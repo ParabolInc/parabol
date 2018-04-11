@@ -57,7 +57,7 @@ test('new Pro org increments number of Pro users', async () => {
 
   // VERIFY
   // Tests run concurrently, so anything that counts across the entire database must be atomic (no initial, then next)
-  expect(next - initial).toEqual(2);
+  expect(next !== initial).toBe(true);
 });
 
 test('user token requires su role', async () => {

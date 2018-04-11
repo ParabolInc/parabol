@@ -45,7 +45,6 @@
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
-    "test:update": "jest --updateSnapshot --runInBand",
     "lint": "yarn flow && eslint 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
