@@ -4,17 +4,33 @@ import React from 'react';
 import ErrorBoundary from 'universal/components/ErrorBoundary';
 import withStyles from 'universal/styles/withStyles';
 import ui from 'universal/styles/ui';
+import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog';
 
 const MeetingMain = (props) => {
-  const {children, hasBoxShadow, styles} = props;
+  const {children, hasBoxShadow, hasHelpFor, isFacilitating, styles} = props;
   const rootStyles = css(
     styles.meetingMainRoot,
     hasBoxShadow && styles.hasBoxShadow
   );
+  const innerBlockStyles = css(
+    styles.meetingMainRoot,
+    styles.innerBlockStyles
+  );
+  const helpStyles = css(
+    styles.helpStyles,
+    isFacilitating && styles.helpIsFacilitating
+  );
   return (
     <ErrorBoundary>
       <div className={rootStyles}>
-        {children}
+        {hasHelpFor &&
+          <div className={helpStyles}>
+            <MeetingHelpDialog phase={hasHelpFor} />
+          </div>
+        }
+        <div className={innerBlockStyles}>
+          {children}
+        </div>
       </div>
     </ErrorBoundary>
   );
@@ -24,6 +40,8 @@ const MeetingMain = (props) => {
 MeetingMain.propTypes = {
   children: PropTypes.any,
   hasBoxShadow: PropTypes.bool,
+  hasHelpFor: PropTypes.string,
+  isFacilitating: PropTypes.bool,
   styles: PropTypes.object
 };
 
@@ -33,13 +51,27 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     minWidth: '60rem',
+    position: 'relative',
     width: '100%'
   },
 
   hasBoxShadow: {
-    // similar to shadow[2] (depth .25rem, blur-radius .5rem)
-    // boxShadow: 'inset .25rem 0 .5rem rgba(0, 0, 0, .25), inset 0 0 .0625rem rgba(0, 0, 0, .15)'
     boxShadow: ui.meetingChromeBoxShadow
+  },
+
+  innerBlockStyles: {
+    zIndex: 100
+  },
+
+  helpStyles: {
+    bottom: '1.25rem',
+    position: 'absolute',
+    right: '1.25rem',
+    zIndex: 200
+  },
+
+  helpIsFacilitating: {
+    bottom: '5.25rem'
   }
 });
 

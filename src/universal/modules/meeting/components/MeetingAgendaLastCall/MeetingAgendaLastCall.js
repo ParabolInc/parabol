@@ -13,7 +13,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import {AGENDA_ITEM_LABEL, LAST_CALL} from 'universal/utils/constants';
 import plural from 'universal/utils/plural';
 
 const MeetingAgendaLastCall = (props) => {
@@ -30,7 +30,7 @@ const MeetingAgendaLastCall = (props) => {
   const hintName = hideMoveMeetingControls ? facilitatorName : 'you';
 
   return (
-    <MeetingMain>
+    <MeetingMain hasHelpFor={LAST_CALL}>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <div className={css(styles.main)}>
