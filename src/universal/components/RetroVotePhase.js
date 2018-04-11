@@ -23,9 +23,9 @@ const VotePhaseWrapper = styled('div')({
 
 const RetroVotePhase = (props: Props) => {
   const {atmosphere: {viewerId}, gotoNext, team} = props;
-  const {newMeeting, meetingSettings} = team;
-  const {facilitatorUserId} = newMeeting || {};
-  const phaseItems = meetingSettings.phaseItems || [];
+  const {newMeeting, meetingSettings, teamMembers} = team;
+  const {facilitatorUserId, votesRemaining} = newMeeting || {};
+  const {phaseItems = [], totalVotes} = meetingSettings;
   const isFacilitating = facilitatorUserId === viewerId;
   return (
     <React.Fragment>
@@ -40,6 +40,7 @@ const RetroVotePhase = (props: Props) => {
           buttonSize="medium"
           buttonStyle="flat"
           colorPalette="dark"
+          disabled={votesRemaining === totalVotes * teamMembers.length}
           icon="arrow-circle-right"
           iconLarge
           iconPalette="warm"
@@ -67,6 +68,7 @@ export default createFragmentContainer(
       }
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
+          totalVotes
           phaseItems {
             ... on RetroPhaseItem {
               id
@@ -75,6 +77,9 @@ export default createFragmentContainer(
           }
         }
       }
+    teamMembers(sortBy: "checkInOrder") {
+      id
+    }
     }
   `
 );

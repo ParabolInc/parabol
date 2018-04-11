@@ -17,7 +17,9 @@ const getRetroMeeting = (meetingId) => {
               userId: meetingMember('userId'),
               meetingId
             })
-        })),
+            .coerceTo('array')
+        }))
+        .coerceTo('array'),
       team: r.table('Team').get(meeting('teamId')),
       reflectionGroups: r.table('RetroReflectionGroup')
         .getAll(meetingId, {index: 'meetingId'})
@@ -26,7 +28,9 @@ const getRetroMeeting = (meetingId) => {
           reflections: r.table('RetroReflection')
             .getAll(reflectionGroup('id'), {index: 'reflectionGroupId'})
             .filter({isActive: true})
+            .coerceTo('array')
         }))
+        .coerceTo('array')
     }));
 };
 

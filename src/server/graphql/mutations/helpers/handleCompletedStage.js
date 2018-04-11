@@ -18,7 +18,9 @@ const handleCompletedRetrospectiveStage = async (stage, meeting, dataLoader, sub
     addDefaultGroupTitles(meeting, subOptions);
     return undefined;
   } else if (stage.phaseType === VOTE) {
-    return addDiscussionTopics(meeting, dataLoader);
+    // OK this is really hacky. we're using the start new meeting message to send down something unrelated, but the client uses the same payload
+    addDiscussionTopics(meeting, dataLoader, subOptions);
+    return undefined;
   }
   return undefined;
 };

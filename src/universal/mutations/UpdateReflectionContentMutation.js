@@ -27,6 +27,9 @@ graphql`
 const mutation = graphql`
   mutation UpdateReflectionContentMutation($content: String!, $reflectionId: ID!) {
     updateReflectionContent(content: $content, reflectionId: $reflectionId) {
+      error {
+        message
+      }
       ...UpdateReflectionContentMutation_team @relay(mask: false)
     }
   }

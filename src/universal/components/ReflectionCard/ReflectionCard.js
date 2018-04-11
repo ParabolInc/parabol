@@ -27,6 +27,8 @@ import isTempId from 'universal/utils/relay/isTempId';
 import UserDraggingHeader from 'universal/components/UserDraggingHeader';
 import ui from 'universal/styles/ui';
 import textOverflow from 'universal/styles/helpers/textOverflow';
+import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
+import StyledError from 'universal/components/StyledError';
 
 export type Props = {|
   // true if the card is in a collapsed group and it is not the top card (default false)
@@ -119,11 +121,13 @@ class ReflectionCard extends Component<Props, State> {
   };
 
   render() {
-    const {atmosphere, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
+    const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
-    const {localPhase: {phaseType}, teamId} = meeting;
+    const {localPhase: {phaseType}, phases, teamId} = meeting;
     const {draggerUser, isViewerCreator, phaseItem: {question}} = reflection;
-    const canDelete = isViewerCreator && phaseType === REFLECT;
+    const meetingStageRes = findMeetingStage(phases);
+    const {phase: {phaseType: meetingPhaseType}} = meetingStageRes;
+    const canDelete = isViewerCreator && phaseType === REFLECT && meetingPhaseType === REFLECT;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
       <ReflectionStyles isCollapsed={isCollapsed}>
@@ -139,6 +143,7 @@ class ReflectionCard extends Component<Props, State> {
           setEditorState={this.setEditorState}
           teamId={teamId}
         />
+        {error && <StyledError>{error.message}</StyledError>}
         {showOriginFooter && <OriginFooter>{question}</OriginFooter>}
         {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
       </ReflectionStyles>
@@ -156,6 +161,12 @@ export default createFragmentContainer(
       teamId
       localPhase {
         phaseType
+      }
+      phases {
+        phaseType
+        stages {
+          isComplete
+        }
       }
       ...ReflectionCardDeleteButton_meeting
     }

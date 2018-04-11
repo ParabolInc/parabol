@@ -10,6 +10,8 @@ import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
+import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation';
+import {withRouter} from 'react-router-dom';
 
 type Props = {|
   atmosphere: Object,
@@ -39,7 +41,8 @@ const ReflectionGrid = styled('div')({
   flexWrap: 'wrap'
 });
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere: {viewerId}, gotoNext, team} = props;
+  const {atmosphere, gotoNext, history, team} = props;
+  const {viewerId} = atmosphere;
   const {newMeeting, teamId} = team;
   const {facilitatorUserId, localStage: {localStageId, reflectionGroup}, meetingId, phases} = newMeeting || {};
   // reflection group will be null until the server overwrites the placeholder.
@@ -48,6 +51,9 @@ const RetroDiscussPhase = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId;
   const checkMarks = [...Array(voteCount).keys()];
   const nextStageRes = findStageAfterId(phases, localStageId);
+  const endMeeting = () => {
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history});
+  };
   return (
     <React.Fragment>
       <PhaseWrapper>
@@ -93,7 +99,7 @@ const RetroDiscussPhase = (props: Props) => {
           iconPalette="warm"
           iconPlacement="right"
           label={'End Meeting'}
-          onClick={gotoNext}
+          onClick={endMeeting}
         />
       </MeetingControlBar>
       }
@@ -102,7 +108,7 @@ const RetroDiscussPhase = (props: Props) => {
 };
 
 export default createFragmentContainer(
-  withAtmosphere(RetroDiscussPhase),
+  withRouter(withAtmosphere(RetroDiscussPhase)),
   graphql`
     fragment RetroDiscussPhase_team on Team {
       teamId: id
@@ -112,6 +118,7 @@ export default createFragmentContainer(
         facilitatorUserId
         phases {
           stages {
+            id
             ... on RetroDiscussStage {
               reflectionGroup {
                 id

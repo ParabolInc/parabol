@@ -29,14 +29,15 @@ export const customPhaseItemFields = () => ({
   }
 });
 
-const resolveTypeLookup = {
-  [RETRO_PHASE_ITEM]: RetroPhaseItem
-};
-
 const CustomPhaseItem = new GraphQLInterfaceType({
   name: 'CustomPhaseItem',
   fields: customPhaseItemFields,
-  resolveType: ({phaseItemType}) => resolveTypeLookup[phaseItemType]
+  resolveType: ({phaseItemType}) => {
+    const resolveTypeLookup = {
+      [RETRO_PHASE_ITEM]: RetroPhaseItem
+    };
+    return resolveTypeLookup[phaseItemType];
+  }
 });
 
 export default CustomPhaseItem;

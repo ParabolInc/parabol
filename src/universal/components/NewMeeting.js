@@ -35,6 +35,7 @@ import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/
 import RetroGroupPhase from 'universal/components/RetroGroupPhase';
 import RetroVotePhase from 'universal/components/RetroVotePhase';
 import RetroDiscussPhase from 'universal/components/RetroDiscussPhase';
+import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 
 const {Component} = React;
 
@@ -100,9 +101,11 @@ class NewMeeting extends Component<Props> {
     if (!newMeeting) return;
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
     const {viewerId} = atmosphere;
-    const isFacilitating = viewerId === facilitatorUserId;
+    const isViewerFacilitator = viewerId === facilitatorUserId;
+    const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId);
+    if (!isNavigable) return;
     updateLocalStage(atmosphere, meetingId, stageId);
-    if (isFacilitating) {
+    if (isViewerFacilitator) {
       const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
       const variables: Variables = {meetingId, facilitatorStageId: stageId};
       if (!isComplete) {
@@ -118,10 +121,7 @@ class NewMeeting extends Component<Props> {
     if (!newMeeting) return;
     const {localStage: {localStageId}, phases} = newMeeting;
     const nextStageRes = findStageAfterId(phases, localStageId);
-    if (!nextStageRes) {
-      // TODO end meeting!
-      return;
-    }
+    if (!nextStageRes) return;
     const {stage: {id: nextStageId}} = nextStageRes;
     this.gotoStageId(nextStageId);
   }
@@ -131,10 +131,7 @@ class NewMeeting extends Component<Props> {
     if (!newMeeting) return;
     const {localStage: {localStageId}, phases} = newMeeting;
     const nextStageRes = findStageBeforeId(phases, localStageId);
-    if (!nextStageRes) {
-      // TODO end meeting!
-      return;
-    }
+    if (!nextStageRes) return;
     const {stage: {id: nextStageId}} = nextStageRes;
     this.gotoStageId(nextStageId);
   }
