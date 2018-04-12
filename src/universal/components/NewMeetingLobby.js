@@ -107,7 +107,7 @@ const NewMeetingLobby = (props: Props) => {
       </GetAccessCopy>
       }
       <MeetingCopy>
-        {'The person who presses “Start Meeting” will facilitate the meeting.'}<br />
+        {'The person who presses “Start Meeting” will be today’s Facilitator.'}<br />
         {'Everyone’s display automatically follows the Facilitator.'}
       </MeetingCopy>
       <ButtonBlock>
