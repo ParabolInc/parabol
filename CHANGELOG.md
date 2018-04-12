@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.5.1 2018-Apr-12
+### Fixed
+- Regression in Draft-js #1993
+
 ## v1.5.0 2018-Apr-11
 ### Added
 - Latest retro meeting progress behind the release flag
