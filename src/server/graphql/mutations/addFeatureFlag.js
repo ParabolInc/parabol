@@ -38,11 +38,13 @@ export default {
     }
 
     const {id: userId} = user;
-    console.log('flag', flag);
     await r.table('User').get(userId)
-      .update({
-        [flag]: true
-      });
+      .update((userRow) => ({
+        featureFlags: userRow('featureFlags')
+          .default([])
+          .append(flag)
+          .distinct()
+      }));
     const result = `${email} has been given access to the ${flag} feature. If the app is open, it should magically appear.`;
     const data = {result, userId};
     publish(NOTIFICATION, userId, AddFeatureFlagPayload, data, subOptions);

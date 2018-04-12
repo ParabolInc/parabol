@@ -33,6 +33,7 @@ import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
 import MeetingMember from 'server/graphql/types/MeetingMember';
 import NewMeeting from 'server/graphql/types/NewMeeting';
+import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -70,14 +71,21 @@ const User = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if email is verified, false otherwise'
     },
+    featureFlags: {
+      type: UserFeatureFlags,
+      description: 'Any super power given to the user via a super user',
+      resolve: ({featureFlags}) => {
+        const flagObj = {};
+        featureFlags.forEach((flag) => {
+          flagObj[flag] = true;
+        });
+        return flagObj;
+      }
+    },
     identities: {
       type: new GraphQLList(AuthIdentityType),
       description: `An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked`
-    },
-    isRetroEnabled: {
-      type: GraphQLBoolean,
-      description: 'true if the user can view retros, else false'
     },
     isConnected: {
       type: GraphQLBoolean,

@@ -57,7 +57,9 @@ const subscription = graphql`
       ... on AddFeatureFlagPayload {
         user {
           id
-          isRetroEnabled
+          featureFlags {
+            retro
+          }
         }
       }
     }
