@@ -1,21 +1,30 @@
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLNonNull} from 'graphql';
 import {requireSU} from 'server/utils/authorization';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import UserFlagEnum from 'server/graphql/types/UserFlagEnum';
+import {NOTIFICATION} from 'universal/utils/constants';
+import publish from 'server/utils/publish';
+import AddFeatureFlagPayload from 'server/graphql/types/AddFeatureFlagPayload';
+import {sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
-  type: GraphQLString,
+  type: AddFeatureFlagPayload,
   description: 'Give someone advanced features in a flag',
   args: {
     email: {
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'the email of the person to whom you are giving advanced features'
+    },
+    flag: {
+      type: new GraphQLNonNull(UserFlagEnum),
+      description: 'the flag that you want to give to the user'
     }
   },
-  async resolve(source, {email}, {authToken}) {
+  async resolve(source, {email, flag}, {authToken, dataLoader}) {
     const r = getRethink();
-
+    const operationId = dataLoader.share();
+    const subOptions = {operationId};
     // AUTH
     requireSU(authToken);
 
@@ -25,16 +34,18 @@ export default {
       .nth(0)
       .default(null);
     if (!user) {
-      throw new Error(`${email} was not found on the server!`);
+      return sendTeamMemberNotFoundError(authToken);
     }
-    const userId = user.id;
 
-    auth0ManagementClient.users.updateAppMetadata({id: userId}, {bet: 1});
-
-    // TODO send them a new token while they're logged in because we're that good
-
-    // get a fresh token from auth0
-
-    return `${email} has been given access to beta features. Please have them log in again.`;
+    const {id: userId} = user;
+    console.log('flag', flag);
+    await r.table('User').get(userId)
+      .update({
+        [flag]: true
+      });
+    const result = `${email} has been given access to the ${flag} feature. If the app is open, it should magically appear.`;
+    const data = {result, userId};
+    publish(NOTIFICATION, userId, AddFeatureFlagPayload, data, subOptions);
+    return data;
   }
 };

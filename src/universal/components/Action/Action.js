@@ -53,9 +53,7 @@ const Action = () => {
         }
         <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
-        {__RELEASE_FLAGS__.retro &&
-          <AsyncRoute isPrivate path="/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?" mod={retroRoot} />
-        }
+        <AsyncRoute isPrivate path="/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?" mod={retroRoot} />
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />
         <AsyncRoute isPrivate path="/summary/:meetingId" mod={meetingSummary} />
         <AsyncRoute isPrivate path="/new-summary/:meetingId" mod={newMeetingSummary} />

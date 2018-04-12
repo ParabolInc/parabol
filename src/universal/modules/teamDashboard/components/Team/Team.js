@@ -58,6 +58,7 @@ class Team extends Component {
     const {
       children,
       hasMeetingAlert,
+      isRetroEnabled,
       isSettings,
       styles,
       team
@@ -122,7 +123,7 @@ class Team extends Component {
             }
             <DashboardAvatars team={team} />
             {!isSettings &&
-            <TeamCallsToAction teamId={teamId} />
+            <TeamCallsToAction isRetroEnabled={isRetroEnabled} teamId={teamId} />
             }
           </div>
         </DashHeader>
@@ -138,6 +139,7 @@ Team.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   children: PropTypes.any,
   hasMeetingAlert: PropTypes.bool,
+  isRetroEnabled: PropTypes.bool,
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
   styles: PropTypes.object,

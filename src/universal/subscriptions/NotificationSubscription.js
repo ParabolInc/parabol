@@ -52,6 +52,14 @@ const subscription = graphql`
           ...PaymentRejected_notification @relay(mask: false)
         }
       }
+      
+      # Feature flags
+      ... on AddFeatureFlagPayload {
+        user {
+          id
+          isRetroEnabled
+        }
+      }
     }
   }
 `;
@@ -118,6 +126,8 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
       if (!payload) return;
       const type = payload.getValue('__typename');
       switch (type) {
+        case 'AddFeatureFlagPayload':
+          break;
         case 'AddOrgPayload':
           addOrgMutationNotificationUpdater(payload, store, viewerId, options);
           break;

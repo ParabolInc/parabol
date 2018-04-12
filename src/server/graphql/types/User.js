@@ -75,6 +75,10 @@ const User = new GraphQLObjectType({
       description: `An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked`
     },
+    isRetroEnabled: {
+      type: GraphQLBoolean,
+      description: 'true if the user can view retros, else false'
+    },
     isConnected: {
       type: GraphQLBoolean,
       description: 'true if the user is currently online',

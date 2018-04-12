@@ -59,6 +59,8 @@ export type User = {
   /** An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked */
   identities: ?Array<AuthIdentityType>;
+  /** true if the user can view retros, else false */
+  isRetroEnabled: ?boolean;
   /** true if the user is currently online */
   isConnected: ?boolean;
   /** The number of logins for this user */
@@ -948,7 +950,7 @@ export type Mutation = {
   /** Create a new agenda item */
   addAgendaItem: ?AddAgendaItemPayload;
   /** Give someone advanced features in a flag */
-  addFeatureFlag: ?string;
+  addFeatureFlag: ?AddFeatureFlagPayload;
   addGitHubRepo: AddGitHubRepoPayload;
   /** Create a new team and add the first team member */
   addOrg: ?AddOrgPayload;
@@ -1161,6 +1163,19 @@ export type CreateAgendaItemInput = {
 export type AddAgendaItemPayload = {
   agendaItem: ?AgendaItem;
   error: ?StandardMutationError;
+}
+
+/**
+  A flag to give an individual user super powers
+*/
+export type UserFlagEnum = "retro";
+
+export type AddFeatureFlagPayload = {
+  error: ?StandardMutationError;
+  /** the user that was given the super power */
+  user: ?User;
+  /** A human-readable result */
+  result: ?string;
 }
 
 export type AddGitHubRepoPayload = {
@@ -2227,7 +2242,7 @@ export type GitHubMemberRemovedPayload = {
 
 export type InvitationSubscriptionPayload = AcceptTeamInvitePayload | ApproveToOrgPayload | CancelTeamInvitePayload | InviteTeamMembersPayload | ResendTeamInvitePayload;
 
-export type NotificationSubscriptionPayload = AddOrgPayload | AddTeamPayload | ApproveToOrgPayload | CancelApprovalPayload | CancelTeamInvitePayload | ClearNotificationPayload | CreateTaskPayload | DeleteTaskPayload | DisconnectSocketPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | StripeFailPaymentPayload | User | UpdateUserProfilePayload;
+export type NotificationSubscriptionPayload = AddFeatureFlagPayload | AddOrgPayload | AddTeamPayload | ApproveToOrgPayload | CancelApprovalPayload | CancelTeamInvitePayload | ClearNotificationPayload | CreateTaskPayload | DeleteTaskPayload | DisconnectSocketPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | StripeFailPaymentPayload | User | UpdateUserProfilePayload;
 
 export type OrgApprovalSubscriptionPayload = ApproveToOrgPayload | CancelApprovalPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload;
 
