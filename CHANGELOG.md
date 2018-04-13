@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.5.2 2018-Apr-12
+### Added
+- Error logging to login mutation
+
 ## v1.5.1 2018-Apr-12
 ### Fixed
 - Regression in Draft-js #1993
