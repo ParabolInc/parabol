@@ -127,7 +127,8 @@ const phaseHelpLookup = {
     helpDialog: voteHelpContent
   },
   [DISCUSS]: {
-    facilitatorBarTip: 'Facilitator: encourage your team to break tasks down to their smallest components, perhaps owned by multiple teammates.',
+    facilitatorBarTip: `Facilitator: encourage your team to break tasks down to their smallest components,
+                        perhaps owned by multiple teammates.`,
     helpDialog: discussHelpContent
   },
   [UPDATES]: {

@@ -106,11 +106,11 @@ class NewMeetingCheckIn extends Component<Props> {
               <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
                 {!lastCheckInStage ?
                   <span>
-                  {isMyMeetingSection ?
-                    <span>{'Share with your teammates!'}</span> :
-                    <span>{'Waiting for'} <b>{teamMember.preferredName}</b> {'to share with the team'}</span>
-                  }
-                </span> :
+                    {isMyMeetingSection ?
+                      <span>{'Share with your teammates!'}</span> :
+                      <span>{'Waiting for'} <b>{teamMember.preferredName}</b> {'to share with the team'}</span>
+                    }
+                  </span> :
                   <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
                 }
               </MeetingFacilitationHint>
@@ -130,7 +130,7 @@ class NewMeetingCheckIn extends Component<Props> {
       </React.Fragment>
     );
   }
-};
+}
 
 export default createFragmentContainer(
   withHotkey(withRouter(withAtmosphere(withMutationProps(NewMeetingCheckIn)))),
