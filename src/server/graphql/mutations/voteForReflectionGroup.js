@@ -2,7 +2,10 @@ import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import {sendMeetingMemberNotFoundError, sendReflectionGroupNotFoundError} from 'server/utils/docNotFoundErrors';
+import {
+  sendMeetingMemberNotCheckedInError, sendMeetingMemberNotFoundError,
+  sendReflectionGroupNotFoundError
+} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
 import {RETROSPECTIVE, TEAM, VOTE} from 'universal/utils/constants';
@@ -47,6 +50,8 @@ export default {
       .nth(0)
       .default(null);
     if (!meetingMember) return sendMeetingMemberNotFoundError(authToken, meetingId);
+    const {isCheckedIn} = meetingMember;
+    if (!isCheckedIn) return sendMeetingMemberNotCheckedInError(authToken, meetingMember.id);
 
     // RESOLUTION
     if (isUnvote) {

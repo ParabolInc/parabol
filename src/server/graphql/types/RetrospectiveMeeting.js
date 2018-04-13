@@ -8,7 +8,7 @@ import Task from 'server/graphql/types/Task';
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
-  description: 'sorts for the reflection group. default is sortOrder',
+  description: 'sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.',
   values: {
     voteCount: {}
   }
@@ -35,7 +35,6 @@ const RetrospectiveMeeting = new GraphQLObjectType({
       },
       resolve: async ({id: meetingId}, {sortBy}, {dataLoader}) => {
         const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId);
-        console.log('sortBy', sortBy);
         if (sortBy === 'voteCount') {
           const groupsWithVotes = reflectionGroups.filter(({voterIds}) => voterIds.length > 0);
           groupsWithVotes.sort((a, b) => a.voterIds.length < b.voterIds.length ? 1 : -1);
@@ -67,10 +66,10 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     },
     votesRemaining: {
       type: new GraphQLNonNull(GraphQLInt),
-      description: 'The votes remaining for the whole team',
+      description: 'The sum total of the votes remaining for the meeting members that are present in the meeting',
       resolve: async ({id: meetingId}, args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId);
-        return meetingMembers.reduce((sum, member) => sum + member.votesRemaining, 0);
+        return meetingMembers.reduce((sum, member) => member.isCheckedIn ? sum + member.votesRemaining : sum, 0);
       }
     }
     // reflections: {

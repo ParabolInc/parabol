@@ -4,9 +4,9 @@ import addDiscussionTopics from 'server/graphql/mutations/helpers/addDiscussionT
 import addDefaultGroupTitles from 'server/graphql/mutations/helpers/addDefaultGroupTitles';
 
 /*
- * Used to stage-complete side effects.
- * Should only return a promise if the side effect changes the phases or stages
- * Otherwise, just update via pubsub so we don't slow down the navigation
+ * handle side effects when a stage is completed
+ * returns an object if the side effect is necessary before the navigation is complete
+ * otherwise, returns an empty object
  */
 const handleCompletedRetrospectiveStage = async (stage, meeting, dataLoader) => {
   if (stage.phaseType === REFLECT) {

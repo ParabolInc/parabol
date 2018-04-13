@@ -56,11 +56,11 @@ export type User = {
   email: any;
   /** true if email is verified, false otherwise */
   emailVerified: ?boolean;
+  /** Any super power given to the user via a super user */
+  featureFlags: ?UserFeatureFlags;
   /** An array of objects with information about the user's identities.
       More than one will exists in case accounts are linked */
   identities: ?Array<AuthIdentityType>;
-  /** true if the user can view retros, else false */
-  isRetroEnabled: ?boolean;
   /** true if the user is currently online */
   isConnected: ?boolean;
   /** The number of logins for this user */
@@ -130,6 +130,14 @@ export type BlockedUserType = {
   identifier: ?string;
   /** The IP address of the blocked user */
   id: ?string;
+}
+
+/**
+  The user account profile
+*/
+export type UserFeatureFlags = {
+  /** true if the user has access to retro meetings */
+  retro: ?boolean;
 }
 
 export type AuthIdentityType = {
@@ -1425,12 +1433,12 @@ export type RetrospectiveMeeting = {
   settings: RetrospectiveMeetingSettings;
   /** The tasks created within the meeting */
   tasks: Array<Task>;
-  /** The votes remaining for the whole team */
+  /** The sum total of the votes remaining for the meeting members that are present in the meeting */
   votesRemaining: number;
 }
 
 /**
-  sorts for the reflection group. default is sortOrder
+  sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
 */
 export type ReflectionGroupSortEnum = "voteCount";
 

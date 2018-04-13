@@ -41,8 +41,12 @@ const CheckColumn = styled('div')({
 class ReflectionGroupVoting extends Component<Props> {
   vote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props;
-    const {meetingId} = meeting;
+    const {meetingId, viewerMeetingMember: {isCheckedIn}} = meeting;
     const {reflectionGroupId} = reflectionGroup;
+    if (!isCheckedIn) {
+      onError({message: 'You must be checked in in order to vote'});
+      return;
+    }
     submitMutation();
     VoteForReflectionGroupMutation(atmosphere, {reflectionGroupId}, {meetingId}, onError, onCompleted);
   };
@@ -81,6 +85,7 @@ export default createFragmentContainer(
     fragment ReflectionGroupVoting_meeting on RetrospectiveMeeting {
       meetingId: id
       viewerMeetingMember {
+        isCheckedIn
         ... on RetrospectiveMeetingMember {
           votesRemaining
         }

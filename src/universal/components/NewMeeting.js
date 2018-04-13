@@ -212,7 +212,6 @@ export default createFragmentContainer(
           preferredName
           picture
           checkInOrder
-          isCheckedIn
           isConnected
           isFacilitator
           isLead

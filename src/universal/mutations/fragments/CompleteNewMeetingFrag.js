@@ -47,6 +47,7 @@ graphql`
       }
     }
     viewerMeetingMember {
+      isCheckedIn
       ... on RetrospectiveMeetingMember {
         votesRemaining
       }

@@ -19,6 +19,10 @@ import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/Meetin
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import {CHECKIN} from 'universal/utils/constants';
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
+import withHotkey from 'react-hotkey-hoc';
+import handleHotkey from 'universal/utils/meetings/handleHotkey';
+
+const {Component} = React;
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -52,65 +56,84 @@ type Props = {
   ...MutationProps
 };
 
-const NewMeetingCheckIn = (props: Props) => {
-  const {atmosphere, gotoNext, onError, onCompleted, submitMutation, submitting, team} = props;
-  const {newMeeting} = team;
-  const {meetingId, facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
-  const makeCheckinPressFactory = (userId) => (isCheckedIn) => () => {
+class NewMeetingCheckIn extends Component<Props> {
+  constructor(props) {
+    super(props);
+    const {atmosphere, bindHotkey, onError, onCompleted, submitMutation, submitting, team} = props;
+    const {newMeeting} = team;
+    const {meetingId, localStage: {teamMember: {meetingMember: {isCheckedIn}, userId}}} = newMeeting;
+    const markAsPresent = () => {
+      if (isCheckedIn === false) return;
+      submitMutation();
+      NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn}, onError, onCompleted);
+    };
+    bindHotkey(['enter', 'right'], handleHotkey(markAsPresent, submitting));
+  }
+
+  makeCheckinPressFactory = (userId) => (isCheckedIn) => () => {
+    const {atmosphere, gotoNext, onError, onCompleted, submitMutation, submitting, team} = this.props;
+    const {newMeeting} = team;
+    const {meetingId, localStage: {localStageId}} = newMeeting;
     if (submitting) return;
     submitMutation();
     NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn}, onError, onCompleted);
     gotoNext(localStageId);
   };
-  const {isSelf: isMyMeetingSection} = teamMember;
-  const nextStageRes = findStageAfterId(phases, localStageId);
-  // in case the checkin is the last phase of the meeting
-  if (!nextStageRes) return null;
-  const {stage: nextStage, phase: nextPhase} = nextStageRes;
-  const lastCheckInStage = nextPhase.phaseType !== CHECKIN;
-  const nextMemberName = nextStage && nextStage.teamMember && nextStage.teamMember.preferredName || '';
-  const {viewerId} = atmosphere;
-  const isFacilitating = facilitatorUserId === viewerId;
-  return (
-    <React.Fragment>
-      <MeetingSection flexToFill paddingBottom="1rem">
-        <NewMeetingCheckInPrompt
-          team={team}
-          teamMember={teamMember}
-        />
-        <CheckIn>
-          {!isFacilitating &&
-          <Hint>
-            <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
-              {!lastCheckInStage ?
-                <span>
+
+  render() {
+    const {atmosphere, team} = this.props;
+    const {newMeeting} = team;
+    const {facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
+    const {isSelf: isMyMeetingSection} = teamMember;
+    const nextStageRes = findStageAfterId(phases, localStageId);
+    // in case the checkin is the last phase of the meeting
+    if (!nextStageRes) return null;
+    const {stage: nextStage, phase: nextPhase} = nextStageRes;
+    const lastCheckInStage = nextPhase.phaseType !== CHECKIN;
+    const nextMemberName = nextStage && nextStage.teamMember && nextStage.teamMember.preferredName || '';
+    const {viewerId} = atmosphere;
+    const isFacilitating = facilitatorUserId === viewerId;
+    return (
+      <React.Fragment>
+        <MeetingSection flexToFill paddingBottom="1rem">
+          <NewMeetingCheckInPrompt
+            team={team}
+            teamMember={teamMember}
+          />
+          <CheckIn>
+            {!isFacilitating &&
+            <Hint>
+              <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
+                {!lastCheckInStage ?
+                  <span>
                   {isMyMeetingSection ?
                     <span>{'Share with your teammates!'}</span> :
                     <span>{'Waiting for'} <b>{teamMember.preferredName}</b> {'to share with the team'}</span>
                   }
                 </span> :
-                <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
-              }
-            </MeetingFacilitationHint>
-          </Hint>
-          }
-        </CheckIn>
-      </MeetingSection>
-      {isFacilitating &&
-      <MeetingControlBar>
-        <CheckInControls
-          checkInPressFactory={makeCheckinPressFactory(teamMember.userId)}
-          currentMemberName={teamMember.preferredName}
-          nextMemberName={nextMemberName}
-        />
-      </MeetingControlBar>
-      }
-    </React.Fragment>
-  );
+                  <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
+                }
+              </MeetingFacilitationHint>
+            </Hint>
+            }
+          </CheckIn>
+        </MeetingSection>
+        {isFacilitating &&
+        <MeetingControlBar>
+          <CheckInControls
+            checkInPressFactory={this.makeCheckinPressFactory(teamMember.userId)}
+            currentMemberName={teamMember.preferredName}
+            nextMemberName={nextMemberName}
+          />
+        </MeetingControlBar>
+        }
+      </React.Fragment>
+    );
+  }
 };
 
 export default createFragmentContainer(
-  withRouter(withAtmosphere(withMutationProps(NewMeetingCheckIn))),
+  withHotkey(withRouter(withAtmosphere(withMutationProps(NewMeetingCheckIn)))),
   graphql`
     fragment NewMeetingCheckIn_team on Team {
       ...NewMeetingCheckInPrompt_team
@@ -129,6 +152,9 @@ export default createFragmentContainer(
               isSelf
               preferredName
               userId
+              meetingMember {
+                isCheckedIn
+              }
               ...NewMeetingCheckInPrompt_teamMember
             }
           }
@@ -141,6 +167,9 @@ export default createFragmentContainer(
               teamMember {
                 id
                 isSelf
+                meetingMember {
+                  isCheckedIn
+                }
                 preferredName
                 userId
               }

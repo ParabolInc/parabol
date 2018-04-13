@@ -5,6 +5,9 @@ graphql`
   fragment NewMeetingCheckInMutation_team on NewMeetingCheckInPayload {
     meetingMember {
       isCheckedIn
+      ... on RetrospectiveMeetingMember {
+        votesRemaining
+      }
     }
   }
 `;
