@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.5.3 2018-Apr-12
+### Fixed
+- Possible login fix with extra logging
+
 ## v1.5.2 2018-Apr-12
 ### Added
 - Error logging to login mutation
