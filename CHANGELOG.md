@@ -4,6 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.5.0 2018-Apr-11
+### Added
+- Latest retro meeting progress behind the release flag
+- A batch of UI style updates for consistency and improvements
+- Ability to identify pro users accurately
+- Help dialog content in Action meetings
+
+### Fixed
+- Segment identify logic #1901
+
 ## v1.4.0 2018-Apr-04
 ### Added
 - More check-in questions
@@ -12,7 +22,6 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Clear filter after leaving team dashboard #1871
 - Make dash filter menus keyboard accessible
 - Use react-emotion for global CSS styles
-
 
 ## v1.3.0 2018-Mar-28
 ### Added

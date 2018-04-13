@@ -117,7 +117,7 @@ class MenuItemWithShortcuts extends Component {
       (<FontAwesome
         name={icon}
         className={css({
-          color: iconColor || 'inherit',
+          color: iconColor || ui.menuItemIconColor,
           fontSize: ui.iconSize,
           lineHeight: 'inherit',
           marginLeft: ui.menuGutterHorizontal,

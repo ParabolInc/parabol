@@ -17,6 +17,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import makeHref from 'universal/utils/makeHref';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {LOBBY} from 'universal/utils/constants';
 
 const MeetingLobby = (props) => {
   const {atmosphere, history, onError, onCompleted, submitMutation, submitting, team, styles} = props;
@@ -27,7 +28,7 @@ const MeetingLobby = (props) => {
   };
   const meetingUrl = makeHref(`/meeting/${teamId}`);
   return (
-    <MeetingMain>
+    <MeetingMain hasHelpFor={LOBBY}>
       {/* */}
       <div className={css(styles.root)}>
         <LabelHeading>{'Welcome to the Meeting Lobby'}</LabelHeading>

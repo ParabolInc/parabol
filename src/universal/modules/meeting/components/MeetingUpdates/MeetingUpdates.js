@@ -10,7 +10,7 @@ import MeetingSection from 'universal/modules/meeting/components/MeetingSection/
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import withStyles from 'universal/styles/withStyles';
-import {MEETING} from 'universal/utils/constants';
+import {MEETING, UPDATES} from 'universal/utils/constants';
 import getTaskById from 'universal/utils/getTaskById';
 import isTaskPrivate from 'universal/utils/isTaskPrivate';
 
@@ -56,7 +56,7 @@ class MeetingUpdates extends Component {
     const myTeamMemberId = self && self.id;
     const {isSelf: isMyMeetingSection} = currentTeamMember;
     return (
-      <MeetingMain>
+      <MeetingMain hasHelpFor={UPDATES} isFacilitating={showMoveMeetingControls}>
         <MeetingSection flexToFill>
           <div className={css(styles.body)}>
             <TaskColumns

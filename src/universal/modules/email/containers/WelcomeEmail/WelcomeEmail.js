@@ -13,10 +13,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 
 const ruleStyle = {
-  backgroundColor: ui.emailRuleColor,
-  border: 0,
-  height: '2px',
-  margin: '0 auto',
+  ...ui.emailRuleStyle,
   width: '80%'
 };
 

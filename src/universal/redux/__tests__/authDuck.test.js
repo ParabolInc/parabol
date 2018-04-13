@@ -29,7 +29,7 @@ test('can setAuthToken w/token decode', () => {
   const user = {id: testTokenData.sub, email: 'a@a.co'};
   store.dispatch(setAuthToken(testToken, user));
   expect(raven.setUserContext).toBeCalledWith({id: testTokenData.sub, email: 'a@a.co'});
-  expect(segmentActions.segmentEventIdentify).toBeCalled();
+  expect(segmentActions.selectSegmentTraits).toBeCalled();
   expect(store.getState()).toMatchSnapshot();
 });
 

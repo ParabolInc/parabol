@@ -17,10 +17,7 @@ import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
 import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE} from 'universal/utils/constants';
 
 const ruleStyle = {
-  backgroundColor: ui.emailRuleColor,
-  border: 0,
-  height: '2px',
-  margin: 0,
+  ...ui.emailRuleStyle,
   width: '100%'
 };
 

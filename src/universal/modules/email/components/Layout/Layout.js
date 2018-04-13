@@ -4,24 +4,22 @@ import ui from 'universal/styles/ui';
 
 const Layout = (props) => {
   const containerStyle = {
+    ...ui.emailTableBase,
     WebkitTextSizeAdjust: '100%',
     msTextSizeAdjust: '100%',
     msoTableLspace: '0pt',
     msoTableRspace: '0pt',
     backgroundColor: ui.emailBackgroundColor,
-    borderCollapse: 'collapse',
-    margin: '0px auto',
     textAlign: 'center'
   };
 
   const innerStyle = {
+    ...ui.emailTableBase,
     WebkitTextSizeAdjust: '100%',
     msTextSizeAdjust: '100%',
     msoTableLspace: '0pt',
     msoTableRspace: '0pt',
-    borderCollapse: 'collapse',
     fontFamily: '"IBM Plex Sans", "Helvetica Neue", sans-serif',
-    margin: '0px auto',
     textAlign: 'center'
   };
 

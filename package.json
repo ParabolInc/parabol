@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -42,9 +42,9 @@
     "flow": "flow",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
-    "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
-    "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
+    "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
+    "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "lint": "yarn flow && eslint 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
     "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",

@@ -43,6 +43,17 @@ const login = {
       const user = await dataLoader.get('users').load(viewerId);
       // LOGIN
       if (user) {
+        /*
+         * The segment docs are inconsistent, and warn against sending
+         * identify() on each log in. However, calling identify is the
+         * only way to synchronize changing user properties with certain
+         * services (such as Hubspot). After checking with support
+         * and combing the forums, it turns out sending identify()
+         * on each login is just fine.
+         *
+         * See also: https://community.segment.com/t/631m9s/identify-per-signup-or-signin
+         */
+        await sendSegmentIdentify(user.id);
         return {
           userId: viewerId,
           // create a brand new auth token using the tms in our DB, not auth0s
@@ -70,15 +81,6 @@ const login = {
       welcomeSentAt: now
     };
     await r.table('User').insert(newUser);
-    /*
-    * From segment docs:
-    *
-    * We recommend calling identify a single time when the
-    * user’s account is first created, and only identifying
-    * again later when their traits change.
-    *
-    * see: https://segment.com/docs/sources/server/node/
-    */
     await sendSegmentIdentify(newUser.id);
 
     // don't await
