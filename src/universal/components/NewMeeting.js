@@ -17,7 +17,7 @@ import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroRefle
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
+import {LOBBY, CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
@@ -178,11 +178,9 @@ class NewMeeting extends Component<Props> {
           </ErrorBoundary>
         </MeetingArea>
         {!inSync && <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />}
-        {localPhaseType &&
-          <MeetingHelpBlock isFacilitating={isFacilitating}>
-            <MeetingHelpDialog phase={localPhaseType} />
-          </MeetingHelpBlock>
-        }
+        <MeetingHelpBlock isFacilitating={isFacilitating}>
+          <MeetingHelpDialog phase={localPhaseType || LOBBY} />
+        </MeetingHelpBlock>
       </MeetingContainer>
     );
   }
