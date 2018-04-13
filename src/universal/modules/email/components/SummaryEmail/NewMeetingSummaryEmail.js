@@ -18,10 +18,7 @@ import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 const teamDashLabel = 'Go to Team Dashboard';
 
 const ruleStyle = {
-  backgroundColor: ui.emailRuleColor,
-  border: 0,
-  height: '2px',
-  margin: 0,
+  ...ui.emailRuleStyle,
   width: '100%'
 };
 
@@ -117,6 +114,7 @@ const SummaryEmail = (props: Props) => {
                 <SummaryHeader
                   createdAt={createdAt}
                   meetingNumber={meetingNumber}
+                  meetingType={meetingType}
                   referrer={referrer}
                   teamDashUrl={teamDashUrl}
                   teamName={teamName}

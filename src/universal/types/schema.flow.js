@@ -17,9 +17,10 @@ export type GraphQLResponseErrorLocation = {
 }
 
 export type Query = {
-  activeProOrgCount: ?number;
-  activeProUserCount: ?number;
-  countTiersForUser: ?UserTiersCount;
+  suCountTiersForUser: ?UserTiersCount;
+  suUserCount: ?number;
+  suProOrgInfo: ?Array<SuProOrgInfo>;
+  suOrgCount: ?number;
   viewer: ?User;
 }
 
@@ -948,6 +949,20 @@ export type SlackIntegration = {
   notifications: ?Array<string>;
   /** *The team that cares about these annoucements */
   teamId: string;
+}
+
+/**
+  The tier of the Organization
+*/
+export type OrgTierEnum = "personal" | "pro" | "enterprise";
+
+export type SuProOrgInfo = {
+  /** The count of active users within the org */
+  activeCount: ?number;
+  /** The PRO organization */
+  organization: ?Organization;
+  /** The id of the Organization */
+  organizationId: string;
 }
 
 export type Mutation = {

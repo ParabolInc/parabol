@@ -6,10 +6,6 @@ import RetroDiscussionTopic from 'universal/modules/email/components/RetroDiscus
 
 const fontFamily = ui.emailFontFamily;
 
-const tableStyle = {
-  borderCollapse: 'collapse'
-};
-
 const sectionHeading = {
   fontFamily,
   fontSize: '18px',
@@ -24,7 +20,7 @@ const RetroDiscussionTopics = (props) => {
   } = props;
 
   return (
-    <table style={tableStyle} width="100%">
+    <table style={ui.emailTableBase} width="100%">
       <tbody>
         <tr>
           <td style={sectionHeading}>

@@ -8,7 +8,13 @@ import ReflectionEditorWrapperForEmail from 'universal/components/ReflectionEdit
 const fontFamily = ui.emailFontFamily;
 
 const tableStyle = {
-  borderCollapse: 'collapse'
+  ...ui.emailTableBase
+};
+
+const cardCell = {
+  padding: '8px',
+  verticalAlign: 'top',
+  width: '188px'
 };
 
 const topicThemeHeading = {
@@ -35,8 +41,8 @@ const reflectionCard = {
   borderRadius: '4px',
   fontFamily,
   fontSize: '13px',
-  margin: '8px',
-  padding: '8px'
+  margin: 0,
+  padding: 0
 };
 
 type Reflection = {
@@ -78,13 +84,13 @@ const RetroDiscussionTopic = (props: Props) => {
         </tr>
         <tr>
           <td>
-            <table style={tableStyle} width="100%">
+            <table style={tableStyle}>
               <tbody>
                 {rows.map((row, idx) => (
                   // eslint-disable-next-line
                   <tr key={idx}>
                     {row.map(({id, content}) => (
-                      <td key={id}>
+                      <td key={id} style={cardCell}>
                         <div style={reflectionCard}>
                           <ReflectionEditorWrapperForEmail content={content} />
                         </div>

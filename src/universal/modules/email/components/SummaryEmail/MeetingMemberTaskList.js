@@ -18,7 +18,7 @@ const avatarStyles = {
 
 const topBorderStyle = {
   ...textCenter,
-  borderTop: `1px solid ${ui.cardBorderColor}`
+  borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
 };
 
 const nameStyle = {
@@ -60,7 +60,7 @@ const MeetingMemberTaskList = (props: Props) => {
   const newTasksLabel = `${newTasks.length} New ${plural(newTasks.length, 'Task')}`;
 
   return (
-    <table align="center" width="100%">
+    <table align="center" width="100%" style={ui.emailTableBase}>
       <tbody>
         <tr>
           <td style={topBorderStyle}>

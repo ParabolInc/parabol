@@ -23,7 +23,7 @@ class ReflectionEditorWrapperForEmail extends Component<Props> {
       <Editor
         editorState={editorState}
         readOnly
-        style={{padding: '0.8rem', userSelect: 'none', WebkitUserSelect: 'none'}}
+        style={{padding: '.5rem', userSelect: 'none', WebkitUserSelect: 'none'}}
       />
     );
   }

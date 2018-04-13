@@ -4,10 +4,11 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import makeDateString from 'universal/utils/makeDateString';
-import {MEETING_NAME} from 'universal/utils/constants';
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 
 const SummaryHeader = (props) => {
-  const {createdAt, meetingNumber, teamName} = props;
+  const {createdAt, meetingNumber, meetingType, teamName} = props;
+  const meetingLabel = meetingTypeToLabel[meetingType];
   const blockStyle = {
     backgroundColor: '#fff',
     color: appTheme.palette.dark,
@@ -53,7 +54,7 @@ const SummaryHeader = (props) => {
             <td style={blockStyle}>
               <div style={labelStyles}>{'Meeting Summary'}</div>
               <div style={teamNameStyle}>{teamName}</div>
-              <div style={meetingDateStyle}>{`${MEETING_NAME} #${meetingNumber}`}{' • '}{meetingDate}</div>
+              <div style={meetingDateStyle}>{`${meetingLabel} Meeting #${meetingNumber}`}{' • '}{meetingDate}</div>
             </td>
           </tr>
         </tbody>
@@ -72,6 +73,7 @@ SummaryHeader.propTypes = {
   fontSize: PropTypes.number,
   lineHeight: PropTypes.number,
   meetingNumber: PropTypes.number,
+  meetingType: PropTypes.string,
   padding: PropTypes.number,
   teamName: PropTypes.string,
   vSpacing: PropTypes.number,
