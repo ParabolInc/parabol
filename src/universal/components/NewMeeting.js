@@ -36,6 +36,7 @@ import RetroGroupPhase from 'universal/components/RetroGroupPhase';
 import RetroVotePhase from 'universal/components/RetroVotePhase';
 import RetroDiscussPhase from 'universal/components/RetroDiscussPhase';
 import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
+import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog';
 
 const {Component} = React;
 
@@ -50,7 +51,8 @@ const MeetingArea = styled('div')({
   flex: 1,
   flexDirection: 'column',
   minWidth: '60rem',
-  width: '100%'
+  width: '100%',
+  zIndex: 100
 });
 
 const MeetingAreaHeader = styled('div')({
@@ -63,6 +65,13 @@ const MeetingAreaHeader = styled('div')({
   padding: '0 1rem',
   width: '100%'
 });
+
+const MeetingHelpBlock = styled('div')(({isFacilitating}) => ({
+  bottom: isFacilitating ? '5.25rem' : '1.25rem',
+  position: 'absolute',
+  right: '1.25rem',
+  zIndex: 200
+}));
 
 type Props = {
   atmosphere: Object,
@@ -136,10 +145,12 @@ class NewMeeting extends Component<Props> {
   }
 
   render() {
-    const {meetingType, viewer} = this.props;
+    const {atmosphere, meetingType, viewer} = this.props;
     const {team} = viewer;
     const {newMeeting, teamName} = team;
-    const {facilitatorStageId, localPhase, localStage} = newMeeting || {};
+    const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting || {};
+    const {viewerId} = atmosphere;
+    const isFacilitating = viewerId === facilitatorUserId;
     const meetingLabel = meetingTypeToLabel[meetingType];
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true;
     const localPhaseType = localPhase && localPhase.phaseType;
@@ -167,6 +178,11 @@ class NewMeeting extends Component<Props> {
           </ErrorBoundary>
         </MeetingArea>
         {!inSync && <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />}
+        {localPhaseType &&
+          <MeetingHelpBlock isFacilitating={isFacilitating}>
+            <MeetingHelpDialog phase={localPhaseType} />
+          </MeetingHelpBlock>
+        }
       </MeetingContainer>
     );
   }
