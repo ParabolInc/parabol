@@ -11,7 +11,7 @@ import {
 import {getUserId} from 'server/utils/authorization';
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
-import {sendBadAuthTokenError} from 'server/utils/authorizationErrors';
+import {sendAuth0Error, sendBadAuthTokenError, sendSegmentIdentifyError} from 'server/utils/authorizationErrors';
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj';
 
 const login = {
@@ -62,7 +62,14 @@ const login = {
       }
       // should never reach this line in production. that means our DB !== auth0 DB
     }
-    const userInfo = await auth0Client.tokens.getInfo(auth0Token);
+
+    let userInfo;
+    try {
+      userInfo = await auth0Client.tokens.getInfo(auth0Token);
+    } catch (e) {
+      return sendAuth0Error(authToken, e);
+    }
+
     // TODO loginsCount and blockedFor are not a part of this API response
     const newUser = {
       id: userInfo.user_id,
@@ -81,7 +88,12 @@ const login = {
       welcomeSentAt: now
     };
     await r.table('User').insert(newUser);
-    await sendSegmentIdentify(newUser.id);
+
+    try {
+      await sendSegmentIdentify(newUser.id);
+    } catch (e) {
+      return sendSegmentIdentifyError(authToken, e);
+    }
 
     // don't await
     setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
