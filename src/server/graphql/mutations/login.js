@@ -13,6 +13,7 @@ import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
 import {sendAuth0Error, sendBadAuthTokenError, sendSegmentIdentifyError} from 'server/utils/authorizationErrors';
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj';
+import ensureDate from 'universal/utils/ensureDate';
 
 const login = {
   type: LoginPayload,
@@ -70,20 +71,22 @@ const login = {
       return sendAuth0Error(authToken, e);
     }
 
-    // TODO loginsCount and blockedFor are not a part of this API response
+    // REMOVE THIS
+    console.log('USER INFO', userInfo);
+
     const newUser = {
       id: userInfo.user_id,
       cachedAt: now,
       email: userInfo.email,
       emailVerified: userInfo.email_verified,
       lastLogin: now,
-      updatedAt: new Date(userInfo.updated_at),
+      updatedAt: ensureDate(userInfo.updated_at),
       picture: userInfo.picture,
       inactive: false,
       name: userInfo.name,
       preferredName: userInfo.nickname,
       identities: userInfo.identities || [],
-      createdAt: new Date(userInfo.created_at),
+      createdAt: ensureDate(userInfo.created_at),
       userOrgs: [],
       welcomeSentAt: now
     };
