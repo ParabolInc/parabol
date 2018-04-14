@@ -86,6 +86,7 @@ const withLinks = (ComposedComponent) => {
       handleBeforeInput: PropTypes.func,
       handleChange: PropTypes.func,
       handleKeyCommand: PropTypes.func,
+      innerRef: PropTypes.func,
       keyBindingFn: PropTypes.func,
       removeModal: PropTypes.func,
       renderModal: PropTypes.func,
@@ -271,6 +272,14 @@ const withLinks = (ComposedComponent) => {
       });
     };
 
+    innerRef = (c) => {
+      const {innerRef} = this.props;
+      if (innerRef) {
+        innerRef(c);
+      }
+      this.editorRef = c;
+    };
+
     renderChangerModal = () => {
       const {linkChangerData} = this.state;
       const {text, link, selectionState} = linkChangerData;
@@ -301,7 +310,7 @@ const withLinks = (ComposedComponent) => {
             text,
             link,
             initialValues: {text, link},
-            editorRef,
+            editorRef: editorRef || this.editorRef,
             trackEditingComponent
           }}
           targetAnchor={targetAnchor}
@@ -355,6 +364,7 @@ const withLinks = (ComposedComponent) => {
       return (<ComposedComponent
         {...this.props}
         {...modalProps}
+        innerRef={this.innerRef}
         handleBeforeInput={this.handleBeforeInput}
         handleChange={this.handleChange}
         handleKeyCommand={this.handleKeyCommand}

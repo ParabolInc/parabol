@@ -18,9 +18,7 @@ import styled from 'react-emotion';
 import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt';
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import {CHECKIN} from 'universal/utils/constants';
-import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
 import withHotkey from 'react-hotkey-hoc';
-import handleHotkey from 'universal/utils/meetings/handleHotkey';
 
 const {Component} = React;
 
