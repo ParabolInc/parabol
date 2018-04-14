@@ -1,15 +1,15 @@
 /* eslint-disable max-len */
 // taya, jordan, terry, matt
 const productTeam = [
-  'auth0|5797eb5d12664ba4675745b9',
-  'auth0|58a861e682b0ca077463c577',
-  'auth0|5797e83170dddc395d8d1675',
-  'auth0|5797eb9712664ba4675745c3'
+  'auth0|5ad119debcb4500e4f4e2808',
+  'auth0|5ad184fabcb4500e4f4e345e',
+  'auth0|5ad184ad6d59890e8635d9e4',
+  'auth0|5ad1851a6d59890e8635d9eb'
 ];
 const engineeringTeam = [
-  'auth0|58a861e682b0ca077463c577',
-  'auth0|5797e83170dddc395d8d1675',
-  'auth0|5797eb9712664ba4675745c3'
+  'auth0|5ad119debcb4500e4f4e2808',
+  'auth0|5ad184fabcb4500e4f4e345e',
+  'auth0|5ad1851a6d59890e8635d9eb'
 ];
 exports.up = async (r) => {
   const fields = [
