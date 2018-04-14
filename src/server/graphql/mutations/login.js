@@ -11,8 +11,9 @@ import {
 import {getUserId} from 'server/utils/authorization';
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
-import {sendBadAuthTokenError} from 'server/utils/authorizationErrors';
+import {sendAuth0Error, sendBadAuthTokenError, sendSegmentIdentifyError} from 'server/utils/authorizationErrors';
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj';
+import ensureDate from 'universal/utils/ensureDate';
 
 const login = {
   type: LoginPayload,
@@ -62,29 +63,40 @@ const login = {
       }
       // should never reach this line in production. that means our DB !== auth0 DB
     }
-    const auth0ManagementClient = await auth0MgmtClientBuilder();
-    const userInfo = await auth0ManagementClient.getUser({
-      id: authToken.sub
-    });
-    // TODO loginsCount and blockedFor are not a part of this API response
+
+    let userInfo;
+    try {
+      const auth0ManagementClient = await auth0MgmtClientBuilder();
+      userInfo = await auth0ManagementClient.getUser({
+        id: authToken.sub
+      });
+    } catch (e) {
+      return sendAuth0Error(authToken, e);
+    }
+
     const newUser = {
       id: userInfo.user_id,
       cachedAt: now,
       email: userInfo.email,
       emailVerified: userInfo.email_verified,
       lastLogin: now,
-      updatedAt: new Date(userInfo.updated_at),
+      updatedAt: ensureDate(userInfo.updated_at),
       picture: userInfo.picture,
       inactive: false,
       name: userInfo.name,
       preferredName: userInfo.nickname,
       identities: userInfo.identities || [],
-      createdAt: new Date(userInfo.created_at),
+      createdAt: ensureDate(userInfo.created_at),
       userOrgs: [],
       welcomeSentAt: now
     };
     await r.table('User').insert(newUser);
-    await sendSegmentIdentify(newUser.id);
+
+    try {
+      await sendSegmentIdentify(newUser.id);
+    } catch (e) {
+      return sendSegmentIdentifyError(authToken, e);
+    }
 
     // don't await
     setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
