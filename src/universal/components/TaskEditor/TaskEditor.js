@@ -108,14 +108,17 @@ class TaskEditor extends Component {
   keyBindingFn = (e) => {
     const {keyBindingFn} = this.props;
     if (keyBindingFn) {
-      keyBindingFn(e);
+      const result = keyBindingFn(e);
+      if (result) {
+        return result;
+      }
     }
     if (e.key === 'Escape') {
       e.preventDefault();
       this.removeModal();
-    } else {
-      getDefaultKeyBinding(e);
+      return undefined;
     }
+    return getDefaultKeyBinding(e);
   };
 
   handleBeforeInput = (char) => {
