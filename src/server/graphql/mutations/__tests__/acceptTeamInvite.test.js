@@ -13,7 +13,7 @@ import hashInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembe
 import makeInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/makeInviteToken';
 import parseInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/parseInviteToken';
 import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
 import {ADD_USER} from 'server/utils/serverConstants';
 import * as tmsSignToken from 'server/utils/tmsSignToken';
 import {TEAM_INVITE} from 'universal/utils/constants';
@@ -21,7 +21,14 @@ import {TEAM_INVITE} from 'universal/utils/constants';
 MockDate.set(__now);
 console.error = jest.fn();
 
+let auth0ManagementClient = null;
+
 describe('acceptTeamInvite', () => {
+  beforeAll(async (done) => {
+    auth0ManagementClient = await auth0MgmtClientBuilder();
+    done()
+  });
+
   beforeEach(() => {
     auth0ManagementClient.users.updateAppMetadata.mockReset();
   });

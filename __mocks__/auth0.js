@@ -1,26 +1,6 @@
 import jwtDecode from 'jwt-decode';
 const auth0 = jest.genMockFromModule('auth0');
 
-class AuthenticationClient {
-  constructor() {
-    this.__mockDB = null;
-    this.tokens = {
-      getInfo: jest.fn((auth0Token) => new Promise((resolve, reject) => {
-        const authToken = jwtDecode(auth0Token);
-        const match = this.__mockDB.user.find((user) => user.id === authToken.sub);
-        if (match) {
-          resolve(match);
-        }
-        reject(new Error(`auth0Client.tokens.getInfo (mock): unknown id ${authToken.sub}`));
-      }))
-    }
-  }
-
-  __initMock(db) {
-    this.__mockDB = db;
-  }
-}
-
 class ManagementClient {
   constructor() {
     this.__mockDB = null;
@@ -48,7 +28,6 @@ class ManagementClient {
   }
 }
 
-auth0.AuthenticationClient = AuthenticationClient;
 auth0.ManagementClient = ManagementClient;
 
 module.exports = auth0;

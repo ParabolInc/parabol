@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {GraphQLNonNull, GraphQLString} from 'graphql';
 import {requireSU} from 'server/utils/authorization';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
 
 export default {
   type: GraphQLString,
@@ -29,6 +29,7 @@ export default {
     }
     const userId = user.id;
 
+    const auth0ManagementClient = await auth0MgmtClientBuilder();
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {bet: 1});
 
     // TODO send them a new token while they're logged in because we're that good

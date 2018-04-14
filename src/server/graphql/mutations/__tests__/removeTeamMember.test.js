@@ -8,12 +8,19 @@ import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
 
 MockDate.set(__now);
 console.error = jest.fn();
 
+let auth0ManagementClient = null;
+
 describe('removeTeamMember', () => {
+  beforeAll(async (done) => {
+    auth0ManagementClient = await auth0MgmtClientBuilder();
+    done();
+  });
+
   test('promotes another member if the person removed was the lead', async () => {
 
   });

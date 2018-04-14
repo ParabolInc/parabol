@@ -4,7 +4,7 @@ import parseInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers
 import validateInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembers/validateInviteTokenKey';
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
 import acceptTeamInvite from 'server/safeMutations/acceptTeamInvite';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
 import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import tmsSignToken from 'server/utils/tmsSignToken';
@@ -129,6 +129,7 @@ export default {
     }
     // Send the new team member a welcome & a new token
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
+    const auth0ManagementClient = await auth0MgmtClientBuilder();
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
     // remove the old invitation

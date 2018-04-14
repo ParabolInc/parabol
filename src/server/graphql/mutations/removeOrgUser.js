@@ -3,7 +3,7 @@ import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
 import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
 import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {REMOVE_USER} from 'server/utils/serverConstants';
@@ -104,6 +104,7 @@ const removeOrgUser = {
 
     const {tms} = updatedUser;
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
+    const auth0ManagementClient = await auth0MgmtClientBuilder();
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
     const data = {
