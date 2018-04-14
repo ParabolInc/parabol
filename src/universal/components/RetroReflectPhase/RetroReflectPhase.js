@@ -46,7 +46,7 @@ const RetroReflectPhase = (props: Props) => {
           buttonSize="medium"
           buttonStyle="flat"
           colorPalette="dark"
-          disabled={reflectionGroups.length === 0}
+          disabled={!reflectionGroups || reflectionGroups.length === 0}
           icon="arrow-circle-right"
           iconLarge
           iconPalette="warm"

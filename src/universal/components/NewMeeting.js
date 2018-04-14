@@ -133,7 +133,10 @@ class NewMeeting extends Component<Props> {
     // it feels dirty to put phase-specific logic here,
     // but if we didn't each phase would have to handle the keybinding & unbind it on a setTimeout, which is dirtier
     if (phaseType === CHECKIN) {
-      const {meetingMember: {isCheckedIn}, userId} = teamMember;
+      if (!teamMember) return;
+      const {meetingMember, userId} = teamMember;
+      if (!meetingMember) return;
+      const {isCheckedIn} = meetingMember;
       const nextCheckedInValue = options ? options.isCheckedIn : true;
       if (isCheckedIn !== nextCheckedInValue) {
         NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: nextCheckedInValue});
