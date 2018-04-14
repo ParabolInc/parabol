@@ -389,7 +389,7 @@ const ui = {
   },
   emailTableBase: {
     borderCollapse: 'collapse',
-    borderSpacing: 0,
+    borderSpacing: '0px',
     margin: '0px auto'
   },
 

@@ -1,10 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import plural from 'universal/utils/plural';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import styles from './quickStatsStyles';
+
+const {
+  cellStyles,
+  statStyles,
+  statValue,
+  statLabel,
+  containerStyle
+} = styles;
 
 const QuickStats = (props) => {
   const {
@@ -14,42 +21,6 @@ const QuickStats = (props) => {
     teamMembers,
     teamMembersPresent
   } = props;
-
-  const cellStyles = {
-    padding: 0,
-    textAlign: 'center',
-    verticalAlign: 'top',
-    width: '25%'
-  };
-
-  const fontStyles = {
-    color: appTheme.palette.dark,
-    fontFamily: ui.emailFontFamily
-  };
-
-  const statStyles = {
-    backgroundColor: appTheme.palette.light,
-    padding: '8px 0 12px',
-    textAlign: 'center'
-  };
-
-  const statValue = {
-    ...fontStyles,
-    fontSize: '36px'
-  };
-
-  const statLabel = {
-    ...fontStyles,
-    fontSize: '10px',
-    fontWeight: 600,
-    textTransform: 'uppercase'
-  };
-
-  const containerStyle = {
-    margin: '0 auto',
-    maxWidth: '440px',
-    width: '100%'
-  };
 
   return (
     <div style={containerStyle}>
@@ -82,7 +53,7 @@ const QuickStats = (props) => {
                     <span>{teamMembersPresent}/{teamMembers}</span>
                   }
                 </div>
-                <div style={statLabel}>Present</div>
+                <div style={statLabel}>{'Present'}</div>
               </div>
             </td>
           </tr>
