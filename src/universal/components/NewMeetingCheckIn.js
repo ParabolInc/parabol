@@ -57,27 +57,9 @@ type Props = {
 };
 
 class NewMeetingCheckIn extends Component<Props> {
-  constructor(props) {
-    super(props);
-    const {atmosphere, bindHotkey, onError, onCompleted, submitMutation, submitting, team} = props;
-    const {newMeeting} = team;
-    const {meetingId, localStage: {teamMember: {meetingMember: {isCheckedIn}, userId}}} = newMeeting;
-    const markAsPresent = () => {
-      if (isCheckedIn === false) return;
-      submitMutation();
-      NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn}, onError, onCompleted);
-    };
-    bindHotkey(['enter', 'right'], handleHotkey(markAsPresent, submitting));
-  }
-
-  makeCheckinPressFactory = (userId) => (isCheckedIn) => () => {
-    const {atmosphere, gotoNext, onError, onCompleted, submitMutation, submitting, team} = this.props;
-    const {newMeeting} = team;
-    const {meetingId, localStage: {localStageId}} = newMeeting;
-    if (submitting) return;
-    submitMutation();
-    NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn}, onError, onCompleted);
-    gotoNext(localStageId);
+  checkinPressFactory = (isCheckedIn) => () => {
+    const {gotoNext} = this.props;
+    gotoNext({isCheckedIn});
   };
 
   render() {
@@ -121,7 +103,7 @@ class NewMeetingCheckIn extends Component<Props> {
         {isFacilitating &&
         <MeetingControlBar>
           <CheckInControls
-            checkInPressFactory={this.makeCheckinPressFactory(teamMember.userId)}
+            checkInPressFactory={this.checkinPressFactory}
             currentMemberName={teamMember.preferredName}
             nextMemberName={nextMemberName}
           />

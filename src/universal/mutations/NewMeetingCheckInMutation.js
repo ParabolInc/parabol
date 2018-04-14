@@ -3,11 +3,13 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
 graphql`
   fragment NewMeetingCheckInMutation_team on NewMeetingCheckInPayload {
-    meetingMember {
-      isCheckedIn
-      ... on RetrospectiveMeetingMember {
+    meeting {
+      ... on RetrospectiveMeeting {
         votesRemaining
       }
+    }
+    meetingMember {
+      isCheckedIn
     }
   }
 `;

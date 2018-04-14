@@ -17,9 +17,10 @@ export type GraphQLResponseErrorLocation = {
 }
 
 export type Query = {
-  activeProOrgCount: ?number;
-  activeProUserCount: ?number;
-  countTiersForUser: ?UserTiersCount;
+  suCountTiersForUser: ?UserTiersCount;
+  suUserCount: ?number;
+  suProOrgInfo: ?Array<SuProOrgInfo>;
+  suOrgCount: ?number;
   viewer: ?User;
 }
 
@@ -950,6 +951,20 @@ export type SlackIntegration = {
   teamId: string;
 }
 
+/**
+  The tier of the Organization
+*/
+export type OrgTierEnum = "personal" | "pro" | "enterprise";
+
+export type SuProOrgInfo = {
+  /** The count of active users within the org */
+  activeCount: ?number;
+  /** The PRO organization */
+  organization: ?Organization;
+  /** The id of the Organization */
+  organizationId: string;
+}
+
 export type Mutation = {
   /** Add a user to a Team given an invitationToken or the notification id of the invitation.
     If the invitationToken is valid, returns the auth token with the new team added to tms.
@@ -1851,6 +1866,7 @@ export type VotePhaseCompletePayload = {
 export type NewMeetingCheckInPayload = {
   error: ?StandardMutationError;
   meetingMember: ?MeetingMember;
+  meeting: ?NewMeeting;
 }
 
 export type PromoteFacilitatorPayload = {

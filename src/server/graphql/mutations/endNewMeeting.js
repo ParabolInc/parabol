@@ -38,8 +38,10 @@ export default {
 
     if (lastPhaseStarted) {
       const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt);
-      currentStage.isComplete = true;
-      currentStage.endAt = now;
+      if (currentStage) {
+        currentStage.isComplete = true;
+        currentStage.endAt = now;
+      }
     }
 
     // RESOLUTION

@@ -36,6 +36,7 @@ import RetroGroupPhase from 'universal/components/RetroGroupPhase';
 import RetroVotePhase from 'universal/components/RetroVotePhase';
 import RetroDiscussPhase from 'universal/components/RetroDiscussPhase';
 import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
+import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
 
 const {Component} = React;
 
@@ -84,9 +85,9 @@ type Variables = {
 class NewMeeting extends Component<Props> {
   constructor(props) {
     super(props);
-    const {atmosphere, bindHotkey, dispatch, history, submitting} = props;
-    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
-    bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
+    const {atmosphere, bindHotkey, dispatch, history} = props;
+    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
+    bindHotkey('left', handleHotkey(this.gotoPrev));
     bindHotkey('i c a n t h a c k i t', () => {
       const {viewer: {team: {newMeeting}}} = props;
       if (!newMeeting) return;
@@ -96,7 +97,8 @@ class NewMeeting extends Component<Props> {
   }
 
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
-    const {atmosphere, viewer: {team: {newMeeting}}} = this.props;
+    const {atmosphere, submitting, viewer: {team: {newMeeting}}} = this.props;
+    if (submitting) return;
     if (!newMeeting) return;
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
     const {viewerId} = atmosphere;
@@ -115,10 +117,19 @@ class NewMeeting extends Component<Props> {
     }
   };
 
-  gotoNext = () => {
-    const {viewer: {team: {newMeeting}}} = this.props;
-    if (!newMeeting) return;
-    const {localStage: {localStageId}, phases} = newMeeting;
+  gotoNext = (options) => {
+    const {atmosphere, submitting, viewer: {team: {newMeeting}}} = this.props;
+    if (!newMeeting || submitting) return;
+    const {meetingId, localPhase: {phaseType}, localStage: {localStageId, teamMember}, phases} = newMeeting;
+    // it feels dirty to put phase-specific logic here,
+    // but if we didn't each phase would have to handle the keybinding & unbind it on a setTimeout, which is dirtier
+    if (phaseType === CHECKIN) {
+      const {meetingMember: {isCheckedIn}, userId} = teamMember;
+      const nextCheckedInValue = options ? options.isCheckedIn : true;
+      if (isCheckedIn !== nextCheckedInValue) {
+        NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: nextCheckedInValue});
+      }
+    }
     const nextStageRes = findStageAfterId(phases, localStageId);
     if (!nextStageRes) return;
     const {stage: {id: nextStageId}} = nextStageRes;
@@ -227,6 +238,14 @@ export default createFragmentContainer(
           }
           localStage {
             localStageId: id
+            ... on CheckInStage {
+              teamMember {
+                meetingMember {
+                  isCheckedIn
+                }
+                userId
+              }
+            }
           }
           phases {
             id

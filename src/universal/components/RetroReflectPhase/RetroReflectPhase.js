@@ -29,7 +29,7 @@ const ReflectPhaseWrapper = styled('div')({
 const RetroReflectPhase = (props: Props) => {
   const {atmosphere: {viewerId}, team, gotoNext} = props;
   const {newMeeting, meetingSettings} = team;
-  const {facilitatorUserId, localPhase: {phaseType}} = newMeeting || {};
+  const {facilitatorUserId, localPhase: {phaseType}, reflectionGroups} = newMeeting || {};
   const phaseItems = meetingSettings.phaseItems || [];
   const isFacilitating = facilitatorUserId === viewerId;
   return (
@@ -46,6 +46,7 @@ const RetroReflectPhase = (props: Props) => {
           buttonSize="medium"
           buttonStyle="flat"
           colorPalette="dark"
+          disabled={reflectionGroups.length === 0}
           icon="arrow-circle-right"
           iconLarge
           iconPalette="warm"
@@ -69,6 +70,11 @@ export default createFragmentContainer(
           phaseType
         }
         facilitatorUserId
+        ... on RetrospectiveMeeting {
+          reflectionGroups {
+            id
+          }  
+        }
       }
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
