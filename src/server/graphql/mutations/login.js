@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import sendEmail from 'server/email/sendEmail';
 import LoginPayload from 'server/graphql/types/LoginPayload';
 import {
-  auth0AuthenticationClient as auth0Client,
+  auth0MgmtClientBuilder,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
@@ -62,7 +62,10 @@ const login = {
       }
       // should never reach this line in production. that means our DB !== auth0 DB
     }
-    const userInfo = await auth0Client.tokens.getInfo(auth0Token);
+    const auth0ManagementClient = await auth0MgmtClientBuilder();
+    const userInfo = await auth0ManagementClient.getUser({
+      id: authToken.sub
+    });
     // TODO loginsCount and blockedFor are not a part of this API response
     const newUser = {
       id: userInfo.user_id,
