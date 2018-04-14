@@ -127,6 +127,7 @@ const phaseHelpLookup = {
     helpDialog: voteHelpContent
   },
   [DISCUSS]: {
+    // eslint-disable-next-line max-len
     facilitatorBarTip: 'Facilitator: encourage your team to break tasks down to their smallest components, perhaps owned by multiple teammates.',
     helpDialog: discussHelpContent
   },

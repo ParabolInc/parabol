@@ -21,7 +21,6 @@ export const auth0MgmtClientBuilder = async () => {
         audience: `https://${process.env.AUTH0_MANAGEMENT_HOST}/api/v2/` || 'https://parabol.auth0.com/api/v2',
         grant_type: 'client_credentials'
       })
-      // body: '{"client_id":"CFSD0cQHAtxg5F0QvffT611jq047I9tW","client_secret":"sGIFhBb-WtvU-aSE5EnGGSmOOs6xiOZm_DmPRH4DHYfE5yu1ABB3oxkxKEbkhYjk","audience":"https://parabol.auth0.com/api/v2/","grant_type":"client_credentials"}'
     };
     const res = await fetch(url, options);
     const payload = await res.json();

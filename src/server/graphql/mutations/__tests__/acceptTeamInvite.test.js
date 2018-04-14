@@ -26,7 +26,7 @@ let auth0ManagementClient = null;
 describe('acceptTeamInvite', () => {
   beforeAll(async (done) => {
     auth0ManagementClient = await auth0MgmtClientBuilder();
-    done()
+    done();
   });
 
   beforeEach(() => {
