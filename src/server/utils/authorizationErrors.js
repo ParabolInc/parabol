@@ -8,6 +8,22 @@ export const sendBadAuthTokenError = (authToken, returnValue) => {
   return sendAuthRaven(authToken, 'Bad authentication', breadcrumb, returnValue);
 };
 
+export const sendAuth0Error = (authToken, error) => {
+  const breadcrumb = {
+    message: 'We had a problem logging you in, please try again later',
+    category: 'Authentication Error'
+  };
+  return sendAuthRaven(authToken, 'Our apologies', breadcrumb, undefined, error);
+};
+
+export const sendSegmentIdentifyError = (authToken, error) => {
+  const breadcrumb = {
+    message: 'We hit a small bug, try refreshing the page if something looks funny',
+    category: 'Oh no!'
+  };
+  return sendAuthRaven(authToken, 'Our apologies', breadcrumb, undefined, error);
+};
+
 export const sendNotAuthenticatedAccessError = (authToken, returnValue) => {
   const breadcrumb = {
     message: 'You must be logged in for this action.',

@@ -34,9 +34,13 @@ type AuthToken = {
   sub: string
 }
 
-const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb) => {
+const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb, error?: Object) => {
   if (process.env.NODE_ENV !== 'production') {
-    console.error(JSON.stringify(breadcrumb));
+    if (breadcrumb && breadcrumb.data.firstError) {
+      console.error(breadcrumb.data.firstError);
+    } else {
+      console.error(JSON.stringify(breadcrumb));
+    }
     return;
   }
   const r = getRethink();
@@ -55,7 +59,7 @@ const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb) =
     if (breadcrumb) {
       Raven.captureBreadcrumb(breadcrumb);
     }
-    const event = breadcrumb && breadcrumb.message || new Error('Unknown Error');
+    const event = error || breadcrumb && breadcrumb.message || new Error('Unknown Error');
     Raven.captureException(event);
   });
 };
