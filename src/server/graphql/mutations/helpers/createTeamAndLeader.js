@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -91,7 +91,6 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
 
   const {tms} = res;
 
-  const auth0ManagementClient = await auth0MgmtClientBuilder();
   // no need to wait for auth0
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 

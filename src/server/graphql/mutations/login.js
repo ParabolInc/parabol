@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import sendEmail from 'server/email/sendEmail';
 import LoginPayload from 'server/graphql/types/LoginPayload';
 import {
-  auth0MgmtClientBuilder,
+  auth0ManagementClient,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
@@ -66,7 +66,6 @@ const login = {
 
     let userInfo;
     try {
-      const auth0ManagementClient = await auth0MgmtClientBuilder();
       userInfo = await auth0ManagementClient.getUser({
         id: authToken.sub
       });

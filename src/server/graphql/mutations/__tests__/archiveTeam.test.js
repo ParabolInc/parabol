@@ -9,7 +9,7 @@ import {__now} from 'server/__tests__/setup/mockTimes';
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
 import getRethink from 'server/database/rethinkDriver';
 import archiveTeam from 'server/graphql/mutations/archiveTeam';
-import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import * as tmsSignToken from 'server/utils/tmsSignToken';
 
 MockDate.set(__now);
@@ -18,11 +18,6 @@ console.error = jest.fn();
 let auth0ManagementClient = null;
 
 describe('ArchiveTeam', () => {
-  beforeAll(async (done) => {
-    auth0ManagementClient = await auth0MgmtClientBuilder();
-    done();
-  });
-
   test('archives a team', async () => {
     // SETUP
     const r = getRethink();

@@ -1,4 +1,4 @@
-import {auth0MgmtClientBuilder} from '../../utils/auth0Helpers';
+import {auth0ManagementClient} from '../../utils/auth0Helpers';
 
 exports.up = async (r) => {
   const changes = await r.table('User').pluck('id', 'tms')
@@ -35,7 +35,6 @@ exports.up = async (r) => {
   }, {});
 
   const userIds = Object.keys(smallestTMSperUser);
-  const auth0ManagementClient = await auth0MgmtClientBuilder();
   await userIds.map((userId) => {
     return auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: smallestTMSperUser[userId]});
   });

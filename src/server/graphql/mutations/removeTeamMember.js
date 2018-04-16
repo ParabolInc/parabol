@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember';
 import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayload';
-import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, isTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
@@ -37,7 +37,6 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
     const {tms} = user;
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
-    const auth0ManagementClient = await auth0MgmtClientBuilder();
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds];

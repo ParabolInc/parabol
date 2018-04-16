@@ -6,7 +6,7 @@ import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndL
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload';
 import Invitee from 'server/graphql/types/Invitee';
 import NewTeamInput from 'server/graphql/types/NewTeamInput';
-import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
@@ -52,7 +52,6 @@ export default {
     const inviteeCount = invitees ? invitees.length : 0;
     sendSegmentEvent('New Org', viewerId, {orgId, teamId, inviteeCount});
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
-    const auth0ManagementClient = await auth0MgmtClientBuilder();
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
     const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId, dataLoader);

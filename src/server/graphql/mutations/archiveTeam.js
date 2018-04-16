@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
-import {auth0MgmtClientBuilder} from 'server/utils/auth0Helpers';
+import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, isTeamLead} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
@@ -76,7 +76,6 @@ export default {
     };
     publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions);
 
-    const auth0ManagementClient = await auth0MgmtClientBuilder();
     users.forEach((user) => {
       const {id, tms} = user;
       auth0ManagementClient.users.updateAppMetadata({id}, {tms});
