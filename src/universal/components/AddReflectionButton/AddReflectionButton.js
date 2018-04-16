@@ -35,12 +35,14 @@ const Plus = styled('span')({
 });
 
 const AddButton = styled(PlainButton)({
-  border: `2px dashed ${appTheme.palette.mid30a}`,
-  borderRadius: 3,
-  color: appTheme.palette.dark,
-  padding: '0.8rem',
+  border: `.0625rem dashed ${appTheme.palette.mid30a}`,
+  borderRadius: ui.cardBorderRadius,
+  color: appTheme.palette.mid,
+  fontSize: '.875rem',
+  padding: '.75rem',
   textAlign: 'center',
-  width: ui.retroCardWidth,
+  width: '100%',
+  // width: ui.retroCardWidth,
   ':focus': {
     boxShadow: 'none'
   }

@@ -49,9 +49,9 @@ const OriginFooter = styled('div')({
   alignItems: 'flex-start',
   background: '#fff',
   borderRadius: ui.cardBorderRadius,
-  color: appTheme.palette.mid,
-  fontSize: '.8125rem',
-  padding: '0.4rem 0.8rem'
+  color: ui.hintFontColor,
+  fontSize: ui.hintFontSize,
+  padding: '.5rem .75rem'
 });
 
 const ReflectionStyles = styled('div')(
@@ -59,7 +59,7 @@ const ReflectionStyles = styled('div')(
     backgroundColor: '#fff',
     borderRadius: ui.cardBorderRadius,
     boxShadow: ui.cardBoxShadow,
-    margin: 8,
+    // margin: 8,
     position: 'relative'
   },
   ({isCollapsed}) => isCollapsed && ({

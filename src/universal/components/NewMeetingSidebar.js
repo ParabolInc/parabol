@@ -10,6 +10,7 @@ import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/Co
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 import LogoBlock from 'universal/components/LogoBlock/LogoBlock';
 import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList';
+import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
 import makeHref from 'universal/utils/makeHref';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
@@ -44,12 +45,6 @@ const TeamDashboardLink = styled(Link)({
   lineHeight: '1.5'
 });
 
-const SidebarSubHeading = styled('div')({
-  borderTop: `.0625rem solid ${ui.palette.light}`,
-  margin: '1.25rem 0 0 3.75rem',
-  padding: '1rem 0'
-});
-
 type Props = {
   gotoStageId: (stageId: string) => void,
   meetingType: MeetingTypeEnum,
@@ -77,9 +72,9 @@ const NewMeetingSidebar = (props: Props) => {
         </TeamDashboardLink>
         <CopyShortLink icon="link" label="Meeting Link" url={makeHref(relativeLink)} />
       </SidebarHeader>
-      <SidebarSubHeading>
+      <MeetingSidebarLabelBlock>
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
-      </SidebarSubHeading>
+      </MeetingSidebarLabelBlock>
       <Nav>
         <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />
       </Nav>

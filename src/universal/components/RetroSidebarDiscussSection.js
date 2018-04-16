@@ -6,6 +6,8 @@ import {createFragmentContainer} from 'react-relay';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
+import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
+import {LabelHeading} from 'universal/components';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
@@ -14,12 +16,11 @@ type Props = {|
 
 const SidebarPhaseItemChild = styled('div')({
   display: 'flex',
-  flexDirection: 'column',
-  marginLeft: '1rem'
+  flexDirection: 'column'
 });
 
 const Header = styled('div')({
-  fontWeight: 'bold'
+  fontWeight: 600
 });
 
 const VoteTally = styled('span')({
@@ -52,7 +53,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {stages} = localPhase;
   return (
     <SidebarPhaseItemChild>
-      <Header>{'Upvoted Topics'}</Header>
+      <MeetingSidebarLabelBlock>
+        <LabelHeading>{'Upvoted Topics'}</LabelHeading>
+      </MeetingSidebarLabelBlock>
       {stages.map((stage, idx) => {
         const {reflectionGroup} = stage;
         if (!reflectionGroup) return null;

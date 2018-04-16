@@ -314,6 +314,8 @@ const ui = {
   },
   cardStatusIndicatorHeight: '.25rem',
   cardStatusIndicatorWidth: '1.875rem',
+  cardThemeLabelFontSize: appTheme.typography.s3,
+  cardThemeLabelLineHeight: appTheme.typography.s5,
 
   // CTA Panels
   // ---------------------------------------------------------------------------

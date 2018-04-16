@@ -35,6 +35,20 @@ const underlineStyles = {
   boxShadow: 'none !important'
 };
 
+const RootBlock = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  flexShrink: 1,
+  maxWidth: '100%',
+  padding: '0 .25rem'
+});
+
+const FormBlock = styled('form')({
+  display: 'flex',
+  flexShrink: 1,
+  maxWidth: '100%'
+});
+
 const NameInput = styled('input')(({readOnly}) => ({
   ...underlineStyles,
   ':hover,:focus,:active': {
@@ -42,11 +56,15 @@ const NameInput = styled('input')(({readOnly}) => ({
   },
   ...ui.fieldBaseStyles,
   ...ui.fieldSizeStyles.small,
+  border: 0,
   boxShadow: 'none',
-  fontSize: '1.2rem',
-  color: appTheme.brand.primary.darkGray,
-  textAlign: 'center',
-  cursor: readOnly ? 'default' : 'text'
+  color: appTheme.palette.dark,
+  cursor: readOnly ? 'default' : 'text',
+  fontSize: ui.cardThemeLabelFontSize,
+  fontWeight: 600,
+  lineHeight: ui.cardThemeLabelLineHeight,
+  padding: 0,
+  textAlign: 'center'
 }));
 
 const getValidationError = (title: ?string, reflectionGroups) => {
@@ -136,20 +154,27 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
   render() {
     const {title} = this.state;
     const {error, readOnly} = this.props;
+    const maxlength = 24;
+    const placeholder = 'Theme';
+    const placeholderSize = placeholder.length;
+    const titleSize = (title.length > maxlength) ? maxlength : title.length;
+    const size = titleSize || placeholderSize;
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
+      <RootBlock>
+        <FormBlock onSubmit={this.onSubmit}>
           <NameInput
             onBlur={this.onSubmit}
             onChange={this.onChange}
+            placeholder={placeholder}
+            readOnly={readOnly}
             ref={this.setInputRef}
+            size={size}
             type="text"
             value={title}
-            readOnly={readOnly}
           />
-        </form>
+        </FormBlock>
         {error && <StyledError>{error.message}</StyledError>}
-      </div>
+      </RootBlock>
     );
   }
 }

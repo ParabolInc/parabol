@@ -17,7 +17,7 @@ const SidebarPhaseItemChild = styled('div')({
 });
 
 const Header = styled('div')({
-  fontWeight: 'bold'
+  fontWeight: 600
 });
 
 const CheckIcon = styled(StyledFontAwesome)(({isDark}) => ({

@@ -12,6 +12,7 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback';
+import styled from 'react-emotion';
 
 const taskSource = {
   beginDrag(props) {
