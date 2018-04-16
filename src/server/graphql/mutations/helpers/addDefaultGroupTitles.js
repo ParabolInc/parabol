@@ -3,9 +3,9 @@ import promiseAllPartial from 'universal/utils/promiseAllPartial';
 import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle';
 import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle';
 
-const getTitleFromReflection = async (reflection, idx) => {
+const getTitleFromReflection = async (reflection) => {
   const {meetingId, reflectionGroupId} = reflection;
-  const {smartTitle, title} = await makeRetroGroupTitle(meetingId, [reflection], idx + 1);
+  const {smartTitle, title} = makeRetroGroupTitle(meetingId, [reflection]);
   return updateGroupTitle(reflectionGroupId, smartTitle, title);
 };
 

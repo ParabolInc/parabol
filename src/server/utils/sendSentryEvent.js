@@ -36,8 +36,10 @@ type AuthToken = {
 
 const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb, error?: Object) => {
   if (process.env.NODE_ENV !== 'production') {
-    if (breadcrumb && breadcrumb.data.firstError) {
+    if (breadcrumb && breadcrumb.data && breadcrumb.data.firstError) {
       console.error(breadcrumb.data.firstError);
+    } else if (error) {
+      console.error(error);
     } else {
       console.error(JSON.stringify(breadcrumb));
     }

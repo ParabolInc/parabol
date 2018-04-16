@@ -45,7 +45,7 @@ export default {
 
     // RESOLUTION
     const reflectionGroupId = shortid.generate();
-    const {title, smartTitle} = await makeRetroGroupTitle(meetingId, reflections);
+    const {title, smartTitle} = makeRetroGroupTitle(meetingId, reflections);
 
     const reflectionGroup = {
       id: reflectionGroupId,
