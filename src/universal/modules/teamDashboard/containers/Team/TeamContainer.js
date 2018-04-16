@@ -40,6 +40,7 @@ const TeamContainer = (props) => {
       hasMeetingAlert={hasMeetingAlert}
       isSettings={isSettings}
       team={team}
+      isRetroEnabled={viewer && viewer.featureFlags && viewer.featureFlags.retro}
     >
       <Switch>
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
@@ -67,6 +68,9 @@ export default createFragmentContainer(
   ),
   graphql`
     fragment TeamContainer_viewer on User {
+      featureFlags {
+        retro
+      }
       team(teamId: $teamId) {
         ...Team_team
         ...TeamArchive_team

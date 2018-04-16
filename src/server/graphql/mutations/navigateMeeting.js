@@ -42,6 +42,7 @@ export default {
     if (viewerId !== facilitatorUserId) return sendNotMeetingFacilitatorError(authToken, viewerId);
 
     // VALIDATION
+    let phaseCompleteData;
     if (completedStageId) {
       const completedStageRes = findStageById(phases, completedStageId);
       if (!completedStageRes) return sendStageNotFoundError(authToken, completedStageId);
@@ -50,8 +51,8 @@ export default {
         // MUTATIVE
         stage.isComplete = true;
         stage.endAt = now;
-        // handle any side effects
-        handleCompletedStage(stage, meeting);
+        // handle any side effects, this could mutate the meeting object!
+        phaseCompleteData = await handleCompletedStage(stage, meeting, dataLoader);
       }
     }
     if (facilitatorStageId) {
@@ -71,7 +72,7 @@ export default {
         updatedAt: now
       }, {returnChanges: true})('changes')(0)('old_val')('facilitatorStageId');
 
-    const data = {meetingId, oldFacilitatorStageId, facilitatorStageId};
+    const data = {meetingId, oldFacilitatorStageId, facilitatorStageId, ...phaseCompleteData};
     publish(TEAM, teamId, NavigateMeetingPayload, data, subOptions);
     return data;
   }

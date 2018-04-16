@@ -136,3 +136,12 @@ export const sendRetroPhaseItemIdNotExpectedError = (authToken, reflectionId, re
   };
   return sendAuthRaven(authToken, 'Phase item ID Not Expected', breadcrumb, returnValue);
 };
+
+export const sendMeetingMemberNotCheckedInError = (authToken, meetingMemberId, returnValue) => {
+  const breadcrumb = {
+    message: 'You must be marked as present in the check-in round to vote',
+    category: 'You are not checked in!',
+    data: {meetingMemberId}
+  };
+  return sendAuthRaven(authToken, 'Meeting member not checked in', breadcrumb, returnValue);
+};

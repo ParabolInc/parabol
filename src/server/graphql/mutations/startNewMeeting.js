@@ -62,7 +62,8 @@ export default {
       };
       return sendAuthRaven(authToken, 'Something went wrong', breadcrumb);
     }
-    const facilitatorStageId = phases[0] && phases[0].stages[0] && phases[0].stages[0].id;
+    const firstStage = phases[0] && phases[0].stages[0];
+    const {id: facilitatorStageId} = firstStage;
     const newMeetingBase = {
       id: meetingId,
       createdAt: now,

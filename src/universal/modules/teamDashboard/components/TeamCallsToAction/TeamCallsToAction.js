@@ -16,6 +16,7 @@ import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 import {ACTION} from 'universal/utils/constants';
 
 type Props = {
+  isRetroEnabled: boolean,
   teamId: TeamID,
   history: RouterHistory
 };
@@ -41,7 +42,8 @@ const targetAnchor = {
   horizontal: 'right'
 };
 
-const TeamCallToAction = ({history, teamId}: Props) => {
+const TeamCallToAction = (props: Props) => {
+  const {history, isRetroEnabled, teamId} = props;
   const goToMeetingLobby = () => {
     const slug = meetingTypeToSlug[ACTION];
     history.push(`/${slug}/${teamId}/`);
@@ -60,7 +62,7 @@ const TeamCallToAction = ({history, teamId}: Props) => {
 
   return (
     <ButtonGroup>
-      {__RELEASE_FLAGS__.retro ?
+      {__RELEASE_FLAGS__.retro || isRetroEnabled ?
         <LoadableMenu
           LoadableComponent={LoadableTeamCallsToActionMenu}
           maxWidth={208}

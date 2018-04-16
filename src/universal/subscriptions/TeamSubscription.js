@@ -16,6 +16,7 @@ import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMuta
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
 import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
+import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from 'universal/mutations/EndNewMeetingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -30,7 +31,7 @@ const subscription = graphql`
       ...EditReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
-      ...KillNewMeetingMutation_team @relay(mask: false)
+      ...EndNewMeetingMutation_team @relay(mask: false)
       ...MoveMeetingMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
       ...NewMeetingCheckInMutation_team @relay(mask: false)
@@ -45,14 +46,17 @@ const subscription = graphql`
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
+      ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
+      ...VoteForReflectionGroupMutation_team @relay(mask: false) 
     }
   }
 `;
 
 const onNextHandlers = {
+  EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
   NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
@@ -105,13 +109,14 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'EndMeetingPayload':
           endMeetingTeamUpdater(payload, options);
           break;
+        case 'EndNewMeetingPayload':
+          endNewMeetingTeamUpdater(payload, options);
+          break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamUpdater(payload, store, viewerId);
           break;
         case 'KillMeetingPayload':
           killMeetingTeamUpdater();
-          break;
-        case 'KillNewMeetingPayload':
           break;
         case 'MeetingCheckInPayload':
           break;
@@ -148,10 +153,14 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'UpdateReflectionContentPayload':
           break;
+        case 'UpdateReflectionGroupTitlePayload':
+          break;
         case 'UpdateReflectionLocationPayload':
           updateReflectionLocationTeamUpdater(payload, options);
           break;
         case 'UpgradeToProPayload':
+          break;
+        case 'VoteForReflectionGroupPayload':
           break;
         default:
           console.error('TeamSubscription case fail', type);

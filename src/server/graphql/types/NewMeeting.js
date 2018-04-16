@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
 import {makeResolve, resolveTeam} from 'server/graphql/resolvers';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 import Team from 'server/graphql/types/Team';
@@ -8,6 +7,9 @@ import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import {RETROSPECTIVE} from 'universal/utils/constants';
 import User from 'server/graphql/types/User';
+import MeetingMember from 'server/graphql/types/MeetingMember';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {getUserId} from 'server/utils/authorization';
 
 export const newMeetingFields = () => ({
   id: {
@@ -35,8 +37,12 @@ export const newMeetingFields = () => ({
     description: 'The facilitator user',
     resolve: makeResolve('facilitatorUserId', 'facilitator', 'users')
   },
-  invitees: {
-    type: new GraphQLList(MeetingInvitee)
+  meetingMembers: {
+    type: new GraphQLList(MeetingMember),
+    description: 'The team members that were active during the time of the meeting',
+    resolve: ({id: meetingId}, args, {dataLoader}) => {
+      return dataLoader.get('meetingMembersByMeetingId').load(meetingId);
+    }
   },
   meetingNumber: {
     type: new GraphQLNonNull(GraphQLInt),
@@ -58,13 +64,22 @@ export const newMeetingFields = () => ({
     description: 'foreign key for team'
   },
   team: {
-    type: Team,
+    type: new GraphQLNonNull(Team),
     description: 'The team that ran the meeting',
     resolve: resolveTeam
   },
   updatedAt: {
     type: GraphQLISO8601Type,
     description: 'The last time a meeting was updated (stage completed, finished, etc)'
+  },
+  viewerMeetingMember: {
+    type: MeetingMember,
+    description: 'The meeting member of the viewer',
+    resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
+      const viewerId = getUserId(authToken);
+      const meetingMemberId = toTeamMemberId(meetingId, viewerId);
+      return dataLoader.get('meetingMembers').load(meetingMemberId);
+    }
   }
 });
 

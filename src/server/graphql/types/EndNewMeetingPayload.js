@@ -1,14 +1,18 @@
-import {GraphQLObjectType} from 'graphql';
+import {GraphQLBoolean, GraphQLObjectType} from 'graphql';
 import {resolveNewMeeting, resolveTeam} from 'server/graphql/resolvers';
 import Team from 'server/graphql/types/Team';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 
-const KillNewMeetingPayload = new GraphQLObjectType({
-  name: 'KillNewMeetingPayload',
+const EndNewMeetingPayload = new GraphQLObjectType({
+  name: 'EndNewMeetingPayload',
   fields: () => ({
     error: {
       type: StandardMutationError
+    },
+    isKill: {
+      type: GraphQLBoolean,
+      description: 'true if the meeting was killed (ended before reaching last stage)'
     },
     team: {
       type: Team,
@@ -21,4 +25,4 @@ const KillNewMeetingPayload = new GraphQLObjectType({
   })
 });
 
-export default KillNewMeetingPayload;
+export default EndNewMeetingPayload;

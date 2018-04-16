@@ -17,7 +17,7 @@ import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload';
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload';
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
-import KillNewMeetingPayload from 'server/graphql/types/KillNewMeetingPayload';
+import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload';
 import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload';
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
 import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload';
@@ -43,7 +43,7 @@ const types = [
   EditReflectionPayload,
   EndMeetingPayload,
   KillMeetingPayload,
-  KillNewMeetingPayload,
+  EndNewMeetingPayload,
   MoveMeetingPayload,
   NavigateMeetingPayload,
   NewMeetingCheckInPayload,

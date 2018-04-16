@@ -52,6 +52,14 @@ const Task = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if this is assigned to a soft team member'
     },
+    meetingId: {
+      type: GraphQLID,
+      description: 'the foreign key for the meeting the task was created in'
+    },
+    reflectionGroupId: {
+      type: GraphQLID,
+      description: 'the foreign key for the retrospective reflection group this was created in'
+    },
     sortOrder: {
       type: GraphQLFloat,
       description: 'the shared sort order for tasks on the team dash & user dash'

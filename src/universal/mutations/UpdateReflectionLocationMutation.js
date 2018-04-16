@@ -36,6 +36,9 @@ graphql`
         ...CompleteReflectionFrag @relay(mask: false)  
       }
       title
+      tasks {
+        id
+      }
     }
     oldReflectionGroup {
       id
@@ -75,11 +78,19 @@ const moveReflectionLocation = (reflection, reflectionGroup, oldReflectionGroupI
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store);
 };
 
-export const updateReflectionLocationTeamUpdater = (payload, store) => {
+export const updateReflectionLocationTeamUpdater = (payload, {store}) => {
   const reflection = payload.getLinkedRecord('reflection');
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup');
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id');
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store);
+
+  const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id');
+  if (reflectionGroupId) {
+    store.get(reflectionGroupId).setValue(false, 'isExpanded');
+  }
+  if (oldReflectionGroupId) {
+    store.get(oldReflectionGroupId).setValue(false, 'isExpanded');
+  }
 };
 
 type Context = {
@@ -101,17 +112,7 @@ const UpdateReflectionLocationMutation = (
     updater: (store) => {
       const payload = store.getRootField('updateReflectionLocation');
       if (!payload) return;
-      updateReflectionLocationTeamUpdater(payload, store);
-
-      // only do this for the mutator, don't want unexpected collapses because someone else did something
-      const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id');
-      const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id');
-      if (reflectionGroupId) {
-        store.get(reflectionGroupId).setValue(false, 'isExpanded');
-      }
-      if (oldReflectionGroupId) {
-        store.get(oldReflectionGroupId).setValue(false, 'isExpanded');
-      }
+      updateReflectionLocationTeamUpdater(payload, {store});
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON();

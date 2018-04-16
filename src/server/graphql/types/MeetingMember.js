@@ -3,6 +3,8 @@ import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
 import {RETROSPECTIVE} from 'universal/utils/constants';
 import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember';
+import {resolveUser} from 'server/graphql/resolvers';
+import User from 'server/graphql/types/User';
 
 export const meetingMemberFields = () => ({
   id: {
@@ -21,6 +23,10 @@ export const meetingMemberFields = () => ({
   },
   teamId: {
     type: GraphQLID
+  },
+  user: {
+    type: User,
+    resolve: resolveUser
   },
   userId: {
     type: GraphQLID

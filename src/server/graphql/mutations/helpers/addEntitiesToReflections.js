@@ -26,7 +26,7 @@ const addEntitiesToReflections = async (meetingId) => {
 
   const nextReflections = reflections.map((reflection, idx) => ({
     id: reflection.id,
-    entities: sanitizedReflectionResponses[idx].entities
+    entities: sanitizedReflectionResponses[idx]
   }));
 
   return r(nextReflections).forEach((reflection) => {

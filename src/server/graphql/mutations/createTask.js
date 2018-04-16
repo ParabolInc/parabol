@@ -54,6 +54,8 @@ export default {
       createdAt: now,
       createdBy: viewerId,
       isSoftTask: false,
+      meetingId: validNewTask.meetingId,
+      reflectionGroupId: validNewTask.reflectionGroupId,
       sortOrder: validNewTask.sortOrder,
       status: validNewTask.status,
       tags,
