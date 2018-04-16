@@ -8,8 +8,6 @@ import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 import styled, {css} from 'react-emotion';
 import ui from 'universal/styles/ui';
-import withLinks from 'universal/components/TaskEditor/withLinks';
-import withSuggestions from 'universal/components/TaskEditor/withSuggestions';
 
 type Props = {
   ariaLabel: string,
@@ -139,14 +137,17 @@ class ReflectionEditorWrapper extends Component<Props> {
   keyBindingFn = (e) => {
     const {keyBindingFn} = this.props;
     if (keyBindingFn) {
-      keyBindingFn(e);
+      const result = keyBindingFn(e);
+      if (result) {
+        return result;
+      }
     }
     if (e.key === 'Escape') {
       e.preventDefault();
       this.removeModal();
-    } else {
-      getDefaultKeyBinding(e);
+      return undefined;
     }
+    return getDefaultKeyBinding(e);
   };
 
   handleBeforeInput = (char) => {
@@ -200,12 +201,8 @@ class ReflectionEditorWrapper extends Component<Props> {
   }
 }
 
-export default withSuggestions(
-  withLinks(
-    withMarkdown(
-      withKeyboardShortcuts((ReflectionEditorWrapper)
-      )
-    )
+export default withMarkdown(
+  withKeyboardShortcuts((ReflectionEditorWrapper)
   )
 );
 

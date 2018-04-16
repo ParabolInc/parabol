@@ -14,7 +14,7 @@ import UserTasks from '../UserTasks/UserTasks';
 import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutcomes';
 import {Link} from 'react-router-dom';
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy';
-import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE} from 'universal/utils/constants';
+import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE, ACTION} from 'universal/utils/constants';
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
@@ -177,6 +177,7 @@ const SummaryEmail = (props) => {
                 <SummaryHeader
                   createdAt={createdAt}
                   meetingNumber={meetingNumber}
+                  meetingType={ACTION}
                   referrer={referrer}
                   teamDashUrl={teamDashUrl}
                   teamName={teamName}

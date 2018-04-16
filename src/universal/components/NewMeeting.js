@@ -17,7 +17,7 @@ import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroRefle
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
-import {CHECKIN, GROUP, REFLECT} from 'universal/utils/constants';
+import {LOBBY, CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
@@ -26,13 +26,18 @@ import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId';
 import handleHotkey from 'universal/utils/meetings/handleHotkey';
 import {connect} from 'react-redux';
-import KillNewMeetingMutation from 'universal/mutations/KillNewMeetingMutation';
+import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation';
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton';
 import type {Dispatch} from 'redux';
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup';
 import updateLocalStage from 'universal/utils/relay/updateLocalStage';
 import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading';
 import RetroGroupPhase from 'universal/components/RetroGroupPhase';
+import RetroVotePhase from 'universal/components/RetroVotePhase';
+import RetroDiscussPhase from 'universal/components/RetroDiscussPhase';
+import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
+import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
+import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog';
 
 const {Component} = React;
 
@@ -47,7 +52,8 @@ const MeetingArea = styled('div')({
   flex: 1,
   flexDirection: 'column',
   minWidth: '60rem',
-  width: '100%'
+  width: '100%',
+  zIndex: 100
 });
 
 const MeetingAreaHeader = styled('div')({
@@ -60,6 +66,13 @@ const MeetingAreaHeader = styled('div')({
   padding: '0 1rem',
   width: '100%'
 });
+
+const MeetingHelpBlock = styled('div')(({isFacilitating}) => ({
+  bottom: isFacilitating ? '5.25rem' : '1.25rem',
+  position: 'absolute',
+  right: '1.25rem',
+  zIndex: 200
+}));
 
 type Props = {
   atmosphere: Object,
@@ -81,25 +94,28 @@ type Variables = {
 class NewMeeting extends Component<Props> {
   constructor(props) {
     super(props);
-    const {atmosphere, bindHotkey, dispatch, history, submitting} = props;
-    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
-    bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
+    const {atmosphere, bindHotkey, dispatch, history} = props;
+    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
+    bindHotkey('left', handleHotkey(this.gotoPrev));
     bindHotkey('i c a n t h a c k i t', () => {
       const {viewer: {team: {newMeeting}}} = props;
       if (!newMeeting) return;
       const {meetingId} = newMeeting;
-      KillNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
+      EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
     });
   }
 
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
-    const {atmosphere, viewer: {team: {newMeeting}}} = this.props;
+    const {atmosphere, submitting, viewer: {team: {newMeeting}}} = this.props;
+    if (submitting) return;
     if (!newMeeting) return;
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
     const {viewerId} = atmosphere;
-    const isFacilitating = viewerId === facilitatorUserId;
+    const isViewerFacilitator = viewerId === facilitatorUserId;
+    const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId);
+    if (!isNavigable) return;
     updateLocalStage(atmosphere, meetingId, stageId);
-    if (isFacilitating) {
+    if (isViewerFacilitator) {
       const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
       const variables: Variables = {meetingId, facilitatorStageId: stageId};
       if (!isComplete) {
@@ -110,15 +126,24 @@ class NewMeeting extends Component<Props> {
     }
   };
 
-  gotoNext = () => {
-    const {viewer: {team: {newMeeting}}} = this.props;
-    if (!newMeeting) return;
-    const {localStage: {localStageId}, phases} = newMeeting;
-    const nextStageRes = findStageAfterId(phases, localStageId);
-    if (!nextStageRes) {
-      // TODO end meeting!
-      return;
+  gotoNext = (options) => {
+    const {atmosphere, submitting, viewer: {team: {newMeeting}}} = this.props;
+    if (!newMeeting || submitting) return;
+    const {meetingId, localPhase: {phaseType}, localStage: {localStageId, teamMember}, phases} = newMeeting;
+    // it feels dirty to put phase-specific logic here,
+    // but if we didn't each phase would have to handle the keybinding & unbind it on a setTimeout, which is dirtier
+    if (phaseType === CHECKIN) {
+      if (!teamMember) return;
+      const {meetingMember, userId} = teamMember;
+      if (!meetingMember) return;
+      const {isCheckedIn} = meetingMember;
+      const nextCheckedInValue = options ? options.isCheckedIn : true;
+      if (isCheckedIn !== nextCheckedInValue) {
+        NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: nextCheckedInValue});
+      }
     }
+    const nextStageRes = findStageAfterId(phases, localStageId);
+    if (!nextStageRes) return;
     const {stage: {id: nextStageId}} = nextStageRes;
     this.gotoStageId(nextStageId);
   }
@@ -128,19 +153,18 @@ class NewMeeting extends Component<Props> {
     if (!newMeeting) return;
     const {localStage: {localStageId}, phases} = newMeeting;
     const nextStageRes = findStageBeforeId(phases, localStageId);
-    if (!nextStageRes) {
-      // TODO end meeting!
-      return;
-    }
+    if (!nextStageRes) return;
     const {stage: {id: nextStageId}} = nextStageRes;
     this.gotoStageId(nextStageId);
   }
 
   render() {
-    const {meetingType, viewer} = this.props;
+    const {atmosphere, meetingType, viewer} = this.props;
     const {team} = viewer;
     const {newMeeting, teamName} = team;
-    const {facilitatorStageId, localPhase, localStage} = newMeeting || {};
+    const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting || {};
+    const {viewerId} = atmosphere;
+    const isFacilitating = viewerId === facilitatorUserId;
     const meetingLabel = meetingTypeToLabel[meetingType];
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true;
     const localPhaseType = localPhase && localPhase.phaseType;
@@ -161,11 +185,16 @@ class NewMeeting extends Component<Props> {
               {localPhaseType === CHECKIN && <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
               {localPhaseType === REFLECT && <RetroReflectPhase gotoNext={this.gotoNext} team={team} />}
               {localPhaseType === GROUP && <RetroGroupPhase gotoNext={this.gotoNext} team={team} />}
+              {localPhaseType === VOTE && <RetroVotePhase gotoNext={this.gotoNext} team={team} />}
+              {localPhaseType === DISCUSS && <RetroDiscussPhase gotoNext={this.gotoNext} team={team} />}
               {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
             </React.Fragment>
           </ErrorBoundary>
         </MeetingArea>
         {!inSync && <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />}
+        <MeetingHelpBlock isFacilitating={isFacilitating}>
+          <MeetingHelpDialog phase={localPhaseType || LOBBY} />
+        </MeetingHelpBlock>
       </MeetingContainer>
     );
   }
@@ -194,6 +223,8 @@ export default createFragmentContainer(
         ...NewMeetingCheckIn_team
         ...RetroReflectPhase_team
         ...RetroGroupPhase_team
+        ...RetroVotePhase_team
+        ...RetroDiscussPhase_team
         checkInGreeting {
           content
           language
@@ -208,7 +239,6 @@ export default createFragmentContainer(
           preferredName
           picture
           checkInOrder
-          isCheckedIn
           isConnected
           isFacilitator
           isLead
@@ -225,6 +255,14 @@ export default createFragmentContainer(
           }
           localStage {
             localStageId: id
+            ... on CheckInStage {
+              teamMember {
+                meetingMember {
+                  isCheckedIn
+                }
+                userId
+              }
+            }
           }
           phases {
             id

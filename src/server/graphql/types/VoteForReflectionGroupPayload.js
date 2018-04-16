@@ -1,9 +1,9 @@
 import {GraphQLObjectType} from 'graphql';
 import {makeResolve, resolveMeetingMember, resolveNewMeeting} from 'server/graphql/resolvers';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
-import NewMeeting from 'server/graphql/types/NewMeeting';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
-import MeetingMember from 'server/graphql/types/MeetingMember';
+import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember';
+import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
 
 const VoteForReflectionGroupPayload = new GraphQLObjectType({
   name: 'VoteForReflectionGroupPayload',
@@ -12,7 +12,7 @@ const VoteForReflectionGroupPayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     meeting: {
-      type: NewMeeting,
+      type: RetrospectiveMeeting,
       resolve: resolveNewMeeting
     },
     reflectionGroup: {
@@ -20,7 +20,7 @@ const VoteForReflectionGroupPayload = new GraphQLObjectType({
       resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
     },
     meetingMember: {
-      type: MeetingMember,
+      type: RetrospectiveMeetingMember,
       resolve: resolveMeetingMember
     }
   })

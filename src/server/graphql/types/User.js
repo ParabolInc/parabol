@@ -31,6 +31,9 @@ import archivedTasks from 'server/graphql/queries/archivedTasks';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
+import MeetingMember from 'server/graphql/types/MeetingMember';
+import NewMeeting from 'server/graphql/types/NewMeeting';
+import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags';
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -67,6 +70,17 @@ const User = new GraphQLObjectType({
     emailVerified: {
       type: GraphQLBoolean,
       description: 'true if email is verified, false otherwise'
+    },
+    featureFlags: {
+      type: UserFeatureFlags,
+      description: 'Any super power given to the user via a super user',
+      resolve: ({featureFlags}) => {
+        const flagObj = {};
+        featureFlags.forEach((flag) => {
+          flagObj[flag] = true;
+        });
+        return flagObj;
+      }
     },
     identities: {
       type: new GraphQLList(AuthIdentityType),
@@ -152,6 +166,48 @@ const User = new GraphQLObjectType({
           return sendMeetingNotFoundError(authToken, meetingId);
         }
         if (!isTeamMember(authToken, meeting.teamId)) return sendTeamAccessError(authToken, meeting.teamId, null);
+        return meeting;
+      }
+    },
+    meetingMember: {
+      type: MeetingMember,
+      description: 'The meeting member associated with this user, if a meeting is currently in progress',
+      args: {
+        meetingId: {
+          type: GraphQLID,
+          description: 'The specific meeting ID'
+        },
+        teamId: {
+          type: GraphQLID,
+          description: 'The teamId of the meeting currently in progress'
+        }
+      },
+      resolve: async (source, args, {authToken, dataLoader}) => {
+        if (!args.teamId && !args.meetingId) return null;
+        const viewerId = getUserId(authToken);
+        let meetingId = args.meetingId;
+        if (!meetingId) {
+          const team = await dataLoader.get('teams').load(args.teamId);
+          meetingId = team.meetingId;
+        }
+        const meetingMemberId = toTeamMemberId(meetingId, viewerId);
+        return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined;
+      }
+    },
+    newMeeting: {
+      type: new GraphQLNonNull(NewMeeting),
+      description: 'A previous meeting that the user was in (present or absent)',
+      args: {
+        meetingId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The meeting ID'
+        }
+      },
+      async resolve(source, {meetingId}, {authToken, dataLoader}) {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId);
+        if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
+        const {teamId} = meeting;
+        if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
         return meeting;
       }
     },

@@ -84,9 +84,12 @@ class EditorInputWrapper extends Component {
   keyBindingFn = (e) => {
     const {keyBindingFn} = this.props;
     if (keyBindingFn) {
-      keyBindingFn(e);
+      const result = keyBindingFn(e);
+      if (result) {
+        return result;
+      }
     }
-    getDefaultKeyBinding(e);
+    return getDefaultKeyBinding(e);
   };
 
   handleBeforeInput = (char) => {

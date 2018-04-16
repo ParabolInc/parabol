@@ -1,5 +1,5 @@
-const handleHotkey = (gotoFunc, submitting) => () => {
-  if (!submitting && document.activeElement === document.body) gotoFunc();
+const handleHotkey = (gotoFunc) => () => {
+  if (document.activeElement === document.body) gotoFunc();
 };
 
 export default handleHotkey;

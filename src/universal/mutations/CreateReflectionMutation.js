@@ -17,6 +17,9 @@ graphql`
       reflections {
         ...CompleteReflectionFrag@relay(mask: false)
       }
+      tasks {
+        id
+      }
     }
   }
 `;

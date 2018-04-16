@@ -1,6 +1,9 @@
 import {commitLocalUpdate, commitMutation} from 'react-relay';
 import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage';
 import getInProxy from 'universal/utils/relay/getInProxy';
+import {DISCUSS, VOTE} from 'universal/utils/constants';
+import clientTempId from 'universal/utils/relay/clientTempId';
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
@@ -11,6 +14,32 @@ graphql`
     oldFacilitatorStage {
       id
       isComplete
+    }
+    phaseComplete {
+      group {
+        reflectionGroups {
+          title
+        }
+      }
+      vote {
+        meeting {
+          phases {
+            id
+            ... on DiscussPhase {
+              phaseType
+              stages {
+                id
+                isComplete
+                meetingId
+                phaseType
+                reflectionGroup {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -38,6 +67,27 @@ export const navigateMeetingTeamOnNext = (payload, context) => {
   });
 };
 
+const optimisticallyCreateRetroTopics = (store, discussPhase, meetingId) => {
+  if (!discussPhase || discussPhase.getLinkedRecords('stages').length > 1) return;
+  const meeting = store.get(meetingId);
+  const reflectionGroups = meeting.getLinkedRecords('reflectionGroups');
+  const topReflectionGroups = reflectionGroups.filter((group) => group.getValue('voteCount') > 0);
+  topReflectionGroups.sort((a, b) => a.getValue('voteCount') < b.getValue('voteCount') ? 1 : -1);
+  const discussStages = topReflectionGroups.map((reflectionGroup) => {
+    const reflectionGroupId = reflectionGroup.getValue('id');
+    const proxyStage = createProxyRecord(store, 'RetroDiscussStage', {
+      id: clientTempId(),
+      meetingId,
+      isComplete: false,
+      phaseType: DISCUSS,
+      reflectionGroupId
+    });
+    proxyStage.setLinkedRecord(reflectionGroup, 'reflectionGroup');
+    return proxyStage;
+  });
+  discussPhase.setLinkedRecords(discussStages, 'stages');
+};
+
 const NavigateMeetingMutation = (environment, variables, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
@@ -53,6 +103,11 @@ const NavigateMeetingMutation = (environment, variables, onError, onCompleted) =
         const stage = stages.find((curStage) => curStage.getValue('id') === completedStageId);
         if (stage) {
           stage.setValue(true, 'isComplete');
+          const phaseType = stage.getValue('phaseType');
+          if (phaseType === VOTE) {
+            const discussPhase = phases[ii + 1];
+            optimisticallyCreateRetroTopics(store, discussPhase, meetingId);
+          }
         }
       }
     },

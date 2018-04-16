@@ -11,10 +11,7 @@ const sanitizeAnalyzedEntitiesResponse = (response) => {
     if (!name || !salience) continue;
     validEntities.push(entity);
   }
-  return {
-    ...firstResponse,
-    entities: validEntities
-  };
+  return validEntities;
 };
 
 export default sanitizeAnalyzedEntitiesResponse;

@@ -12,7 +12,7 @@ import styled from 'react-emotion';
 
 import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton';
 import ui from 'universal/styles/ui';
-import {GROUP, REFLECT, REFLECTION_CARD} from 'universal/utils/constants';
+import {GROUP, REFLECT, REFLECTION_CARD, VOTE} from 'universal/utils/constants';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
 import type {DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd/src/index';
 
@@ -23,6 +23,7 @@ import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionDropZone from 'universal/components/ReflectionDropZone';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
+import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -38,8 +39,7 @@ const ReflectionsArea = styled('div')({
   // overflow: 'auto',
   height: '100%',
   minWidth: ui.retroCardWidth
-}
-);
+});
 
 const ReflectionsList = styled('div')({
   // adds a buffer to the dropzone to limit unwanted drags to the dropzone
@@ -104,8 +104,11 @@ class PhaseItemColumn extends Component<Props, State> {
   render() {
     const {meeting, retroPhaseItem} = this.props;
     const {columnReflectionGroups} = this.state;
-    const {localPhase: {phaseType}} = meeting;
+    const {localPhase: {phaseType}, phases} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
+    const meetingStageRes = findMeetingStage(phases);
+    if (!meetingStageRes) return null;
+    const {phase: {phaseType: meetingPhaseType}} = meetingStageRes;
     return (
       <ColumnWrapper>
         <TypeHeader>
@@ -150,16 +153,26 @@ class PhaseItemColumn extends Component<Props, State> {
                     )}
                   </Droppable>
                 );
+              } else if (phaseType === VOTE) {
+                return (
+                  <ColumnChild key={group.id}>
+                    <ReflectionGroup
+                      reflectionGroup={group}
+                      retroPhaseItemId={retroPhaseItemId}
+                      meeting={meeting}
+                    />
+                  </ColumnChild>
+                );
               }
               return null;
             })}
           </ReflectionsList>
-          {phaseType === GROUP &&
+          {phaseType === GROUP && meetingPhaseType === GROUP &&
           <EntireDropZone>
             <ReflectionDropZone retroPhaseItem={retroPhaseItem} />
           </EntireDropZone>
           }
-          {phaseType === REFLECT &&
+          {phaseType === REFLECT && meetingPhaseType === REFLECT &&
           <ColumnChild>
             <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
           </ColumnChild>
@@ -191,6 +204,13 @@ export default createFragmentContainer(
       meetingId: id
       localPhase {
         phaseType
+      }
+      phases {
+        id
+        phaseType
+        stages {
+          isComplete
+        }
       }
       reflectionGroups {
         id
