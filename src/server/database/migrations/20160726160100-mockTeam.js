@@ -4,28 +4,28 @@ import {LOBBY} from '../../../universal/utils/constants';
 exports.up = async (r) => {
   const users = [
     {
-      id: 'auth0|5797eb5d12664ba4675745b9',
+      id: 'auth0|5ad184ad6d59890e8635d9e4',
       email: 'taya@prbl.co',
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264149ff7c5065482011ce/1478902205921/2016+Taya+Mueller.jpg?format=300w',
-      preferredName: 'taya'
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Taya+Mueller.jpg?t=1523658193243',
+      preferredName: 'Taya'
     },
     {
-      id: 'auth0|58a861e682b0ca077463c577',
+      id: 'auth0|5ad119debcb4500e4f4e2808',
       email: 'jordan@prbl.co',
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
-      preferredName: 'jordan'
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
+      preferredName: 'Jordan'
     },
     {
-      id: 'auth0|5797e83170dddc395d8d1675',
+      id: 'auth0|5ad184fabcb4500e4f4e345e',
       email: 'terry@prbl.co',
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264194ff7c506548201522/1478902180686/2016+Terry+Acker.png?format=300w',
-      preferredName: 'terry'
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
+      preferredName: 'Terry'
     },
     {
-      id: 'auth0|5797eb9712664ba4675745c3',
+      id: 'auth0|5ad1851a6d59890e8635d9eb',
       email: 'matt@prbl.co',
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
-      preferredName: 'matt'
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
+      preferredName: 'Matt'
     }
   ];
   const team = {
@@ -40,44 +40,44 @@ exports.up = async (r) => {
   };
   const teamMembers = [
     {
-      id: 'auth0|58a861e682b0ca077463c577::team123',
+      id: 'auth0|5ad119debcb4500e4f4e2808::team123',
       isActive: true,
       isFacilitator: true,
       isLead: true,
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
-      preferredName: 'jordan',
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
+      preferredName: 'Jordan',
       teamId: 'team123',
-      userId: 'auth0|58a861e682b0ca077463c577'
+      userId: 'auth0|5ad119debcb4500e4f4e2808'
     },
     {
-      id: 'auth0|5797e83170dddc395d8d1675::team123',
+      id: 'auth0|5ad184fabcb4500e4f4e345e::team123',
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264194ff7c506548201522/1478902180686/2016+Terry+Acker.png?format=300w',
-      preferredName: 'terry',
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
+      preferredName: 'Terry',
       teamId: 'team123',
-      userId: 'auth0|5797e83170dddc395d8d1675'
+      userId: 'auth0|5ad184fabcb4500e4f4e345e'
     },
     {
-      id: 'auth0|5797eb5d12664ba4675745b9::team123',
+      id: 'auth0|5ad184ad6d59890e8635d9e4::team123',
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264149ff7c5065482011ce/1478902205921/2016+Taya+Mueller.jpg?format=300w',
-      preferredName: 'taya',
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Taya+Mueller.jpg?t=1523658193243',
+      preferredName: 'Taya',
       teamId: 'team123',
-      userId: 'auth0|5797eb5d12664ba4675745b9'
+      userId: 'auth0|5ad184ad6d59890e8635d9e4'
     },
     {
-      id: 'auth0|5797eb9712664ba4675745c3::team123',
+      id: 'auth0|5ad1851a6d59890e8635d9eb::team123',
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
-      preferredName: 'matt',
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
+      preferredName: 'Matt',
       teamId: 'team123',
-      userId: 'auth0|5797eb9712664ba4675745c3'
+      userId: 'auth0|5ad1851a6d59890e8635d9eb'
     }
   ];
   const engineeringTeam = {
@@ -92,34 +92,34 @@ exports.up = async (r) => {
   };
   const engineeringMembers = [
     {
-      id: 'auth0|58a861e682b0ca077463c577::team456',
+      id: 'auth0|5ad119debcb4500e4f4e2808::team456',
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826412fff7c506548200d81/1478902214166/2016+Jordan+Husney.jpg?format=300w',
-      preferredName: 'jordan',
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
+      preferredName: 'Jordan',
       teamId: 'team456',
-      userId: 'auth0|58a861e682b0ca077463c577'
+      userId: 'auth0|5ad119debcb4500e4f4e2808'
     },
     {
-      id: 'auth0|5797e83170dddc395d8d1675::team456',
+      id: 'auth0|5ad184fabcb4500e4f4e345e::team456',
       isActive: false,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/58264194ff7c506548201522/1478902180686/2016+Terry+Acker.png?format=300w',
-      preferredName: 'terry',
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
+      preferredName: 'Terry',
       teamId: 'team456',
-      userId: 'auth0|5797e83170dddc395d8d1675'
+      userId: 'auth0|5ad184fabcb4500e4f4e345e'
     },
     {
-      id: 'auth0|5797eb9712664ba4675745c3::team456',
+      id: 'auth0|5ad1851a6d59890e8635d9eb::team456',
       isActive: true,
       isFacilitator: true,
       isLead: true,
-      picture: 'https://static1.squarespace.com/static/58236748893fc00a1fffd879/t/5826415aff7c506548201290/1478902195409/2016+Matt+Krick.png?format=300w',
-      preferredName: 'matt',
+      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
+      preferredName: 'Matt',
       teamId: 'team456',
-      userId: 'auth0|5797eb9712664ba4675745c3'
+      userId: 'auth0|5ad1851a6d59890e8635d9eb'
     }
   ];
   const mockUsers = [
