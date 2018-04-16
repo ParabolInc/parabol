@@ -1,7 +1,6 @@
 import getRethink from 'server/database/rethinkDriver';
-import {GraphQLNonNull} from 'graphql';
+import {GraphQLNonNull, GraphQLString} from 'graphql';
 import {requireSU} from 'server/utils/authorization';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
 import UserFlagEnum from 'server/graphql/types/UserFlagEnum';
 import {NOTIFICATION} from 'universal/utils/constants';
 import publish from 'server/utils/publish';
@@ -13,8 +12,9 @@ export default {
   description: 'Give someone advanced features in a flag',
   args: {
     email: {
-      type: new GraphQLNonNull(GraphQLEmailType),
-      description: 'the email of the person to whom you are giving advanced features'
+      type: new GraphQLNonNull(GraphQLString),
+      description: `the complete or partial email of the person to whom you are giving advanced features. 
+      Matches via a regex to support entire domains`
     },
     flag: {
       type: new GraphQLNonNull(UserFlagEnum),
@@ -29,16 +29,15 @@ export default {
     requireSU(authToken);
 
     // RESOLUTION
-    const user = await r.table('User')
-      .filter((doc) => doc('email').downcase().eq(email))
-      .nth(0)
-      .default(null);
-    if (!user) {
+    const userIds = await r.table('User')
+      .filter((doc) => doc('email').match(email))('id')
+      .default([]);
+    if (userIds.length === 0) {
       return sendTeamMemberNotFoundError(authToken);
     }
 
-    const {id: userId} = user;
-    await r.table('User').get(userId)
+    await r.table('User')
+      .getAll(userIds, {index: 'id'})
       .update((userRow) => ({
         featureFlags: userRow('featureFlags')
           .default([])
@@ -46,8 +45,10 @@ export default {
           .distinct()
       }));
     const result = `${email} has been given access to the ${flag} feature. If the app is open, it should magically appear.`;
-    const data = {result, userId};
-    publish(NOTIFICATION, userId, AddFeatureFlagPayload, data, subOptions);
-    return data;
+    userIds.forEach((userId) => {
+      const data = {result, userId};
+      publish(NOTIFICATION, userId, AddFeatureFlagPayload, data, subOptions);
+    });
+    return {result, userIds};
   }
 };

@@ -78,6 +78,7 @@ const login = {
       cachedAt: now,
       email: userInfo.email,
       emailVerified: userInfo.email_verified,
+      featureFlags: [],
       lastLogin: now,
       updatedAt: ensureDate(userInfo.updated_at),
       picture: userInfo.picture,

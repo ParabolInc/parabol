@@ -9,20 +9,18 @@ import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const getActiveMeetings = (viewer) => {
   const activeMeetings = [];
-  if (viewer) {
-    const {teams} = viewer;
-    teams.forEach((team) => {
-      const {meetingId, newMeeting} = team;
-      if (meetingId) {
-        const meetingType = newMeeting ? newMeeting.meetingType : ACTION;
-        const meetingSlug = meetingTypeToSlug[meetingType];
-        activeMeetings.push({
-          link: `/${meetingSlug}/${team.id}`,
-          name: team.name
-        });
-      }
-    });
-  }
+  const teams = viewer && viewer.teams || [];
+  teams.forEach((team) => {
+    const {meetingId, newMeeting} = team;
+    if (meetingId) {
+      const meetingType = newMeeting ? newMeeting.meetingType : ACTION;
+      const meetingSlug = meetingTypeToSlug[meetingType];
+      activeMeetings.push({
+        link: `/${meetingSlug}/${team.id}`,
+        name: team.name
+      });
+    }
+  });
   return activeMeetings;
 };
 

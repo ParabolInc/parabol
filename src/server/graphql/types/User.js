@@ -74,7 +74,8 @@ const User = new GraphQLObjectType({
     featureFlags: {
       type: UserFeatureFlags,
       description: 'Any super power given to the user via a super user',
-      resolve: ({featureFlags}) => {
+      resolve: (source) => {
+        const featureFlags = source.featureFlags || [];
         const flagObj = {};
         featureFlags.forEach((flag) => {
           flagObj[flag] = true;
