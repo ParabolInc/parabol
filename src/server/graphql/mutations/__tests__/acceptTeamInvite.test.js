@@ -21,8 +21,6 @@ import {TEAM_INVITE} from 'universal/utils/constants';
 MockDate.set(__now);
 console.error = jest.fn();
 
-let auth0ManagementClient = null;
-
 describe('acceptTeamInvite', () => {
   beforeEach(() => {
     auth0ManagementClient.users.updateAppMetadata.mockReset();

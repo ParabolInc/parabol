@@ -1,5 +1,4 @@
 import {ManagementClient} from 'auth0';
-import fetch from 'node-fetch';
 import getDotenv from '../../universal/utils/dotenv';
 
 // Import .env and expand variables:

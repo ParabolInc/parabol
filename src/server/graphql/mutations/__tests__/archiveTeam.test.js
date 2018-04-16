@@ -15,8 +15,6 @@ import * as tmsSignToken from 'server/utils/tmsSignToken';
 MockDate.set(__now);
 console.error = jest.fn();
 
-let auth0ManagementClient = null;
-
 describe('ArchiveTeam', () => {
   test('archives a team', async () => {
     // SETUP

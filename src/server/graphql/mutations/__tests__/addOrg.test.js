@@ -13,8 +13,6 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 MockDate.set(__now);
 console.error = jest.fn();
 
-let auth0ManagementClient = null;
-
 describe('addOrg', () => {
   test('adds a new org with no invitees', async () => {
     // SETUP

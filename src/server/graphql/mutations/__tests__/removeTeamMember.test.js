@@ -13,8 +13,6 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 MockDate.set(__now);
 console.error = jest.fn();
 
-let auth0ManagementClient = null;
-
 describe('removeTeamMember', () => {
   test('promotes another member if the person removed was the lead', async () => {
 
