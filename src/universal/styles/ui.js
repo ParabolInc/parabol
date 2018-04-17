@@ -539,6 +539,7 @@ const ui = {
   meetingSidebarWidth: '15rem',
   meetingSplashGutter: '4.5rem',
   meetingControlBarHeight: '4rem',
+  meetingTopicPhaseMaxWidth: '80rem',
 
   // Menus
   // ---------------------------------------------------------------------------
@@ -584,6 +585,11 @@ const ui = {
   navMenuFontSize: '.9375rem',
   navMenuLineHeight: '1.25rem',
   navMenuLeftBorderWidth: '.1875rem',
+
+  // Nav Topics (team agenda, retro discuss)
+  // ---------------------------------------------------------------------------
+
+  navTopicFontSize: appTheme.typography.s3,
 
   // Notifications
   // ---------------------------------------------------------------------------

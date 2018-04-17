@@ -48,15 +48,17 @@ const PhaseWrapper = styled('div')({
 
 const ReflectionSection = styled('div')({
   borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
+  margin: '0 auto',
   maxHeight: '65%',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
   minHeight: '35%',
   overflowY: 'scroll',
-  padding: '2rem 2.5rem .875rem'
+  padding: '2rem 1.375rem .875rem 2.5rem'
 });
 
 const ReflectionGrid = styled('div')({
-  display: 'flex',
-  flexWrap: 'wrap'
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, calc(100% / 3))'
 });
 
 const ReflectionGridBlock = styled('div')({
@@ -64,9 +66,22 @@ const ReflectionGridBlock = styled('div')({
 });
 
 const TaskCardBlock = styled('div')({
-  maxWidth: ui.taskColumnsMaxWidth,
-  padding: '1rem 2rem 2.5rem'
+  margin: '0 auto',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  padding: '1rem 2rem 2.5rem',
+
+  [ui.breakpoint.wide]: {
+    paddingLeft: '1.75rem',
+    paddingRight: '1.75rem'
+  },
+
+  [ui.breakpoint.wider]: {
+    paddingLeft: '1.5rem',
+    paddingRight: '1.5rem'
+  }
 });
+
+
 
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, history, team} = props;

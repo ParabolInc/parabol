@@ -22,7 +22,9 @@ type Props = {
 const ReflectPhaseWrapper = styled('div')({
   height: '100%',
   display: 'flex',
+  flex: 1,
   justifyContent: 'space-around',
+  overflowY: 'scroll',
   width: '100%'
 });
 
@@ -73,7 +75,7 @@ export default createFragmentContainer(
         ... on RetrospectiveMeeting {
           reflectionGroups {
             id
-          }  
+          }
         }
       }
       meetingSettings(meetingType: $meetingType) {

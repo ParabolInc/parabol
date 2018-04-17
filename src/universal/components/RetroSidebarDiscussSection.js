@@ -19,10 +19,6 @@ const SidebarPhaseItemChild = styled('div')({
   flexDirection: 'column'
 });
 
-const Header = styled('div')({
-  fontWeight: 600
-});
-
 const VoteTally = styled('span')({
   marginRight: '0.5rem'
 });
@@ -33,7 +29,7 @@ const ItemNumberAndTitle = styled('span')({
 });
 
 const Title = styled('span')({
-
+  // Define
 });
 
 const TopicRow = styled('div')({
