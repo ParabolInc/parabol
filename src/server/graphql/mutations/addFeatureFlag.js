@@ -37,7 +37,7 @@ export default {
     }
 
     await r.table('User')
-      .getAll(userIds, {index: 'id'})
+      .getAll(r.args(userIds), {index: 'id'})
       .update((userRow) => ({
         featureFlags: userRow('featureFlags')
           .default([])
