@@ -19,7 +19,7 @@ const taskSource = {
   }
 };
 
-const lineHeight = '1.5rem';
+const lineHeight = ui.navTopicLineHeight;
 
 const DeleteIconButton = styled('div')(({agendaLength, disabled}) => ({
   color: appTheme.palette.warm,

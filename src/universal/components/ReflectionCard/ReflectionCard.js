@@ -139,7 +139,6 @@ class ReflectionCard extends Component<Props, State> {
         <ReflectionEditorWrapper
           ariaLabel="Edit this reflection"
           editorState={editorState}
-          hasDragLock={hasDragLock}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder="My reflection thought..."

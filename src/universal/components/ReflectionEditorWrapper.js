@@ -17,7 +17,7 @@ type Props = {
   handleChange: () => void,
   handleKeyCommand: () => void,
   handleReturn: () => void,
-  hasDragLock: boolean,
+  anonEditing: boolean,
   isBlurred: boolean,
   keyBindingFn: () => void,
   placeholder: string,
@@ -57,12 +57,12 @@ const EditorStyles = styled('div')(
     width: ui.retroCardWidth
   },
   ({isBlurred}) => isBlurred && ({
-    filter: 'blur(4px)',
+    filter: 'blur(.25rem)',
     userSelect: 'none'
   }),
-  // ({hasDragLock}) => hasDragLock && ({
-  //   border: `solid 1px ${appTheme.palette.warm}`
-  // })
+  ({anonEditing}) => anonEditing && ({
+    color: ui.hintFontColor
+  })
 );
 
 class ReflectionEditorWrapper extends Component<Props> {
@@ -175,10 +175,10 @@ class ReflectionEditorWrapper extends Component<Props> {
   };
 
   render() {
-    const {ariaLabel, editorState, hasDragLock, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
+    const {ariaLabel, editorState, anonEditing, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
     const userSelect = readOnly ? 'none' : 'text';
     return (
-      <EditorStyles hasDragLock={hasDragLock} isBlurred={isBlurred}>
+      <EditorStyles anonEditing={anonEditing} isBlurred={isBlurred}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}

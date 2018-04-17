@@ -14,12 +14,14 @@ const MeetingMemberTasks = (props: Props) => {
   const {meetingMembers} = meeting;
   const membersWithTasks = meetingMembers.filter(({tasks}) => tasks.length > 0);
   const membersWithoutTasks = meetingMembers.filter(({tasks}) => tasks.length === 0);
+  // local flag, wanna try without this section without completely yanking (TA)
+  const showMembersWithoutTasks = false;
   return (
     <React.Fragment>
       {membersWithTasks.map((member) =>
         <MeetingMemberTaskList member={member} key={member.id} />
       )}
-      <MeetingMemberNoTasks meetingType={meetingType} members={membersWithoutTasks} />
+      {showMembersWithoutTasks && <MeetingMemberNoTasks meetingType={meetingType} members={membersWithoutTasks} />}
     </React.Fragment>
   );
 };

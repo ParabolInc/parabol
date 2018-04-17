@@ -56,7 +56,7 @@ const Icon = styled(FontAwesome)({
   textAlign: 'center',
   width: ui.iconSize,
   zIndex: 200
-})
+});
 
 class ReflectionCardDeleteButton extends Component<Props> {
   handleDelete = () => {

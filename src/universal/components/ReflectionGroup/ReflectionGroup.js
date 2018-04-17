@@ -32,7 +32,7 @@ type State = {
 const MARGIN = 8;
 
 const Reflections = styled('div')({
-  // position: 'relative'
+  cursor: 'pointer'
 });
 
 const AnimatedReflection = styled('div')({

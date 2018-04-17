@@ -5,8 +5,6 @@ import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/
 import {createFragmentContainer} from 'react-relay';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import textOverflow from 'universal/styles/helpers/textOverflow';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
 import {LabelHeading} from 'universal/components';
 
@@ -21,11 +19,13 @@ const SidebarPhaseItemChild = styled('div')({
 });
 
 const VoteTally = styled('div')({
+  lineHeight: ui.navTopicLineHeight,
   marginRight: '0.5rem'
 });
 
 const IndexBlock = styled('div')({
   opacity: '.5',
+  lineHeight: ui.navTopicLineHeight,
   paddingRight: '.75rem',
   textAlign: 'right',
   width: ui.meetingSidebarGutterInner
@@ -33,18 +33,19 @@ const IndexBlock = styled('div')({
 
 const Title = styled('span')({
   flex: 1,
-  fontSize: ui.navTopicFontSize
+  fontSize: ui.navTopicFontSize,
+  lineHeight: ui.navTopicLineHeight
 });
 
 const TopicRow = styled('div')({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   cursor: 'pointer',
   display: 'flex',
   fontSize: ui.navTopicFontSize,
   fontWeight: 400,
   justifyContent: 'space-between',
-  lineHeight: '1.5',
   minHeight: '2.5rem',
+  padding: '.5rem 0',
   width: '100%'
 });
 

@@ -13,13 +13,14 @@ const tableStyle = {
 
 const cardCell = {
   padding: '8px',
+  textAlign: 'left',
   verticalAlign: 'top',
   width: '188px'
 };
 
 const topicThemeHeading = {
   fontFamily,
-  fontSize: '13px',
+  fontSize: '16px',
   fontWeight: 600,
   textAlign: 'center'
 };

@@ -8,7 +8,7 @@ const fontFamily = ui.emailFontFamily;
 
 const sectionHeading = {
   fontFamily,
-  fontSize: '18px',
+  fontSize: '24px',
   fontWeight: 600,
   textAlign: 'center'
 };

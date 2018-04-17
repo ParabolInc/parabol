@@ -39,16 +39,17 @@ const AddButton = styled(PlainButton)({
   borderRadius: ui.cardBorderRadius,
   color: appTheme.palette.mid,
   fontSize: '.875rem',
-  minHeight: '2.875rem', // intended to match ReflectionCard
+  minHeight: '3rem', // intended to match ReflectionCard
   padding: '.75rem',
   textAlign: 'center',
+  transition: ui.cardControlTransition,
   width: '100%',
 
   '&:hover,:focus': {
     backgroundColor: ui.palette.white,
     boxShadow: ui.cardBoxShadow, // intended to match ReflectionCard
     cursor: 'pointer'
-  },
+  }
 });
 
 class AddReflectionButton extends Component<Props> {

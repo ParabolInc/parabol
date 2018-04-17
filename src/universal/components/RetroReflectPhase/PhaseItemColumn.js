@@ -72,6 +72,11 @@ const EntireDropZone = styled('div')({
   minWidth: '100%'
 });
 
+const ButtonBlock = styled('div')({
+  padding: '0 0 1.25rem',
+  width: '100%'
+});
+
 type Props = {
   atmosphere: Object,
   meeting: Meeting,
@@ -173,7 +178,9 @@ class PhaseItemColumn extends Component<Props, State> {
           }
           {phaseType === REFLECT && meetingPhaseType === REFLECT &&
           <ColumnChild>
-            <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+            <ButtonBlock>
+              <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+            </ButtonBlock>
           </ColumnChild>
           }
         </ReflectionsArea>

@@ -63,17 +63,17 @@ const ReflectionSection = styled('div')({
   padding: '0 1.375rem .875rem 2.5rem',
   width: '100%',
 
-  // [ui.breakpoint.wide]: {
-  //   maxHeight: '40%'
-  // },
-  //
-  // [ui.breakpoint.wider]: {
-  //   maxHeight: '45%'
-  // },
-  //
-  // [ui.breakpoint.wider]: {
-  //   maxHeight: '50%'
-  // }
+  [ui.breakpoint.wide]: {
+    maxHeight: '40%',
+  },
+
+  [ui.breakpoint.wider]: {
+    maxHeight: '45%',
+  },
+
+  [ui.breakpoint.widest]: {
+    maxHeight: '50%',
+  }
 });
 
 const ReflectionGrid = styled('div')({
@@ -131,7 +131,7 @@ const RetroDiscussPhase = (props: Props) => {
           <ReflectionGrid>
             {reflections.map((reflection) => {
               return (
-                <ReflectionGridBlock>
+                <ReflectionGridBlock key={`GridBlock-${reflection.id}`}>
                   <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
                 </ReflectionGridBlock>
               );

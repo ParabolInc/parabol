@@ -159,8 +159,11 @@ const SummaryEmail = (props: Props) => {
           <RetroDiscussionTopics imageSource={referrer === 'email' ? 'static' : 'local'} topics={meeting.reflectionGroups} />
         }
         <div>
+          <EmptySpace height={48} />
+          <hr style={ruleStyle} />
+          <EmptySpace height={48} />
           <ContactUs
-            fontSize={18}
+            fontSize={16}
             hasLearningLink={meetingType === ACTION}
             lineHeight={1.5}
             prompt={`How’d your ${meetingLabel} meeting go?`}

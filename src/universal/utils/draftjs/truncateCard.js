@@ -2,7 +2,7 @@ import {convertFromRaw, Modifier, SelectionState} from 'draft-js';
 
 const MAX_BLOCKS = 5;
 const MAX_CHARS = 52;
-const ELLIPSIS = '...';
+const ELLIPSIS = '…';
 
 const truncateByBlock = (contentState) => {
   const blockArray = contentState.getBlocksAsArray();
@@ -28,18 +28,18 @@ const truncateByBlock = (contentState) => {
 };
 
 // truncate on MAX_CHARS chars or MAX_BLOCKS line breaks
-const truncateCard = (content) => {
+const truncateCard = (content, maxBlocks = MAX_BLOCKS, maxChars = MAX_CHARS) => {
   const contentState = truncateByBlock(convertFromRaw(JSON.parse(content)));
   const lastBlock = contentState.getLastBlock();
   let block = contentState.getFirstBlock();
   let curLength = 0;
-  for (let i = 0; i < MAX_BLOCKS; i++) {
+  for (let i = 0; i < maxBlocks; i++) {
     const key = block.getKey();
     const blockLen = block.getLength();
     curLength += blockLen;
-    if (curLength > MAX_CHARS) {
+    if (curLength > maxChars) {
       const selection = new SelectionState({
-        anchorOffset: Math.max(0, MAX_CHARS - curLength + blockLen - ELLIPSIS.length),
+        anchorOffset: Math.max(0, maxChars - curLength + blockLen - ELLIPSIS.length),
         focusOffset: lastBlock.getLength(),
         anchorKey: key,
         focusKey: lastBlock.getKey(),
