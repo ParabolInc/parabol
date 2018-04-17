@@ -1,8 +1,10 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import {QueryRenderer} from 'react-relay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {connect} from 'react-redux';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -14,13 +16,16 @@ const unauthenticatedDefault = {
   message: 'Hey! You haven’t signed in yet. Taking you to the sign in page.'
 };
 
-const mapStateToProps = (state) => {
-  const {sub: userId, rol: tokenRole} = state.auth.obj;
-  return {
-    userId,
-    tokenRole
-  };
-};
+const query = graphql`
+  query requireAuthAndRoleQuery {
+    viewer {
+      viewerId: id
+      authToken {
+        tokenRole: rol
+      }
+    }
+  }
+`;
 
 export default (role, {
   /* optional named options: */
@@ -28,54 +33,44 @@ export default (role, {
   unauthorized = unauthorizedDefault,
   unauthenticated = unauthenticatedDefault
 } = {}) => (ComposedComponent) => {
-  @connect(mapStateToProps)
   class RequiredAuthAndRole extends Component {
     static propTypes = {
       dispatch: PropTypes.func.isRequired,
       history: PropTypes.object.isRequired,
       location: PropTypes.object.isRequired,
-      tokenRole: PropTypes.string,
-      userId: PropTypes.string
     };
-
-    state = {
-      legit: true
-    };
-
-    componentWillMount() {
-      this.handleAuthChange(this.props);
-    }
-
-    handleAuthChange(props) { // eslint-disable-line
-      const {userId, tokenRole, dispatch} = props;
-
-      if (userId) {
-        if (role && role !== tokenRole) {
-          this.setState({legit: false});
-          if (!silent) {
-            dispatch(showError(unauthorized));
-          }
-        }
-      } else {
-        // no legit authToken
-        if (!silent) {
-          // squak about it:
-          dispatch(showError(unauthenticated));
-        }
-        this.setState({legit: false});
-      }
-    }
 
     render() {
-      const {location: {pathname}, userId} = this.props;
-      const {legit} = this.state;
-      if (!legit) {
-        const to = userId ? '/' : {pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`};
-        return <Redirect to={to} />;
-      }
-      return <ComposedComponent {...this.props} />;
+      const {atmosphere, dispatch} = this.props;
+      atmosphere.setNet('local');
+      return (
+        <QueryRenderer
+          environment={atmosphere}
+          query={query}
+          variables={{}}
+          render={({props}) => {
+            const {location: {pathname}} = this.props;
+            const {viewer} = props;
+            if (viewer) {
+              const {authToken: {tokenRole}} = viewer;
+              if (role && role !== tokenRole) {
+                if (!silent) {
+                  setTimeout(() => dispatch(showError(unauthorized)));
+                }
+                return <Redirect to="/" />
+              }
+            } else {
+              if (!silent) {
+                setTimeout(() => dispatch(showError(unauthenticated)));
+              }
+              return <Redirect to={{pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`}} />;
+            }
+            return <ComposedComponent {...this.props} />;
+          }}
+        />
+      )
     }
   }
 
-  return RequiredAuthAndRole;
+  return connect()(withAtmosphere(RequiredAuthAndRole));
 };

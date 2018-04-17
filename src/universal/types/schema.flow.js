@@ -1195,8 +1195,10 @@ export type UserFlagEnum = "retro";
 
 export type AddFeatureFlagPayload = {
   error: ?StandardMutationError;
-  /** the user that was given the super power */
+  /** the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users */
   user: ?User;
+  /** the users given the super power */
+  users: ?Array<User>;
   /** A human-readable result */
   result: ?string;
 }
@@ -2477,6 +2479,8 @@ export type ActionMeetingSettings = {
   An auth token provided by Parabol to the client
 */
 export type AuthToken = {
+  /** A static ID so the location in the relay store is deterministic */
+  id: ?string;
   /** audience. the target API used in auth0. Parabol does not use this. */
   aud: ?string;
   /** beta. 1 if enrolled in beta features. else absent */

@@ -1,12 +1,13 @@
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import {setAuthToken} from 'universal/redux/authDuck';
-import {GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import {APP_TOKEN_KEY, GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import EventEmitter from 'eventemitter3';
 import SafeSubscriptionClient from 'universal/utils/SafeSubscriptionClient';
 import handlerProvider from 'universal/utils/relay/handlerProvider';
+import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err);
@@ -46,6 +47,7 @@ export default class Atmosphere extends Environment {
     this.authToken = undefined;
     this.subscriptionClient = undefined;
     this.networks = {
+      local: Network.create(this.fetchLocal),
       http: this._network,
       socket: Network.create(this.fetchWS, this.socketSubscribe)
     };
@@ -96,7 +98,6 @@ export default class Atmosphere extends Environment {
       handler: (errors, payload) => {
         const {authToken} = payload;
         this.setAuthToken(authToken);
-        this.dispatch(setAuthToken(authToken));
       },
       options: {
         query,
@@ -148,18 +149,70 @@ export default class Atmosphere extends Environment {
     return res.json();
   };
 
+  fetchLocal = () => {
+    const authToken = window.localStorage.getItem(APP_TOKEN_KEY);
+    this.setNet('http');
+    if (!authToken) {
+      return {data: {viewer: null}};
+    }
+    const authObj = jwtDecode(authToken);
+    const res = {
+      data: {
+        viewer: {
+          id: authObj.sub,
+          authToken: {
+            id: 'AuthToken',
+            ...authObj
+          }
+        }
+      }
+    };
+    return res;
+  };
+
   setSocket = () => {
     this.querySubscriptions = [];
     this.subscriptions = {};
     this.setNet('socket');
   };
 
+  getAuthToken = (global) => {
+    if (!global) return;
+    const authToken = global.localStorage.getItem(APP_TOKEN_KEY);
+    this.setAuthToken(authToken);
+  };
+
   setAuthToken = (authToken) => {
     this.authToken = authToken;
     if (authToken) {
       const authObj = jwtDecode(authToken);
-      this.userId = authObj.sub;
-      this.viewerId = authObj.sub;
+      const {sub: viewerId} = authObj;
+      this.viewerId = viewerId;
+      window.localStorage.setItem(APP_TOKEN_KEY, authToken);
+      // same as commitLocalUpdate
+      this.commitUpdate((store) => {
+        const viewer = store.get(viewerId) || createProxyRecord(store, 'User', {id: viewerId});
+        store.getRoot().setLinkedRecord(viewer, 'viewer');
+        const authTokenProxy = store.get('AuthToken');
+        const nextAuthToken = {
+          id: 'AuthToken',
+          ...authObj
+        };
+        if (authTokenProxy) {
+          updateProxyRecord(authTokenProxy, nextAuthToken)
+        } else {
+          const nextAuthTokenProxy = createProxyRecord(store, 'AuthToken', nextAuthToken);
+          viewer.setLinkedRecord(nextAuthTokenProxy, 'authToken');
+        }
+      });
+      // this._store.retain({
+      //   dataID: 'AuthToken',
+      //   node: {selections: []},
+      //   variables: {}
+      // });
+
+      // deprecated! will be removed soon
+      this.userId = viewerId;
     }
   };
 

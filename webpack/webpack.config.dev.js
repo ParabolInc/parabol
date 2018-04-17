@@ -31,7 +31,6 @@ export default {
   entry: {
     app: [
       'babel-polyfill',
-      'react-hot-loader/patch',
       'webpack-hot-middleware/client',
       'client/client.js'
     ]
