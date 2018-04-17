@@ -56,7 +56,7 @@ const TypeDescription = styled('div')({
 });
 
 const TypeHeader = styled('div')({
-  marginBottom: '2rem'
+  marginBottom: '1rem'
 });
 
 const ColumnChild = styled('div')(

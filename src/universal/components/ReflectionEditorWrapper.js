@@ -60,9 +60,9 @@ const EditorStyles = styled('div')(
     filter: 'blur(4px)',
     userSelect: 'none'
   }),
-  ({hasDragLock}) => hasDragLock && ({
-    border: `solid 1px ${appTheme.palette.warm}`
-  })
+  // ({hasDragLock}) => hasDragLock && ({
+  //   border: `solid 1px ${appTheme.palette.warm}`
+  // })
 );
 
 class ReflectionEditorWrapper extends Component<Props> {
@@ -194,7 +194,7 @@ class ReflectionEditorWrapper extends Component<Props> {
           placeholder={placeholder}
           readOnly={readOnly}
           ref={this.setEditorRef}
-          style={{padding: '0.8rem', userSelect, WebkitUserSelect: userSelect}}
+          style={{padding: '.75rem', userSelect, WebkitUserSelect: userSelect}}
         />
       </EditorStyles>
     );
@@ -205,4 +205,3 @@ export default withMarkdown(
   withKeyboardShortcuts((ReflectionEditorWrapper)
   )
 );
-

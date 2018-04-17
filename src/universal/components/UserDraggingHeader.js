@@ -9,7 +9,12 @@ type Props = {
 }
 
 const Header = styled('div')({
+  bottom: '100%',
   color: appTheme.palette.warm,
+  fontSize: '.6875rem',
+  lineHeight: '1.125rem',
+  position: 'absolute',
+  right: 0,
   textAlign: 'end'
 });
 
@@ -32,4 +37,3 @@ export default createFragmentContainer(
     }
   `
 );
-

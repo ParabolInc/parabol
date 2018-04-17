@@ -3,7 +3,7 @@ import styled from 'react-emotion';
 
 const MeetingSidebarLabelBlock = styled('div')({
   borderTop: `.0625rem solid ${ui.palette.light}`,
-  margin: '1.25rem 0 0 3.75rem',
+  margin: `1.25rem 0 0 ${ui.meetingSidebarGutterInner}`,
   padding: '1rem 0'
 });
 

@@ -28,7 +28,12 @@ const DiscussHeader = styled('div')({
 });
 
 const TopicHeading = styled('div')({
-  fontSize: appTheme.typography.s6
+  fontSize: appTheme.typography.s6,
+  position: 'relative',
+  '& > span': {
+    right: '100%',
+    position: 'absolute'
+  }
 });
 
 const CheckColumn = styled('div')({
@@ -42,18 +47,33 @@ const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
 }));
 
 const PhaseWrapper = styled('div')({
+  display: 'flex',
   flex: 1,
-  overflowY: 'scroll'
+  flexDirection: 'column',
+  overflow: 'hidden'
 });
 
 const ReflectionSection = styled('div')({
   borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
+  height: '100%',
   margin: '0 auto',
-  maxHeight: '65%',
+  maxHeight: '35%',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  minHeight: '35%',
   overflowY: 'scroll',
-  padding: '2rem 1.375rem .875rem 2.5rem'
+  padding: '0 1.375rem .875rem 2.5rem',
+  width: '100%',
+
+  // [ui.breakpoint.wide]: {
+  //   maxHeight: '40%'
+  // },
+  //
+  // [ui.breakpoint.wider]: {
+  //   maxHeight: '45%'
+  // },
+  //
+  // [ui.breakpoint.wider]: {
+  //   maxHeight: '50%'
+  // }
 });
 
 const ReflectionGrid = styled('div')({
@@ -66,9 +86,12 @@ const ReflectionGridBlock = styled('div')({
 });
 
 const TaskCardBlock = styled('div')({
+  flex: 1,
   margin: '0 auto',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  padding: '1rem 2rem 2.5rem',
+  overflowY: 'scroll',
+  padding: '1rem 2rem',
+  width: '100%',
 
   [ui.breakpoint.wide]: {
     paddingLeft: '1.75rem',
@@ -100,7 +123,7 @@ const RetroDiscussPhase = (props: Props) => {
       <PhaseWrapper>
         <ReflectionSection>
           <DiscussHeader>
-            <TopicHeading>{`“${title}”`}</TopicHeading>
+            <TopicHeading><span>{'“'}</span>{`${title}”`}</TopicHeading>
             <CheckColumn>
               {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.mid} />)}
             </CheckColumn>

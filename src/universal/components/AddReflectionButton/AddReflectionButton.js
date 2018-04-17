@@ -35,17 +35,20 @@ const Plus = styled('span')({
 });
 
 const AddButton = styled(PlainButton)({
-  border: `.0625rem dashed ${appTheme.palette.mid30a}`,
+  backgroundColor: ui.cardControlBackgroundColor,
   borderRadius: ui.cardBorderRadius,
   color: appTheme.palette.mid,
   fontSize: '.875rem',
+  minHeight: '2.875rem', // intended to match ReflectionCard
   padding: '.75rem',
   textAlign: 'center',
   width: '100%',
-  // width: ui.retroCardWidth,
-  ':focus': {
-    boxShadow: 'none'
-  }
+
+  '&:hover,:focus': {
+    backgroundColor: ui.palette.white,
+    boxShadow: ui.cardBoxShadow, // intended to match ReflectionCard
+    cursor: 'pointer'
+  },
 });
 
 class AddReflectionButton extends Component<Props> {

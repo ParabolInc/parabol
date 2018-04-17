@@ -317,6 +317,11 @@ const ui = {
   cardThemeLabelFontSize: appTheme.typography.s3,
   cardThemeLabelLineHeight: appTheme.typography.s5,
 
+  // Card Controls (tapping these makes cards)
+  // ---------------------------------------------------------------------------
+  cardControlBackgroundColor: appTheme.palette.mid10a,
+  cardControlTransition: 'background-color 100ms ease-in, box-shadow 100ms ease-in',
+
   // CTA Panels
   // ---------------------------------------------------------------------------
   ctaPanelButtonSize: BUTTON_SIZE_LARGE,
@@ -536,6 +541,7 @@ const ui = {
   meetingBorderColor: appTheme.palette.mid10a,
   meetingCopyFontSize: '.9375rem',
   meetingSidebarGutter: '.5rem',
+  meetingSidebarGutterInner: '3.75rem',
   meetingSidebarWidth: '15rem',
   meetingSplashGutter: '4.5rem',
   meetingControlBarHeight: '4rem',

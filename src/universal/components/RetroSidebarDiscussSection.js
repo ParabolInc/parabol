@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/RetroSidebarDiscussSection_viewer.graphql';
 import {createFragmentContainer} from 'react-relay';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
@@ -19,27 +20,36 @@ const SidebarPhaseItemChild = styled('div')({
   flexDirection: 'column'
 });
 
-const VoteTally = styled('span')({
+const VoteTally = styled('div')({
   marginRight: '0.5rem'
 });
 
-const ItemNumberAndTitle = styled('span')({
-  ...textOverflow,
-  width: '60%'
+const IndexBlock = styled('div')({
+  opacity: '.5',
+  paddingRight: '.75rem',
+  textAlign: 'right',
+  width: ui.meetingSidebarGutterInner
 });
 
 const Title = styled('span')({
-  // Define
+  flex: 1,
+  fontSize: ui.navTopicFontSize
 });
 
 const TopicRow = styled('div')({
+  alignItems: 'center',
+  cursor: 'pointer',
   display: 'flex',
+  fontSize: ui.navTopicFontSize,
+  fontWeight: 400,
   justifyContent: 'space-between',
+  lineHeight: '1.5',
+  minHeight: '2.5rem',
   width: '100%'
 });
 
 const CheckIcon = styled(StyledFontAwesome)({
-  color: appTheme.palette.warm
+  color: ui.palette.mid
 });
 
 const RetroSidebarDiscussSection = (props: Props) => {
@@ -58,10 +68,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const {title, voteCount} = reflectionGroup;
         return (
           <TopicRow key={stage.id} onClick={() => gotoStageId(stage.id)}>
-            <ItemNumberAndTitle>
-              <span>{`${idx + 1}. `}</span>
-              <Title>{title}</Title>
-            </ItemNumberAndTitle>
+            <IndexBlock>{`${idx + 1}.`}</IndexBlock>
+            <Title>{title}</Title>
             <VoteTally>
               <CheckIcon name="check" />
               {' x '}

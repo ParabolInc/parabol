@@ -25,6 +25,7 @@ import {REFLECT} from 'universal/utils/constants';
 import isTempId from 'universal/utils/relay/isTempId';
 import UserDraggingHeader from 'universal/components/UserDraggingHeader';
 import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
 import StyledError from 'universal/components/StyledError';
@@ -53,14 +54,17 @@ const OriginFooter = styled('div')({
   padding: '.5rem .75rem'
 });
 
-const ReflectionStyles = styled('div')(
+const ReflectionCardRoot = styled('div')(
   {
-    backgroundColor: '#fff',
+    backgroundColor: ui.palette.white,
+    border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
     boxShadow: ui.cardBoxShadow,
-    // margin: 8,
     position: 'relative'
   },
+  ({hasDragLock}) => hasDragLock && ({
+    borderColor: appTheme.palette.warm50a
+  }),
   ({isCollapsed}) => isCollapsed && ({
     height: `${ui.retroCardCollapsedHeightRem}rem`,
     overflow: 'hidden'
@@ -130,7 +134,7 @@ class ReflectionCard extends Component<Props, State> {
     const canDelete = isViewerCreator && phaseType === REFLECT && meetingPhaseType === REFLECT;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
-      <ReflectionStyles isCollapsed={isCollapsed}>
+      <ReflectionCardRoot hasDragLock={hasDragLock} isCollapsed={isCollapsed}>
         {hasDragLock && <UserDraggingHeader user={draggerUser} />}
         <ReflectionEditorWrapper
           ariaLabel="Edit this reflection"
@@ -146,7 +150,7 @@ class ReflectionCard extends Component<Props, State> {
         {error && <StyledError>{error.message}</StyledError>}
         {showOriginFooter && <OriginFooter>{question}</OriginFooter>}
         {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
-      </ReflectionStyles>
+      </ReflectionCardRoot>
     );
   }
 }

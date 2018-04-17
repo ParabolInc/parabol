@@ -16,12 +16,12 @@ const CardBlock = css({
 
 const CardWithControls = css({
   ...CreateCardRootStyles,
-  backgroundColor: appTheme.palette.mid10a,
+  backgroundColor: ui.cardControlBackgroundColor,
   boxShadow: 'none',
   borderTop: 0,
   paddingLeft: 0,
   paddingRight: 0,
-  transition: 'background-color 100ms ease-in, box-shadow 100ms ease-in',
+  transition: ui.cardControlTransition,
   '&:hover': {
     backgroundColor: ui.palette.white,
     boxShadow: ui.shadow[2],

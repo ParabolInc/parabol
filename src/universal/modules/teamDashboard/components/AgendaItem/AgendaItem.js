@@ -46,7 +46,7 @@ const IndexBlock = styled('div')(({disabled}) => ({
   opacity: disabled ? '.5 !important' : '.5',
   paddingRight: '.75rem',
   textAlign: 'right',
-  width: '3.75rem'
+  width: ui.meetingSidebarGutterInner
 }));
 
 const ContentBlock = styled('div')({
