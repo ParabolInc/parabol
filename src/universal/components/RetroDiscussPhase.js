@@ -64,15 +64,15 @@ const ReflectionSection = styled('div')({
   width: '100%',
 
   [ui.breakpoint.wide]: {
-    maxHeight: '40%',
+    maxHeight: '40%'
   },
 
   [ui.breakpoint.wider]: {
-    maxHeight: '45%',
+    maxHeight: '45%'
   },
 
   [ui.breakpoint.widest]: {
-    maxHeight: '50%',
+    maxHeight: '50%'
   }
 });
 
