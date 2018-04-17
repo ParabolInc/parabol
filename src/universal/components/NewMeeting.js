@@ -67,14 +67,6 @@ const MeetingAreaHeader = styled('div')({
   width: '100%'
 });
 
-// const MeetingAreaMain = styled('div')(({localPhaseType}) => ({
-//   display: 'flex',
-//   flex: 1,
-//   flexDirection: 'column',
-//   paddingTop: localPhaseType && '1.25rem',
-//   width: '100%'
-// }));
-
 const MeetingHelpBlock = styled('div')(({isFacilitating}) => ({
   bottom: isFacilitating ? '5.25rem' : '1.25rem',
   position: 'absolute',
@@ -207,9 +199,6 @@ class NewMeeting extends Component<Props> {
     );
   }
 }
-
-// <MeetingAreaMain localPhaseType={localPhaseType}>
-// </MeetingAreaMain>
 
 export default createFragmentContainer(
   dragDropContext(HTML5Backend)(
