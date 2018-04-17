@@ -81,8 +81,6 @@ const TaskCardBlock = styled('div')({
   }
 });
 
-
-
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, history, team} = props;
   const {viewerId} = atmosphere;
