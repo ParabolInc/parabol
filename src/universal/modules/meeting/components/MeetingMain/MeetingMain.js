@@ -56,7 +56,7 @@ const styleThunk = () => ({
   },
 
   hasBoxShadow: {
-    boxShadow: ui.meetingChromeBoxShadow
+    boxShadow: ui.meetingChromeBoxShadowInset
   },
 
   innerBlockStyles: {

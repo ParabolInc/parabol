@@ -29,7 +29,8 @@ const SidebarHeader = styled('div')({
 
 const SidebarParent = styled('div')({
   backgroundColor: ui.palette.white,
-  boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px',
+  // boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 10px, rgba(0, 0, 0, 0.23) 0px 3px 10px',
+  boxShadow: ui.meetingChromeBoxShadow,
   display: 'flex',
   flexDirection: 'column',
   maxWidth: ui.meetingSidebarWidth,

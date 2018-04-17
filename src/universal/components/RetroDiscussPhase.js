@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import Button from 'universal/components/Button/Button';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
@@ -22,26 +23,51 @@ type Props = {|
   team: Object,
 |};
 
+const DiscussHeader = styled('div')({
+  margin: '0 0 1.25rem'
+});
+
+const TopicHeading = styled('div')({
+  fontSize: appTheme.typography.s6
+});
+
 const CheckColumn = styled('div')({
   display: 'flex'
 });
 
 const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
-  color
+  color,
+  marginRight: '.25rem',
+  width: ui.iconSize
 }));
 
 const PhaseWrapper = styled('div')({
-  height: '100%'
+  flex: 1,
+  overflowY: 'scroll'
 });
 
 const ReflectionSection = styled('div')({
-  height: '50%'
+  borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
+  maxHeight: '65%',
+  minHeight: '35%',
+  overflowY: 'scroll',
+  padding: '2rem 2.5rem .875rem'
 });
 
 const ReflectionGrid = styled('div')({
   display: 'flex',
   flexWrap: 'wrap'
 });
+
+const ReflectionGridBlock = styled('div')({
+  margin: '0 1.125rem 1.125rem 0'
+});
+
+const TaskCardBlock = styled('div')({
+  maxWidth: ui.taskColumnsMaxWidth,
+  padding: '1rem 2rem 2.5rem'
+});
+
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, history, team} = props;
   const {viewerId} = atmosphere;
@@ -60,24 +86,30 @@ const RetroDiscussPhase = (props: Props) => {
     <React.Fragment>
       <PhaseWrapper>
         <ReflectionSection>
-          <div>{`"${title}"`}</div>
-          <CheckColumn>
-            {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={appTheme.brand.primary.midGray} />)}
-          </CheckColumn>
+          <DiscussHeader>
+            <TopicHeading>{`“${title}”`}</TopicHeading>
+            <CheckColumn>
+              {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.mid} />)}
+            </CheckColumn>
+          </DiscussHeader>
           <ReflectionGrid>
             {reflections.map((reflection) => {
               return (
-                <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
+                <ReflectionGridBlock>
+                  <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
+                </ReflectionGridBlock>
               );
             })}
           </ReflectionGrid>
         </ReflectionSection>
-        <MeetingAgendaCards
-          meetingId={meetingId}
-          reflectionGroupId={reflectionGroupId}
-          tasks={tasks}
-          teamId={teamId}
-        />
+        <TaskCardBlock>
+          <MeetingAgendaCards
+            meetingId={meetingId}
+            reflectionGroupId={reflectionGroupId}
+            tasks={tasks}
+            teamId={teamId}
+          />
+        </TaskCardBlock>
       </PhaseWrapper>
       {isFacilitating &&
       <MeetingControlBar>

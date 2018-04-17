@@ -531,7 +531,8 @@ const ui = {
 
   // Meeting
   // ---------------------------------------------------------------------------
-  meetingChromeBoxShadow: `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`,
+  meetingChromeBoxShadow: `.0625rem 0 .0625rem ${makeShadowColor('.1')}`,
+  meetingChromeBoxShadowInset: `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`,
   meetingBorderColor: appTheme.palette.mid10a,
   meetingCopyFontSize: '.9375rem',
   meetingSidebarGutter: '.5rem',
