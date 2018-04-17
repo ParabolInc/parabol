@@ -1,6 +1,6 @@
 import {decode} from 'jsonwebtoken';
 
-import {AUTH0_AUD} from 'server/utils/auth0Helpers';
+import {clientId} from 'server/utils/auth0Helpers';
 import tmsSignToken from '../tmsSignToken';
 
 describe('tmsSignToken', () => {
@@ -27,7 +27,7 @@ describe('tmsSignToken', () => {
     expect(newToken.sub).toEqual('12345');
     expect(newToken.name).toEqual('daniel');
     expect(newToken.tms).toEqual(['team1', 'team2']);
-    expect(newToken.aud).toEqual(AUTH0_AUD);
+    expect(newToken.aud).toEqual(clientId);
     expect(typeof newToken.iat).toBe('number');
     expect(typeof newToken.exp).toBe('number');
   });

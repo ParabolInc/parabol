@@ -42,11 +42,11 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, sortOrder, 
       .coerceTo('array')
   });
 
-  const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = await makeRetroGroupTitle(meetingId, nextReflections);
+  const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(meetingId, nextReflections);
   await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle);
 
   if (oldReflections.length > 0) {
-    const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = await makeRetroGroupTitle(meetingId, oldReflections);
+    const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(meetingId, oldReflections);
     await updateGroupTitle(reflectionGroupId, oldGroupSmartTitle, oldGroupTitle);
   } else {
     await r.table('RetroReflectionGroup').get(oldReflectionGroupId)

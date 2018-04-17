@@ -1,7 +1,7 @@
 /*
  * Make a list of all the entities mentioned across all the reflections
  */
-const getEntityNameArrFromResponses = (reflectionEntities) => {
+const getEntityNameArrFromResponses = (reflectionEntities = []) => {
   const entitySet = new Set();
   for (let jj = 0; jj < reflectionEntities.length; jj++) {
     const entities = reflectionEntities[jj];

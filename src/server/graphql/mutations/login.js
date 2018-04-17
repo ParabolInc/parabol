@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver';
 import sendEmail from 'server/email/sendEmail';
 import LoginPayload from 'server/graphql/types/LoginPayload';
 import {
-  auth0AuthenticationClient as auth0Client,
+  auth0ManagementClient,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
 } from 'server/utils/auth0Helpers';
@@ -66,19 +66,19 @@ const login = {
 
     let userInfo;
     try {
-      userInfo = await auth0Client.tokens.getInfo(auth0Token);
+      userInfo = await auth0ManagementClient.getUser({
+        id: authToken.sub
+      });
     } catch (e) {
       return sendAuth0Error(authToken, e);
     }
-
-    // REMOVE THIS
-    console.log('USER INFO', userInfo);
 
     const newUser = {
       id: userInfo.user_id,
       cachedAt: now,
       email: userInfo.email,
       emailVerified: userInfo.email_verified,
+      featureFlags: [],
       lastLogin: now,
       updatedAt: ensureDate(userInfo.updated_at),
       picture: userInfo.picture,
