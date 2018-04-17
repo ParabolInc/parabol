@@ -1,6 +1,5 @@
 import {
   GraphQLID,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType
 } from 'graphql';
@@ -10,10 +9,6 @@ const SuProOrgInfo = new GraphQLObjectType({
   name: 'SuProOrgInfo',
   description: '',
   fields: () => ({
-    activeCount: {
-      type: GraphQLInt,
-      description: 'The count of active users within the org'
-    },
     organization: {
       type: Organization,
       description: 'The PRO organization',
