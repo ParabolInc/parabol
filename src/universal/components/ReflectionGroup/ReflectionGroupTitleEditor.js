@@ -154,7 +154,7 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
   render() {
     const {title} = this.state;
     const {error, readOnly} = this.props;
-    const maxlength = 24;
+    const maxlength = 20;
     const placeholder = 'Theme';
     const placeholderSize = placeholder.length;
     const titleSize = (title.length > maxlength) ? maxlength : title.length;

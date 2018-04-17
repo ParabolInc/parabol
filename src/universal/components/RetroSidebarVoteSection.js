@@ -4,6 +4,7 @@ import styled from 'react-emotion';
 import type {RetroSidebarVoteSection_viewer as Viewer} from './__generated__/RetroSidebarVoteSection_viewer.graphql';
 import {createFragmentContainer} from 'react-relay';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 
 type Props = {
@@ -13,21 +14,38 @@ type Props = {
 const SidebarPhaseItemChild = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  marginLeft: '3.75rem'
+  marginLeft: '3.75rem',
+  padding: '1rem 0'
 });
 
-const Header = styled('div')({
-  fontWeight: 600
+const Label = styled('div')({
+  color: ui.labelHeadingColor,
+  fontSize: appTheme.typography.s2,
+  fontWeight: 600,
+  lineHeight: appTheme.typography.s5
 });
 
 const CheckIcon = styled(StyledFontAwesome)(({isDark}) => ({
   color: appTheme.palette.warm,
-  opacity: isDark ? 1 : 0.5
+  opacity: isDark ? 1 : 0.2,
+  marginRight: '.25rem',
+  width: ui.iconSize
 }));
 
 const CheckMarkRow = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  margin: '.5rem 0 1.5rem'
 });
+
+const TeamVotesLabel = styled('div')({
+  color: ui.palette.warm,
+  fontFamily: appTheme.typography.monospace,
+  fontSize: '1rem',
+  lineHeight: '1.5',
+  margin: 0,
+  padding: 0
+});
+
 const RetroSidebarVoteSection = (props: Props) => {
   const {viewer: {meetingMember, team: {meetingSettings: {totalVotes = 0}, newMeeting}}} = props;
   const {teamVotesRemaining = 0} = newMeeting || {};
@@ -35,12 +53,12 @@ const RetroSidebarVoteSection = (props: Props) => {
   const checkMarks = [...Array(totalVotes).keys()];
   return (
     <SidebarPhaseItemChild>
-      <Header>{'My Votes Remaining'}</Header>
+      <Label>{'My Votes Remaining'}</Label>
       <CheckMarkRow>
         {checkMarks.map((idx) => <CheckIcon key={idx} name="check" isDark={idx < myVotesRemaining} />)}
       </CheckMarkRow>
-      <Header>{'Team Votes Remaining'}</Header>
-      {teamVotesRemaining}
+      <Label>{'Team Votes Remaining'}</Label>
+      <TeamVotesLabel>{teamVotesRemaining}</TeamVotesLabel>
     </SidebarPhaseItemChild>
   );
 };

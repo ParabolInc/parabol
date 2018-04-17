@@ -1195,8 +1195,10 @@ export type UserFlagEnum = "retro";
 
 export type AddFeatureFlagPayload = {
   error: ?StandardMutationError;
-  /** the user that was given the super power */
+  /** the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users */
   user: ?User;
+  /** the users given the super power */
+  users: ?Array<User>;
   /** A human-readable result */
   result: ?string;
 }

@@ -9,7 +9,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import StyledError from 'universal/components/StyledError';
 
 const {Component} = React;
@@ -28,14 +28,16 @@ const CheckMarkRow = styled('div')({
 
 const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
   color,
-  cursor: 'pointer'
+  cursor: 'pointer',
+  marginRight: '.25rem',
+  width: ui.iconSize
 }));
 
 const CheckColumn = styled('div')({
   display: 'flex',
-  flex: 1,
   flexDirection: 'column',
-  justifyContent: 'center'
+  justifyContent: 'center',
+  width: ui.votingCheckmarksWidth
 });
 
 class ReflectionGroupVoting extends Component<Props> {
@@ -70,8 +72,8 @@ class ReflectionGroupVoting extends Component<Props> {
     return (
       <CheckColumn>
         <CheckMarkRow>
-          {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={appTheme.palette.warm} onClick={this.unvote} />)}
-          {canVote && <CheckIcon name="check" color={appTheme.brand.primary.midGray} onClick={this.vote} />}
+          {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.warm} onClick={this.unvote} />)}
+          {canVote && <CheckIcon name="check" color={ui.palette.midGray} onClick={this.vote} />}
         </CheckMarkRow>
         {error && <StyledError>{error.message}</StyledError>}
       </CheckColumn>

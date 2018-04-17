@@ -683,6 +683,10 @@ const ui = {
   typeRegular: TYPE_REGULAR,
   typeSemiBold: TYPE_SEMIBOLD,
 
+  // Voting
+  // ---------------------------------------------------------------------------
+  votingCheckmarksWidth: '3.375rem',
+
   // Generic zIndex scale
   // ---------------------------------------------------------------------------
   zi1: zIndexScale(1),

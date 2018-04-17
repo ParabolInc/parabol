@@ -13,13 +13,13 @@ type Props = {
   reflectionGroup: ReflectionGroup
 };
 
-const GroupHeader = styled('div')({
+const GroupHeader = styled('div')(({phaseType}) => ({
   display: 'flex',
   fontSize: '.875rem',
-  justifyContent: 'center',
+  justifyContent: phaseType === VOTE ? 'space-between' : 'center',
   marginBottom: 8,
   width: '100%'
-});
+}));
 
 const TitleAndCount = styled('div')({
   alignItems: 'flex-start',
@@ -38,12 +38,15 @@ const ReflectionCount = styled('span')({
   position: 'absolute'
 });
 
+const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
+
 const ReflectionGroupHeader = (props: Props) => {
   const {meeting, reflectionGroup} = props;
   const {reflections} = reflectionGroup;
   const {localPhase: {phaseType}} = meeting;
   return (
-    <GroupHeader>
+    <GroupHeader phaseType={phaseType}>
+      {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
         <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP} />
         <ReflectionCount>{reflections.length}</ReflectionCount>
