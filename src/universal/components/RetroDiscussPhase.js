@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import Button from 'universal/components/Button/Button';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
@@ -22,26 +23,87 @@ type Props = {|
   team: Object,
 |};
 
+const DiscussHeader = styled('div')({
+  margin: '0 0 1.25rem'
+});
+
+const TopicHeading = styled('div')({
+  fontSize: appTheme.typography.s6,
+  position: 'relative',
+  '& > span': {
+    right: '100%',
+    position: 'absolute'
+  }
+});
+
 const CheckColumn = styled('div')({
   display: 'flex'
 });
 
 const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
-  color
+  color,
+  marginRight: '.25rem',
+  width: ui.iconSize
 }));
 
 const PhaseWrapper = styled('div')({
-  height: '100%'
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  overflow: 'hidden'
 });
 
 const ReflectionSection = styled('div')({
-  height: '50%'
+  borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
+  height: '100%',
+  margin: '0 auto',
+  maxHeight: '35%',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  overflowY: 'scroll',
+  padding: '0 1.375rem .875rem 2.5rem',
+  width: '100%',
+
+  [ui.breakpoint.wide]: {
+    maxHeight: '40%'
+  },
+
+  [ui.breakpoint.wider]: {
+    maxHeight: '45%'
+  },
+
+  [ui.breakpoint.widest]: {
+    maxHeight: '50%'
+  }
 });
 
 const ReflectionGrid = styled('div')({
-  display: 'flex',
-  flexWrap: 'wrap'
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, calc(100% / 3))'
 });
+
+const ReflectionGridBlock = styled('div')({
+  margin: '0 1.125rem 1.125rem 0'
+});
+
+const TaskCardBlock = styled('div')({
+  flex: 1,
+  margin: '0 auto',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  overflowY: 'scroll',
+  padding: '1rem 2rem',
+  width: '100%',
+
+  [ui.breakpoint.wide]: {
+    paddingLeft: '1.75rem',
+    paddingRight: '1.75rem'
+  },
+
+  [ui.breakpoint.wider]: {
+    paddingLeft: '1.5rem',
+    paddingRight: '1.5rem'
+  }
+});
+
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, history, team} = props;
   const {viewerId} = atmosphere;
@@ -60,24 +122,30 @@ const RetroDiscussPhase = (props: Props) => {
     <React.Fragment>
       <PhaseWrapper>
         <ReflectionSection>
-          <div>{`"${title}"`}</div>
-          <CheckColumn>
-            {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={appTheme.brand.primary.midGray} />)}
-          </CheckColumn>
+          <DiscussHeader>
+            <TopicHeading><span>{'“'}</span>{`${title}”`}</TopicHeading>
+            <CheckColumn>
+              {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.mid} />)}
+            </CheckColumn>
+          </DiscussHeader>
           <ReflectionGrid>
             {reflections.map((reflection) => {
               return (
-                <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
+                <ReflectionGridBlock key={`GridBlock-${reflection.id}`}>
+                  <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
+                </ReflectionGridBlock>
               );
             })}
           </ReflectionGrid>
         </ReflectionSection>
-        <MeetingAgendaCards
-          meetingId={meetingId}
-          reflectionGroupId={reflectionGroupId}
-          tasks={tasks}
-          teamId={teamId}
-        />
+        <TaskCardBlock>
+          <MeetingAgendaCards
+            meetingId={meetingId}
+            reflectionGroupId={reflectionGroupId}
+            tasks={tasks}
+            teamId={teamId}
+          />
+        </TaskCardBlock>
       </PhaseWrapper>
       {isFacilitating &&
       <MeetingControlBar>

@@ -5,7 +5,8 @@ import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemCol
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import Button from 'universal/components/Button/Button';
+import {Button} from 'universal/components';
+import ui from 'universal/styles/ui';
 
 type Props = {|
   atmosphere: Object,
@@ -16,8 +17,12 @@ type Props = {|
 
 const VotePhaseWrapper = styled('div')({
   display: 'flex',
+  flex: 1,
   height: '100%',
   justifyContent: 'space-around',
+  margin: '0 auto',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  overflowY: 'scroll',
   width: '100%'
 });
 

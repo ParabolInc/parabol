@@ -9,7 +9,7 @@ import styled from 'react-emotion';
 import FontAwesome from 'react-fontawesome';
 
 import PlainButton from 'universal/components/PlainButton/PlainButton';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui';
 import {createFragmentContainer} from 'react-relay';
 import type {ReflectionCardDeleteButton_reflection as Reflection} from './__generated__/ReflectionCardDeleteButton_reflection.graphql';
 import type {ReflectionCardDeleteButton_meeting as Meeting} from './__generated__/ReflectionCardDeleteButton_meeting.graphql';
@@ -26,12 +26,36 @@ type Props = {
 };
 
 const DeleteButton = styled(PlainButton)({
-  backgroundColor: 'rgba(0, 0, 0, 0)',
-  color: appTheme.palette.warm,
-  padding: '0.1rem',
+  backgroundColor: 'transparent',
+  border: 0,
+  height: ui.iconSize,
+  lineHeight: ui.iconSize,
+  padding: 0,
   position: 'absolute',
-  right: '-.6rem',
-  top: '-.6rem'
+  right: '-.4375rem',
+  top: '-.4375rem',
+  width: ui.iconSize
+});
+
+const Background = styled('div')({
+  backgroundColor: ui.palette.white,
+  borderRadius: '100%',
+  height: '.625rem',
+  left: '.125rem',
+  position: 'absolute',
+  top: '.125rem',
+  width: '.625rem',
+  zIndex: 100
+});
+
+const Icon = styled(FontAwesome)({
+  color: ui.palette.warm,
+  height: ui.iconSize,
+  lineHeight: ui.iconSize,
+  position: 'relative',
+  textAlign: 'center',
+  width: ui.iconSize,
+  zIndex: 200
 });
 
 class ReflectionCardDeleteButton extends Component<Props> {
@@ -44,13 +68,16 @@ class ReflectionCardDeleteButton extends Component<Props> {
 
   render() {
     const {submitting} = this.props;
+    const userLabel = 'Delete this reflection card';
     if (submitting) return null;
     return (
       <DeleteButton
-        aria-label="Delete this reflection card"
+        aria-label={userLabel}
         onClick={this.handleDelete}
+        title={userLabel}
       >
-        <FontAwesome name="times-circle" />
+        <Icon name="times-circle" />
+        <Background />
       </DeleteButton>
     );
   }

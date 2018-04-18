@@ -15,7 +15,8 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import dndNoise from 'universal/utils/dndNoise';
 import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import Button from 'universal/components/Button/Button';
+import {Button} from 'universal/components';
+import ui from 'universal/styles/ui';
 
 const {Component} = React;
 
@@ -28,8 +29,12 @@ type Props = {
 
 const GroupPhaseWrapper = styled('div')({
   display: 'flex',
+  flex: 1,
   height: '100%',
   justifyContent: 'space-around',
+  margin: '0 auto',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  overflowY: 'scroll',
   width: '100%'
 });
 

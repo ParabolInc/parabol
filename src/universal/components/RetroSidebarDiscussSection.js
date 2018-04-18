@@ -4,8 +4,9 @@ import styled from 'react-emotion';
 import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/RetroSidebarDiscussSection_viewer.graphql';
 import {createFragmentContainer} from 'react-relay';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
-import appTheme from 'universal/styles/theme/appTheme';
-import textOverflow from 'universal/styles/helpers/textOverflow';
+import ui from 'universal/styles/ui';
+import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
+import {LabelHeading} from 'universal/components';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
@@ -14,35 +15,42 @@ type Props = {|
 
 const SidebarPhaseItemChild = styled('div')({
   display: 'flex',
-  flexDirection: 'column',
-  marginLeft: '1rem'
+  flexDirection: 'column'
 });
 
-const Header = styled('div')({
-  fontWeight: 'bold'
-});
-
-const VoteTally = styled('span')({
+const VoteTally = styled('div')({
+  lineHeight: ui.navTopicLineHeight,
   marginRight: '0.5rem'
 });
 
-const ItemNumberAndTitle = styled('span')({
-  ...textOverflow,
-  width: '60%'
+const IndexBlock = styled('div')({
+  opacity: '.5',
+  lineHeight: ui.navTopicLineHeight,
+  paddingRight: '.75rem',
+  textAlign: 'right',
+  width: ui.meetingSidebarGutterInner
 });
 
 const Title = styled('span')({
-
+  flex: 1,
+  fontSize: ui.navTopicFontSize,
+  lineHeight: ui.navTopicLineHeight
 });
 
 const TopicRow = styled('div')({
+  alignItems: 'flex-start',
+  cursor: 'pointer',
   display: 'flex',
+  fontSize: ui.navTopicFontSize,
+  fontWeight: 400,
   justifyContent: 'space-between',
+  minHeight: '2.5rem',
+  padding: '.5rem 0',
   width: '100%'
 });
 
 const CheckIcon = styled(StyledFontAwesome)({
-  color: appTheme.palette.warm
+  color: ui.palette.mid
 });
 
 const RetroSidebarDiscussSection = (props: Props) => {
@@ -52,17 +60,17 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {stages} = localPhase;
   return (
     <SidebarPhaseItemChild>
-      <Header>{'Upvoted Topics'}</Header>
+      <MeetingSidebarLabelBlock>
+        <LabelHeading>{'Upvoted Topics'}</LabelHeading>
+      </MeetingSidebarLabelBlock>
       {stages.map((stage, idx) => {
         const {reflectionGroup} = stage;
         if (!reflectionGroup) return null;
         const {title, voteCount} = reflectionGroup;
         return (
           <TopicRow key={stage.id} onClick={() => gotoStageId(stage.id)}>
-            <ItemNumberAndTitle>
-              <span>{`${idx + 1}. `}</span>
-              <Title>{title}</Title>
-            </ItemNumberAndTitle>
+            <IndexBlock>{`${idx + 1}.`}</IndexBlock>
+            <Title>{title}</Title>
             <VoteTally>
               <CheckIcon name="check" />
               {' x '}

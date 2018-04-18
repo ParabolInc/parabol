@@ -10,7 +10,7 @@ type Props = {
 
 class ReflectionEditorWrapperForEmail extends Component<Props> {
   state = {
-    editorState: EditorState.createWithContent(truncateCard(this.props.content), editorDecorators(this.getEditorState))
+    editorState: EditorState.createWithContent(truncateCard(this.props.content, 6, 64), editorDecorators(this.getEditorState))
   };
 
   getEditorState() {

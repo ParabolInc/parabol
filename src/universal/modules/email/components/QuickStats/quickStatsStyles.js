@@ -26,7 +26,8 @@ const quickStatsStyles = {
   },
 
   statLabel: {
-    ...fontStyles,
+    color: ui.palette.midGray,
+    fontFamily: ui.emailFontFamily,
     fontSize: '10px',
     fontWeight: 600,
     textTransform: 'uppercase'

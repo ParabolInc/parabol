@@ -314,6 +314,13 @@ const ui = {
   },
   cardStatusIndicatorHeight: '.25rem',
   cardStatusIndicatorWidth: '1.875rem',
+  cardThemeLabelFontSize: appTheme.typography.s3,
+  cardThemeLabelLineHeight: appTheme.typography.s5,
+
+  // Card Controls (tapping these makes cards)
+  // ---------------------------------------------------------------------------
+  cardControlBackgroundColor: appTheme.palette.mid10a,
+  cardControlTransition: 'background-color 100ms ease-in, box-shadow 100ms ease-in',
 
   // CTA Panels
   // ---------------------------------------------------------------------------
@@ -529,13 +536,16 @@ const ui = {
 
   // Meeting
   // ---------------------------------------------------------------------------
-  meetingChromeBoxShadow: `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`,
+  meetingChromeBoxShadow: `.0625rem 0 .0625rem ${makeShadowColor('.1')}`,
+  meetingChromeBoxShadowInset: `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`,
   meetingBorderColor: appTheme.palette.mid10a,
   meetingCopyFontSize: '.9375rem',
   meetingSidebarGutter: '.5rem',
+  meetingSidebarGutterInner: '3.75rem',
   meetingSidebarWidth: '15rem',
   meetingSplashGutter: '4.5rem',
   meetingControlBarHeight: '4rem',
+  meetingTopicPhaseMaxWidth: '80rem',
 
   // Menus
   // ---------------------------------------------------------------------------
@@ -581,6 +591,12 @@ const ui = {
   navMenuFontSize: '.9375rem',
   navMenuLineHeight: '1.25rem',
   navMenuLeftBorderWidth: '.1875rem',
+
+  // Nav Topics (team agenda, retro discuss)
+  // ---------------------------------------------------------------------------
+
+  navTopicFontSize: appTheme.typography.s3,
+  navTopicLineHeight: '1.5rem',
 
   // Notifications
   // ---------------------------------------------------------------------------
@@ -680,6 +696,10 @@ const ui = {
   // ---------------------------------------------------------------------------
   typeRegular: TYPE_REGULAR,
   typeSemiBold: TYPE_SEMIBOLD,
+
+  // Voting
+  // ---------------------------------------------------------------------------
+  votingCheckmarksWidth: '3.375rem',
 
   // Generic zIndex scale
   // ---------------------------------------------------------------------------

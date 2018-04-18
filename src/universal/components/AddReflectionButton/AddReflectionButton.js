@@ -35,14 +35,20 @@ const Plus = styled('span')({
 });
 
 const AddButton = styled(PlainButton)({
-  border: `2px dashed ${appTheme.palette.mid30a}`,
-  borderRadius: 3,
-  color: appTheme.palette.dark,
-  padding: '0.8rem',
+  backgroundColor: ui.cardControlBackgroundColor,
+  borderRadius: ui.cardBorderRadius,
+  color: appTheme.palette.mid,
+  fontSize: '.875rem',
+  minHeight: '3rem', // intended to match ReflectionCard
+  padding: '.75rem',
   textAlign: 'center',
-  width: ui.retroCardWidth,
-  ':focus': {
-    boxShadow: 'none'
+  transition: ui.cardControlTransition,
+  width: '100%',
+
+  '&:hover,:focus': {
+    backgroundColor: ui.palette.white,
+    boxShadow: ui.cardBoxShadow, // intended to match ReflectionCard
+    cursor: 'pointer'
   }
 });
 

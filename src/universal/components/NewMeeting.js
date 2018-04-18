@@ -63,7 +63,7 @@ const MeetingAreaHeader = styled('div')({
   justifyContent: 'space-between',
   margin: 0,
   maxWidth: '100%',
-  padding: '0 1rem',
+  padding: '0 1rem 2rem',
   width: '100%'
 });
 

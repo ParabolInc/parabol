@@ -126,7 +126,7 @@ MeetingAgendaItems.propTypes = {
 const styleThunk = () => ({
   layout: {
     margin: '0 auto',
-    maxWidth: '80rem',
+    maxWidth: ui.meetingTopicPhaseMaxWidth,
     padding: '0 .5rem 4rem',
     width: '100%',
 

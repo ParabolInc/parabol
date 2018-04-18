@@ -5,12 +5,12 @@ const MeetingControlBar = styled('div')({
   alignItems: 'center',
   backgroundColor: ui.palette.white,
   borderTop: `.0625rem solid ${ui.meetingBorderColor}`,
-  boxShadow: ui.meetingChromeBoxShadow,
+  boxShadow: ui.meetingChromeBoxShadowInset,
   color: ui.hintFontColor,
   display: 'flex',
   fontSize: '.8125rem',
   justifyContent: 'center',
-  minHeight: '4rem', // 3.125rem
+  minHeight: '4.0625rem', // 3.125rem
   padding: '0 1.25rem',
   width: '100%'
 });

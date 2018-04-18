@@ -6,30 +6,47 @@ import type {ReflectionGroupHeader_meeting as Meeting} from './__generated__/Ref
 import type {ReflectionGroupHeader_reflectionGroup as ReflectionGroup} from './__generated__/ReflectionGroupHeader_reflectionGroup.graphql';
 import {GROUP, VOTE} from 'universal/utils/constants';
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting';
+import ui from 'universal/styles/ui';
 
 type Props = {
   meeting: Meeting,
   reflectionGroup: ReflectionGroup
 };
 
-const ReflectionCount = styled('span')({});
-
-const GroupHeader = styled('div')({
+const GroupHeader = styled('div')(({phaseType}) => ({
   display: 'flex',
-  marginBottom: 8
-});
+  fontSize: '.875rem',
+  justifyContent: phaseType === VOTE ? 'space-between' : 'center',
+  marginBottom: 8,
+  width: '100%'
+}));
 
 const TitleAndCount = styled('div')({
+  alignItems: 'flex-start',
   display: 'flex',
-  alignItems: 'center'
+  flexShrink: 1,
+  justifyContent: 'center',
+  position: 'relative',
+  width: 'auto'
 });
+
+const ReflectionCount = styled('span')({
+  color: ui.hintFontColor,
+  fontSize: ui.cardThemeLabelFontSize,
+  left: '100%',
+  lineHeight: ui.cardThemeLabelLineHeight,
+  position: 'absolute'
+});
+
+const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
 
 const ReflectionGroupHeader = (props: Props) => {
   const {meeting, reflectionGroup} = props;
   const {reflections} = reflectionGroup;
   const {localPhase: {phaseType}} = meeting;
   return (
-    <GroupHeader>
+    <GroupHeader phaseType={phaseType}>
+      {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
         <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP} />
         <ReflectionCount>{reflections.length}</ReflectionCount>

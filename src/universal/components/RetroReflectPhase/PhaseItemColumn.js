@@ -25,6 +25,8 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
 
+import {LabelHeading} from 'universal/components';
+
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
@@ -48,16 +50,13 @@ const ReflectionsList = styled('div')({
 
 
 const TypeDescription = styled('div')({
-  fontSize: '1.2rem',
-  fontWeight: 'bold'
+  fontSize: '1.25rem',
+  fontStyle: 'italic',
+  fontWeight: 600
 });
 
 const TypeHeader = styled('div')({
-  marginBottom: '2rem'
-});
-
-const TypeTitle = styled('div')({
-  color: ui.labelHeadingColor
+  marginBottom: '1rem'
 });
 
 const ColumnChild = styled('div')(
@@ -71,6 +70,11 @@ const ColumnChild = styled('div')(
 const EntireDropZone = styled('div')({
   flex: 1,
   minWidth: '100%'
+});
+
+const ButtonBlock = styled('div')({
+  padding: '0 0 1.25rem',
+  width: '100%'
 });
 
 type Props = {
@@ -112,7 +116,7 @@ class PhaseItemColumn extends Component<Props, State> {
     return (
       <ColumnWrapper>
         <TypeHeader>
-          <TypeTitle>{title.toUpperCase()}</TypeTitle>
+          <LabelHeading>{title.toUpperCase()}</LabelHeading>
           <TypeDescription>{question}</TypeDescription>
         </TypeHeader>
         <ReflectionsArea>
@@ -174,7 +178,9 @@ class PhaseItemColumn extends Component<Props, State> {
           }
           {phaseType === REFLECT && meetingPhaseType === REFLECT &&
           <ColumnChild>
-            <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+            <ButtonBlock>
+              <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+            </ButtonBlock>
           </ColumnChild>
           }
         </ReflectionsArea>

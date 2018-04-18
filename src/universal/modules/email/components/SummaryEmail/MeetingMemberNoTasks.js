@@ -17,7 +17,7 @@ const textCenter = {
 
 const topBorderStyle = {
   ...textCenter,
-  borderTop: `1px solid ${ui.cardBorderColor}`
+  borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
 };
 
 const emptyOutcomesMessage = {

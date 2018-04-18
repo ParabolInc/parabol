@@ -79,7 +79,7 @@ describe('truncateCard', () => {
 
     // VERIFY
     const outStr = res.getPlainText();
-    const expectedStr = 'this is a string that is exactly 52 chars in leng...';
+    const expectedStr = 'this is a string that is exactly 52 chars in length…';
     expect(outStr).toEqual(expectedStr);
   });
   test('truncates when max chars is exceeded in 5 blocks', async () => {
@@ -93,7 +93,7 @@ describe('truncateCard', () => {
 
     // VERIFY
     const outStr = res.getPlainText();
-    const expectedStr = 'this\nis\na\nstring\nthat is exactly 52 chars in leng...';
+    const expectedStr = 'this\nis\na\nstring\nthat is exactly 52 chars in length…';
     expect(outStr).toEqual(expectedStr);
   });
   test('truncates the full unicode, not half', async () => {
@@ -107,7 +107,7 @@ describe('truncateCard', () => {
 
     // VERIFY
     const outStr = res.getPlainText();
-    const expectedStr = 'this is a string that is exactly 52 chars in leng...';
+    const expectedStr = 'this is a string that is exactly 52 chars in length…';
     expect(outStr).toEqual(expectedStr);
   });
 });

@@ -10,8 +10,9 @@ import type {RetroReflectPhase_team as Team} from './__generated__/RetroReflectP
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import Button from 'universal/components/Button/Button';
+import {Button} from 'universal/components';
 import {REFLECT} from 'universal/utils/constants';
+import ui from 'universal/styles/ui';
 
 type Props = {
   atmosphere: Object,
@@ -22,7 +23,11 @@ type Props = {
 const ReflectPhaseWrapper = styled('div')({
   height: '100%',
   display: 'flex',
+  flex: 1,
   justifyContent: 'space-around',
+  margin: '0 auto',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  overflowY: 'scroll',
   width: '100%'
 });
 
@@ -73,7 +78,7 @@ export default createFragmentContainer(
         ... on RetrospectiveMeeting {
           reflectionGroups {
             id
-          }  
+          }
         }
       }
       meetingSettings(meetingType: $meetingType) {
