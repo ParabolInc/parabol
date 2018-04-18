@@ -86,7 +86,7 @@ const SummaryEmail = (props: Props) => {
     referrerUrl,
     teamDashUrl
   } = props;
-  const {createdAt, meetingNumber, meetingType, team: {teamName}} = meeting;
+  const {createdAt, meetingNumber, meetingType, team: {name: teamName}} = meeting;
   const meetingLabel = meetingTypeToLabel[meetingType];
   return (
     <Layout>
