@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled, {css} from 'react-emotion';
+import ui from 'universal/styles/ui';
 
 const ScrollableRoot = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
+  overflow: 'hidden',
   width: '100%'
 });
 
@@ -18,16 +20,14 @@ const ScrollableInner = css({
 
 const ScrollableShadow = styled('div')(
   {
+    backgroundColor: ui.scrollableBackgroundColor,
     minHeight: '.0625rem',
-    position: 'relative'
+    position: 'relative',
+    zIndex: 200
   },
-  ({positionTop}) => positionTop && ({
-    boxShadow: '0 .0625rem .0625rem rgba(0, 0, 0, 0.2)',
-    top: '-.0625rem'
-  }),
-  ({positionBottom}) => positionBottom && ({
-    boxShadow: '0 -.0625rem .0625rem rgba(0, 0, 0, 0.2)',
-    top: '.0625rem'
+  ({overflown}) => overflown && ({
+    boxShadow: overflown === 'top' ? ui.scrollableTopShadow : ui.scrollableBottomShadow,
+    top: overflown === 'top' ? '-.0625rem' : '.0625rem'
   })
 );
 
@@ -84,11 +84,11 @@ class ScrollableBlock extends Component {
     const {overflownAbove, overflownBelow} = this.state;
     return (
       <ScrollableRoot>
-        {overflownAbove && <ScrollableShadow positionTop />}
+        {overflownAbove && <ScrollableShadow overflown="top" />}
         <div className={ScrollableInner} ref={this.setOverflowContainerElRef}>
           {children}
         </div>
-        {overflownBelow && <ScrollableShadow positionBottom />}
+        {overflownBelow && <ScrollableShadow overflown="bottom" />}
       </ScrollableRoot>
     );
   }

@@ -667,6 +667,9 @@ const ui = {
 
   // Shadows
   shadow,
+  scrollableBackgroundColor: appTheme.palette.mid10a,
+  scrollableBottomShadow: `0 -.125rem .5rem ${makeShadowColor('.4')}`,
+  scrollableTopShadow: `0 .125rem .5rem ${makeShadowColor('.4')}`,
 
   // Tags
   // ---------------------------------------------------------------------------
