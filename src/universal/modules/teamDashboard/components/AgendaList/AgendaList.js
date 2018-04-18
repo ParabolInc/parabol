@@ -9,11 +9,11 @@ import handleDrop from 'universal/dnd/handleDrop';
 import withDragState from 'universal/dnd/withDragState';
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
 import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutation';
-import {overflowTouch} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
+import ScrollableBlock from 'universal/components/ScrollableBlock';
 
 const columnTarget = {
   drop: handleDrop,
@@ -42,9 +42,7 @@ class AgendaList extends Component {
   }
 
   state = {
-    filteredAgendaItems: [],
-    overflownAbove: false,
-    overflownBelow: false
+    filteredAgendaItems: []
   };
 
   componentWillMount() {
@@ -65,29 +63,6 @@ class AgendaList extends Component {
       filteredAgendaItems: contentFilter ? agendaItems.filter(({content}) => content.match(contentFilter)) : agendaItems
     });
   };
-
-  setOverflowContainerElRef = (el) => {
-    this.overflowContainerEl = el;
-    this.setState({
-      overflownAbove: this.isOverflownAbove(),
-      overflownBelow: this.isOverflownBelow()
-    });
-    if (!el) { return; }
-    this.overflowContainerEl.addEventListener('scroll', () => {
-      const overflownAbove = this.isOverflownAbove();
-      const overflownBelow = this.isOverflownBelow();
-      const newState = {};
-      if (this.state.overflownAbove !== overflownAbove) {
-        newState.overflownAbove = overflownAbove;
-      }
-      if (this.state.overflownBelow !== overflownBelow) {
-        newState.overflownBelow = overflownBelow;
-      }
-      if (Object.keys(newState).length) {
-        this.setState(newState);
-      }
-    });
-  }
 
   makeLoadingState() {
     const {styles} = this.props;
@@ -115,46 +90,6 @@ class AgendaList extends Component {
     );
   }
 
-  makeOverflownAboveShadow = () => {
-    return (
-      <div
-        style={{
-          position: 'relative',
-          top: '-1px',
-          boxShadow: '0 1px 1px rgba(0, 0, 0, 0.2)',
-          minHeight: '1px'
-        }}
-      />
-    );
-  };
-
-  makeOverflownBelowShadow = () => {
-    return (
-      <div
-        style={{
-          position: 'relative',
-          top: '1px',
-          boxShadow: '0 -1px 1px rgba(0, 0, 0, 0.2)',
-          minHeight: '1px'
-        }}
-      />
-    );
-  };
-
-  overflowContainerEl = null;
-
-  isOverflownAbove = () => {
-    const {overflowContainerEl} = this;
-    if (!overflowContainerEl) { return false; }
-    return overflowContainerEl.scrollTop > 0;
-  };
-
-  isOverflownBelow = () => {
-    const {overflowContainerEl} = this;
-    if (!overflowContainerEl) { return false; }
-    return overflowContainerEl.scrollHeight - overflowContainerEl.scrollTop > overflowContainerEl.clientHeight;
-  };
-
   removeItemFactory = (agendaId) => () => {
     const {atmosphere} = this.props;
     RemoveAgendaItemMutation(atmosphere, agendaId);
@@ -177,7 +112,7 @@ class AgendaList extends Component {
       styles,
       team
     } = this.props;
-    const {filteredAgendaItems, overflownAbove, overflownBelow} = this.state;
+    const {filteredAgendaItems} = this.state;
     const {agendaItems} = team;
     const canNavigateItems = canNavigate && !disabled;
     dragState.clear();
@@ -185,9 +120,8 @@ class AgendaList extends Component {
     const isLoading = false;
     return connectDropTarget(
       <div className={css(styles.root)}>
-        {overflownAbove && this.makeOverflownAboveShadow()}
         {filteredAgendaItems.length > 0 ?
-          <div className={css(styles.inner)} ref={this.setOverflowContainerElRef}>
+          <ScrollableBlock>
             {filteredAgendaItems.map((item, idx) =>
               (<AgendaItem
                 key={`agendaItem${item.id}`}
@@ -213,12 +147,11 @@ class AgendaList extends Component {
                 }}
               />)
             )}
-          </div> :
+          </ScrollableBlock> :
           <div>
             {isLoading ? this.makeLoadingState() : this.makeEmptyState()}
           </div>
         }
-        {overflownBelow && this.makeOverflownBelowShadow()}
       </div>
     );
   }
@@ -229,11 +162,6 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     maxHeight: 'calc(100% - 3.625rem)',
-    width: '100%'
-  },
-
-  inner: {
-    ...overflowTouch,
     width: '100%'
   },
 
