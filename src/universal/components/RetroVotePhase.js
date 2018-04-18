@@ -7,6 +7,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import {Button} from 'universal/components';
 import ui from 'universal/styles/ui';
+import ScrollableBlock from 'universal/components/ScrollableBlock';
 
 type Props = {|
   atmosphere: Object,
@@ -17,12 +18,12 @@ type Props = {|
 
 const VotePhaseWrapper = styled('div')({
   display: 'flex',
-  flex: 1,
-  height: '100%',
+  // flex: 1,
+  // height: '100%',
   justifyContent: 'space-around',
   margin: '0 auto',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'scroll',
+  // overflowY: 'auto',
   width: '100%'
 });
 
@@ -34,11 +35,13 @@ const RetroVotePhase = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId;
   return (
     <React.Fragment>
-      <VotePhaseWrapper>
-        {phaseItems.map((phaseItem) =>
-          <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-        )}
-      </VotePhaseWrapper>
+      <ScrollableBlock>
+        <VotePhaseWrapper>
+          {phaseItems.map((phaseItem) =>
+            <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+          )}
+        </VotePhaseWrapper>
+      </ScrollableBlock>
       {isFacilitating &&
       <MeetingControlBar>
         <Button

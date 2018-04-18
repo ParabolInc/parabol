@@ -15,6 +15,7 @@ type Props = {|
 
 const SidebarPhaseItemChild = styled('div')({
   display: 'flex',
+  flex: 1,
   flexDirection: 'column'
 });
 
@@ -53,6 +54,11 @@ const CheckIcon = styled(StyledFontAwesome)({
   color: ui.palette.mid
 });
 
+const ScrollableNavList = styled('div')({
+  flex: 1,
+  overflowY: 'auto'
+});
+
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
   const {localPhase} = newMeeting || {};
@@ -63,22 +69,24 @@ const RetroSidebarDiscussSection = (props: Props) => {
       <MeetingSidebarLabelBlock>
         <LabelHeading>{'Upvoted Topics'}</LabelHeading>
       </MeetingSidebarLabelBlock>
-      {stages.map((stage, idx) => {
-        const {reflectionGroup} = stage;
-        if (!reflectionGroup) return null;
-        const {title, voteCount} = reflectionGroup;
-        return (
-          <TopicRow key={stage.id} onClick={() => gotoStageId(stage.id)}>
-            <IndexBlock>{`${idx + 1}.`}</IndexBlock>
-            <Title>{title}</Title>
-            <VoteTally>
-              <CheckIcon name="check" />
-              {' x '}
-              {voteCount}
-            </VoteTally>
-          </TopicRow>
-        );
-      })}
+      <ScrollableNavList>
+        {stages.map((stage, idx) => {
+          const {reflectionGroup} = stage;
+          if (!reflectionGroup) return null;
+          const {title, voteCount} = reflectionGroup;
+          return (
+            <TopicRow key={stage.id} onClick={() => gotoStageId(stage.id)}>
+              <IndexBlock>{`${idx + 1}.`}</IndexBlock>
+              <Title>{title}</Title>
+              <VoteTally>
+                <CheckIcon name="check" />
+                {' x '}
+                {voteCount}
+              </VoteTally>
+            </TopicRow>
+          );
+        })}
+      </ScrollableNavList>
     </SidebarPhaseItemChild>
   );
 };

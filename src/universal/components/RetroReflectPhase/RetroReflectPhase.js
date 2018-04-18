@@ -13,6 +13,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {Button} from 'universal/components';
 import {REFLECT} from 'universal/utils/constants';
 import ui from 'universal/styles/ui';
+import ScrollableBlock from 'universal/components/ScrollableBlock';
 
 type Props = {
   atmosphere: Object,
@@ -21,13 +22,13 @@ type Props = {
 };
 
 const ReflectPhaseWrapper = styled('div')({
-  height: '100%',
+  // height: '100%',
   display: 'flex',
-  flex: 1,
+  // flex: 1,
   justifyContent: 'space-around',
   margin: '0 auto',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'scroll',
+  // overflowY: 'auto',
   width: '100%'
 });
 
@@ -39,12 +40,14 @@ const RetroReflectPhase = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId;
   return (
     <React.Fragment>
-      <ReflectPhaseWrapper>
-        {phaseType === REFLECT &&
-        phaseItems.map((phaseItem) =>
-          <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-        )}
-      </ReflectPhaseWrapper>
+      <ScrollableBlock>
+        <ReflectPhaseWrapper>
+          {phaseType === REFLECT &&
+          phaseItems.map((phaseItem) =>
+            <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+          )}
+        </ReflectPhaseWrapper>
+      </ScrollableBlock>
       {isFacilitating &&
       <MeetingControlBar>
         <Button

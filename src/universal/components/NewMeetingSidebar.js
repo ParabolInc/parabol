@@ -11,16 +11,18 @@ import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 import LogoBlock from 'universal/components/LogoBlock/LogoBlock';
 import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
+import ScrollableBlock from 'universal/components/ScrollableBlock';
 import makeHref from 'universal/utils/makeHref';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
-const Nav = styled('nav')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  width: '100%'
-});
+// const Nav = styled('nav')({
+//   display: 'flex',
+//   flex: 1,
+//   flexDirection: 'column',
+//   overflowY: 'auto',
+//   width: '100%'
+// });
 
 const SidebarHeader = styled('div')({
   paddingLeft: '3.75rem',
@@ -75,9 +77,9 @@ const NewMeetingSidebar = (props: Props) => {
       <MeetingSidebarLabelBlock>
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
       </MeetingSidebarLabelBlock>
-      <Nav>
+      <ScrollableBlock>
         <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />
-      </Nav>
+      </ScrollableBlock>
       <LogoBlock variant="primary" />
     </SidebarParent>
   );

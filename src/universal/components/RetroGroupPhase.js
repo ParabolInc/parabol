@@ -17,6 +17,7 @@ import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import {Button} from 'universal/components';
 import ui from 'universal/styles/ui';
+import ScrollableBlock from 'universal/components/ScrollableBlock';
 
 const {Component} = React;
 
@@ -29,12 +30,12 @@ type Props = {
 
 const GroupPhaseWrapper = styled('div')({
   display: 'flex',
-  flex: 1,
-  height: '100%',
+  // flex: 1,
+  // height: '100%',
   justifyContent: 'space-around',
   margin: '0 auto',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'scroll',
+  // overflowY: 'auto',
   width: '100%'
 });
 
@@ -177,16 +178,18 @@ class RetroGroupPhase extends Component<Props> {
     const isFacilitating = facilitatorUserId === viewerId;
     return (
       <React.Fragment>
-        <DragDropContext
-          onDragStart={this.onDragStart}
-          onDragEnd={this.onDragEnd}
-        >
-          <GroupPhaseWrapper>
-            {phaseItems.map((phaseItem, idx) =>
-              <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-            )}
-          </GroupPhaseWrapper>
-        </DragDropContext>
+        <ScrollableBlock>
+          <DragDropContext
+            onDragStart={this.onDragStart}
+            onDragEnd={this.onDragEnd}
+          >
+            <GroupPhaseWrapper>
+              {phaseItems.map((phaseItem, idx) =>
+                <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+              )}
+            </GroupPhaseWrapper>
+          </DragDropContext>
+        </ScrollableBlock>
         {isFacilitating &&
         <MeetingControlBar>
           <Button
