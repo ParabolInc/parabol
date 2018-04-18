@@ -15,7 +15,7 @@ type Props = {|
 
 const NewMeetingSummary = (props: Props) => {
   const {viewer: {newMeeting}} = props;
-  const {meetingNumber, meetingType, team: {teamId, teamName}} = newMeeting;
+  const {meetingNumber, meetingType, team: {id: teamId, name: teamName}} = newMeeting;
   const meetingLabel = meetingTypeToLabel[meetingType];
   const title = `${meetingLabel} Meeting #${meetingNumber} for ${teamName}`;
   const meetingUrl = makeHref(`/meeting/${teamId}`);
@@ -64,8 +64,8 @@ export default createFragmentContainer(
         meetingNumber
         meetingType
         team {
-          teamId: id
-          teamName: name
+          id
+          name
         }
         ... on RetrospectiveMeeting {
           reflectionGroups(sortBy: voteCount) {
