@@ -4,17 +4,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.6.0 2018-Apt-18
+### Added
+- First end-to-end feature complete retrospective features
+- Retrospective meetings now masked behind user feature flag, not server feature flag
+- Ability to add user feature flags to emails matching regex via addFeatureFlag mutation
+- First pass at styling the retrospective meeting
+- New seed team ids following Auth0 dev/staging account "bankruptcy"  
+
+### Fixed
+- #1997 fixed failure upon new account creation, Auth0 API exception
+
+### Removed
+- Reliance on Auth0 client API; now using Auth0 Management API exclusively
+
+
 ## v1.5.3 2018-Apr-12
 ### Fixed
 - Possible login fix with extra logging
+
 
 ## v1.5.2 2018-Apr-12
 ### Added
 - Error logging to login mutation
 
+
 ## v1.5.1 2018-Apr-12
 ### Fixed
 - Regression in Draft-js #1993
+
 
 ## v1.5.0 2018-Apr-11
 ### Added
@@ -26,6 +44,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Fixed
 - Segment identify logic #1901
 
+
 ## v1.4.0 2018-Apr-04
 ### Added
 - More check-in questions
@@ -34,6 +53,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 - Clear filter after leaving team dashboard #1871
 - Make dash filter menus keyboard accessible
 - Use react-emotion for global CSS styles
+
 
 ## v1.3.0 2018-Mar-28
 ### Added
