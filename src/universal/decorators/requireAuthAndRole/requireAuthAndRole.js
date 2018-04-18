@@ -22,6 +22,7 @@ export default ({
 } = {}) => (ComposedComponent) => {
   class RequiredAuthAndRole extends Component {
     static propTypes = {
+      atmosphere: PropTypes.object.isRequired,
       dispatch: PropTypes.func.isRequired,
       history: PropTypes.object.isRequired,
       location: PropTypes.object.isRequired

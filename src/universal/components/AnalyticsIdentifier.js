@@ -3,12 +3,12 @@
  * Currently, we only use this in the dashboard views, not the meeting views. That's probably OK for now, but not perfect.
  */
 import PropTypes from 'prop-types';
-import React, {Component} from 'react';
+import {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {selectSegmentTraits} from 'universal/redux/segmentActions';
 import raven from 'raven-js';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
-import {AnalyticsIdentifier_viewer as Viewer} from './__generated__/AnalyticsIdentifier_viewer.graphql';
+import type {AnalyticsIdentifier_viewer as Viewer} from './__generated__/AnalyticsIdentifier_viewer.graphql';
 
 type Props = {
   viewer: Viewer

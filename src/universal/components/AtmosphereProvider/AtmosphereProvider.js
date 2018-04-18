@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {Children, Component} from 'react';
+import {Children, Component} from 'react';
 import Atmosphere from 'universal/Atmosphere';
 
 let atmosphere = new Atmosphere();
@@ -19,17 +19,17 @@ class AtmosphereProvider extends Component {
     children: PropTypes.element.isRequired
   };
 
-  getChildContext() {
-    return {
-      atmosphere
-    };
-  }
-
   constructor(props) {
     super(props);
     if (__CLIENT__) {
       atmosphere.getAuthToken(window);
     }
+  }
+
+  getChildContext() {
+    return {
+      atmosphere
+    };
   }
 
   render() {

@@ -24,7 +24,8 @@ export default class Impersonate extends Component {
     dispatch: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     newUserId: PropTypes.string,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired
   };
 
   componentWillMount() {

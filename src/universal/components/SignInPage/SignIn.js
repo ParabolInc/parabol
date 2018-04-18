@@ -48,7 +48,7 @@ const SignIn = (props: Props) => {
       }
       <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
     </Fragment>
-  )
+  );
 };
 
 export default withRouter(SignIn);

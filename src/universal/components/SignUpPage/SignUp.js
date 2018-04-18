@@ -74,6 +74,6 @@ const SignUp = (props: Props) => {
       </PrivacyFooter>
     </Fragment>
   );
-}
+};
 
 export default withRouter(SignUp);

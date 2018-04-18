@@ -1,22 +1,19 @@
 // @flow
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import type {Location} from 'react-router-dom';
+import * as React from 'react';
+import type {Location, RouterHistory} from 'react-router-dom';
 import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
+const {Component} = React;
+
 type Props = {
   atmosphere: Object,
+  history: RouterHistory,
   location: Location,
 }
 
-const autoLogin = (ComposedComponent) => {
+const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
   class AutoLogin extends Component<Props> {
-    static propTypes = {
-      history: PropTypes.object.isRequired,
-      location: PropTypes.object.isRequired
-    };
-
     constructor(props) {
       super(props);
       const {atmosphere: {authObj}, history, location: {search}} = props;
@@ -33,11 +30,14 @@ const autoLogin = (ComposedComponent) => {
       }
     }
 
+    redir: boolean;
+
     render() {
       if (this.redir) return null;
-      return <ComposedComponent {...this.props} />
+      return <ComposedComponent {...this.props} />;
     }
   }
+
   return withAtmosphere(withRouter(AutoLogin));
 };
 
