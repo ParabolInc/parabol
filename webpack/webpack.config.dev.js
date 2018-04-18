@@ -84,18 +84,8 @@ export default {
       {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'},
       {
         test: /\.js$/,
-        loaders: ['react-hot-loader/webpack', 'babel-loader?cacheDirectory'],
+        loaders: ['babel-loader?cacheDirectory'],
         include: clientInclude
-      },
-      {
-        test: /auth0-lock\/.*\.js$/,
-        loaders: [
-          'transform-loader/cacheable?brfs',
-          'transform-loader/cacheable?packageify'
-        ]
-      }, {
-        test: /auth0-lock\/.*\.ejs$/,
-        loader: 'transform-loader/cacheable?ejsify'
       },
       {test: /\.css$/, loader: 'style-loader!css-loader'}
     ]

@@ -9,7 +9,6 @@ module.exports = {
     vendors: [
       'aphrodite-local-styles',
       'auth0-js',
-      'auth0-lock',
       'core-js',
       'email-addresses',
       'graphql',
@@ -53,16 +52,6 @@ module.exports = {
   module: {
     loaders: [
       {test: /\.flow$/, loader: 'ignore-loader'},
-      {
-        test: /auth0-lock\/.*\.js$/,
-        loaders: [
-          'transform-loader/cacheable?brfs',
-          'transform-loader/cacheable?packageify'
-        ]
-      }, {
-        test: /auth0-lock\/.*\.ejs$/,
-        loader: 'transform-loader/cacheable?ejsify'
-      }
     ]
   }
 };
