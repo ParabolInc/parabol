@@ -23,7 +23,3 @@ extend type RetroReflectionGroup {
 extend type RetroPhaseItem {
   isDropZoneEnabled: Boolean
 }
-
-extend type User {
-  authToken: AuthToken
-}

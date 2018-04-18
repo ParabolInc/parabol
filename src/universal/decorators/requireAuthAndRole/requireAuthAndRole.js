@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {Redirect} from 'react-router-dom';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
-import {QueryRenderer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {connect} from 'react-redux';
 
@@ -16,19 +14,8 @@ const unauthenticatedDefault = {
   message: 'Hey! You haven’t signed in yet. Taking you to the sign in page.'
 };
 
-const query = graphql`
-  query requireAuthAndRoleQuery {
-    viewer {
-      viewerId: id
-      authToken {
-        tokenRole: rol
-      }
-    }
-  }
-`;
-
-export default (role, {
-  /* optional named options: */
+export default ({
+  role,
   silent = false,
   unauthorized = unauthorizedDefault,
   unauthenticated = unauthenticatedDefault
@@ -37,38 +24,33 @@ export default (role, {
     static propTypes = {
       dispatch: PropTypes.func.isRequired,
       history: PropTypes.object.isRequired,
-      location: PropTypes.object.isRequired,
+      location: PropTypes.object.isRequired
     };
 
+    constructor(props) {
+      super(props);
+      const {atmosphere: {authObj}, dispatch, history, location: {pathname}} = props;
+      if (authObj) {
+        const {rol} = authObj;
+        if (role && role !== rol) {
+          if (!silent) {
+            setTimeout(() => dispatch(showError(unauthorized)));
+          }
+          history.push('/');
+          this.redir = true;
+        }
+      } else {
+        if (!silent) {
+          setTimeout(() => dispatch(showError(unauthenticated)));
+        }
+        history.push({pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`});
+        this.redir = true;
+      }
+    }
+
     render() {
-      const {atmosphere, dispatch} = this.props;
-      atmosphere.setNet('local');
-      return (
-        <QueryRenderer
-          environment={atmosphere}
-          query={query}
-          variables={{}}
-          render={({props}) => {
-            const {location: {pathname}} = this.props;
-            const {viewer} = props;
-            if (viewer) {
-              const {authToken: {tokenRole}} = viewer;
-              if (role && role !== tokenRole) {
-                if (!silent) {
-                  setTimeout(() => dispatch(showError(unauthorized)));
-                }
-                return <Redirect to="/" />
-              }
-            } else {
-              if (!silent) {
-                setTimeout(() => dispatch(showError(unauthenticated)));
-              }
-              return <Redirect to={{pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`}} />;
-            }
-            return <ComposedComponent {...this.props} />;
-          }}
-        />
-      )
+      if (this.redir) return null;
+      return <ComposedComponent {...this.props} />;
     }
   }
 

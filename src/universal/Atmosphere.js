@@ -6,8 +6,6 @@ import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscr
 import EventEmitter from 'eventemitter3';
 import SafeSubscriptionClient from 'universal/utils/SafeSubscriptionClient';
 import handlerProvider from 'universal/utils/relay/handlerProvider';
-import createProxyRecord from 'universal/utils/relay/createProxyRecord';
-import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err);
@@ -45,9 +43,9 @@ export default class Atmosphere extends Environment {
 
     // now atmosphere
     this.authToken = undefined;
+    this.authObj = undefined;
     this.subscriptionClient = undefined;
     this.networks = {
-      local: Network.create(this.fetchLocal),
       http: this._network,
       socket: Network.create(this.fetchWS, this.socketSubscribe)
     };
@@ -149,27 +147,6 @@ export default class Atmosphere extends Environment {
     return res.json();
   };
 
-  fetchLocal = () => {
-    const authToken = window.localStorage.getItem(APP_TOKEN_KEY);
-    this.setNet('http');
-    if (!authToken) {
-      return {data: {viewer: null}};
-    }
-    const authObj = jwtDecode(authToken);
-    const res = {
-      data: {
-        viewer: {
-          id: authObj.sub,
-          authToken: {
-            id: 'AuthToken',
-            ...authObj
-          }
-        }
-      }
-    };
-    return res;
-  };
-
   setSocket = () => {
     this.querySubscriptions = [];
     this.subscriptions = {};
@@ -184,33 +161,16 @@ export default class Atmosphere extends Environment {
 
   setAuthToken = (authToken) => {
     this.authToken = authToken;
-    if (authToken) {
-      const authObj = jwtDecode(authToken);
-      const {sub: viewerId} = authObj;
+    if (!authToken) return;
+    this.authObj = jwtDecode(authToken);
+    const {exp, sub: viewerId} = this.authObj;
+    if (exp < (Date.now() / 1000)) {
+      this.authToken = null;
+      this.authObj = null;
+      window.localStorage.removeItem(APP_TOKEN_KEY);
+    } else {
       this.viewerId = viewerId;
       window.localStorage.setItem(APP_TOKEN_KEY, authToken);
-      // same as commitLocalUpdate
-      this.commitUpdate((store) => {
-        const viewer = store.get(viewerId) || createProxyRecord(store, 'User', {id: viewerId});
-        store.getRoot().setLinkedRecord(viewer, 'viewer');
-        const authTokenProxy = store.get('AuthToken');
-        const nextAuthToken = {
-          id: 'AuthToken',
-          ...authObj
-        };
-        if (authTokenProxy) {
-          updateProxyRecord(authTokenProxy, nextAuthToken)
-        } else {
-          const nextAuthTokenProxy = createProxyRecord(store, 'AuthToken', nextAuthToken);
-          viewer.setLinkedRecord(nextAuthTokenProxy, 'authToken');
-        }
-      });
-      // this._store.retain({
-      //   dataID: 'AuthToken',
-      //   node: {selections: []},
-      //   variables: {}
-      // });
-
       // deprecated! will be removed soon
       this.userId = viewerId;
     }

@@ -48,7 +48,7 @@ const styleThunk = () => ({
 const loadStylesCb = () => ({stylesLoaded: true});
 
 @withStyles(styleThunk)
-@requireAuthAndRole('su')
+@requireAuthAndRole({role: 'su'})
 @withAsync(undefined, {[graphiqlStylesheet]: loadStylesCb})
 export default class Graphiql extends Component {
   static propTypes = {

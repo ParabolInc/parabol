@@ -78,7 +78,8 @@ class SignInPage extends Component<Props, State> {
   };
 
   appSignIn = (response: AuthResponse): void => {
-    signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
+    const {atmosphere, dispatch, history, location} = this.props;
+    signinAndUpdateToken(atmosphere, dispatch, history, location, response.idToken);
   };
 
   webAuth = getWebAuth();

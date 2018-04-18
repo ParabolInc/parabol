@@ -2,26 +2,13 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import type {Location} from 'react-router-dom';
-import {Redirect, withRouter} from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {QueryRenderer} from 'react-relay';
 
 type Props = {
   atmosphere: Object,
   location: Location,
-  viewer: Viewer
 }
-
-const query = graphql`
-  query autoLoginQuery {
-    viewer {
-      id
-      authToken {
-        tms
-      }
-    }
-  }
-`;
 
 const autoLogin = (ComposedComponent) => {
   class AutoLogin extends Component<Props> {
@@ -30,31 +17,27 @@ const autoLogin = (ComposedComponent) => {
       location: PropTypes.object.isRequired
     };
 
+    constructor(props) {
+      super(props);
+      const {atmosphere: {authObj}, history, location: {search}} = props;
+      if (authObj) {
+        const isNew = !authObj.tms;
+        if (isNew) {
+          history.push('/welcome');
+          this.redir = true;
+        } else {
+          const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me';
+          history.push(nextUrl);
+          this.redir = true;
+        }
+      }
+    }
+
     render() {
-      const {atmosphere} = this.props;
-      atmosphere.setNet('local');
-      return (
-        <QueryRenderer
-          environment={atmosphere}
-          query={query}
-          variables={{}}
-          render={({props}) => {
-            const {location: {search}} = this.props;
-            const {viewer} = props;
-            if (viewer) {
-              const {authToken: {tms}} = viewer;
-              const isNew = !tms;
-              if (isNew) return <Redirect to="/welcome" />;
-              const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me';
-              return <Redirect to={nextUrl} />;
-            }
-            return <ComposedComponent {...this.props} />
-          }}
-        />
-      )
+      if (this.redir) return null;
+      return <ComposedComponent {...this.props} />
     }
   }
-
   return withAtmosphere(withRouter(AutoLogin));
 };
 

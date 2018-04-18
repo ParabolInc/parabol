@@ -2,7 +2,7 @@ import LoginMutation from 'universal/mutations/LoginMutation';
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 
-export default async function signinAndUpdateToken(atmosphere, dispatch, profile, auth0Token) {
+export default async function signinAndUpdateToken(atmosphere, dispatch, history, location, auth0Token) {
   atmosphere.setAuthToken(auth0Token);
   const onError = (err) => {
     console.error('Error logging in', err);
@@ -15,6 +15,8 @@ export default async function signinAndUpdateToken(atmosphere, dispatch, profile
     }
     const {login: {authToken}} = res;
     atmosphere.setAuthToken(authToken);
+    const nextUrl = new URLSearchParams(location.search).get('redirectTo') || '/me';
+    history.push(nextUrl);
     SendClientSegmentEventMutation(atmosphere, 'User Login');
   };
 
