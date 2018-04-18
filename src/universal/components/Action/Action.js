@@ -49,7 +49,7 @@ const Action = () => {
         <AsyncRoute isPrivate path="/welcome" mod={welcome} />
         <AsyncRoute path="/admin/graphql" mod={graphql} />
         <AsyncRoute path="/admin/impersonate/:newUserId" mod={impersonate} />
-        <AsyncRoute path="/invitation/:id" mod={invitation} />
+        <AsyncRoute isPrivate path="/invitation/:inviteToken" mod={invitation} />
         <AsyncRoute mod={signout} />
         <AsyncRoute mod={notFound} />
       </Switch>
