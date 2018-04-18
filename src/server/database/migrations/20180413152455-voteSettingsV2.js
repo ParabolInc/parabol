@@ -1,4 +1,8 @@
-import {RETROSPECTIVE} from 'universal/utils/constants';
+import {
+  RETROSPECTIVE,
+  RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
+  RETROSPECTIVE_TOTAL_VOTES_DEFAULT
+} from 'universal/utils/constants';
 
 // the first voteSettings did not take (possible merge conflict?) trying again
 exports.up = async (r) => {
@@ -20,8 +24,8 @@ exports.up = async (r) => {
     await r.table('MeetingSettings')
       .filter({meetingType: RETROSPECTIVE})
       .update({
-        totalVotes: 5,
-        maxVotesPerGroup: 3
+        totalVotes: RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
+        maxVotesPerGroup: RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
       });
   } catch (e) {
     // noop

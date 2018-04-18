@@ -12,6 +12,8 @@ import {
   LOBBY,
   RETRO_PHASE_ITEM,
   RETROSPECTIVE,
+  RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
+  RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
   REFLECT,
   UPDATES,
   VOTE
@@ -48,7 +50,9 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
       id: shortid.generate(),
       meetingType: RETROSPECTIVE,
       teamId,
-      phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS]
+      phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS],
+      totalVotes: RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
+      maxVotesPerGroup: RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
     },
     {
       id: shortid.generate(),
