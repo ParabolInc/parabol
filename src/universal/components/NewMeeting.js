@@ -63,8 +63,11 @@ const MeetingAreaHeader = styled('div')({
   justifyContent: 'space-between',
   margin: 0,
   maxWidth: '100%',
-  padding: '0 1rem 2rem',
-  width: '100%'
+  padding: '0 1rem 1rem',
+  width: '100%',
+  [ui.breakpoint.wide]: {
+    padding: '0 1rem 2rem'
+  }
 });
 
 const MeetingHelpBlock = styled('div')(({isFacilitating}) => ({
