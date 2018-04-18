@@ -62,7 +62,6 @@ const ReflectionSection = styled('div')({
   margin: '0 auto',
   maxHeight: '35%',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'auto',
   width: '100%',
 
   [ui.breakpoint.wide]: {
@@ -92,10 +91,8 @@ const ReflectionGridBlock = styled('div')({
 });
 
 const TaskCardBlock = styled('div')({
-  flex: 1,
   margin: '0 auto',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'auto',
   padding: '1rem 2rem',
   width: '100%',
 
