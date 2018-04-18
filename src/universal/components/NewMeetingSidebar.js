@@ -16,14 +16,6 @@ import makeHref from 'universal/utils/makeHref';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
-// const Nav = styled('nav')({
-//   display: 'flex',
-//   flex: 1,
-//   flexDirection: 'column',
-//   overflowY: 'auto',
-//   width: '100%'
-// });
-
 const SidebarHeader = styled('div')({
   paddingLeft: '3.75rem',
   position: 'relative'

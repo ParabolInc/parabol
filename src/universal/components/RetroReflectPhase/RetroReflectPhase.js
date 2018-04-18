@@ -4,7 +4,6 @@
  * @flow
  */
 import * as React from 'react';
-import styled from 'react-emotion';
 import {createFragmentContainer} from 'react-relay';
 import type {RetroReflectPhase_team as Team} from './__generated__/RetroReflectPhase_team.graphql';
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
@@ -12,25 +11,14 @@ import MeetingControlBar from 'universal/modules/meeting/components/MeetingContr
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {Button} from 'universal/components';
 import {REFLECT} from 'universal/utils/constants';
-import ui from 'universal/styles/ui';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
+import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
 
 type Props = {
   atmosphere: Object,
   gotoNext: () => void,
   team: Team,
 };
-
-const ReflectPhaseWrapper = styled('div')({
-  // height: '100%',
-  display: 'flex',
-  // flex: 1,
-  justifyContent: 'space-around',
-  margin: '0 auto',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
-  // overflowY: 'auto',
-  width: '100%'
-});
 
 const RetroReflectPhase = (props: Props) => {
   const {atmosphere: {viewerId}, team, gotoNext} = props;
@@ -41,12 +29,12 @@ const RetroReflectPhase = (props: Props) => {
   return (
     <React.Fragment>
       <ScrollableBlock>
-        <ReflectPhaseWrapper>
+        <MeetingPhaseWrapper>
           {phaseType === REFLECT &&
           phaseItems.map((phaseItem) =>
             <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
           )}
-        </ReflectPhaseWrapper>
+        </MeetingPhaseWrapper>
       </ScrollableBlock>
       {isFacilitating &&
       <MeetingControlBar>

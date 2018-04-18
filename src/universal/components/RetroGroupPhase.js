@@ -4,7 +4,6 @@
  * @flow
  */
 import * as React from 'react';
-import styled from 'react-emotion';
 // import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
@@ -16,8 +15,8 @@ import dndNoise from 'universal/utils/dndNoise';
 import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import {Button} from 'universal/components';
-import ui from 'universal/styles/ui';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
+import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
 
 const {Component} = React;
 
@@ -27,17 +26,6 @@ type Props = {
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object,
 };
-
-const GroupPhaseWrapper = styled('div')({
-  display: 'flex',
-  // flex: 1,
-  // height: '100%',
-  justifyContent: 'space-around',
-  margin: '0 auto',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
-  // overflowY: 'auto',
-  width: '100%'
-});
 
 const getSortOrder = (index, children, inSameGroup) => {
   if (index === 0) return children[0] ? children[0].sortOrder - 1 : 0;
@@ -183,11 +171,11 @@ class RetroGroupPhase extends Component<Props> {
             onDragStart={this.onDragStart}
             onDragEnd={this.onDragEnd}
           >
-            <GroupPhaseWrapper>
+            <MeetingPhaseWrapper>
               {phaseItems.map((phaseItem, idx) =>
                 <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
               )}
-            </GroupPhaseWrapper>
+            </MeetingPhaseWrapper>
           </DragDropContext>
         </ScrollableBlock>
         {isFacilitating &&
