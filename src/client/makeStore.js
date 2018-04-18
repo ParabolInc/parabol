@@ -8,7 +8,7 @@ import makeReducer from 'universal/redux/makeReducer';
 import {APP_REDUX_KEY, APP_VERSION_KEY} from 'universal/utils/constants';
 
 const storageWhitelist = (type) => {
-  const whitelistPrefixes = ['@@auth', '@@root'];
+  const whitelistPrefixes = ['@@auth', '@@invitation', '@@root'];
   for (let i = 0; i < whitelistPrefixes.length; i++) {
     const prefix = whitelistPrefixes[i];
     if (type.indexOf(prefix) !== -1) {

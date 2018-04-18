@@ -7,6 +7,7 @@ import makeRootReducer from 'universal/redux/rootDuck';
 import menuReducer from 'universal/modules/menu/ducks/menuDuck';
 import dashReducer from 'universal/modules/dashboard/ducks/dashDuck';
 import auth, {DEFAULT_AUTH_REDUCER_NAME} from './authDuck';
+import invitationReducer, {DEFAULT_INVITATION_REDUCER_NAME} from './invitationDuck';
 
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
@@ -33,8 +34,9 @@ const formPlugin = formPluginFactory();
 
 const appReducers = {
   [DEFAULT_AUTH_REDUCER_NAME]: auth,
-  form: formReducer.plugin(formPlugin),
+  [DEFAULT_INVITATION_REDUCER_NAME]: invitationReducer,
   dash: dashReducer,
+  form: formReducer.plugin(formPlugin),
   menu: menuReducer,
   toasts
 };

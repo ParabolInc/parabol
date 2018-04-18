@@ -4,13 +4,16 @@
  * @flow
  */
 import type {StyledComponent, Tag} from 'react-emotion';
+import type {Location} from 'react-router-dom';
+
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
-import {Link} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 import appTheme from 'universal/styles/theme/appTheme';
 
 type Props = {
   heading: string,
+  location: Location,
   secondaryAction: {
     displayName: string,
     relativeUrl: string
@@ -52,11 +55,11 @@ const AuthHeader = (props: Props) => (
     <H1>{props.heading}</H1>
     <H2>
       {'or '}
-      <BrandedLink to={props.secondaryAction.relativeUrl}>
+      <BrandedLink to={{...props.location, pathname: props.secondaryAction.relativeUrl}}>
         {props.secondaryAction.displayName}
       </BrandedLink>
     </H2>
   </Fragment>
 );
 
-export default AuthHeader;
+export default withRouter(AuthHeader);
