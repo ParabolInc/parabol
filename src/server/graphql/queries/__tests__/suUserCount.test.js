@@ -8,6 +8,7 @@ import shortid from 'shortid';
 console.error = jest.fn();
 
 const defaultResolverArgs = {
+  ignoreEmailRegex: '',
   includeInactive: false,
   tier: PRO
 };

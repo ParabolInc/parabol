@@ -7,7 +7,9 @@ import {PERSONAL, PRO} from 'universal/utils/constants';
 console.error = jest.fn();
 
 const defaultResolverArgs = {
+  ignoreEmailRegex: '',
   includeInactive: false,
+  minOrgSize: 1,
   tier: PRO
 };
 
