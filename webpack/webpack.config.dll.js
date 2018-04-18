@@ -51,7 +51,7 @@ module.exports = {
   ],
   module: {
     loaders: [
-      {test: /\.flow$/, loader: 'ignore-loader'},
+      {test: /\.flow$/, loader: 'ignore-loader'}
     ]
   }
 };

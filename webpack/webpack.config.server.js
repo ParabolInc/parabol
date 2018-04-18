@@ -27,7 +27,7 @@ export default {
   // ignore anything that throws warnings & doesn't affect the view
   externals: [
     'isomorphic-fetch',
-    'es6-promisify',
+    'es6-promisify'
   ],
   resolve: {
     extensions: ['.js'],
