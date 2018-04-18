@@ -1,12 +1,12 @@
 // @flow
 import * as React from 'react';
-import styled from 'react-emotion';
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import {Button} from 'universal/components';
-import ui from 'universal/styles/ui';
+import ScrollableBlock from 'universal/components/ScrollableBlock';
+import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
 
 type Props = {|
   atmosphere: Object,
@@ -14,17 +14,6 @@ type Props = {|
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object,
 |};
-
-const VotePhaseWrapper = styled('div')({
-  display: 'flex',
-  flex: 1,
-  height: '100%',
-  justifyContent: 'space-around',
-  margin: '0 auto',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'scroll',
-  width: '100%'
-});
 
 const RetroVotePhase = (props: Props) => {
   const {atmosphere: {viewerId}, gotoNext, team} = props;
@@ -34,11 +23,13 @@ const RetroVotePhase = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId;
   return (
     <React.Fragment>
-      <VotePhaseWrapper>
-        {phaseItems.map((phaseItem) =>
-          <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-        )}
-      </VotePhaseWrapper>
+      <ScrollableBlock>
+        <MeetingPhaseWrapper>
+          {phaseItems.map((phaseItem) =>
+            <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+          )}
+        </MeetingPhaseWrapper>
+      </ScrollableBlock>
       {isFacilitating &&
       <MeetingControlBar>
         <Button

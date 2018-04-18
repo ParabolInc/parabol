@@ -957,8 +957,6 @@ export type SlackIntegration = {
 export type OrgTierEnum = "personal" | "pro" | "enterprise";
 
 export type SuProOrgInfo = {
-  /** The count of active users within the org */
-  activeCount: ?number;
   /** The PRO organization */
   organization: ?Organization;
   /** The id of the Organization */

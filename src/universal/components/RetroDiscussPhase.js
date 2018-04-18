@@ -14,6 +14,7 @@ import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation';
 import {withRouter} from 'react-router-dom';
 import type {RouterHistory} from 'react-router-dom';
+import ScrollableBlock from 'universal/components/ScrollableBlock';
 
 type Props = {|
   atmosphere: Object,
@@ -55,12 +56,12 @@ const PhaseWrapper = styled('div')({
 
 const ReflectionSection = styled('div')({
   borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
+  display: 'flex',
+  flexDirection: 'column',
   height: '100%',
   margin: '0 auto',
   maxHeight: '35%',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'scroll',
-  padding: '0 1.375rem .875rem 2.5rem',
   width: '100%',
 
   [ui.breakpoint.wide]: {
@@ -76,6 +77,10 @@ const ReflectionSection = styled('div')({
   }
 });
 
+const ReflectionSectionInner = styled('div')({
+  padding: '0 1.375rem .875rem 2.5rem'
+});
+
 const ReflectionGrid = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, calc(100% / 3))'
@@ -86,10 +91,8 @@ const ReflectionGridBlock = styled('div')({
 });
 
 const TaskCardBlock = styled('div')({
-  flex: 1,
   margin: '0 auto',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
-  overflowY: 'scroll',
   padding: '1rem 2rem',
   width: '100%',
 
@@ -122,30 +125,36 @@ const RetroDiscussPhase = (props: Props) => {
     <React.Fragment>
       <PhaseWrapper>
         <ReflectionSection>
-          <DiscussHeader>
-            <TopicHeading><span>{'“'}</span>{`${title}”`}</TopicHeading>
-            <CheckColumn>
-              {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.mid} />)}
-            </CheckColumn>
-          </DiscussHeader>
-          <ReflectionGrid>
-            {reflections.map((reflection) => {
-              return (
-                <ReflectionGridBlock key={`GridBlock-${reflection.id}`}>
-                  <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
-                </ReflectionGridBlock>
-              );
-            })}
-          </ReflectionGrid>
+          <ScrollableBlock>
+            <ReflectionSectionInner>
+              <DiscussHeader>
+                <TopicHeading><span>{'“'}</span>{`${title}”`}</TopicHeading>
+                <CheckColumn>
+                  {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.mid} />)}
+                </CheckColumn>
+              </DiscussHeader>
+              <ReflectionGrid>
+                {reflections.map((reflection) => {
+                  return (
+                    <ReflectionGridBlock key={`GridBlock-${reflection.id}`}>
+                      <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
+                    </ReflectionGridBlock>
+                  );
+                })}
+              </ReflectionGrid>
+            </ReflectionSectionInner>
+          </ScrollableBlock>
         </ReflectionSection>
-        <TaskCardBlock>
-          <MeetingAgendaCards
-            meetingId={meetingId}
-            reflectionGroupId={reflectionGroupId}
-            tasks={tasks}
-            teamId={teamId}
-          />
-        </TaskCardBlock>
+        <ScrollableBlock>
+          <TaskCardBlock>
+            <MeetingAgendaCards
+              meetingId={meetingId}
+              reflectionGroupId={reflectionGroupId}
+              tasks={tasks}
+              teamId={teamId}
+            />
+          </TaskCardBlock>
+        </ScrollableBlock>
       </PhaseWrapper>
       {isFacilitating &&
       <MeetingControlBar>
