@@ -27,7 +27,6 @@ import UserDraggingHeader from 'universal/components/UserDraggingHeader';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
-import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
 import StyledError from 'universal/components/StyledError';
 
 export type Props = {|
@@ -126,12 +125,9 @@ class ReflectionCard extends Component<Props, State> {
   render() {
     const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
-    const {localPhase: {phaseType}, phases, teamId} = meeting;
+    const {localPhase: {phaseType}, localStage: {isComplete}, teamId} = meeting;
     const {draggerUser, isViewerCreator, phaseItem: {question}} = reflection;
-    const meetingStageRes = findMeetingStage(phases);
-    if (!meetingStageRes) return null;
-    const {phase: {phaseType: meetingPhaseType}} = meetingStageRes;
-    const canDelete = isViewerCreator && phaseType === REFLECT && meetingPhaseType === REFLECT;
+    const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
       <ReflectionCardRoot hasDragLock={hasDragLock} isCollapsed={isCollapsed}>
@@ -142,7 +138,7 @@ class ReflectionCard extends Component<Props, State> {
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder="My reflection thought..."
-          readOnly={phaseType !== REFLECT}
+          readOnly={phaseType !== REFLECT || isComplete}
           setEditorState={this.setEditorState}
           teamId={teamId}
         />
@@ -164,6 +160,9 @@ export default createFragmentContainer(
       teamId
       localPhase {
         phaseType
+      }
+      localStage {
+        isComplete
       }
       phases {
         phaseType

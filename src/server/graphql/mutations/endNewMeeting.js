@@ -60,7 +60,7 @@ export default {
     const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId);
     const presentMembers = meetingMembers.filter((meetingMember) => meetingMember.isCheckedIn === true);
     const presentMemberUserIds = presentMembers.map(({userId}) => userId);
-    endSlackMeeting(meetingId, teamId);
+    endSlackMeeting(meetingId, teamId, true);
 
     if (lastPhaseStarted) {
       sendSegmentEvent('Retro Meeting Completed', presentMemberUserIds, {teamId, meetingNumber});

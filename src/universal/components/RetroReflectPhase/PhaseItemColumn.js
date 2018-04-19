@@ -23,7 +23,6 @@ import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionDropZone from 'universal/components/ReflectionDropZone';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
-import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
 
 import {LabelHeading} from 'universal/components';
 
@@ -108,11 +107,8 @@ class PhaseItemColumn extends Component<Props, State> {
   render() {
     const {meeting, retroPhaseItem} = this.props;
     const {columnReflectionGroups} = this.state;
-    const {localPhase: {phaseType}, phases} = meeting;
+    const {localPhase: {phaseType}, localStage: {isComplete}} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
-    const meetingStageRes = findMeetingStage(phases);
-    if (!meetingStageRes) return null;
-    const {phase: {phaseType: meetingPhaseType}} = meetingStageRes;
     return (
       <ColumnWrapper>
         <TypeHeader>
@@ -171,12 +167,12 @@ class PhaseItemColumn extends Component<Props, State> {
               return null;
             })}
           </ReflectionsList>
-          {phaseType === GROUP && meetingPhaseType === GROUP &&
+          {phaseType === GROUP && !isComplete &&
           <EntireDropZone>
             <ReflectionDropZone retroPhaseItem={retroPhaseItem} />
           </EntireDropZone>
           }
-          {phaseType === REFLECT && meetingPhaseType === REFLECT &&
+          {phaseType === REFLECT && !isComplete &&
           <ColumnChild>
             <ButtonBlock>
               <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
@@ -210,6 +206,9 @@ export default createFragmentContainer(
       meetingId: id
       localPhase {
         phaseType
+      }
+      localStage {
+        isComplete
       }
       phases {
         id

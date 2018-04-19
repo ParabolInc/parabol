@@ -62,7 +62,7 @@ const TeamCallToAction = (props: Props) => {
 
   return (
     <ButtonGroup>
-      {isRetroEnabled ?
+      {!isRetroEnabled ?
         <LoadableMenu
           LoadableComponent={LoadableTeamCallsToActionMenu}
           maxWidth={208}

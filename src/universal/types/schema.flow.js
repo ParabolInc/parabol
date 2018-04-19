@@ -1438,8 +1438,8 @@ export type RetrospectiveMeeting = {
   team: Team;
   /** The last time a meeting was updated (stage completed, finished, etc) */
   updatedAt: ?any;
-  /** The meeting member of the viewer */
-  viewerMeetingMember: ?MeetingMember;
+  /** The retrospective meeting member of the viewer */
+  viewerMeetingMember: ?RetrospectiveMeetingMember;
   /** the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used. */
   autoGroupThreshold: ?number;
   /** The grouped reflections */
@@ -1449,6 +1449,26 @@ export type RetrospectiveMeeting = {
   /** The tasks created within the meeting */
   tasks: Array<Task>;
   /** The sum total of the votes remaining for the meeting members that are present in the meeting */
+  votesRemaining: number;
+}
+
+/**
+  All the meeting specifics for a user in a retro meeting
+*/
+export type RetrospectiveMeetingMember = {
+  /** A composite of userId::meetingId */
+  id: string;
+  /** true if present, false if absent, else null */
+  isCheckedIn: ?boolean;
+  meetingId: ?string;
+  meetingType: MeetingTypeEnum;
+  teamId: ?string;
+  user: ?User;
+  userId: ?string;
+  /** The last time a meeting was updated (stage completed, finished, etc) */
+  updatedAt: ?any;
+  /** The tasks assigned to members during the meeting */
+  tasks: Array<Task>;
   votesRemaining: number;
 }
 
@@ -2199,26 +2219,6 @@ export type VoteForReflectionGroupPayload = {
   meeting: ?RetrospectiveMeeting;
   reflectionGroup: ?RetroReflectionGroup;
   meetingMember: ?RetrospectiveMeetingMember;
-}
-
-/**
-  All the meeting specifics for a user in a retro meeting
-*/
-export type RetrospectiveMeetingMember = {
-  /** A composite of userId::meetingId */
-  id: string;
-  /** true if present, false if absent, else null */
-  isCheckedIn: ?boolean;
-  meetingId: ?string;
-  meetingType: MeetingTypeEnum;
-  teamId: ?string;
-  user: ?User;
-  userId: ?string;
-  /** The last time a meeting was updated (stage completed, finished, etc) */
-  updatedAt: ?any;
-  /** The tasks assigned to members during the meeting */
-  tasks: Array<Task>;
-  votesRemaining: number;
 }
 
 export type LoginPayload = {

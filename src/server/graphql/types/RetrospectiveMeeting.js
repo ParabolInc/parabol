@@ -5,6 +5,9 @@ import {resolveForSU} from 'server/graphql/resolvers';
 import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings';
 import {RETROSPECTIVE} from 'universal/utils/constants';
 import Task from 'server/graphql/types/Task';
+import {getUserId} from 'server/utils/authorization';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember';
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
@@ -70,6 +73,15 @@ const RetrospectiveMeeting = new GraphQLObjectType({
       resolve: async ({id: meetingId}, args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId);
         return meetingMembers.reduce((sum, member) => member.isCheckedIn ? sum + member.votesRemaining : sum, 0);
+      }
+    },
+    viewerMeetingMember: {
+      type: RetrospectiveMeetingMember,
+      description: 'The retrospective meeting member of the viewer',
+      resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken);
+        const meetingMemberId = toTeamMemberId(meetingId, viewerId);
+        return dataLoader.get('meetingMembers').load(meetingMemberId);
       }
     }
     // reflections: {

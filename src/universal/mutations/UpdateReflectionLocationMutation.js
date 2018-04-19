@@ -51,6 +51,9 @@ const mutation = graphql`
   mutation UpdateReflectionLocationMutation($reflectionGroupId: ID, $reflectionId: ID, $retroPhaseItemId: ID, $sortOrder: Float!) {
     updateReflectionLocation(
       reflectionGroupId: $reflectionGroupId, reflectionId: $reflectionId, retroPhaseItemId: $retroPhaseItemId, sortOrder: $sortOrder) {
+      error {
+        message
+      }
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
     }
   }
@@ -63,6 +66,7 @@ const handleRemoveReflectionFromGroup = (reflectionId, reflectionGroupId, store)
 };
 
 const moveGroupLocation = (reflectionGroupProxy, store) => {
+  if (!reflectionGroupProxy) return;
   const reflectionGroupId = reflectionGroupProxy.getValue('id');
   const meetingId = reflectionGroupProxy.getValue('meetingId');
   handleRemoveReflectionGroups(reflectionGroupId, meetingId, store);

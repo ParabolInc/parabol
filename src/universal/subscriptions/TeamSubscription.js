@@ -16,7 +16,7 @@ import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMuta
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
 import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
-import {endNewMeetingTeamOnNext, endNewMeetingTeamUpdater} from 'universal/mutations/EndNewMeetingMutation';
+import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation';
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -110,7 +110,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           endMeetingTeamUpdater(payload, options);
           break;
         case 'EndNewMeetingPayload':
-          endNewMeetingTeamUpdater(payload, options);
           break;
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamUpdater(payload, store, viewerId);

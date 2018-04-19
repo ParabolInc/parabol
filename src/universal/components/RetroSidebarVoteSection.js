@@ -47,9 +47,9 @@ const TeamVotesLabel = styled('div')({
 });
 
 const RetroSidebarVoteSection = (props: Props) => {
-  const {viewer: {meetingMember, team: {meetingSettings: {totalVotes = 0}, newMeeting}}} = props;
-  const {teamVotesRemaining = 0} = newMeeting || {};
-  const {myVotesRemaining = 0} = meetingMember || {};
+  const {viewer: {team: {meetingSettings: {totalVotes = 0}, newMeeting}}} = props;
+  const {teamVotesRemaining = 0, viewerMeetingMember} = newMeeting || {};
+  const {myVotesRemaining = 0} = viewerMeetingMember || {};
   const checkMarks = [...Array(totalVotes).keys()];
   return (
     <SidebarPhaseItemChild>
@@ -67,11 +67,6 @@ export default createFragmentContainer(
   RetroSidebarVoteSection,
   graphql`
     fragment RetroSidebarVoteSection_viewer on User {
-      meetingMember(teamId: $teamId) {
-        ... on RetrospectiveMeetingMember {
-          myVotesRemaining: votesRemaining
-        }
-      }
       team(teamId: $teamId) {
         meetingSettings(meetingType: $meetingType) {
           ... on RetrospectiveMeetingSettings {
@@ -81,6 +76,9 @@ export default createFragmentContainer(
         newMeeting {
           ... on RetrospectiveMeeting {
             teamVotesRemaining: votesRemaining
+            viewerMeetingMember {
+              myVotesRemaining: votesRemaining
+            }
           }
         }
       }
