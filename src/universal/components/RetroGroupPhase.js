@@ -17,6 +17,9 @@ import MeetingControlBar from 'universal/modules/meeting/components/MeetingContr
 import {Button} from 'universal/components';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import StyledError from 'universal/components/StyledError';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 
 const {Component} = React;
 
@@ -25,6 +28,7 @@ type Props = {
   gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object,
+  ...MutationProps
 };
 
 const getSortOrder = (index, children, inSameGroup) => {
@@ -91,7 +95,7 @@ class RetroGroupPhase extends Component<Props> {
   }
 
   onDragEnd = (result: DropResult) => {
-    const {atmosphere, team} = this.props;
+    const {atmosphere, team, onError, onCompleted, submitMutation} = this.props;
     const {meetingSettings, newMeeting} = team;
     const {draggableId: reflectionId, source, destination} = result;
     DragReflectionMutation(atmosphere, {reflectionId, isDragging: false});
@@ -128,7 +132,8 @@ class RetroGroupPhase extends Component<Props> {
         reflectionGroupId: droppableId,
         sortOrder: getSortOrder(index, children, inSameGroup)
       };
-      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
+      submitMutation();
+      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted);
       return;
     }
 
@@ -144,7 +149,8 @@ class RetroGroupPhase extends Component<Props> {
         retroPhaseItemId: droppableId,
         sortOrder: getPhaseItemSortOrder(children, droppableId)
       };
-      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
+      submitMutation();
+      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted);
       return;
     }
 
@@ -155,11 +161,12 @@ class RetroGroupPhase extends Component<Props> {
       retroPhaseItemId: droppableId,
       sortOrder: getPhaseItemSortOrder(children, droppableId)
     };
-    UpdateReflectionLocationMutation(atmosphere, variables, {meetingId});
+    submitMutation();
+    UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted);
   }
 
   render() {
-    const {atmosphere: {viewerId}, gotoNext, team} = this.props;
+    const {atmosphere: {viewerId}, error, gotoNext, team} = this.props;
     const {newMeeting, meetingSettings} = team;
     const {facilitatorUserId} = newMeeting || {};
     const phaseItems = meetingSettings.phaseItems || [];
@@ -167,6 +174,7 @@ class RetroGroupPhase extends Component<Props> {
     return (
       <React.Fragment>
         <ScrollableBlock>
+          {error && <StyledError>{error.message}</StyledError>}
           <DragDropContext
             onDragStart={this.onDragStart}
             onDragEnd={this.onDragEnd}
@@ -199,7 +207,7 @@ class RetroGroupPhase extends Component<Props> {
 }
 
 export default createFragmentContainer(
-  withAtmosphere(RetroGroupPhase),
+  withMutationProps(withAtmosphere(RetroGroupPhase)),
   graphql`
     fragment RetroGroupPhase_team on Team {
       newMeeting {
