@@ -27,7 +27,6 @@ import UserDraggingHeader from 'universal/components/UserDraggingHeader';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
-import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
 import StyledError from 'universal/components/StyledError';
 
 export type Props = {|
