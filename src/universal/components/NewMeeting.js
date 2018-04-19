@@ -38,6 +38,7 @@ import RetroDiscussPhase from 'universal/components/RetroDiscussPhase';
 import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog';
+import isForwardProgress from 'universal/utils/meetings/isForwardProgress';
 
 const {Component} = React;
 
@@ -97,15 +98,17 @@ type Variables = {
 class NewMeeting extends Component<Props> {
   constructor(props) {
     super(props);
-    const {atmosphere, bindHotkey, dispatch, history} = props;
+    const {bindHotkey} = props;
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
     bindHotkey('left', handleHotkey(this.gotoPrev));
-    bindHotkey('i c a n t h a c k i t', () => {
-      const {viewer: {team: {newMeeting}}} = props;
-      if (!newMeeting) return;
-      const {meetingId} = newMeeting;
-      EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
-    });
+    bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting));
+  }
+
+  endMeeting = () => {
+    const {atmosphere, dispatch, history, viewer: {team: {newMeeting}}} = this.props;
+    if (!newMeeting) return;
+    const {meetingId} = newMeeting;
+    EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
   }
 
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
@@ -121,7 +124,7 @@ class NewMeeting extends Component<Props> {
     if (isViewerFacilitator) {
       const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
       const variables: Variables = {meetingId, facilitatorStageId: stageId};
-      if (!isComplete) {
+      if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
         variables.completedStageId = facilitatorStageId;
       }
       // submitMutation();

@@ -2,6 +2,7 @@ import getRethink from 'server/database/rethinkDriver';
 import {SLACK} from 'universal/utils/constants';
 import makeAppLink from 'server/utils/makeAppLink';
 import fetch from 'node-fetch';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const getIntegrationsForNotification = (teamId, notification) => {
   const r = getRethink();
@@ -44,7 +45,7 @@ const notifySlack = async (integrations, teamId, slackText) => {
 
 /* eslint-enable */
 
-export const startSlackMeeting = async (teamId) => {
+export const startSlackMeeting = async (teamId, meetingType) => {
   const r = getRethink();
 
   // get all slack channels that care about meeting:start
@@ -52,19 +53,21 @@ export const startSlackMeeting = async (teamId) => {
   if (integrations.length === 0) return;
 
   const team = await r.table('Team').get(teamId);
-  const meetingUrl = makeAppLink(`meeting/${teamId}`);
+  const meetingSlug = meetingTypeToSlug[meetingType] || 'meeting';
+  const meetingUrl = makeAppLink(`${meetingSlug}/${teamId}`);
   const slackText = `${team.name} has started a meeting!\n To join, click here: ${meetingUrl}`;
   notifySlack(integrations, teamId, slackText);
 };
 
-export const endSlackMeeting = async (meetingId, teamId) => {
+export const endSlackMeeting = async (meetingId, teamId, isNewMeeting) => {
   const r = getRethink();
 
   const integrations = await getIntegrationsForNotification(teamId, 'meeting:end');
   if (integrations.length === 0) return;
 
   const team = await r.table('Team').get(teamId);
-  const summaryUrl = makeAppLink(`summary/${meetingId}`);
+  const summarySlug = isNewMeeting ? 'new-summary' : 'summary';
+  const summaryUrl = makeAppLink(`${summarySlug}/${meetingId}`);
   const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`;
   notifySlack(integrations, teamId, slackText);
 };

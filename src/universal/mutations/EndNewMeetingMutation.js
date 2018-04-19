@@ -2,7 +2,6 @@ import {commitMutation} from 'react-relay';
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams';
 import handleMutationError from 'universal/mutations/handlers/handleMutationError';
-import getInProxy from 'universal/utils/relay/getInProxy';
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -11,7 +10,11 @@ graphql`
       id
     }
     team {
+      id
       meetingId
+      newMeeting {
+        id
+      }
     }
   }
 `;
@@ -52,22 +55,10 @@ export const endNewMeetingTeamOnNext = (payload, context) => {
   }
 };
 
-export const endNewMeetingTeamUpdater = (payload, {store}) => {
-  const meetingId = getInProxy(payload, 'meeting', 'id');
-  const meeting = store.get(meetingId);
-  meeting.setValue(undefined, 'localPhase');
-  meeting.setValue(undefined, 'localStage');
-};
-
 const EndNewMeetingMutation = (environment, variables, context, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('endNewMeeting');
-      if (!payload) return;
-      endNewMeetingTeamUpdater(payload, {store});
-    },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors);

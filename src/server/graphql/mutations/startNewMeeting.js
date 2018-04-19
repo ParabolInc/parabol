@@ -87,7 +87,7 @@ export default {
       members: r.table('MeetingMember').insert(meetingMembers)
     });
 
-    startSlackMeeting(teamId);
+    startSlackMeeting(teamId, meetingType);
     const data = {teamId, meetingId};
     publish(TEAM, teamId, StartNewMeetingPayload, data, subOptions);
     return data;
