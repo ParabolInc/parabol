@@ -116,6 +116,13 @@ class PhaseItemColumn extends Component<Props, State> {
           <TypeDescription>{question}</TypeDescription>
         </TypeHeader>
         <ReflectionsArea>
+          {phaseType === REFLECT && !isComplete &&
+          <ColumnChild>
+            <ButtonBlock>
+              <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+            </ButtonBlock>
+          </ColumnChild>
+          }
           <ReflectionsList>
             {columnReflectionGroups.map((group) => {
               if (phaseType === REFLECT) {
@@ -171,13 +178,6 @@ class PhaseItemColumn extends Component<Props, State> {
           <EntireDropZone>
             <ReflectionDropZone retroPhaseItem={retroPhaseItem} />
           </EntireDropZone>
-          }
-          {phaseType === REFLECT && !isComplete &&
-          <ColumnChild>
-            <ButtonBlock>
-              <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
-            </ButtonBlock>
-          </ColumnChild>
           }
         </ReflectionsArea>
       </ColumnWrapper>

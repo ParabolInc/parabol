@@ -7,6 +7,7 @@ import type {ReflectionGroupHeader_reflectionGroup as ReflectionGroup} from './_
 import {GROUP, VOTE} from 'universal/utils/constants';
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting';
 import ui from 'universal/styles/ui';
+import FontAwesome from 'react-fontawesome';
 
 type Props = {
   meeting: Meeting,
@@ -38,18 +39,36 @@ const ReflectionCount = styled('span')({
   position: 'absolute'
 });
 
+const PencilIcon = styled(FontAwesome)({
+  color: ui.hintFontColor,
+  height: ui.iconSize,
+  left: '100%',
+  lineHeight: ui.cardThemeLabelLineHeight,
+  opacity: '.5',
+  position: 'absolute',
+  textAlign: 'center',
+  top: '-.0625rem',
+  width: ui.iconSize,
+});
+
 const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
 
 const ReflectionGroupHeader = (props: Props) => {
   const {meeting, reflectionGroup} = props;
   const {reflections} = reflectionGroup;
-  const {localPhase: {phaseType}} = meeting;
+  const {localStage, localPhase: {phaseType}} = meeting;
+  console.log('meeting');
+  console.dir(meeting);
+  const groupPhaseNotComplete = phaseType === GROUP && localStage.isComplete === false;
+  const showCount = false; // local flag, testing new UI (TA)
+  // <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP} />
   return (
     <GroupHeader phaseType={phaseType}>
       {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
-        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP} />
-        <ReflectionCount>{reflections.length}</ReflectionCount>
+        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={!groupPhaseNotComplete} />
+        {showCount && <ReflectionCount>{reflections.length}</ReflectionCount>}
+        {groupPhaseNotComplete === GROUP && <PencilIcon name="pencil" />}
       </TitleAndCount>
       {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />}
     </GroupHeader>
@@ -60,6 +79,9 @@ export default createFragmentContainer(
   ReflectionGroupHeader,
   graphql`
     fragment ReflectionGroupHeader_meeting on RetrospectiveMeeting {
+      localStage {
+        isComplete
+      }
       localPhase {
         phaseType
       }

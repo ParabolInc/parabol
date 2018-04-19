@@ -33,8 +33,8 @@ type State = {
 const AnonymousStyles = styled('div')({
   backgroundColor: ui.palette.white,
   borderRadius: ui.cardBorderRadius,
-  boxShadow: ui.cardBoxShadow,
   color: ui.hintFontColor,
+  opacity: '.75',
   position: 'relative'
 });
 
