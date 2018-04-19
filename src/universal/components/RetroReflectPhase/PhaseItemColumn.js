@@ -111,10 +111,12 @@ class PhaseItemColumn extends Component<Props, State> {
     const {retroPhaseItemId, title, question} = retroPhaseItem;
     return (
       <ColumnWrapper>
-        <TypeHeader>
-          <LabelHeading>{title.toUpperCase()}</LabelHeading>
-          <TypeDescription>{question}</TypeDescription>
-        </TypeHeader>
+        {phaseType !== VOTE &&
+          <TypeHeader>
+            <LabelHeading>{title.toUpperCase()}</LabelHeading>
+            <TypeDescription>{question}</TypeDescription>
+          </TypeHeader>
+        }
         <ReflectionsArea>
           {phaseType === REFLECT && !isComplete &&
           <ColumnChild>

@@ -54,7 +54,7 @@ const EditorStyles = styled('div')(
     minHeight: '1rem',
     overflow: 'auto',
     position: 'relative',
-    width: ui.retroCardWidth
+    width: '100%'
   },
   ({isBlurred}) => isBlurred && ({
     filter: 'blur(.25rem)',
@@ -176,7 +176,12 @@ class ReflectionEditorWrapper extends Component<Props> {
 
   render() {
     const {ariaLabel, editorState, anonEditing, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
-    const userSelect = readOnly ? 'none' : 'text';
+    // Folks may want to copy text from reflection cards to quote in task cards, so going to allow unless blurred (TA)
+    const userSelect = (isBlurred || anonEditing) ? 'none' : 'text';
+    // console.log('isBlurred || anonEditing');
+    // console.log(isBlurred || anonEditing);
+    // console.log('userSelect');
+    // console.log(userSelect);
     return (
       <EditorStyles anonEditing={anonEditing} isBlurred={isBlurred}>
         <Editor

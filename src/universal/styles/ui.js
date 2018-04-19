@@ -727,6 +727,7 @@ const ui = {
   // Retro cards
   // ---------------------------------------------------------------------------
   retroCardCollapsedHeightRem: '3', // height, in rem, of reflection cards with truncated height
+  retroCardMinHeight: '3rem',
   retroCardWidth: '20rem' // width for reflection cards and reflection groups
 };
 

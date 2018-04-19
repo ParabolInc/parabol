@@ -19,11 +19,12 @@ class ReflectionEditorWrapperForEmail extends Component<Props> {
 
   render() {
     const {editorState} = this.state;
+    const userSelect = 'text';
     return (
       <Editor
         editorState={editorState}
         readOnly
-        style={{padding: '.5rem', userSelect: 'none', WebkitUserSelect: 'none'}}
+        style={{padding: '.5rem', userSelect, WebkitUserSelect: userSelect}}
       />
     );
   }

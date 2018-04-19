@@ -35,7 +35,10 @@ const AnonymousStyles = styled('div')({
   borderRadius: ui.cardBorderRadius,
   color: ui.hintFontColor,
   opacity: '.75',
-  position: 'relative'
+  minHeight: ui.retroCardMinHeight,
+  position: 'relative',
+  width: ui.retroCardWidth,
+  userSelect: 'none'
 });
 
 const DEFAULT_TEXT = 'Somebody is typing...';

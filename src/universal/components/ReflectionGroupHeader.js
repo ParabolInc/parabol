@@ -48,7 +48,7 @@ const PencilIcon = styled(FontAwesome)({
   position: 'absolute',
   textAlign: 'center',
   top: '-.0625rem',
-  width: ui.iconSize,
+  width: ui.iconSize
 });
 
 const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
@@ -68,7 +68,7 @@ const ReflectionGroupHeader = (props: Props) => {
       <TitleAndCount>
         <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={!groupPhaseNotComplete} />
         {showCount && <ReflectionCount>{reflections.length}</ReflectionCount>}
-        {groupPhaseNotComplete === GROUP && <PencilIcon name="pencil" />}
+        {groupPhaseNotComplete && <PencilIcon name="pencil" />}
       </TitleAndCount>
       {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />}
     </GroupHeader>
