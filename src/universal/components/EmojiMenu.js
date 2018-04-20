@@ -1,0 +1,77 @@
+// @flow
+import * as React from 'react';
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
+import stringScore from 'string-score';
+import emojiArray from 'universal/utils/emojiArray';
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
+
+const {Component} = React;
+
+type EmojiSuggestion = {
+  value: string,
+  emoji: string
+};
+
+type Props = {
+  closePortal: () => void,
+  menuItemClickFactory: () => () => void
+};
+
+type State = {
+  suggestedEmojis: Array<EmojiSuggestion>,
+  query: string
+}
+
+class EmojiMenu extends Component<Props, State> {
+  static filterByQuery(query) {
+    if (!query) {
+      return emojiArray.slice(2, 8);
+    }
+    return emojiArray.map((obj) => ({
+      ...obj,
+      score: stringScore(obj.value, query)
+    }))
+      .sort((a, b) => a.score < b.score ? 1 : -1)
+      .slice(0, 6)
+      // ":place of worship:" shouldn't pop up when i type ":poop"
+      .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
+  }
+
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+    const {query} = nextProps;
+    if (query && query === prevState.query) return null;
+    return {
+      query,
+      suggestedEmojis: EmojiMenu.filterByQuery(query)
+    };
+  }
+
+  state = {
+    suggestedEmojis: [],
+    query: ''
+  };
+
+
+  render() {
+    const {closePortal, menuRef, menuItemClickFactory} = this.props;
+    const {suggestedEmojis} = this.state;
+    return (
+      <MenuWithShortcuts
+        ariaLabel={'Select the emoji'}
+        closePortal={closePortal}
+        keepParentFocus
+        ref={menuRef}
+      >
+        {suggestedEmojis.map(({value, emoji}) => (
+          <MenuItemWithShortcuts
+            key={value}
+            label={`${emoji} ${value}`}
+            onClick={menuItemClickFactory(emoji)}
+          />
+        ))}
+      </MenuWithShortcuts>
+    );
+  }
+};
+
+export default EmojiMenu;

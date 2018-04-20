@@ -1,18 +1,25 @@
 import PropTypes from 'prop-types';
 import React, {Children, cloneElement, Component} from 'react';
-import {css} from 'react-emotion';
+import styled from 'react-emotion';
 
 const isValidMenuItem = (menuItem) => {
   // since uglifier takes away the type name, you must pass in a notMenuItem boolean to a non-menu-item component
   return menuItem && typeof menuItem.type !== 'string' && !menuItem.props.notMenuItem;
 };
 
+const MenuStyles = styled('div')({
+  outline: 0,
+  // VERY important! If not present, draft-js gets confused & thinks the menu is the selection rectangle
+  userSelect: 'none'
+});
+
 class MenuWithShortcuts extends Component {
   static propTypes = {
     ariaLabel: PropTypes.string,
     children: PropTypes.any.isRequired,
     closePortal: PropTypes.func.isRequired,
-    defaultActiveIdx: PropTypes.number
+    defaultActiveIdx: PropTypes.number,
+    keepParentFocus: PropTypes.bool
   };
 
   state = {
@@ -26,7 +33,10 @@ class MenuWithShortcuts extends Component {
   }
 
   componentDidMount() {
-    this.menuRef.focus();
+    if (!this.props.keepParentFocus) {
+      this.menuRef.focus();
+    }
+
   }
 
   setActiveIndex = (idx) => {
@@ -101,16 +111,15 @@ class MenuWithShortcuts extends Component {
     const {ariaLabel, children} = this.props;
     const {active} = this.state;
     return (
-      <div
+      <MenuStyles
         role="menu"
         aria-label={ariaLabel}
         tabIndex={-1}
         onKeyDown={this.handleKeyDown}
-        ref={(c) => { this.menuRef = c; }}
-        className={css({outline: 0})}
+        innerRef={(c) => { this.menuRef = c; }}
       >
         {this.makeSmartChildren(children, active)}
-      </div>
+      </MenuStyles>
     );
   }
 }
