@@ -106,11 +106,7 @@ const MeetingSubnavItem = (props) => {
         {orderLabel}
       </ItemOrderLabel>
       <ItemLabel hasQuotes={hasQuotes}>
-        <ItemLabelInner
-          isComplete={isComplete}
-          isDisabled={isDisabled}
-          onClick={!isDisabled ? onClick : null}
-        >
+        <ItemLabelInner isComplete={isComplete}>
           {label}
         </ItemLabelInner>
         {hasQuotes && <span>{'”'}</span>}
