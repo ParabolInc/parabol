@@ -72,7 +72,7 @@ const ItemLabel = styled('div')(({hasQuotes}) => ({
   }
 }));
 
-const ItemLabelInner = styled('span')(({isComplete, onClick}) => ({
+const ItemLabelInner = styled('span')(({isComplete}) => ({
   color: 'inherit',
   textDecoration: isComplete && 'line-through'
 }));

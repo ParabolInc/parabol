@@ -80,6 +80,9 @@ export default createFragmentContainer(
     fragment RetroSidebarDiscussSection_viewer on User {
       team(teamId: $teamId) {
         newMeeting {
+          localStage {
+            localStageId: id
+          }
           ... on RetrospectiveMeeting {
             facilitatorStageId
             # load up the localPhase
@@ -93,9 +96,6 @@ export default createFragmentContainer(
                   }
                 }
               }
-            }
-            localStage {
-              localStageId: id
             }
             localPhase {
               ... on DiscussPhase {
