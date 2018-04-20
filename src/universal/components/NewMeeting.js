@@ -45,7 +45,8 @@ const {Component} = React;
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
   display: 'flex',
-  height: '100vh'
+  height: '100vh',
+  minWidth: ui.meetingMinWidth
 });
 
 const MeetingArea = styled('div')({
