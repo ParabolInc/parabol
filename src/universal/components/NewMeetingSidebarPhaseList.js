@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import {LOBBY} from 'universal/utils/constants';
+import {LOBBY, DISCUSS, AGENDA_ITEMS} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem';
 import {createFragmentContainer, graphql} from 'react-relay';
@@ -51,12 +51,14 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
           const itemStageId = itemStage && itemStage.id || '';
           const isNavigable = getIsNavigable(isViewerFacilitator, phases, itemStageId);
           const handleClick = isNavigable ? () => gotoStageId(itemStageId) : undefined;
+          // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
+          const activeHasSubItems = phaseType === DISCUSS || phaseType === AGENDA_ITEMS;
           return (
             <NewMeetingSidebarPhaseListItem
               key={phaseType}
               phaseType={phaseType}
               listPrefix={String(idx + 1)}
-              isActive={localGroup === phaseType}
+              isActive={!activeHasSubItems && localGroup === phaseType}
               isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
               handleClick={handleClick}
             >

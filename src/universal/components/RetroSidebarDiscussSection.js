@@ -43,11 +43,11 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const {reflectionGroup} = stage;
         if (!reflectionGroup) return null;
         const {title, voteCount} = reflectionGroup;
-        const isOutOfSync = false;
+        const isOutOfSync = false; // TODO: the local user is at another stage than the facilitator stage
         const navState = {
-          isActive: false,
-          isComplete: false,
-          isDisabled: false,
+          isActive: false, // TODO: the local user is at this stage
+          isComplete: stage.isComplete, // this stage is complete
+          isDisabled: false, // TODO: if the user can navigate here yet, may not be needed by design
           isOutOfSync
         };
         const voteMeta = (
@@ -95,6 +95,7 @@ export default createFragmentContainer(
               ... on DiscussPhase {
                 stages {
                   id
+                  isComplete
                   reflectionGroup {
                     title
                     voteCount
