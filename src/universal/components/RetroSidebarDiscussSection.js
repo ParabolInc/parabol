@@ -31,7 +31,7 @@ const CheckIcon = styled(StyledFontAwesome)(({isOutOfSync}) => ({
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
-  const {localPhase, localStage, facilitatorStageId, phases} = newMeeting || {};
+  const {localPhase, localStage, facilitatorStageId, phases = []} = newMeeting || {};
   if (!localPhase || !localPhase.stages || !localStage) return null;
   const {stages} = localPhase;
   const {localStageId} = localStage;
