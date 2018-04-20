@@ -44,12 +44,10 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const {reflectionGroup} = stage;
         if (!reflectionGroup) return null;
         const {title, voteCount} = reflectionGroup;
-
         // the local user is at another stage than the facilitator stage
         const isOutOfSync = !inSync && stage.id === facilitatorStageId;
-
         const navState = {
-          isActive: false, // TODO: the local user is at this stage
+          isActive: localStage.localStageId === stage.id, // the local user is at this stage
           isComplete: stage.isComplete, // this stage is complete
           isDisabled: false, // TODO: if the user can’t navigate here yet, may not ever be true by design
           isOutOfSync
