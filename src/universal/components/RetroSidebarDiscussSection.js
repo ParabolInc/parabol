@@ -8,6 +8,7 @@ import ui from 'universal/styles/ui';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem';
 import {LabelHeading} from 'universal/components';
+import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
@@ -30,10 +31,11 @@ const CheckIcon = styled(StyledFontAwesome)(({isOutOfSync}) => ({
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
-  const {localPhase, localStage, facilitatorStageId} = newMeeting || {};
-  if (!localPhase || !localPhase.stages) return null;
+  const {localPhase, localStage, facilitatorStageId, phases} = newMeeting || {};
+  if (!localPhase || !localPhase.stages || !localStage) return null;
   const {stages} = localPhase;
-  const inSync = localStage ? localStage.localStageId === facilitatorStageId : true;
+  const {localStageId} = localStage;
+  const inSync = localStageId === facilitatorStageId;
 
   return (
     <SidebarPhaseItemChild>
@@ -49,7 +51,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const navState = {
           isActive: localStage.localStageId === stage.id, // the local user is at this stage
           isComplete: stage.isComplete, // this stage is complete
-          isDisabled: false, // TODO: if the user can’t navigate here yet, may not ever be true by design
+          isDisabled: !getIsNavigable(false, phases, stage.id),
           isOutOfSync
         };
         const voteMeta = (
