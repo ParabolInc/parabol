@@ -30,9 +30,10 @@ const CheckIcon = styled(StyledFontAwesome)(({isOutOfSync}) => ({
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
-  const {localPhase} = newMeeting || {};
+  const {localPhase, localStage, facilitatorStageId} = newMeeting || {};
   if (!localPhase || !localPhase.stages) return null;
   const {stages} = localPhase;
+  const inSync = localStage ? localStage.localStageId === facilitatorStageId : true;
 
   return (
     <SidebarPhaseItemChild>
@@ -43,11 +44,14 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const {reflectionGroup} = stage;
         if (!reflectionGroup) return null;
         const {title, voteCount} = reflectionGroup;
-        const isOutOfSync = false; // TODO: the local user is at another stage than the facilitator stage
+
+        // the local user is at another stage than the facilitator stage
+        const isOutOfSync = !inSync && stage.id === facilitatorStageId;
+
         const navState = {
           isActive: false, // TODO: the local user is at this stage
           isComplete: stage.isComplete, // this stage is complete
-          isDisabled: false, // TODO: if the user can navigate here yet, may not be needed by design
+          isDisabled: false, // TODO: if the user can’t navigate here yet, may not ever be true by design
           isOutOfSync
         };
         const voteMeta = (
@@ -79,6 +83,7 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         newMeeting {
           ... on RetrospectiveMeeting {
+            facilitatorStageId
             # load up the localPhase
             phases {
               ... on DiscussPhase {
@@ -90,6 +95,9 @@ export default createFragmentContainer(
                   }
                 }
               }
+            }
+            localStage {
+              localStageId: id
             }
             localPhase {
               ... on DiscussPhase {
