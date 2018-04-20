@@ -211,6 +211,7 @@ const styleThunk = () => ({
     padding: '.5rem .5rem .5rem 3rem',
     position: 'relative',
     textIndent: '.1875rem',
+    userSelect: 'none',
     width: '100%',
     zIndex: 200,
     ...makeFieldColorPalette('primary', false),
