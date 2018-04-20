@@ -15,18 +15,19 @@ const ItemRoot = styled('div')(
     fontSize: ui.navTopicFontSize,
     fontWeight: 400,
     minHeight: '2.5rem',
-    opacity: isComplete && 0.5,
+    opacity: !isActive && isComplete && 0.5,
     padding: '.5rem 0',
     position: 'relative',
     width: '100%',
     '&:hover': {
       backgroundColor: onClick && !isActive && appTheme.palette.light50l,
-      cursor: onClick && 'pointer',
+      cursor: !isActive && onClick && 'pointer',
       opacity: !isDisabled && 1
     }
   }),
   ({isOutOfSync}) => isOutOfSync && ({
     color: ui.palette.warm,
+    opacity: 1,
     '&::after': {
       backgroundColor: ui.palette.warm,
       borderRadius: '100%',
@@ -73,11 +74,7 @@ const ItemLabel = styled('div')(({hasQuotes}) => ({
 
 const ItemLabelInner = styled('span')(({isComplete, onClick}) => ({
   color: 'inherit',
-  textDecoration: isComplete && 'line-through',
-  '&:hover': {
-    cursor: onClick && 'pointer',
-    textDecoration: onClick && 'underline'
-  }
+  textDecoration: isComplete && 'line-through'
 }));
 
 const ItemMeta = styled('div')({
