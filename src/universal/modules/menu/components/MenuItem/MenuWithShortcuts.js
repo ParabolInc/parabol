@@ -20,7 +20,7 @@ class MenuWithShortcuts extends Component {
     closePortal: PropTypes.func.isRequired,
     defaultActiveIdx: PropTypes.number,
     keepParentFocus: PropTypes.bool,
-    tabReturns: PropTypes.bool,
+    tabReturns: PropTypes.bool
   };
 
   state = {
@@ -37,7 +37,6 @@ class MenuWithShortcuts extends Component {
     if (!this.props.keepParentFocus) {
       this.menuRef.focus();
     }
-
   }
 
   setActiveIndex = (idx) => {

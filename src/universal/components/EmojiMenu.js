@@ -14,16 +14,20 @@ type EmojiSuggestion = {
 
 type Props = {
   closePortal: () => void,
-  menuItemClickFactory: () => () => void
+  editorState: Object,
+  menuItemClickFactory: (emoji: string, editorState: ?Object) => () => void,
+  menuRef: () => void,
+  query: string
 };
 
 type State = {
+  focusedEditorState: ?Object,
   suggestedEmojis: Array<EmojiSuggestion>,
   query: string
 }
 
 class EmojiMenu extends Component<Props, State> {
-  static filterByQuery(query) {
+  static filterByQuery(query: string) {
     if (!query) {
       return emojiArray.slice(2, 8);
     }
@@ -77,6 +81,6 @@ class EmojiMenu extends Component<Props, State> {
       </MenuWithShortcuts>
     );
   }
-};
+}
 
 export default EmojiMenu;

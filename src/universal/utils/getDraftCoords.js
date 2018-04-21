@@ -8,13 +8,12 @@ const getDraftCoords = () => {
   let target = selection.anchorNode;
   while (target !== document) {
     // make sure the selection is inside draft, this isn't always guaranteed
-    if (target.className === "notranslate public-DraftEditor-content") {
+    if (target.className === 'notranslate public-DraftEditor-content') {
       return getVisibleSelectionRect(window);
     }
     target = target.parentNode;
   }
   return null;
-
 };
 
 export default getDraftCoords;

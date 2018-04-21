@@ -81,7 +81,7 @@ const withEmojis = (ComposedComponent) => {
           query: word.slice(1)
         });
       } else if (this.state.isOpen) {
-        this.removeModal()
+        this.removeModal();
       }
     }
 

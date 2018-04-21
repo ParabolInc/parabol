@@ -94,12 +94,11 @@ class ReflectionCard extends Component<Props, State> {
     this.setState({editorState});
   };
 
-  handleEditorBlur = () => {
-    const {atmosphere, reflection: {reflectionId}} = this.props;
-    if (isTempId(reflectionId)) return;
-    this.handleContentUpdate();
-    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
-  };
+  setEditorRef = (c) => {
+    this.editorRef = c;
+  }
+
+  editorRef: ?HTMLElement;
 
   handleEditorFocus = () => {
     const {atmosphere, reflection: {reflectionId}} = this.props;
@@ -122,9 +121,12 @@ class ReflectionCard extends Component<Props, State> {
     }
   };
 
-  setEditorRef = (c) => {
-    this.editorRef = c;
-  }
+  handleEditorBlur = () => {
+    const {atmosphere, reflection: {reflectionId}} = this.props;
+    if (isTempId(reflectionId)) return;
+    this.handleContentUpdate();
+    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
+  };
 
   render() {
     const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
