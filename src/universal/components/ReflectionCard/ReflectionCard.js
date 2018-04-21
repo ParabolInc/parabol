@@ -27,7 +27,6 @@ import UserDraggingHeader from 'universal/components/UserDraggingHeader';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
-import findMeetingStage from 'universal/utils/meetings/findMeetingStage';
 import StyledError from 'universal/components/StyledError';
 
 export type Props = {|
@@ -123,6 +122,10 @@ class ReflectionCard extends Component<Props, State> {
     }
   };
 
+  setEditorRef = (c) => {
+    this.editorRef = c;
+  }
+
   render() {
     const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
@@ -135,7 +138,9 @@ class ReflectionCard extends Component<Props, State> {
         {hasDragLock && <UserDraggingHeader user={draggerUser} />}
         <ReflectionEditorWrapper
           ariaLabel="Edit this reflection"
+          editorRef={this.editorRef}
           editorState={editorState}
+          innerRef={this.setEditorRef}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder="My reflection thought..."

@@ -39,26 +39,24 @@ const withEmojis = (ComposedComponent) => {
       const {keyBindingFn} = this.props;
       if (keyBindingFn) {
         const result = keyBindingFn(e);
-        if (result) {
-          return result;
-        }
+        if (result) return result;
       }
       if (this.menuRef.current) {
-        this.menuRef.current.handleKeyDown(e);
+        const handled = this.menuRef.current.handleKeyDown(e);
+        if (handled) return handled;
       }
       return undefined;
     };
 
     menuRef = React.createRef();
 
-    menuItemClickFactory = (emoji) => () => {
-      const {editorState, setEditorState} = this.props;
-      console.log('set ed state');
-      setEditorState(autoCompleteEmoji(editorState, emoji));
+    menuItemClickFactory = (emoji, editorState) => () => {
+      const {setEditorState} = this.props;
+      const nextEditorState = autoCompleteEmoji(editorState, emoji);
+      setEditorState(nextEditorState);
     };
 
     removeModal = () => {
-      console.log('removing modal')
       this.setState({
         isOpen: false,
         query: ''
@@ -97,14 +95,10 @@ const withEmojis = (ComposedComponent) => {
 
     renderModal = () => {
       const {query} = this.state;
-      const {editorRef} = this.props;
+      const {editorRef, editorState} = this.props;
       const coords = getDraftCoords(editorRef);
       this.cachedCoords = coords || this.cachedCoords;
       if (!this.cachedCoords) {
-        // setTimeout(() => {
-        //   this.forceUpdate();
-        // });
-        console.log('ret null')
         return null;
       }
       return (
@@ -119,6 +113,7 @@ const withEmojis = (ComposedComponent) => {
             menuItemClickFactory: this.menuItemClickFactory,
             query,
             menuRef: this.menuRef,
+            editorState
           }}
           targetAnchor={targetAnchor}
           marginFromOrigin={ui.draftModalMargin}

@@ -38,15 +38,18 @@ class EmojiMenu extends Component<Props, State> {
   }
 
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
-    const {query} = nextProps;
+    const {editorState, query} = nextProps;
     if (query && query === prevState.query) return null;
     return {
+      // clicking on a menu will cause the editorStateSelection to lose focus, so we persist the last state before that point
+      focusedEditorState: editorState.getSelection().getHasFocus() ? editorState : prevState.focusedEditorState,
       query,
       suggestedEmojis: EmojiMenu.filterByQuery(query)
     };
   }
 
   state = {
+    focusedEditorState: null,
     suggestedEmojis: [],
     query: ''
   };
@@ -54,6 +57,7 @@ class EmojiMenu extends Component<Props, State> {
 
   render() {
     const {closePortal, menuRef, menuItemClickFactory} = this.props;
+    const {focusedEditorState} = this.state;
     const {suggestedEmojis} = this.state;
     return (
       <MenuWithShortcuts
@@ -61,12 +65,13 @@ class EmojiMenu extends Component<Props, State> {
         closePortal={closePortal}
         keepParentFocus
         ref={menuRef}
+        tabReturns
       >
         {suggestedEmojis.map(({value, emoji}) => (
           <MenuItemWithShortcuts
             key={value}
             label={`${emoji} ${value}`}
-            onClick={menuItemClickFactory(emoji)}
+            onClick={menuItemClickFactory(emoji, focusedEditorState)}
           />
         ))}
       </MenuWithShortcuts>

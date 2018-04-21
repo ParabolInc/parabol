@@ -19,7 +19,8 @@ class MenuWithShortcuts extends Component {
     children: PropTypes.any.isRequired,
     closePortal: PropTypes.func.isRequired,
     defaultActiveIdx: PropTypes.number,
-    keepParentFocus: PropTypes.bool
+    keepParentFocus: PropTypes.bool,
+    tabReturns: PropTypes.bool,
   };
 
   state = {
@@ -82,7 +83,7 @@ class MenuWithShortcuts extends Component {
 
   handleKeyDown = (e) => {
     const {active} = this.state;
-    const {children} = this.props;
+    const {children, tabReturns} = this.props;
     const {closePortal} = this.props;
     let handled;
     if (e.key === 'ArrowDown') {
@@ -91,7 +92,7 @@ class MenuWithShortcuts extends Component {
     } else if (e.key === 'ArrowUp') {
       handled = true;
       this.setActiveIndex(active - 1);
-    } else if (e.key === 'Enter') {
+    } else if (e.key === 'Enter' || tabReturns && e.key === 'Tab') {
       const smartChild = Children.toArray(children)[active];
       if (smartChild && smartChild.props.onClick) {
         handled = true;
@@ -105,6 +106,7 @@ class MenuWithShortcuts extends Component {
     if (handled) {
       e.preventDefault();
     }
+    return handled;
   };
 
   render() {
