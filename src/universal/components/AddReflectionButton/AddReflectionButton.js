@@ -43,6 +43,7 @@ const AddButton = styled(PlainButton)({
   padding: '.75rem',
   textAlign: 'center',
   transition: ui.cardControlTransition,
+  userSelect: 'none',
   width: '100%',
 
   '&:hover,:focus': {

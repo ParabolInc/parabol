@@ -50,7 +50,8 @@ const withEmojis = (ComposedComponent) => {
 
     menuRef = React.createRef();
 
-    menuItemClickFactory = (emoji, editorState) => () => {
+    menuItemClickFactory = (emoji, editorState) => (e) => {
+      e.preventDefault();
       const {setEditorState} = this.props;
       const nextEditorState = autoCompleteEmoji(editorState, emoji);
       setEditorState(nextEditorState);

@@ -96,7 +96,7 @@ class MenuWithShortcuts extends Component {
       const smartChild = Children.toArray(children)[active];
       if (smartChild && smartChild.props.onClick) {
         handled = true;
-        smartChild.props.onClick();
+        smartChild.props.onClick(e);
         closePortal(e);
       }
     } else if (e.key === 'Tab') {

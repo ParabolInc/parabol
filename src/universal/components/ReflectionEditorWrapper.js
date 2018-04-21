@@ -115,7 +115,9 @@ class ReflectionEditorWrapper extends Component<Props> {
         return;
       }
     }
-    if (editorState.getSelection().getHasFocus() && handleChange) {
+    if (!editorState.getSelection().getHasFocus()) {
+      this.removeModal();
+    } else if (handleChange) {
       handleChange(editorState);
     }
     setEditorState(editorState);
