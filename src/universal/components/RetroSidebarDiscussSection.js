@@ -24,8 +24,8 @@ const VoteTally = styled('div')({
   marginRight: '0.5rem'
 });
 
-const CheckIcon = styled(StyledFontAwesome)(({isOutOfSync}) => ({
-  color: isOutOfSync ? ui.palette.warm : ui.palette.mid
+const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
+  color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.mid
 }));
 
 const RetroSidebarDiscussSection = (props: Props) => {
@@ -45,16 +45,16 @@ const RetroSidebarDiscussSection = (props: Props) => {
         if (!reflectionGroup) return null;
         const {title, voteCount} = reflectionGroup;
         // the local user is at another stage than the facilitator stage
-        const isOutOfSync = !inSync && stage.id === facilitatorStageId;
+        const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId;
         const navState = {
           isActive: localStage.localStageId === stage.id, // the local user is at this stage
           isComplete: stage.isComplete, // this stage is complete
           isDisabled: false, // TODO: if the user can’t navigate here yet, may not ever be true by design
-          isOutOfSync
+          isUnsyncedFacilitatorStage
         };
         const voteMeta = (
           <VoteTally>
-            <CheckIcon isOutOfSync={isOutOfSync} name="check" />
+            <CheckIcon isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage} name="check" />
             {' x '}
             {voteCount}
           </VoteTally>

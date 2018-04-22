@@ -8,8 +8,8 @@ const lineHeight = ui.navTopicLineHeight;
 
 const ItemRoot = styled('div')(
   ({isActive, isComplete, isDisabled, onClick}) => ({
-    backgroundColor: !isDisabled && isActive && ui.navMenuLightBackgroundColorActive,
-    boxShadow: !isDisabled && isActive && `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}`,
+    backgroundColor: isActive && ui.navMenuLightBackgroundColorActive,
+    boxShadow: isActive && `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}`,
     color: onClick ? ui.colorLink : ui.colorText,
     display: 'flex',
     fontSize: ui.navTopicFontSize,
@@ -25,7 +25,7 @@ const ItemRoot = styled('div')(
       opacity: !isDisabled && 1
     }
   }),
-  ({isOutOfSync}) => isOutOfSync && ({
+  ({isUnsyncedFacilitatorStage}) => isUnsyncedFacilitatorStage && ({
     color: ui.palette.warm,
     opacity: 1,
     '&::after': {
@@ -44,37 +44,22 @@ const ItemRoot = styled('div')(
   })
 );
 
-const ItemOrderLabel = styled('div')(({isDisabled}) => ({
+const ItemOrderLabel = styled('div')({
   height: lineHeight,
   lineHeight,
-  // overrides hover state using !important only during disabled
-  opacity: isDisabled ? '.5 !important' : '.5',
+  opacity: 0.5,
   paddingRight: '.75rem',
   textAlign: 'right',
   width: ui.meetingSidebarGutterInner
-}));
+});
 
-const ItemLabel = styled('div')(({hasQuotes}) => ({
+const ItemLabel = styled('div')(({isComplete}) => ({
   color: 'inherit',
   fontSize: appTheme.typography.s3,
   flex: 1,
   lineHeight,
-  position: 'relative',
-  wordBreak: 'break-word',
-
-  '&::before': {
-    content: hasQuotes && '"“"',
-    display: 'block',
-    position: 'absolute',
-    right: '100%',
-    textAlign: 'right',
-    width: '1rem'
-  }
-}));
-
-const ItemLabelInner = styled('span')(({isComplete}) => ({
-  color: 'inherit',
-  textDecoration: isComplete && 'line-through'
+  textDecoration: isComplete && 'line-through',
+  wordBreak: 'break-word'
 }));
 
 const ItemMeta = styled('div')({
@@ -83,11 +68,10 @@ const ItemMeta = styled('div')({
 
 const MeetingSubnavItem = (props) => {
   const {
-    hasQuotes,
     isActive,
     isComplete,
     isDisabled,
-    isOutOfSync,
+    isUnsyncedFacilitatorStage,
     label,
     metaContent,
     onClick,
@@ -99,17 +83,14 @@ const MeetingSubnavItem = (props) => {
       isActive={isActive}
       isComplete={isComplete}
       isDisabled={isDisabled}
-      isOutOfSync={isOutOfSync}
+      isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : null}
     >
-      <ItemOrderLabel isDisabled={isDisabled}>
+      <ItemOrderLabel>
         {orderLabel}
       </ItemOrderLabel>
-      <ItemLabel hasQuotes={hasQuotes}>
-        <ItemLabelInner isComplete={isComplete}>
-          {label}
-        </ItemLabelInner>
-        {hasQuotes && <span>{'”'}</span>}
+      <ItemLabel isComplete={isComplete}>
+        {label}
       </ItemLabel>
       <ItemMeta>
         {metaContent}
@@ -119,11 +100,10 @@ const MeetingSubnavItem = (props) => {
 };
 
 MeetingSubnavItem.propTypes = {
-  hasQuotes: PropTypes.bool,
   isActive: PropTypes.bool,
   isComplete: PropTypes.bool,
   isDisabled: PropTypes.bool,
-  isOutOfSync: PropTypes.bool,
+  isUnsyncedFacilitatorStage: PropTypes.bool,
   label: PropTypes.string,
   metaContent: PropTypes.any,
   onClick: PropTypes.func,

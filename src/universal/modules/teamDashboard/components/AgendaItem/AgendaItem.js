@@ -31,14 +31,13 @@ const DeleteIconButton = styled('div')(({agendaLength, disabled}) => ({
   // we can make the position of the del (x) more centered when there’s a low number of agenda items
   left: agendaLength < 10 ? '.8125rem' : ui.meetingSidebarGutter,
   lineHeight,
-  // overrides hover state using !important only during disabled
-  opacity: disabled ? '0 !important' : 0,
+  opacity: 0,
   position: 'absolute',
   textAlign: 'center',
   top: '.5rem',
   transition: 'opacity .1s ease-in',
-  width: ui.iconSize,
-  zIndex: 200
+  visibility: disabled && 'hidden',
+  width: ui.iconSize
 }));
 
 const DeleteIcon = styled(StyledFontAwesome)({
@@ -123,12 +122,12 @@ class AgendaItem extends Component {
     const canDelete = !isComplete && !isCurrent && !disabled;
     const inAgendaGroupLocal = inAgendaGroup(localPhase);
     const inAgendaGroupFacilitator = inAgendaGroup(facilitatorPhase);
-    const isOutOfSync = inAgendaGroupFacilitator && isFacilitator && !inSync;
+    const isUnsyncedFacilitatorStage = inAgendaGroupFacilitator && isFacilitator && !inSync;
     const navItemState = {
       isActive: inAgendaGroupLocal && isLocal,
       isComplete,
       isDisabled: disabled,
-      isOutOfSync
+      isUnsyncedFacilitatorStage
     };
     const avatar = (
       <AvatarBlock>
@@ -138,7 +137,14 @@ class AgendaItem extends Component {
     const deleteLabel = 'Remove this agenda topic';
     return connectDragSource(
       <div className={rootStyles} title={content} ref={(el) => { this.el = el; }}>
-        {canDelete && !isOutOfSync &&
+        <MeetingSubnavItem
+          label={content}
+          metaContent={avatar}
+          onClick={(canNavigate && !disabled) ? gotoAgendaItem : null}
+          orderLabel={`${idx + 1}.`}
+          {...navItemState}
+        />
+        {canDelete && !isUnsyncedFacilitatorStage &&
           <DeleteIconButton
             aria-label={deleteLabel}
             agendaLength={agendaLength}
@@ -149,14 +155,6 @@ class AgendaItem extends Component {
             <DeleteIcon name="times-circle" />
           </DeleteIconButton>
         }
-        <MeetingSubnavItem
-          hasQuotes
-          label={content}
-          metaContent={avatar}
-          onClick={(canNavigate && !disabled) ? gotoAgendaItem : null}
-          orderLabel={`${idx + 1}.`}
-          {...navItemState}
-        />
       </div>
     );
   }
