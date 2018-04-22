@@ -17,7 +17,6 @@ type Props = {
   handleChange: () => void,
   handleKeyCommand: () => void,
   handleReturn: () => void,
-  anonEditing: boolean,
   isBlurred: boolean,
   keyBindingFn: () => void,
   placeholder: string,
@@ -45,25 +44,18 @@ const codeBlock = css({
   padding: '0 .5rem'
 });
 
-const EditorStyles = styled('div')(
-  {
-    color: appTheme.palette.dark,
-    fontSize: ui.cardContentFontSize,
-    lineHeight: ui.cardContentLineHeight,
-    maxHeight: '10rem',
-    minHeight: '1rem',
-    overflow: 'auto',
-    position: 'relative',
-    width: '100%'
-  },
-  ({isBlurred}) => isBlurred && ({
-    filter: 'blur(.25rem)',
-    userSelect: 'none'
-  }),
-  ({anonEditing}) => anonEditing && ({
-    color: ui.hintFontColor
-  })
-);
+const EditorStyles = styled('div')(({isBlurred}) => ({
+  color: isBlurred === false ? ui.hintFontColor : appTheme.palette.dark,
+  filter: isBlurred && 'blur(.25rem)',
+  fontSize: ui.cardContentFontSize,
+  lineHeight: ui.cardContentLineHeight,
+  maxHeight: '10rem',
+  minHeight: '1rem',
+  overflow: 'auto',
+  position: 'relative',
+  userSelect: isBlurred && 'none',
+  width: '100%'
+}));
 
 class ReflectionEditorWrapper extends Component<Props> {
   componentDidMount() {
@@ -175,11 +167,13 @@ class ReflectionEditorWrapper extends Component<Props> {
   };
 
   render() {
-    const {ariaLabel, editorState, anonEditing, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
-    // Folks may want to copy text from reflection cards to quote in task cards, so going to allow unless blurred (TA)
-    const userSelect = (isBlurred || anonEditing) ? 'none' : 'text';
+    const {ariaLabel, editorState, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
+    // Folks may want to copy text from reflection cards to quote in task cards,
+    // so going to allow unless AnonymousReflectionCard.
+    // If isBlurred is true or false it’s probably from the AnonymousReflectionCard.
+    const userSelect = isBlurred === undefined ? 'text' : 'none';
     return (
-      <EditorStyles anonEditing={anonEditing} isBlurred={isBlurred}>
+      <EditorStyles isBlurred={isBlurred}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}

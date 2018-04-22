@@ -105,7 +105,7 @@ class AnonymousReflectionCard extends Component<Props, State> {
     const {meeting: {teamId}} = this.props;
     return (
       <AnonymousStyles>
-        <ReflectionEditorWrapper anonEditing={!isBlurred} editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
+        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
       </AnonymousStyles>
     );
   }
