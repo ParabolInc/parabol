@@ -178,10 +178,6 @@ class ReflectionEditorWrapper extends Component<Props> {
     const {ariaLabel, editorState, anonEditing, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
     // Folks may want to copy text from reflection cards to quote in task cards, so going to allow unless blurred (TA)
     const userSelect = (isBlurred || anonEditing) ? 'none' : 'text';
-    // console.log('isBlurred || anonEditing');
-    // console.log(isBlurred || anonEditing);
-    // console.log('userSelect');
-    // console.log(userSelect);
     return (
       <EditorStyles anonEditing={anonEditing} isBlurred={isBlurred}>
         <Editor

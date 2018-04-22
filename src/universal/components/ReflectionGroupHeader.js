@@ -31,14 +31,6 @@ const TitleAndCount = styled('div')({
   width: 'auto'
 });
 
-const ReflectionCount = styled('span')({
-  color: ui.hintFontColor,
-  fontSize: ui.cardThemeLabelFontSize,
-  left: '100%',
-  lineHeight: ui.cardThemeLabelLineHeight,
-  position: 'absolute'
-});
-
 const PencilIcon = styled(FontAwesome)({
   color: ui.hintFontColor,
   height: ui.iconSize,
@@ -55,20 +47,14 @@ const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
 
 const ReflectionGroupHeader = (props: Props) => {
   const {meeting, reflectionGroup} = props;
-  const {reflections} = reflectionGroup;
   const {localStage, localPhase: {phaseType}} = meeting;
-  console.log('meeting');
-  console.dir(meeting);
-  const groupPhaseNotComplete = phaseType === GROUP && localStage.isComplete === false;
-  const showCount = false; // local flag, testing new UI (TA)
-  // <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP} />
+  const canEdit = phaseType === GROUP && localStage.isComplete === false;
   return (
     <GroupHeader phaseType={phaseType}>
       {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
-        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={!groupPhaseNotComplete} />
-        {showCount && <ReflectionCount>{reflections.length}</ReflectionCount>}
-        {groupPhaseNotComplete && <PencilIcon name="pencil" />}
+        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={!canEdit} />
+        {canEdit && <PencilIcon name="pencil" />}
       </TitleAndCount>
       {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />}
     </GroupHeader>

@@ -111,6 +111,10 @@ const ControlButtonBlock = styled('div')({
   width: '12rem'
 });
 
+const SpacedMeetingControlBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+});
+
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, history, team} = props;
   const {viewerId} = atmosphere;
@@ -161,7 +165,7 @@ const RetroDiscussPhase = (props: Props) => {
         </ScrollableBlock>
       </PhaseWrapper>
       {isFacilitating &&
-      <MeetingControlBar style={{justifyContent: 'space-between'}}>
+      <SpacedMeetingControlBar>
         {/* placeholder for layout */}
         <ControlButtonBlock />
         {nextStageRes && <ControlButtonBlock>
@@ -194,7 +198,7 @@ const RetroDiscussPhase = (props: Props) => {
         </ControlButtonBlock>
         {/* placeholder for layout */}
         {!nextStageRes && <ControlButtonBlock />}
-      </MeetingControlBar>
+      </SpacedMeetingControlBar>
       }
     </React.Fragment>
   );
