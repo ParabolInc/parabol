@@ -13,9 +13,9 @@ export default async function signinAndUpdateToken(atmosphere, dispatch, history
       onError(serverError.message);
       return;
     }
-    const {login: {authToken}} = res;
+    const {login: {authToken, user: {tms}}} = res;
     atmosphere.setAuthToken(authToken);
-    const nextUrl = new URLSearchParams(location.search).get('redirectTo') || '/me';
+    const nextUrl = new URLSearchParams(location.search).get('redirectTo') || tms ? '/me' : '/welcome';
     history.push(nextUrl);
     SendClientSegmentEventMutation(atmosphere, 'User Login');
   };
