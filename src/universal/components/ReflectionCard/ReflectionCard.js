@@ -59,6 +59,7 @@ const ReflectionCardRoot = styled('div')(
     border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
     boxShadow: ui.cardBoxShadow,
+    maxWidth: '100%',
     position: 'relative',
     width: ui.retroCardWidth
   },
