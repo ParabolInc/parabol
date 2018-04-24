@@ -206,7 +206,7 @@ class OrgPlanSqueeze extends Component {
             }
           </ButtonBlock>
         </TierPanelBody>
-      )
+      );
     };
 
     const nudgeAnyBillingLeader = () => {
@@ -218,7 +218,7 @@ class OrgPlanSqueeze extends Component {
               const {email, hasUpgradeNudge} = billingLeader;
               const handleBillingLeaderRowClick = () => {
                 console.log('handleBillingLeaderRowClick');
-              }
+              };
               return (
                 <BillingLeaderRow hasUpgradeNudge={hasUpgradeNudge}>
                   <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
@@ -242,7 +242,6 @@ class OrgPlanSqueeze extends Component {
     return (
       <OrgPlanSqueezeRoot>
         <TierPanelLayout>
-
           {/* Personal Panel */}
           <TierPanel tier={PERSONAL}>
             <TierPanelHeader tier={PERSONAL}>{PERSONAL_LABEL}</TierPanelHeader>
@@ -253,7 +252,6 @@ class OrgPlanSqueeze extends Component {
               </CopyWithStatus>
             </TierPanelBody>
           </TierPanel>
-
           {/* Professional Panel */}
           <TierPanel tier={PRO}>
             <TierPanelHeader tier={PRO}>{PRO_LABEL}</TierPanelHeader>
@@ -261,8 +259,8 @@ class OrgPlanSqueeze extends Component {
             {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
             {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
           </TierPanel>
-
         </TierPanelLayout>
+        {/* Learn More Link */}
         <ButtonBlock>
           <Button
             buttonSize="medium"
