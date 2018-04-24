@@ -149,8 +149,7 @@ class OrgPlanSqueeze extends Component {
 
     const isBillingLeader = false;
 
-    // NOTE: hasUpgradeNudge is true when the billing leader has a notification from the current user that has not been cleared
-    //       the billing leader can clear the notificaiton from the current user, which makes hasUpgradeNudge false
+    // NOTE: hasUpgradeNudge is true when the billing leader has received a notification from the current user for this org
     //       the billing leader can have 1 notification from every org member that nudges
     const billingLeaders = [
       {hasUpgradeNudge: false, preferredName: 'Jordan', email: 'jordan@parabol.co'},
@@ -214,13 +213,14 @@ class OrgPlanSqueeze extends Component {
         <TierPanelBody>
           <div>{'Contact a billing leader to upgrade:'}</div>
           <BillingLeaderRowBlock>
-            {billingLeaders.map((billingLeader) => {
+            {billingLeaders.map((billingLeader, idx) => {
               const {email, hasUpgradeNudge} = billingLeader;
               const handleBillingLeaderRowClick = () => {
                 console.log('handleBillingLeaderRowClick');
               };
+              const makeKey = `billingLeader${idx + 1}`;
               return (
-                <BillingLeaderRow hasUpgradeNudge={hasUpgradeNudge}>
+                <BillingLeaderRow hasUpgradeNudge={hasUpgradeNudge} key={makeKey}>
                   <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
                   <Button
                     buttonSize="small"

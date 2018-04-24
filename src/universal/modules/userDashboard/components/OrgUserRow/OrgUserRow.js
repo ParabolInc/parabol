@@ -1,13 +1,51 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import Avatar from 'universal/components/Avatar/Avatar';
-import Row from 'universal/components/Row/Row';
-import Tag from 'universal/components/Tag/Tag';
+import {Avatar, Row, Tag} from 'universal/components';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import styled from 'react-emotion';
+import appTheme from 'universal/styles/theme/appTheme';
+
+
+const UserAvatar = styled('div')({
+  // Define
+});
+
+const UserInfo = styled('div')({
+  paddingLeft: '1rem'
+});
+
+const UserActions = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'flex-end'
+});
+
+const NameAndTags = styled('div')({
+  // Define
+});
+
+const PreferredName = styled('div')({
+  color: appTheme.palette.dark,
+  display: 'inline-block',
+  fontSize: appTheme.typography.s4,
+  lineHeight: '1.625rem',
+  verticalAlign: 'middle'
+});
+
+const InfoLink = styled('a')({
+  color: appTheme.palette.mid,
+  fontSize: appTheme.typography.s2,
+  fontWeight: 600,
+  lineHeight: appTheme.typography.s4,
+
+  '&:hover,:focus': {
+    color: appTheme.palette.mid,
+    textDecoration: 'underline'
+  }
+});
+
 
 const OrgUserRow = (props) => {
   const {
@@ -21,36 +59,36 @@ const OrgUserRow = (props) => {
       },
       isBillingLeader
     },
-    styles
+    viewerIsBillingLeader
   } = props;
   return (
     <Row>
-      <div className={css(styles.userAvatar)}>
+      <UserAvatar>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small" /> :
           <img alt="" src={defaultUserAvatar} />
         }
-      </div>
-      <div className={css(styles.userInfo)}>
-        <div className={css(styles.nameAndTags)}>
-          <div className={css(styles.preferredName)}>
+      </UserAvatar>
+      <UserInfo>
+        <NameAndTags>
+          <PreferredName>
             {preferredName}
-          </div>
+          </PreferredName>
           {isBillingLeader &&
-            <Tag colorPalette="light" label="Billing Leader" />
+            <Tag colorPalette="blue" label="Billing Leader" />
           }
-          {inactive &&
-            <Tag colorPalette="light" label="Inactive" />
+          {inactive && !viewerIsBillingLeader &&
+            <Tag colorPalette="midGray" label="Inactive" />
           }
-        </div>
-        <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
+        </NameAndTags>
+        <InfoLink href={`mailto:${email}`} title="Send an email">
           {email}
-        </a>
-      </div>
+        </InfoLink>
+      </UserInfo>
       {actions &&
-        <div className={css(styles.userActions)}>
+        <UserActions>
           {actions}
-        </div>
+        </UserActions>
       }
     </Row>
   );
@@ -59,63 +97,11 @@ const OrgUserRow = (props) => {
 OrgUserRow.propTypes = {
   actions: PropTypes.any,
   orgMember: PropTypes.object.isRequired,
-  styles: PropTypes.object
+  viewerIsBillingLeader: PropTypes.bool
 };
 
-const styleThunk = () => ({
-  userAvatar: {
-    // Define
-  },
-
-  userInfo: {
-    paddingLeft: '1rem'
-  },
-
-  userActions: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: 1,
-    justifyContent: 'flex-end'
-  },
-
-  nameAndTags: {
-    // Define
-  },
-
-  preferredName: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
-    verticalAlign: 'middle'
-  },
-
-  invitedAt: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4
-  },
-
-  infoLink: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4,
-
-    ':hover': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
-    },
-    ':focus': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
-    }
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(OrgUserRow),
+  OrgUserRow,
   graphql`
     fragment OrgUserRow_orgMember on OrganizationMember {
       user {

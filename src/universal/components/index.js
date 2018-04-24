@@ -20,6 +20,8 @@ export PlainButton from './PlainButton/PlainButton';
 export Row from './Row/Row';
 export Tag from './Tag/Tag';
 export ThirdPartyAuthButton from './ThirdPartyAuthButton/ThirdPartyAuthButton';
+export Toggle from './Toggle/Toggle';
+export Tooltip from './Tooltip/Tooltip';
 export Type from './Type/Type';
 
 // Have a nice day!

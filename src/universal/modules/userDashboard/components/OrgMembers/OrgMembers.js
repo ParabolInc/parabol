@@ -1,24 +1,20 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
 import {createPaginationContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import Button from 'universal/components/Button/Button';
-import Panel from 'universal/components/Panel/Panel';
-import Toggle from 'universal/components/Toggle/Toggle';
-import Tooltip from 'universal/components/Tooltip/Tooltip';
+import {Button, Panel, Toggle, Tooltip} from 'universal/components';
 import {Menu, MenuItem} from 'universal/modules/menu';
 import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
 import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal';
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation';
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import OrgUserRow from '../OrgUserRow/OrgUserRow';
+import styled from 'react-emotion';
+import ui from 'universal/styles/ui';
 
 const originAnchor = {
   vertical: 'top',
@@ -30,6 +26,23 @@ const targetAnchor = {
   horizontal: 'left'
 };
 
+
+const ActionsBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'flex-end'
+});
+
+const MenuToggleBlock = styled('div')({
+  marginLeft: ui.rowGutter,
+  width: '1.5rem'
+});
+
+const ToggleBlock = styled('div')({
+  marginLeft: ui.rowGutter,
+  width: '6.25rem'
+});
+
 const OrgMembers = (props) => {
   const {
     dispatch,
@@ -40,8 +53,7 @@ const OrgMembers = (props) => {
     relay: {environment},
     submitMutation,
     onError,
-    onCompleted,
-    styles
+    onCompleted
   } = props;
 
   const {tier} = org;
@@ -50,6 +62,8 @@ const OrgMembers = (props) => {
     const variables = {orgId, userId, role};
     SetOrgUserRoleMutation(environment, variables, {dispatch, history});
   };
+
+  const viewerIsBillingLeader = false;
 
   const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
 
@@ -137,9 +151,9 @@ const OrgMembers = (props) => {
       isBlock: true,
       size: 'smallest'
     };
-    return (
-      <div className={css(styles.actionLinkBlock)}>
-        <div className={css(styles.toggleBlock)}>
+    const billingLeaderActions = (
+      <ActionsBlock>
+        <ToggleBlock>
           {isPersonalTier ?
             <Tooltip
               tip={toggleTip}
@@ -152,8 +166,8 @@ const OrgMembers = (props) => {
             </Tooltip> :
             makeToggle()
           }
-        </div>
-        <div className={css(styles.menuToggleBlock)}>
+        </ToggleBlock>
+        <MenuToggleBlock>
           {(orgMember.isBillingLeader && billingLeaderCount === 1) ?
             <Tooltip
               tip={menuTip}
@@ -175,23 +189,36 @@ const OrgMembers = (props) => {
               }
             />
           }
-        </div>
-      </div>
+        </MenuToggleBlock>
+      </ActionsBlock>
     );
+    const viewerIsUserRow = true; // if the current user is not a BL and the current row is for this user
+    const orgMemberActions = (
+      <ActionsBlock>
+        {viewerIsUserRow && <Button
+          buttonSize="small"
+          buttonStyle="flat"
+          colorPalette="dark"
+          label="Leave Organization"
+          onClick={() => console.log('I want to leave!!!')}
+        />}
+      </ActionsBlock>
+    );
+    const actions = viewerIsBillingLeader ? billingLeaderActions : orgMemberActions;
+    return actions;
   };
   return (
     <Panel label="Organization Members">
-      <div className={css(styles.listOfAdmins)}>
-        {orgMembers.edges.map(({node: orgMember}) => {
-          return (
-            <OrgUserRow
-              key={`orgUser${orgMember.user.email}`}
-              actions={userRowActions(orgMember)}
-              orgMember={orgMember}
-            />
-          );
-        })}
-      </div>
+      {orgMembers.edges.map(({node: orgMember}) => {
+        return (
+          <OrgUserRow
+            key={`orgUser${orgMember.user.email}`}
+            actions={userRowActions(orgMember)}
+            orgMember={orgMember}
+            viewerIsBillingLeader={viewerIsBillingLeader}
+          />
+        );
+      })}
     </Panel>
   );
 };
@@ -207,30 +234,11 @@ OrgMembers.propTypes = {
   submitting: PropTypes.bool,
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
-  styles: PropTypes.object
+  onError: PropTypes.func.isRequired
 };
 
-const styleThunk = () => ({
-  actionLinkBlock: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'flex-end'
-  },
-
-  menuToggleBlock: {
-    marginLeft: ui.rowGutter,
-    width: '1.5rem'
-  },
-
-  toggleBlock: {
-    marginLeft: ui.rowGutter,
-    width: '100px'
-  }
-});
-
 export default createPaginationContainer(
-  withRouter(connect()(withMutationProps(withStyles(styleThunk)(OrgMembers)))),
+  withRouter(connect()(withMutationProps(OrgMembers))),
   graphql`
     fragment OrgMembers_viewer on User {
       organization(orgId: $orgId) {
