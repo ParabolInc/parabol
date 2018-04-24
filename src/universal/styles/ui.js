@@ -47,7 +47,7 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
 const {purple, purpleLightened, midGray} = appTheme.brand.primary;
-const {red, rose, green} = appTheme.brand.secondary;
+const {blue, red, rose, green, yellow} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
 // Border radius ratio: powers of 2
@@ -81,7 +81,9 @@ const PALETTE_OPTIONS = [
   'gray',
   'midGray',
   'green',
-  'red'
+  'red',
+  'yellow',
+  'blue'
 ];
 const PALETTE_VALUES = {
   cool,
@@ -93,7 +95,9 @@ const PALETTE_VALUES = {
   gray,
   midGray,
   green,
-  red
+  red,
+  yellow,
+  blue
 };
 
 // Fields
@@ -681,8 +685,11 @@ const ui = {
   tagPalette: [
     'cool',
     'gray',
+    'midGray',
     'light',
     'warm',
+    'yellow',
+    'blue',
     'white'
   ],
 

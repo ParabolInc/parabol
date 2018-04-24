@@ -1,17 +1,50 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Button from 'universal/components/Button/Button';
-import Row from 'universal/components/Row/Row';
-import {tagBlock} from 'universal/components/Tag/tagBase';
-import TagPro from 'universal/components/Tag/TagPro';
-import appTheme from 'universal/styles/theme/appTheme';
+import {Avatar, Button, Row} from 'universal/components';
+import {TagBlock, TagPro} from 'universal/components/Tag';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {PRO} from 'universal/utils/constants';
+import {PERSONAL, PRO, PRO_LABEL} from 'universal/utils/constants';
 import withRouter from 'react-router-dom/es/withRouter';
 import plural from 'universal/utils/plural';
+
+import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+import styled from 'react-emotion';
+
+const OrgAvatar = styled('div')({
+  cursor: 'pointer'
+});
+
+const OrgInfo = styled('div')({
+  paddingLeft: '1rem'
+});
+
+const OrgActions = styled('div')({
+  flex: 1,
+  marginLeft: ui.rowGutter,
+  textAlign: 'right'
+});
+
+const Name = styled('div')({
+  color: appTheme.palette.dark,
+  cursor: 'pointer',
+  display: 'inline-block',
+  fontSize: appTheme.typography.s4,
+  lineHeight: '1.625rem',
+  verticalAlign: 'middle'
+});
+
+const SubHeader = styled('div')({
+  color: appTheme.palette.dark,
+  fontSize: appTheme.typography.s2,
+  fontWeight: 600,
+  lineHeight: appTheme.typography.s4
+});
+
+const StyledTagBlock = styled(TagBlock)({
+  marginLeft: '.125rem',
+  marginTop: '-.5rem'
+});
 
 const OrganizationRow = (props) => {
   const {
@@ -26,8 +59,7 @@ const OrganizationRow = (props) => {
       },
       picture,
       tier
-    },
-    styles
+    }
   } = props;
   const orgAvatar = picture || defaultOrgAvatar;
   const label = isBillingLeader ? 'Settings and Billing' : 'Create New Team';
@@ -35,27 +67,35 @@ const OrganizationRow = (props) => {
   const onRowClickUrl = isBillingLeader ? `/me/organizations/${orgId}` : `/newteam/${orgId}`;
   const onRowClick = () => history.push(onRowClickUrl);
   const totalUsers = activeUserCount + inactiveUserCount;
+  const upgradeCTALabel = <span>{'Upgrade to '}<b>{PRO_LABEL}</b></span>;
   return (
     <Row>
-      <div className={css(styles.orgAvatar)} onClick={onRowClick}>
-        <img className={css(styles.avatarImg)} height={50} width={50} src={orgAvatar} />
-      </div>
-      <div className={css(styles.orgInfo)}>
-        <div className={css(styles.nameAndTags)}>
-          <div className={css(styles.name)} onClick={onRowClick}>
-            {name}
-            {tier === PRO &&
-            <div className={css(styles.tagBlock)}>
-              <TagPro />
-            </div>
-            }
-          </div>
-          <div className={css(styles.subHeader)}>
-            {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
-          </div>
-        </div>
-      </div>
-      <div className={css(styles.orgActions)}>
+      <OrgAvatar onClick={onRowClick}>
+        <Avatar size="fill" picture={orgAvatar} />
+      </OrgAvatar>
+      <OrgInfo>
+        <Name onClick={onRowClick}>
+          {name}
+          {tier === PRO &&
+          <StyledTagBlock>
+            <TagPro />
+          </StyledTagBlock>
+          }
+        </Name>
+        <SubHeader>
+          {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
+        </SubHeader>
+      </OrgInfo>
+      <OrgActions>
+        {tier === PERSONAL &&
+          <Button
+            buttonStyle="flat"
+            colorPalette="warm"
+            label={upgradeCTALabel}
+            onClick={onRowClick}
+            buttonSize="small"
+          />
+        }
         <Button
           buttonStyle="flat"
           colorPalette="dark"
@@ -64,7 +104,7 @@ const OrganizationRow = (props) => {
           onClick={onRowClick}
           buttonSize="small"
         />
-      </div>
+      </OrgActions>
     </Row>
   );
 };
@@ -81,50 +121,7 @@ OrganizationRow.propTypes = {
       activeUserCount: PropTypes.number.isRequired,
       inactiveUserCount: PropTypes.number.isRequired
     }).isRequired
-  }).isRequired,
-  styles: PropTypes.object
+  }).isRequired
 };
 
-const styleThunk = () => ({
-  orgAvatar: {
-    cursor: 'pointer'
-  },
-
-  orgInfo: {
-    paddingLeft: '1rem'
-  },
-
-  orgActions: {
-    flex: 1,
-    marginLeft: ui.rowGutter,
-    textAlign: 'right'
-  },
-
-  nameAndTags: {
-    // Define
-  },
-
-  name: {
-    color: appTheme.palette.dark,
-    cursor: 'pointer',
-    display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
-    verticalAlign: 'middle'
-  },
-
-  subHeader: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4
-  },
-
-  tagBlock: {
-    ...tagBlock,
-    marginLeft: '.125rem',
-    marginTop: '-.5rem'
-  }
-});
-
-export default withRouter(withStyles(styleThunk)(OrganizationRow));
+export default withRouter(OrganizationRow);

@@ -1,63 +1,75 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import {tagBase} from './tagBase';
+
+const tagTheme = {
+  cool: {
+    backgroundColor: ui.palette.cool,
+    color: ui.palette.white
+  },
+
+  gray: {
+    backgroundColor: ui.palette.light,
+    color: ui.palette.dark
+  },
+
+  midGray: {
+    backgroundColor: ui.palette.midGray,
+    color: ui.palette.white
+  },
+
+  light: {
+    backgroundColor: ui.palette.light,
+    color: ui.palette.dark
+  },
+
+  warm: {
+    backgroundColor: ui.palette.warm,
+    color: ui.palette.white
+  },
+
+  yellow: {
+    backgroundColor: ui.palette.yellow,
+    color: ui.palette.mid
+  },
+
+  blue: {
+    backgroundColor: ui.palette.blue,
+    color: ui.palette.white
+  },
+
+  white: {
+    backgroundColor: ui.palette.white,
+    color: ui.palette.mid
+  }
+};
+
+const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
+  backgroundColor: tagTheme[colorPalette].backgroundColor,
+  borderRadius: '4em',
+  boxShadow: hasDepth && ui.shadow[0],
+  color: tagTheme[colorPalette].color,
+  display: 'inline-block',
+  fontSize: ui.tagFontSize,
+  fontWeight: ui.tagFontWeight,
+  height: ui.tagHeight,
+  lineHeight: ui.tagHeight,
+  marginLeft: ui.tagGutter,
+  padding: ui.tagPadding,
+  textAlign: 'center',
+  verticalAlign: 'middle'
+}));
 
 const Tag = (props) => {
-  const {
-    colorPalette,
-    label,
-    styles
-  } = props;
-
-  const tagStyles = css(
-    styles.tagBase,
-    styles[colorPalette]
-  );
-
-  return (
-    <div className={tagStyles}>
-      {label}
-    </div>
-  );
+  const {colorPalette, hasDepth, label} = props;
+  return <TagRoot colorPalette={colorPalette || 'midGray'} hasDepth={hasDepth}>{label}</TagRoot>;
 };
 
 Tag.propTypes = {
   colorPalette: PropTypes.oneOf(ui.tagPalette),
-  label: PropTypes.string,
-  styles: PropTypes.object
+  hasDepth: PropTypes.bool,
+  label: PropTypes.string
 };
 
-const styleThunk = () => ({
-  tagBase,
-
-  cool: {
-    backgroundColor: appTheme.palette.cool10l,
-    color: appTheme.palette.cool
-  },
-
-  gray: {
-    backgroundColor: appTheme.palette.mid10l,
-    color: appTheme.palette.dark
-  },
-
-  light: {
-    backgroundColor: appTheme.palette.light,
-    color: appTheme.palette.light30d
-  },
-
-  warm: {
-    backgroundColor: appTheme.palette.warm10l,
-    color: appTheme.palette.warm
-  },
-
-  white: {
-    backgroundColor: '#fff',
-    color: appTheme.palette.mid
-  }
-});
-
-export default withStyles(styleThunk)(Tag);
+export default Tag;

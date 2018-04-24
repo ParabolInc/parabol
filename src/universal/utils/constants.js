@@ -72,7 +72,7 @@ export const USER_DASH = 'userDash';
 
 /* Accounts */
 export const PERSONAL_LABEL = 'Personal';
-export const PRO_LABEL = 'Pro';
+export const PRO_LABEL = 'Professional';
 
 /* NotificationRow Types */
 // Send to folks that got reactivated on a team

@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
@@ -7,67 +6,93 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import {DashNavControl} from 'universal/components';
-import TagPro from 'universal/components/Tag/TagPro';
-import {tagBlock} from 'universal/components/Tag/tagBase';
+import {TagBlock, TagPersonal, TagPro} from 'universal/components/Tag';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import appTheme from 'universal/styles/theme/appTheme';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {BILLING_PAGE, MEMBERS_PAGE, PRO} from 'universal/utils/constants';
+import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
+
+import appTheme from 'universal/styles/theme/appTheme';
+import styled from 'react-emotion';
 
 const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
 const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot');
 
+const AvatarAndName = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex',
+  flexShrink: 0,
+  margin: '0 0 1rem',
+  width: '100%'
+});
+
+const OrgDetails = styled('div')({
+  fontSize: appTheme.typography.s3,
+  lineHeight: appTheme.typography.s7,
+  paddingBottom: '.75rem'
+});
+
+const OrgNameAndDetails = styled('div')({
+  color: appTheme.palette.mid,
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  marginLeft: '1.5rem',
+  width: '100%'
+});
+
+const BackControlBlock = styled('div')({
+  margin: '1rem 0'
+});
+
+const StyledTagBlock = styled(TagBlock)({
+  marginLeft: '.25rem',
+  marginTop: '-.375rem'
+});
+
 const Organization = (props) => {
-  const {
-    history,
-    match,
-    orgId,
-    styles,
-    viewer
-  } = props;
+  const {history, match, orgId, viewer} = props;
   const org = viewer ? viewer.organization : {};
   const {createdAt, name: orgName, picture: orgAvatar, tier} = org;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
-  const toggle = <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />;
+  const toggle = <div><EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled /></div>;
   const extraProps = {orgId, org};
   const goToOrgs = () => history.push('/me/organizations');
 
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
-      <SettingsWrapper>
-        <div className={css(styles.backControl)}>
+      <SettingsWrapper maxWidth="40.25rem">
+        <BackControlBlock>
           <DashNavControl
             icon="arrow-circle-left"
             label="Back to Organizations"
             onClick={goToOrgs}
           />
-        </div>
-        <div className={css(styles.avatarAndName)}>
+        </BackControlBlock>
+        <AvatarAndName>
           <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
             <OrgAvatarInput orgId={orgId} />
           </PhotoUploadModal>
-          <div className={css(styles.orgNameAndDetails)}>
+          <OrgNameAndDetails>
             <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
-            <div className={css(styles.orgDetails)}>
+            <OrgDetails>
               {'Created '}{makeDateString(createdAt)}
-              {tier === PRO &&
-                <div className={css(styles.tagBlock)}>
-                  <TagPro />
-                </div>
+              {tier &&
+                <StyledTagBlock>
+                  {tier === PRO && <TagPro />}
+                  {tier === PERSONAL && <TagPersonal />}
+                </StyledTagBlock>
               }
-            </div>
+            </OrgDetails>
             <BillingMembersToggle orgId={orgId} />
-          </div>
-        </div>
+          </OrgNameAndDetails>
+        </AvatarAndName>
         <Switch>
           <AsyncRoute exact path={`${match.url}`} mod={orgBilling} extraProps={extraProps} />
           <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps} />
@@ -82,70 +107,11 @@ Organization.propTypes = {
   match: PropTypes.object.isRequired,
   orgId: PropTypes.string.isRequired,
   history: PropTypes.object,
-  styles: PropTypes.object,
   viewer: PropTypes.object
 };
 
-const styleThunk = () => ({
-  avatarAndName: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    flexShrink: 0,
-    margin: '0 0 1rem',
-    maxWidth: '40rem',
-    width: '100%'
-  },
-
-  creditCardProvider: {
-    margin: '0 1rem'
-  },
-
-  infoAndUpdate: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: `0 ${ui.panelGutter} ${ui.panelGutter}`
-  },
-
-  noInvoices: {
-    textAlign: 'center',
-    margin: '1rem'
-  },
-
-  orgDetails: {
-    fontSize: appTheme.typography.s3,
-    lineHeight: appTheme.typography.s7,
-    paddingBottom: '.75rem'
-  },
-
-  orgNameAndDetails: {
-    color: appTheme.palette.mid,
-    display: 'flex',
-    flexDirection: 'column',
-    marginLeft: '1.5rem',
-    maxWidth: '24.875rem',
-    width: '100%'
-  },
-
-  backControl: {
-    margin: '1rem 0'
-  },
-
-  toggleBlock: {
-    display: 'inline-block',
-    marginLeft: ui.rowGutter,
-    width: '100px'
-  },
-
-  tagBlock: {
-    ...tagBlock,
-    marginLeft: '.25rem',
-    marginTop: '-.375rem'
-  }
-});
-
 export default createFragmentContainer(
-  withRouter(withStyles(styleThunk)(Organization)),
+  withRouter(Organization),
   graphql`
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {
