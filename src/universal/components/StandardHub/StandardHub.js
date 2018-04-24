@@ -137,7 +137,7 @@ const StandardHub = (props) => {
   // TODO: get a real array of free orgs, clean this up (TA)
   // looking at a local org to test UI
   const showBillingNudgeCTA = true;
-  const arrayFreeOrgs = showBillingNudgeCTA ? [{id: 'Hk6PztMhz'}] : [];
+  const arrayFreeOrgs = showBillingNudgeCTA ? [{id: 'HyF7ebanz'}] : [];
 
   const makeUpgradeCTA = () => {
     const label = 'Upgrade to Professional';

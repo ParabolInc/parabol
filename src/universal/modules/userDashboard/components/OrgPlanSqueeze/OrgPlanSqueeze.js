@@ -9,6 +9,7 @@ import plural from 'universal/utils/plural';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import {textOverflow} from 'universal/styles/helpers';
 
 import makeGradient from 'universal/styles/helpers/makeGradient';
 
@@ -69,15 +70,14 @@ const ButtonBlock = styled('div')({
   width: '100%'
 });
 
-const CostHint = styled('div')({
+const InlineHint = styled('div')({
   backgroundColor: ui.palette.light,
   borderRadius: ui.borderRadiusSmall,
-  color: ui.palette.dark,
+  color: ui.hintFontColor,
   fontSize: appTheme.typography.s2,
-  fontWeight: 600,
-  lineHeight: '2.5rem',
+  lineHeight: appTheme.typography.s5,
   margin: '0 1rem',
-  padding: '0 1rem',
+  padding: '.625rem 1rem',
   textAlign: 'center'
 });
 
@@ -98,6 +98,30 @@ const CopyWithStatus = styled('div')({
   }
 });
 
+const BillingLeaderRowBlock = styled('div')({
+  margin: '1.25rem auto .5rem'
+});
+
+const BillingLeaderRowLabel = styled('div')({
+  fontSize: appTheme.typography.s2,
+  flex: 1,
+  paddingBottom: '.0625rem',
+  paddingRight: '1rem',
+  textAlign: 'left',
+  '& > span': {
+    ...textOverflow
+  }
+});
+
+const BillingLeaderRow = styled('div')(({hasNudge}) => ({
+  alignItems: 'center',
+  color: hasNudge ? ui.hintFontColor : ui.colorText,
+  display: 'flex',
+  justifyContent: 'space-between',
+  margin: '0 0 .5rem',
+  width: '100%'
+}));
+
 class OrgPlanSqueeze extends Component {
   state = {showCost: false}
 
@@ -111,14 +135,110 @@ class OrgPlanSqueeze extends Component {
     const {activeUserCount, orgId} = this.props;
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const {showCost} = this.state;
+    const primaryButtonProps = {
+      buttonSize: 'medium',
+      buttonStyle: 'primary',
+      depth: 2,
+      isBlock: true
+    };
     const toggle = (<Button
-      buttonSize="medium"
-      buttonStyle="primary"
-      depth={2}
-      isBlock
+      {...primaryButtonProps}
       label="Upgrade to the Pro Plan"
     />);
     const openUrl = (url) => () => window.open(url, '_blank');
+
+    const isBillingLeader = false;
+
+    // NOTE: hasNudge is true when the billing leader has a notification from the current user that has not been cleared
+    //       the billing leader can clear the notificaiton from the current user, which makes hasNudge false
+    //       the billing leader can have 1 notification from every org member that nudges
+    const billingLeaders = [
+      {hasNudge: false, preferredName: 'Jordan', email: 'jordan@parabol.co'},
+      {hasNudge: false, preferredName: 'Taya', email: 'taya@parabol.co'},
+      {hasNudge: true, preferredName: 'Marimar', email: 'marimar@parabol.co'}
+    ];
+
+    const billingLeaderSqueeze = (
+      <TierPanelBody>
+        <div>
+          {'This could be you.'}<br />
+          {'Ready for the full experience?'}
+        </div>
+        <ButtonBlock>
+          <CreditCardModalContainer
+            orgId={orgId}
+            toggle={toggle}
+          />
+        </ButtonBlock>
+        {showCost ?
+          <InlineHint>
+            {`${activeUserCount} Active ${plural(activeUserCount, 'User')} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
+          </InlineHint> :
+          <Button
+            buttonSize="medium"
+            buttonStyle="flat"
+            colorPalette="warm"
+            icon="question-circle"
+            iconPlacement="right"
+            label="How much will it cost?"
+            onClick={this.getCost}
+          />
+        }
+      </TierPanelBody>
+    );
+
+    const nudgeTheBillingLeader = () => {
+      const {email, hasNudge, preferredName} = billingLeaders[0];
+      return (
+        <TierPanelBody>
+          <div>
+            {'Contact your billing leader,'}<br />
+            <b>{email}</b>{', to upgrade.'}
+          </div>
+          <ButtonBlock>
+            {hasNudge ?
+              <InlineHint>{`We sent ${preferredName} a notification from you about upgrading.`}</InlineHint> :
+              <Button
+                {...primaryButtonProps}
+                label={`Send ${preferredName} a Notification`}
+                onClick={() => (console.log('send a billing nudge'))}
+              />
+            }
+          </ButtonBlock>
+        </TierPanelBody>
+      )
+    };
+
+    const nudgeAnyBillingLeader = () => {
+      return (
+        <TierPanelBody>
+          <div>{'Contact a billing leader to upgrade:'}</div>
+          <BillingLeaderRowBlock>
+            {billingLeaders.map((billingLeader) => {
+              const {email, hasNudge} = billingLeader;
+              const handleBillingLeaderRowClick = () => {
+                console.log('handleBillingLeaderRowClick');
+              }
+              return (
+                <BillingLeaderRow hasNudge={hasNudge}>
+                  <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
+                  <Button
+                    buttonSize="small"
+                    buttonStyle="link"
+                    colorPalette={hasNudge ? 'dark' : 'warm'}
+                    disabled={hasNudge}
+                    icon={hasNudge ? 'check' : 'paper-plane'}
+                    label={hasNudge ? 'Notification Sent' : 'Send Notification'}
+                    onClick={hasNudge ? null : handleBillingLeaderRowClick}
+                  />
+                </BillingLeaderRow>
+              );
+            })}
+          </BillingLeaderRowBlock>
+        </TierPanelBody>
+      );
+    };
+
     return (
       <OrgPlanSqueezeRoot>
         <TierPanelLayout>
@@ -137,32 +257,9 @@ class OrgPlanSqueeze extends Component {
           {/* Professional Panel */}
           <TierPanel tier={PRO}>
             <TierPanelHeader tier={PRO}>{PRO_LABEL}</TierPanelHeader>
-            <TierPanelBody>
-              <div>
-                {'This could be you.'}<br />
-                {'Ready for the full experience?'}
-              </div>
-              <ButtonBlock>
-                <CreditCardModalContainer
-                  orgId={orgId}
-                  toggle={toggle}
-                />
-              </ButtonBlock>
-              {showCost ?
-                <CostHint>
-                  {`${activeUserCount} Active ${plural(activeUserCount, 'User')} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
-                </CostHint> :
-                <Button
-                  buttonSize="medium"
-                  buttonStyle="flat"
-                  colorPalette="warm"
-                  icon="question-circle"
-                  iconPlacement="right"
-                  label="How much will it cost?"
-                  onClick={this.getCost}
-                />
-              }
-            </TierPanelBody>
+            {isBillingLeader && billingLeaderSqueeze}
+            {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
+            {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
           </TierPanel>
 
         </TierPanelLayout>
