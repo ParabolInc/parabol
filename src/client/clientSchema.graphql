@@ -19,7 +19,3 @@ extend type Task {
 extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
-
-extend type RetroPhaseItem {
-  isDropZoneEnabled: Boolean
-}
