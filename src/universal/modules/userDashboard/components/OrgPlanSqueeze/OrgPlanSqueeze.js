@@ -113,9 +113,9 @@ const BillingLeaderRowLabel = styled('div')({
   }
 });
 
-const BillingLeaderRow = styled('div')(({hasNudge}) => ({
+const BillingLeaderRow = styled('div')(({hasUpgradeNudge}) => ({
   alignItems: 'center',
-  color: hasNudge ? ui.hintFontColor : ui.colorText,
+  color: hasUpgradeNudge ? ui.hintFontColor : ui.colorText,
   display: 'flex',
   justifyContent: 'space-between',
   margin: '0 0 .5rem',
@@ -149,13 +149,13 @@ class OrgPlanSqueeze extends Component {
 
     const isBillingLeader = false;
 
-    // NOTE: hasNudge is true when the billing leader has a notification from the current user that has not been cleared
-    //       the billing leader can clear the notificaiton from the current user, which makes hasNudge false
+    // NOTE: hasUpgradeNudge is true when the billing leader has a notification from the current user that has not been cleared
+    //       the billing leader can clear the notificaiton from the current user, which makes hasUpgradeNudge false
     //       the billing leader can have 1 notification from every org member that nudges
     const billingLeaders = [
-      {hasNudge: false, preferredName: 'Jordan', email: 'jordan@parabol.co'},
-      {hasNudge: false, preferredName: 'Taya', email: 'taya@parabol.co'},
-      {hasNudge: true, preferredName: 'Marimar', email: 'marimar@parabol.co'}
+      {hasUpgradeNudge: false, preferredName: 'Jordan', email: 'jordan@parabol.co'},
+      {hasUpgradeNudge: false, preferredName: 'Taya', email: 'taya@parabol.co'},
+      {hasUpgradeNudge: true, preferredName: 'Marimar', email: 'marimar@parabol.co'}
     ];
 
     const billingLeaderSqueeze = (
@@ -188,7 +188,7 @@ class OrgPlanSqueeze extends Component {
     );
 
     const nudgeTheBillingLeader = () => {
-      const {email, hasNudge, preferredName} = billingLeaders[0];
+      const {email, hasUpgradeNudge, preferredName} = billingLeaders[0];
       return (
         <TierPanelBody>
           <div>
@@ -196,7 +196,7 @@ class OrgPlanSqueeze extends Component {
             <b>{email}</b>{', to upgrade.'}
           </div>
           <ButtonBlock>
-            {hasNudge ?
+            {hasUpgradeNudge ?
               <InlineHint>{`We sent ${preferredName} a notification from you about upgrading.`}</InlineHint> :
               <Button
                 {...primaryButtonProps}
@@ -215,21 +215,21 @@ class OrgPlanSqueeze extends Component {
           <div>{'Contact a billing leader to upgrade:'}</div>
           <BillingLeaderRowBlock>
             {billingLeaders.map((billingLeader) => {
-              const {email, hasNudge} = billingLeader;
+              const {email, hasUpgradeNudge} = billingLeader;
               const handleBillingLeaderRowClick = () => {
                 console.log('handleBillingLeaderRowClick');
               }
               return (
-                <BillingLeaderRow hasNudge={hasNudge}>
+                <BillingLeaderRow hasUpgradeNudge={hasUpgradeNudge}>
                   <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
                   <Button
                     buttonSize="small"
                     buttonStyle="link"
-                    colorPalette={hasNudge ? 'dark' : 'warm'}
-                    disabled={hasNudge}
-                    icon={hasNudge ? 'check' : 'paper-plane'}
-                    label={hasNudge ? 'Notification Sent' : 'Send Notification'}
-                    onClick={hasNudge ? null : handleBillingLeaderRowClick}
+                    colorPalette={hasUpgradeNudge ? 'dark' : 'warm'}
+                    disabled={hasUpgradeNudge}
+                    icon={hasUpgradeNudge ? 'check' : 'paper-plane'}
+                    label={hasUpgradeNudge ? 'Notification Sent' : 'Send Notification'}
+                    onClick={hasUpgradeNudge ? null : handleBillingLeaderRowClick}
                   />
                 </BillingLeaderRow>
               );
