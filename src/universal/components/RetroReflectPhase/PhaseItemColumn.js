@@ -26,6 +26,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 import dndNoise from 'universal/utils/dndNoise';
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
 import appTheme from 'universal/styles/theme/appTheme';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -67,13 +68,14 @@ const ButtonBlock = styled('div')({
   width: '100%'
 });
 
-type Props = {
+type Props = {|
   atmosphere: Object,
   canDrop: boolean,
   connectDropTarget: () => Node,
   meeting: Meeting,
-  retroPhaseItem: RetroPhaseItem
-};
+  retroPhaseItem: RetroPhaseItem,
+  ...MutationProps
+|};
 
 type State = {
   columnReflectionGroups: $ReadOnlyArray<Object>,
@@ -108,8 +110,6 @@ class PhaseItemColumn extends Component<Props, State> {
     const {columnReflectionGroups} = this.state;
     const {localPhase: {phaseType}, localStage: {isComplete}} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
-    // this.groupRefs.clear();
-    // console.log('clearing groupRefs');
     return connectDropTarget(
       <div>
         <ColumnWrapper>

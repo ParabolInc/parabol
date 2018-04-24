@@ -14,6 +14,7 @@ import {DropTarget as dropTarget} from 'react-dnd';
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
 import dndNoise from 'universal/utils/dndNoise';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 
 const {Component} = React;
 
@@ -24,7 +25,8 @@ export type Props = {|
   innerRef?: (HTMLElement) => void,
   meeting: Meeting,
   reflectionGroup: ReflectionGroupType,
-  retroPhaseItemId: string
+  retroPhaseItemId: string,
+  ...MutationProps
 |};
 
 type State = {
@@ -63,7 +65,7 @@ class ReflectionGroup extends Component<Props, State> {
     this.forceUpdate();
   };
 
-  topCardRef: ?HTMLElement
+  topCardRef: ?HTMLElement;
 
   toggleExpanded = () => {
     const {atmosphere, reflectionGroup: {reflections, reflectionGroupId}} = this.props;
