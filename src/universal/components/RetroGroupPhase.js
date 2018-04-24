@@ -57,7 +57,7 @@ const RetroGroupPhase = (props: Props) => {
       }
     </React.Fragment>
   );
-}
+};
 
 export default createFragmentContainer(
   withMutationProps(withAtmosphere(RetroGroupPhase)),

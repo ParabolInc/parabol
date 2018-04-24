@@ -1,6 +1,5 @@
 // @flow
 import * as React from 'react';
-import type {ReflectionGroupID} from 'universal/types/retro';
 import styled from 'react-emotion';
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard';
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
@@ -76,7 +75,8 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   renderReflection = (reflection: Object, idx: number) => {
-    const {canDrop, meeting, retroPhaseItemId, reflectionGroup: {isExpanded, reflections, retroPhaseItemId: currentRetroPhaseItemId}} = this.props;
+    const {canDrop, meeting, retroPhaseItemId, reflectionGroup} = this.props;
+    const {isExpanded, reflections, retroPhaseItemId: currentRetroPhaseItemId} = reflectionGroup;
     const {localPhase: {phaseType}} = meeting;
     const isTopCard = idx === reflections.length - 1;
     const isCollapsed = isExpanded ? false : !isTopCard;

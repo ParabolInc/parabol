@@ -12,6 +12,7 @@ class NullableTask extends Component {
     handleAddTask: PropTypes.func,
     isAgenda: PropTypes.bool,
     isDragging: PropTypes.bool,
+    isPreview: PropTypes.bool,
     myUserId: PropTypes.string,
     task: PropTypes.object
   };
