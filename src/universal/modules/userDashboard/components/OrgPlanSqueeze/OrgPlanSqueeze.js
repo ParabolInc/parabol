@@ -35,6 +35,7 @@ const TierPanelLayout = styled('div')({
 
 const TierPanel = styled('div')(({tier}) => ({
   boxShadow: tier === PERSONAL ? ui.shadow[0] : ui.shadow[2],
+  borderRadius: ui.borderRadiusLarge,
   width: tier === PERSONAL ? '15rem' : '21.25rem'
 }));
 
