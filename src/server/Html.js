@@ -26,7 +26,7 @@ export default function Html({store, assets, clientIds}) {
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
   const context = {};
-  const atmosphere = new Atmosphere()
+  const atmosphere = new Atmosphere();
   let critical;
   try {
     critical = EmotionServer.extractCritical(renderToString(
