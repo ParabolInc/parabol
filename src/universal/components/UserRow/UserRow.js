@@ -1,59 +1,83 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Row from 'universal/components/Row/Row';
 import Tag from 'universal/components/Tag/Tag';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import fromNow from 'universal/utils/fromNow';
+import styled from 'react-emotion';
+
+const UserInfo = styled('div')({
+  paddingLeft: '1rem'
+});
+
+const UserActions = styled('div')({
+  alignItems: 'center',
+  flex: 1,
+  justifyContent: 'flex-end'
+});
+
+const PreferredName = styled('div')({
+  color: appTheme.palette.dark,
+  display: 'inline-block',
+  fontSize: appTheme.typography.s4,
+  lineHeight: '1.625rem',
+  verticalAlign: 'middle'
+});
+
+const InvitedAt = styled('div')({
+  color: appTheme.palette.dark,
+  fontSize: appTheme.typography.s2,
+  fontWeight: 600,
+  lineHeight: appTheme.typography.s4
+});
+
+const InfoLink = styled('a')({
+  color: appTheme.palette.mid,
+  fontSize: appTheme.typography.s2,
+  fontWeight: 600,
+  lineHeight: appTheme.typography.s4,
+
+  ':hover, :focus': {
+    color: appTheme.palette.mid,
+    textDecoration: 'underline'
+  }
+});
 
 const UserRow = (props) => {
-  const {
-    actions,
-    possibleTeamMember,
-    styles
-  } = props;
+  const {actions, possibleTeamMember} = props;
   const {__typename: type, email, isLead, picture, preferredName, createdAt, updatedAt} = possibleTeamMember;
   return (
     <Row>
-      <div className={css(styles.userAvatar)}>
+      <div>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small" /> :
           <img alt="" src={defaultUserAvatar} />
         }
       </div>
-      <div className={css(styles.userInfo)}>
+      <UserInfo>
         {type === 'TeamMember' ?
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {preferredName}
-            </div>
-            {isLead &&
-              <Tag colorPalette="light" label="Lead" />
-            }
+          <div>
+            <PreferredName>{preferredName}</PreferredName>
+            {isLead && <Tag colorPalette="blue" label="Team Lead" />}
           </div> :
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {email}
-            </div>
-          </div>
+          <PreferredName>{email}</PreferredName>
         }
         {type !== 'TeamMember' ?
-          <div className={css(styles.invitedAt)}>
+          <InvitedAt>
             {`invited ${fromNow(createdAt || updatedAt)}`}
-          </div> :
-          <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
+          </InvitedAt> :
+          <InfoLink href={`mailto:${email}`} title="Send an email">
             {email}
-          </a>
+          </InfoLink>
         }
-      </div>
+      </UserInfo>
       {actions &&
-        <div className={css(styles.userActions)}>
+        <UserActions>
           {actions}
-        </div>
+        </UserActions>
       }
     </Row>
   );
@@ -69,57 +93,8 @@ UserRow.defaultProps = {
   email: 'name@company.co'
 };
 
-const styleThunk = () => ({
-  userAvatar: {
-    // Define
-  },
-
-  userInfo: {
-    paddingLeft: '1rem'
-  },
-
-  userActions: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'flex-end'
-  },
-
-  nameAndTags: {
-    // Define
-  },
-
-  preferredName: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
-    verticalAlign: 'middle'
-  },
-
-  invitedAt: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4
-  },
-
-  infoLink: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4,
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(UserRow),
+  UserRow,
   graphql`
     fragment UserRow_possibleTeamMember on PossibleTeamMember {
       __typename

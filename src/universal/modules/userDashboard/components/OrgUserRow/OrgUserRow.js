@@ -6,11 +6,6 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import styled from 'react-emotion';
 import appTheme from 'universal/styles/theme/appTheme';
 
-
-const UserAvatar = styled('div')({
-  // Define
-});
-
 const UserInfo = styled('div')({
   paddingLeft: '1rem'
 });
@@ -20,10 +15,6 @@ const UserActions = styled('div')({
   display: 'flex',
   flex: 1,
   justifyContent: 'flex-end'
-});
-
-const NameAndTags = styled('div')({
-  // Define
 });
 
 const PreferredName = styled('div')({
@@ -63,24 +54,22 @@ const OrgUserRow = (props) => {
   } = props;
   return (
     <Row>
-      <UserAvatar>
+      <div>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small" /> :
           <img alt="" src={defaultUserAvatar} />
         }
-      </UserAvatar>
+      </div>
       <UserInfo>
-        <NameAndTags>
-          <PreferredName>
-            {preferredName}
-          </PreferredName>
+        <div>
+          <PreferredName>{preferredName}</PreferredName>
           {isBillingLeader &&
             <Tag colorPalette="blue" label="Billing Leader" />
           }
           {inactive && !viewerIsBillingLeader &&
             <Tag colorPalette="midGray" label="Inactive" />
           }
-        </NameAndTags>
+        </div>
         <InfoLink href={`mailto:${email}`} title="Send an email">
           {email}
         </InfoLink>

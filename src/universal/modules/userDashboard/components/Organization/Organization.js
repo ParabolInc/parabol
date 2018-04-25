@@ -14,7 +14,7 @@ import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
-import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants';
+import {BILLING_PAGE, MEMBERS_PAGE, PRO} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 
 import appTheme from 'universal/styles/theme/appTheme';
