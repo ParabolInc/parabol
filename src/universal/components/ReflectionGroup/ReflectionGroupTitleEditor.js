@@ -3,7 +3,7 @@
  *
  * @flow
  */
-import React, {Component} from 'react';
+import * as React from 'react';
 import styled from 'react-emotion';
 import StyledError from 'universal/components/StyledError';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
@@ -11,11 +11,14 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflectionGroupTitleMutation';
-import {createFragmentContainer} from 'react-relay';
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from './__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'; // eslint-disable-line
 import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated__/ReflectionGroupTitleEditor_meeting.graphql';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
+import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+
+const {Component} = React;
 
 type Props = {
   ...MutationProps,
@@ -24,9 +27,6 @@ type Props = {
   meeting: Meeting
 };
 
-type State = {
-  title: string
-}
 const underlineStyles = {
   backgroundColor: 'transparent',
   borderLeftColor: 'transparent !important',
@@ -34,6 +34,19 @@ const underlineStyles = {
   borderTopColor: 'transparent !important',
   boxShadow: 'none !important'
 };
+
+
+const PencilIcon = styled(StyledFontAwesome)({
+  color: ui.hintFontColor,
+  height: ui.iconSize,
+  left: '100%',
+  lineHeight: ui.cardThemeLabelLineHeight,
+  opacity: '.5',
+  position: 'absolute',
+  textAlign: 'center',
+  top: '-.0625rem',
+  width: ui.iconSize
+});
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -67,11 +80,13 @@ const NameInput = styled('input')(({readOnly}) => ({
   textAlign: 'center'
 }));
 
-const getValidationError = (title: ?string, reflectionGroups) => {
+const getValidationError = (title: ?string, reflectionGroups, reflectionGroupId) => {
   if (!title || title.length < 1) {
     return 'Enter a title';
   }
-  const usedTitles = reflectionGroups.map((group) => group.title);
+  const usedTitles = reflectionGroups
+    .filter((group) => group.id !== reflectionGroupId)
+    .map((group) => group.title);
   if (usedTitles.includes(title)) {
     return 'You already used that name';
   }
@@ -79,29 +94,22 @@ const getValidationError = (title: ?string, reflectionGroups) => {
   return undefined;
 };
 
-class ReflectionGroupTitleEditor extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
-    const {reflectionGroup: {title}} = nextProps;
-    if (title && title !== prevState.title) {
-      return {
-        title
-      };
-    }
-    return null;
+class ReflectionGroupTitleEditor extends Component<Props> {
+  constructor(props) {
+    super(props);
+    this.initialTitle = props.reflectionGroup.title;
   }
-
-  state = {
-    title: ''
-  };
-
-
   onChange = (e) => {
-    const {dirty, error, onCompleted, onError, meeting: {reflectionGroups}} = this.props;
+    const {atmosphere, dirty, error, onCompleted, onError, meeting: {reflectionGroups}, reflectionGroup: {reflectionGroupId}} = this.props;
     const title = e.target.value;
-    this.setState({title});
+    console.log('next title', title);
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflectionGroup = store.get(reflectionGroupId);
+      reflectionGroup.setValue(title, 'title');
+    });
     if (dirty) {
       const normalizedTitle = title.trim();
-      const validationError = getValidationError(normalizedTitle, reflectionGroups);
+      const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId);
       if (!validationError) {
         if (error) {
           onCompleted();
@@ -113,14 +121,13 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
   };
 
   onClick = () => {
-    if (this.inputRef) {
-      this.inputRef.focus();
+    if (this.inputRef.current) {
+      this.inputRef.current.select();
     }
   };
 
   onSubmit = (e) => {
     e.preventDefault();
-    const {title} = this.state;
     const {
       atmosphere,
       setDirty,
@@ -129,13 +136,14 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
       onCompleted,
       onError,
       meeting: {reflectionGroups},
-      reflectionGroup: {reflectionGroupId, title: initialTitle}
+      reflectionGroup: {reflectionGroupId, title}
     } = this.props;
-    if (submitting || title === initialTitle) return;
+    if (submitting || title === this.initialTitle) return;
+    this.initialTitle = title;
     // validate
     setDirty();
     const normalizedTitle = title.trim();
-    const validationError = getValidationError(normalizedTitle, reflectionGroups);
+    const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId);
     if (validationError) {
       onError({message: validationError});
       return;
@@ -145,36 +153,35 @@ class ReflectionGroupTitleEditor extends Component<Props, State> {
     UpdateReflectionGroupTitleMutation(atmosphere, {title: normalizedTitle, reflectionGroupId}, onError, onCompleted);
   };
 
-  setInputRef = (c) => {
-    this.inputRef = c;
-  };
-
-  inputRef: ?HTMLElement;
+  initialTitle: string;
+  inputRef = React.createRef();
 
   render() {
-    const {title} = this.state;
-    const {error, readOnly} = this.props;
+    const {error, readOnly, reflectionGroup: {title}} = this.props;
     const maxlength = 20;
     const placeholder = 'Theme';
     const placeholderSize = placeholder.length;
     const titleSize = (title.length > maxlength) ? maxlength : title.length;
     const size = titleSize || placeholderSize;
     return (
-      <RootBlock>
-        <FormBlock onSubmit={this.onSubmit}>
-          <NameInput
-            onBlur={this.onSubmit}
-            onChange={this.onChange}
-            placeholder={placeholder}
-            readOnly={readOnly}
-            ref={this.setInputRef}
-            size={size}
-            type="text"
-            value={title}
-          />
-        </FormBlock>
-        {error && <StyledError>{error.message}</StyledError>}
-      </RootBlock>
+      <React.Fragment>
+        <RootBlock>
+          <FormBlock onSubmit={this.onSubmit}>
+            <NameInput
+              onBlur={this.onSubmit}
+              onChange={this.onChange}
+              placeholder={placeholder}
+              readOnly={readOnly}
+              innerRef={this.inputRef}
+              size={size}
+              type="text"
+              value={title}
+            />
+          </FormBlock>
+          {error && <StyledError>{error.message}</StyledError>}
+        </RootBlock>
+        {!readOnly && <PencilIcon name="pencil" onClick={this.onClick} />}
+      </React.Fragment>
     );
   }
 }
@@ -189,6 +196,7 @@ export default createFragmentContainer(
     }
     fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
       reflectionGroups {
+        id
         title
       }
     }
