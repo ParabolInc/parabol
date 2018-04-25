@@ -4,6 +4,7 @@
 export AuthHeader from './AuthHeader/AuthHeader';
 export AuthPage from './AuthPage/AuthPage';
 export Avatar from './Avatar/Avatar';
+export Badge from './Badge/Badge';
 export Button from './Button/Button';
 export DashNavControl from './DashNavControl/DashNavControl';
 export Ellipsis from './Ellipsis/Ellipsis';

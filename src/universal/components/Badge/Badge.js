@@ -1,61 +1,37 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import styled from 'react-emotion';
 
-const Badge = (props) => {
-  const {
-    flat,
-    styles,
-    value
-  } = props;
+const boxShadow = '1px 1px 2px rgba(0, 0, 0, .5)';
 
-  const badgeStyles = css(
-    styles.badge,
-    !flat && styles.boxShadow
-  );
+const BadgeRoot = styled('div')(({colorPalette, flat}) => ({
+  backgroundColor: ui.palette[colorPalette] || ui.palette.warm,
+  borderRadius: '1rem',
+  boxShadow: !flat && boxShadow,
+  color: ui.palette.white,
+  fontSize: appTheme.typography.s1,
+  fontWeight: 600,
+  height: '1rem',
+  lineHeight: '1rem',
+  minWidth: '1rem',
+  padding: '0 .25rem',
+  textAlign: 'center'
+}));
 
-  return (
-    <div className={badgeStyles}>
-      {value}
-    </div>
-  );
-};
+const Badge = (props) => <BadgeRoot {...props}>{props.value || 0}</BadgeRoot>;
 
 Badge.propTypes = {
   colorPalette: PropTypes.oneOf([
     'cool',
     'dark',
     'mid',
+    'midGray',
     'warm'
   ]),
   flat: PropTypes.bool,
-  styles: PropTypes.object,
   value: PropTypes.number
 };
 
-Badge.defaultProps = {
-  value: 0
-};
-
-const boxShadow = '1px 1px 2px rgba(0, 0, 0, .5)';
-
-const styleThunk = (customTheme, {colorPalette}) => ({
-  badge: {
-    backgroundColor: appTheme.palette[colorPalette] || appTheme.palette.warm,
-    borderRadius: '1rem',
-    color: '#fff',
-    fontSize: appTheme.typography.s1,
-    fontWeight: 600,
-    height: '1rem',
-    lineHeight: '1rem',
-    minWidth: '1rem',
-    padding: '0 .25rem',
-    textAlign: 'center'
-  },
-
-  boxShadow
-});
-
-export default withStyles(styleThunk)(Badge);
+export default Badge;

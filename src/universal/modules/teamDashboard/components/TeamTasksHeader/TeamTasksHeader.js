@@ -37,7 +37,7 @@ const orgLinkStyles = css({
   ':hover, :focus': {
     color: ui.linkColorHover
   }
-})
+});
 
 const upgradeLinkStyles = css({
   color: appTheme.palette.warm,

@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import {Badge} from 'universal/components';
 
 const bgThemeValues = {
   light: appTheme.palette.yellow30l,
@@ -36,14 +37,17 @@ const PanelLabel = styled('div')(({compact}) => ({
   textTransform: 'uppercase'
 }));
 
-const PanelControls = styled('div')(({compact}) => ({
-  display: 'flex',
-  flex: 1,
-  height: '2.75rem',
-  justifyContent: 'flex-end',
-  lineHeight: '2.75rem',
-  paddingRight: compact ? ui.panelCompactGutter : ui.panelGutter
-}));
+const PanelControls = styled('div')(({compact}) => {
+  const padding = compact ? ui.panelCompactGutter : ui.panelGutter;
+  return ({
+    display: 'flex',
+    flex: 1,
+    height: '2.75rem',
+    justifyContent: 'flex-end',
+    lineHeight: '2.75rem',
+    padding: `0 ${padding}`
+  });
+});
 
 const PanelBody = styled('div')(({hideFirstRowBorder}) => ({
   display: 'block',
@@ -53,6 +57,7 @@ const PanelBody = styled('div')(({hideFirstRowBorder}) => ({
 
 const Panel = (props) => {
   const {
+    badgeCount,
     bgTheme,
     children,
     compact,
@@ -68,6 +73,7 @@ const Panel = (props) => {
           <PanelLabel compact={compact}>
             {label}
           </PanelLabel>
+          {badgeCount && <Badge colorPalette="midGray" value={badgeCount} />}
           <PanelControls>
             {controls}
           </PanelControls>
@@ -88,6 +94,7 @@ const Panel = (props) => {
 };
 
 Panel.propTypes = {
+  badgeCount: PropTypes.number,
   bgTheme: PropTypes.oneOf([
     'light',
     'white'
