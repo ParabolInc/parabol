@@ -6,7 +6,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import {DashNavControl} from 'universal/components';
-import {TagBlock, TagPersonal, TagPro} from 'universal/components/Tag';
+import {TagBlock, TagPro} from 'universal/components/Tag';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
@@ -91,10 +91,9 @@ const Organization = (props) => {
             <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
             <OrgDetails>
               {'Created '}{makeDateString(createdAt)}
-              {tier &&
+              {tier === PRO &&
                 <StyledTagBlock>
-                  {tier === PRO && <TagPro />}
-                  {tier === PERSONAL && <TagPersonal />}
+                  <TagPro />
                 </StyledTagBlock>
               }
             </OrgDetails>
