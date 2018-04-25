@@ -546,6 +546,7 @@ const ui = {
   meetingSplashGutter: '4.5rem',
   meetingControlBarHeight: '4rem',
   meetingTopicPhaseMaxWidth: '80rem',
+  meetingMinWidth: '80rem',
 
   // Menus
   // ---------------------------------------------------------------------------
@@ -727,6 +728,7 @@ const ui = {
   // Retro cards
   // ---------------------------------------------------------------------------
   retroCardCollapsedHeightRem: '3', // height, in rem, of reflection cards with truncated height
+  retroCardMinHeight: '3rem',
   retroCardWidth: '20rem' // width for reflection cards and reflection groups
 };
 

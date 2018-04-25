@@ -6,7 +6,9 @@ import {createFragmentContainer} from 'react-relay';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import ui from 'universal/styles/ui';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
+import MeetingSubnavItem from 'universal/components/MeetingSubnavItem';
 import {LabelHeading} from 'universal/components';
+import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
@@ -23,41 +25,18 @@ const VoteTally = styled('div')({
   marginRight: '0.5rem'
 });
 
-const IndexBlock = styled('div')({
-  opacity: '.5',
-  lineHeight: ui.navTopicLineHeight,
-  paddingRight: '.75rem',
-  textAlign: 'right',
-  width: ui.meetingSidebarGutterInner
-});
-
-const Title = styled('span')({
-  flex: 1,
-  fontSize: ui.navTopicFontSize,
-  lineHeight: ui.navTopicLineHeight
-});
-
-const TopicRow = styled('div')({
-  alignItems: 'flex-start',
-  cursor: 'pointer',
-  display: 'flex',
-  fontSize: ui.navTopicFontSize,
-  fontWeight: 400,
-  justifyContent: 'space-between',
-  minHeight: '2.5rem',
-  padding: '.5rem 0',
-  width: '100%'
-});
-
-const CheckIcon = styled(StyledFontAwesome)({
-  color: ui.palette.mid
-});
+const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
+  color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.mid
+}));
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
-  const {localPhase} = newMeeting || {};
-  if (!localPhase || !localPhase.stages) return null;
+  const {localPhase, localStage, facilitatorStageId, phases = []} = newMeeting || {};
+  if (!localPhase || !localPhase.stages || !localStage) return null;
   const {stages} = localPhase;
+  const {localStageId} = localStage;
+  const inSync = localStageId === facilitatorStageId;
+
   return (
     <SidebarPhaseItemChild>
       <MeetingSidebarLabelBlock>
@@ -67,16 +46,30 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const {reflectionGroup} = stage;
         if (!reflectionGroup) return null;
         const {title, voteCount} = reflectionGroup;
+        // the local user is at another stage than the facilitator stage
+        const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId;
+        const navState = {
+          isActive: localStage.localStageId === stage.id, // the local user is at this stage
+          isComplete: stage.isComplete, // this stage is complete
+          isDisabled: !getIsNavigable(false, phases, stage.id),
+          isUnsyncedFacilitatorStage
+        };
+        const voteMeta = (
+          <VoteTally>
+            <CheckIcon isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage} name="check" />
+            {' x '}
+            {voteCount}
+          </VoteTally>
+        );
         return (
-          <TopicRow key={stage.id} onClick={() => gotoStageId(stage.id)}>
-            <IndexBlock>{`${idx + 1}.`}</IndexBlock>
-            <Title>{title}</Title>
-            <VoteTally>
-              <CheckIcon name="check" />
-              {' x '}
-              {voteCount}
-            </VoteTally>
-          </TopicRow>
+          <MeetingSubnavItem
+            key={stage.id}
+            label={title}
+            metaContent={voteMeta}
+            onClick={() => gotoStageId(stage.id)}
+            orderLabel={`${idx + 1}.`}
+            {...navState}
+          />
         );
       })}
     </SidebarPhaseItemChild>
@@ -89,9 +82,17 @@ export default createFragmentContainer(
     fragment RetroSidebarDiscussSection_viewer on User {
       team(teamId: $teamId) {
         newMeeting {
+          localStage {
+            localStageId: id
+          }
           ... on RetrospectiveMeeting {
+            facilitatorStageId
             # load up the localPhase
             phases {
+              stages {
+                id
+                isComplete
+              }
               ... on DiscussPhase {
                 stages {
                   id
@@ -106,6 +107,7 @@ export default createFragmentContainer(
               ... on DiscussPhase {
                 stages {
                   id
+                  isComplete
                   reflectionGroup {
                     title
                     voteCount

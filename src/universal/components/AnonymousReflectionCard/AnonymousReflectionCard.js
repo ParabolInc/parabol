@@ -33,9 +33,12 @@ type State = {
 const AnonymousStyles = styled('div')({
   backgroundColor: ui.palette.white,
   borderRadius: ui.cardBorderRadius,
-  boxShadow: ui.cardBoxShadow,
   color: ui.hintFontColor,
-  position: 'relative'
+  opacity: '.75',
+  minHeight: ui.retroCardMinHeight,
+  position: 'relative',
+  width: ui.retroCardWidth,
+  userSelect: 'none'
 });
 
 const DEFAULT_TEXT = 'Somebody is typing...';
@@ -102,7 +105,7 @@ class AnonymousReflectionCard extends Component<Props, State> {
     const {meeting: {teamId}} = this.props;
     return (
       <AnonymousStyles>
-        <ReflectionEditorWrapper anonEditing={!isBlurred} editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
+        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
       </AnonymousStyles>
     );
   }

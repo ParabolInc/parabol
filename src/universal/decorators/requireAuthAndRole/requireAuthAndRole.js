@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {Redirect} from 'react-router-dom';
 import {showError} from 'universal/modules/toast/ducks/toastDuck';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {connect} from 'react-redux';
 
 const unauthorizedDefault = {
   title: 'Unauthorized',
@@ -14,68 +14,46 @@ const unauthenticatedDefault = {
   message: 'Hey! You haven’t signed in yet. Taking you to the sign in page.'
 };
 
-const mapStateToProps = (state) => {
-  const {sub: userId, rol: tokenRole} = state.auth.obj;
-  return {
-    userId,
-    tokenRole
-  };
-};
-
-export default (role, {
-  /* optional named options: */
+export default ({
+  role,
   silent = false,
   unauthorized = unauthorizedDefault,
   unauthenticated = unauthenticatedDefault
 } = {}) => (ComposedComponent) => {
-  @connect(mapStateToProps)
   class RequiredAuthAndRole extends Component {
     static propTypes = {
+      atmosphere: PropTypes.object.isRequired,
       dispatch: PropTypes.func.isRequired,
       history: PropTypes.object.isRequired,
-      location: PropTypes.object.isRequired,
-      tokenRole: PropTypes.string,
-      userId: PropTypes.string
+      location: PropTypes.object.isRequired
     };
 
-    state = {
-      legit: true
-    };
-
-    componentWillMount() {
-      this.handleAuthChange(this.props);
-    }
-
-    handleAuthChange(props) { // eslint-disable-line
-      const {userId, tokenRole, dispatch} = props;
-
-      if (userId) {
-        if (role && role !== tokenRole) {
-          this.setState({legit: false});
+    constructor(props) {
+      super(props);
+      const {atmosphere: {authObj}, dispatch, history, location: {pathname}} = props;
+      if (authObj) {
+        const {rol} = authObj;
+        if (role && role !== rol) {
           if (!silent) {
-            dispatch(showError(unauthorized));
+            setTimeout(() => dispatch(showError(unauthorized)));
           }
+          history.push('/');
+          this.redir = true;
         }
       } else {
-        // no legit authToken
         if (!silent) {
-          // squak about it:
-          dispatch(showError(unauthenticated));
+          setTimeout(() => dispatch(showError(unauthenticated)));
         }
-        this.setState({legit: false});
+        history.push({pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`});
+        this.redir = true;
       }
     }
 
     render() {
-      const {location: {pathname}, userId} = this.props;
-      const {legit} = this.state;
-      if (!legit) {
-        const to = userId ? '/' : {pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`};
-        return <Redirect to={to} />;
-      }
+      if (this.redir) return null;
       return <ComposedComponent {...this.props} />;
     }
   }
 
-  return RequiredAuthAndRole;
+  return connect()(withAtmosphere(RequiredAuthAndRole));
 };

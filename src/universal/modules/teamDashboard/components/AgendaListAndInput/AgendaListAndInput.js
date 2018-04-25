@@ -147,7 +147,8 @@ const styleThunk = (theme, {context}) => ({
 
   disabled: {
     cursor: 'not-allowed',
-    filter: 'blur(3px)'
+    filter: 'blur(3px)',
+    pointerEvents: 'none'
   }
 });
 

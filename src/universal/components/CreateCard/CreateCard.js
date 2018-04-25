@@ -38,6 +38,7 @@ const ControlBlock = styled('div')({
   justifyContent: 'center',
   lineHeight: '1.5',
   textAlign: 'center',
+  userSelect: 'none',
   width: '100%'
 });
 

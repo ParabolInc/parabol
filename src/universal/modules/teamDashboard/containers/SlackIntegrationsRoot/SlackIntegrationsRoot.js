@@ -6,7 +6,6 @@ import {DEFAULT_TTL, SLACK} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
-import {connect} from 'react-redux';
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription';
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
@@ -21,12 +20,6 @@ const slackChannelQuery = graphql`
   }
 `;
 
-const mapStateToProps = (state) => {
-  return {
-    jwt: state.auth.token
-  };
-};
-
 const subscriptions = [
   SlackChannelAddedSubscription,
   SlackChannelRemovedSubscription,
@@ -36,7 +29,7 @@ const subscriptions = [
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
+const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
   const {teamId} = fromTeamMemberId(teamMemberId);
   return (
     <QueryRenderer
@@ -51,7 +44,7 @@ const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
         } else if (props) {
           const {viewer} = props;
           return (<SlackIntegrations
-            jwt={jwt}
+            jwt={atmosphere.authToken}
             viewer={viewer}
             teamId={teamId}
             teamMemberId={teamMemberId}
@@ -67,9 +60,8 @@ const SlackIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
 
 SlackIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  jwt: PropTypes.string.isRequired,
   teamMemberId: PropTypes.string.isRequired,
   viewer: PropTypes.object
 };
 
-export default withAtmosphere(connect(mapStateToProps)(SlackIntegrationsRoot));
+export default withAtmosphere(SlackIntegrationsRoot);

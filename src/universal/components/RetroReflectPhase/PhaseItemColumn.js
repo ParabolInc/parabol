@@ -113,11 +113,20 @@ class PhaseItemColumn extends Component<Props, State> {
     return connectDropTarget(
       <div>
         <ColumnWrapper>
-          <TypeHeader>
-            <LabelHeading>{title.toUpperCase()}</LabelHeading>
-            <TypeDescription>{question}</TypeDescription>
-          </TypeHeader>
+          {phaseType !== VOTE &&
+            <TypeHeader>
+              <LabelHeading>{title.toUpperCase()}</LabelHeading>
+              <TypeDescription>{question}</TypeDescription>
+            </TypeHeader>
+          }
           <ReflectionsArea>
+            {phaseType === REFLECT && !isComplete &&
+              <ColumnChild>
+                <ButtonBlock>
+                  <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+                </ButtonBlock>
+              </ColumnChild>
+            }
             <ReflectionsList canDrop={canDrop}>
               {columnReflectionGroups.map((group) => {
                 if (phaseType === REFLECT) {
@@ -156,13 +165,6 @@ class PhaseItemColumn extends Component<Props, State> {
                 return null;
               })}
             </ReflectionsList>
-            {phaseType === REFLECT && !isComplete &&
-            <ColumnChild>
-              <ButtonBlock>
-                <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
-              </ButtonBlock>
-            </ColumnChild>
-            }
           </ReflectionsArea>
         </ColumnWrapper>
       </div>
