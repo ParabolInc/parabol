@@ -4,7 +4,6 @@ import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
-import {StyleSheetServer as S} from 'aphrodite-local-styles/no-important';
 import A from 'universal/Atmosphere';
 import SignInPage from 'universal/components/SignInPage/SignInPage';
 
@@ -58,5 +57,4 @@ const Action = () => {
 };
 
 export const Atmosphere = A;
-export const StyleSheetServer = S;
 export default Action;
