@@ -17,12 +17,11 @@ const mapStateToProps = (state) => ({
   // default to something nice
   preferredName: selector(state, 'preferredName'),
   teamName: selector(state, 'teamName'),
-  tms: state.auth.obj.tms,
   welcome: state.welcome
 });
 
 const WelcomeContainer = (props) => {
-  const {dispatch, invitees, inviteesRaw, preferredName, teamName, history, tms, viewer, welcome} = props;
+  const {dispatch, invitees, inviteesRaw, preferredName, teamName, viewer, welcome} = props;
   const {completed} = welcome;
   const progressDotClickFactory = (dot) => (e) => {
     e.preventDefault();
@@ -30,17 +29,12 @@ const WelcomeContainer = (props) => {
       dispatch(goToPage(dot));
     }
   };
-  if (tms && completed === 0) {
-    history.push('/me');
-    return null;
-  }
   return (
     <Welcome
       invitees={invitees}
       inviteesRaw={inviteesRaw}
       preferredName={preferredName}
       teamName={teamName}
-      tms={tms}
       welcome={welcome}
       progressDotClickFactory={progressDotClickFactory}
       title="Welcome"
@@ -56,7 +50,6 @@ WelcomeContainer.propTypes = {
   preferredName: PropTypes.string,
   history: PropTypes.object,
   teamName: PropTypes.string,
-  tms: PropTypes.array,
   welcome: PropTypes.shape({
     existingInvites: PropTypes.array,
     teamId: PropTypes.string,

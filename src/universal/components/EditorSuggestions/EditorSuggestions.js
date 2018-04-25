@@ -1,6 +1,5 @@
 import {css} from 'aphrodite-local-styles/no-important';
 import React from 'react';
-import MentionEmoji from 'universal/components/MentionEmoji/MentionEmoji';
 import MentionTag from 'universal/components/MentionTag/MentionTag';
 import MentionUser from 'universal/components/MentionUser/MentionUser';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -13,7 +12,6 @@ const dontTellDraft = (e) => {
 };
 
 const suggestionTypes = {
-  emoji: MentionEmoji,
   tag: MentionTag,
   mention: MentionUser
 };

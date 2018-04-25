@@ -84,7 +84,7 @@ const expectations = {
   },
 
   shouldSeeHomepage: (driver) => async () => {
-    await driver.wait(until.urlMatches(/signin$/), waitTimes.short, 'Logging out did not redirect to signin page');
+    await driver.wait(until.urlMatches(/\//), waitTimes.short, 'Logging out did not redirect to signin page');
     await driver.wait(until.titleMatches(/Sign In | Parabol/), waitTimes.short, 'Logging out did not redirect to the Parabol Homepage');
   }
 };

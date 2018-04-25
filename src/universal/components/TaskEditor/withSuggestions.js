@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import getWordAt from 'universal/components/TaskEditor/getWordAt';
 import resolvers from 'universal/components/TaskEditor/resolvers';
 import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
-import completeEntity, {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity';
+import completeEntity from 'universal/utils/draftjs/completeEnitity';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import getAnchorLocation from './getAnchorLocation';
 import Loadable from 'react-loadable';
@@ -97,9 +97,6 @@ const withSuggestions = (ComposedComponent) => {
       if (suggestionType === 'tag') {
         const {name} = item;
         setEditorState(completeEntity(editorState, 'TAG', {value: name}, `#${name}`));
-      } else if (suggestionType === 'emoji') {
-        const unicode = item.emoji;
-        setEditorState(autoCompleteEmoji(editorState, unicode));
       } else if (suggestionType === 'mention') {
         // team is derived from the task itself, so userId is the real useful thing here
         const [userId] = item.id.split('::');
@@ -129,10 +126,7 @@ const withSuggestions = (ComposedComponent) => {
     checkForSuggestions = (word) => {
       const trigger = word[0];
       const triggerWord = word.slice(1);
-      if (trigger === ':') {
-        this.makeSuggestions(triggerWord, 'emoji');
-        return true;
-      } else if (trigger === '#') {
+      if (trigger === '#') {
         this.makeSuggestions(triggerWord, 'tag');
         return true;
       } else if (trigger === '@') {

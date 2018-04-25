@@ -14,8 +14,8 @@ const MeetingMemberTasks = (props: Props) => {
   const {meetingMembers} = meeting;
   const membersWithTasks = meetingMembers.filter(({tasks}) => tasks.length > 0);
   const membersWithoutTasks = meetingMembers.filter(({tasks}) => tasks.length === 0);
-  // local flag, wanna try without this section without completely yanking (TA)
-  const showMembersWithoutTasks = false;
+  // local flag, going to show members with no tasks for attendance information (TA)
+  const showMembersWithoutTasks = true;
   return (
     <React.Fragment>
       {membersWithTasks.map((member) =>

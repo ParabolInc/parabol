@@ -1,12 +1,9 @@
 import {combineReducers} from 'redux';
 import toasts from 'universal/modules/toast/ducks/toastDuck';
 import {reducer as formReducer, actionTypes} from 'redux-form';
-import {reducer as storageReducer} from 'redux-storage-whitelist-fn';
-import storageMerger from 'universal/redux/storageMerger';
 import makeRootReducer from 'universal/redux/rootDuck';
 import menuReducer from 'universal/modules/menu/ducks/menuDuck';
 import dashReducer from 'universal/modules/dashboard/ducks/dashDuck';
-import auth, {DEFAULT_AUTH_REDUCER_NAME} from './authDuck';
 
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
@@ -32,7 +29,6 @@ const formPluginFactory = () => {
 const formPlugin = formPluginFactory();
 
 const appReducers = {
-  [DEFAULT_AUTH_REDUCER_NAME]: auth,
   form: formReducer.plugin(formPlugin),
   dash: dashReducer,
   menu: menuReducer,
@@ -43,6 +39,5 @@ const appReducers = {
 export default (newReducers) => {
   Object.assign(appReducers, newReducers);
   const appReducer = combineReducers({...appReducers});
-  const rootReducer = makeRootReducer(appReducer);
-  return storageReducer(rootReducer, storageMerger);
+  return makeRootReducer(appReducer);
 };
