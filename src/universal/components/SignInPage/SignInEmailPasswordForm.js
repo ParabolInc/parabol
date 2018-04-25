@@ -9,7 +9,7 @@ import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
 import {Field, reduxForm} from 'redux-form';
 import {InputField} from 'universal/components';
-import PrimaryButton from 'universal/components/PrimaryButton';
+import StyledButton from 'universal/components/StyledButton';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -67,9 +67,9 @@ const SignInEmailPasswordForm = (props: Props) => (
         disabled={props.submitting}
       />
     </Block>
-    <PrimaryButton disabled={!props.valid} type="submit" waiting={props.submitting}>
+    <StyledButton buttonPalette="primary" disabled={!props.valid} type="submit" waiting={props.submitting}>
       {'Sign In'}
-    </PrimaryButton>
+    </StyledButton>
     <ForgotPasswordLink to="/reset-password">{'Forgot your password?'}</ForgotPasswordLink>
   </Form>
 );
