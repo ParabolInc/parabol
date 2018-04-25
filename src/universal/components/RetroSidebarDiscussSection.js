@@ -31,7 +31,7 @@ const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
-  const {localPhase, localStage, facilitatorStageId, phases = ['one']} = newMeeting || {};
+  const {localPhase, localStage, facilitatorStageId, phases} = newMeeting || {};
   if (!localPhase || !localPhase.stages || !localStage) return null;
   const {stages} = localPhase;
   const {localStageId} = localStage;
@@ -51,8 +51,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const navState = {
           isActive: localStage.localStageId === stage.id, // the local user is at this stage
           isComplete: stage.isComplete, // this stage is complete
-          // isDisabled: !getIsNavigable(false, phases, stage.id),
-          isDisabled: false,
+          isDisabled: !getIsNavigable(false, phases, stage.id),
           isUnsyncedFacilitatorStage
         };
         const voteMeta = (
@@ -90,6 +89,10 @@ export default createFragmentContainer(
             facilitatorStageId
             # load up the localPhase
             phases {
+              stages {
+                id
+                isComplete
+              }
               ... on DiscussPhase {
                 stages {
                   id

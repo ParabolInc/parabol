@@ -18,6 +18,7 @@ const ItemRoot = styled('div')(
     opacity: !isActive && isComplete && 0.5,
     padding: '.5rem 0',
     position: 'relative',
+    userSelect: 'none',
     width: '100%',
     '&:hover': {
       backgroundColor: onClick && !isActive && appTheme.palette.light50l,
