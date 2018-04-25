@@ -59,7 +59,9 @@ const ReflectionCardRoot = styled('div')(
     border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
     boxShadow: ui.cardBoxShadow,
-    position: 'relative'
+    maxWidth: '100%',
+    position: 'relative',
+    width: ui.retroCardWidth
   },
   ({hasDragLock}) => hasDragLock && ({
     borderColor: appTheme.palette.warm50a
@@ -145,7 +147,7 @@ class ReflectionCard extends Component<Props, State> {
           innerRef={this.setEditorRef}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
-          placeholder="My reflection thought..."
+          placeholder="My reflection thought…"
           readOnly={phaseType !== REFLECT || isComplete}
           setEditorState={this.setEditorState}
           teamId={teamId}
