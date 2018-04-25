@@ -1,14 +1,10 @@
-/**
- * A big warm rounded button.
- *      ____________
- *     ( ~click me~ )
- *      ------------
- * @flow
- */
+
+// StyledButton.js
+// A button styled with react-emotion, TODO: refactor all the button Thangs™
+//@flow
 
 import React from 'react';
 import styled from 'react-emotion';
-
 import PlainButton from 'universal/components/PlainButton/PlainButton';
 import ui from 'universal/styles/ui';
 
