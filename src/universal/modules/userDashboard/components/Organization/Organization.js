@@ -64,6 +64,14 @@ const Organization = (props) => {
   const extraProps = {orgId, org};
   const goToOrgs = () => history.push('/me/organizations');
 
+  // TODO: canNavOrgViews is true when the user is a billing leader.
+  //       canNavOrgViews is true when the user is not a billing leader, and org is on the Personal tier,
+  //                      so that they can see their version of the squeeze (controls to nudge BLs)
+  //       canNavOrgViews is false when the user is not a billing leader, and org is on the Professional tier,
+  //                      the idea being that they can see the org members read-only (no BL actions),
+  //                      know who the BLs are, and leave the org on their user row.
+  const canNavOrgViews = true;
+
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
@@ -90,7 +98,7 @@ const Organization = (props) => {
                 </StyledTagBlock>
               }
             </OrgDetails>
-            <BillingMembersToggle orgId={orgId} />
+            {canNavOrgViews && <BillingMembersToggle orgId={orgId} />}
           </OrgNameAndDetails>
         </AvatarAndName>
         <Switch>
