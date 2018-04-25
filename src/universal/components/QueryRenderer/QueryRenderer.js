@@ -302,7 +302,7 @@ function fetchQueryAndComputeStateFromProps(
     try {
       const snapshot = queryFetcher.fetch({
         cacheConfig: props.cacheConfig,
-        dataFrom: props.dataFrom,
+        dataFrom: props.dataFrom || 'STORE_THEN_NETWORK',
         environment: genericEnvironment,
         onDataChange: retryCallbacks.handleDataChange,
         operation,

@@ -6,6 +6,7 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import Welcome from 'universal/modules/welcome/containers/Welcome/Welcome';
+import autoLogin from 'universal/decorators/autoLogin';
 
 const query = graphql`
   query WelcomeRootQuery {
@@ -38,4 +39,4 @@ WelcomeRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired
 };
 
-export default withAtmosphere(WelcomeRoot);
+export default autoLogin(withAtmosphere(WelcomeRoot));

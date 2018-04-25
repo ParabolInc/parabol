@@ -6,7 +6,6 @@ import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
-import {connect} from 'react-redux';
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription';
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription';
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription';
@@ -24,12 +23,6 @@ const githubRepoQuery = graphql`
   }
 `;
 
-const mapStateToProps = (state) => {
-  return {
-    jwt: state.auth.token
-  };
-};
-
 const subscriptions = [
   GitHubMemberRemovedSubscription,
   GitHubRepoAddedSubscription,
@@ -42,7 +35,7 @@ const subscriptions = [
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const GitHubIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
+const GitHubIntegrationsRoot = ({atmosphere, teamMemberId}) => {
   const {teamId} = fromTeamMemberId(teamMemberId);
   return (
     <QueryRenderer
@@ -57,7 +50,7 @@ const GitHubIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
         } else if (props) {
           const {viewer} = props;
           return (<GitHubIntegrations
-            jwt={jwt}
+            jwt={atmosphere.authToken}
             viewer={viewer}
             teamId={teamId}
           />);
@@ -72,9 +65,8 @@ const GitHubIntegrationsRoot = ({atmosphere, jwt, teamMemberId}) => {
 
 GitHubIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  jwt: PropTypes.string.isRequired,
   teamMemberId: PropTypes.string.isRequired,
   viewer: PropTypes.object
 };
 
-export default withAtmosphere(connect(mapStateToProps)(GitHubIntegrationsRoot));
+export default withAtmosphere(GitHubIntegrationsRoot);
