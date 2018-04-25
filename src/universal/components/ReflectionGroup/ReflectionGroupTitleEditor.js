@@ -3,7 +3,7 @@
  *
  * @flow
  */
-import React, {Component} from 'react';
+import * as React from 'react';
 import styled from 'react-emotion';
 import StyledError from 'universal/components/StyledError';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
@@ -17,6 +17,8 @@ import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from
 import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated__/ReflectionGroupTitleEditor_meeting.graphql';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+
+const {Component} = React;
 
 type Props = {
   ...MutationProps,
@@ -119,7 +121,9 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   };
 
   onClick = () => {
-    this.inputRef.current.select();
+    if (this.inputRef.current) {
+      this.inputRef.current.select();
+    }
   };
 
   onSubmit = (e) => {
@@ -149,7 +153,8 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     UpdateReflectionGroupTitleMutation(atmosphere, {title: normalizedTitle, reflectionGroupId}, onError, onCompleted);
   };
 
-  inputRef: ?HTMLElement = React.createRef();
+  initialTitle: string;
+  inputRef = React.createRef();
 
   render() {
     const {error, readOnly, reflectionGroup: {title}} = this.props;
