@@ -4,6 +4,7 @@ import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWi
 import stringScore from 'string-score';
 import emojiArray from 'universal/utils/emojiArray';
 import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
+import dontTellDraft from 'universal/utils/draftjs/dontTellDraft';
 
 const {Component} = React;
 
@@ -58,7 +59,6 @@ class EmojiMenu extends Component<Props, State> {
     query: ''
   };
 
-
   render() {
     const {closePortal, menuRef, menuItemClickFactory} = this.props;
     const {focusedEditorState} = this.state;
@@ -68,6 +68,7 @@ class EmojiMenu extends Component<Props, State> {
         ariaLabel={'Select the emoji'}
         closePortal={closePortal}
         keepParentFocus
+        onMouseDown={dontTellDraft}
         ref={menuRef}
         tabReturns
       >
