@@ -59,6 +59,8 @@ export const ReflectionCardRoot = styled('div')(
     border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
     boxShadow: ui.cardBoxShadow,
+    // useful for drag preview
+    display: 'inline-block',
     position: 'relative'
   },
   ({hasDragLock}) => hasDragLock && ({

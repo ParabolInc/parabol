@@ -13,8 +13,9 @@ import {DragSource as dragSource} from 'react-dnd';
 import {REFLECTION_CARD} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
-import Modal from 'redux-segment/examples/react-redux/src/components/ui/Modal';
 import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight';
+import Modal from 'universal/components/Modal';
+import {getEmptyImage} from 'react-dnd-html5-backend';
 
 type Props = {
   dndIndex: number,
@@ -29,9 +30,15 @@ const DragStyles = styled('div')(({isDragging}) => ({
 }));
 
 class DraggableReflectionCard extends Component<Props> {
+  componentDidMount() {
+    const {connectDragPreview} = this.props;
+    connectDragPreview(getEmptyImage());
+  }
   render() {
     const {
       connectDragSource,
+      initialCursorOffset,
+      initialComponentOffset,
       isCollapsed,
       isDragging,
       isOver,
@@ -39,16 +46,24 @@ class DraggableReflectionCard extends Component<Props> {
       meeting,
       showOriginFooter
     } = this.props;
-    return connectDragSource(
-      <div>
-        <DragStyles isDragging={isDragging} isOver={isOver}>
-          <ReflectionCard isCollapsed={isCollapsed} meeting={meeting} reflection={reflection} showOriginFooter={showOriginFooter} />
-        </DragStyles>
+    return (
+      <React.Fragment>
+        {connectDragSource(
+          <div>
+            <DragStyles isDragging={isDragging} isOver={isOver}>
+              <ReflectionCard isCollapsed={isCollapsed} meeting={meeting} reflection={reflection} showOriginFooter={showOriginFooter} />
+            </DragStyles>
+          </div>
+        )}
         <Modal isOpen={isDragging}>
-          <ReflectionCardInFlight content={reflection.content}/>
+          <ReflectionCardInFlight
+            initialCursorOffset={initialCursorOffset}
+            initialComponentOffset={initialComponentOffset}
+            content={reflection.content}
+          />
         </Modal>
-      </div>
-    );
+      </React.Fragment>
+    )
   }
 }
 
@@ -75,7 +90,9 @@ const reflectionDragSpec = {
 const reflectionDragCollect = (connectSource, monitor) => ({
   connectDragSource: connectSource.dragSource(),
   connectDragPreview: connectSource.dragPreview(),
-  isDragging: monitor.isDragging()
+  isDragging: monitor.isDragging(),
+  initialCursorOffset: monitor.getInitialClientOffset(),
+  initialComponentOffset: monitor.getInitialSourceClientOffset(),
 });
 
 export default createFragmentContainer(

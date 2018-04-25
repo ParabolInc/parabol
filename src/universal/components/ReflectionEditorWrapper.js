@@ -1,5 +1,5 @@
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import 'universal/components/TaskEditor/Draft.css';
 import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts';
 import withMarkdown from 'universal/components/TaskEditor/withMarkdown';
@@ -65,7 +65,7 @@ const EditorStyles = styled('div')(
   })
 );
 
-class ReflectionEditorWrapper extends Component<Props> {
+class ReflectionEditorWrapper extends PureComponent<Props> {
   componentDidMount() {
     const {editorState} = this.props;
     if (!editorState.getCurrentContent().hasText()) {
