@@ -13,6 +13,8 @@ import {DragSource as dragSource} from 'react-dnd';
 import {REFLECTION_CARD} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
+import Modal from 'redux-segment/examples/react-redux/src/components/ui/Modal';
+import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight';
 
 type Props = {
   dndIndex: number,
@@ -42,6 +44,9 @@ class DraggableReflectionCard extends Component<Props> {
         <DragStyles isDragging={isDragging} isOver={isOver}>
           <ReflectionCard isCollapsed={isCollapsed} meeting={meeting} reflection={reflection} showOriginFooter={showOriginFooter} />
         </DragStyles>
+        <Modal isOpen={isDragging}>
+          <ReflectionCardInFlight content={reflection.content}/>
+        </Modal>
       </div>
     );
   }
@@ -81,6 +86,7 @@ export default createFragmentContainer(
   ),
   graphql`
     fragment DraggableReflectionCard_reflection on RetroReflection {
+      content
       reflectionId: id
       reflectionGroupId
       retroPhaseItemId
