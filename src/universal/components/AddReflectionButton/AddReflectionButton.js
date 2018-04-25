@@ -31,20 +31,21 @@ type Props = {
 };
 
 const Plus = styled('span')({
-  paddingRight: '0.5rem'
+  paddingRight: '.5rem'
 });
 
 const AddButton = styled(PlainButton)({
   backgroundColor: ui.cardControlBackgroundColor,
   borderRadius: ui.cardBorderRadius,
   color: appTheme.palette.mid,
-  fontSize: '.875rem',
-  minHeight: '3rem', // intended to match ReflectionCard
+  fontSize: ui.cardContentFontSize,
+  fontWeight: 600,
+  minHeight: ui.retroCardMinHeight,
   padding: '.75rem',
   textAlign: 'center',
   transition: ui.cardControlTransition,
   userSelect: 'none',
-  width: '100%',
+  width: ui.retroCardWidth,
 
   '&:hover,:focus': {
     backgroundColor: ui.palette.white,
