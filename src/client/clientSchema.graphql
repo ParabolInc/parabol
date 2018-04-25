@@ -19,3 +19,8 @@ extend type Task {
 extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
+
+extend type RetroReflection {
+  dragX: Float
+  dragY: Float
+}

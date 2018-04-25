@@ -59,7 +59,7 @@ class DraggableReflectionCard extends Component<Props> {
           <ReflectionCardInFlight
             initialCursorOffset={initialCursorOffset}
             initialComponentOffset={initialComponentOffset}
-            content={reflection.content}
+            reflection={reflection}
           />
         </Modal>
       </React.Fragment>
@@ -108,6 +108,7 @@ export default createFragmentContainer(
       reflectionGroupId
       retroPhaseItemId
       ...ReflectionCard_reflection
+      ...ReflectionCardInFlight_reflection
     }
   `
 );
