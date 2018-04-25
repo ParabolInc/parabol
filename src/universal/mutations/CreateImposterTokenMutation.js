@@ -26,7 +26,7 @@ const mutation = graphql`
   }
 `;
 
-const CreateImposterTokenMutation = (environment, userId, {dispatch, history}) => {
+const CreateImposterTokenMutation = (environment, userId, {dispatch, history, location}) => {
   const onError = (err) => {
     dispatch(showError({title: 'Whoa there!', message: err.message}));
   };
@@ -41,14 +41,13 @@ const CreateImposterTokenMutation = (environment, userId, {dispatch, history}) =
         return;
       }
       const {createImposterToken} = res;
-      const {authToken, user: {id, preferredName: name, picture: avatar, email}} = createImposterToken;
-      const profile = {id, avatar, email, name};
+      const {authToken} = createImposterToken;
 
       // Reset application state:
       await signout(environment, dispatch);
 
       // Assume the identity of the new user:
-      await signinAndUpdateToken(environment, dispatch, profile, authToken);
+      await signinAndUpdateToken(environment, dispatch, history, location, authToken);
 
       // Navigate to a default location, the application root:
       history.replace('/');

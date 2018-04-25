@@ -7,12 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import PropTypes from 'prop-types';
-
-const dontTellDraft = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-};
-
+import dontTellDraft from 'universal/utils/draftjs/dontTellDraft';
 
 class EditorLinkViewer extends Component {
   render() {

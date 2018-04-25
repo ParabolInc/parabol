@@ -21,7 +21,6 @@ const clientInclude = [
 
 const vendor = [
   'auth0-js',
-  'auth0-lock',
   'react',
   'react-dom',
   'react-redux',
@@ -122,16 +121,6 @@ export default {
         test: /\.js$/,
         loader: 'babel-loader',
         include: clientInclude
-      },
-      {
-        test: /auth0-lock\/.*\.js$/,
-        loaders: [
-          'transform-loader/cacheable?brfs',
-          'transform-loader/cacheable?packageify'
-        ]
-      }, {
-        test: /auth0-lock\/.*\.ejs$/,
-        loader: 'transform-loader/cacheable?ejsify'
       },
       {test: /\.css$/, loader: 'style-loader!css-loader'}
     ]

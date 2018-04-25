@@ -1,4 +1,5 @@
 import {EventTypes} from 'redux-segment';
+import ensureDate from 'universal/utils/ensureDate';
 
 /**
  * Sometimes, we just want to track events in segment.
@@ -15,18 +16,19 @@ let traits = {
   name: null
 };
 
-export function selectSegmentTraits(user) {
-  const createdAt = new Date(user.createdAt);
+export function selectSegmentTraits(viewer) {
+  const {picture, createdAt, email, viewerId, preferredName} = viewer;
   traits = {
-    avatar: user.picture,
-    createdAt: isNaN(createdAt) ? null : createdAt,
-    email: user.email,
-    id: user.id,
-    name: user.preferredName
+    avatar: picture,
+    createdAt: ensureDate(createdAt),
+    email,
+    id: viewerId,
+    name: preferredName
   };
   return traits;
 }
 
+// eslint-disable-next-line
 export function segmentEventIdentify(user) {
   // mutative!
   selectSegmentTraits(user);

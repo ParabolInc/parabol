@@ -9,7 +9,6 @@ module.exports = {
     vendors: [
       'aphrodite-local-styles',
       'auth0-js',
-      'auth0-lock',
       'core-js',
       'email-addresses',
       'graphql',
@@ -34,8 +33,6 @@ module.exports = {
       'redux-form',
       'redux-raven-middleware',
       'redux-segment',
-      'redux-storage-engine-localstorage',
-      'redux-storage-whitelist-fn',
       'redux-thunk',
       'tinycolor2'
     ]
@@ -52,17 +49,7 @@ module.exports = {
   ],
   module: {
     loaders: [
-      {test: /\.flow$/, loader: 'ignore-loader'},
-      {
-        test: /auth0-lock\/.*\.js$/,
-        loaders: [
-          'transform-loader/cacheable?brfs',
-          'transform-loader/cacheable?packageify'
-        ]
-      }, {
-        test: /auth0-lock\/.*\.ejs$/,
-        loader: 'transform-loader/cacheable?ejsify'
-      }
+      {test: /\.flow$/, loader: 'ignore-loader'}
     ]
   }
 };

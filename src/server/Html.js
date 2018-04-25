@@ -53,11 +53,11 @@ export default function Html({store, assets, clientIds}) {
         <link rel="stylesheet" type="text/css" href={fontAwesomeUrl} />
         {/* segment.io analytics */}
         <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}} />
+        <script dangerouslySetInnerHTML={{__html: dehydratedClientIds}} />
       </head>
       <body>
         <div id="root" dangerouslySetInnerHTML={{__html: html}} />
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}} />
-        <script dangerouslySetInnerHTML={{__html: dehydratedClientIds}} />
         <script dangerouslySetInnerHTML={{__html: manifest.text}} />
         <script src={`${webpackPublicPath}${vendor.js}`} />
         <script src={`${webpackPublicPath}${app.js}`} />

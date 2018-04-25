@@ -4,7 +4,6 @@ import fetch from 'isomorphic-fetch';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import withAsync from 'react-async-hoc';
-import {connect} from 'react-redux';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import withStyles from 'universal/styles/withStyles';
@@ -36,12 +35,6 @@ const makeGraphQLFetcher = (authToken) => {
   };
 };
 
-const mapStateToProps = (state) => {
-  return {
-    authToken: state.auth.token
-  };
-};
-
 const styleThunk = () => ({
   graphiql: {
     margin: 0,
@@ -54,13 +47,12 @@ const styleThunk = () => ({
 
 const loadStylesCb = () => ({stylesLoaded: true});
 
-@connect(mapStateToProps)
 @withStyles(styleThunk)
-@requireAuthAndRole('su')
+@requireAuthAndRole({role: 'su'})
 @withAsync(undefined, {[graphiqlStylesheet]: loadStylesCb})
 export default class Graphiql extends Component {
   static propTypes = {
-    authToken: PropTypes.string,
+    atmosphere: PropTypes.object.isRequired,
     styles: PropTypes.object,
     stylesLoaded: PropTypes.bool
   };
@@ -72,7 +64,7 @@ export default class Graphiql extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.stylesLoaded) {
-      this.setState({graphQLFetcher: makeGraphQLFetcher(nextProps.authToken)});
+      this.setState({graphQLFetcher: makeGraphQLFetcher(nextProps.atmosphere.authToken)});
     }
   }
 

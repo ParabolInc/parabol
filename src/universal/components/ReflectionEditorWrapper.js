@@ -8,6 +8,7 @@ import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 import styled, {css} from 'react-emotion';
 import ui from 'universal/styles/ui';
+import withEmojis from 'universal/components/TaskEditor/withEmojis';
 
 type Props = {
   ariaLabel: string,
@@ -23,6 +24,8 @@ type Props = {
   onBlur: () => void,
   onFocus: () => void,
   readOnly: boolean,
+  removeModal?: () => void,
+  renderModal?: () => void,
   setEditorState: () => void,
   innerRef: () => void,
 };
@@ -104,7 +107,9 @@ class ReflectionEditorWrapper extends Component<Props> {
         return;
       }
     }
-    if (editorState.getSelection().getHasFocus() && handleChange) {
+    if (!editorState.getSelection().getHasFocus()) {
+      this.removeModal();
+    } else if (handleChange) {
       handleChange(editorState);
     }
     setEditorState(editorState);
@@ -166,12 +171,20 @@ class ReflectionEditorWrapper extends Component<Props> {
     return 'not-handled';
   };
 
+  removeModal = () => {
+    const {removeModal, renderModal} = this.props;
+    if (renderModal && removeModal) {
+      removeModal();
+    }
+  };
+
   render() {
-    const {ariaLabel, editorState, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
+    const {ariaLabel, editorState, isBlurred, onBlur, onFocus, placeholder, renderModal, readOnly} = this.props;
     // Folks may want to copy text from reflection cards to quote in task cards,
     // so going to allow unless AnonymousReflectionCard.
     // If isBlurred is true or false it’s probably from the AnonymousReflectionCard.
     const userSelect = isBlurred === undefined ? 'text' : 'none';
+
     return (
       <EditorStyles isBlurred={isBlurred}>
         <Editor
@@ -191,12 +204,13 @@ class ReflectionEditorWrapper extends Component<Props> {
           ref={this.setEditorRef}
           style={{padding: '.75rem', userSelect, WebkitUserSelect: userSelect}}
         />
+        {renderModal && renderModal()}
       </EditorStyles>
     );
   }
 }
 
-export default withMarkdown(
+export default withEmojis(withMarkdown(
   withKeyboardShortcuts((ReflectionEditorWrapper)
-  )
+  ))
 );

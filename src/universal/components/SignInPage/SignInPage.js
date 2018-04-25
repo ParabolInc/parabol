@@ -14,13 +14,13 @@ import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
 import {AuthPage, LoadingView} from 'universal/components';
-import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 import promisify from 'es6-promisify';
 import SignIn from './SignIn';
+import autoLogin from 'universal/decorators/autoLogin';
 
 type Props = {
   atmosphere: Object,
@@ -78,7 +78,8 @@ class SignInPage extends Component<Props, State> {
   };
 
   appSignIn = (response: AuthResponse): void => {
-    signinAndUpdateToken(this.props.atmosphere, this.props.dispatch, null, response.idToken);
+    const {atmosphere, dispatch, history, location} = this.props;
+    signinAndUpdateToken(atmosphere, dispatch, history, location, response.idToken);
   };
 
   webAuth = getWebAuth();
@@ -128,7 +129,6 @@ class SignInPage extends Component<Props, State> {
 
   render() {
     const {loggingIn, error} = this.state;
-
     let pageContent: Node;
     if (loggingIn && !error) {
       pageContent = this.renderLoading();
@@ -146,7 +146,7 @@ class SignInPage extends Component<Props, State> {
 }
 
 export default withAtmosphere(
-  loginWithToken(
+  autoLogin(
     withRouter(
       connect()(SignInPage)
     )

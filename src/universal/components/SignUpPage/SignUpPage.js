@@ -7,19 +7,17 @@ import type {Credentials} from 'universal/types/auth';
 import type {Dispatch} from 'redux';
 import promisify from 'es6-promisify';
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
 import {AuthPage} from 'universal/components';
-import loginWithToken from 'universal/decorators/loginWithToken/loginWithToken';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
 import {AUTH0_DB_CONNECTION, THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 import SignUp from './SignUp';
+import autoLogin from 'universal/decorators/autoLogin';
 
 type Props = {
   atmosphere: Object,
-  dispatch: Dispatch<*>,
-  hasSession: boolean
+  dispatch: Dispatch<*>
 };
 
 type State = {
@@ -79,12 +77,6 @@ class SignUpPage extends Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state) => ({
-  hasSession: Boolean(state.auth.obj.sub)
-});
-
-export default connect(mapStateToProps)(
-  loginWithToken(
-    withAtmosphere(SignUpPage)
-  )
+export default autoLogin(
+  withAtmosphere(SignUpPage)
 );

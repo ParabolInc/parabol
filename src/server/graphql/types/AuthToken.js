@@ -23,6 +23,11 @@ const AuthToken = new GraphQLObjectType({
   name: 'AuthToken',
   description: 'An auth token provided by Parabol to the client',
   fields: () => ({
+    id: {
+      type: GraphQLID,
+      description: 'A static ID so the location in the relay store is deterministic',
+      resolve: () => 'AuthToken'
+    },
     aud: {
       type: GraphQLString,
       description: 'audience. the target API used in auth0. Parabol does not use this.'
