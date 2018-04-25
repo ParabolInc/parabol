@@ -190,7 +190,7 @@ const RetroDiscussPhase = (props: Props) => {
             icon="flag-checkered"
             iconLarge
             iconPalette="midGray"
-            iconPlacement="right"
+            iconPlacement="left"
             isBlock
             label={'End Meeting'}
             onClick={endMeeting}

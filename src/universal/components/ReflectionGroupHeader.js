@@ -7,7 +7,6 @@ import type {ReflectionGroupHeader_reflectionGroup as ReflectionGroup} from './_
 import {GROUP, VOTE} from 'universal/utils/constants';
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting';
 import ui from 'universal/styles/ui';
-import FontAwesome from 'react-fontawesome';
 
 type Props = {
   meeting: Meeting,
@@ -31,18 +30,6 @@ const TitleAndCount = styled('div')({
   width: 'auto'
 });
 
-const PencilIcon = styled(FontAwesome)({
-  color: ui.hintFontColor,
-  height: ui.iconSize,
-  left: '100%',
-  lineHeight: ui.cardThemeLabelLineHeight,
-  opacity: '.5',
-  position: 'absolute',
-  textAlign: 'center',
-  top: '-.0625rem',
-  width: ui.iconSize
-});
-
 const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
 
 const ReflectionGroupHeader = (props: Props) => {
@@ -54,7 +41,6 @@ const ReflectionGroupHeader = (props: Props) => {
       {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
         <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={!canEdit} />
-        {canEdit && <PencilIcon name="pencil" />}
       </TitleAndCount>
       {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />}
     </GroupHeader>
