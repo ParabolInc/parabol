@@ -9,7 +9,6 @@ import getWebpackPublicPath from 'server/utils/getWebpackPublicPath';
 import {StaticRouter} from 'react-router';
 import AtmosphereProvider from '../universal/components/AtmosphereProvider/AtmosphereProvider';
 import sendSentryEvent from 'server/utils/sendSentryEvent';
-import {extractCritical} from 'emotion-server';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
@@ -21,7 +20,7 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 // Injects the server rendered state and app into a basic html template
 export default function Html({store, assets, clientIds}) {
   // const ActionContainer = require('../../build/prerender');
-  const {default: ActionContainer, Atmosphere, StyleSheetServer} = require('../../build/prerender');
+  const {default: ActionContainer, Atmosphere, EmotionServer} = require('../../build/prerender');
   const {manifest, app, vendor} = assets;
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
@@ -30,7 +29,7 @@ export default function Html({store, assets, clientIds}) {
   const atmosphere = new Atmosphere()
   let critical;
   try {
-    critical = extractCritical(renderToString(
+    critical = EmotionServer.extractCritical(renderToString(
       <Provider store={store}>
         <AtmosphereProvider atmosphere={atmosphere}>
           <StaticRouter location={'/'} context={context}>
