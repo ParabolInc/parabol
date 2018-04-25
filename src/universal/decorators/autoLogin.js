@@ -20,8 +20,10 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
       if (authObj) {
         const isNew = !authObj.tms;
         if (isNew) {
-          history.push('/welcome');
-          this.redir = true;
+          if (location.pathname !== '/welcome') {
+            history.push('/welcome');
+            this.redir = true;
+          }
         } else {
           const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me';
           history.push(nextUrl);
