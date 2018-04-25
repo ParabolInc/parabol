@@ -17,3 +17,5 @@ declare var graphql: (strings: Array<string>) => any;
 // Remove this when upgrading webpack
 // eslint-disable-next-line no-unused-vars
 declare var System: Object;
+
+declare var __PRODUCTION__: boolean;

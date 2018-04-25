@@ -5,13 +5,14 @@ import {createFragmentContainer} from 'react-relay';
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
 import {TEAM_DASH} from 'universal/utils/constants';
 import getTaskById from 'universal/utils/getTaskById';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state, props) => {
-  const {teamId} = props;
+  const {atmosphere: {viewerId}, teamId} = props;
   const {teamMemberFilterId} = state.teamDashboard;
-  const userId = state.auth.obj.sub;
   return {
-    myTeamMemberId: `${userId}::${teamId}`,
+    myTeamMemberId: toTeamMemberId(teamId, viewerId),
     teamMemberFilterId
   };
 };
@@ -83,7 +84,7 @@ TeamColumnsContainer.propTypes = {
 };
 
 export default createFragmentContainer(
-  connect(mapStateToProps)(TeamColumnsContainer),
+  withAtmosphere(connect(mapStateToProps)(TeamColumnsContainer)),
   graphql`
     fragment TeamColumnsContainer_viewer on User {
       team(teamId: $teamId) {

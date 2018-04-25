@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v1.6.0 2018-Apt-18
+## v1.6.1 2018-Apr-19
+### Fixed
+- Minor retro bugs #2022
+
+## v1.6.0 2018-Apr-18
 ### Added
 - First end-to-end feature complete retrospective features
 - Retrospective meetings now masked behind user feature flag, not server feature flag

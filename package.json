@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -135,7 +135,6 @@
     "assets-webpack-plugin": "^3.5.1",
     "auth0": "^2.7.0",
     "auth0-js": "^9.2.3",
-    "auth0-lock": "^9.2.2",
     "aws-sdk": "^2.99.0",
     "babel-plugin-emotion": "^9.0.1",
     "babel-runtime": "^6.25.0",
@@ -217,8 +216,6 @@
     "redux-logger": "^3.0.6",
     "redux-raven-middleware": "^1.2.0",
     "redux-segment": "^1.6.2",
-    "redux-storage-engine-localstorage": "^1.1.4",
-    "redux-storage-whitelist-fn": "^4.0.1",
     "redux-thunk": "2.2.0",
     "relay-runtime": "^1.5.0",
     "rethinkdbdash": "^2.3.31",

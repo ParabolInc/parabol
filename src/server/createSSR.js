@@ -59,12 +59,12 @@ export default function createSSR(req, res) {
     <html>
     <head>
       <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.css"/>
+      <script>${dehydrate('__ACTION__', clientIds)}</script>
     </head>
     <body>
       <div id="root"></div>
       <script src="/static/vendors.dll.js"></script>
       <script src="/static/app.js"></script>
-      <script>${dehydrate('__ACTION__', clientIds)}</script>
       ${segmentSnippet}
     </body>
     </html>
