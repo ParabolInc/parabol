@@ -94,12 +94,11 @@ class ReflectionCard extends Component<Props, State> {
     this.setState({editorState});
   };
 
-  handleEditorBlur = () => {
-    const {atmosphere, reflection: {reflectionId}} = this.props;
-    if (isTempId(reflectionId)) return;
-    this.handleContentUpdate();
-    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
-  };
+  setEditorRef = (c) => {
+    this.editorRef = c;
+  }
+
+  editorRef: ?HTMLElement;
 
   handleEditorFocus = () => {
     const {atmosphere, reflection: {reflectionId}} = this.props;
@@ -122,6 +121,13 @@ class ReflectionCard extends Component<Props, State> {
     }
   };
 
+  handleEditorBlur = () => {
+    const {atmosphere, reflection: {reflectionId}} = this.props;
+    if (isTempId(reflectionId)) return;
+    this.handleContentUpdate();
+    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
+  };
+
   render() {
     const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
@@ -134,7 +140,9 @@ class ReflectionCard extends Component<Props, State> {
         {hasDragLock && <UserDraggingHeader user={draggerUser} />}
         <ReflectionEditorWrapper
           ariaLabel="Edit this reflection"
+          editorRef={this.editorRef}
           editorState={editorState}
+          innerRef={this.setEditorRef}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder="My reflection thought..."

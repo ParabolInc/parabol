@@ -69,7 +69,7 @@ class MenuItemWithShortcuts extends Component {
     }
   }
 
-  handleClick = () => {
+  handleClick = (e) => {
     const {
       activate,
       noCloseOnClick,
@@ -82,7 +82,7 @@ class MenuItemWithShortcuts extends Component {
       closePortal();
     }
     if (onClick) {
-      onClick();
+      onClick(e);
     }
   };
 
