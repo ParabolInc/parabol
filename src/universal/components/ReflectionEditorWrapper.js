@@ -8,6 +8,7 @@ import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 import styled, {css} from 'react-emotion';
 import ui from 'universal/styles/ui';
+import withEmojis from 'universal/components/TaskEditor/withEmojis';
 
 type Props = {
   ariaLabel: string,
@@ -17,13 +18,14 @@ type Props = {
   handleChange: () => void,
   handleKeyCommand: () => void,
   handleReturn: () => void,
-  anonEditing: boolean,
   isBlurred: boolean,
   keyBindingFn: () => void,
   placeholder: string,
   onBlur: () => void,
   onFocus: () => void,
   readOnly: boolean,
+  removeModal?: () => void,
+  renderModal?: () => void,
   setEditorState: () => void,
   innerRef: () => void,
 };
@@ -45,25 +47,18 @@ const codeBlock = css({
   padding: '0 .5rem'
 });
 
-const EditorStyles = styled('div')(
-  {
-    color: appTheme.palette.dark,
-    fontSize: ui.cardContentFontSize,
-    lineHeight: ui.cardContentLineHeight,
-    maxHeight: '10rem',
-    minHeight: '1rem',
-    overflow: 'auto',
-    position: 'relative',
-    width: '100%'
-  },
-  ({isBlurred}) => isBlurred && ({
-    filter: 'blur(.25rem)',
-    userSelect: 'none'
-  }),
-  ({anonEditing}) => anonEditing && ({
-    color: ui.hintFontColor
-  })
-);
+const EditorStyles = styled('div')(({isBlurred}) => ({
+  color: isBlurred === false ? ui.hintFontColor : appTheme.palette.dark,
+  filter: isBlurred && 'blur(.25rem)',
+  fontSize: ui.cardContentFontSize,
+  lineHeight: ui.cardContentLineHeight,
+  maxHeight: '10rem',
+  minHeight: '1rem',
+  overflow: 'auto',
+  position: 'relative',
+  userSelect: isBlurred && 'none',
+  width: '100%'
+}));
 
 class ReflectionEditorWrapper extends Component<Props> {
   componentDidMount() {
@@ -112,7 +107,9 @@ class ReflectionEditorWrapper extends Component<Props> {
         return;
       }
     }
-    if (editorState.getSelection().getHasFocus() && handleChange) {
+    if (!editorState.getSelection().getHasFocus()) {
+      this.removeModal();
+    } else if (handleChange) {
       handleChange(editorState);
     }
     setEditorState(editorState);
@@ -174,16 +171,22 @@ class ReflectionEditorWrapper extends Component<Props> {
     return 'not-handled';
   };
 
+  removeModal = () => {
+    const {removeModal, renderModal} = this.props;
+    if (renderModal && removeModal) {
+      removeModal();
+    }
+  };
+
   render() {
-    const {ariaLabel, editorState, anonEditing, isBlurred, onBlur, onFocus, placeholder, readOnly} = this.props;
-    // Folks may want to copy text from reflection cards to quote in task cards, so going to allow unless blurred (TA)
-    const userSelect = (isBlurred || anonEditing) ? 'none' : 'text';
-    // console.log('isBlurred || anonEditing');
-    // console.log(isBlurred || anonEditing);
-    // console.log('userSelect');
-    // console.log(userSelect);
+    const {ariaLabel, editorState, isBlurred, onBlur, onFocus, placeholder, renderModal, readOnly} = this.props;
+    // Folks may want to copy text from reflection cards to quote in task cards,
+    // so going to allow unless AnonymousReflectionCard.
+    // If isBlurred is true or false it’s probably from the AnonymousReflectionCard.
+    const userSelect = isBlurred === undefined ? 'text' : 'none';
+
     return (
-      <EditorStyles anonEditing={anonEditing} isBlurred={isBlurred}>
+      <EditorStyles isBlurred={isBlurred}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}
@@ -201,12 +204,13 @@ class ReflectionEditorWrapper extends Component<Props> {
           ref={this.setEditorRef}
           style={{padding: '.75rem', userSelect, WebkitUserSelect: userSelect}}
         />
+        {renderModal && renderModal()}
       </EditorStyles>
     );
   }
 }
 
-export default withMarkdown(
+export default withEmojis(withMarkdown(
   withKeyboardShortcuts((ReflectionEditorWrapper)
-  )
+  ))
 );

@@ -546,6 +546,7 @@ const ui = {
   meetingSplashGutter: '4.5rem',
   meetingControlBarHeight: '4rem',
   meetingTopicPhaseMaxWidth: '80rem',
+  meetingMinWidth: '80rem',
 
   // Menus
   // ---------------------------------------------------------------------------

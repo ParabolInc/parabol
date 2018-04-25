@@ -16,7 +16,7 @@ const showDucks = () => {
   );
 };
 
-@requireAuthAndRole('su', {silent: true})
+@requireAuthAndRole({role: 'su', silent: true})
 @withAtmosphere
 export default class Impersonate extends Component {
   static propTypes = {
@@ -24,13 +24,14 @@ export default class Impersonate extends Component {
     dispatch: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     newUserId: PropTypes.string,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired
   };
 
   componentWillMount() {
-    const {atmosphere, dispatch, match: {params: {newUserId}}, history} = this.props;
+    const {atmosphere, dispatch, match: {params: {newUserId}}, history, location} = this.props;
     if (newUserId) {
-      CreateImposterTokenMutation(atmosphere, newUserId, {dispatch, history});
+      CreateImposterTokenMutation(atmosphere, newUserId, {dispatch, history, location});
     }
   }
 

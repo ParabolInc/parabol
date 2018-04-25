@@ -12,34 +12,43 @@ import {
   ThirdPartyAuthButton
 } from 'universal/components';
 import SignInEmailPasswordForm from './SignInEmailPasswordForm';
+import {withRouter} from 'react-router-dom';
+import type {Location} from 'react-router-dom';
 
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
   handleSubmitCredentials: (Credentials) => Promise<any>,
+  location: Location,
   error: ?string,
   isSubmitting: boolean
 };
 
-export default (props: Props) => (
-  <Fragment>
-    <AuthHeader
-      heading="Sign In"
-      secondaryAction={{relativeUrl: '/signup', displayName: 'Sign Up'}}
-    />
-    {props.authProviders.map((provider) => (
-      <ThirdPartyAuthButton
-        action="Sign in"
-        waiting={props.isSubmitting}
-        key={provider.displayName}
-        provider={provider}
-        handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
+const SignIn = (props: Props) => {
+  const {location} = props;
+  const relativeUrl = `/signup${location.search}`;
+  return (
+    <Fragment>
+      <AuthHeader
+        heading="Sign In"
+        secondaryAction={{relativeUrl, displayName: 'Sign Up'}}
       />
-    ))}
-    <HorizontalSeparator margin="1rem 0 0" text="or" />
-    {props.error &&
+      {props.authProviders.map((provider) => (
+        <ThirdPartyAuthButton
+          action="Sign in"
+          waiting={props.isSubmitting}
+          key={provider.displayName}
+          provider={provider}
+          handleClick={props.getHandlerForThirdPartyAuth(provider.auth0Connection)}
+        />
+      ))}
+      <HorizontalSeparator margin="1rem 0 0" text="or" />
+      {props.error &&
       <ErrorAlert message={props.error} />
-    }
-    <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
-  </Fragment>
-);
+      }
+      <SignInEmailPasswordForm onSubmit={props.handleSubmitCredentials} />
+    </Fragment>
+  );
+};
+
+export default withRouter(SignIn);
