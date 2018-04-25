@@ -13,8 +13,6 @@ import {PAID, PENDING, UPCOMING} from 'universal/utils/constants';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import styled, {css, cx} from 'react-emotion';
 
-const lineHeightLarge = '1.625rem';
-
 const FileIcon = styled(StyledFontAwesome)({
   alignItems: 'center',
   color: ui.palette.white,
@@ -44,7 +42,7 @@ const InvoiceTitle = styled('div')({
   color: ui.rowHeadingColor,
   display: 'inline-block',
   fontSize: ui.rowHeadingFontSize,
-  lineHeight: lineHeightLarge,
+  lineHeight: '1.625rem',
   verticalAlign: 'middle'
 });
 
