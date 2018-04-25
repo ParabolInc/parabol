@@ -53,7 +53,7 @@ const OriginFooter = styled('div')({
   padding: '.5rem .75rem'
 });
 
-const ReflectionCardRoot = styled('div')(
+export const ReflectionCardRoot = styled('div')(
   {
     backgroundColor: ui.palette.white,
     border: '.0625rem solid transparent',
