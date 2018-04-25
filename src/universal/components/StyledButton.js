@@ -1,7 +1,7 @@
 
 // StyledButton.js
 // A button styled with react-emotion, TODO: refactor all the button Thangs™
-//@flow
+// @flow
 
 import React from 'react';
 import styled from 'react-emotion';
