@@ -2477,6 +2477,8 @@ export type ActionMeetingSettings = {
   An auth token provided by Parabol to the client
 */
 export type AuthToken = {
+  /** A static ID so the location in the relay store is deterministic */
+  id: ?string;
   /** audience. the target API used in auth0. Parabol does not use this. */
   aud: ?string;
   /** beta. 1 if enrolled in beta features. else absent */

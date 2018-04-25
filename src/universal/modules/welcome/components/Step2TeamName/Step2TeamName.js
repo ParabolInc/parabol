@@ -9,7 +9,6 @@ import WelcomeHeading from 'universal/modules/welcome/components/WelcomeHeading/
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
 import {nextPage, setWelcomeTeam, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
 import CreateFirstTeamMutation from 'universal/mutations/CreateFirstTeamMutation';
-import {setAuthToken} from 'universal/redux/authDuck';
 import formError from 'universal/styles/helpers/formError';
 import withStyles from 'universal/styles/withStyles';
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
@@ -35,12 +34,11 @@ const Step2TeamName = (props) => {
           onError(serverError.message);
           return;
         }
-        const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}, user}} = res;
+        const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}}} = res;
         atmosphere.setAuthToken(newToken);
         dispatch(setWelcomeTeam({teamId, teamMemberId}));
         dispatch(updateCompleted(2));
         dispatch(nextPage());
-        dispatch(setAuthToken(newToken, user));
         resolve();
       };
       const newTeam = {name: normalizedTeamName};

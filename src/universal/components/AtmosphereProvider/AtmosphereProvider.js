@@ -1,17 +1,13 @@
 import PropTypes from 'prop-types';
 import {Children, Component} from 'react';
-import {connect} from 'react-redux';
 import Atmosphere from 'universal/Atmosphere';
-
-const mapStateToProps = (state) => ({authToken: state.auth.token});
 
 let atmosphere = new Atmosphere();
 
 export const resetAtmosphere = () => {
-  // super dirty, we'll remove it in the next chore PR when we remove auth from redux
-  const {dispatch} = atmosphere;
+  // race condition when logging out & the autoLogin
+  atmosphere.authObj = null;
   atmosphere = new Atmosphere();
-  atmosphere.dispatch = dispatch;
 };
 
 class AtmosphereProvider extends Component {
@@ -20,10 +16,15 @@ class AtmosphereProvider extends Component {
   };
 
   static propTypes = {
-    authToken: PropTypes.string,
-    children: PropTypes.element.isRequired,
-    dispatch: PropTypes.func.isRequired
+    children: PropTypes.element.isRequired
   };
+
+  constructor(props) {
+    super(props);
+    if (__CLIENT__) {
+      atmosphere.getAuthToken(window);
+    }
+  }
 
   getChildContext() {
     return {
@@ -31,25 +32,9 @@ class AtmosphereProvider extends Component {
     };
   }
 
-  componentWillMount() {
-    const {authToken, dispatch} = this.props;
-    // super dirty, we'll remove it in the next chore PR when we remove auth from redux
-    atmosphere.dispatch = dispatch;
-    if (authToken) {
-      atmosphere.setAuthToken(authToken);
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const {authToken} = nextProps;
-    if (this.props.authToken !== authToken) {
-      atmosphere.setAuthToken(authToken);
-    }
-  }
-
   render() {
     return Children.only(this.props.children);
   }
 }
 
-export default connect(mapStateToProps)(AtmosphereProvider);
+export default AtmosphereProvider;

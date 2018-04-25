@@ -9,7 +9,6 @@ import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemo
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 import getGraphQLError from 'universal/utils/relay/getGraphQLError';
 import jwtDecode from 'jwt-decode';
-import {setAuthToken} from 'universal/redux/authDuck';
 import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError';
 
@@ -115,9 +114,9 @@ export const acceptTeamInviteInvitationUpdater = (payload, store) => {
   handleRemoveInvitations(invitation, store);
 };
 
-const AcceptTeamInviteMutation = (environment, variables, {dispatch, history}, onError, onCompleted) => {
-  const {viewerId} = environment;
-  return commitMutation(environment, {
+const AcceptTeamInviteMutation = (atmosphere, variables, {dispatch, history}, onError, onCompleted) => {
+  const {viewerId} = atmosphere;
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -137,10 +136,10 @@ const AcceptTeamInviteMutation = (environment, variables, {dispatch, history}, o
         history.push('/');
         return;
       }
-      const {acceptTeamInvite: {team, authToken, user}} = data;
+      const {acceptTeamInvite: {team, authToken}} = data;
       const {id: teamId, name: teamName} = team;
       const {tms} = jwtDecode(authToken);
-      dispatch(setAuthToken(authToken, user));
+      atmosphere.setAuthToken(authToken);
       dispatch(showInfo({
         autoDismiss: 10,
         title: 'Congratulations!',

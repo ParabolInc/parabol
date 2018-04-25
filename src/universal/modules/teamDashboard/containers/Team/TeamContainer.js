@@ -8,14 +8,14 @@ import withReducer from 'universal/decorators/withReducer/withReducer';
 import Team from 'universal/modules/teamDashboard/components/Team/Team';
 import teamDashReducer from 'universal/modules/teamDashboard/ducks/teamDashDuck';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state, props) => {
-  const {match: {params: {teamId}}} = props;
+  const {atmosphere: {viewerId}, match: {params: {teamId}}} = props;
   const {hasMeetingAlert} = state.dash;
-  const userId = state.auth.obj.sub;
   return {
     hasMeetingAlert,
-    teamMemberId: toTeamMemberId(teamId, userId)
+    teamMemberId: toTeamMemberId(teamId, viewerId)
   };
 };
 
@@ -63,9 +63,9 @@ TeamContainer.propTypes = {
 };
 
 export default createFragmentContainer(
-  withReducer({teamDashboard: teamDashReducer})(
+  withAtmosphere(withReducer({teamDashboard: teamDashReducer})(
     connect(mapStateToProps)(TeamContainer)
-  ),
+  )),
   graphql`
     fragment TeamContainer_viewer on User {
       featureFlags {

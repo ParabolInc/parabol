@@ -27,8 +27,7 @@ export default {
   // ignore anything that throws warnings & doesn't affect the view
   externals: [
     'isomorphic-fetch',
-    'es6-promisify',
-    'socketcluster-client'
+    'es6-promisify'
   ],
   resolve: {
     extensions: ['.js'],
@@ -63,16 +62,6 @@ export default {
         test: /\.js$/,
         loader: 'babel-loader',
         include: serverInclude
-      },
-      {
-        test: /auth0-lock\/.*\.js$/,
-        loaders: [
-          'transform-loader/cacheable?brfs',
-          'transform-loader/cacheable?packageify'
-        ]
-      }, {
-        test: /auth0-lock\/.*\.ejs$/,
-        loader: 'transform-loader/cacheable?ejsify'
       },
       {test: /\.css$/, loader: 'style-loader!css-loader'}
     ]

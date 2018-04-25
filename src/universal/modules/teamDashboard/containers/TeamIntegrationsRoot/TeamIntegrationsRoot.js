@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {connect} from 'react-redux';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent';
@@ -25,12 +24,6 @@ const teamIntegrationsQuery = graphql`
   }
 `;
 
-const mapStateToProps = (state) => {
-  return {
-    jwt: state.auth.token
-  };
-};
-
 const subscriptions = [
   ProviderRemovedSubscription,
   ProviderAddedSubscription,
@@ -45,7 +38,7 @@ const subscriptions = [
 
 const cacheConfig = {ttl: DEFAULT_TTL};
 
-const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
+const TeamIntegrationsRoot = ({atmosphere, teamMemberId}) => {
   const {teamId} = fromTeamMemberId(teamMemberId);
   return (
     <QueryRenderer
@@ -59,7 +52,7 @@ const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
           return <ErrorComponent height={'14rem'} error={error} />;
         }
         if (props) {
-          return <TeamIntegrations viewer={props.viewer} jwt={jwt} teamId={teamId} />;
+          return <TeamIntegrations viewer={props.viewer} jwt={atmosphere.authToken} teamId={teamId} />;
         }
         return <LoadingComponent height={'14rem'} />;
       }}
@@ -71,9 +64,8 @@ const TeamIntegrationsRoot = ({jwt, atmosphere, teamMemberId}) => {
 
 TeamIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  jwt: PropTypes.string.isRequired,
   teamMemberId: PropTypes.string.isRequired,
   viewer: PropTypes.object
 };
 
-export default withAtmosphere(connect(mapStateToProps)(TeamIntegrationsRoot));
+export default withAtmosphere(TeamIntegrationsRoot);

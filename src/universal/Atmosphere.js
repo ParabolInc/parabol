@@ -1,8 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import {requestSubscription} from 'react-relay';
 import {Environment, Network, RecordSource, Store} from 'relay-runtime';
-import {setAuthToken} from 'universal/redux/authDuck';
-import {GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants';
+import {APP_TOKEN_KEY, GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import EventEmitter from 'eventemitter3';
 import SafeSubscriptionClient from 'universal/utils/SafeSubscriptionClient';
@@ -44,6 +43,7 @@ export default class Atmosphere extends Environment {
 
     // now atmosphere
     this.authToken = undefined;
+    this.authObj = undefined;
     this.subscriptionClient = undefined;
     this.networks = {
       http: this._network,
@@ -96,7 +96,6 @@ export default class Atmosphere extends Environment {
       handler: (errors, payload) => {
         const {authToken} = payload;
         this.setAuthToken(authToken);
-        this.dispatch(setAuthToken(authToken));
       },
       options: {
         query,
@@ -154,12 +153,26 @@ export default class Atmosphere extends Environment {
     this.setNet('socket');
   };
 
+  getAuthToken = (global) => {
+    if (!global) return;
+    const authToken = global.localStorage.getItem(APP_TOKEN_KEY);
+    this.setAuthToken(authToken);
+  };
+
   setAuthToken = (authToken) => {
     this.authToken = authToken;
-    if (authToken) {
-      const authObj = jwtDecode(authToken);
-      this.userId = authObj.sub;
-      this.viewerId = authObj.sub;
+    if (!authToken) return;
+    this.authObj = jwtDecode(authToken);
+    const {exp, sub: viewerId} = this.authObj;
+    if (exp < (Date.now() / 1000)) {
+      this.authToken = null;
+      this.authObj = null;
+      window.localStorage.removeItem(APP_TOKEN_KEY);
+    } else {
+      this.viewerId = viewerId;
+      window.localStorage.setItem(APP_TOKEN_KEY, authToken);
+      // deprecated! will be removed soon
+      this.userId = viewerId;
     }
   };
 

@@ -1,35 +1,19 @@
 import {applyMiddleware, compose, createStore} from 'redux';
 import ravenMiddleware from 'redux-raven-middleware';
 import thunkMiddleware from 'redux-thunk';
-import {createLoader, createMiddleware} from 'redux-storage-whitelist-fn';
 import {createTracker} from 'redux-segment';
-import createEngine from 'redux-storage-engine-localstorage';
 import makeReducer from 'universal/redux/makeReducer';
-import {APP_REDUX_KEY, APP_VERSION_KEY} from 'universal/utils/constants';
+import {APP_VERSION_KEY} from 'universal/utils/constants';
 
-const storageWhitelist = (type) => {
-  const whitelistPrefixes = ['@@auth', '@@root'];
-  for (let i = 0; i < whitelistPrefixes.length; i++) {
-    const prefix = whitelistPrefixes[i];
-    if (type.indexOf(prefix) !== -1) {
-      return true;
-    }
-  }
-  return false;
-};
-
-export default async (initialState) => {
+export default (initialState) => {
   let store;
   const reducer = makeReducer();
-  const engine = createEngine(APP_REDUX_KEY);
-  const storageMiddleware = createMiddleware(engine, [], storageWhitelist);
   /*
    * Special action types, such as thunks, must be placed before
    * storageMiddleware so they can be properly interpreted:
    */
   const middlewares = [
-    thunkMiddleware,
-    storageMiddleware
+    thunkMiddleware
   ];
 
   if (__PRODUCTION__) {
@@ -44,16 +28,6 @@ export default async (initialState) => {
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)));
   } else {
     const devtoolsExt = global.__REDUX_DEVTOOLS_EXTENSION__ && global.__REDUX_DEVTOOLS_EXTENSION__({maxAge: 50});
-    // removing for now, it kinda pollutes the console when debugging browser-specific bugs
-    // if (!devtoolsExt) {
-    // We don't have the Redux extension in the browser, show the Redux logger
-    // const {createLogger} = require('redux-logger'); // eslint-disable-line global-require
-    // const logger = createLogger({
-    //  level: 'info',
-    //  collapsed: true
-    // });
-    // middlewares.push(logger);
-    // }
     store = createStore(reducer, initialState, compose(
       applyMiddleware(...middlewares),
       devtoolsExt || ((f) => f),
@@ -65,7 +39,5 @@ export default async (initialState) => {
     window.localStorage.setItem(APP_VERSION_KEY, __APP_VERSION__); // eslint-disable-line no-undef
     return store;
   }
-  const load = createLoader(engine);
-  await load(store);
   return store;
 };
