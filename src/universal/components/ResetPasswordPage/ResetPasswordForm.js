@@ -7,7 +7,8 @@
 import React from 'react';
 import styled from 'react-emotion';
 import {Field, reduxForm} from 'redux-form';
-import {InputField, Button} from 'universal/components';
+import {InputField} from 'universal/components';
+import StyledButton from 'universal/components/StyledButton';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 
@@ -44,14 +45,9 @@ const PasswordResetForm = (props: Props) => {
           disabled={props.submitting}
         />
       </Block>
-      <Button
-        buttonSize="large"
-        buttonStyle="primary"
-        disabled={!props.valid}
-        label="Submit"
-        type="submit"
-        waiting={props.submitting}
-      />
+      <StyledButton buttonPalette="primary" disabled={!props.valid} type="submit" waiting={props.submitting}>
+        {'Submit'}
+      </StyledButton>
     </Form>
   );
 };
