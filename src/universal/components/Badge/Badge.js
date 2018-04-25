@@ -4,7 +4,7 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
 
-const boxShadow = '1px 1px 2px rgba(0, 0, 0, .5)';
+const boxShadow = '.0625rem .0625rem .125rem rgba(0, 0, 0, .5)';
 
 const BadgeRoot = styled('div')(({colorPalette, flat}) => ({
   backgroundColor: ui.palette[colorPalette] || ui.palette.warm,
