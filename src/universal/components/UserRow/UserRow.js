@@ -1,50 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import appTheme from 'universal/styles/theme/appTheme';
-import Avatar from 'universal/components/Avatar/Avatar';
-import Row from 'universal/components/Row/Row';
-import Tag from 'universal/components/Tag/Tag';
+import {
+  Avatar,
+  Row,
+  RowActions,
+  RowInfo,
+  RowInfoHeader,
+  RowInfoHeading,
+  RowInfoCopy,
+  RowInfoLink,
+  Tag
+} from 'universal/components';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import fromNow from 'universal/utils/fromNow';
-import styled from 'react-emotion';
-
-const UserInfo = styled('div')({
-  paddingLeft: '1rem'
-});
-
-const UserActions = styled('div')({
-  alignItems: 'center',
-  flex: 1,
-  justifyContent: 'flex-end'
-});
-
-const PreferredName = styled('div')({
-  color: appTheme.palette.dark,
-  display: 'inline-block',
-  fontSize: appTheme.typography.s4,
-  lineHeight: '1.625rem',
-  verticalAlign: 'middle'
-});
-
-const InvitedAt = styled('div')({
-  color: appTheme.palette.dark,
-  fontSize: appTheme.typography.s2,
-  fontWeight: 600,
-  lineHeight: appTheme.typography.s4
-});
-
-const InfoLink = styled('a')({
-  color: appTheme.palette.mid,
-  fontSize: appTheme.typography.s2,
-  fontWeight: 600,
-  lineHeight: appTheme.typography.s4,
-
-  ':hover, :focus': {
-    color: appTheme.palette.mid,
-    textDecoration: 'underline'
-  }
-});
 
 const UserRow = (props) => {
   const {actions, possibleTeamMember} = props;
@@ -57,27 +26,27 @@ const UserRow = (props) => {
           <img alt="" src={defaultUserAvatar} />
         }
       </div>
-      <UserInfo>
+      <RowInfo>
         {type === 'TeamMember' ?
-          <div>
-            <PreferredName>{preferredName}</PreferredName>
+          <RowInfoHeader>
+            <RowInfoHeading>{preferredName}</RowInfoHeading>
             {isLead && <Tag colorPalette="blue" label="Team Lead" />}
-          </div> :
+          </RowInfoHeader> :
           <PreferredName>{email}</PreferredName>
         }
         {type !== 'TeamMember' ?
-          <InvitedAt>
-            {`invited ${fromNow(createdAt || updatedAt)}`}
-          </InvitedAt> :
-          <InfoLink href={`mailto:${email}`} title="Send an email">
+          <RowInfoCopy useHintCopy>
+            {`Invited ${fromNow(createdAt || updatedAt)}`}
+          </RowInfoCopy> :
+          <RowInfoLink href={`mailto:${email}`} title="Send an email">
             {email}
-          </InfoLink>
+          </RowInfoLink>
         }
-      </UserInfo>
+      </RowInfo>
       {actions &&
-        <UserActions>
+        <RowActions>
           {actions}
-        </UserActions>
+        </RowActions>
       }
     </Row>
   );
@@ -85,8 +54,7 @@ const UserRow = (props) => {
 
 UserRow.propTypes = {
   actions: PropTypes.any,
-  possibleTeamMember: PropTypes.object.isRequired,
-  styles: PropTypes.object
+  possibleTeamMember: PropTypes.object.isRequired
 };
 
 UserRow.defaultProps = {

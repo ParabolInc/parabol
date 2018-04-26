@@ -25,7 +25,7 @@ const CopyLabel = styled('div')({
 });
 
 const CopyBlock = styled('div')({
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   position: 'relative',
   '&:hover': {
     color: ui.colorText,

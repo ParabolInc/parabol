@@ -37,7 +37,7 @@ const underlineStyles = {
 
 
 const PencilIcon = styled(StyledFontAwesome)({
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   height: ui.iconSize,
   left: '100%',
   lineHeight: ui.cardThemeLabelLineHeight,

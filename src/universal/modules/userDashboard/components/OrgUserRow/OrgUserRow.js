@@ -1,42 +1,17 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {Avatar, Row, Tag} from 'universal/components';
+import {
+  Avatar,
+  Row,
+  RowActions,
+  RowInfo,
+  RowInfoHeader,
+  RowInfoHeading,
+  RowInfoLink,
+  Tag
+} from 'universal/components';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import styled from 'react-emotion';
-import appTheme from 'universal/styles/theme/appTheme';
-
-const UserInfo = styled('div')({
-  paddingLeft: '1rem'
-});
-
-const UserActions = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  justifyContent: 'flex-end'
-});
-
-const PreferredName = styled('div')({
-  color: appTheme.palette.dark,
-  display: 'inline-block',
-  fontSize: appTheme.typography.s4,
-  lineHeight: '1.625rem',
-  verticalAlign: 'middle'
-});
-
-const InfoLink = styled('a')({
-  color: appTheme.palette.mid,
-  fontSize: appTheme.typography.s2,
-  fontWeight: 600,
-  lineHeight: appTheme.typography.s4,
-
-  '&:hover,:focus': {
-    color: appTheme.palette.mid,
-    textDecoration: 'underline'
-  }
-});
-
 
 const OrgUserRow = (props) => {
   const {
@@ -60,24 +35,24 @@ const OrgUserRow = (props) => {
           <img alt="" src={defaultUserAvatar} />
         }
       </div>
-      <UserInfo>
-        <div>
-          <PreferredName>{preferredName}</PreferredName>
+      <RowInfo>
+        <RowInfoHeader>
+          <RowInfoHeading>{preferredName}</RowInfoHeading>
           {isBillingLeader &&
             <Tag colorPalette="blue" label="Billing Leader" />
           }
           {inactive && !viewerIsBillingLeader &&
             <Tag colorPalette="midGray" label="Inactive" />
           }
-        </div>
-        <InfoLink href={`mailto:${email}`} title="Send an email">
+        </RowInfoHeader>
+        <RowInfoLink href={`mailto:${email}`} title="Send an email">
           {email}
-        </InfoLink>
-      </UserInfo>
+        </RowInfoLink>
+      </RowInfo>
       {actions &&
-        <UserActions>
+        <RowActions>
           {actions}
-        </UserActions>
+        </RowActions>
       }
     </Row>
   );

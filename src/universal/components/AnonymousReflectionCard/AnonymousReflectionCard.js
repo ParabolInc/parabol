@@ -33,7 +33,7 @@ type State = {
 const AnonymousStyles = styled('div')({
   backgroundColor: ui.palette.white,
   borderRadius: ui.cardBorderRadius,
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   opacity: '.75',
   minHeight: ui.retroCardMinHeight,
   position: 'relative',

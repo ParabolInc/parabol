@@ -16,7 +16,6 @@ import UserSettingsWrapper from 'universal/modules/userDashboard/components/User
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import {BILLING_PAGE, MEMBERS_PAGE, PRO} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
-
 import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
 
@@ -75,7 +74,7 @@ const Organization = (props) => {
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
-      <SettingsWrapper maxWidth="40.25rem">
+      <SettingsWrapper narrow>
         <BackControlBlock>
           <DashNavControl
             icon="arrow-circle-left"

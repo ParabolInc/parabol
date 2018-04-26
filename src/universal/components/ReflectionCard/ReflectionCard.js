@@ -48,7 +48,7 @@ const OriginFooter = styled('div')({
   alignItems: 'flex-start',
   background: '#fff',
   borderRadius: ui.cardBorderRadius,
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   fontSize: ui.hintFontSize,
   padding: '.5rem .75rem'
 });

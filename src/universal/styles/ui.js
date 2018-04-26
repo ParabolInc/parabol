@@ -498,7 +498,7 @@ const ui = {
 
   // Hints
   // ---------------------------------------------------------------------------
-  hintFontColor: COLOR_TEXT_LIGHT,
+  hintColor: COLOR_TEXT_LIGHT,
   hintFontSize: appTheme.typography.s2,
   hintFontSizeLarger: appTheme.typography.s3,
 
@@ -659,16 +659,22 @@ const ui = {
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
   rowCompactGutter: '.75rem',
-  rowSubheading: {
+  rowHeading: {
     color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s4,
+    lineHeight: '1.625rem'
+  },
+  rowSubheading: {
+    color: COLOR_TEXT,
     fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s5
+    lineHeight: appTheme.typography.s4
   },
 
   // Settings
   // ---------------------------------------------------------------------------
   settingsGutter: '1rem',
   settingsPanelMaxWidth: '48rem',
+  settingsPanelMaxWidthNarrow: '40.25rem',
 
   // Shadows
   shadow,

@@ -48,7 +48,7 @@ const codeBlock = css({
 });
 
 const EditorStyles = styled('div')(({isBlurred}) => ({
-  color: isBlurred === false ? ui.hintFontColor : appTheme.palette.dark,
+  color: isBlurred === false ? ui.hintColor : appTheme.palette.dark,
   filter: isBlurred && 'blur(.25rem)',
   fontSize: ui.cardContentFontSize,
   lineHeight: ui.cardContentLineHeight,

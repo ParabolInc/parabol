@@ -1,44 +1,28 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Avatar, Button, Row} from 'universal/components';
+import {
+  Avatar,
+  Button,
+  Row,
+  RowActions,
+  RowInfo,
+  RowInfoHeader,
+  RowInfoHeading,
+  RowInfoCopy
+} from 'universal/components';
 import {TagBlock, TagPro} from 'universal/components/Tag';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import {PERSONAL, PRO, PRO_LABEL} from 'universal/utils/constants';
 import withRouter from 'react-router-dom/es/withRouter';
 import plural from 'universal/utils/plural';
-
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
 
 const OrgAvatar = styled('div')({
   cursor: 'pointer'
 });
 
-const OrgInfo = styled('div')({
-  paddingLeft: '1rem'
-});
-
-const OrgActions = styled('div')({
-  flex: 1,
-  marginLeft: ui.rowGutter,
-  textAlign: 'right'
-});
-
-const Name = styled('div')({
-  color: appTheme.palette.dark,
-  cursor: 'pointer',
-  display: 'inline-block',
-  fontSize: appTheme.typography.s4,
-  lineHeight: '1.625rem',
-  verticalAlign: 'middle'
-});
-
-const SubHeader = styled('div')({
-  color: appTheme.palette.dark,
-  fontSize: appTheme.typography.s2,
-  fontWeight: 600,
-  lineHeight: appTheme.typography.s4
+const Name = styled(RowInfoHeading)({
+  cursor: 'pointer'
 });
 
 const StyledTagBlock = styled(TagBlock)({
@@ -69,20 +53,22 @@ const OrganizationRow = (props) => {
       <OrgAvatar onClick={onRowClick}>
         <Avatar size="fill" picture={orgAvatar} />
       </OrgAvatar>
-      <OrgInfo>
-        <Name onClick={onRowClick}>
-          {name}
-          {tier === PRO &&
-          <StyledTagBlock>
-            <TagPro />
-          </StyledTagBlock>
-          }
-        </Name>
-        <SubHeader>
+      <RowInfo>
+        <RowInfoHeader>
+          <Name onClick={onRowClick}>
+            {name}
+            {tier === PRO &&
+            <StyledTagBlock>
+              <TagPro />
+            </StyledTagBlock>
+            }
+          </Name>
+        </RowInfoHeader>
+        <RowInfoCopy useHintCopy>
           {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
-        </SubHeader>
-      </OrgInfo>
-      <OrgActions>
+        </RowInfoCopy>
+      </RowInfo>
+      <RowActions>
         {tier === PERSONAL &&
           <Button
             buttonStyle="flat"
@@ -100,7 +86,7 @@ const OrganizationRow = (props) => {
           onClick={onRowClick}
           buttonSize="small"
         />
-      </OrgActions>
+      </RowActions>
     </Row>
   );
 };

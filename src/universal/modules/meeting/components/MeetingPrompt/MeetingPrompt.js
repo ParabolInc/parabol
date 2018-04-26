@@ -84,7 +84,7 @@ const styleThunk = (theme, {avatarLarge}) => ({
   },
 
   subHeading: {
-    color: ui.hintFontColor,
+    color: ui.hintColor,
     fontSize: ui.hintFontSize,
     lineHeight: '1.5',
     margin: 0,
@@ -97,7 +97,7 @@ const styleThunk = (theme, {avatarLarge}) => ({
   },
 
   helpText: {
-    color: ui.hintFontColor,
+    color: ui.hintColor,
     fontSize: ui.hintFontSize,
     lineHeight: '1.5',
     margin: 0,

@@ -2,9 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import Row from 'universal/components/Row/Row';
-import Tag from 'universal/components/Tag/Tag';
-import FontAwesome from 'react-fontawesome';
+import {Row, RowInfo, Tag} from 'universal/components';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router-dom';
@@ -33,8 +31,7 @@ const InvoiceAvatar = styled('div')(({isEstimate}) => ({
   borderRadius: '.5rem'
 }));
 
-const InvoiceInfo = styled('div')({
-  paddingLeft: ui.rowGutter,
+const InvoiceInfo = styled(RowInfo)({
   width: '100%'
 });
 
@@ -63,25 +60,24 @@ const styledDate = css({
 });
 
 const styledToPay = css({
-  color: ui.palette.dark,
-  fontWeight: 600
+  color: ui.palette.dark
 });
 
 const styledPaid = css({
-  color: appTheme.palette.mid,
-  fontWeight: 600
+  color: ui.hintColor
 });
 
 const styledUnpaid = css({
-  color: appTheme.palette.warm,
-  fontWeight: 600
+  color: appTheme.palette.warm
 });
 
-const styledSubHeader = css({
+const styledInfoLink = css({
+  ...ui.rowSubheading,
   color: appTheme.palette.mid,
-  fontSize: appTheme.typography.s2,
-  fontWeight: 600,
-  lineHeight: appTheme.typography.s4
+  ':hover, :focus': {
+    color: appTheme.palette.mid,
+    textDecoration: 'underline'
+  }
 });
 
 const InvoiceRow = (props) => {
@@ -119,7 +115,7 @@ const InvoiceRow = (props) => {
         </InfoRow>
         <InfoRow>
           <div>
-            <Link className={styledSubHeader} rel="noopener noreferrer" target="_blank" to={`/invoice/${invoiceId}`}>
+            <Link className={styledInfoLink} rel="noopener noreferrer" target="_blank" to={`/invoice/${invoiceId}`}>
               {'See Details'}
             </Link>
           </div>

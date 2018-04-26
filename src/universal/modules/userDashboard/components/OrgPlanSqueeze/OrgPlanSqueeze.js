@@ -74,7 +74,7 @@ const ButtonBlock = styled('div')({
 const InlineHint = styled('div')({
   backgroundColor: ui.palette.light,
   borderRadius: ui.borderRadiusSmall,
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   fontSize: appTheme.typography.s2,
   lineHeight: appTheme.typography.s5,
   margin: '0 1rem',
@@ -116,7 +116,7 @@ const BillingLeaderRowLabel = styled('div')({
 
 const BillingLeaderRow = styled('div')(({hasUpgradeNudge}) => ({
   alignItems: 'center',
-  color: hasUpgradeNudge ? ui.hintFontColor : ui.colorText,
+  color: hasUpgradeNudge ? ui.hintColor : ui.colorText,
   display: 'flex',
   justifyContent: 'space-between',
   margin: '0 0 .5rem',
