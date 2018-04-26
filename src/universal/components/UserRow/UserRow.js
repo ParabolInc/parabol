@@ -32,7 +32,7 @@ const UserRow = (props) => {
             <RowInfoHeading>{preferredName}</RowInfoHeading>
             {isLead && <Tag colorPalette="blue" label="Team Lead" />}
           </RowInfoHeader> :
-          <PreferredName>{email}</PreferredName>
+          <RowInfoHeading>{email}</RowInfoHeading>
         }
         {type !== 'TeamMember' ?
           <RowInfoCopy useHintCopy>
