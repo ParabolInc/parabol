@@ -20,43 +20,43 @@ const segmentSnippet = segKey && makeSegmentSnippet.min({
 // Injects the server rendered state and app into a basic html template
 export default function Html({store, assets, clientIds}) {
   // const ActionContainer = require('../../build/prerender');
-  const {default: ActionContainer, Atmosphere, StyleSheetServer} = require('../../build/prerender');
+  const {default: ActionContainer, Atmosphere, EmotionServer} = require('../../build/prerender');
   const {manifest, app, vendor} = assets;
   // TURN ON WHEN WE SEND STATE TO CLIENT
   // const initialState = `window.__INITIAL_STATE__ = ${JSON.stringify(store.getState())}`;
   // <script dangerouslySetInnerHTML={{__html: initialState}}/>
   const context = {};
   const atmosphere = new Atmosphere();
-  const {html, css} = StyleSheetServer.renderStatic(() => {
-    try {
-      return renderToString(
-        <Provider store={store}>
-          <AtmosphereProvider atmosphere={atmosphere}>
-            <StaticRouter location={'/'} context={context}>
-              <ActionContainer />
-            </StaticRouter>
-          </AtmosphereProvider>
-        </Provider>
-      );
-    } catch (e) {
-      sendSentryEvent(undefined, {message: e.message});
-      return '<div>Error during render!</div>';
-    }
-  });
-  const dehydratedStyles = dehydrate('__APHRODITE__', css.renderedClassNames);
+  let critical;
+  try {
+    critical = EmotionServer.extractCritical(renderToString(
+      <Provider store={store}>
+        <AtmosphereProvider atmosphere={atmosphere}>
+          <StaticRouter location={'/'} context={context}>
+            <ActionContainer />
+          </StaticRouter>
+        </AtmosphereProvider>
+      </Provider>
+    ));
+  } catch (e) {
+    sendSentryEvent(undefined, {message: e.message});
+    throw e;
+    // return `<div>Error during render! ${e}</div>`;
+  }
+  const dehydratedStyles = dehydrate('__EMOTION__', critical.ids);
   const dehydratedClientIds = dehydrate('__ACTION__', clientIds);
   const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
   return (
     <html>
       <head>
-        <style data-aphrodite dangerouslySetInnerHTML={{__html: css.content}} />
+        <style dangerouslySetInnerHTML={{__html: critical.css}} />
         <link rel="stylesheet" type="text/css" href={fontAwesomeUrl} />
         {/* segment.io analytics */}
         <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}} />
         <script dangerouslySetInnerHTML={{__html: dehydratedClientIds}} />
       </head>
       <body>
-        <div id="root" dangerouslySetInnerHTML={{__html: html}} />
+        <div id="root" dangerouslySetInnerHTML={{__html: critical.html}} />
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}} />
         <script dangerouslySetInnerHTML={{__html: manifest.text}} />
         <script src={`${webpackPublicPath}${vendor.js}`} />

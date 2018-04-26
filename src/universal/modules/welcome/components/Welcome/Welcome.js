@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
@@ -12,10 +11,14 @@ import Step3InviteTeam from 'universal/modules/welcome/components/Step3InviteTea
 import WelcomeContent from 'universal/modules/welcome/components/WelcomeContent/WelcomeContent';
 import WelcomeHeader from 'universal/modules/welcome/components/WelcomeHeader/WelcomeHeader';
 import WelcomeLayout from 'universal/modules/welcome/components/WelcomeLayout/WelcomeLayout';
-import withStyles from 'universal/styles/withStyles';
+import styled from 'react-emotion';
+
+const Signout = styled(Link)({
+  alignSelf: 'flex-end'
+});
 
 const Welcome = (props) => {
-  const {progressDotClickFactory, styles, title, welcome: {page, completed}} = props;
+  const {progressDotClickFactory, title, welcome: {page, completed}} = props;
   const headingText = page === 1 ? 'Hello!' : 'Invite your team';
   return (
     <WelcomeLayout>
@@ -32,15 +35,14 @@ const Welcome = (props) => {
         {page === 2 && <Step2TeamName {...props} completed={completed} />}
         {page === 3 && <Step3InviteTeam {...props} />}
       </WelcomeContent>
-      <Link
-        className={css(styles.signout)}
+      <Signout
         title="Sign Out"
         to="/signout"
       >
         <FontAwesome
           name="sign-out"
         />
-      </Link>
+      </Signout>
     </WelcomeLayout>
   );
 };
@@ -51,7 +53,6 @@ Welcome.propTypes = {
   inviteesRaw: PropTypes.string,
   preferredName: PropTypes.string,
   progressDotClickFactory: PropTypes.func,
-  styles: PropTypes.object.isRequired,
   teamName: PropTypes.string,
   title: PropTypes.string,
   welcome: PropTypes.shape({
@@ -62,13 +63,8 @@ Welcome.propTypes = {
   })
 };
 
-const styleThunk = () => ({
-  signout: {
-    alignSelf: 'flex-end'
-  }
-});
 export default createFragmentContainer(
-  withStyles(styleThunk)(Welcome),
+  Welcome,
   graphql`
     fragment Welcome_viewer on User {
       ...Step1PreferredName_viewer

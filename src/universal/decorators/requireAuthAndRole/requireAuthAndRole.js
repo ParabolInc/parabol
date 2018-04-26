@@ -18,7 +18,8 @@ export default ({
   role,
   silent = false,
   unauthorized = unauthorizedDefault,
-  unauthenticated = unauthenticatedDefault
+  unauthenticated = unauthenticatedDefault,
+  unauthRoute = '/'
 } = {}) => (ComposedComponent) => {
   class RequiredAuthAndRole extends Component {
     static propTypes = {
@@ -37,14 +38,14 @@ export default ({
           if (!silent) {
             setTimeout(() => dispatch(showError(unauthorized)));
           }
-          history.push('/');
+          history.push(unauthRoute);
           this.redir = true;
         }
       } else {
         if (!silent) {
           setTimeout(() => dispatch(showError(unauthenticated)));
         }
-        history.push({pathname: '/', search: `?redirectTo=${encodeURIComponent(pathname)}`});
+        history.push({pathname: unauthRoute, search: `?redirectTo=${encodeURIComponent(pathname)}`});
         this.redir = true;
       }
     }
