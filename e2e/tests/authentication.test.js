@@ -39,6 +39,7 @@ const actions = {
   },
 
   authenticate: (driver) => async ({email, password}) => {
+    await sleep(100);
     await driver
       .findElement(By.css('input[type="email"]'))
       .sendKeys(email);
