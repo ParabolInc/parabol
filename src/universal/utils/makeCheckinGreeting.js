@@ -83,14 +83,14 @@ const questions = [
   'Heard any good tips lately?'
 ];
 
-export const makeCheckinGreeting = (week, seedId = '') => {
+export const makeCheckinGreeting = (meetingCount, seedId = '') => {
   const seed = seedId.charCodeAt(0);
-  const idx = (seed + week) % greetings.length;
+  const idx = (seed + meetingCount) % greetings.length;
   return greetings[idx];
 };
 
-export const makeCheckinQuestion = (week, seedId = '') => {
+export const makeCheckinQuestion = (meetingCount, seedId = '') => {
   const seed = seedId.charCodeAt(0);
-  const idx = (seed + week) % questions.length;
+  const idx = (seed + meetingCount) % questions.length;
   return questions[idx];
 };
