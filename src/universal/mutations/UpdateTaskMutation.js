@@ -32,8 +32,8 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!) {
-    updateTask(updatedTask: $updatedTask) {
+  mutation UpdateTaskMutation($updatedTask: UpdateTaskInput!, $area: AreaEnum) {
+    updateTask(updatedTask: $updatedTask, area: $area) {
       error {
         message
       }
