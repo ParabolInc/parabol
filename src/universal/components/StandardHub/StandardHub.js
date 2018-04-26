@@ -95,26 +95,10 @@ const BadgeBlock = styled('div')({
   right: '-.375rem'
 });
 
-const UpgradeCTA = styled('div')({
-  color: ui.palette.warm,
-  cursor: 'pointer',
-  flex: 1,
-  paddingRight: ui.menuGutterHorizontal,
-  textAlign: 'right',
-  '&:hover': {
-    textDecoration: 'underline'
-  }
-});
-
-const MenuLabelWithCTA = styled('div')({
-  alignItems: 'center',
-  cursor: 'pointer',
-  display: 'flex',
-  flex: 1,
+const UpgradeCTA = styled('span')({
+  color: ui.upgradeColor,
   fontSize: ui.menuItemFontSize,
-  justifyContent: 'space-between',
-  lineHeight: ui.menuItemHeight,
-  width: '100%'
+  lineHeight: ui.menuItemHeight
 });
 
 const NotificationIcon = styled(StyledFontAwesome)({
@@ -136,60 +120,41 @@ const StandardHub = (props) => {
 
   // TODO: get a real array of free orgs, clean this up (TA)
   // looking at a local org to test UI
-  const showBillingNudgeCTA = true;
-  const arrayFreeOrgs = showBillingNudgeCTA ? [{id: 'HyF7ebanz'}] : [];
+  const isBillingLeader = true;
+  const arrayFreeOrgs = [{id: 'HyF7ebanz'}];
+  const showUpgradeCTA = isBillingLeader && arrayFreeOrgs.length !== 0;
 
-  const makeUpgradeCTA = () => {
-    const label = 'Upgrade to Professional';
+  const makeUpgradeMenuLabel = (
+    <UpgradeCTA>
+      {'Upgrade to '}<b>{'Professional'}</b>
+    </UpgradeCTA>
+  );
+
+  const handleUpgradeClick = () => {
     let upgradeGoTo = goToOrganizations;
     if (arrayFreeOrgs.length === 1) {
       const {id} = arrayFreeOrgs[0];
       upgradeGoTo = () => history.push(`/me/organizations/${id}`);
     }
-    return (
-      <UpgradeCTA
-        aria-label={label}
-        onClick={upgradeGoTo}
-        title={label}
-      >
-        {'Upgrade to '}<b>{'Professional'}</b>
-      </UpgradeCTA>
-    );
-  };
-
-  const organizationsLabel = () => {
-    const label = 'Organizations';
-    if (arrayFreeOrgs.length !== 0) {
-      return (
-        <MenuLabelWithCTA>
-          <span
-            aria-label={label}
-            onClick={goToOrganizations}
-            title={label}
-          >
-            {label}
-          </span>
-          {makeUpgradeCTA()}
-        </MenuLabelWithCTA>
-      );
-    }
-    return label;
+    return upgradeGoTo();
   };
 
   const makeUserMenu = () => {
     const itemFactory = () => {
       const listItems = [];
-      // scope click handlers to inner label and CTA if there are any free orgs
-      const orgOnClick = arrayFreeOrgs.length === 0 ? goToOrganizations : null;
       listItems.push(
         <MenuItem icon="address-card" label="Settings" onClick={goToSettings} />,
-        <MenuItem icon="building" label={organizationsLabel()} onClick={orgOnClick} />,
+        <MenuItem icon="building" label="Organizations" onClick={goToOrganizations} />,
         <MenuItem icon="bell" label="Notifications" onClick={goToNotifications} />,
         <MenuItem icon="sign-out" label="Sign Out" onClick={signOut} hr="before" />
       );
+      // Conditionally add the Upgrade menu item before Sign Out
+      if (isBillingLeader) {
+        listItems.splice(3, 0, <MenuItem icon="star" label={makeUpgradeMenuLabel} onClick={handleUpgradeClick} hr="before" />);
+      }
       return listItems;
     };
-    const menuWidth = arrayFreeOrgs.length !== 0 ? '21rem' : '13rem';
+    const menuWidth = showUpgradeCTA ? '21rem' : '13rem';
     return (
       <Menu
         itemFactory={itemFactory}

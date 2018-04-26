@@ -40,11 +40,12 @@ const orgLinkStyles = css({
 });
 
 const upgradeLinkStyles = css({
-  color: appTheme.palette.warm,
+  color: ui.upgradeColor,
   cursor: 'pointer',
   marginLeft: '.75rem',
   ':hover, :focus': {
-    color: appTheme.palette.warm70d
+    color: ui.upgradeColor,
+    textDecoration: 'underline'
   }
 });
 
@@ -60,6 +61,8 @@ const TeamTasksHeader = (props) => {
   const goToOrg = `/me/organizations/${orgId}`;
   const squeezeLabel = `Upgrade to ${PRO_LABEL}`;
   const isPersonal = true;
+  // TODO: scope this to billing leader for now
+  const isBillingLeader = true;
 
   return (
     <DashSectionHeader>
@@ -68,24 +71,26 @@ const TeamTasksHeader = (props) => {
         <DashHeading>
           {`${teamName} Tasks`}
         </DashHeading>
-        <OrgInfoBlock>
-          <NavLink
-            className={orgLinkStyles}
-            title={orgName}
-            to={goToOrg}
-          >
-            {orgName}
-          </NavLink>
-          {isPersonal &&
+        {isBillingLeader &&
+          <OrgInfoBlock>
             <NavLink
-              className={upgradeLinkStyles}
-              title={squeezeLabel}
+              className={orgLinkStyles}
+              title={orgName}
               to={goToOrg}
             >
-              {'Upgrade to '}<b>{PRO_LABEL}</b>
+              {orgName}
             </NavLink>
-          }
-        </OrgInfoBlock>
+            {isPersonal &&
+              <NavLink
+                className={upgradeLinkStyles}
+                title={squeezeLabel}
+                to={goToOrg}
+              >
+                {'Upgrade to '}<b>{PRO_LABEL}</b>
+              </NavLink>
+            }
+          </OrgInfoBlock>
+        }
       </div>
       <DashSectionControls>
 

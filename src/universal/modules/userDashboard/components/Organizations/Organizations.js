@@ -31,7 +31,7 @@ const Organizations = (props) => {
   return (
     <UserSettingsWrapper>
       <Helmet title="My Organizations | Parabol" />
-      <SettingsWrapper narrow>
+      <SettingsWrapper>
         {organizations.length ?
           <Panel label="Organizations" controls={addNewOrg()}>
             {organizations.map((organization) =>

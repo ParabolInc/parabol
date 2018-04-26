@@ -714,6 +714,11 @@ const ui = {
   typeRegular: TYPE_REGULAR,
   typeSemiBold: TYPE_SEMIBOLD,
 
+  // Upgrade
+  // ---------------------------------------------------------------------------
+  upgradeColor: blue,
+  upgradeColorOption: 'blue',
+
   // Voting
   // ---------------------------------------------------------------------------
   votingCheckmarksWidth: '3.375rem',

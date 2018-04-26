@@ -31,5 +31,6 @@ export ThirdPartyAuthButton from './ThirdPartyAuthButton/ThirdPartyAuthButton';
 export Toggle from './Toggle/Toggle';
 export Tooltip from './Tooltip/Tooltip';
 export Type from './Type/Type';
+export UserRow from './UserRow/UserRow';
 
 // Have a nice day!

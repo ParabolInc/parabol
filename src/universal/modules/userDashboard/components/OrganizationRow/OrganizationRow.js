@@ -16,6 +16,7 @@ import {PERSONAL, PRO, PRO_LABEL} from 'universal/utils/constants';
 import withRouter from 'react-router-dom/es/withRouter';
 import plural from 'universal/utils/plural';
 import styled from 'react-emotion';
+import ui from 'universal/styles/ui';
 
 const OrgAvatar = styled('div')({
   cursor: 'pointer'
@@ -35,6 +36,7 @@ const OrganizationRow = (props) => {
     history,
     organization: {
       id: orgId,
+      isBillingLeader,
       name,
       orgUserCount: {
         activeUserCount,
@@ -44,9 +46,14 @@ const OrganizationRow = (props) => {
       tier
     }
   } = props;
+  // TODO: restore the action for org member “Create New Team” per org row
   const orgAvatar = picture || defaultOrgAvatar;
-  const onRowClick = () => history.push(`/me/organizations/${orgId}`);
+  const label = isBillingLeader ? 'Settings and Billing' : 'Create New Team';
+  const icon = isBillingLeader ? 'cog' : 'plus';
+  const onRowClickUrl = isBillingLeader ? `/me/organizations/${orgId}` : `/newteam/${orgId}`;
+  const onRowClick = () => history.push(onRowClickUrl);
   const totalUsers = activeUserCount + inactiveUserCount;
+  const showUpgradeCTA = isBillingLeader && tier === PERSONAL;
   const upgradeCTALabel = <span>{'Upgrade to '}<b>{PRO_LABEL}</b></span>;
   return (
     <Row>
@@ -69,10 +76,10 @@ const OrganizationRow = (props) => {
         </RowInfoCopy>
       </RowInfo>
       <RowActions>
-        {tier === PERSONAL &&
+        {showUpgradeCTA &&
           <Button
             buttonStyle="flat"
-            colorPalette="warm"
+            colorPalette={ui.upgradeColorOption}
             label={upgradeCTALabel}
             onClick={onRowClick}
             buttonSize="small"
@@ -81,8 +88,8 @@ const OrganizationRow = (props) => {
         <Button
           buttonStyle="flat"
           colorPalette="dark"
-          label="Settings and Billing"
-          icon="cog"
+          label={label}
+          icon={icon}
           onClick={onRowClick}
           buttonSize="small"
         />
@@ -95,6 +102,7 @@ OrganizationRow.propTypes = {
   history: PropTypes.object.isRequired,
   organization: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    isBillingLeader: PropTypes.bool.isRequired,
     name: PropTypes.string.isRequired,
     picture: PropTypes.string,
     tier: PropTypes.string.isRequired,

@@ -108,7 +108,7 @@ const BillingLeaderRowLabel = styled('div')({
   flex: 1,
   paddingBottom: '.0625rem',
   paddingRight: '1rem',
-  textAlign: 'left',
+  // textAlign: 'left',
   '& > span': {
     ...textOverflow
   }
@@ -148,7 +148,7 @@ class OrgPlanSqueeze extends Component {
     />);
     const openUrl = (url) => () => window.open(url, '_blank');
 
-    const isBillingLeader = false;
+    const isBillingLeader = true;
 
     // NOTE: hasUpgradeNudge is true when the billing leader has received a notification from the current user for this org
     //       the billing leader can have 1 notification from every org member that nudges
@@ -220,10 +220,11 @@ class OrgPlanSqueeze extends Component {
                 console.log('handleBillingLeaderRowClick');
               };
               const makeKey = `billingLeader${idx + 1}`;
+              const canNudge = false; // a simpler version, just show a list of billing leaders
               return (
-                <BillingLeaderRow hasUpgradeNudge={hasUpgradeNudge} key={makeKey}>
+                <BillingLeaderRow hasUpgradeNudge={canNudge && hasUpgradeNudge} key={makeKey}>
                   <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
-                  <Button
+                  {canNudge && <Button
                     buttonSize="small"
                     buttonStyle="link"
                     colorPalette={hasUpgradeNudge ? 'dark' : 'warm'}
@@ -231,7 +232,7 @@ class OrgPlanSqueeze extends Component {
                     icon={hasUpgradeNudge ? 'check' : 'paper-plane'}
                     label={hasUpgradeNudge ? 'Notification Sent' : 'Send Notification'}
                     onClick={hasUpgradeNudge ? null : handleBillingLeaderRowClick}
-                  />
+                  />}
                 </BillingLeaderRow>
               );
             })}

@@ -3,10 +3,8 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
-import Panel from 'universal/components/Panel/Panel';
+import {Button, Panel, Tooltip, UserRow} from 'universal/components';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import Tooltip from 'universal/components/Tooltip/Tooltip';
-import UserRow from 'universal/components/UserRow/UserRow';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
@@ -21,6 +19,7 @@ import ui from 'universal/styles/ui';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import styled from 'react-emotion';
+import {PRO_LABEL} from 'universal/utils/constants';
 
 const originAnchor = {
   vertical: 'center',
@@ -83,6 +82,11 @@ const PanelInner = styled('div')({
 const PanelRow = styled('div')({
   borderTop: `.0625rem solid ${ui.rowBorderColor}`,
   padding: `${ui.panelGutter}`
+});
+
+const PanelRowCentered = styled(PanelRow)({
+  display: 'flex',
+  justifyContent: 'center'
 });
 
 class TeamSettings extends Component {
@@ -209,10 +213,30 @@ class TeamSettings extends Component {
     // if kicked out, the component might reload before the redirect occurs
     if (!viewerTeamMember) return null;
     const {isLead: viewerIsLead} = viewerTeamMember;
+
+    // TODO: upgrade UX
+    const isBillingLeader = true;
+    const isPersonal = true;
+    const showUpgradeCTA = isBillingLeader && isPersonal;
+    const upgradeButtonLabel = <span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>;
+
     return (
       <TeamSettingsLayout>
         <Helmet title={`${teamName} Settings | Parabol`} />
+        {/* TODO: add Upgrade CTA for billing leaders */}
         <PanelsLayout>
+          {showUpgradeCTA &&
+            <Panel>
+              <PanelRowCentered>
+                <Button
+                  buttonSize="small"
+                  colorPalette={ui.upgradeColorOption}
+                  label={upgradeButtonLabel}
+                  onClick={() => (console.log('upgrade, go to org billing view'))}
+                />
+              </PanelRowCentered>
+            </Panel>
+          }
           <Panel label="Manage Team">
             <PanelInner>
               <InviteUser

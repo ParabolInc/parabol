@@ -63,7 +63,7 @@ const OrgMembers = (props) => {
     SetOrgUserRoleMutation(environment, variables, {dispatch, history});
   };
 
-  const viewerIsBillingLeader = false;
+  const viewerIsBillingLeader = true;
 
   const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
 
