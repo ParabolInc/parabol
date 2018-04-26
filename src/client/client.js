@@ -1,15 +1,15 @@
-import {StyleSheet} from 'aphrodite-local-styles/no-important';
 import React from 'react';
 import {render} from 'react-dom';
 import makeStore from './makeStore';
 import Root from './Root';
 import './scrollIntoViewIfNeeded';
+import {hydrate} from 'emotion';
 
 const initialState = {};
 const store = makeStore(initialState);
 
 if (__PRODUCTION__) {
-  StyleSheet.rehydrate(window.__APHRODITE__);
+  hydrate(window.__EMOTION__);
 }
 render(
   <Root store={store} />,

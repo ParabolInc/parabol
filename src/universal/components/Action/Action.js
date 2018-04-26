@@ -4,8 +4,6 @@ import {Route, Switch} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
-import {StyleSheetServer as S} from 'aphrodite-local-styles/no-important';
-import A from 'universal/Atmosphere';
 import SignInPage from 'universal/components/SignInPage/SignInPage';
 
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
@@ -49,7 +47,7 @@ const Action = () => {
         <AsyncRoute isPrivate path="/welcome" mod={welcome} />
         <AsyncRoute path="/admin/graphql" mod={graphql} />
         <AsyncRoute path="/admin/impersonate/:newUserId" mod={impersonate} />
-        <AsyncRoute isPrivate path="/invitation/:inviteToken" mod={invitation} />
+        <AsyncRoute path="/invitation/:inviteToken" mod={invitation} />
         <AsyncRoute mod={signout} />
         <AsyncRoute mod={notFound} />
       </Switch>
@@ -57,6 +55,4 @@ const Action = () => {
   );
 };
 
-export const Atmosphere = A;
-export const StyleSheetServer = S;
 export default Action;

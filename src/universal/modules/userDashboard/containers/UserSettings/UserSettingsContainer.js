@@ -49,9 +49,14 @@ class UserSettingsContainer extends Component {
   }
 
   onSubmit = async (submissionData) => {
-    const {atmosphere, viewer} = this.props;
+    const {activity, dispatch, untouch, atmosphere, nextPage, viewer, history} = this.props;
     const {preferredName} = submissionData;
-    if (preferredName === viewer.preferredName) return undefined;
+    if (preferredName === viewer.preferredName) {
+      if (nextPage) {
+        history.push(nextPage);
+      }
+      return undefined;
+    }
     return new Promise((resolve, reject) => {
       const onError = (err) => {
         raven.captureException(err);
@@ -63,7 +68,6 @@ class UserSettingsContainer extends Component {
           onError(serverError.message);
           return;
         }
-        const {activity, dispatch, nextPage, untouch, history} = this.props;
         dispatch(showSuccess(updateSuccess));
         if (activity === ACTIVITY_WELCOME) {
           dispatch(clearActivity());
