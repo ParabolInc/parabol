@@ -75,7 +75,7 @@ const discussHelpContent = (
 const updatesHelpContent = (
   <div>
     <p>{'During this phase each teammate has uninterrupted airtime to give an update on their work.'}</p>
-    <p>{'Help keep your team on schedule by adding Agenda topics to the queue if updates inspire the need for discussion.'}</p>
+    <p>{'Help keep your team stay on schedule by adding Agenda topics to the queue if updates inspire the need for discussion.'}</p>
     <p>{makeLink('https://www.parabol.co/getting-started-guide#solo-updates', 'Learn More')}</p>
   </div>
 );
