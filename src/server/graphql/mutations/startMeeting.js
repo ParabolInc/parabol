@@ -7,7 +7,6 @@ import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
-import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
