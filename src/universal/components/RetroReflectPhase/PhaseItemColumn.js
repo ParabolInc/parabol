@@ -14,38 +14,39 @@ import AddReflectionButton from 'universal/components/AddReflectionButton/AddRef
 import ui from 'universal/styles/ui';
 import {GROUP, REFLECT, REFLECTION_CARD, VOTE} from 'universal/utils/constants';
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
-import type {DroppableProvided, DroppableStateSnapshot} from 'react-beautiful-dnd/src/index';
-
-import {Droppable} from 'react-beautiful-dnd';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
-import ReflectionDropZone from 'universal/components/ReflectionDropZone';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
 
 import {LabelHeading} from 'universal/components';
+import {DropTarget as dropTarget} from 'react-dnd';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import dndNoise from 'universal/utils/dndNoise';
+import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
+import appTheme from 'universal/styles/theme/appTheme';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  flex: 1
+  flex: 1,
+  height: '100%'
 });
 
 const ReflectionsArea = styled('div')({
   flexDirection: 'column',
   display: 'flex',
-  // cannot use overflow since react-beautiful-dnd does not use portals.
-  // overflow: 'auto',
+  overflow: 'auto',
   height: '100%',
   minWidth: ui.retroCardWidth
 });
 
-const ReflectionsList = styled('div')({
-  // adds a buffer to the dropzone to limit unwanted drags to the dropzone
-  marginBottom: '1rem'
-});
+const ReflectionsList = styled('div')(({canDrop}) => ({
+  background: canDrop && appTheme.palette.light60l
+}));
 
 
 const TypeDescription = styled('div')({
@@ -58,17 +59,8 @@ const TypeHeader = styled('div')({
   marginBottom: '1rem'
 });
 
-const ColumnChild = styled('div')(
-  ({isDraggingOver}) => ({
-    // background: isDraggingOver && 'blue',
-    opacity: isDraggingOver && 0.6,
-    margin: 8
-  })
-);
-
-const EntireDropZone = styled('div')({
-  flex: 1,
-  minWidth: '100%'
+const ColumnChild = styled('div')({
+  margin: 16
 });
 
 const ButtonBlock = styled('div')({
@@ -76,11 +68,14 @@ const ButtonBlock = styled('div')({
   width: '100%'
 });
 
-type Props = {
+type Props = {|
   atmosphere: Object,
+  canDrop: boolean,
+  connectDropTarget: () => Node,
   meeting: Meeting,
-  retroPhaseItem: RetroPhaseItem
-};
+  retroPhaseItem: RetroPhaseItem,
+  ...MutationProps
+|};
 
 type State = {
   columnReflectionGroups: $ReadOnlyArray<Object>,
@@ -104,97 +99,140 @@ class PhaseItemColumn extends Component<Props, State> {
     columnReflectionGroups: []
   };
 
+  setGroupRef = (groupId) => (c) => {
+    this.groupRefs[groupId] = c;
+  }
+
+  groupRefs = {};
+
   render() {
-    const {meeting, retroPhaseItem} = this.props;
+    const {connectDropTarget, canDrop, meeting, retroPhaseItem} = this.props;
     const {columnReflectionGroups} = this.state;
     const {localPhase: {phaseType}, localStage: {isComplete}} = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
-    return (
-      <ColumnWrapper>
-        {phaseType !== VOTE &&
-          <TypeHeader>
-            <LabelHeading>{title.toUpperCase()}</LabelHeading>
-            <TypeDescription>{question}</TypeDescription>
-          </TypeHeader>
-        }
-        <ReflectionsArea>
-          {phaseType === REFLECT && !isComplete &&
-          <ColumnChild>
-            <ButtonBlock>
-              <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
-            </ButtonBlock>
-          </ColumnChild>
+    return connectDropTarget(
+      <div>
+        <ColumnWrapper>
+          {phaseType !== VOTE &&
+            <TypeHeader>
+              <LabelHeading>{title.toUpperCase()}</LabelHeading>
+              <TypeDescription>{question}</TypeDescription>
+            </TypeHeader>
           }
-          <ReflectionsList>
-            {columnReflectionGroups.map((group) => {
-              if (phaseType === REFLECT) {
-                return group.reflections.map((reflection) => {
+          <ReflectionsArea>
+            {phaseType === REFLECT && !isComplete &&
+              <ColumnChild>
+                <ButtonBlock>
+                  <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+                </ButtonBlock>
+              </ColumnChild>
+            }
+            <ReflectionsList canDrop={canDrop}>
+              {columnReflectionGroups.map((group) => {
+                if (phaseType === REFLECT) {
+                  return group.reflections.map((reflection) => {
+                    return (
+                      <ColumnChild key={reflection.id}>
+                        {reflection.isViewerCreator ?
+                          <ReflectionCard meeting={meeting} reflection={reflection} /> :
+                          <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
+                        }
+                      </ColumnChild>
+                    );
+                  });
+                } else if (phaseType === GROUP) {
                   return (
-                    <ColumnChild key={reflection.id}>
-                      {reflection.isViewerCreator ?
-                        <ReflectionCard meeting={meeting} reflection={reflection} /> :
-                        <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-                      }
+                    <ColumnChild key={group.id}>
+                      <ReflectionGroup
+                        innerRef={this.setGroupRef(group.id)}
+                        reflectionGroup={group}
+                        retroPhaseItemId={retroPhaseItemId}
+                        meeting={meeting}
+                      />
                     </ColumnChild>
                   );
-                });
-              } else if (phaseType === GROUP) {
-                return (
-                  <Droppable
-                    key={group.id}
-                    droppableId={group.id}
-                    type={REFLECTION_CARD}
-                  >
-                    {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
-                      <ColumnChild
-                        innerRef={dropProvided.innerRef}
-                        isDraggingOver={dropSnapshot.isDraggingOver}
-                        {...dropProvided.droppableProps}
-                      >
-                        <ReflectionGroup
-                          reflectionGroup={group}
-                          retroPhaseItemId={retroPhaseItemId}
-                          meeting={meeting}
-                          isDraggingOver={dropSnapshot.isDraggingOver}
-                        />
-                        {dropProvided.placeholder}
-                      </ColumnChild>
-                    )}
-                  </Droppable>
-                );
-              } else if (phaseType === VOTE) {
-                return (
-                  <ColumnChild key={group.id}>
-                    <ReflectionGroup
-                      reflectionGroup={group}
-                      retroPhaseItemId={retroPhaseItemId}
-                      meeting={meeting}
-                    />
-                  </ColumnChild>
-                );
-              }
-              return null;
-            })}
-          </ReflectionsList>
-          {phaseType === GROUP && !isComplete &&
-          <EntireDropZone>
-            <ReflectionDropZone retroPhaseItem={retroPhaseItem} />
-          </EntireDropZone>
-          }
-        </ReflectionsArea>
-      </ColumnWrapper>
+                } else if (phaseType === VOTE) {
+                  return (
+                    <ColumnChild key={group.id}>
+                      <ReflectionGroup
+                        reflectionGroup={group}
+                        retroPhaseItemId={retroPhaseItemId}
+                        meeting={meeting}
+                      />
+                    </ColumnChild>
+                  );
+                }
+                return null;
+              })}
+            </ReflectionsList>
+          </ReflectionsArea>
+        </ColumnWrapper>
+      </div>
     );
   }
 }
 
 reactLifecyclesCompat(PhaseItemColumn);
 
+const reflectionDropSpec = {
+  canDrop(props: Props, monitor) {
+    const {isSingleCardGroup, currentRetroPhaseItemId} = monitor.getItem();
+    return monitor.isOver({shallow: true}) && !isSingleCardGroup && currentRetroPhaseItemId === props.retroPhaseItem.retroPhaseItemId;
+  },
+
+  // Makes the card-dropped-into available in the dragSpec's endDrag method.
+  drop(props: Props, monitor, component) {
+    // if (monitor.didDrop()) return;
+    const {groupRefs, state: {columnReflectionGroups}} = component;
+    const {y} = monitor.getClientOffset();
+    let idx = columnReflectionGroups.length;
+
+    for (let ii = 0; ii < columnReflectionGroups.length; ii++) {
+      const group = columnReflectionGroups[ii];
+      const {id} = group;
+      const ref = groupRefs[id];
+      if (y < ref.getBoundingClientRect().y) {
+        idx = ii;
+        break;
+      }
+    }
+    const {reflectionId} = monitor.getItem();
+    const {atmosphere, submitMutation, meeting: {meetingId}, onError, onCompleted, retroPhaseItem: {retroPhaseItemId}} = props;
+    let sortOrder;
+    if (idx === 0) {
+      sortOrder = columnReflectionGroups[0].sortOrder - 1 + dndNoise();
+    } else if (idx === columnReflectionGroups.length) {
+      sortOrder = columnReflectionGroups[columnReflectionGroups.length - 1].sortOrder + 1 + dndNoise();
+    } else {
+      sortOrder = (columnReflectionGroups[idx - 1].sortOrder + columnReflectionGroups[idx].sortOrder) / 2 + dndNoise();
+    }
+    const variables = {
+      reflectionId,
+      reflectionGroupId: null,
+      retroPhaseItemId,
+      sortOrder
+    };
+    submitMutation();
+    UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted);
+    this.groupRefs = {};
+  }
+};
+
+const reflectionDropCollect = (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  canDrop: monitor.canDrop()
+});
+
 export default createFragmentContainer(
-  withAtmosphere(PhaseItemColumn),
+  withAtmosphere(
+    withMutationProps(
+      dropTarget(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(
+        PhaseItemColumn)
+    )
+  ),
   graphql`
     fragment PhaseItemColumn_retroPhaseItem on RetroPhaseItem {
       ...AddReflectionButton_retroPhaseItem
-      ...ReflectionDropZone_retroPhaseItem
       retroPhaseItemId: id
       title
       question

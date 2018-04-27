@@ -63,15 +63,15 @@ export default {
       quantity: orgUsers.length,
       trial_period_days: 0
     });
-
-    const {current_period_end, current_period_start} = subscription;
+    const currentPeriodStart = subscription.current_period_start;
+    const currentPeriodEnd = subscription.current_period_end;
     const creditCard = getCCFromCustomer(customer);
     const {teamIds} = await r({
       updatedOrg: r.table('Organization').get(orgId).update({
         creditCard,
         tier: PRO,
-        periodEnd: fromEpochSeconds(current_period_end),
-        periodStart: fromEpochSeconds(current_period_start),
+        periodEnd: fromEpochSeconds(currentPeriodEnd),
+        periodStart: fromEpochSeconds(currentPeriodStart),
         stripeId: customer.id,
         stripeSubscriptionId: subscription.id,
         updatedAt: now
