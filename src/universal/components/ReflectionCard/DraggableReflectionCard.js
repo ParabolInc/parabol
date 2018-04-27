@@ -63,7 +63,7 @@ class DraggableReflectionCard extends Component<Props> {
           />
         </Modal>
       </React.Fragment>
-    )
+    );
   }
 }
 
@@ -92,7 +92,7 @@ const reflectionDragCollect = (connectSource, monitor) => ({
   connectDragPreview: connectSource.dragPreview(),
   isDragging: monitor.isDragging(),
   initialCursorOffset: monitor.getInitialClientOffset(),
-  initialComponentOffset: monitor.getInitialSourceClientOffset(),
+  initialComponentOffset: monitor.getInitialSourceClientOffset()
 });
 
 export default createFragmentContainer(

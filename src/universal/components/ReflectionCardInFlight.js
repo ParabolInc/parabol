@@ -40,15 +40,15 @@ class ReflectionCardInFlight extends Component<Props> {
     super(props);
     this.initialComponentOffset = props.initialComponentOffset;
     this.initialCursorOffset = props.initialCursorOffset;
-    this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.reflection.content)))
+    this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.reflection.content)));
   }
 
   componentDidMount() {
-    window.addEventListener('drag', this.setDragState)
+    window.addEventListener('drag', this.setDragState);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('drag', this.setDragState)
+    window.removeEventListener('drag', this.setDragState);
   }
 
   setDragState = (e) => {

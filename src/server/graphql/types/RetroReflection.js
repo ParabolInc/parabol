@@ -42,7 +42,7 @@ const RetroReflection = new GraphQLObjectType({
     },
     draggerCoords: {
       description: 'The coordinates necessary to simulate a drag for a subscribing user',
-      type: DraggerCoords,
+      type: DraggerCoords
     },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',
