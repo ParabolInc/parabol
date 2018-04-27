@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.7.1 2018-Apr-26
+## Fixed
+- Various retro bugs
+- replaced react-beautiful-dnd with react-dnd
+
+
 ## v1.7.0 2018-Apr-25
 ## Added 
 - new signin logic
