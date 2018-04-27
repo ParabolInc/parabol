@@ -63,6 +63,7 @@ const actions = {
 
 const expectations = {
   shouldSeeLoginWarning: (driver) => async (warningRegex) => {
+    await sleep(100);
     const warningElementSelector = '[role="alert"]';
     await driver.wait(until.elementLocated(By.css(warningElementSelector)));
     const warningElement = await driver.findElement(By.css(warningElementSelector));
