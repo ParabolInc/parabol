@@ -1,12 +1,8 @@
-/**
- * The reflection card presentational component.
- *
- * @flow
- */
-// $FlowFixMe
-import React, {Component} from 'react';
+// @flow
+import * as React from 'react';
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper';
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard';
+// $FlowFixMe
 import {convertFromRaw, EditorState} from 'draft-js';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
@@ -35,7 +31,7 @@ const ModalBlock = styled('div')({
   zIndex: ui.ziTooltip
 });
 
-class ReflectionCardInFlight extends Component<Props> {
+class ReflectionCardInFlight extends React.Component<Props> {
   constructor(props) {
     super(props);
     this.initialComponentOffset = props.initialComponentOffset;
@@ -65,6 +61,10 @@ class ReflectionCardInFlight extends Component<Props> {
       });
     }
   }
+
+  editorState: Object;
+  initialComponentOffset: Coords;
+  initialCursorOffset: Coords;
 
   render() {
     const {reflection: {dragX, dragY}} = this.props;

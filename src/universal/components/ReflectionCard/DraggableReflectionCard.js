@@ -3,7 +3,7 @@
  *
  * @flow
  */
-import React, {Component} from 'react';
+import * as React from 'react';
 import type {Props as ReflectionCardProps} from './ReflectionCard';
 import ReflectionCard from './ReflectionCard';
 import {createFragmentContainer} from 'react-relay';
@@ -29,7 +29,7 @@ const DragStyles = styled('div')(({isDragging}) => ({
   margin: 8
 }));
 
-class DraggableReflectionCard extends Component<Props> {
+class DraggableReflectionCard extends React.Component<Props> {
   componentDidMount() {
     const {connectDragPreview} = this.props;
     connectDragPreview(getEmptyImage());
