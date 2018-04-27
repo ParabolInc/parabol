@@ -39,7 +39,7 @@ const LoadableDraftJSModal = (props: Props) => {
       <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>
         <MenuBlock style={coords} innerRef={setModalRef}>
           <MenuContents>
-            <LoadableComponent {...queryVars} />
+            <LoadableComponent closePortal={closePortal} {...queryVars} />
           </MenuContents>
         </MenuBlock>
       </AnimatedFade>

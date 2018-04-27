@@ -4,6 +4,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.7.0 2018-Apr-25
+## Added 
+- new signin logic
+- async emoji support in retros
+
+### Fixed
+- email invitations
+- New meeting styles
+ 
+### Removed
+- Auth0-lock
+- Persisted redux state in local storage
+
+
 ## v1.6.1 2018-Apr-19
 ### Fixed
 - Minor retro bugs #2022

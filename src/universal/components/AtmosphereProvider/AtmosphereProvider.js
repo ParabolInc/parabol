@@ -21,7 +21,7 @@ class AtmosphereProvider extends Component {
 
   constructor(props) {
     super(props);
-    if (__CLIENT__) {
+    if (typeof __CLIENT__ !== 'undefined' && __CLIENT__) {
       atmosphere.getAuthToken(window);
     }
   }

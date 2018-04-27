@@ -12,6 +12,7 @@ import './Draft.css';
 import withKeyboardShortcuts from './withKeyboardShortcuts';
 import withLinks from './withLinks';
 import withSuggestions from './withSuggestions';
+import withEmojis from 'universal/components/TaskEditor/withEmojis';
 
 class TaskEditor extends Component {
   static propTypes = {
@@ -206,11 +207,13 @@ const styleThunk = () => ({
 });
 
 export default withSuggestions(
-  withLinks(
-    withMarkdown(
-      withKeyboardShortcuts(
-        withStyles(styleThunk)(
-          TaskEditor
+  withEmojis(
+    withLinks(
+      withMarkdown(
+        withKeyboardShortcuts(
+          withStyles(styleThunk)(
+            TaskEditor
+          )
         )
       )
     )

@@ -1,28 +1,25 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import styled from 'react-emotion';
+
+
+const FieldBlockStyles = styled('div')({
+  margin: '0 auto',
+  maxWidth: '100%',
+  width: '100%'
+});
 
 const FieldBlock = (props) => {
-  const {children, styles} = props;
+  const {children} = props;
   return (
-    <div className={css(styles.fieldBlock)}>
+    <FieldBlockStyles>
       {children}
-    </div>
+    </FieldBlockStyles>
   );
 };
 
 FieldBlock.propTypes = {
-  children: PropTypes.any,
-  styles: PropTypes.object
+  children: PropTypes.any
 };
 
-const styleThunk = () => ({
-  fieldBlock: {
-    margin: '0 auto',
-    maxWidth: '100%',
-    width: '100%'
-  }
-});
-
-export default withStyles(styleThunk)(FieldBlock);
+export default FieldBlock;

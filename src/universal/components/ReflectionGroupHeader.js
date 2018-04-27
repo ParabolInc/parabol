@@ -30,26 +30,17 @@ const TitleAndCount = styled('div')({
   width: 'auto'
 });
 
-const ReflectionCount = styled('span')({
-  color: ui.hintFontColor,
-  fontSize: ui.cardThemeLabelFontSize,
-  left: '100%',
-  lineHeight: ui.cardThemeLabelLineHeight,
-  position: 'absolute'
-});
-
 const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
 
 const ReflectionGroupHeader = (props: Props) => {
   const {meeting, reflectionGroup} = props;
-  const {reflections} = reflectionGroup;
-  const {localPhase: {phaseType}} = meeting;
+  const {localStage, localPhase: {phaseType}} = meeting;
+  const canEdit = phaseType === GROUP && localStage.isComplete === false;
   return (
     <GroupHeader phaseType={phaseType}>
       {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
-        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={phaseType !== GROUP} />
-        <ReflectionCount>{reflections.length}</ReflectionCount>
+        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={!canEdit} />
       </TitleAndCount>
       {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />}
     </GroupHeader>
@@ -60,6 +51,9 @@ export default createFragmentContainer(
   ReflectionGroupHeader,
   graphql`
     fragment ReflectionGroupHeader_meeting on RetrospectiveMeeting {
+      localStage {
+        isComplete
+      }
       localPhase {
         phaseType
       }

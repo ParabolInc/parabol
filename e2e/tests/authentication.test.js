@@ -7,7 +7,7 @@
 import expect from 'expect';
 import {By, until} from 'selenium-webdriver';
 import shortid from 'shortid';
-
+import sleep from '../../src/universal/utils/sleep';
 import {all, newUserSession, waitTimes} from '../lib';
 
 const BASE_URL = global.E2E_APP_SERVER_URL;
@@ -39,6 +39,7 @@ const actions = {
   },
 
   authenticate: (driver) => async ({email, password}) => {
+    await sleep(100);
     await driver
       .findElement(By.css('input[type="email"]'))
       .sendKeys(email);
@@ -51,6 +52,7 @@ const actions = {
   },
 
   logout: (driver) => async () => {
+    await sleep(100);
     const signOutButtonSelector = 'a[title="Sign Out"]';
     await driver.wait(until.elementLocated(By.css(signOutButtonSelector)));
     await driver

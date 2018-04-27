@@ -107,6 +107,14 @@ const TaskCardBlock = styled('div')({
   }
 });
 
+const ControlButtonBlock = styled('div')({
+  width: '12rem'
+});
+
+const SpacedMeetingControlBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+});
+
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, history, team} = props;
   const {viewerId} = atmosphere;
@@ -157,30 +165,40 @@ const RetroDiscussPhase = (props: Props) => {
         </ScrollableBlock>
       </PhaseWrapper>
       {isFacilitating &&
-      <MeetingControlBar>
-        {nextStageRes && <Button
-          buttonSize="medium"
-          buttonStyle="flat"
-          colorPalette="dark"
-          icon="arrow-circle-right"
-          iconLarge
-          iconPalette="warm"
-          iconPlacement="right"
-          label={'Done! Next topic'}
-          onClick={gotoNext}
-        />}
-        <Button
-          buttonSize="medium"
-          buttonStyle="flat"
-          colorPalette="dark"
-          icon="arrow-circle-right"
-          iconLarge
-          iconPalette="warm"
-          iconPlacement="right"
-          label={'End Meeting'}
-          onClick={endMeeting}
-        />
-      </MeetingControlBar>
+      <SpacedMeetingControlBar>
+        {/* placeholder for layout */}
+        <ControlButtonBlock />
+        {nextStageRes && <ControlButtonBlock>
+          <Button
+            buttonSize="medium"
+            buttonStyle="flat"
+            colorPalette="dark"
+            icon="arrow-circle-right"
+            iconLarge
+            iconPalette="warm"
+            iconPlacement="right"
+            isBlock
+            label={'Done! Next topic'}
+            onClick={gotoNext}
+          />
+        </ControlButtonBlock>}
+        <ControlButtonBlock>
+          <Button
+            buttonSize="medium"
+            buttonStyle="flat"
+            colorPalette="dark"
+            icon="flag-checkered"
+            iconLarge
+            iconPalette="midGray"
+            iconPlacement="left"
+            isBlock
+            label={'End Meeting'}
+            onClick={endMeeting}
+          />
+        </ControlButtonBlock>
+        {/* placeholder for layout */}
+        {!nextStageRes && <ControlButtonBlock />}
+      </SpacedMeetingControlBar>
       }
     </React.Fragment>
   );

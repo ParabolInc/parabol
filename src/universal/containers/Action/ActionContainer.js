@@ -4,6 +4,8 @@ import React, {Component} from 'react';
 import {withRouter} from 'react-router-dom';
 import Action from 'universal/components/Action/Action';
 import globalStyles from 'universal/styles/theme/globalStyles';
+import * as E from 'emotion-server';
+import A from 'universal/Atmosphere';
 
 const analytics = {
   lastPath: '',
@@ -11,7 +13,7 @@ const analytics = {
 };
 
 @withRouter
-export default class ActionContainer extends Component {
+class ActionContainer extends Component {
   static childContextTypes = {
     analytics: PropTypes.shape({
       lastPath: PropTypes.string,
@@ -27,12 +29,13 @@ export default class ActionContainer extends Component {
     params: PropTypes.object
   };
 
-  getChildContext() {
-    return {analytics};
+  constructor(props) {
+    super(props);
+    injectGlobal(globalStyles);
   }
 
-  componentWillMount() {
-    injectGlobal(globalStyles);
+  getChildContext() {
+    return {analytics};
   }
 
   componentWillReceiveProps() {
@@ -50,3 +53,7 @@ export default class ActionContainer extends Component {
     return <Action {...this.props} />;
   }
 }
+
+export default ActionContainer;
+export const Atmosphere = A;
+export const EmotionServer = E;

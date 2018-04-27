@@ -61,7 +61,9 @@ export const ReflectionCardRoot = styled('div')(
     boxShadow: ui.cardBoxShadow,
     // useful for drag preview
     display: 'inline-block',
-    position: 'relative'
+    maxWidth: '100%',
+    position: 'relative',
+    width: ui.retroCardWidth
   },
   ({hasDragLock}) => hasDragLock && ({
     borderColor: appTheme.palette.warm50a
@@ -96,12 +98,11 @@ class ReflectionCard extends Component<Props, State> {
     this.setState({editorState});
   };
 
-  handleEditorBlur = () => {
-    const {atmosphere, reflection: {reflectionId}} = this.props;
-    if (isTempId(reflectionId)) return;
-    this.handleContentUpdate();
-    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
-  };
+  setEditorRef = (c) => {
+    this.editorRef = c;
+  }
+
+  editorRef: ?HTMLElement;
 
   handleEditorFocus = () => {
     const {atmosphere, reflection: {reflectionId}} = this.props;
@@ -124,11 +125,18 @@ class ReflectionCard extends Component<Props, State> {
     }
   };
 
+  handleEditorBlur = () => {
+    const {atmosphere, reflection: {reflectionId}} = this.props;
+    if (isTempId(reflectionId)) return;
+    this.handleContentUpdate();
+    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
+  };
+
   render() {
     const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
     const {localPhase: {phaseType}, localStage: {isComplete}, teamId} = meeting;
-    const {draggerUser, isViewerCreator, phaseItem: {question}} = reflection;
+    const {draggerUser, isViewerCreator, phaseItem: {question}, reflectionId} = reflection;
     const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
@@ -136,11 +144,13 @@ class ReflectionCard extends Component<Props, State> {
         {hasDragLock && <UserDraggingHeader user={draggerUser} />}
         <ReflectionEditorWrapper
           ariaLabel="Edit this reflection"
+          editorRef={this.editorRef}
           editorState={editorState}
+          innerRef={this.setEditorRef}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
-          placeholder="My reflection thought..."
-          readOnly={phaseType !== REFLECT || isComplete}
+          placeholder="My reflection thought…"
+          readOnly={phaseType !== REFLECT || isComplete || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
           teamId={teamId}
         />
