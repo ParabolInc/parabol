@@ -10,9 +10,9 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashMain,
-  DashSearchControl
+  DashMain
 } from 'universal/components/Dashboard';
+import UserDashSearch from 'universal/modules/userDashboard/components/UserDashSearch/UserDashSearch';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import makeDateString from 'universal/utils/makeDateString';
@@ -27,10 +27,7 @@ const UserDashMain = (props) => {
       <DashHeader area="userDash">
         <DashHeaderInfo>
           {__RELEASE_FLAGS__.userDashFilter &&
-            <DashSearchControl
-              onChange={() => (console.log('DashSearchControl'))}
-              placeholder="Search My Tasks"
-            />
+            <UserDashSearch viewer={viewer} />
           }
           <div className={css(styles.headerCopy)}>
             {makeDateString(new Date(), {showDay: true})}<br />
@@ -90,6 +87,7 @@ export default createFragmentContainer(
   withStyles(styleThunk)(UserDashMain),
   graphql`
     fragment UserDashMain_viewer on User {
+      ...UserDashSearch_viewer
       ...UserColumnsContainer_viewer
       teams {
         id

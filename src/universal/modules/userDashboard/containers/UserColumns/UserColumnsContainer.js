@@ -14,26 +14,53 @@ const mapStateToProps = (state) => {
 
 class UserColumnsContainer extends Component {
   componentWillMount() {
-    this.filterByTeamMember(this.props);
+    this.filterTasks(this.props);
   }
 
   componentWillReceiveProps(nextProps) {
-    const {teamFilterId: oldFilter, viewer: {tasks: oldTasks}} = this.props;
-    const {teamFilterId, viewer: {tasks}} = nextProps;
-    if (oldFilter !== teamFilterId || oldTasks !== tasks) {
-      this.filterByTeamMember(nextProps);
+    const {teamFilterId: oldFilter, viewer: {contentFilter: oldContentFilter, tasks: oldTasks}} = this.props;
+    const {teamFilterId, viewer: {contentFilter, tasks}} = nextProps;
+    if (oldFilter !== teamFilterId || oldTasks !== tasks || oldContentFilter !== contentFilter) {
+      this.filterTasks(nextProps);
     }
   }
 
-  filterByTeamMember(props) {
-    const {teamFilterId, viewer: {tasks}} = props;
-    const edges = teamFilterId ?
-      tasks.edges.filter(({node}) => node.team.id === teamFilterId) :
-      tasks.edges;
+  // filterByTeamMember(props) {
+  //   const {teamFilterId, viewer: {tasks}} = props;
+  //   const edges = teamFilterId ?
+  //     tasks.edges.filter(({node}) => node.team.id === teamFilterId) :
+  //     tasks.edges;
+  //   this.setState({
+  //     tasks: {
+  //       ...tasks,
+  //       edges
+  //     }
+  //   });
+  // }
+
+  filterTasks(props) {
+    const {teamFilterId, viewer: {contentFilter, tasks}} = props;
+    const contentFilterRegex = new RegExp(contentFilter, 'i');
+    const contentFilteredEdges = contentFilter ?
+      tasks.edges.filter(({node}) => {
+        const {contentText} = node;
+        return contentText && node.contentText.match(contentFilterRegex);
+      }) : tasks.edges;
+    const teamFilteredEdges = teamFilterId ?
+      contentFilteredEdges.filter(({node}) => node.team.id === teamFilterId) :
+      contentFilteredEdges;
+    const edgesWithTeams = teamFilteredEdges.map((edge) => {
+      return {
+        ...edge,
+        node: {
+          ...edge.node
+        }
+      };
+    });
     this.setState({
       tasks: {
         ...tasks,
-        edges
+        edges: edgesWithTeams
       }
     });
   }
@@ -66,11 +93,15 @@ export default createFragmentContainer(
   connect(mapStateToProps)(UserColumnsContainer),
   graphql`
     fragment UserColumnsContainer_viewer on User {
+      userId: id
+      contentFilter
       tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
         edges {
           node {
             # grab these so we can sort correctly
             id
+            content @__clientField(handle: "contentText")
+            contentText
             status
             sortOrder
             team {
