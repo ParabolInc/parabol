@@ -53,7 +53,6 @@ class TeamColumnsContainer extends Component {
         }
       };
     });
-
     this.setState({
       tasks: {
         ...tasks,
