@@ -3,16 +3,18 @@ import getRethink from 'server/database/rethinkDriver';
 import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {
-  sendMeetingMemberNotCheckedInError, sendMeetingMemberNotFoundError,
+  sendMeetingMemberNotCheckedInError,
+  sendMeetingMemberNotFoundError,
   sendReflectionGroupNotFoundError
 } from 'server/utils/docNotFoundErrors';
 import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
-import {RETROSPECTIVE, TEAM, VOTE} from 'universal/utils/constants';
+import {DISCUSS, RETROSPECTIVE, TEAM, VOTE} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload';
 import safelyCastVote from 'server/graphql/mutations/helpers/safelyCastVote';
 import safelyWithdrawVote from 'server/graphql/mutations/helpers/safelyWithdrawVote';
+import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase';
 
 
 export default {
@@ -64,8 +66,25 @@ export default {
       const votingError = await safelyCastVote(authToken, meetingId, viewerId, reflectionGroupId, maxVotesPerGroup);
       if (votingError) return votingError;
     }
+    const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId);
+    const voteCount = reflectionGroups.reduce((sum, group) => sum + group.voterIds.length, 0);
 
-    const data = {meetingId, userId: viewerId, reflectionGroupId};
+    let isUnlock;
+    let unlockedStageIds;
+    if (voteCount === 0) {
+      isUnlock = false;
+    } else if (voteCount === 1 && !isUnvote) {
+      isUnlock = true;
+    }
+    if (isUnlock !== undefined) {
+      unlockedStageIds = unlockAllStagesForPhase(phases, DISCUSS, true, isUnlock);
+      await r.table('NewMeeting').get(meetingId)
+        .update({
+          phases
+        });
+    }
+
+    const data = {meetingId, userId: viewerId, reflectionGroupId, unlockedStageIds};
     publish(TEAM, teamId, VoteForReflectionGroupPayload, data, subOptions);
     return data;
   }

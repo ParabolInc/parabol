@@ -47,8 +47,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
       {phaseTypes
         .map((phaseType, idx) => {
           const itemStage = getItemStage(phaseType, phases, facilitatorStageId);
-          const itemStageId = itemStage && itemStage.id || '';
-          const {stage: {isNavigable, isNavigableByFacilitator}} = itemStage;
+          const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} = itemStage || {};
           const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
           const handleClick = canNavigate ? () => gotoStageId(itemStageId) : undefined;
           // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)

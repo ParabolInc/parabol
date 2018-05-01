@@ -146,6 +146,15 @@ export const sendRetroPhaseItemIdNotExpectedError = (authToken, reflectionId, re
   return sendAuthRaven(authToken, 'Phase item ID Not Expected', breadcrumb, returnValue);
 };
 
+export const sendMeetingMemberNotFoundError = (authToken, meetingMemberId, returnValue) => {
+  const breadcrumb = {
+    message: 'Meeting member not found',
+    category: 'Not found',
+    data: {meetingMemberId}
+  };
+  return sendAuthRaven(authToken, 'Meeting member not found', breadcrumb, returnValue);
+};
+
 export const sendMeetingMemberNotCheckedInError = (authToken, meetingMemberId, returnValue) => {
   const breadcrumb = {
     message: 'You must be marked as present in the check-in round to vote',

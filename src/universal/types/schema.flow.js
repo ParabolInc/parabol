@@ -2239,8 +2239,10 @@ export type UpdateUserProfilePayload = {
 export type VoteForReflectionGroupPayload = {
   error: ?StandardMutationError;
   meeting: ?RetrospectiveMeeting;
-  reflectionGroup: ?RetroReflectionGroup;
   meetingMember: ?RetrospectiveMeetingMember;
+  reflectionGroup: ?RetroReflectionGroup;
+  /** The stages that were locked or unlocked by having at least 1 vote */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type LoginPayload = {

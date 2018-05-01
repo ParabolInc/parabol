@@ -8,7 +8,6 @@ import ui from 'universal/styles/ui';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem';
 import {LabelHeading} from 'universal/components';
-import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
@@ -31,7 +30,7 @@ const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
-  const {localPhase, localStage, facilitatorStageId, phases = []} = newMeeting || {};
+  const {localPhase, localStage, facilitatorStageId} = newMeeting || {};
   if (!localPhase || !localPhase.stages || !localStage) return null;
   const {stages} = localPhase;
   const {localStageId} = localStage;
@@ -89,14 +88,11 @@ export default createFragmentContainer(
             facilitatorStageId
             # load up the localPhase
             phases {
-              stages {
-                id
-                isComplete
-                isNavigable
-              }
               ... on DiscussPhase {
                 stages {
                   id
+                  isComplete
+                  isNavigable
                   reflectionGroup {
                     title
                     voteCount

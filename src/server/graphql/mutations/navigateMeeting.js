@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {DISCUSS, GROUP, TEAM} from 'universal/utils/constants';
+import {TEAM} from 'universal/utils/constants';
 import {sendNotMeetingFacilitatorError} from 'server/utils/authorizationErrors';
 import NavigateMeetingPayload from 'server/graphql/types/NavigateMeetingPayload';
 import {sendMeetingNotFoundError, sendStageNotFoundError, sendStageNotUnlockedError} from 'server/utils/docNotFoundErrors';
