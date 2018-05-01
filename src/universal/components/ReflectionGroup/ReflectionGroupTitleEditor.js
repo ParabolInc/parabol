@@ -17,6 +17,7 @@ import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from
 import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated__/ReflectionGroupTitleEditor_meeting.graphql';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import {RETRO_TOPIC_LABEL} from 'universal/utils/constants';
 
 const {Component} = React;
 
@@ -164,7 +165,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
             <NameInput
               onBlur={this.onSubmit}
               onChange={this.onChange}
-              placeholder="Theme"
+              placeholder={RETRO_TOPIC_LABEL}
               readOnly={readOnly}
               innerRef={this.inputRef}
               size={20}

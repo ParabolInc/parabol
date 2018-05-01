@@ -9,6 +9,8 @@ import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBl
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem';
 import {LabelHeading} from 'universal/components';
 import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
+import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from 'universal/utils/constants';
+import plural from 'universal/utils/plural';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
@@ -40,7 +42,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
   return (
     <SidebarPhaseItemChild>
       <MeetingSidebarLabelBlock>
-        <LabelHeading>{'Upvoted Topics'}</LabelHeading>
+        <LabelHeading>{plural(stages.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}</LabelHeading>
       </MeetingSidebarLabelBlock>
       {stages.map((stage, idx) => {
         const {reflectionGroup} = stage;

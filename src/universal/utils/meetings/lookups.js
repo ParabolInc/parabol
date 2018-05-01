@@ -23,7 +23,7 @@ export const phaseTypeToPhaseGroup = {
 export const phaseLabelLookup = {
   [CHECKIN]: 'Social Check-In',
   [REFLECT]: 'Reflect',
-  [GROUP]: 'Theme',
+  [GROUP]: 'Group',
   [VOTE]: 'Vote',
   [DISCUSS]: 'Discuss',
   [UPDATES]: 'Solo Updates',
@@ -34,7 +34,7 @@ export const phaseLabelLookup = {
 
 export const phaseDescriptionLookup = {
   [REFLECT]: 'Add anonymous reflections for each prompt',
-  [GROUP]: 'Drag cards to group by common themes',
+  [GROUP]: 'Drag cards to group by common topics',
   [VOTE]: 'Vote on the themes you want to discuss',
   [DISCUSS]: 'Create takeaway task cards to capture next steps'
 };
@@ -52,7 +52,7 @@ export const meetingTypeToLabel = {
 export const phaseTypeToSlug = {
   [CHECKIN]: 'checkin',
   [REFLECT]: 'reflect',
-  [GROUP]: 'theme',
+  [GROUP]: 'group',
   [VOTE]: 'vote',
   [DISCUSS]: 'discuss'
 };

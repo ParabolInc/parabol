@@ -65,14 +65,14 @@ storiesOf('Meeting Components', module)
       />
     </RetroBackground>
   ))
-  .add('Retro Theme Heading', () => (
+  .add('Retro Group Heading', () => (
     <RetroBackground>
       <StoryContainer
         render={() => (
           <div>
-            <LabelHeading>{'Theme'}</LabelHeading>
-            <MeetingPhaseHeading>{'Group by Theme'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Drag cards to group by common themes'}</MeetingCopy>
+            <LabelHeading>{'Group'}</LabelHeading>
+            <MeetingPhaseHeading>{'Group'}</MeetingPhaseHeading>
+            <MeetingCopy margin="0">{'Drag cards to group by common topics'}</MeetingCopy>
           </div>
         )}
       />
