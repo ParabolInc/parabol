@@ -26,9 +26,7 @@ const UserDashMain = (props) => {
       <Helmet title="My Dashboard | Parabol" />
       <DashHeader area="userDash">
         <DashHeaderInfo>
-          {__RELEASE_FLAGS__.userDashFilter &&
-            <UserDashSearch viewer={viewer} />
-          }
+          <UserDashSearch viewer={viewer} />
           <div className={css(styles.headerCopy)}>
             {makeDateString(new Date(), {showDay: true})}<br />
             <span className={css(styles.rallyLink)}>
