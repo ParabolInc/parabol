@@ -1369,6 +1369,8 @@ export type RetroReflection = {
   draggerUserId: ?string;
   /** The user that is currently dragging the reflection */
   draggerUser: ?User;
+  /** The coordinates necessary to simulate a drag for a subscribing user */
+  draggerCoords: ?DraggerCoords;
   /** an array of all the socketIds that are currently editing the reflection */
   editorIds: Array<string>;
   /** True if the reflection was not removed, else false */
@@ -1398,6 +1400,20 @@ export type RetroReflection = {
   team: ?RetrospectiveMeeting;
   /** The timestamp the meeting was updated. Used to determine how long it took to write a reflection */
   updatedAt: ?any;
+}
+
+/**
+  Coordinates used to share a drag
+*/
+export type DraggerCoords = {
+  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
+  height: ?number;
+  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
+  width: ?number;
+  /** The x-offset from the current location */
+  x: ?number;
+  /** The y-offset from the current location */
+  y: ?number;
 }
 
 export type GoogleAnalyzedEntity = {

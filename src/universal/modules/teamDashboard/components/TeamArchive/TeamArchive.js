@@ -108,7 +108,7 @@ class TeamArchive extends Component {
         {({measure}) => {
           return (
             // put styles here because aphrodite is async
-            <div key={`cardBlockFor${task.id}`} style={{...style, width: CARD_WIDTH, padding: '0.5rem'}}>
+            <div key={`cardBlockFor${task.id}`} style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem 0'}}>
               <NullableTask
                 key={key}
                 area={TEAM_DASH}
@@ -250,7 +250,12 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    position: 'relative'
+    paddingLeft: '.75rem',
+    position: 'relative',
+
+    [ui.dashBreakpoint]: {
+      paddingLeft: '1.5rem'
+    }
   },
 
   cardGrid: {
