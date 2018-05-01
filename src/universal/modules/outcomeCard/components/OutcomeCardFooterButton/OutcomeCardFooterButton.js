@@ -45,7 +45,7 @@ OutcomeCardFooterButton.propTypes = {
   icon: PropTypes.string,
   onClick: PropTypes.func,
   onMouseEnter: PropTypes.func,
-  innerRef: PropTypes.func.isRequired,
+  innerRef: PropTypes.func,
   styles: PropTypes.object
 };
 

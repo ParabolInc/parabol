@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createPaginationContainer} from 'react-relay';
-import {CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader, WindowScroller} from 'react-virtualized';
+import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized';
 import NullableTask from 'universal/components/NullableTask/NullableTask';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
@@ -54,14 +54,9 @@ class TeamArchive extends Component {
     return this.columnCount * rowIndex + columnIndex;
   }
 
-  getGridRowCount = () => {
-    const {viewer: {archivedTasks: {edges}}} = this.props;
-    const currentCount = edges.length;
-    return Math.ceil(currentCount / this.columnCount);
-  };
-
   isRowLoaded = ({index}) => {
-    return Boolean(this.props.viewer.archivedTasks.edges[index]);
+    const {viewer: {archivedTasks: {edges}}} = this.props;
+    return index < edges.length;
   };
 
   loadMore = () => {
@@ -71,7 +66,7 @@ class TeamArchive extends Component {
   };
 
   cellCache = new CellMeasurerCache({
-    defaultHeight: 180,
+    defaultHeight: 182,
     minHeight: 106,
     fixedWidth: true
   });
@@ -110,49 +105,23 @@ class TeamArchive extends Component {
         parent={parent}
         rowIndex={rowIndex}
       >
-        {/* Put padding here because of aphrodite's async annoyance */}
-        <div key={`cardBlockFor${task.id}`} style={{...style, width: CARD_WIDTH, padding: '0.5rem'}}>
-          <NullableTask
-            key={key}
-            area={TEAM_DASH}
-            myUserId={userId}
-            task={task}
-          />
-        </div>
+        {({measure}) => {
+          return (
+            // put styles here because aphrodite is async
+            <div key={`cardBlockFor${task.id}`} style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem 0'}}>
+              <NullableTask
+                key={key}
+                area={TEAM_DASH}
+                measure={measure}
+                myUserId={userId}
+                task={task}
+              />
+            </div>
+          );
+        }}
       </CellMeasurer>
     );
   };
-
-  _infiniteLoaderChildFunction = ({onRowsRendered, registerChild}) => {
-    this._onRowsRendered = onRowsRendered;
-    return (
-      <WindowScroller>
-        {({height, isScrolling, onChildScroll, scrollTop}) => (
-          <Grid
-            autoHeight
-            cellRenderer={this.rowRenderer}
-            columnCount={this.columnCount}
-            columnWidth={CARD_WIDTH}
-            deferredMeasurementCache={this.cellCache}
-            estimatedColumnSize={CARD_WIDTH}
-            height={height}
-            isScrolling={isScrolling}
-            onRowsRendered={onRowsRendered}
-            onScroll={onChildScroll}
-            onSectionRendered={this._onSectionRendered}
-            ref={(c) => {
-              this.gridRef = c;
-              registerChild(c);
-            }}
-            rowCount={this.getGridRowCount()}
-            rowHeight={this.cellCache.rowHeight}
-            scrollTop={scrollTop}
-            width={this.archiveWidth}
-          />
-        )}
-      </WindowScroller>
-    );
-  }
 
   _onSectionRendered = ({columnStartIndex, columnStopIndex, rowStartIndex, rowStopIndex}) => {
     this._onRowsRendered({
@@ -185,7 +154,38 @@ class TeamArchive extends Component {
                 loadMoreRows={this.loadMore}
                 rowCount={MAX_INT}
               >
-                {this._infiniteLoaderChildFunction}
+                {({onRowsRendered, registerChild}) => {
+                  this._onRowsRendered = onRowsRendered;
+                  return (
+                    <div style={{flex: '1 1 auto'}}>
+                      <AutoSizer>
+                        {({height, width}) => {
+                          return (
+                            <Grid
+                              cellRenderer={this.rowRenderer}
+                              columnCount={this.columnCount}
+                              columnWidth={CARD_WIDTH}
+                              deferredMeasurementCache={this.cellCache}
+                              estimatedColumnSize={CARD_WIDTH}
+                              estimatedRowSize={182}
+                              height={height}
+                              onRowsRendered={onRowsRendered}
+                              onSectionRendered={this._onSectionRendered}
+                              ref={(c) => {
+                                this.gridRef = c;
+                                registerChild(c);
+                              }}
+                              rowCount={Math.ceil(edges.length / this.columnCount)}
+                              rowHeight={this.cellCache.rowHeight}
+                              style={{outline: 'none'}}
+                              width={width}
+                            />
+                          );
+                        }}
+                      </AutoSizer>
+                    </div>
+                  );
+                }}
               </InfiniteLoader>
             </div> :
             <div className={css(styles.emptyMsg)}>
@@ -226,6 +226,8 @@ const styleThunk = () => ({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
+    // hide the window scrollbar, the cardGrid scrollbar will mimic the window scrollbar
+    overflow: 'hidden',
     width: '100%'
   },
 
@@ -248,16 +250,21 @@ const styleThunk = () => ({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    position: 'relative'
+    paddingLeft: '.75rem',
+    position: 'relative',
+
+    [ui.dashBreakpoint]: {
+      paddingLeft: '1.5rem'
+    }
   },
 
   cardGrid: {
-    padding: '.75rem',
-    width: '100%',
-
-    [ui.dashBreakpoint]: {
-      padding: '1.5rem'
-    }
+    border: 0,
+    display: 'flex',
+    // grow to the largest height possible
+    flex: 1,
+    outline: 0,
+    width: '100%'
   },
 
   emptyMsg: {
