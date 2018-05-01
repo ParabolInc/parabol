@@ -44,6 +44,11 @@ graphql`
         }
       }
     }
+    unlockedStages {
+      id
+      isNavigable
+      isNavigableByFacilitator
+    }
   }
 `;
 

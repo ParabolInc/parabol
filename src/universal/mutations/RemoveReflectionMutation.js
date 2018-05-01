@@ -24,6 +24,10 @@ graphql`
       id
       reflectionGroupId
     }
+    unlockedStages {
+      id
+      isNavigableByFacilitator
+    }
   }
 `;
 

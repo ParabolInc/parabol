@@ -108,6 +108,15 @@ export const sendStageNotFoundError = (authToken, stageId, returnValue) => {
   return sendAuthRaven(authToken, 'Meeting Stage Not Found', breadcrumb, returnValue);
 };
 
+export const sendStageNotUnlockedError = (authToken, stageId, returnValue) => {
+  const breadcrumb = {
+    message: 'Stage has not been unlocked yet',
+    category: 'Not unlocked',
+    data: {stageId}
+  };
+  return sendAuthRaven(authToken, 'Meeting Stage Not Yet Unlocked', breadcrumb, returnValue);
+};
+
 export const sendInvitationNotFoundError = (authToken, inviteToken, returnValue) => {
   const breadcrumb = {
     message: `

@@ -6,6 +6,8 @@ export const makeDiscussionStage = (reflectionGroupId: string, meetingId: string
   id: placeholderId || shortid.generate(),
   meetingId,
   isComplete: false,
+  isNavigable: true,
+  isNavigableByFacilitator: true,
   phaseType: DISCUSS,
   reflectionGroupId,
   startAt: placeholderId ? new Date() : undefined,

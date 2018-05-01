@@ -51,7 +51,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const navState = {
           isActive: localStage.localStageId === stage.id, // the local user is at this stage
           isComplete: stage.isComplete, // this stage is complete
-          isDisabled: !getIsNavigable(false, phases, stage.id),
+          isDisabled: !stage.isNavigable,
           isUnsyncedFacilitatorStage
         };
         const voteMeta = (
@@ -92,6 +92,7 @@ export default createFragmentContainer(
               stages {
                 id
                 isComplete
+                isNavigable
               }
               ... on DiscussPhase {
                 stages {
@@ -108,6 +109,7 @@ export default createFragmentContainer(
                 stages {
                   id
                   isComplete
+                  isNavigable
                   reflectionGroup {
                     title
                     voteCount

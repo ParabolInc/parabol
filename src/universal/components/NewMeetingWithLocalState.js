@@ -12,7 +12,7 @@ import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeet
 import NewMeeting from 'universal/components/NewMeeting';
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
 import updateLocalStage from 'universal/utils/relay/updateLocalStage';
-import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
+import findStageById from 'universal/utils/meetings/findStageById';
 
 /*
  * Creates a 2-way sync between the URL and the local state
@@ -124,8 +124,11 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     const stage = phase.stages[stageIdx];
     const stageId = stage && stage.id;
     const isViewerFacilitator = viewerId === facilitatorUserId;
-    const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId);
-    if (!isNavigable) {
+    const itemStage = findStageById(phases, stageId);
+    if (!itemStage) return false;
+    const {stage: {isNavigable, isNavigableByFacilitator}} = itemStage;
+    const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
+    if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, phases);
       history.push(nextUrl);
@@ -155,12 +158,16 @@ export default createFragmentContainer(
           meetingId: id
           localStage {
             id
+            isNavigable
+            isNavigableByFacilitator
           }
           phases {
             id
             phaseType
             stages {
               id
+              isNavigable
+              isNavigableByFacilitator
             }
           }
         }

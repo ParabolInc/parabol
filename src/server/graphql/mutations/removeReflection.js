@@ -5,10 +5,11 @@ import {sendReflectionAccessError, sendTeamAccessError} from 'server/utils/autho
 import {sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
 import publish from 'server/utils/publish';
-import {REFLECT, TEAM} from 'universal/utils/constants';
+import {GROUP, REFLECT, TEAM} from 'universal/utils/constants';
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload';
 import removeEmptyReflectionGroup from 'server/graphql/mutations/helpers/removeEmptyReflectionGroup';
+import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase';
 
 export default {
   type: RemoveReflectionPayload,
@@ -43,7 +44,16 @@ export default {
         updatedAt: now
       });
     await removeEmptyReflectionGroup(reflectionGroupId, reflectionGroupId);
-    const data = {meetingId, reflectionId};
+    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId);
+    let unlockedStageIds;
+    if (reflections.length === 0) {
+      unlockedStageIds = unlockAllStagesForPhase(phases, GROUP, true, false);
+      await r.table('NewMeeting').get(meetingId)
+        .update({
+          phases
+        });
+    }
+    const data = {meetingId, reflectionId, unlockedStageIds};
     publish(TEAM, teamId, RemoveReflectionPayload, data, subOptions);
     return data;
   }
