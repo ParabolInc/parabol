@@ -7,6 +7,8 @@ import MeetingControlBar from 'universal/modules/meeting/components/MeetingContr
 import {Button} from 'universal/components';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
+import {DISCUSS} from 'universal/utils/constants';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 
 type Props = {|
   atmosphere: Object,
@@ -21,6 +23,7 @@ const RetroVotePhase = (props: Props) => {
   const {facilitatorUserId, votesRemaining} = newMeeting || {};
   const {phaseItems = [], totalVotes} = meetingSettings;
   const isFacilitating = facilitatorUserId === viewerId;
+  const nextPhaseLabel = phaseLabelLookup[DISCUSS];
   return (
     <React.Fragment>
       <ScrollableBlock>
@@ -41,7 +44,7 @@ const RetroVotePhase = (props: Props) => {
           iconLarge
           iconPalette="warm"
           iconPlacement="right"
-          label={'Done! Let’s Discuss'}
+          label={`Done! Let’s ${nextPhaseLabel}`}
           onClick={gotoNext}
         />
       </MeetingControlBar>
