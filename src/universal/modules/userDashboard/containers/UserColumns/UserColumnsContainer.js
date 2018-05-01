@@ -25,19 +25,6 @@ class UserColumnsContainer extends Component {
     }
   }
 
-  // filterByTeamMember(props) {
-  //   const {teamFilterId, viewer: {tasks}} = props;
-  //   const edges = teamFilterId ?
-  //     tasks.edges.filter(({node}) => node.team.id === teamFilterId) :
-  //     tasks.edges;
-  //   this.setState({
-  //     tasks: {
-  //       ...tasks,
-  //       edges
-  //     }
-  //   });
-  // }
-
   filterTasks(props) {
     const {teamFilterId, viewer: {contentFilter, tasks}} = props;
     const contentFilterRegex = new RegExp(contentFilter, 'i');

@@ -5,15 +5,6 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 class UserDashSearch extends Component {
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {userId: oldUserId, contentFilter: oldContentFilter}} = this.props;
-    if (oldUserId && oldContentFilter) {
-      if (!nextProps.userId || nextProps.userId !== oldUserId) {
-        this.setContentFilter('');
-      }
-    }
-  }
-
   componentWillUnmount() {
     if (this.props.viewer.contentFilter) {
       this.setContentFilter('');
