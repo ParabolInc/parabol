@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
@@ -10,86 +9,80 @@ import {
   DashContent,
   DashHeader,
   DashHeaderInfo,
-  DashMain,
-  DashSearchControl
+  DashMain
 } from 'universal/components/Dashboard';
+import UserDashSearch from 'universal/modules/userDashboard/components/UserDashSearch/UserDashSearch';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import makeDateString from 'universal/utils/makeDateString';
 import {createFragmentContainer} from 'react-relay';
 
+const LayoutBlock = styled('div')({
+  display: 'flex',
+  flex: 1,
+  width: '100%'
+});
+
+const TasksLayout = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column'
+});
+
+const HeaderCopy = styled('div')({
+  color: ui.colorText,
+  flex: 1,
+  fontSize: appTheme.typography.s2,
+  fontWeight: 600,
+  lineHeight: '1.25',
+  textAlign: 'right'
+});
+
+const RallyLink = styled('span')({
+  color: 'inherit',
+  fontWeight: 400,
+  fontStyle: 'italic'
+});
+
 const UserDashMain = (props) => {
-  const {styles, viewer} = props;
+  const {viewer} = props;
   const {teams} = viewer;
   return (
     <DashMain>
       <Helmet title="My Dashboard | Parabol" />
       <DashHeader area="userDash">
         <DashHeaderInfo>
-          {__RELEASE_FLAGS__.userDashFilter &&
-            <DashSearchControl
-              onChange={() => (console.log('DashSearchControl'))}
-              placeholder="Search My Tasks"
-            />
-          }
-          <div className={css(styles.headerCopy)}>
+          <UserDashSearch viewer={viewer} />
+          <HeaderCopy>
             {makeDateString(new Date(), {showDay: true})}<br />
-            <span className={css(styles.rallyLink)}>
-              <i>{getRallyLink()}!</i>
-            </span>
-          </div>
+            <RallyLink>
+              {getRallyLink()}{'!'}
+            </RallyLink>
+          </HeaderCopy>
         </DashHeaderInfo>
       </DashHeader>
       <DashContent padding="0">
-        <div className={css(styles.root)}>
-          <div className={css(styles.tasksLayout)}>
+        <LayoutBlock>
+          <TasksLayout>
             <UserTasksHeaderContainer teams={teams} viewer={viewer} />
             <UserColumnsContainer teams={teams} viewer={viewer} />
-          </div>
-        </div>
+          </TasksLayout>
+        </LayoutBlock>
       </DashContent>
     </DashMain>
   );
 };
 
 UserDashMain.propTypes = {
-  styles: PropTypes.object,
   teams: PropTypes.array,
   viewer: PropTypes.object
 };
 
-const styleThunk = () => ({
-  root: {
-    display: 'flex',
-    flex: 1,
-    width: '100%'
-  },
-
-  tasksLayout: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column'
-  },
-
-  headerCopy: {
-    color: ui.colorText,
-    flex: 1,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: '1.25',
-    textAlign: 'right'
-  },
-
-  rallyLink: {
-    color: 'inherit',
-    fontWeight: 400
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(UserDashMain),
+  UserDashMain,
   graphql`
     fragment UserDashMain_viewer on User {
+      ...UserDashSearch_viewer
       ...UserColumnsContainer_viewer
       teams {
         id
