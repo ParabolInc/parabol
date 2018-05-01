@@ -102,7 +102,6 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   onChange = (e) => {
     const {atmosphere, dirty, error, onCompleted, onError, meeting: {reflectionGroups}, reflectionGroup: {reflectionGroupId}} = this.props;
     const title = e.target.value;
-    console.log('next title', title);
     commitLocalUpdate(atmosphere, (store) => {
       const reflectionGroup = store.get(reflectionGroupId);
       reflectionGroup.setValue(title, 'title');
@@ -158,11 +157,6 @@ class ReflectionGroupTitleEditor extends Component<Props> {
 
   render() {
     const {error, readOnly, reflectionGroup: {title}} = this.props;
-    const maxlength = 20;
-    const placeholder = 'Theme';
-    const placeholderSize = placeholder.length;
-    const titleSize = (title.length > maxlength) ? maxlength : title.length;
-    const size = titleSize || placeholderSize;
     return (
       <React.Fragment>
         <RootBlock>
@@ -170,12 +164,12 @@ class ReflectionGroupTitleEditor extends Component<Props> {
             <NameInput
               onBlur={this.onSubmit}
               onChange={this.onChange}
-              placeholder={placeholder}
+              placeholder="Theme"
               readOnly={readOnly}
               innerRef={this.inputRef}
-              size={size}
+              size={20}
               type="text"
-              value={title}
+              value={title || ''}
             />
           </FormBlock>
           {error && <StyledError>{error.message}</StyledError>}

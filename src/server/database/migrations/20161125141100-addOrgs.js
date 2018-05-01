@@ -102,8 +102,10 @@ exports.up = async (r) => {
   const notificationsForDB = [];
   for (let i = 0; i < subscriptions.length; i++) {
     const subscription = subscriptions[i];
-    const {metadata: {orgId}, customer, id, current_period_end, current_period_start} = subscription;
-    const periodEnd = fromEpochSeconds(current_period_end);
+    const currentPeriodStart = subscription.current_period_start;
+    const currentPeriodEnd = subscription.current_period_end;
+    const {metadata: {orgId}, customer, id} = subscription;
+    const periodEnd = fromEpochSeconds(currentPeriodEnd);
     const {leaderId, name, orgUserMap} = orgs[orgId];
     const orgUserIds = Object.keys(orgUserMap);
     const orgUsers = [];
@@ -125,7 +127,7 @@ exports.up = async (r) => {
       stripeSubscriptionId: id,
       updatedAt: now,
       periodEnd,
-      periodStart: fromEpochSeconds(current_period_start)
+      periodStart: fromEpochSeconds(currentPeriodStart)
     };
     notificationsForDB[i] = {
       id: shortid.generate(),

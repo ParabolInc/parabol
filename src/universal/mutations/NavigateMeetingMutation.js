@@ -34,6 +34,9 @@ graphql`
                 phaseType
                 reflectionGroup {
                   id
+                  tasks {
+                    id
+                  }
                 }
               }
             }

@@ -20,6 +20,7 @@ extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
 
-extend type RetroPhaseItem {
-  isDropZoneEnabled: Boolean
+extend type RetroReflection {
+  dragX: Float
+  dragY: Float
 }

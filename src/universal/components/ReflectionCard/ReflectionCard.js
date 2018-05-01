@@ -53,12 +53,14 @@ const OriginFooter = styled('div')({
   padding: '.5rem .75rem'
 });
 
-const ReflectionCardRoot = styled('div')(
+export const ReflectionCardRoot = styled('div')(
   {
     backgroundColor: ui.palette.white,
     border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
     boxShadow: ui.cardBoxShadow,
+    // useful for drag preview
+    display: 'inline-block',
     maxWidth: '100%',
     position: 'relative',
     width: ui.retroCardWidth
@@ -134,7 +136,7 @@ class ReflectionCard extends Component<Props, State> {
     const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
     const {localPhase: {phaseType}, localStage: {isComplete}, teamId} = meeting;
-    const {draggerUser, isViewerCreator, phaseItem: {question}} = reflection;
+    const {draggerUser, isViewerCreator, phaseItem: {question}, reflectionId} = reflection;
     const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
@@ -148,7 +150,7 @@ class ReflectionCard extends Component<Props, State> {
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder="My reflection thought…"
-          readOnly={phaseType !== REFLECT || isComplete}
+          readOnly={phaseType !== REFLECT || isComplete || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
           teamId={teamId}
         />
