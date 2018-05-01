@@ -32,7 +32,6 @@ class UserDashSearch extends Component {
 
 UserDashSearch.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  userId: PropTypes.string,
   viewer: PropTypes.object
 };
 
