@@ -28,7 +28,7 @@ class NullableTask extends Component {
     if (this.props.measure) {
       setTimeout(() => {
         if (this._mounted) {
-          this.props.measure()
+          this.props.measure();
         }
       });
     }

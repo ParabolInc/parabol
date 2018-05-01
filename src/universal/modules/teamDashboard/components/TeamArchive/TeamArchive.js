@@ -180,11 +180,11 @@ class TeamArchive extends Component {
                               style={{outline: 'none'}}
                               width={width}
                             />
-                          )
+                          );
                         }}
                       </AutoSizer>
                     </div>
-                  )
+                  );
                 }}
               </InfiniteLoader>
             </div> :
