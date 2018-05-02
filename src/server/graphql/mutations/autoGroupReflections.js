@@ -38,7 +38,7 @@ export default {
     if (isPhaseComplete(GROUP, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP);
 
     // VALIDATION
-    if (groupingThreshold < 0.01 || groupingThreshold > 0.99) {
+    if (groupingThreshold <= 0 || groupingThreshold >= 1) {
       return sendGroupingThresholdValidationError(authToken, meetingId, groupingThreshold);
     }
 

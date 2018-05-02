@@ -26,6 +26,7 @@ const subscription = graphql`
       ...AddTeamMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
+      ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
       ...DragReflectionMutation_team @relay(mask: false)
       ...EditReflectionMutation_team @relay(mask: false)
@@ -83,6 +84,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break;
         case 'AddTeamCreatorPayload':
           addTeamMutationNotificationUpdater(payload, store, viewerId, options);
+          break;
+        case 'AutoGroupReflectionsPayload':
           break;
         case 'CreateGitHubIssuePayload':
           break;
