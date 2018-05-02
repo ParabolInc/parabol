@@ -30,16 +30,26 @@ graphql`
               stages {
                 id
                 isComplete
+                isNavigable
+                isNavigableByFacilitator
                 meetingId
                 phaseType
                 reflectionGroup {
                   id
+                  tasks {
+                    id
+                  }
                 }
               }
             }
           }
         }
       }
+    }
+    unlockedStages {
+      id
+      isNavigable
+      isNavigableByFacilitator
     }
   }
 `;

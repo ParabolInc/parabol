@@ -1,6 +1,7 @@
 import {getUserId, isSuperUser} from 'server/utils/authorization';
 import nullIfEmpty from 'universal/utils/nullIfEmpty';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import findStageById from 'universal/utils/meetings/findStageById';
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem;
@@ -124,6 +125,12 @@ export const resolveTeamMember = ({teamMemberId, teamMember}, args, {dataLoader}
 export const resolveTeamMembers = ({teamMemberIds, teamMembers}, args, {dataLoader}) => {
   return (teamMemberIds && teamMemberIds.length > 0) ?
     dataLoader.get('teamMembers').loadMany(teamMemberIds) : teamMembers;
+};
+
+export const resolveUnlockedStages = async ({meetingId, unlockedStageIds}, args, {dataLoader}) => {
+  if (!unlockedStageIds || unlockedStageIds.length === 0) return undefined;
+  const meeting = await dataLoader.get('newMeetings').load(meetingId);
+  return unlockedStageIds.map((stageId) => findStageById(meeting.phases, stageId).stage);
 };
 
 export const resolveUser = ({userId, user}, args, {dataLoader}) => {

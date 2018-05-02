@@ -7,6 +7,8 @@ import MeetingControlBar from 'universal/modules/meeting/components/MeetingContr
 import {Button} from 'universal/components';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
+import {DISCUSS} from 'universal/utils/constants';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 
 type Props = {|
   atmosphere: Object,
@@ -17,10 +19,13 @@ type Props = {|
 
 const RetroVotePhase = (props: Props) => {
   const {atmosphere: {viewerId}, gotoNext, team} = props;
-  const {newMeeting, meetingSettings, teamMembers} = team;
-  const {facilitatorUserId, votesRemaining} = newMeeting || {};
-  const {phaseItems = [], totalVotes} = meetingSettings;
+  const {newMeeting, meetingSettings} = team;
+  const {facilitatorUserId, phases} = newMeeting || {};
+  const {phaseItems = []} = meetingSettings;
   const isFacilitating = facilitatorUserId === viewerId;
+  const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS);
+  const discussStage = discussPhase.stages[0];
+  const nextPhaseLabel = phaseLabelLookup[DISCUSS];
   return (
     <React.Fragment>
       <ScrollableBlock>
@@ -36,12 +41,12 @@ const RetroVotePhase = (props: Props) => {
           buttonSize="medium"
           buttonStyle="flat"
           colorPalette="dark"
-          disabled={votesRemaining === totalVotes * teamMembers.length}
+          disabled={!discussStage.isNavigableByFacilitator}
           icon="arrow-circle-right"
           iconLarge
           iconPalette="warm"
           iconPlacement="right"
-          label={'Done! Let’s Discuss'}
+          label={`Done! Let’s ${nextPhaseLabel}`}
           onClick={gotoNext}
         />
       </MeetingControlBar>
@@ -59,12 +64,21 @@ export default createFragmentContainer(
         facilitatorUserId
         ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
-          votesRemaining
+          phases {
+            phaseType
+            ... on DiscussPhase {
+              stages {
+                ... on RetroDiscussStage {
+                  id
+                  isNavigableByFacilitator
+                }
+              }
+            }
+          }
         }
       }
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
-          totalVotes
           phaseItems {
             ... on RetroPhaseItem {
               id
@@ -73,9 +87,6 @@ export default createFragmentContainer(
           }
         }
       }
-    teamMembers(sortBy: "checkInOrder") {
-      id
-    }
     }
   `
 );

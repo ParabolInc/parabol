@@ -26,8 +26,7 @@ const withEmojis = (ComposedComponent) => {
       handleChange: PropTypes.func,
       keyBindingFn: PropTypes.func,
       // could be readOnly, so not strictly required
-      setEditorState: PropTypes.func,
-      teamId: PropTypes.string.isRequired
+      setEditorState: PropTypes.func
     };
 
     state = {

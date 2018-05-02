@@ -44,6 +44,14 @@ export const newMeetingStageFields = () => ({
     type: GraphQLBoolean,
     description: 'true if the facilitator has completed this stage, else false. Should be boolean(endAt)'
   },
+  isNavigable: {
+    type: GraphQLBoolean,
+    description: 'true if any meeting participant can navigate to this stage'
+  },
+  isNavigableByFacilitator: {
+    type: GraphQLBoolean,
+    description: 'true if the facilitator can navigate to this stage'
+  },
   phase: {
     type: NewMeetingPhase,
     description: 'The phase this stage belongs to',

@@ -3,6 +3,7 @@ import React from 'react';
 import EmptySpace from '../EmptySpace/EmptySpace';
 import plural from 'universal/utils/plural';
 import styles from './quickStatsStyles';
+import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from 'universal/utils/constants';
 
 const {
   cellStyles,
@@ -38,7 +39,7 @@ const RetroQuickStats = (props: Props) => {
             <td style={cellStyles}>
               <div style={statStyles}>
                 <div style={statValue}>{upvotedTopicCount}</div>
-                <div style={statLabel}>{plural(upvotedTopicCount, 'Upvoted Topic')}</div>
+                <div style={statLabel}>{plural(upvotedTopicCount, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}</div>
               </div>
             </td>
             <td style={cellStyles}>
@@ -55,7 +56,7 @@ const RetroQuickStats = (props: Props) => {
                     <span>{meetingMembersPresentCount}/{meetingMembersCount}</span>
                   }
                 </div>
-                <div style={statLabel}>Present</div>
+                <div style={statLabel}>{'Present'}</div>
               </div>
             </td>
           </tr>

@@ -16,6 +16,8 @@ graphql`
       stages {
         id
         isComplete
+        isNavigable
+        isNavigableByFacilitator
         ... on NewMeetingTeamMemberStage {
           teamMemberId
           teamMember {

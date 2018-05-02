@@ -23,7 +23,9 @@ const getAscendingIdx = (newName, arr, sortValue) => {
 const addNodeToArray = (newNode, parent, arrayName, sortValue, options = {}) => {
   if (!newNode || !parent) return;
   const {descending, storageKeyArgs} = options;
-  const arr = parent.getLinkedRecords(arrayName, storageKeyArgs);
+  // create an empty array so we don't have to make sure all of our mutations are bullet proof.
+  // alternative is to test every page pre & post refresh, which would suck
+  const arr = parent.getLinkedRecords(arrayName, storageKeyArgs) || [];
   if (!arr) return;
   const nodeDataId = newNode.getDataID();
   // rule out duplicates

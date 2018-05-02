@@ -12,6 +12,9 @@ class NullableTask extends Component {
     handleAddTask: PropTypes.func,
     isAgenda: PropTypes.bool,
     isDragging: PropTypes.bool,
+    isPreview: PropTypes.bool,
+    // used by react-virtualized for archived cards. can remove when we remove aphrodite
+    measure: PropTypes.func,
     myUserId: PropTypes.string,
     task: PropTypes.object
   };
@@ -19,6 +22,17 @@ class NullableTask extends Component {
   state = {
     contentState: convertFromRaw(JSON.parse(this.props.task.content))
   };
+
+  componentDidMount() {
+    this._mounted = true;
+    if (this.props.measure) {
+      setTimeout(() => {
+        if (this._mounted) {
+          this.props.measure();
+        }
+      });
+    }
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.task.content !== this.props.task.content) {
@@ -35,6 +49,9 @@ class NullableTask extends Component {
     );
   }
 
+  componentWillUnmount() {
+    this._mounted = false;
+  }
   render() {
     const {area, handleAddTask, hasDragStyles, isAgenda, myUserId, task, isDragging} = this.props;
     const {contentState} = this.state;

@@ -6,22 +6,17 @@
 import * as React from 'react';
 // import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn';
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
-import type {DragStart, DropResult} from 'react-beautiful-dnd/src/index';
-import {DragDropContext} from 'react-beautiful-dnd';
-import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
+import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import dndNoise from 'universal/utils/dndNoise';
-import DragReflectionMutation from 'universal/mutations/DragReflectionMutation';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import {Button} from 'universal/components';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledError from 'universal/components/StyledError';
-import type {MutationProps} from 'universal/utils/relay/withMutationProps';
-
-const {Component} = React;
+import {VOTE} from 'universal/utils/constants';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 
 type Props = {
   atmosphere: Object,
@@ -31,180 +26,41 @@ type Props = {
   ...MutationProps
 };
 
-const getSortOrder = (index, children, inSameGroup) => {
-  if (index === 0) return children[0] ? children[0].sortOrder - 1 : 0;
-  if (index === children.length || (inSameGroup && index === children.length - 1)) return children[children.length - 1].sortOrder + 1;
-  return (children[index - 1].sortOrder + children[index].sortOrder) / 2 + dndNoise();
-};
-
-const getPhaseItemSortOrder = (reflectionGroups, retroPhaseItemId) => {
-  const phaseSortOrders = reflectionGroups
-    .filter((reflectionGroup) => reflectionGroup.retroPhaseItemId === retroPhaseItemId)
-    .map(({sortOrder}) => sortOrder);
-  const columnMax = Math.max(...phaseSortOrders, 0);
-  return columnMax + 1 + dndNoise();
-};
-
-const getChildren = (team, droppableId) => {
-  const {meetingSettings, newMeeting} = team;
-  const reflectionGroups = newMeeting.reflectionGroups || [];
-  const reflectionGroup = reflectionGroups.find((group) => group.id === droppableId);
-  if (reflectionGroup) return {dropType: 'reflectionGroupId', children: reflectionGroup.reflections};
+const RetroGroupPhase = (props: Props) => {
+  const {atmosphere: {viewerId}, error, gotoNext, team} = props;
+  const {newMeeting, meetingSettings} = team;
+  const {facilitatorUserId} = newMeeting || {};
   const phaseItems = meetingSettings.phaseItems || [];
-  const retroPhaseItem = phaseItems.find((phaseItem) => phaseItem.id === droppableId);
-  if (retroPhaseItem) return {dropType: 'retroPhaseItemId', children: reflectionGroups};
-  return {};
+  const isFacilitating = facilitatorUserId === viewerId;
+  const nextPhaseLabel = phaseLabelLookup[VOTE];
+  return (
+    <React.Fragment>
+      <ScrollableBlock>
+        {error && <StyledError>{error.message}</StyledError>}
+        <MeetingPhaseWrapper>
+          {phaseItems.map((phaseItem, idx) =>
+            <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+          )}
+        </MeetingPhaseWrapper>
+      </ScrollableBlock>
+      {isFacilitating &&
+      <MeetingControlBar>
+        <Button
+          buttonSize="medium"
+          buttonStyle="flat"
+          colorPalette="dark"
+          icon="arrow-circle-right"
+          iconLarge
+          iconPalette="warm"
+          iconPlacement="right"
+          label={`Done! Let’s ${nextPhaseLabel}`}
+          onClick={gotoNext}
+        />
+      </MeetingControlBar>
+      }
+    </React.Fragment>
+  );
 };
-
-class RetroGroupPhase extends Component<Props> {
-  constructor(props) {
-    super(props);
-    const {atmosphere, team} = props;
-    const {meetingSettings} = team;
-    const phaseItems = meetingSettings.phaseItems || [];
-    // if a reflection is by itself at the bottom of a column, it's weird to see it be dragged to the dropzone below it & then shift up
-    // this fixes it by disabling the dropzone for single-reflection groups residing in the same column
-    commitLocalUpdate(atmosphere, (store) => {
-      phaseItems.forEach((phaseItem) => {
-        const phaseItemProxy = store.get(phaseItem.id);
-        if (phaseItemProxy) {
-          phaseItemProxy.setValue(true, 'isDropZoneEnabled');
-        }
-      });
-    });
-  }
-
-  onDragStart = (dragStart: DragStart) => {
-    const {atmosphere, team: {newMeeting}} = this.props;
-    const {draggableId: reflectionId} = dragStart;
-    DragReflectionMutation(atmosphere, {reflectionId, isDragging: true});
-    const {reflectionGroups} = newMeeting;
-    const group = reflectionGroups.find((reflectionGroup) => reflectionGroup.reflections.some((reflection) => reflection.id ===
-      reflectionId));
-    const {reflections, retroPhaseItemId} = group;
-    const isDropZoneEnabled = reflections.length > 1;
-    // setTimeout required otherwise we get a warning https://github.com/atlassian/react-beautiful-dnd/issues/426
-    setTimeout(() => {
-      commitLocalUpdate(atmosphere, (store) => {
-        const phaseItemProxy = store.get(retroPhaseItemId);
-        if (phaseItemProxy) {
-          phaseItemProxy.setValue(isDropZoneEnabled, 'isDropZoneEnabled');
-        }
-      });
-    }, 100);
-  }
-
-  onDragEnd = (result: DropResult) => {
-    const {atmosphere, team, onError, onCompleted, submitMutation} = this.props;
-    const {meetingSettings, newMeeting} = team;
-    const {draggableId: reflectionId, source, destination} = result;
-    DragReflectionMutation(atmosphere, {reflectionId, isDragging: false});
-
-    // re-enable drop zones
-    const phaseItems = meetingSettings.phaseItems || [];
-    commitLocalUpdate(atmosphere, (store) => {
-      phaseItems.forEach((phaseItem) => {
-        const phaseItemProxy = store.get(phaseItem.id);
-        if (phaseItemProxy) {
-          phaseItemProxy.setValue(true, 'isDropZoneEnabled');
-        }
-      });
-    });
-
-    // dropped nowhere
-    if (!destination) return;
-
-    // did not move anywhere - can bail early
-    const inSameGroup = source.droppableId === destination.droppableId;
-    if (inSameGroup && source.index === destination.index) {
-      return;
-    }
-
-    const {droppableId, index} = destination;
-    const {dropType, children} = getChildren(team, droppableId);
-    if (!dropType) return;
-    const {meetingId} = newMeeting;
-
-    if (dropType === 'reflectionGroupId') {
-      // this is an add
-      const variables = {
-        reflectionId,
-        reflectionGroupId: droppableId,
-        sortOrder: getSortOrder(index, children, inSameGroup)
-      };
-      submitMutation();
-      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted);
-      return;
-    }
-
-    // this is a move (to a different column) or a remove (from 1 group in a column to its own group)
-    const oldGroup = children.find((reflectionGroup) => reflectionGroup.reflections.some((reflection) => reflection.id === reflectionId));
-    if (!oldGroup) return;
-    if (oldGroup.reflections.length === 1) {
-      // don't move a reflection from its own group to a new group in the same column
-      if (oldGroup.retroPhaseItemId === droppableId) return;
-      // move a single group to a different column
-      const variables = {
-        reflectionGroupId: oldGroup.id,
-        retroPhaseItemId: droppableId,
-        sortOrder: getPhaseItemSortOrder(children, droppableId)
-      };
-      submitMutation();
-      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted);
-      return;
-    }
-
-    // this is a remove
-    const variables = {
-      reflectionId,
-      reflectionGroupId: null,
-      retroPhaseItemId: droppableId,
-      sortOrder: getPhaseItemSortOrder(children, droppableId)
-    };
-    submitMutation();
-    UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted);
-  }
-
-  render() {
-    const {atmosphere: {viewerId}, error, gotoNext, team} = this.props;
-    const {newMeeting, meetingSettings} = team;
-    const {facilitatorUserId} = newMeeting || {};
-    const phaseItems = meetingSettings.phaseItems || [];
-    const isFacilitating = facilitatorUserId === viewerId;
-    return (
-      <React.Fragment>
-        <ScrollableBlock>
-          {error && <StyledError>{error.message}</StyledError>}
-          <DragDropContext
-            onDragStart={this.onDragStart}
-            onDragEnd={this.onDragEnd}
-          >
-            <MeetingPhaseWrapper>
-              {phaseItems.map((phaseItem, idx) =>
-                <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-              )}
-            </MeetingPhaseWrapper>
-          </DragDropContext>
-        </ScrollableBlock>
-        {isFacilitating &&
-        <MeetingControlBar>
-          <Button
-            buttonSize="medium"
-            buttonStyle="flat"
-            colorPalette="dark"
-            icon="arrow-circle-right"
-            iconLarge
-            iconPalette="warm"
-            iconPlacement="right"
-            label={'Done! Let’s Vote'}
-            onClick={gotoNext}
-          />
-        </MeetingControlBar>
-        }
-      </React.Fragment>
-    );
-  }
-}
 
 export default createFragmentContainer(
   withMutationProps(withAtmosphere(RetroGroupPhase)),

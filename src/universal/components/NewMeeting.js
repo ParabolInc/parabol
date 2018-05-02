@@ -35,7 +35,6 @@ import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/
 import RetroGroupPhase from 'universal/components/RetroGroupPhase';
 import RetroVotePhase from 'universal/components/RetroVotePhase';
 import RetroDiscussPhase from 'universal/components/RetroDiscussPhase';
-import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog';
 import isForwardProgress from 'universal/utils/meetings/isForwardProgress';
@@ -119,10 +118,11 @@ class NewMeeting extends Component<Props> {
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
     const {viewerId} = atmosphere;
     const isViewerFacilitator = viewerId === facilitatorUserId;
-    const isNavigable = getIsNavigable(isViewerFacilitator, phases, stageId);
-    if (!isNavigable) return;
+    const {stage: {isNavigable, isNavigableByFacilitator}} = findStageById(phases, facilitatorStageId);
+    const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
+    if (!canNavigate) return;
     updateLocalStage(atmosphere, meetingId, stageId);
-    if (isViewerFacilitator) {
+    if (isViewerFacilitator && isNavigableByFacilitator) {
       const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
       const variables: Variables = {meetingId, facilitatorStageId: stageId};
       if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
@@ -277,6 +277,8 @@ export default createFragmentContainer(
             stages {
               id
               isComplete
+              isNavigable
+              isNavigableByFacilitator
             }
           }
         }

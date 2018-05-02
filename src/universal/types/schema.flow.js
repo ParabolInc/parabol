@@ -1369,6 +1369,8 @@ export type RetroReflection = {
   draggerUserId: ?string;
   /** The user that is currently dragging the reflection */
   draggerUser: ?User;
+  /** The coordinates necessary to simulate a drag for a subscribing user */
+  draggerCoords: ?DraggerCoords;
   /** an array of all the socketIds that are currently editing the reflection */
   editorIds: Array<string>;
   /** True if the reflection was not removed, else false */
@@ -1398,6 +1400,20 @@ export type RetroReflection = {
   team: ?RetrospectiveMeeting;
   /** The timestamp the meeting was updated. Used to determine how long it took to write a reflection */
   updatedAt: ?any;
+}
+
+/**
+  Coordinates used to share a drag
+*/
+export type DraggerCoords = {
+  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
+  height: ?number;
+  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
+  width: ?number;
+  /** The x-offset from the current location */
+  x: ?number;
+  /** The y-offset from the current location */
+  y: ?number;
 }
 
 export type GoogleAnalyzedEntity = {
@@ -1670,6 +1686,8 @@ export type CreateReflectionPayload = {
   reflection: ?RetroReflection;
   /** The group automatically created for the reflection */
   reflectionGroup: ?RetroReflectionGroup;
+  /** The stages that were unlocked by navigating */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type CreateReflectionGroupPayload = {
@@ -1864,6 +1882,8 @@ export type NavigateMeetingPayload = {
   oldFacilitatorStage: ?NewMeetingStage;
   /** Additional details triggered by completing certain phases */
   phaseComplete: ?PhaseCompletePayload;
+  /** The stages that were unlocked by navigating */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type PhaseCompletePayload = {
@@ -2023,6 +2043,8 @@ export type RemoveReflectionPayload = {
   error: ?StandardMutationError;
   meeting: ?NewMeeting;
   reflection: ?RetroReflection;
+  /** The stages that were unlocked by navigating */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type RemoveTeamMemberPayload = {
@@ -2217,8 +2239,10 @@ export type UpdateUserProfilePayload = {
 export type VoteForReflectionGroupPayload = {
   error: ?StandardMutationError;
   meeting: ?RetrospectiveMeeting;
-  reflectionGroup: ?RetroReflectionGroup;
   meetingMember: ?RetrospectiveMeetingMember;
+  reflectionGroup: ?RetroReflectionGroup;
+  /** The stages that were locked or unlocked by having at least 1 vote */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type LoginPayload = {
@@ -2331,6 +2355,10 @@ export type CheckInStage = {
   meeting: ?NewMeeting;
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
   isComplete: ?boolean;
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean;
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean;
   /** The phase this stage belongs to */
   phase: ?NewMeetingPhase;
   /** The type of the phase */
@@ -2381,6 +2409,10 @@ export type GenericMeetingStage = {
   meeting: ?NewMeeting;
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
   isComplete: ?boolean;
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean;
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean;
   /** The phase this stage belongs to */
   phase: ?NewMeetingPhase;
   /** The type of the phase */
@@ -2416,6 +2448,10 @@ export type RetroDiscussStage = {
   meeting: ?NewMeeting;
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
   isComplete: ?boolean;
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean;
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean;
   /** The phase this stage belongs to */
   phase: ?NewMeetingPhase;
   /** The type of the phase */
