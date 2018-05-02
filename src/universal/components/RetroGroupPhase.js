@@ -17,6 +17,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledError from 'universal/components/StyledError';
 import {VOTE} from 'universal/utils/constants';
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
+import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation';
 
 type Props = {
   atmosphere: Object,
@@ -27,12 +28,17 @@ type Props = {
 };
 
 const RetroGroupPhase = (props: Props) => {
-  const {atmosphere: {viewerId}, error, gotoNext, team} = props;
+  const {atmosphere, error, gotoNext, onError, onCompleted, submitMutation, team} = props;
+  const {viewerId} = atmosphere;
   const {newMeeting, meetingSettings} = team;
-  const {facilitatorUserId} = newMeeting || {};
+  const {facilitatorUserId, meetingId} = newMeeting || {};
   const phaseItems = meetingSettings.phaseItems || [];
   const isFacilitating = facilitatorUserId === viewerId;
   const nextPhaseLabel = phaseLabelLookup[VOTE];
+  const autoGroup = () => {
+    submitMutation();
+    AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold: 0.5}, onError, onCompleted);
+  };
   return (
     <React.Fragment>
       <ScrollableBlock>
@@ -55,6 +61,18 @@ const RetroGroupPhase = (props: Props) => {
           iconPlacement="right"
           label={`Done! Let’s ${nextPhaseLabel}`}
           onClick={gotoNext}
+        />
+        <Button
+          buttonSize="medium"
+          buttonStyle="flat"
+          colorPalette="dark"
+          icon="magic"
+          iconLarge
+          iconPalette="midGray"
+          iconPlacement="left"
+          isBlock
+          label={'Auto Group'}
+          onClick={autoGroup}
         />
       </MeetingControlBar>
       }
