@@ -4,6 +4,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v1.8.0 2018-May-02
+# Added
+- Users now have a filter search control on My Dashboard #1887
+
+# Changed
+- Labels in the retro meeting: Group phase (Group was Theme), [Upvoted] Topic (Topic was Theme) #2041
+- Improves rotation of check-in questions based on team #1578
+
+## Fixed
+- Fixed vote count in retro summary email
+- Fixed false toast for not having web sockets #1955
+- Fixed false positive for firewall detection
+- Fixed logic for app upgrade without requiring refresh #2006
+- Fixed navigational issues with the new meeting type #2062 #2060 #1979
+- Trivial fix for suOrgCount query
+- Suppresses task involvement notifications during meetings #1659
+- Fixed archive bugs (card layout and scrolling to load) #1927 #1900
+
 ## v1.7.1 2018-Apr-26
 ## Fixed
 - Various retro bugs
@@ -11,14 +29,14 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
 ## v1.7.0 2018-Apr-25
-## Added 
+## Added
 - new signin logic
 - async emoji support in retros
 
 ### Fixed
 - email invitations
 - New meeting styles
- 
+
 ### Removed
 - Auth0-lock
 - Persisted redux state in local storage
