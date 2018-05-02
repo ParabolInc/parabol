@@ -69,7 +69,7 @@ const expectations = {
     const warningElement = await driver.findElement(By.css(warningElementSelector));
     await driver.wait(
       () => warningElement.getText().then((txt) => !!(txt.trim().length)),
-      waitTimes.short,
+      waitTimes.long,
       'Warning area did not display warning text'
     );
     const warningText = await warningElement.getText();
@@ -87,8 +87,8 @@ const expectations = {
   },
 
   shouldSeeHomepage: (driver) => async () => {
-    await driver.wait(until.urlMatches(/\//), waitTimes.short, 'Logging out did not redirect to signin page');
-    await driver.wait(until.titleMatches(/Sign In | Parabol/), waitTimes.short, 'Logging out did not redirect to the Parabol Homepage');
+    await driver.wait(until.urlMatches(/\//), waitTimes.long, 'Logging out did not redirect to signin page');
+    await driver.wait(until.titleMatches(/Sign In | Parabol/), waitTimes.long, 'Logging out did not redirect to the Parabol Homepage');
   }
 };
 
