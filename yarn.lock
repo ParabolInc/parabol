@@ -10674,9 +10674,9 @@ stylis@^3.3.2:
   version "3.4.9"
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.4.9.tgz#2e1403c06264bde8dbf1eb8fd82b2cfd1c4b31cc"
 
-"subscriptions-transport-ws@https://github.com/mattkrick/subscriptions-transport-ws/tarball/39100e7e6458a0831cd7c0f8cf0f12ea0482b399":
+"subscriptions-transport-ws@https://github.com/mattkrick/subscriptions-transport-ws/tarball/8eaa45976cbb01b03b3bf004c5595b571482f349":
   version "0.9.5"
-  resolved "https://github.com/mattkrick/subscriptions-transport-ws/tarball/39100e7e6458a0831cd7c0f8cf0f12ea0482b399#844fceb634edc9e9206c108f0e6235406f05d880"
+  resolved "https://github.com/mattkrick/subscriptions-transport-ws/tarball/8eaa45976cbb01b03b3bf004c5595b571482f349#220d1dc20c9885aa35926c80e48f504bd9bca376"
   dependencies:
     backo2 "^1.0.2"
     eventemitter3 "^2.0.3"
