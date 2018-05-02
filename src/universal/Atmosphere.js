@@ -4,8 +4,8 @@ import {Environment, Network, RecordSource, Store} from 'relay-runtime';
 import {APP_TOKEN_KEY, GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants';
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription';
 import EventEmitter from 'eventemitter3';
-import SafeSubscriptionClient from 'universal/utils/SafeSubscriptionClient';
 import handlerProvider from 'universal/utils/relay/handlerProvider';
+import {SubscriptionClient} from 'subscriptions-transport-ws/dist/index';
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err);
@@ -88,9 +88,8 @@ export default class Atmosphere extends Environment {
     }
     const wsProtocol = window.location.protocol.replace('http', 'ws');
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`;
-    const subscriptionClient = new SafeSubscriptionClient(url, {reconnect: true});
+    const subscriptionClient = new SubscriptionClient(url, {reconnect: true});
 
-    // this is dirty, but it'll go away when we move auth out of redux
     const {text: query, name: operationName} = NewAuthTokenSubscription().subscription();
     subscriptionClient.operations[NEW_AUTH_TOKEN] = {
       handler: (errors, payload) => {
