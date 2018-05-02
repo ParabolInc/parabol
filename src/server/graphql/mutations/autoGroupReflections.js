@@ -43,8 +43,17 @@ export default {
     }
 
     // RESOLUTION
-    const {autoGroupThreshold, groupedReflections, groups} = await groupReflections(meetingId, groupingThreshold);
+    const {
+      autoGroupThreshold,
+      groupedReflections,
+      groups,
+      inactivatedGroupIds,
+      nextThresh
+    } = await groupReflections(meetingId, groupingThreshold);
     await r({
+      inactivatedGroups: r.table('RetroReflectionGroup')
+        .getAll(r.args(inactivatedGroupIds), {index: 'id'})
+        .update({inactive: true}),
       groups: r.table('RetroReflectionGroup').insert(groups),
       reflections: r(groupedReflections).forEach((reflection) => {
         return r.table('RetroReflection')
@@ -60,7 +69,8 @@ export default {
       }),
       meeting: r.table('NewMeeting').get(meetingId)
         .update({
-          autoGroupThreshold
+          autoGroupThreshold,
+          nextAutoGroupThreshold: nextThresh
         })
     });
 

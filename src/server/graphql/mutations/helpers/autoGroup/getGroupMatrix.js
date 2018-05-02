@@ -22,7 +22,11 @@ const MAX_REDUCTION_PERCENT = 0.80;
 
 const traverseTree = (initialTree, groupingThreshold) => {
   const groups = [];
+  const distanceSet = new Set();
   const visit = (tree, group) => {
+    if (tree.dist) {
+      distanceSet.add(tree.dist);
+    }
     if (tree.value) {
       if (group) {
         group.push(tree.value);
@@ -40,27 +44,39 @@ const traverseTree = (initialTree, groupingThreshold) => {
     }
   };
   visit(initialTree);
-  return groups;
+  return {groups, distanceSet};
 };
 const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
   const clusters = clusterfck.hcluster(distanceMatrix, clusterfck.euclidean, 'average');
   const {tree} = clusters;
-  if (!tree) return {group: []};
-  let group;
+  if (!tree) return {groups: []};
+  let groups;
   let thresh = groupingThreshold;
+  let distancesArr;
   // naive logic to make sure the grouping is AOK
   for (let i = 0; i < 5; i++) {
-    group = traverseTree(tree, thresh);
-    const reduction = (distanceMatrix.length - group.length) / distanceMatrix.length;
+    const res = traverseTree(tree, thresh);
+    groups = res.groups;
+    ({groups} = res);
+    distancesArr = Array.from(res.distanceSet).sort();
+    const reduction = (distanceMatrix.length - groups.length) / distanceMatrix.length;
     if (reduction < MIN_REDUCTION_PERCENT) {
-      thresh += 0.09;
+      // eslint-disable-next-line no-loop-func
+      const nextDistance = distancesArr.find((d) => d > thresh);
+      if (!nextDistance) break;
+      thresh = Math.ceil(nextDistance * 100) / 100;
     } else if (reduction > MAX_REDUCTION_PERCENT) {
-      thresh -= 0.1;
+      // eslint-disable-next-line no-loop-func
+      const nextDistance = distancesArr.find((d) => d < thresh);
+      if (!nextDistance) break;
+      thresh = Math.floor(nextDistance * 100) / 100;
     } else {
       break;
     }
   }
-  return {thresh, group};
+  const nextDistance = distancesArr.find((d) => d > thresh);
+  const nextThresh = nextDistance ? Math.ceil(nextDistance * 100) / 100 : undefined;
+  return {thresh, groups, nextThresh};
 };
 
 export default getGroupMatrix;
