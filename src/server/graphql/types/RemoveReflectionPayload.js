@@ -1,8 +1,9 @@
-import {GraphQLObjectType} from 'graphql';
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
+import {GraphQLObjectType, GraphQLList, GraphQLNonNull} from 'graphql';
+import {makeResolve, resolveNewMeeting, resolveUnlockedStages} from 'server/graphql/resolvers';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 import NewMeeting from 'server/graphql/types/NewMeeting';
 import RetroReflection from 'server/graphql/types/RetroReflection';
+import NewMeetingStage from 'server/graphql/types/NewMeetingStage';
 
 const RemoveReflectionPayload = new GraphQLObjectType({
   name: 'RemoveReflectionPayload',
@@ -17,6 +18,11 @@ const RemoveReflectionPayload = new GraphQLObjectType({
     reflection: {
       type: RetroReflection,
       resolve: makeResolve('reflectionId', 'reflection', 'retroReflections')
+    },
+    unlockedStages: {
+      type: new GraphQLList(new GraphQLNonNull(NewMeetingStage)),
+      description: 'The stages that were unlocked by navigating',
+      resolve: resolveUnlockedStages
     }
   })
 });

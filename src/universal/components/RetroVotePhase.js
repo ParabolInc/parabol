@@ -19,10 +19,12 @@ type Props = {|
 
 const RetroVotePhase = (props: Props) => {
   const {atmosphere: {viewerId}, gotoNext, team} = props;
-  const {newMeeting, meetingSettings, teamMembers} = team;
-  const {facilitatorUserId, votesRemaining} = newMeeting || {};
-  const {phaseItems = [], totalVotes} = meetingSettings;
+  const {newMeeting, meetingSettings} = team;
+  const {facilitatorUserId, phases} = newMeeting || {};
+  const {phaseItems = []} = meetingSettings;
   const isFacilitating = facilitatorUserId === viewerId;
+  const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS);
+  const discussStage = discussPhase.stages[0];
   const nextPhaseLabel = phaseLabelLookup[DISCUSS];
   return (
     <React.Fragment>
@@ -39,7 +41,7 @@ const RetroVotePhase = (props: Props) => {
           buttonSize="medium"
           buttonStyle="flat"
           colorPalette="dark"
-          disabled={votesRemaining === totalVotes * teamMembers.length}
+          disabled={!discussStage.isNavigableByFacilitator}
           icon="arrow-circle-right"
           iconLarge
           iconPalette="warm"
@@ -62,12 +64,21 @@ export default createFragmentContainer(
         facilitatorUserId
         ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
-          votesRemaining
+          phases {
+            phaseType
+            ... on DiscussPhase {
+              stages {
+                ... on RetroDiscussStage {
+                  id
+                  isNavigableByFacilitator
+                }
+              }
+            }
+          }
         }
       }
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
-          totalVotes
           phaseItems {
             ... on RetroPhaseItem {
               id
@@ -76,9 +87,6 @@ export default createFragmentContainer(
           }
         }
       }
-    teamMembers(sortBy: "checkInOrder") {
-      id
-    }
     }
   `
 );

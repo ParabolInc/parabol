@@ -1686,6 +1686,8 @@ export type CreateReflectionPayload = {
   reflection: ?RetroReflection;
   /** The group automatically created for the reflection */
   reflectionGroup: ?RetroReflectionGroup;
+  /** The stages that were unlocked by navigating */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type CreateReflectionGroupPayload = {
@@ -1880,6 +1882,8 @@ export type NavigateMeetingPayload = {
   oldFacilitatorStage: ?NewMeetingStage;
   /** Additional details triggered by completing certain phases */
   phaseComplete: ?PhaseCompletePayload;
+  /** The stages that were unlocked by navigating */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type PhaseCompletePayload = {
@@ -2039,6 +2043,8 @@ export type RemoveReflectionPayload = {
   error: ?StandardMutationError;
   meeting: ?NewMeeting;
   reflection: ?RetroReflection;
+  /** The stages that were unlocked by navigating */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type RemoveTeamMemberPayload = {
@@ -2233,8 +2239,10 @@ export type UpdateUserProfilePayload = {
 export type VoteForReflectionGroupPayload = {
   error: ?StandardMutationError;
   meeting: ?RetrospectiveMeeting;
-  reflectionGroup: ?RetroReflectionGroup;
   meetingMember: ?RetrospectiveMeetingMember;
+  reflectionGroup: ?RetroReflectionGroup;
+  /** The stages that were locked or unlocked by having at least 1 vote */
+  unlockedStages: ?Array<NewMeetingStage>;
 }
 
 export type LoginPayload = {
@@ -2347,6 +2355,10 @@ export type CheckInStage = {
   meeting: ?NewMeeting;
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
   isComplete: ?boolean;
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean;
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean;
   /** The phase this stage belongs to */
   phase: ?NewMeetingPhase;
   /** The type of the phase */
@@ -2397,6 +2409,10 @@ export type GenericMeetingStage = {
   meeting: ?NewMeeting;
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
   isComplete: ?boolean;
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean;
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean;
   /** The phase this stage belongs to */
   phase: ?NewMeetingPhase;
   /** The type of the phase */
@@ -2432,6 +2448,10 @@ export type RetroDiscussStage = {
   meeting: ?NewMeeting;
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
   isComplete: ?boolean;
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean;
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean;
   /** The phase this stage belongs to */
   phase: ?NewMeetingPhase;
   /** The type of the phase */

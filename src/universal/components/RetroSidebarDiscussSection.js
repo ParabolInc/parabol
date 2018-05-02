@@ -8,7 +8,6 @@ import ui from 'universal/styles/ui';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem';
 import {LabelHeading} from 'universal/components';
-import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from 'universal/utils/constants';
 import plural from 'universal/utils/plural';
 
@@ -33,7 +32,7 @@ const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {gotoStageId, viewer: {team: {newMeeting}}} = props;
-  const {localPhase, localStage, facilitatorStageId, phases = []} = newMeeting || {};
+  const {localPhase, localStage, facilitatorStageId} = newMeeting || {};
   if (!localPhase || !localPhase.stages || !localStage) return null;
   const {stages} = localPhase;
   const {localStageId} = localStage;
@@ -53,7 +52,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         const navState = {
           isActive: localStage.localStageId === stage.id, // the local user is at this stage
           isComplete: stage.isComplete, // this stage is complete
-          isDisabled: !getIsNavigable(false, phases, stage.id),
+          isDisabled: !stage.isNavigable,
           isUnsyncedFacilitatorStage
         };
         const voteMeta = (
@@ -91,13 +90,11 @@ export default createFragmentContainer(
             facilitatorStageId
             # load up the localPhase
             phases {
-              stages {
-                id
-                isComplete
-              }
               ... on DiscussPhase {
                 stages {
                   id
+                  isComplete
+                  isNavigable
                   reflectionGroup {
                     title
                     voteCount
@@ -110,6 +107,7 @@ export default createFragmentContainer(
                 stages {
                   id
                   isComplete
+                  isNavigable
                   reflectionGroup {
                     title
                     voteCount

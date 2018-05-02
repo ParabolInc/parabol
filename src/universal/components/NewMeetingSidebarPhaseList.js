@@ -8,7 +8,6 @@ import {withRouter} from 'react-router-dom';
 import {phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups';
 import type {NewMeetingSidebarPhaseList_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseList_viewer.graphql';
 import findStageById from 'universal/utils/meetings/findStageById';
-import getIsNavigable from 'universal/utils/meetings/getIsNavigable';
 import NewMeetingSidebarPhaseListItemChildren from 'universal/components/NewMeetingSidebarPhaseListItemChildren';
 
 const NavList = styled('ul')({
@@ -48,9 +47,9 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
       {phaseTypes
         .map((phaseType, idx) => {
           const itemStage = getItemStage(phaseType, phases, facilitatorStageId);
-          const itemStageId = itemStage && itemStage.id || '';
-          const isNavigable = getIsNavigable(isViewerFacilitator, phases, itemStageId);
-          const handleClick = isNavigable ? () => gotoStageId(itemStageId) : undefined;
+          const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} = itemStage || {};
+          const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
+          const handleClick = canNavigate ? () => gotoStageId(itemStageId) : undefined;
           // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
           const activeHasSubItems = phaseType === DISCUSS || phaseType === AGENDA_ITEMS;
           return (
@@ -91,6 +90,8 @@ export default createFragmentContainer(
             stages {
               id
               isComplete
+              isNavigable
+              isNavigableByFacilitator
             }
           }
         }

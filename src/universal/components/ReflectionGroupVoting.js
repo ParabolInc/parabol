@@ -11,6 +11,7 @@ import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import ui from 'universal/styles/ui';
 import StyledError from 'universal/components/StyledError';
+import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation';
 
 const {Component} = React;
 
@@ -45,12 +46,14 @@ class ReflectionGroupVoting extends Component<Props> {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props;
     const {meetingId, viewerMeetingMember: {isCheckedIn}} = meeting;
     const {reflectionGroupId} = reflectionGroup;
-    if (!isCheckedIn) {
-      onError({message: 'You must be checked in in order to vote'});
-      return;
-    }
     submitMutation();
-    VoteForReflectionGroupMutation(atmosphere, {reflectionGroupId}, {meetingId}, onError, onCompleted);
+    const sendVote = () => VoteForReflectionGroupMutation(atmosphere, {reflectionGroupId}, {meetingId}, onError, onCompleted);
+    if (!isCheckedIn) {
+      const {viewerId: userId} = atmosphere;
+      NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: true}, onError, sendVote);
+    } else {
+      sendVote();
+    }
   };
 
   unvote = () => {

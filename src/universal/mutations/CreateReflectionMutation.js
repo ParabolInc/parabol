@@ -21,6 +21,10 @@ graphql`
         id
       }
     }
+    unlockedStages {
+      id
+      isNavigableByFacilitator
+    }
   }
 `;
 

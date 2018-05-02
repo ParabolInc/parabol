@@ -5,9 +5,10 @@ import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import {sendNotMeetingFacilitatorError} from 'server/utils/authorizationErrors';
 import NavigateMeetingPayload from 'server/graphql/types/NavigateMeetingPayload';
-import {sendMeetingNotFoundError, sendStageNotFoundError} from 'server/utils/docNotFoundErrors';
+import {sendMeetingNotFoundError, sendStageNotFoundError, sendStageNotUnlockedError} from 'server/utils/docNotFoundErrors';
 import findStageById from 'universal/utils/meetings/findStageById';
 import handleCompletedStage from 'server/graphql/mutations/helpers/handleCompletedStage';
+import unlockNextStages from 'server/graphql/mutations/helpers/unlockNextStages';
 
 export default {
   type: NavigateMeetingPayload,
@@ -43,10 +44,12 @@ export default {
 
     // VALIDATION
     let phaseCompleteData;
+    let unlockedStageIds;
     if (completedStageId) {
       const completedStageRes = findStageById(phases, completedStageId);
       if (!completedStageRes) return sendStageNotFoundError(authToken, completedStageId);
       const {stage} = completedStageRes;
+      if (!stage.isNavigableByFacilitator) return sendStageNotUnlockedError(authToken, completedStageId);
       if (!stage.isComplete) {
         // MUTATIVE
         stage.isComplete = true;
@@ -59,9 +62,14 @@ export default {
       const facilitatorStageRes = findStageById(phases, facilitatorStageId);
       if (!facilitatorStageRes) return sendStageNotFoundError(authToken, facilitatorStageId);
       const {stage: facilitatorStage} = facilitatorStageRes;
+      if (!facilitatorStage.isNavigableByFacilitator) return sendStageNotUnlockedError(authToken, facilitatorStageId);
+
       // mutative
       facilitatorStage.startAt = facilitatorStage.startAt || now;
       facilitatorStage.viewCount = facilitatorStage.viewCount ? facilitatorStage.viewCount + 1 : 1;
+
+      // mutative! sets isNavigable and isNavigableByFacilitator
+      unlockedStageIds = await unlockNextStages(facilitatorStageId, phases, meetingId);
     }
 
     // RESOLUTION
@@ -72,7 +80,7 @@ export default {
         updatedAt: now
       }, {returnChanges: true})('changes')(0)('old_val')('facilitatorStageId');
 
-    const data = {meetingId, oldFacilitatorStageId, facilitatorStageId, ...phaseCompleteData};
+    const data = {meetingId, oldFacilitatorStageId, facilitatorStageId, unlockedStageIds, ...phaseCompleteData};
     publish(TEAM, teamId, NavigateMeetingPayload, data, subOptions);
     return data;
   }
