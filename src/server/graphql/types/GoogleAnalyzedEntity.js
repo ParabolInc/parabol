@@ -4,8 +4,8 @@ const GoogleAnalyzedEntity = new GraphQLObjectType({
   name: 'GoogleAnalyzedEntity',
   fields: () => ({
     lemma: {
-      type: GraphQLString,
-      description: 'The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural. Only present if different'
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.'
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),

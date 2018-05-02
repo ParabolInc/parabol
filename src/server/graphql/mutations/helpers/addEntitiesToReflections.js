@@ -33,10 +33,10 @@ const addEntitiesToReflections = async (meetingId) => {
   // run a distance matrix on the lemma
   // sanitize reflection responses, nulling out anything without a full response tree
   const sanitizedReflectionResponses = reflectionResponses.map(sanitizeAnalyzedEntitiesResponse);
-  const responsesWithLemma = sanitizedReflectionResponses.map((response, idx) => addLemmaToEntities(response, reflectionSyntax[idx]))
+  const responsesWithLemma = sanitizedReflectionResponses.map((response, idx) => addLemmaToEntities(response, reflectionSyntax[idx]));
   const nextReflections = reflections.map((reflection, idx) => ({
     id: reflection.id,
-    entities: sanitizedReflectionResponses[idx]
+    entities: responsesWithLemma[idx]
   }));
 
   return r(nextReflections).forEach((reflection) => {
