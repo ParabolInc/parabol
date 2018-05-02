@@ -58,6 +58,6 @@ export default {
       ))
       .map((org) => org('orgUsers').count())
       .filter((c) => c.ge(minOrgSize))
-      .sum();
+      .count();
   }
 };
