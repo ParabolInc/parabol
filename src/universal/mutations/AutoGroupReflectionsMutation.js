@@ -4,9 +4,9 @@ graphql`
   fragment AutoGroupReflectionsMutation_team on AutoGroupReflectionsPayload {
     meeting {
       id
+      nextAutoGroupThreshold
       reflectionGroups {
-        id
-        title
+        ...CompleteReflectionGroupFrag @relay(mask: false)
         reflections {
           id
           reflectionGroupId

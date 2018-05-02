@@ -15,21 +15,21 @@ const groupReflections = async (meetingId, groupingThreshold) => {
   // get reflections
   const r = getRethink();
   const reflections = await r.table('RetroReflection')
-    .getAll(meetingId, {index: meetingId})
+    .getAll(meetingId, {index: 'meetingId'})
     .filter({isActive: true});
 
   const allReflectionEntities = reflections.map(({entities}) => entities);
-
+  const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId);
   // create a unique array of all entity names mentioned in the meeting's reflect phase
   const entityNameArr = getEntityNameArrFromResponses(allReflectionEntities);
 
   // create a distance vector for each reflection
   const distanceMatrix = computeDistanceMatrix(allReflectionEntities, entityNameArr);
-  const {group: groupedArrays, thresh} = getGroupMatrix(distanceMatrix, groupingThreshold);
+  const {groups: groupedArrays, thresh, nextThresh} = getGroupMatrix(distanceMatrix, groupingThreshold);
 
   // replace the arrays with reflections
   const updatedReflections = [];
-  const newGroups = groupedArrays.map((group) => {
+  const newGroups = groupedArrays.map((group, sortOrder) => {
     const reflectionGroupId = shortid.generate();
     // look up the reflection by its vector
     const groupedReflections = group.map((reflectionDistanceArr) => {
@@ -49,6 +49,7 @@ const groupReflections = async (meetingId, groupingThreshold) => {
       isActive: true,
       meetingId,
       smartTitle,
+      sortOrder,
       title: smartTitle,
       updatedAt: now,
       voterIds: [],
@@ -58,7 +59,9 @@ const groupReflections = async (meetingId, groupingThreshold) => {
   return {
     autoGroupThreshold: thresh,
     groups: newGroups,
-    groupedReflections: updatedReflections
+    groupedReflections: updatedReflections,
+    inactivatedGroupIds: oldReflectionGroupIds,
+    nextThresh
   };
 };
 

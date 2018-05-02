@@ -31,14 +31,16 @@ const RetroGroupPhase = (props: Props) => {
   const {atmosphere, error, gotoNext, onError, onCompleted, submitMutation, team} = props;
   const {viewerId} = atmosphere;
   const {newMeeting, meetingSettings} = team;
-  const {facilitatorUserId, meetingId} = newMeeting || {};
+  const {nextAutoGroupThreshold, facilitatorUserId, meetingId} = newMeeting || {};
   const phaseItems = meetingSettings.phaseItems || [];
   const isFacilitating = facilitatorUserId === viewerId;
   const nextPhaseLabel = phaseLabelLookup[VOTE];
   const autoGroup = () => {
     submitMutation();
-    AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold: 0.5}, onError, onCompleted);
+    const groupingThreshold = nextAutoGroupThreshold || 0.5;
+    AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted);
   };
+  const canAutoGroup = !nextAutoGroupThreshold || nextAutoGroupThreshold < 1;
   return (
     <React.Fragment>
       <ScrollableBlock>
@@ -62,6 +64,7 @@ const RetroGroupPhase = (props: Props) => {
           label={`Done! Let’s ${nextPhaseLabel}`}
           onClick={gotoNext}
         />
+        {canAutoGroup &&
         <Button
           buttonSize="medium"
           buttonStyle="flat"
@@ -74,6 +77,7 @@ const RetroGroupPhase = (props: Props) => {
           label={'Auto Group'}
           onClick={autoGroup}
         />
+        }
       </MeetingControlBar>
       }
     </React.Fragment>
@@ -89,6 +93,7 @@ export default createFragmentContainer(
         facilitatorUserId
         ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
+          nextAutoGroupThreshold
           reflectionGroups {
             id
             meetingId
