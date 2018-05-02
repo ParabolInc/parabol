@@ -20,6 +20,8 @@ const query = graphql`
 const UserDashRoot = ({atmosphere}) => {
   return (
     <QueryRenderer
+      // FIXME remove when relay merges PR https://github.com/facebook/relay/pull/2416
+      dataFrom={'NETWORK_ONLY'}
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}

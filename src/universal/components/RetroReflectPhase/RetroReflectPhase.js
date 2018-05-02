@@ -10,7 +10,8 @@ import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemCol
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {Button} from 'universal/components';
-import {REFLECT} from 'universal/utils/constants';
+import {REFLECT, GROUP} from 'universal/utils/constants';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
 
@@ -26,6 +27,7 @@ const RetroReflectPhase = (props: Props) => {
   const {facilitatorUserId, localPhase: {phaseType}, reflectionGroups} = newMeeting || {};
   const phaseItems = meetingSettings.phaseItems || [];
   const isFacilitating = facilitatorUserId === viewerId;
+  const nextPhaseLabel = phaseLabelLookup[GROUP];
   return (
     <React.Fragment>
       <ScrollableBlock>
@@ -47,7 +49,7 @@ const RetroReflectPhase = (props: Props) => {
           iconLarge
           iconPalette="warm"
           iconPlacement="right"
-          label={'Done! Let’s Theme'}
+          label={`Done! Let’s ${nextPhaseLabel}`}
           onClick={gotoNext}
         />
       </MeetingControlBar>

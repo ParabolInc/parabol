@@ -12,6 +12,10 @@ extend type Team {
   contentFilter: String
 }
 
+extend type User {
+  contentFilter: String
+}
+
 extend type Task {
   contentText: String
 }

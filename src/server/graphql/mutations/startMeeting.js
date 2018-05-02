@@ -7,7 +7,6 @@ import publish from 'server/utils/publish';
 import shortid from 'shortid';
 import {CHECKIN, TEAM} from 'universal/utils/constants';
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
-import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
@@ -39,11 +38,15 @@ export default {
 
     const now = new Date();
     const meetingId = shortid.generate();
-    const week = getWeekOfYear(now);
+    const meetingCount = await r.table('Meeting')
+      .getAll(teamId, {index: 'teamId'})
+      .count()
+      .default(0)
+      .add(1);
 
     const updatedTeam = {
-      checkInGreeting: makeCheckinGreeting(week, teamId),
-      checkInQuestion: convertToTaskContent(makeCheckinQuestion(week, teamId)),
+      checkInGreeting: makeCheckinGreeting(meetingCount, teamId),
+      checkInQuestion: convertToTaskContent(makeCheckinQuestion(meetingCount, teamId)),
       meetingId,
       activeFacilitator: facilitatorId,
       facilitatorPhase: CHECKIN,
@@ -56,10 +59,7 @@ export default {
       meeting: r.table('Meeting').insert({
         id: meetingId,
         createdAt: now,
-        meetingNumber: r.table('Meeting')
-          .getAll(teamId, {index: 'teamId'})
-          .count()
-          .add(1),
+        meetingNumber: meetingCount,
         teamId,
         teamName: r.table('Team').get(teamId)('name')
       })

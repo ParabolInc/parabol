@@ -20,6 +20,5 @@
 
 export default {
   // The single-page embedded signin
-  newSignIn: true,
-  userDashFilter: false
+  newSignIn: true
 };
