@@ -8,7 +8,7 @@ import expect from 'expect';
 import {By, until} from 'selenium-webdriver';
 import shortid from 'shortid';
 import sleep from '../../src/universal/utils/sleep';
-import {all, newUserSession, waitTimes} from '../lib';
+import {newUserSession, waitTimes} from '../lib';
 
 const BASE_URL = global.E2E_APP_SERVER_URL;
 
@@ -69,7 +69,7 @@ const expectations = {
     const warningElement = await driver.findElement(By.css(warningElementSelector));
     await driver.wait(
       () => warningElement.getText().then((txt) => !!(txt.trim().length)),
-      waitTimes.long,
+      waitTimes.short,
       'Warning area did not display warning text'
     );
     const warningText = await warningElement.getText();
@@ -87,8 +87,8 @@ const expectations = {
   },
 
   shouldSeeHomepage: (driver) => async () => {
-    await driver.wait(until.urlMatches(/\//), waitTimes.long, 'Logging out did not redirect to signin page');
-    await driver.wait(until.titleMatches(/Sign In | Parabol/), waitTimes.long, 'Logging out did not redirect to the Parabol Homepage');
+    await driver.wait(until.urlMatches(/\//), waitTimes.short, 'Logging out did not redirect to signin page');
+    await driver.wait(until.titleMatches(/Sign In | Parabol/), waitTimes.short, 'Logging out did not redirect to the Parabol Homepage');
   }
 };
 
