@@ -15,6 +15,9 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from 'universal/utils/constants';
+import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import {withRouter} from 'react-router';
 
 class MeetingAgendaItems extends Component {
   state = {agendaTasks: []};
@@ -46,6 +49,8 @@ class MeetingAgendaItems extends Component {
 
   render() {
     const {
+      atmosphere,
+      history,
       facilitatorName,
       gotoNext,
       hideMoveMeetingControls,
@@ -55,11 +60,14 @@ class MeetingAgendaItems extends Component {
       viewer: {team}
     } = this.props;
     const {agendaTasks} = this.state;
-    const {agendaItems, teamMembers} = team;
+    const {agendaItems, id: teamId, teamMembers} = team;
     const agendaItem = agendaItems[localPhaseItem - 1];
     const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
     const isLast = agendaItems.length === localPhaseItem;
     const subHeading = (<span><b>{currentTeamMember.preferredName}</b>{', what do you need?'}</span>);
+    const endMeeting = () => {
+      EndMeetingMutation(atmosphere, teamId, history);
+    };
     return (
       <MeetingMain hasHelpFor={AGENDA_ITEMS} isFacilitating={showMoveMeetingControls}>
         <MeetingSection flexToFill paddingBottom="2rem">
@@ -106,6 +114,17 @@ class MeetingAgendaItems extends Component {
                 onClick={gotoNext}
               />
             </BounceBlock>
+            <Button
+              buttonSize="medium"
+              buttonStyle="flat"
+              colorPalette="dark"
+              icon="flag-checkered"
+              iconLarge
+              iconPalette="midGray"
+              iconPlacement="left"
+              label={'End Meeting'}
+              onClick={endMeeting}
+            />
           </MeetingControlBar>
         }
       </MeetingMain>
@@ -114,8 +133,10 @@ class MeetingAgendaItems extends Component {
 }
 
 MeetingAgendaItems.propTypes = {
+  atmosphere: PropTypes.object.isRequired,
   facilitatorName: PropTypes.string.isRequired,
   gotoNext: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
   hideMoveMeetingControls: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   showMoveMeetingControls: PropTypes.bool,
@@ -157,7 +178,7 @@ const styleThunk = () => ({
 });
 
 export default createFragmentContainer(
-  withStyles(styleThunk)(MeetingAgendaItems),
+  withAtmosphere(withRouter(withStyles(styleThunk)(MeetingAgendaItems))),
   graphql`
     fragment MeetingAgendaItems_viewer on User {
       team(teamId: $teamId) {
