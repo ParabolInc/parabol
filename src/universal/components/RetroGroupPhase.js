@@ -15,6 +15,8 @@ import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledError from 'universal/components/StyledError';
+import {VOTE} from 'universal/utils/constants';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 
 type Props = {
   atmosphere: Object,
@@ -30,6 +32,7 @@ const RetroGroupPhase = (props: Props) => {
   const {facilitatorUserId} = newMeeting || {};
   const phaseItems = meetingSettings.phaseItems || [];
   const isFacilitating = facilitatorUserId === viewerId;
+  const nextPhaseLabel = phaseLabelLookup[VOTE];
   return (
     <React.Fragment>
       <ScrollableBlock>
@@ -50,7 +53,7 @@ const RetroGroupPhase = (props: Props) => {
           iconLarge
           iconPalette="warm"
           iconPlacement="right"
-          label={'Done! Let’s Vote'}
+          label={`Done! Let’s ${nextPhaseLabel}`}
           onClick={gotoNext}
         />
       </MeetingControlBar>
