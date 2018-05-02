@@ -24,14 +24,15 @@ const getRetroMeeting = (meetingId) => {
       reflectionGroups: r.table('RetroReflectionGroup')
         .getAll(meetingId, {index: 'meetingId'})
         .filter({isActive: true})
-        .filter((group) => group('voterIds').count().ge(1))
-        .orderBy(r.desc('voterIds'))
         .merge((reflectionGroup) => ({
           reflections: r.table('RetroReflection')
             .getAll(reflectionGroup('id'), {index: 'reflectionGroupId'})
             .filter({isActive: true})
-            .coerceTo('array')
+            .coerceTo('array'),
+          voteCount: reflectionGroup('voterIds').count().default(0)
         }))
+        .filter((group) => group('voteCount').ge(1))
+        .orderBy(r.desc('voteCount'))
         .coerceTo('array')
     }));
 };
