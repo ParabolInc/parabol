@@ -73,7 +73,6 @@ const RetroGroupPhase = (props: Props) => {
           iconLarge
           iconPalette="midGray"
           iconPlacement="left"
-          isBlock
           label={'Auto Group'}
           onClick={autoGroup}
         />
