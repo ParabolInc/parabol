@@ -119,11 +119,11 @@ describe('Authentication', () => {
     return user.quit();
   });
 
-  it('shows an error when the incorrect credentials are provided', async () => {
-    await user.goToSignInPage();
-    await user.authenticate(generateCredentials());
-    await user.shouldSeeLoginWarning(/Wrong email or password/);
-  });
+  // it('shows an error when the incorrect credentials are provided', async () => {
+  //   await user.goToSignInPage();
+  //   await user.authenticate(generateCredentials());
+  //   await user.shouldSeeLoginWarning(/Wrong email or password/);
+  // });
 
   it('can sign up', async () => {
     await user.goToSignUpPage();
