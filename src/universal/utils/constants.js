@@ -6,22 +6,8 @@ import ms from 'ms';
 export const APP_CDN_USER_ASSET_SUBDIR = '/store';
 export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024;
 export const APP_NAME = 'Action';
-export const APP_REDUX_KEY = `${APP_NAME}:redux`;
-
-/**
- * Upgrade pending states, called when the server version changes.
- * Must be a string:
- *
- *    APP_UPGRADE_PENDING_FALSE: no upgrade needed
- *   APP_UPGRADE_PENDING_RELOAD: client reload needed
- *     APP_UPGRADE_PENDING_DONE: upgrade complete
- *
- * Stored in localSession by APP_UPGRADE_PENDING_KEY.
- */
 
 export const APP_TOKEN_KEY = `${APP_NAME}:token`;
-export const APP_UPGRADE_PENDING_KEY = `${APP_NAME}:upgradePending`;
-export const APP_UPGRADE_PENDING_RELOAD = 'reload';
 export const APP_VERSION_KEY = `${APP_NAME}:version`; // in localStorage
 export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
 
