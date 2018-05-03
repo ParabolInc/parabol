@@ -48,7 +48,8 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 };
 
 const EditingStatus = (props) => {
-  const {atmosphere: {userId: myUserId}, handleClick, task: {editors}, timestamp, timestampType, styles} = props;
+  const {atmosphere: {userId: myUserId}, handleClick, task, timestamp, timestampType} = props;
+  const {editors} = task;
   const otherEditors = editors.filter((editor) => editor.userId !== myUserId);
   const isEditing = editors.length > otherEditors.length;
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated';
@@ -57,7 +58,7 @@ const EditingStatus = (props) => {
       <EditingText isEditing={isEditing} onClick={handleClick} title={title}>
       {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
       </EditingText>
-      <DueDateToggle />
+      <DueDateToggle task={task}/>
     </StatusHeader>
   );
 };
@@ -79,5 +80,6 @@ export default createFragmentContainer(
         userId
         preferredName
       }
+      ...DueDatePicker_task
     }`
 );

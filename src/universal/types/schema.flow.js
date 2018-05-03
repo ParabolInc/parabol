@@ -216,6 +216,8 @@ export type Task = {
   createdAt: ?any;
   /** The userId that created the task */
   createdBy: ?string;
+  /** a user-defined due date */
+  dueDate: ?any;
   /** a list of users currently editing the task (fed by a subscription, so queries return null) */
   editors: ?Array<TaskEditorDetails>;
   integration: ?GitHubTask;
@@ -1115,6 +1117,8 @@ export type Mutation = {
   updateReflectionLocation: ?UpdateReflectionLocationPayload;
   /** Update a task with a change in content, ownership, or status */
   updateTask: ?UpdateTaskPayload;
+  /** Set or unset the due date of a task */
+  updateTaskDueDate: ?UpdateTaskDueDatePayload;
   updateTeamName: ?UpdateTeamNamePayload;
   updateUserProfile: ?UpdateUserProfilePayload;
   /** Cast your vote for a reflection group */
@@ -2209,6 +2213,11 @@ export type UpdateTaskPayload = {
   removedNotification: ?NotifyTaskInvolves;
 }
 
+export type UpdateTaskDueDatePayload = {
+  error: ?StandardMutationError;
+  task: ?Task;
+}
+
 export type UpdatedTeamInput = {
   id: ?string;
   /** The name of the team */
@@ -2312,7 +2321,7 @@ export type SetOrgUserRoleRemovedPayload = {
   notificationsRemoved: ?Array<OrganizationNotification>;
 }
 
-export type TaskSubscriptionPayload = AcceptTeamInvitePayload | CancelApprovalPayload | CancelTeamInvitePayload | ChangeTaskTeamPayload | CreateGitHubIssuePayload | CreateTaskPayload | DeleteTaskPayload | EditTaskPayload | EndMeetingPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | RemoveTeamMemberPayload | UpdateTaskPayload;
+export type TaskSubscriptionPayload = AcceptTeamInvitePayload | CancelApprovalPayload | CancelTeamInvitePayload | ChangeTaskTeamPayload | CreateGitHubIssuePayload | CreateTaskPayload | DeleteTaskPayload | EditTaskPayload | EndMeetingPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | RemoveTeamMemberPayload | UpdateTaskPayload | UpdateTaskDueDatePayload;
 
 export type AddProviderPayload = {
   providerRow: ProviderRow;
