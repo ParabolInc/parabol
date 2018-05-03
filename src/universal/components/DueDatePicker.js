@@ -1,13 +1,14 @@
 // @flow
 import * as React from 'react';
 import DayPicker from 'react-day-picker';
-import 'react-day-picker/lib/style.css';
+import 'universal/styles/daypicker.css';
 import UpdateTaskDueDateMutation from 'universal/mutations/UpdateTaskDueDateMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {createFragmentContainer} from 'react-relay';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import {DueDatePicker_task as Task} from './__generated__/DueDatePicker_task.graphql';
+import styled from 'react-emotion';
 
 type Props = {|
   Atmosphere: Object,
@@ -15,6 +16,10 @@ type Props = {|
   ...MutationProps
 |}
 
+const PickerTitle = styled('div')({
+  width: '100%',
+  textAlign: 'center'
+});
 class DueDatePicker extends React.Component<Props> {
   handleDayClick = (day, {selected}) => {
     const {atmosphere, closePortal, task: {taskId}, submitMutation, onCompleted, onError} = this.props;
@@ -26,13 +31,15 @@ class DueDatePicker extends React.Component<Props> {
 
   render() {
     const {task: {dueDate}} = this.props;
-    console.log(this.props.task)
     const selectedDate = dueDate && new Date(dueDate);
     return (
-      <DayPicker onDayClick={this.handleDayClick} selectedDays={selectedDate} />
+      <React.Fragment>
+        <PickerTitle>Change Due Date</PickerTitle>
+        <DayPicker onDayClick={this.handleDayClick} selectedDays={selectedDate} />
+      </React.Fragment>
     );
   }
-};
+}
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(DueDatePicker)),

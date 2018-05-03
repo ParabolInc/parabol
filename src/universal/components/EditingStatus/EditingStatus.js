@@ -57,9 +57,9 @@ const EditingStatus = (props) => {
   return (
     <StatusHeader>
       <EditingText isEditing={isEditing} onClick={handleClick} title={title}>
-      {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
+        {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
       </EditingText>
-      <DueDateToggle task={task}/>
+      <DueDateToggle task={task} />
     </StatusHeader>
   );
 };

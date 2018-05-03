@@ -6,6 +6,7 @@ const domProps = [
 ];
 const propSet = new Set([...Object.keys(FontAwesome.propTypes), ...domProps]);
 
+// eslint-disable-next-line react/prefer-stateless-function
 class StyledFontAwesome extends React.Component {
   render() {
     const goodProps = {};
@@ -16,6 +17,6 @@ class StyledFontAwesome extends React.Component {
     });
     return <FontAwesome {...goodProps} />;
   }
-};
+}
 
 export default StyledFontAwesome;

@@ -10,15 +10,16 @@ import {shortMonths} from 'universal/utils/makeDateString';
 const Toggle = styled('div')(
   {
     alignItems: 'center',
+    cursor: 'pointer'
   },
   ({dueDate}) => ({
     color: dueDate && 'red',
-    backgroundColor: dueDate && 'rgba(255,0,0, 0.2)',
+    backgroundColor: dueDate && 'rgba(255,0,0, 0.2)'
   })
 );
 
 const DateString = styled('span')({
-  marginLeft: '0.25rem',
+  marginLeft: '0.25rem'
 });
 
 const originAnchor = {
@@ -43,31 +44,29 @@ const formatDueDate = (dueDate) => {
   return `${monthStr} ${day}`;
 };
 
-class DueDateToggle extends React.Component<Props> {
-  render() {
-    const {task} = this.props;
-    const {dueDate} = task;
-    const toggle = (
-      <Toggle dueDate={dueDate}>
-        <FontAwesome name="clock-o" />
-        {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
-      </Toggle>
-    )
-    return (
-      <LoadableMenu
-        LoadableComponent={LoadableDueDatePicker}
-        maxWidth={350}
-        maxHeight={300}
-        originAnchor={originAnchor}
-        queryVars={{
-          task
-        }}
-        targetAnchor={targetAnchor}
-        toggle={toggle}
-      />
-    )
-  }
-};
+const DueDateToggle = (props: Props) => {
+  const {task} = props;
+  const {dueDate} = task;
+  const toggle = (
+    <Toggle dueDate={dueDate}>
+      <FontAwesome name="clock-o" />
+      {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
+    </Toggle>
+  );
+  return (
+    <LoadableMenu
+      LoadableComponent={LoadableDueDatePicker}
+      maxWidth={350}
+      maxHeight={300}
+      originAnchor={originAnchor}
+      queryVars={{
+        task
+      }}
+      targetAnchor={targetAnchor}
+      toggle={toggle}
+    />
+  );
+}
 
 export default createFragmentContainer(
   DueDateToggle,
