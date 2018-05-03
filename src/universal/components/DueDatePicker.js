@@ -17,10 +17,11 @@ type Props = {|
 
 class DueDatePicker extends React.Component<Props> {
   handleDayClick = (day, {selected}) => {
-    const {atmosphere, task: {taskId}, submitMutation, onCompleted, onError} = this.props;
+    const {atmosphere, closePortal, task: {taskId}, submitMutation, onCompleted, onError} = this.props;
     submitMutation();
     const dueDate = selected ? null : day;
     UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, onCompleted, onError);
+    closePortal();
   };
 
   render() {

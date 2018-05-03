@@ -15,6 +15,7 @@ const StatusHeader = styled('div')({
   display: 'flex',
   fontSize: ui.cardEditingStatusFontSize,
   fontWeight: 400,
+  justifyContent: 'space-between',
   lineHeight: ui.cardEditingStatusLineHeight,
   padding: `.25rem ${ui.cardPaddingBase}`,
   textAlign: 'left'
@@ -80,6 +81,6 @@ export default createFragmentContainer(
         userId
         preferredName
       }
-      ...DueDatePicker_task
+      ...DueDateToggle_task
     }`
 );
