@@ -217,7 +217,8 @@ class TeamSettings extends Component {
     // TODO: upgrade UX
     const isBillingLeader = true;
     const isPersonal = true;
-    const showUpgradeCTA = isBillingLeader && isPersonal;
+    // const showUpgradeCTA = isBillingLeader && isPersonal;
+    const showUpgradeCTA = false; // TODO wire this up later
     const upgradeButtonLabel = <span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>;
 
     return (
