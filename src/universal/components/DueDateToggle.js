@@ -75,17 +75,23 @@ const DueDateToggle = (props: Props) => {
   const dateDiff = dueDate && getDateDiff(dueDate);
   const isDueSoon =  dueDate && dateDiff > -1 && dateDiff < 2;
   const isPastDue =  dueDate && dateDiff < 0;
+  const dateString = formatDueDate(dueDate);
+  const title = ['Add a due date'];
+  const action = 'tap to change';
+  if (dueDate) title.push(`Due ${dateString}, ${action}`);
+  if (isDueSoon) title.push(`Due soon, ${action}`);
+  if (isPastDue) title.push(`Past due, ${action}`);
   const toggle = (
-    <Toggle dueDate={dueDate} isDueSoon={isDueSoon} isPastDue={isPastDue}>
+    <Toggle dueDate={dueDate} isDueSoon={isDueSoon} isPastDue={isPastDue} title={title.pop()}>
       <DueDateIcon name="clock-o" />
-      {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
+      {dueDate && <DateString>{dateString}</DateString>}
     </Toggle>
   );
   return (
     <LoadableMenu
       LoadableComponent={LoadableDueDatePicker}
       maxWidth={350}
-      maxHeight={300}
+      maxHeight={340}
       originAnchor={originAnchor}
       queryVars={{
         task
