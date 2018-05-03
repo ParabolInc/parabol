@@ -8,7 +8,7 @@ import expect from 'expect';
 import {By, until} from 'selenium-webdriver';
 import shortid from 'shortid';
 import sleep from '../../src/universal/utils/sleep';
-import {all, newUserSession, waitTimes} from '../lib';
+import {newUserSession, waitTimes} from '../lib';
 
 const BASE_URL = global.E2E_APP_SERVER_URL;
 

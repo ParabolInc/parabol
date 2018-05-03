@@ -215,9 +215,10 @@ class TeamSettings extends Component {
     const {isLead: viewerIsLead} = viewerTeamMember;
 
     // TODO: upgrade UX
-    const isBillingLeader = true;
-    const isPersonal = true;
-    const showUpgradeCTA = isBillingLeader && isPersonal;
+    // const isBillingLeader = true;
+    // const isPersonal = true;
+    // const showUpgradeCTA = isBillingLeader && isPersonal;
+    const showUpgradeCTA = false; // TODO wire this up later
     const upgradeButtonLabel = <span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>;
 
     return (

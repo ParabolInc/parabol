@@ -56,13 +56,15 @@ const TeamTasksHeader = (props) => {
   const goToArchive = () => history.push(`/team/${teamId}/archive`);
 
   // TODO: add conditional squeeze to the org for this team
+  // TODO: not wiring this up yet
   const orgId = 'HyF7ebanz';
   const orgName = 'Parabol, Inc.';
   const goToOrg = `/me/organizations/${orgId}`;
   const squeezeLabel = `Upgrade to ${PRO_LABEL}`;
   const isPersonal = true;
   // TODO: scope this to billing leader for now
-  const isBillingLeader = true;
+  // const isBillingLeader = true;
+  const showUpgradeCTA = false;
 
   return (
     <DashSectionHeader>
@@ -71,7 +73,7 @@ const TeamTasksHeader = (props) => {
         <DashHeading>
           {`${teamName} Tasks`}
         </DashHeading>
-        {isBillingLeader &&
+        {showUpgradeCTA &&
           <OrgInfoBlock>
             <NavLink
               className={orgLinkStyles}
