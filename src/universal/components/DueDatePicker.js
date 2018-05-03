@@ -41,10 +41,11 @@ class DueDatePicker extends React.Component<Props> {
   render() {
     const {task: {dueDate}} = this.props;
     const selectedDate = dueDate && new Date(dueDate);
+    const showHint = false;
     return (
       <React.Fragment>
         <PickerTitle>{'Change Due Date'}</PickerTitle>
-        <Hint>{'To remove, tap selected date'}</Hint>
+        {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
         <DayPicker onDayClick={this.handleDayClick} selectedDays={selectedDate} />
       </React.Fragment>
     );

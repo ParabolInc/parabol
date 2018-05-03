@@ -13,13 +13,22 @@ const Toggle = styled('div')(
   {
     alignItems: 'center',
     borderRadius: '.125rem',
+    color: ui.colorText,
     cursor: 'pointer',
     display: 'flex',
+    opacity: 0,
     padding: '.0625rem .1875rem'
   },
+  ({cardIsActive}) => ({
+    opacity: cardIsActive && 0.5,
+    ':hover, :focus': {
+      opacity: cardIsActive && 1
+    }
+  }),
   ({dueDate}) => ({
     color: dueDate && ui.dueDateColor,
-    backgroundColor: dueDate && ui.dueDateBg
+    backgroundColor: dueDate && ui.dueDateBg,
+    opacity: dueDate && 1
   }),
   ({isDueSoon}) => ({
     color: isDueSoon && ui.dueDateSoonColor,
@@ -50,6 +59,7 @@ const targetAnchor = {
 };
 
 type Props = {|
+  cardIsActive: Boolean,
   task: Object
 |}
 
@@ -70,19 +80,19 @@ const getDateDiff = (dueDate) => {
 };
 
 const DueDateToggle = (props: Props) => {
-  const {task} = props;
+  const {cardIsActive, task} = props;
   const {dueDate} = task;
   const dateDiff = dueDate && getDateDiff(dueDate);
   const isDueSoon =  dueDate && dateDiff > -1 && dateDiff < 2;
   const isPastDue =  dueDate && dateDiff < 0;
   const dateString = formatDueDate(dueDate);
-  const title = ['Add a due date'];
   const action = 'tap to change';
-  if (dueDate) title.push(`Due ${dateString}, ${action}`);
-  if (isDueSoon) title.push(`Due soon, ${action}`);
-  if (isPastDue) title.push(`Past due, ${action}`);
+  let title = 'Add a due date';
+  if (dueDate) title = `Due ${dateString}, ${action}`;
+  if (isDueSoon) title = `Due soon, ${action}`;
+  if (isPastDue) title = `Past due, ${action}`;
   const toggle = (
-    <Toggle dueDate={dueDate} isDueSoon={isDueSoon} isPastDue={isPastDue} title={title.pop()}>
+    <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} isDueSoon={isDueSoon} isPastDue={isPastDue} title={title}>
       <DueDateIcon name="clock-o" />
       {dueDate && <DateString>{dateString}</DateString>}
     </Toggle>

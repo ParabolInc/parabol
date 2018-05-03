@@ -49,7 +49,7 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 };
 
 const EditingStatus = (props) => {
-  const {atmosphere: {userId: myUserId}, handleClick, task, timestamp, timestampType} = props;
+  const {atmosphere: {userId: myUserId}, cardIsActive, handleClick, task, timestamp, timestampType} = props;
   const {editors} = task;
   const otherEditors = editors.filter((editor) => editor.userId !== myUserId);
   const isEditing = editors.length > otherEditors.length;
@@ -59,13 +59,14 @@ const EditingStatus = (props) => {
       <EditingText isEditing={isEditing} onClick={handleClick} title={title}>
         {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
       </EditingText>
-      <DueDateToggle task={task} />
+      <DueDateToggle cardIsActive={cardIsActive} task={task} />
     </StatusHeader>
   );
 };
 
 EditingStatus.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  cardIsActive: PropTypes.bool,
   handleClick: PropTypes.func,
   task: PropTypes.object.isRequired,
   timestamp: PropTypes.string.isRequired,
