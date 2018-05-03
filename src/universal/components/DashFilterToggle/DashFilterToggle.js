@@ -3,7 +3,7 @@ import React from 'react';
 import {Button} from 'universal/components';
 
 const DashFilterToggle = (props) => {
-  const {label, onClick} = props;
+  const {label, innerRef, onClick} = props;
   return (
     <Button
       aria-label={`Filter by ${label}`}
@@ -14,12 +14,14 @@ const DashFilterToggle = (props) => {
       iconPlacement="right"
       label={label}
       onClick={onClick}
+      ref={innerRef}
       title={`Filter by ${label}`}
     />
   );
 };
 
 DashFilterToggle.propTypes = {
+  innerRef: PropTypes.func,
   label: PropTypes.string,
   onClick: PropTypes.func
 };

@@ -193,6 +193,7 @@
     "react-addons-css-transition-group": "^15.4.2",
     "react-async-hoc": "^0.4.1",
     "react-copy-to-clipboard": "^5.0.0",
+    "react-day-picker": "^7.1.6",
     "react-dnd": "^2.6.0",
     "react-dnd-html5-backend": "^2.4.1",
     "react-dnd-scrollzone": "^4.0.0",

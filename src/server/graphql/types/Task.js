@@ -37,6 +37,10 @@ const Task = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The userId that created the task'
     },
+    dueDate: {
+      type: GraphQLISO8601Type,
+      description: 'a user-defined due date'
+    },
     editors: {
       type: new GraphQLList(TaskEditorDetails),
       description: 'a list of users currently editing the task (fed by a subscription, so queries return null)',

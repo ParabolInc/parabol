@@ -5,6 +5,7 @@ graphql`
     content
     createdAt
     createdBy
+    dueDate
     integration {
       service
       nameWithOwner
