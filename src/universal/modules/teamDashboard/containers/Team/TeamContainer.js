@@ -12,9 +12,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state, props) => {
   const {atmosphere: {viewerId}, match: {params: {teamId}}} = props;
-  const {hasMeetingAlert} = state.dash;
   return {
-    hasMeetingAlert,
     teamMemberId: toTeamMemberId(teamId, viewerId)
   };
 };

@@ -47,16 +47,13 @@ const OrgMembers = (props) => {
   const {
     dispatch,
     history,
-    org,
-    orgId,
-    viewer: {organization: {orgMembers}},
+    viewer: {organization: {orgId, orgMembers, tier}},
     relay: {environment},
     submitMutation,
     onError,
     onCompleted
   } = props;
 
-  const {tier} = org;
   const isPersonalTier = tier === PERSONAL;
   const setRole = (userId, role = null) => () => {
     const variables = {orgId, userId, role};
@@ -227,8 +224,7 @@ OrgMembers.propTypes = {
   history: PropTypes.object.isRequired,
   relay: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
-  org: PropTypes.object,
-  orgId: PropTypes.string.isRequired,
+  organization: PropTypes.object,
   viewer: PropTypes.object.isRequired,
   error: PropTypes.any,
   submitting: PropTypes.bool,
@@ -242,6 +238,8 @@ export default createPaginationContainer(
   graphql`
     fragment OrgMembers_viewer on User {
       organization(orgId: $orgId) {
+        orgId: id
+        tier
         orgMembers(first: $first, after: $after) @connection(key: "OrgMembers_orgMembers") {
           edges {
             cursor

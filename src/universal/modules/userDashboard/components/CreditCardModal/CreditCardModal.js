@@ -65,6 +65,7 @@ const CreditCardModal = (props) => {
           <div className={css(styles.cardInputs)}>
             <div className={css(styles.creditCardNumber)}>
               <Field
+                autoComplete="cc-number"
                 autoFocus
                 component={CreditCardField}
                 iconName="credit-card"
@@ -80,6 +81,7 @@ const CreditCardModal = (props) => {
             <div className={css(styles.cardDetails)}>
               <div className={css(styles.expiry)}>
                 <Field
+                  autoComplete="cc-exp"
                   component={CreditCardField}
                   iconName="calendar"
                   maxLength="5"
@@ -91,6 +93,7 @@ const CreditCardModal = (props) => {
               </div>
               <div>
                 <Field
+                  autoComplete="cc-csc"
                   component={CreditCardField}
                   iconName="lock"
                   maxLength="4"

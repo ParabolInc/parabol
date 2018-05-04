@@ -96,9 +96,9 @@ class OrgBilling extends Component {
   }
 
   render() {
-    const {org, viewer: {invoices}, relay: {hasMore}} = this.props;
+    const {organization, viewer: {invoices}, relay: {hasMore}} = this.props;
     const hasInvoices = invoices.edges.length > 0;
-    const {orgUserCount: {activeUserCount}, creditCard = {}, id: orgId, tier} = org;
+    const {orgUserCount: {activeUserCount}, creditCard = {}, id: orgId, tier} = organization;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
       buttonSize="small"
