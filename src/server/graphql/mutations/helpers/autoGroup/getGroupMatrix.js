@@ -63,12 +63,12 @@ const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
     if (reduction < MIN_REDUCTION_PERCENT) {
       // eslint-disable-next-line no-loop-func
       const nextDistance = distancesArr.find((d) => d > thresh);
-      if (!nextDistance) break;
+      if (!nextDistance || nextDistance >= 1) break;
       thresh = Math.ceil(nextDistance * 100) / 100;
     } else if (reduction > MAX_REDUCTION_PERCENT) {
       // eslint-disable-next-line no-loop-func
       const nextDistance = distancesArr.find((d) => d < thresh);
-      if (!nextDistance) break;
+      if (!nextDistance || nextDistance >= 1) break;
       thresh = Math.floor(nextDistance * 100) / 100;
     } else {
       break;
