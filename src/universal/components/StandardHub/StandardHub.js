@@ -2,15 +2,16 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import {createFragmentContainer} from 'react-relay';
-import {NavLink, withRouter} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Badge from 'universal/components/Badge/Badge';
-import {Menu, MenuItem} from 'universal/modules/menu';
 import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import ui from 'universal/styles/ui';
 import styled, {css} from 'react-emotion';
+import LoadableStandardHubUserMenu from 'universal/components/LoadableStandardHubUserMenu';
+import LoadableMenu from 'universal/components/LoadableMenu';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -95,84 +96,21 @@ const BadgeBlock = styled('div')({
   right: '-.375rem'
 });
 
-const UpgradeCTA = styled('span')({
-  color: ui.upgradeColor,
-  fontSize: ui.menuItemFontSize,
-  lineHeight: ui.menuItemHeight
-});
-
 const NotificationIcon = styled(StyledFontAwesome)({
   lineHeight: 'inherit',
   color: 'white'
 });
 
 const StandardHub = (props) => {
-  const {history, viewer} = props;
+  const {viewer} = props;
   const notifications = viewer && viewer.notifications && viewer.notifications.edges;
   const notificationsCount = notifications ? notifications.length : 0;
-  const {picture = '', preferredName = '', email = ''} = viewer || {};
-
-  // nav menu routes
-  const goToSettings = () => history.push('/me/settings');
-  const goToOrganizations = () => history.push('/me/organizations');
-  const goToNotifications = () => history.push('/me/notifications');
-  const signOut = () => history.push('/signout');
-
-  // TODO: get a real array of free orgs, clean this up (TA)
-  // looking at a local org to test UI
-  const isBillingLeader = true;
-  const arrayFreeOrgs = [{id: 'HyF7ebanz'}];
-  const showUpgradeCTA = isBillingLeader && arrayFreeOrgs.length !== 0;
-
-  const makeUpgradeMenuLabel = (
-    <UpgradeCTA>
-      {'Upgrade to '}<b>{'Professional'}</b>
-    </UpgradeCTA>
-  );
-
-  const handleUpgradeClick = () => {
-    let upgradeGoTo = goToOrganizations;
-    if (arrayFreeOrgs.length === 1) {
-      const {id} = arrayFreeOrgs[0];
-      upgradeGoTo = () => history.push(`/me/organizations/${id}`);
-    }
-    return upgradeGoTo();
-  };
-
-  const makeUserMenu = () => {
-    const itemFactory = () => {
-      const listItems = [];
-      listItems.push(
-        <MenuItem icon="address-card" label="Settings" onClick={goToSettings} />,
-        <MenuItem icon="building" label="Organizations" onClick={goToOrganizations} />,
-        <MenuItem icon="bell" label="Notifications" onClick={goToNotifications} />,
-        <MenuItem icon="sign-out" label="Sign Out" onClick={signOut} hr="before" />
-      );
-      // Conditionally add the Upgrade menu item before Sign Out
-      if (isBillingLeader) {
-        listItems.splice(3, 0, <MenuItem icon="star" label={makeUpgradeMenuLabel} onClick={handleUpgradeClick} hr="before" />);
-      }
-      return listItems;
-    };
-    const menuWidth = showUpgradeCTA ? '21rem' : '13rem';
-    return (
-      <Menu
-        itemFactory={itemFactory}
-        label={email}
-        originAnchor={originAnchor}
-        maxHeight="none"
-        menuWidth={menuWidth}
-        targetAnchor={targetAnchor}
-        toggle={<MenuToggle />}
-      />
-    );
-  };
+  const {picture = '', preferredName = ''} = viewer || {};
 
   const navLinkStyles = css(
     notificationsStyles,
     notificationsCount > 0 && notificationsWithBadge
   );
-
   const userAvatar = picture || defaultUserAvatar;
 
   return (
@@ -180,7 +118,17 @@ const StandardHub = (props) => {
       <User>
         <Avatar hasBadge={false} picture={userAvatar} size="smaller" />
         <PreferredName><span>{preferredName}</span></PreferredName>
-        {makeUserMenu()}
+        <LoadableMenu
+          LoadableComponent={LoadableStandardHubUserMenu}
+          maxWidth={450}
+          maxHeight={275}
+          originAnchor={originAnchor}
+          queryVars={{
+            viewer
+          }}
+          targetAnchor={targetAnchor}
+          toggle={<MenuToggle />}
+        />
       </User>
       <NavLink
         activeClassName={css(notificationsActive)}
@@ -200,15 +148,13 @@ const StandardHub = (props) => {
 
 StandardHub.propTypes = {
   notificationsCount: PropTypes.number,
-  history: PropTypes.object,
   viewer: PropTypes.object
 };
 
 export default createFragmentContainer(
-  withRouter(StandardHub),
+  StandardHub,
   graphql`
     fragment StandardHub_viewer on User {
-      email
       picture
       preferredName
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
@@ -218,6 +164,7 @@ export default createFragmentContainer(
           }
         }
       }
+      ...StandardHubUserMenu_viewer
     }
   `
 );
