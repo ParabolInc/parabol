@@ -1348,79 +1348,9 @@ export type TeamRemovedNotification = NotifyTeamArchived | NotifyKickedOut;
 
 export type AutoGroupReflectionsPayload = {
   error: ?StandardMutationError;
-  meeting: ?NewMeeting;
+  meeting: ?RetrospectiveMeeting;
   reflections: ?Array<RetroReflection>;
   reflectionGroups: ?Array<RetroReflectionGroup>;
-}
-
-/**
-  A reflection created during the reflect phase of a retrospective
-*/
-export type RetroReflection = {
-  /** shortid */
-  id: string;
-  /** The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count() */
-  autoReflectionGroupId: ?string;
-  /** The timestamp the meeting was created */
-  createdAt: ?any;
-  /** The userId that created the reflection (or unique Id if not a team member) */
-  creatorId: ?string;
-  /** The userId of the person currently dragging the reflection */
-  draggerUserId: ?string;
-  /** The user that is currently dragging the reflection */
-  draggerUser: ?User;
-  /** The coordinates necessary to simulate a drag for a subscribing user */
-  draggerCoords: ?DraggerCoords;
-  /** an array of all the socketIds that are currently editing the reflection */
-  editorIds: Array<string>;
-  /** True if the reflection was not removed, else false */
-  isActive: ?boolean;
-  /** true if the reflection is being edited, else false */
-  isEditing: ?boolean;
-  /** true if the viewer (userId) is the creator of the retro reflection, else false */
-  isViewerCreator: ?boolean;
-  /** The stringified draft-js content */
-  content: string;
-  /** The entities (i.e. nouns) parsed from the content and their respective salience */
-  entities: Array<GoogleAnalyzedEntity>;
-  /** The foreign key to link a reflection to its meeting */
-  meetingId: ?string;
-  /** The retrospective meeting this reflection was created in */
-  meeting: ?RetrospectiveMeeting;
-  phaseItem: RetroPhaseItem;
-  /** The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group. */
-  retroPhaseItemId: string;
-  /** The foreign key to link a reflection to its group */
-  reflectionGroupId: ?string;
-  /** The group the reflection belongs to, if any */
-  retroReflectionGroup: ?RetroReflectionGroup;
-  /** The sort order of the reflection in the group (increments starting from 0) */
-  sortOrder: number;
-  /** The team that is running the meeting that contains this reflection */
-  team: ?RetrospectiveMeeting;
-  /** The timestamp the meeting was updated. Used to determine how long it took to write a reflection */
-  updatedAt: ?any;
-}
-
-/**
-  Coordinates used to share a drag
-*/
-export type DraggerCoords = {
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  height: ?number;
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  width: ?number;
-  /** The x-offset from the current location */
-  x: ?number;
-  /** The y-offset from the current location */
-  y: ?number;
-}
-
-export type GoogleAnalyzedEntity = {
-  /** The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun. */
-  name: string;
-  /** The salience of the entity in the provided text. The salience of all entities always sums to 1 */
-  salience: number;
 }
 
 /**
@@ -1458,6 +1388,8 @@ export type RetrospectiveMeeting = {
   viewerMeetingMember: ?RetrospectiveMeetingMember;
   /** the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used. */
   autoGroupThreshold: ?number;
+  /** the next smallest threshold to guarantee at least 1 more grouping will be achieved */
+  nextAutoGroupThreshold: ?number;
   /** The grouped reflections */
   reflectionGroups: Array<RetroReflectionGroup>;
   /** The settings that govern the retrospective meeting */
@@ -1551,6 +1483,76 @@ export type RetroPhaseItem = {
   title: string;
   /** The question to answer during the phase of the retrospective (eg What went well?) */
   question: string;
+}
+
+/**
+  A reflection created during the reflect phase of a retrospective
+*/
+export type RetroReflection = {
+  /** shortid */
+  id: string;
+  /** The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count() */
+  autoReflectionGroupId: ?string;
+  /** The timestamp the meeting was created */
+  createdAt: ?any;
+  /** The userId that created the reflection (or unique Id if not a team member) */
+  creatorId: ?string;
+  /** The userId of the person currently dragging the reflection */
+  draggerUserId: ?string;
+  /** The user that is currently dragging the reflection */
+  draggerUser: ?User;
+  /** The coordinates necessary to simulate a drag for a subscribing user */
+  draggerCoords: ?DraggerCoords;
+  /** an array of all the socketIds that are currently editing the reflection */
+  editorIds: Array<string>;
+  /** True if the reflection was not removed, else false */
+  isActive: ?boolean;
+  /** true if the reflection is being edited, else false */
+  isEditing: ?boolean;
+  /** true if the viewer (userId) is the creator of the retro reflection, else false */
+  isViewerCreator: ?boolean;
+  /** The stringified draft-js content */
+  content: string;
+  /** The entities (i.e. nouns) parsed from the content and their respective salience */
+  entities: Array<GoogleAnalyzedEntity>;
+  /** The foreign key to link a reflection to its meeting */
+  meetingId: ?string;
+  /** The retrospective meeting this reflection was created in */
+  meeting: ?RetrospectiveMeeting;
+  phaseItem: RetroPhaseItem;
+  /** The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group. */
+  retroPhaseItemId: string;
+  /** The foreign key to link a reflection to its group */
+  reflectionGroupId: ?string;
+  /** The group the reflection belongs to, if any */
+  retroReflectionGroup: ?RetroReflectionGroup;
+  /** The sort order of the reflection in the group (increments starting from 0) */
+  sortOrder: number;
+  /** The team that is running the meeting that contains this reflection */
+  team: ?RetrospectiveMeeting;
+  /** The timestamp the meeting was updated. Used to determine how long it took to write a reflection */
+  updatedAt: ?any;
+}
+
+/**
+  Coordinates used to share a drag
+*/
+export type DraggerCoords = {
+  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
+  height: ?number;
+  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
+  width: ?number;
+  /** The x-offset from the current location */
+  x: ?number;
+  /** The y-offset from the current location */
+  y: ?number;
+}
+
+export type GoogleAnalyzedEntity = {
+  /** The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun. */
+  name: string;
+  /** The salience of the entity in the provided text. The salience of all entities always sums to 1 */
+  salience: number;
 }
 
 /**
@@ -2182,7 +2184,7 @@ export type UpdateReflectionGroupTitlePayload = {
 
 export type UpdateReflectionLocationPayload = {
   error: ?StandardMutationError;
-  meeting: ?NewMeeting;
+  meeting: ?RetrospectiveMeeting;
   reflection: ?RetroReflection;
   /** The group encapsulating the new reflection. A new one was created if one was not provided. */
   reflectionGroup: ?RetroReflectionGroup;

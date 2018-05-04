@@ -27,12 +27,17 @@ const removeReflectionFromGroup = async (reflectionId, retroPhaseItemId, sortOrd
   // RESOLUTION
   const reflectionGroup = await makeReflectionGroup(meetingId, retroPhaseItemId, sortOrder);
   const {id: reflectionGroupId} = reflectionGroup;
-  await r.table('RetroReflection').get(reflectionId)
-    .update({
-      sortOrder: 0,
-      reflectionGroupId,
-      updatedAt: now
-    });
+  await r({
+    reflection: r.table('RetroReflection').get(reflectionId)
+      .update({
+        sortOrder: 0,
+        reflectionGroupId,
+        updatedAt: now
+      }),
+    meeting: r.table('NewMeeting').get(meetingId).update({nextAutoGroupThreshold: null})
+  });
+  // mutates the dataloader response
+  meeting.nextAutoGroupThreshold = null;
   const oldReflections = await r.table('RetroReflection')
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
     .filter({isActive: true});

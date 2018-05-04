@@ -28,6 +28,10 @@ const RetrospectiveMeeting = new GraphQLObjectType({
       description: 'the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.',
       resolve: resolveForSU('autoGroupThreshold')
     },
+    nextAutoGroupThreshold: {
+      type: GraphQLFloat,
+      description: 'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved'
+    },
     reflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
       description: 'The grouped reflections',
