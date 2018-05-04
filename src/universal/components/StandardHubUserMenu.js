@@ -10,7 +10,7 @@ import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import type {RouterHistory} from 'react-router-dom';
 import {StandardHubUserMenu_viewer as Viewer} from './__generated__/StandardHubUserMenu_viewer.graphql';
-import {PERSONAL} from 'universal/utils/constants';
+import {PERSONAL, PRO_LABEL} from 'universal/utils/constants';
 
 const Label = styled('div')({
   ...textOverflow,
@@ -50,7 +50,7 @@ const StandardHubUserMenu = (props: Props) => {
 
   const makeUpgradeMenuLabel = (
     <UpgradeCTA>
-      {'Upgrade to '}<b>{'Professional'}</b>
+      {'Upgrade to '}<b>{PRO_LABEL}</b>
     </UpgradeCTA>
   );
 
