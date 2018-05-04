@@ -39,7 +39,7 @@ const A = styled('a')({
 });
 
 const PrivacyFooter = styled('div')({
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   fontSize: ui.hintFontSize,
   marginTop: '1rem',
   textAlign: 'center'

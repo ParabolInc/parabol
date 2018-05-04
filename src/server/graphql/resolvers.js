@@ -2,6 +2,7 @@ import {getUserId, isSuperUser} from 'server/utils/authorization';
 import nullIfEmpty from 'universal/utils/nullIfEmpty';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import findStageById from 'universal/utils/meetings/findStageById';
+import {BILLING_LEADER} from 'universal/utils/constants';
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem;
@@ -166,4 +167,11 @@ export const resolveArchivedSoftTasks = async ({archivedSoftTaskIds}, args, {aut
   const {tms} = authToken;
   const softTasks = await dataLoader.get('tasks').loadMany(archivedSoftTaskIds);
   return softTasks.filter(({teamId}) => tms.includes(teamId));
+};
+
+export const resolveForBillingLeaders = (fieldName) => async (source, args, {authToken}) => {
+  const viewerId = getUserId(authToken);
+  const {orgUsers} = source;
+  const isBillingLeader = Boolean(orgUsers.find((user) => user.id === viewerId && user.role === BILLING_LEADER));
+  return isBillingLeader ? source[fieldName] : undefined;
 };

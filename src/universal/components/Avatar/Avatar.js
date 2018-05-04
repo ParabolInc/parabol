@@ -112,7 +112,7 @@ const styleThunk = () => ({
     width: '2rem'
   },
   small: {
-    width: '2.5rem'
+    width: '2.75rem'
   },
   medium: {
     width: '4rem'

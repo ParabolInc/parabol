@@ -1,17 +1,77 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import Button from 'universal/components/Button/Button';
-import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink';
-import Row from 'universal/components/Row/Row';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
+import {Button, ConditionalLink, Row, RowActions, RowInfo, RowInfoCopy} from 'universal/components';
+import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
+import styled, {css} from 'react-emotion';
+import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme';
+
+const StyledRow = styled(Row)({
+  justifyContent: 'flex-start'
+});
+
+const ProviderAvatar = styled('div')(({backgroundColor}) => ({
+  backgroundColor,
+  borderRadius: ui.providerIconBorderRadius
+}));
+
+const ProviderIcon = styled(StyledFontAwesome)({
+  alignItems: 'center',
+  color: ui.palette.white,
+  display: 'flex',
+  fontSize: ui.iconSize2x,
+  height: ui.providerIconSize,
+  justifyContent: 'center',
+  width: ui.providerIconSize
+});
+
+const providerRowContent = {
+  color: ui.providerName.color,
+  display: 'block',
+  ':hover, :focus': {
+    color: ui.providerName.color
+  }
+};
+
+const NameAndMeta = styled('div')({
+  display: 'flex',
+  alignItems: 'center'
+});
+
+const ProviderMeta = styled('div')({
+  color: appTheme.palette.mid,
+  display: 'inline-block',
+  fontSize: 0,
+  height: '1rem',
+  lineHeight: appTheme.typography.s3,
+  padding: '0 0 .125rem 1.5rem',
+  verticalAlign: 'middle'
+});
+
+const ProviderMetaItem = styled('div')({
+  display: 'inline-block',
+  fontSize: appTheme.typography.s3,
+  fontWeight: 600,
+  marginRight: ui.rowGutter
+});
+
+const ProviderName = styled('div')({
+  ...ui.providerName,
+  display: 'inline-block',
+  marginRight: ui.rowGutter,
+  verticalAlign: 'middle'
+});
+
+const ProviderActions = styled(RowActions)({
+  marginLeft: 'auto',
+  paddingLeft: ui.rowGutter,
+  maxWidth: '10rem'
+});
 
 export const providerLookup = {
   [GITHUB]: {
@@ -49,7 +109,6 @@ const ProviderRow = (props) => {
     jwt,
     name,
     providerDetails,
-    styles,
     teamId
   } = props;
   const {
@@ -75,39 +134,37 @@ const ProviderRow = (props) => {
   };
   const hasActivity = userCount > 0 || integrationCount > 0;
   return (
-    <Row style={{justifyContent: 'flex-start'}}>
+    <StyledRow>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
-        <div className={css(styles.providerAvatar)} style={{backgroundColor: color}}>
-          <FontAwesome name={icon} className={css(styles.providerIcon)} />
-        </div>
+        <ProviderAvatar backgroundColor={color}>
+          <ProviderIcon name={icon} />
+        </ProviderAvatar>
       </ConditionalLink>
-      <div className={css(styles.userInfo)}>
-        <ConditionalLink isLink={!comingSoon} to={to} className={css(styles.providerRowContent)}>
-          <div className={css(styles.nameAndMeta)}>
-            <div className={css(styles.providerName)}>
+      <RowInfo>
+        <ConditionalLink isLink={!comingSoon} to={to} className={css(providerRowContent)}>
+          <NameAndMeta>
+            <ProviderName>
               {providerName}
               {hasActivity &&
-                <div className={css(styles.providerMeta)}>
-                  <div className={css(styles.providerMetaItem)}>
+                <ProviderMeta>
+                  <ProviderMetaItem>
                     <FontAwesome name="user-circle" style={metaIconStyle} /> {userCount}
-                  </div>
-                  <div className={css(styles.providerMetaItem)}>
+                  </ProviderMetaItem>
+                  <ProviderMetaItem>
                     <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
-                  </div>
-                </div>
+                  </ProviderMetaItem>
+                </ProviderMeta>
               }
-            </div>
-          </div>
-          <div className={css(styles.subHeading)}>
-            {comingSoon &&
-            <span className={css(styles.comingSoon)}>Coming Soon! </span>
-            }
+            </ProviderName>
+          </NameAndMeta>
+          <RowInfoCopy>
+            {comingSoon && <b>{'Coming Soon! '}</b>}
             {description}
-          </div>
+          </RowInfoCopy>
         </ConditionalLink>
-      </div>
+      </RowInfo>
       {!comingSoon &&
-      <div className={css(styles.providerActions)}>
+      <ProviderActions>
         {accessToken ?
           <Button
             buttonSize="small"
@@ -128,12 +185,11 @@ const ProviderRow = (props) => {
             onClick={openOauth}
           />
         }
-      </div>
+      </ProviderActions>
       }
-    </Row>
+    </StyledRow>
   );
 };
-
 
 ProviderRow.propTypes = {
   actions: PropTypes.any,
@@ -142,118 +198,11 @@ ProviderRow.propTypes = {
   jwt: PropTypes.string,
   name: PropTypes.string,
   providerDetails: PropTypes.object,
-  teamId: PropTypes.string.isRequired,
-  styles: PropTypes.object
+  teamId: PropTypes.string.isRequired
 };
 
-const styleThunk = () => ({
-  comingSoon: {
-    fontWeight: 600
-  },
-
-  providerAvatar: {
-    borderRadius: ui.providerIconBorderRadius
-  },
-
-  providerIcon: {
-    alignItems: 'center',
-    color: '#fff',
-    display: 'flex !important',
-    fontSize: `${ui.iconSize2x} !important`,
-    height: ui.providerIconSize,
-    justifyContent: 'center',
-    width: ui.providerIconSize
-  },
-
-  userInfo: {
-    paddingLeft: '1rem'
-  },
-
-  userActions: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: 1,
-    justifyContent: 'flex-end'
-  },
-
-  providerRowContent: {
-    display: 'block',
-    color: ui.providerName.color,
-
-    ':hover': {
-      color: ui.providerName.color
-    },
-    ':focus': {
-      color: ui.providerName.color
-    }
-  },
-
-  nameAndMeta: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-
-  providerMeta: {
-    color: appTheme.palette.mid,
-    display: 'inline-block',
-    fontSize: 0,
-    height: '1rem',
-    lineHeight: appTheme.typography.s3,
-    padding: '0 0 .125rem 1.5rem',
-    verticalAlign: 'middle'
-  },
-
-  providerMetaItem: {
-    display: 'inline-block',
-    fontSize: appTheme.typography.s3,
-    fontWeight: 600,
-    marginRight: ui.rowGutter
-  },
-
-  providerName: {
-    ...ui.providerName,
-    display: 'inline-block',
-    marginRight: ui.rowGutter,
-    verticalAlign: 'middle'
-  },
-
-  providerActions: {
-    flex: 1,
-    marginLeft: 'auto',
-    paddingLeft: ui.rowGutter,
-    textAlign: 'right',
-    maxWidth: '10rem'
-  },
-
-  invitedAt: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4
-  },
-
-  infoLink: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4,
-
-    ':hover': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
-    },
-    ':focus': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
-    }
-  },
-  subHeading: {
-    ...ui.rowSubheading
-  }
-});
-
 export default createFragmentContainer(
-  withRouter(withStyles(styleThunk)(ProviderRow)),
+  withRouter(ProviderRow),
   graphql`
     fragment ProviderRow_providerDetails on ProviderRow {
       accessToken

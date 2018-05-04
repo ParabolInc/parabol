@@ -103,12 +103,12 @@ const activeHoverFocusStyles = {
 };
 
 
-const styleThunk = () => ({
+const styleThunk = (theme, {onClick}) => ({
   root: {
     alignItems: 'center',
     backgroundColor: ui.menuBackgroundColor,
     color: ui.menuItemColor,
-    cursor: 'pointer',
+    cursor: onClick && 'pointer',
     display: 'flex',
     transition: `background-color ${ui.transition[0]}`,
 

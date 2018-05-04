@@ -32,7 +32,7 @@ const renderActivity = (activity) => {
 const UserSettings = (props) => {
   const {activity, handleSubmit, onSubmit, styles, viewer: {userId, picture}} = props;
   const pictureOrDefault = picture || defaultUserAvatar;
-  const toggle = <EditableAvatar picture={pictureOrDefault} size={96} />;
+  const toggle = <div><EditableAvatar picture={pictureOrDefault} size={96} /></div>;
   const controlSize = 'medium';
   return (
     <UserSettingsWrapper>

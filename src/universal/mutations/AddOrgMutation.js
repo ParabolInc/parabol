@@ -10,6 +10,7 @@ graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
     organization {
       id
+      isBillingLeader
       name
       orgUserCount {
         activeUserCount

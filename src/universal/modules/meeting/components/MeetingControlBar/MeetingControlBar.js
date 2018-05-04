@@ -6,7 +6,7 @@ const MeetingControlBar = styled('div')({
   backgroundColor: ui.palette.white,
   borderTop: `.0625rem solid ${ui.meetingBorderColor}`,
   boxShadow: ui.meetingChromeBoxShadowInset,
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   display: 'flex',
   fontSize: '.8125rem',
   justifyContent: 'center',
