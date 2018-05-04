@@ -70,8 +70,8 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
             <AnalyticsIdentifier viewer={viewer} />
             <DashSidebar viewer={viewer} location={location} />
             <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
-            <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} extraProps={{notifications}} />
-            <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />
+            <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} />
+            <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} />
           </DashLayout>
         );
       }}

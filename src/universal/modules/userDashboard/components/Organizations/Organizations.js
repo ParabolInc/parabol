@@ -7,6 +7,7 @@ import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
+import {withRouter} from 'react-router-dom';
 
 const Organizations = (props) => {
   const {
@@ -54,7 +55,7 @@ Organizations.propTypes = {
 };
 
 export default createFragmentContainer(
-  Organizations,
+  withRouter(Organizations),
   graphql`
     fragment Organizations_viewer on User {
       organizations {
