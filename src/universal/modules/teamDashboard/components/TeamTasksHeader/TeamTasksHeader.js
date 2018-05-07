@@ -11,7 +11,6 @@ import appTheme from 'universal/styles/theme/appTheme';
 import LoadableTeamDashTeamMemberMenu from 'universal/components/LoadableTeamDashTeamMemberMenu';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import styled, {css} from 'react-emotion';
-import {PRO_LABEL} from 'universal/utils/constants';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -39,33 +38,10 @@ const orgLinkStyles = css({
   }
 });
 
-const upgradeLinkStyles = css({
-  color: ui.upgradeColor,
-  cursor: 'pointer',
-  marginLeft: '.75rem',
-  ':hover, :focus': {
-    color: ui.upgradeColor,
-    textDecoration: 'underline'
-  }
-});
-
 const TeamTasksHeader = (props) => {
   const {history, teamMemberFilterId, teamMemberFilterName, team} = props;
-  const {teamId, teamName} = team;
-
-  const goToArchive = () => history.push(`/team/${teamId}/archive`);
-
-  // TODO: add conditional squeeze to the org for this team
-  // TODO: not wiring this up yet
-  const orgId = 'HyF7ebanz';
-  const orgName = 'Parabol, Inc.';
-  const goToOrg = `/me/organizations/${orgId}`;
-  const squeezeLabel = `Upgrade to ${PRO_LABEL}`;
-  const isPersonal = true;
-  // TODO: scope this to billing leader for now
-  // const isBillingLeader = true;
-  const showUpgradeCTA = false;
-
+  const {organization, teamId, teamName} = team;
+  const {orgName, orgId} = organization;
   return (
     <DashSectionHeader>
       <div>
@@ -73,26 +49,15 @@ const TeamTasksHeader = (props) => {
         <DashHeading>
           {`${teamName} Tasks`}
         </DashHeading>
-        {showUpgradeCTA &&
-          <OrgInfoBlock>
-            <NavLink
-              className={orgLinkStyles}
-              title={orgName}
-              to={goToOrg}
-            >
-              {orgName}
-            </NavLink>
-            {isPersonal &&
-              <NavLink
-                className={upgradeLinkStyles}
-                title={squeezeLabel}
-                to={goToOrg}
-              >
-                {'Upgrade to '}<b>{PRO_LABEL}</b>
-              </NavLink>
-            }
-          </OrgInfoBlock>
-        }
+        <OrgInfoBlock>
+          <NavLink
+            className={orgLinkStyles}
+            title={orgName}
+            to={`/me/organizations/${orgId}`}
+          >
+            {orgName}
+          </NavLink>
+        </OrgInfoBlock>
       </div>
       <DashSectionControls>
 
@@ -100,7 +65,7 @@ const TeamTasksHeader = (props) => {
         <DashNavControl
           icon="archive"
           label="See Archived Tasks"
-          onClick={goToArchive}
+          onClick={() => history.push(`/team/${teamId}/archive`)}
         />
 
         {/* Filter by Owner */}
@@ -139,6 +104,10 @@ export default createFragmentContainer(
     fragment TeamTasksHeader_team on Team {
       teamId: id
       teamName: name
+      organization {
+        orgId: id
+        orgName: name
+      }
       ...TeamDashTeamMemberMenu_team
     }
   `

@@ -16,6 +16,10 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {connect} from 'react-redux';
 import LoadableBillingLeaderActionMenu from 'universal/components/LoadableBillingLeaderActionMenu';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
+import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import type {Dispatch} from 'react-redux';
+import {OrgMemberRow_organization as Organization} from './__generated__/OrgMemberRow_organization.graphql';
+import {OrgMemberRow_orgMember as OrgMember} from './__generated__/OrgMemberRow_orgMember.graphql';
 
 const originAnchor = {
   vertical: 'top',
@@ -53,7 +57,17 @@ const menuButtonProps = {
   size: 'smallest'
 };
 
-const OrgMemberRow = (props) => {
+type Props = {|
+  atmosphere: Object,
+  billingLeaderCount: number,
+  closePortal: () => void,
+  dispatch: Dispatch<*>,
+  orgMember: OrgMember,
+  organization: Organization,
+  ...MutationProps
+|}
+
+const OrgMemberRow = (props: Props) => {
   const {
     atmosphere,
     billingLeaderCount,

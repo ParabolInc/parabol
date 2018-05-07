@@ -9,7 +9,7 @@ const OrgMembers = (props) => {
     viewer: {organization}
   } = props;
   const {orgMembers} = organization;
-  const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0)
+  const billingLeaderCount = orgMembers.edges.reduce((count, {node}) => node.isBillingLeader ? count + 1 : count, 0);
   return (
     <Panel label="Organization Members">
       {orgMembers.edges.map(({node: orgMember}) => {

@@ -44,7 +44,7 @@ class MeetingDashAlert extends Component {
       </DashAlert>
     );
   }
-};
+}
 
 MeetingDashAlert.propTypes = {
   activeMeetings: PropTypes.array,

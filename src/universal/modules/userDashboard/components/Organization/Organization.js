@@ -71,8 +71,8 @@ const OrgNameBlock = styled('div')({
 });
 
 const Organization = (props) => {
-  const {history, match, orgId, viewer: {organization}} = props;
-  const {createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization;
+  const {history, match, viewer: {organization}} = props;
+  const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <div><EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled /></div>;
   const goToOrgs = () => history.push('/me/organizations');

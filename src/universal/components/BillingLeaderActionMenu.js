@@ -22,7 +22,17 @@ type Props = {|
 |}
 
 const BillingLeaderActionMenu = (props: Props) => {
-  const {atmosphere, closePortal, isViewerLastBillingLeader, orgMember, submitting, submitMutation, onError, onCompleted, organization} = props;
+  const {
+    atmosphere,
+    closePortal,
+    isViewerLastBillingLeader,
+    orgMember,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted,
+    organization
+  } = props;
   const {orgId} = organization;
   const {viewerId} = atmosphere;
   const {isBillingLeader, user} = orgMember;

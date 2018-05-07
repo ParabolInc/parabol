@@ -27,6 +27,7 @@ const OrganizationsRoot = (props: Props) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
+      variables={{}}
       render={(readyState) => (
         <RelayTransitionGroup
           readyState={readyState}

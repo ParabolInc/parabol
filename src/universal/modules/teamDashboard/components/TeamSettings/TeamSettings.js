@@ -19,7 +19,7 @@ import ui from 'universal/styles/ui';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import styled from 'react-emotion';
-import {PRO_LABEL} from 'universal/utils/constants';
+import {PERSONAL, PRO_LABEL} from 'universal/utils/constants';
 
 const originAnchor = {
   vertical: 'center',
@@ -208,32 +208,24 @@ class TeamSettings extends Component {
 
   render() {
     const {dispatch, viewer: {team}} = this.props;
-    const {invitations, orgApprovals, teamName, teamMembers} = team;
+    const {invitations, orgApprovals, orgId, teamName, teamMembers, tier} = team;
     const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     // if kicked out, the component might reload before the redirect occurs
     if (!viewerTeamMember) return null;
     const {isLead: viewerIsLead} = viewerTeamMember;
 
-    // TODO: upgrade UX
-    // const isBillingLeader = true;
-    // const isPersonal = true;
-    // const showUpgradeCTA = isBillingLeader && isPersonal;
-    const showUpgradeCTA = false; // TODO wire this up later
-    const upgradeButtonLabel = <span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>;
-
     return (
       <TeamSettingsLayout>
         <Helmet title={`${teamName} Settings | Parabol`} />
-        {/* TODO: add Upgrade CTA for billing leaders */}
         <PanelsLayout>
-          {showUpgradeCTA &&
+          {tier === PERSONAL &&
             <Panel>
               <PanelRowCentered>
                 <Button
                   buttonSize="small"
                   colorPalette={ui.upgradeColorOption}
-                  label={upgradeButtonLabel}
-                  onClick={() => (console.log('upgrade, go to org billing view'))}
+                  label={<span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>}
+                  onClick={() => history.push(`/me/organizations/${orgId}`)}
                 />
               </PanelRowCentered>
             </Panel>
@@ -305,6 +297,8 @@ export default createFragmentContainer(
         ...ArchiveTeamContainer_team
         teamId: id
         teamName: name
+        tier
+        orgId
         teamMembers(sortBy: "preferredName") {
           ...PromoteTeamMemberModal_teamMember
           ...RemoveTeamMemberModal_teamMember
