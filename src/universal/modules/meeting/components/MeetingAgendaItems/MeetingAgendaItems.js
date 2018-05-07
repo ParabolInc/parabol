@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
@@ -12,12 +11,51 @@ import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/Me
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEM_LABEL, AGENDA_ITEMS} from 'universal/utils/constants';
+import {AGENDA_ITEMS} from 'universal/utils/constants';
 import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {withRouter} from 'react-router';
+import styled from 'react-emotion';
+import ui from 'universal/styles/ui';
+
+const Layout = styled('div')({
+  margin: '0 auto',
+  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  padding: '0 .5rem 4rem',
+  width: '100%',
+
+  [ui.breakpoint.wide]: {
+    paddingBottom: '0 1rem 6rem'
+  },
+
+  [ui.breakpoint.wider]: {
+    paddingBottom: '8rem'
+  },
+
+  [ui.breakpoint.widest]: {
+    paddingBottom: '12rem'
+  }
+});
+
+const Prompt = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'center'
+});
+
+const Nav = styled('div')({
+  paddingTop: '1rem',
+  textAlign: 'center',
+  width: '100%'
+});
+
+const ControlButtonBlock = styled('div')({
+  width: '12rem'
+});
+
+const SpacedMeetingControlBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+});
 
 class MeetingAgendaItems extends Component {
   state = {agendaTasks: []};
@@ -56,14 +94,12 @@ class MeetingAgendaItems extends Component {
       hideMoveMeetingControls,
       localPhaseItem,
       showMoveMeetingControls,
-      styles,
       viewer: {team}
     } = this.props;
     const {agendaTasks} = this.state;
     const {agendaItems, id: teamId, teamMembers} = team;
     const agendaItem = agendaItems[localPhaseItem - 1];
     const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
-    const isLast = agendaItems.length === localPhaseItem;
     const subHeading = (<span><b>{currentTeamMember.preferredName}</b>{', what do you need?'}</span>);
     const endMeeting = () => {
       EndMeetingMutation(atmosphere, teamId, history);
@@ -72,32 +108,33 @@ class MeetingAgendaItems extends Component {
       <MeetingMain hasHelpFor={AGENDA_ITEMS} isFacilitating={showMoveMeetingControls}>
         <MeetingSection flexToFill paddingBottom="2rem">
           <MeetingSection flexToFill>
-            <div className={css(styles.layout)}>
-              <div className={css(styles.prompt)}>
+            <Layout>
+              <Prompt>
                 <MeetingPrompt
                   avatar={currentTeamMember.picture}
                   heading={`“${agendaItem.content}”`}
                   subHeading={subHeading}
                 />
-              </div>
-              <div className={css(styles.nav)}>
+              </Prompt>
+              <Nav>
                 {hideMoveMeetingControls &&
                   <MeetingFacilitationHint>
                     {'Waiting for'} <b>{facilitatorName}</b> {`to wrap up the ${actionMeeting.agendaitems.name}`}
                   </MeetingFacilitationHint>
                 }
-              </div>
+              </Nav>
               <MeetingAgendaCards
                 agendaId={agendaItem.id}
                 tasks={agendaTasks}
                 teamId={team.id}
               />
               <EditorHelpModalContainer />
-            </div>
+            </Layout>
           </MeetingSection>
         </MeetingSection>
         {showMoveMeetingControls &&
-          <MeetingControlBar>
+          <SpacedMeetingControlBar>
+            <ControlButtonBlock />
             <BounceBlock animationDelay="120s" key={`agendaItem${localPhaseItem}buttonAnimation`}>
               <Button
                 buttonSize="medium"
@@ -110,22 +147,24 @@ class MeetingAgendaItems extends Component {
                 iconPalette="warm"
                 iconPlacement="right"
                 key={`agendaItem${localPhaseItem}`}
-                label={isLast ? 'Wrap up the meeting' : `Next ${AGENDA_ITEM_LABEL}`}
+                label="Done! Next…"
                 onClick={gotoNext}
               />
             </BounceBlock>
-            <Button
-              buttonSize="medium"
-              buttonStyle="flat"
-              colorPalette="dark"
-              icon="flag-checkered"
-              iconLarge
-              iconPalette="midGray"
-              iconPlacement="left"
-              label={'End Meeting'}
-              onClick={endMeeting}
-            />
-          </MeetingControlBar>
+            <ControlButtonBlock>
+              <Button
+                buttonSize="medium"
+                buttonStyle="flat"
+                colorPalette="dark"
+                icon="flag-checkered"
+                iconLarge
+                iconPalette="midGray"
+                iconPlacement="left"
+                label={'End Meeting'}
+                onClick={endMeeting}
+              />
+            </ControlButtonBlock>
+          </SpacedMeetingControlBar>
         }
       </MeetingMain>
     );
@@ -140,45 +179,11 @@ MeetingAgendaItems.propTypes = {
   hideMoveMeetingControls: PropTypes.bool,
   localPhaseItem: PropTypes.number.isRequired,
   showMoveMeetingControls: PropTypes.bool,
-  styles: PropTypes.object.isRequired,
   viewer: PropTypes.object
 };
 
-const styleThunk = () => ({
-  layout: {
-    margin: '0 auto',
-    maxWidth: ui.meetingTopicPhaseMaxWidth,
-    padding: '0 .5rem 4rem',
-    width: '100%',
-
-    [ui.breakpoint.wide]: {
-      paddingBottom: '0 1rem 6rem'
-    },
-
-    [ui.breakpoint.wider]: {
-      paddingBottom: '8rem'
-    },
-
-    [ui.breakpoint.widest]: {
-      paddingBottom: '12rem'
-    }
-  },
-
-  prompt: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center'
-  },
-
-  nav: {
-    paddingTop: '1rem',
-    textAlign: 'center',
-    width: '100%'
-  }
-});
-
 export default createFragmentContainer(
-  withAtmosphere(withRouter(withStyles(styleThunk)(MeetingAgendaItems))),
+  withAtmosphere(withRouter(MeetingAgendaItems)),
   graphql`
     fragment MeetingAgendaItems_viewer on User {
       team(teamId: $teamId) {
