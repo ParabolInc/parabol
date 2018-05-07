@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Button from 'universal/components/Button/Button';
 import InlineEstimatedCost from 'universal/components/InlineEstimatedCost';
 import {PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal/utils/constants';
@@ -69,17 +69,6 @@ const ButtonBlock = styled('div')({
   padding: '1.5rem 1rem',
   textAlign: 'center',
   width: '100%'
-});
-
-const InlineHint = styled('div')({
-  backgroundColor: ui.palette.light,
-  borderRadius: ui.borderRadiusSmall,
-  color: ui.hintColor,
-  fontSize: appTheme.typography.s2,
-  lineHeight: appTheme.typography.s5,
-  margin: '0 1rem',
-  padding: '.625rem 1rem',
-  textAlign: 'center'
 });
 
 const CopyWithStatus = styled('div')({
