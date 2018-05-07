@@ -93,6 +93,7 @@ const NewMeetingLobby = (props: Props) => {
           LoadableComponent={UpgradeModalLoadable}
           maxWidth={350}
           maxHeight={225}
+          queryVars={{isBillingLeader: false}}
           toggle={<Button
             aria-label="Get Access Now"
             buttonSize="large"

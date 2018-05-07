@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import Button from 'universal/components/Button/Button';
-import {MONTHLY_PRICE, PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal/utils/constants';
+import InlineEstimatedCost from 'universal/components/InlineEstimatedCost';
+import {PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal/utils/constants';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import {PRICING_LINK} from 'universal/utils/externalLinks';
-import plural from 'universal/utils/plural';
 
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
@@ -127,138 +127,113 @@ type Props = {|
   organization: Object
 |};
 
-class OrgPlanSqueeze extends Component<Props> {
-  state = {showCost: false}
-
-  getCost = () => {
-    this.setState({
-      showCost: !this.state.showCost
-    });
+const OrgPlanSqueeze = (props: Props) => {
+  const {organization: {isBillingLeader, billingLeaders, orgUserCount: {activeUserCount}, orgId}} = props;
+  const primaryButtonProps = {
+    buttonSize: 'medium',
+    buttonStyle: 'primary',
+    depth: 2,
+    isBlock: true
   };
+  const toggle = (<Button
+    {...primaryButtonProps}
+    label="Upgrade to the Pro Plan"
+  />);
+  const openUrl = (url) => () => window.open(url, '_blank');
 
-  render() {
-    const {organization: {isBillingLeader, billingLeaders, orgUserCount: {activeUserCount}, orgId}} = this.props;
-    const estimatedCost = activeUserCount * MONTHLY_PRICE;
-    const {showCost} = this.state;
-    const primaryButtonProps = {
-      buttonSize: 'medium',
-      buttonStyle: 'primary',
-      depth: 2,
-      isBlock: true
-    };
-    const toggle = (<Button
-      {...primaryButtonProps}
-      label="Upgrade to the Pro Plan"
-    />);
-    const openUrl = (url) => () => window.open(url, '_blank');
+  const billingLeaderSqueeze = (
+    <TierPanelBody>
+      <div>
+        {'This could be you.'}<br />
+        {'Ready for the full experience?'}
+      </div>
+      <ButtonBlock>
+        <CreditCardModalContainer
+          orgId={orgId}
+          toggle={toggle}
+        />
+      </ButtonBlock>
+      <InlineEstimatedCost activeUserCount={activeUserCount} />
+    </TierPanelBody>
+  );
 
-    const billingLeaderSqueeze = (
+  const nudgeTheBillingLeader = () => {
+    const {email, preferredName} = billingLeaders[0];
+    return (
       <TierPanelBody>
         <div>
-          {'This could be you.'}<br />
-          {'Ready for the full experience?'}
+          {'Contact your billing leader,'}<br />
+          <b>{preferredName}</b>{', to upgrade:'}
         </div>
-        <ButtonBlock>
-          <CreditCardModalContainer
-            orgId={orgId}
-            toggle={toggle}
-          />
-        </ButtonBlock>
-        {showCost ?
-          <InlineHint>
-            {`${activeUserCount} Active ${plural(activeUserCount, 'User')} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
-          </InlineHint> :
-          <Button
-            buttonSize="medium"
-            buttonStyle="flat"
-            colorPalette="warm"
-            icon="question-circle"
-            iconPlacement="right"
-            label="How much will it cost?"
-            onClick={this.getCost}
-          />
-        }
+        <b>{email}</b>
       </TierPanelBody>
     );
+  };
 
-    const nudgeTheBillingLeader = () => {
-      const {email, preferredName} = billingLeaders[0];
-      return (
-        <TierPanelBody>
-          <div>
-            {'Contact your billing leader,'}<br />
-            <b>{preferredName}</b>{', to upgrade:'}
-          </div>
-          <b>{email}</b>
-        </TierPanelBody>
-      );
-    };
-
-    const nudgeAnyBillingLeader = () => {
-      return (
-        <TierPanelBody>
-          <div>{'Contact a billing leader to upgrade:'}</div>
-          <BillingLeaderRowBlock>
-            {billingLeaders.map((billingLeader, idx) => {
-              const {email} = billingLeader;
-              const makeKey = `billingLeader${idx + 1}`;
-              const canNudge = false; // a simpler version, just show a list of billing leaders
-              return (
-                <BillingLeaderRow key={makeKey}>
-                  <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
-                  {canNudge && <Button
-                    buttonSize="small"
-                    buttonStyle="link"
-                    colorPalette={'dark'}
-                    icon={'check'}
-                    label={'Notification Sent'}
-                    onClick={null}
-                  />}
-                </BillingLeaderRow>
-              );
-            })}
-          </BillingLeaderRowBlock>
-        </TierPanelBody>
-      );
-    };
-
+  const nudgeAnyBillingLeader = () => {
     return (
-      <OrgPlanSqueezeRoot>
-        <TierPanelLayout>
-          {/* Personal Panel */}
-          <TierPanel tier={PERSONAL}>
-            <TierPanelHeader tier={PERSONAL}>{PERSONAL_LABEL}</TierPanelHeader>
-            <TierPanelBody>
-              <CopyWithStatus>
-                <b>{'Your current plan.'}</b><br />
-                {'The basics, for free!'}
-              </CopyWithStatus>
-            </TierPanelBody>
-          </TierPanel>
-          {/* Professional Panel */}
-          <TierPanel tier={PRO}>
-            <TierPanelHeader tier={PRO}>{PRO_LABEL}</TierPanelHeader>
-            {isBillingLeader && billingLeaderSqueeze}
-            {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
-            {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
-          </TierPanel>
-        </TierPanelLayout>
-        {/* Learn More Link */}
-        <ButtonBlock>
-          <Button
-            buttonSize="medium"
-            buttonStyle="link"
-            colorPalette="mid"
-            icon="external-link-square"
-            iconPlacement="right"
-            label="Learn About Plans & Invoicing"
-            onClick={openUrl(PRICING_LINK)}
-          />
-        </ButtonBlock>
-      </OrgPlanSqueezeRoot>
+      <TierPanelBody>
+        <div>{'Contact a billing leader to upgrade:'}</div>
+        <BillingLeaderRowBlock>
+          {billingLeaders.map((billingLeader, idx) => {
+            const {email} = billingLeader;
+            const makeKey = `billingLeader${idx + 1}`;
+            const canNudge = false; // a simpler version, just show a list of billing leaders
+            return (
+              <BillingLeaderRow key={makeKey}>
+                <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
+                {canNudge && <Button
+                  buttonSize="small"
+                  buttonStyle="link"
+                  colorPalette={'dark'}
+                  icon={'check'}
+                  label={'Notification Sent'}
+                  onClick={null}
+                />}
+              </BillingLeaderRow>
+            );
+          })}
+        </BillingLeaderRowBlock>
+      </TierPanelBody>
     );
-  }
-}
+  };
+
+  return (
+    <OrgPlanSqueezeRoot>
+      <TierPanelLayout>
+        {/* Personal Panel */}
+        <TierPanel tier={PERSONAL}>
+          <TierPanelHeader tier={PERSONAL}>{PERSONAL_LABEL}</TierPanelHeader>
+          <TierPanelBody>
+            <CopyWithStatus>
+              <b>{'Your current plan.'}</b><br />
+              {'The basics, for free!'}
+            </CopyWithStatus>
+          </TierPanelBody>
+        </TierPanel>
+        {/* Professional Panel */}
+        <TierPanel tier={PRO}>
+          <TierPanelHeader tier={PRO}>{PRO_LABEL}</TierPanelHeader>
+          {isBillingLeader && billingLeaderSqueeze}
+          {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
+          {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
+        </TierPanel>
+      </TierPanelLayout>
+      {/* Learn More Link */}
+      <ButtonBlock>
+        <Button
+          buttonSize="medium"
+          buttonStyle="link"
+          colorPalette="mid"
+          icon="external-link-square"
+          iconPlacement="right"
+          label="Learn About Plans & Invoicing"
+          onClick={openUrl(PRICING_LINK)}
+        />
+      </ButtonBlock>
+    </OrgPlanSqueezeRoot>
+  );
+};
 
 export default createFragmentContainer(
   OrgPlanSqueeze,
