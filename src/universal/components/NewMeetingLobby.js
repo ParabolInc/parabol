@@ -10,7 +10,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {PRO} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import LoadableModal from 'universal/components/LoadableModal';
-import GetRetroAccessLoadable from 'universal/components/GetRetroAccessLoadable';
+import UpgradeModalLoadable from 'universal/components/UpgradeModalLoadable';
 import type {NewMeetingLobby_team as Team} from './__generated__/NewMeetingLobby_team.graphql';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation';
@@ -90,7 +90,7 @@ const NewMeetingLobby = (props: Props) => {
       <GetAccessCopy>
         <span>{'As a free user, you can start running retrospectives immediately with your team'}</span>
         <LoadableModal
-          LoadableComponent={GetRetroAccessLoadable}
+          LoadableComponent={UpgradeModalLoadable}
           maxWidth={350}
           maxHeight={225}
           toggle={<Button
