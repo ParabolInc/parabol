@@ -199,21 +199,11 @@ class OrgPlanSqueeze extends Component<Props> {
         <TierPanelBody>
           <div>{'Contact a billing leader to upgrade:'}</div>
           <BillingLeaderRowBlock>
-            {billingLeaders.map((billingLeader, idx) => {
-              const {email} = billingLeader;
-              const makeKey = `billingLeader${idx + 1}`;
-              const canNudge = false; // a simpler version, just show a list of billing leaders
+            {billingLeaders.map((billingLeader) => {
+              const {billingLeaderId, email} = billingLeader;
               return (
-                <BillingLeaderRow key={makeKey}>
+                <BillingLeaderRow key={billingLeaderId}>
                   <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
-                  {canNudge && <Button
-                    buttonSize="small"
-                    buttonStyle="link"
-                    colorPalette={'dark'}
-                    icon={'check'}
-                    label={'Notification Sent'}
-                    onClick={null}
-                  />}
                 </BillingLeaderRow>
               );
             })}
@@ -267,6 +257,7 @@ export default createFragmentContainer(
       orgId: id
       isBillingLeader
       billingLeaders {
+        billingLeaderId: id
         email
         preferredName
       }
