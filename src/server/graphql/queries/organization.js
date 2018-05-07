@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql';
 import Organization from 'server/graphql/types/Organization';
 import {getUserId} from 'server/utils/authorization';
-import {BILLING_LEADER} from 'universal/utils/constants';
 
 export default {
   type: Organization,
@@ -19,8 +18,8 @@ export default {
 
     const {orgUsers} = org;
     const myOrgUser = orgUsers.find((user) => user.id === viewerId);
-    if (!myOrgUser || myOrgUser.role !== BILLING_LEADER) {
-      // silently fail
+    if (!myOrgUser) {
+      // silently fail if not in org
       return null;
     }
 
