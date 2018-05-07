@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from 'universal/components/Button/Button';
-import InlineEstimatedCost from 'universal/components/InlineEstimatedCost';
 import {PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal/utils/constants';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import {PRICING_LINK} from 'universal/utils/externalLinks';
@@ -12,6 +11,7 @@ import {textOverflow} from 'universal/styles/helpers';
 
 import makeGradient from 'universal/styles/helpers/makeGradient';
 import {createFragmentContainer} from 'react-relay';
+import InlineEstimatedCost from 'universal/components/InlineEstimatedCost';
 
 const personalGradient = makeGradient(ui.palette.mid, ui.palette.midGray);
 const professionalGradient = makeGradient(ui.palette.yellow, ui.palette.warm);
@@ -164,21 +164,11 @@ const OrgPlanSqueeze = (props: Props) => {
       <TierPanelBody>
         <div>{'Contact a billing leader to upgrade:'}</div>
         <BillingLeaderRowBlock>
-          {billingLeaders.map((billingLeader, idx) => {
-            const {email} = billingLeader;
-            const makeKey = `billingLeader${idx + 1}`;
-            const canNudge = false; // a simpler version, just show a list of billing leaders
+          {billingLeaders.map((billingLeader) => {
+            const {billingLeaderId, email} = billingLeader;
             return (
-              <BillingLeaderRow key={makeKey}>
+              <BillingLeaderRow key={billingLeaderId}>
                 <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
-                {canNudge && <Button
-                  buttonSize="small"
-                  buttonStyle="link"
-                  colorPalette={'dark'}
-                  icon={'check'}
-                  label={'Notification Sent'}
-                  onClick={null}
-                />}
               </BillingLeaderRow>
             );
           })}
@@ -231,6 +221,7 @@ export default createFragmentContainer(
       orgId: id
       isBillingLeader
       billingLeaders {
+        billingLeaderId: id
         email
         preferredName
       }
