@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
+import {GraphQLID, GraphQLNonNull} from 'graphql';
 import adjustUserCount from 'server/billing/helpers/adjustUserCount';
 import getRethink from 'server/database/rethinkDriver';
 import {isOrgLeaderOfUser} from 'server/utils/authorization';
@@ -8,9 +8,10 @@ import {PERSONAL} from 'universal/utils/constants';
 import {sendOrgLeadOfUserAccessError} from 'server/utils/authorizationErrors';
 import sendAuthRaven from 'server/utils/sendAuthRaven';
 import {sendAlreadyInactivatedUserError} from 'server/utils/alreadyMutatedErrors';
+import InactivateUserPayload from 'server/graphql/types/InactivateUserPayload';
 
 export default {
-  type: GraphQLBoolean,
+  type: InactivateUserPayload,
   description: 'pauses the subscription for a single user',
   args: {
     userId: {
@@ -83,6 +84,8 @@ export default {
     });
     const orgIds = orgDocs.map((doc) => doc.id);
     await adjustUserCount(userId, orgIds, PAUSE_USER);
-    return true;
+
+    // TOOD wire up subscription
+    return {userId};
   }
 };
