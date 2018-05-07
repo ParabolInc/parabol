@@ -44,12 +44,12 @@ class InlineEstimatedCost extends Component<Props> {
     const {showCost} = this.state;
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const estimate = `${activeUserCount} Active ${plural(activeUserCount, 'User')} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`;
-    const question = 'How much will it cost'; // sans ? to avoid underlining punctuation
-    const text = showCost ? estimate : question;
+    const question = 'How much will it cost'; // sans ? to avoid underlining punctuation on hover
+    const copy = showCost ? estimate : question;
     return (
       <InlineEstimatedCostBlock onClick={!showCost && this.getCost} showCost={showCost} title={`${question}?`}>
         <StyledIcon name="question-circle" showCost={showCost} />
-        <Copy showCost={showCost}>{text}</Copy>{'?'}
+        <Copy showCost={showCost}>{copy}</Copy>{!showCost && <span>{'?'}</span>}
       </InlineEstimatedCostBlock>
     );
   }
