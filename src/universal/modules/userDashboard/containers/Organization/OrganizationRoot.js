@@ -40,7 +40,7 @@ const OrganizationRoot = (props: Props) => {
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight="50vh" />}
           // pass in match to mitigate update blocker
-          ready={<Organization orgId={orgId} match={match} />}
+          ready={<Organization match={match} />}
         />
       )}
     />

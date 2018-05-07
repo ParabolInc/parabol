@@ -1028,7 +1028,7 @@ export type Mutation = {
   /** Receive a webhook from github saying an org member was removed */
   githubRemoveMember: ?boolean;
   /** pauses the subscription for a single user */
-  inactivateUser: ?boolean;
+  inactivateUser: ?InactivateUserPayload;
   /** If in the org,
      Send invitation emails to a list of email addresses, add them to the invitation table.
      Else, send a request to the org leader to get them approval and put them in the OrgApproval table. */
@@ -1777,6 +1777,12 @@ export type EndMeetingPayload = {
   /** The list of tasks that were archived during the meeting */
   archivedTasks: ?Array<Task>;
   meeting: ?Meeting;
+}
+
+export type InactivateUserPayload = {
+  error: ?StandardMutationError;
+  /** The user that has been inactivated */
+  user: ?User;
 }
 
 /**

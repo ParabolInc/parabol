@@ -82,7 +82,7 @@ class OrgBilling extends Component {
   static propTypes = {
     invoices: PropTypes.array,
     invoicesReady: PropTypes.bool,
-    org: PropTypes.object,
+    organization: PropTypes.object,
     relay: PropTypes.object.isRequired,
     viewer: PropTypes.object
   };

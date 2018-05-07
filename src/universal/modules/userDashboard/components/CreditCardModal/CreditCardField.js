@@ -67,6 +67,7 @@ const CreditCardField = (props) => {
 };
 
 CreditCardField.propTypes = {
+  autoComplete: PropTypes.string,
   autoFocus: PropTypes.bool,
   iconName: PropTypes.string,
   input: PropTypes.shape({

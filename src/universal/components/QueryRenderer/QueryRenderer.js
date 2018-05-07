@@ -48,7 +48,7 @@ export type Props = {
   environment: IEnvironment,
   query: ?GraphQLTaggedNode,
   render: (renderProps: RenderProps) => React.Node,
-  subscriptions: Array<Subscription>,
+  subscriptions?: Array<Subscription>,
   subParams?: Object,
   variables: Variables,
 };

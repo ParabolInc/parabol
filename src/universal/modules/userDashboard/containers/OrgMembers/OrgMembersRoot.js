@@ -35,7 +35,7 @@ const OrgMembersRoot = ({atmosphere, orgId}) => {
 
 OrgMembersRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  orgId: PropTypes.string.isRequired,
+  orgId: PropTypes.string.isRequired
 };
 
 export default withAtmosphere(OrgMembersRoot);
