@@ -5,10 +5,8 @@ import Button from 'universal/components/Button/Button';
 import Panel from 'universal/components/Panel/Panel';
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
-import OrgPlanSqueeze from 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import {PERSONAL} from 'universal/utils/constants';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import styled from 'react-emotion';
 
@@ -98,7 +96,7 @@ class OrgBilling extends Component {
   render() {
     const {organization, viewer: {invoices}, relay: {hasMore}} = this.props;
     const hasInvoices = invoices.edges.length > 0;
-    const {orgUserCount: {activeUserCount}, creditCard = {}, id: orgId, tier} = organization;
+    const {creditCard = {}, id: orgId} = organization;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
     const update = (<Button
       buttonSize="small"
@@ -107,54 +105,49 @@ class OrgBilling extends Component {
     />);
     return (
       <div>
-        {tier === PERSONAL ?
-          <OrgPlanSqueeze activeUserCount={activeUserCount} orgId={orgId} /> :
+        <Panel label="Credit Card Information">
+          <InfoAndUpdate>
+            <CreditCardInfo>
+              <CreditCardIcon name="credit-card" />
+              <CreditCardProvider>{brand || '???'}</CreditCardProvider>
+              <CreditCardNumber>{'•••• •••• •••• '}{last4 || '••••'}</CreditCardNumber>
+              <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
+              <span>{expiry || '??/??'}</span>
+            </CreditCardInfo>
+            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
+          </InfoAndUpdate>
+        </Panel>
+        <Panel label="Invoices">
           <div>
-            <Panel label="Credit Card Information">
-              <InfoAndUpdate>
-                <CreditCardInfo>
-                  <CreditCardIcon name="credit-card" />
-                  <CreditCardProvider>{brand || '???'}</CreditCardProvider>
-                  <CreditCardNumber>{'•••• •••• •••• '}{last4 || '••••'}</CreditCardNumber>
-                  <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
-                  <span>{expiry || '??/??'}</span>
-                </CreditCardInfo>
-                <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
-              </InfoAndUpdate>
-            </Panel>
-            <Panel label="Invoices">
-              <div>
-                {hasInvoices &&
-                invoices.edges.map(({node: invoice}) =>
-                  <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
-                )
-                }
-                {hasMore() &&
-                <LoadMore>
-                  <Button
-                    buttonSize="medium"
-                    buttonStyle="flat"
-                    colorPalette="warm"
-                    label="Load More"
-                    onClick={this.loadMore}
-                  />
-                </LoadMore>
-                }
-              </div>
-            </Panel>
-            <Panel label="Danger Zone">
-              <PanelRow>
-                <Unsubscribe>
-                  <span>{'Need to cancel? It’s painless. '}</span>
-                  <a href="mailto:love@parabol.co?subject=Instant Unsubscribe from Pro" title="Instant Unsubscribe from Pro">
-                    <u>{'Contact us'}</u>
-                    <EnvelopeIcon name="envelope" />
-                  </a>
-                </Unsubscribe>
-              </PanelRow>
-            </Panel>
+            {hasInvoices &&
+            invoices.edges.map(({node: invoice}) =>
+              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
+            )
+            }
+            {hasMore() &&
+            <LoadMore>
+              <Button
+                buttonSize="medium"
+                buttonStyle="flat"
+                colorPalette="warm"
+                label="Load More"
+                onClick={this.loadMore}
+              />
+            </LoadMore>
+            }
           </div>
-        }
+        </Panel>
+        <Panel label="Danger Zone">
+          <PanelRow>
+            <Unsubscribe>
+              <span>{'Need to cancel? It’s painless. '}</span>
+              <a href="mailto:love@parabol.co?subject=Instant Unsubscribe from Pro" title="Instant Unsubscribe from Pro">
+                <u>{'Contact us'}</u>
+                <EnvelopeIcon name="envelope" />
+              </a>
+            </Unsubscribe>
+          </PanelRow>
+        </Panel>
       </div>
     );
   }

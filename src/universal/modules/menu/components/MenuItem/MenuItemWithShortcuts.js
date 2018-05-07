@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import ui from 'universal/styles/ui';
 import {textOverflow} from 'universal/styles/helpers';
-import {css, cx} from 'react-emotion';
+import styled, {css, cx} from 'react-emotion';
 
 const rootStyle = css({
   alignItems: 'center',
@@ -27,16 +27,14 @@ const activeStyle = css({
   }
 });
 
-const labelStyle = css({
+const Label = styled('div')(({hasIcon, disabled}) => ({
   ...textOverflow,
   fontSize: ui.menuItemFontSize,
   lineHeight: ui.menuItemHeight,
-  padding: `0 ${ui.menuGutterHorizontal}`
-});
-
-const iconLabelStyle = css({
-  paddingLeft: 0
-});
+  padding: `0 ${ui.menuGutterHorizontal}`,
+  paddingLeft: hasIcon && 0,
+  color: disabled && 'grey'
+}));
 
 class MenuItemWithShortcuts extends Component {
   static propTypes = {
@@ -44,6 +42,7 @@ class MenuItemWithShortcuts extends Component {
     avatar: PropTypes.string,
     children: PropTypes.any,
     closePortal: PropTypes.func,
+    disabled: PropTypes.bool,
     hasDotIcon: PropTypes.bool,
     icon: PropTypes.string,
     iconColor: PropTypes.string,
@@ -90,6 +89,7 @@ class MenuItemWithShortcuts extends Component {
     const {
       avatar,
       children,
+      disabled,
       hasDotIcon,
       icon,
       iconColor,
@@ -99,7 +99,7 @@ class MenuItemWithShortcuts extends Component {
       title
     } = this.props;
     const labelEl = typeof label === 'string' ?
-      <div className={cx(labelStyle, (avatar || icon) && iconLabelStyle)}>{label}</div> : label;
+      <Label hasIcon={Boolean(avatar || icon)} disabled={disabled}>{label}</Label> : label;
     const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
     const titleStr = title || titleFallbackStr;
     const makeDot = () =>

@@ -187,15 +187,9 @@ class OrgPlanSqueeze extends Component<Props> {
         <TierPanelBody>
           <div>
             {'Contact your billing leader,'}<br />
-            <b>{email}</b>{', to upgrade.'}
+            <b>{preferredName}</b>{', to upgrade:'}
           </div>
-          <ButtonBlock>
-            <Button
-              {...primaryButtonProps}
-              label={`Send ${preferredName} a Notification`}
-              onClick={() => (console.log('send a billing nudge'))}
-            />
-          </ButtonBlock>
+          <b>{email}</b>
         </TierPanelBody>
       );
     };

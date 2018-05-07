@@ -14,10 +14,12 @@ import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
-import {BILLING_PAGE, MEMBERS_PAGE, PRO} from 'universal/utils/constants';
+import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
+import Avatar from 'universal/components/Avatar/Avatar';
+import ui from 'universal/styles/ui';
 
 const orgSqueeze = () => System.import('universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze');
 const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
@@ -55,13 +57,27 @@ const StyledTagBlock = styled(TagBlock)({
   marginTop: '-.375rem'
 });
 
+const AvatarBlock = styled('div')({
+  display: 'block',
+  margin: '1.5rem auto',
+  width: '6rem'
+});
+
+const OrgNameBlock = styled('div')({
+  color: ui.colorText,
+  fontSize: appTheme.typography.s7,
+  lineHeight: appTheme.typography.s8,
+  placeholderColor: ui.placeholderColor
+});
+
 const Organization = (props) => {
   const {history, match, orgId, viewer: {organization}} = props;
   const {createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <div><EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled /></div>;
   const goToOrgs = () => history.push('/me/organizations');
-  const billingMod = isBillingLeader ? orgBilling : orgSqueeze;
+  const onlyShowMembers = !isBillingLeader && tier !== PERSONAL;
+  const billingMod = isBillingLeader && tier !== PERSONAL ? orgBilling : orgSqueeze;
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
@@ -74,11 +90,19 @@ const Organization = (props) => {
           />
         </BackControlBlock>
         <AvatarAndName>
-          <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
-            <OrgAvatarInput orgId={orgId} />
-          </PhotoUploadModal>
+          {isBillingLeader ?
+            <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
+              <OrgAvatarInput orgId={orgId} />
+            </PhotoUploadModal> :
+            <AvatarBlock>
+              <Avatar picture={pictureOrDefault} size="fill" sansRadius sansShadow />
+            </AvatarBlock>
+          }
           <OrgNameAndDetails>
-            <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
+            {isBillingLeader ?
+              <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} /> :
+              <OrgNameBlock>{orgName}</OrgNameBlock>
+            }
             <OrgDetails>
               {'Created '}{makeDateString(createdAt)}
               {tier === PRO &&
@@ -87,14 +111,17 @@ const Organization = (props) => {
               </StyledTagBlock>
               }
             </OrgDetails>
-            <BillingMembersToggle orgId={orgId} />
+            {!onlyShowMembers && <BillingMembersToggle orgId={orgId} />}
           </OrgNameAndDetails>
         </AvatarAndName>
-        <Switch>
-          <AsyncRoute exact path={`${match.url}`} mod={billingMod} extraProps={{organization}} />
-          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={billingMod} extraProps={{organization}} />
-          <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={{orgId}} />
-        </Switch>
+        {onlyShowMembers ?
+          <AsyncRoute path={`${match.url}`} mod={orgMembers} extraProps={{orgId}} /> :
+          <Switch>
+            <AsyncRoute exact path={`${match.url}`} mod={billingMod} extraProps={{organization}} />
+            <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={billingMod} extraProps={{organization}} />
+            <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={{orgId}} />
+          </Switch>
+        }
       </SettingsWrapper>
     </UserSettingsWrapper>
   );
