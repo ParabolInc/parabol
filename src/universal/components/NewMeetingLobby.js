@@ -96,7 +96,7 @@ const NewMeetingLobby = (props: Props) => {
             waiting={submitting}
           />
         </ButtonBlock>
-        {!isPro &&
+        {!isPro && !meetingsOffered &&
           <ButtonBlock>
             <LoadableModal
               LoadableComponent={UpgradeModalLoadable}
