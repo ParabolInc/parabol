@@ -74,7 +74,7 @@ const Organization = (props) => {
   const {history, match, viewer: {organization}} = props;
   if (!organization) {
     // trying to be somewhere they shouldn't be
-    return <Redirect to="/me"/>;
+    return <Redirect to="/me" />;
   }
   const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
