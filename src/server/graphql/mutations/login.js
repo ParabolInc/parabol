@@ -73,6 +73,7 @@ const login = {
       return sendAuth0Error(authToken, e);
     }
 
+    const preferredName = userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname;
     const newUser = {
       id: userInfo.user_id,
       cachedAt: now,
@@ -84,7 +85,7 @@ const login = {
       picture: userInfo.picture,
       inactive: false,
       name: userInfo.name,
-      preferredName: userInfo.nickname,
+      preferredName,
       identities: userInfo.identities || [],
       createdAt: ensureDate(userInfo.created_at),
       userOrgs: [],

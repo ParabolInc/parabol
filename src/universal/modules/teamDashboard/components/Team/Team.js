@@ -1,9 +1,8 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import Button from 'universal/components/Button/Button';
+import {Button} from 'universal/components';
 import {DashContent, DashHeader, DashHeaderInfo, DashMain, DashSearchControl} from 'universal/components/Dashboard';
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
@@ -11,13 +10,18 @@ import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamNam
 import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction';
 import UnpaidTeamModalRoot from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {ACTION} from 'universal/utils/constants';
+import styled from 'react-emotion';
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''};
+
+const TeamViewNavBlock = styled('div')({
+  display: 'flex',
+  flexWrap: 'nowrap'
+});
 
 class Team extends Component {
   componentWillReceiveProps(nextProps) {
@@ -60,7 +64,6 @@ class Team extends Component {
       hasMeetingAlert,
       isRetroEnabled,
       isSettings,
-      styles,
       team
     } = this.props;
     if (!team) return <LoadingView />;
@@ -96,7 +99,7 @@ class Team extends Component {
           <DashHeaderInfo title={DashHeaderInfoTitle}>
             {!isSettings && <DashSearchControl onChange={this.updateFilter} placeholder="Search Team Tasks & Agenda" />}
           </DashHeaderInfo>
-          <div className={css(styles.teamLinks)}>
+          <TeamViewNavBlock>
             {isSettings ?
               <Button
                 key="1"
@@ -125,7 +128,7 @@ class Team extends Component {
             {!isSettings &&
             <TeamCallsToAction isRetroEnabled={isRetroEnabled} teamId={teamId} />
             }
-          </div>
+          </TeamViewNavBlock>
         </DashHeader>
         <DashContent hasOverlay={hasOverlay} padding="0">
           {children}
@@ -142,19 +145,11 @@ Team.propTypes = {
   isRetroEnabled: PropTypes.bool,
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
-  styles: PropTypes.object,
   team: PropTypes.object
 };
 
-const styleThunk = () => ({
-  teamLinks: {
-    display: 'flex',
-    flexWrap: 'nowrap'
-  }
-});
-
 export default createFragmentContainer(
-  withAtmosphere(withRouter(withStyles(styleThunk)(Team))),
+  withAtmosphere(withRouter(Team)),
   graphql`
     fragment Team_team on Team {
       contentFilter

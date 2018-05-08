@@ -47,7 +47,7 @@ const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
 // Colors
 const {cool, warm, dark, mid, light} = appTheme.palette;
 const {purple, purpleLightened, midGray} = appTheme.brand.primary;
-const {red, rose, green} = appTheme.brand.secondary;
+const {blue, red, rose, green, yellow} = appTheme.brand.secondary;
 const backgroundColor = appTheme.brand.primary.silver;
 
 // Border radius ratio: powers of 2
@@ -81,7 +81,9 @@ const PALETTE_OPTIONS = [
   'gray',
   'midGray',
   'green',
-  'red'
+  'red',
+  'yellow',
+  'blue'
 ];
 const PALETTE_VALUES = {
   cool,
@@ -93,7 +95,9 @@ const PALETTE_VALUES = {
   gray,
   midGray,
   green,
-  red
+  red,
+  yellow,
+  blue
 };
 
 // Fields
@@ -503,7 +507,7 @@ const ui = {
 
   // Hints
   // ---------------------------------------------------------------------------
-  hintFontColor: COLOR_TEXT_LIGHT,
+  hintColor: COLOR_TEXT_LIGHT,
   hintFontSize: appTheme.typography.s2,
   hintFontSizeLarger: appTheme.typography.s3,
 
@@ -664,16 +668,22 @@ const ui = {
   rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
   rowCompactGutter: '.75rem',
-  rowSubheading: {
+  rowHeading: {
     color: appTheme.palette.dark,
+    fontSize: appTheme.typography.s4,
+    lineHeight: '1.625rem'
+  },
+  rowSubheading: {
+    color: COLOR_TEXT,
     fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s5
+    lineHeight: appTheme.typography.s4
   },
 
   // Settings
   // ---------------------------------------------------------------------------
   settingsGutter: '1rem',
   settingsPanelMaxWidth: '48rem',
+  settingsPanelMaxWidthNarrow: '40.25rem',
 
   // Shadows
   shadow,
@@ -691,8 +701,11 @@ const ui = {
   tagPalette: [
     'cool',
     'gray',
+    'midGray',
     'light',
     'warm',
+    'yellow',
+    'blue',
     'white'
   ],
 
@@ -709,6 +722,11 @@ const ui = {
   // ---------------------------------------------------------------------------
   typeRegular: TYPE_REGULAR,
   typeSemiBold: TYPE_SEMIBOLD,
+
+  // Upgrade
+  // ---------------------------------------------------------------------------
+  upgradeColor: blue,
+  upgradeColorOption: 'blue',
 
   // Voting
   // ---------------------------------------------------------------------------

@@ -6,12 +6,12 @@ const DashSectionHeader = styled('div')({
   display: 'flex',
   margin: '0 auto',
   maxWidth: ui.taskColumnsMaxWidth,
-  padding: `2rem ${ui.dashGutterSmall}`,
+  padding: `1rem ${ui.dashGutterSmall}`,
   position: 'relative',
   width: '100%',
 
   [ui.dashBreakpoint]: {
-    padding: `3rem ${ui.dashGutterLarge} 2.25rem`
+    padding: `2rem ${ui.dashGutterLarge} 2.25rem`
   }
 });
 

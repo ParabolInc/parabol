@@ -1,59 +1,52 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import Avatar from 'universal/components/Avatar/Avatar';
-import Row from 'universal/components/Row/Row';
-import Tag from 'universal/components/Tag/Tag';
+import {
+  Avatar,
+  Row,
+  RowActions,
+  RowInfo,
+  RowInfoHeader,
+  RowInfoHeading,
+  RowInfoCopy,
+  RowInfoLink,
+  Tag
+} from 'universal/components';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import fromNow from 'universal/utils/fromNow';
 
 const UserRow = (props) => {
-  const {
-    actions,
-    possibleTeamMember,
-    styles
-  } = props;
+  const {actions, possibleTeamMember} = props;
   const {__typename: type, email, isLead, picture, preferredName, createdAt, updatedAt} = possibleTeamMember;
   return (
     <Row>
-      <div className={css(styles.userAvatar)}>
+      <div>
         {picture ?
           <Avatar hasBadge={false} picture={picture} size="small" /> :
           <img alt="" src={defaultUserAvatar} />
         }
       </div>
-      <div className={css(styles.userInfo)}>
+      <RowInfo>
         {type === 'TeamMember' ?
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {preferredName}
-            </div>
-            {isLead &&
-              <Tag colorPalette="light" label="Lead" />
-            }
-          </div> :
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.preferredName)}>
-              {email}
-            </div>
-          </div>
+          <RowInfoHeader>
+            <RowInfoHeading>{preferredName}</RowInfoHeading>
+            {isLead && <Tag colorPalette="blue" label="Team Lead" />}
+          </RowInfoHeader> :
+          <RowInfoHeading>{email}</RowInfoHeading>
         }
         {type !== 'TeamMember' ?
-          <div className={css(styles.invitedAt)}>
-            {`invited ${fromNow(createdAt || updatedAt)}`}
-          </div> :
-          <a className={css(styles.infoLink)} href={`mailto:${email}`} title="Send an email">
+          <RowInfoCopy useHintCopy>
+            {`Invited ${fromNow(createdAt || updatedAt)}`}
+          </RowInfoCopy> :
+          <RowInfoLink href={`mailto:${email}`} title="Send an email">
             {email}
-          </a>
+          </RowInfoLink>
         }
-      </div>
+      </RowInfo>
       {actions &&
-        <div className={css(styles.userActions)}>
+        <RowActions>
           {actions}
-        </div>
+        </RowActions>
       }
     </Row>
   );
@@ -61,65 +54,15 @@ const UserRow = (props) => {
 
 UserRow.propTypes = {
   actions: PropTypes.any,
-  possibleTeamMember: PropTypes.object.isRequired,
-  styles: PropTypes.object
+  possibleTeamMember: PropTypes.object.isRequired
 };
 
 UserRow.defaultProps = {
   email: 'name@company.co'
 };
 
-const styleThunk = () => ({
-  userAvatar: {
-    // Define
-  },
-
-  userInfo: {
-    paddingLeft: '1rem'
-  },
-
-  userActions: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'flex-end'
-  },
-
-  nameAndTags: {
-    // Define
-  },
-
-  preferredName: {
-    color: appTheme.palette.dark,
-    display: 'inline-block',
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem',
-    verticalAlign: 'middle'
-  },
-
-  invitedAt: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4
-  },
-
-  infoLink: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4,
-
-    ':hover': {
-      color: appTheme.palette.dark
-    },
-    ':focus': {
-      color: appTheme.palette.dark
-    }
-  }
-});
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(UserRow),
+  UserRow,
   graphql`
     fragment UserRow_possibleTeamMember on PossibleTeamMember {
       __typename

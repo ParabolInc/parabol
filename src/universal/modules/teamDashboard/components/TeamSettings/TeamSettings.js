@@ -1,14 +1,10 @@
-import {css} from 'aphrodite-local-styles/no-important';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import FontAwesome from 'react-fontawesome';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
-import Panel from 'universal/components/Panel/Panel';
+import {Button, Panel, Tooltip, UserRow} from 'universal/components';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import Tooltip from 'universal/components/Tooltip/Tooltip';
-import UserRow from 'universal/components/UserRow/UserRow';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
@@ -20,17 +16,10 @@ import CancelTeamInviteMutation from 'universal/mutations/CancelTeamInviteMutati
 import ResendTeamInviteMutation from 'universal/mutations/ResendTeamInviteMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
-
-const tooltipIconStyle = {
-  color: appTheme.palette.dark70a,
-  fontSize: ui.iconSize,
-  lineHeight: '1.25rem',
-  verticalAlign: 'middle',
-  marginLeft: '.25rem',
-  marginTop: '-.0625rem'
-};
+import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import styled from 'react-emotion';
+import {PRO_LABEL} from 'universal/utils/constants';
 
 const originAnchor = {
   vertical: 'center',
@@ -42,11 +31,68 @@ const targetAnchor = {
   horizontal: 'left'
 };
 
+const TooltipIcon = styled(StyledFontAwesome)({
+  color: appTheme.palette.dark70a,
+  fontSize: ui.iconSize,
+  lineHeight: '1.25rem',
+  verticalAlign: 'middle',
+  marginLeft: '.25rem',
+  marginTop: '-.0625rem'
+});
+
+const TeamSettingsLayout = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  width: '100%'
+});
+
+const PanelsLayout = styled('div')({
+  margin: '0 auto',
+  maxWidth: ui.settingsPanelMaxWidth,
+  width: '100%'
+});
+
+const ActionsBlock = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  fontSize: 0,
+  textAlign: 'right'
+});
+
+const ActionLink = styled('div')({
+  color: appTheme.palette.dark,
+  cursor: 'pointer',
+  display: 'inline-block',
+  fontSize: appTheme.typography.s3,
+  fontWeight: 600,
+  lineHeight: appTheme.typography.s5,
+  marginLeft: '1.25rem',
+  verticalAlign: 'middle',
+
+  ':hover': {
+    opacity: '.5'
+  }
+});
+
+const PanelInner = styled('div')({
+  borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`
+});
+
+const PanelRow = styled('div')({
+  borderTop: `.0625rem solid ${ui.rowBorderColor}`,
+  padding: `${ui.panelGutter}`
+});
+
+const PanelRowCentered = styled(PanelRow)({
+  display: 'flex',
+  justifyContent: 'center'
+});
+
 class TeamSettings extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    styles: PropTypes.object,
     viewer: PropTypes.object.isRequired,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
@@ -54,47 +100,43 @@ class TeamSettings extends Component {
     onError: PropTypes.func.isRequired
   };
   teamMemberRowActions = (teamMember) => {
-    const {
-      styles,
-      viewer: {team}
-    } = this.props;
+    const {viewer: {team}} = this.props;
     const {teamMembers} = team;
     const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     const {teamMemberId, preferredName} = teamMember;
     const {isLead: viewerIsLead, teamMemberId: myTeamMemberId} = viewerTeamMember;
     return (
-      <div className={css(styles.actionLinkBlock)}>
+      <ActionsBlock>
         {viewerIsLead && myTeamMemberId !== teamMemberId &&
         <PromoteTeamMemberModal
           toggle={
-            <div className={css(styles.actionLink)}>
-              Promote {preferredName} to Team Lead
-            </div>
+            <ActionLink>
+              {`Promote ${preferredName} to Team Lead`}
+            </ActionLink>
           }
           teamMember={teamMember}
         />
         }
         {viewerIsLead && myTeamMemberId !== teamMemberId &&
         <RemoveTeamMemberModal
-          toggle={<div className={css(styles.actionLink)}>Remove</div>}
+          toggle={<ActionLink>{'Remove'}</ActionLink>}
           teamMember={teamMember}
         />
         }
         {!viewerIsLead && myTeamMemberId === teamMemberId &&
         <LeaveTeamModal
-          toggle={<div className={css(styles.actionLink)}>Leave Team</div>}
+          toggle={<ActionLink>{'Leave Team'}</ActionLink>}
           team={team}
           teamMember={teamMember}
         />
 
         }
-      </div>
+      </ActionsBlock>
     );
   };
   orgApprovalRowActions = (orgApprovalId) => {
     const {
       atmosphere,
-      styles,
       submitMutation,
       submitting,
       onCompleted,
@@ -108,10 +150,10 @@ class TeamSettings extends Component {
     };
     const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
     return (
-      <div className={css(styles.actionLinkBlock)}>
-        <div className={css(styles.actionLink)} onClick={cancel}>
+      <ActionsBlock>
+        <ActionLink onClick={cancel}>
           {'Cancel Pending Approval'}
-        </div>
+        </ActionLink>
         <span>
           <Tooltip
             maxHeight={40}
@@ -120,10 +162,10 @@ class TeamSettings extends Component {
             targetAnchor={targetAnchor}
             tip={tip}
           >
-            <FontAwesome name="question-circle" style={tooltipIconStyle} />
+            <TooltipIcon name="question-circle" />
           </Tooltip>
         </span>
-      </div>
+      </ActionsBlock>
     );
   };
 
@@ -131,7 +173,6 @@ class TeamSettings extends Component {
     const {
       atmosphere,
       dispatch,
-      styles,
       submitMutation,
       onCompleted,
       onError,
@@ -154,34 +195,51 @@ class TeamSettings extends Component {
       CancelTeamInviteMutation(atmosphere, invitationId, teamId, onError, onCompleted);
     };
     return (
-      <div className={css(styles.actionLinkBlock)}>
-        <div className={css(styles.actionLink)} onClick={resend}>
+      <ActionsBlock>
+        <ActionLink onClick={resend}>
           {'Resend Invitation'}
-        </div>
-        <div className={css(styles.actionLink)} onClick={cancel}>
+        </ActionLink>
+        <ActionLink onClick={cancel}>
           {'Cancel Invitation'}
-        </div>
-      </div>
+        </ActionLink>
+      </ActionsBlock>
     );
   }
 
   render() {
-    const {
-      dispatch,
-      styles,
-      viewer: {team}
-    } = this.props;
+    const {dispatch, viewer: {team}} = this.props;
     const {invitations, orgApprovals, teamName, teamMembers} = team;
     const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     // if kicked out, the component might reload before the redirect occurs
     if (!viewerTeamMember) return null;
     const {isLead: viewerIsLead} = viewerTeamMember;
+
+    // TODO: upgrade UX
+    // const isBillingLeader = true;
+    // const isPersonal = true;
+    // const showUpgradeCTA = isBillingLeader && isPersonal;
+    const showUpgradeCTA = false; // TODO wire this up later
+    const upgradeButtonLabel = <span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>;
+
     return (
-      <div className={css(styles.root)}>
+      <TeamSettingsLayout>
         <Helmet title={`${teamName} Settings | Parabol`} />
-        <div className={css(styles.panels)}>
+        {/* TODO: add Upgrade CTA for billing leaders */}
+        <PanelsLayout>
+          {showUpgradeCTA &&
+            <Panel>
+              <PanelRowCentered>
+                <Button
+                  buttonSize="small"
+                  colorPalette={ui.upgradeColorOption}
+                  label={upgradeButtonLabel}
+                  onClick={() => (console.log('upgrade, go to org billing view'))}
+                />
+              </PanelRowCentered>
+            </Panel>
+          }
           <Panel label="Manage Team">
-            <div className={css(styles.panelBorder)}>
+            <PanelInner>
               <InviteUser
                 dispatch={dispatch}
                 team={team}
@@ -218,71 +276,25 @@ class TeamSettings extends Component {
                   />
                 );
               })}
-            </div>
+            </PanelInner>
           </Panel>
           {viewerIsLead &&
           <Panel label="Danger Zone">
-            <div className={css(styles.panelRow)}>
+            <PanelRow>
               <ArchiveTeamContainer team={team} />
-            </div>
+            </PanelRow>
           </Panel>
           }
-        </div>
-      </div>
+        </PanelsLayout>
+      </TeamSettingsLayout>
     );
   }
 }
 
-const styleThunk = () => ({
-  root: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    width: '100%'
-  },
-
-  panels: {
-    margin: '0 auto',
-    maxWidth: ui.settingsPanelMaxWidth,
-    width: '100%'
-  },
-
-  actionLinkBlock: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    fontSize: 0,
-    textAlign: 'right'
-  },
-
-  actionLink: {
-    color: appTheme.palette.dark,
-    cursor: 'pointer',
-    display: 'inline-block',
-    fontSize: appTheme.typography.s3,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s5,
-    marginLeft: '1.25rem',
-    verticalAlign: 'middle',
-
-    ':hover': {
-      opacity: '.5'
-    }
-  },
-
-  panelBorder: {
-    borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`
-  },
-
-  panelRow: {
-    borderTop: `.0625rem solid ${ui.rowBorderColor}`,
-    padding: `${ui.panelGutter}`
-  }
-});
-
 export default createFragmentContainer(
   withAtmosphere(
     withMutationProps(
-      connect()(withStyles(styleThunk)(TeamSettings))
+      connect()(TeamSettings)
     )
   ),
   graphql`

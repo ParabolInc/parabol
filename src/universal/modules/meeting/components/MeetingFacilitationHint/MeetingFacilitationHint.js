@@ -38,7 +38,7 @@ MeetingFacilitationHint.defaultProps = {
 
 const styleThunk = () => ({
   facilitationHint: {
-    color: ui.hintFontColor,
+    color: ui.hintColor,
     display: 'inline-block',
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s5,
