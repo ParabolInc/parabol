@@ -202,6 +202,7 @@ class OutcomeCardFooter extends Component {
             {canAssign && !showTeam &&
             <LoadableMenu
               LoadableComponent={LoadableAssignMenu}
+              isToggleNativeElement
               maxWidth={350}
               maxHeight={225}
               originAnchor={assignOriginAnchor}

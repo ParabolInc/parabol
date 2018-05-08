@@ -20,6 +20,7 @@ type Props = {|
 const PickerTitle = styled('div')({
   fontSize: '.875rem',
   textAlign: 'center',
+  userSelect: 'none',
   width: '100%'
 });
 
@@ -30,7 +31,8 @@ const Hint = styled('div')({
 });
 
 class DueDatePicker extends React.Component<Props> {
-  handleDayClick = (day, {selected}) => {
+  handleDayClick = (day, {disabled, selected}) => {
+    if (disabled) return;
     const {atmosphere, closePortal, task: {taskId}, submitMutation, onCompleted, onError} = this.props;
     submitMutation();
     const dueDate = selected ? null : day;
@@ -42,11 +44,20 @@ class DueDatePicker extends React.Component<Props> {
     const {task: {dueDate}} = this.props;
     const selectedDate = dueDate && new Date(dueDate);
     const showHint = false;
+    const now = new Date();
+    const nextYear = new Date(new Date().setFullYear(now.getFullYear() + 1));
     return (
       <React.Fragment>
         <PickerTitle>{'Change Due Date'}</PickerTitle>
         {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
-        <DayPicker onDayClick={this.handleDayClick} selectedDays={selectedDate} />
+        <DayPicker
+          disabledDays={{before: now}}
+          fromMonth={now}
+          initialMonth={selectedDate || now}
+          onDayClick={this.handleDayClick}
+          selectedDays={selectedDate}
+          toMonth={nextYear}
+        />
       </React.Fragment>
     );
   }

@@ -12,6 +12,7 @@
     user-select: none;
     padding-bottom: 1rem;
     flex-direction: row;
+    outline: none;
 }
 
 .DayPicker-Months {
@@ -41,6 +42,7 @@
     top: 1rem;
     right: 1.5rem;
     margin-top: 2px;
+    outline: none;
     color: #82809A;
     width: 1.25rem;
     height: 1.25rem;

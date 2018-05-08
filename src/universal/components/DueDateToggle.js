@@ -3,11 +3,11 @@ import * as React from 'react';
 import styled from 'react-emotion';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker';
-import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {shortMonths} from 'universal/utils/makeDateString';
 import ui from 'universal/styles/ui';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import ms from 'ms';
 
 const Toggle = styled('div')(
   {
@@ -71,30 +71,26 @@ const formatDueDate = (dueDate) => {
   return `${monthStr} ${day}`;
 };
 
-const getDateDiff = (dueDate) => {
-  const today = new Date();
+const action = 'tap to change';
+const getDateInfo = (dueDate) => {
+  if (!dueDate) return {title: 'Add a due date'};
   const date = new Date(dueDate);
-  const timeDiff = date.getTime() - today.getTime();
-  const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  return diffDays;
+  const now = new Date();
+  const timeDiff = date - now;
+  const diffDays = Math.ceil(timeDiff / ms('1d'));
+  if (diffDays < 0) return {title: `Past due, ${action}`, isPastDue: true};
+  if (diffDays < 3) return {title: `Due soon, ${action}`, isDueSoon: true};
+  const dateString = formatDueDate(dueDate);
+  return {title: `Due ${dateString}, ${action}`};
 };
 
 const DueDateToggle = (props: Props) => {
   const {cardIsActive, task} = props;
   const {dueDate} = task;
-  const dateDiff = dueDate && getDateDiff(dueDate);
-  const isDueSoon =  dueDate && dateDiff > -1 && dateDiff < 2;
-  const isPastDue =  dueDate && dateDiff < 0;
-  const dateString = formatDueDate(dueDate);
-  const action = 'tap to change';
-  let title = 'Add a due date';
-  if (dueDate) title = `Due ${dateString}, ${action}`;
-  if (isDueSoon) title = `Due soon, ${action}`;
-  if (isPastDue) title = `Past due, ${action}`;
   const toggle = (
-    <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} isDueSoon={isDueSoon} isPastDue={isPastDue} title={title}>
+    <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} {...getDateInfo(dueDate)}>
       <DueDateIcon name="clock-o" />
-      {dueDate && <DateString>{dateString}</DateString>}
+      {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
     </Toggle>
   );
   return (
@@ -110,7 +106,7 @@ const DueDateToggle = (props: Props) => {
       toggle={toggle}
     />
   );
-}
+};
 
 export default createFragmentContainer(
   DueDateToggle,
