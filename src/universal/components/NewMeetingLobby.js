@@ -22,10 +22,14 @@ import makeHref from 'universal/utils/makeHref';
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
 
+const ButtonGroup = styled('div')({
+  display: 'flex',
+  paddingTop: '2.25rem'
+});
+
 const ButtonBlock = styled('div')({
-  margin: '0',
-  paddingTop: '2.25rem',
-  width: '13rem'
+  padding: '0 2rem 0 0',
+  width: '18.125rem'
 });
 
 const Lobby = styled('div')({
@@ -44,13 +48,6 @@ const Lobby = styled('div')({
   }
 });
 
-const RetroExpository = styled('div')({
-  fontWeight: 300
-});
-
-const GetAccessCopy = styled('div')({
-  fontWeight: 300
-});
 
 const UrlBlock = styled('div')({
   margin: '3rem 0 0',
@@ -81,47 +78,44 @@ const NewMeetingLobby = (props: Props) => {
     <Lobby>
       <LabelHeading>{`${meetingLabel} Meeting Lobby`}</LabelHeading>
       <MeetingPhaseHeading>{`${teamName} ${meetingLabel}`}</MeetingPhaseHeading>
-      {!isPro &&
-      <RetroExpository>
-        {'A retrospective lets your team reflect on past work and discover opportunities for how to work better in the future'}
-      </RetroExpository>
-      }
-      {!isPro && !meetingsOffered &&
-      <GetAccessCopy>
-        <span>{'As a free user, you can start running retrospectives immediately with your team'}</span>
-        <LoadableModal
-          LoadableComponent={UpgradeModalLoadable}
-          maxWidth={350}
-          maxHeight={225}
-          queryVars={{isBillingLeader: false}}
-          toggle={<Button
-            aria-label="Get Access Now"
-            buttonSize="large"
-            buttonStyle="solid"
-            colorPalette="cool"
-            depth={1}
-            isBlock
-            label="GET ACCESS NOW"
-            textTransform="uppercase"
-          />}
-        />
-      </GetAccessCopy>
-      }
       <MeetingCopy>
         {'The person who presses “Start Meeting” will be today’s Facilitator.'}<br />
         {'Everyone’s display automatically follows the Facilitator.'}
       </MeetingCopy>
-      <ButtonBlock>
-        <Button
-          buttonStyle="primary"
-          colorPalette="warm"
-          disabled={!canStartMeeting}
-          label={`Start ${meetingLabel} Meeting`}
-          onClick={onStartMeetingClick}
-          buttonSize="large"
-          waiting={submitting}
-        />
-      </ButtonBlock>
+      <ButtonGroup>
+        <ButtonBlock>
+          <Button
+            buttonStyle="primary"
+            colorPalette="warm"
+            depth={1}
+            disabled={!canStartMeeting}
+            isBlock
+            label={`Start ${meetingLabel} Meeting`}
+            onClick={onStartMeetingClick}
+            buttonSize="large"
+            waiting={submitting}
+          />
+        </ButtonBlock>
+        {!isPro &&
+          <ButtonBlock>
+            <LoadableModal
+              LoadableComponent={UpgradeModalLoadable}
+              maxWidth={350}
+              maxHeight={225}
+              queryVars={{isBillingLeader: false}}
+              toggle={<Button
+                aria-label="Get Access Now"
+                buttonSize="large"
+                buttonStyle="solid"
+                colorPalette="green"
+                depth={1}
+                isBlock
+                label="Get Access Now"
+              />}
+            />
+          </ButtonBlock>
+        }
+      </ButtonGroup>
       <UrlBlock>
         <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
       </UrlBlock>
