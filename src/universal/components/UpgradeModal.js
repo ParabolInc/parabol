@@ -164,7 +164,7 @@ const makeModalSqueezeContent = ({isBillingLeader}) => {
           <ModalContentSpacer />
           <InlineEstimatedCost activeUserCount={5} />
           <ModalLink href={PRICING_LINK} rel="noopener noreferrer" target="_blank" title={pricingLinkCopy}>
-            <StyledIcon name="external-link" />
+            <StyledIcon name={ui.iconExternalLink} />
             {pricingLinkCopy}
           </ModalLink>
         </ModalContent>

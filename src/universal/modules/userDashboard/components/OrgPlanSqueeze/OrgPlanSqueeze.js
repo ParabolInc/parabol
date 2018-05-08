@@ -196,7 +196,7 @@ const OrgPlanSqueeze = (props: Props) => {
           buttonSize="medium"
           buttonStyle="link"
           colorPalette="mid"
-          icon="external-link-square"
+          icon={ui.iconExternalLink}
           iconPlacement="right"
           label="Learn About Plans & Invoicing"
           onClick={openUrl(PRICING_LINK)}

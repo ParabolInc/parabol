@@ -50,7 +50,7 @@ class TeamArchiveSqueeze extends Component {
                 {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can see cards archived up to '}<b>{'14 days ago'}</b>{'.'}<br />
                 {'For full access to your team’s archive, upgrade to the '}<b>{`${PRO_LABEL} Plan`}</b>{'.'}<br />
                 <a href={PRICING_LINK} target="_blank" title={linkLabel}>
-                  <b>{linkLabel}</b> <FontAwesome name="external-link-square" style={iconStyles} />
+                  <b>{linkLabel}</b> <FontAwesome name={ui.iconExternalLink} style={iconStyles} />
                 </a>
               </p>
             </div>
