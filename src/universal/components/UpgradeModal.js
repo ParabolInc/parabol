@@ -139,9 +139,9 @@ const bullets = [
 ];
 
 const billingLeaders = [
-  {email: 'jordan@parabol.co'},
-  {email: 'marimar@parabol.co'},
-  {email: 'taya@parabol.co'}
+  {billingLeaderId: '001', email: 'jordan@parabol.co'},
+  {billingLeaderId: '002', email: 'marimar@parabol.co'},
+  {billingLeaderId: '003', email: 'taya@parabol.co'}
 ];
 
 const makeModalSqueezeContent = ({isBillingLeader}) => {
@@ -168,8 +168,8 @@ const makeModalSqueezeContent = ({isBillingLeader}) => {
           <ModalCopy>{'Add Credit Card'}</ModalCopy> :
           <BillingLeaders>
             <h3>{'Contact a Billing Leader:'}</h3>
-            {billingLeaders.map(({email}, idx) => (
-              <a href={`mailto:${email}`} key={`billingLeader-${idx + 1}`} title={`Email ${email}`}>{email}</a>
+            {billingLeaders.map(({billingLeaderId, email}) => (
+              <a href={`mailto:${email}`} key={billingLeaderId} title={`Email ${email}`}>{email}</a>
             ))}
           </BillingLeaders>
         }
