@@ -127,7 +127,8 @@ class ReflectionGroup extends Component<Props, State> {
     const {localPhase: {phaseType}} = meeting;
     // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
     const style = !isExpanded && this.topCardRef && reflections.length > 1 &&
-      {height: (reflections.length - 1) * 8 + this.topCardRef.clientHeight} || {};
+      // not sure how the DOM calculates 10.7. It's not pixel perfect, but supports 1 - 15 cards
+      {height: (reflections.length) * 10.7 + this.topCardRef.clientHeight} || {};
     const showHeader = reflections.length > 1 || phaseType === VOTE;
     return (
       <Group>
