@@ -8,7 +8,7 @@ import ui from 'universal/styles/ui';
 const InlineEstimatedCostBlock = styled('div')(({showCost}) => ({
   color: showCost ? ui.palette.green : ui.palette.mid,
   cursor: showCost ? 'default' : 'pointer',
-  fontSize: '1rem',
+  fontSize: '.9375rem',
   lineHeight: '2rem'
 }));
 
@@ -47,7 +47,7 @@ class InlineEstimatedCost extends Component<Props> {
     const question = 'How much will it cost'; // sans ? to avoid underlining punctuation on hover
     const copy = showCost ? estimate : question;
     return (
-      <InlineEstimatedCostBlock onClick={!showCost && this.getCost} showCost={showCost} title={`${question}?`}>
+      <InlineEstimatedCostBlock onClick={!showCost ? this.getCost : null} showCost={showCost} title={`${question}?`}>
         <StyledIcon name="question-circle" showCost={showCost} />
         <Copy showCost={showCost}>{copy}</Copy>{!showCost && <span>{'?'}</span>}
       </InlineEstimatedCostBlock>

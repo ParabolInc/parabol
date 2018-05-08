@@ -21,7 +21,7 @@ const flexBase = {
 };
 
 const modalCopyBase = {
-  fontSize: '1rem',
+  fontSize: '.9375rem',
   lineHeight: '2rem',
   margin: 0
 };
@@ -113,12 +113,11 @@ const BillingLeaders = styled('div')({
   '& h3': {
     fontSize: '1.25rem',
     fontWeight: 400,
-    margin: '0 0 .5rem'
+    margin: '0 0 1rem'
   },
   '& a': {
     color: ui.palette.mid,
     display: 'block',
-    fontSize: '1rem',
     margin: '.5rem 0',
     ':hover, :focus': {
       textDecoration: 'underline'

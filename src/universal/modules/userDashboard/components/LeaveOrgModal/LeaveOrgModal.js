@@ -25,24 +25,23 @@ const LeaveOrgModal = (props) => {
     submitMutation();
     RemoveOrgUserMutation(atmosphere, orgId, userId, onError, onCompleted);
   };
-  const undoStr = 'To undo it, you’ll have to ask another Billing Leader to re-add you';
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
-        Are you sure?
+      <Type align="center" bold marginBottom="1.5rem" scale="s5" colorPalette="dark">
+        {'Are you sure?'}
       </Type>
-      <Type align="center" bold marginBottom="1.5rem" scale="s4">
-        This will remove you from the organization and all teams under it! <br />
-        {undoStr}<br />
+      <Type align="center" marginBottom="1.5rem" scale="s3">
+        {'This will remove you from the organization and all teams under it! '}<br />
+        {'To undo it, you’ll have to ask another Billing Leader to re-add you.'}<br />
       </Type>
       <Button
         buttonStyle="flat"
         colorPalette="warm"
-        icon="arrow-circle-right"
+        icon="sign-out"
         iconPlacement="right"
         label={'Leave the organization'}
         onClick={handleClick}
-        buttonSize="large"
+        buttonSize="medium"
         waiting={submitting}
       />
     </DashModal>
@@ -54,7 +53,6 @@ LeaveOrgModal.propTypes = {
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
-  onBackdropClick: PropTypes.func.isRequired,
   orgId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   submitting: PropTypes.bool,
