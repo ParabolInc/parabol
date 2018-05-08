@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
-import {Button, Panel, Tooltip, UserRow} from 'universal/components';
+import {Button, Panel, Tooltip, UserRow, Row} from 'universal/components';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
@@ -84,15 +85,11 @@ const PanelRow = styled('div')({
   padding: `${ui.panelGutter}`
 });
 
-const PanelRowCentered = styled(PanelRow)({
-  display: 'flex',
-  justifyContent: 'center'
-});
-
 class TeamSettings extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
     viewer: PropTypes.object.isRequired,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
@@ -207,7 +204,7 @@ class TeamSettings extends Component {
   }
 
   render() {
-    const {dispatch, viewer: {team}} = this.props;
+    const {dispatch, history, viewer: {team}} = this.props;
     const {invitations, orgApprovals, orgId, teamName, teamMembers, tier} = team;
     const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     // if kicked out, the component might reload before the redirect occurs
@@ -220,14 +217,15 @@ class TeamSettings extends Component {
         <PanelsLayout>
           {tier === PERSONAL &&
             <Panel>
-              <PanelRowCentered>
+              <Row>
+                <div>{'This team is currently on a personal plan.'}</div>
                 <Button
                   buttonSize="small"
-                  colorPalette={ui.upgradeColorOption}
+                  buttonStyle="primary"
                   label={<span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>}
                   onClick={() => history.push(`/me/organizations/${orgId}`)}
                 />
-              </PanelRowCentered>
+              </Row>
             </Panel>
           }
           <Panel label="Manage Team">
@@ -286,7 +284,9 @@ class TeamSettings extends Component {
 export default createFragmentContainer(
   withAtmosphere(
     withMutationProps(
-      connect()(TeamSettings)
+      withRouter(
+        connect()(TeamSettings)
+      )
     )
   ),
   graphql`

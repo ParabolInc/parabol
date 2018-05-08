@@ -4,12 +4,9 @@ import {MONTHLY_PRICE, PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import {PRICING_LINK} from 'universal/utils/externalLinks';
 import plural from 'universal/utils/plural';
-
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import {textOverflow} from 'universal/styles/helpers';
-
 import makeGradient from 'universal/styles/helpers/makeGradient';
 import {createFragmentContainer} from 'react-relay';
 
@@ -20,6 +17,7 @@ const OrgPlanSqueezeRoot = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
+  flexShrink: 0,
   margin: '0 auto',
   maxWidth: '40.25rem',
   width: '100%'
@@ -58,7 +56,7 @@ const TierPanelBody = styled('div')({
   borderRadius: `0 0 ${ui.borderRadiusLarge} ${ui.borderRadiusLarge}`,
   display: 'flex',
   flexDirection: 'column',
-  fontSize: appTheme.typography.sBase,
+  fontSize: '.9375rem',
   lineHeight: 1.5,
   padding: '1.5rem 1.25rem',
   textAlign: 'center',
@@ -94,34 +92,27 @@ const CopyWithStatus = styled('div')({
     height: '.625rem',
     left: '-1rem',
     position: 'absolute',
-    top: '.4375rem',
+    top: '.375rem',
     width: '.625rem'
   }
 });
 
-const BillingLeaderRowBlock = styled('div')({
-  margin: '1.25rem auto .5rem'
+const EmailBlock = styled('div')({
+  margin: '1rem auto 0'
 });
 
-const BillingLeaderRowLabel = styled('div')({
-  fontSize: appTheme.typography.s2,
-  flex: 1,
-  paddingBottom: '.0625rem',
-  paddingRight: '1rem',
-  // textAlign: 'left',
-  '& > span': {
-    ...textOverflow
+const Email = styled('a')({
+  color: ui.palette.mid,
+  cursor: 'pointer',
+  display: 'block',
+  fontWeight: 400,
+  lineHeight: '2rem',
+  margin: '0 auto .5rem',
+  ':hover, :focus': {
+    color: ui.palette.mid,
+    textDecoration: 'underline'
   }
 });
-
-const BillingLeaderRow = styled('div')(({hasUpgradeNudge}) => ({
-  alignItems: 'center',
-  color: hasUpgradeNudge ? ui.hintColor : ui.colorText,
-  display: 'flex',
-  justifyContent: 'space-between',
-  margin: '0 0 .5rem',
-  width: '100%'
-}));
 
 type Props = {|
   organization: Object
@@ -181,6 +172,8 @@ class OrgPlanSqueeze extends Component<Props> {
       </TierPanelBody>
     );
 
+    const makeEmail = (email) => <Email href={`mailto:${email}`} title={`Email ${email}`}>{email}</Email>;
+
     const nudgeTheBillingLeader = () => {
       const {email, preferredName} = billingLeaders[0];
       return (
@@ -189,7 +182,7 @@ class OrgPlanSqueeze extends Component<Props> {
             {'Contact your billing leader,'}<br />
             <b>{preferredName}</b>{', to upgrade:'}
           </div>
-          <b>{email}</b>
+          {makeEmail(email)}
         </TierPanelBody>
       );
     };
@@ -198,16 +191,16 @@ class OrgPlanSqueeze extends Component<Props> {
       return (
         <TierPanelBody>
           <div>{'Contact a billing leader to upgrade:'}</div>
-          <BillingLeaderRowBlock>
+          <EmailBlock>
             {billingLeaders.map((billingLeader) => {
               const {billingLeaderId, email} = billingLeader;
               return (
-                <BillingLeaderRow key={billingLeaderId}>
-                  <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
-                </BillingLeaderRow>
+                <div key={billingLeaderId}>
+                  {makeEmail(email)}
+                </div>
               );
             })}
-          </BillingLeaderRowBlock>
+          </EmailBlock>
         </TierPanelBody>
       );
     };
@@ -227,7 +220,7 @@ class OrgPlanSqueeze extends Component<Props> {
           </TierPanel>
           {/* Professional Panel */}
           <TierPanel tier={PRO}>
-            <TierPanelHeader tier={PRO}>{PRO_LABEL}</TierPanelHeader>
+            <TierPanelHeader tier={PRO}>{'Upgrade to '}{PRO_LABEL}</TierPanelHeader>
             {isBillingLeader && billingLeaderSqueeze}
             {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
             {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
