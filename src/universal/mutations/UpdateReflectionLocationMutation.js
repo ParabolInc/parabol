@@ -23,6 +23,9 @@ type Variables = {
 
 graphql`
   fragment UpdateReflectionLocationMutation_team on UpdateReflectionLocationPayload {
+    meeting {
+      nextAutoGroupThreshold
+    }
     reflection {
       ...CompleteReflectionFrag @relay(mask: false)
     }

@@ -1,17 +1,84 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import Row from 'universal/components/Row/Row';
-import Tag from 'universal/components/Tag/Tag';
-import FontAwesome from 'react-fontawesome';
+import {Row, RowInfo, Tag} from 'universal/components';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router-dom';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
 import {PAID, PENDING, UPCOMING} from 'universal/utils/constants';
+import StyledFontAwesome from 'universal/components/StyledFontAwesome';
+import styled, {css, cx} from 'react-emotion';
+
+const FileIcon = styled(StyledFontAwesome)({
+  alignItems: 'center',
+  color: ui.palette.white,
+  display: 'flex',
+  fontSize: ui.iconSize2x,
+  height: 50,
+  justifyContent: 'center',
+  width: 50
+});
+
+const InvoiceAmount = styled('span')({
+  fontSize: appTheme.typography.s6,
+  color: ui.palette.dark
+});
+
+const InvoiceAvatar = styled('div')(({isEstimate}) => ({
+  backgroundColor: isEstimate ? appTheme.palette.mid : appTheme.palette.mid40l,
+  borderRadius: '.5rem'
+}));
+
+const InvoiceInfo = styled(RowInfo)({
+  width: '100%'
+});
+
+const InvoiceTitle = styled('div')({
+  color: ui.rowHeadingColor,
+  display: 'inline-block',
+  fontSize: ui.rowHeadingFontSize,
+  lineHeight: '1.625rem',
+  verticalAlign: 'middle'
+});
+
+const InfoRow = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  width: '100%'
+});
+
+const InfoRowRight = styled('div')({
+  flex: 1,
+  justifyContent: 'flex-end',
+  textAlign: 'right'
+});
+
+const styledDate = css({
+  fontSize: appTheme.typography.s2
+});
+
+const styledToPay = css({
+  color: ui.palette.dark
+});
+
+const styledPaid = css({
+  color: ui.hintColor
+});
+
+const styledUnpaid = css({
+  color: appTheme.palette.warm
+});
+
+const styledInfoLink = css({
+  ...ui.rowSubheading,
+  color: appTheme.palette.mid,
+  ':hover, :focus': {
+    color: appTheme.palette.mid,
+    textDecoration: 'underline'
+  }
+});
 
 const InvoiceRow = (props) => {
   const {
@@ -22,182 +89,64 @@ const InvoiceRow = (props) => {
       endAt,
       paidAt,
       status
-    },
-    styles
+    }
   } = props;
   const isEstimate = status === UPCOMING;
-  const invoiceAvatarStyles = css(
-    styles.invoiceAvatar,
-    isEstimate && styles.invoiceAvatarEstimate
-  );
-  const statusStyle = status === PENDING ? styles.paid : styles.unpaid;
   return (
     <Row>
-      <div className={invoiceAvatarStyles}>
-        <div className={css(styles.icon)}>
-          <FontAwesome name="file-text" className={css(styles.fileIcon)} />
-        </div>
-      </div>
-      <div className={css(styles.invoiceInfo)}>
-        <div className={css(styles.infoRow)}>
-          <div className={css(styles.infoRowLeft)}>
-            <div className={css(styles.invoiceTitle)}>
+      <InvoiceAvatar isEstimate={isEstimate}>
+        <FileIcon name="file-text" />
+      </InvoiceAvatar>
+      <InvoiceInfo>
+        <InfoRow>
+          <div>
+            <InvoiceTitle>
               {makeMonthString(endAt)}
-            </div>
+            </InvoiceTitle>
             {isEstimate &&
-              <Tag colorPalette="light" label="Current Estimate" />
+              <Tag colorPalette="blue" label="Current Estimate" />
             }
           </div>
-          <div className={css(styles.infoRowRight)}>
-            <span className={css(styles.invoiceAmount)}>
+          <InfoRowRight>
+            <InvoiceAmount>
               {invoiceLineFormat(amountDue)}
-            </span>
-          </div>
-        </div>
-        <div className={css(styles.infoRow)}>
-          <div className={css(styles.infoRowLeft)}>
-            <Link className={css(styles.subHeader)} rel="noopener noreferrer" target="_blank" to={`/invoice/${invoiceId}`}>
+            </InvoiceAmount>
+          </InfoRowRight>
+        </InfoRow>
+        <InfoRow>
+          <div>
+            <Link className={styledInfoLink} rel="noopener noreferrer" target="_blank" to={`/invoice/${invoiceId}`}>
               {'See Details'}
             </Link>
           </div>
-          <div className={css(styles.infoRowRight)}>
+          <InfoRowRight>
             {status === UPCOMING &&
-              <span className={css(styles.date, styles.toPay)}>
+              <span className={cx(styledDate, styledToPay)}>
                 {hasCard ? `card will be charged on ${makeDateString(endAt)}` :
                   `Make sure to add billing info before ${makeDateString(endAt)}!`
                 }
               </span>
             }
             {status === PAID &&
-              <span className={css(styles.date, styles.paid)}>
+              <span className={cx(styledDate, styledPaid)}>
                 {'Paid on '}{makeDateString(paidAt)}
               </span>
             }
             {status !== PAID && status !== UPCOMING &&
-              <span className={css(statusStyle)}>
+              <span className={status === PENDING ? styledPaid : styledUnpaid}>
                 {'Status: '}{status}
               </span>
             }
-          </div>
-        </div>
-      </div>
+          </InfoRowRight>
+        </InfoRow>
+      </InvoiceInfo>
     </Row>
   );
 };
 
 InvoiceRow.propTypes = {
   hasCard: PropTypes.bool,
-  invoice: PropTypes.object,
-  styles: PropTypes.object
+  invoice: PropTypes.object
 };
 
-const lineHeightLarge = '1.625rem';
-
-const styleThunk = () => ({
-  fileIcon: {
-    alignItems: 'center',
-    color: '#fff',
-    display: 'flex !important',
-    fontSize: `${ui.iconSize2x} !important`,
-    height: 50,
-    justifyContent: 'center',
-    width: 50
-  },
-
-  invoiceAmount: {
-    fontSize: appTheme.typography.s6,
-    color: appTheme.palette.cool
-  },
-
-  invoiceAvatar: {
-    backgroundColor: appTheme.palette.mid40l,
-    borderRadius: '.5rem'
-  },
-
-  invoiceAvatarEstimate: {
-    backgroundColor: appTheme.palette.mid
-  },
-
-  invoiceInfo: {
-    paddingLeft: ui.rowGutter,
-    width: '100%'
-  },
-
-  amountAndDueDate: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    textAlign: 'right'
-  },
-
-  nameAndTags: {
-    // Define
-  },
-
-  date: {
-    fontSize: appTheme.typography.s2
-  },
-
-  toPay: {
-    color: appTheme.palette.cool,
-    fontWeight: 600
-  },
-
-  paid: {
-    color: appTheme.palette.mid,
-    fontWeight: 600
-  },
-
-  unpaid: {
-    color: appTheme.palette.warm,
-    fontWeight: 600
-  },
-  invoiceTitle: {
-    color: ui.rowHeadingColor,
-    display: 'inline-block',
-    fontSize: ui.rowHeadingFontSize,
-    lineHeight: lineHeightLarge,
-    verticalAlign: 'middle'
-  },
-
-  subHeader: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4
-  },
-
-  infoRow: {
-    alignItems: 'center',
-    display: 'flex',
-    width: '100%'
-  },
-
-  infoRowLeft: {
-    // Define
-  },
-
-  infoRowRight: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    textAlign: 'right'
-  },
-
-  infoLink: {
-    color: appTheme.palette.mid,
-    fontSize: appTheme.typography.s2,
-    fontWeight: 600,
-    lineHeight: appTheme.typography.s4,
-
-    ':hover': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
-    },
-    ':focus': {
-      color: appTheme.palette.mid,
-      textDecoration: 'underline'
-    }
-  }
-});
-
-export default withStyles(styleThunk)(InvoiceRow);
+export default InvoiceRow;

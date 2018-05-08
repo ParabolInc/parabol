@@ -12,7 +12,7 @@ const CardBlock = styled('div')({
 });
 
 const AddingHint = styled('div')({
-  color: ui.hintFontColor,
+  color: ui.hintColor,
   fontSize: ui.cardContentFontSize,
   textAlign: 'center'
 });
