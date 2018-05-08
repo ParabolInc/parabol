@@ -1891,10 +1891,17 @@ export type NavigateMeetingPayload = {
 }
 
 export type PhaseCompletePayload = {
+  /** payload provided if the retro reflect phase was completed */
+  reflect: ?ReflectPhaseCompletePayload;
   /** payload provided if the retro grouping phase was completed */
   group: ?GroupPhaseCompletePayload;
   /** payload provided if the retro voting phase was completed */
   vote: ?VotePhaseCompletePayload;
+}
+
+export type ReflectPhaseCompletePayload = {
+  /** a list of empty reflection groups to remove */
+  emptyReflectionGroupIds: ?Array<string>;
 }
 
 export type GroupPhaseCompletePayload = {
