@@ -29,10 +29,10 @@ const LeaveOrgModal = (props) => {
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
       <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
-        Are you sure?
+        {'Are you sure?'}
       </Type>
-      <Type align="center" bold marginBottom="1.5rem" scale="s4">
-        This will remove you from the organization and all teams under it! <br />
+      <Type align="center" marginBottom="1.5rem" scale="s4">
+        {'This will remove you from the organization and all teams under it! <br />'}
         {undoStr}<br />
       </Type>
       <Button

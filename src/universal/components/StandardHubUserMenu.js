@@ -38,14 +38,14 @@ type Props = {|
 |}
 const StandardHubUserMenu = (props: Props) => {
   const {closePortal, history, viewer: {email, organizations}} = props;
+
   // nav menu routes
   const goToSettings = () => history.push('/me/settings');
   const goToOrganizations = () => history.push('/me/organizations');
   const goToNotifications = () => history.push('/me/notifications');
   const signOut = () => history.push('/signout');
 
-
-  const ownedFreeOrgs = organizations.filter((org) => org.isBillingLeader && org.tier === PERSONAL);
+  const ownedFreeOrgs = organizations.filter((org) => org.tier === PERSONAL);
   const showUpgradeCTA = ownedFreeOrgs.length > 0;
 
   const makeUpgradeMenuLabel = (
@@ -84,7 +84,6 @@ export default createFragmentContainer(
       email
       organizations {
         id
-        isBillingLeader
         tier
       }
     }

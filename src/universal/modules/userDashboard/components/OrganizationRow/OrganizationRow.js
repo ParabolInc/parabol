@@ -36,7 +36,6 @@ const OrganizationRow = (props) => {
     history,
     organization: {
       id: orgId,
-      isBillingLeader,
       name,
       orgUserCount: {
         activeUserCount,
@@ -49,7 +48,7 @@ const OrganizationRow = (props) => {
   const orgAvatar = picture || defaultOrgAvatar;
   const onRowClick = () => history.push(`/me/organizations/${orgId}`);
   const totalUsers = activeUserCount + inactiveUserCount;
-  const showUpgradeCTA = isBillingLeader && tier === PERSONAL;
+  const showUpgradeCTA = tier === PERSONAL;
   const upgradeCTALabel = <span>{'Upgrade to '}<b>{PRO_LABEL}</b></span>;
   return (
     <Row>
@@ -98,7 +97,6 @@ OrganizationRow.propTypes = {
   history: PropTypes.object.isRequired,
   organization: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    isBillingLeader: PropTypes.bool.isRequired,
     name: PropTypes.string.isRequired,
     picture: PropTypes.string,
     tier: PropTypes.string.isRequired,
