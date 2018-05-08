@@ -54,6 +54,7 @@ const OutcomeCard = (props) => {
   const privateTitle = ', marked as #private';
   const archivedTitle = ', set as #archived';
   const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${isArchived ? archivedTitle : ''}`;
+  const cardIsActive = cardHasFocus || cardHasHover || cardHasMenuOpen;
   return (
     <div className={rootStyles}>
       <TaskWatermark service={service} />
@@ -65,6 +66,7 @@ const OutcomeCard = (props) => {
             {isArchived && <OutcomeCardStatusIndicator status="archived" />}
           </div>
           <EditingStatusContainer
+            cardIsActive={cardIsActive}
             isEditing={isEditing}
             task={task}
           />
@@ -82,7 +84,7 @@ const OutcomeCard = (props) => {
         <TaskIntegrationLink integration={integration || null} />
         <OutcomeCardFooter
           area={area}
-          cardIsActive={cardHasFocus || cardHasHover || cardHasMenuOpen}
+          cardIsActive={cardIsActive}
           editorState={editorState}
           handleAddTask={handleAddTask}
           isAgenda={isAgenda}

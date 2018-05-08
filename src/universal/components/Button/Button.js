@@ -98,6 +98,7 @@ class Button extends Component {
       'left',
       'right'
     ]),
+    innerRef: PropTypes.func,
     isBlock: PropTypes.bool,
     label: PropTypes.any,
     onClick: PropTypes.func,
@@ -172,6 +173,7 @@ class Button extends Component {
       iconLarge,
       iconPalette,
       iconPlacement,
+      innerRef,
       isBlock,
       label,
       onClick,
@@ -236,6 +238,7 @@ class Button extends Component {
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseLeave={this.onMouseLeave}
+        ref={innerRef}
         title={title || ariaLabel}
         type={type || 'button'}
         aria-label={ariaLabel}

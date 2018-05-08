@@ -12,6 +12,7 @@ const withToggledPortal = (ComposedComponent) => {
   class ToggledPortal extends Component {
     static displayName = `ToggledPortal(${getDisplayName(ComposedComponent)})`;
     static propTypes = {
+      isToggleNativeElement: PropTypes.bool,
       toggle: PropTypes.any.isRequired,
       LoadableComponent: PropTypes.func.isRequired,
       queryVars: PropTypes.object,
@@ -70,7 +71,6 @@ const withToggledPortal = (ComposedComponent) => {
 
     makeSmartToggle(toggle) {
       // strings are plain DOM nodes
-      const refProp = typeof toggle.type === 'string' ? 'ref' : 'innerRef';
       return React.cloneElement(toggle, {
         'aria-haspopup': 'true',
         'aria-expanded': this.state.isOpen,
@@ -99,7 +99,7 @@ const withToggledPortal = (ComposedComponent) => {
             LoadableComponent.preload();
           }
         },
-        [refProp]: (c) => {
+        [this.props.isToggleNativeElement ? 'ref' : 'innerRef']: (c) => {
           this.toggleRef = c;
         }
       });

@@ -16,20 +16,21 @@ const subscription = graphql`
   subscription TaskSubscription {
     taskSubscription {
       __typename
-      ...AcceptTeamInviteMutation_task
-      ...RemoveTeamMemberMutation_task
-      ...CancelApprovalMutation_task
-      ...CancelTeamInviteMutation_task
-      ...ChangeTaskTeamMutation_task
-      ...CreateGitHubIssueMutation_task
-      ...CreateTaskMutation_task
-      ...DeleteTaskMutation_task
-      ...EditTaskMutation_task
-      ...EndMeetingMutation_task
-      ...InviteTeamMembersMutation_task
-      ...RejectOrgApprovalMutation_task
-      ...RemoveOrgUserMutation_task
-      ...UpdateTaskMutation_task
+      ...AcceptTeamInviteMutation_task @relay(mask: false)
+      ...RemoveTeamMemberMutation_task @relay(mask: false)
+      ...CancelApprovalMutation_task @relay(mask: false)
+      ...CancelTeamInviteMutation_task @relay(mask: false)
+      ...ChangeTaskTeamMutation_task @relay(mask: false)
+      ...CreateGitHubIssueMutation_task @relay(mask: false)
+      ...CreateTaskMutation_task @relay(mask: false)
+      ...DeleteTaskMutation_task @relay(mask: false)
+      ...EditTaskMutation_task @relay(mask: false)
+      ...EndMeetingMutation_task @relay(mask: false)
+      ...InviteTeamMembersMutation_task @relay(mask: false)
+      ...RejectOrgApprovalMutation_task @relay(mask: false)
+      ...RemoveOrgUserMutation_task @relay(mask: false)
+      ...UpdateTaskMutation_task @relay(mask: false)
+      ...UpdateTaskDueDateMutation_task @relay(mask: false)
     }
   }
 `;
@@ -84,6 +85,8 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
           break;
         case 'UpdateTaskPayload':
           updateTaskTaskUpdater(payload, store, viewerId, {dispatch, history, location});
+          break;
+        case 'UpdateTaskDueDatePayload':
           break;
         default:
           console.error('TaskSubscription case fail', type);

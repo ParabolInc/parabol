@@ -13,6 +13,7 @@ import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayl
 import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
+import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayload';
 
 const types = [
   AcceptTeamInvitePayload,
@@ -28,7 +29,8 @@ const types = [
   RejectOrgApprovalPayload,
   RemoveOrgUserPayload,
   RemoveTeamMemberPayload,
-  UpdateTaskPayload
+  UpdateTaskPayload,
+  UpdateTaskDueDatePayload
 ];
 
 export default graphQLSubscriptionType('TaskSubscriptionPayload', types);

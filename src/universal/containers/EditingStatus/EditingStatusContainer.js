@@ -6,6 +6,7 @@ import getRefreshPeriod from 'universal/utils/getRefreshPeriod';
 
 class EditingStatusContainer extends Component {
   static propTypes = {
+    cardIsActive: PropTypes.bool,
     isEditing: PropTypes.bool,
     task: PropTypes.object.isRequired
   };
@@ -42,13 +43,14 @@ class EditingStatusContainer extends Component {
   }
 
   render() {
-    const {isEditing, task} = this.props;
+    const {cardIsActive, isEditing, task} = this.props;
     const {createdAt, updatedAt} = task;
     const {timestampType} = this.state;
     this.queueNextRender();
     const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt;
     return (
       <EditingStatus
+        cardIsActive={cardIsActive}
         handleClick={this.toggleTimestamp}
         isEditing={isEditing}
         task={task}

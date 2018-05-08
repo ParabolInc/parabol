@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import FontAwesome from 'react-fontawesome';
 
 const domProps = [
@@ -6,14 +6,17 @@ const domProps = [
 ];
 const propSet = new Set([...Object.keys(FontAwesome.propTypes), ...domProps]);
 
-const StyledFontAwesome = (props) => {
-  const goodProps = {};
-  Object.keys(props).forEach((propName) => {
-    if (propSet.has(propName)) {
-      goodProps[propName] = props[propName];
-    }
-  });
-  return <FontAwesome {...goodProps} />;
-};
+// eslint-disable-next-line react/prefer-stateless-function
+class StyledFontAwesome extends React.Component {
+  render() {
+    const goodProps = {};
+    Object.keys(this.props).forEach((propName) => {
+      if (propSet.has(propName)) {
+        goodProps[propName] = this.props[propName];
+      }
+    });
+    return <FontAwesome {...goodProps} />;
+  }
+}
 
 export default StyledFontAwesome;
