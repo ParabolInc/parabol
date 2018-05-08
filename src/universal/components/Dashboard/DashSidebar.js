@@ -11,8 +11,8 @@ import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import DashNavItem from './DashNavItem';
-import {Scrollbars} from 'react-custom-scrollbars';
 import styled, {css} from 'react-emotion';
+import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar';
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString();
 const linkBaseStyles = {
@@ -101,76 +101,45 @@ const AddTeamLabel = styled('div')({
   lineHeight: ui.navMenuLineHeight
 });
 
-const scrollbarStyles = css({
-  // silver
-  backgroundColor: 'rgba(241,240,250, .3)',
-  borderRadius: '3px'
-});
+const DashSidebar = (props) => {
+  const {location, viewer} = props;
+  return (
+    <DashSidebarStyles>
+      <StandardHub location={location} viewer={viewer} />
+      <Nav>
+        <MyDashboard>
+          <DashNavItem
+            location={location}
+            href="/me"
+            icon="table"
+            label="My Dashboard"
+          />
+        </MyDashboard>
+        <NavLabel>
+          {'My Teams'}
+        </NavLabel>
+        <SexyScrollbar>
+          <TeamList>
+            <DashNavList location={location} viewer={viewer} />
+          </TeamList>
+        </SexyScrollbar>
+        <NavLink
+          className={addTeamStyles}
+          activeClassName={disabledAddTeamStyles}
+          title="Add New Team"
+          to="/newteam/1"
+        >
+          <AddTeamIcon name="plus-circle" />
+          <AddTeamLabel>
+            {'Add New Team'}
+          </AddTeamLabel>
+        </NavLink>
+      </Nav>
 
-console.log('cn', `& .${scrollbarStyles}`);
-const StyledScrollbars = styled(Scrollbars)({
-  ':hover': {
-    [`.${scrollbarStyles}`]: {
-      opacity: 1
-    }
-  },
-  [`.${scrollbarStyles}`]: {
-    opacity: 0,
-    transition: 'opacity .2s ease-in'
-  }
-});
-
-class DashSidebar extends React.Component {
-  componentDidMount() {
-    // FIXME remove when we get rid of aphrodite. necessary to get the correct height
-    setTimeout(() => this.forceUpdate());
-  }
-
-  teamScrollRef = React.createRef();
-
-  render() {
-    const {location, viewer} = this.props;
-    return (
-      <DashSidebarStyles>
-        <StandardHub location={location} viewer={viewer} />
-        <Nav>
-          <MyDashboard>
-            <DashNavItem
-              location={location}
-              href="/me"
-              icon="table"
-              label="My Dashboard"
-            />
-          </MyDashboard>
-          <NavLabel>
-            {'My Teams'}
-          </NavLabel>
-          <StyledScrollbars
-            style={{height: this.teamScrollRef.current && this.teamScrollRef.current.getBoundingClientRect().height}}
-            renderThumbVertical={(props) => <div {...props} className={scrollbarStyles} />}
-          >
-            <TeamList innerRef={this.teamScrollRef}>
-              <DashNavList location={location} viewer={viewer} />
-            </TeamList>
-          </StyledScrollbars>
-          <NavLink
-            className={addTeamStyles}
-            activeClassName={disabledAddTeamStyles}
-            title="Add New Team"
-            to="/newteam/1"
-          >
-            <AddTeamIcon name="plus-circle" />
-            <AddTeamLabel>
-              {'Add New Team'}
-            </AddTeamLabel>
-          </NavLink>
-        </Nav>
-
-        <LogoBlock variant="white" />
-      </DashSidebarStyles>
-    );
-  }
-}
+      <LogoBlock variant="white" />
+    </DashSidebarStyles>
+  );
+};
 
 DashSidebar.propTypes = {
   // required to update highlighting
