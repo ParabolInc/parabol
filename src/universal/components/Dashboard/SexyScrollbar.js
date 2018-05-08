@@ -6,7 +6,7 @@ import styled from 'react-emotion';
 
 type Props = {|
   isNativeChild?: boolean,
-  children: React.Node
+  children: React.Element<*>
 |}
 
 const scrollbarStyles = css({
