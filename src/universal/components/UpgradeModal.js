@@ -30,7 +30,7 @@ const ModalBoundary = styled('div')({
   ...flexBase,
   background: ui.palette.white,
   borderRadius: ui.modalBorderRadius,
-  height: 370,
+  height: 374,
   width: 700
 });
 
@@ -146,13 +146,19 @@ const billingLeaders = [
 
 const makeModalSqueezeContent = ({isBillingLeader}) => {
   const pricingLinkCopy = 'Learn About Plans & Invoicing';
+  // TODO scrub the org name
+  const organizationName = 'Parabol, Inc.';
+  const showFreeRetroContext = true; // we may use this modal elsewhere
   return (
     <ModalBoundary>
       <ModalContentPanel>
         <ModalHeading>{`Upgrade to ${PRO_LABEL}`}</ModalHeading>
-        <StyleInlineAlert>
-          {'0 of 3 Free Retrospective Meetings Remaining'}
-        </StyleInlineAlert>
+        {showFreeRetroContext &&
+          <StyleInlineAlert>
+            {'0 of 3 Free Retrospective Meetings'}<br />
+            {'Remaining for '}<b>{organizationName}</b>
+          </StyleInlineAlert>
+        }
         <ModalContent>
           {bullets.map((bullet, idx) => makeBulletedContent(bullet, idx))}
           <ModalContentSpacer />
