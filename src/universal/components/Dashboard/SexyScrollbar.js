@@ -28,11 +28,6 @@ const StyledScrollbars = styled(Scrollbars)({
 });
 
 class SexyScrollbar extends React.Component<Props> {
-  componentDidMount() {
-    // FIXME remove when we get rid of aphrodite. necessary to get the correct height
-    setTimeout(() => this.forceUpdate());
-  }
-
   scrollRef = React.createRef();
 
   render() {
@@ -40,7 +35,6 @@ class SexyScrollbar extends React.Component<Props> {
     const refProp = isNativeChild ? 'ref' : 'innerRef';
     return (
       <StyledScrollbars
-        style={{height: this.scrollRef.current && this.scrollRef.current.getBoundingClientRect().height}}
         renderThumbVertical={(props) => <div {...props} className={scrollbarStyles} />}
       >
         {React.cloneElement(children, {[refProp]: this.scrollRef})}

@@ -37,7 +37,6 @@ class ScrollableBlock extends Component {
   };
 
   state = {
-    filteredAgendaItems: [],
     overflownAbove: false,
     overflownBelow: false
   };
