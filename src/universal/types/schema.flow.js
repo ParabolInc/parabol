@@ -1392,7 +1392,7 @@ export type RetrospectiveMeeting = {
   viewerMeetingMember: ?RetrospectiveMeetingMember;
   /** the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used. */
   autoGroupThreshold: ?number;
-  /** the next smallest threshold to guarantee at least 1 more grouping will be achieved */
+  /** the next smallest distance threshold to guarantee at least 1 more grouping will be achieved */
   nextAutoGroupThreshold: ?number;
   /** The grouped reflections */
   reflectionGroups: Array<RetroReflectionGroup>;
