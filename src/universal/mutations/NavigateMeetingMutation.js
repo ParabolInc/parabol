@@ -4,6 +4,7 @@ import getInProxy from 'universal/utils/relay/getInProxy';
 import {DISCUSS, VOTE} from 'universal/utils/constants';
 import clientTempId from 'universal/utils/relay/clientTempId';
 import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups';
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
@@ -16,6 +17,9 @@ graphql`
       isComplete
     }
     phaseComplete {
+      reflect {
+        emptyReflectionGroupIds
+      }
       group {
         reflectionGroups {
           title
@@ -98,10 +102,22 @@ const optimisticallyCreateRetroTopics = (store, discussPhase, meetingId) => {
   discussPhase.setLinkedRecords(discussStages, 'stages');
 };
 
+export const navigateMeetingTeamUpdater = (payload, store) => {
+  const emptyReflectionGroupIds = getInProxy(payload, 'phaseComplete', 'reflect', 'emptyReflectionGroupIds');
+  if (!emptyReflectionGroupIds) return;
+  const meetingId = getInProxy(payload, 'meeting', 'id');
+  handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store);
+};
+
 const NavigateMeetingMutation = (environment, variables, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('navigateMeeting');
+      if (!payload) return;
+      navigateMeetingTeamUpdater(payload, store);
+    },
     optimisticUpdater: (store) => {
       const {meetingId, facilitatorStageId, completedStageId} = variables;
       const meeting = store.get(meetingId);

@@ -12,7 +12,7 @@ import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberM
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
-import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMutation';
+import {navigateMeetingTeamOnNext, navigateMeetingTeamUpdater} from 'universal/mutations/NavigateMeetingMutation';
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
 import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
@@ -125,6 +125,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'MoveMeetingPayload':
           break;
         case 'NavigateMeetingPayload':
+          navigateMeetingTeamUpdater(payload, store, viewerId);
           break;
         case 'NewMeetingCheckInPayload':
           break;
