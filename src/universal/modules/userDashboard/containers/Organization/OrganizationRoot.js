@@ -1,10 +1,12 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization';
 import {cacheConfig} from 'universal/utils/constants';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
+import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import type {Match} from 'react-router-dom';
 
 const query = graphql`
   query OrganizationRootQuery($orgId: ID!) {
@@ -14,11 +16,16 @@ const query = graphql`
   }
 `;
 
-const OrganizationRoot = (rootProps) => {
+type Props = {|
+  atmosphere: Object,
+  match: Match,
+|}
+
+const OrganizationRoot = (props: Props) => {
   const {
     atmosphere,
     match
-  } = rootProps;
+  } = props;
   const {params: {orgId}} = match;
   return (
     <QueryRenderer
@@ -27,24 +34,17 @@ const OrganizationRoot = (rootProps) => {
       query={query}
       variables={{orgId}}
       subParams={{orgId}}
-      render={({error, props: queryProps}) => {
-        if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />;
-        }
-        const viewer = queryProps ? queryProps.viewer : null;
-        // pass in match to mitigate update blocker
-        return <Organization orgId={orgId} viewer={viewer} match={match} />;
-      }}
+      render={(readyState) => (
+        <RelayTransitionGroup
+          readyState={readyState}
+          error={<ErrorComponent height={'14rem'} />}
+          loading={<LoadingView minHeight="50vh" />}
+          // pass in match to mitigate update blocker
+          ready={<Organization match={match} />}
+        />
+      )}
     />
   );
-};
-
-OrganizationRoot.propTypes = {
-  activeOrgDetail: PropTypes.string,
-  billingLeaders: PropTypes.array,
-  dispatch: PropTypes.func,
-  myUserId: PropTypes.string,
-  org: PropTypes.object
 };
 
 export default withAtmosphere(OrganizationRoot);

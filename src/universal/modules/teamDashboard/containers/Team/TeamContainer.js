@@ -12,9 +12,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state, props) => {
   const {atmosphere: {viewerId}, match: {params: {teamId}}} = props;
-  const {hasMeetingAlert} = state.dash;
   return {
-    hasMeetingAlert,
     teamMemberId: toTeamMemberId(teamId, viewerId)
   };
 };
@@ -27,7 +25,6 @@ const TeamContainer = (props) => {
   const {
     location: {pathname},
     match,
-    hasMeetingAlert,
     teamMemberId,
     viewer
   } = props;
@@ -37,7 +34,7 @@ const TeamContainer = (props) => {
   }));
   return (
     <Team
-      hasMeetingAlert={hasMeetingAlert}
+      hasMeetingAlert={viewer && viewer.hasMeetingAlert}
       isSettings={isSettings}
       team={team}
       isRetroEnabled={viewer && viewer.featureFlags && viewer.featureFlags.retro}
@@ -53,7 +50,6 @@ const TeamContainer = (props) => {
 };
 
 TeamContainer.propTypes = {
-  hasMeetingAlert: PropTypes.bool,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired
   }),
@@ -68,6 +64,7 @@ export default createFragmentContainer(
   )),
   graphql`
     fragment TeamContainer_viewer on User {
+      hasMeetingAlert
       featureFlags {
         retro
       }

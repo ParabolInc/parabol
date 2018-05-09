@@ -1,50 +1,79 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import MeetingDashAlert from 'universal/components/MeetingDashAlert/MeetingDashAlert';
 import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
+import {ACTION} from 'universal/utils/constants';
+import {createFragmentContainer} from 'react-relay';
+import styled from 'react-emotion';
+import {DashLayout_viewer as Viewer} from './__generated__/DashLayout_viewer.graphql';
 
-const DashLayout = (props) => {
+const StyledDashLayout = styled('div')({
+  backgroundColor: '#fff',
+  display: 'flex !important',
+  flexDirection: 'column',
+  height: '100vh',
+  minWidth: ui.dashMinWidth
+});
+
+const ChildrenWrapper = styled('div')({
+  display: 'flex !important',
+  flex: 1,
+  position: 'relative',
+  height: '100%'
+});
+
+const getActiveMeetings = (viewer) => {
+  const activeMeetings = [];
+  const teams = viewer && viewer.teams || [];
+  teams.forEach((team) => {
+    const {meetingId, newMeeting} = team;
+    if (meetingId) {
+      const meetingType = newMeeting ? newMeeting.meetingType : ACTION;
+      const meetingSlug = meetingTypeToSlug[meetingType];
+      activeMeetings.push({
+        link: `/${meetingSlug}/${team.id}`,
+        name: team.name
+      });
+    }
+  });
+  return activeMeetings;
+};
+
+type Props = {|
+  children: React.Node,
+  viewer: Viewer
+|};
+
+const DashLayout = (props: Props) => {
   const {
-    activeMeetings,
     children,
-    hasMeetingAlert,
-    styles
+    viewer
   } = props;
+  const activeMeetings = getActiveMeetings(viewer);
   return (
-    <div className={css(styles.root)}>
+    <StyledDashLayout>
       {/* Shows over any dashboard view when there is a meeting. */}
-      {hasMeetingAlert && <MeetingDashAlert activeMeetings={activeMeetings} />}
-      <div className={css(styles.main)}>
+      {activeMeetings.length > 0 && <MeetingDashAlert activeMeetings={activeMeetings} />}
+      <ChildrenWrapper>
         {children}
-      </div>
-    </div>
+      </ChildrenWrapper>
+    </StyledDashLayout>
   );
 };
 
-DashLayout.propTypes = {
-  activeMeetings: PropTypes.array,
-  children: PropTypes.any,
-  hasMeetingAlert: PropTypes.bool,
-  styles: PropTypes.object
-};
-
-const styleThunk = () => ({
-  root: {
-    backgroundColor: '#fff',
-    display: 'flex !important',
-    flexDirection: 'column',
-    height: '100vh',
-    minWidth: ui.dashMinWidth
-  },
-
-  main: {
-    display: 'flex !important',
-    flex: 1,
-    position: 'relative',
-    height: '100%'
-  }
-});
-
-export default withStyles(styleThunk)(DashLayout);
+export default createFragmentContainer(
+  DashLayout,
+  graphql`
+    fragment DashLayout_viewer on User {
+      teams {
+        id
+        meetingId
+        newMeeting {
+          id
+          meetingType
+        }
+        name
+      }
+    }
+  `
+);

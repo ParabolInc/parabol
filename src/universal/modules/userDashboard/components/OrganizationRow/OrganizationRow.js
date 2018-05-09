@@ -36,7 +36,6 @@ const OrganizationRow = (props) => {
     history,
     organization: {
       id: orgId,
-      isBillingLeader,
       name,
       orgUserCount: {
         activeUserCount,
@@ -46,14 +45,10 @@ const OrganizationRow = (props) => {
       tier
     }
   } = props;
-  // TODO: restore the action for org member “Create New Team” per org row
   const orgAvatar = picture || defaultOrgAvatar;
-  const label = isBillingLeader ? 'Settings and Billing' : 'Create New Team';
-  const icon = isBillingLeader ? 'cog' : 'plus';
-  const onRowClickUrl = isBillingLeader ? `/me/organizations/${orgId}` : `/newteam/${orgId}`;
-  const onRowClick = () => history.push(onRowClickUrl);
+  const onRowClick = () => history.push(`/me/organizations/${orgId}`);
   const totalUsers = activeUserCount + inactiveUserCount;
-  const showUpgradeCTA = isBillingLeader && tier === PERSONAL;
+  const showUpgradeCTA = tier === PERSONAL;
   const upgradeCTALabel = <span>{'Upgrade to '}<b>{PRO_LABEL}</b></span>;
   return (
     <Row>
@@ -88,8 +83,8 @@ const OrganizationRow = (props) => {
         <Button
           buttonStyle="flat"
           colorPalette="dark"
-          label={label}
-          icon={icon}
+          label="Settings"
+          icon="cog"
           onClick={onRowClick}
           buttonSize="small"
         />
@@ -102,7 +97,6 @@ OrganizationRow.propTypes = {
   history: PropTypes.object.isRequired,
   organization: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    isBillingLeader: PropTypes.bool.isRequired,
     name: PropTypes.string.isRequired,
     picture: PropTypes.string,
     tier: PropTypes.string.isRequired,

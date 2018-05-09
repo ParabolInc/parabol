@@ -3,7 +3,6 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import DashSidebar from 'universal/components/Dashboard/DashSidebar';
-import DashLayoutContainer from 'universal/containers/DashLayoutContainer/DashLayoutContainer';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription';
@@ -17,6 +16,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
 import AnalyticsIdentifier from 'universal/components/AnalyticsIdentifier';
+import DashLayout from 'universal/components/Dashboard/DashLayout';
 
 const query = graphql`
   query DashboardWrapperQuery {
@@ -34,7 +34,7 @@ const query = graphql`
         }
       }
       ...DashSidebar_viewer
-      ...DashLayoutContainer_viewer
+      ...DashLayout_viewer
     }
   }
 `;
@@ -66,13 +66,13 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
           renderProps.viewer.notifications : undefined;
         const viewer = renderProps ? renderProps.viewer : null;
         return (
-          <DashLayoutContainer viewer={viewer}>
+          <DashLayout viewer={viewer}>
             <AnalyticsIdentifier viewer={viewer} />
             <DashSidebar viewer={viewer} location={location} />
             <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
-            <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} extraProps={{notifications}} />
-            <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} extraProps={{notifications}} />
-          </DashLayoutContainer>
+            <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} />
+            <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} />
+          </DashLayout>
         );
       }}
 

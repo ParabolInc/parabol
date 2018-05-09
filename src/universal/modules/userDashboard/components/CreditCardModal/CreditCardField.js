@@ -9,6 +9,7 @@ import FontAwesome from 'react-fontawesome';
 
 const CreditCardField = (props) => {
   const {
+    autoComplete,
     autoFocus,
     iconName,
     input,
@@ -52,6 +53,7 @@ const CreditCardField = (props) => {
       />
       <input
         {...input}
+        autoComplete={autoComplete}
         autoFocus={autoFocus}
         className={inputStyle}
         maxLength={maxLength}
@@ -65,6 +67,7 @@ const CreditCardField = (props) => {
 };
 
 CreditCardField.propTypes = {
+  autoComplete: PropTypes.string,
   autoFocus: PropTypes.bool,
   iconName: PropTypes.string,
   input: PropTypes.shape({

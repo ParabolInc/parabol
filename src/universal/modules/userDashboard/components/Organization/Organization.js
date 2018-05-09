@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {withRouter, Switch} from 'react-router-dom';
+import {Redirect, Switch, withRouter} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
@@ -14,11 +14,14 @@ import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/
 import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
-import {BILLING_PAGE, MEMBERS_PAGE, PRO} from 'universal/utils/constants';
+import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
+import Avatar from 'universal/components/Avatar/Avatar';
+import ui from 'universal/styles/ui';
 
+const orgSqueeze = () => System.import('universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze');
 const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
 const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot');
 
@@ -54,23 +57,31 @@ const StyledTagBlock = styled(TagBlock)({
   marginTop: '-.375rem'
 });
 
+const AvatarBlock = styled('div')({
+  display: 'block',
+  margin: '1.5rem auto',
+  width: '6rem'
+});
+
+const OrgNameBlock = styled('div')({
+  color: ui.colorText,
+  fontSize: appTheme.typography.s7,
+  lineHeight: appTheme.typography.s8,
+  placeholderColor: ui.placeholderColor
+});
+
 const Organization = (props) => {
-  const {history, match, orgId, viewer} = props;
-  const org = viewer ? viewer.organization : {};
-  const {createdAt, name: orgName, picture: orgAvatar, tier} = org;
+  const {history, match, viewer: {organization}} = props;
+  if (!organization) {
+    // trying to be somewhere they shouldn't be
+    return <Redirect to="/me" />;
+  }
+  const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <div><EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled /></div>;
-  const extraProps = {orgId, org};
   const goToOrgs = () => history.push('/me/organizations');
-
-  // TODO: canNavOrgViews is true when the user is a billing leader.
-  //       canNavOrgViews is true when the user is not a billing leader, and org is on the Personal tier,
-  //                      so that they can see their version of the squeeze (controls to nudge BLs)
-  //       canNavOrgViews is false when the user is not a billing leader, and org is on the Professional tier,
-  //                      the idea being that they can see the org members read-only (no BL actions),
-  //                      know who the BLs are, and leave the org on their user row.
-  const canNavOrgViews = true;
-
+  const onlyShowMembers = !isBillingLeader && tier !== PERSONAL;
+  const billingMod = isBillingLeader && tier !== PERSONAL ? orgBilling : orgSqueeze;
   return (
     <UserSettingsWrapper>
       <Helmet title={`${orgName} | Parabol`} />
@@ -83,27 +94,38 @@ const Organization = (props) => {
           />
         </BackControlBlock>
         <AvatarAndName>
-          <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
-            <OrgAvatarInput orgId={orgId} />
-          </PhotoUploadModal>
+          {isBillingLeader ?
+            <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
+              <OrgAvatarInput orgId={orgId} />
+            </PhotoUploadModal> :
+            <AvatarBlock>
+              <Avatar picture={pictureOrDefault} size="fill" sansRadius sansShadow />
+            </AvatarBlock>
+          }
           <OrgNameAndDetails>
-            <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
+            {isBillingLeader ?
+              <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} /> :
+              <OrgNameBlock>{orgName}</OrgNameBlock>
+            }
             <OrgDetails>
               {'Created '}{makeDateString(createdAt)}
               {tier === PRO &&
-                <StyledTagBlock>
-                  <TagPro />
-                </StyledTagBlock>
+              <StyledTagBlock>
+                <TagPro />
+              </StyledTagBlock>
               }
             </OrgDetails>
-            {canNavOrgViews && <BillingMembersToggle orgId={orgId} />}
+            {!onlyShowMembers && <BillingMembersToggle orgId={orgId} />}
           </OrgNameAndDetails>
         </AvatarAndName>
-        <Switch>
-          <AsyncRoute exact path={`${match.url}`} mod={orgBilling} extraProps={extraProps} />
-          <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={orgBilling} extraProps={extraProps} />
-          <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={extraProps} />
-        </Switch>
+        {onlyShowMembers ?
+          <AsyncRoute path={`${match.url}`} mod={orgMembers} extraProps={{orgId}} /> :
+          <Switch>
+            <AsyncRoute exact path={`${match.url}`} mod={billingMod} extraProps={{organization}} />
+            <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={billingMod} extraProps={{organization}} />
+            <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={{orgId}} />
+          </Switch>
+        }
       </SettingsWrapper>
     </UserSettingsWrapper>
   );
@@ -111,7 +133,6 @@ const Organization = (props) => {
 
 Organization.propTypes = {
   match: PropTypes.object.isRequired,
-  orgId: PropTypes.string.isRequired,
   history: PropTypes.object,
   viewer: PropTypes.object
 };
@@ -121,7 +142,9 @@ export default createFragmentContainer(
   graphql`
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {
-        id
+        ...OrgPlanSqueeze_organization
+        orgId: id
+        isBillingLeader
         createdAt
         name
         orgUserCount {
