@@ -1388,7 +1388,7 @@ export type RetrospectiveMeeting = {
   viewerMeetingMember: ?RetrospectiveMeetingMember;
   /** the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used. */
   autoGroupThreshold: ?number;
-  /** the next smallest threshold to guarantee at least 1 more grouping will be achieved */
+  /** the next smallest distance threshold to guarantee at least 1 more grouping will be achieved */
   nextAutoGroupThreshold: ?number;
   /** The grouped reflections */
   reflectionGroups: Array<RetroReflectionGroup>;
@@ -1549,6 +1549,8 @@ export type DraggerCoords = {
 }
 
 export type GoogleAnalyzedEntity = {
+  /** The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural. */
+  lemma: string;
   /** The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun. */
   name: string;
   /** The salience of the entity in the provided text. The salience of all entities always sums to 1 */
