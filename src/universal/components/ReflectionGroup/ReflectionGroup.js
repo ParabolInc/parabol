@@ -68,7 +68,9 @@ class ReflectionGroup extends Component<Props, State> {
   setReflectionListRef = (c) => {
     const {innerRef} = this.props;
     this.reflectionListRef = c;
-    innerRef(c);
+    if (innerRef) {
+      innerRef(c);
+    }
   };
 
   reflectionListRef: ?HTMLElement;
