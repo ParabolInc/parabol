@@ -1,17 +1,14 @@
-import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import Button from 'universal/components/Button/Button';
-import {MONTHLY_PRICE, PERSONAL, PRO, PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants';
+import {MONTHLY_PRICE, PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal/utils/constants';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import {PRICING_LINK} from 'universal/utils/externalLinks';
 import plural from 'universal/utils/plural';
-
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import {textOverflow} from 'universal/styles/helpers';
-
 import makeGradient from 'universal/styles/helpers/makeGradient';
+import {createFragmentContainer} from 'react-relay';
 
 const personalGradient = makeGradient(ui.palette.mid, ui.palette.midGray);
 const professionalGradient = makeGradient(ui.palette.yellow, ui.palette.warm);
@@ -20,6 +17,7 @@ const OrgPlanSqueezeRoot = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
+  flexShrink: 0,
   margin: '0 auto',
   maxWidth: '40.25rem',
   width: '100%'
@@ -58,7 +56,7 @@ const TierPanelBody = styled('div')({
   borderRadius: `0 0 ${ui.borderRadiusLarge} ${ui.borderRadiusLarge}`,
   display: 'flex',
   flexDirection: 'column',
-  fontSize: appTheme.typography.sBase,
+  fontSize: '.9375rem',
   lineHeight: 1.5,
   padding: '1.5rem 1.25rem',
   textAlign: 'center',
@@ -94,36 +92,33 @@ const CopyWithStatus = styled('div')({
     height: '.625rem',
     left: '-1rem',
     position: 'absolute',
-    top: '.4375rem',
+    top: '.375rem',
     width: '.625rem'
   }
 });
 
-const BillingLeaderRowBlock = styled('div')({
-  margin: '1.25rem auto .5rem'
+const EmailBlock = styled('div')({
+  margin: '1rem auto 0'
 });
 
-const BillingLeaderRowLabel = styled('div')({
-  fontSize: appTheme.typography.s2,
-  flex: 1,
-  paddingBottom: '.0625rem',
-  paddingRight: '1rem',
-  // textAlign: 'left',
-  '& > span': {
-    ...textOverflow
+const Email = styled('a')({
+  color: ui.palette.mid,
+  cursor: 'pointer',
+  display: 'block',
+  fontWeight: 400,
+  lineHeight: '2rem',
+  margin: '0 auto .5rem',
+  ':hover, :focus': {
+    color: ui.palette.mid,
+    textDecoration: 'underline'
   }
 });
 
-const BillingLeaderRow = styled('div')(({hasUpgradeNudge}) => ({
-  alignItems: 'center',
-  color: hasUpgradeNudge ? ui.hintColor : ui.colorText,
-  display: 'flex',
-  justifyContent: 'space-between',
-  margin: '0 0 .5rem',
-  width: '100%'
-}));
+type Props = {|
+  organization: Object
+|};
 
-class OrgPlanSqueeze extends Component {
+class OrgPlanSqueeze extends Component<Props> {
   state = {showCost: false}
 
   getCost = () => {
@@ -133,7 +128,7 @@ class OrgPlanSqueeze extends Component {
   };
 
   render() {
-    const {activeUserCount, orgId} = this.props;
+    const {organization: {isBillingLeader, billingLeaders, orgUserCount: {activeUserCount}, orgId}} = this.props;
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const {showCost} = this.state;
     const primaryButtonProps = {
@@ -147,16 +142,6 @@ class OrgPlanSqueeze extends Component {
       label="Upgrade to the Pro Plan"
     />);
     const openUrl = (url) => () => window.open(url, '_blank');
-
-    const isBillingLeader = true;
-
-    // NOTE: hasUpgradeNudge is true when the billing leader has received a notification from the current user for this org
-    //       the billing leader can have 1 notification from every org member that nudges
-    const billingLeaders = [
-      {hasUpgradeNudge: false, preferredName: 'Jordan', email: 'jordan@parabol.co'},
-      {hasUpgradeNudge: false, preferredName: 'Taya', email: 'taya@parabol.co'},
-      {hasUpgradeNudge: true, preferredName: 'Marimar', email: 'marimar@parabol.co'}
-    ];
 
     const billingLeaderSqueeze = (
       <TierPanelBody>
@@ -187,24 +172,17 @@ class OrgPlanSqueeze extends Component {
       </TierPanelBody>
     );
 
+    const makeEmail = (email) => <Email href={`mailto:${email}`} title={`Email ${email}`}>{email}</Email>;
+
     const nudgeTheBillingLeader = () => {
-      const {email, hasUpgradeNudge, preferredName} = billingLeaders[0];
+      const {email, preferredName} = billingLeaders[0];
       return (
         <TierPanelBody>
           <div>
             {'Contact your billing leader,'}<br />
-            <b>{email}</b>{', to upgrade.'}
+            <b>{preferredName}</b>{', to upgrade:'}
           </div>
-          <ButtonBlock>
-            {hasUpgradeNudge ?
-              <InlineHint>{`We sent ${preferredName} a notification from you about upgrading.`}</InlineHint> :
-              <Button
-                {...primaryButtonProps}
-                label={`Send ${preferredName} a Notification`}
-                onClick={() => (console.log('send a billing nudge'))}
-              />
-            }
-          </ButtonBlock>
+          {makeEmail(email)}
         </TierPanelBody>
       );
     };
@@ -213,30 +191,16 @@ class OrgPlanSqueeze extends Component {
       return (
         <TierPanelBody>
           <div>{'Contact a billing leader to upgrade:'}</div>
-          <BillingLeaderRowBlock>
-            {billingLeaders.map((billingLeader, idx) => {
-              const {email, hasUpgradeNudge} = billingLeader;
-              const handleBillingLeaderRowClick = () => {
-                console.log('handleBillingLeaderRowClick');
-              };
-              const makeKey = `billingLeader${idx + 1}`;
-              const canNudge = false; // a simpler version, just show a list of billing leaders
+          <EmailBlock>
+            {billingLeaders.map((billingLeader) => {
+              const {billingLeaderId, email} = billingLeader;
               return (
-                <BillingLeaderRow hasUpgradeNudge={canNudge && hasUpgradeNudge} key={makeKey}>
-                  <BillingLeaderRowLabel><span>{email}</span></BillingLeaderRowLabel>
-                  {canNudge && <Button
-                    buttonSize="small"
-                    buttonStyle="link"
-                    colorPalette={hasUpgradeNudge ? 'dark' : 'warm'}
-                    disabled={hasUpgradeNudge}
-                    icon={hasUpgradeNudge ? 'check' : 'paper-plane'}
-                    label={hasUpgradeNudge ? 'Notification Sent' : 'Send Notification'}
-                    onClick={hasUpgradeNudge ? null : handleBillingLeaderRowClick}
-                  />}
-                </BillingLeaderRow>
+                <div key={billingLeaderId}>
+                  {makeEmail(email)}
+                </div>
               );
             })}
-          </BillingLeaderRowBlock>
+          </EmailBlock>
         </TierPanelBody>
       );
     };
@@ -256,7 +220,7 @@ class OrgPlanSqueeze extends Component {
           </TierPanel>
           {/* Professional Panel */}
           <TierPanel tier={PRO}>
-            <TierPanelHeader tier={PRO}>{PRO_LABEL}</TierPanelHeader>
+            <TierPanelHeader tier={PRO}>{'Upgrade to '}{PRO_LABEL}</TierPanelHeader>
             {isBillingLeader && billingLeaderSqueeze}
             {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
             {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
@@ -279,9 +243,20 @@ class OrgPlanSqueeze extends Component {
   }
 }
 
-OrgPlanSqueeze.propTypes = {
-  activeUserCount: PropTypes.number,
-  orgId: PropTypes.string
-};
-
-export default OrgPlanSqueeze;
+export default createFragmentContainer(
+  OrgPlanSqueeze,
+  graphql`
+    fragment OrgPlanSqueeze_organization on Organization {
+      orgId: id
+      isBillingLeader
+      billingLeaders {
+        billingLeaderId: id
+        email
+        preferredName
+      }
+      orgUserCount {
+        activeUserCount
+      }
+    }
+  `
+);

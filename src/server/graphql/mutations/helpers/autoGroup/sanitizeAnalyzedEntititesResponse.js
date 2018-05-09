@@ -4,14 +4,19 @@ const sanitizeAnalyzedEntitiesResponse = (response) => {
   if (!firstResponse) return null;
   const {entities} = firstResponse;
   if (!Array.isArray(entities)) return null;
-  const validEntities = [];
+  const validEntities = {};
   for (let ii = 0; ii < entities.length; ii++) {
     const entity = entities[ii];
     const {name, salience} = entity;
     if (!name || !salience) continue;
-    validEntities.push(entity);
+    const normalizedEntityName = name.toLowerCase();
+    const cumlSalience = validEntities[normalizedEntityName] || 0;
+    validEntities[normalizedEntityName] = cumlSalience + salience;
   }
-  return validEntities;
+  return Object.keys(validEntities).map((name) => ({
+    name,
+    salience: validEntities[name]
+  }));
 };
 
 export default sanitizeAnalyzedEntitiesResponse;

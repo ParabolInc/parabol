@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
+import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
-import {Button, Panel, Tooltip, UserRow} from 'universal/components';
+import {Button, Panel, Tooltip, UserRow, Row} from 'universal/components';
 import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
@@ -19,7 +20,7 @@ import ui from 'universal/styles/ui';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import styled from 'react-emotion';
-import {PRO_LABEL} from 'universal/utils/constants';
+import {PERSONAL, PRO_LABEL} from 'universal/utils/constants';
 
 const originAnchor = {
   vertical: 'center',
@@ -84,15 +85,11 @@ const PanelRow = styled('div')({
   padding: `${ui.panelGutter}`
 });
 
-const PanelRowCentered = styled(PanelRow)({
-  display: 'flex',
-  justifyContent: 'center'
-});
-
 class TeamSettings extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
     viewer: PropTypes.object.isRequired,
     submitting: PropTypes.bool,
     submitMutation: PropTypes.func.isRequired,
@@ -207,35 +204,28 @@ class TeamSettings extends Component {
   }
 
   render() {
-    const {dispatch, viewer: {team}} = this.props;
-    const {invitations, orgApprovals, teamName, teamMembers} = team;
+    const {dispatch, history, viewer: {team}} = this.props;
+    const {invitations, orgApprovals, orgId, teamName, teamMembers, tier} = team;
     const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     // if kicked out, the component might reload before the redirect occurs
     if (!viewerTeamMember) return null;
     const {isLead: viewerIsLead} = viewerTeamMember;
 
-    // TODO: upgrade UX
-    // const isBillingLeader = true;
-    // const isPersonal = true;
-    // const showUpgradeCTA = isBillingLeader && isPersonal;
-    const showUpgradeCTA = false; // TODO wire this up later
-    const upgradeButtonLabel = <span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>;
-
     return (
       <TeamSettingsLayout>
         <Helmet title={`${teamName} Settings | Parabol`} />
-        {/* TODO: add Upgrade CTA for billing leaders */}
         <PanelsLayout>
-          {showUpgradeCTA &&
+          {tier === PERSONAL &&
             <Panel>
-              <PanelRowCentered>
+              <Row>
+                <div>{'This team is currently on a personal plan.'}</div>
                 <Button
                   buttonSize="small"
-                  colorPalette={ui.upgradeColorOption}
-                  label={upgradeButtonLabel}
-                  onClick={() => (console.log('upgrade, go to org billing view'))}
+                  buttonStyle="primary"
+                  label={<span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>}
+                  onClick={() => history.push(`/me/organizations/${orgId}`)}
                 />
-              </PanelRowCentered>
+              </Row>
             </Panel>
           }
           <Panel label="Manage Team">
@@ -294,7 +284,9 @@ class TeamSettings extends Component {
 export default createFragmentContainer(
   withAtmosphere(
     withMutationProps(
-      connect()(TeamSettings)
+      withRouter(
+        connect()(TeamSettings)
+      )
     )
   ),
   graphql`
@@ -305,6 +297,8 @@ export default createFragmentContainer(
         ...ArchiveTeamContainer_team
         teamId: id
         teamName: name
+        tier
+        orgId
         teamMembers(sortBy: "preferredName") {
           ...PromoteTeamMemberModal_teamMember
           ...RemoveTeamMemberModal_teamMember

@@ -13,8 +13,8 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import {DropTarget as dropTarget} from 'react-dnd';
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
 import dndNoise from 'universal/utils/dndNoise';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const {Component} = React;
 
@@ -62,9 +62,16 @@ class ReflectionGroup extends Component<Props, State> {
 
   setTopCardRef = (c) => {
     this.topCardRef = c;
-    this.forceUpdate();
   };
 
+
+  setReflectionListRef = (c) => {
+    const {innerRef} = this.props;
+    this.reflectionListRef = c;
+    innerRef(c);
+  };
+
+  reflectionListRef: ?HTMLElement;
   topCardRef: ?HTMLElement;
 
   toggleExpanded = () => {
@@ -74,6 +81,16 @@ class ReflectionGroup extends Component<Props, State> {
       const reflectionGroupProxy = store.get(reflectionGroupId);
       reflectionGroupProxy.setValue(!reflectionGroupProxy.getValue('isExpanded'), 'isExpanded');
     });
+  }
+
+  makeCustomHeight = () => {
+    const {reflectionGroup: {reflections, isExpanded}} = this.props;
+    if (!this.topCardRef || !this.reflectionListRef || reflections.length <= 1 || isExpanded) return {};
+    const groupTop = this.reflectionListRef.getBoundingClientRect().top;
+    // $FlowFixMe
+    const {top, height} = this.topCardRef.getBoundingClientRect();
+    const groupBottom = top + height;
+    return {height: groupBottom - groupTop};
   }
 
   renderReflection = (reflection: Object, idx: number) => {
@@ -93,9 +110,16 @@ class ReflectionGroup extends Component<Props, State> {
       transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`,
       transition: !canDrop && 'all 200ms ease'
     };
+
+    const onTransitionEnd = () => {
+      // wait for the topCard to find its new home before calculating the height
+      if (isExpanded || !this.topCardRef || !this.reflectionListRef || reflections.length <= 1) return;
+      this.forceUpdate();
+    };
+
     if (phaseType === GROUP) {
       return (
-        <div key={reflection.id} style={style} ref={isTopCard ? this.setTopCardRef : undefined}>
+        <div key={reflection.id} style={style} ref={isTopCard ? this.setTopCardRef : undefined} onTransitionEnd={onTransitionEnd}>
           <DraggableReflectionCard
             currentRetroPhaseItemId={currentRetroPhaseItemId}
             dndIndex={idx}
@@ -110,7 +134,7 @@ class ReflectionGroup extends Component<Props, State> {
       );
     }
     return (
-      <div key={reflection.id} style={style} ref={isTopCard ? this.setTopCardRef : undefined}>
+      <div key={reflection.id} style={style} ref={isTopCard ? this.setTopCardRef : undefined} onTransitionEnd={onTransitionEnd}>
         <ReflectionCard
           isCollapsed={isCollapsed}
           meeting={meeting}
@@ -122,13 +146,11 @@ class ReflectionGroup extends Component<Props, State> {
   };
 
   render() {
-    const {canDrop, connectDropTarget, innerRef, meeting, reflectionGroup} = this.props;
-    const {isExpanded, reflections} = reflectionGroup;
+    const {canDrop, connectDropTarget, meeting, reflectionGroup} = this.props;
+    const {reflections} = reflectionGroup;
     const {localPhase: {phaseType}} = meeting;
+
     // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
-    const style = !isExpanded && this.topCardRef && reflections.length > 1 &&
-      // not sure how the DOM calculates 10.7. It's not pixel perfect, but supports 1 - 15 cards
-      {height: (reflections.length) * 10.7 + this.topCardRef.clientHeight} || {};
     const showHeader = reflections.length > 1 || phaseType === VOTE;
     return (
       <Group>
@@ -136,7 +158,12 @@ class ReflectionGroup extends Component<Props, State> {
         {/* connect the drop target here so dropping on the title triggers an ungroup */}
         {connectDropTarget(
           <div>
-            <Reflections canDrop={canDrop} onClick={this.toggleExpanded} innerRef={innerRef} style={style}>
+            <Reflections
+              canDrop={canDrop}
+              onClick={this.toggleExpanded}
+              innerRef={this.setReflectionListRef}
+              style={this.makeCustomHeight()}
+            >
               {reflections.map(this.renderReflection)}
             </Reflections>
           </div>

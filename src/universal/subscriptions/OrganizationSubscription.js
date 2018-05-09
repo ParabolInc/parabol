@@ -1,10 +1,7 @@
 import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation';
 import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation';
-import {
-  setOrgUserRoleAddedOrganizationUpdater,
-  setOrgUserRoleRemovedOrganizationUpdater
-} from 'universal/mutations/SetOrgUserRoleMutation';
-import {removeOrgUserOrganizationUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {setOrgUserRoleAddedOrganizationUpdater, setOrgUserRoleRemovedOrganizationUpdater} from 'universal/mutations/SetOrgUserRoleMutation';
+import {removeOrgUserOrganizationOnNext, removeOrgUserOrganizationUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 
 const subscription = graphql`
   subscription OrganizationSubscription {
@@ -22,9 +19,13 @@ const subscription = graphql`
   }
 `;
 
-const OrganizationSubscription = (environment, queryVariables, subParams) => {
+const onNextHandlers = {
+  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext
+};
+
+const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
   const {dispatch, history} = subParams;
-  const {viewerId} = environment;
+  const {viewerId} = atmosphere;
   return {
     subscription,
     variables: {},
@@ -53,6 +54,13 @@ const OrganizationSubscription = (environment, queryVariables, subParams) => {
           break;
         default:
           console.error('OrganizationSubscription case fail', type);
+      }
+    },
+    onNext: ({organizationSubscription}) => {
+      const {__typename: type} = organizationSubscription;
+      const handler = onNextHandlers[type];
+      if (handler) {
+        handler(organizationSubscription, {...subParams, atmosphere});
       }
     }
   };

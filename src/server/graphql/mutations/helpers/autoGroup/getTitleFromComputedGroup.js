@@ -8,8 +8,22 @@ const SALIENT_THRESHOLD = 0.60;
 const MIN_ENTITIES = 2;
 const MAX_CHARS = 30;
 
-const getTitleFromComputedGroup = (entityNameArr, group) => {
-  const sumArr = new Array(entityNameArr.length).fill(0);
+const getNameFromLemma = (lemma, reflectionEntities) => {
+  const names = new Set();
+  reflectionEntities.forEach((entities) => {
+    entities.forEach((entity) => {
+      if (entity.lemma === lemma) {
+        names.add(entity.name);
+      }
+    });
+  });
+  names.delete(lemma);
+  if (names.size !== 1) return lemma;
+  return Array.from(names)[0];
+};
+
+const getTitleFromComputedGroup = (uniqueLemmaArr, group, reflectionEntities) => {
+  const sumArr = new Array(uniqueLemmaArr.length).fill(0);
   group.forEach((reflectionDistanceArr) => {
     for (let jj = 0; jj < reflectionDistanceArr.length; jj++) {
       sumArr[jj] += reflectionDistanceArr[jj];
@@ -26,7 +40,8 @@ const getTitleFromComputedGroup = (entityNameArr, group) => {
   const titleArr = [];
   for (let ii = 0; ii < arrWithIdx.length; ii++) {
     const [totalSalience, idx] = arrWithIdx[ii];
-    const name = entityNameArr[idx];
+    const lemma = uniqueLemmaArr[idx];
+    const name = getNameFromLemma(lemma, reflectionEntities);
     const capName = name[0].toUpperCase() + name.slice(1);
     // if we've used 2 words & adding this word would make it look long & ugly, abort
     if (titleArr.length > MIN_ENTITIES && titleArr.join(' ').length + capName.length > MAX_CHARS) {

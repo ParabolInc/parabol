@@ -1,8 +1,23 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
+
+## v1.9.0 2018-May-09
+# Added
+- Auto-grouping improvements: ignore plurality and case when grouping
+- Added #2064 end meeting button to Action meeting
+- Added #2087 due dates on Task cards
+- Backend support for #1980, adding nudges for Personal-tier users to upgrade to Pro
+
+# Fixed
+- Fixed #2052 pad auth0 1-char names
+- Fixed #2063 auto-grouping improvements
+- Fixed #2097 empty reflections showing up in retrospective group phase
+- Fixed #2094 overlap of deep stacks of reflection cards
+- Fixed #2104 team unable to vote if team member joins after retro meeting started
+- Strikethrough keyboard shortcut
 
 ## v1.8.0 2018-May-02
 # Added

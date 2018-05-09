@@ -12,6 +12,7 @@ import onExTeamRoute from 'universal/utils/onExTeamRoute';
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
 import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage';
 import findStageById from 'universal/utils/meetings/findStageById';
+import onExOrgRoute from 'universal/utils/onExOrgRoute';
 
 graphql`
   fragment RemoveOrgUserMutation_organization on RemoveOrgUserPayload {
@@ -188,20 +189,40 @@ export const removeOrgUserTeamOnNext = (payload, context) => {
   });
 };
 
-const RemoveOrgUserMutation = (environment, orgId, userId, onError, onCompleted) => {
-  const {viewerId} = environment;
-  return commitMutation(environment, {
+export const removeOrgUserOrganizationOnNext = (payload, context) => {
+  // FIXME currently, the server doesn't send this to the user in other tabs, so they don't get redirected in their other tabs
+  const {atmosphere: {viewerId}, history, location} = context;
+  const {pathname} = location;
+  const {user: {id: userId}, organization: {id: orgId}} = payload;
+  if (userId === viewerId && onExOrgRoute(pathname, orgId)) {
+    history.push('/me');
+  }
+};
+
+const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onCompleted) => {
+  const {viewerId} = atmosphere;
+  return commitMutation(atmosphere, {
     mutation,
-    variables: {orgId, userId},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('removeOrgUser');
       if (!payload) return;
       removeOrgUserOrganizationUpdater(payload, store, viewerId);
     },
-    optimisticUpdater: (store) => {
-      handleRemoveOrganization(orgId, store, viewerId);
+    // optimisticUpdater: (store) => {
+    //   const {orgId, userId} = variables;
+    //   const {viewerId} = atmosphere;
+    //   if (viewerId === userId) {
+    //     handleRemoveOrganization(orgId, store, viewerId);
+    //   }
+    // },
+    onCompleted: (res, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors);
+      }
+
+      removeOrgUserOrganizationOnNext(res.removeOrgUser, {...context, atmosphere});
     },
-    onCompleted,
     onError
   });
 };

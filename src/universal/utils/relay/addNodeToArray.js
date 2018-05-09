@@ -31,7 +31,7 @@ const addNodeToArray = (newNode, parent, arrayName, sortValue, options = {}) => 
   // rule out duplicates
   for (let ii = 0; ii < arr.length; ii++) {
     const node = arr[ii];
-    if (node.getDataID() === nodeDataId) return;
+    if (node && node.getDataID() === nodeDataId) return;
   }
   const newName = newNode.getValue(sortValue);
   const idxFinder = descending ? getDescendingIdx : getAscendingIdx;

@@ -2,8 +2,6 @@ import {combineReducers} from 'redux';
 import toasts from 'universal/modules/toast/ducks/toastDuck';
 import {reducer as formReducer, actionTypes} from 'redux-form';
 import makeRootReducer from 'universal/redux/rootDuck';
-import menuReducer from 'universal/modules/menu/ducks/menuDuck';
-import dashReducer from 'universal/modules/dashboard/ducks/dashDuck';
 
 const {SET_SUBMIT_SUCCEEDED} = actionTypes;
 
@@ -30,8 +28,6 @@ const formPlugin = formPluginFactory();
 
 const appReducers = {
   form: formReducer.plugin(formPlugin),
-  dash: dashReducer,
-  menu: menuReducer,
   toasts
 };
 

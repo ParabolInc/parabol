@@ -13,8 +13,7 @@ const sortGroupedReflections = (groupedReflections, retroPhaseItemIdMode, reflec
   return groupedReflections.map((reflection, idx) => ({
     ...reflection,
     sortOrder: firstReflection.sortOrder + idx * 0.01,
-    reflectionGroupId,
-    retroPhaseItemId: retroPhaseItemIdMode
+    reflectionGroupId
   }));
 };
 

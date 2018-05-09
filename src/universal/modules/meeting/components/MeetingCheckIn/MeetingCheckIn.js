@@ -77,6 +77,7 @@ const MeetingCheckin = (props) => {
             currentMemberName={currentMember.preferredName}
             localPhaseItem={localPhaseItem}
             nextMemberName={nextMember && nextMember.preferredName}
+            nextPhaseName={actionMeeting.updates.name}
           />
         </MeetingControlBar>
       }

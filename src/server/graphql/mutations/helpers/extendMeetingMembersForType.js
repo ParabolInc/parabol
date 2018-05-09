@@ -1,6 +1,6 @@
 import {RETROSPECTIVE} from 'universal/utils/constants';
 
-const extendNewMeetingForType = async (meetingMembers, dataLoader) => {
+const extendMeetingMembersForType = async (meetingMembers, dataLoader) => {
   const {meetingType, teamId} = meetingMembers[0];
   if (meetingType === RETROSPECTIVE) {
     const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
@@ -14,4 +14,4 @@ const extendNewMeetingForType = async (meetingMembers, dataLoader) => {
   return meetingMembers;
 };
 
-export default extendNewMeetingForType;
+export default extendMeetingMembersForType;
