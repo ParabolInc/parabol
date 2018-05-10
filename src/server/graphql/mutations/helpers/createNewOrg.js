@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver';
-import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants';
+import {BILLING_LEADER, PERSONAL, RETROSPECTIVE_TRIAL_COUNT_DEFAULT} from 'universal/utils/constants';
 
 export default async function createNewOrg(orgId, orgName, leaderUserId) {
   const r = getRethink();
@@ -10,6 +10,8 @@ export default async function createNewOrg(orgId, orgName, leaderUserId) {
     createdAt: now,
     name: orgName,
     orgUsers: [{id: leaderUserId, role: BILLING_LEADER, inactive: false}],
+    retroMeetingsOffered: RETROSPECTIVE_TRIAL_COUNT_DEFAULT,
+    retroMeetingsRemaining: RETROSPECTIVE_TRIAL_COUNT_DEFAULT,
     tier: PERSONAL,
     updatedAt: now
   });
