@@ -1,12 +1,8 @@
 // @flow
 import * as React from 'react';
-import {createFragmentContainer} from 'react-relay';
 import type {RouterHistory} from 'react-router-dom';
-import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {PRO} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import LoadableModal from 'universal/components/LoadableModal';
@@ -17,10 +13,15 @@ import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 import ui from 'universal/styles/ui';
-import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
-import makeHref from 'universal/utils/makeHref';
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
+import makeHref from 'universal/utils/makeHref';
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
+import {createFragmentContainer} from 'react-relay';
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {withRouter} from 'react-router-dom';
+import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable';
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -63,15 +64,33 @@ type Props = {
   ...MutationProps
 };
 
+const SalesPitch = styled('div')({
+  color: ui.colorText,
+  fontSize: '1.2rem',
+  lineHeight: 1.5
+});
+
+const InitialHook = styled(SalesPitch)({
+  marginTop: '1rem'
+});
+
+const TrialStatus = styled(MeetingCopy)({
+  textAlign: 'center',
+  marginTop: '0.5rem'
+});
+
 const NewMeetingLobby = (props: Props) => {
   const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = props;
-  const {meetingSettings: {meetingsOffered, meetingsRemaining}, teamId, teamName, tier} = team;
+  const {orgId, organization, teamId, teamName, tier} = team;
+  const {retroMeetingsOffered = 3, retroMeetingsRemaining = 3} = organization;
+  // const retroMeetingsOffered = 3;
+  // const retroMeetingsRemaining = 0;
   const onStartMeetingClick = () => {
     submitMutation();
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted);
   };
   const isPro = tier === PRO;
-  const canStartMeeting = isPro || meetingsRemaining > 0;
+  const canStartMeeting = isPro || retroMeetingsRemaining > 0;
   const meetingLabel = meetingTypeToLabel[meetingType];
   const meetingSlug = meetingTypeToSlug[meetingType];
   return (
@@ -82,27 +101,56 @@ const NewMeetingLobby = (props: Props) => {
         {'The person who presses “Start Meeting” will be today’s Facilitator.'}<br />
         {'Everyone’s display automatically follows the Facilitator.'}
       </MeetingCopy>
+      {!isPro &&
+      <div>
+        <SalesPitch>
+          <div>Running a retrospective is the most effective way to learn how your team can work smarter.</div>
+          <div>In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.</div>
+        </SalesPitch>
+        {retroMeetingsRemaining === retroMeetingsOffered &&
+        <SalesPitch>Try a few retrospectives with your team, on the house.</SalesPitch>
+        }
+        {retroMeetingsRemaining !== retroMeetingsOffered && retroMeetingsRemaining > 0 &&
+        <div>
+          <InitialHook>Upgrade to Pro to unlock unlimited retrospectives.</InitialHook>
+          <LoadableModal
+            LoadableComponent={UpgradeModalLoadable}
+            maxWidth={350}
+            maxHeight={225}
+            queryVars={{isBillingLeader: false}}
+            toggle={<Button
+              aria-label="Get Access Now"
+              buttonSize="large"
+              buttonStyle="solid"
+              colorPalette="green"
+              depth={1}
+              label="Get Access Now"
+            />}
+          />
+        </div>
+        }
+      </div>
+      }
+
       <ButtonGroup>
         <ButtonBlock>
-          <Button
-            buttonStyle="primary"
-            colorPalette="warm"
-            depth={1}
-            disabled={!canStartMeeting}
-            isBlock
-            label={`Start ${meetingLabel} Meeting`}
-            onClick={onStartMeetingClick}
-            buttonSize="large"
-            waiting={submitting}
-          />
-        </ButtonBlock>
-        {!isPro && !meetingsOffered &&
-          <ButtonBlock>
+          {isPro || retroMeetingsRemaining > 0 ?
+            <Button
+              buttonStyle="primary"
+              colorPalette="warm"
+              depth={1}
+              disabled={!canStartMeeting}
+              isBlock
+              label={`Start ${meetingLabel} Meeting`}
+              onClick={onStartMeetingClick}
+              buttonSize="large"
+              waiting={submitting}
+            /> :
             <LoadableModal
-              LoadableComponent={UpgradeModalLoadable}
+              LoadableComponent={UpgradeModalRootLoadable}
               maxWidth={350}
               maxHeight={225}
-              queryVars={{isBillingLeader: false}}
+              queryVars={{orgId}}
               toggle={<Button
                 aria-label="Get Access Now"
                 buttonSize="large"
@@ -113,9 +161,13 @@ const NewMeetingLobby = (props: Props) => {
                 label="Get Access Now"
               />}
             />
-          </ButtonBlock>
-        }
+          }
+          {!isPro && retroMeetingsRemaining > 0 &&
+          <TrialStatus>{`${retroMeetingsRemaining} of ${retroMeetingsOffered} meetings remaining`}</TrialStatus>
+          }
+        </ButtonBlock>
       </ButtonGroup>
+
       <UrlBlock>
         <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
       </UrlBlock>
@@ -128,12 +180,13 @@ export default createFragmentContainer(
   graphql`
     fragment NewMeetingLobby_team on Team {
       tier
-      meetingSettings(meetingType: $meetingType) {
-        meetingsOffered
-        meetingsRemaining
-      }
       teamId: id
-      teamName: name
+      teamName: name,
+      orgId
+      organization {
+        retroMeetingsOffered
+        retroMeetingsRemaining
+      }
     }
   `
 );

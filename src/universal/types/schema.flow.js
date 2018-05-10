@@ -472,6 +472,10 @@ export type Organization = {
   periodEnd: ?any;
   /** The datetime the current billing cycle starts */
   periodStart: ?any;
+  /** The total number of retroMeetings given to the team */
+  retroMeetingsOffered: ?number;
+  /** Number of retro meetings that can be run (if not pro) */
+  retroMeetingsRemaining: ?number;
   /** The customerId from stripe */
   stripeId: ?string;
   /** The subscriptionId from stripe */
@@ -482,7 +486,7 @@ export type Organization = {
   /** The count of active & inactive users */
   orgUserCount: ?OrgUserCount;
   /** The leaders of the org */
-  billingLeaders: ?Array<User>;
+  billingLeaders: Array<User>;
 }
 
 /**
@@ -1557,10 +1561,6 @@ export type RetroPhaseItem = {
   The retro-specific meeting settings
 */
 export type RetrospectiveMeetingSettings = {
-  /** The total number of meetings given to the team */
-  meetingsOffered: ?number;
-  /** Number of meetings that can be run (if not pro) */
-  meetingsRemaining: ?number;
   /** The type of meeting these settings apply to */
   meetingType: ?MeetingTypeEnum;
   /** The broad phase types that will be addressed during the meeting */
@@ -2503,10 +2503,6 @@ export type NotifyPromoteToOrgLeader = {
   The action-specific meeting settings
 */
 export type ActionMeetingSettings = {
-  /** The total number of meetings given to the team */
-  meetingsOffered: ?number;
-  /** Number of meetings that can be run (if not pro) */
-  meetingsRemaining: ?number;
   /** The type of meeting these settings apply to */
   meetingType: ?MeetingTypeEnum;
   /** The broad phase types that will be addressed during the meeting */

@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
@@ -64,7 +64,14 @@ const Organization = new GraphQLObjectType({
       description: 'The datetime the current billing cycle starts',
       resolve: resolveForBillingLeaders('periodStart')
     },
-
+    retroMeetingsOffered: {
+      type: GraphQLInt,
+      description: 'The total number of retroMeetings given to the team'
+    },
+    retroMeetingsRemaining: {
+      type: GraphQLInt,
+      description: 'Number of retro meetings that can be run (if not pro)'
+    },
     stripeId: {
       type: GraphQLID,
       description: 'The customerId from stripe',
@@ -125,7 +132,7 @@ const Organization = new GraphQLObjectType({
       }
     },
     billingLeaders: {
-      type: new GraphQLList(User),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
       resolve: async ({orgUsers}, args, {dataLoader}) => {
         const billingLeaderUserIds = orgUsers

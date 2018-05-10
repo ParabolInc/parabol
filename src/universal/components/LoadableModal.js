@@ -24,7 +24,8 @@ const ModalContents = styled('div')({
   flex: '0 1 auto',
   flexDirection: 'column',
   maxHeight: '90vh',
-  overflowY: 'auto',
+  // comment out for confetti
+  // overflowY: 'auto',
   position: 'relative'
 });
 

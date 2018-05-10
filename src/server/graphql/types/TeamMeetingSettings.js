@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLInterfaceType} from 'graphql';
+import {GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
 import Team from 'server/graphql/types/Team';
 import {resolveTeam} from 'server/graphql/resolvers';
@@ -8,14 +8,6 @@ import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeet
 import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings';
 
 export const teamMeetingSettingsFields = () => ({
-  meetingsOffered: {
-    type: GraphQLInt,
-    description: 'The total number of meetings given to the team'
-  },
-  meetingsRemaining: {
-    type: GraphQLInt,
-    description: 'Number of meetings that can be run (if not pro)'
-  },
   meetingType: {
     description: 'The type of meeting these settings apply to',
     type: MeetingTypeEnum
