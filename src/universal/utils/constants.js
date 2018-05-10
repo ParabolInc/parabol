@@ -20,6 +20,8 @@ export const RETRO_VOTED_LABEL = 'Upvoted';
 
 /* Phases */
 export const LOBBY = 'lobby';
+export const RETRO_LOBBY_FREE = 'retroLobbyFree';
+export const RETRO_LOBBY_PAID = 'retroLobbyPaid';
 // lowercase here to match url
 export const CHECKIN = 'checkin';
 export const UPDATES = 'updates';

@@ -17,7 +17,7 @@ import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroRefle
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql';
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
 import ui from 'universal/styles/ui';
-import {LOBBY, CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
+import {RETRO_LOBBY_FREE, RETRO_LOBBY_PAID, CHECKIN, DISCUSS, GROUP, REFLECT, VOTE, PRO} from 'universal/utils/constants';
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn';
 import findStageById from 'universal/utils/meetings/findStageById';
 import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation';
@@ -168,13 +168,14 @@ class NewMeeting extends Component<Props> {
   render() {
     const {atmosphere, meetingType, viewer} = this.props;
     const {team} = viewer;
-    const {newMeeting, teamName} = team;
+    const {newMeeting, teamName, tier} = team;
     const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting || {};
     const {viewerId} = atmosphere;
     const isFacilitating = viewerId === facilitatorUserId;
     const meetingLabel = meetingTypeToLabel[meetingType];
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true;
     const localPhaseType = localPhase && localPhase.phaseType;
+    const retroLobbyHelpContent = tier === PRO ? RETRO_LOBBY_PAID : RETRO_LOBBY_FREE;
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
@@ -200,7 +201,7 @@ class NewMeeting extends Component<Props> {
         </MeetingArea>
         {!inSync && <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />}
         <MeetingHelpBlock isFacilitating={isFacilitating}>
-          <MeetingHelpDialog phase={localPhaseType || LOBBY} />
+          <MeetingHelpDialog phase={localPhaseType || retroLobbyHelpContent} />
         </MeetingHelpBlock>
       </MeetingContainer>
     );

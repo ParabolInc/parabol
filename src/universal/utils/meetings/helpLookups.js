@@ -2,6 +2,8 @@ import React from 'react';
 
 import {
   LOBBY,
+  RETRO_LOBBY_FREE,
+  RETRO_LOBBY_PAID,
   CHECKIN,
   REFLECT,
   GROUP,
@@ -30,6 +32,20 @@ const meetingHelpLink = actionGettingStartedLink || retroGettingStartedLink;
 const lobbyHelpContent = (
   <div>
     <p>{`To learn more about how to run ${meetingLabel}, see our `}{meetingHelpLink}{'.'}</p>
+  </div>
+);
+
+const retroLobbyHelpContentFree = (
+  <div>
+    <p>{'The person who presses “Start Meeting” will be today’s Facilitator.'}</p>
+    <p>{'Everyone’s display automatically follows the Facilitator.'}</p>
+  </div>
+);
+
+const retroLobbyHelpContentPaid = (
+  <div>
+    <p>{'Running a retrospective is the most effective way to learn how your team can work smarter.'}</p>
+    <p>{'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'}</p>
   </div>
 );
 
@@ -109,6 +125,14 @@ const phaseHelpLookup = {
   [LOBBY]: {
     facilitatorBarTip: null,
     helpDialog: lobbyHelpContent
+  },
+  [RETRO_LOBBY_FREE]: {
+    facilitatorBarTip: null,
+    helpDialog: retroLobbyHelpContentFree
+  },
+  [RETRO_LOBBY_PAID]: {
+    facilitatorBarTip: null,
+    helpDialog: retroLobbyHelpContentPaid
   },
   [CHECKIN]: {
     facilitatorBarTip: 'Facilitator: allow each teammate a moment to answer today’s prompt, then mark them as Here or Not Here.',

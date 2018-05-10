@@ -105,7 +105,7 @@ const pricingLinkCopy = 'Learn About Plans & Invoicing';
 
 const UpgradeSqueeze = (props: Props) => {
   const {onSuccess, organization} = props;
-  const {orgId, billingLeaders, isBillingLeader} = organization;
+  const {orgId, billingLeaders, isBillingLeader, orgUserCount: {activeUserCount}} = organization;
   return (
     <ModalBoundary>
       <ModalContentPanel>
@@ -113,7 +113,7 @@ const UpgradeSqueeze = (props: Props) => {
         <ModalContent>
           <UpgradeBenefits />
           <ModalContentSpacer />
-          <InlineEstimatedCost activeUserCount={5} />
+          <InlineEstimatedCost activeUserCount={activeUserCount} />
           <ModalLink href={PRICING_LINK} rel="noopener no2referrer" target="_blank" title={pricingLinkCopy}>
             <StyledIcon name={ui.iconExternalLink} />
             {pricingLinkCopy}
@@ -143,6 +143,9 @@ export default createFragmentContainer(
       isBillingLeader
       billingLeaders {
         email
+      }
+      orgUserCount {
+        activeUserCount
       }
     }
   `
