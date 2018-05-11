@@ -23,7 +23,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
 
   static identify(viewer) {
     if (!viewer) return;
-    const {email, viewerId, avatar, name} = viewer;
+    const {created, email, viewerId, avatar, name} = viewer;
     raven.setUserContext({
       id: viewerId,
       email
@@ -31,6 +31,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
     window.analytics.identify(viewerId, {
       avatar,
+      created,
       email,
       name
     });
@@ -87,7 +88,7 @@ export default createFragmentContainer(
   graphql`
     fragment AnalyticsIdentifier_viewer on User {
       viewerId: id
-      createdAt
+      created: createdAt
       avatar: picture
       name: preferredName
       email
