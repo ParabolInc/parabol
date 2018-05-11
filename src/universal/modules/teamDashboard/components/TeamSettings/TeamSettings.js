@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
 import {Button, Panel, Tooltip, UserRow, Row} from 'universal/components';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
 import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal';
@@ -213,7 +213,7 @@ class TeamSettings extends Component {
 
     return (
       <TeamSettingsLayout>
-        <Helmet title={`${teamName} Settings | Parabol`} />
+        <Helmet title={`Team Settings | ${teamName}`} />
         <PanelsLayout>
           {tier === PERSONAL &&
             <Panel>

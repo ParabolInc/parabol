@@ -288,7 +288,7 @@ class MeetingContainer extends Component {
     const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
 
     return (
-      <MeetingLayout title={`Action Meeting for ${teamName} | Parabol`}>
+      <MeetingLayout title={`Action Meeting | ${teamName}`}>
         <Sidebar
           gotoItem={this.gotoItem}
           gotoAgendaItem={this.gotoAgendaItem}

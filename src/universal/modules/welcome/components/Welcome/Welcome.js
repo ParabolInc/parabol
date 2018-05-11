@@ -3,7 +3,7 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import ProgressDots from 'universal/modules/welcome/components/ProgressDots/ProgressDots';
 import Step1PreferredName from 'universal/modules/welcome/components/Step1PreferredName/Step1PreferredName';
 import Step2TeamName from 'universal/modules/welcome/components/Step2TeamName/Step2TeamName';

@@ -18,7 +18,7 @@ const UserDashboard = (props) => {
       <AsyncRoute exact path={match.url} mod={userDashRoot} />
       <AsyncRoute path={`${match.url}/settings`} mod={userSettings} />
       <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
-      <AsyncRoute isAbstract path={`${match.url}/organizations/:orgId`} mod={organization} />
+      <AsyncRoute path={`${match.url}/organizations/:orgId`} mod={organization} />
       <AsyncRoute path={`${match.url}/notifications`} mod={notificationsMod} extraProps={{notifications}} />
     </Switch>
   );

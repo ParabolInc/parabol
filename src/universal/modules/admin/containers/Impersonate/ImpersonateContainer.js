@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import LoadingView from 'universal/components/LoadingView/LoadingView';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateImposterTokenMutation from 'universal/mutations/CreateImposterTokenMutation';
@@ -10,7 +10,7 @@ import CreateImposterTokenMutation from 'universal/mutations/CreateImposterToken
 const showDucks = () => {
   return (
     <div>
-      <Helmet title="Authenticating As..." />
+      <Helmet title="Impersonating" />
       <LoadingView />
     </div>
   );

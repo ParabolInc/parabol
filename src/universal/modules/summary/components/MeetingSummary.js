@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import SummaryEmail from 'universal/modules/email/components/SummaryEmail/SummaryEmail';
 import ui from 'universal/styles/ui';
 import {MEETING_NAME, MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
@@ -11,7 +11,7 @@ import makeHref from 'universal/utils/makeHref';
 const MeetingSummary = (props) => {
   const {viewer: {meeting}} = props;
   const {meetingNumber, teamId, teamName} = meeting;
-  const title = `${MEETING_NAME} #${meetingNumber} ${MEETING_SUMMARY_LABEL} for ${teamName}`;
+  const title = `${MEETING_NAME} ${MEETING_SUMMARY_LABEL} | ${teamName} | ${meetingNumber}`;
   const meetingUrl = makeHref(`/meeting/${teamId}`);
   const teamDashUrl = `/team/${teamId}`;
   return (

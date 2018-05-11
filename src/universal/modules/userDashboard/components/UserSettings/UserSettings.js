@@ -8,7 +8,7 @@ import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
 import Panel from 'universal/components/Panel/Panel';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
