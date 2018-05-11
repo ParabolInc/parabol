@@ -5,6 +5,7 @@ import {getUserId} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {UNPAUSE_USER} from 'server/utils/serverConstants';
 import {NOTIFICATION} from 'universal/utils/constants';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
 
 export default {
@@ -54,6 +55,8 @@ export default {
         publish(NOTIFICATION, onlineUserId, User, user, subOptions);
       });
     }
+
+    sendSegmentEvent('Connect WebSocket', userId, {connectedSockets, socketId, tms});
     return user;
   }
 };

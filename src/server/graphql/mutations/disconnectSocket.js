@@ -5,6 +5,7 @@ import {NOTIFICATION} from 'universal/utils/constants';
 import DisconnectSocketPayload from 'server/graphql/types/DisconnectSocketPayload';
 import promoteFirstTeamMember from 'server/graphql/mutations/helpers/promoteFirstTeamMember';
 import {MEETING_FACILITATOR_ELECTION_TIMEOUT, SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants';
+import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
 export default {
   name: 'DisconnectSocket',
@@ -25,10 +26,10 @@ export default {
       }), {returnChanges: true})('changes')(0)('new_val').default(null);
 
     if (!disconnectedUser) return undefined;
+    const {connectedSockets, tms} = disconnectedUser;
     const data = {user: disconnectedUser};
-    if (disconnectedUser.connectedSockets.length === 0) {
+    if (connectedSockets.length === 0) {
       // If that was the last socket, tell everyone they went offline
-      const {tms} = disconnectedUser;
       const {listeningUserIds, facilitatingTeams} = await r({
         listeningUserIds: r.table('TeamMember')
           .getAll(r.args(tms), {index: 'teamId'})
@@ -63,6 +64,7 @@ export default {
         }, MEETING_FACILITATOR_ELECTION_TIMEOUT);
       }
     }
+    sendSegmentEvent('Disconnect WebSocket', userId, {connectedSockets, socketId, tms});
     return data;
   }
 };
