@@ -27,7 +27,7 @@ type State = {
   editorState: EditorState,
   content: string,
   isBlurred: boolean,
-  isEditing: boolean
+  isEditing: boolean,
 }
 
 const AnonymousStyles = styled('div')({
