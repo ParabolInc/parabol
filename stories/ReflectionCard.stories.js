@@ -55,16 +55,14 @@ storiesOf('Reflection Card', module)
         render={() => (
           <ReflectionCard
             id={newReflectionId()}
-            contentState={
-              ContentState.createFromText(
-                'This is a long observation. ' +
+            contentState={ContentState.createFromText(
+              'This is a long observation. ' +
                 'I have a lot of feelings and want my team to know. ' +
                 "There's much to say, and I hope people have the patience to read this because it's, like, super important. " +
                 'At some point, this will get really long, and it should probably overflow by scrolling. ' +
                 "I hope folks don't get mad at me for writing so much. " +
                 'Seriously. When will I stop??'
-              )
-            }
+            )}
             handleDelete={action('handle-delete')}
             handleSave={action('handle-save')}
           />
@@ -91,16 +89,18 @@ storiesOf('Reflection Card', module)
       <StoryContainer
         render={() => (
           <Grid>
-            {[undefined, "What's working?", 'Where did you get stuck?'].map((reflectionPhaseQuestion) => (
-              <ReflectionCard
-                id={newReflectionId()}
-                contentState={ContentState.createFromText('Edit me!')}
-                handleDelete={action('handle-delete')}
-                handleSave={action('handle-save')}
-                key={reflectionPhaseQuestion || 'undefined'}
-                reflectionPhaseQuestion={reflectionPhaseQuestion}
-              />
-            ))}
+            {[undefined, "What's working?", 'Where did you get stuck?'].map(
+              (reflectionPhaseQuestion) => (
+                <ReflectionCard
+                  id={newReflectionId()}
+                  contentState={ContentState.createFromText('Edit me!')}
+                  handleDelete={action('handle-delete')}
+                  handleSave={action('handle-save')}
+                  key={reflectionPhaseQuestion || 'undefined'}
+                  reflectionPhaseQuestion={reflectionPhaseQuestion}
+                />
+              )
+            )}
           </Grid>
         )}
       />
@@ -118,13 +118,17 @@ storiesOf('Reflection Card', module)
         render={() => (
           <Grid>
             <ReflectionCard
-              contentState={ContentState.createFromText('Holding the original place for me as I drag')}
+              contentState={ContentState.createFromText(
+                'Holding the original place for me as I drag'
+              )}
               iAmDragging
               id={newReflectionId()}
               userDragging="Dan"
             />
             <ReflectionCard
-              contentState={ContentState.createFromText('Holding the original place for another user as they drag')}
+              contentState={ContentState.createFromText(
+                'Holding the original place for another user as they drag'
+              )}
               id={newReflectionId()}
               userDragging="Terry"
             />

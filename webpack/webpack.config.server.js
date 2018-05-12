@@ -13,7 +13,6 @@ const serverInclude = [
 const prefetches = [];
 const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
 
-
 export default {
   context: path.join(root, 'src'),
   entry: {prerender: '../src/server/webpackEntry.js'},
@@ -25,15 +24,13 @@ export default {
     libraryTarget: 'commonjs2'
   },
   // ignore anything that throws warnings & doesn't affect the view
-  externals: [
-    'isomorphic-fetch',
-    'es6-promisify'
-  ],
+  externals: ['isomorphic-fetch', 'es6-promisify'],
   resolve: {
     extensions: ['.js'],
     modules: [path.join(root, 'src'), 'node_modules', path.join(root, 'build')]
   },
-  plugins: [...prefetchPlugins,
+  plugins: [
+    ...prefetchPlugins,
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.LimitChunkCountPlugin({maxChunks: 1}),
     new webpack.DefinePlugin({

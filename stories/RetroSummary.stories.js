@@ -31,23 +31,16 @@ const exampleTopic = {
   ]
 };
 
-const exampleTopics = [
-  exampleTopic,
-  exampleTopic,
-  exampleTopic,
-  exampleTopic,
-  exampleTopic
-];
+const exampleTopics = [exampleTopic, exampleTopic, exampleTopic, exampleTopic, exampleTopic];
 
-storiesOf('Retro Summary', module)
-  .add('Voted topics', () => (
-    <RetroBackground>
-      <StoryContainer
-        render={() => (
-          <div style={{backgroundColor: 'white', width: '600px', padding: '20px'}}>
-            <RetroDiscussionTopics imageSource="local" topics={exampleTopics} />
-          </div>
-        )}
-      />
-    </RetroBackground>
-  ));
+storiesOf('Retro Summary', module).add('Voted topics', () => (
+  <RetroBackground>
+    <StoryContainer
+      render={() => (
+        <div style={{backgroundColor: 'white', width: '600px', padding: '20px'}}>
+          <RetroDiscussionTopics imageSource="local" topics={exampleTopics} />
+        </div>
+      )}
+    />
+  </RetroBackground>
+));

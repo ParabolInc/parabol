@@ -29,8 +29,16 @@ storiesOf('Reflection Group', module)
               handleSaveTitle={action('save-title')}
               id={newId()}
               reflections={[
-                {id: newId(), content: ContentState.createFromText('This is the bottom card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('This is the top card'), reflectionPhaseQuestion: null}
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('This is the bottom card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('This is the top card'),
+                  reflectionPhaseQuestion: null
+                }
               ]}
               title={''}
             />
@@ -38,8 +46,16 @@ storiesOf('Reflection Group', module)
               handleSaveTitle={action('save-title')}
               id={newId()}
               reflections={[
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
                 {
                   id: newId(),
                   content: ContentState.createFromText(`
@@ -48,7 +64,11 @@ storiesOf('Reflection Group', module)
                   `),
                   reflectionPhaseQuestion: null
                 },
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null}
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                }
               ]}
               title={''}
             />
@@ -56,15 +76,51 @@ storiesOf('Reflection Group', module)
               handleSaveTitle={action('save-title')}
               id={newId()}
               reflections={[
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null}
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                }
               ]}
               title={''}
             />
@@ -84,8 +140,16 @@ storiesOf('Reflection Group', module)
               id={newId()}
               hovered
               reflections={[
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null},
-                {id: newId(), content: ContentState.createFromText('Card'), reflectionPhaseQuestion: null}
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                },
+                {
+                  id: newId(),
+                  content: ContentState.createFromText('Card'),
+                  reflectionPhaseQuestion: null
+                }
               ]}
               title={''}
             />

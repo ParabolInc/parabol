@@ -98,7 +98,9 @@ storiesOf('Meeting Components', module)
           <div>
             <LabelHeading>{'Discuss'}</LabelHeading>
             <MeetingPhaseHeading>{'What might we do differently next time?'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Create takeaway task cards to capture next steps'}</MeetingCopy>
+            <MeetingCopy margin="0">
+              {'Create takeaway task cards to capture next steps'}
+            </MeetingCopy>
           </div>
         )}
       />
@@ -110,7 +112,9 @@ storiesOf('Meeting Components', module)
         render={() => (
           <div style={{display: 'flex', flex: 1, flexDirection: 'column', flexShrink: 0}}>
             <div style={{display: 'flex', flex: 1, flexShrink: 0}}>{'Meeting Content'}</div>
-            <MeetingControlBar>{'Psst. Facilitator, you can control the meeting here!'}</MeetingControlBar>
+            <MeetingControlBar>
+              {'Psst. Facilitator, you can control the meeting here!'}
+            </MeetingControlBar>
           </div>
         )}
       />
@@ -123,11 +127,16 @@ storiesOf('Meeting Components', module)
           <FlexBlock direction="column" margin="auto">
             <FlexBlock margin="0 0 3rem">
               <MeetingFacilitatorAvatar size="small" picture={picture} />
-              <MeetingCopy margin="auto auto auto 0">{'Marimar is today’s facilitator.'}</MeetingCopy>
+              <MeetingCopy margin="auto auto auto 0">
+                {'Marimar is today’s facilitator.'}
+              </MeetingCopy>
             </FlexBlock>
             <FlexBlock>
               <MeetingFacilitatorAvatar size="small" picture={picture} />
-              <SimpleMeetingPrompt><b>{'Bojan'}</b>{', what has your attention today?'}</SimpleMeetingPrompt>
+              <SimpleMeetingPrompt>
+                <b>{'Bojan'}</b>
+                {', what has your attention today?'}
+              </SimpleMeetingPrompt>
             </FlexBlock>
           </FlexBlock>
         )}

@@ -27,7 +27,7 @@ type State = {
   editorState: EditorState,
   content: string,
   isBlurred: boolean,
-  isEditing: boolean,
+  isEditing: boolean
 };
 
 const AnonymousStyles = styled('div')({
@@ -38,7 +38,7 @@ const AnonymousStyles = styled('div')({
   minHeight: ui.retroCardMinHeight,
   position: 'relative',
   width: ui.retroCardWidth,
-  userSelect: 'none',
+  userSelect: 'none'
 });
 
 const DEFAULT_TEXT = 'Somebody is typing...';
@@ -49,8 +49,8 @@ const obfuscate = (content: string): string => {
       // $FlowFixMe
       (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - ROT * 2
     );
-  })
-}
+  });
+};
 
 const getContentState = (contentText) => {
   const contentState = ContentState.createFromText(contentText);

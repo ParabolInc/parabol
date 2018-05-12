@@ -42,7 +42,7 @@
     "postdeploy": "node ./src/server/utils/postDeploy.babel.js",
     "precommit": "lint-staged",
     "flow": "flow",
-    "format": "prettier-standard 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
+    "prettier": "prettier-standard 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",

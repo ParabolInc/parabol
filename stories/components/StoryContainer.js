@@ -41,7 +41,7 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer);
 
 export default class StoryContainer extends Component<Props> {
-  componentWillMount() {
+  componentWillMount () {
     injectGlobal(globalStyles);
   }
 
@@ -54,14 +54,10 @@ export default class StoryContainer extends Component<Props> {
       maxWidth: '50rem',
       paddingBottom: '0.5rem'
     };
-    return Boolean(description) && (
-      <div className={css(style)}>
-        {description}
-      </div>
-    );
+    return Boolean(description) && <div className={css(style)}>{description}</div>;
   };
 
-  render() {
+  render () {
     return (
       <Provider store={store}>
         <DragDropContextProvider backend={HTML5Backend}>

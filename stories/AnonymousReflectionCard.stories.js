@@ -28,7 +28,9 @@ storiesOf('Anonymous Reflection Card', module)
     <RetroBackground>
       <StoryContainer
         render={() => (
-          <AnonymousReflectionCard contentState={ContentState.createFromText("Hello world! It's me, Dan.")} />
+          <AnonymousReflectionCard
+            contentState={ContentState.createFromText("Hello world! It's me, Dan.")}
+          />
         )}
       />
     </RetroBackground>

@@ -13,15 +13,10 @@ import AddReflectionButton from 'universal/components/AddReflectionButton/AddRef
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
 
-storiesOf('Add Reflection Button', module)
-  .add('adds a reflection', () => (
-    <RetroBackground>
-      <StoryContainer
-        render={() => (
-          <AddReflectionButton
-            handleClick={action('handle-click-add-reflection')}
-          />
-        )}
-      />
-    </RetroBackground>
-  ));
+storiesOf('Add Reflection Button', module).add('adds a reflection', () => (
+  <RetroBackground>
+    <StoryContainer
+      render={() => <AddReflectionButton handleClick={action('handle-click-add-reflection')} />}
+    />
+  </RetroBackground>
+));
