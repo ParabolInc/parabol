@@ -1,14 +1,14 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, isTeamLead} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
-import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
-import {sendAlreadyArchivedTeamError} from 'server/utils/alreadyMutatedErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload'
+import {auth0ManagementClient} from 'server/utils/auth0Helpers'
+import {getUserId, isTeamLead} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
+import shortid from 'shortid'
+import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants'
+import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors'
+import {sendAlreadyArchivedTeamError} from 'server/utils/alreadyMutatedErrors'
 
 export default {
   type: ArchiveTeamPayload,
@@ -19,19 +19,19 @@ export default {
     }
   },
   async resolve (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const now = new Date();
-    const operationId = dataLoader.share();
-    const subOptions = {operationId, mutatorId};
+    const r = getRethink()
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {operationId, mutatorId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
+    const viewerId = getUserId(authToken)
     if (!(await isTeamLead(viewerId, teamId))) {
-      return sendTeamLeadAccessError(authToken, teamId);
+      return sendTeamLeadAccessError(authToken, teamId)
     }
 
     // RESOLUTION
-    sendSegmentEvent('Archive Team', viewerId, {teamId});
+    sendSegmentEvent('Archive Team', viewerId, {teamId})
     const {team, users, removedTeamNotifications} = await r({
       team: r
         .table('Team')
@@ -50,7 +50,7 @@ export default {
             .update((user) => ({tms: user('tms').difference([teamId])}), {
               returnChanges: true
             })('changes')('new_val')
-            .default([]);
+            .default([])
         }),
       removedTeamNotifications: r
         .table('Notification')
@@ -58,10 +58,10 @@ export default {
         .filter({teamId})
         .delete({returnChanges: true})('changes')('new_val')
         .default([])
-    });
+    })
 
     if (!team) {
-      return sendAlreadyArchivedTeamError(authToken, teamId);
+      return sendAlreadyArchivedTeamError(authToken, teamId)
     }
 
     const notifications = users
@@ -73,24 +73,24 @@ export default {
         type: TEAM_ARCHIVED,
         userIds: [notifiedUserId],
         teamId
-      }));
+      }))
     if (notifications.length) {
-      await r.table('Notification').insert(notifications);
+      await r.table('Notification').insert(notifications)
     }
 
     const data = {
       teamId,
       notificationIds: notifications.map(({id}) => id),
       removedTeamNotifications
-    };
-    publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions);
+    }
+    publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions)
 
     users.forEach((user) => {
-      const {id, tms} = user;
-      auth0ManagementClient.users.updateAppMetadata({id}, {tms});
-      publish(NEW_AUTH_TOKEN, id, UPDATED, {tms});
-    });
+      const {id, tms} = user
+      auth0ManagementClient.users.updateAppMetadata({id}, {tms})
+      publish(NEW_AUTH_TOKEN, id, UPDATED, {tms})
+    })
 
-    return data;
+    return data
   }
-};
+}

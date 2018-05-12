@@ -1,9 +1,9 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
-import {GITHUB} from 'universal/utils/constants';
-import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember';
-import {insertNodeBefore} from 'universal/utils/relay/insertEdge';
-import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount';
+import {GITHUB} from 'universal/utils/constants'
+import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember'
+import {insertNodeBefore} from 'universal/utils/relay/insertEdge'
+import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount'
 
 const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
@@ -23,46 +23,46 @@ const mutation = graphql`
       }
     }
   }
-`;
+`
 
-let tempId = 0;
+let tempId = 0
 
 export const addGitHubRepoUpdater = (store, viewerId, teamId, newNode) => {
   // update the integration list
-  const viewer = store.get(viewerId);
-  const githubRepos = viewer.getLinkedRecords('githubRepos', {teamId});
+  const viewer = store.get(viewerId)
+  const githubRepos = viewer.getLinkedRecords('githubRepos', {teamId})
   if (githubRepos) {
-    const newNodes = insertNodeBefore(githubRepos, newNode, 'nameWithOwner');
-    viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId});
+    const newNodes = insertNodeBefore(githubRepos, newNode, 'nameWithOwner')
+    viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId})
   }
 
-  incrementIntegrationCount(viewer, teamId, GITHUB, 1);
-};
+  incrementIntegrationCount(viewer, teamId, GITHUB, 1)
+}
 
 const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, onError, onCompleted) => {
-  const {viewerId} = environment;
+  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {nameWithOwner, teamId},
     updater: (store) => {
-      const payload = store.getRoot('addGitHubRepo');
-      if (!payload) return;
-      const node = payload.getLinkedRecord('repo');
-      addGitHubRepoUpdater(store, viewerId, teamId, node);
+      const payload = store.getRoot('addGitHubRepo')
+      if (!payload) return
+      const node = payload.getLinkedRecord('repo')
+      addGitHubRepoUpdater(store, viewerId, teamId, node)
     },
     optimisticUpdater: (store) => {
-      const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId);
-      const repoId = `addGitHubRepo:${tempId++}`;
+      const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId)
+      const repoId = `addGitHubRepo:${tempId++}`
       const repo = store
         .create(repoId, GITHUB)
         .setValue(nameWithOwner, 'nameWithOwner')
         .setValue(repoId, 'id')
-        .setLinkedRecords([teamMemberNode], 'teamMembers');
-      addGitHubRepoUpdater(store, viewerId, teamId, repo);
+        .setLinkedRecords([teamMemberNode], 'teamMembers')
+      addGitHubRepoUpdater(store, viewerId, teamId, repo)
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default AddGitHubRepoMutation;
+export default AddGitHubRepoMutation

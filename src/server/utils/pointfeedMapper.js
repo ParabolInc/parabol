@@ -6,5 +6,5 @@ export default function (row, requestedFields) {
     old_val: row('old_val')
       .default({})
       .pluck(requestedFields)
-  };
+  }
 }

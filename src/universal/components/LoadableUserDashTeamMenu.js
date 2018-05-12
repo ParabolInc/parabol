@@ -1,13 +1,13 @@
 // @flow
-import React from 'react';
+import React from 'react'
 import {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui';
-import Loadable from 'react-loadable';
-import LoadableLoading from 'universal/components/LoadableLoading';
+} from 'universal/styles/ui'
+import Loadable from 'react-loadable'
+import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableUserDashTeamMenu = Loadable({
   loader: () =>
@@ -20,6 +20,6 @@ const LoadableUserDashTeamMenu = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
-export default LoadableUserDashTeamMenu;
+export default LoadableUserDashTeamMenu

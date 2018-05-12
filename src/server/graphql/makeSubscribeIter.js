@@ -1,48 +1,48 @@
-import {$$asyncIterator} from 'iterall';
-import getPubSub from 'server/utils/getPubSub';
+import {$$asyncIterator} from 'iterall'
+import getPubSub from 'server/utils/getPubSub'
 
-const defaultFilterFn = () => true;
+const defaultFilterFn = () => true
 
 const makeSubscribeIter = (channelName, options = {}) => {
-  const {dataLoader, filterFn = defaultFilterFn, resolve} = options;
-  const asyncIterator = getPubSub().asyncIterator(channelName);
+  const {dataLoader, filterFn = defaultFilterFn, resolve} = options
+  const asyncIterator = getPubSub().asyncIterator(channelName)
   const getNextPromise = async () => {
-    const nextRes = await asyncIterator.next();
-    const {value, done} = nextRes;
+    const nextRes = await asyncIterator.next()
+    const {value, done} = nextRes
     if (done) {
-      return asyncIterator.return();
+      return asyncIterator.return()
     }
     if (filterFn(value)) {
       if (value.operationId) {
-        dataLoader.useShared(value.operationId);
+        dataLoader.useShared(value.operationId)
       }
       if (resolve) {
         return {
           done: false,
           value: await resolve(value)
-        };
+        }
       }
-      return nextRes;
+      return nextRes
     }
     // if the value doesn't get filtered, send it to the client. else, restart the listener
-    return getNextPromise();
-  };
+    return getNextPromise()
+  }
 
   return {
     next () {
-      return getNextPromise();
+      return getNextPromise()
     },
     return () {
-      dataLoader.dispose({force: true});
-      return asyncIterator.return();
+      dataLoader.dispose({force: true})
+      return asyncIterator.return()
     },
     throw (error) {
-      return asyncIterator.throw(error);
+      return asyncIterator.throw(error)
     },
     [$$asyncIterator] () {
-      return this;
+      return this
     }
-  };
-};
+  }
+}
 
-export default makeSubscribeIter;
+export default makeSubscribeIter

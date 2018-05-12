@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveInvitation} from 'server/graphql/resolvers';
-import Invitation from 'server/graphql/types/Invitation';
-import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
+import {GraphQLObjectType} from 'graphql'
+import {resolveInvitation} from 'server/graphql/resolvers'
+import Invitation from 'server/graphql/types/Invitation'
+import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember'
 
 const InvitationRemoved = new GraphQLObjectType({
   name: 'InvitationRemoved',
@@ -15,6 +15,6 @@ const InvitationRemoved = new GraphQLObjectType({
       description: 'A notification annoucing that the invitee is now a team member'
     }
   })
-});
+})
 
-export default InvitationRemoved;
+export default InvitationRemoved

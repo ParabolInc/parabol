@@ -1,5 +1,5 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const AddTeamMemberPayload = new GraphQLObjectType({
   name: 'AddTeamMemberPayload',
@@ -8,6 +8,6 @@ const AddTeamMemberPayload = new GraphQLObjectType({
       type: new GraphQLNonNull(TeamMember)
     }
   })
-});
+})
 
-export default AddTeamMemberPayload;
+export default AddTeamMemberPayload

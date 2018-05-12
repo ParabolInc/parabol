@@ -1,6 +1,6 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 
 const InvoiceLineItemDetails = new GraphQLObjectType({
   name: 'InvoiceLineItemDetails',
@@ -32,6 +32,6 @@ const InvoiceLineItemDetails = new GraphQLObjectType({
       description: 'The timestamp for the beginning of the period of no charge'
     }
   })
-});
+})
 
-export default InvoiceLineItemDetails;
+export default InvoiceLineItemDetails

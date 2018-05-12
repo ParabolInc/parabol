@@ -1,20 +1,20 @@
 // @flow
 
-import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
+import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow'
 
 const findFirstStageInPhase = (
   phases: $ReadOnlyArray<Object>,
   phaseType: NewMeetingPhaseTypeEnum
 ) => {
-  if (!phases) return undefined;
+  if (!phases) return undefined
   for (let ii = 0; ii < phases.length; ii++) {
-    const phase = phases[ii];
-    const {stages} = phase;
+    const phase = phases[ii]
+    const {stages} = phase
     if (phase.phaseType === phaseType) {
-      return {stage: stages[0], phase};
+      return {stage: stages[0], phase}
     }
   }
-  return undefined;
-};
+  return undefined
+}
 
-export default findFirstStageInPhase;
+export default findFirstStageInPhase

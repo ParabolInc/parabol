@@ -1,5 +1,5 @@
-import {compositeId, id} from 'universal/validation/templates';
-import legitify from './legitify';
+import {compositeId, id} from 'universal/validation/templates'
+import legitify from './legitify'
 
 export default function makeUpdateAgendaItemSchema () {
   return legitify({
@@ -10,5 +10,5 @@ export default function makeUpdateAgendaItemSchema () {
     sortOrder: (value) => value.float(),
     teamId: id,
     teamMemberId: compositeId
-  });
+  })
 }

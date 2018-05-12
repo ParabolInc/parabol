@@ -1,5 +1,5 @@
-import {GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
+import {GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 
 const Invitee = new GraphQLInputObjectType({
   name: 'Invitee',
@@ -18,6 +18,6 @@ const Invitee = new GraphQLInputObjectType({
       description: 'The current task the invitee is working on'
     }
   })
-});
+})
 
-export default Invitee;
+export default Invitee

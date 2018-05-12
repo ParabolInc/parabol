@@ -1,17 +1,17 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting/getEndMeetingSortOrders';
-import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEmailSummary';
-import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
-import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload';
-import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
-import {isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants';
-import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import sendAuthRaven from 'server/utils/sendAuthRaven';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import getEndMeetingSortOrders from 'server/graphql/mutations/helpers/endMeeting/getEndMeetingSortOrders'
+import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEmailSummary'
+import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
+import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
+import {isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
+import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants'
+import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import sendAuthRaven from 'server/utils/sendAuthRaven'
 
 export default {
   type: EndMeetingPayload,
@@ -23,13 +23,13 @@ export default {
     }
   },
   async resolve (source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
     const meeting = await r
       .table('Meeting')
@@ -37,19 +37,19 @@ export default {
       .getAll(teamId, {index: 'teamId'})
       .orderBy(r.desc('createdAt'))
       .nth(0)
-      .default({endedAt: r.now()});
+      .default({endedAt: r.now()})
     if (meeting.endedAt) {
       const breadcrumb = {
         message: 'Meeting already ended!',
         category: 'Meeting ended',
         data: {teamId}
-      };
-      return sendAuthRaven(authToken, 'Meeting already ended', breadcrumb);
+      }
+      return sendAuthRaven(authToken, 'Meeting already ended', breadcrumb)
     }
 
     // RESOLUTION
-    const now = new Date();
-    const {id: meetingId} = meeting;
+    const now = new Date()
+    const {id: meetingId} = meeting
     const completedMeeting = await r
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
@@ -122,9 +122,9 @@ export default {
               nonAtomic: true,
               returnChanges: true
             }
-          )('changes')(0)('new_val');
-      });
-    const updatedTasks = await getEndMeetingSortOrders(completedMeeting);
+          )('changes')(0)('new_val')
+      })
+    const updatedTasks = await getEndMeetingSortOrders(completedMeeting)
     const {tasksToArchive, team} = await r({
       updatedSortOrders: r(updatedTasks).forEach((task) => {
         return r
@@ -132,7 +132,7 @@ export default {
           .get(task('id'))
           .update({
             sortOrder: task('sortOrder')
-          });
+          })
       }),
       team: r
         .table('Team')
@@ -168,7 +168,7 @@ export default {
               .update({
                 checkInOrder: arr.offsetsOf(doc).nth(0),
                 isCheckedIn: null
-              });
+              })
           })
         ),
       tasksToArchive: r
@@ -182,29 +182,29 @@ export default {
         )
         .pluck('id', 'content', 'tags')
         .coerceTo('array')
-    });
+    })
 
-    const archivedTasks = await archiveTasksForDB(tasksToArchive, dataLoader);
-    const {meetingNumber} = completedMeeting;
+    const archivedTasks = await archiveTasksForDB(tasksToArchive, dataLoader)
+    const {meetingNumber} = completedMeeting
     const userIds = completedMeeting.invitees
       .filter((invitee) => invitee.present)
-      .map((invitee) => invitee.id.split('::')[0]);
-    sendSegmentEvent('Meeting Completed', userIds, {teamId, meetingNumber});
-    endSlackMeeting(meetingId, teamId);
+      .map((invitee) => invitee.id.split('::')[0])
+    sendSegmentEvent('Meeting Completed', userIds, {teamId, meetingNumber})
+    endSlackMeeting(meetingId, teamId)
 
     const data = {
       team,
       archivedTasks,
       meetingId
-    };
-    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
+    }
+    const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
 
-    publish(TEAM, teamId, EndMeetingPayload, data, subOptions);
+    publish(TEAM, teamId, EndMeetingPayload, data, subOptions)
     teamMembers.forEach(({userId}) => {
-      publish(TASK, userId, EndMeetingPayload, data, subOptions);
-    });
-    await sendEmailSummary(completedMeeting);
+      publish(TASK, userId, EndMeetingPayload, data, subOptions)
+    })
+    await sendEmailSummary(completedMeeting)
 
-    return data;
+    return data
   }
-};
+}

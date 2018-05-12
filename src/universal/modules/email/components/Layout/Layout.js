@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ui from 'universal/styles/ui'
 
 const Layout = (props) => {
   const containerStyle = {
@@ -11,7 +11,7 @@ const Layout = (props) => {
     msoTableRspace: '0pt',
     backgroundColor: ui.emailBackgroundColor,
     textAlign: 'center'
-  };
+  }
 
   const innerStyle = {
     ...ui.emailTableBase,
@@ -21,19 +21,19 @@ const Layout = (props) => {
     msoTableRspace: '0pt',
     fontFamily: '"IBM Plex Sans", "Helvetica Neue", sans-serif',
     textAlign: 'center'
-  };
+  }
 
   const cellStyle = {
     padding: '16px 0px',
     textAlign: 'center'
-  };
+  }
 
   return (
-    <table align="center" style={containerStyle} width="100%">
+    <table align='center' style={containerStyle} width='100%'>
       <tbody>
         <tr>
-          <td align="center" style={cellStyle}>
-            <table align="center" style={innerStyle} width="600">
+          <td align='center' style={cellStyle}>
+            <table align='center' style={innerStyle} width='600'>
               <tbody>
                 <tr>
                   <td style={cellStyle}>{props.children}</td>
@@ -44,11 +44,11 @@ const Layout = (props) => {
         </tr>
       </tbody>
     </table>
-  );
-};
+  )
+}
 
 Layout.propTypes = {
   children: PropTypes.any
-};
+}
 
-export default Layout;
+export default Layout

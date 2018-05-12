@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import portal from 'react-portal-hoc';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {withRouter} from 'react-router-dom';
-import DashModal from 'universal/components/Dashboard/DashModal';
+import PropTypes from 'prop-types'
+import React from 'react'
+import portal from 'react-portal-hoc'
+import Button from 'universal/components/Button/Button'
+import Type from 'universal/components/Type/Type'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {withRouter} from 'react-router-dom'
+import DashModal from 'universal/components/Dashboard/DashModal'
 
 const LeaveOrgModal = (props) => {
   const {
@@ -23,11 +23,11 @@ const LeaveOrgModal = (props) => {
     onError,
     orgId,
     userId
-  } = props;
+  } = props
   const handleClick = () => {
-    submitMutation();
-    RemoveOrgUserMutation(atmosphere, {orgId, userId}, {history, location}, onError, onCompleted);
-  };
+    submitMutation()
+    RemoveOrgUserMutation(atmosphere, {orgId, userId}, {history, location}, onError, onCompleted)
+  }
   return (
     <DashModal
       closeAfter={closeAfter}
@@ -35,28 +35,28 @@ const LeaveOrgModal = (props) => {
       isClosing={isClosing}
       onBackdropClick={closePortal}
     >
-      <Type align="center" bold marginBottom="1.5rem" scale="s5" colorPalette="dark">
+      <Type align='center' bold marginBottom='1.5rem' scale='s5' colorPalette='dark'>
         {'Are you sure?'}
       </Type>
-      <Type align="center" marginBottom="1.5rem" scale="s3">
+      <Type align='center' marginBottom='1.5rem' scale='s3'>
         {'This will remove you from the organization and all teams under it! '}
         <br />
         {'To undo it, you’ll have to ask another Billing Leader to re-add you.'}
         <br />
       </Type>
       <Button
-        buttonStyle="flat"
-        colorPalette="warm"
-        icon="sign-out"
-        iconPlacement="right"
+        buttonStyle='flat'
+        colorPalette='warm'
+        icon='sign-out'
+        iconPlacement='right'
         label={'Leave the organization'}
         onClick={handleClick}
-        buttonSize="medium"
+        buttonSize='medium'
         waiting={submitting}
       />
     </DashModal>
-  );
-};
+  )
+}
 
 LeaveOrgModal.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -71,8 +71,8 @@ LeaveOrgModal.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired
-};
+}
 
 export default withRouter(
   withAtmosphere(withMutationProps(portal({escToClose: true, closeAfter: 100})(LeaveOrgModal)))
-);
+)

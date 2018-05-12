@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import withReducer from 'universal/decorators/withReducer/withReducer';
-import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck';
-import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
-import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import LoadingView from 'universal/components/LoadingView/LoadingView'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withReducer from 'universal/decorators/withReducer/withReducer'
+import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck'
+import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation'
+import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole'
 
 class Invitation extends Component {
   static propTypes = {
@@ -13,7 +13,7 @@ class Invitation extends Component {
     dispatch: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired
-  };
+  }
 
   componentDidMount () {
     const {
@@ -23,9 +23,9 @@ class Invitation extends Component {
         params: {inviteToken}
       },
       history
-    } = this.props;
-    if (!inviteToken) return;
-    AcceptTeamInviteMutation(atmosphere, {inviteToken}, {dispatch, history});
+    } = this.props
+    if (!inviteToken) return
+    AcceptTeamInviteMutation(atmosphere, {inviteToken}, {dispatch, history})
   }
 
   render () {
@@ -33,10 +33,10 @@ class Invitation extends Component {
       <div>
         <LoadingView />
       </div>
-    );
+    )
   }
 }
 
 export default withReducer({userDashboardSettings: userSettingsReducer})(
   withAtmosphere(requireAuthAndRole({silent: true, unauthRoute: '/signup'})(Invitation))
-);
+)

@@ -1,11 +1,11 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {makeResolveNotificationsForViewer, resolveInvitations} from 'server/graphql/resolvers';
-import Invitation from 'server/graphql/types/Invitation';
-import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
-import OrgApproval from 'server/graphql/types/OrgApproval';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {makeResolveNotificationsForViewer, resolveInvitations} from 'server/graphql/resolvers'
+import Invitation from 'server/graphql/types/Invitation'
+import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved'
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser'
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite'
+import OrgApproval from 'server/graphql/types/OrgApproval'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const ApproveToOrgPayload = new GraphQLObjectType({
   name: 'ApproveToOrgPayload',
@@ -24,8 +24,8 @@ const ApproveToOrgPayload = new GraphQLObjectType({
       description:
         'If the viegnwer is a team member, the org approvals that were removed in place of team members',
       resolve: ({removedOrgApprovals, teamIdFilter}) => {
-        if (!teamIdFilter) return removedOrgApprovals;
-        return removedOrgApprovals.filter((approval) => approval.teamId === teamIdFilter);
+        if (!teamIdFilter) return removedOrgApprovals
+        return removedOrgApprovals.filter((approval) => approval.teamId === teamIdFilter)
       }
     },
     newInvitations: {
@@ -33,11 +33,11 @@ const ApproveToOrgPayload = new GraphQLObjectType({
       description:
         'If the viewer is a team member, the list of team members added as a result of the approval',
       resolve: async (source, args, context) => {
-        const {teamIdFilter} = source;
-        const invitations = await resolveInvitations(source, args, context);
+        const {teamIdFilter} = source
+        const invitations = await resolveInvitations(source, args, context)
         return teamIdFilter
           ? invitations.filter((invitation) => invitation.teamId === teamIdFilter)
-          : invitations;
+          : invitations
       }
     },
     inviteeApprovedNotifications: {
@@ -52,6 +52,6 @@ const ApproveToOrgPayload = new GraphQLObjectType({
       resolve: makeResolveNotificationsForViewer('teamInviteNotificationIds', '')
     }
   })
-});
+})
 
-export default ApproveToOrgPayload;
+export default ApproveToOrgPayload

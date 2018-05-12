@@ -1,9 +1,9 @@
-const FILTER_TEAM_MEMBER = 'action/teamDashboard/FILTER_TEAM_MEMBER';
+const FILTER_TEAM_MEMBER = 'action/teamDashboard/FILTER_TEAM_MEMBER'
 
 const initialState = {
   teamMemberFilterId: null,
   teamMemberFilterName: 'All members'
-};
+}
 
 export default function reducer (state = initialState, action = {type: ''}) {
   switch (action.type) {
@@ -13,10 +13,10 @@ export default function reducer (state = initialState, action = {type: ''}) {
         teamMemberFilterId: action.payload.teamMemberFilterId,
         teamMemberFilterName:
           action.payload.teamMemberFilterName || initialState.teamMemberFilterName
-      };
+      }
     }
     default:
-      return state;
+      return state
   }
 }
 
@@ -27,5 +27,5 @@ export const filterTeamMember = (teamMemberFilterId, teamMemberFilterName) => {
       teamMemberFilterId,
       teamMemberFilterName
     }
-  };
-};
+  }
+}

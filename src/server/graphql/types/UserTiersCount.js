@@ -1,6 +1,6 @@
-import {GraphQLInt, GraphQLObjectType} from 'graphql';
-import {resolveUser} from 'server/graphql/resolvers';
-import User from 'server/graphql/types/User';
+import {GraphQLInt, GraphQLObjectType} from 'graphql'
+import {resolveUser} from 'server/graphql/resolvers'
+import User from 'server/graphql/types/User'
 
 const UserTiersCount = new GraphQLObjectType({
   name: 'UserTiersCount',
@@ -23,6 +23,6 @@ const UserTiersCount = new GraphQLObjectType({
       resolve: resolveUser
     }
   })
-});
+})
 
-export default UserTiersCount;
+export default UserTiersCount

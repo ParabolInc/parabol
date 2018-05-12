@@ -1,29 +1,29 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage';
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
-import textOverflow from 'universal/styles/helpers/textOverflow';
-import appTheme from 'universal/styles/theme/theme';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import OutcomeCardMessage from 'universal/modules/outcomeCard/components/OutcomeCardMessage/OutcomeCardMessage'
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
+import textOverflow from 'universal/styles/helpers/textOverflow'
+import appTheme from 'universal/styles/theme/theme'
 import ui, {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {USER_DASH} from 'universal/utils/constants';
-import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity';
-import isTaskArchived from 'universal/utils/isTaskArchived';
-import {clearError, setError} from 'universal/utils/relay/mutationCallbacks';
-import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton';
-import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
-import Loadable from 'react-loadable';
-import LoadableMenu from 'universal/components/LoadableMenu';
-import LoadableLoading from 'universal/components/LoadableLoading';
-import PlainButton from 'universal/components/PlainButton/PlainButton';
+} from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {USER_DASH} from 'universal/utils/constants'
+import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity'
+import isTaskArchived from 'universal/utils/isTaskArchived'
+import {clearError, setError} from 'universal/utils/relay/mutationCallbacks'
+import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton'
+import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
+import Loadable from 'react-loadable'
+import LoadableMenu from 'universal/components/LoadableMenu'
+import LoadableLoading from 'universal/components/LoadableLoading'
+import PlainButton from 'universal/components/PlainButton/PlainButton'
 
 const LoadableAssignMenu = Loadable({
   loader: () =>
@@ -36,7 +36,7 @@ const LoadableAssignMenu = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const LoadableAssignTeamMenu = Loadable({
   loader: () =>
@@ -49,7 +49,7 @@ const LoadableAssignTeamMenu = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const LoadableStatusMenu = Loadable({
   loader: () =>
@@ -62,7 +62,7 @@ const LoadableStatusMenu = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const LoadableGitHubMenu = Loadable({
   loader: () =>
@@ -75,29 +75,29 @@ const LoadableGitHubMenu = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
+}
 
 const assignOriginAnchor = {
   vertical: 'bottom',
   horizontal: 'left'
-};
+}
 
 const assignTargetAnchor = {
   vertical: 'top',
   horizontal: 'left'
-};
+}
 
-const height = ui.cardButtonHeight;
+const height = ui.cardButtonHeight
 
 const label = {
   ...textOverflow,
@@ -109,32 +109,32 @@ const label = {
   lineHeight: height,
   maxWidth: '100%',
   textAlign: 'left'
-};
+}
 
 class OutcomeCardFooter extends Component {
   constructor (props) {
-    super(props);
-    this.setError = setError.bind(this);
-    this.clearError = clearError.bind(this);
+    super(props)
+    this.setError = setError.bind(this)
+    this.clearError = clearError.bind(this)
   }
 
-  state = {};
+  state = {}
 
   removeContentTag = (tagValue) => () => {
     const {
       area,
       atmosphere,
       task: {taskId, content}
-    } = this.props;
-    const eqFn = (data) => data.value === tagValue;
-    const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn);
-    if (!nextContent) return;
+    } = this.props
+    const eqFn = (data) => data.value === tagValue
+    const nextContent = removeAllRangesForEntity(content, 'TAG', eqFn)
+    if (!nextContent) return
     const updatedTask = {
       id: taskId,
       content: nextContent
-    };
-    UpdateTaskMutation(atmosphere, updatedTask, area);
-  };
+    }
+    UpdateTaskMutation(atmosphere, updatedTask, area)
+  }
 
   render () {
     const {
@@ -147,24 +147,24 @@ class OutcomeCardFooter extends Component {
       task,
       styles,
       toggleMenuState
-    } = this.props;
-    const showTeam = area === USER_DASH;
-    const {taskId, assignee, integration, tags, team} = task;
-    const {teamId, teamName} = team;
-    const {service} = integration || {};
-    const isArchived = isTaskArchived(tags);
-    const buttonBlockStyles = css(styles.buttonBlock, cardIsActive && styles.showButtonBlock);
-    const avatarStyles = css(styles.avatar, cardIsActive && styles.activeAvatar);
-    const {error} = this.state;
+    } = this.props
+    const showTeam = area === USER_DASH
+    const {taskId, assignee, integration, tags, team} = task
+    const {teamId, teamName} = team
+    const {service} = integration || {}
+    const isArchived = isTaskArchived(tags)
+    const buttonBlockStyles = css(styles.buttonBlock, cardIsActive && styles.showButtonBlock)
+    const avatarStyles = css(styles.avatar, cardIsActive && styles.activeAvatar)
+    const {error} = this.state
     const teamToggleStyle = {
       ...label,
       color: ui.colorText,
       fontSize: appTheme.typography.s1,
       textAlign: 'left'
-    };
+    }
     const ownerAvatarOrTeamName = showTeam ? (
       <PlainButton
-        aria-label="Assign this task to another team"
+        aria-label='Assign this task to another team'
         onClick={this.selectAllQuestion}
         style={teamToggleStyle}
       >
@@ -172,10 +172,10 @@ class OutcomeCardFooter extends Component {
       </PlainButton>
     ) : (
       <button
-        aria-label="Assign this task to a teammate"
+        aria-label='Assign this task to a teammate'
         className={css(styles.avatarButton)}
         title={`Assigned to ${assignee.preferredName}`}
-        type="button"
+        type='button'
       >
         <div className={avatarStyles}>
           <img
@@ -188,9 +188,9 @@ class OutcomeCardFooter extends Component {
         </div>
         <div className={css(styles.avatarLabel)}>{assignee.preferredName}</div>
       </button>
-    );
+    )
 
-    const canAssign = !service && !isArchived;
+    const canAssign = !service && !isArchived
     return (
       <div className={css(styles.footerAndMessage)}>
         <div className={css(styles.footer)}>
@@ -198,44 +198,44 @@ class OutcomeCardFooter extends Component {
             {!canAssign && ownerAvatarOrTeamName}
             {canAssign &&
               showTeam && (
-              <LoadableMenu
-                LoadableComponent={LoadableAssignTeamMenu}
-                maxWidth={350}
-                maxHeight={225}
-                originAnchor={assignOriginAnchor}
-                queryVars={{
-                  area,
-                  task
-                }}
-                targetAnchor={assignTargetAnchor}
-                toggle={ownerAvatarOrTeamName}
-                onOpen={toggleMenuState}
-                onClose={toggleMenuState}
-              />
-            )}
+                <LoadableMenu
+                  LoadableComponent={LoadableAssignTeamMenu}
+                  maxWidth={350}
+                  maxHeight={225}
+                  originAnchor={assignOriginAnchor}
+                  queryVars={{
+                    area,
+                    task
+                  }}
+                  targetAnchor={assignTargetAnchor}
+                  toggle={ownerAvatarOrTeamName}
+                  onOpen={toggleMenuState}
+                  onClose={toggleMenuState}
+                />
+              )}
             {canAssign &&
               !showTeam && (
-              <LoadableMenu
-                LoadableComponent={LoadableAssignMenu}
-                isToggleNativeElement
-                maxWidth={350}
-                maxHeight={225}
-                originAnchor={assignOriginAnchor}
-                queryVars={{
-                  area,
-                  task,
-                  teamId
-                }}
-                targetAnchor={assignTargetAnchor}
-                toggle={ownerAvatarOrTeamName}
-                onOpen={toggleMenuState}
-                onClose={toggleMenuState}
-              />
-            )}
+                <LoadableMenu
+                  LoadableComponent={LoadableAssignMenu}
+                  isToggleNativeElement
+                  maxWidth={350}
+                  maxHeight={225}
+                  originAnchor={assignOriginAnchor}
+                  queryVars={{
+                    area,
+                    task,
+                    teamId
+                  }}
+                  targetAnchor={assignTargetAnchor}
+                  toggle={ownerAvatarOrTeamName}
+                  onOpen={toggleMenuState}
+                  onClose={toggleMenuState}
+                />
+              )}
           </div>
           <div className={buttonBlockStyles}>
             {isArchived ? (
-              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon="reply" />
+              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon='reply' />
             ) : (
               <React.Fragment>
                 {/* buttonSpacer helps truncated names (…) be consistent */}
@@ -254,7 +254,7 @@ class OutcomeCardFooter extends Component {
                       clearError: this.clearError
                     }}
                     targetAnchor={targetAnchor}
-                    toggle={<OutcomeCardFooterButton icon="github" />}
+                    toggle={<OutcomeCardFooterButton icon='github' />}
                     onOpen={toggleMenuState}
                     onClose={toggleMenuState}
                   />
@@ -275,7 +275,7 @@ class OutcomeCardFooter extends Component {
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon="ellipsis-v" />}
+                  toggle={<OutcomeCardFooterButton icon='ellipsis-v' />}
                   onOpen={toggleMenuState}
                   onClose={toggleMenuState}
                 />
@@ -285,7 +285,7 @@ class OutcomeCardFooter extends Component {
         </div>
         {error && <OutcomeCardMessage onClose={this.clearError} message={error} />}
       </div>
-    );
+    )
   }
 }
 
@@ -302,7 +302,7 @@ OutcomeCardFooter.propTypes = {
   showTeam: PropTypes.bool,
   styles: PropTypes.object,
   toggleMenuState: PropTypes.func.isRequired
-};
+}
 
 const styleThunk = () => ({
   footer: {
@@ -396,7 +396,7 @@ const styleThunk = () => ({
     verticalAlign: 'middle',
     width: height
   }
-});
+})
 
 export default createFragmentContainer(
   withAtmosphere(withStyles(styleThunk)(OutcomeCardFooter)),
@@ -423,4 +423,4 @@ export default createFragmentContainer(
       ...OutcomeCardStatusMenu_task
     }
   `
-);
+)

@@ -1,10 +1,10 @@
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-import {commitMutation} from 'react-relay';
+import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
+import {commitMutation} from 'react-relay'
 
 type Variables = {
   isDragging: boolean,
   reflectionId: string
-};
+}
 
 graphql`
   fragment DragReflectionMutation_team on DragReflectionPayload {
@@ -16,7 +16,7 @@ graphql`
       }
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation DragReflectionMutation($isDragging: Boolean!, $reflectionId: ID!) {
@@ -24,7 +24,7 @@ const mutation = graphql`
       ...DragReflectionMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const DragReflectionMutation = (
   atmosphere: Object,
@@ -38,19 +38,19 @@ const DragReflectionMutation = (
     onCompleted,
     onError,
     optimisticUpdater: (store) => {
-      const {viewerId} = atmosphere;
-      const {isDragging, reflectionId} = variables;
-      const reflection = store.get(reflectionId);
+      const {viewerId} = atmosphere
+      const {isDragging, reflectionId} = variables
+      const reflection = store.get(reflectionId)
       if (isDragging) {
-        const draggerUser = store.get(viewerId);
-        reflection.setValue(viewerId, 'draggerUserId');
-        reflection.setLinkedRecord(draggerUser, 'draggerUser');
+        const draggerUser = store.get(viewerId)
+        reflection.setValue(viewerId, 'draggerUserId')
+        reflection.setLinkedRecord(draggerUser, 'draggerUser')
       } else {
-        reflection.setValue(null, 'draggerUserId');
-        reflection.setValue(null, 'draggerUser');
+        reflection.setValue(null, 'draggerUserId')
+        reflection.setValue(null, 'draggerUser')
       }
     }
-  });
-};
+  })
+}
 
-export default DragReflectionMutation;
+export default DragReflectionMutation

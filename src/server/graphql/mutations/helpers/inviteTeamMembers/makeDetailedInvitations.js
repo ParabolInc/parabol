@@ -1,5 +1,5 @@
-import getAction from 'server/graphql/mutations/helpers/inviteTeamMembers/getAction';
-import {APPROVED, PENDING} from 'server/utils/serverConstants';
+import getAction from 'server/graphql/mutations/helpers/inviteTeamMembers/getAction'
+import {APPROVED, PENDING} from 'server/utils/serverConstants'
 
 const makeDetailedInvitations = (
   teamMembers,
@@ -9,14 +9,14 @@ const makeDetailedInvitations = (
   pendingInvitations = [],
   inviter = {}
 ) => {
-  const {orgId, isBillingLeader, teamId} = inviter;
+  const {orgId, isBillingLeader, teamId} = inviter
   const pendingTeamApprovals = orgApprovals.filter(
     (approval) => approval.teamId === teamId && approval.status === PENDING
-  );
-  const approvedOrgApprovals = orgApprovals.filter((approval) => approval.status === APPROVED);
+  )
+  const approvedOrgApprovals = orgApprovals.filter((approval) => approval.status === APPROVED)
   return emailArr.map((email) => {
-    const userDoc = users.find((user) => user.email === email);
-    const teamMemberDoc = teamMembers.find((m) => m.email === email);
+    const userDoc = users.find((user) => user.email === email)
+    const teamMemberDoc = teamMembers.find((m) => m.email === email)
     const details = {
       email,
       isActiveTeamMember: teamMemberDoc && teamMemberDoc.isNotRemoved,
@@ -33,12 +33,12 @@ const makeDetailedInvitations = (
         Boolean(approvedOrgApprovals.find((approval) => approval.email === email)) ||
         isBillingLeader ||
         false
-    };
+    }
     return {
       ...details,
       action: getAction(details)
-    };
-  });
-};
+    }
+  })
+}
 
-export default makeDetailedInvitations;
+export default makeDetailedInvitations

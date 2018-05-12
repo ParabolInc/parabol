@@ -1,14 +1,14 @@
 export default class DragState {
   constructor () {
-    this.clear();
+    this.clear()
   }
   clear () {
-    this.components = [];
-    this.thresholds = [];
-    this.handleEndDrag();
+    this.components = []
+    this.thresholds = []
+    this.handleEndDrag()
   }
   handleEndDrag () {
-    this.minY = null;
-    this.maxY = null;
+    this.minY = null
+    this.maxY = null
   }
 }

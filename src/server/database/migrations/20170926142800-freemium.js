@@ -1,9 +1,9 @@
-import {PERSONAL, PRO} from 'universal/utils/constants';
+import {PERSONAL, PRO} from 'universal/utils/constants'
 
 exports.up = async (r) => {
   await r({
     updatedUsers: r.table('User').replace((doc) => {
-      return doc.without('trialOrg');
+      return doc.without('trialOrg')
     }),
     removedNotifications: r
       .table('Notification')
@@ -26,7 +26,7 @@ exports.up = async (r) => {
               .update({
                 tier: PERSONAL,
                 isPaid: true
-              });
+              })
           }),
         // PREMIUM accounts
         r
@@ -41,13 +41,13 @@ exports.up = async (r) => {
               .getAll(org('id'), {index: 'orgId'})
               .update({
                 tier: PRO
-              });
+              })
           })
-      );
+      )
     })
-  });
-};
+  })
+}
 
 exports.down = async () => {
   // noop
-};
+}

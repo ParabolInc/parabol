@@ -1,30 +1,30 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {NavLink, withRouter} from 'react-router-dom';
-import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel';
-import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import LoadableTeamDashTeamMemberMenu from 'universal/components/LoadableTeamDashTeamMemberMenu';
-import LoadableMenu from 'universal/components/LoadableMenu';
-import styled, {css} from 'react-emotion';
-import DashNavControl from 'universal/components/DashNavControl/DashNavControl';
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
-import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader';
-import DashHeading from 'universal/components/Dashboard/DashHeading';
-import DashSectionControls from 'universal/components/Dashboard/DashSectionControls';
-import DashSectionControl from 'universal/components/Dashboard/DashSectionControl';
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {NavLink, withRouter} from 'react-router-dom'
+import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel'
+import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import LoadableTeamDashTeamMemberMenu from 'universal/components/LoadableTeamDashTeamMemberMenu'
+import LoadableMenu from 'universal/components/LoadableMenu'
+import styled, {css} from 'react-emotion'
+import DashNavControl from 'universal/components/DashNavControl/DashNavControl'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader'
+import DashHeading from 'universal/components/Dashboard/DashHeading'
+import DashSectionControls from 'universal/components/Dashboard/DashSectionControls'
+import DashSectionControl from 'universal/components/Dashboard/DashSectionControl'
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
+}
 
 const OrgInfoBlock = styled('div')({
   alignItems: 'center',
@@ -32,7 +32,7 @@ const OrgInfoBlock = styled('div')({
   fontSize: appTheme.typography.s2,
   lineHeight: appTheme.typography.s5,
   marginTop: '.125rem'
-});
+})
 
 const orgLinkStyles = css({
   color: ui.linkColor,
@@ -40,12 +40,12 @@ const orgLinkStyles = css({
   ':hover, :focus': {
     color: ui.linkColorHover
   }
-});
+})
 
 const TeamTasksHeader = (props) => {
-  const {history, teamMemberFilterId, teamMemberFilterName, team} = props;
-  const {organization, teamId, teamName} = team;
-  const {orgName, orgId} = organization;
+  const {history, teamMemberFilterId, teamMemberFilterName, team} = props
+  const {organization, teamId, teamName} = team
+  const {orgName, orgId} = organization
   return (
     <DashSectionHeader>
       <div>
@@ -60,8 +60,8 @@ const TeamTasksHeader = (props) => {
       <DashSectionControls>
         {/* Archive Link */}
         <DashNavControl
-          icon="archive"
-          label="See Archived Tasks"
+          icon='archive'
+          label='See Archived Tasks'
           onClick={() => history.push(`/team/${teamId}/archive`)}
         />
 
@@ -86,8 +86,8 @@ const TeamTasksHeader = (props) => {
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
-  );
-};
+  )
+}
 
 TeamTasksHeader.propTypes = {
   children: PropTypes.any,
@@ -96,7 +96,7 @@ TeamTasksHeader.propTypes = {
   team: PropTypes.object.isRequired,
   teamMemberFilterId: PropTypes.string,
   teamMemberFilterName: PropTypes.string
-};
+}
 
 export default createFragmentContainer(
   withRouter(TeamTasksHeader),
@@ -111,4 +111,4 @@ export default createFragmentContainer(
       ...TeamDashTeamMemberMenu_team
     }
   `
-);
+)

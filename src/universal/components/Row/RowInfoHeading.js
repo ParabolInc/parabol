@@ -1,6 +1,6 @@
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
-const RowInfoHeading = styled('div')({...ui.rowHeading});
+const RowInfoHeading = styled('div')({...ui.rowHeading})
 
-export default RowInfoHeading;
+export default RowInfoHeading

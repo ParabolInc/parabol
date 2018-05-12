@@ -4,9 +4,9 @@
  * Defines the js-land type of a Team, and functions to operate on them.
  */
 
-import type {EntityMap} from './entityMap';
-import type {OrgID} from './organization';
-import type {UserID} from './user';
+import type {EntityMap} from './entityMap'
+import type {OrgID} from './organization'
+import type {UserID} from './user'
 
 import {
   LOBBY,
@@ -19,13 +19,13 @@ import {
   PERSONAL,
   PRO,
   SUMMARY
-} from '../utils/constants';
+} from '../utils/constants'
 
-export type TeamID = string;
+export type TeamID = string
 
-type MeetingID = string;
+type MeetingID = string
 
-type MeetingPhase = LOBBY | CHECKIN | UPDATES | FIRST_CALL | AGENDA_ITEMS | LAST_CALL | SUMMARY;
+type MeetingPhase = LOBBY | CHECKIN | UPDATES | FIRST_CALL | AGENDA_ITEMS | LAST_CALL | SUMMARY
 
 export type Team = {
   activeFacilitator: ?UserID,
@@ -46,4 +46,4 @@ export type Team = {
   orgId: OrgID,
   tier: PERSONAL | PRO | ENTERPRISE,
   updatedAt?: Date
-};
+}

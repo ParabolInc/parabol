@@ -5,7 +5,7 @@ import {
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLString
-} from 'graphql';
+} from 'graphql'
 
 const UpdateAgendaItemInput = new GraphQLInputObjectType({
   name: 'UpdateAgendaItemInput',
@@ -32,6 +32,6 @@ const UpdateAgendaItemInput = new GraphQLInputObjectType({
       description: 'The sort order of the agenda item in the list'
     }
   })
-});
+})
 
-export default UpdateAgendaItemInput;
+export default UpdateAgendaItemInput

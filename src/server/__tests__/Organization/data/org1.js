@@ -1,12 +1,12 @@
-import shortid from 'shortid';
-import testOrgMember from './testOrgMember';
+import shortid from 'shortid'
+import testOrgMember from './testOrgMember'
 
 export const ORG1_BILLING_LEADER = testOrgMember({
   id: 'test|steveRogers',
   email: 'steve.rogers@avengers.org',
   name: 'Steve Rogers',
   nickname: 'Captain America'
-});
+})
 
 export const ORG1_OTHER_TEAM_MEMBERS = [
   testOrgMember({
@@ -51,11 +51,11 @@ export const ORG1_OTHER_TEAM_MEMBERS = [
     name: 'Thor Odinson',
     nickname: 'Thor'
   })
-];
+]
 
-export const ORG1_ALL_TEAM_MEMBERS = [ORG1_BILLING_LEADER, ...ORG1_OTHER_TEAM_MEMBERS];
+export const ORG1_ALL_TEAM_MEMBERS = [ORG1_BILLING_LEADER, ...ORG1_OTHER_TEAM_MEMBERS]
 
 export const ORG1_TEAM = {
   id: shortid.generate(),
   name: 'The Avengers'
-};
+}

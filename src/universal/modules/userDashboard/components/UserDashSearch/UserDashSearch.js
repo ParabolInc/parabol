@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import DashSearchControl from 'universal/components/Dashboard/DashSearchControl';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
 
 class UserDashSearch extends Component {
   componentWillUnmount () {
     if (this.props.viewer.contentFilter) {
-      this.setContentFilter('');
+      this.setContentFilter('')
     }
   }
 
@@ -15,26 +15,26 @@ class UserDashSearch extends Component {
     const {
       atmosphere,
       viewer: {userId}
-    } = this.props;
+    } = this.props
     commitLocalUpdate(atmosphere, (store) => {
-      const userProxy = store.get(userId);
-      userProxy.setValue(nextValue, 'contentFilter');
-    });
+      const userProxy = store.get(userId)
+      userProxy.setValue(nextValue, 'contentFilter')
+    })
   }
 
   updateFilter = (e) => {
-    this.setContentFilter(e.target.value);
-  };
+    this.setContentFilter(e.target.value)
+  }
 
   render () {
-    return <DashSearchControl onChange={this.updateFilter} placeholder="Search My Tasks" />;
+    return <DashSearchControl onChange={this.updateFilter} placeholder='Search My Tasks' />
   }
 }
 
 UserDashSearch.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   viewer: PropTypes.object
-};
+}
 
 export default createFragmentContainer(
   withAtmosphere(UserDashSearch),
@@ -44,4 +44,4 @@ export default createFragmentContainer(
       contentFilter
     }
   `
-);
+)

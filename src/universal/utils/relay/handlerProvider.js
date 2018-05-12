@@ -1,17 +1,17 @@
-import {ConnectionHandler, ViewerHandler} from 'relay-runtime';
-import ContentTextHandler from 'universal/utils/relay/ContentFilterHandler';
+import {ConnectionHandler, ViewerHandler} from 'relay-runtime'
+import ContentTextHandler from 'universal/utils/relay/ContentFilterHandler'
 
 const handlerProvider = (handle) => {
   switch (handle) {
     case 'connection':
-      return ConnectionHandler;
+      return ConnectionHandler
     case 'viewer':
-      return ViewerHandler;
+      return ViewerHandler
     case 'contentText':
-      return ContentTextHandler;
+      return ContentTextHandler
     default:
-      throw new Error(`Unknown handle ${handle}`);
+      throw new Error(`Unknown handle ${handle}`)
   }
-};
+}
 
-export default handlerProvider;
+export default handlerProvider

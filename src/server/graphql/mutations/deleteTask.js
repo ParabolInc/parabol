@@ -1,12 +1,12 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload';
-import {isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants';
-import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload'
+import {isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants'
+import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
 
 export default {
   type: DeleteTaskPayload,
@@ -18,18 +18,18 @@ export default {
     }
   },
   async resolve (source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const task = await r.table('Task').get(taskId);
+    const task = await r.table('Task').get(taskId)
     if (!task) {
-      return sendTaskNotFoundError(authToken, taskId);
+      return sendTaskNotFoundError(authToken, taskId)
     }
-    const {teamId} = task;
+    const {teamId} = task
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
 
     // RESOLUTION
@@ -49,12 +49,12 @@ export default {
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
         .coerceTo('array')
-    });
-    const {content, tags, userId: taskUserId} = task;
+    })
+    const {content, tags, userId: taskUserId} = task
 
     // handle notifications
-    const {entityMap} = JSON.parse(content);
-    const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(taskUserId);
+    const {entityMap} = JSON.parse(content)
+    const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(taskUserId)
     const clearedNotifications = await r
       .table('Notification')
       .getAll(r.args(userIdsWithNotifications), {index: 'userIds'})
@@ -63,22 +63,22 @@ export default {
         type: TASK_INVOLVES
       })
       .delete({returnChanges: true})('changes')('old_val')
-      .default([]);
+      .default([])
 
-    const data = {task, notifications: clearedNotifications};
+    const data = {task, notifications: clearedNotifications}
     clearedNotifications.forEach((notification) => {
       const {
         userIds: [notificationUserId]
-      } = notification;
-      publish(NOTIFICATION, notificationUserId, DeleteTaskPayload, data, subOptions);
-    });
+      } = notification
+      publish(NOTIFICATION, notificationUserId, DeleteTaskPayload, data, subOptions)
+    })
 
-    const isPrivate = tags.includes('private');
+    const isPrivate = tags.includes('private')
     subscribedUserIds.forEach((userId) => {
       if (!isPrivate || userId === taskUserId) {
-        publish(TASK, userId, DeleteTaskPayload, data, subOptions);
+        publish(TASK, userId, DeleteTaskPayload, data, subOptions)
       }
-    });
-    return data;
+    })
+    return data
   }
-};
+}

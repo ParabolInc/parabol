@@ -10,7 +10,7 @@
 export type AuthResponse = {
   idToken: string,
   idTokenPayload: Object
-};
+}
 
 /**
  * Email/password credentials.
@@ -18,7 +18,7 @@ export type AuthResponse = {
 export type Credentials = {
   email: string,
   password: string
-};
+}
 
 /**
  * An OIDC auth provider we use by way of auth0.
@@ -30,4 +30,4 @@ export type ThirdPartyAuthProvider = {
   displayName: string,
   // auth0's canonical connection name for this auth provider
   auth0Connection: string
-};
+}

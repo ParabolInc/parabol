@@ -1,6 +1,6 @@
-import styled from 'react-emotion';
+import styled from 'react-emotion'
 
-import appTheme from 'universal/styles/theme/appTheme';
+import appTheme from 'universal/styles/theme/appTheme'
 
 const disabledStyles = {
   cursor: 'not-allowed',
@@ -14,7 +14,7 @@ const disabledStyles = {
   ':active': {
     animation: 'none'
   }
-};
+}
 
 const PlainButton = styled('button')(
   {
@@ -36,6 +36,6 @@ const PlainButton = styled('button')(
   },
   ({disabled, waiting}) => (disabled || waiting) && disabledStyles,
   ({waiting}) => ({cursor: waiting && 'wait'})
-);
+)
 
-export default PlainButton;
+export default PlainButton

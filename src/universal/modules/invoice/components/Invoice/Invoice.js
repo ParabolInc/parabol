@@ -1,19 +1,19 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import Helmet from 'react-helmet';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import InvoiceHeader from '../InvoiceHeader/InvoiceHeader';
-import InvoiceFooter from '../InvoiceFooter/InvoiceFooter';
-import InvoiceLineItemContainer from 'universal/modules/invoice/containers/InvoiceLineItemContainer/InvoiceLineItemContainer';
-import makeMonthString from 'universal/utils/makeMonthString';
-import makeDateString from 'universal/utils/makeDateString';
-import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem';
-import plural from 'universal/utils/plural';
-import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
-import Tag from 'universal/components/Tag/Tag';
+import PropTypes from 'prop-types'
+import React from 'react'
+import Helmet from 'react-helmet'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import InvoiceHeader from '../InvoiceHeader/InvoiceHeader'
+import InvoiceFooter from '../InvoiceFooter/InvoiceFooter'
+import InvoiceLineItemContainer from 'universal/modules/invoice/containers/InvoiceLineItemContainer/InvoiceLineItemContainer'
+import makeMonthString from 'universal/utils/makeMonthString'
+import makeDateString from 'universal/utils/makeDateString'
+import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineItem/InvoiceLineItem'
+import plural from 'universal/utils/plural'
+import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat'
+import Tag from 'universal/components/Tag/Tag'
 
 import {
   PAID,
@@ -23,24 +23,24 @@ import {
   ADDED_USERS,
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS
-} from 'universal/utils/constants';
-import {createFragmentContainer} from 'react-relay';
+} from 'universal/utils/constants'
+import {createFragmentContainer} from 'react-relay'
 
 const descriptionMaker = {
   [ADDED_USERS]: (quantity) => `${quantity} new ${plural(quantity, 'user')} added`,
   [REMOVED_USERS]: (quantity) => `${quantity} ${plural(quantity, 'user')} removed`,
   [INACTIVITY_ADJUSTMENTS]: () => 'Adjustments for paused users'
-};
+}
 
 const chargeStatus = {
   [PAID]: 'Charged',
   [FAILED]: 'Failed charge',
   [PENDING]: 'Pending charge',
   [UPCOMING]: 'Will be charged'
-};
+}
 
 const Invoice = (props) => {
-  const {viewer, styles} = props;
+  const {viewer, styles} = props
 
   const {
     invoiceDetails: {
@@ -57,37 +57,37 @@ const Invoice = (props) => {
       status,
       startingBalance
     }
-  } = viewer;
+  } = viewer
 
-  const {nextPeriodEnd} = nextMonthCharges;
-  const {brand, last4} = creditCard;
-  const subject = makeMonthString(endAt);
+  const {nextPeriodEnd} = nextMonthCharges
+  const {brand, last4} = creditCard
+  const subject = makeMonthString(endAt)
   // const nextMonthCharges = lines.find((line) => line.type === NEXT_MONTH_CHARGES);
-  const {quantity, unitPrice} = nextMonthCharges;
+  const {quantity, unitPrice} = nextMonthCharges
   const unitPriceString = (unitPrice / 100).toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0
-  });
+  })
   const nextUsage = {
     amount: invoiceLineFormat(nextMonthCharges.amount),
     desc: `${quantity} active ${plural(quantity, 'user')} (${unitPriceString} each)`
-  };
-  const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`;
-  const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`;
+  }
+  const chargeDates = `${makeDateString(startAt)} to ${makeDateString(endAt)}`
+  const nextChargesDates = `${makeDateString(endAt)} to ${makeDateString(nextPeriodEnd)}`
   const makeLineItems = (arr) =>
     arr.map((item) => {
-      const {id: lineId, amount, description, type, quantity: lineItemQuantity, details} = item;
+      const {id: lineId, amount, description, type, quantity: lineItemQuantity, details} = item
       const li = {
         amount: invoiceLineFormat(amount),
         desc: description || descriptionMaker[type](lineItemQuantity),
         details,
         type
-      };
-      return <InvoiceLineItemContainer key={lineId} item={li} />;
-    });
+      }
+      return <InvoiceLineItemContainer key={lineId} item={li} />
+    })
 
-  const makeAsterisk = () => <span className={css(styles.asterisk)}>{'*'}</span>;
+  const makeAsterisk = () => <span className={css(styles.asterisk)}>{'*'}</span>
 
   return (
     <div className={css(styles.invoice)}>
@@ -97,12 +97,12 @@ const Invoice = (props) => {
         {status === FAILED && <div className={css(styles.failedStamp)}>{'Payment Failed'}</div>}
         {status === UPCOMING && (
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette="light" label="Current Estimation" />
+            <Tag colorPalette='light' label='Current Estimation' />
           </div>
         )}
         {status === PENDING && (
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette="gray" label="Payment Processing" />
+            <Tag colorPalette='gray' label='Payment Processing' />
           </div>
         )}
         <div className={css(styles.label)}>{'Invoice'}</div>
@@ -159,20 +159,20 @@ const Invoice = (props) => {
       </div>
       <InvoiceFooter />
     </div>
-  );
-};
+  )
+}
 
 Invoice.propTypes = {
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object
-};
+}
 
-const breakpoint = ui.invoiceBreakpoint;
-const invoiceGutterSmall = '1rem';
-const invoiceGutterLarge = '2rem';
-const labelBreakpoint = '@media (min-width: 24rem)';
-const panelGutterSmall = ui.invoicePanelGutterSmall;
-const panelGutterLarge = ui.invoicePanelGutterLarge;
+const breakpoint = ui.invoiceBreakpoint
+const invoiceGutterSmall = '1rem'
+const invoiceGutterLarge = '2rem'
+const labelBreakpoint = '@media (min-width: 24rem)'
+const panelGutterSmall = ui.invoicePanelGutterSmall
+const panelGutterLarge = ui.invoicePanelGutterLarge
 
 const styleThunk = () => ({
   invoice: {
@@ -329,7 +329,7 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s4,
     lineHeight: '1.75rem'
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(Invoice),
@@ -372,4 +372,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay';
-import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember';
+import {commitMutation} from 'react-relay'
+import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember'
 
 const mutation = graphql`
   mutation JoinIntegrationMutation($globalId: ID!) {
@@ -15,41 +15,41 @@ const mutation = graphql`
       }
     }
   }
-`;
+`
 
 export const joinIntegrationUpdater = (store, viewer, teamId, payload) => {
-  const globalId = payload.getValue('globalId');
-  const integration = store.get(globalId);
-  if (!integration) return;
-  const teamMembers = integration.getLinkedRecords('teamMembers');
-  teamMembers.push(payload.getLinkedRecord('teamMember'));
-  integration.setLinkedRecords(teamMembers, 'teamMembers');
-};
+  const globalId = payload.getValue('globalId')
+  const integration = store.get(globalId)
+  if (!integration) return
+  const teamMembers = integration.getLinkedRecords('teamMembers')
+  teamMembers.push(payload.getLinkedRecord('teamMember'))
+  integration.setLinkedRecords(teamMembers, 'teamMembers')
+}
 
-let tempId = 0;
+let tempId = 0
 const JoinIntegrationMutation = (environment, globalId, teamId, onError, onCompleted) => {
-  const {viewerId} = environment;
+  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {globalId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
-      const payload = store.getRootField('joinIntegration');
-      if (!payload) return;
-      joinIntegrationUpdater(store, viewer, teamId, payload);
+      const viewer = store.get(viewerId)
+      const payload = store.getRootField('joinIntegration')
+      if (!payload) return
+      joinIntegrationUpdater(store, viewer, teamId, payload)
     },
     optimisticUpdater: (store) => {
-      const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId);
+      const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId)
       const payload = store
         .create(`client:joinIntegration:${tempId++}`, 'JoinIntegrationPayload')
         .setValue(globalId, 'globalId')
-        .setLinkedRecord(teamMemberNode, 'teamMember');
-      const viewer = store.get(viewerId);
-      joinIntegrationUpdater(store, viewer, teamId, payload);
+        .setLinkedRecord(teamMemberNode, 'teamMember')
+      const viewer = store.get(viewerId)
+      joinIntegrationUpdater(store, viewer, teamId, payload)
     },
     onError,
     onCompleted
-  });
-};
+  })
+}
 
-export default JoinIntegrationMutation;
+export default JoinIntegrationMutation

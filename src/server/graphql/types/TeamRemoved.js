@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveNotification, resolveTeam} from 'server/graphql/resolvers';
-import Team from 'server/graphql/types/Team';
-import TeamRemovedNotification from 'server/graphql/types/TeamRemovedNotification';
+import {GraphQLObjectType} from 'graphql'
+import {resolveNotification, resolveTeam} from 'server/graphql/resolvers'
+import Team from 'server/graphql/types/Team'
+import TeamRemovedNotification from 'server/graphql/types/TeamRemovedNotification'
 
 const TeamRemoved = new GraphQLObjectType({
   name: 'TeamRemoved',
@@ -17,6 +17,6 @@ const TeamRemoved = new GraphQLObjectType({
       resolve: resolveTeam
     }
   })
-});
+})
 
-export default TeamRemoved;
+export default TeamRemoved

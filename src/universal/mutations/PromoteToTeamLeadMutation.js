@@ -1,6 +1,6 @@
-import {commitMutation} from 'react-relay';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {commitMutation} from 'react-relay'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 graphql`
   fragment PromoteToTeamLeadMutation_teamMember on PromoteToTeamLeadPayload {
@@ -11,7 +11,7 @@ graphql`
       isLead
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation PromoteToTeamLeadMutation($teamMemberId: ID!) {
@@ -22,21 +22,21 @@ const mutation = graphql`
       ...PromoteToTeamLeadMutation_teamMember
     }
   }
-`;
+`
 
 const PromoteToTeamLeadMutation = (environment, teamMemberId, onError, onCompleted) => {
-  const {teamId} = fromTeamMemberId(teamMemberId);
-  const myTeamMemberId = toTeamMemberId(teamId, environment.userId);
+  const {teamId} = fromTeamMemberId(teamMemberId)
+  const myTeamMemberId = toTeamMemberId(teamId, environment.userId)
   return commitMutation(environment, {
     mutation,
     variables: {teamMemberId},
     optimisticUpdater: (store) => {
-      store.get(myTeamMemberId).setValue(false, 'isLead');
-      store.get(teamMemberId).setValue(true, 'isLead');
+      store.get(myTeamMemberId).setValue(false, 'isLead')
+      store.get(teamMemberId).setValue(true, 'isLead')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default PromoteToTeamLeadMutation;
+export default PromoteToTeamLeadMutation

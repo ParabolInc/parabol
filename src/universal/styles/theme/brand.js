@@ -19,6 +19,6 @@ const brand = {
     green: '#61BF8B',
     yellow: '#FFCC63'
   }
-};
+}
 
-export default brand;
+export default brand

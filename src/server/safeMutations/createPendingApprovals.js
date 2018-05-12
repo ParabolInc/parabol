@@ -1,8 +1,8 @@
-import getRethink from 'server/database/rethinkDriver';
-import {PENDING} from 'server/utils/serverConstants';
-import shortid from 'shortid';
-import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
-import makeNewSoftTeamMembers from 'server/safeMutations/makeNewSoftTeamMembers';
+import getRethink from 'server/database/rethinkDriver'
+import {PENDING} from 'server/utils/serverConstants'
+import shortid from 'shortid'
+import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants'
+import makeNewSoftTeamMembers from 'server/safeMutations/makeNewSoftTeamMembers'
 
 export default async function createPendingApprovals (outOfOrgEmails, inviteSender, dataLoader) {
   if (outOfOrgEmails.length === 0) {
@@ -11,11 +11,11 @@ export default async function createPendingApprovals (outOfOrgEmails, inviteSend
       orgApprovalIds: [],
       billingLeaderUserIds: [],
       newSoftTeamMembers: []
-    };
+    }
   }
-  const {orgId, teamId, userId} = inviteSender || {};
-  const r = getRethink();
-  const now = new Date();
+  const {orgId, teamId, userId} = inviteSender || {}
+  const r = getRethink()
+  const now = new Date()
   // add a notification to the Billing Leaders
   const {userIds, inviter} = await r({
     userIds: r
@@ -33,7 +33,7 @@ export default async function createPendingApprovals (outOfOrgEmails, inviteSend
       .table('User')
       .get(userId)
       .pluck('preferredName', 'id')
-  });
+  })
   const requestNotifications = outOfOrgEmails.map((inviteeEmail) => ({
     id: shortid.generate(),
     type: REQUEST_NEW_USER,
@@ -43,7 +43,7 @@ export default async function createPendingApprovals (outOfOrgEmails, inviteSend
     inviterUserId: inviter.id,
     inviteeEmail,
     teamId
-  }));
+  }))
 
   const pendingApprovals = outOfOrgEmails.map((inviteeEmail) => ({
     id: shortid.generate(),
@@ -54,20 +54,20 @@ export default async function createPendingApprovals (outOfOrgEmails, inviteSend
     status: PENDING,
     teamId,
     updatedAt: now
-  }));
+  }))
 
   // send a new notification to each Billing Leader concerning each out-of-org invitee
   await r({
     requestNotifications: r.table('Notification').insert(requestNotifications),
     approvals: r.table('OrgApproval').insert(pendingApprovals)
-  });
+  })
 
-  const newSoftTeamMembers = await makeNewSoftTeamMembers(outOfOrgEmails, teamId, dataLoader);
+  const newSoftTeamMembers = await makeNewSoftTeamMembers(outOfOrgEmails, teamId, dataLoader)
 
   return {
     requestNotifications,
     newSoftTeamMembers,
     orgApprovalIds: pendingApprovals.map(({id}) => id),
     billingLeaderUserIds: userIds
-  };
+  }
 }

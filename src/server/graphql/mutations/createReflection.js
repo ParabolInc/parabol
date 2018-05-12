@@ -1,20 +1,20 @@
-import {GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import shortid from 'shortid';
-import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
-import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
-import {sendMeetingNotFoundError, sendPhaseItemNotFoundError} from 'server/utils/docNotFoundErrors';
+import {GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import shortid from 'shortid'
+import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors'
+import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload'
+import {sendMeetingNotFoundError, sendPhaseItemNotFoundError} from 'server/utils/docNotFoundErrors'
 import {
   sendAlreadyCompletedMeetingPhaseError,
   sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors';
-import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
-import publish from 'server/utils/publish';
-import {GROUP, REFLECT, TEAM} from 'universal/utils/constants';
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
-import CreateReflectionInput from 'server/graphql/types/CreateReflectionInput';
-import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase';
+} from 'server/utils/alreadyMutatedErrors'
+import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
+import publish from 'server/utils/publish'
+import {GROUP, REFLECT, TEAM} from 'universal/utils/constants'
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
+import CreateReflectionInput from 'server/graphql/types/CreateReflectionInput'
+import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase'
 
 export default {
   type: CreateReflectionPayload,
@@ -31,42 +31,42 @@ export default {
     },
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const now = new Date();
-    const subOptions = {operationId, mutatorId};
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const now = new Date()
+    const subOptions = {operationId, mutatorId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
-    const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId);
+    const viewerId = getUserId(authToken)
+    const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId)
     if (!phaseItem) {
-      return sendPhaseItemNotFoundError(authToken, retroPhaseItemId);
+      return sendPhaseItemNotFoundError(authToken, retroPhaseItemId)
     }
     if (!phaseItem.isActive) {
-      return sendPhaseItemNotActiveError(authToken, retroPhaseItemId);
+      return sendPhaseItemNotActiveError(authToken, retroPhaseItemId)
     }
-    const {teamId} = phaseItem;
+    const {teamId} = phaseItem
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
-    const team = await dataLoader.get('teams').load(teamId);
-    const {meetingId} = team;
+    const team = await dataLoader.get('teams').load(teamId)
+    const {meetingId} = team
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
-      .default(null);
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
-    const {endedAt, phases} = meeting;
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
+      .default(null)
+    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    const {endedAt, phases} = meeting
+    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
     if (isPhaseComplete(REFLECT, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT);
+      return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT)
     }
 
     // VALIDATION
-    const normalizedContent = normalizeRawDraftJS(content);
+    const normalizedContent = normalizeRawDraftJS(content)
 
     // RESOLUTION
-    const reflectionGroupId = shortid.generate();
+    const reflectionGroupId = shortid.generate()
     const reflection = {
       id: shortid.generate(),
       createdAt: now,
@@ -78,7 +78,7 @@ export default {
       retroPhaseItemId,
       sortOrder: 0,
       updatedAt: now
-    };
+    }
 
     const reflectionGroup = {
       id: reflectionGroupId,
@@ -89,29 +89,29 @@ export default {
       sortOrder,
       updatedAt: now,
       voterIds: []
-    };
+    }
     await r({
       group: r.table('RetroReflectionGroup').insert(reflectionGroup),
       reflection: r.table('RetroReflection').insert(reflection)
-    });
-    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId);
-    let unlockedStageIds;
+    })
+    const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
+    let unlockedStageIds
     if (reflections.length === 1) {
-      unlockedStageIds = unlockAllStagesForPhase(phases, GROUP, true);
+      unlockedStageIds = unlockAllStagesForPhase(phases, GROUP, true)
       await r
         .table('NewMeeting')
         .get(meetingId)
         .update({
           phases
-        });
+        })
     }
     const data = {
       meetingId,
       reflectionId: reflection.id,
       reflectionGroupId,
       unlockedStageIds
-    };
-    publish(TEAM, teamId, CreateReflectionPayload, data, subOptions);
-    return data;
+    }
+    publish(TEAM, teamId, CreateReflectionPayload, data, subOptions)
+    return data
   }
-};
+}

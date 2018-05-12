@@ -3,18 +3,18 @@
 export type GraphQLResponseRoot = {
   data?: Query | Mutation,
   errors?: Array<GraphQLResponseError>
-};
+}
 
 export type GraphQLResponseError = {
   message: string, // Required for all errors
   locations?: Array<GraphQLResponseErrorLocation>,
   [propName: string]: any // 7.2.2 says 'GraphQL servers may provide additional entries to error'
-};
+}
 
 export type GraphQLResponseErrorLocation = {
   line: number,
   column: number
-};
+}
 
 export type Query = {
   suCountTiersForUser: ?UserTiersCount,
@@ -22,7 +22,7 @@ export type Query = {
   suProOrgInfo: ?Array<SuProOrgInfo>,
   suOrgCount: ?number,
   viewer: ?User
-};
+}
 
 /**
   A count of the number of account tiers a user belongs to.
@@ -35,7 +35,7 @@ export type UserTiersCount = {
   /** The number of pro orgs the user holds the role of Billing Leader */
   tierProBillingLeaderCount: ?number,
   user: ?User
-};
+}
 
 /**
   The user account profile
@@ -121,7 +121,7 @@ export type User = {
   teamMember: ?TeamMember,
   /** all the teams the user is a part of that the viewer can see */
   tms: ?Array<string>
-};
+}
 
 /**
   Identifier and IP address blocked
@@ -131,7 +131,7 @@ export type BlockedUserType = {
   identifier: ?string,
   /** The IP address of the blocked user */
   id: ?string
-};
+}
 
 /**
   The user account profile
@@ -139,7 +139,7 @@ export type BlockedUserType = {
 export type UserFeatureFlags = {
   /** true if the user has access to retro meetings */
   retro: ?boolean
-};
+}
 
 export type AuthIdentityType = {
   /** The connection name.
@@ -152,7 +152,7 @@ export type AuthIdentityType = {
   provider: ?string,
   /** true if the identity provider is a social provider, false otherwise */
   isSocial: ?boolean
-};
+}
 
 /**
   The user/org M:F join, denormalized on the user/org tables
@@ -162,12 +162,12 @@ export type UserOrg = {
   id: ?string,
   /** role of the user in the org */
   role: ?OrgUserRole
-};
+}
 
 /**
   The role of the org user
 */
-export type OrgUserRole = 'billingLeader';
+export type OrgUserRole = 'billingLeader'
 
 /**
   A connection to a list of items.
@@ -177,7 +177,7 @@ export type TaskConnection = {
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
   edges: ?Array<TaskEdge>
-};
+}
 
 /**
   Information about pagination in a connection.
@@ -191,7 +191,7 @@ export type PageInfoDateCursor = {
   startCursor: ?any,
   /** When paginating forwards, the cursor to continue. */
   endCursor: ?any
-};
+}
 
 /**
   An edge in a connection.
@@ -200,7 +200,7 @@ export type TaskEdge = {
   /** The item at the end of the edge */
   node: ?Task,
   cursor: ?any
-};
+}
 
 /**
   A long-term task shared across the team, assigned to a single user
@@ -245,14 +245,14 @@ export type Task = {
   updatedAt: ?any,
   /** * The userId, index useful for server-side methods getting all tasks under a user */
   userId: ?string
-};
+}
 
 export type TaskEditorDetails = {
   /** The userId of the person editing the task */
   userId: string,
   /** The name of the userId editing the task */
   preferredName: string
-};
+}
 
 /**
   The details associated with a task integrated with GitHub
@@ -262,19 +262,19 @@ export type GitHubTask = {
   service: IntegrationService,
   nameWithOwner: ?string,
   issueNumber: ?number
-};
+}
 
-export type TaskIntegration = GitHubTask;
+export type TaskIntegration = GitHubTask
 
 /**
   The list of services for integrations
 */
-export type IntegrationService = 'GitHubIntegration' | 'SlackIntegration';
+export type IntegrationService = 'GitHubIntegration' | 'SlackIntegration'
 
 /**
   The status of the task
 */
-export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future';
+export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 
 /**
   A team
@@ -334,21 +334,21 @@ export type Team = {
   teamMembers: Array<TeamMember>,
   /** true if the team has been archived */
   isArchived: ?boolean
-};
+}
 
 export type MeetingGreeting = {
   /** The foreign-language greeting */
   content: string,
   /** The source language for the greeting */
   language: string
-};
+}
 
-export type CustomPhaseItem = RetroPhaseItem;
+export type CustomPhaseItem = RetroPhaseItem
 
 /**
   The type of phase item
 */
-export type CustomPhaseItemTypeEnum = 'retroPhaseItem';
+export type CustomPhaseItemTypeEnum = 'retroPhaseItem'
 
 /**
   The phases of an action meeting
@@ -360,7 +360,7 @@ export type ActionMeetingPhaseEnum =
   | 'firstcall'
   | 'agendaitems'
   | 'lastcall'
-  | 'summary';
+  | 'summary'
 
 /**
   An invitation to become a team member
@@ -386,19 +386,19 @@ export type Invitation = {
   tokenExpiration: ?any,
   /** The datetime the invitation was last updated */
   updatedAt: ?any
-};
+}
 
-export type PossibleTeamMember = Invitation | OrgApproval | TeamMember | SoftTeamMember;
+export type PossibleTeamMember = Invitation | OrgApproval | TeamMember | SoftTeamMember
 
 /**
   The phases of an action meeting
 */
-export type MeetingTypeEnum = 'action' | 'retrospective';
+export type MeetingTypeEnum = 'action' | 'retrospective'
 
 /**
   The team settings for a specific type of meeting
 */
-export type TeamMeetingSettings = RetrospectiveMeetingSettings | ActionMeetingSettings;
+export type TeamMeetingSettings = RetrospectiveMeetingSettings | ActionMeetingSettings
 
 /**
   The phase of the meeting
@@ -412,29 +412,29 @@ export type NewMeetingPhaseTypeEnum =
   | 'reflect'
   | 'group'
   | 'vote'
-  | 'discuss';
+  | 'discuss'
 
 /**
   A team meeting history for all previous meetings
 */
-export type NewMeeting = RetrospectiveMeeting;
+export type NewMeeting = RetrospectiveMeeting
 
 /**
   All the user details for a specific meeting
 */
-export type MeetingMember = RetrospectiveMeetingMember;
+export type MeetingMember = RetrospectiveMeetingMember
 
-export type NewMeetingPhase = CheckInPhase | ReflectPhase | DiscussPhase | GenericMeetingPhase;
+export type NewMeetingPhase = CheckInPhase | ReflectPhase | DiscussPhase | GenericMeetingPhase
 
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingStage = CheckInStage | GenericMeetingStage | RetroDiscussStage;
+export type NewMeetingStage = CheckInStage | GenericMeetingStage | RetroDiscussStage
 
 /**
   The pay tier of the team
 */
-export type TierEnum = 'personal' | 'pro' | 'enterprise';
+export type TierEnum = 'personal' | 'pro' | 'enterprise'
 
 /**
   The state of approving an email address to join a team and org
@@ -459,12 +459,12 @@ export type OrgApproval = {
   status: ?OrgApprovalStatusEnum,
   /** The datetime the approval was last updated */
   updatedAt: ?any
-};
+}
 
 /**
   The approval status for a user joining the org
 */
-export type OrgApprovalStatusEnum = 'APPROVED' | 'PENDING' | 'DENIED';
+export type OrgApprovalStatusEnum = 'APPROVED' | 'PENDING' | 'DENIED'
 
 /**
   An organization
@@ -501,7 +501,7 @@ export type Organization = {
   orgUserCount: ?OrgUserCount,
   /** The leaders of the org */
   billingLeaders: ?Array<User>
-};
+}
 
 /**
   A credit card
@@ -513,7 +513,7 @@ export type CreditCard = {
   expiry: ?string,
   /** The last 4 digits of a credit card */
   last4: ?number
-};
+}
 
 /**
   A connection to a list of items.
@@ -523,7 +523,7 @@ export type OrganizationMemberConnection = {
   pageInfo: PageInfo,
   /** A list of edges. */
   edges: ?Array<OrganizationMemberEdge>
-};
+}
 
 /**
   Information about pagination in a connection.
@@ -537,7 +537,7 @@ export type PageInfo = {
   startCursor: ?string,
   /** When paginating forwards, the cursor to continue. */
   endCursor: ?string
-};
+}
 
 /**
   An edge in a connection.
@@ -547,21 +547,21 @@ export type OrganizationMemberEdge = {
   node: ?OrganizationMember,
   /** A cursor for use in pagination */
   cursor: string
-};
+}
 
 export type OrganizationMember = {
   id: ?string,
   organization: ?Organization,
   user: ?User,
   isBillingLeader: ?boolean
-};
+}
 
 export type OrgUserCount = {
   /** The number of orgUsers who have an inactive flag */
   inactiveUserCount: ?number,
   /** The number of orgUsers who do not have an inactive flag */
   activeUserCount: ?number
-};
+}
 
 /**
   A request placeholder that will likely turn into 1 or more tasks
@@ -587,7 +587,7 @@ export type AgendaItem = {
   updatedAt: ?any,
   /** The team member that created the agenda item */
   teamMember: ?TeamMember
-};
+}
 
 /**
   A member of a team
@@ -629,9 +629,9 @@ export type TeamMember = {
   user: ?User,
   /** Tasks owned by the team member */
   tasks: ?TaskConnection
-};
+}
 
-export type Assignee = TeamMember | SoftTeamMember;
+export type Assignee = TeamMember | SoftTeamMember
 
 /**
   A member of a team
@@ -653,7 +653,7 @@ export type SoftTeamMember = {
   teamId: ?string,
   /** The team this team member belongs to */
   team: ?Team
-};
+}
 
 /**
   An integration that connects github issues & PRs to Parabol tasks
@@ -677,7 +677,7 @@ export type GitHubIntegration = {
   updatedAt: any,
   /** *The userIds connected to the repo so they can CRUD things under their own name */
   userIds: ?Array<string>
-};
+}
 
 /**
   A token for a user to be used on 1 or more teams
@@ -703,7 +703,7 @@ export type Provider = {
   updatedAt: ?any,
   /** The user that the access token is attached to */
   userId: ?string
-};
+}
 
 /**
   A connection to a list of items.
@@ -713,7 +713,7 @@ export type InvoiceConnection = {
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
   edges: ?Array<InvoiceEdge>
-};
+}
 
 /**
   An edge in a connection.
@@ -722,7 +722,7 @@ export type InvoiceEdge = {
   /** The item at the end of the edge */
   node: ?Invoice,
   cursor: ?any
-};
+}
 
 /**
   A monthly billing invoice for an organization
@@ -762,7 +762,7 @@ export type Invoice = {
   startingBalance: ?number,
   /** the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded */
   status: ?InvoiceStatusEnum
-};
+}
 
 /**
   A single line item charge on the invoice
@@ -780,7 +780,7 @@ export type InvoiceLineItem = {
   quantity: ?number,
   /** The line item type for a monthly billing invoice */
   type: ?InvoiceLineItemEnum
-};
+}
 
 /**
   The per-user-action line item details,
@@ -798,7 +798,7 @@ export type InvoiceLineItemDetails = {
   parentId: string,
   /** The timestamp for the beginning of the period of no charge */
   startAt: ?any
-};
+}
 
 /**
   A big picture line item
@@ -807,7 +807,7 @@ export type InvoiceLineItemEnum =
   | 'ADDED_USERS'
   | 'INACTIVITY_ADJUSTMENTS'
   | 'OTHER_ADJUSTMENTS'
-  | 'REMOVED_USERS';
+  | 'REMOVED_USERS'
 
 /**
   A single line item for the charges for next month
@@ -821,12 +821,12 @@ export type InvoiceChargeNextMonth = {
   quantity: ?number,
   /** The per-seat monthly price of the subscription (in dollars) */
   unitPrice: ?number
-};
+}
 
 /**
   The payment status of the invoice
 */
-export type InvoiceStatusEnum = 'PENDING' | 'PAID' | 'FAILED' | 'UPCOMING';
+export type InvoiceStatusEnum = 'PENDING' | 'PAID' | 'FAILED' | 'UPCOMING'
 
 /**
   A team meeting history for all previous meetings
@@ -861,7 +861,7 @@ export type Meeting = {
   teamName: ?string,
   /** All the team members associated who can join this team */
   teamMembers: ?Array<TeamMember>
-};
+}
 
 /**
   The user invited to the meeting
@@ -879,7 +879,7 @@ export type MeetingInvitee = {
   preferredName: ?string,
   /** All of the fields from the team member table */
   membership: ?TeamMember
-};
+}
 
 /**
   The task that was created in a meeting
@@ -895,7 +895,7 @@ export type MeetingTask = {
   tags: ?Array<string>,
   /** The id of the team member the action was assigned to during the meeting */
   assigneeId: string
-};
+}
 
 /**
   A connection to a list of items.
@@ -905,7 +905,7 @@ export type NotificationConnection = {
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
   edges: ?Array<NotificationEdge>
-};
+}
 
 /**
   An edge in a connection.
@@ -914,7 +914,7 @@ export type NotificationEdge = {
   /** The item at the end of the edge */
   node: ?Notification,
   cursor: ?any
-};
+}
 
 export type Notification =
   | NotifyTeamInvite
@@ -926,7 +926,7 @@ export type Notification =
   | NotifyDenial
   | NotifyKickedOut
   | NotifyPaymentRejected
-  | NotifyPromoteToOrgLeader;
+  | NotifyPromoteToOrgLeader
 
 /**
   The kind of notification
@@ -946,7 +946,7 @@ export type NotificationEnum =
   | 'TEAM_INVITE'
   | 'TEAM_ARCHIVED'
   | 'VERSION_INFO'
-  | 'PROMOTE_TO_BILLING_LEADER';
+  | 'PROMOTE_TO_BILLING_LEADER'
 
 /**
   A token for a user to be used on 1 or more teams
@@ -959,7 +959,7 @@ export type ProviderMap = {
   SlackIntegration: ?ProviderRow,
   /** All the big details associated with GitHub */
   GitHubIntegration: ?ProviderRow
-};
+}
 
 /**
   All the details about a particular provider
@@ -978,7 +978,7 @@ export type ProviderRow = {
   /** The name of the service */
   service: ?IntegrationService,
   teamId: ?string
-};
+}
 
 /**
   An integration that sends start/end meeting messages to a specified slack channel
@@ -996,19 +996,19 @@ export type SlackIntegration = {
   notifications: ?Array<string>,
   /** *The team that cares about these annoucements */
   teamId: string
-};
+}
 
 /**
   The tier of the Organization
 */
-export type OrgTierEnum = 'personal' | 'pro' | 'enterprise';
+export type OrgTierEnum = 'personal' | 'pro' | 'enterprise'
 
 export type SuProOrgInfo = {
   /** The PRO organization */
   organization: ?Organization,
   /** The id of the Organization */
   organizationId: string
-};
+}
 
 export type Mutation = {
   /** Add a user to a Team given an invitationToken or the notification id of the invitation.
@@ -1172,7 +1172,7 @@ export type Mutation = {
   login: ?LoginPayload,
   /** Upgrade an account to the paid service */
   upgradeToPro: ?UpgradeToProPayload
-};
+}
 
 export type AcceptTeamInvitePayload = {
   /** The new JWT */
@@ -1191,14 +1191,14 @@ export type AcceptTeamInvitePayload = {
   removedSoftTeamMember: ?SoftTeamMember,
   /** The tasks that got reassigned from the soft team member to the real team member */
   hardenedTasks: ?Array<Task>
-};
+}
 
 export type StandardMutationError = {
   /** The title of the error */
   title: string,
   /** The full error */
   message: string
-};
+}
 
 /**
   A notification sent to a user that was invited to a new team
@@ -1216,7 +1216,7 @@ export type NotifyTeamInvite = {
   type: ?NotificationEnum,
   /** *The userId that should see this notification */
   userIds: ?Array<string>
-};
+}
 
 export type TeamNotification =
   | NotifyTeamInvite
@@ -1224,7 +1224,7 @@ export type TeamNotification =
   | NotifyInviteeApproved
   | NotifyTaskInvolves
   | NotifyAddedToTeam
-  | NotifyDenial;
+  | NotifyDenial
 
 export type CreateAgendaItemInput = {
   /** The content of the agenda item */
@@ -1234,17 +1234,17 @@ export type CreateAgendaItemInput = {
   teamMemberId: string,
   /** The sort order of the agenda item in the list */
   sortOrder: ?number
-};
+}
 
 export type AddAgendaItemPayload = {
   agendaItem: ?AgendaItem,
   error: ?StandardMutationError
-};
+}
 
 /**
   A flag to give an individual user super powers
 */
-export type UserFlagEnum = 'retro';
+export type UserFlagEnum = 'retro'
 
 export type AddFeatureFlagPayload = {
   error: ?StandardMutationError,
@@ -1254,19 +1254,19 @@ export type AddFeatureFlagPayload = {
   users: ?Array<User>,
   /** A human-readable result */
   result: ?string
-};
+}
 
 export type AddGitHubRepoPayload = {
   error: ?StandardMutationError,
   repo: GitHubIntegration
-};
+}
 
 export type NewTeamInput = {
   /** The name of the team */
   name: ?string,
   /** The unique orginization ID that pays for the team */
   orgId: ?string
-};
+}
 
 /**
   The email and task of an invited team member
@@ -1278,7 +1278,7 @@ export type Invitee = {
   fullName: ?string,
   /** The current task the invitee is working on */
   task: ?string
-};
+}
 
 export type AddOrgPayload = {
   organization: ?Organization,
@@ -1289,19 +1289,19 @@ export type AddOrgPayload = {
   invitations: ?Array<Invitation>,
   /** The invitation sent when an team was being created */
   teamInviteNotification: ?NotifyTeamInvite
-};
+}
 
 export type AddSlackChannelInput = {
   /** The id of the teamMember calling it. */
   teamMemberId: string,
   /** the slack channel that wants our messages */
   slackChannelId: string
-};
+}
 
 export type AddSlackChannelPayload = {
   error: ?StandardMutationError,
   channel: SlackIntegration
-};
+}
 
 export type AddTeamPayload = {
   error: ?StandardMutationError,
@@ -1311,7 +1311,7 @@ export type AddTeamPayload = {
   invitations: ?Array<Invitation>,
   /** The invitation sent when an team was being created */
   teamInviteNotification: ?NotifyTeamInvite
-};
+}
 
 export type ApproveToOrgPayload = {
   error: ?StandardMutationError,
@@ -1325,7 +1325,7 @@ export type ApproveToOrgPayload = {
   inviteeApprovedNotifications: ?Array<NotifyInviteeApproved>,
   /** If the viewer is the invitee, the notifications to invite them to teams */
   teamInviteNotifications: ?Array<NotifyTeamInvite>
-};
+}
 
 /**
   A notification sent to a user concerning an invitation (request, joined)
@@ -1351,12 +1351,12 @@ export type NotifyRequestNewUser = {
   type: ?NotificationEnum,
   /** *The userId that should see this notification */
   userIds: ?Array<string>
-};
+}
 
 export type OrganizationNotification =
   | NotifyRequestNewUser
   | NotifyPaymentRejected
-  | NotifyPromoteToOrgLeader;
+  | NotifyPromoteToOrgLeader
 
 /**
   A notification sent to a user when the person they invited got approved by the org leader
@@ -1376,7 +1376,7 @@ export type NotifyInviteeApproved = {
   type: ?NotificationEnum,
   /** *The userId that should see this notification */
   userIds: ?Array<string>
-};
+}
 
 export type ArchiveTeamPayload = {
   error: ?StandardMutationError,
@@ -1384,7 +1384,7 @@ export type ArchiveTeamPayload = {
   /** A notification explaining that the team was archived and removed from view */
   notification: ?NotifyTeamArchived,
   removedTeamNotifications: ?Array<TeamNotification>
-};
+}
 
 /**
   A notification alerting the user that a team they were on is now archived
@@ -1400,16 +1400,16 @@ export type NotifyTeamArchived = {
   type: ?NotificationEnum,
   /** *The userId that should see this notification */
   userIds: ?Array<string>
-};
+}
 
-export type TeamRemovedNotification = NotifyTeamArchived | NotifyKickedOut;
+export type TeamRemovedNotification = NotifyTeamArchived | NotifyKickedOut
 
 export type AutoGroupReflectionsPayload = {
   error: ?StandardMutationError,
   meeting: ?RetrospectiveMeeting,
   reflections: ?Array<RetroReflection>,
   reflectionGroups: ?Array<RetroReflectionGroup>
-};
+}
 
 /**
   A retrospective meeting
@@ -1456,7 +1456,7 @@ export type RetrospectiveMeeting = {
   tasks: Array<Task>,
   /** The sum total of the votes remaining for the meeting members that are present in the meeting */
   votesRemaining: number
-};
+}
 
 /**
   All the meeting specifics for a user in a retro meeting
@@ -1476,12 +1476,12 @@ export type RetrospectiveMeetingMember = {
   /** The tasks assigned to members during the meeting */
   tasks: Array<Task>,
   votesRemaining: number
-};
+}
 
 /**
   sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
 */
-export type ReflectionGroupSortEnum = 'voteCount';
+export type ReflectionGroupSortEnum = 'voteCount'
 
 /**
   A reflection created during the reflect phase of a retrospective
@@ -1521,7 +1521,7 @@ export type RetroReflectionGroup = {
   voteCount: ?number,
   /** The number of votes the viewer has given this group */
   viewerVoteCount: ?number
-};
+}
 
 /**
   A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
@@ -1541,7 +1541,7 @@ export type RetroPhaseItem = {
   title: string,
   /** The question to answer during the phase of the retrospective (eg What went well?) */
   question: string
-};
+}
 
 /**
   A reflection created during the reflect phase of a retrospective
@@ -1590,7 +1590,7 @@ export type RetroReflection = {
   team: ?RetrospectiveMeeting,
   /** The timestamp the meeting was updated. Used to determine how long it took to write a reflection */
   updatedAt: ?any
-};
+}
 
 /**
   Coordinates used to share a drag
@@ -1604,7 +1604,7 @@ export type DraggerCoords = {
   x: ?number,
   /** The y-offset from the current location */
   y: ?number
-};
+}
 
 export type GoogleAnalyzedEntity = {
   /** The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural. */
@@ -1613,7 +1613,7 @@ export type GoogleAnalyzedEntity = {
   name: string,
   /** The salience of the entity in the provided text. The salience of all entities always sums to 1 */
   salience: number
-};
+}
 
 /**
   The retro-specific meeting settings
@@ -1635,7 +1635,7 @@ export type RetrospectiveMeetingSettings = {
   totalVotes: number,
   /** The maximum number of votes a team member can vote for a single reflection group */
   maxVotesPerGroup: number
-};
+}
 
 export type CancelApprovalPayload = {
   error: ?StandardMutationError,
@@ -1647,7 +1647,7 @@ export type CancelApprovalPayload = {
   removedSoftTeamMember: ?SoftTeamMember,
   /** The tasks that belonged to the soft team member */
   archivedSoftTasks: ?Array<Task>
-};
+}
 
 export type CancelTeamInvitePayload = {
   error: ?StandardMutationError,
@@ -1658,7 +1658,7 @@ export type CancelTeamInvitePayload = {
   removedSoftTeamMember: ?SoftTeamMember,
   /** The tasks that belonged to the soft team member */
   archivedSoftTasks: ?Array<Task>
-};
+}
 
 export type ChangeTaskTeamPayload = {
   error: ?StandardMutationError,
@@ -1666,7 +1666,7 @@ export type ChangeTaskTeamPayload = {
   removedNotification: ?NotifyTaskInvolves,
   /** the taskId sent to a user who is not on the new team so they can remove it from their client */
   removedTaskId: ?string
-};
+}
 
 /**
   A notification sent to someone who was just added to a team
@@ -1694,18 +1694,18 @@ export type NotifyTaskInvolves = {
   teamId: string,
   /** The team the task is on */
   team: ?Team
-};
+}
 
 /**
   How a user is involved with a task (listed in hierarchical order)
 */
-export type TaskInvolvementType = 'ASSIGNEE' | 'MENTIONEE';
+export type TaskInvolvementType = 'ASSIGNEE' | 'MENTIONEE'
 
 export type ClearNotificationPayload = {
   error: ?StandardMutationError,
   /** The deleted notifcation */
   notification: ?Notification
-};
+}
 
 export type CreateImposterTokenPayload = {
   error: ?StandardMutationError,
@@ -1713,7 +1713,7 @@ export type CreateImposterTokenPayload = {
   authToken: ?string,
   /** The user you have assumed */
   user: ?User
-};
+}
 
 export type CreateFirstTeamPayload = {
   error: ?StandardMutationError,
@@ -1722,17 +1722,17 @@ export type CreateFirstTeamPayload = {
   /** The new JWT after adding the team */
   jwt: ?string,
   user: ?User
-};
+}
 
 export type CreateGitHubIssuePayload = {
   error: ?StandardMutationError,
   task: ?Task
-};
+}
 
 export type CreatePicturePutUrlPayload = {
   error: ?StandardMutationError,
   url: ?any
-};
+}
 
 export type CreateReflectionInput = {
   /** A stringified draft-js document containing thoughts */
@@ -1740,7 +1740,7 @@ export type CreateReflectionInput = {
   /** The phase item the reflection belongs to */
   retroPhaseItemId: string,
   sortOrder: number
-};
+}
 
 export type CreateReflectionPayload = {
   error: ?StandardMutationError,
@@ -1750,13 +1750,13 @@ export type CreateReflectionPayload = {
   reflectionGroup: ?RetroReflectionGroup,
   /** The stages that were unlocked by navigating */
   unlockedStages: ?Array<NewMeetingStage>
-};
+}
 
 export type CreateReflectionGroupPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
   reflectionGroup: ?RetroReflectionGroup
-};
+}
 
 export type CreateTaskInput = {
   /** foreign key for AgendaItem */
@@ -1772,23 +1772,23 @@ export type CreateTaskInput = {
   teamId: ?string,
   /** userId, the owner of the task */
   userId: ?string
-};
+}
 
 /**
   The part of the site that is calling the mutation
 */
-export type AreaEnum = 'meeting' | 'teamDash' | 'userDash';
+export type AreaEnum = 'meeting' | 'teamDash' | 'userDash'
 
 export type CreateTaskPayload = {
   error: ?StandardMutationError,
   task: ?Task,
   involvementNotification: ?NotifyTaskInvolves
-};
+}
 
 export type CreateUserPicturePutUrlPayload = {
   error: ?StandardMutationError,
   url: ?any
-};
+}
 
 export type DeleteTaskPayload = {
   error: ?StandardMutationError,
@@ -1796,12 +1796,12 @@ export type DeleteTaskPayload = {
   task: ?Task,
   /** The notification stating that the viewer was mentioned or assigned */
   involvementNotification: ?NotifyTaskInvolves
-};
+}
 
 export type DisconnectSocketPayload = {
   /** The user that disconnected */
   user: ?User
-};
+}
 
 export type DragReflectionPayload = {
   error: ?StandardMutationError,
@@ -1813,7 +1813,7 @@ export type DragReflectionPayload = {
   user: ?User,
   /** true if the reflection is being dragged, else false */
   isDragging: ?boolean
-};
+}
 
 export type EditReflectionPayload = {
   error: ?StandardMutationError,
@@ -1823,7 +1823,7 @@ export type EditReflectionPayload = {
   editorId: ?string,
   /** true if the reflection is being edited, else false  */
   isEditing: ?boolean
-};
+}
 
 export type EditTaskPayload = {
   error: ?StandardMutationError,
@@ -1831,7 +1831,7 @@ export type EditTaskPayload = {
   editor: ?User,
   /** true if the editor is editing, false if they stopped editing */
   isEditing: ?boolean
-};
+}
 
 export type EndMeetingPayload = {
   error: ?StandardMutationError,
@@ -1839,13 +1839,13 @@ export type EndMeetingPayload = {
   /** The list of tasks that were archived during the meeting */
   archivedTasks: ?Array<Task>,
   meeting: ?Meeting
-};
+}
 
 export type InactivateUserPayload = {
   error: ?StandardMutationError,
   /** The user that has been inactivated */
   user: ?User
-};
+}
 
 /**
   A list of all the possible outcomes when trying to invite a team member
@@ -1874,7 +1874,7 @@ export type InviteTeamMembersPayload = {
   newSoftTeamMembers: ?Array<SoftTeamMember>,
   /** Any tasks that were recently assigned to a reactivated soft team member */
   unarchivedSoftTasks: ?Array<Task>
-};
+}
 
 /**
   A notification sent to someone who was just added to a team
@@ -1897,19 +1897,19 @@ export type NotifyAddedToTeam = {
   teamName: string,
   /** The teamId the user is joining */
   teamId: string
-};
+}
 
 export type JoinIntegrationPayload = {
   error: ?StandardMutationError,
   /** The globalId of the integration with a removed member */
   globalId: string,
   teamMember: TeamMember
-};
+}
 
 export type KillMeetingPayload = {
   error: ?StandardMutationError,
   team: ?Team
-};
+}
 
 export type EndNewMeetingPayload = {
   error: ?StandardMutationError,
@@ -1917,7 +1917,7 @@ export type EndNewMeetingPayload = {
   isKill: ?boolean,
   team: ?Team,
   meeting: ?NewMeeting
-};
+}
 
 export type LeaveIntegrationPayload = {
   error: ?StandardMutationError,
@@ -1927,19 +1927,19 @@ export type LeaveIntegrationPayload = {
   userId: ?string,
   /** The list of tasks removed triggered by a removed repo if this was the last viewer on the repo */
   archivedTaskIds: ?Array<string>
-};
+}
 
 export type MeetingCheckInPayload = {
   error: ?StandardMutationError,
   teamMember: ?TeamMember
-};
+}
 
 export type MoveMeetingPayload = {
   error: ?StandardMutationError,
   team: ?Team,
   /** The agendaItem completed, if any */
   completedAgendaItem: ?AgendaItem
-};
+}
 
 export type NavigateMeetingPayload = {
   error: ?StandardMutationError,
@@ -1952,7 +1952,7 @@ export type NavigateMeetingPayload = {
   phaseComplete: ?PhaseCompletePayload,
   /** The stages that were unlocked by navigating */
   unlockedStages: ?Array<NewMeetingStage>
-};
+}
 
 export type PhaseCompletePayload = {
   /** payload provided if the retro reflect phase was completed */
@@ -1961,28 +1961,28 @@ export type PhaseCompletePayload = {
   group: ?GroupPhaseCompletePayload,
   /** payload provided if the retro voting phase was completed */
   vote: ?VotePhaseCompletePayload
-};
+}
 
 export type ReflectPhaseCompletePayload = {
   /** a list of empty reflection groups to remove */
   emptyReflectionGroupIds: ?Array<string>
-};
+}
 
 export type GroupPhaseCompletePayload = {
   /** a list of updated reflection groups */
   reflectionGroups: ?Array<RetroReflectionGroup>
-};
+}
 
 export type VotePhaseCompletePayload = {
   /** the current meeting */
   meeting: ?RetrospectiveMeeting
-};
+}
 
 export type NewMeetingCheckInPayload = {
   error: ?StandardMutationError,
   meetingMember: ?MeetingMember,
   meeting: ?NewMeeting
-};
+}
 
 export type PromoteFacilitatorPayload = {
   error: ?StandardMutationError,
@@ -1992,7 +1992,7 @@ export type PromoteFacilitatorPayload = {
   newFacilitator: ?TeamMember,
   /** The team member that disconnected */
   disconnectedFacilitator: ?TeamMember
-};
+}
 
 export type PromoteNewMeetingFacilitatorPayload = {
   error: ?StandardMutationError,
@@ -2000,13 +2000,13 @@ export type PromoteNewMeetingFacilitatorPayload = {
   meeting: ?NewMeeting,
   /** The old meeting facilitator */
   oldFacilitator: ?User
-};
+}
 
 export type PromoteToTeamLeadPayload = {
   error: ?StandardMutationError,
   oldTeamLead: ?TeamMember,
   newTeamLead: ?TeamMember
-};
+}
 
 export type RejectOrgApprovalPayload = {
   error: ?StandardMutationError,
@@ -2020,7 +2020,7 @@ export type RejectOrgApprovalPayload = {
   removedSoftTeamMembers: ?Array<SoftTeamMember>,
   /** The tasks that belonged to the soft team member */
   archivedSoftTasks: ?Array<Task>
-};
+}
 
 /**
   A notification alerting the user that their request was denied by the org billing leader
@@ -2041,12 +2041,12 @@ export type NotifyDenial = {
   type: ?NotificationEnum,
   /** *The userId that should see this notification */
   userIds: ?Array<string>
-};
+}
 
 export type RemoveAgendaItemPayload = {
   error: ?StandardMutationError,
   agendaItem: ?AgendaItem
-};
+}
 
 export type RemoveProviderPayload = {
   error: ?StandardMutationError,
@@ -2056,18 +2056,18 @@ export type RemoveProviderPayload = {
   /** The userId of the person who removed the provider */
   userId: string,
   archivedTaskIds: ?Array<string>
-};
+}
 
 export type RemoveSlackChannelPayload = {
   error: ?StandardMutationError,
   deletedId: string
-};
+}
 
 export type RemoveGitHubRepoPayload = {
   deletedId: string,
   error: ?StandardMutationError,
   archivedTaskIds: ?Array<string>
-};
+}
 
 export type RemoveOrgUserPayload = {
   error: ?StandardMutationError,
@@ -2089,7 +2089,7 @@ export type RemoveOrgUserPayload = {
   kickOutNotifications: ?Array<NotifyKickedOut>,
   /** The organization member that got removed */
   removedOrgMember: ?OrganizationMember
-};
+}
 
 /**
   A notification sent to someone who was just kicked off a team
@@ -2112,7 +2112,7 @@ export type NotifyKickedOut = {
   teamId: string,
   /** The team the task is on */
   team: ?Team
-};
+}
 
 export type RemoveReflectionPayload = {
   error: ?StandardMutationError,
@@ -2120,7 +2120,7 @@ export type RemoveReflectionPayload = {
   reflection: ?RetroReflection,
   /** The stages that were unlocked by navigating */
   unlockedStages: ?Array<NewMeetingStage>
-};
+}
 
 export type RemoveTeamMemberPayload = {
   error: ?StandardMutationError,
@@ -2136,45 +2136,45 @@ export type RemoveTeamMemberPayload = {
   removedNotifications: ?Array<Notification>,
   /** A notification if you were kicked out by the team leader */
   kickOutNotification: ?NotifyKickedOut
-};
+}
 
 export type RequestFacilitatorPayload = {
   error: ?StandardMutationError,
   /** The team member that wants to be the facilitator */
   requestor: ?TeamMember
-};
+}
 
 export type ResendTeamInvitePayload = {
   error: ?StandardMutationError,
   invitation: ?Invitation
-};
+}
 
 export type SegmentEventTrackOptions = {
   teamId: ?string,
   orgId: ?string,
   /** Used during the welcome wizard step 3 */
   inviteeCount: ?number
-};
+}
 
-export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload;
+export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload
 
 export type StartMeetingPayload = {
   error: ?StandardMutationError,
   team: ?Team
-};
+}
 
 export type StartNewMeetingPayload = {
   error: ?StandardMutationError,
   team: ?Team,
   meeting: ?NewMeeting
-};
+}
 
 export type StripeFailPaymentPayload = {
   error: ?StandardMutationError,
   organization: ?Organization,
   /** The notification to billing leaders stating the payment was rejected */
   notification: ?NotifyPaymentRejected
-};
+}
 
 /**
   A notification sent to a user when their payment has been rejected
@@ -2190,7 +2190,7 @@ export type NotifyPaymentRejected = {
   type: ?NotificationEnum,
   /** *The userId that should see this notification */
   userIds: ?Array<string>
-};
+}
 
 export type UpdateAgendaItemInput = {
   /** The unique agenda item ID, composed of a teamId::shortid */
@@ -2203,12 +2203,12 @@ export type UpdateAgendaItemInput = {
   isComplete: ?boolean,
   /** The sort order of the agenda item in the list */
   sortOrder: ?number
-};
+}
 
 export type UpdateAgendaItemPayload = {
   agendaItem: ?AgendaItem,
   error: ?StandardMutationError
-};
+}
 
 export type UpdateCreditCardPayload = {
   error: ?StandardMutationError,
@@ -2216,7 +2216,7 @@ export type UpdateCreditCardPayload = {
   organization: ?Organization,
   /** The teams that are now paid up */
   teamsUpdated: ?Array<Team>
-};
+}
 
 export type UpdateOrgInput = {
   /** The unique action ID */
@@ -2225,35 +2225,35 @@ export type UpdateOrgInput = {
   name: ?string,
   /** The org avatar */
   picture: ?any
-};
+}
 
 export type UpdateOrgPayload = {
   error: ?StandardMutationError,
   /** The updated org */
   organization: ?Organization
-};
+}
 
 export type UpdateCheckInQuestionPayload = {
   error: ?StandardMutationError,
   team: ?Team
-};
+}
 
 export type UpdateNewCheckInQuestionPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting
-};
+}
 
 export type UpdateReflectionContentPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
   reflection: ?RetroReflection
-};
+}
 
 export type UpdateReflectionGroupTitlePayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
   reflectionGroup: ?RetroReflectionGroup
-};
+}
 
 export type UpdateReflectionLocationPayload = {
   error: ?StandardMutationError,
@@ -2263,7 +2263,7 @@ export type UpdateReflectionLocationPayload = {
   reflectionGroup: ?RetroReflectionGroup,
   /** The old group the reflection was in */
   oldReflectionGroup: ?RetroReflectionGroup
-};
+}
 
 export type UpdateTaskInput = {
   /** The task id */
@@ -2273,7 +2273,7 @@ export type UpdateTaskInput = {
   status: ?TaskStatusEnum,
   /** The teamMemberId or softTeamMemberId */
   assigneeId: ?string
-};
+}
 
 export type UpdateTaskPayload = {
   error: ?StandardMutationError,
@@ -2282,12 +2282,12 @@ export type UpdateTaskPayload = {
   privatizedTaskId: ?string,
   addedNotification: ?NotifyTaskInvolves,
   removedNotification: ?NotifyTaskInvolves
-};
+}
 
 export type UpdateTaskDueDatePayload = {
   error: ?StandardMutationError,
   task: ?Task
-};
+}
 
 export type UpdatedTeamInput = {
   id: ?string,
@@ -2295,26 +2295,26 @@ export type UpdatedTeamInput = {
   name: ?string,
   /** A link to the team’s profile image. */
   picture: ?any
-};
+}
 
 export type UpdateTeamNamePayload = {
   error: ?StandardMutationError,
   team: ?Team
-};
+}
 
 export type UpdateUserProfileInput = {
   /** A link to the user’s profile image. */
   picture: ?any,
   /** The name, as confirmed by the user */
   preferredName: ?string
-};
+}
 
 export type UpdateUserProfilePayload = {
   error: ?StandardMutationError,
   user: ?User,
   /** The updated team members */
   teamMembers: ?Array<TeamMember>
-};
+}
 
 export type VoteForReflectionGroupPayload = {
   error: ?StandardMutationError,
@@ -2323,7 +2323,7 @@ export type VoteForReflectionGroupPayload = {
   reflectionGroup: ?RetroReflectionGroup,
   /** The stages that were locked or unlocked by having at least 1 vote */
   unlockedStages: ?Array<NewMeetingStage>
-};
+}
 
 export type LoginPayload = {
   error: ?StandardMutationError,
@@ -2331,7 +2331,7 @@ export type LoginPayload = {
   user: ?User,
   /** The new JWT */
   authToken: ?string
-};
+}
 
 export type UpgradeToProPayload = {
   error: ?StandardMutationError,
@@ -2339,7 +2339,7 @@ export type UpgradeToProPayload = {
   organization: ?Organization,
   /** The updated teams under the org */
   teams: ?Array<Team>
-};
+}
 
 export type Subscription = {
   agendaItemSubscription: AgendaItemSubscriptionPayload,
@@ -2360,24 +2360,24 @@ export type Subscription = {
   providerRemoved: RemoveProviderPayload,
   teamSubscription: TeamSubscriptionPayload,
   teamMemberSubscription: TeanMemberSubscriptionPayload
-};
+}
 
 export type AgendaItemSubscriptionPayload =
   | AddAgendaItemPayload
   | RemoveAgendaItemPayload
   | UpdateAgendaItemPayload
-  | MoveMeetingPayload;
+  | MoveMeetingPayload
 
 export type GitHubMemberRemovedPayload = {
   leaveIntegration: ?Array<LeaveIntegrationPayload>
-};
+}
 
 export type InvitationSubscriptionPayload =
   | AcceptTeamInvitePayload
   | ApproveToOrgPayload
   | CancelTeamInvitePayload
   | InviteTeamMembersPayload
-  | ResendTeamInvitePayload;
+  | ResendTeamInvitePayload
 
 export type NotificationSubscriptionPayload =
   | AddFeatureFlagPayload
@@ -2395,13 +2395,13 @@ export type NotificationSubscriptionPayload =
   | RemoveOrgUserPayload
   | StripeFailPaymentPayload
   | User
-  | UpdateUserProfilePayload;
+  | UpdateUserProfilePayload
 
 export type OrgApprovalSubscriptionPayload =
   | ApproveToOrgPayload
   | CancelApprovalPayload
   | InviteTeamMembersPayload
-  | RejectOrgApprovalPayload;
+  | RejectOrgApprovalPayload
 
 export type OrganizationSubscriptionPayload =
   | AddOrgPayload
@@ -2411,7 +2411,7 @@ export type OrganizationSubscriptionPayload =
   | SetOrgUserRoleRemovedPayload
   | UpdateCreditCardPayload
   | UpdateOrgPayload
-  | UpgradeToProPayload;
+  | UpgradeToProPayload
 
 export type SetOrgUserRoleAddedPayload = {
   error: ?StandardMutationError,
@@ -2419,7 +2419,7 @@ export type SetOrgUserRoleAddedPayload = {
   updatedOrgMember: ?OrganizationMember,
   /** If promoted, notify them and give them all other admin notifications */
   notificationsAdded: ?Array<OrganizationNotification>
-};
+}
 
 export type SetOrgUserRoleRemovedPayload = {
   error: ?StandardMutationError,
@@ -2427,7 +2427,7 @@ export type SetOrgUserRoleRemovedPayload = {
   updatedOrgMember: ?OrganizationMember,
   /** If demoted, notify them and remove all other admin notifications */
   notificationsRemoved: ?Array<OrganizationNotification>
-};
+}
 
 export type TaskSubscriptionPayload =
   | AcceptTeamInvitePayload
@@ -2444,7 +2444,7 @@ export type TaskSubscriptionPayload =
   | RemoveOrgUserPayload
   | RemoveTeamMemberPayload
   | UpdateTaskPayload
-  | UpdateTaskDueDatePayload;
+  | UpdateTaskDueDatePayload
 
 export type AddProviderPayload = {
   providerRow: ProviderRow,
@@ -2452,7 +2452,7 @@ export type AddProviderPayload = {
   /** All the integrationIds that the provider has successfully joined */
   joinedIntegrationIds: ?Array<string>,
   teamMember: ?TeamMember
-};
+}
 
 export type TeamSubscriptionPayload =
   | AcceptTeamInvitePayload
@@ -2485,7 +2485,7 @@ export type TeamSubscriptionPayload =
   | UpdateReflectionLocationPayload
   | UpdateTeamNamePayload
   | UpgradeToProPayload
-  | VoteForReflectionGroupPayload;
+  | VoteForReflectionGroupPayload
 
 export type TeanMemberSubscriptionPayload =
   | AcceptTeamInvitePayload
@@ -2497,7 +2497,7 @@ export type TeanMemberSubscriptionPayload =
   | PromoteToTeamLeadPayload
   | RejectOrgApprovalPayload
   | RemoveOrgUserPayload
-  | UpdateUserProfilePayload;
+  | UpdateUserProfilePayload
 
 /**
   The meeting phase where all team members check in one-by-one
@@ -2512,7 +2512,7 @@ export type CheckInPhase = {
   checkInGreeting: MeetingGreeting,
   /** The checkIn question of the week (draft-js format) */
   checkInQuestion: string
-};
+}
 
 /**
   A stage that focuses on a single team member
@@ -2546,12 +2546,12 @@ export type CheckInStage = {
   teamMember: ?TeamMember,
   /** true if the team member is present for the meeting */
   present: ?boolean
-};
+}
 
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingTeamMemberStage = CheckInStage;
+export type NewMeetingTeamMemberStage = CheckInStage
 
 /**
   The meeting phase where all team members check in one-by-one
@@ -2566,7 +2566,7 @@ export type ReflectPhase = {
   focusedPhaseItemId: ?string,
   /** the phase item that the facilitator wants the group to focus on */
   focusedPhaseItem: ?RetroPhaseItem
-};
+}
 
 /**
   A stage of a meeting that has no extra state. Only used for single-stage phases
@@ -2594,7 +2594,7 @@ export type GenericMeetingStage = {
   startAt: ?any,
   /** Number of times the facilitator has visited this stage */
   viewCount: ?number
-};
+}
 
 /**
   The meeting phase where all team members discuss the topics with the most votes
@@ -2605,7 +2605,7 @@ export type DiscussPhase = {
   /** The type of phase */
   phaseType: ?NewMeetingPhaseTypeEnum,
   stages: Array<RetroDiscussStage>
-};
+}
 
 /**
   The stage where the team discusses a single theme
@@ -2637,7 +2637,7 @@ export type RetroDiscussStage = {
   reflectionGroupId: ?string,
   /** the group that is the focal point of the discussion */
   reflectionGroup: ?RetroReflectionGroup
-};
+}
 
 /**
   An all-purpose meeting phase with no extra state
@@ -2648,7 +2648,7 @@ export type GenericMeetingPhase = {
   /** The type of phase */
   phaseType: ?NewMeetingPhaseTypeEnum,
   stages: Array<GenericMeetingStage>
-};
+}
 
 /**
   A notification alerting the user that they have been promoted (to team or org leader)
@@ -2664,7 +2664,7 @@ export type NotifyPromoteToOrgLeader = {
   type: ?NotificationEnum,
   /** *The userId that should see this notification */
   userIds: ?Array<string>
-};
+}
 
 /**
   The action-specific meeting settings
@@ -2680,7 +2680,7 @@ export type ActionMeetingSettings = {
   phaseTypes: Array<NewMeetingPhaseTypeEnum>,
   /** The team these settings belong to */
   team: ?Team
-};
+}
 
 /**
   An auth token provided by Parabol to the client
@@ -2704,9 +2704,9 @@ export type AuthToken = {
   rol: ?AuthTokenRole,
   /** teams. a list of teamIds where the user is active */
   tms: ?Array<string>
-};
+}
 
 /**
   A role describing super user privileges
 */
-export type AuthTokenRole = 'su';
+export type AuthTokenRole = 'su'

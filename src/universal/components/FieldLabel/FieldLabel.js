@@ -1,18 +1,18 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inline}) => {
-  const size = fieldSize || ui.buttonSizeOptions[1];
-  const paddingLeft = fieldSize && indent ? ui.controlBlockPaddingHorizontal[size] : 0;
-  const inlineSizeStyles = ui.fieldSizeStyles[size];
+  const size = fieldSize || ui.buttonSizeOptions[1]
+  const paddingLeft = fieldSize && indent ? ui.controlBlockPaddingHorizontal[size] : 0
+  const inlineSizeStyles = ui.fieldSizeStyles[size]
   const inlineStyles = {
     lineHeight: inlineSizeStyles.lineHeight,
     paddingBottom: ui.controlBlockPaddingVertical[size],
     paddingTop: ui.controlBlockPaddingVertical[size]
-  };
-  const useInlineStyles = fieldSize && inline && inlineStyles;
+  }
+  const useInlineStyles = fieldSize && inline && inlineStyles
   return {
     color: ui.labelHeadingColor,
     display: 'block',
@@ -28,11 +28,11 @@ const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inli
     paddingLeft,
     // 3. Do what ya want
     ...customStyles
-  };
-});
+  }
+})
 
 const FieldLabel = (props) => {
-  const {customStyles, fieldSize, indent, inline, htmlFor, label} = props;
+  const {customStyles, fieldSize, indent, inline, htmlFor, label} = props
   return (
     <FieldLabelStyles
       customStyles={customStyles}
@@ -43,8 +43,8 @@ const FieldLabel = (props) => {
     >
       {label}
     </FieldLabelStyles>
-  );
-};
+  )
+}
 
 FieldLabel.propTypes = {
   customStyles: PropTypes.object,
@@ -54,6 +54,6 @@ FieldLabel.propTypes = {
   inline: PropTypes.bool,
   label: PropTypes.string,
   styles: PropTypes.object
-};
+}
 
-export default FieldLabel;
+export default FieldLabel

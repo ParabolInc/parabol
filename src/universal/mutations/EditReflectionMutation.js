@@ -2,14 +2,14 @@
  * Updates the editing state of a retrospective reflection.
  *
  */
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-import {commitMutation} from 'react-relay';
-import handleEditReflection from 'universal/mutations/handlers/handleEditReflection';
+import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
+import {commitMutation} from 'react-relay'
+import handleEditReflection from 'universal/mutations/handlers/handleEditReflection'
 
 type Variables = {
   isEditing: boolean,
   reflectionId: string
-};
+}
 
 graphql`
   fragment EditReflectionMutation_team on EditReflectionPayload {
@@ -24,7 +24,7 @@ graphql`
     editorId
     isEditing
   }
-`;
+`
 
 const mutation = graphql`
   mutation EditReflectionMutation($reflectionId: ID!, $isEditing: Boolean!) {
@@ -32,11 +32,11 @@ const mutation = graphql`
       ...EditReflectionMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 export const editReflectionTeamUpdater = (payload, store) => {
-  handleEditReflection(payload, store);
-};
+  handleEditReflection(payload, store)
+}
 
 const EditReflectionMutation = (
   atmosphere: Object,
@@ -50,21 +50,21 @@ const EditReflectionMutation = (
     onCompleted,
     onError,
     updater: (store) => {
-      const payload = store.getRootField('editReflection');
-      if (!payload) return;
-      editReflectionTeamUpdater(payload, store);
+      const payload = store.getRootField('editReflection')
+      if (!payload) return
+      editReflectionTeamUpdater(payload, store)
     },
     optimisticUpdater: (store) => {
-      const {reflectionId, isEditing} = variables;
-      const reflection = store.get(reflectionId);
-      const reflectionEditorIds = reflection.getValue('editorIds') || [];
+      const {reflectionId, isEditing} = variables
+      const reflection = store.get(reflectionId)
+      const reflectionEditorIds = reflection.getValue('editorIds') || []
       const nextEditorIds = isEditing
         ? reflectionEditorIds.concat('tmpUser')
-        : reflectionEditorIds.slice(1);
-      reflection.setValue(nextEditorIds, 'editorIds');
-      reflection.setValue(nextEditorIds.length > 0, 'isEditing');
+        : reflectionEditorIds.slice(1)
+      reflection.setValue(nextEditorIds, 'editorIds')
+      reflection.setValue(nextEditorIds.length > 0, 'isEditing')
     }
-  });
-};
+  })
+}
 
-export default EditReflectionMutation;
+export default EditReflectionMutation

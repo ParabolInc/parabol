@@ -1,8 +1,8 @@
-import {GraphQLList, GraphQLString} from 'graphql';
-import ms from 'ms';
-import getRethink from 'server/database/rethinkDriver';
-import {sendBatchEmail} from 'server/email/sendEmail';
-import {requireSU} from 'server/utils/authorization';
+import {GraphQLList, GraphQLString} from 'graphql'
+import ms from 'ms'
+import getRethink from 'server/database/rethinkDriver'
+import {sendBatchEmail} from 'server/email/sendEmail'
+import {requireSU} from 'server/utils/authorization'
 
 const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),
@@ -10,16 +10,16 @@ const sendBatchNotificationEmails = {
     'Send summary emails of unread notifications to all users who have not been seen within the last 24 hours',
   async resolve (source, args, {authToken}) {
     // AUTH
-    requireSU(authToken);
+    requireSU(authToken)
 
     // RESOLUTION
     // Note - this may be a lot of data one day. userNotifications is an array
     // of all the users who have not logged in within the last 24 hours and their
     // associated notifications.
-    const r = getRethink();
-    const now = Date.now();
-    const today = new Date(now);
-    const yesterday = new Date(now - ms('1d'));
+    const r = getRethink()
+    const now = Date.now()
+    const today = new Date(now)
+    const yesterday = new Date(now - ms('1d'))
     const userNotifications = await r
       .table('Notification')
       // Only include notifications which occurred within the last day
@@ -56,21 +56,21 @@ const sendBatchNotificationEmails = {
         email: group('reduction')(0)('email'),
         name: group('reduction')(0)('preferredName'),
         numNotifications: group('reduction').count()
-      }));
+      }))
 
-    const emails = userNotifications.map(({email}) => email);
+    const emails = userNotifications.map(({email}) => email)
     const recipientVariables = userNotifications.reduce(
       (addressMap, {email, name, numNotifications}) => ({
         ...addressMap,
         [email]: {name, numNotifications}
       }),
       {}
-    );
+    )
     if (emails.length) {
-      await sendBatchEmail(emails, 'notificationSummary', {date: today}, recipientVariables);
+      await sendBatchEmail(emails, 'notificationSummary', {date: today}, recipientVariables)
     }
-    return emails;
+    return emails
   }
-};
+}
 
-export default sendBatchNotificationEmails;
+export default sendBatchNotificationEmails

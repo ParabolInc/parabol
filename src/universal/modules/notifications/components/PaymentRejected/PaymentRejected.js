@@ -1,29 +1,29 @@
-import {css} from 'react-emotion';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import ui from 'universal/styles/ui';
-import Row from 'universal/components/Row/Row';
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import Button from 'universal/components/Button/Button';
+import {css} from 'react-emotion'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import defaultStyles from 'universal/modules/notifications/helpers/styles'
+import ui from 'universal/styles/ui'
+import Row from 'universal/components/Row/Row'
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
+import Button from 'universal/components/Button/Button'
 
 const PaymentRejected = (props) => {
-  const {history, notification} = props;
+  const {history, notification} = props
   const {
     organization: {
       orgId,
       creditCard: {last4, brand}
     }
-  } = notification;
+  } = notification
   const addBilling = () => {
-    history.push(`/me/organizations/${orgId}`);
-  };
+    history.push(`/me/organizations/${orgId}`)
+  }
   return (
     <Row compact>
       <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon="credit-card" size="small" />
+        <IconAvatar icon='credit-card' size='small' />
       </div>
       <div className={css(defaultStyles.message)}>
         {'Your '}
@@ -36,23 +36,23 @@ const PaymentRejected = (props) => {
       </div>
       <div className={css(defaultStyles.widestButton)}>
         <Button
-          aria-label="Go to the billing page to update billing information"
+          aria-label='Go to the billing page to update billing information'
           buttonSize={ui.notificationButtonSize}
-          colorPalette="warm"
+          colorPalette='warm'
           isBlock
-          label="See Billing"
-          type="submit"
+          label='See Billing'
+          type='submit'
           onClick={addBilling}
         />
       </div>
     </Row>
-  );
-};
+  )
+}
 
 PaymentRejected.propTypes = {
   history: PropTypes.object.isRequired,
   notification: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   withRouter(PaymentRejected),
@@ -68,4 +68,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

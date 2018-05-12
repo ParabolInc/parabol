@@ -1,4 +1,4 @@
-import ui from 'universal/styles/ui';
+import ui from 'universal/styles/ui'
 
 const DashNavItemBaseStyles = {
   borderLeft: '.1875rem solid transparent',
@@ -12,6 +12,6 @@ const DashNavItemBaseStyles = {
   transition: `background-color ${ui.transition[0]}`,
   userSelect: 'none',
   width: '100%'
-};
+}
 
-export default DashNavItemBaseStyles;
+export default DashNavItemBaseStyles

@@ -1,6 +1,6 @@
-import styled from 'react-emotion';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const DashHeading = styled('div')(({textAlign}) => ({
   color: ui.colorText,
@@ -12,6 +12,6 @@ const DashHeading = styled('div')(({textAlign}) => ({
   [ui.dashBreakpoint]: {
     fontSize: appTheme.typography.s7
   }
-}));
+}))
 
-export default DashHeading;
+export default DashHeading

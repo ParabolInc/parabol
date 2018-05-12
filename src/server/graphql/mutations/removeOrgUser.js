@@ -1,12 +1,12 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import getRethink from 'server/database/rethinkDriver';
-import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember';
-import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {REMOVE_USER} from 'server/utils/serverConstants';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import adjustUserCount from 'server/billing/helpers/adjustUserCount'
+import getRethink from 'server/database/rethinkDriver'
+import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember'
+import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
+import {auth0ManagementClient} from 'server/utils/auth0Helpers'
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {REMOVE_USER} from 'server/utils/serverConstants'
 import {
   NEW_AUTH_TOKEN,
   NOTIFICATION,
@@ -15,8 +15,8 @@ import {
   TEAM,
   TEAM_MEMBER,
   UPDATED
-} from 'universal/utils/constants';
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+} from 'universal/utils/constants'
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -32,47 +32,47 @@ const removeOrgUser = {
     }
   },
   async resolve (source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const now = new Date();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
+    const viewerId = getUserId(authToken)
     if (viewerId !== userId) {
-      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
+      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId)
       if (!isOrgBillingLeader(userOrgDoc)) {
-        return sendOrgLeadAccessError(authToken, userOrgDoc);
+        return sendOrgLeadAccessError(authToken, userOrgDoc)
       }
     }
 
     // RESOLUTION
-    const teamIds = await r.table('Team').getAll(orgId, {index: 'orgId'})('id');
+    const teamIds = await r.table('Team').getAll(orgId, {index: 'orgId'})('id')
     const teamMemberIds = await r
       .table('TeamMember')
       .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({userId, isNotRemoved: true})('id');
+      .filter({userId, isNotRemoved: true})('id')
 
     const perTeamRes = await Promise.all(
       teamMemberIds.map((teamMemberId) => {
-        return removeTeamMember(teamMemberId, {isKickout: true}, dataLoader);
+        return removeTeamMember(teamMemberId, {isKickout: true}, dataLoader)
       })
-    );
+    )
 
     const taskIds = perTeamRes.reduce((arr, res) => {
-      arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds);
-      return arr;
-    }, []);
+      arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds)
+      return arr
+    }, [])
 
     const removedTeamNotifications = perTeamRes.reduce((arr, res) => {
-      arr.push(...res.removedNotifications);
-      return arr;
-    }, []);
+      arr.push(...res.removedNotifications)
+      return arr
+    }, [])
 
     const kickOutNotificationIds = perTeamRes.reduce((arr, res) => {
-      arr.push(res.notificationId);
-      return arr;
-    }, []);
+      arr.push(res.notificationId)
+      return arr
+    }, [])
 
     const {allRemovedOrgNotifications, updatedUser} = await r({
       updatedOrg: r
@@ -119,7 +119,7 @@ const removeOrgUser = {
                   .eq(0)
               )
               .delete()
-          };
+          }
         }),
       inactivatedApprovals: r
         .table('User')
@@ -131,16 +131,16 @@ const removeOrgUser = {
             .filter({orgId})
             .update({
               isActive: false
-            });
+            })
         })
-    });
+    })
 
     // need to make sure the org doc is updated before adjusting this
-    await adjustUserCount(userId, orgId, REMOVE_USER);
+    await adjustUserCount(userId, orgId, REMOVE_USER)
 
-    const {tms} = updatedUser;
-    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms});
-    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
+    const {tms} = updatedUser
+    publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms})
+    auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
 
     const data = {
       orgId,
@@ -151,23 +151,23 @@ const removeOrgUser = {
       removedTeamNotifications,
       removedOrgNotifications: allRemovedOrgNotifications.notifications,
       userId
-    };
+    }
 
-    publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions);
-    publish(NOTIFICATION, userId, RemoveOrgUserPayload, data, subOptions);
+    publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions)
+    publish(NOTIFICATION, userId, RemoveOrgUserPayload, data, subOptions)
     teamIds.forEach((teamId) => {
-      const teamData = {...data, teamFilterId: teamId};
-      publish(TEAM, teamId, RemoveOrgUserPayload, teamData, subOptions);
-      publish(TEAM_MEMBER, teamId, RemoveOrgUserPayload, teamData, subOptions);
-    });
+      const teamData = {...data, teamFilterId: teamId}
+      publish(TEAM, teamId, RemoveOrgUserPayload, teamData, subOptions)
+      publish(TEAM_MEMBER, teamId, RemoveOrgUserPayload, teamData, subOptions)
+    })
 
-    const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds);
+    const remainingTeamMembers = await dataLoader.get('teamMembersByTeamId').loadMany(teamIds)
     remainingTeamMembers.forEach((teamMember) => {
-      if (teamMemberIds.includes(teamMember.id)) return;
-      publish(TASK, teamMember.userId, RemoveOrgUserPayload, data, subOptions);
-    });
-    return data;
+      if (teamMemberIds.includes(teamMember.id)) return
+      publish(TASK, teamMember.userId, RemoveOrgUserPayload, data, subOptions)
+    })
+    return data
   }
-};
+}
 
-export default removeOrgUser;
+export default removeOrgUser

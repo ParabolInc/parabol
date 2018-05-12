@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 // import appTheme from 'universal/styles/theme/appTheme';
 
 // The trailing exclamation mark “!” is added in the presentation component.
@@ -163,22 +163,22 @@ const rallyList = [
     phrase: 'Just Do It',
     link: 'https://youtu.be/ZXsQAXx_ao0'
   }
-];
+]
 
-const rally = rallyList[Math.floor(Math.random() * rallyList.length)];
+const rally = rallyList[Math.floor(Math.random() * rallyList.length)]
 
-const rallyPhrase = `${rally.phrase}!`;
+const rallyPhrase = `${rally.phrase}!`
 
 export default function getRallyLink () {
   return (
     <a
       href={rally.link}
-      rel="noopener noreferrer"
+      rel='noopener noreferrer'
       style={{color: 'inherit'}}
-      target="_blank"
+      target='_blank'
       title={rallyPhrase}
     >
       {rally.phrase}
     </a>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import cardBorderTop from 'universal/styles/helpers/cardBorderTop';
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import cardBorderTop from 'universal/styles/helpers/cardBorderTop'
 
 const cardSection = {
   display: 'flex',
@@ -18,6 +18,6 @@ const cardSection = {
     ...cardBorderTop,
     color: appTheme.palette.mid40l
   }
-};
+}
 
-export default cardSection;
+export default cardSection

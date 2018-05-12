@@ -1,15 +1,15 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload';
-import {isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {INVITATION, NOTIFICATION, TASK, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants';
-import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
-import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
-import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
-import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload'
+import {isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {INVITATION, NOTIFICATION, TASK, TEAM_INVITE, TEAM_MEMBER} from 'universal/utils/constants'
+import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember'
+import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
+import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds'
+import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors'
 
 export default {
   name: 'CancelTeamInvite',
@@ -22,21 +22,21 @@ export default {
     }
   },
   async resolve (source, {invitationId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const now = new Date();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
     const {email, teamId} = await r
       .table('Invitation')
       .get(invitationId)
-      .default({});
+      .default({})
     if (!teamId) {
-      return sendInvitationNotFoundError(authToken, invitationId);
+      return sendInvitationNotFoundError(authToken, invitationId)
     }
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
 
     // RESOLUTION
@@ -70,38 +70,38 @@ export default {
               teamId
             })
             .delete({returnChanges: true})('changes')(0)('old_val')
-            .default(null);
+            .default(null)
         })
-    });
+    })
 
-    const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
-    const {id: softTeamMemberId} = removedSoftTeamMember;
-    const softTasksToArchive = await getTasksByAssigneeId(softTeamMemberId, dataLoader);
-    const archivedSoftTasks = await archiveTasksForDB(softTasksToArchive, dataLoader);
-    const archivedSoftTaskIds = archivedSoftTasks.map(({id}) => id);
+    const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader)
+    const {id: softTeamMemberId} = removedSoftTeamMember
+    const softTasksToArchive = await getTasksByAssigneeId(softTeamMemberId, dataLoader)
+    const archivedSoftTasks = await archiveTasksForDB(softTasksToArchive, dataLoader)
+    const archivedSoftTaskIds = archivedSoftTasks.map(({id}) => id)
     const data = {
       invitationId,
       removedTeamInviteNotification,
       archivedSoftTaskIds,
       softTeamMemberId
-    };
-
-    if (archivedSoftTaskIds.length > 0) {
-      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
-      const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)));
-      userIdsOnTeams.forEach((userId) => {
-        publish(TASK, userId, CancelTeamInvitePayload, data, subOptions);
-      });
     }
 
-    publish(TEAM_MEMBER, teamId, CancelTeamInvitePayload, data, subOptions);
-    publish(INVITATION, teamId, CancelTeamInvitePayload, data, subOptions);
+    if (archivedSoftTaskIds.length > 0) {
+      const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader)
+      const userIdsOnTeams = Array.from(new Set(teamMembers.map(({userId}) => userId)))
+      userIdsOnTeams.forEach((userId) => {
+        publish(TASK, userId, CancelTeamInvitePayload, data, subOptions)
+      })
+    }
+
+    publish(TEAM_MEMBER, teamId, CancelTeamInvitePayload, data, subOptions)
+    publish(INVITATION, teamId, CancelTeamInvitePayload, data, subOptions)
     if (removedTeamInviteNotification) {
       const {
         userIds: [userId]
-      } = removedTeamInviteNotification;
-      publish(NOTIFICATION, userId, CancelTeamInvitePayload, data, subOptions);
+      } = removedTeamInviteNotification
+      publish(NOTIFICATION, userId, CancelTeamInvitePayload, data, subOptions)
     }
-    return data;
+    return data
   }
-};
+}

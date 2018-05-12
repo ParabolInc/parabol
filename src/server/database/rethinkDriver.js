@@ -1,13 +1,13 @@
-import rethinkdbdash from 'rethinkdbdash';
-import getRethinkConfig from './getRethinkConfig';
+import rethinkdbdash from 'rethinkdbdash'
+import getRethinkConfig from './getRethinkConfig'
 
-const config = getRethinkConfig();
-let driver;
+const config = getRethinkConfig()
+let driver
 const getRethink = () => {
   if (!driver) {
-    driver = rethinkdbdash(config);
+    driver = rethinkdbdash(config)
   }
-  return driver;
-};
+  return driver
+}
 
-export default getRethink;
+export default getRethink

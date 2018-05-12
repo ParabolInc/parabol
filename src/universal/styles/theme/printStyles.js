@@ -8,6 +8,6 @@ const printStyles = `
       display: none !important;
     }
   }
-`;
+`
 
-export default printStyles;
+export default printStyles

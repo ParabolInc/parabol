@@ -1,13 +1,13 @@
-import getRethink from 'server/database/rethinkDriver';
-import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations';
-import {APPROVED, PENDING} from 'server/utils/serverConstants';
-import shortid from 'shortid';
-import {INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants';
-import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors';
+import getRethink from 'server/database/rethinkDriver'
+import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations'
+import {APPROVED, PENDING} from 'server/utils/serverConstants'
+import shortid from 'shortid'
+import {INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants'
+import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors'
 
 const approveToOrg = async (email, orgId, userId, dataLoader) => {
-  const r = getRethink();
-  const now = new Date();
+  const r = getRethink()
+  const now = new Date()
   // get all notifications for this email to join this org
   const removedNotifications = await r
     .table('Notification')
@@ -18,17 +18,17 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
       inviteeEmail: email
     })
     .delete({returnChanges: true})('changes')('old_val')
-    .default([]);
-  if (removedNotifications.length === 0) return sendNotificationAccessError();
+    .default([])
+  if (removedNotifications.length === 0) return sendNotificationAccessError()
   // RESOLUTION
   // send 1 team invite per notification
   const inviterUserIds = Array.from(
     removedNotifications.reduce((userIds, notification) => {
-      return userIds.add(notification.inviterUserId);
+      return userIds.add(notification.inviterUserId)
     }, new Set())
-  );
+  )
 
-  const teamIds = removedNotifications.map(({teamId}) => teamId);
+  const teamIds = removedNotifications.map(({teamId}) => teamId)
   const {inviterUsers, teams} = await r({
     inviterUsers: r
       .table('User')
@@ -40,10 +40,10 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
       .getAll(r.args(teamIds), {index: 'id'})
       .pluck('id', 'name')
       .coerceTo('array')
-  });
+  })
   const inviters = removedNotifications.map((notification) => {
-    const inviterUser = inviterUsers.find(({id}) => id === notification.inviterUserId);
-    const team = teams.find(({id}) => id === notification.teamId);
+    const inviterUser = inviterUsers.find(({id}) => id === notification.inviterUserId)
+    const team = teams.find(({id}) => id === notification.teamId)
     return {
       inviterUserId: inviterUser.id,
       inviterAvatar: inviterUser.picture,
@@ -53,10 +53,10 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
       orgId,
       teamId: team.id,
       userId: inviterUser.id
-    };
-  });
+    }
+  })
   const inviteeApprovedNotifications = inviters.map((inviter) => {
-    const {inviterName, userId: inviterUserId, teamId, teamName} = inviter;
+    const {inviterName, userId: inviterUserId, teamId, teamName} = inviter
     return {
       id: shortid.generate(),
       type: INVITEE_APPROVED,
@@ -67,8 +67,8 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
       inviterName,
       teamId,
       teamName
-    };
-  });
+    }
+  })
 
   // tell the inviters that their friend was approved
   // send the invitee a series of team invites
@@ -92,25 +92,25 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
       .getAll(email, {index: 'email'})
       .nth(0)
       .default(null)
-  });
+  })
 
-  const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
+  const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}]
 
   const sentTeamInvitations = await Promise.all(
     inviters.map((inviter) => {
-      return sendTeamInvitations(invitees, inviter, undefined, dataLoader);
+      return sendTeamInvitations(invitees, inviter, undefined, dataLoader)
     })
-  );
+  )
 
   const newInvitations = sentTeamInvitations.reduce((arr, upserts) => {
-    arr.push(...upserts.newInvitations);
-    return arr;
-  }, []);
+    arr.push(...upserts.newInvitations)
+    return arr
+  }, [])
 
   const teamInviteNotifications = sentTeamInvitations.reduce((arr, upserts) => {
-    arr.push(...upserts.teamInviteNotifications);
-    return arr;
-  }, []);
+    arr.push(...upserts.teamInviteNotifications)
+    return arr
+  }, [])
 
   return {
     removedRequestNotifications: removedNotifications,
@@ -118,7 +118,7 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
     newInvitations,
     inviteeApprovedNotifications,
     teamInviteNotifications
-  };
-};
+  }
+}
 
-export default approveToOrg;
+export default approveToOrg

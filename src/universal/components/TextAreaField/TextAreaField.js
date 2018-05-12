@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import ui from 'universal/styles/ui'
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
 // import Textarea from 'react-textarea-autosize';
-import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
-import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
+import FieldBlock from 'universal/components/FieldBlock/FieldBlock'
+import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText'
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
 
 const TextAreaField = (props) => {
   const {
@@ -20,9 +20,9 @@ const TextAreaField = (props) => {
     placeholder,
     readOnly,
     styles
-  } = props;
+  } = props
 
-  const inputStyles = css(styles.field, disabled && styles.disabled, readOnly && styles.readOnly);
+  const inputStyles = css(styles.field, disabled && styles.disabled, readOnly && styles.readOnly)
 
   return (
     <FieldBlock>
@@ -49,8 +49,8 @@ const TextAreaField = (props) => {
       {touched &&
         error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
-  );
-};
+  )
+}
 
 TextAreaField.propTypes = {
   autoFocus: PropTypes.bool,
@@ -70,10 +70,10 @@ TextAreaField.propTypes = {
   placeholder: PropTypes.string,
   readOnly: PropTypes.bool,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = (theme, {disabled, fieldSize}) => {
-  const size = fieldSize || ui.fieldSizeOptions[1];
+  const size = fieldSize || ui.fieldSizeOptions[1]
   return {
     field: {
       ...ui.fieldBaseStyles,
@@ -83,7 +83,7 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
     },
     disabled: ui.fieldDisabled,
     readOnly: ui.fieldReadOnly
-  };
-};
+  }
+}
 
-export default withStyles(styleThunk)(TextAreaField);
+export default withStyles(styleThunk)(TextAreaField)

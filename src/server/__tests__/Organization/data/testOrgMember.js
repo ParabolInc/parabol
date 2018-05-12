@@ -1,5 +1,5 @@
 export default function ({id, email, name, nickname, picture = null} = {}) {
-  const now = new Date();
+  const now = new Date()
 
   return {
     id,
@@ -13,5 +13,5 @@ export default function ({id, email, name, nickname, picture = null} = {}) {
       created_at: now,
       updated_at: now
     }
-  };
+  }
 }

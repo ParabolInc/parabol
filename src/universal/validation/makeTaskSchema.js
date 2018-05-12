@@ -1,7 +1,7 @@
-import {columnArray, TASK_MAX_CHARS} from 'universal/utils/constants';
-import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
-import {compositeId, id} from 'universal/validation/templates';
-import legitify from './legitify';
+import {columnArray, TASK_MAX_CHARS} from 'universal/utils/constants'
+import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
+import {compositeId, id} from 'universal/validation/templates'
+import legitify from './legitify'
 
 export default function makeTaskSchema () {
   return legitify({
@@ -18,5 +18,5 @@ export default function makeTaskSchema () {
     userId: id,
     sortOrder: (value) => value.float(),
     assigneeId: id
-  });
+  })
 }

@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 const mutation = graphql`
   mutation InactivateUserMutation($userId: ID!) {
@@ -8,20 +8,20 @@ const mutation = graphql`
       }
     }
   }
-`;
+`
 
 const InactivateUserMutation = (environment, userId, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {userId},
     optimisticUpdater: (store) => {
-      const user = store.get(userId);
-      if (!user) return;
-      user.setValue(true, 'inactive');
+      const user = store.get(userId)
+      if (!user) return
+      user.setValue(true, 'inactive')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default InactivateUserMutation;
+export default InactivateUserMutation

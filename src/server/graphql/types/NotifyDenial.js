@@ -1,6 +1,6 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import TeamNotification from 'server/graphql/types/TeamNotification';
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import TeamNotification from 'server/graphql/types/TeamNotification'
 
 const NotifyDenial = new GraphQLObjectType({
   name: 'NotifyDenial',
@@ -22,6 +22,6 @@ const NotifyDenial = new GraphQLObjectType({
     },
     ...notificationInterfaceFields
   })
-});
+})
 
-export default NotifyDenial;
+export default NotifyDenial

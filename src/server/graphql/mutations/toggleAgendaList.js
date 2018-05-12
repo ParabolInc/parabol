@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import TeamMember from 'server/graphql/types/TeamMember';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import TeamMember from 'server/graphql/types/TeamMember'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 
 export default {
   type: TeamMember,
@@ -13,15 +13,15 @@ export default {
     }
   },
   async resolve (source, {teamId}, {authToken}) {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
     // TODO return proper payload
-    if (!isTeamMember(authToken, teamId)) return null;
+    if (!isTeamMember(authToken, teamId)) return null
 
     // RESOLUTION
-    const userId = getUserId(authToken);
-    const myTeamMemberId = `${userId}::${teamId}`;
+    const userId = getUserId(authToken)
+    const myTeamMemberId = `${userId}::${teamId}`
     return r
       .table('TeamMember')
       .get(myTeamMemberId)
@@ -32,6 +32,6 @@ export default {
             .not()
         }),
         {returnChanges: true}
-      )('changes')(0)('new_val');
+      )('changes')(0)('new_val')
   }
-};
+}

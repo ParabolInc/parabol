@@ -1,16 +1,16 @@
-import {commitMutation} from 'react-relay';
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
-import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers';
-import handleAddTeams from 'universal/mutations/handlers/handleAddTeams';
-import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations';
-import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications';
-import getInProxy from 'universal/utils/relay/getInProxy';
-import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers';
-import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
-import getGraphQLError from 'universal/utils/relay/getGraphQLError';
-import jwtDecode from 'jwt-decode';
-import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError';
+import {commitMutation} from 'react-relay'
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
+import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers'
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
+import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations'
+import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
+import getInProxy from 'universal/utils/relay/getInProxy'
+import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers'
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import jwtDecode from 'jwt-decode'
+import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck'
+import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError'
 
 graphql`
   fragment AcceptTeamInviteMutation_invitation on AcceptTeamInvitePayload {
@@ -19,7 +19,7 @@ graphql`
       teamId
     }
   }
-`;
+`
 
 graphql`
   fragment AcceptTeamInviteMutation_teamMember on AcceptTeamInvitePayload {
@@ -38,7 +38,7 @@ graphql`
       teamId
     }
   }
-`;
+`
 
 graphql`
   fragment AcceptTeamInviteMutation_task on AcceptTeamInvitePayload {
@@ -46,7 +46,7 @@ graphql`
       ...CompleteTaskFrag @relay(mask: false)
     }
   }
-`;
+`
 
 graphql`
   fragment AcceptTeamInviteMutation_team on AcceptTeamInvitePayload {
@@ -61,7 +61,7 @@ graphql`
       ...UserAnalyticsFrag @relay(mask: false)
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation AcceptTeamInviteMutation($notificationId: ID, $inviteToken: ID) {
@@ -73,48 +73,48 @@ const mutation = graphql`
       ...AcceptTeamInviteMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const popJoinedYourTeamToast = (payload, dispatch) => {
-  const teamName = getInProxy(payload, 'team', 'name');
-  const preferredName = getInProxy(payload, 'teamMember', 'preferredName');
-  if (!preferredName) return;
+  const teamName = getInProxy(payload, 'team', 'name')
+  const preferredName = getInProxy(payload, 'teamMember', 'preferredName')
+  if (!preferredName) return
   dispatch(
     showInfo({
       autoDismiss: 10,
       title: 'Ahoy, a new crewmate!',
       message: `${preferredName} just joined team ${teamName}`
     })
-  );
-};
+  )
+}
 
 export const acceptTeamInviteTeamUpdater = (payload, store, viewerId) => {
-  const team = payload.getLinkedRecord('team');
-  handleAddTeams(team, store, viewerId);
+  const team = payload.getLinkedRecord('team')
+  handleAddTeams(team, store, viewerId)
 
-  const notificationId = getInProxy(payload, 'removedNotification', 'id');
-  handleRemoveNotifications(notificationId, store, viewerId);
-};
+  const notificationId = getInProxy(payload, 'removedNotification', 'id')
+  handleRemoveNotifications(notificationId, store, viewerId)
+}
 
 export const acceptTeamInviteTeamMemberUpdater = (payload, store, viewerId, dispatch) => {
-  const teamMember = payload.getLinkedRecord('teamMember');
-  handleAddTeamMembers(teamMember, store);
+  const teamMember = payload.getLinkedRecord('teamMember')
+  handleAddTeamMembers(teamMember, store)
 
-  const removedSoftTeamMember = payload.getLinkedRecord('removedSoftTeamMember');
-  handleRemoveSoftTeamMembers(removedSoftTeamMember, store);
+  const removedSoftTeamMember = payload.getLinkedRecord('removedSoftTeamMember')
+  handleRemoveSoftTeamMembers(removedSoftTeamMember, store)
 
-  popJoinedYourTeamToast(payload, dispatch);
-};
+  popJoinedYourTeamToast(payload, dispatch)
+}
 
 export const acceptTeamInviteTaskUpdater = (payload, store, viewerId) => {
-  const hardenedTasks = payload.getLinkedRecords(payload, 'hardenedTasks');
-  handleUpsertTasks(hardenedTasks, store, viewerId);
-};
+  const hardenedTasks = payload.getLinkedRecords(payload, 'hardenedTasks')
+  handleUpsertTasks(hardenedTasks, store, viewerId)
+}
 
 export const acceptTeamInviteInvitationUpdater = (payload, store) => {
-  const invitation = payload.getLinkedRecord('removedInvitation');
-  handleRemoveInvitations(invitation, store);
-};
+  const invitation = payload.getLinkedRecord('removedInvitation')
+  handleRemoveInvitations(invitation, store)
+}
 
 const AcceptTeamInviteMutation = (
   atmosphere,
@@ -123,33 +123,33 @@ const AcceptTeamInviteMutation = (
   onError,
   onCompleted
 ) => {
-  const {viewerId} = atmosphere;
+  const {viewerId} = atmosphere
   return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
-      const payload = store.getRootField('acceptTeamInvite');
-      if (!payload) return;
-      acceptTeamInviteTeamUpdater(payload, store, viewerId);
+      const payload = store.getRootField('acceptTeamInvite')
+      if (!payload) return
+      acceptTeamInviteTeamUpdater(payload, store, viewerId)
     },
     onError,
     onCompleted: (data, errors) => {
       if (onCompleted) {
-        onCompleted(data, errors);
+        onCompleted(data, errors)
       }
-      const serverError = getGraphQLError(data, errors);
+      const serverError = getGraphQLError(data, errors)
       if (serverError) {
-        handleOnCompletedToastError(serverError, dispatch);
+        handleOnCompletedToastError(serverError, dispatch)
         // give them the benefit of the doubt & don't sign them out
-        history.push('/');
-        return;
+        history.push('/')
+        return
       }
       const {
         acceptTeamInvite: {team, authToken}
-      } = data;
-      const {id: teamId, name: teamName} = team;
-      const {tms} = jwtDecode(authToken);
-      atmosphere.setAuthToken(authToken);
+      } = data
+      const {id: teamId, name: teamName} = team
+      const {tms} = jwtDecode(authToken)
+      atmosphere.setAuthToken(authToken)
       dispatch(
         showInfo({
           autoDismiss: 10,
@@ -157,15 +157,15 @@ const AcceptTeamInviteMutation = (
           message: `You’ve been added to team ${teamName}`,
           action: {label: 'Great!'}
         })
-      );
+      )
       if (tms.length <= 1) {
-        dispatch(setWelcomeActivity(`/team/${teamId}`));
-        history.push('/me/settings');
+        dispatch(setWelcomeActivity(`/team/${teamId}`))
+        history.push('/me/settings')
       } else {
-        history.push(`/team/${teamId}`);
+        history.push(`/team/${teamId}`)
       }
     }
-  });
-};
+  })
+}
 
-export default AcceptTeamInviteMutation;
+export default AcceptTeamInviteMutation

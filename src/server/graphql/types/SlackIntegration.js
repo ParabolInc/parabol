@@ -5,9 +5,9 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import {globalIdField} from 'graphql-relay';
-import {SLACK} from 'universal/utils/constants';
+} from 'graphql'
+import {globalIdField} from 'graphql-relay'
+import {SLACK} from 'universal/utils/constants'
 
 const SlackIntegration = new GraphQLObjectType({
   name: SLACK,
@@ -38,6 +38,6 @@ const SlackIntegration = new GraphQLObjectType({
       description: '*The team that cares about these annoucements'
     }
   })
-});
+})
 
-export default SlackIntegration;
+export default SlackIntegration

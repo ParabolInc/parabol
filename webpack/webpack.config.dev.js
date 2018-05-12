@@ -1,9 +1,9 @@
-import path from 'path';
-import webpack from 'webpack';
-import getDotenv from '../src/universal/utils/dotenv';
-import npmPackage from '../package.json';
-import vendors from '../dll/vendors.json';
-import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
+import path from 'path'
+import webpack from 'webpack'
+import getDotenv from '../src/universal/utils/dotenv'
+import npmPackage from '../package.json'
+import vendors from '../dll/vendors.json'
+import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin'
 
 // import UnusedFilesWebpackPlugin from "unused-files-webpack-plugin";
 
@@ -12,14 +12,14 @@ import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
  */
 
 // Import .env and expand variables:
-getDotenv();
+getDotenv()
 
-const root = process.cwd();
-const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal')];
+const root = process.cwd()
+const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal')]
 
-const prefetches = [];
+const prefetches = []
 
-const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
+const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier))
 
 export default {
   // devtool: 'source-maps',
@@ -83,4 +83,4 @@ export default {
       {test: /\.css$/, loader: 'style-loader!css-loader'}
     ]
   }
-};
+}

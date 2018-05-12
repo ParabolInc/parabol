@@ -1,35 +1,35 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {matchPath, Switch} from 'react-router-dom';
-import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import {matchPath, Switch} from 'react-router-dom'
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
+import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav'
+import ui from 'universal/styles/ui'
 
 const teamSettings = () =>
-  System.import('universal/modules/teamDashboard/components/TeamSettingsRoot');
+  System.import('universal/modules/teamDashboard/components/TeamSettingsRoot')
 const providers = () =>
   System.import(
     'universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot'
-  );
+  )
 const slackIntegrations = () =>
   System.import(
     'universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot'
-  );
+  )
 const githubIntegrations = () =>
   System.import(
     'universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot'
-  );
+  )
 
 const TeamSettingsWrapper = (props) => {
   const {
     location: {pathname},
     match,
     teamMemberId
-  } = props;
+  } = props
   const {
     params: {teamId}
-  } = match;
-  const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`});
+  } = match
+  const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`})
   return (
     <div style={{padding: `0 ${ui.settingsGutter}`}}>
       <TeamSettingsToggleNav activeKey={areaMatch.params.area || ''} teamId={teamId} />
@@ -55,13 +55,13 @@ const TeamSettingsWrapper = (props) => {
         />
       </Switch>
     </div>
-  );
-};
+  )
+}
 
 TeamSettingsWrapper.propTypes = {
   location: PropTypes.object,
   match: PropTypes.object.isRequired,
   teamMemberId: PropTypes.string.isRequired
-};
+}
 
-export default TeamSettingsWrapper;
+export default TeamSettingsWrapper

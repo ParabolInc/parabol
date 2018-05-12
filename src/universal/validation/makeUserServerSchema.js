@@ -1,6 +1,6 @@
-import {urlRegex} from 'universal/validation/regex';
-import {avatar} from 'universal/validation/templates';
-import legitify from './legitify';
+import {urlRegex} from 'universal/validation/regex'
+import {avatar} from 'universal/validation/templates'
+import legitify from './legitify'
 
 export default function makeUserServerSchema () {
   return legitify({
@@ -15,5 +15,5 @@ export default function makeUserServerSchema () {
         .trim()
         .min(2, 'C’mon, you call that a name?')
         .max(100, 'I want your name, not your life story')
-  });
+  })
 }

@@ -25,6 +25,6 @@ const dataFieldsToSerialize = [
   'message.data.deniedNotificationIds',
   'message.data.removedOrgApprovalIds',
   'message.data.notificationIds'
-];
+]
 
-export default dataFieldsToSerialize;
+export default dataFieldsToSerialize

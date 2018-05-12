@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 exports.up = async (r) => {
-  const indices = [r.table('Project').indexCreate('tokenExpiration')];
-  await Promise.all(indices);
+  const indices = [r.table('Project').indexCreate('tokenExpiration')]
+  await Promise.all(indices)
   const fields = [
     r.table('TeamMember').update(
       {
@@ -12,13 +12,13 @@ exports.up = async (r) => {
       },
       {nonAtomic: true}
     )
-  ];
-  await Promise.all(fields);
-};
+  ]
+  await Promise.all(fields)
+}
 
 exports.down = async (r) => {
-  const indices = [r.table('Project').indexDrop('tokenExpiration')];
-  await Promise.all(indices);
-  const fields = [r.table('TeamMember').replace(r.row.without('email'))];
-  await Promise.all(fields);
-};
+  const indices = [r.table('Project').indexDrop('tokenExpiration')]
+  await Promise.all(indices)
+  const fields = [r.table('TeamMember').replace(r.row.without('email'))]
+  await Promise.all(fields)
+}

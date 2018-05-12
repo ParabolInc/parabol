@@ -1,5 +1,5 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import LeaveIntegrationPayload from 'server/graphql/types/LeaveIntegrationPayload'
 
 const GitHubMemberRemovedPayload = new GraphQLObjectType({
   name: 'GitHubMemberRemovedPayload',
@@ -8,6 +8,6 @@ const GitHubMemberRemovedPayload = new GraphQLObjectType({
       type: new GraphQLList(LeaveIntegrationPayload)
     }
   })
-});
+})
 
-export default GitHubMemberRemovedPayload;
+export default GitHubMemberRemovedPayload

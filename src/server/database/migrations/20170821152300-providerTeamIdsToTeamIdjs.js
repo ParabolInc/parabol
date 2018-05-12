@@ -8,24 +8,24 @@ exports.up = async (r) => {
             .count()
             .ne(0)
         })
-        .without('teamIds');
+        .without('teamIds')
     })
-  ];
+  ]
   try {
-    await Promise.all(tables);
+    await Promise.all(tables)
   } catch (e) {
-    console.log('Exception during Promise.all(tables)');
+    console.log('Exception during Promise.all(tables)')
   }
   const indices = [
     r.table('Provider').indexDrop('teamIds'),
     r.table('Provider').indexCreate('teamId')
-  ];
+  ]
   try {
-    await Promise.all(indices);
+    await Promise.all(indices)
   } catch (e) {
-    console.log('Exception during Promise.all(indices)');
+    console.log('Exception during Promise.all(indices)')
   }
-};
+}
 
 exports.down = async (r) => {
   const tables = [
@@ -34,21 +34,21 @@ exports.down = async (r) => {
         .merge({
           teamIds: r.branch(row('teamId'), [row('teamId')], [])
         })
-        .without('teamId', 'isActive');
+        .without('teamId', 'isActive')
     })
-  ];
+  ]
   try {
-    await Promise.all(tables);
+    await Promise.all(tables)
   } catch (e) {
-    console.log('Exception during Promise.all(tables)');
+    console.log('Exception during Promise.all(tables)')
   }
   const indices = [
     r.table('Provider').indexCreate('teamIds', {multi: true}),
     r.table('Provider').indexDrop('teamId')
-  ];
+  ]
   try {
-    await Promise.all(indices);
+    await Promise.all(indices)
   } catch (e) {
-    console.log('Exception during Promise.all(indices)');
+    console.log('Exception during Promise.all(indices)')
   }
-};
+}
