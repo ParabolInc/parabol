@@ -1,7 +1,7 @@
-import {GraphQLObjectType, GraphQLID} from 'graphql';
-import ProviderRow from 'server/graphql/types/ProviderRow';
-import {globalIdField} from 'graphql-relay';
-import {GITHUB, SLACK} from 'universal/utils/constants';
+import {GraphQLObjectType, GraphQLID} from 'graphql'
+import ProviderRow from 'server/graphql/types/ProviderRow'
+import {globalIdField} from 'graphql-relay'
+import {GITHUB, SLACK} from 'universal/utils/constants'
 
 const ProviderMap = new GraphQLObjectType({
   name: 'ProviderMap',
@@ -20,6 +20,6 @@ const ProviderMap = new GraphQLObjectType({
       type: ProviderRow
     }
   })
-});
+})
 
-export default ProviderMap;
+export default ProviderMap

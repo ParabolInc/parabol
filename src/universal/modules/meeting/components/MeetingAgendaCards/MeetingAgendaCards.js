@@ -1,22 +1,22 @@
 // @flow
-import type {Task} from 'universal/types/task';
+import type {Task} from 'universal/types/task'
 
-import {css} from 'aphrodite-local-styles/no-important';
-import React, {Component} from 'react';
-import withHotkey from 'react-hotkey-hoc';
-import {withRouter} from 'react-router';
-import CreateCard from 'universal/components/CreateCard/CreateCard';
-import NullableTask from 'universal/components/NullableTask/NullableTask';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import sortOrderBetween from 'universal/dnd/sortOrderBetween';
-import CreateTaskMutation from 'universal/mutations/CreateTaskMutation';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {ACTIVE, MEETING} from 'universal/utils/constants';
+import {css} from 'aphrodite-local-styles/no-important'
+import React, {Component} from 'react'
+import withHotkey from 'react-hotkey-hoc'
+import {withRouter} from 'react-router'
+import CreateCard from 'universal/components/CreateCard/CreateCard'
+import NullableTask from 'universal/components/NullableTask/NullableTask'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import sortOrderBetween from 'universal/dnd/sortOrderBetween'
+import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {ACTIVE, MEETING} from 'universal/utils/constants'
 
 const makeCards = (tasks = [], myUserId, itemStyle, handleAddTask) => {
   return tasks.map((task) => {
-    const {id: taskId} = task;
+    const {id: taskId} = task
     return (
       <div className={css(itemStyle)} key={taskId}>
         <NullableTask
@@ -27,21 +27,21 @@ const makeCards = (tasks = [], myUserId, itemStyle, handleAddTask) => {
           task={task}
         />
       </div>
-    );
-  });
-};
+    )
+  })
+}
 
 const makePlaceholders = (length, itemStyle) => {
-  const rowLength = 4;
-  const emptyCardCount = rowLength - (length % rowLength + 1);
+  const rowLength = 4
+  const emptyCardCount = rowLength - (length % rowLength + 1)
   /* eslint-disable react/no-array-index-key */
   return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
     <div className={css(itemStyle)} key={`CreateCardPlaceholder${idx}`}>
       <CreateCard />
     </div>
-  ));
+  ))
   /* eslint-enable */
-};
+}
 
 type Props = {
   agendaId?: string,
@@ -53,20 +53,20 @@ type Props = {
   tasks: ?Array<Task>,
   styles: Object,
   teamId: string
-};
+}
 
 class MeetingAgendaCards extends Component<Props> {
   componentWillMount () {
-    const {bindHotkey} = this.props;
-    bindHotkey('t', this.handleAddTask());
+    const {bindHotkey} = this.props
+    bindHotkey('t', this.handleAddTask())
   }
 
   handleAddTask = (content) => () => {
-    const {agendaId, atmosphere, meetingId, reflectionGroupId, teamId} = this.props;
-    const tasks = this.props.tasks || [];
-    const {userId} = atmosphere;
-    const maybeLastTask = tasks[tasks.length - 1];
-    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false);
+    const {agendaId, atmosphere, meetingId, reflectionGroupId, teamId} = this.props
+    const tasks = this.props.tasks || []
+    const {userId} = atmosphere
+    const maybeLastTask = tasks[tasks.length - 1]
+    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false)
     const newTask = {
       content,
       status: ACTIVE,
@@ -76,16 +76,16 @@ class MeetingAgendaCards extends Component<Props> {
       reflectionGroupId,
       userId,
       teamId
-    };
-    CreateTaskMutation(atmosphere, newTask, MEETING);
-  };
+    }
+    CreateTaskMutation(atmosphere, newTask, MEETING)
+  }
 
   render () {
     const {
       atmosphere: {userId},
       styles
-    } = this.props;
-    const tasks = this.props.tasks || [];
+    } = this.props
+    const tasks = this.props.tasks || []
     return (
       <div className={css(styles.root)}>
         {makeCards(tasks, userId, styles.item, this.handleAddTask)}
@@ -96,7 +96,7 @@ class MeetingAgendaCards extends Component<Props> {
         {/* Placeholder Cards */}
         {makePlaceholders(tasks.length, styles.item)}
       </div>
-    );
+    )
   }
 }
 
@@ -120,6 +120,6 @@ const styleThunk = () => ({
       padding: '0 1rem'
     }
   }
-});
+})
 
-export default withRouter(withAtmosphere(withHotkey(withStyles(styleThunk)(MeetingAgendaCards))));
+export default withRouter(withAtmosphere(withHotkey(withStyles(styleThunk)(MeetingAgendaCards))))

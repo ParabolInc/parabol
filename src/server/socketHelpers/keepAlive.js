@@ -1,16 +1,16 @@
-import handleDisconnect from 'server/socketHandlers/handleDisconnect';
-import {GQL_CONNECTION_KEEP_ALIVE} from 'universal/utils/constants';
+import handleDisconnect from 'server/socketHandlers/handleDisconnect'
+import {GQL_CONNECTION_KEEP_ALIVE} from 'universal/utils/constants'
 
 const keepAlive = (connectionContext, timeout) => {
   connectionContext.cancelKeepAlive = setInterval(() => {
-    const {socket} = connectionContext;
+    const {socket} = connectionContext
     if (connectionContext.isAlive === false) {
-      handleDisconnect(connectionContext)();
+      handleDisconnect(connectionContext)()
     } else {
-      connectionContext.isAlive = false;
-      socket.send(GQL_CONNECTION_KEEP_ALIVE);
+      connectionContext.isAlive = false
+      socket.send(GQL_CONNECTION_KEEP_ALIVE)
     }
-  }, timeout);
-};
+  }, timeout)
+}
 
-export default keepAlive;
+export default keepAlive

@@ -7,8 +7,8 @@ exports.up = async (r) => {
     r.tableCreate('Project'),
     r.tableCreate('Outcome'),
     r.tableCreate('TaskOutcomeDiff')
-  ];
-  await Promise.all(meetingTables);
+  ]
+  await Promise.all(meetingTables)
   const meetingIndices = [
     r.table('Action').indexCreate('userId'),
     r.table('AgendaItem').indexCreate('teamId'),
@@ -17,9 +17,9 @@ exports.up = async (r) => {
     r.table('Participant').indexCreate('userId'),
     r.table('Project').indexCreate('teamMemberId'),
     r.table('Project').indexCreate('teamIdCreatedAt', (row) => [row('teamId'), row('createdAt')])
-  ];
-  await Promise.all(meetingIndices);
-};
+  ]
+  await Promise.all(meetingIndices)
+}
 
 exports.down = async (r) => {
   const meetingTables = [
@@ -30,6 +30,6 @@ exports.down = async (r) => {
     r.tableDrop('Project'),
     r.tableDrop('Outcome'),
     r.tableDrop('TaskOutcomeDiff')
-  ];
-  await Promise.all(meetingTables);
-};
+  ]
+  await Promise.all(meetingTables)
+}

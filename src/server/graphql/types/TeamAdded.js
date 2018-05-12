@@ -1,9 +1,9 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveNotification, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {GraphQLObjectType} from 'graphql'
+import {resolveNotification, resolveTeam, resolveTeamMember} from 'server/graphql/resolvers'
+import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam'
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser'
+import Team from 'server/graphql/types/Team'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const TeamAdded = new GraphQLObjectType({
   name: 'TeamAdded',
@@ -28,6 +28,6 @@ const TeamAdded = new GraphQLObjectType({
       resolve: resolveTeamMember
     }
   })
-});
+})
 
-export default TeamAdded;
+export default TeamAdded

@@ -1,3 +1,3 @@
-exports.up = async () => {};
+exports.up = async () => {}
 
-exports.down = async () => {};
+exports.down = async () => {}

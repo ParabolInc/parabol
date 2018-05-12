@@ -16,15 +16,15 @@ exports.up = async (r) => {
             tags: []
           })
           .without('isArchived')
-      );
+      )
     })
-  ];
-  const [actions] = await Promise.all(mutations);
+  ]
+  const [actions] = await Promise.all(mutations)
   const newProjects = actions.map((action, idx) => {
-    const tags = ['#private'];
-    const isArchived = action.isComplete || false;
+    const tags = ['#private']
+    const isArchived = action.isComplete || false
     if (isArchived) {
-      tags.push('#archived');
+      tags.push('#archived')
     }
     return {
       id: action.id,
@@ -38,36 +38,36 @@ exports.up = async (r) => {
       teamId: action.teamMemberId.split('::')[1],
       teamMemberId: action.teamMemberId,
       updatedAt: action.updatedAt
-    };
-  });
+    }
+  })
 
-  await r.table('Project').insert(newProjects);
+  await r.table('Project').insert(newProjects)
 
   try {
-    await r.tableDrop('Action');
+    await r.tableDrop('Action')
   } catch (e) {
     //
   }
 
-  const indices = [r.table('Project').indexCreate('tags', {multi: true})];
+  const indices = [r.table('Project').indexCreate('tags', {multi: true})]
   try {
-    await Promise.all(indices);
+    await Promise.all(indices)
   } catch (e) {
     // ignore
   }
 
-  const waitIndices = [r.table('Project').indexWait('tags')];
-  await Promise.all(waitIndices);
-};
+  const waitIndices = [r.table('Project').indexWait('tags')]
+  await Promise.all(waitIndices)
+}
 
 exports.down = async (r) => {
-  const tables = [r.tableCreate('Action')];
+  const tables = [r.tableCreate('Action')]
   try {
-    await Promise.all(tables);
+    await Promise.all(tables)
   } catch (e) {
     //
   }
-  const projectsToConvert = await r.table('Project').getAll('#private', {index: 'tags'});
+  const projectsToConvert = await r.table('Project').getAll('#private', {index: 'tags'})
   const actions = projectsToConvert.map((project, idx) => ({
     id: project.id,
     content: project.content,
@@ -78,28 +78,28 @@ exports.down = async (r) => {
     updatedAt: project.updatedAt,
     sortOrder: idx,
     agendaId: project.agendaId
-  }));
+  }))
 
-  await r.table('Action').insert(actions);
+  await r.table('Action').insert(actions)
 
   const mutations = [
     r.table('Project').update((project) => ({
       isArchived: r.branch(project('tags').contains('#archived'), true, false)
     }))
-  ];
+  ]
 
-  await Promise.all(mutations);
+  await Promise.all(mutations)
 
   const indices = [
     r.table('Project').indexDrop('tags'),
     r.table('Action').indexCreate('userId'),
     r.table('Action').indexCreate('teamMemberId'),
     r.table('Action').indexCreate('agendaId')
-  ];
+  ]
   try {
-    await Promise.all(indices);
+    await Promise.all(indices)
   } catch (e) {
     // ignore
   }
-  await r.table('Project').replace(r.row.without('tags'));
-};
+  await r.table('Project').replace(r.row.without('tags'))
+}

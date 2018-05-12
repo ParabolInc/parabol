@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember'
 
 const Invitation = new GraphQLObjectType({
   name: 'Invitation',
@@ -49,6 +49,6 @@ const Invitation = new GraphQLObjectType({
       description: 'The datetime the invitation was last updated'
     }
   })
-});
+})
 
-export default Invitation;
+export default Invitation

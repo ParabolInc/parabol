@@ -1,14 +1,14 @@
-import {GraphQLID, GraphQLInterfaceType} from 'graphql';
-import NotificationEnum from 'server/graphql/types/NotificationEnum';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
-import NotifyDenial from 'server/graphql/types/NotifyDenial';
-import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved';
-import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
-import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
-import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
+import {GraphQLID, GraphQLInterfaceType} from 'graphql'
+import NotificationEnum from 'server/graphql/types/NotificationEnum'
+import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam'
+import NotifyDenial from 'server/graphql/types/NotifyDenial'
+import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved'
+import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
+import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember'
+import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves'
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser'
+import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite'
 import {
   ADD_TO_TEAM,
   DENY_NEW_USER,
@@ -20,7 +20,7 @@ import {
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
   TEAM_INVITE
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 
 const TeamNotification = new GraphQLInterfaceType({
   name: 'TeamNotification',
@@ -44,10 +44,10 @@ const TeamNotification = new GraphQLInterfaceType({
       [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [TEAM_INVITE]: NotifyTeamInvite,
       [TEAM_ARCHIVED]: NotifyTeamArchived
-    };
+    }
 
-    return resolveTypeLookup[type];
+    return resolveTypeLookup[type]
   }
-});
+})
 
-export default TeamNotification;
+export default TeamNotification

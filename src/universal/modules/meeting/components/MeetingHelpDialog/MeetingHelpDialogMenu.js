@@ -1,16 +1,16 @@
 // @flow
-import React from 'react';
-import styled from 'react-emotion';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
-import phaseHelpLookup from 'universal/utils/meetings/helpLookups';
+import React from 'react'
+import styled from 'react-emotion'
+import FontAwesome from 'react-fontawesome'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import phaseHelpLookup from 'universal/utils/meetings/helpLookups'
 
 type Props = {
   closePortal: () => void,
   phase: string
-};
+}
 
 const DialogContent = styled('div')({
   fontSize: appTheme.typography.s2,
@@ -29,7 +29,7 @@ const DialogContent = styled('div')({
   '& a': {
     textDecoration: 'underline'
   }
-});
+})
 
 const DialogClose = styled(FontAwesome)({
   color: ui.palette.warm,
@@ -43,19 +43,19 @@ const DialogClose = styled(FontAwesome)({
   '&:hover': {
     opacity: '.5'
   }
-});
+})
 
 const MeetingHelpDialogMenu = (props: Props) => {
-  const {closePortal, phase} = props;
-  const phaseLabel = phaseLabelLookup[phase];
+  const {closePortal, phase} = props
+  const phaseLabel = phaseLabelLookup[phase]
 
   return (
     <DialogContent>
-      <DialogClose name="times-circle" onClick={closePortal} title="Close help menu" />
+      <DialogClose name='times-circle' onClick={closePortal} title='Close help menu' />
       {phaseLabel && <h3>{phaseLabel}</h3>}
       {phaseHelpLookup[phase].helpDialog}
     </DialogContent>
-  );
-};
+  )
+}
 
-export default MeetingHelpDialogMenu;
+export default MeetingHelpDialogMenu

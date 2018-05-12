@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 import {
   LOBBY,
@@ -11,32 +11,32 @@ import {
   FIRST_CALL,
   AGENDA_ITEMS,
   LAST_CALL
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 
 const makeLink = (href, copy) => (
-  <a href={href} rel="noopener noreferrer" target="blank" title={copy}>
+  <a href={href} rel='noopener noreferrer' target='blank' title={copy}>
     {copy}
   </a>
-);
+)
 
 const teamAgendaHelpLink = makeLink(
   'https://www.parabol.co/getting-started-guide#team-agenda',
   'Learn More'
-);
+)
 
 const actionGettingStartedLink = makeLink(
   'https://www.parabol.co/getting-started-guide',
   'Getting Started Guide'
-);
+)
 // TODO: Add Learn More links, etc. for Retro Guide when it is created
 const retroGettingStartedLink = makeLink(
   'https://www.parabol.co/getting-started-guide',
   'Getting Started Guide'
-);
+)
 
 // TODO: Refactor to handle Retro type
-const meetingLabel = 'an Action Meeting' || 'a Retro Meeting';
-const meetingHelpLink = actionGettingStartedLink || retroGettingStartedLink;
+const meetingLabel = 'an Action Meeting' || 'a Retro Meeting'
+const meetingHelpLink = actionGettingStartedLink || retroGettingStartedLink
 
 const lobbyHelpContent = (
   <div>
@@ -46,7 +46,7 @@ const lobbyHelpContent = (
       {'.'}
     </p>
   </div>
-);
+)
 
 const checkInHelpContent = (
   <div>
@@ -58,7 +58,7 @@ const checkInHelpContent = (
     <p>{'Avoid cross-talk so that everybody can have uninterrupted airtime.'}</p>
     <p>{makeLink('https://www.parabol.co/getting-started-guide#social-check-in', 'Learn More')}</p>
   </div>
-);
+)
 
 const reflectHelpContent = (
   <div>
@@ -70,7 +70,7 @@ const reflectHelpContent = (
       }
     </p>
   </div>
-);
+)
 
 const groupHelpContent = (
   <div>
@@ -78,7 +78,7 @@ const groupHelpContent = (
     <p>{'To group, simply drag and drop a card onto another card or group.'}</p>
     <p>{'Tap or hover a single card to give it a theme.'}</p>
   </div>
-);
+)
 
 const voteHelpContent = (
   <div>
@@ -90,7 +90,7 @@ const voteHelpContent = (
     <p>{'Each teammate has 5 total votes, and can vote on a single theme up to 3 times.'}</p>
     <p>{'To vote, simply tap on the check icon above the card. Toggle votes to remove.'}</p>
   </div>
-);
+)
 
 const discussHelpContent = (
   <div>
@@ -105,7 +105,7 @@ const discussHelpContent = (
       }
     </p>
   </div>
-);
+)
 
 const updatesHelpContent = (
   <div>
@@ -119,7 +119,7 @@ const updatesHelpContent = (
     </p>
     <p>{makeLink('https://www.parabol.co/getting-started-guide#solo-updates', 'Learn More')}</p>
   </div>
-);
+)
 
 const firstCallHelpContent = (
   <div>
@@ -130,7 +130,7 @@ const firstCallHelpContent = (
     <p>{'For those that like keyboard shortcuts, you can simply press the “+” key to add.'}</p>
     <p>{teamAgendaHelpLink}</p>
   </div>
-);
+)
 
 const agendaTopicHelpContent = (
   <div>
@@ -146,7 +146,7 @@ const agendaTopicHelpContent = (
     </p>
     <p>{teamAgendaHelpLink}</p>
   </div>
-);
+)
 
 const lastCallHelpContent = (
   <div>
@@ -154,7 +154,7 @@ const lastCallHelpContent = (
     <p>{'A Meeting Summary will be generated once the Facilitator ends the meeting.'}</p>
     <p>{teamAgendaHelpLink}</p>
   </div>
-);
+)
 
 const phaseHelpLookup = {
   [LOBBY]: {
@@ -204,6 +204,6 @@ const phaseHelpLookup = {
     facilitatorBarTip: 'Facilitator: remember to end the meeting!',
     helpDialog: lastCallHelpContent
   }
-};
+}
 
-export default phaseHelpLookup;
+export default phaseHelpLookup

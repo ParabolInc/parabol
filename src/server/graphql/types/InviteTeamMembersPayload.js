@@ -1,20 +1,20 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
 import {
   makeResolveNotificationForViewer,
   resolveTasks,
   resolveSoftTeamMembers,
   resolveTeam
-} from 'server/graphql/resolvers';
-import Invitation from 'server/graphql/types/Invitation';
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
-import OrgApproval from 'server/graphql/types/OrgApproval';
-import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+} from 'server/graphql/resolvers'
+import Invitation from 'server/graphql/types/Invitation'
+import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam'
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser'
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite'
+import OrgApproval from 'server/graphql/types/OrgApproval'
+import Team from 'server/graphql/types/Team'
+import TeamMember from 'server/graphql/types/TeamMember'
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const InviteTeamMembersPayload = new GraphQLObjectType({
   name: 'InviteTeamMembersPayload',
@@ -57,25 +57,25 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       description: 'The list of emails that turned out to be reactivated team members',
       resolve: ({reactivatedTeamMemberIds}, args, {dataLoader}) => {
         if (!reactivatedTeamMemberIds || reactivatedTeamMemberIds.length === 0) {
-          return null;
+          return null
         }
-        return dataLoader.get('teamMembers').loadMany(reactivatedTeamMemberIds);
+        return dataLoader.get('teamMembers').loadMany(reactivatedTeamMemberIds)
       }
     },
     invitationsSent: {
       type: new GraphQLList(Invitation),
       description: 'The list of invitations successfully sent out',
       resolve: ({invitationIds}, args, {dataLoader}) => {
-        if (!invitationIds || invitationIds.length === 0) return null;
-        return dataLoader.get('invitations').loadMany(invitationIds);
+        if (!invitationIds || invitationIds.length === 0) return null
+        return dataLoader.get('invitations').loadMany(invitationIds)
       }
     },
     orgApprovalsSent: {
       type: new GraphQLList(OrgApproval),
       description: 'The list of orgApprovals sent to the org leader',
       resolve: ({orgApprovalIds}, args, {dataLoader}) => {
-        if (!orgApprovalIds || orgApprovalIds.length === 0) return null;
-        return dataLoader.get('orgApprovals').loadMany(orgApprovalIds);
+        if (!orgApprovalIds || orgApprovalIds.length === 0) return null
+        return dataLoader.get('orgApprovals').loadMany(orgApprovalIds)
       }
     },
     orgApprovalsRemoved: {
@@ -84,9 +84,9 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
         'The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval',
       resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
         if (!removedOrgApprovalIds || removedOrgApprovalIds.length === 0) {
-          return null;
+          return null
         }
-        return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
+        return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds)
       }
     },
     newSoftTeamMembers: {
@@ -101,6 +101,6 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       resolve: resolveTasks
     }
   })
-});
+})
 
-export default InviteTeamMembersPayload;
+export default InviteTeamMembersPayload

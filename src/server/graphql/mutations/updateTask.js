@@ -1,25 +1,25 @@
-import {GraphQLNonNull} from 'graphql';
-import ms from 'ms';
-import getRethink from 'server/database/rethinkDriver';
-import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore';
-import publishChangeNotifications from 'server/graphql/mutations/helpers/publishChangeNotifications';
-import AreaEnum from 'server/graphql/types/AreaEnum';
-import UpdateTaskInput from 'server/graphql/types/UpdateTaskInput';
-import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import shortid from 'shortid';
-import {TASK} from 'universal/utils/constants';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import makeTaskSchema from 'universal/validation/makeTaskSchema';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import {sendTaskNotFoundError, sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyUpdatedTaskError} from 'server/utils/alreadyMutatedErrors';
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
+import {GraphQLNonNull} from 'graphql'
+import ms from 'ms'
+import getRethink from 'server/database/rethinkDriver'
+import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore'
+import publishChangeNotifications from 'server/graphql/mutations/helpers/publishChangeNotifications'
+import AreaEnum from 'server/graphql/types/AreaEnum'
+import UpdateTaskInput from 'server/graphql/types/UpdateTaskInput'
+import UpdateTaskPayload from 'server/graphql/types/UpdateTaskPayload'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import shortid from 'shortid'
+import {TASK} from 'universal/utils/constants'
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
+import makeTaskSchema from 'universal/validation/makeTaskSchema'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {sendTaskNotFoundError, sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors'
+import {sendAlreadyUpdatedTaskError} from 'server/utils/alreadyMutatedErrors'
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 
-const DEBOUNCE_TIME = ms('5m');
+const DEBOUNCE_TIME = ms('5m')
 
 export default {
   type: UpdateTaskPayload,
@@ -35,33 +35,33 @@ export default {
     }
   },
   async resolve (source, {area, updatedTask}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const now = new Date();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
-    const {id: taskId} = updatedTask;
-    const task = await r.table('Task').get(taskId);
-    if (!task) return sendTaskNotFoundError(authToken, taskId);
-    const {teamId} = task;
+    const viewerId = getUserId(authToken)
+    const {id: taskId} = updatedTask
+    const task = await r.table('Task').get(taskId)
+    if (!task) return sendTaskNotFoundError(authToken, taskId)
+    const {teamId} = task
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
 
     // VALIDATION
-    const schema = makeTaskSchema();
-    const {errors, data: validUpdatedTask} = schema(updatedTask);
+    const schema = makeTaskSchema()
+    const {errors, data: validUpdatedTask} = schema(updatedTask)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors);
+      return sendFailedInputValidation(authToken, errors)
     }
-    const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask;
+    const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask
     if (assigneeId) {
-      const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember';
-      const res = r.table(table).get(assigneeId);
+      const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember'
+      const res = r.table(table).get(assigneeId)
       if (!res) {
-        return sendTeamMemberNotFoundError(authToken, teamId, assigneeId);
+        return sendTeamMemberNotFoundError(authToken, teamId, assigneeId)
       }
     }
 
@@ -74,21 +74,21 @@ export default {
       teamId,
       assigneeId,
       sortOrder
-    };
+    }
 
     if (assigneeId) {
-      const isSoftTask = getIsSoftTeamMember(assigneeId);
-      taskUpdates.isSoftTask = isSoftTask;
-      taskUpdates.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId;
+      const isSoftTask = getIsSoftTeamMember(assigneeId)
+      taskUpdates.isSoftTask = isSoftTask
+      taskUpdates.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId
       if (assigneeId === false) {
-        taskUpdates.userId = null;
+        taskUpdates.userId = null
       }
     }
 
-    let taskHistory;
+    let taskHistory
     if (Object.keys(updatedTask).length > 2 || taskUpdates.sortOrder === undefined) {
       // if this is anything but a sort update, log it to history
-      taskUpdates.updatedAt = now;
+      taskUpdates.updatedAt = now
       const mergeDoc = {
         content,
         taskId,
@@ -97,7 +97,7 @@ export default {
         isSoftTask: taskUpdates.isSoftTask,
         updatedAt: now,
         tags: taskUpdates.tags
-      };
+      }
       taskHistory = r
         .table('TaskHistory')
         .between([taskId, r.minval], [taskId, r.maxval], {
@@ -114,8 +114,8 @@ export default {
               .get(lastDoc('id'))
               .update(mergeDoc),
             r.table('TaskHistory').insert(lastDoc.merge(mergeDoc, {id: shortid.generate()}))
-          );
-        });
+          )
+        })
     }
     const {newTask, teamMembers} = await r({
       newTask: r
@@ -131,15 +131,15 @@ export default {
           isNotRemoved: true
         })
         .coerceTo('array')
-    });
-    const usersToIgnore = getUsersToIgnore(area, teamMembers);
-    if (!newTask) return sendAlreadyUpdatedTaskError(authToken, taskId);
+    })
+    const usersToIgnore = getUsersToIgnore(area, teamMembers)
+    if (!newTask) return sendAlreadyUpdatedTaskError(authToken, taskId)
 
     // send task updated messages
-    const isPrivate = newTask.tags.includes('private');
-    const wasPrivate = task.tags.includes('private');
-    const isPrivatized = isPrivate && !wasPrivate;
-    const isPublic = !isPrivate || isPrivatized;
+    const isPrivate = newTask.tags.includes('private')
+    const wasPrivate = task.tags.includes('private')
+    const isPrivatized = isPrivate && !wasPrivate
+    const isPublic = !isPrivate || isPrivatized
 
     // get notification diffs
     const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(
@@ -147,19 +147,19 @@ export default {
       task,
       viewerId,
       usersToIgnore
-    );
+    )
     const data = {
       isPrivatized,
       taskId,
       notificationsToAdd,
       notificationsToRemove
-    };
+    }
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === newTask.userId || userId === viewerId) {
-        publish(TASK, userId, UpdateTaskPayload, data, subOptions);
+        publish(TASK, userId, UpdateTaskPayload, data, subOptions)
       }
-    });
+    })
 
-    return data;
+    return data
   }
-};
+}

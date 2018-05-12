@@ -1,6 +1,6 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import SlackIntegration from 'server/graphql/types/SlackIntegration';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import SlackIntegration from 'server/graphql/types/SlackIntegration'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const AddSlackChannelPayload = new GraphQLObjectType({
   name: 'AddSlackChannelPayload',
@@ -15,6 +15,6 @@ const AddSlackChannelPayload = new GraphQLObjectType({
     //  type: new GraphQLNonNull(Provider)
     // }
   })
-});
+})
 
-export default AddSlackChannelPayload;
+export default AddSlackChannelPayload

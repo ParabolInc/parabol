@@ -1,26 +1,26 @@
-import adjustUserCount from 'server/billing/helpers/adjustUserCount';
-import getRethink from 'server/database/rethinkDriver';
-import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg';
-import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
-import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications';
-import {getUserId} from 'server/utils/authorization';
-import {ADD_USER} from 'server/utils/serverConstants';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import addTeamMemberToNewMeeting from 'server/graphql/mutations/helpers/addTeamMemberToNewMeeting';
+import adjustUserCount from 'server/billing/helpers/adjustUserCount'
+import getRethink from 'server/database/rethinkDriver'
+import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg'
+import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
+import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications'
+import {getUserId} from 'server/utils/authorization'
+import {ADD_USER} from 'server/utils/serverConstants'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import addTeamMemberToNewMeeting from 'server/graphql/mutations/helpers/addTeamMemberToNewMeeting'
 
 const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
-  const r = getRethink();
-  const now = new Date();
-  const userId = getUserId(authToken);
+  const r = getRethink()
+  const now = new Date()
+  const userId = getUserId(authToken)
   const {
     team: {orgId},
     user
   } = await r({
     team: r.table('Team').get(teamId),
     user: r.table('User').get(userId)
-  });
-  const userOrgs = user.userOrgs || [];
-  const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId));
+  })
+  const userOrgs = user.userOrgs || []
+  const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId))
   const {removedInvitationId, removedNotification, removedSoftTeamMember, teamMember} = await r({
     // add the team to the user doc
     userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
@@ -50,8 +50,8 @@ const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
       .nth(0)
       .update({isActive: false}, {returnChanges: true})('changes')(0)('new_val')
       .default(null)
-  });
-  const teamMemberId = toTeamMemberId(teamId, userId);
+  })
+  const teamMemberId = toTeamMemberId(teamId, userId)
 
   const hardenedTasks = await r
     .table('Task')
@@ -59,20 +59,20 @@ const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
     .update({assigneeId: teamMemberId, isSoftTask: false}, {returnChanges: true})('changes')(
       'new_val'
     )
-    .default([]);
+    .default([])
 
   if (!userInOrg) {
-    await adjustUserCount(userId, orgId, ADD_USER);
+    await adjustUserCount(userId, orgId, ADD_USER)
   }
 
   // if a meeting is going on right now, add them
-  await addTeamMemberToNewMeeting(teamMember, teamId, dataLoader);
+  await addTeamMemberToNewMeeting(teamMember, teamId, dataLoader)
   return {
     removedNotification,
     removedInvitationId,
     removedSoftTeamMember,
     hardenedTasks
-  };
-};
+  }
+}
 
-export default acceptTeamInvite;
+export default acceptTeamInvite

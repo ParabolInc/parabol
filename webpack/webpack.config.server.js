@@ -1,17 +1,17 @@
-import path from 'path';
-import webpack from 'webpack';
-import npmPackage from '../package.json';
-import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
+import path from 'path'
+import webpack from 'webpack'
+import npmPackage from '../package.json'
+import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin'
 
-const root = process.cwd();
+const root = process.cwd()
 const serverInclude = [
   path.join(root, 'src', 'server'),
   path.join(root, 'src', 'universal'),
   path.join(root, 'build') // for appTheme.json
-];
+]
 
-const prefetches = [];
-const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier));
+const prefetches = []
+const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin(specifier))
 
 export default {
   context: path.join(root, 'src'),
@@ -63,4 +63,4 @@ export default {
       {test: /\.css$/, loader: 'style-loader!css-loader'}
     ]
   }
-};
+}

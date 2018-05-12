@@ -1,7 +1,7 @@
-import {GraphQLObjectType, GraphQLList, GraphQLString} from 'graphql';
-import {resolveUser} from 'server/graphql/resolvers';
-import User from 'server/graphql/types/User';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType, GraphQLList, GraphQLString} from 'graphql'
+import {resolveUser} from 'server/graphql/resolvers'
+import User from 'server/graphql/types/User'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const AddFeatureFlagPayload = new GraphQLObjectType({
   name: 'AddFeatureFlagPayload',
@@ -19,7 +19,7 @@ const AddFeatureFlagPayload = new GraphQLObjectType({
       type: new GraphQLList(User),
       description: 'the users given the super power',
       resolve: ({userIds}, args, {dataLoader}) => {
-        return dataLoader.get('users').loadMany(userIds);
+        return dataLoader.get('users').loadMany(userIds)
       }
     },
     result: {
@@ -27,6 +27,6 @@ const AddFeatureFlagPayload = new GraphQLObjectType({
       description: 'A human-readable result'
     }
   })
-});
+})
 
-export default AddFeatureFlagPayload;
+export default AddFeatureFlagPayload

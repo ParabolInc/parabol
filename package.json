@@ -42,13 +42,14 @@
     "postdeploy": "node ./src/server/utils/postDeploy.babel.js",
     "precommit": "lint-staged",
     "flow": "flow",
-    "prettier": "prettier-standard 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
+    "prettier": "prettier --write --loglevel warn 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
+    "standard": "standard --fix 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js' | snazzy",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
-    "lint": "yarn flow && yarn prettier",
+    "lint": "yarn prettier && yarn standard && yarn flow",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
     "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.json --client-schema src/client/clientSchema.graphql --watch",
     "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn flowgen",
@@ -64,6 +65,7 @@
     "@storybook/react": "^3.3.14",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
+    "babel-eslint": "^8.2.3",
     "babel-jest": "^21.2.0",
     "babel-loader": "^7.1.1",
     "babel-plugin-add-module-exports": "0.2.1",
@@ -105,7 +107,6 @@
     "mockdate": "^2.0.1",
     "piping": "^1.0.0-rc.4",
     "prettier": "1.12.1",
-    "prettier-standard": "^8.0.1",
     "react-addons-test-utils": "^15.6.0",
     "react-hot-loader": "^3.1.3",
     "react-transform-catch-errors": "1.0.2",
@@ -114,6 +115,8 @@
     "relay-compiler": "^1.5.0",
     "rimraf": "2.6.1",
     "selenium-webdriver": "^3.6.0",
+    "snazzy": "^7.1.1",
+    "standard": "^11.0.1",
     "stats-webpack-plugin": "^0.6.1",
     "style-loader": "^0.18.1",
     "transform-loader": "^0.2.4",
@@ -237,7 +240,8 @@
   },
   "lint-staged": {
     "*.js": [
-      "prettier-standard",
+      "prettier --write",
+      "standard --fix",
       "git add"
     ]
   },
@@ -248,5 +252,20 @@
     "testRegex": "/__tests__/.*.test\\.jsx?$",
     "testResultsProcessor": "./src/server/__tests__/teardown",
     "setupTestFrameworkScriptFile": "./src/universal/__tests__/enzyme"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "globals": [
+      "__ACTION__",
+      "__CLIENT__",
+      "__PRODUCTION__",
+      "graphql",
+      "$ReadOnlyArray",
+      "$Shape",
+      "System"
+    ],
+    "ignore": [
+      "schema.flow.js"
+    ]
   }
 }

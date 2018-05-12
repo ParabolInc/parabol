@@ -1,4 +1,4 @@
-import {GraphQLEnumType} from 'graphql';
+import {GraphQLEnumType} from 'graphql'
 
 const UserFlagEnum = new GraphQLEnumType({
   name: 'UserFlagEnum',
@@ -6,6 +6,6 @@ const UserFlagEnum = new GraphQLEnumType({
   values: {
     retro: {}
   }
-});
+})
 
-export default UserFlagEnum;
+export default UserFlagEnum

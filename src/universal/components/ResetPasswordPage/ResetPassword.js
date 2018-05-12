@@ -4,28 +4,28 @@
  * @flow
  */
 
-import React, {Fragment} from 'react';
-import styled from 'react-emotion';
-import PasswordResetForm from './ResetPasswordForm';
-import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
-import PlainButton from 'universal/components/PlainButton/PlainButton';
+import React, {Fragment} from 'react'
+import styled from 'react-emotion'
+import PasswordResetForm from './ResetPasswordForm'
+import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
+import PlainButton from 'universal/components/PlainButton/PlainButton'
 
 type Props = {
   error: ?string,
   emailSent: boolean,
   handleSubmitResetPassword: ({email: string}) => Promise<any>,
   tryAgain: () => void
-};
+}
 
 const P = styled('p')({
   lineHeight: 1.5,
   margin: '1rem 0',
   textAlign: 'center'
-});
+})
 
 const LinkButton = styled(PlainButton)({
   textDecoration: 'underline'
-});
+})
 
 const PasswordReset = (props: Props) => (
   <Fragment>
@@ -51,6 +51,6 @@ const PasswordReset = (props: Props) => (
       </Fragment>
     )}
   </Fragment>
-);
+)
 
-export default PasswordReset;
+export default PasswordReset

@@ -1,6 +1,6 @@
-import stripe from 'server/billing/stripe';
-import getRethink from 'server/database/rethinkDriver';
-import shortid from 'shortid';
+import stripe from 'server/billing/stripe'
+import getRethink from 'server/database/rethinkDriver'
+import shortid from 'shortid'
 import {
   FAILED,
   PAID,
@@ -11,166 +11,166 @@ import {
   REMOVED_USERS,
   INACTIVITY_ADJUSTMENTS,
   OTHER_ADJUSTMENTS
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 import {
   ADD_USER,
   AUTO_PAUSE_USER,
   PAUSE_USER,
   REMOVE_USER,
   UNPAUSE_USER
-} from 'server/utils/serverConstants';
-import {fromEpochSeconds} from 'server/utils/epochTime';
+} from 'server/utils/serverConstants'
+import {fromEpochSeconds} from 'server/utils/epochTime'
 
 const getEmailLookup = async (userIds) => {
-  const r = getRethink();
+  const r = getRethink()
   const usersAndEmails = await r
     .table('User')
     .getAll(r.args(userIds), {index: 'id'})
-    .pluck('id', 'email');
+    .pluck('id', 'email')
   return usersAndEmails.reduce((dict, doc) => {
-    dict[doc.id] = doc.email;
-    return dict;
-  }, {});
-};
+    dict[doc.id] = doc.email
+    return dict
+  }, {})
+}
 
 const reduceItemsByType = (typesDict, email, invoiceId) => {
-  const userTypes = Object.keys(typesDict);
+  const userTypes = Object.keys(typesDict)
   const reducedItemsByType = {
     [ADD_USER]: [],
     [REMOVE_USER]: [],
     [PAUSE_USER]: [],
     [UNPAUSE_USER]: []
-  };
+  }
   for (let j = 0; j < userTypes.length; j++) {
     // for each type
-    const type = userTypes[j];
-    const reducedItems = reducedItemsByType[type];
-    const startTimeDict = typesDict[type];
-    const startTimes = Object.keys(startTimeDict);
+    const type = userTypes[j]
+    const reducedItems = reducedItemsByType[type]
+    const startTimeDict = typesDict[type]
+    const startTimes = Object.keys(startTimeDict)
     // unpausing someone ends a period, we'll use this later
-    const dateField = type === UNPAUSE_USER ? 'endAt' : 'startAt';
+    const dateField = type === UNPAUSE_USER ? 'endAt' : 'startAt'
     for (let k = 0; k < startTimes.length; k++) {
       // for each time period
-      const startTime = startTimes[k];
-      const lineItems = startTimeDict[startTime];
-      const firstLineItem = lineItems[0];
+      const startTime = startTimes[k]
+      const lineItems = startTimeDict[startTime]
+      const firstLineItem = lineItems[0]
       if (lineItems.length !== 2) {
         if (firstLineItem.quantity !== 1) {
           console.warn(
             `We did not get 2 line items and qty > 1. What do? Invoice: ${invoiceId}, ${JSON.stringify(
               lineItems
             )}`
-          );
-          continue;
+          )
+          continue
         }
       }
-      const secondLineItemAmount = lineItems[1] ? lineItems[1].amount : 0;
+      const secondLineItemAmount = lineItems[1] ? lineItems[1].amount : 0
       reducedItems[k] = {
         id: shortid.generate(),
         amount: firstLineItem.amount + secondLineItemAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
-      };
+      }
     }
   }
-  return reducedItemsByType;
-};
+  return reducedItemsByType
+}
 
 const makeDetailedPauseEvents = (pausedItems, unpausedItems) => {
-  const inactivityDetails = [];
+  const inactivityDetails = []
   // if an unpause happened before a pause, we know they came into this period paused, so we don't want a start date
   if (
     unpausedItems.length > 0 &&
     (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)
   ) {
     // mutative
-    const firstUnpausedItem = unpausedItems.shift();
-    inactivityDetails.push(firstUnpausedItem);
+    const firstUnpausedItem = unpausedItems.shift()
+    inactivityDetails.push(firstUnpausedItem)
   }
   // match up every pause with an unpause so it's clear that Foo was paused for 5 days
   for (let j = 0; j < unpausedItems.length; j++) {
-    const unpausedItem = unpausedItems[j];
-    const pausedItem = pausedItems[j];
+    const unpausedItem = unpausedItems[j]
+    const pausedItem = pausedItems[j]
     inactivityDetails.push({
       ...pausedItem,
       amount: unpausedItem.amount + pausedItem.amount,
       endAt: unpausedItem.endAt
-    });
+    })
   }
 
   // if there is an extra pause, then it's because they are still on pause while we're invoicing.
   if (pausedItems.length > unpausedItems.length) {
-    const lastPausedItem = pausedItems[pausedItems.length - 1];
-    inactivityDetails.push(lastPausedItem);
+    const lastPausedItem = pausedItems[pausedItems.length - 1]
+    inactivityDetails.push(lastPausedItem)
   }
-  return inactivityDetails;
-};
+  return inactivityDetails
+}
 
 const makeQuantityChangeLineItems = (detailedLineItems) => {
-  const quantityChangeLineItems = [];
-  const lineItemTypes = Object.keys(detailedLineItems);
+  const quantityChangeLineItems = []
+  const lineItemTypes = Object.keys(detailedLineItems)
   for (let i = 0; i < lineItemTypes.length; i++) {
-    const lineItemType = lineItemTypes[i];
-    const details = detailedLineItems[lineItemType];
+    const lineItemType = lineItemTypes[i]
+    const details = detailedLineItems[lineItemType]
     if (details.length > 0) {
-      const id = shortid.generate();
+      const id = shortid.generate()
       quantityChangeLineItems.push({
         id,
         amount: details.reduce((sum, detail) => sum + detail.amount, 0),
         details: details.map((doc) => ({...doc, parentId: id})),
         quantity: details.length,
         type: lineItemType
-      });
+      })
     }
   }
-  return quantityChangeLineItems;
-};
+  return quantityChangeLineItems
+}
 
 const makeDetailedLineItems = async (itemDict, invoiceId) => {
   // Make lookup table to get user Emails
-  const userIds = Object.keys(itemDict);
-  const emailLookup = await getEmailLookup(userIds);
+  const userIds = Object.keys(itemDict)
+  const emailLookup = await getEmailLookup(userIds)
   const detailedLineItems = {
     [ADDED_USERS]: [],
     [REMOVED_USERS]: [],
     [INACTIVITY_ADJUSTMENTS]: []
-  };
+  }
 
   for (let i = 0; i < userIds.length; i++) {
     // for each userId
-    const userId = userIds[i];
-    const email = emailLookup[userId];
-    const typesDict = itemDict[userId];
-    const reducedItemsByType = reduceItemsByType(typesDict, email, invoiceId);
-    const pausedItems = reducedItemsByType[PAUSE_USER];
-    const unpausedItems = reducedItemsByType[UNPAUSE_USER];
-    detailedLineItems[ADDED_USERS].push(...reducedItemsByType[ADD_USER]);
-    detailedLineItems[REMOVED_USERS].push(...reducedItemsByType[REMOVE_USER]);
+    const userId = userIds[i]
+    const email = emailLookup[userId]
+    const typesDict = itemDict[userId]
+    const reducedItemsByType = reduceItemsByType(typesDict, email, invoiceId)
+    const pausedItems = reducedItemsByType[PAUSE_USER]
+    const unpausedItems = reducedItemsByType[UNPAUSE_USER]
+    detailedLineItems[ADDED_USERS].push(...reducedItemsByType[ADD_USER])
+    detailedLineItems[REMOVED_USERS].push(...reducedItemsByType[REMOVE_USER])
     detailedLineItems[INACTIVITY_ADJUSTMENTS].push(
       ...makeDetailedPauseEvents(pausedItems, unpausedItems)
-    );
+    )
   }
-  return detailedLineItems;
-};
+  return detailedLineItems
+}
 
 const addToDict = (itemDict, lineItem) => {
   const {
     metadata: {userId, type},
     period: {start}
-  } = lineItem;
-  const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type;
-  itemDict[userId] = itemDict[userId] || {};
-  itemDict[userId][safeType] = itemDict[userId][safeType] || {};
-  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || [];
-  itemDict[userId][safeType][start].push(lineItem);
-};
+  } = lineItem
+  const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type
+  itemDict[userId] = itemDict[userId] || {}
+  itemDict[userId][safeType] = itemDict[userId][safeType] || {}
+  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || []
+  itemDict[userId][safeType][start].push(lineItem)
+}
 
 const makeItemDict = (stripeLineItems) => {
-  const itemDict = {};
-  const unknownLineItems = [];
-  let nextMonthCharges;
+  const itemDict = {}
+  const unknownLineItems = []
+  let nextMonthCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
-    const lineItem = stripeLineItems[i];
+    const lineItem = stripeLineItems[i]
     const {
       amount,
       metadata,
@@ -178,7 +178,7 @@ const makeItemDict = (stripeLineItems) => {
       period: {end},
       proration,
       quantity
-    } = lineItem;
+    } = lineItem
     if (description === null && proration === false) {
       // this must be the next month's charge
       nextMonthCharges = {
@@ -188,22 +188,22 @@ const makeItemDict = (stripeLineItems) => {
         quantity,
         nextPeriodEnd: fromEpochSeconds(end),
         unitPrice: lineItem.plan.amount
-      };
+      }
     } else if (!metadata.type) {
-      unknownLineItems.push(lineItem);
+      unknownLineItems.push(lineItem)
     } else {
       // at this point, we don't care whether it's an auto pause or manual
-      addToDict(itemDict, lineItem);
+      addToDict(itemDict, lineItem)
     }
   }
-  return {itemDict, nextMonthCharges, unknownLineItems};
-};
+  return {itemDict, nextMonthCharges, unknownLineItems}
+}
 
 const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptionId) => {
-  const r = getRethink();
-  const unknowns = [];
+  const r = getRethink()
+  const unknowns = []
   for (let i = 0; i < unknownLineItems.length; i++) {
-    const unknownLineItem = unknownLineItems[i];
+    const unknownLineItem = unknownLineItems[i]
     // this could be inefficient but if all goes as planned, we'll never use this function
 
     const hook = await r
@@ -211,42 +211,42 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
       .getAll(unknownLineItem.period.start, {index: 'prorationDate'})
       .filter({stripeSubscriptionId})
       .nth(0)
-      .default(null);
+      .default(null)
     if (hook) {
-      const {type, userId} = hook;
+      const {type, userId} = hook
       // push it back to stripe for posterity
       stripe.invoiceItems.update(unknownLineItem.id, {
         metadata: {
           type,
           userId
         }
-      });
+      })
       // mutate the original line item
       unknownLineItem.metadata = {
         type,
         userId
-      };
-      addToDict(itemDict, unknownLineItem);
+      }
+      addToDict(itemDict, unknownLineItem)
     } else {
-      unknowns.push(unknownLineItem);
+      unknowns.push(unknownLineItem)
     }
   }
-  return unknowns;
-};
+  return unknowns
+}
 
 export default async function generateInvoice (invoice, stripeLineItems, orgId, invoiceId) {
-  const r = getRethink();
-  const now = new Date();
+  const r = getRethink()
+  const now = new Date()
 
-  const {itemDict, nextMonthCharges, unknownLineItems} = makeItemDict(stripeLineItems);
+  const {itemDict, nextMonthCharges, unknownLineItems} = makeItemDict(stripeLineItems)
   // technically, invoice.created could be called before invoiceitem.created is if there is a network hiccup. mutates itemDict!
   const unknownInvoiceLines = await maybeReduceUnknowns(
     unknownLineItems,
     itemDict,
     invoice.subscription
-  );
-  const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId);
-  const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems);
+  )
+  const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId)
+  const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems)
   const invoiceLineItems = [
     ...unknownInvoiceLines.map((item) => ({
       id: shortid.generate(),
@@ -256,28 +256,28 @@ export default async function generateInvoice (invoice, stripeLineItems, orgId, 
       type: OTHER_ADJUSTMENTS
     })),
     ...quantityChangeLineItems
-  ].sort((a, b) => (a.type > b.type ? 1 : -1));
+  ].sort((a, b) => (a.type > b.type ? 1 : -1))
 
   // sanity check
   const calculatedTotal =
-    invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;
+    invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount
   if (calculatedTotal !== invoice.total) {
     console.warn(
       'Calculated invoice does not match stripe invoice',
       invoiceId,
       calculatedTotal,
       invoice.total
-    );
+    )
   }
 
-  const [type] = invoiceId.split('_');
-  const isUpcoming = type === 'upcoming';
+  const [type] = invoiceId.split('_')
+  const isUpcoming = type === 'upcoming'
 
-  let status = isUpcoming ? UPCOMING : PENDING;
+  let status = isUpcoming ? UPCOMING : PENDING
   if (status === PENDING && invoice.closed === true) {
-    status = invoice.paid ? PAID : FAILED;
+    status = invoice.paid ? PAID : FAILED
   }
-  const paidAt = status === PAID ? now : undefined;
+  const paidAt = status === PAID ? now : undefined
 
   return r
     .table('Organization')
@@ -314,6 +314,6 @@ export default async function generateInvoice (invoice, stripeLineItems, orgId, 
           status
         },
         {conflict: 'replace', returnChanges: true}
-      )('changes')(0)('new_val');
-    });
+      )('changes')(0)('new_val')
+    })
 }

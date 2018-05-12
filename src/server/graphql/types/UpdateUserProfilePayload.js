@@ -1,8 +1,8 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import User from 'server/graphql/types/User';
-import {resolveFilterByTeam, resolveTeamMembers, resolveUser} from 'server/graphql/resolvers';
-import TeamMember from 'server/graphql/types/TeamMember';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import User from 'server/graphql/types/User'
+import {resolveFilterByTeam, resolveTeamMembers, resolveUser} from 'server/graphql/resolvers'
+import TeamMember from 'server/graphql/types/TeamMember'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const UpdateUserProfilePayload = new GraphQLObjectType({
   name: 'UpdateUserProfilePayload',
@@ -20,6 +20,6 @@ const UpdateUserProfilePayload = new GraphQLObjectType({
       resolve: resolveFilterByTeam(resolveTeamMembers, ({teamId}) => teamId)
     }
   })
-});
+})
 
-export default UpdateUserProfilePayload;
+export default UpdateUserProfilePayload

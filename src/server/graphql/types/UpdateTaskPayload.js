@@ -1,8 +1,8 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql';
-import {makeResolveNotificationForViewer, resolveTask} from 'server/graphql/resolvers';
-import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {makeResolveNotificationForViewer, resolveTask} from 'server/graphql/resolvers'
+import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const UpdateTaskPayload = new GraphQLObjectType({
   name: 'UpdateTaskPayload',
@@ -18,7 +18,7 @@ const UpdateTaskPayload = new GraphQLObjectType({
       type: GraphQLID,
       description: 'If a task was just turned private, this its ID, else null',
       resolve: ({taskId, isPrivatized}) => {
-        return isPrivatized ? taskId : null;
+        return isPrivatized ? taskId : null
       }
     },
     addedNotification: {
@@ -30,6 +30,6 @@ const UpdateTaskPayload = new GraphQLObjectType({
       resolve: makeResolveNotificationForViewer('notificationIdsToRemove', 'notificationsToRemove')
     }
   })
-});
+})
 
-export default UpdateTaskPayload;
+export default UpdateTaskPayload

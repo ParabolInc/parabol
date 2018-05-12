@@ -1,20 +1,20 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {Link, withRouter} from 'react-router-dom';
-import {destroy, reduxForm} from 'redux-form';
-import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
-import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
-import withStyles from 'universal/styles/withStyles';
-import makeStep3Schema from 'universal/validation/makeStep3Schema';
-import Button from 'universal/components/Button/Button';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {Link, withRouter} from 'react-router-dom'
+import {destroy, reduxForm} from 'redux-form'
+import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation'
+import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
+import withStyles from 'universal/styles/withStyles'
+import makeStep3Schema from 'universal/validation/makeStep3Schema'
+import Button from 'universal/components/Button/Button'
 
 const validate = (values) => {
-  const schema = makeStep3Schema();
-  return schema(values).errors;
-};
+  const schema = makeStep3Schema()
+  return schema(values).errors
+}
 
 const Step3InviteeList = (props) => {
   const {
@@ -26,21 +26,21 @@ const Step3InviteeList = (props) => {
     history,
     styles,
     teamId
-  } = props;
+  } = props
   const onInviteTeamSubmit = () => {
-    const inviteeCount = (invitees && invitees.length) || 0;
+    const inviteeCount = (invitees && invitees.length) || 0
     const gotoTeamDash = () => {
-      history.push(`/team/${teamId}`);
-    };
+      history.push(`/team/${teamId}`)
+    }
 
     if (inviteeCount > 0) {
       const serverInvitees = invitees.map((invitee) => {
-        const {email, fullName} = invitee;
+        const {email, fullName} = invitee
         return {
           email,
           fullName
-        };
-      });
+        }
+      })
       // We shouldn't need to wait until this mutation completes, but relay flags softTeamMembers for GC & then reruns
       // the optimisticUpdater before the GC had a chance to clean it so it borks on the sentinel. Still a bug in v1.5.0.
       InviteTeamMembersMutation(
@@ -49,21 +49,21 @@ const Step3InviteeList = (props) => {
         dispatch,
         undefined,
         gotoTeamDash
-      );
+      )
     } else {
-      gotoTeamDash();
+      gotoTeamDash()
     }
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
       SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {
         inviteeCount
-      });
-      dispatch(destroy('welcomeWizard')); // bye bye form data!
-    }, 1000);
-  };
+      })
+      dispatch(destroy('welcomeWizard')) // bye bye form data!
+    }, 1000)
+  }
 
-  const fieldArrayHasValue = invitees && invitees.length > 0;
+  const fieldArrayHasValue = invitees && invitees.length > 0
   if (fieldArrayHasValue) {
     return (
       <form onSubmit={handleSubmit(onInviteTeamSubmit)}>
@@ -71,44 +71,44 @@ const Step3InviteeList = (props) => {
           <LabeledFieldArray
             existingInvites={existingInvites}
             invitees={invitees}
-            labelHeader="Invitees"
-            labelSource="invitees"
+            labelHeader='Invitees'
+            labelSource='invitees'
           />
         </div>
         <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
           <Button
-            colorPalette="warm"
-            label="Looks Good!"
+            colorPalette='warm'
+            label='Looks Good!'
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              System.import('universal/modules/teamDashboard/components/TeamRoot');
+              System.import('universal/modules/teamDashboard/components/TeamRoot')
             }}
-            buttonSize="large"
-            type="submit"
+            buttonSize='large'
+            type='submit'
           />
         </div>
       </form>
-    );
+    )
   }
   return (
     <Link
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        System.import('universal/modules/teamDashboard/components/TeamRoot');
+        System.import('universal/modules/teamDashboard/components/TeamRoot')
       }}
       onClick={() => {
         SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {
           inviteeCount: 0
-        });
+        })
       }}
       style={{margin: '1rem auto', maxWidth: '45.5rem', padding: '0 2.5rem'}}
-      title="I’ll invite them later"
+      title='I’ll invite them later'
     >
       {'Not yet, I just want to kick the tires'}
     </Link>
-  );
-};
+  )
+}
 
 Step3InviteeList.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -119,7 +119,7 @@ Step3InviteeList.propTypes = {
   history: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
-};
+}
 const styleThunk = () => ({
   noThanks: {
     display: 'inline-block',
@@ -128,7 +128,7 @@ const styleThunk = () => ({
     textDecoration: 'none',
     width: '100%'
   }
-});
+})
 
 export default withAtmosphere(
   reduxForm({
@@ -136,4 +136,4 @@ export default withAtmosphere(
     destroyOnUnmount: false,
     validate
   })(withRouter(withStyles(styleThunk)(Step3InviteeList)))
-);
+)

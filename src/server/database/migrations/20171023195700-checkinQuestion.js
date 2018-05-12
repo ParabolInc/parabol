@@ -1,4 +1,4 @@
-import {ContentState, convertToRaw} from 'draft-js';
+import {ContentState, convertToRaw} from 'draft-js'
 
 exports.up = async (r) => {
   const teamsWithActiveMeetings = await r
@@ -8,21 +8,21 @@ exports.up = async (r) => {
         .default(null)
         .ne(null)
     )
-    .pluck('id', 'checkInQuestion');
+    .pluck('id', 'checkInQuestion')
 
   await Promise.all(
     teamsWithActiveMeetings.map((team) => {
-      const contentState = ContentState.createFromText(team.checkInQuestion);
-      const raw = convertToRaw(contentState);
-      const checkInQuestion = JSON.stringify(raw);
+      const contentState = ContentState.createFromText(team.checkInQuestion)
+      const raw = convertToRaw(contentState)
+      const checkInQuestion = JSON.stringify(raw)
       return r
         .table('Team')
         .get(team.id)
-        .update({checkInQuestion});
+        .update({checkInQuestion})
     })
-  );
-};
+  )
+}
 
 exports.down = async () => {
   // noop
-};
+}

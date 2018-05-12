@@ -1,8 +1,8 @@
-import getRethink from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver'
 
 const updateGroupTitle = (reflectionGroupId, smartTitle, title) => {
-  const r = getRethink();
-  const now = new Date();
+  const r = getRethink()
+  const now = new Date()
   return r
     .table('RetroReflectionGroup')
     .get(reflectionGroupId)
@@ -16,7 +16,7 @@ const updateGroupTitle = (reflectionGroupId, smartTitle, title) => {
         title
       ),
       updatedAt: now
-    }));
-};
+    }))
+}
 
-export default updateGroupTitle;
+export default updateGroupTitle

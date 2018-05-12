@@ -1,9 +1,9 @@
-import getRethink from 'server/database/rethinkDriver';
-import sendEmailPromise from 'server/email/sendEmail';
-import {RETROSPECTIVE} from 'universal/utils/constants';
+import getRethink from 'server/database/rethinkDriver'
+import sendEmailPromise from 'server/email/sendEmail'
+import {RETROSPECTIVE} from 'universal/utils/constants'
 
 const getRetroMeeting = (meetingId) => {
-  const r = getRethink();
+  const r = getRethink()
   return r
     .table('NewMeeting')
     .get(meetingId)
@@ -41,28 +41,28 @@ const getRetroMeeting = (meetingId) => {
         .filter((group) => group('voteCount').ge(1))
         .orderBy(r.desc('voteCount'))
         .coerceTo('array')
-    }));
-};
+    }))
+}
 
 const meetingGetters = {
   [RETROSPECTIVE]: getRetroMeeting
-};
+}
 
 export default async function sendNewMeetingSummary (newMeeting) {
-  const {id: meetingId, meetingType, summarySentAt} = newMeeting;
-  const r = getRethink();
-  if (summarySentAt) return;
-  const specificMeeting = await meetingGetters[meetingType](meetingId);
-  const emails = specificMeeting.meetingMembers.map((member) => member.user.email);
-  const emailString = emails.join(', ');
+  const {id: meetingId, meetingType, summarySentAt} = newMeeting
+  const r = getRethink()
+  if (summarySentAt) return
+  const specificMeeting = await meetingGetters[meetingType](meetingId)
+  const emails = specificMeeting.meetingMembers.map((member) => member.user.email)
+  const emailString = emails.join(', ')
   const emailSuccess = await sendEmailPromise(emailString, 'newMeetingSummaryEmailCreator', {
     meeting: specificMeeting
-  });
+  })
   if (emailSuccess) {
-    const now = new Date();
+    const now = new Date()
     await r
       .table('NewMeeting')
       .get(meetingId)
-      .update({summarySentAt: now});
+      .update({summarySentAt: now})
   }
 }

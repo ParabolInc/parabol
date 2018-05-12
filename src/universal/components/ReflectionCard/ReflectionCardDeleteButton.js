@@ -4,26 +4,26 @@
  *
  * @flow
  */
-import React, {Component} from 'react';
-import styled from 'react-emotion';
-import FontAwesome from 'react-fontawesome';
+import React, {Component} from 'react'
+import styled from 'react-emotion'
+import FontAwesome from 'react-fontawesome'
 
-import PlainButton from 'universal/components/PlainButton/PlainButton';
-import ui from 'universal/styles/ui';
-import {createFragmentContainer} from 'react-relay';
-import type {ReflectionCardDeleteButton_reflection as Reflection} from './__generated__/ReflectionCardDeleteButton_reflection.graphql';
-import type {ReflectionCardDeleteButton_meeting as Meeting} from './__generated__/ReflectionCardDeleteButton_meeting.graphql';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import PlainButton from 'universal/components/PlainButton/PlainButton'
+import ui from 'universal/styles/ui'
+import {createFragmentContainer} from 'react-relay'
+import type {ReflectionCardDeleteButton_reflection as Reflection} from './__generated__/ReflectionCardDeleteButton_reflection.graphql'
+import type {ReflectionCardDeleteButton_meeting as Meeting} from './__generated__/ReflectionCardDeleteButton_meeting.graphql'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 
 type Props = {
   atmosphere: Object,
   reflection: Reflection,
   meeting: Meeting,
   ...MutationProps
-};
+}
 
 const DeleteButton = styled(PlainButton)({
   backgroundColor: 'transparent',
@@ -35,7 +35,7 @@ const DeleteButton = styled(PlainButton)({
   right: '-.4375rem',
   top: '-.4375rem',
   width: ui.iconSize
-});
+})
 
 const Background = styled('div')({
   backgroundColor: ui.palette.white,
@@ -46,7 +46,7 @@ const Background = styled('div')({
   top: '.125rem',
   width: '.625rem',
   zIndex: 100
-});
+})
 
 const Icon = styled(FontAwesome)({
   color: ui.palette.warm,
@@ -56,7 +56,7 @@ const Icon = styled(FontAwesome)({
   textAlign: 'center',
   width: ui.iconSize,
   zIndex: 200
-});
+})
 
 class ReflectionCardDeleteButton extends Component<Props> {
   handleDelete = () => {
@@ -68,22 +68,22 @@ class ReflectionCardDeleteButton extends Component<Props> {
       reflection: {reflectionId},
       submitMutation,
       submitting
-    } = this.props;
-    if (submitting) return;
-    submitMutation();
-    RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
-  };
+    } = this.props
+    if (submitting) return
+    submitMutation()
+    RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
+  }
 
   render () {
-    const {submitting} = this.props;
-    const userLabel = 'Delete this reflection card';
-    if (submitting) return null;
+    const {submitting} = this.props
+    const userLabel = 'Delete this reflection card'
+    if (submitting) return null
     return (
       <DeleteButton aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
-        <Icon name="times-circle" />
+        <Icon name='times-circle' />
         <Background />
       </DeleteButton>
-    );
+    )
   }
 }
 
@@ -98,4 +98,4 @@ export default createFragmentContainer(
       reflectionId: id
     }
   `
-);
+)

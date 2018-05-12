@@ -1,19 +1,19 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput';
-import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEMS, phaseArray} from 'universal/utils/constants';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput'
+import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {AGENDA_ITEMS, phaseArray} from 'universal/utils/constants'
 
 const meetingOnAgendaItem = (props) =>
-  props.facilitatorPhase === AGENDA_ITEMS && props.facilitatorPhaseItem != null;
+  props.facilitatorPhase === AGENDA_ITEMS && props.facilitatorPhaseItem != null
 
 const meetingChangingAgendaItem = (curProps, nextProps) =>
   nextProps.facilitatorPhase === AGENDA_ITEMS &&
-  nextProps.facilitatorPhaseItem !== curProps.facilitatorPhaseItem;
+  nextProps.facilitatorPhaseItem !== curProps.facilitatorPhaseItem
 
 class AgendaListAndInput extends Component {
   static propTypes = {
@@ -31,35 +31,35 @@ class AgendaListAndInput extends Component {
     setAgendaInputRef: PropTypes.func,
     styles: PropTypes.object,
     team: PropTypes.object.isRequired
-  };
+  }
 
   constructor (props) {
-    super(props);
+    super(props)
     const {
       facilitatorPhaseItem,
       team: {agendaItems}
-    } = props;
-    const agendaItem = meetingOnAgendaItem(props) && agendaItems[facilitatorPhaseItem - 1];
+    } = props
+    const agendaItem = meetingOnAgendaItem(props) && agendaItems[facilitatorPhaseItem - 1]
     this.state = {
       visibleAgendaItemId: agendaItem ? agendaItem.id : null
-    };
+    }
   }
 
   componentDidMount () {
     if (meetingOnAgendaItem(this.props)) {
-      this.scrollToFacilitatedAgendaItem(this.props);
+      this.scrollToFacilitatedAgendaItem(this.props)
     }
   }
 
   componentWillReceiveProps (nextProps) {
     const {
       team: {agendaItems}
-    } = this.props;
+    } = this.props
     if (!agendaItems.length) {
-      return;
+      return
     }
     if (meetingChangingAgendaItem(this.props, nextProps)) {
-      this.scrollToFacilitatedAgendaItem(nextProps);
+      this.scrollToFacilitatedAgendaItem(nextProps)
     }
   }
 
@@ -67,25 +67,25 @@ class AgendaListAndInput extends Component {
     const {
       facilitatorPhaseItem,
       team: {agendaItems}
-    } = props;
+    } = props
     if (!meetingOnAgendaItem(props)) {
-      return;
+      return
     }
     this.setState({
       visibleAgendaItemId: agendaItems[facilitatorPhaseItem - 1].id
-    });
-  };
+    })
+  }
 
   scrollToLatestAgendaItem = () => {
     const {
       team: {agendaItems}
-    } = this.props;
+    } = this.props
     if (!agendaItems.length) {
-      return;
+      return
     }
-    const visibleAgendaItemId = agendaItems[agendaItems.length - 1].id;
-    this.setState({visibleAgendaItemId});
-  };
+    const visibleAgendaItemId = agendaItems[agendaItems.length - 1].id
+    this.setState({visibleAgendaItemId})
+  }
 
   render () {
     const {
@@ -102,9 +102,9 @@ class AgendaListAndInput extends Component {
       setAgendaInputRef,
       styles,
       team
-    } = this.props;
-    const {visibleAgendaItemId} = this.state;
-    const rootStyles = css(styles.root, disabled && styles.disabled);
+    } = this.props
+    const {visibleAgendaItemId} = this.state
+    const rootStyles = css(styles.root, disabled && styles.disabled)
     return (
       <div className={rootStyles}>
         <div className={css(styles.inner)}>
@@ -131,7 +131,7 @@ class AgendaListAndInput extends Component {
           />
         </div>
       </div>
-    );
+    )
   }
 }
 
@@ -158,7 +158,7 @@ const styleThunk = (theme, {context}) => ({
     filter: 'blur(3px)',
     pointerEvents: 'none'
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(AgendaListAndInput),
@@ -175,4 +175,4 @@ export default createFragmentContainer(
       ...AgendaList_team
     }
   `
-);
+)

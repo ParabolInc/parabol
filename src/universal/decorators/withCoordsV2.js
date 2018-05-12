@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import getDisplayName from 'universal/utils/getDisplayName';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import getDisplayName from 'universal/utils/getDisplayName'
 
 /*
  * Almost identical to V1, except it assumes the composed component does not load styles async (ie uses aphrodite)
@@ -10,16 +10,16 @@ import getDisplayName from 'universal/utils/getDisplayName';
 
 const getOffset = (orientation, fullWidth) => {
   if (orientation === 'center') {
-    return fullWidth / 2;
+    return fullWidth / 2
   } else if (orientation === 'right' || orientation === 'bottom') {
-    return fullWidth;
+    return fullWidth
   }
-  return 0;
-};
+  return 0
+}
 
 export default (ComposedComponent) => {
   class WithCoordsV2 extends Component {
-    static displayName = `WithCoordsV2(${getDisplayName(ComposedComponent)})`;
+    static displayName = `WithCoordsV2(${getDisplayName(ComposedComponent)})`
 
     static propTypes = {
       originAnchor: PropTypes.object,
@@ -33,30 +33,30 @@ export default (ComposedComponent) => {
       maxHeight: PropTypes.number.isRequired,
       minWidth: PropTypes.number,
       marginFromOrigin: PropTypes.number
-    };
+    }
 
     state = {
       left: 0,
       top: 0
-    };
+    }
 
     componentWillMount () {
-      const {originCoords} = this.props;
+      const {originCoords} = this.props
       if (originCoords) {
-        this.originCoords = originCoords;
+        this.originCoords = originCoords
       }
     }
 
     componentWillReceiveProps (nextProps) {
-      const {originCoords} = nextProps;
+      const {originCoords} = nextProps
       if (originCoords) {
         if (
           !this.originCoords ||
           this.originCoords.top !== originCoords.top ||
           this.originCoords.left !== originCoords.left
         ) {
-          this.originCoords = originCoords;
-          this.updateModalCoords();
+          this.originCoords = originCoords
+          this.updateModalCoords()
         }
       }
     }
@@ -64,96 +64,96 @@ export default (ComposedComponent) => {
     componentWillUnmount () {
       window.removeEventListener('resize', this.resizeWindow, {
         passive: true
-      });
+      })
     }
 
     setOriginRef = (c) => {
       if (c) {
-        this.originRef = c;
-        this.updateModalCoords();
+        this.originRef = c
+        this.updateModalCoords()
       }
-    };
+    }
 
     setModalRef = (c) => {
       if (c) {
-        this.modalRef = c;
+        this.modalRef = c
         // a little side-effecty, but the alternative is to create another component with a componentDidMount and
         // export updateModalCoords to the parent so it can call that on mount
-        this.updateModalCoords();
+        this.updateModalCoords()
       }
-    };
+    }
     updateModalCoords = () => {
-      if (!this.modalRef || (!this.originCoords && !this.originRef)) return;
+      if (!this.modalRef || (!this.originCoords && !this.originRef)) return
       // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
-      const {originAnchor, targetAnchor, marginFromOrigin = 0, maxHeight} = this.props;
-      const modalCoords = this.modalRef.getBoundingClientRect();
-      const modalWidth = modalCoords.width;
+      const {originAnchor, targetAnchor, marginFromOrigin = 0, maxHeight} = this.props
+      const modalCoords = this.modalRef.getBoundingClientRect()
+      const modalWidth = modalCoords.width
       // Heuristic: if the modal is larger than 50% of the max size, it's probably loaded
-      const modalHeight = modalCoords.height < 0.5 * maxHeight ? maxHeight : modalCoords.height;
+      const modalHeight = modalCoords.height < 0.5 * maxHeight ? maxHeight : modalCoords.height
       const nextCoords = {
         left: undefined,
         top: undefined,
         right: undefined,
         bottom: undefined
-      };
+      }
       // a vertical scroll can bork this originCoords, so use the ref to recalculate
       if (this.originRef) {
-        this.originCoords = this.originRef.getBoundingClientRect();
+        this.originCoords = this.originRef.getBoundingClientRect()
       }
-      const originLeftOffset = getOffset(originAnchor.horizontal, this.originCoords.width);
-      const {scrollX, scrollY, innerWidth, innerHeight} = window;
+      const originLeftOffset = getOffset(originAnchor.horizontal, this.originCoords.width)
+      const {scrollX, scrollY, innerWidth, innerHeight} = window
       if (targetAnchor.horizontal !== 'right') {
-        const targetLeftOffset = getOffset(targetAnchor.horizontal, modalWidth);
-        const left = scrollX + this.originCoords.left + originLeftOffset - targetLeftOffset;
-        const maxLeft = innerWidth - modalWidth + scrollX;
-        nextCoords.left = Math.min(left, maxLeft);
+        const targetLeftOffset = getOffset(targetAnchor.horizontal, modalWidth)
+        const left = scrollX + this.originCoords.left + originLeftOffset - targetLeftOffset
+        const maxLeft = innerWidth - modalWidth + scrollX
+        nextCoords.left = Math.min(left, maxLeft)
       } else {
-        const right = innerWidth - (this.originCoords.left + originLeftOffset) - scrollX;
-        const maxRight = innerWidth - modalWidth - scrollX;
-        nextCoords.right = Math.min(right, maxRight);
+        const right = innerWidth - (this.originCoords.left + originLeftOffset) - scrollX
+        const maxRight = innerWidth - modalWidth - scrollX
+        nextCoords.right = Math.min(right, maxRight)
       }
 
       if (targetAnchor.vertical !== 'bottom') {
-        const originTopOffset = getOffset(originAnchor.vertical, this.originCoords.height);
-        const targetTopOffset = getOffset(targetAnchor.vertical, modalHeight);
+        const originTopOffset = getOffset(originAnchor.vertical, this.originCoords.height)
+        const targetTopOffset = getOffset(targetAnchor.vertical, modalHeight)
         const top =
-          scrollY + this.originCoords.top + originTopOffset - targetTopOffset + marginFromOrigin;
-        const isBelow = top + modalHeight < innerHeight + scrollY;
+          scrollY + this.originCoords.top + originTopOffset - targetTopOffset + marginFromOrigin
+        const isBelow = top + modalHeight < innerHeight + scrollY
         if (isBelow) {
-          nextCoords.top = top;
+          nextCoords.top = top
         }
       }
       // if by choice or circumstance, put it above & anchor it from the bottom
       if (nextCoords.top === undefined) {
         // dont include marginFromOrigin here, it's just too tall
-        const bottom = innerHeight - this.originCoords.top - scrollY;
-        const maxBottom = innerHeight - modalHeight + scrollY;
-        nextCoords.bottom = Math.min(bottom, maxBottom);
+        const bottom = innerHeight - this.originCoords.top - scrollY
+        const maxBottom = innerHeight - modalHeight + scrollY
+        nextCoords.bottom = Math.min(bottom, maxBottom)
       }
 
       // listen to window resize only if it's anchored on the right or bottom
       if (nextCoords.left === undefined || nextCoords.top === undefined) {
-        window.addEventListener('resize', this.resizeWindow, {passive: true});
+        window.addEventListener('resize', this.resizeWindow, {passive: true})
       }
-      this.setState(nextCoords);
-    };
+      this.setState(nextCoords)
+    }
 
     resizeWindow = () => {
-      const {left, top} = this.state;
+      const {left, top} = this.state
       if (left === undefined || top === undefined) {
-        const modalCoords = this.modalRef.getBoundingClientRect();
+        const modalCoords = this.modalRef.getBoundingClientRect()
         const nextCoords = {
           left: modalCoords.left,
           top: modalCoords.top,
           right: undefined,
           bottom: undefined
-        };
-        this.setState(nextCoords);
+        }
+        this.setState(nextCoords)
       }
-    };
+    }
 
     render () {
-      const {...coords} = this.state;
+      const {...coords} = this.state
       return (
         <ComposedComponent
           {...this.props}
@@ -161,12 +161,12 @@ export default (ComposedComponent) => {
           setModalRef={this.setModalRef}
           setOriginRef={this.setOriginRef}
         />
-      );
+      )
     }
   }
 
-  return WithCoordsV2;
-};
+  return WithCoordsV2
+}
 
 export type WithCoordsProps = {
   coords: {
@@ -177,4 +177,4 @@ export type WithCoordsProps = {
   },
   setModalRef: (component: any) => void,
   setOriginRef: (component: any) => void
-};
+}

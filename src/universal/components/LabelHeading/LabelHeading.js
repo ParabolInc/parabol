@@ -1,5 +1,5 @@
-import styled from 'react-emotion';
-import ui from 'universal/styles/ui';
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 const LabelHeading = styled('div')({
   color: ui.labelHeadingColor,
@@ -9,6 +9,6 @@ const LabelHeading = styled('div')({
   lineHeight: ui.labelHeadingLineHeight,
   opacity: '.8',
   textTransform: 'uppercase'
-});
+})
 
-export default LabelHeading;
+export default LabelHeading

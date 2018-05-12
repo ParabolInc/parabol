@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import appTheme from 'universal/styles/theme/appTheme'
 
-const white = '#fff';
-const black = appTheme.palette.dark10d;
-const palettePlus = {...appTheme.palette, white, black};
+const white = '#fff'
+const black = appTheme.palette.dark10d
+const palettePlus = {...appTheme.palette, white, black}
 
 const Type = (props) => {
   const {
@@ -20,7 +20,7 @@ const Type = (props) => {
     scale,
     colorPalette,
     width
-  } = props;
+  } = props
 
   const styleTag = {
     textAlign: align,
@@ -35,17 +35,17 @@ const Type = (props) => {
     lineHeight,
     marginBottom,
     marginTop
-  };
+  }
 
   // mutates the above object, getting rid of nulls. not sure if react does this for us?
   Object.keys(styleTag).forEach((tag) => {
     if (styleTag[tag] === null) {
-      delete styleTag[tag];
+      delete styleTag[tag]
     }
-  });
+  })
 
-  return <div style={styleTag}>{children}</div>;
-};
+  return <div style={styleTag}>{children}</div>
+}
 
 Type.propTypes = {
   align: PropTypes.oneOf(['left', 'center', 'right']),
@@ -70,7 +70,7 @@ Type.propTypes = {
   ]),
   colorPalette: PropTypes.oneOf(['cool', 'warm', 'dark', 'mid', 'light', 'black', 'white']),
   width: PropTypes.oneOf(['auto', 'full'])
-};
+}
 
 Type.defaultProps = {
   align: 'left',
@@ -83,6 +83,6 @@ Type.defaultProps = {
   style: 'normal',
   colorPalette: 'dark',
   width: 'full'
-};
+}
 
-export default Type;
+export default Type

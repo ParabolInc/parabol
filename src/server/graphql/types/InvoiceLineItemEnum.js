@@ -1,10 +1,10 @@
-import {GraphQLEnumType} from 'graphql';
+import {GraphQLEnumType} from 'graphql'
 import {
   ADDED_USERS,
   INACTIVITY_ADJUSTMENTS,
   OTHER_ADJUSTMENTS,
   REMOVED_USERS
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 
 const InvoiceLineItemEnum = new GraphQLEnumType({
   name: 'InvoiceLineItemEnum',
@@ -15,6 +15,6 @@ const InvoiceLineItemEnum = new GraphQLEnumType({
     [OTHER_ADJUSTMENTS]: {},
     [REMOVED_USERS]: {}
   }
-});
+})
 
-export default InvoiceLineItemEnum;
+export default InvoiceLineItemEnum

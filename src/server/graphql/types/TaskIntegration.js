@@ -1,11 +1,11 @@
-import {GraphQLInterfaceType} from 'graphql';
-import IntegrationService from 'server/graphql/types/IntegrationService';
-import GitHubTask from 'server/graphql/types/GitHubTask';
-import {GITHUB} from 'universal/utils/constants';
+import {GraphQLInterfaceType} from 'graphql'
+import IntegrationService from 'server/graphql/types/IntegrationService'
+import GitHubTask from 'server/graphql/types/GitHubTask'
+import {GITHUB} from 'universal/utils/constants'
 
 const resolveTypeLookup = {
   [GITHUB]: GitHubTask
-};
+}
 
 const TaskIntegration = new GraphQLInterfaceType({
   name: 'TaskIntegration',
@@ -15,8 +15,8 @@ const TaskIntegration = new GraphQLInterfaceType({
     }
   },
   resolveType (value) {
-    return resolveTypeLookup[value.service];
+    return resolveTypeLookup[value.service]
   }
-});
+})
 
-export default TaskIntegration;
+export default TaskIntegration

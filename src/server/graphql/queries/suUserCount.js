@@ -1,8 +1,8 @@
-import {GraphQLBoolean, GraphQLInt, GraphQLString} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {requireSU} from 'server/utils/authorization';
-import OrgTierEnum from 'server/graphql/types/OrgTierEnum';
-import {PRO} from 'universal/utils/constants';
+import {GraphQLBoolean, GraphQLInt, GraphQLString} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import {requireSU} from 'server/utils/authorization'
+import OrgTierEnum from 'server/graphql/types/OrgTierEnum'
+import {PRO} from 'universal/utils/constants'
 
 export default {
   type: GraphQLInt,
@@ -24,10 +24,10 @@ export default {
     }
   },
   async resolve (source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
-    requireSU(authToken);
+    requireSU(authToken)
 
     // RESOLUTION
     return r
@@ -62,6 +62,6 @@ export default {
           true, // count everybody
           r.not(inactive)
         )
-      );
+      )
   }
-};
+}

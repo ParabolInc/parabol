@@ -3,14 +3,14 @@
  *
  * @flow
  */
-import {commitMutation} from 'react-relay';
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
+import {commitMutation} from 'react-relay'
+import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
+import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
 
 type Variables = {
   content: string,
   reflectionId: string
-};
+}
 
 graphql`
   fragment UpdateReflectionContentMutation_team on UpdateReflectionContentPayload {
@@ -22,7 +22,7 @@ graphql`
       content
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpdateReflectionContentMutation($content: String!, $reflectionId: ID!) {
@@ -33,7 +33,7 @@ const mutation = graphql`
       ...UpdateReflectionContentMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const UpdateReflectionContentMutation = (
   environment: Object,
@@ -47,16 +47,16 @@ const UpdateReflectionContentMutation = (
     onCompleted,
     onError,
     optimisticUpdater: (store) => {
-      const {reflectionId, content} = variables;
-      const reflectionProxy = store.get(reflectionId);
-      const nowISO = new Date().toJSON();
+      const {reflectionId, content} = variables
+      const reflectionProxy = store.get(reflectionId)
+      const nowISO = new Date().toJSON()
       const optimisticReflection = {
         content,
         updatedAt: nowISO
-      };
-      updateProxyRecord(reflectionProxy, optimisticReflection);
+      }
+      updateProxyRecord(reflectionProxy, optimisticReflection)
     }
-  });
-};
+  })
+}
 
-export default UpdateReflectionContentMutation;
+export default UpdateReflectionContentMutation

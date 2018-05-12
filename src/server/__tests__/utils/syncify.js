@@ -1,12 +1,12 @@
 export default async (fn) => {
   try {
-    const result = await fn();
+    const result = await fn()
     return () => {
-      return result;
-    };
+      return result
+    }
   } catch (e) {
     return () => {
-      throw e;
-    };
+      throw e
+    }
   }
-};
+}

@@ -1,11 +1,11 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLInterfaceType} from 'graphql';
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
-import Team from 'server/graphql/types/Team';
-import {resolveTeam} from 'server/graphql/resolvers';
-import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
-import {ACTION, RETROSPECTIVE} from 'universal/utils/constants';
-import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings';
-import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings';
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLInterfaceType} from 'graphql'
+import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
+import Team from 'server/graphql/types/Team'
+import {resolveTeam} from 'server/graphql/resolvers'
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
+import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
+import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings'
+import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings'
 
 export const teamMeetingSettingsFields = () => ({
   meetingsOffered: {
@@ -29,7 +29,7 @@ export const teamMeetingSettingsFields = () => ({
     type: Team,
     resolve: resolveTeam
   }
-});
+})
 
 const TeamMeetingSettings = new GraphQLInterfaceType({
   name: 'TeamMeetingSettings',
@@ -39,9 +39,9 @@ const TeamMeetingSettings = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       [ACTION]: ActionMeetingSettings,
       [RETROSPECTIVE]: RetrospectiveMeetingSettings
-    };
-    return resolveTypeLookup[meetingType];
+    }
+    return resolveTypeLookup[meetingType]
   }
-});
+})
 
-export default TeamMeetingSettings;
+export default TeamMeetingSettings

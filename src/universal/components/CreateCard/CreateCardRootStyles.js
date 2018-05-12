@@ -1,5 +1,5 @@
-import ui from 'universal/styles/ui';
-import cardRootStyles from 'universal/styles/helpers/cardRootStyles';
+import ui from 'universal/styles/ui'
+import cardRootStyles from 'universal/styles/helpers/cardRootStyles'
 
 const CreateCardRootStyles = {
   ...cardRootStyles,
@@ -11,6 +11,6 @@ const CreateCardRootStyles = {
   margin: '0 0 .5rem',
   minHeight: ui.cardMinHeight,
   padding: '.6875rem 1.25rem .5rem'
-};
+}
 
-export default CreateCardRootStyles;
+export default CreateCardRootStyles

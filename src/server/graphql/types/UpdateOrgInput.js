@@ -1,5 +1,5 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
 
 const UpdateOrgInput = new GraphQLInputObjectType({
   name: 'UpdateOrgInput',
@@ -14,6 +14,6 @@ const UpdateOrgInput = new GraphQLInputObjectType({
       description: 'The org avatar'
     }
   })
-});
+})
 
-export default UpdateOrgInput;
+export default UpdateOrgInput

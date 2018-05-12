@@ -1,4 +1,4 @@
-import * as clusterfck from 'tayden-clusterfck';
+import * as clusterfck from 'tayden-clusterfck'
 
 /*
  * Use hierarchical agglomerative clustering to group the reflections by theme
@@ -15,67 +15,67 @@ import * as clusterfck from 'tayden-clusterfck';
  * Returns an array where each child represents a reflection group
  * Each child of the reflection group is the distinct distance vector for a reflection
  */
-const MAX_GROUP_SIZE = 5;
-const MIN_REDUCTION_PERCENT = 0.01;
-const MAX_REDUCTION_PERCENT = 0.8;
+const MAX_GROUP_SIZE = 5
+const MIN_REDUCTION_PERCENT = 0.01
+const MAX_REDUCTION_PERCENT = 0.8
 
 const traverseTree = (initialTree, groupingThreshold) => {
-  const groups = [];
-  const distanceSet = new Set();
+  const groups = []
+  const distanceSet = new Set()
   const visit = (tree, group) => {
     if (tree.dist) {
-      distanceSet.add(tree.dist);
+      distanceSet.add(tree.dist)
     }
     if (tree.value) {
       if (group) {
-        group.push(tree.value);
+        group.push(tree.value)
       } else {
-        groups.push([tree.value]);
+        groups.push([tree.value])
       }
     } else if (!group && tree.size <= MAX_GROUP_SIZE && tree.dist <= groupingThreshold) {
-      const newGroup = [];
-      visit(tree.left, newGroup);
-      visit(tree.right, newGroup);
-      groups.push(newGroup);
+      const newGroup = []
+      visit(tree.left, newGroup)
+      visit(tree.right, newGroup)
+      groups.push(newGroup)
     } else {
-      visit(tree.left, group);
-      visit(tree.right, group);
-    }
-  };
-  visit(initialTree);
-  return {groups, distanceSet};
-};
-const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
-  const clusters = clusterfck.hcluster(distanceMatrix, clusterfck.euclidean, 'average');
-  const {tree} = clusters;
-  if (!tree) return {groups: []};
-  let groups;
-  let thresh = groupingThreshold;
-  let distancesArr;
-  // naive logic to make sure the grouping is AOK
-  for (let i = 0; i < 5; i++) {
-    const res = traverseTree(tree, thresh);
-    groups = res.groups;
-    ({groups} = res);
-    distancesArr = Array.from(res.distanceSet).sort();
-    const reduction = (distanceMatrix.length - groups.length) / distanceMatrix.length;
-    if (reduction < MIN_REDUCTION_PERCENT) {
-      // eslint-disable-next-line no-loop-func
-      const nextDistance = distancesArr.find((d) => d > thresh);
-      if (!nextDistance || nextDistance >= 1) break;
-      thresh = Math.ceil(nextDistance * 100) / 100;
-    } else if (reduction > MAX_REDUCTION_PERCENT) {
-      // eslint-disable-next-line no-loop-func
-      const nextDistance = distancesArr.find((d) => d < thresh);
-      if (!nextDistance || nextDistance >= 1) break;
-      thresh = Math.floor(nextDistance * 100) / 100;
-    } else {
-      break;
+      visit(tree.left, group)
+      visit(tree.right, group)
     }
   }
-  const nextDistance = distancesArr.find((d) => d > thresh);
-  const nextThresh = nextDistance ? Math.ceil(nextDistance * 100) / 100 : undefined;
-  return {thresh, groups, nextThresh};
-};
+  visit(initialTree)
+  return {groups, distanceSet}
+}
+const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
+  const clusters = clusterfck.hcluster(distanceMatrix, clusterfck.euclidean, 'average')
+  const {tree} = clusters
+  if (!tree) return {groups: []}
+  let groups
+  let thresh = groupingThreshold
+  let distancesArr
+  // naive logic to make sure the grouping is AOK
+  for (let i = 0; i < 5; i++) {
+    const res = traverseTree(tree, thresh)
+    groups = res.groups
+    ;({groups} = res)
+    distancesArr = Array.from(res.distanceSet).sort()
+    const reduction = (distanceMatrix.length - groups.length) / distanceMatrix.length
+    if (reduction < MIN_REDUCTION_PERCENT) {
+      // eslint-disable-next-line no-loop-func
+      const nextDistance = distancesArr.find((d) => d > thresh)
+      if (!nextDistance || nextDistance >= 1) break
+      thresh = Math.ceil(nextDistance * 100) / 100
+    } else if (reduction > MAX_REDUCTION_PERCENT) {
+      // eslint-disable-next-line no-loop-func
+      const nextDistance = distancesArr.find((d) => d < thresh)
+      if (!nextDistance || nextDistance >= 1) break
+      thresh = Math.floor(nextDistance * 100) / 100
+    } else {
+      break
+    }
+  }
+  const nextDistance = distancesArr.find((d) => d > thresh)
+  const nextThresh = nextDistance ? Math.ceil(nextDistance * 100) / 100 : undefined
+  return {thresh, groups, nextThresh}
+}
 
-export default getGroupMatrix;
+export default getGroupMatrix

@@ -20,4 +20,4 @@ export default {
     expiry: '12/25',
     last4: '0341'
   }
-};
+}

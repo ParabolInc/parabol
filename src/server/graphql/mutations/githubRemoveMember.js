@@ -1,9 +1,9 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import {toGlobalId} from 'graphql-relay';
-import getRethink from 'server/database/rethinkDriver';
-import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
-import getPubSub from 'server/utils/getPubSub';
-import {GITHUB} from 'universal/utils/constants';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import {toGlobalId} from 'graphql-relay'
+import getRethink from 'server/database/rethinkDriver'
+import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos'
+import getPubSub from 'server/utils/getPubSub'
+import {GITHUB} from 'universal/utils/constants'
 
 export default {
   name: 'GitHubRemoveMember',
@@ -20,11 +20,11 @@ export default {
     }
   },
   resolve: async (source, {userName, orgName}, {serverSecret}) => {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
     if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
-      throw new Error('Don’t be rude.');
+      throw new Error('Don’t be rude.')
     }
 
     const userId = await r
@@ -32,7 +32,7 @@ export default {
       .getAll(userName, {index: 'providerUserId'})
       .filter({service: GITHUB, isActive: true})
       .nth(0)('userId')
-      .default(null);
+      .default(null)
 
     const updatedIntegrations = await r
       .table(GITHUB)
@@ -47,9 +47,9 @@ export default {
         }),
         {returnChanges: true}
       )('changes')
-      .default([]);
+      .default([])
 
-    const archivedTasksByRepo = await archiveTasksForManyRepos(updatedIntegrations);
+    const archivedTasksByRepo = await archiveTasksForManyRepos(updatedIntegrations)
 
     // 2 teams could use the same org, so break it down by team
     const payloadsByTeam = updatedIntegrations.reduce(
@@ -58,24 +58,24 @@ export default {
           obj[teamId] = {
             // TODO notification here
             leaveIntegration: []
-          };
+          }
         }
 
         obj[teamId].leaveIntegration.push({
           globalId: toGlobalId(GITHUB, id),
           userId: isActive ? userId : null,
           archivedTasksIds: archivedTasksByRepo[idx]
-        });
-        return obj;
+        })
+        return obj
       },
       {}
-    );
+    )
     Object.keys(payloadsByTeam).forEach((teamId) => {
-      const githubMemberRemoved = payloadsByTeam[teamId];
+      const githubMemberRemoved = payloadsByTeam[teamId]
       getPubSub().publish(`githubMemberRemoved.${teamId}`, {
         githubMemberRemoved
-      });
-    });
-    return true;
+      })
+    })
+    return true
   }
-};
+}

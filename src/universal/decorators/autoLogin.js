@@ -1,50 +1,51 @@
 // @flow
-import * as React from 'react';
-import type {Location, RouterHistory} from 'react-router-dom';
-import {withRouter} from 'react-router-dom';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import * as React from 'react'
+import type {Location, RouterHistory} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 
-const {Component} = React;
+const {Component} = React
 
 type Props = {
   atmosphere: Object,
   history: RouterHistory,
   location: Location
-};
+}
 
 const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
   class AutoLogin extends Component<Props> {
     constructor (props) {
-      super(props);
+      super(props)
       const {
         atmosphere: {authObj},
         history,
-        location: {search}
-      } = props;
+        location
+      } = props
+      const {search} = location
       if (authObj) {
-        const isNew = !authObj.tms;
+        const isNew = !authObj.tms
         if (isNew) {
-          if (location.pathname !== '/welcome') {
-            history.push('/welcome');
-            this.redir = true;
+          if (window.location.pathname !== '/welcome') {
+            history.push('/welcome')
+            this.redir = true
           }
         } else {
-          const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me';
-          history.push(nextUrl);
-          this.redir = true;
+          const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me'
+          history.push(nextUrl)
+          this.redir = true
         }
       }
     }
 
-    redir: boolean;
+    redir: boolean
 
     render () {
-      if (this.redir) return null;
-      return <ComposedComponent {...this.props} />;
+      if (this.redir) return null
+      return <ComposedComponent {...this.props} />
     }
   }
 
-  return withAtmosphere(withRouter(AutoLogin));
-};
+  return withAtmosphere(withRouter(AutoLogin))
+}
 
-export default autoLogin;
+export default autoLogin

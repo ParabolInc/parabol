@@ -1,22 +1,22 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {Field} from 'redux-form';
-import Button from 'universal/components/Button/Button';
-import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
-import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
-import InputField from 'universal/components/InputField/InputField';
-import Panel from 'universal/components/Panel/Panel';
-import Helmet from 'react-helmet';
-import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
-import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput';
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Field} from 'redux-form'
+import Button from 'universal/components/Button/Button'
+import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
+import InputField from 'universal/components/InputField/InputField'
+import Panel from 'universal/components/Panel/Panel'
+import Helmet from 'react-helmet'
+import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal'
+import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput'
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
+import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder'
 
 const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
@@ -26,10 +26,10 @@ const renderActivity = (activity) => {
           'Hey, welcome aboard! In order for your team to recognize who you are, do you mind telling us your name?'
         }
       </div>
-    );
+    )
   }
-  return null;
-};
+  return null
+}
 
 const UserSettings = (props) => {
   const {
@@ -38,19 +38,19 @@ const UserSettings = (props) => {
     onSubmit,
     styles,
     viewer: {userId, picture}
-  } = props;
-  const pictureOrDefault = picture || defaultUserAvatar;
+  } = props
+  const pictureOrDefault = picture || defaultUserAvatar
   const toggle = (
     <div>
       <EditableAvatar picture={pictureOrDefault} size={96} />
     </div>
-  );
-  const controlSize = 'medium';
+  )
+  const controlSize = 'medium'
   return (
     <UserSettingsWrapper>
-      <Helmet title="My Settings | Parabol" />
+      <Helmet title='My Settings | Parabol' />
       <div className={css(styles.body)}>
-        <Panel label="My Information">
+        <Panel label='My Information'>
           <form className={css(styles.form)} onSubmit={handleSubmit(onSubmit)}>
             <div className={css(styles.avatarBlock)}>
               <PhotoUploadModal picture={pictureOrDefault} toggle={toggle}>
@@ -63,10 +63,10 @@ const UserSettings = (props) => {
               )}
               <FieldLabel
                 customStyles={{paddingBottom: ui.fieldLabelGutter}}
-                label="Name"
+                label='Name'
                 fieldSize={controlSize}
                 indent
-                htmlFor="preferredName"
+                htmlFor='preferredName'
               />
               <div className={css(styles.controlBlock)}>
                 <div className={css(styles.fieldBlock)}>
@@ -75,18 +75,18 @@ const UserSettings = (props) => {
                     autoFocus
                     component={InputField}
                     fieldSize={controlSize}
-                    name="preferredName"
+                    name='preferredName'
                     placeholder={randomPreferredName}
-                    type="text"
+                    type='text'
                   />
                 </div>
                 <div className={css(styles.buttonBlock)}>
                   <Button
                     isBlock
-                    label="Update"
+                    label='Update'
                     buttonSize={controlSize}
-                    colorPalette="warm"
-                    type="submit"
+                    colorPalette='warm'
+                    type='submit'
                   />
                 </div>
               </div>
@@ -95,8 +95,8 @@ const UserSettings = (props) => {
         </Panel>
       </div>
     </UserSettingsWrapper>
-  );
-};
+  )
+}
 
 UserSettings.propTypes = {
   activity: PropTypes.string, // from settingsDuck
@@ -107,7 +107,7 @@ UserSettings.propTypes = {
   userId: PropTypes.string,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
-};
+}
 
 const styleThunk = () => ({
   body: {
@@ -151,7 +151,7 @@ const styleThunk = () => ({
     paddingLeft: ui.panelGutter,
     flex: 1
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(UserSettings),
@@ -162,4 +162,4 @@ export default createFragmentContainer(
       picture
     }
   `
-);
+)

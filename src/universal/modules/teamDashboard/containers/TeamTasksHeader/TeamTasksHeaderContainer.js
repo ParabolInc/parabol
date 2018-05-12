@@ -1,38 +1,38 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {createFragmentContainer} from 'react-relay';
-import TeamTasksHeader from 'universal/modules/teamDashboard/components/TeamTasksHeader/TeamTasksHeader';
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {createFragmentContainer} from 'react-relay'
+import TeamTasksHeader from 'universal/modules/teamDashboard/components/TeamTasksHeader/TeamTasksHeader'
+import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck'
 
 const mapStateToProps = (state) => {
   return {
     teamMemberFilterId: state.teamDashboard.teamMemberFilterId,
     teamMemberFilterName: state.teamDashboard.teamMemberFilterName
-  };
-};
+  }
+}
 
 class TeamTasksHeaderContainer extends Component {
   componentWillReceiveProps (nextProps) {
     const {
       dispatch,
       team: {teamId: oldTeamId}
-    } = this.props;
+    } = this.props
     const {
       team: {teamId}
-    } = nextProps;
+    } = nextProps
     if (oldTeamId !== teamId) {
-      dispatch(filterTeamMember(null));
+      dispatch(filterTeamMember(null))
     }
   }
 
   componentWillUnmount () {
-    const {dispatch} = this.props;
-    dispatch(filterTeamMember(null));
+    const {dispatch} = this.props
+    dispatch(filterTeamMember(null))
   }
 
   render () {
-    const {dispatch, teamMemberFilterId, teamMemberFilterName, team} = this.props;
+    const {dispatch, teamMemberFilterId, teamMemberFilterName, team} = this.props
     return (
       <TeamTasksHeader
         dispatch={dispatch}
@@ -40,7 +40,7 @@ class TeamTasksHeaderContainer extends Component {
         teamMemberFilterId={teamMemberFilterId}
         teamMemberFilterName={teamMemberFilterName}
       />
-    );
+    )
   }
 }
 
@@ -49,7 +49,7 @@ TeamTasksHeaderContainer.propTypes = {
   teamMemberFilterId: PropTypes.string,
   teamMemberFilterName: PropTypes.string,
   team: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   connect(mapStateToProps)(TeamTasksHeaderContainer),
@@ -59,4 +59,4 @@ export default createFragmentContainer(
       ...TeamTasksHeader_team
     }
   `
-);
+)

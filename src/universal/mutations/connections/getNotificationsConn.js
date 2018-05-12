@@ -1,6 +1,6 @@
-import {ConnectionHandler} from 'relay-runtime';
+import {ConnectionHandler} from 'relay-runtime'
 
 const getNotificationsConn = (viewer) =>
-  ConnectionHandler.getConnection(viewer, 'DashboardWrapper_notifications');
+  ConnectionHandler.getConnection(viewer, 'DashboardWrapper_notifications')
 
-export default getNotificationsConn;
+export default getNotificationsConn

@@ -1,14 +1,15 @@
+/* eslint-env jest */
 import reducer, {
   goToPage,
   setWelcomeTeam,
   nextPage,
   previousPage,
   updateCompleted
-} from '../welcomeDuck';
+} from '../welcomeDuck'
 
 test('initial state', () => {
-  expect(reducer()).toMatchSnapshot();
-});
+  expect(reducer()).toMatchSnapshot()
+})
 
 test('setWelcomeTeam() updates teamId, teamMemberId', () => {
   expect(
@@ -19,41 +20,41 @@ test('setWelcomeTeam() updates teamId, teamMemberId', () => {
         teamMemberId: 'banana2'
       })
     )
-  ).toMatchSnapshot();
-});
+  ).toMatchSnapshot()
+})
 
 test('nextPage() increments', () => {
-  const initialState = reducer();
-  expect(reducer(initialState, nextPage())).toMatchSnapshot();
-});
+  const initialState = reducer()
+  expect(reducer(initialState, nextPage())).toMatchSnapshot()
+})
 
 test('nextPage() does not exceed 3', () => {
-  let state = reducer();
+  let state = reducer()
   for (let i = 0; i < 4; i++) {
-    state = reducer(state, nextPage());
+    state = reducer(state, nextPage())
   }
 
-  expect(reducer(state, nextPage())).toMatchSnapshot();
-});
+  expect(reducer(state, nextPage())).toMatchSnapshot()
+})
 
 test('previousPage() decrements', () => {
-  let state = reducer();
-  state = reducer(state, nextPage());
+  let state = reducer()
+  state = reducer(state, nextPage())
 
-  expect(reducer(state, previousPage())).toMatchSnapshot();
-});
+  expect(reducer(state, previousPage())).toMatchSnapshot()
+})
 
 test('previousPage() is never less than one', () => {
-  let state = reducer();
-  state = reducer(state, previousPage());
-  expect(reducer(state, previousPage())).toMatchSnapshot();
-});
+  let state = reducer()
+  state = reducer(state, previousPage())
+  expect(reducer(state, previousPage())).toMatchSnapshot()
+})
 
 test('updateCompleted() updates state', () => {
-  const state = reducer();
-  expect(reducer(state, updateCompleted(2))).toMatchSnapshot();
-});
+  const state = reducer()
+  expect(reducer(state, updateCompleted(2))).toMatchSnapshot()
+})
 
 test('goToPage', () => {
-  expect(reducer(undefined, goToPage(1))).toMatchSnapshot();
-});
+  expect(reducer(undefined, goToPage(1))).toMatchSnapshot()
+})

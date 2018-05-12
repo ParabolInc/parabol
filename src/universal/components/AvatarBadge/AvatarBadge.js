@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import FontAwesome from 'react-fontawesome';
-import srOnly from 'universal/styles/helpers/srOnly';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import FontAwesome from 'react-fontawesome'
+import srOnly from 'universal/styles/helpers/srOnly'
 
 const checkInStatus = {
   null: {
@@ -19,29 +19,29 @@ const checkInStatus = {
     icon: 'minus-circle',
     statusName: ' & absent'
   }
-};
+}
 
 const AvatarBadge = (props) => {
-  const {isCheckedIn = null, isConnected, styles} = props;
-  const connection = isConnected ? 'online' : 'offline';
-  const checkIn = isCheckedIn ? 'present' : 'absent';
-  const iconStyles = css(styles.badgeIcon, styles[connection]);
-  const {icon, statusName} = checkInStatus[isCheckedIn];
-  const title = `${isConnected ? 'Online' : 'Offline'}${statusName}`;
-  const description = `${connection}, ${checkIn}`;
+  const {isCheckedIn = null, isConnected, styles} = props
+  const connection = isConnected ? 'online' : 'offline'
+  const checkIn = isCheckedIn ? 'present' : 'absent'
+  const iconStyles = css(styles.badgeIcon, styles[connection])
+  const {icon, statusName} = checkInStatus[isCheckedIn]
+  const title = `${isConnected ? 'Online' : 'Offline'}${statusName}`
+  const description = `${connection}, ${checkIn}`
   return (
     <div className={css(styles.badge)}>
       <FontAwesome className={iconStyles} name={icon} title={title} />
       <span className={css(styles.srOnly)}>{description}</span>
     </div>
-  );
-};
+  )
+}
 
 AvatarBadge.propTypes = {
   isCheckedIn: PropTypes.bool,
   isConnected: PropTypes.bool,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   badge: {
@@ -95,6 +95,6 @@ const styleThunk = () => ({
   srOnly: {
     ...srOnly
   }
-});
+})
 
-export default withStyles(styleThunk)(AvatarBadge);
+export default withStyles(styleThunk)(AvatarBadge)

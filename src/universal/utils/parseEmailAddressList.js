@@ -1,4 +1,4 @@
-import emailAddresses from 'email-addresses';
+import emailAddresses from 'email-addresses'
 
 const parseEmailAddressList = (rawStr = '') => {
   // this breaks RFC5322 standards, but people are not standard :-(
@@ -10,8 +10,8 @@ const parseEmailAddressList = (rawStr = '') => {
     // remove leading/trailing whitespace
     .trim()
     // remove trailing commas
-    .replace(/,$/g, '');
-  return emailAddresses.parseAddressList(commaDelimStr);
-};
+    .replace(/,$/g, '')
+  return emailAddresses.parseAddressList(commaDelimStr)
+}
 
-export default parseEmailAddressList;
+export default parseEmailAddressList

@@ -6,29 +6,29 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import {forwardConnectionArgs} from 'graphql-relay';
-import getRethink from 'server/database/rethinkDriver';
-import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks';
-import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum';
-import AgendaItem from 'server/graphql/types/AgendaItem';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import Invitation from 'server/graphql/types/Invitation';
-import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
-import Organization from 'server/graphql/types/Organization';
-import OrgApproval from 'server/graphql/types/OrgApproval';
-import {TaskConnection} from 'server/graphql/types/Task';
-import TeamMember from 'server/graphql/types/TeamMember';
-import TierEnum from 'server/graphql/types/TierEnum';
-import {PENDING} from 'server/utils/serverConstants';
-import {resolveNewMeeting, resolveOrganization} from 'server/graphql/resolvers';
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
-import NewMeeting from 'server/graphql/types/NewMeeting';
-import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings';
-import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
-import {isTeamMember} from 'server/utils/authorization';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+} from 'graphql'
+import {forwardConnectionArgs} from 'graphql-relay'
+import getRethink from 'server/database/rethinkDriver'
+import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
+import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum'
+import AgendaItem from 'server/graphql/types/AgendaItem'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import Invitation from 'server/graphql/types/Invitation'
+import MeetingGreeting from 'server/graphql/types/MeetingGreeting'
+import Organization from 'server/graphql/types/Organization'
+import OrgApproval from 'server/graphql/types/OrgApproval'
+import {TaskConnection} from 'server/graphql/types/Task'
+import TeamMember from 'server/graphql/types/TeamMember'
+import TierEnum from 'server/graphql/types/TierEnum'
+import {PENDING} from 'server/utils/serverConstants'
+import {resolveNewMeeting, resolveOrganization} from 'server/graphql/resolvers'
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
+import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
+import NewMeeting from 'server/graphql/types/NewMeeting'
+import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings'
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
+import {isTeamMember} from 'server/utils/authorization'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -84,7 +84,7 @@ const Team = new GraphQLObjectType({
     customPhaseItems: {
       type: new GraphQLList(CustomPhaseItem),
       resolve: ({id: teamId}, args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItemsByTeamId').load(teamId);
+        return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
       }
     },
     meetingId: {
@@ -107,14 +107,14 @@ const Team = new GraphQLObjectType({
       type: new GraphQLList(Invitation),
       description: 'The outstanding invitations to join the team',
       resolve: ({id: teamId}) => {
-        const r = getRethink();
-        const now = new Date();
+        const r = getRethink()
+        const now = new Date()
         return r
           .table('Invitation')
           .getAll(teamId, {index: 'teamId'})
           .filter(r.row('tokenExpiration').ge(now))
           .orderBy('createdAt')
-          .run();
+          .run()
       }
     },
     meetingPhase: {
@@ -136,8 +136,8 @@ const Team = new GraphQLObjectType({
       },
       description: 'The team-specific settings for running all available types of meetings',
       resolve: async ({id: teamId}, {meetingType}, {dataLoader}) => {
-        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
-        return allSettings.find((settings) => settings.meetingType === meetingType);
+        const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
+        return allSettings.find((settings) => settings.meetingType === meetingType)
       }
     },
     newMeeting: {
@@ -153,13 +153,13 @@ const Team = new GraphQLObjectType({
       type: new GraphQLList(OrgApproval),
       description: 'The outstanding invitations to join the team',
       resolve: ({id: teamId}) => {
-        const r = getRethink();
+        const r = getRethink()
         return r
           .table('OrgApproval')
           .getAll(teamId, {index: 'teamId'})
           .filter({status: PENDING, isActive: true})
           .orderBy('email')
-          .run();
+          .run()
       }
     },
     organization: {
@@ -170,9 +170,9 @@ const Team = new GraphQLObjectType({
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
       async resolve ({id: teamId}, args, {dataLoader}) {
-        const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId);
-        agendaItems.sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1));
-        return agendaItems;
+        const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
+        agendaItems.sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1))
+        return agendaItems
       }
     },
     tasks: {
@@ -187,19 +187,19 @@ const Team = new GraphQLObjectType({
       description: 'All of the tasks for this team',
       async resolve ({id: teamId}, args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
-          return sendTeamAccessError(authToken, teamId, null);
+          return sendTeamAccessError(authToken, teamId, null)
         }
-        const tasks = await dataLoader.get('tasksByTeamId').load(teamId);
-        return connectionFromTasks(tasks);
+        const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        return connectionFromTasks(tasks)
       }
     },
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),
       description: 'All the soft team members actively associated with the team',
       async resolve ({id: teamId}, args, {dataLoader}) {
-        const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId);
-        softTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1));
-        return softTeamMembers;
+        const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId)
+        softTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
+        return softTeamMembers
       }
     },
     teamMembers: {
@@ -212,9 +212,9 @@ const Team = new GraphQLObjectType({
       },
       description: 'All the team members actively associated with the team',
       async resolve ({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
-        const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
-        teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1));
-        return teamMembers;
+        const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+        teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
+        return teamMembers
       }
     },
     isArchived: {
@@ -222,6 +222,6 @@ const Team = new GraphQLObjectType({
       description: 'true if the team has been archived'
     }
   })
-});
+})
 
-export default Team;
+export default Team

@@ -1,11 +1,11 @@
-import getRethink from 'server/database/rethinkDriver';
-import {PERSONAL, PRO} from 'universal/utils/constants';
+import getRethink from 'server/database/rethinkDriver'
+import {PERSONAL, PRO} from 'universal/utils/constants'
 
 // breaking this out into its own helper so it can be used directly to
 // populate segment traits
 
 const countTiersForUserId = (userId) => {
-  const r = getRethink();
+  const r = getRethink()
 
   return r
     .table('Organization')
@@ -55,7 +55,7 @@ const countTiersForUserId = (userId) => {
           )
         )
       })
-    );
-};
+    )
+}
 
-export default countTiersForUserId;
+export default countTiersForUserId

@@ -1,5 +1,5 @@
-import {fullName, task} from 'universal/validation/templates';
-import legitify from './legitify';
+import {fullName, task} from 'universal/validation/templates'
+import legitify from './legitify'
 
 export default function makeStep3RawSchema () {
   return legitify({
@@ -10,5 +10,5 @@ export default function makeStep3RawSchema () {
         task
       }
     ]
-  });
+  })
 }

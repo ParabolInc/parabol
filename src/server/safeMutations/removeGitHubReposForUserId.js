@@ -1,8 +1,8 @@
-import getRethink from 'server/database/rethinkDriver';
-import {GITHUB} from 'universal/utils/constants';
+import getRethink from 'server/database/rethinkDriver'
+import {GITHUB} from 'universal/utils/constants'
 
 const removeGitHubReposForUserId = (userId, teamIds) => {
-  const r = getRethink();
+  const r = getRethink()
   return r
     .table(GITHUB)
     .getAll(r.args(teamIds), {index: 'teamId'})
@@ -16,7 +16,7 @@ const removeGitHubReposForUserId = (userId, teamIds) => {
       {returnChanges: true}
     )('changes')
     .default([])
-    .run();
-};
+    .run()
+}
 
-export default removeGitHubReposForUserId;
+export default removeGitHubReposForUserId
