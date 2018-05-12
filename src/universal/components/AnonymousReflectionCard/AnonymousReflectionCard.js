@@ -20,7 +20,7 @@ import ui from 'universal/styles/ui';
 
 type Props = {
   meeting: Meeting,
-  reflection: Reflection,
+  reflection: Reflection
 };
 
 type State = {
