@@ -38,17 +38,17 @@ const AnonymousStyles = styled('div')({
   minHeight: ui.retroCardMinHeight,
   position: 'relative',
   width: ui.retroCardWidth,
-  userSelect: 'none'
+  userSelect: 'none',
 });
 
 const DEFAULT_TEXT = 'Somebody is typing...';
 const ROT = Math.floor(Math.random() * 25) + 1;
 const obfuscate = (content: string): string => {
   return content.replace(/[a-zA-Z]/g, (c: string) => {
-    // $FlowFixMe
     return String.fromCharCode(
+      // $FlowFixMe
       (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - ROT * 2
-    ); // eslint-disable-line
+    );
   });
 };
 
