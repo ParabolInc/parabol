@@ -1,5 +1,5 @@
-import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
+import {GraphQLBoolean, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 
 const PageInfoDateCursor = new GraphQLObjectType({
   name: 'PageInfoDateCursor',
@@ -22,6 +22,6 @@ const PageInfoDateCursor = new GraphQLObjectType({
       description: 'When paginating forwards, the cursor to continue.'
     }
   })
-});
+})
 
-export default PageInfoDateCursor;
+export default PageInfoDateCursor

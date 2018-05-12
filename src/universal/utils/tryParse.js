@@ -1,9 +1,9 @@
 const tryParse = (str) => {
   try {
-    return JSON.parse(str);
+    return JSON.parse(str)
   } catch (e) {
-    return false;
+    return false
   }
-};
+}
 
-export default tryParse;
+export default tryParse

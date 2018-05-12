@@ -1,7 +1,7 @@
 // add props to the NewMeeting table
 
 const extendNewMeetingForType = (newMeetingBase) => {
-  return newMeetingBase;
-};
+  return newMeetingBase
+}
 
-export default extendNewMeetingForType;
+export default extendNewMeetingForType

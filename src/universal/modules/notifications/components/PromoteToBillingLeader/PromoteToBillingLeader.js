@@ -1,16 +1,16 @@
-import {css} from 'react-emotion';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import ui from 'universal/styles/ui';
-import {clearNotificationLabel} from '../../helpers/constants';
-import Row from 'universal/components/Row/Row';
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import Button from 'universal/components/Button/Button';
+import {css} from 'react-emotion'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
+import defaultStyles from 'universal/modules/notifications/helpers/styles'
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
+import ui from 'universal/styles/ui'
+import {clearNotificationLabel} from '../../helpers/constants'
+import Row from 'universal/components/Row/Row'
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
+import Button from 'universal/components/Button/Button'
 
 const PromoteToBillingLeader = (props) => {
   const {
@@ -21,25 +21,25 @@ const PromoteToBillingLeader = (props) => {
     submitMutation,
     onError,
     onCompleted
-  } = props;
+  } = props
   const {
     notificationId,
     organization: {orgName, orgId}
-  } = notification;
+  } = notification
   const acknowledge = () => {
-    submitMutation();
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
-  };
+    submitMutation()
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+  }
   const goToOrg = () => {
-    submitMutation();
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
-    history.push(`/me/organizations/${orgId}`);
-  };
+    submitMutation()
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    history.push(`/me/organizations/${orgId}`)
+  }
 
   return (
     <Row compact>
       <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon="building" size="small" />
+        <IconAvatar icon='building' size='small' />
       </div>
       <div className={css(defaultStyles.message)}>
         {'You are now a '}
@@ -54,12 +54,12 @@ const PromoteToBillingLeader = (props) => {
       </div>
       <div className={css(defaultStyles.widerButton)}>
         <Button
-          aria-label="Go to the Organization page"
-          colorPalette="warm"
+          aria-label='Go to the Organization page'
+          colorPalette='warm'
           isBlock
-          label="See Organization"
+          label='See Organization'
           buttonSize={ui.notificationButtonSize}
-          type="submit"
+          type='submit'
           onClick={goToOrg}
           waiting={submitting}
         />
@@ -72,8 +72,8 @@ const PromoteToBillingLeader = (props) => {
         />
       </div>
     </Row>
-  );
-};
+  )
+}
 
 PromoteToBillingLeader.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -83,7 +83,7 @@ PromoteToBillingLeader.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
   notification: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   withRouter(PromoteToBillingLeader),
@@ -96,4 +96,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

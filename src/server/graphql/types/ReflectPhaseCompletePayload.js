@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql';
+import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
 
 const ReflectPhaseCompletePayload = new GraphQLObjectType({
   name: 'ReflectPhaseCompletePayload',
@@ -8,6 +8,6 @@ const ReflectPhaseCompletePayload = new GraphQLObjectType({
       description: 'a list of empty reflection groups to remove'
     }
   })
-});
+})
 
-export default ReflectPhaseCompletePayload;
+export default ReflectPhaseCompletePayload

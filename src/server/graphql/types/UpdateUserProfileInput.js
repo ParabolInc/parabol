@@ -1,5 +1,5 @@
-import {GraphQLInputObjectType, GraphQLString} from 'graphql';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import {GraphQLInputObjectType, GraphQLString} from 'graphql'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
 
 const UpdateUserProfileInput = new GraphQLInputObjectType({
   name: 'UpdateUserProfileInput',
@@ -13,6 +13,6 @@ const UpdateUserProfileInput = new GraphQLInputObjectType({
       description: 'The name, as confirmed by the user'
     }
   })
-});
+})
 
-export default UpdateUserProfileInput;
+export default UpdateUserProfileInput

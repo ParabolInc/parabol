@@ -1,27 +1,27 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import React from 'react';
-import MentionTag from 'universal/components/MentionTag/MentionTag';
-import MentionUser from 'universal/components/MentionUser/MentionUser';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import PropTypes from 'prop-types';
+import {css} from 'aphrodite-local-styles/no-important'
+import React from 'react'
+import MentionTag from 'universal/components/MentionTag/MentionTag'
+import MentionUser from 'universal/components/MentionUser/MentionUser'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import PropTypes from 'prop-types'
 
 const dontTellDraft = (e) => {
-  e.preventDefault();
-};
+  e.preventDefault()
+}
 
 const suggestionTypes = {
   tag: MentionTag,
   mention: MentionUser
-};
+}
 
 const EditorSuggestions = (props) => {
-  const {active, handleSelect, isClosing, innerRef, styles, suggestions, suggestionType} = props;
+  const {active, handleSelect, isClosing, innerRef, styles, suggestions, suggestionType} = props
 
-  const SuggestionItem = suggestionTypes[suggestionType];
+  const SuggestionItem = suggestionTypes[suggestionType]
 
-  const menuStyles = css(styles.mentionMenu, isClosing && styles.closing);
+  const menuStyles = css(styles.mentionMenu, isClosing && styles.closing)
   return (
     <div className={menuStyles} ref={innerRef}>
       {suggestions.map((suggestion, idx) => {
@@ -30,11 +30,11 @@ const EditorSuggestions = (props) => {
           <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
             <SuggestionItem active={active === idx} {...suggestion} />
           </div>
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
 EditorSuggestions.propTypes = {
   active: PropTypes.number,
@@ -46,7 +46,7 @@ EditorSuggestions.propTypes = {
   suggestions: PropTypes.array,
   suggestionType: PropTypes.string,
   top: PropTypes.number
-};
+}
 
 const styleThunk = () => ({
   mentionMenu: {
@@ -72,6 +72,6 @@ const styleThunk = () => ({
   value: {
     fontWeight: 600
   }
-});
+})
 
-export default withStyles(styleThunk)(EditorSuggestions);
+export default withStyles(styleThunk)(EditorSuggestions)

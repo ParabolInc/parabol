@@ -1,42 +1,42 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import withScrolling from 'react-dnd-scrollzone';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router';
-import AddTaskButton from 'universal/components/AddTaskButton/AddTaskButton';
-import DraggableTask from 'universal/containers/TaskCard/DraggableTask';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import sortOrderBetween from 'universal/dnd/sortOrderBetween';
-import CreateTaskMutation from 'universal/mutations/CreateTaskMutation';
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
-import appTheme from 'universal/styles/theme/appTheme';
-import themeLabels from 'universal/styles/theme/labels';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {TEAM_DASH, USER_DASH} from 'universal/utils/constants';
-import dndNoise from 'universal/utils/dndNoise';
-import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import withScrolling from 'react-dnd-scrollzone'
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router'
+import AddTaskButton from 'universal/components/AddTaskButton/AddTaskButton'
+import DraggableTask from 'universal/containers/TaskCard/DraggableTask'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import sortOrderBetween from 'universal/dnd/sortOrderBetween'
+import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import themeLabels from 'universal/styles/theme/labels'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {TEAM_DASH, USER_DASH} from 'universal/utils/constants'
+import dndNoise from 'universal/utils/dndNoise'
+import getNextSortOrder from 'universal/utils/getNextSortOrder'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 
-import TaskColumnDropZone from './TaskColumnDropZone';
-import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
-import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer';
-import overflowTouch from 'universal/styles/helpers/overflowTouch';
+import TaskColumnDropZone from './TaskColumnDropZone'
+import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem'
+import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer'
+import overflowTouch from 'universal/styles/helpers/overflowTouch'
 
 // The `ScrollZone` component manages an overflowed block-level element,
 // scrolling its contents when another element is dragged close to its edges.
-const ScrollZone = withScrolling('div');
+const ScrollZone = withScrolling('div')
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
+}
 
 const handleAddTaskFactory = (atmosphere, status, teamId, userId, sortOrder) => () => {
   const newTask = {
@@ -44,9 +44,9 @@ const handleAddTaskFactory = (atmosphere, status, teamId, userId, sortOrder) => 
     teamId,
     userId,
     sortOrder
-  };
-  CreateTaskMutation(atmosphere, newTask);
-};
+  }
+  CreateTaskMutation(atmosphere, newTask)
+}
 
 class TaskColumn extends Component {
   static propTypes = {
@@ -64,7 +64,7 @@ class TaskColumn extends Component {
     styles: PropTypes.object,
     teamMemberFilterId: PropTypes.string,
     teams: PropTypes.array
-  };
+  }
 
   makeAddTask = () => {
     const {
@@ -78,28 +78,28 @@ class TaskColumn extends Component {
       myTeamMemberId,
       teamMemberFilterId,
       teams
-    } = this.props;
-    const label = themeLabels.taskStatus[status].slug;
-    const sortOrder = getNextSortOrder(tasks, dndNoise());
+    } = this.props
+    const label = themeLabels.taskStatus[status].slug
+    const sortOrder = getNextSortOrder(tasks, dndNoise())
     if (area === TEAM_DASH || isMyMeetingSection) {
-      const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId);
-      const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder);
-      return <AddTaskButton onClick={handleAddTask} label={label} />;
+      const {userId, teamId} = fromTeamMemberId(teamMemberFilterId || myTeamMemberId)
+      const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder)
+      return <AddTaskButton onClick={handleAddTask} label={label} />
     } else if (area === USER_DASH) {
       if (teams.length === 1) {
-        const {id: teamId} = teams[0];
-        const {userId} = atmosphere;
-        const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder);
-        return <AddTaskButton onClick={handleAddTask} label={label} />;
+        const {id: teamId} = teams[0]
+        const {userId} = atmosphere
+        const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder)
+        return <AddTaskButton onClick={handleAddTask} label={label} />
       }
       const itemFactory = () => {
-        const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
+        const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder)
         return menuItems.map((item) => (
           <MenuItem key={`MenuItem${item.label}`} label={item.label} onClick={item.handleClick} />
-        ));
-      };
+        ))
+      }
 
-      const toggle = <AddTaskButton label={label} />;
+      const toggle = <AddTaskButton label={label} />
       return (
         <MenuContainer
           itemFactory={itemFactory}
@@ -108,19 +108,19 @@ class TaskColumn extends Component {
           menuWidth={ui.dashMenuWidth}
           targetAnchor={targetAnchor}
           toggle={toggle}
-          label="Select Team:"
+          label='Select Team:'
         />
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   taskIsInPlace = (draggedTask, targetTask, before) => {
-    const {tasks} = this.props;
-    const targetIndex = tasks.findIndex((p) => p.id === targetTask.id);
-    const boundingTask = tasks[targetIndex + (before ? -1 : 1)];
-    return Boolean(boundingTask && boundingTask.id === draggedTask.id);
-  };
+    const {tasks} = this.props
+    const targetIndex = tasks.findIndex((p) => p.id === targetTask.id)
+    const boundingTask = tasks[targetIndex + (before ? -1 : 1)]
+    return Boolean(boundingTask && boundingTask.id === draggedTask.id)
+  }
 
   /**
    * `draggedTask` - task being dragged-and-dropped
@@ -130,25 +130,25 @@ class TaskColumn extends Component {
    */
   insertTask = (draggedTask, targetTask, before) => {
     if (this.taskIsInPlace(draggedTask, targetTask, before)) {
-      return;
+      return
     }
-    const {area, atmosphere, tasks} = this.props;
-    const targetIndex = tasks.findIndex((p) => p.id === targetTask.id);
+    const {area, atmosphere, tasks} = this.props
+    const targetIndex = tasks.findIndex((p) => p.id === targetTask.id)
     // `boundingTask` is the task which sandwiches the dragged task on
     // the opposite side of the target task.  When the target task is in
     // the front or back of the list, this will be `undefined`.
-    const boundingTask = tasks[targetIndex + (before ? -1 : 1)];
-    const sortOrder = sortOrderBetween(targetTask, boundingTask, draggedTask, before);
-    const updatedTask = {id: draggedTask.id, sortOrder};
+    const boundingTask = tasks[targetIndex + (before ? -1 : 1)]
+    const sortOrder = sortOrderBetween(targetTask, boundingTask, draggedTask, before)
+    const updatedTask = {id: draggedTask.id, sortOrder}
     if (draggedTask.status !== targetTask.status) {
-      updatedTask.status = targetTask.status;
+      updatedTask.status = targetTask.status
     }
-    UpdateTaskMutation(atmosphere, updatedTask, area);
-  };
+    UpdateTaskMutation(atmosphere, updatedTask, area)
+  }
 
   makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
-    const {status, teams} = this.props;
-    const {userId} = atmosphere;
+    const {status, teams} = this.props
+    const {userId} = atmosphere
     return teams.map((team) => ({
       label: team.name,
       handleClick: () => {
@@ -157,11 +157,11 @@ class TaskColumn extends Component {
           status,
           teamId: team.id,
           userId
-        };
-        CreateTaskMutation(atmosphere, newTask);
+        }
+        CreateTaskMutation(atmosphere, newTask)
       }
-    }));
-  };
+    }))
+  }
 
   render () {
     const {
@@ -174,18 +174,18 @@ class TaskColumn extends Component {
       status,
       tasks,
       styles
-    } = this.props;
-    const label = themeLabels.taskStatus[status].slug;
+    } = this.props
+    const label = themeLabels.taskStatus[status].slug
     const columnStyles = css(
       styles.column,
       firstColumn && styles.columnFirst,
       lastColumn && styles.columnLast
-    );
-    const userCanAdd = area === 'TEAM_DASH' || area === 'USER_DASH' || isMyMeetingSection;
+    )
+    const userCanAdd = area === 'TEAM_DASH' || area === 'USER_DASH' || isMyMeetingSection
     const statusLabelBlockStyles = css(
       styles.statusLabelBlock,
       userCanAdd && styles.statusLabelBlockUserCanAdd
-    );
+    )
 
     return (
       <div className={columnStyles}>
@@ -217,7 +217,7 @@ class TaskColumn extends Component {
           </ScrollZone>
         </div>
       </div>
-    );
+    )
   }
 }
 
@@ -291,6 +291,6 @@ const styleThunk = () => ({
     color: appTheme.palette.dark40a,
     marginLeft: '.5rem'
   }
-});
+})
 
-export default connect()(withAtmosphere(withRouter(withStyles(styleThunk)(TaskColumn))));
+export default connect()(withAtmosphere(withRouter(withStyles(styleThunk)(TaskColumn))))

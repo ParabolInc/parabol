@@ -1,9 +1,9 @@
-import getRethink from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver'
 
 const addUserToTMSUserOrg = (userId, teamId, orgId, options = {}) => {
-  const {returnChanges, role = null} = options;
-  const r = getRethink();
-  const now = new Date();
+  const {returnChanges, role = null} = options
+  const r = getRethink()
+  const now = new Date()
 
   return r
     .table('User')
@@ -32,7 +32,7 @@ const addUserToTMSUserOrg = (userId, teamId, orgId, options = {}) => {
         updatedAt: now
       }),
       {returnChanges}
-    );
-};
+    )
+}
 
-export default addUserToTMSUserOrg;
+export default addUserToTMSUserOrg

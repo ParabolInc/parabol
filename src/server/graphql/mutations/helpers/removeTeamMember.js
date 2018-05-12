@@ -1,32 +1,32 @@
-import getRethink from 'server/database/rethinkDriver';
-import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos';
-import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId';
-import shortid from 'shortid';
-import {GITHUB, KICKED_OUT} from 'universal/utils/constants';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import removeTeamMemberFromNewMeeting from 'server/graphql/mutations/helpers/removeTeamMemberFromNewMeeting';
+import getRethink from 'server/database/rethinkDriver'
+import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos'
+import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId'
+import shortid from 'shortid'
+import {GITHUB, KICKED_OUT} from 'universal/utils/constants'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import removeTeamMemberFromNewMeeting from 'server/graphql/mutations/helpers/removeTeamMemberFromNewMeeting'
 
 const removeTeamMember = async (teamMemberId, options, dataLoader) => {
-  const {isKickout} = options;
-  const r = getRethink();
-  const now = new Date();
-  const {userId, teamId} = fromTeamMemberId(teamMemberId);
+  const {isKickout} = options
+  const r = getRethink()
+  const now = new Date()
+  const {userId, teamId} = fromTeamMemberId(teamMemberId)
 
   // see if they were a leader, make a new guy leader so later we can reassign tasks
-  const activeTeamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'});
-  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId);
-  const {isLead, isNotRemoved} = teamMember;
+  const activeTeamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'})
+  const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
+  const {isLead, isNotRemoved} = teamMember
   // if the guy being removed is the leader, pick a new one. else, use him
-  const teamLeader = activeTeamMembers.find((t) => t.isLead === !isLead);
+  const teamLeader = activeTeamMembers.find((t) => t.isLead === !isLead)
   if (!isNotRemoved) {
-    throw new Error('Team member already removed');
+    throw new Error('Team member already removed')
   }
 
   if (activeTeamMembers.length === 1) {
     await r
       .table('Team')
       .get(teamId)
-      .update({isArchived: true});
+      .update({isArchived: true})
   } else if (isLead) {
     await r({
       newTeamLead: r
@@ -39,7 +39,7 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
         .table('TeamMember')
         .get(teamMemberId)
         .update({isLead: false})
-    });
+    })
   }
 
   // assign active tasks to the team lead
@@ -95,30 +95,30 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
       .filter({teamId})
       .delete({returnChanges: true})('changes')('old_val')
       .default([])
-  });
+  })
 
-  let notificationId;
+  let notificationId
   if (isKickout) {
-    notificationId = shortid.generate();
+    notificationId = shortid.generate()
     await r.table('Notification').insert({
       id: notificationId,
       startAt: now,
       teamId,
       type: KICKED_OUT,
       userIds: [userId]
-    });
+    })
   }
 
-  const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB);
-  let archivedTaskIds = [];
+  const changedGitHubIntegrations = changedProviders.some((change) => change.service === GITHUB)
+  let archivedTaskIds = []
   if (changedGitHubIntegrations) {
-    const repoChanges = await removeGitHubReposForUserId(userId, [teamId]);
+    const repoChanges = await removeGitHubReposForUserId(userId, [teamId])
     // TODO send the archived tasks in a mutation payload
-    archivedTaskIds = await archiveTasksForManyRepos(repoChanges);
+    archivedTaskIds = await archiveTasksForManyRepos(repoChanges)
   }
 
   // if a new meeting was currently running, remove them from it
-  await removeTeamMemberFromNewMeeting(teamMemberId, teamId, dataLoader);
+  await removeTeamMemberFromNewMeeting(teamMemberId, teamId, dataLoader)
 
   return {
     user,
@@ -126,7 +126,7 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
     notificationId,
     archivedTaskIds,
     reassignedTaskIds: reassignedTasks.map(({id}) => id)
-  };
-};
+  }
+}
 
-export default removeTeamMember;
+export default removeTeamMember

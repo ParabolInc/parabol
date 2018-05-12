@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import RelayTransitionGroup from 'universal/components/RelayTransitionGroup';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import Welcome from 'universal/modules/welcome/containers/Welcome/Welcome';
-import autoLogin from 'universal/decorators/autoLogin';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
+import LoadingView from 'universal/components/LoadingView/LoadingView'
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import Welcome from 'universal/modules/welcome/containers/Welcome/Welcome'
+import autoLogin from 'universal/decorators/autoLogin'
 
 const query = graphql`
   query WelcomeRootQuery {
@@ -14,10 +14,10 @@ const query = graphql`
       ...WelcomeContainer_viewer
     }
   }
-`;
+`
 
 const WelcomeRoot = (props) => {
-  const {atmosphere} = props;
+  const {atmosphere} = props
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -27,16 +27,16 @@ const WelcomeRoot = (props) => {
         <RelayTransitionGroup
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
-          loading={<LoadingView minHeight="50vh" />}
+          loading={<LoadingView minHeight='50vh' />}
           ready={<Welcome />}
         />
       )}
     />
-  );
-};
+  )
+}
 
 WelcomeRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired
-};
+}
 
-export default autoLogin(withAtmosphere(WelcomeRoot));
+export default autoLogin(withAtmosphere(WelcomeRoot))

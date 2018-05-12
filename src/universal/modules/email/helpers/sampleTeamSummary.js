@@ -1,8 +1,8 @@
-const avatarJordan = '/static/images/avatars/jh-linkedin-avatar.jpg';
-const avatarMatt = '/static/images/avatars/matt-krick-bw.png';
-const avatarMarimar = '/static/images/avatars/marimar-suarez-penalva.jpg';
-const avatarTaya = '/static/images/avatars/taya-mueller-avatar.jpg';
-const avatarTerry = '/static/images/avatars/terry-acker-avatar.jpg';
+const avatarJordan = '/static/images/avatars/jh-linkedin-avatar.jpg'
+const avatarMatt = '/static/images/avatars/matt-krick-bw.png'
+const avatarMarimar = '/static/images/avatars/marimar-suarez-penalva.jpg'
+const avatarTaya = '/static/images/avatars/taya-mueller-avatar.jpg'
+const avatarTerry = '/static/images/avatars/terry-acker-avatar.jpg'
 
 const Jordan = {
   avatar: avatarJordan,
@@ -59,14 +59,14 @@ const Jordan = {
       type: 'action'
     }
   ]
-};
+}
 
 const Marimar = {
   avatar: avatarMarimar,
   name: 'Marimar Suárez Peñalva',
   present: true,
   outcomes: []
-};
+}
 
 // const Jerry = {
 //   avatar: avatarTerry,
@@ -132,7 +132,7 @@ const Matt = {
       type: 'action'
     }
   ]
-};
+}
 
 const Taya = {
   avatar: avatarTaya,
@@ -159,7 +159,7 @@ const Taya = {
       type: 'action'
     }
   ]
-};
+}
 
 const Terry = {
   avatar: avatarTerry,
@@ -218,10 +218,10 @@ const Terry = {
       type: 'action'
     }
   ]
-};
+}
 
-const sampleTeamSummary = [];
+const sampleTeamSummary = []
 
-sampleTeamSummary.push(Jordan, Marimar, Matt, Taya, Terry);
+sampleTeamSummary.push(Jordan, Marimar, Matt, Taya, Terry)
 
-export default sampleTeamSummary;
+export default sampleTeamSummary

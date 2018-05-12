@@ -5,23 +5,23 @@
  * @flow
  */
 
-import type {Node} from 'react';
-import type {RouterHistory, Location} from 'react-router-dom';
-import type {Dispatch} from 'redux';
-import type {AuthResponse, Credentials} from 'universal/types/auth';
-import React, {Component, Fragment} from 'react';
-import {connect} from 'react-redux';
-import {Link, withRouter} from 'react-router-dom';
-import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import auth0Login from 'universal/utils/auth0Login';
-import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
-import getWebAuth from 'universal/utils/getWebAuth';
-import promisify from 'es6-promisify';
-import SignIn from './SignIn';
-import autoLogin from 'universal/decorators/autoLogin';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
-import AuthPage from 'universal/components/AuthPage/AuthPage';
+import type {Node} from 'react'
+import type {RouterHistory, Location} from 'react-router-dom'
+import type {Dispatch} from 'redux'
+import type {AuthResponse, Credentials} from 'universal/types/auth'
+import React, {Component, Fragment} from 'react'
+import {connect} from 'react-redux'
+import {Link, withRouter} from 'react-router-dom'
+import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import auth0Login from 'universal/utils/auth0Login'
+import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants'
+import getWebAuth from 'universal/utils/getWebAuth'
+import promisify from 'es6-promisify'
+import SignIn from './SignIn'
+import autoLogin from 'universal/decorators/autoLogin'
+import LoadingView from 'universal/components/LoadingView/LoadingView'
+import AuthPage from 'universal/components/AuthPage/AuthPage'
 
 type Props = {
   atmosphere: Object,
@@ -29,75 +29,75 @@ type Props = {
   history: RouterHistory,
   location: Location,
   webAuth: Object
-};
+}
 
 type State = {
   loggingIn: boolean,
   error: ?string,
   submittingCredentials: boolean
-};
+}
 
 class SignInPage extends Component<Props, State> {
   state = {
     error: null,
     loggingIn: false,
     submittingCredentials: false
-  };
+  }
 
   componentDidMount () {
-    this.maybeCaptureAuthResponse();
+    this.maybeCaptureAuthResponse()
   }
 
   getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
     this.webAuth.authorize({
       connection: auth0Connection,
       responseType: 'token'
-    });
-  };
+    })
+  }
 
   maybeCaptureAuthResponse = async () => {
     // If we've received an auth response, log us in
-    const {hash} = this.props.location;
+    const {hash} = this.props.location
     if (hash) {
-      this.setState({loggingIn: true});
+      this.setState({loggingIn: true})
       try {
-        const authResponse = await this.parseAuthResponse(hash);
-        this.appSignIn(authResponse);
+        const authResponse = await this.parseAuthResponse(hash)
+        this.appSignIn(authResponse)
       } catch (error) {
-        this.setState({error: error.error_description});
+        this.setState({error: error.error_description})
       }
     }
-  };
+  }
 
   parseAuthResponse = (hash: string): Promise<AuthResponse> => {
-    const parseHash = promisify(this.webAuth.parseHash, this.webAuth);
-    return parseHash({hash});
-  };
+    const parseHash = promisify(this.webAuth.parseHash, this.webAuth)
+    return parseHash({hash})
+  }
 
   resetState = () => {
-    this.setState({loggingIn: false, error: null});
-  };
+    this.setState({loggingIn: false, error: null})
+  }
 
   appSignIn = (response: AuthResponse): void => {
-    const {atmosphere, dispatch, history, location} = this.props;
-    signinAndUpdateToken(atmosphere, dispatch, history, location, response.idToken);
-  };
+    const {atmosphere, dispatch, history, location} = this.props
+    signinAndUpdateToken(atmosphere, dispatch, history, location, response.idToken)
+  }
 
-  webAuth = getWebAuth();
+  webAuth = getWebAuth()
 
   handleSubmitCredentials = async (credentials: Credentials) => {
-    this.setState({submittingCredentials: true, error: null});
+    this.setState({submittingCredentials: true, error: null})
     try {
-      await auth0Login(this.webAuth, credentials);
+      await auth0Login(this.webAuth, credentials)
     } catch (error) {
-      this.setState({error: error.error_description});
+      this.setState({error: error.error_description})
     }
-    this.setState({submittingCredentials: false});
-  };
+    this.setState({submittingCredentials: false})
+  }
 
   renderLoading = () => {
-    return <LoadingView />;
-  };
+    return <LoadingView />
+  }
 
   renderLoadingError = () => {
     return (
@@ -106,17 +106,17 @@ class SignInPage extends Component<Props, State> {
         <p>We had some trouble signing you in!</p>
         <p>
           Try going back to the{' '}
-          <Link to="/signin" onClick={this.resetState}>
+          <Link to='/signin' onClick={this.resetState}>
             Sign in page
           </Link>{' '}
           in order to sign in again.
         </p>
       </Fragment>
-    );
-  };
+    )
+  }
 
   renderSignIn = () => {
-    const {error, submittingCredentials} = this.state;
+    const {error, submittingCredentials} = this.state
     return (
       <SignIn
         authProviders={THIRD_PARTY_AUTH_PROVIDERS}
@@ -125,21 +125,21 @@ class SignInPage extends Component<Props, State> {
         error={error}
         isSubmitting={submittingCredentials}
       />
-    );
-  };
+    )
+  }
 
   render () {
-    const {loggingIn, error} = this.state;
-    let pageContent: Node;
+    const {loggingIn, error} = this.state
+    let pageContent: Node
     if (loggingIn && !error) {
-      pageContent = this.renderLoading();
+      pageContent = this.renderLoading()
     } else if (loggingIn && error) {
-      pageContent = this.renderLoadingError();
+      pageContent = this.renderLoadingError()
     } else {
-      pageContent = this.renderSignIn();
+      pageContent = this.renderSignIn()
     }
-    return <AuthPage title="Sign In | Parabol">{pageContent}</AuthPage>;
+    return <AuthPage title='Sign In | Parabol'>{pageContent}</AuthPage>
   }
 }
 
-export default withAtmosphere(autoLogin(withRouter(connect()(SignInPage))));
+export default withAtmosphere(autoLogin(withRouter(connect()(SignInPage))))

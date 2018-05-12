@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam';
-import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam'
+import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation'
 
 class ArchiveTeamContainer extends Component {
   static propTypes = {
@@ -14,20 +14,20 @@ class ArchiveTeamContainer extends Component {
     team: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired
-  };
+  }
 
   constructor (props) {
-    super(props);
-    this.state = {showConfirmationField: false};
+    super(props)
+    this.state = {showConfirmationField: false}
   }
 
   handleClick = () => {
-    this.setState({showConfirmationField: true});
-  };
+    this.setState({showConfirmationField: true})
+  }
 
   formBlurred = () => {
-    this.setState({showConfirmationField: false});
-  };
+    this.setState({showConfirmationField: false})
+  }
 
   archiveTeam = async () => {
     const {
@@ -36,15 +36,15 @@ class ArchiveTeamContainer extends Component {
       team: {teamId},
       history,
       location
-    } = this.props;
-    ArchiveTeamMutation(atmosphere, teamId, {dispatch, history, location});
-  };
+    } = this.props
+    ArchiveTeamMutation(atmosphere, teamId, {dispatch, history, location})
+  }
 
   render () {
     const {
       team: {teamName}
-    } = this.props;
-    const {showConfirmationField} = this.state;
+    } = this.props
+    const {showConfirmationField} = this.state
     return (
       <ArchiveTeam
         teamName={teamName}
@@ -53,7 +53,7 @@ class ArchiveTeamContainer extends Component {
         handleFormSubmit={this.archiveTeam}
         showConfirmationField={showConfirmationField}
       />
-    );
+    )
   }
 }
 
@@ -65,4 +65,4 @@ export default createFragmentContainer(
       teamName: name
     }
   `
-);
+)

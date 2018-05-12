@@ -1,29 +1,29 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import EmptySpace from '../../components/EmptySpace/EmptySpace';
-import TasksTable from '../TasksTable/TasksTable';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import plural from 'universal/utils/plural';
-import {DONE} from 'universal/utils/constants';
+import PropTypes from 'prop-types'
+import React from 'react'
+import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import TasksTable from '../TasksTable/TasksTable'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import plural from 'universal/utils/plural'
+import {DONE} from 'universal/utils/constants'
 
 const UserTasks = (props) => {
-  const {member} = props;
-  const {tasks, picture, preferredName, present} = member;
-  const {emailTableBase} = ui;
+  const {member} = props
+  const {tasks, picture, preferredName, present} = member
+  const {emailTableBase} = ui
   const cardsCell = {
     padding: '8px',
     textAlign: 'center'
-  };
+  }
 
   const textCenter = {
     fontFamily: ui.emailFontFamily,
     textAlign: 'center'
-  };
+  }
 
   const avatarStyles = {
     borderRadius: '100%'
-  };
+  }
 
   const labelStyle = {
     display: 'inline-block',
@@ -31,24 +31,24 @@ const UserTasks = (props) => {
     fontSize: '14px',
     fontWeight: 600,
     verticalAlign: 'middle'
-  };
+  }
 
   const topBorderStyle = {
     ...textCenter,
     borderTop: `${ui.emailRuleHeight} solid ${ui.emailRuleColor}`
-  };
+  }
 
   const nameStyle = {
     color: appTheme.palette.dark,
     display: 'block',
     fontSize: '20px',
     padding: '4px 0'
-  };
+  }
 
   const userStats = {
     ...textCenter,
     padding: 0
-  };
+  }
 
   const presentLabelStyles = {
     color: present ? appTheme.brand.secondary.green : appTheme.palette.mid50l,
@@ -57,19 +57,19 @@ const UserTasks = (props) => {
     fontStyle: 'italic',
     fontWeight: 600,
     padding: '0 0 8px'
-  };
+  }
 
-  const presentLabel = present ? 'Present' : 'Absent';
+  const presentLabel = present ? 'Present' : 'Absent'
 
-  const doneTasks = tasks.filter((task) => task.status === DONE);
-  const newTasks = tasks.filter((task) => task.status !== DONE);
-  const doneTasksLabel = `${doneTasks.length} ${plural(doneTasks.length, 'Task')} Done`;
-  const newTasksLabel = `${newTasks.length} New ${plural(newTasks.length, 'Task')}`;
+  const doneTasks = tasks.filter((task) => task.status === DONE)
+  const newTasks = tasks.filter((task) => task.status !== DONE)
+  const doneTasksLabel = `${doneTasks.length} ${plural(doneTasks.length, 'Task')} Done`
+  const newTasksLabel = `${newTasks.length} New ${plural(newTasks.length, 'Task')}`
 
   const makeTaskGroup = (taskArr, label, space) => (
     <tr>
       <td>
-        <table style={emailTableBase} align="center" width="100%">
+        <table style={emailTableBase} align='center' width='100%'>
           <tbody>
             <tr>
               <td style={userStats}>
@@ -77,7 +77,7 @@ const UserTasks = (props) => {
               </td>
             </tr>
             <tr>
-              <td align="center" style={cardsCell}>
+              <td align='center' style={cardsCell}>
                 <TasksTable tasks={taskArr} />
                 <EmptySpace height={space} />
               </td>
@@ -86,15 +86,15 @@ const UserTasks = (props) => {
         </table>
       </td>
     </tr>
-  );
+  )
 
   return (
-    <table style={emailTableBase} align="center" width="100%">
+    <table style={emailTableBase} align='center' width='100%'>
       <tbody>
         <tr>
           <td style={topBorderStyle}>
             <EmptySpace height={24} />
-            <img height="80" src={picture} style={avatarStyles} width="80" />
+            <img height='80' src={picture} style={avatarStyles} width='80' />
             <div style={nameStyle}>{preferredName}</div>
             <div style={presentLabelStyles}>{presentLabel}</div>
             <EmptySpace height={8} />
@@ -106,11 +106,11 @@ const UserTasks = (props) => {
         {newTasks.length > 0 && makeTaskGroup(newTasks, newTasksLabel, 24)}
       </tbody>
     </table>
-  );
-};
+  )
+}
 
 UserTasks.propTypes = {
   member: PropTypes.object.isRequired
-};
+}
 
-export default UserTasks;
+export default UserTasks

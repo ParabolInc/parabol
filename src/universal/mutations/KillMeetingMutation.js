@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay';
-import {LOBBY} from 'universal/utils/constants';
+import {commitMutation} from 'react-relay'
+import {LOBBY} from 'universal/utils/constants'
 
 graphql`
   fragment KillMeetingMutation_team on KillMeetingPayload {
@@ -15,7 +15,7 @@ graphql`
       }
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation KillMeetingMutation($teamId: ID!) {
@@ -26,18 +26,18 @@ const mutation = graphql`
       ...KillMeetingMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 export const killMeetingTeamUpdater = () => {
-  console.log('Meeting was killed!');
-};
+  console.log('Meeting was killed!')
+}
 
 const KillMeetingMutation = (environment, teamId, history, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
     updater: () => {
-      killMeetingTeamUpdater();
+      killMeetingTeamUpdater()
     },
     optimisticUpdater: (store) => {
       store
@@ -47,11 +47,11 @@ const KillMeetingMutation = (environment, teamId, history, onError, onCompleted)
         .setValue(null, 'meetingId')
         .setValue(null, 'facilitatorPhaseItem')
         .setValue(null, 'meetingPhaseItem')
-        .setValue(null, 'activeFacilitator');
+        .setValue(null, 'activeFacilitator')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default KillMeetingMutation;
+export default KillMeetingMutation

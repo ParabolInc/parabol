@@ -1,4 +1,4 @@
-import stripe from './stripe';
+// import stripe from './stripe'
 // import ms from 'ms';
 // import MockDB from '../__tests__/setup/MockDB';
 // import fieldsToSerialize from 'server/__tests__/utils/fieldsToSerialize';
@@ -35,6 +35,6 @@ import stripe from './stripe';
 //   console.log(err, res, res.lines.data);
 // });
 
-stripe.invoices.retrieveUpcoming('cus_AGA08G2n4ueq5c', (err, res) => {
-  console.log(res, res.lines.data);
-});
+// stripe.invoices.retrieveUpcoming('cus_AGA08G2n4ueq5c', (err, res) => {
+//   console.log(res, res.lines.data)
+// })

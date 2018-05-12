@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-import dotenvExpand from 'dotenv-expand';
+import dotenv from 'dotenv'
+import dotenvExpand from 'dotenv-expand'
 
 /*
  * getDotenv()
@@ -9,12 +9,12 @@ import dotenvExpand from 'dotenv-expand';
  * Returns true.
  */
 export default function getDotenv () {
-  const myConfig = {silent: true};
+  const myConfig = {silent: true}
   if (process.env.NODE_ENV === 'test') {
-    myConfig.path = '.env.test';
+    myConfig.path = '.env.test'
   }
-  const myEnv = dotenv.config(myConfig);
-  dotenvExpand(myEnv);
+  const myEnv = dotenv.config(myConfig)
+  dotenvExpand(myEnv)
 
-  return true;
+  return true
 }

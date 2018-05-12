@@ -1,4 +1,4 @@
-import styled, {keyframes} from 'react-emotion';
+import styled, {keyframes} from 'react-emotion'
 
 const BounceKeyframes = keyframes`
   from, 10%, 26%, 40%, to {
@@ -16,12 +16,12 @@ const BounceKeyframes = keyframes`
   45% {
     transform: translate3d(0, -.25rem, 0);
   }
-`;
+`
 
 const BounceBlock = styled('div')(({animationDelay}) => ({
   animation: `${BounceKeyframes} 2s ease infinite`,
   animationDelay,
   transformOrigin: 'center bottom'
-}));
+}))
 
-export default BounceBlock;
+export default BounceBlock

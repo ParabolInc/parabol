@@ -34,4 +34,4 @@ export default (stripeId) => ({
     },
     previous_attributes: {exp_year: '2013'}
   }
-});
+})

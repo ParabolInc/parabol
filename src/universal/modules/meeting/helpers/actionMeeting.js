@@ -7,7 +7,7 @@ import {
   LAST_CALL,
   SUMMARY,
   MEETING_SUMMARY_LABEL
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 
 export default {
   [LOBBY]: {
@@ -67,4 +67,4 @@ export default {
     route: 'summary',
     visitOnce: false
   }
-};
+}

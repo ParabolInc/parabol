@@ -1,5 +1,5 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum';
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 
 const MeetingTask = new GraphQLObjectType({
   name: 'MeetingTask',
@@ -27,9 +27,9 @@ const MeetingTask = new GraphQLObjectType({
       description: 'The id of the team member the action was assigned to during the meeting'
     }
   })
-});
+})
 
-export default MeetingTask;
+export default MeetingTask
 
 // TODO use this when we move to more complex reporting
 // const HistoricalAction = new GraphQLObjectType({

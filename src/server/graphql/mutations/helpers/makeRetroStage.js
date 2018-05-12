@@ -1,6 +1,6 @@
 // @flow
-import shortid from 'shortid';
-import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
+import shortid from 'shortid'
+import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow'
 
 const makeRetroStage = (
   phaseType: NewMeetingPhaseTypeEnum,
@@ -14,7 +14,7 @@ const makeRetroStage = (
     isNavigable: false,
     isNavigableByFacilitator: phaseIdx === 1,
     phaseType
-  };
-};
+  }
+}
 
-export default makeRetroStage;
+export default makeRetroStage

@@ -1,7 +1,7 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import {connectionDefinitions, globalIdField} from 'graphql-relay';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import IntegrationService from 'server/graphql/types/IntegrationService';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {connectionDefinitions, globalIdField} from 'graphql-relay'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import IntegrationService from 'server/graphql/types/IntegrationService'
 
 const Provider = new GraphQLObjectType({
   name: 'Provider',
@@ -47,12 +47,12 @@ const Provider = new GraphQLObjectType({
       description: 'The user that the access token is attached to'
     }
   })
-});
+})
 
 const {connectionType, edgeType} = connectionDefinitions({
   nodeType: Provider
-});
+})
 
-export const ProviderConnection = connectionType;
-export const ProviderEdge = edgeType;
-export default Provider;
+export const ProviderConnection = connectionType
+export const ProviderEdge = edgeType
+export default Provider

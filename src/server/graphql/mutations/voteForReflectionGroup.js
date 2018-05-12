@@ -1,23 +1,23 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import {
   sendMeetingMemberNotCheckedInError,
   sendMeetingMemberNotFoundError,
   sendReflectionGroupNotFoundError
-} from 'server/utils/docNotFoundErrors';
+} from 'server/utils/docNotFoundErrors'
 import {
   sendAlreadyCompletedMeetingPhaseError,
   sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors';
-import publish from 'server/utils/publish';
-import {DISCUSS, RETROSPECTIVE, TEAM, VOTE} from 'universal/utils/constants';
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete';
-import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload';
-import safelyCastVote from 'server/graphql/mutations/helpers/safelyCastVote';
-import safelyWithdrawVote from 'server/graphql/mutations/helpers/safelyWithdrawVote';
-import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase';
+} from 'server/utils/alreadyMutatedErrors'
+import publish from 'server/utils/publish'
+import {DISCUSS, RETROSPECTIVE, TEAM, VOTE} from 'universal/utils/constants'
+import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
+import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload'
+import safelyCastVote from 'server/graphql/mutations/helpers/safelyCastVote'
+import safelyWithdrawVote from 'server/graphql/mutations/helpers/safelyWithdrawVote'
+import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase'
 
 export default {
   type: VoteForReflectionGroupPayload,
@@ -36,25 +36,25 @@ export default {
     {isUnvote, reflectionGroupId},
     {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {operationId, mutatorId};
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {operationId, mutatorId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
-    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId);
+    const viewerId = getUserId(authToken)
+    const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
     if (!reflectionGroup) {
-      return sendReflectionGroupNotFoundError(authToken, reflectionGroupId);
+      return sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
     }
-    const {meetingId} = reflectionGroup;
-    const meeting = await dataLoader.get('newMeetings').load(meetingId);
-    const {endedAt, phases, teamId} = meeting;
+    const {meetingId} = reflectionGroup
+    const meeting = await dataLoader.get('newMeetings').load(meetingId)
+    const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
+    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
     if (isPhaseComplete(VOTE, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, VOTE);
+      return sendAlreadyCompletedMeetingPhaseError(authToken, VOTE)
     }
 
     // VALIDATION
@@ -63,13 +63,13 @@ export default {
       .getAll(meetingId, {index: 'meetingId'})
       .filter({userId: viewerId})
       .nth(0)
-      .default(null);
+      .default(null)
     if (!meetingMember) {
-      return sendMeetingMemberNotFoundError(authToken, meetingId);
+      return sendMeetingMemberNotFoundError(authToken, meetingId)
     }
-    const {isCheckedIn} = meetingMember;
+    const {isCheckedIn} = meetingMember
     if (!isCheckedIn) {
-      return sendMeetingMemberNotCheckedInError(authToken, meetingMember.id);
+      return sendMeetingMemberNotCheckedInError(authToken, meetingMember.id)
     }
 
     // RESOLUTION
@@ -79,41 +79,41 @@ export default {
         meetingId,
         viewerId,
         reflectionGroupId
-      );
-      if (votingError) return votingError;
+      )
+      if (votingError) return votingError
     } else {
-      const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId);
-      const retroSettings = allSettings.find((settings) => settings.meetingType === RETROSPECTIVE);
-      const {maxVotesPerGroup} = retroSettings;
+      const allSettings = await dataLoader.get('meetingSettingsByTeamId').load(teamId)
+      const retroSettings = allSettings.find((settings) => settings.meetingType === RETROSPECTIVE)
+      const {maxVotesPerGroup} = retroSettings
       const votingError = await safelyCastVote(
         authToken,
         meetingId,
         viewerId,
         reflectionGroupId,
         maxVotesPerGroup
-      );
-      if (votingError) return votingError;
+      )
+      if (votingError) return votingError
     }
     const reflectionGroups = await dataLoader
       .get('retroReflectionGroupsByMeetingId')
-      .load(meetingId);
-    const voteCount = reflectionGroups.reduce((sum, group) => sum + group.voterIds.length, 0);
+      .load(meetingId)
+    const voteCount = reflectionGroups.reduce((sum, group) => sum + group.voterIds.length, 0)
 
-    let isUnlock;
-    let unlockedStageIds;
+    let isUnlock
+    let unlockedStageIds
     if (voteCount === 0) {
-      isUnlock = false;
+      isUnlock = false
     } else if (voteCount === 1 && !isUnvote) {
-      isUnlock = true;
+      isUnlock = true
     }
     if (isUnlock !== undefined) {
-      unlockedStageIds = unlockAllStagesForPhase(phases, DISCUSS, true, isUnlock);
+      unlockedStageIds = unlockAllStagesForPhase(phases, DISCUSS, true, isUnlock)
       await r
         .table('NewMeeting')
         .get(meetingId)
         .update({
           phases
-        });
+        })
     }
 
     const data = {
@@ -121,8 +121,8 @@ export default {
       userId: viewerId,
       reflectionGroupId,
       unlockedStageIds
-    };
-    publish(TEAM, teamId, VoteForReflectionGroupPayload, data, subOptions);
-    return data;
+    }
+    publish(TEAM, teamId, VoteForReflectionGroupPayload, data, subOptions)
+    return data
   }
-};
+}

@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import styled from 'react-emotion'
 
-const lineHeight = ui.navTopicLineHeight;
+const lineHeight = ui.navTopicLineHeight
 
 const ItemRoot = styled('div')(
   ({isActive, isComplete, isDisabled, onClick}) => ({
@@ -44,7 +44,7 @@ const ItemRoot = styled('div')(
         width: '.375rem'
       }
     }
-);
+)
 
 const ItemOrderLabel = styled('div')({
   height: lineHeight,
@@ -53,7 +53,7 @@ const ItemOrderLabel = styled('div')({
   paddingRight: '.75rem',
   textAlign: 'right',
   width: ui.meetingSidebarGutterInner
-});
+})
 
 const ItemLabel = styled('div')(({isComplete}) => ({
   color: 'inherit',
@@ -62,11 +62,11 @@ const ItemLabel = styled('div')(({isComplete}) => ({
   lineHeight,
   textDecoration: isComplete && 'line-through',
   wordBreak: 'break-word'
-}));
+}))
 
 const ItemMeta = styled('div')({
   paddingLeft: '.25rem'
-});
+})
 
 const MeetingSubnavItem = (props) => {
   const {
@@ -78,7 +78,7 @@ const MeetingSubnavItem = (props) => {
     metaContent,
     onClick,
     orderLabel
-  } = props;
+  } = props
 
   return (
     <ItemRoot
@@ -92,8 +92,8 @@ const MeetingSubnavItem = (props) => {
       <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
       <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
-  );
-};
+  )
+}
 
 MeetingSubnavItem.propTypes = {
   isActive: PropTypes.bool,
@@ -104,6 +104,6 @@ MeetingSubnavItem.propTypes = {
   metaContent: PropTypes.any,
   onClick: PropTypes.func,
   orderLabel: PropTypes.string
-};
+}
 
-export default MeetingSubnavItem;
+export default MeetingSubnavItem

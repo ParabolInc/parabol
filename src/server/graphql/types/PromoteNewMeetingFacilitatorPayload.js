@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
-import NewMeeting from 'server/graphql/types/NewMeeting';
-import User from 'server/graphql/types/User';
+import {GraphQLObjectType} from 'graphql'
+import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import NewMeeting from 'server/graphql/types/NewMeeting'
+import User from 'server/graphql/types/User'
 
 const PromoteNewMeetingFacilitatorPayload = new GraphQLObjectType({
   name: 'PromoteNewMeetingFacilitatorPayload',
@@ -21,6 +21,6 @@ const PromoteNewMeetingFacilitatorPayload = new GraphQLObjectType({
       resolve: makeResolve('oldFacilitatorUserId', 'oldFacilitator', 'users')
     }
   })
-});
+})
 
-export default PromoteNewMeetingFacilitatorPayload;
+export default PromoteNewMeetingFacilitatorPayload

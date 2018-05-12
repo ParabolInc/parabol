@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
   fragment MeetingCheckInMutation_teamMember on MeetingCheckInPayload {
@@ -6,7 +6,7 @@ graphql`
       isCheckedIn
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation MeetingCheckInMutation($teamMemberId: ID!, $isCheckedIn: Boolean) {
@@ -17,18 +17,18 @@ const mutation = graphql`
       ...MeetingCheckInMutation_teamMember @relay(mask: false)
     }
   }
-`;
+`
 
 const MeetingCheckInMutation = (environment, teamMemberId, isCheckedIn, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {teamMemberId, isCheckedIn},
     optimisticUpdater: (store) => {
-      store.get(teamMemberId).setValue(isCheckedIn, 'isCheckedIn');
+      store.get(teamMemberId).setValue(isCheckedIn, 'isCheckedIn')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default MeetingCheckInMutation;
+export default MeetingCheckInMutation

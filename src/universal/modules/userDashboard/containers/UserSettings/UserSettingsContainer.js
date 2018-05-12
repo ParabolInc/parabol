@@ -1,40 +1,40 @@
-import PropTypes from 'prop-types';
-import raven from 'raven-js';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {createFragmentContainer} from 'react-relay';
-import {initialize, reduxForm} from 'redux-form';
-import withReducer from 'universal/decorators/withReducer/withReducer';
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
-import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
+import PropTypes from 'prop-types'
+import raven from 'raven-js'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {createFragmentContainer} from 'react-relay'
+import {initialize, reduxForm} from 'redux-form'
+import withReducer from 'universal/decorators/withReducer/withReducer'
+import {showSuccess} from 'universal/modules/toast/ducks/toastDuck'
+import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings'
 import userSettingsReducer, {
   ACTIVITY_WELCOME,
   clearActivity
-} from 'universal/modules/userDashboard/ducks/settingsDuck';
-import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation';
-import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
-import shouldValidate from 'universal/validation/shouldValidate';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {withRouter} from 'react-router-dom';
-import getGraphQLError from 'universal/utils/relay/getGraphQLError';
+} from 'universal/modules/userDashboard/ducks/settingsDuck'
+import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation'
+import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema'
+import shouldValidate from 'universal/validation/shouldValidate'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {withRouter} from 'react-router-dom'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
 const updateSuccess = {
   title: 'Settings saved!',
   message: 'We won’t forget who you are.',
   level: 'success'
-};
+}
 
 const mapStateToProps = (state) => {
   return {
     activity: state.userDashboardSettings.activity,
     nextPage: state.userDashboardSettings.nextPage
-  };
-};
+  }
+}
 
 const validate = (values) => {
-  const schema = makeUpdatedUserSchema();
-  return schema(values).errors;
-};
+  const schema = makeUpdatedUserSchema()
+  return schema(values).errors
+}
 
 class UserSettingsContainer extends Component {
   static propTypes = {
@@ -45,57 +45,57 @@ class UserSettingsContainer extends Component {
     history: PropTypes.object,
     untouch: PropTypes.func,
     viewer: PropTypes.object.isRequired
-  };
+  }
 
   componentWillMount () {
-    this.initializeForm();
+    this.initializeForm()
   }
 
   onSubmit = async (submissionData) => {
-    const {activity, dispatch, untouch, atmosphere, nextPage, viewer, history} = this.props;
-    const {preferredName} = submissionData;
+    const {activity, dispatch, untouch, atmosphere, nextPage, viewer, history} = this.props
+    const {preferredName} = submissionData
     if (preferredName === viewer.preferredName) {
       if (nextPage) {
-        history.push(nextPage);
+        history.push(nextPage)
       }
-      return undefined;
+      return undefined
     }
     return new Promise((resolve, reject) => {
       const onError = (err) => {
-        raven.captureException(err);
-        reject(err);
-      };
+        raven.captureException(err)
+        reject(err)
+      }
       const onCompleted = (res, errors) => {
-        const serverError = getGraphQLError(res, errors);
+        const serverError = getGraphQLError(res, errors)
         if (serverError) {
-          onError(serverError.message);
-          return;
+          onError(serverError.message)
+          return
         }
-        dispatch(showSuccess(updateSuccess));
+        dispatch(showSuccess(updateSuccess))
         if (activity === ACTIVITY_WELCOME) {
-          dispatch(clearActivity());
+          dispatch(clearActivity())
         }
         if (nextPage) {
-          history.push(nextPage);
+          history.push(nextPage)
         }
-        untouch('preferredName');
-        resolve();
-      };
-      const updatedUser = {preferredName};
-      UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted);
-    });
-  };
+        untouch('preferredName')
+        resolve()
+      }
+      const updatedUser = {preferredName}
+      UpdateUserProfileMutation(atmosphere, updatedUser, onError, onCompleted)
+    })
+  }
 
   initializeForm () {
     const {
       dispatch,
       viewer: {preferredName}
-    } = this.props;
-    return dispatch(initialize('userSettings', {preferredName}));
+    } = this.props
+    return dispatch(initialize('userSettings', {preferredName}))
   }
 
   render () {
-    return <UserSettings {...this.props} onSubmit={this.onSubmit} />;
+    return <UserSettings {...this.props} onSubmit={this.onSubmit} />
   }
 }
 
@@ -113,4 +113,4 @@ export default createFragmentContainer(
       ...UserSettings_viewer
     }
   `
-);
+)

@@ -1,18 +1,18 @@
-import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
-import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
-import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation';
-import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgMutation';
-import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation';
-import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation';
-import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation';
-import {createTaskNotificationUpdater} from 'universal/mutations/CreateTaskMutation';
-import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation';
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
-import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation';
-import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation';
-import getInProxy from 'universal/utils/relay/getInProxy';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {showWarning} from 'universal/modules/toast/ducks/toastDuck'
+import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
+import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation'
+import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgMutation'
+import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
+import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation'
+import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
+import {createTaskNotificationUpdater} from 'universal/mutations/CreateTaskMutation'
+import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation'
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
+import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation'
+import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation'
+import getInProxy from 'universal/utils/relay/getInProxy'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -64,37 +64,37 @@ const subscription = graphql`
       }
     }
   }
-`;
+`
 
 const connectSocketUserUpdater = (payload, store) => {
-  const isConnected = payload.getValue('isConnected');
-  const userId = payload.getValue('id');
-  const teamIds = payload.getValue('tms');
-  if (!teamIds) return;
-  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
+  const isConnected = payload.getValue('isConnected')
+  const userId = payload.getValue('id')
+  const teamIds = payload.getValue('tms')
+  if (!teamIds) return
+  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId))
   teamMemberIds.forEach((teamMemberId) => {
-    const teamMember = store.get(teamMemberId);
-    if (!teamMember) return;
-    teamMember.setValue(isConnected, 'isConnected');
-  });
-};
+    const teamMember = store.get(teamMemberId)
+    if (!teamMember) return
+    teamMember.setValue(isConnected, 'isConnected')
+  })
+}
 
 const disconnectSocketNotificationUpdater = (payload, store) => {
-  const user = payload.getLinkedRecord('user');
-  const userId = user.getValue('id');
-  const teamIds = user.getValue('tms');
-  if (!teamIds) return;
-  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId));
+  const user = payload.getLinkedRecord('user')
+  const userId = user.getValue('id')
+  const teamIds = user.getValue('tms')
+  if (!teamIds) return
+  const teamMemberIds = teamIds.map((teamId) => toTeamMemberId(teamId, userId))
   teamMemberIds.forEach((teamMemberId) => {
-    const teamMember = store.get(teamMemberId);
-    if (!teamMember) return;
-    teamMember.setValue(false, 'isConnected');
-  });
-};
+    const teamMember = store.get(teamMemberId)
+    if (!teamMember) return
+    teamMember.setValue(false, 'isConnected')
+  })
+}
 
 const popPaymentFailedToast = (payload, {dispatch, history}) => {
-  const orgId = getInProxy(payload, 'organization', 'id');
-  const orgName = getInProxy(payload, 'organization', 'name');
+  const orgId = getInProxy(payload, 'organization', 'id')
+  const orgName = getInProxy(payload, 'organization', 'name')
   // TODO add brand and last 4
   dispatch(
     showWarning({
@@ -104,90 +104,90 @@ const popPaymentFailedToast = (payload, {dispatch, history}) => {
       action: {
         label: 'Fix it!',
         callback: () => {
-          history.push(`/me/organizations/${orgId}`);
+          history.push(`/me/organizations/${orgId}`)
         }
       }
     })
-  );
-};
+  )
+}
 
 const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options) => {
-  const notification = payload.getLinkedRecord('notification');
-  handleAddNotifications(notification, store, viewerId);
-  popPaymentFailedToast(payload, options);
-};
+  const notification = payload.getLinkedRecord('notification')
+  handleAddNotifications(notification, store, viewerId)
+  popPaymentFailedToast(payload, options)
+}
 
-const onNextHandlers = {};
+const onNextHandlers = {}
 
 const NotificationSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams;
-  const {viewerId} = environment;
+  const {dispatch, history, location} = subParams
+  const {viewerId} = environment
   return {
     subscription,
     updater: (store) => {
-      const options = {dispatch, environment, history, location, store};
-      const payload = store.getRootField('notificationSubscription');
-      if (!payload) return;
-      const type = payload.getValue('__typename');
+      const options = {dispatch, environment, history, location, store}
+      const payload = store.getRootField('notificationSubscription')
+      if (!payload) return
+      const type = payload.getValue('__typename')
       switch (type) {
         case 'AddFeatureFlagPayload':
-          break;
+          break
         case 'AddOrgPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId, options);
-          break;
+          addOrgMutationNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'AddTeamPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId, options);
-          break;
+          addTeamMutationNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'ApproveToOrgPayload':
-          approveToOrgNotificationUpdater(payload, store, viewerId, options);
-          break;
+          approveToOrgNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'CancelApprovalPayload':
-          cancelApprovalNotificationUpdater(payload, store, viewerId);
-          break;
+          cancelApprovalNotificationUpdater(payload, store, viewerId)
+          break
         case 'CancelTeamInvitePayload':
-          cancelTeamInviteNotificationUpdater(payload, store, viewerId);
-          break;
+          cancelTeamInviteNotificationUpdater(payload, store, viewerId)
+          break
         case 'ClearNotificationPayload':
-          clearNotificationNotificationUpdater(payload, store, viewerId);
-          break;
+          clearNotificationNotificationUpdater(payload, store, viewerId)
+          break
         case 'CreateTaskPayload':
-          createTaskNotificationUpdater(payload, store, viewerId, options);
-          break;
+          createTaskNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'DeleteTaskPayload':
-          deleteTaskNotificationUpdater(payload, store, viewerId);
-          break;
+          deleteTaskNotificationUpdater(payload, store, viewerId)
+          break
         case 'DisconnectSocketPayload':
-          disconnectSocketNotificationUpdater(payload, store);
-          break;
+          disconnectSocketNotificationUpdater(payload, store)
+          break
         case 'InviteTeamMembersPayload':
-          inviteTeamMembersNotificationUpdater(payload, store, viewerId, options);
-          break;
+          inviteTeamMembersNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'RejectOrgApprovalPayload':
-          rejectOrgApprovalNotificationUpdater(payload, store, viewerId, options);
-          break;
+          rejectOrgApprovalNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'User':
-          connectSocketUserUpdater(payload, store);
-          break;
+          connectSocketUserUpdater(payload, store)
+          break
         case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, store, viewerId, options);
-          break;
+          removeOrgUserNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'StripeFailPaymentPayload':
-          stripeFailPaymentNotificationUpdater(payload, store, viewerId, options);
-          break;
+          stripeFailPaymentNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'UpdateUserProfilePayload':
-          break;
+          break
         default:
-          console.error('NotificationSubscription case fail', type);
+          console.error('NotificationSubscription case fail', type)
       }
     },
     onNext: ({notificationSubscription}) => {
-      const {__typename: type} = notificationSubscription;
-      const handler = onNextHandlers[type];
+      const {__typename: type} = notificationSubscription
+      const handler = onNextHandlers[type]
       if (handler) {
-        handler(notificationSubscription, {...subParams, environment});
+        handler(notificationSubscription, {...subParams, environment})
       }
     }
-  };
-};
+  }
+}
 
-export default NotificationSubscription;
+export default NotificationSubscription

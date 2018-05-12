@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 const mutation = graphql`
   mutation CreateOrgPicturePutUrlMutation(
@@ -17,7 +17,7 @@ const mutation = graphql`
       url
     }
   }
-`;
+`
 
 const CreateOrgPicturePutUrlMutation = (environment, variables, onError, onCompleted) => {
   return commitMutation(environment, {
@@ -25,7 +25,7 @@ const CreateOrgPicturePutUrlMutation = (environment, variables, onError, onCompl
     variables,
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default CreateOrgPicturePutUrlMutation;
+export default CreateOrgPicturePutUrlMutation

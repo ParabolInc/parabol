@@ -1,21 +1,21 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import FontAwesome from 'react-fontawesome';
-import {createFragmentContainer} from 'react-relay';
-import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo';
-import GitHubRepoRow from 'universal/modules/teamDashboard/components/GitHubRepoRow';
-import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
-import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow';
-import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {GITHUB} from 'universal/utils/constants';
-import SettingsWrapper from 'universal/components/Settings/SettingsWrapper';
-import Button from 'universal/components/Button/Button';
-import Panel from 'universal/components/Panel/Panel';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import FontAwesome from 'react-fontawesome'
+import {createFragmentContainer} from 'react-relay'
+import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo'
+import GitHubRepoRow from 'universal/modules/teamDashboard/components/GitHubRepoRow'
+import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack'
+import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow'
+import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {GITHUB} from 'universal/utils/constants'
+import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
+import Button from 'universal/components/Button/Button'
+import Panel from 'universal/components/Panel/Panel'
 
-const {makeUri} = providerLookup[GITHUB];
+const {makeUri} = providerLookup[GITHUB]
 
 const GitHubIntegrations = (props) => {
   const {
@@ -24,21 +24,21 @@ const GitHubIntegrations = (props) => {
     styles,
     teamId,
     viewer
-  } = props;
-  const {githubRepos, integrationProvider} = viewer;
-  const accessToken = integrationProvider && integrationProvider.accessToken;
-  const providerUserName = integrationProvider && integrationProvider.providerUserName;
+  } = props
+  const {githubRepos, integrationProvider} = viewer
+  const accessToken = integrationProvider && integrationProvider.accessToken
+  const providerUserName = integrationProvider && integrationProvider.providerUserName
   const openOauth = () => {
-    const uri = makeUri(jwt, teamId);
-    window.open(uri);
-  };
+    const uri = makeUri(jwt, teamId)
+    window.open(uri)
+  }
   return (
     <SettingsWrapper>
       <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <div className={css(styles.providerDetails)}>
         <div className={css(styles.providerAvatar)}>
-          <FontAwesome name="github" className={css(styles.providerIcon)} />
+          <FontAwesome name='github' className={css(styles.providerIcon)} />
         </div>
         <div className={css(styles.providerInfo)}>
           <div className={css(styles.nameAndTags)}>
@@ -49,25 +49,25 @@ const GitHubIntegrations = (props) => {
         {accessToken && (
           <div className={css(styles.providerActions)}>
             <Button
-              buttonSize="small"
-              buttonStyle="flat"
-              colorPalette="warm"
-              label="Remove GitHub"
+              buttonSize='small'
+              buttonStyle='flat'
+              colorPalette='warm'
+              label='Remove GitHub'
               onClick={() =>
                 RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId)
               }
             />
             <Button
-              buttonSize="small"
-              buttonStyle="flat"
-              colorPalette="warm"
+              buttonSize='small'
+              buttonStyle='flat'
+              colorPalette='warm'
               label={`Refresh Token for ${providerUserName}`}
               onClick={openOauth}
             />
           </div>
         )}
       </div>
-      <Panel label="Repositories">
+      <Panel label='Repositories'>
         <div className={css(styles.integrations)}>
           {accessToken ? (
             <div className={css(styles.addRepo)}>
@@ -81,10 +81,10 @@ const GitHubIntegrations = (props) => {
           ) : (
             <div className={css(styles.addGitHub)}>
               <Button
-                buttonSize="medium"
-                buttonStyle="solid"
-                colorPalette="warm"
-                label="Authorize GitHub to Add a Repo"
+                buttonSize='medium'
+                buttonStyle='solid'
+                colorPalette='warm'
+                label='Authorize GitHub to Add a Repo'
                 onClick={openOauth}
               />
             </div>
@@ -105,8 +105,8 @@ const GitHubIntegrations = (props) => {
         </div>
       </Panel>
     </SettingsWrapper>
-  );
-};
+  )
+}
 
 GitHubIntegrations.propTypes = {
   jwt: PropTypes.string.isRequired,
@@ -114,7 +114,7 @@ GitHubIntegrations.propTypes = {
   viewer: PropTypes.object.isRequired,
   styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
-};
+}
 
 const styleThunk = () => ({
   providerDetails: {
@@ -177,7 +177,7 @@ const styleThunk = () => ({
     color: ui.palette.cool,
     fontWeight: 600
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(GitHubIntegrations),
@@ -200,4 +200,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

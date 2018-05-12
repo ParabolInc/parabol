@@ -6,20 +6,20 @@
  *
  * @flow
  */
-import {WebAuth} from 'auth0-js/build/auth0';
-import promisify from 'es6-promisify';
+import {WebAuth} from 'auth0-js/build/auth0'
+import promisify from 'es6-promisify'
 
-import type {Credentials} from 'universal/types/auth';
-import {AUTH0_DB_CONNECTION} from 'universal/utils/constants';
+import type {Credentials} from 'universal/types/auth'
+import {AUTH0_DB_CONNECTION} from 'universal/utils/constants'
 
 export default async function auth0Login (
   webAuth: WebAuth,
   credentials: Credentials
 ): Promise<void> {
-  const login = promisify(webAuth.login, webAuth);
+  const login = promisify(webAuth.login, webAuth)
   return login({
     ...credentials,
     realm: AUTH0_DB_CONNECTION,
     responseType: 'token'
-  });
+  })
 }

@@ -1,9 +1,9 @@
-import {convertFromRaw} from 'draft-js';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import NullCard from 'universal/components/NullCard/NullCard';
-import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer';
-import {createFragmentContainer} from 'react-relay';
+import {convertFromRaw} from 'draft-js'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import NullCard from 'universal/components/NullCard/NullCard'
+import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
+import {createFragmentContainer} from 'react-relay'
 
 class NullableTask extends Component {
   static propTypes = {
@@ -17,20 +17,20 @@ class NullableTask extends Component {
     measure: PropTypes.func,
     myUserId: PropTypes.string,
     task: PropTypes.object
-  };
+  }
 
   state = {
     contentState: convertFromRaw(JSON.parse(this.props.task.content))
-  };
+  }
 
   componentDidMount () {
-    this._mounted = true;
+    this._mounted = true
     if (this.props.measure) {
       setTimeout(() => {
         if (this._mounted) {
-          this.props.measure();
+          this.props.measure()
         }
-      });
+      })
     }
   }
 
@@ -38,7 +38,7 @@ class NullableTask extends Component {
     if (nextProps.task.content !== this.props.task.content) {
       this.setState({
         contentState: convertFromRaw(JSON.parse(nextProps.task.content))
-      });
+      })
     }
   }
 
@@ -47,20 +47,20 @@ class NullableTask extends Component {
       !nextProps.isPreview ||
         nextProps.task.status !== this.props.task.status ||
         nextProps.task.content !== this.props.task.content
-    );
+    )
   }
 
   componentWillUnmount () {
-    this._mounted = false;
+    this._mounted = false
   }
   render () {
-    const {area, handleAddTask, hasDragStyles, isAgenda, myUserId, task, isDragging} = this.props;
-    const {contentState} = this.state;
+    const {area, handleAddTask, hasDragStyles, isAgenda, myUserId, task, isDragging} = this.props
+    const {contentState} = this.state
     const {
       createdBy,
       assignee: {preferredName}
-    } = task;
-    const showOutcome = contentState.hasText() || createdBy === myUserId;
+    } = task
+    const showOutcome = contentState.hasText() || createdBy === myUserId
     return showOutcome ? (
       <OutcomeCardContainer
         area={area}
@@ -74,7 +74,7 @@ class NullableTask extends Component {
       />
     ) : (
       <NullCard preferredName={preferredName} />
-    );
+    )
   }
 }
 
@@ -93,4 +93,4 @@ export default createFragmentContainer(
       ...OutcomeCardContainer_task
     }
   `
-);
+)

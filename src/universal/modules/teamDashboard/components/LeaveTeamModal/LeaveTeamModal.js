@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import portal from 'react-portal-hoc';
-import {connect} from 'react-redux';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation';
-import DashModal from 'universal/components/Dashboard/DashModal';
+import PropTypes from 'prop-types'
+import React from 'react'
+import portal from 'react-portal-hoc'
+import {connect} from 'react-redux'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import Button from 'universal/components/Button/Button'
+import Type from 'universal/components/Type/Type'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
+import DashModal from 'universal/components/Dashboard/DashModal'
 
 const LeaveTeamModal = (props) => {
   const {
@@ -21,42 +21,42 @@ const LeaveTeamModal = (props) => {
     history,
     team,
     teamMember
-  } = props;
-  const {teamMembers} = team;
-  const {teamMemberId} = teamMember;
-  const teamLead = teamMembers.find((m) => m.isLead === true);
-  const teamLeadName = teamLead ? teamLead.preferredName : 'your leader';
+  } = props
+  const {teamMembers} = team
+  const {teamMemberId} = teamMember
+  const teamLead = teamMembers.find((m) => m.isLead === true)
+  const teamLeadName = teamLead ? teamLead.preferredName : 'your leader'
   const handleClick = () => {
     // the KICKED_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
-    history.push('/me');
-    closePortal();
+    history.push('/me')
+    closePortal()
     RemoveTeamMemberMutation(atmosphere, teamMemberId, {
       dispatch,
       location,
       history
-    });
-  };
+    })
+  }
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
+      <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
         Are you sure?
       </Type>
-      <Type align="center" bold marginBottom="1.5rem" scale="s4">
+      <Type align='center' bold marginBottom='1.5rem' scale='s4'>
         This will remove you from the team. <br />
         All of your tasks will be given to {teamLeadName} <br />
       </Type>
       <Button
-        buttonSize="large"
-        buttonStyle="flat"
-        colorPalette="warm"
-        icon="arrow-circle-right"
-        iconPlacement="right"
+        buttonSize='large'
+        buttonStyle='flat'
+        colorPalette='warm'
+        icon='arrow-circle-right'
+        iconPlacement='right'
         label={'Leave the team'}
         onClick={handleClick}
       />
     </DashModal>
-  );
-};
+  )
+}
 
 LeaveTeamModal.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -70,7 +70,7 @@ LeaveTeamModal.propTypes = {
   location: PropTypes.object.isRequired,
   team: PropTypes.object.isRequired,
   teamMember: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   portal({escToClose: true, closeAfter: 100})(
@@ -88,4 +88,4 @@ export default createFragmentContainer(
       teamMemberId: id
     }
   `
-);
+)

@@ -1,5 +1,5 @@
 // import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
-import {addGitHubRepoUpdater} from 'universal/mutations/AddGitHubRepoMutation';
+import {addGitHubRepoUpdater} from 'universal/mutations/AddGitHubRepoMutation'
 
 const subscription = graphql`
   subscription GitHubRepoAddedSubscription($teamId: ID!) {
@@ -16,21 +16,21 @@ const subscription = graphql`
       }
     }
   }
-`;
+`
 
 const GitHubRepoAddedSubscription = (environment, queryVariables) => {
-  const {viewerId} = environment;
-  const {teamId} = queryVariables;
+  const {viewerId} = environment
+  const {teamId} = queryVariables
   return {
     subscription,
     variables: {teamId},
     updater: (store) => {
-      const payload = store.getRootField('githubRepoAdded');
-      if (!payload) return;
-      const newNode = payload.getLinkedRecord('repo');
-      addGitHubRepoUpdater(store, viewerId, teamId, newNode);
+      const payload = store.getRootField('githubRepoAdded')
+      if (!payload) return
+      const newNode = payload.getLinkedRecord('repo')
+      addGitHubRepoUpdater(store, viewerId, teamId, newNode)
     }
-  };
-};
+  }
+}
 
-export default GitHubRepoAddedSubscription;
+export default GitHubRepoAddedSubscription

@@ -1,16 +1,16 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import ErrorBoundary from 'universal/components/ErrorBoundary';
-import withStyles from 'universal/styles/withStyles';
-import ui from 'universal/styles/ui';
-import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
+import withStyles from 'universal/styles/withStyles'
+import ui from 'universal/styles/ui'
+import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
 
 const MeetingMain = (props) => {
-  const {children, hasBoxShadow, hasHelpFor, isFacilitating, styles} = props;
-  const rootStyles = css(styles.meetingMainRoot, hasBoxShadow && styles.hasBoxShadow);
-  const innerBlockStyles = css(styles.meetingMainRoot, styles.innerBlockStyles);
-  const helpStyles = css(styles.helpStyles, isFacilitating && styles.helpIsFacilitating);
+  const {children, hasBoxShadow, hasHelpFor, isFacilitating, styles} = props
+  const rootStyles = css(styles.meetingMainRoot, hasBoxShadow && styles.hasBoxShadow)
+  const innerBlockStyles = css(styles.meetingMainRoot, styles.innerBlockStyles)
+  const helpStyles = css(styles.helpStyles, isFacilitating && styles.helpIsFacilitating)
   return (
     <ErrorBoundary>
       <div className={rootStyles}>
@@ -22,8 +22,8 @@ const MeetingMain = (props) => {
         <div className={innerBlockStyles}>{children}</div>
       </div>
     </ErrorBoundary>
-  );
-};
+  )
+}
 
 MeetingMain.propTypes = {
   children: PropTypes.any,
@@ -31,7 +31,7 @@ MeetingMain.propTypes = {
   hasHelpFor: PropTypes.string,
   isFacilitating: PropTypes.bool,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   meetingMainRoot: {
@@ -61,6 +61,6 @@ const styleThunk = () => ({
   helpIsFacilitating: {
     bottom: '5.25rem'
   }
-});
+})
 
-export default withStyles(styleThunk)(MeetingMain);
+export default withStyles(styleThunk)(MeetingMain)

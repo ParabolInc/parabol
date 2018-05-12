@@ -1,31 +1,31 @@
-import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
-import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
+import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
+import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
 import {
   addTeamMutationNotificationUpdater,
   addTeamTeamUpdater
-} from 'universal/mutations/AddTeamMutation';
-import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation';
-import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation';
-import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
-import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation';
-import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation';
-import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation';
-import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation';
-import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
-import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
+} from 'universal/mutations/AddTeamMutation'
+import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation'
+import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation'
+import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation'
+import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation'
+import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation'
+import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation'
+import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation'
+import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
+import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation'
 import {
   removeOrgUserTeamOnNext,
   removeOrgUserTeamUpdater
-} from 'universal/mutations/RemoveOrgUserMutation';
-import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
+} from 'universal/mutations/RemoveOrgUserMutation'
+import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation'
 import {
   navigateMeetingTeamOnNext,
   navigateMeetingTeamUpdater
-} from 'universal/mutations/NavigateMeetingMutation';
-import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
-import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
-import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
-import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation';
+} from 'universal/mutations/NavigateMeetingMutation'
+import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
+import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
+import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation'
+import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -63,7 +63,7 @@ const subscription = graphql`
       ...VoteForReflectionGroupMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const onNextHandlers = {
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
@@ -71,121 +71,121 @@ const onNextHandlers = {
   NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext
-};
+}
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams;
-  const {viewerId} = environment;
+  const {dispatch, history, location} = subParams
+  const {viewerId} = environment
   return {
     subscription,
     variables: {},
     updater: (store) => {
-      const payload = store.getRootField('teamSubscription');
-      if (!payload) return;
-      const type = payload.getValue('__typename');
-      const options = {store, environment, dispatch, history, location};
+      const payload = store.getRootField('teamSubscription')
+      if (!payload) return
+      const type = payload.getValue('__typename')
+      const options = {store, environment, dispatch, history, location}
       switch (type) {
         case 'AcceptTeamInvitePayload':
-          acceptTeamInviteTeamUpdater(payload, store, viewerId);
-          break;
+          acceptTeamInviteTeamUpdater(payload, store, viewerId)
+          break
         case 'AddOrgCreatorPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId, options);
-          break;
+          addOrgMutationNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'AddTeamCreatorPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId, options);
-          break;
+          addTeamMutationNotificationUpdater(payload, store, viewerId, options)
+          break
         case 'AutoGroupReflectionsPayload':
-          break;
+          break
         case 'CreateGitHubIssuePayload':
-          break;
+          break
         case 'CreateReflectionPayload':
-          createReflectionTeamUpdater(payload, store);
-          break;
+          createReflectionTeamUpdater(payload, store)
+          break
         case 'DragReflectionPayload':
-          break;
+          break
         case 'RemoveTeamMemberSelfPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options);
-          break;
+          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
+          break
         case 'RequestFacilitatorPayload':
-          requestFacilitatorTeamUpdater(payload, options);
-          break;
+          requestFacilitatorTeamUpdater(payload, options)
+          break
         case 'AddTeamMutationPayload':
-          addTeamTeamUpdater(payload, store, viewerId);
-          break;
+          addTeamTeamUpdater(payload, store, viewerId)
+          break
         case 'ArchiveTeamPayload':
-          archiveTeamTeamUpdater(payload, store, viewerId, options);
-          break;
+          archiveTeamTeamUpdater(payload, store, viewerId, options)
+          break
         case 'EditReflectionPayload':
-          editReflectionTeamUpdater(payload, store);
-          break;
+          editReflectionTeamUpdater(payload, store)
+          break
         case 'EndMeetingPayload':
-          endMeetingTeamUpdater(payload, options);
-          break;
+          endMeetingTeamUpdater(payload, options)
+          break
         case 'EndNewMeetingPayload':
-          break;
+          break
         case 'InviteTeamMembersPayload':
-          inviteTeamMembersTeamUpdater(payload, store, viewerId);
-          break;
+          inviteTeamMembersTeamUpdater(payload, store, viewerId)
+          break
         case 'KillMeetingPayload':
-          killMeetingTeamUpdater();
-          break;
+          killMeetingTeamUpdater()
+          break
         case 'MeetingCheckInPayload':
-          break;
+          break
         case 'MoveMeetingPayload':
-          break;
+          break
         case 'NavigateMeetingPayload':
-          navigateMeetingTeamUpdater(payload, store, viewerId);
-          break;
+          navigateMeetingTeamUpdater(payload, store, viewerId)
+          break
         case 'NewMeetingCheckInPayload':
-          break;
+          break
         case 'PromoteFacilitatorPayload':
-          promoteFacilitatorTeamUpdater(payload, viewerId, dispatch);
-          break;
+          promoteFacilitatorTeamUpdater(payload, viewerId, dispatch)
+          break
         case 'PromoteNewMeetingFacilitatorPayload':
-          break;
+          break
         case 'RemoveOrgUserPayload':
-          removeOrgUserTeamUpdater(payload, store, viewerId);
-          break;
+          removeOrgUserTeamUpdater(payload, store, viewerId)
+          break
         case 'RemoveReflectionPayload':
-          removeReflectionTeamUpdater(payload, store);
-          break;
+          removeReflectionTeamUpdater(payload, store)
+          break
         case 'RemoveTeamMemberPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options);
-          break;
+          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
+          break
         case 'RequestFaciltatorPayload':
-          requestFacilitatorTeamUpdater(payload, options);
-          break;
+          requestFacilitatorTeamUpdater(payload, options)
+          break
         case 'StartMeetingPayload':
-          break;
+          break
         case 'StartNewMeetingPayload':
-          break;
+          break
         case 'UpdateCreditCardPayload':
-          break;
+          break
         case 'UpdateCheckInQuestionPayload':
-          break;
+          break
         case 'UpdateReflectionContentPayload':
-          break;
+          break
         case 'UpdateReflectionGroupTitlePayload':
-          break;
+          break
         case 'UpdateReflectionLocationPayload':
-          updateReflectionLocationTeamUpdater(payload, options);
-          break;
+          updateReflectionLocationTeamUpdater(payload, options)
+          break
         case 'UpgradeToProPayload':
-          break;
+          break
         case 'VoteForReflectionGroupPayload':
-          break;
+          break
         default:
-          console.error('TeamSubscription case fail', type);
+          console.error('TeamSubscription case fail', type)
       }
     },
     onNext: ({teamSubscription}) => {
-      const {__typename: type} = teamSubscription;
-      const handler = onNextHandlers[type];
+      const {__typename: type} = teamSubscription
+      const handler = onNextHandlers[type]
       if (handler) {
-        handler(teamSubscription, {...subParams, environment});
+        handler(teamSubscription, {...subParams, environment})
       }
     }
-  };
-};
+  }
+}
 
-export default TeamSubscription;
+export default TeamSubscription

@@ -1,3 +1,3 @@
-const toTeamMemberId = (teamId, userId) => `${userId}::${teamId}`;
+const toTeamMemberId = (teamId, userId) => `${userId}::${teamId}`
 
-export default toTeamMemberId;
+export default toTeamMemberId

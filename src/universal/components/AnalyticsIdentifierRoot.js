@@ -1,9 +1,10 @@
 // @flow
-import React from 'react';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import AnalyticsIdentifier from 'universal/components/AnalyticsIdentifier';
-import {withRouter} from 'react-router-dom';
+import React from 'react'
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import AnalyticsIdentifier from 'universal/components/AnalyticsIdentifier'
+import {withRouter} from 'react-router-dom'
+import type {Location} from 'react-router-dom'
 
 const query = graphql`
   query AnalyticsIdentifierRootQuery {
@@ -11,15 +12,15 @@ const query = graphql`
       ...AnalyticsIdentifier_viewer
     }
   }
-`;
+`
 
 type Props = {|
   atmosphere: Object,
   location: Location
-|};
+|}
 
 const AnalyticsIdentifierRoot = (props: Props) => {
-  const {atmosphere, location} = props;
+  const {atmosphere, location} = props
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -31,10 +32,10 @@ const AnalyticsIdentifierRoot = (props: Props) => {
             location={location}
             viewer={renderProps ? renderProps.viewer : null}
           />
-        );
+        )
       }}
     />
-  );
-};
+  )
+}
 
-export default withRouter(withAtmosphere(AnalyticsIdentifierRoot));
+export default withRouter(withAtmosphere(AnalyticsIdentifierRoot))

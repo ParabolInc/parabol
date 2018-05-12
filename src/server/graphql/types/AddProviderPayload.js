@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLList} from 'graphql';
-import ProviderRow from 'server/graphql/types/ProviderRow';
-import Provider from 'server/graphql/types/Provider';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLList} from 'graphql'
+import ProviderRow from 'server/graphql/types/ProviderRow'
+import Provider from 'server/graphql/types/Provider'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const AddProviderPayload = new GraphQLObjectType({
   name: 'AddProviderPayload',
@@ -20,6 +20,6 @@ const AddProviderPayload = new GraphQLObjectType({
       type: TeamMember
     }
   })
-});
+})
 
-export default AddProviderPayload;
+export default AddProviderPayload

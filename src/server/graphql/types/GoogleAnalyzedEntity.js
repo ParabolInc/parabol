@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLFloat, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 
 const GoogleAnalyzedEntity = new GraphQLObjectType({
   name: 'GoogleAnalyzedEntity',
@@ -19,6 +19,6 @@ const GoogleAnalyzedEntity = new GraphQLObjectType({
         'The salience of the entity in the provided text. The salience of all entities always sums to 1'
     }
   })
-});
+})
 
-export default GoogleAnalyzedEntity;
+export default GoogleAnalyzedEntity

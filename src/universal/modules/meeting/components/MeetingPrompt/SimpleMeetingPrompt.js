@@ -1,6 +1,6 @@
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const SimpleMeetingPrompt = styled('div')({
   backgroundColor: appTheme.brand.primary.purple,
@@ -11,6 +11,6 @@ const SimpleMeetingPrompt = styled('div')({
   lineHeight: appTheme.typography.s5,
   margin: 'auto',
   padding: '.5rem 1rem'
-});
+})
 
-export default SimpleMeetingPrompt;
+export default SimpleMeetingPrompt

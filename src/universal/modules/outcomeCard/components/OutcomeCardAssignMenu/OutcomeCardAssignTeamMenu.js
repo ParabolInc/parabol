@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation';
-import styled from 'react-emotion';
-import textOverflow from 'universal/styles/helpers/textOverflow';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation'
+import styled from 'react-emotion'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const makeAssignableTeams = (props) => {
   const {
@@ -16,9 +16,9 @@ const makeAssignableTeams = (props) => {
     task: {
       team: {teamId}
     }
-  } = props;
-  return teams.filter((team) => team.teamId !== teamId);
-};
+  } = props
+  return teams.filter((team) => team.teamId !== teamId)
+}
 
 const MenuLabel = styled('div')({
   ...textOverflow,
@@ -29,28 +29,28 @@ const MenuLabel = styled('div')({
   lineHeight: ui.menuItemHeight,
   marginBottom: ui.menuGutterVertical,
   padding: `0 ${ui.menuGutterHorizontal}`
-});
+})
 
 class OutcomeCardAssignTeamMenu extends Component {
   state = {
     assignableTeams: []
-  };
+  }
 
   componentWillMount () {
-    this.state.assignableTeams = makeAssignableTeams(this.props);
+    this.state.assignableTeams = makeAssignableTeams(this.props)
   }
 
   componentWillReceiveProps (nextProps) {
     const {
       viewer: {teams}
-    } = nextProps;
+    } = nextProps
     const {
       viewer: {teams: oldTeams}
-    } = this.props;
+    } = this.props
     if (teams !== oldTeams) {
       this.setState({
         assignableTeams: makeAssignableTeams(nextProps)
-      });
+      })
     }
   }
 
@@ -61,19 +61,19 @@ class OutcomeCardAssignTeamMenu extends Component {
         taskId,
         team: {teamId: oldTeamId}
       }
-    } = this.props;
-    const {teamId} = newTeam;
+    } = this.props
+    const {teamId} = newTeam
     if (oldTeamId === teamId) {
-      return;
+      return
     }
-    ChangeTaskTeamMutation(atmosphere, {taskId, teamId});
-  };
+    ChangeTaskTeamMutation(atmosphere, {taskId, teamId})
+  }
 
   render () {
-    const {closePortal} = this.props;
-    const {assignableTeams} = this.state;
+    const {closePortal} = this.props
+    const {assignableTeams} = this.state
 
-    if (assignableTeams.length === 0) return <div />;
+    if (assignableTeams.length === 0) return <div />
     return (
       <MenuWithShortcuts ariaLabel={'Assign this task to another team'} closePortal={closePortal}>
         <MenuLabel>Move to:</MenuLabel>
@@ -84,10 +84,10 @@ class OutcomeCardAssignTeamMenu extends Component {
               label={team.teamName}
               onClick={this.handleTaskUpdate(team)}
             />
-          );
+          )
         })}
       </MenuWithShortcuts>
-    );
+    )
   }
 }
 
@@ -97,7 +97,7 @@ OutcomeCardAssignTeamMenu.propTypes = {
   closePortal: PropTypes.func.isRequired,
   task: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   withAtmosphere(OutcomeCardAssignTeamMenu),
@@ -116,4 +116,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

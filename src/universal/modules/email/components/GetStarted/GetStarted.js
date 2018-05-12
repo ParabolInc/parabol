@@ -1,24 +1,24 @@
-import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import EmptySpace from '../EmptySpace/EmptySpace';
+import React from 'react'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import EmptySpace from '../EmptySpace/EmptySpace'
 
 const GetStarted = () => {
   const linkStyle = {
     color: appTheme.palette.warm,
     fontWeight: 600
-  };
+  }
 
   const headingStyle = {
     color: ui.colorText,
     fontWeight: 600,
     textTransform: 'uppercase'
-  };
+  }
 
   const cellStyle = {
     padding: 0,
     textAlign: 'center'
-  };
+  }
 
   return (
     <table style={ui.emailTableBase}>
@@ -30,11 +30,11 @@ const GetStarted = () => {
             <br />
             {'Read '}
             <a
-              href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
-              rel="noopener noreferrer"
+              href='https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830'
+              rel='noopener noreferrer'
               style={linkStyle}
-              target="_blank"
-              title="How to Navigate Uncertainty using the Action Rhythm"
+              target='_blank'
+              title='How to Navigate Uncertainty using the Action Rhythm'
             >
               {'How to Navigate Uncertainty'}
             </a>
@@ -45,7 +45,7 @@ const GetStarted = () => {
         </tr>
       </tbody>
     </table>
-  );
-};
+  )
+}
 
-export default GetStarted;
+export default GetStarted

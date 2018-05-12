@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: GraphQLInt,
@@ -12,16 +12,16 @@ export default {
     }
   },
   async resolve (source, {teamId}, {authToken}) {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
-    const userId = getUserId(authToken);
+    const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, 0);
+      return sendTeamAccessError(authToken, teamId, 0)
     }
 
     // RESOLUTION
-    const teamMemberId = `${userId}::${teamId}`;
+    const teamMemberId = `${userId}::${teamId}`
     return r
       .table('Task')
       .between([teamId, r.minval], [teamId, r.maxval], {
@@ -35,6 +35,6 @@ export default {
           )
       )
       .count()
-      .run();
+      .run()
   }
-};
+}

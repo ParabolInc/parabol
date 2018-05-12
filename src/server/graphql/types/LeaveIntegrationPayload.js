@@ -1,5 +1,5 @@
-import {GraphQLList, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLList, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const LeaveIntegrationPayload = new GraphQLObjectType({
   name: 'LeaveIntegrationPayload',
@@ -22,6 +22,6 @@ const LeaveIntegrationPayload = new GraphQLObjectType({
         'The list of tasks removed triggered by a removed repo if this was the last viewer on the repo'
     }
   })
-});
+})
 
-export default LeaveIntegrationPayload;
+export default LeaveIntegrationPayload

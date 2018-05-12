@@ -1,10 +1,10 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import Team from 'server/graphql/types/Team';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import Task from 'server/graphql/types/Task';
-import TaskInvolvementType from 'server/graphql/types/TaskInvolvementType';
-import TeamMember from 'server/graphql/types/TeamMember';
-import TeamNotification from 'server/graphql/types/TeamNotification';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import Team from 'server/graphql/types/Team'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import Task from 'server/graphql/types/Task'
+import TaskInvolvementType from 'server/graphql/types/TaskInvolvementType'
+import TeamMember from 'server/graphql/types/TeamMember'
+import TeamNotification from 'server/graphql/types/TeamNotification'
 
 const NotifyTaskInvolves = new GraphQLObjectType({
   name: 'NotifyTaskInvolves',
@@ -24,7 +24,7 @@ const NotifyTaskInvolves = new GraphQLObjectType({
       type: Task,
       description: 'The task that now involves the userId',
       resolve: ({taskId}, args, {dataLoader}) => {
-        return dataLoader.get('tasks').load(taskId);
+        return dataLoader.get('tasks').load(taskId)
       }
     },
     changeAuthorId: {
@@ -35,7 +35,7 @@ const NotifyTaskInvolves = new GraphQLObjectType({
       type: TeamMember,
       description: 'The TeamMember of the person that made the change',
       resolve: ({changeAuthorId}, args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(changeAuthorId);
+        return dataLoader.get('teamMembers').load(changeAuthorId)
       }
     },
     teamId: {
@@ -45,10 +45,10 @@ const NotifyTaskInvolves = new GraphQLObjectType({
       type: Team,
       description: 'The team the task is on',
       resolve: ({teamId}, args, {dataLoader}) => {
-        return dataLoader.get('teams').load(teamId);
+        return dataLoader.get('teams').load(teamId)
       }
     }
   })
-});
+})
 
-export default NotifyTaskInvolves;
+export default NotifyTaskInvolves

@@ -1,12 +1,12 @@
-import publish from 'server/utils/publish';
-import {TEAM} from 'universal/utils/constants';
-import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload';
-import getRethink from 'server/database/rethinkDriver';
+import publish from 'server/utils/publish'
+import {TEAM} from 'universal/utils/constants'
+import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload'
+import getRethink from 'server/database/rethinkDriver'
 
 const promoteFirstTeamMember = (oldFacilitatorUserId, subOptions) => async (team) => {
-  const r = getRethink();
-  const now = new Date();
-  const {teamId, meetingId} = team;
+  const r = getRethink()
+  const now = new Date()
+  const {teamId, meetingId} = team
   await r
     .table('NewMeeting')
     .get(meetingId)
@@ -28,9 +28,9 @@ const promoteFirstTeamMember = (oldFacilitatorUserId, subOptions) => async (team
         updatedAt: now
       }),
       {nonAtomic: true}
-    );
-  const data = {meetingId, oldFacilitatorUserId};
-  publish(TEAM, teamId, PromoteNewMeetingFacilitatorPayload, data, subOptions);
-};
+    )
+  const data = {meetingId, oldFacilitatorUserId}
+  publish(TEAM, teamId, PromoteNewMeetingFacilitatorPayload, data, subOptions)
+}
 
-export default promoteFirstTeamMember;
+export default promoteFirstTeamMember

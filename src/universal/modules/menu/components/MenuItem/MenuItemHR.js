@@ -1,6 +1,6 @@
-import React from 'react';
-import {css} from 'react-emotion';
-import ui from 'universal/styles/ui';
+import React from 'react'
+import {css} from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 const MenuItemHR = () => {
   return (
@@ -14,7 +14,7 @@ const MenuItemHR = () => {
         padding: 0
       })}
     />
-  );
-};
+  )
+}
 
-export default MenuItemHR;
+export default MenuItemHR

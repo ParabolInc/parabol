@@ -1,5 +1,5 @@
-import makeAppLink from 'server/utils/makeAppLink';
-import sendEmailPromise from 'server/email/sendEmail';
+import makeAppLink from 'server/utils/makeAppLink'
+import sendEmailPromise from 'server/email/sendEmail'
 
 export default function createEmailPromises (inviterInfoAndTeamName, inviteesWithTokens) {
   return inviteesWithTokens.map((invitee) => {
@@ -9,7 +9,7 @@ export default function createEmailPromises (inviterInfoAndTeamName, inviteesWit
       inviteeName: invitee.fullName,
       firstTask: invitee.task,
       inviteLink: makeAppLink(`invitation/${invitee.inviteToken}`)
-    };
-    return sendEmailPromise(emailProps.inviteeEmail, 'teamInvite', emailProps);
-  });
+    }
+    return sendEmailPromise(emailProps.inviteeEmail, 'teamInvite', emailProps)
+  })
 }

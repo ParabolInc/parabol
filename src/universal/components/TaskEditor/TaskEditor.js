@@ -1,18 +1,18 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import withMarkdown from 'universal/components/TaskEditor/withMarkdown';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {textTags} from 'universal/utils/constants';
-import entitizeText from 'universal/utils/draftjs/entitizeText';
-import './Draft.css';
-import withKeyboardShortcuts from './withKeyboardShortcuts';
-import withLinks from './withLinks';
-import withSuggestions from './withSuggestions';
-import withEmojis from 'universal/components/TaskEditor/withEmojis';
+import {css} from 'aphrodite-local-styles/no-important'
+import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {textTags} from 'universal/utils/constants'
+import entitizeText from 'universal/utils/draftjs/entitizeText'
+import './Draft.css'
+import withKeyboardShortcuts from './withKeyboardShortcuts'
+import withLinks from './withLinks'
+import withSuggestions from './withSuggestions'
+import withEmojis from 'universal/components/TaskEditor/withEmojis'
 
 class TaskEditor extends Component {
   static propTypes = {
@@ -30,128 +30,128 @@ class TaskEditor extends Component {
     removeModal: PropTypes.func,
     setEditorRef: PropTypes.func.isRequired,
     styles: PropTypes.object
-  };
+  }
 
-  state = {};
+  state = {}
 
   componentDidMount () {
-    const {editorState} = this.props;
+    const {editorState} = this.props
     if (!editorState.getCurrentContent().hasText()) {
       setTimeout(() => {
         // don't pull it from this.props above because react will mutate this.props to our advantage
-        const {editorRef} = this.props;
+        const {editorRef} = this.props
         try {
-          editorRef.focus();
+          editorRef.focus()
         } catch (e) {
           // DraftEditor was unmounted before this was called
         }
-      });
+      })
     }
   }
 
   blockStyleFn = (contentBlock) => {
-    const {styles} = this.props;
-    const type = contentBlock.getType();
+    const {styles} = this.props
+    const type = contentBlock.getType()
     if (type === 'blockquote') {
-      return css(styles.editorBlockquote);
+      return css(styles.editorBlockquote)
     } else if (type === 'code-block') {
-      return css(styles.codeBlock);
+      return css(styles.codeBlock)
     }
-    return undefined;
-  };
+    return undefined
+  }
 
   removeModal = () => {
-    const {removeModal, renderModal} = this.props;
+    const {removeModal, renderModal} = this.props
     if (renderModal && removeModal) {
-      removeModal();
+      removeModal()
     }
-  };
+  }
 
   handleChange = (editorState) => {
-    const {setEditorState, handleChange} = this.props;
+    const {setEditorState, handleChange} = this.props
     if (this.entityPasteStart) {
-      const {anchorOffset, anchorKey} = this.entityPasteStart;
+      const {anchorOffset, anchorKey} = this.entityPasteStart
       const selectionState = editorState.getSelection().merge({
         anchorOffset,
         anchorKey
-      });
-      const contentState = entitizeText(editorState.getCurrentContent(), selectionState);
-      this.entityPasteStart = undefined;
+      })
+      const contentState = entitizeText(editorState.getCurrentContent(), selectionState)
+      this.entityPasteStart = undefined
       if (contentState) {
-        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'));
-        return;
+        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'))
+        return
       }
     }
     if (!editorState.getSelection().getHasFocus()) {
-      this.removeModal();
+      this.removeModal()
     } else if (handleChange) {
-      handleChange(editorState);
+      handleChange(editorState)
     }
-    setEditorState(editorState);
-  };
+    setEditorState(editorState)
+  }
 
   handleReturn = (e) => {
-    const {handleReturn} = this.props;
+    const {handleReturn} = this.props
     if (handleReturn) {
-      return handleReturn(e);
+      return handleReturn(e)
     }
-    return 'not-handled';
-  };
+    return 'not-handled'
+  }
 
   handleKeyCommand = (command) => {
-    const {handleKeyCommand} = this.props;
+    const {handleKeyCommand} = this.props
     if (handleKeyCommand) {
-      return handleKeyCommand(command);
+      return handleKeyCommand(command)
     }
-    return undefined;
-  };
+    return undefined
+  }
 
   keyBindingFn = (e) => {
-    const {keyBindingFn} = this.props;
+    const {keyBindingFn} = this.props
     if (keyBindingFn) {
-      const result = keyBindingFn(e);
+      const result = keyBindingFn(e)
       if (result) {
-        return result;
+        return result
       }
     }
     if (e.key === 'Escape') {
-      e.preventDefault();
-      this.removeModal();
-      return undefined;
+      e.preventDefault()
+      this.removeModal()
+      return undefined
     }
-    return getDefaultKeyBinding(e);
-  };
+    return getDefaultKeyBinding(e)
+  }
 
   handleBeforeInput = (char) => {
-    const {handleBeforeInput} = this.props;
+    const {handleBeforeInput} = this.props
     if (handleBeforeInput) {
-      return handleBeforeInput(char);
+      return handleBeforeInput(char)
     }
-    return undefined;
-  };
+    return undefined
+  }
 
   handlePastedText = (text) => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i];
+        const tag = textTags[i]
         if (text.indexOf(tag) !== -1) {
-          const selection = this.props.editorState.getSelection();
+          const selection = this.props.editorState.getSelection()
           this.entityPasteStart = {
             anchorOffset: selection.getAnchorOffset(),
             anchorKey: selection.getAnchorKey()
-          };
+          }
         }
       }
     }
-    return 'not-handled';
-  };
+    return 'not-handled'
+  }
 
   render () {
-    const {editorState, readOnly, renderModal, styles, setEditorRef} = this.props;
+    const {editorState, readOnly, renderModal, styles, setEditorRef} = this.props
     // console.log('es', Editor.getClipboard())
-    const noText = !editorState.getCurrentContent().hasText();
-    const rootStyles = css(styles.root, noText && styles.rootNoText);
-    const placeholder = 'Describe what “Done” looks like';
+    const noText = !editorState.getCurrentContent().hasText()
+    const rootStyles = css(styles.root, noText && styles.rootNoText)
+    const placeholder = 'Describe what “Done” looks like'
     return (
       <div className={rootStyles}>
         <Editor
@@ -169,7 +169,7 @@ class TaskEditor extends Component {
         />
         {renderModal && renderModal()}
       </div>
-    );
+    )
   }
 }
 
@@ -201,8 +201,8 @@ const styleThunk = () => ({
     margin: '0',
     padding: '0 .5rem'
   }
-});
+})
 
 export default withSuggestions(
   withEmojis(withLinks(withMarkdown(withKeyboardShortcuts(withStyles(styleThunk)(TaskEditor)))))
-);
+)

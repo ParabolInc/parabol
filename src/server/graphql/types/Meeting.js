@@ -5,12 +5,12 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
-import MeetingTask from 'server/graphql/types/MeetingTask';
-import TeamMember from 'server/graphql/types/TeamMember';
+} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import MeetingInvitee from 'server/graphql/types/MeetingInvitee'
+import MeetingTask from 'server/graphql/types/MeetingTask'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const Meeting = new GraphQLObjectType({
   name: 'Meeting',
@@ -77,14 +77,14 @@ const Meeting = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
       resolve ({teamId}) {
-        const r = getRethink();
+        const r = getRethink()
         return r
           .table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
-          .run();
+          .run()
       }
     }
   })
-});
+})
 
-export default Meeting;
+export default Meeting

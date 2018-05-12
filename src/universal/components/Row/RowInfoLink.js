@@ -1,8 +1,8 @@
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import styled from 'react-emotion';
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import styled from 'react-emotion'
 
-const color = appTheme.palette.mid;
+const color = appTheme.palette.mid
 
 const RowInfoLink = styled('a')({
   ...ui.rowSubheading,
@@ -11,6 +11,6 @@ const RowInfoLink = styled('a')({
     color,
     textDecoration: 'underline'
   }
-});
+})
 
-export default RowInfoLink;
+export default RowInfoLink

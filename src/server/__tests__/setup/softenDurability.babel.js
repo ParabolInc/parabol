@@ -1,4 +1,4 @@
-require('babel-register');
-const softenDurability = require('./softenDurability');
+require('babel-register')
+const softenDurability = require('./softenDurability')
 
-softenDurability.default();
+softenDurability.default()

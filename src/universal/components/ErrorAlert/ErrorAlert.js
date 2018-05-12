@@ -5,20 +5,20 @@
  *
  * @flow
  */
-import React from 'react';
-import tinycolor from 'tinycolor2';
-import styled from 'react-emotion';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import React from 'react'
+import tinycolor from 'tinycolor2'
+import styled from 'react-emotion'
+import FontAwesome from 'react-fontawesome'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 type Props = {
   message: string
-};
+}
 
 const backgroundColor = tinycolor(ui.colorError)
   .setAlpha(0.2)
-  .toRgbString();
+  .toRgbString()
 
 const ErrorAlertWrapper = styled('div')({
   backgroundColor,
@@ -26,20 +26,20 @@ const ErrorAlertWrapper = styled('div')({
   fontSize: appTheme.typography.s3,
   marginBottom: '1rem',
   padding: '.5rem 1rem'
-});
+})
 
 const SpacedIcon = styled(FontAwesome)({
   fontSize: ui.iconSize,
   marginRight: '.5rem'
-});
+})
 
 const ErrorAlert = ({message}: Props) => {
   return (
-    <ErrorAlertWrapper role="alert">
-      <SpacedIcon name="exclamation-circle" />
+    <ErrorAlertWrapper role='alert'>
+      <SpacedIcon name='exclamation-circle' />
       <span>{message}</span>
     </ErrorAlertWrapper>
-  );
-};
+  )
+}
 
-export default ErrorAlert;
+export default ErrorAlert

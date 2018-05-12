@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveAgendaItem, resolveTeam} from 'server/graphql/resolvers';
-import AgendaItem from 'server/graphql/types/AgendaItem';
-import Team from 'server/graphql/types/Team';
+import {GraphQLObjectType} from 'graphql'
+import {resolveAgendaItem, resolveTeam} from 'server/graphql/resolvers'
+import AgendaItem from 'server/graphql/types/AgendaItem'
+import Team from 'server/graphql/types/Team'
 
 const MeetingMoved = new GraphQLObjectType({
   name: 'MeetingMoved',
@@ -16,6 +16,6 @@ const MeetingMoved = new GraphQLObjectType({
       resolve: resolveAgendaItem
     }
   })
-});
+})
 
-export default MeetingMoved;
+export default MeetingMoved

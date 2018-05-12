@@ -1,18 +1,18 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload';
-import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import shortid from 'shortid';
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload'
+import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import shortid from 'shortid'
 import {
   BILLING_LEADER,
   billingLeaderTypes,
   ORGANIZATION,
   PROMOTE_TO_BILLING_LEADER
-} from 'universal/utils/constants';
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
-import sendAuthRaven from 'server/utils/sendAuthRaven';
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
+} from 'universal/utils/constants'
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
+import sendAuthRaven from 'server/utils/sendAuthRaven'
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 
 export default {
   type: SetOrgUserRolePayload,
@@ -32,14 +32,14 @@ export default {
     }
   },
   async resolve (source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const now = new Date();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
     // AUTH
-    const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
+    const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId)
     if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc);
+      return sendOrgLeadAccessError(authToken, userOrgDoc)
     }
 
     // VALIDATION
@@ -48,8 +48,8 @@ export default {
         message: 'Invalid role',
         category: 'Unauthorized Access',
         data: {role, orgId, userId}
-      };
-      return sendAuthRaven(authToken, 'Set org user role', breadcrumb);
+      }
+      return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
     }
     // if someone is leaving, make sure there is someone else to take their place
     if (userId === authToken.sub) {
@@ -59,14 +59,14 @@ export default {
         .filter({
           role: BILLING_LEADER
         })
-        .count();
+        .count()
       if (leaderCount === 1) {
         const breadcrumb = {
           message: 'You’re the last leader, you can’t give that up',
           category: 'Unauthorized Access',
           data: {role, orgId, userId}
-        };
-        return sendAuthRaven(authToken, 'Set org user role', breadcrumb);
+        }
+        return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
       }
     }
 
@@ -83,7 +83,7 @@ export default {
                 role
               }),
               userOrg
-            );
+            )
           }),
           updatedAt: now
         })),
@@ -99,28 +99,28 @@ export default {
                   role
                 }),
                 orgUser
-              );
+              )
             }),
             updatedAt: now
           }),
           {returnChanges: true}
         )('changes')(0)
-    });
-    const {old_val: oldOrg, new_val: organization} = organizationChanges;
-    const oldUser = oldOrg.orgUsers.find((orgUser) => orgUser.id === userId);
-    const newUser = organization.orgUsers.find((orgUser) => orgUser.id === userId);
+    })
+    const {old_val: oldOrg, new_val: organization} = organizationChanges
+    const oldUser = oldOrg.orgUsers.find((orgUser) => orgUser.id === userId)
+    const newUser = organization.orgUsers.find((orgUser) => orgUser.id === userId)
     if (oldUser.role === newUser.role) {
-      return null;
+      return null
     }
     if (role === BILLING_LEADER) {
-      const promotionNotificationId = shortid.generate();
+      const promotionNotificationId = shortid.generate()
       const promotionNotification = {
         id: promotionNotificationId,
         type: PROMOTE_TO_BILLING_LEADER,
         startAt: now,
         orgId,
         userIds: [userId]
-      };
+      }
       const {existingNotificationIds} = await r({
         insert: r.table('Notification').insert(promotionNotification),
         existingNotificationIds: r
@@ -134,14 +134,14 @@ export default {
             {returnChanges: true}
           )('changes')('new_val')
           .default([])
-      });
-      const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId);
+      })
+      const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId)
       // add the org to the list of owned orgs
-      const data = {orgId, userId, notificationIdsAdded};
-      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
-      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
-      await sendSegmentIdentify(userId);
-      return data;
+      const data = {orgId, userId, notificationIdsAdded}
+      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
+      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
+      await sendSegmentIdentify(userId)
+      return data
     }
     if (role === null) {
       const {oldPromotion, removedNotifications} = await r({
@@ -165,14 +165,14 @@ export default {
             {returnChanges: true}
           )('changes')('new_val')
           .default([])
-      });
-      const notificationsRemoved = removedNotifications.concat(oldPromotion);
-      const data = {orgId, userId, notificationsRemoved};
-      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions);
-      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions);
-      await sendSegmentIdentify(userId);
-      return data;
+      })
+      const notificationsRemoved = removedNotifications.concat(oldPromotion)
+      const data = {orgId, userId, notificationsRemoved}
+      publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
+      publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
+      await sendSegmentIdentify(userId)
+      return data
     }
-    return null;
+    return null
   }
-};
+}

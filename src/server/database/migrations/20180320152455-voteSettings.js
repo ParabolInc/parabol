@@ -1,8 +1,8 @@
-import {RETROSPECTIVE} from 'universal/utils/constants';
+import {RETROSPECTIVE} from 'universal/utils/constants'
 
 exports.up = async (r) => {
   try {
-    await r.tableCreate('MeetingMember');
+    await r.tableCreate('MeetingMember')
   } catch (e) {
     // noop
   }
@@ -11,7 +11,7 @@ exports.up = async (r) => {
       r.table('MeetingMember').indexCreate('meetingId'),
       r.table('MeetingMember').indexCreate('teamId'),
       r.table('MeetingMember').indexCreate('userId')
-    ]);
+    ])
   } catch (e) {
     // noop
   }
@@ -22,24 +22,24 @@ exports.up = async (r) => {
       .update({
         totalVotes: 5,
         maxVotesPerGroup: 3
-      });
+      })
   } catch (e) {
     // noop
   }
-};
+}
 
 exports.down = async (r) => {
   try {
     await r
       .table('MeetingSettings')
       .filter({meetingType: RETROSPECTIVE})
-      .replace((settings) => settings.without('totalVotes', 'maxVotesPerGroup'));
+      .replace((settings) => settings.without('totalVotes', 'maxVotesPerGroup'))
   } catch (e) {
     // noop
   }
   try {
-    await r.tableDrop('MeetingMember');
+    await r.tableDrop('MeetingMember')
   } catch (e) {
     // noop
   }
-};
+}

@@ -1,13 +1,13 @@
-import {Editor, EditorState} from 'draft-js';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import editorDecorators from 'universal/components/TaskEditor/decorators';
-import appTheme from 'universal/styles/theme/appTheme';
-import labels from 'universal/styles/theme/labels';
-import ui from 'universal/styles/ui';
-import truncateCard from 'universal/utils/draftjs/truncateCard';
-import isTaskPrivate from 'universal/utils/isTaskPrivate';
-import EmptySpace from '../EmptySpace/EmptySpace';
+import {Editor, EditorState} from 'draft-js'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import editorDecorators from 'universal/components/TaskEditor/decorators'
+import appTheme from 'universal/styles/theme/appTheme'
+import labels from 'universal/styles/theme/labels'
+import ui from 'universal/styles/ui'
+import truncateCard from 'universal/utils/draftjs/truncateCard'
+import isTaskPrivate from 'universal/utils/isTaskPrivate'
+import EmptySpace from '../EmptySpace/EmptySpace'
 
 class Card extends Component {
   constructor (props) {
@@ -53,7 +53,7 @@ class Card extends Component {
     }
 
     return (
-      <table style={ui.emailTableBase} width="100%">
+      <table style={ui.emailTableBase} width='100%'>
         <tbody>
           <tr>
             <td style={cellStyle}>

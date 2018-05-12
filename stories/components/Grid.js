@@ -1,4 +1,4 @@
-import styled from 'react-emotion';
+import styled from 'react-emotion'
 
 const Grid = styled('div')({
   alignItems: 'start',
@@ -7,6 +7,6 @@ const Grid = styled('div')({
   gridTemplateRows: '1fr 1fr 1fr',
   height: '100%',
   justifyItems: 'start'
-});
+})
 
-export default Grid;
+export default Grid

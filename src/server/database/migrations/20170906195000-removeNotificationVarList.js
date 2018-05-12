@@ -13,7 +13,7 @@ exports.up = async (r) => {
             teamId: row('varList')(3),
             teamName: row('varList')(4)
           })
-          .without('varList');
+          .without('varList')
       }),
     r
       .table('Notification')
@@ -23,7 +23,7 @@ exports.up = async (r) => {
           .merge({
             teamName: row('varList')(0)
           })
-          .without('varList');
+          .without('varList')
       }),
     r
       .table('Notification')
@@ -33,16 +33,16 @@ exports.up = async (r) => {
           .merge({
             trialExpiresAt: row('varList')(0)
           })
-          .without('varList');
+          .without('varList')
       })
-  ];
+  ]
   try {
-    await Promise.all(tables);
+    await Promise.all(tables)
   } catch (e) {
-    console.log('Exception during Promise.all(tables)');
+    console.log('Exception during Promise.all(tables)')
   }
-};
+}
 
 exports.down = async () => {
   // noop
-};
+}

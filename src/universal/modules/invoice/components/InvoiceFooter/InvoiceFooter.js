@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import lockup from 'universal/styles/theme/images/brand/parabol-lockup-v-dark.svg';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import lockup from 'universal/styles/theme/images/brand/parabol-lockup-v-dark.svg'
 
 const InvoiceFooter = (props) => {
-  const {styles} = props;
+  const {styles} = props
 
   return (
     <div className={css(styles.footer)}>
@@ -15,11 +15,11 @@ const InvoiceFooter = (props) => {
         {'Questions? Concerns?'}
         <br />
         {'Get in touch: '}
-        <a href="mailto:billing@parabol.co" title="Contact Us">
+        <a href='mailto:billing@parabol.co' title='Contact Us'>
           <b>{'billing@parabol.co'}</b>
         </a>
       </div>
-      <img alt="Logo for Parabol" className={css(styles.lockup)} src={lockup} />
+      <img alt='Logo for Parabol' className={css(styles.lockup)} src={lockup} />
       <div className={css(styles.finePrint)}>
         {'Parabol, Inc.'}
         <br />
@@ -29,21 +29,21 @@ const InvoiceFooter = (props) => {
         <br />
         {'United States'}
         <br />
-        <a href="tel:6122275673" title="Call us: 612-227-5673">
+        <a href='tel:6122275673' title='Call us: 612-227-5673'>
           {'612-227-5673'}
         </a>
         <br />
-        <a href="mailto:love@parabol.co" title="Email us:love@parabol.co">
+        <a href='mailto:love@parabol.co' title='Email us:love@parabol.co'>
           {'love@parabol.co'}
         </a>
       </div>
     </div>
-  );
-};
+  )
+}
 
 InvoiceFooter.propTypes = {
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   footer: {
@@ -72,6 +72,6 @@ const styleThunk = () => ({
     lineHeight: '1.5',
     margin: '1rem auto 0'
   }
-});
+})
 
-export default withStyles(styleThunk)(InvoiceFooter);
+export default withStyles(styleThunk)(InvoiceFooter)

@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import portal from 'react-portal-hoc';
-import {createFragmentContainer} from 'react-relay';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import DashModal from 'universal/components/Dashboard/DashModal';
+import PropTypes from 'prop-types'
+import React from 'react'
+import portal from 'react-portal-hoc'
+import {createFragmentContainer} from 'react-relay'
+import Button from 'universal/components/Button/Button'
+import Type from 'universal/components/Type/Type'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import DashModal from 'universal/components/Dashboard/DashModal'
 
 const PromoteTeamMemberModal = (props) => {
   const {
@@ -20,19 +20,19 @@ const PromoteTeamMemberModal = (props) => {
     onError,
     onCompleted,
     teamMember
-  } = props;
-  const {preferredName, teamMemberId} = teamMember;
+  } = props
+  const {preferredName, teamMemberId} = teamMember
   const handleClick = () => {
-    submitMutation();
-    PromoteToTeamLeadMutation(atmosphere, teamMemberId, onError, onCompleted);
-    closePortal();
-  };
+    submitMutation()
+    PromoteToTeamLeadMutation(atmosphere, teamMemberId, onError, onCompleted)
+    closePortal()
+  }
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
-      <Type align="center" bold marginBottom="1.5rem" scale="s7" colorPalette="warm">
+      <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
         Are you sure?
       </Type>
-      <Type align="center" bold marginBottom="1.5rem" scale="s4">
+      <Type align='center' bold marginBottom='1.5rem' scale='s4'>
         You will be removed as the team leader <br />
         and promote {preferredName}. You will no<br />
         longer be able to change team membership.<br />
@@ -40,18 +40,18 @@ const PromoteTeamMemberModal = (props) => {
         This cannot be undone!<br />
       </Type>
       <Button
-        buttonSize="large"
-        buttonStyle="flat"
-        colorPalette="warm"
-        icon="arrow-circle-right"
-        iconPlacement="right"
+        buttonSize='large'
+        buttonStyle='flat'
+        colorPalette='warm'
+        icon='arrow-circle-right'
+        iconPlacement='right'
         label={`Yes, promote ${preferredName}`}
         onClick={handleClick}
         waiting={submitting}
       />
     </DashModal>
-  );
-};
+  )
+}
 
 PromoteTeamMemberModal.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -64,7 +64,7 @@ PromoteTeamMemberModal.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired
-};
+}
 
 export default createFragmentContainer(
   portal({escToClose: true, closeAfter: 100})(
@@ -76,4 +76,4 @@ export default createFragmentContainer(
       preferredName
     }
   `
-);
+)

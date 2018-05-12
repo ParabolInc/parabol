@@ -1,9 +1,9 @@
-import {GraphQLInterfaceType} from 'graphql';
-import {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
-import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
+import {GraphQLInterfaceType} from 'graphql'
+import {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
+import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
 
-import {KICKED_OUT, TEAM_ARCHIVED} from 'universal/utils/constants';
+import {KICKED_OUT, TEAM_ARCHIVED} from 'universal/utils/constants'
 
 const TeamRemovedNotification = new GraphQLInterfaceType({
   name: 'TeamRemovedNotification',
@@ -14,10 +14,10 @@ const TeamRemovedNotification = new GraphQLInterfaceType({
     const resolveTypeLookup = {
       [KICKED_OUT]: NotifyKickedOut,
       [TEAM_ARCHIVED]: NotifyTeamArchived
-    };
+    }
 
-    return resolveTypeLookup[value.type];
+    return resolveTypeLookup[value.type]
   }
-});
+})
 
-export default TeamRemovedNotification;
+export default TeamRemovedNotification

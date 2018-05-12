@@ -1,69 +1,69 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import {EditorState} from 'draft-js';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {Field, reduxForm} from 'redux-form';
-import Button from 'universal/components/Button/Button';
-import PlainInputField from 'universal/components/PlainInputField/PlainInputField';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import completeEntity from 'universal/utils/draftjs/completeEnitity';
-import linkify from 'universal/utils/linkify';
-import shouldValidate from 'universal/validation/shouldValidate';
-import changerValidation from './changerValidation';
+import {css} from 'aphrodite-local-styles/no-important'
+import {EditorState} from 'draft-js'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {Field, reduxForm} from 'redux-form'
+import Button from 'universal/components/Button/Button'
+import PlainInputField from 'universal/components/PlainInputField/PlainInputField'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import completeEntity from 'universal/utils/draftjs/completeEnitity'
+import linkify from 'universal/utils/linkify'
+import shouldValidate from 'universal/validation/shouldValidate'
+import changerValidation from './changerValidation'
 
 const validate = (values) => {
-  const schema = changerValidation();
-  return schema(values).errors;
-};
+  const schema = changerValidation()
+  return schema(values).errors
+}
 
 class EditorLinkChanger extends Component {
   componentWillMount () {
-    const {trackEditingComponent} = this.props;
+    const {trackEditingComponent} = this.props
     if (trackEditingComponent) {
-      trackEditingComponent('editor-link-changer', true);
+      trackEditingComponent('editor-link-changer', true)
     }
   }
 
   componentWillUnmount () {
-    const {trackEditingComponent} = this.props;
+    const {trackEditingComponent} = this.props
     if (trackEditingComponent) {
-      trackEditingComponent('editor-link-changer', false);
+      trackEditingComponent('editor-link-changer', false)
     }
   }
 
   onSubmit = (submissionData) => {
-    const {editorState, editorRef, removeModal, selectionState, setEditorState} = this.props;
-    const schema = changerValidation();
-    const {data} = schema(submissionData);
-    const href = linkify.match(data.link)[0].url;
-    removeModal(true);
-    const focusedEditorState = EditorState.forceSelection(editorState, selectionState);
+    const {editorState, editorRef, removeModal, selectionState, setEditorState} = this.props
+    const schema = changerValidation()
+    const {data} = schema(submissionData)
+    const href = linkify.match(data.link)[0].url
+    removeModal(true)
+    const focusedEditorState = EditorState.forceSelection(editorState, selectionState)
     const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text, {
       keepSelection: true
-    });
-    setEditorState(nextEditorState);
-    setTimeout(() => editorRef.focus(), 0);
-  };
+    })
+    setEditorState(nextEditorState)
+    setTimeout(() => editorRef.focus(), 0)
+  }
 
   handleBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      this.props.removeModal(true);
+      this.props.removeModal(true)
     }
-  };
+  }
 
   handleKeyDown = (e) => {
     if (e.key === 'Escape') {
-      const {editorRef, removeModal} = this.props;
-      removeModal(true);
-      setTimeout(() => editorRef.focus(), 0);
+      const {editorRef, removeModal} = this.props
+      removeModal(true)
+      setTimeout(() => editorRef.focus(), 0)
     }
-  };
+  }
 
   render () {
-    const {link, styles, handleSubmit, valid, innerRef, text} = this.props;
+    const {link, styles, handleSubmit, valid, innerRef, text} = this.props
 
-    const label = text ? 'Update' : 'Add';
+    const label = text ? 'Update' : 'Add'
     return (
       <div
         className={css(styles.modal)}
@@ -76,7 +76,7 @@ class EditorLinkChanger extends Component {
           {text !== null && (
             <div className={css(styles.textBlock)}>
               <span className={css(styles.inputLabel)}>{'Text'}</span>
-              <Field autoFocus component={PlainInputField} fieldSize="small" name="text" />
+              <Field autoFocus component={PlainInputField} fieldSize='small' name='text' />
             </div>
           )}
           <div className={css(styles.textBlock)}>
@@ -84,25 +84,25 @@ class EditorLinkChanger extends Component {
             <Field
               autoFocus={link === null && text !== ''}
               component={PlainInputField}
-              fieldSize="small"
-              name="link"
+              fieldSize='small'
+              name='link'
               spellCheck={false}
             />
           </div>
           <div className={css(styles.buttonBlock)}>
             <Button
-              buttonSize="small"
-              buttonStyle="solid"
-              colorPalette="mid"
+              buttonSize='small'
+              buttonStyle='solid'
+              colorPalette='mid'
               disabled={!valid}
               label={label}
-              type="submit"
+              type='submit'
               onClick={handleSubmit(this.onSubmit)}
             />
           </div>
         </form>
       </div>
-    );
+    )
   }
 }
 
@@ -123,7 +123,7 @@ EditorLinkChanger.propTypes = {
   text: PropTypes.string,
   top: PropTypes.number,
   valid: PropTypes.bool
-};
+}
 
 const styleThunk = () => ({
   modal: {
@@ -156,11 +156,11 @@ const styleThunk = () => ({
     display: 'flex',
     justifyContent: 'flex-end'
   }
-});
+})
 
 export default reduxForm({
   form: 'linkChanger',
   validate,
   shouldValidate,
   immutableProps: ['editorState', 'selectionState']
-})(withStyles(styleThunk)(EditorLinkChanger));
+})(withStyles(styleThunk)(EditorLinkChanger))

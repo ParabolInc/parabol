@@ -1,6 +1,6 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import Organization from 'server/graphql/types/Organization';
-import {getUserId} from 'server/utils/authorization';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import Organization from 'server/graphql/types/Organization'
+import {getUserId} from 'server/utils/authorization'
 
 export default {
   type: Organization,
@@ -13,17 +13,17 @@ export default {
   description: 'get a single organization and the count of users by status',
   resolve: async (source, {orgId}, {authToken, dataLoader}) => {
     // AUTH
-    const viewerId = getUserId(authToken);
-    const org = await dataLoader.get('organizations').load(orgId);
+    const viewerId = getUserId(authToken)
+    const org = await dataLoader.get('organizations').load(orgId)
 
-    const {orgUsers} = org;
-    const myOrgUser = orgUsers.find((user) => user.id === viewerId);
+    const {orgUsers} = org
+    const myOrgUser = orgUsers.find((user) => user.id === viewerId)
     if (!myOrgUser) {
       // silently fail if not in org
-      return null;
+      return null
     }
 
     // RESOLUTION
-    return org;
+    return org
   }
-};
+}

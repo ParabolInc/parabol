@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
   fragment UpdateNewCheckInQuestionMutation_team on UpdateNewCheckInQuestionPayload {
@@ -10,7 +10,7 @@ graphql`
       }
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpdateNewCheckInQuestionMutation($meetingId: ID!, $checkInQuestion: String!) {
@@ -21,22 +21,22 @@ const mutation = graphql`
       ...UpdateNewCheckInQuestionMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const UpdateNewCheckInQuestionMutation = (environment, variables, onCompleted, onError) => {
   return commitMutation(environment, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
-      const {meetingId, checkInQuestion} = variables;
-      const meeting = store.get(meetingId);
-      const phases = meeting.getLinkedRecords('phases');
-      const checkInPhase = phases.find((phase) => phase.getValue('__typename') === 'CheckInPhase');
-      checkInPhase.setValue(checkInQuestion, 'checkInQuestion');
+      const {meetingId, checkInQuestion} = variables
+      const meeting = store.get(meetingId)
+      const phases = meeting.getLinkedRecords('phases')
+      const checkInPhase = phases.find((phase) => phase.getValue('__typename') === 'CheckInPhase')
+      checkInPhase.setValue(checkInQuestion, 'checkInQuestion')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default UpdateNewCheckInQuestionMutation;
+export default UpdateNewCheckInQuestionMutation

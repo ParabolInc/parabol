@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import Team from 'server/graphql/types/Team';
-import {resolveTeam} from 'server/graphql/resolvers';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import Team from 'server/graphql/types/Team'
+import {resolveTeam} from 'server/graphql/resolvers'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const UpdateCheckInQuestionPayload = new GraphQLObjectType({
   name: 'UpdateCheckInQuestionPayload',
@@ -14,6 +14,6 @@ const UpdateCheckInQuestionPayload = new GraphQLObjectType({
       resolve: resolveTeam
     }
   })
-});
+})
 
-export default UpdateCheckInQuestionPayload;
+export default UpdateCheckInQuestionPayload

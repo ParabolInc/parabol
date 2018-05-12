@@ -12,7 +12,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 
 /* Groups used for equality and navigation purposes. Could probably be refactored, but I'm not sure the best way */
 export const phaseTypeToPhaseGroup = {
@@ -27,7 +27,7 @@ export const phaseTypeToPhaseGroup = {
   [GROUP]: GROUP,
   [VOTE]: VOTE,
   [DISCUSS]: DISCUSS
-};
+}
 
 /* These are the labels show to the viewer */
 export const phaseLabelLookup = {
@@ -40,24 +40,24 @@ export const phaseLabelLookup = {
   [FIRST_CALL]: 'First Call',
   [AGENDA_ITEMS]: 'Team Agenda',
   [LAST_CALL]: 'Last Call'
-};
+}
 
 export const phaseDescriptionLookup = {
   [REFLECT]: 'Add anonymous reflections for each prompt',
   [GROUP]: 'Drag cards to group by common topics',
   [VOTE]: 'Vote on the themes you want to discuss',
   [DISCUSS]: 'Create takeaway task cards to capture next steps'
-};
+}
 
 export const meetingTypeToSlug = {
   [RETROSPECTIVE]: 'retro',
   [ACTION]: 'meeting'
-};
+}
 
 export const meetingTypeToLabel = {
   [RETROSPECTIVE]: 'Retrospective',
   [ACTION]: 'Action'
-};
+}
 
 export const phaseTypeToSlug = {
   [CHECKIN]: 'checkin',
@@ -65,7 +65,7 @@ export const phaseTypeToSlug = {
   [GROUP]: 'group',
   [VOTE]: 'vote',
   [DISCUSS]: 'discuss'
-};
+}
 
 export const phaseIsMultiStage = {
   [CHECKIN]: true,
@@ -73,4 +73,4 @@ export const phaseIsMultiStage = {
   [GROUP]: false,
   [VOTE]: false,
   [DISCUSS]: true
-};
+}

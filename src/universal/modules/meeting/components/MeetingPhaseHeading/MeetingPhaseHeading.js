@@ -1,23 +1,23 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import Type from 'universal/components/Type/Type';
+import PropTypes from 'prop-types'
+import React from 'react'
+import Type from 'universal/components/Type/Type'
 
 const MeetingPhaseHeading = (props) => {
-  const {align, children} = props;
+  const {align, children} = props
   return (
-    <Type align={align} bold family="serif" scale="s7" colorPalette="dark">
+    <Type align={align} bold family='serif' scale='s7' colorPalette='dark'>
       {children}
     </Type>
-  );
-};
+  )
+}
 
 MeetingPhaseHeading.propTypes = {
   align: PropTypes.oneOf(['left', 'center', 'right']),
   children: PropTypes.any
-};
+}
 
 MeetingPhaseHeading.defaultProps = {
   align: 'left'
-};
+}
 
-export default MeetingPhaseHeading;
+export default MeetingPhaseHeading

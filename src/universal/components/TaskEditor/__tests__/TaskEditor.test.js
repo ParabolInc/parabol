@@ -1,3 +1,4 @@
+/* eslint-env jest */
 // import {StyleSheetTestUtils} from 'aphrodite-local-styles';
 // import {EditorState} from 'draft-js';
 // import {mount} from 'enzyme';
@@ -48,8 +49,8 @@ describe('TaskEditor', () => {
     //    });
     //  expect(props.editorState.getCurrentContent().getPlainText()).toEqual('S');
     //  expect(props.editorRef).toBeDefined();
-    expect(true).toBe(true);
-  });
+    expect(true).toBe(true)
+  })
   // test.only('open suggestions when triggered by #', () => {
   //  const props = new EditorProps();
   //  const component = <TaskEditor {...props}/>;
@@ -65,4 +66,4 @@ describe('TaskEditor', () => {
   //  //expect(props.editorState.getCurrentContent().getPlainText()).toEqual('S');
   //  expect(wrapper2.prop('renderModal')).toBeDefined();
   // });
-});
+})

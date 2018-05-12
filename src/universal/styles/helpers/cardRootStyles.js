@@ -1,4 +1,4 @@
-import ui from 'universal/styles/ui';
+import ui from 'universal/styles/ui'
 
 const cardRootStyles = {
   backgroundColor: ui.palette.white,
@@ -7,6 +7,6 @@ const cardRootStyles = {
   boxShadow: ui.cardBoxShadow,
   position: 'relative',
   width: '100%'
-};
+}
 
-export default cardRootStyles;
+export default cardRootStyles

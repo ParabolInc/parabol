@@ -4,19 +4,19 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState} from 'draft-js';
-import React from 'react';
-import shortid from 'shortid';
-import {action} from '@storybook/addon-actions';
-import {storiesOf} from '@storybook/react';
+import {ContentState} from 'draft-js'
+import React from 'react'
+import shortid from 'shortid'
+import {action} from '@storybook/addon-actions'
+import {storiesOf} from '@storybook/react'
 
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
+import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 
-import Grid from './components/Grid';
-import RetroBackground from './components/RetroBackground';
-import StoryContainer from './components/StoryContainer';
+import Grid from './components/Grid'
+import RetroBackground from './components/RetroBackground'
+import StoryContainer from './components/StoryContainer'
 
-const newReflectionId = () => shortid.generate();
+const newReflectionId = () => shortid.generate()
 
 storiesOf('Reflection Card', module)
   .add('with no contents', () => (
@@ -123,20 +123,20 @@ storiesOf('Reflection Card', module)
               )}
               iAmDragging
               id={newReflectionId()}
-              userDragging="Dan"
+              userDragging='Dan'
             />
             <ReflectionCard
               contentState={ContentState.createFromText(
                 'Holding the original place for another user as they drag'
               )}
               id={newReflectionId()}
-              userDragging="Terry"
+              userDragging='Terry'
             />
             <ReflectionCard
               contentState={ContentState.createFromText('Pulled under the mouse')}
               id={newReflectionId()}
               pulled
-              userDragging="Dan"
+              userDragging='Dan'
             />
             <ReflectionCard
               id={newReflectionId()}
@@ -147,4 +147,4 @@ storiesOf('Reflection Card', module)
         )}
       />
     </RetroBackground>
-  ));
+  ))

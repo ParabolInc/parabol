@@ -1,14 +1,14 @@
-import {GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput';
-import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload';
-import {getUserId, isAuthenticated} from 'server/utils/authorization';
-import makeUserServerSchema from 'universal/validation/makeUserServerSchema';
-import publish from 'server/utils/publish';
-import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants';
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
-import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors';
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
+import {GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import UpdateUserProfileInput from 'server/graphql/types/UpdateUserProfileInput'
+import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload'
+import {getUserId, isAuthenticated} from 'server/utils/authorization'
+import makeUserServerSchema from 'universal/validation/makeUserServerSchema'
+import publish from 'server/utils/publish'
+import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants'
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
+import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors'
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -19,27 +19,27 @@ const updateUserProfile = {
     }
   },
   async resolve (source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const now = new Date();
-    const operationId = dataLoader.share();
-    const subOptions = {operationId, mutatorId};
+    const r = getRethink()
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {operationId, mutatorId}
 
     // AUTH
-    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError();
-    const userId = getUserId(authToken);
+    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError()
+    const userId = getUserId(authToken)
 
     // VALIDATION
-    const schema = makeUserServerSchema();
-    const {data: validUpdatedUser, errors} = schema(updatedUser);
+    const schema = makeUserServerSchema()
+    const {data: validUpdatedUser, errors} = schema(updatedUser)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors);
+      return sendFailedInputValidation(authToken, errors)
     }
 
     // RESOLUTION
     const updates = {
       ...validUpdatedUser,
       updatedAt: now
-    };
+    }
     // propagate denormalized changes to TeamMember
     const {user, teamMembers} = await r({
       teamMembers: r
@@ -52,7 +52,7 @@ const updateUserProfile = {
         .get(userId)
         .update(updates, {returnChanges: true})('changes')(0)('new_val')
         .default(null)
-    });
+    })
     //
     // If we ever want to delete the previous profile images:
     //
@@ -63,16 +63,16 @@ const updateUserProfile = {
     //   .catch(console.warn.bind(console));
     // }
     //
-    await sendSegmentIdentify(user.id);
-    const teamMemberIds = teamMembers.map(({id}) => id);
-    const teamIds = teamMembers.map(({teamId}) => teamId);
-    const data = {userId, teamMemberIds};
+    await sendSegmentIdentify(user.id)
+    const teamMemberIds = teamMembers.map(({id}) => id)
+    const teamIds = teamMembers.map(({teamId}) => teamId)
+    const data = {userId, teamMemberIds}
     teamIds.forEach((teamId) => {
-      publish(TEAM_MEMBER, teamId, UpdateUserProfilePayload, data, subOptions);
-    });
-    publish(NOTIFICATION, userId, UpdateUserProfilePayload, data, subOptions);
-    return data;
+      publish(TEAM_MEMBER, teamId, UpdateUserProfilePayload, data, subOptions)
+    })
+    publish(NOTIFICATION, userId, UpdateUserProfilePayload, data, subOptions)
+    return data
   }
-};
+}
 
-export default updateUserProfile;
+export default updateUserProfile

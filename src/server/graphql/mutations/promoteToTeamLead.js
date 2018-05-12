@@ -1,15 +1,15 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload';
-import {getUserId, isTeamLead} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {TEAM_MEMBER} from 'universal/utils/constants';
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload'
+import {getUserId, isTeamLead} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {TEAM_MEMBER} from 'universal/utils/constants'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {
   sendTeamLeadAccessError,
   sendTeamMemberNotOnTeamError
-} from 'server/utils/authorizationErrors';
+} from 'server/utils/authorizationErrors'
 
 export default {
   type: PromoteToTeamLeadPayload,
@@ -21,22 +21,22 @@ export default {
     }
   },
   async resolve (source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
-    const {teamId, userId} = fromTeamMemberId(teamMemberId);
-    const myTeamMemberId = toTeamMemberId(teamId, viewerId);
+    const viewerId = getUserId(authToken)
+    const {teamId, userId} = fromTeamMemberId(teamMemberId)
+    const myTeamMemberId = toTeamMemberId(teamId, viewerId)
     if (!(await isTeamLead(viewerId, teamId))) {
-      return sendTeamLeadAccessError(authToken, teamId);
+      return sendTeamLeadAccessError(authToken, teamId)
     }
 
     // VALIDATION
-    const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId);
+    const promoteeOnTeam = await r.table('TeamMember').get(teamMemberId)
     if (!promoteeOnTeam || !promoteeOnTeam.isNotRemoved) {
-      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId});
+      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId})
     }
 
     // RESOLUTION
@@ -53,10 +53,10 @@ export default {
         .update({
           isLead: true
         })
-    });
+    })
 
-    const data = {oldTeamLeadId: myTeamMemberId, newTeamLeadId: teamMemberId};
-    publish(TEAM_MEMBER, teamId, PromoteToTeamLeadPayload, data, subOptions);
-    return data;
+    const data = {oldTeamLeadId: myTeamMemberId, newTeamLeadId: teamMemberId}
+    publish(TEAM_MEMBER, teamId, PromoteToTeamLeadPayload, data, subOptions)
+    return data
   }
-};
+}

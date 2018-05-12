@@ -1,5 +1,5 @@
-import appTheme from 'universal/styles/theme/appTheme';
-import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png';
+import appTheme from 'universal/styles/theme/appTheme'
+import parabolLogoColor from 'universal/styles/theme/images/brand/mark-color@4x.png'
 
 // auth0 lock customization
 // -------------------------
@@ -55,4 +55,4 @@ export default {
   'body #a0-lock.a0-theme-default .a0-panel button.a0-primary': {
     backgroundColor: `${appTheme.palette.warm} !important`
   }
-};
+}

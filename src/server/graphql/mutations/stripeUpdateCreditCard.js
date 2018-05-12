@@ -1,7 +1,7 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import stripe from 'server/billing/stripe';
-import getRethink from 'server/database/rethinkDriver';
-import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import stripe from 'server/billing/stripe'
+import getRethink from 'server/database/rethinkDriver'
+import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer'
 
 export default {
   name: 'StripeUpdateCreditCard',
@@ -16,18 +16,18 @@ export default {
   resolve: async (source, {customerId}, {serverSecret}) => {
     // AUTH
     if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
-      throw new Error('Don’t be rude.');
+      throw new Error('Don’t be rude.')
     }
-    const r = getRethink();
-    const customer = await stripe.customers.retrieve(customerId);
-    const creditCard = getCCFromCustomer(customer);
+    const r = getRethink()
+    const customer = await stripe.customers.retrieve(customerId)
+    const creditCard = getCCFromCustomer(customer)
     const {
       metadata: {orgId}
-    } = customer;
+    } = customer
     await r
       .table('Organization')
       .get(orgId)
-      .update({creditCard});
-    return true;
+      .update({creditCard})
+    return true
   }
-};
+}

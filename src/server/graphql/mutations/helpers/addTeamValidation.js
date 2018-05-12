@@ -1,5 +1,5 @@
-import legitify from 'universal/validation/legitify';
-import {requiredId, fullName, requiredEmail, teamName} from 'universal/validation/templates';
+import legitify from 'universal/validation/legitify'
+import {requiredId, fullName, requiredEmail, teamName} from 'universal/validation/templates'
 
 export default function addTeamValidation () {
   return legitify({
@@ -13,5 +13,5 @@ export default function addTeamValidation () {
       name: teamName,
       orgId: requiredId
     }
-  });
+  })
 }

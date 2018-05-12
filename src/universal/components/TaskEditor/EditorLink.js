@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import ui from 'universal/styles/ui'
 
 const baseStyle = {
   color: ui.colorText // TODO: theme-able?
-};
+}
 
 const EditorLink = (getEditorState) =>
   class _EditorLink extends Component {
@@ -14,38 +14,38 @@ const EditorLink = (getEditorState) =>
       entityKey: PropTypes.string,
       offsetkey: PropTypes.string,
       styles: PropTypes.object
-    };
+    }
 
-    state = {hasFocus: false};
+    state = {hasFocus: false}
 
     onClick = (e) => {
       const hasFocus = getEditorState()
         .getSelection()
-        .getHasFocus();
-      if (hasFocus) return;
-      e.preventDefault();
-      const {contentState, entityKey} = this.props;
-      const {href} = contentState.getEntity(entityKey).getData();
-      window.open(href, '_blank');
-    };
+        .getHasFocus()
+      if (hasFocus) return
+      e.preventDefault()
+      const {contentState, entityKey} = this.props
+      const {href} = contentState.getEntity(entityKey).getData()
+      window.open(href, '_blank')
+    }
 
     onMouseOver = () => {
       const hasFocus = getEditorState()
         .getSelection()
-        .getHasFocus();
+        .getHasFocus()
       if (this.state.hasFocus !== hasFocus) {
-        this.setState({hasFocus});
+        this.setState({hasFocus})
       }
-    };
+    }
 
     render () {
-      const {offsetkey, children} = this.props;
-      const {hasFocus} = this.state;
+      const {offsetkey, children} = this.props
+      const {hasFocus} = this.state
       const style = {
         ...baseStyle,
         cursor: hasFocus ? 'text' : 'pointer',
         textDecoration: 'underline'
-      };
+      }
       return (
         <span
           data-offset-key={offsetkey}
@@ -55,8 +55,8 @@ const EditorLink = (getEditorState) =>
         >
           {children}
         </span>
-      );
+      )
     }
-  };
+  }
 
-export default EditorLink;
+export default EditorLink

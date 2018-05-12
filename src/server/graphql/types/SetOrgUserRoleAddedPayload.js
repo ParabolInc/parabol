@@ -1,9 +1,9 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import OrganizationNotification from 'server/graphql/types/OrganizationNotification';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import OrganizationNotification from 'server/graphql/types/OrganizationNotification'
 import SetOrgUserRolePayload, {
   setOrgUserRoleFields
-} from 'server/graphql/types/SetOrgUserRolePayload';
-import {makeResolveNotificationsForViewer} from 'server/graphql/resolvers';
+} from 'server/graphql/types/SetOrgUserRolePayload'
+import {makeResolveNotificationsForViewer} from 'server/graphql/resolvers'
 
 const SetOrgUserRoleAddedPayload = new GraphQLObjectType({
   name: 'SetOrgUserRoleAddedPayload',
@@ -16,6 +16,6 @@ const SetOrgUserRoleAddedPayload = new GraphQLObjectType({
       resolve: makeResolveNotificationsForViewer('notificationIdsAdded')
     }
   })
-});
+})
 
-export default SetOrgUserRoleAddedPayload;
+export default SetOrgUserRoleAddedPayload

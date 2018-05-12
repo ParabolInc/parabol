@@ -7,10 +7,10 @@ exports.up = async (r) => {
         .default(false),
       {tokenExpiration: r.epochTime(doc('tokenExpiration'))},
       null
-    );
-  });
-};
+    )
+  })
+}
 
 exports.down = async () => {
   // noop
-};
+}

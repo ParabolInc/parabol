@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLObjectType} from 'graphql';
+import {GraphQLFloat, GraphQLObjectType} from 'graphql'
 
 const DraggerCoords = new GraphQLObjectType({
   name: 'DraggerCoords',
@@ -23,6 +23,6 @@ const DraggerCoords = new GraphQLObjectType({
       description: 'The y-offset from the current location'
     }
   })
-});
+})
 
-export default DraggerCoords;
+export default DraggerCoords

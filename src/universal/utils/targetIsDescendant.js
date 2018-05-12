@@ -4,9 +4,9 @@ export default function targetIsDescendant (target, parent) {
     // its parent got unmounted, so give it the benefit of the doubt
     // if the id is portal, then we assume the parent spawned a portal
     if (target === parent || target === null || target.id === 'portal') {
-      return true;
+      return true
     }
-    target = target.parentNode;
+    target = target.parentNode
   }
-  return false;
+  return false
 }

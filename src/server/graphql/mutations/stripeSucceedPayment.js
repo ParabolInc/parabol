@@ -1,7 +1,7 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import stripe from 'server/billing/stripe';
-import getRethink from 'server/database/rethinkDriver';
-import {PAID} from 'universal/utils/constants';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import stripe from 'server/billing/stripe'
+import getRethink from 'server/database/rethinkDriver'
+import {PAID} from 'universal/utils/constants'
 
 export default {
   name: 'StripeSucceedPayment',
@@ -14,26 +14,26 @@ export default {
     }
   },
   resolve: async (source, {invoiceId}, {serverSecret}) => {
-    const r = getRethink();
-    const now = new Date();
+    const r = getRethink()
+    const now = new Date()
 
     // AUTH
     if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
-      throw new Error('Don’t be rude.');
+      throw new Error('Don’t be rude.')
     }
 
     // VALIDATION
-    const {customer: customerId} = await stripe.invoices.retrieve(invoiceId);
+    const {customer: customerId} = await stripe.invoices.retrieve(invoiceId)
     const {
       metadata: {orgId}
-    } = await stripe.customers.retrieve(customerId);
-    const org = await r.table('Organization').get(orgId);
+    } = await stripe.customers.retrieve(customerId)
+    const org = await r.table('Organization').get(orgId)
     if (!org) {
       throw new Error(
         `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`
-      );
+      )
     }
-    const {creditCard} = org;
+    const {creditCard} = org
 
     // RESOLUTION
     await r
@@ -43,6 +43,6 @@ export default {
         creditCard,
         paidAt: now,
         status: PAID
-      });
+      })
   }
-};
+}

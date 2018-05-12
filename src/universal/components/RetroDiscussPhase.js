@@ -1,20 +1,20 @@
 // @flow
-import * as React from 'react';
-import styled from 'react-emotion';
-import {createFragmentContainer} from 'react-relay';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import Button from 'universal/components/Button/Button';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import StyledFontAwesome from 'universal/components/StyledFontAwesome';
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
-import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
-import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation';
-import {withRouter} from 'react-router-dom';
-import type {RouterHistory} from 'react-router-dom';
-import ScrollableBlock from 'universal/components/ScrollableBlock';
+import * as React from 'react'
+import styled from 'react-emotion'
+import {createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import Button from 'universal/components/Button/Button'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
+import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
+import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
+import {withRouter} from 'react-router-dom'
+import type {RouterHistory} from 'react-router-dom'
+import ScrollableBlock from 'universal/components/ScrollableBlock'
 
 type Props = {|
   atmosphere: Object,
@@ -22,11 +22,11 @@ type Props = {|
   gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object
-|};
+|}
 
 const DiscussHeader = styled('div')({
   margin: '0 0 1.25rem'
-});
+})
 
 const TopicHeading = styled('div')({
   fontSize: appTheme.typography.s6,
@@ -35,24 +35,24 @@ const TopicHeading = styled('div')({
     right: '100%',
     position: 'absolute'
   }
-});
+})
 
 const CheckColumn = styled('div')({
   display: 'flex'
-});
+})
 
 const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
   color,
   marginRight: '.25rem',
   width: ui.iconSize
-}));
+}))
 
 const PhaseWrapper = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
   overflow: 'hidden'
-});
+})
 
 const ReflectionSection = styled('div')({
   borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
@@ -75,20 +75,20 @@ const ReflectionSection = styled('div')({
   [ui.breakpoint.widest]: {
     maxHeight: '50%'
   }
-});
+})
 
 const ReflectionSectionInner = styled('div')({
   padding: '0 1.375rem .875rem 2.5rem'
-});
+})
 
 const ReflectionGrid = styled('div')({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, calc(100% / 3))'
-});
+})
 
 const ReflectionGridBlock = styled('div')({
   margin: '0 1.125rem 1.125rem 0'
-});
+})
 
 const TaskCardBlock = styled('div')({
   margin: '0 auto',
@@ -105,36 +105,36 @@ const TaskCardBlock = styled('div')({
     paddingLeft: '1.5rem',
     paddingRight: '1.5rem'
   }
-});
+})
 
 const ControlButtonBlock = styled('div')({
   width: '12rem'
-});
+})
 
 const SpacedMeetingControlBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
-});
+})
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, gotoNext, history, team} = props;
-  const {viewerId} = atmosphere;
-  const {newMeeting, teamId} = team;
+  const {atmosphere, gotoNext, history, team} = props
+  const {viewerId} = atmosphere
+  const {newMeeting, teamId} = team
   const {
     facilitatorUserId,
     localStage: {localStageId, reflectionGroup},
     meetingId,
     phases
   } =
-    newMeeting || {};
+    newMeeting || {}
   // reflection group will be null until the server overwrites the placeholder.
-  if (!reflectionGroup) return null;
-  const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup;
-  const isFacilitating = facilitatorUserId === viewerId;
-  const checkMarks = [...Array(voteCount).keys()];
-  const nextStageRes = findStageAfterId(phases, localStageId);
+  if (!reflectionGroup) return null
+  const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
+  const isFacilitating = facilitatorUserId === viewerId
+  const checkMarks = [...Array(voteCount).keys()]
+  const nextStageRes = findStageAfterId(phases, localStageId)
   const endMeeting = () => {
-    EndNewMeetingMutation(atmosphere, {meetingId}, {history});
-  };
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history})
+  }
   return (
     <React.Fragment>
       <PhaseWrapper>
@@ -148,7 +148,7 @@ const RetroDiscussPhase = (props: Props) => {
                 </TopicHeading>
                 <CheckColumn>
                   {checkMarks.map((idx) => (
-                    <CheckIcon key={idx} name="check" color={ui.palette.mid} />
+                    <CheckIcon key={idx} name='check' color={ui.palette.mid} />
                   ))}
                 </CheckColumn>
               </DiscussHeader>
@@ -162,7 +162,7 @@ const RetroDiscussPhase = (props: Props) => {
                         reflection={reflection}
                       />
                     </ReflectionGridBlock>
-                  );
+                  )
                 })}
               </ReflectionGrid>
             </ReflectionSectionInner>
@@ -186,13 +186,13 @@ const RetroDiscussPhase = (props: Props) => {
           {nextStageRes && (
             <ControlButtonBlock>
               <Button
-                buttonSize="medium"
-                buttonStyle="flat"
-                colorPalette="dark"
-                icon="arrow-circle-right"
+                buttonSize='medium'
+                buttonStyle='flat'
+                colorPalette='dark'
+                icon='arrow-circle-right'
                 iconLarge
-                iconPalette="warm"
-                iconPlacement="right"
+                iconPalette='warm'
+                iconPlacement='right'
                 isBlock
                 label={'Done! Next topic'}
                 onClick={gotoNext}
@@ -201,13 +201,13 @@ const RetroDiscussPhase = (props: Props) => {
           )}
           <ControlButtonBlock>
             <Button
-              buttonSize="medium"
-              buttonStyle="flat"
-              colorPalette="dark"
-              icon="flag-checkered"
+              buttonSize='medium'
+              buttonStyle='flat'
+              colorPalette='dark'
+              icon='flag-checkered'
               iconLarge
-              iconPalette="midGray"
-              iconPlacement="left"
+              iconPalette='midGray'
+              iconPlacement='left'
               isBlock
               label={'End Meeting'}
               onClick={endMeeting}
@@ -218,8 +218,8 @@ const RetroDiscussPhase = (props: Props) => {
         </SpacedMeetingControlBar>
       )}
     </React.Fragment>
-  );
-};
+  )
+}
 
 export default createFragmentContainer(
   withRouter(withAtmosphere(RetroDiscussPhase)),
@@ -272,4 +272,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

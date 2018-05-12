@@ -8,14 +8,14 @@
  * @format
  */
 /* eslint-disable */
-import polyfill from 'react-lifecycles-compat';
+import polyfill from 'react-lifecycles-compat'
 
-const React = require('react');
-const ReactRelayQueryFetcher = require('react-relay/lib/ReactRelayQueryFetcher');
-const RelayPropTypes = require('react-relay/lib/RelayPropTypes');
-const areEqual = require('fbjs/lib/areEqual');
+const React = require('react')
+const ReactRelayQueryFetcher = require('react-relay/lib/ReactRelayQueryFetcher')
+const RelayPropTypes = require('react-relay/lib/RelayPropTypes')
+const areEqual = require('fbjs/lib/areEqual')
 
-import type {DataFrom} from 'react-relay/lib/ReactRelayQueryFetcher';
+import type {DataFrom} from 'react-relay/lib/ReactRelayQueryFetcher'
 import type {
   CacheConfig,
   GraphQLTaggedNode,
@@ -24,7 +24,7 @@ import type {
   RelayContext,
   Snapshot,
   Variables
-} from 'relay-runtime';
+} from 'relay-runtime'
 
 type RetryCallbacks = {
   handleDataChange: ({
@@ -32,19 +32,19 @@ type RetryCallbacks = {
     snapshot?: Snapshot
   }) => void,
   handleRetryAfterError: (error: Error) => void
-};
+}
 
 export type RenderProps = {
   error: ?Error,
   props: ?Object,
   retry: ?() => void
-};
+}
 
 type Subscription = (
   environment: IEnvironment,
   queryVariables: Variables,
   subParams?: Object
-) => GraphQLSubscriptionConfig;
+) => GraphQLSubscriptionConfig
 
 export type Props = {
   cacheConfig?: ?CacheConfig,
@@ -55,7 +55,7 @@ export type Props = {
   subscriptions?: Array<Subscription>,
   subParams?: Object,
   variables: Variables
-};
+}
 
 type State = {
   prevPropsEnvironment: IEnvironment,
@@ -67,19 +67,19 @@ type State = {
   relayContextVariables: Variables,
   renderProps: RenderProps,
   retryCallbacks: RetryCallbacks
-};
+}
 
-const MAX_INT = 2147483647;
-const makeQueryKey = (name, variables) => JSON.stringify({name, variables});
+const MAX_INT = 2147483647
+const makeQueryKey = (name, variables) => JSON.stringify({name, variables})
 const isCacheable = (subs, cacheConfig: CacheConfig = {}) =>
-  Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
+  Boolean(subs || cacheConfig.force === false || cacheConfig.ttl)
 
 class SafeQueryFetcher extends ReactRelayQueryFetcher {
   readyToGC() {
-    return this._readyToGC;
+    return this._readyToGC
   }
   flagForGC() {
-    this._readyToGC = true;
+    this._readyToGC = true
   }
 }
 
@@ -98,34 +98,34 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
   // Once we have confirmed that it's okay to raise min React version to 16.3.
   static childContextTypes = {
     relay: RelayPropTypes.Relay
-  };
+  }
 
   _relayContext: RelayContext = {
     // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
     environment: (this.props.environment: IEnvironment),
     variables: this.props.variables
-  };
+  }
 
   constructor(props: Props, context: Object) {
-    super(props, context);
+    super(props, context)
 
     const handleDataChange = ({error, snapshot}: {error?: Error, snapshot?: Snapshot}): void => {
       this.setState({
         renderProps: getRenderProps(error, snapshot, queryFetcher, retryCallbacks)
-      });
-    };
+      })
+    }
 
     const handleRetryAfterError = (error: Error) =>
-      this.setState({renderProps: getLoadingRenderProps()});
+      this.setState({renderProps: getLoadingRenderProps()})
 
     const retryCallbacks = {
       handleDataChange,
       handleRetryAfterError
-    };
+    }
 
-    const queryFetcher = new SafeQueryFetcher();
+    const queryFetcher = new SafeQueryFetcher()
     if (!isCacheable(props.subscriptions, props.cacheConfig)) {
-      queryFetcher.flagForGC();
+      queryFetcher.flagForGC()
     }
 
     this.state = {
@@ -135,14 +135,14 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
       queryFetcher,
       retryCallbacks,
       ...fetchQueryAndComputeStateFromProps(props, queryFetcher, retryCallbacks)
-    };
+    }
   }
 
-  static timeouts = {};
+  static timeouts = {}
 
   static renewTTL(queryKey: string) {
-    clearTimeout(ReactRelayQueryRenderer.timeouts[queryKey]);
-    delete ReactRelayQueryRenderer.timeouts[queryKey];
+    clearTimeout(ReactRelayQueryRenderer.timeouts[queryKey])
+    delete ReactRelayQueryRenderer.timeouts[queryKey]
   }
 
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
@@ -160,54 +160,54 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
           prevState.queryFetcher,
           prevState.retryCallbacks
         )
-      };
+      }
     }
 
-    return null;
+    return null
   }
 
   componentWillUnmount(): void {
-    this._requestRelease();
+    this._requestRelease()
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     return (
       nextProps.render !== this.props.render || nextState.renderProps !== this.state.renderProps
-    );
+    )
   }
 
   getChildContext(): Object {
     return {
       relay: this._relayContext
-    };
+    }
   }
 
   _requestRelease(): void {
-    const {environment, cacheConfig} = this.props;
-    const {ttl} = cacheConfig || {};
-    const {queryKey, queryFetcher} = this.state;
+    const {environment, cacheConfig} = this.props
+    const {ttl} = cacheConfig || {}
+    const {queryKey, queryFetcher} = this.state
     if (queryFetcher.readyToGC()) {
-      environment.unregisterQuery(queryKey);
-      queryFetcher.dispose();
+      environment.unregisterQuery(queryKey)
+      queryFetcher.dispose()
     } else {
-      this._scheduleRelease(ttl, queryKey);
+      this._scheduleRelease(ttl, queryKey)
     }
   }
 
   _scheduleRelease(ttl?: number, queryKey: string): void {
     if (ttl !== undefined && ttl <= MAX_INT) {
-      const {timeouts} = ReactRelayQueryRenderer;
+      const {timeouts} = ReactRelayQueryRenderer
       timeouts[queryKey] = setTimeout(() => {
-        const {relayContextEnvironment, queryFetcher} = this.state;
-        queryFetcher.dispose();
-        relayContextEnvironment.unregisterQuery(queryKey);
-        delete timeouts[queryKey];
-      }, ttl);
+        const {relayContextEnvironment, queryFetcher} = this.state
+        queryFetcher.dispose()
+        relayContextEnvironment.unregisterQuery(queryKey)
+        delete timeouts[queryKey]
+      }, ttl)
     }
   }
 
   render() {
-    const {relayContextEnvironment, relayContextVariables, renderProps} = this.state;
+    const {relayContextEnvironment, relayContextVariables, renderProps} = this.state
 
     // HACK Mutate the context.relay object before updating children,
     // To account for any changes made by static gDSFP.
@@ -215,9 +215,9 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     // could be interrupted and we might re-render based on a setState call.
     // Child containers rely on context.relay being mutated (also for gDSFP).
     // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
-    this._relayContext.environment = (relayContextEnvironment: IEnvironment);
-    this._relayContext.variables = relayContextVariables;
-    return this.props.render(renderProps);
+    this._relayContext.environment = (relayContextEnvironment: IEnvironment)
+    this._relayContext.variables = relayContextVariables
+    return this.props.render(renderProps)
   }
 }
 
@@ -226,7 +226,7 @@ function getLoadingRenderProps(): RenderProps {
     error: null,
     props: null, // `props: null` indicates that the data is being fetched (i.e. loading)
     retry: null
-  };
+  }
 }
 
 function getEmptyRenderProps(): RenderProps {
@@ -234,7 +234,7 @@ function getEmptyRenderProps(): RenderProps {
     error: null,
     props: {}, // `props: {}` indicates no data available
     retry: null
-  };
+  }
 }
 
 function getRenderProps(
@@ -247,16 +247,16 @@ function getRenderProps(
     error: error ? error : null,
     props: snapshot ? snapshot.data : null,
     retry: () => {
-      const syncSnapshot = queryFetcher.retry();
+      const syncSnapshot = queryFetcher.retry()
       if (syncSnapshot) {
-        retryCallbacks.handleDataChange({snapshot: syncSnapshot});
+        retryCallbacks.handleDataChange({snapshot: syncSnapshot})
       } else if (error) {
         // If retrying after an error and no synchronous result available,
         // reset the render props
-        retryCallbacks.handleRetryAfterError(error);
+        retryCallbacks.handleRetryAfterError(error)
       }
     }
-  };
+  }
 }
 
 function fetchQueryAndComputeStateFromProps(
@@ -264,16 +264,16 @@ function fetchQueryAndComputeStateFromProps(
   queryFetcher: ReactRelayQueryFetcher,
   retryCallbacks: RetryCallbacks
 ): $Shape<State> {
-  const {environment, query, variables} = props;
+  const {environment, query, variables} = props
   if (query) {
     // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
-    const genericEnvironment = (environment: IEnvironment);
+    const genericEnvironment = (environment: IEnvironment)
 
-    const {createOperationSelector, getRequest} = genericEnvironment.unstable_internal;
-    const request = getRequest(query);
-    const operation = createOperationSelector(request, variables);
-    const queryKey = makeQueryKey(request.name, operation.variables);
-    ReactRelayQueryRenderer.renewTTL(queryKey);
+    const {createOperationSelector, getRequest} = genericEnvironment.unstable_internal
+    const request = getRequest(query)
+    const operation = createOperationSelector(request, variables)
+    const queryKey = makeQueryKey(request.name, operation.variables)
+    ReactRelayQueryRenderer.renewTTL(queryKey)
     if (props.subscriptions) {
       environment.registerQuery(
         queryKey,
@@ -281,7 +281,7 @@ function fetchQueryAndComputeStateFromProps(
         props.subParams,
         operation.variables,
         queryFetcher
-      );
+      )
     }
 
     try {
@@ -291,14 +291,14 @@ function fetchQueryAndComputeStateFromProps(
         environment: genericEnvironment,
         onDataChange: retryCallbacks.handleDataChange,
         operation
-      });
+      })
       if (!snapshot) {
         return {
           queryKey,
           relayContextEnvironment: environment,
           relayContextVariables: operation.variables,
           renderProps: getLoadingRenderProps()
-        };
+        }
       }
 
       return {
@@ -306,25 +306,25 @@ function fetchQueryAndComputeStateFromProps(
         relayContextEnvironment: environment,
         relayContextVariables: operation.variables,
         renderProps: getRenderProps(null, snapshot, queryFetcher, retryCallbacks)
-      };
+      }
     } catch (error) {
       return {
         queryKey,
         relayContextEnvironment: environment,
         relayContextVariables: operation.variables,
         renderProps: getRenderProps(error, null, queryFetcher, retryCallbacks)
-      };
+      }
     }
   } else {
-    queryFetcher.dispose();
+    queryFetcher.dispose()
 
     return {
       relayContextEnvironment: environment,
       relayContextVariables: variables,
       renderProps: getEmptyRenderProps()
-    };
+    }
   }
 }
 
-polyfill(ReactRelayQueryRenderer);
-module.exports = ReactRelayQueryRenderer;
+polyfill(ReactRelayQueryRenderer)
+module.exports = ReactRelayQueryRenderer

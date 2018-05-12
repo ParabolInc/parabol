@@ -1,34 +1,34 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import srOnly from 'universal/styles/helpers/srOnly';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import srOnly from 'universal/styles/helpers/srOnly'
 
 const ProgressDots = (props) => {
-  const {currentDot, clickFactory, numCompleted, styles} = props;
+  const {currentDot, clickFactory, numCompleted, styles} = props
   const renderDot = (dotNumber) => {
     const dotStyle = css(
       styles.progressDot,
       numCompleted + 1 >= dotNumber && styles.canClick,
       dotNumber <= numCompleted && styles.progressDotCompleted,
       dotNumber === currentDot && styles.progressDotCurrent
-    );
+    )
     return (
-      <a className={dotStyle} href="#" key={dotNumber} onClick={clickFactory(dotNumber)}>
+      <a className={dotStyle} href='#' key={dotNumber} onClick={clickFactory(dotNumber)}>
         <span className={css(styles.progressDotLabel)}>Step {dotNumber}</span>
       </a>
-    );
-  };
+    )
+  }
   const renderDots = () => {
-    const dots = [];
+    const dots = []
     for (let i = 0; i < props.numDots; i++) {
-      dots[i] = renderDot(i + 1);
+      dots[i] = renderDot(i + 1)
     }
-    return dots;
-  };
-  return <div className={css(styles.progressDotGroup)}>{renderDots()}</div>;
-};
+    return dots
+  }
+  return <div className={css(styles.progressDotGroup)}>{renderDots()}</div>
+}
 
 ProgressDots.propTypes = {
   clickFactory: PropTypes.func,
@@ -36,7 +36,7 @@ ProgressDots.propTypes = {
   numCompleted: PropTypes.number, // how many of the dots are completed?
   currentDot: PropTypes.number, // which dot (1=first dot) is the user on now?
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   canClick: {
@@ -76,6 +76,6 @@ const styleThunk = () => ({
   progressDotLabel: {
     ...srOnly
   }
-});
+})
 
-export default withStyles(styleThunk)(ProgressDots);
+export default withStyles(styleThunk)(ProgressDots)

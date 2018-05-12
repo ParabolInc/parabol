@@ -1,18 +1,18 @@
 // @flow
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 
-import type {Match, RouterHistory} from 'react-router-dom';
-import type {MeetingTypeEnum} from 'universal/types/schema.flow';
-import {withRouter} from 'react-router-dom';
-import {createFragmentContainer} from 'react-relay';
-import findKeyByValue from 'universal/utils/findKeyByValue';
-import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeetingWithLocalState_viewer.graphql';
-import NewMeeting from 'universal/components/NewMeeting';
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl';
-import updateLocalStage from 'universal/utils/relay/updateLocalStage';
-import findStageById from 'universal/utils/meetings/findStageById';
+import type {Match, RouterHistory} from 'react-router-dom'
+import type {MeetingTypeEnum} from 'universal/types/schema.flow'
+import {withRouter} from 'react-router-dom'
+import {createFragmentContainer} from 'react-relay'
+import findKeyByValue from 'universal/utils/findKeyByValue'
+import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeetingWithLocalState_viewer.graphql'
+import NewMeeting from 'universal/components/NewMeeting'
+import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
+import updateLocalStage from 'universal/utils/relay/updateLocalStage'
+import findStageById from 'universal/utils/meetings/findStageById'
 
 /*
  * Creates a 2-way sync between the URL and the local state
@@ -33,20 +33,20 @@ type Props = {
   match: Match,
   meetingType: MeetingTypeEnum,
   viewer: Viewer
-};
+}
 
 type State = {
   // true if the initial URL is legit, else false
   safeRoute: boolean
-};
+}
 
 class NewMeetingWithLocalState extends Component<Props, State> {
   constructor (props) {
-    super(props);
-    const safeRoute = this.updateRelayFromURL(props.match.params);
+    super(props)
+    const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
       safeRoute
-    };
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -54,14 +54,14 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       viewer: {
         team: {newMeeting}
       }
-    } = nextProps;
+    } = nextProps
     const {
       viewer: {
         team: {newMeeting: oldMeeting}
       }
-    } = this.props;
-    const localStageId = newMeeting && newMeeting.localStage && newMeeting.localStage.id;
-    const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id;
+    } = this.props
+    const localStageId = newMeeting && newMeeting.localStage && newMeeting.localStage.id
+    const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id
     if (localStageId !== oldLocalStageId) {
       const {
         history,
@@ -69,19 +69,19 @@ class NewMeetingWithLocalState extends Component<Props, State> {
           params: {teamId}
         },
         meetingType
-      } = nextProps;
-      const meetingSlug = meetingTypeToSlug[meetingType];
+      } = nextProps
+      const meetingSlug = meetingTypeToSlug[meetingType]
       if (!newMeeting && teamId) {
         // goto lobby
-        history.push(`/${meetingSlug}/${teamId}`);
-        return;
+        history.push(`/${meetingSlug}/${teamId}`)
+        return
       }
-      const {phases} = newMeeting;
-      const nextUrl = fromStageIdToUrl(localStageId, phases);
-      history.push(nextUrl);
+      const {phases} = newMeeting
+      const nextUrl = fromStageIdToUrl(localStageId, phases)
+      history.push(nextUrl)
     }
     if (!this.state.safeRoute) {
-      this.setState({safeRoute: true});
+      this.setState({safeRoute: true})
     }
   }
 
@@ -92,7 +92,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
      *  1) no need for validation inside phase components
      *  2) guaranteed 1 redirect maximum (no URL flickering)
      */
-    const {localPhaseSlug, stageIdxSlug} = params;
+    const {localPhaseSlug, stageIdxSlug} = params
     const {
       atmosphere,
       history,
@@ -101,74 +101,74 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       },
       viewer,
       meetingType
-    } = this.props;
+    } = this.props
     if (!viewer) {
       // server error
-      history.push('/');
-      return false;
+      history.push('/')
+      return false
     }
     const {
       team: {newMeeting}
-    } = viewer;
-    const meetingSlug = meetingTypeToSlug[meetingType];
-    const {viewerId} = atmosphere;
+    } = viewer
+    const meetingSlug = meetingTypeToSlug[meetingType]
+    const {viewerId} = atmosphere
 
     // i'm trying to go to the lobby and there's no active meeting
     if (!localPhaseSlug && !newMeeting) {
-      return true;
+      return true
     }
 
     // i'm trying to go to the middle of a meeting that hasn't started
     if (!newMeeting && teamId) {
-      history.push(`/${meetingSlug}/${teamId}`);
-      return false;
+      history.push(`/${meetingSlug}/${teamId}`)
+      return false
     }
 
-    const {facilitatorStageId, facilitatorUserId, localStage, meetingId, phases} = newMeeting;
+    const {facilitatorStageId, facilitatorUserId, localStage, meetingId, phases} = newMeeting
 
     // i'm headed to the lobby but the meeting is already going, send me there
     if (localStage && !localPhaseSlug) {
-      const {id: localStageId} = localStage;
-      const nextUrl = fromStageIdToUrl(localStageId, phases);
-      history.push(nextUrl);
-      return false;
+      const {id: localStageId} = localStage
+      const nextUrl = fromStageIdToUrl(localStageId, phases)
+      history.push(nextUrl)
+      return false
     }
 
-    const localPhaseType = findKeyByValue(phaseTypeToSlug, localPhaseSlug);
-    const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0;
+    const localPhaseType = findKeyByValue(phaseTypeToSlug, localPhaseSlug)
+    const stageIdx = stageIdxSlug ? Number(stageIdxSlug) - 1 : 0
 
-    const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType);
+    const phase = phases.find((curPhase) => curPhase.phaseType === localPhaseType)
     if (!phase) {
       // typo in url, send to the facilitator
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases);
-      history.push(nextUrl);
-      updateLocalStage(atmosphere, meetingId, facilitatorStageId);
-      return false;
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
+      history.push(nextUrl)
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+      return false
     }
-    const stage = phase.stages[stageIdx];
-    const stageId = stage && stage.id;
-    const isViewerFacilitator = viewerId === facilitatorUserId;
-    const itemStage = findStageById(phases, stageId);
-    if (!itemStage) return false;
+    const stage = phase.stages[stageIdx]
+    const stageId = stage && stage.id
+    const isViewerFacilitator = viewerId === facilitatorUserId
+    const itemStage = findStageById(phases, stageId)
+    if (!itemStage) return false
     const {
       stage: {isNavigable, isNavigableByFacilitator}
-    } = itemStage;
-    const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
+    } = itemStage
+    const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
-      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases);
-      history.push(nextUrl);
-      updateLocalStage(atmosphere, meetingId, facilitatorStageId);
-      return false;
+      const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
+      history.push(nextUrl)
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+      return false
     }
 
     // legit URL!
-    updateLocalStage(atmosphere, meetingId, stage.id);
-    return true;
+    updateLocalStage(atmosphere, meetingId, stage.id)
+    return true
   }
 
   render () {
-    return this.state.safeRoute ? <NewMeeting {...this.props} /> : null;
+    return this.state.safeRoute ? <NewMeeting {...this.props} /> : null
   }
 }
 
@@ -200,4 +200,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

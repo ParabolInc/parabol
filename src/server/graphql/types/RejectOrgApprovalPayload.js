@@ -1,16 +1,16 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveArchivedSoftTasks,
   resolveSoftTeamMembers
-} from 'server/graphql/resolvers';
-import NotifyDenial from 'server/graphql/types/NotifyDenial';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import OrgApproval from 'server/graphql/types/OrgApproval';
-import {getUserId} from 'server/utils/authorization';
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+} from 'server/graphql/resolvers'
+import NotifyDenial from 'server/graphql/types/NotifyDenial'
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser'
+import OrgApproval from 'server/graphql/types/OrgApproval'
+import {getUserId} from 'server/utils/authorization'
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const RejectOrgApprovalPayload = new GraphQLObjectType({
   name: 'RejectOrgApprovalPayload',
@@ -24,9 +24,9 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
         'The list of org approvals to remove. There may be multiple if many inviters requested the same email',
       resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
         if (!removedOrgApprovalIds || removedOrgApprovalIds.length === 0) {
-          return null;
+          return null
         }
-        return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
+        return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds)
       }
     },
     deniedNotifications: {
@@ -39,11 +39,11 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
       description:
         'The list of notifications to remove. There may be multiple if many inviters requested the same email',
       resolve: ({removedRequestNotifications}, args, {authToken}) => {
-        const viewerId = getUserId(authToken);
+        const viewerId = getUserId(authToken)
         if (!removedRequestNotifications || removedRequestNotifications.length === 0) {
-          return null;
+          return null
         }
-        return removedRequestNotifications.filter(({userIds}) => userIds.includes(viewerId));
+        return removedRequestNotifications.filter(({userIds}) => userIds.includes(viewerId))
       }
     },
     removedSoftTeamMembers: {
@@ -57,6 +57,6 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
       resolve: resolveArchivedSoftTasks
     }
   })
-});
+})
 
-export default RejectOrgApprovalPayload;
+export default RejectOrgApprovalPayload

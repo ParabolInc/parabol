@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
-import FontAwesome from 'react-fontawesome';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
+import FontAwesome from 'react-fontawesome'
 
 const CreditCardField = (props) => {
   const {
@@ -18,13 +18,13 @@ const CreditCardField = (props) => {
     placeholder,
     styles,
     topField
-  } = props;
+  } = props
 
   const inputStyle = css(
     styles.field,
     topField && styles.topField,
     touched && error && styles.error
-  );
+  )
 
   const iconStyle = {
     color: appTheme.palette.mid50l,
@@ -36,14 +36,14 @@ const CreditCardField = (props) => {
     textAlign: 'center',
     top: '.5rem',
     width: '1rem'
-  };
+  }
 
   const requireNumeric = (e) => {
     // keep Enter around to let them submit
     if (e.key !== 'Enter' && isNaN(parseInt(e.key, 10))) {
-      e.preventDefault();
+      e.preventDefault()
     }
-  };
+  }
 
   return (
     <div className={css(styles.iconAndInput)}>
@@ -56,11 +56,11 @@ const CreditCardField = (props) => {
         maxLength={maxLength}
         placeholder={placeholder}
         onKeyPress={requireNumeric}
-        type="text"
+        type='text'
       />
     </div>
-  );
-};
+  )
+}
 
 CreditCardField.propTypes = {
   autoComplete: PropTypes.string,
@@ -79,7 +79,7 @@ CreditCardField.propTypes = {
   placeholder: PropTypes.string,
   styles: PropTypes.object,
   topField: PropTypes.bool
-};
+}
 
 const styleThunk = () => ({
   field: {
@@ -103,6 +103,6 @@ const styleThunk = () => ({
   },
 
   topField: {}
-});
+})
 
-export default withStyles(styleThunk)(CreditCardField);
+export default withStyles(styleThunk)(CreditCardField)

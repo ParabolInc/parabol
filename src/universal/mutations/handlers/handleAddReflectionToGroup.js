@@ -1,10 +1,10 @@
-import addNodeToArray from 'universal/utils/relay/addNodeToArray';
+import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 
 const handleAddReflectionToGroup = (reflectionProxy, store) => {
-  if (!reflectionProxy) return;
-  const reflectionGroupId = reflectionProxy.getValue('reflectionGroupId');
-  const reflectionGroupProxy = store.get(reflectionGroupId);
-  addNodeToArray(reflectionProxy, reflectionGroupProxy, 'reflections', 'sortOrder');
-};
+  if (!reflectionProxy) return
+  const reflectionGroupId = reflectionProxy.getValue('reflectionGroupId')
+  const reflectionGroupProxy = store.get(reflectionGroupId)
+  addNodeToArray(reflectionProxy, reflectionGroupProxy, 'reflections', 'sortOrder')
+}
 
-export default handleAddReflectionToGroup;
+export default handleAddReflectionToGroup

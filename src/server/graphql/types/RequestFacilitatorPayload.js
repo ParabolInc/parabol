@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import TeamMember from 'server/graphql/types/TeamMember';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import TeamMember from 'server/graphql/types/TeamMember'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const RequestFacilitatorPayload = new GraphQLObjectType({
   name: 'RequestFacilitatorPayload',
@@ -12,10 +12,10 @@ const RequestFacilitatorPayload = new GraphQLObjectType({
       type: TeamMember,
       description: 'The team member that wants to be the facilitator',
       resolve: ({requestorId}, args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(requestorId);
+        return dataLoader.get('teamMembers').load(requestorId)
       }
     }
   })
-});
+})
 
-export default RequestFacilitatorPayload;
+export default RequestFacilitatorPayload

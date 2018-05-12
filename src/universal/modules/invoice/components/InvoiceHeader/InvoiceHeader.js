@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
 
 const InvoiceHeader = (props) => {
-  const {emails, picture, orgName, styles} = props;
+  const {emails, picture, orgName, styles} = props
 
   return (
     <div className={css(styles.header)}>
@@ -27,17 +27,17 @@ const InvoiceHeader = (props) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
 InvoiceHeader.propTypes = {
   emails: PropTypes.array,
   picture: PropTypes.string,
   orgName: PropTypes.string,
   styles: PropTypes.object
-};
+}
 
-const breakpoint = ui.invoiceBreakpoint;
+const breakpoint = ui.invoiceBreakpoint
 const styleThunk = () => ({
   header: {
     alignItems: 'center',
@@ -82,6 +82,6 @@ const styleThunk = () => ({
     fontSize: appTheme.typography.s3,
     lineHeight: appTheme.typography.s5
   }
-});
+})
 
-export default withStyles(styleThunk)(InvoiceHeader);
+export default withStyles(styleThunk)(InvoiceHeader)

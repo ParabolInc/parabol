@@ -1,11 +1,11 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
-import CheckInPhase from 'server/graphql/types/CheckInPhase';
-import GenericMeetingPhase from 'server/graphql/types/GenericMeetingPhase';
-import ReflectPhase from 'server/graphql/types/ReflectPhase';
-import DiscussPhase from 'server/graphql/types/DiscussPhase';
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage';
+import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
+import CheckInPhase from 'server/graphql/types/CheckInPhase'
+import GenericMeetingPhase from 'server/graphql/types/GenericMeetingPhase'
+import ReflectPhase from 'server/graphql/types/ReflectPhase'
+import DiscussPhase from 'server/graphql/types/DiscussPhase'
+import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
 
 export const newMeetingPhaseFields = () => ({
   id: {
@@ -22,7 +22,7 @@ export const newMeetingPhaseFields = () => ({
     // this makes for much prettier graphql queries
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingStage)))
   }
-});
+})
 
 const resolveTypeLookup = {
   [CHECKIN]: CheckInPhase,
@@ -30,12 +30,12 @@ const resolveTypeLookup = {
   [GROUP]: GenericMeetingPhase,
   [VOTE]: GenericMeetingPhase,
   [DISCUSS]: DiscussPhase
-};
+}
 
 const NewMeetingPhase = new GraphQLInterfaceType({
   name: 'NewMeetingPhase',
   fields: newMeetingPhaseFields,
   resolveType: ({phaseType}) => resolveTypeLookup[phaseType]
-});
+})
 
-export default NewMeetingPhase;
+export default NewMeetingPhase

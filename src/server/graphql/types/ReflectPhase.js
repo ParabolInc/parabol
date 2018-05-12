@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase';
-import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
-import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase'
+import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
+import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage'
 
 const ReflectPhase = new GraphQLObjectType({
   name: 'ReflectPhase',
@@ -17,13 +17,13 @@ const ReflectPhase = new GraphQLObjectType({
       type: RetroPhaseItem,
       description: 'the phase item that the facilitator wants the group to focus on',
       resolve: ({focusedPhaseItemId}, args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItems').load(focusedPhaseItemId);
+        return dataLoader.get('customPhaseItems').load(focusedPhaseItemId)
       }
     },
     stages: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GenericMeetingStage)))
     }
   })
-});
+})
 
-export default ReflectPhase;
+export default ReflectPhase

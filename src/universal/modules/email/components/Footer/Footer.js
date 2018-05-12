@@ -1,30 +1,30 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import EmptySpace from '../EmptySpace/EmptySpace';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import EmptySpace from '../EmptySpace/EmptySpace'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 
 const Footer = (props) => {
   const tableStyle = {
     ...ui.emailTableBase,
     backgroundColor: ui.emailBodyColor,
     color: props.color
-  };
+  }
 
   const spaceStyle = {
     lineHeight: '1px',
     fontSize: '1px'
-  };
+  }
 
   const cellStyles = {
     backgroundColor: ui.emailBodyColor,
     color: props.color,
     fontFamily: ui.emailFontFamily,
     textAlign: 'center'
-  };
+  }
 
   return (
-    <table width="100%" style={tableStyle}>
+    <table width='100%' style={tableStyle}>
       <tbody>
         <tr>
           <td>
@@ -39,17 +39,17 @@ const Footer = (props) => {
         </tr>
 
         <tr>
-          <td height="1" width="20" style={spaceStyle}>
+          <td height='1' width='20' style={spaceStyle}>
             &nbsp;
           </td>
 
           <td>
-            <table width="560">
+            <table width='560'>
               <tbody>
                 <tr>
                   <td style={cellStyles}>
                     <EmptySpace height={10} />
-                    <img src="/static/images/brand/mark-color@3x.png" height="28" width="31" />
+                    <img src='/static/images/brand/mark-color@3x.png' height='28' width='31' />
                     <EmptySpace height={10} />
                     Crafted with care by the folks at{' '}
                     <a
@@ -57,7 +57,7 @@ const Footer = (props) => {
                         color: appTheme.palette.warm,
                         textDecoration: 'none'
                       }}
-                      href="http://www.parabol.co/"
+                      href='http://www.parabol.co/'
                     >
                       {' '}
                       Parabol
@@ -69,7 +69,7 @@ const Footer = (props) => {
             </table>
           </td>
 
-          <td height="1" width="20" style={spaceStyle}>
+          <td height='1' width='20' style={spaceStyle}>
             &nbsp;
           </td>
         </tr>
@@ -87,11 +87,11 @@ const Footer = (props) => {
         </tr>
       </tbody>
     </table>
-  );
-};
+  )
+}
 
 Footer.propTypes = {
   color: PropTypes.string.isRequired
-};
+}
 
-export default Footer;
+export default Footer

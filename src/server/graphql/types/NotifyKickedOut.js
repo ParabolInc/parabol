@@ -1,7 +1,7 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import Team from 'server/graphql/types/Team';
-import TeamRemovedNotification from 'server/graphql/types/TeamRemovedNotification';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import Team from 'server/graphql/types/Team'
+import TeamRemovedNotification from 'server/graphql/types/TeamRemovedNotification'
 
 const NotifyKickedOut = new GraphQLObjectType({
   name: 'NotifyKickedOut',
@@ -25,10 +25,10 @@ const NotifyKickedOut = new GraphQLObjectType({
       type: Team,
       description: 'The team the task is on',
       resolve: ({teamId}, args, {dataLoader}) => {
-        return dataLoader.get('teams').load(teamId);
+        return dataLoader.get('teams').load(teamId)
       }
     }
   })
-});
+})
 
-export default NotifyKickedOut;
+export default NotifyKickedOut

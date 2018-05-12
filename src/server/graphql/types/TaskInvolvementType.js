@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants'
 
 const TaskInvolvementType = new GraphQLEnumType({
   name: 'TaskInvolvementType',
@@ -8,6 +8,6 @@ const TaskInvolvementType = new GraphQLEnumType({
     [ASSIGNEE]: {},
     [MENTIONEE]: {}
   }
-});
+})
 
-export default TaskInvolvementType;
+export default TaskInvolvementType
