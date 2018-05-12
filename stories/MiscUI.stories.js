@@ -16,8 +16,18 @@ storiesOf('Misc. UI Components', module)
       <StoryContainer
         render={() => (
           <div style={{backgroundColor: 'white', width: '600px', padding: '20px'}}>
-            <Button colorPalette="gray" buttonSize="small" buttonStyle="solid" label="Take Action Now" />
-            <Button colorPalette="dark" buttonSize="medium" buttonStyle="solid" label="Take Action Now" />
+            <Button
+              colorPalette="gray"
+              buttonSize="small"
+              buttonStyle="solid"
+              label="Take Action Now"
+            />
+            <Button
+              colorPalette="dark"
+              buttonSize="medium"
+              buttonStyle="solid"
+              label="Take Action Now"
+            />
             <Button buttonSize="large" buttonStyle="primary" label="Take Action Now" />
           </div>
         )}
@@ -26,10 +36,6 @@ storiesOf('Misc. UI Components', module)
   ))
   .add('Loading view', () => (
     <RetroBackground>
-      <StoryContainer
-        render={() => (
-          <LoadingView />
-        )}
-      />
+      <StoryContainer render={() => <LoadingView />} />
     </RetroBackground>
   ));

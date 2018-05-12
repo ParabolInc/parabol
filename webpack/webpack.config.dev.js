@@ -15,10 +15,7 @@ import releaseFlagsDefinePlugin from './utils/releaseFlagsDefinePlugin';
 getDotenv();
 
 const root = process.cwd();
-const clientInclude = [
-  path.join(root, 'src', 'client'),
-  path.join(root, 'src', 'universal')
-];
+const clientInclude = [path.join(root, 'src', 'client'), path.join(root, 'src', 'universal')];
 
 const prefetches = [];
 
@@ -29,11 +26,7 @@ export default {
   devtool: 'eval',
   context: path.join(root, 'src'),
   entry: {
-    app: [
-      'babel-polyfill',
-      'webpack-hot-middleware/client',
-      'client/client.js'
-    ]
+    app: ['babel-polyfill', 'webpack-hot-middleware/client', 'client/client.js']
   },
   output: {
     // https://github.com/webpack/webpack/issues/1752

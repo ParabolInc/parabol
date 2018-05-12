@@ -18,7 +18,6 @@ const clientInclude = [
   path.join(root, 'build') // for appTheme.json
 ];
 
-
 const vendor = [
   'auth0-js',
   'react',
@@ -34,41 +33,44 @@ const prefetchPlugins = prefetches.map((specifier) => new webpack.PrefetchPlugin
 
 const deployPlugins = [];
 if (process.env.WEBPACK_MIN) {
-  deployPlugins.push(new webpack.optimize.UglifyJsPlugin({
-    compressor: {warnings: false},
-    comments: /(?:)/,
-    sourceMap: true
-  }));
+  deployPlugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {warnings: false},
+      comments: /(?:)/,
+      sourceMap: true
+    })
+  );
   const sourceMappingBase = getWebpackPublicPath();
-  deployPlugins.push(new webpack.SourceMapDevToolPlugin({
-    filename: '[name]_[chunkhash].js.map',
-    append: `\n//# sourceMappingURL=${sourceMappingBase}[url]`
-  }));
+  deployPlugins.push(
+    new webpack.SourceMapDevToolPlugin({
+      filename: '[name]_[chunkhash].js.map',
+      append: `\n//# sourceMappingURL=${sourceMappingBase}[url]`
+    })
+  );
   deployPlugins.push(new webpack.LoaderOptionsPlugin({comments: false}));
 }
 if (process.env.WEBPACK_DEPLOY) {
   // do not deploy to S3 if running in continuous integration environment:
-  deployPlugins.push(new S3Plugin({
-    s3Options: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      region: process.env.AWS_REGION
-    },
-    s3UploadOptions: {
-      Bucket: process.env.AWS_S3_BUCKET
-    },
-    basePath: getS3BasePath(),
-    directory: path.join(root, 'build')
-  }));
+  deployPlugins.push(
+    new S3Plugin({
+      s3Options: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      s3UploadOptions: {
+        Bucket: process.env.AWS_S3_BUCKET
+      },
+      basePath: getS3BasePath(),
+      directory: path.join(root, 'build')
+    })
+  );
 }
 
 export default {
   context: path.join(root, 'src'),
   entry: {
-    app: [
-      'babel-polyfill',
-      'client/webpackEntry.js'
-    ],
+    app: ['babel-polyfill', 'client/webpackEntry.js'],
     vendor
   },
   output: {
