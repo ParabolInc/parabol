@@ -38,7 +38,7 @@ const AnonymousStyles = styled('div')({
   minHeight: ui.retroCardMinHeight,
   position: 'relative',
   width: ui.retroCardWidth,
-  userSelect: 'none',
+  userSelect: 'none'
 });
 
 const DEFAULT_TEXT = 'Somebody is typing...';
