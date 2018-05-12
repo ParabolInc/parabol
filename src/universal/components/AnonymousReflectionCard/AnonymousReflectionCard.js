@@ -28,7 +28,7 @@ type State = {
   content: string,
   isBlurred: boolean,
   isEditing: boolean
-};
+}
 
 const AnonymousStyles = styled('div')({
   backgroundColor: ui.palette.white,
