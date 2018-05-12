@@ -26,7 +26,10 @@ const sendErrorToSentry = (authToken, key, keys, indexedResults) => {
   sendSentryEvent(authToken, breadcrumb);
 };
 
-const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (results, authToken) => {
+const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (
+  results,
+  authToken
+) => {
   const indexedResults = indexResults(results, indexField, cacheKeyFn);
   // return keys.map((val) => indexedResults.get(cacheKeyFn(val)) || new Error(`Key not found : ${val}`));
   return keys.map((val) => {
@@ -62,14 +65,14 @@ export const primeStandardLoader = (loader, items) => {
   });
 };
 
-
 export default class RethinkDataLoader {
-  constructor(authToken, dataloaderOptions = {}) {
+  constructor (authToken, dataloaderOptions = {}) {
     this.authToken = authToken;
     this.dataloaderOptions = dataloaderOptions;
     this.customPhaseItemsByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
-      const customPhaseItems = await r.table('CustomPhaseItem')
+      const customPhaseItems = await r
+        .table('CustomPhaseItem')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter({isActive: true});
       primeStandardLoader(this.customPhaseItems, customPhaseItems);
@@ -79,7 +82,8 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions);
     this.meetingMembersByMeetingId = makeCustomLoader(async (meetingIds) => {
       const r = getRethink();
-      const meetingMembers = await r.table('MeetingMember')
+      const meetingMembers = await r
+        .table('MeetingMember')
         .getAll(r.args(meetingIds), {index: 'meetingId'});
       primeStandardLoader(this.meetingMembers, meetingMembers);
       return meetingIds.map((meetingId) => {
@@ -89,7 +93,8 @@ export default class RethinkDataLoader {
     // doing this ugly stuff in the constructor because class properties are created before constructor is called
     this.meetingSettingsByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
-      const meetingSettings = await r.table('MeetingSettings')
+      const meetingSettings = await r
+        .table('MeetingSettings')
         .getAll(r.args(teamIds), {index: 'teamId'});
       primeStandardLoader(this.meetingSettings, meetingSettings);
       return teamIds.map((teamId) => {
@@ -98,8 +103,7 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions);
     this.orgsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink();
-      const orgs = await r.table('Organization')
-        .getAll(r.args(userIds), {index: 'orgUsers'});
+      const orgs = await r.table('Organization').getAll(r.args(userIds), {index: 'orgUsers'});
       primeStandardLoader(this.organizations, orgs);
       return userIds.map((userId) => {
         return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)));
@@ -107,27 +111,34 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions);
     this.retroReflectionGroupsByMeetingId = makeCustomLoader(async (meetingIds) => {
       const r = getRethink();
-      const retroReflectionGroups = await r.table('RetroReflectionGroup')
+      const retroReflectionGroups = await r
+        .table('RetroReflectionGroup')
         .getAll(r.args(meetingIds), {index: 'meetingId'})
         .filter({isActive: true});
       primeStandardLoader(this.retroReflectionGroups, retroReflectionGroups);
       return meetingIds.map((meetingId) => {
-        return retroReflectionGroups.filter((retroReflection) => retroReflection.meetingId === meetingId);
+        return retroReflectionGroups.filter(
+          (retroReflection) => retroReflection.meetingId === meetingId
+        );
       });
     }, this.dataloaderOptions);
     this.retroReflectionsByMeetingId = makeCustomLoader(async (meetingIds) => {
       const r = getRethink();
-      const retroReflections = await r.table('RetroReflection')
+      const retroReflections = await r
+        .table('RetroReflection')
         .getAll(r.args(meetingIds), {index: 'meetingId'})
         .filter({isActive: true});
       primeStandardLoader(this.retroReflections, retroReflections);
       return meetingIds.map((meetingId) => {
-        return retroReflections.filter((retroReflection) => retroReflection.meetingId === meetingId);
+        return retroReflections.filter(
+          (retroReflection) => retroReflection.meetingId === meetingId
+        );
       });
     }, this.dataloaderOptions);
     this.softTeamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
-      const softTeamMembers = await r.table('SoftTeamMember')
+      const softTeamMembers = await r
+        .table('SoftTeamMember')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter({isActive: true});
       primeStandardLoader(this.softTeamMembers, softTeamMembers);
@@ -138,12 +149,16 @@ export default class RethinkDataLoader {
     this.tasksByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
       const userId = getUserId(this.authToken);
-      const tasks = await r.table('Task')
+      const tasks = await r
+        .table('Task')
         .getAll(r.args(teamIds), {index: 'teamId'})
-        .filter((task) => task('tags')
-          .contains('private').and(task('userId').ne(userId))
-          .or(task('tags').contains('archived'))
-          .not());
+        .filter((task) =>
+          task('tags')
+            .contains('private')
+            .and(task('userId').ne(userId))
+            .or(task('tags').contains('archived'))
+            .not()
+        );
       primeStandardLoader(this.tasks, tasks);
       return teamIds.map((teamId) => {
         return tasks.filter((task) => task.teamId === teamId);
@@ -153,19 +168,25 @@ export default class RethinkDataLoader {
       const r = getRethink();
       const userId = getUserId(this.authToken);
       const {tms} = this.authToken;
-      const tasks = await r.table('Task')
+      const tasks = await r
+        .table('Task')
         .getAll(userId, {index: 'userId'})
-        .filter((task) => r.and(
-          task('tags').contains('archived').not(),
-          // weed out the tasks on archived teams
-          r(tms).contains(task('teamId'))
-        ));
+        .filter((task) =>
+          r.and(
+            task('tags')
+              .contains('archived')
+              .not(),
+            // weed out the tasks on archived teams
+            r(tms).contains(task('teamId'))
+          )
+        );
       primeStandardLoader(this.tasks, tasks);
       return userIds.map(() => tasks);
     }, this.dataloaderOptions);
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
-      const teamMembers = await r.table('TeamMember')
+      const teamMembers = await r
+        .table('TeamMember')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter({isNotRemoved: true});
       primeStandardLoader(this.teamMembers, teamMembers);
@@ -175,7 +196,8 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions);
     this.agendaItemsByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink();
-      const agendaItems = await r.table('AgendaItem')
+      const agendaItems = await r
+        .table('AgendaItem')
         .getAll(r.args(teamIds), {index: 'teamId'})
         .filter({isActive: true});
       primeStandardLoader(this.agendaItems, agendaItems);
@@ -185,15 +207,14 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions);
   }
 
-  _share() {
+  _share () {
     this.authToken = null;
   }
-  makeStandardLoader(table) {
+  makeStandardLoader (table) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink();
-      const docs = await r.table(table)
-        .getAll(r.args(keys), {index: 'id'});
+      const docs = await r.table(table).getAll(r.args(keys), {index: 'id'});
       return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken);
     };
     return new DataLoader(batchFn);

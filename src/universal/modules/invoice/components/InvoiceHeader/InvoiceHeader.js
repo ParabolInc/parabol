@@ -7,22 +7,24 @@ import appTheme from 'universal/styles/theme/appTheme';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 
 const InvoiceHeader = (props) => {
-  const {
-    emails,
-    picture,
-    orgName,
-    styles
-  } = props;
+  const {emails, picture, orgName, styles} = props;
 
   return (
     <div className={css(styles.header)}>
       <div className={css(styles.logoPanel)}>
-        <img alt={`Logo for ${orgName}`} className={css(styles.picture)} src={picture || defaultOrgAvatar} />
+        <img
+          alt={`Logo for ${orgName}`}
+          className={css(styles.picture)}
+          src={picture || defaultOrgAvatar}
+        />
       </div>
       <div className={css(styles.info)}>
         <div className={css(styles.orgName)}>{orgName}</div>
-        {emails.map((email) => <div key={`email${email}`} className={css(styles.email)}>{email}</div>)}
-
+        {emails.map((email) => (
+          <div key={`email${email}`} className={css(styles.email)}>
+            {email}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -49,10 +49,12 @@ const popOrganizationCreatedToast = (payload, {dispatch, history}) => {
   const teamId = getInProxy(payload, 'team', 'id');
   if (!teamId) return;
   const teamName = getInProxy(payload, 'team', 'name');
-  dispatch(showSuccess({
-    title: 'Organization successfully created!',
-    message: `Here's your new team dashboard for ${teamName}`
-  }));
+  dispatch(
+    showSuccess({
+      title: 'Organization successfully created!',
+      message: `Here's your new team dashboard for ${teamName}`
+    })
+  );
   history.push(`/team/${teamId}`);
 };
 
@@ -79,7 +81,11 @@ const AddOrgMutation = (environment, variables, options, onError, onCompleted) =
     updater: (store) => {
       const payload = store.getRootField('addOrg');
       if (!payload) return;
-      addOrgMutationOrganizationUpdater(payload, store, viewerId, {...options, store, environment});
+      addOrgMutationOrganizationUpdater(payload, store, viewerId, {
+        ...options,
+        store,
+        environment
+      });
     },
     onCompleted,
     onError

@@ -21,7 +21,9 @@ const EditTeamName = (props) => {
   const {atmosphere, teamName, teamId, handleSubmit} = props;
   const updateEditable = async (submissionData) => {
     const schema = editTeamNameValidation();
-    const {data: {teamName: validTeamName}} = schema(submissionData);
+    const {
+      data: {teamName: validTeamName}
+    } = schema(submissionData);
     const updatedTeam = {
       id: teamId,
       name: validTeamName
@@ -48,4 +50,6 @@ EditTeamName.propTypes = {
   handleSubmit: PropTypes.func.isRequired
 };
 
-export default withAtmosphere(reduxForm({form: 'teamName', enableReinitialize: true, validate})(EditTeamName));
+export default withAtmosphere(
+  reduxForm({form: 'teamName', enableReinitialize: true, validate})(EditTeamName)
+);

@@ -92,4 +92,3 @@ describe('getAction', () => {
     expect(result).toEqual(ASK_APPROVAL);
   });
 });
-

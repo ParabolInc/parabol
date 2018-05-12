@@ -4,13 +4,12 @@ const CLEAR_ACTIVITY = 'userSettings/CLEAR_ACTIVITY';
 export const ACTIVITY_WELCOME = 'welcome';
 const ACTIVITIES = [ACTIVITY_WELCOME];
 
-
 const initialState = {
   activity: null,
   nextPage: null
 };
 
-export default function reducer(state = initialState, action = {type: ''}) {
+export default function reducer (state = initialState, action = {type: ''}) {
   if (action.type.startsWith('userSettings/')) {
     const {type, payload} = action;
     if (type === SET_ACTIVITY) {

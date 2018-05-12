@@ -6,7 +6,6 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import styled from 'react-emotion';
 
-import {LabelHeading} from 'universal/components';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
@@ -16,6 +15,7 @@ import picture from 'universal/styles/theme/images/avatars/marimar-suarez-penalv
 
 import RetroBackground from './components/RetroBackground';
 import StoryContainer from './components/StoryContainer';
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 
 const FlexBlock = styled('div')(({direction, margin}) => ({
   alignItems: 'flex-start',

@@ -1,7 +1,7 @@
 import {UPDATE} from 'universal/utils/constants';
 
 const MergeHandler = {
-  update(store, payload) {
+  update (store, payload) {
     const record = store.get(payload.dataID);
     if (!record) return;
 

@@ -1,23 +1,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashModal} from 'universal/components/Dashboard';
 import Type from 'universal/components/Type/Type';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import portal from 'react-portal-hoc';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Button from 'universal/components/Button/Button';
+import DashModal from 'universal/components/Dashboard/DashModal';
 
 const PhotoUploadModal = (props) => {
-  const {
-    children,
-    closeAfter,
-    closePortal,
-    isClosing,
-    picture,
-    styles,
-    unstyled
-  } = props;
+  const {children, closeAfter, closePortal, isClosing, picture, styles, unstyled} = props;
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align="center" bold scale="s6" colorPalette="mid">

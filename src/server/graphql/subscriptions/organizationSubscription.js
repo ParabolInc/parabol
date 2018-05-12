@@ -4,7 +4,6 @@ import OrganizationSubscriptionPayload from 'server/graphql/types/OrganizationSu
 import {getUserId} from 'server/utils/authorization';
 import {BILLING_LEADER, ORGANIZATION} from 'universal/utils/constants';
 
-
 export default {
   type: new GraphQLNonNull(OrganizationSubscriptionPayload),
   subscribe: async (source, args, {authToken, dataLoader, socketId}) => {

@@ -3,7 +3,7 @@ class SubscriptionClient {
   onReconnected = jest.fn();
   onConnected = jest.fn();
 
-  constructor() {
+  constructor () {
     this.client = {
       onerror: jest.fn()
     };

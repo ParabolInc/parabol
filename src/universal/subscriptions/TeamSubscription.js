@@ -1,6 +1,9 @@
 import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation';
 import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation';
-import {addTeamMutationNotificationUpdater, addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation';
+import {
+  addTeamMutationNotificationUpdater,
+  addTeamTeamUpdater
+} from 'universal/mutations/AddTeamMutation';
 import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation';
 import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation';
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation';
@@ -10,9 +13,15 @@ import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilita
 import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation';
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation';
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
-import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
+import {
+  removeOrgUserTeamOnNext,
+  removeOrgUserTeamUpdater
+} from 'universal/mutations/RemoveOrgUserMutation';
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
-import {navigateMeetingTeamOnNext, navigateMeetingTeamUpdater} from 'universal/mutations/NavigateMeetingMutation';
+import {
+  navigateMeetingTeamOnNext,
+  navigateMeetingTeamUpdater
+} from 'universal/mutations/NavigateMeetingMutation';
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
 import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
@@ -51,7 +60,7 @@ const subscription = graphql`
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
-      ...VoteForReflectionGroupMutation_team @relay(mask: false) 
+      ...VoteForReflectionGroupMutation_team @relay(mask: false)
     }
   }
 `;

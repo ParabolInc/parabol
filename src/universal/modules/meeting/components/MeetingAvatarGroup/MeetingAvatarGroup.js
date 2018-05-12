@@ -6,7 +6,12 @@ import Avatar from 'universal/components/Avatar/Avatar';
 import Tag from 'universal/components/Tag/Tag';
 import appTheme from 'universal/styles/theme/appTheme';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
+import ui, {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -18,11 +23,14 @@ import LoadableLoading from 'universal/components/LoadableLoading';
 import LoadableMenu from 'universal/components/LoadableMenu';
 
 const LoadableMeetingAvatarMenu = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'MeetingAvatarMenu' */
-    'universal/modules/meeting/components/MeetingAvatarMenu'
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'MeetingAvatarMenu' */
+      'universal/modules/meeting/components/MeetingAvatarMenu'
+    ),
+  loading: (props) => (
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
-  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
 });
@@ -53,73 +61,69 @@ const MeetingAvatarGroup = (props) => {
   return (
     <div className={css(styles.meetingAvatarGroupRoot)}>
       <div className={css(styles.meetingAvatarGroupInner)}>
-        {
-          teamMembers.map((avatar, idx) => {
-            const {isConnected, isSelf} = avatar;
-            const picture = avatar.picture || defaultUserAvatar;
-            const count = idx + 1;
-            const itemStyles = css(
-              styles.item,
-              !canNavigate && styles.itemReadOnly
-            );
-            const avatarBlockStyles = css(
-              styles.avatarBlock,
-              count === localPhaseItem && styles.avatarBlockLocal,
-              count === facilitatorPhaseItem && onFacilitatorPhase && styles.avatarBlockFacilitator,
-              !canNavigate && styles.avatarBlockReadOnly
-            );
-            const tagBlockStyles = css(
-              styles.tagBlock,
-              !canNavigate && styles.tagBlockReadOnly
-            );
-            const navigateTo = () => {
-              gotoItem(count);
-            };
-            const promoteToFacilitator = () => {
-              PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, dispatch);
-            };
-            const requestFacilitator = () => {
-              RequestFacilitatorMutation(atmosphere, teamId);
-            };
-            const avatarIsFacilitating = activeFacilitator === avatar.id;
-            const handleNavigate = canNavigate && navigateTo || undefined;
-            const handlePromote = isFacilitating && !isSelf && isConnected && promoteToFacilitator || undefined;
-            const handleRequest = avatarIsFacilitating && !isSelf && requestFacilitator || undefined;
-            return (
-              <div className={itemStyles} key={avatar.id}>
-                <div className={avatarBlockStyles}>
-                  <LoadableMenu
-                    LoadableComponent={LoadableMeetingAvatarMenu}
-                    maxWidth={350}
-                    maxHeight={225}
-                    originAnchor={originAnchor}
-                    queryVars={{
-                      handleNavigate,
-                      handlePromote,
-                      handleRequest,
-                      avatar,
-                      localPhase
-                    }}
-                    targetAnchor={targetAnchor}
-                    toggle={<Avatar
+        {teamMembers.map((avatar, idx) => {
+          const {isConnected, isSelf} = avatar;
+          const picture = avatar.picture || defaultUserAvatar;
+          const count = idx + 1;
+          const itemStyles = css(styles.item, !canNavigate && styles.itemReadOnly);
+          const avatarBlockStyles = css(
+            styles.avatarBlock,
+            count === localPhaseItem && styles.avatarBlockLocal,
+            count === facilitatorPhaseItem && onFacilitatorPhase && styles.avatarBlockFacilitator,
+            !canNavigate && styles.avatarBlockReadOnly
+          );
+          const tagBlockStyles = css(styles.tagBlock, !canNavigate && styles.tagBlockReadOnly);
+          const navigateTo = () => {
+            gotoItem(count);
+          };
+          const promoteToFacilitator = () => {
+            PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, dispatch);
+          };
+          const requestFacilitator = () => {
+            RequestFacilitatorMutation(atmosphere, teamId);
+          };
+          const avatarIsFacilitating = activeFacilitator === avatar.id;
+          const handleNavigate = (canNavigate && navigateTo) || undefined;
+          const handlePromote =
+            (isFacilitating && !isSelf && isConnected && promoteToFacilitator) || undefined;
+          const handleRequest =
+            (avatarIsFacilitating && !isSelf && requestFacilitator) || undefined;
+          return (
+            <div className={itemStyles} key={avatar.id}>
+              <div className={avatarBlockStyles}>
+                <LoadableMenu
+                  LoadableComponent={LoadableMeetingAvatarMenu}
+                  maxWidth={350}
+                  maxHeight={225}
+                  originAnchor={originAnchor}
+                  queryVars={{
+                    handleNavigate,
+                    handlePromote,
+                    handleRequest,
+                    avatar,
+                    localPhase
+                  }}
+                  targetAnchor={targetAnchor}
+                  toggle={
+                    <Avatar
                       hasBadge
                       isClickable
                       picture={picture}
                       isConnected={avatar.isConnected || avatar.isSelf}
                       isCheckedIn={avatar.isCheckedIn}
                       size="fill"
-                    />}
-                  />
-                </div>
-                {avatarIsFacilitating &&
+                    />
+                  }
+                />
+              </div>
+              {avatarIsFacilitating && (
                 <div className={tagBlockStyles}>
                   <Tag colorPalette="gray" label="Facilitator" />
                 </div>
-                }
-              </div>
-            );
-          })
-        }
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -231,5 +235,6 @@ export default createFragmentContainer(
         picture
         ...MeetingAvatarMenu_avatar
       }
-    }`
+    }
+  `
 );

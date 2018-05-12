@@ -6,4 +6,3 @@ graphql`
     teamId
   }
 `;
-

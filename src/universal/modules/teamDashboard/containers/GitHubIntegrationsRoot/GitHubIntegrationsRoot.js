@@ -49,19 +49,13 @@ const GitHubIntegrationsRoot = ({atmosphere, teamMemberId}) => {
           return <ErrorComponent height={'14rem'} error={error} />;
         } else if (props) {
           const {viewer} = props;
-          return (<GitHubIntegrations
-            jwt={atmosphere.authToken}
-            viewer={viewer}
-            teamId={teamId}
-          />);
+          return <GitHubIntegrations jwt={atmosphere.authToken} viewer={viewer} teamId={teamId} />;
         }
         return <LoadingComponent height={'14rem'} />;
       }}
-
     />
   );
 };
-
 
 GitHubIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,

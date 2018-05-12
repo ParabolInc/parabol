@@ -4,7 +4,10 @@ import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {sendReflectionAccessError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload';
 import {sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {
+  sendAlreadyCompletedMeetingPhaseError,
+  sendAlreadyEndedMeetingError
+} from 'server/utils/alreadyMutatedErrors';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
 import publish from 'server/utils/publish';
 import {REFLECT, TEAM} from 'universal/utils/constants';
@@ -22,7 +25,7 @@ export default {
       description: 'A stringified draft-js document containing thoughts'
     }
   },
-  async resolve(source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const now = new Date();
@@ -31,20 +34,30 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     const reflection = await r.table('RetroReflection').get(reflectionId);
-    if (!reflection) return sendReflectionNotFoundError(authToken, reflectionId);
+    if (!reflection) {
+      return sendReflectionNotFoundError(authToken, reflectionId);
+    }
     const {creatorId, meetingId} = reflection;
     const meeting = await dataLoader.get('newMeetings').load(meetingId);
     const {endedAt, phases, teamId} = meeting;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    if (isPhaseComplete(REFLECT, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT);
-    if (creatorId !== viewerId) return sendReflectionAccessError(authToken, reflectionId);
+    if (isPhaseComplete(REFLECT, phases)) {
+      return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT);
+    }
+    if (creatorId !== viewerId) {
+      return sendReflectionAccessError(authToken, reflectionId);
+    }
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content);
 
     // RESOLUTION
-    await r.table('RetroReflection').get(reflectionId)
+    await r
+      .table('RetroReflection')
+      .get(reflectionId)
       .update({
         content: normalizedContent,
         updatedAt: now
@@ -55,4 +68,3 @@ export default {
     return data;
   }
 };
-

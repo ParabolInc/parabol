@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import {Menu, MenuItem} from 'universal/modules/menu';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
+import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer';
+import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -20,13 +21,15 @@ const targetAnchor = {
 
 const ServiceDropdownInput = (props) => {
   const {isLoaded, fetchOptions, dropdownText, handleItemClick, options, styles} = props;
-  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={fetchOptions} />;
+  const toggle = (
+    <FontAwesome className={css(styles.downButton)} name="chevron-down" onClick={fetchOptions} />
+  );
   return (
     <div className={css(styles.dropdownBlock)}>
       <FieldBlock>
         <div className={css(styles.inputBlock)} tabIndex="1">
           <span>{dropdownText}</span>
-          <Menu
+          <MenuContainer
             isLoaded={isLoaded}
             menuWidth="28.875rem"
             originAnchor={originAnchor}
@@ -43,7 +46,7 @@ const ServiceDropdownInput = (props) => {
                 />
               );
             })}
-          </Menu>
+          </MenuContainer>
         </div>
       </FieldBlock>
     </div>

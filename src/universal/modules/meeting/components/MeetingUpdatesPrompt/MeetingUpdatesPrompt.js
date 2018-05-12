@@ -6,36 +6,42 @@ import HelpTextMyRound from 'universal/modules/meeting/components/HelpTextMyRoun
 import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
 
 const MeetingUpdatesPrompt = (props) => {
-  const {
-    agendaInputRef,
-    localPhaseItem,
-    team,
-    updateUserHasTasks
-  } = props;
+  const {agendaInputRef, localPhaseItem, team, updateUserHasTasks} = props;
   const {teamMembers} = team;
   const currentTeamMember = teamMembers[localPhaseItem - 1];
   const {isSelf: isMyMeetingSection} = currentTeamMember;
   const isCheckedInFalse = currentTeamMember.isCheckedIn === false;
-  const question = updateUserHasTasks ? 'what’s changed with your tasks' : 'what are you working on';
-  const headingHere = <span>{currentTeamMember.preferredName}, <i>{question}</i>{'?'}</span>;
+  const question = updateUserHasTasks
+    ? 'what’s changed with your tasks'
+    : 'what are you working on';
+  const headingHere = (
+    <span>
+      {currentTeamMember.preferredName}, <i>{question}</i>
+      {'?'}
+    </span>
+  );
   const questionNotHere = updateUserHasTasks
     ? `Any updates with ${currentTeamMember.preferredName}’s tasks`
     : `What is ${currentTeamMember.preferredName} working on`;
-  const headingNotHere = <span><i>{questionNotHere}</i>{'?'}</span>;
-  const heading = (isCheckedInFalse && !isMyMeetingSection) ? headingNotHere : headingHere;
+  const headingNotHere = (
+    <span>
+      <i>{questionNotHere}</i>
+      {'?'}
+    </span>
+  );
+  const heading = isCheckedInFalse && !isMyMeetingSection ? headingNotHere : headingHere;
 
   return (
     <MeetingPrompt
       avatar={currentTeamMember.picture}
       heading={heading}
-      helpText={isMyMeetingSection ?
-        <HelpTextMyRound
-          updateUserHasTasks={updateUserHasTasks}
-        /> :
-        <HelpTextForTeam
-          agendaInputRef={agendaInputRef}
-          currentTeamMember={currentTeamMember}
-        />}
+      helpText={
+        isMyMeetingSection ? (
+          <HelpTextMyRound updateUserHasTasks={updateUserHasTasks} />
+        ) : (
+          <HelpTextForTeam agendaInputRef={agendaInputRef} currentTeamMember={currentTeamMember} />
+        )
+      }
     />
   );
 };
@@ -58,5 +64,6 @@ export default createFragmentContainer(
         isCheckedIn
         ...HelpTextForTeam_currentTeamMember
       }
-    }`
+    }
+  `
 );

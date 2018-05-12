@@ -87,8 +87,7 @@ const CancelApprovalMutation = (environment, orgApprovalId, teamId, onError, onC
       cancelApprovalTaskUpdater(payload, store, viewerId);
     },
     optimisticUpdater: (store) => {
-      const orgApproval = store.get(orgApprovalId)
-        .setValue(teamId, 'teamId');
+      const orgApproval = store.get(orgApprovalId).setValue(teamId, 'teamId');
       handleRemoveOrgApprovals(orgApproval, store);
     },
     onCompleted,

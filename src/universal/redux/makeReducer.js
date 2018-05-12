@@ -31,7 +31,6 @@ const appReducers = {
   toasts
 };
 
-
 export default (newReducers) => {
   Object.assign(appReducers, newReducers);
   const appReducer = combineReducers({...appReducers});

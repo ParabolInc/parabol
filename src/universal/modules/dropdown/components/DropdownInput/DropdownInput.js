@@ -5,12 +5,13 @@ import FontAwesome from 'react-fontawesome';
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import TagPro from 'universal/components/Tag/TagPro';
-import {Menu, MenuItem} from 'universal/modules/menu';
-import {textOverflow} from 'universal/styles/helpers';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {PRO} from 'universal/utils/constants';
+import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
+import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -32,7 +33,7 @@ const DropdownInput = (props) => {
     styles
   } = props;
   const org = organizations.find((anOrg) => anOrg.id === value);
-  const orgName = org && org.name || 'Loading...';
+  const orgName = (org && org.name) || 'Loading...';
   const size = fieldSize || ui.fieldSizeOptions[1];
   const toggleLineHeight = {
     small: '1.875rem',
@@ -43,7 +44,9 @@ const DropdownInput = (props) => {
     fontSize: ui.iconSize,
     lineHeight: toggleLineHeight[size]
   };
-  const toggle = <FontAwesome className={css(styles.downButton)} name="chevron-down" style={toggleStyles} />;
+  const toggle = (
+    <FontAwesome className={css(styles.downButton)} name="chevron-down" style={toggleStyles} />
+  );
   const itemFactory = () => {
     return organizations.map((anOrg) => {
       return (
@@ -73,8 +76,8 @@ const DropdownInput = (props) => {
       <div className={fieldInputStyles} tabIndex="1">
         <span>{orgName}</span>
         {org.tier === PRO && <TagPro />}
-        {!disabled &&
-          <Menu
+        {!disabled && (
+          <MenuContainer
             originAnchor={originAnchor}
             maxHeight="none"
             menuWidth="13rem"
@@ -83,7 +86,7 @@ const DropdownInput = (props) => {
             itemFactory={itemFactory}
             label="Select Organization:"
           />
-        }
+        )}
       </div>
     </FieldBlock>
   );
@@ -105,7 +108,7 @@ DropdownInput.propTypes = {
 const styleThunk = (theme, {fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
   const paddingRight = ui.controlBlockPaddingHorizontal[size];
-  return ({
+  return {
     downButton: {
       cursor: 'pointer',
       height: '100%',
@@ -142,7 +145,7 @@ const styleThunk = (theme, {fieldSize}) => {
       lineHeight: ui.menuItemHeight,
       padding: `0 ${ui.menuGutterHorizontal}`
     }
-  });
+  };
 };
 
 export default withStyles(styleThunk)(DropdownInput);

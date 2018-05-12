@@ -35,19 +35,20 @@ const Step3RawInvitees = (props) => {
     }, []);
     const inviteeEmails = invitees.map((i) => i.email);
     const existingInvites = [];
-    distinctParsedAddresses
-      .forEach((email, idx) => {
-        if (inviteeEmails.includes(email.address)) {
-          // highlight that email then fade
-          existingInvites.push(idx);
-        } else {
-          dispatch(arrayPush('welcomeWizard', 'invitees', {
+    distinctParsedAddresses.forEach((email, idx) => {
+      if (inviteeEmails.includes(email.address)) {
+        // highlight that email then fade
+        existingInvites.push(idx);
+      } else {
+        dispatch(
+          arrayPush('welcomeWizard', 'invitees', {
             email: email.address,
             fullName: email.name,
             label: email.name ? `"${email.name}" <${email.address}>` : email.address
-          }));
-        }
-      });
+          })
+        );
+      }
+    });
     if (existingInvites.length) {
       dispatch(updateExistingInvites(existingInvites));
     }
@@ -95,6 +96,4 @@ const formOptions = {
   validate
 };
 
-export default reduxForm(formOptions)(
-  withStyles(styleThunk)(Step3RawInvitees)
-);
+export default reduxForm(formOptions)(withStyles(styleThunk)(Step3RawInvitees));

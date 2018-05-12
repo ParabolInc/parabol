@@ -47,10 +47,7 @@ const CreditCardField = (props) => {
 
   return (
     <div className={css(styles.iconAndInput)}>
-      <FontAwesome
-        name={iconName}
-        style={iconStyle}
-      />
+      <FontAwesome name={iconName} style={iconStyle} />
       <input
         {...input}
         autoComplete={autoComplete}
@@ -62,7 +59,6 @@ const CreditCardField = (props) => {
         type="text"
       />
     </div>
-
   );
 };
 

@@ -15,23 +15,18 @@ type Props = {
 
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props;
-  const {newMeeting: {localPhase: {checkInGreeting}}} = team;
+  const {
+    newMeeting: {
+      localPhase: {checkInGreeting}
+    }
+  } = team;
   const heading = (
     <React.Fragment>
-      <NewMeetingCheckInGreeting
-        checkInGreeting={checkInGreeting}
-        teamMember={teamMember}
-      />
+      <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting} teamMember={teamMember} />
       <NewCheckInQuestion team={team} />
     </React.Fragment>
   );
-  return (
-    <NewMeetingPrompt
-      avatarLarge
-      heading={heading}
-      teamMember={teamMember}
-    />
-  );
+  return <NewMeetingPrompt avatarLarge heading={heading} teamMember={teamMember} />;
 };
 
 export default createFragmentContainer(
@@ -59,8 +54,10 @@ export default createFragmentContainer(
         }
       }
     }
+
     fragment NewMeetingCheckInPrompt_teamMember on TeamMember {
       ...NewMeetingCheckInGreeting_teamMember
       ...NewMeetingPrompt_teamMember
-    }`
+    }
+  `
 );

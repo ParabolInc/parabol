@@ -14,7 +14,7 @@ const TaskIntegration = new GraphQLInterfaceType({
       type: IntegrationService
     }
   },
-  resolveType(value) {
+  resolveType (value) {
     return resolveTypeLookup[value.service];
   }
 });

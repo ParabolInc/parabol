@@ -1,11 +1,4 @@
-
-export default function ({
-  id,
-  email,
-  name,
-  nickname,
-  picture = null
-} = {}) {
+export default function ({id, email, name, nickname, picture = null} = {}) {
   const now = new Date();
 
   return {

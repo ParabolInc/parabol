@@ -7,7 +7,10 @@ import {getUserId, isTeamMember} from 'server/utils/authorization';
 import getPubSub from 'server/utils/getPubSub';
 import {GITHUB} from 'universal/utils/constants';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import {sendIntegrationNotFoundError, sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors';
+import {
+  sendIntegrationNotFoundError,
+  sendTeamMemberNotFoundError
+} from 'server/utils/docNotFoundErrors';
 import {sendAlreadyJoinedIntegrationError} from 'server/utils/alreadyMutatedErrors';
 import sendAuthRaven from 'server/utils/sendAuthRaven';
 
@@ -20,7 +23,7 @@ export default {
       description: 'The global id of the integration to join'
     }
   },
-  async resolve(source, {globalId}, {authToken, socketId: mutatorId}) {
+  async resolve (source, {globalId}, {authToken, socketId: mutatorId}) {
     const r = getRethink();
 
     // AUTH
@@ -31,16 +34,21 @@ export default {
       return sendIntegrationNotFoundError(authToken, localId);
     }
     const {teamId, userIds} = integration;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     if (userIds.includes(userId)) {
       return sendAlreadyJoinedIntegrationError(authToken, globalId);
     }
 
-    const provider = await r.table('Provider')
+    const provider = await r
+      .table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({service, userId, isActive: true})
       .nth(0)
@@ -80,8 +88,10 @@ export default {
       teamMember
     };
 
-    getPubSub().publish(`integrationJoined.${teamId}.${service}`, {integrationJoined, mutatorId});
+    getPubSub().publish(`integrationJoined.${teamId}.${service}`, {
+      integrationJoined,
+      mutatorId
+    });
     return integrationJoined;
   }
 };
-

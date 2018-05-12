@@ -34,7 +34,7 @@ export default {
       description: 'the updated task including the id, and at least one other field'
     }
   },
-  async resolve(source, {area, updatedTask}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {area, updatedTask}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -46,17 +46,23 @@ export default {
     const task = await r.table('Task').get(taskId);
     if (!task) return sendTaskNotFoundError(authToken, taskId);
     const {teamId} = task;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
     const schema = makeTaskSchema();
     const {errors, data: validUpdatedTask} = schema(updatedTask);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
     const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask;
     if (assigneeId) {
       const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember';
       const res = r.table(table).get(assigneeId);
-      if (!res) return sendTeamMemberNotFoundError(authToken, teamId, assigneeId);
+      if (!res) {
+        return sendTeamMemberNotFoundError(authToken, teamId, assigneeId);
+      }
     }
 
     // RESOLUTION
@@ -92,26 +98,34 @@ export default {
         updatedAt: now,
         tags: taskUpdates.tags
       };
-      taskHistory = r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
+      taskHistory = r
+        .table('TaskHistory')
+        .between([taskId, r.minval], [taskId, r.maxval], {
+          index: 'taskIdUpdatedAt'
+        })
         .orderBy({index: 'taskIdUpdatedAt'})
         .nth(-1)
         .default({updatedAt: r.epochTime(0)})
         .do((lastDoc) => {
           return r.branch(
             lastDoc('updatedAt').gt(r.epochTime((now - DEBOUNCE_TIME) / 1000)),
-            r.table('TaskHistory').get(lastDoc('id')).update(mergeDoc),
+            r
+              .table('TaskHistory')
+              .get(lastDoc('id'))
+              .update(mergeDoc),
             r.table('TaskHistory').insert(lastDoc.merge(mergeDoc, {id: shortid.generate()}))
           );
         });
     }
     const {newTask, teamMembers} = await r({
-      newTask: r.table('Task')
+      newTask: r
+        .table('Task')
         .get(taskId)
         .update(taskUpdates, {returnChanges: true})('changes')(0)('new_val')
         .default(null),
       history: taskHistory,
-      teamMembers: r.table('TeamMember')
+      teamMembers: r
+        .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isNotRemoved: true
@@ -128,8 +142,18 @@ export default {
     const isPublic = !isPrivate || isPrivatized;
 
     // get notification diffs
-    const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(newTask, task, viewerId, usersToIgnore);
-    const data = {isPrivatized, taskId, notificationsToAdd, notificationsToRemove};
+    const {notificationsToRemove, notificationsToAdd} = await publishChangeNotifications(
+      newTask,
+      task,
+      viewerId,
+      usersToIgnore
+    );
+    const data = {
+      isPrivatized,
+      taskId,
+      notificationsToAdd,
+      notificationsToRemove
+    };
     teamMembers.forEach(({userId}) => {
       if (isPublic || userId === newTask.userId || userId === viewerId) {
         publish(TASK, userId, UpdateTaskPayload, data, subOptions);

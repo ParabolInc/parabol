@@ -20,7 +20,7 @@ import ui from 'universal/styles/ui';
 
 type Props = {
   meeting: Meeting,
-  reflection: Reflection,
+  reflection: Reflection
 };
 
 type State = {
@@ -46,15 +46,16 @@ const ROT = Math.floor(Math.random() * 25) + 1;
 const obfuscate = (content: string): string => {
   return content.replace(/[a-zA-Z]/g, (c: string) => {
     // $FlowFixMe
-    return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - (ROT * 2)); // eslint-disable-line
+    return String.fromCharCode(
+      (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - ROT * 2
+    ); // eslint-disable-line
   });
 };
 
 const getContentState = (contentText) => {
   const contentState = ContentState.createFromText(contentText);
   if (contentText !== DEFAULT_TEXT) return contentState;
-  const contentStateWithEntity = contentState
-    .createEntity('ELLIPSIS', 'IMMUTABLE', {});
+  const contentStateWithEntity = contentState.createEntity('ELLIPSIS', 'IMMUTABLE', {});
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
   const anchorKey = contentState.getFirstBlock().getKey();
   const selectionState = new SelectionState({
@@ -67,7 +68,7 @@ const getContentState = (contentText) => {
 };
 
 class AnonymousReflectionCard extends Component<Props, State> {
-  static getContent(reflection: Reflection) {
+  static getContent (reflection: Reflection) {
     const {content, isEditing} = reflection;
     if (isEditing) return DEFAULT_TEXT;
     const parsedContent = JSON.parse(content);
@@ -77,11 +78,13 @@ class AnonymousReflectionCard extends Component<Props, State> {
     return obfuscate(fullText);
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
     const {content} = reflection;
     const isEditing = Boolean(reflection.isEditing);
-    if (content === prevState.content && isEditing === prevState.isEditing) return null;
+    if (content === prevState.content && isEditing === prevState.isEditing) {
+      return null;
+    }
     const contentText = AnonymousReflectionCard.getContent(reflection);
     const contentState = getContentState(contentText);
     const editorState = EditorState.createWithContent(contentState, anonymousReflectionDecorators);
@@ -100,12 +103,19 @@ class AnonymousReflectionCard extends Component<Props, State> {
     isEditing: false
   };
 
-  render() {
+  render () {
     const {editorState, isBlurred} = this.state;
-    const {meeting: {teamId}} = this.props;
+    const {
+      meeting: {teamId}
+    } = this.props;
     return (
       <AnonymousStyles>
-        <ReflectionEditorWrapper editorState={editorState} isBlurred={isBlurred} readOnly teamId={teamId} />
+        <ReflectionEditorWrapper
+          editorState={editorState}
+          isBlurred={isBlurred}
+          readOnly
+          teamId={teamId}
+        />
       </AnonymousStyles>
     );
   }
@@ -119,6 +129,7 @@ export default createFragmentContainer(
     fragment AnonymousReflectionCard_meeting on RetrospectiveMeeting {
       teamId
     }
+
     fragment AnonymousReflectionCard_reflection on RetroReflection {
       isEditing
       content

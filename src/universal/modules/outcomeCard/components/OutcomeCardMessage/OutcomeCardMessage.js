@@ -7,44 +7,26 @@ import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
 
 const OutcomeCardMessage = (props) => {
-  const {
-    onClose,
-    message,
-    styles
-  } = props;
+  const {onClose, message, styles} = props;
 
-  const messageInnerStyles = css(
-    styles.messageInner,
-    onClose && styles.onClose
-  );
+  const messageInnerStyles = css(styles.messageInner, onClose && styles.onClose);
 
   return (
     <div className={css(styles.message)}>
       <div className={messageInnerStyles}>
         {message}
-        {onClose &&
-          <div
-            className={css(styles.messageClose)}
-            onClick={onClose}
-            tabIndex="0"
-          >
-            <FontAwesome
-              className={css(styles.messageCloseIcon)}
-              name="times-circle"
-            />
+        {onClose && (
+          <div className={css(styles.messageClose)} onClick={onClose} tabIndex="0">
+            <FontAwesome className={css(styles.messageCloseIcon)} name="times-circle" />
           </div>
-        }
+        )}
       </div>
     </div>
   );
 };
 
 OutcomeCardMessage.propTypes = {
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'dark',
-    'warm'
-  ]),
+  colorPalette: PropTypes.oneOf(['cool', 'dark', 'warm']),
   onClose: PropTypes.func,
   message: PropTypes.string,
   styles: PropTypes.object

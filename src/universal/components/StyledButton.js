@@ -1,4 +1,3 @@
-
 // StyledButton.js
 // A button styled with react-emotion, TODO: refactor all the button Thangs™
 // @flow

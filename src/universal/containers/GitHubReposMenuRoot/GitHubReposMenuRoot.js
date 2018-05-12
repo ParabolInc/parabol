@@ -11,7 +11,12 @@ import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemoved
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants';
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
+import {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from 'universal/styles/ui';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';
 import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup';
@@ -24,12 +29,15 @@ const githubRepoQuery = graphql`
   }
 `;
 
-const loading = (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />;
+const loading = (props) => (
+  <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
+);
 const LoadableGitHubRepoListMenu = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'GitHubRepoListMenu' */
-    'universal/modules/outcomeCard/components/GitHubRepoListMenu/GitHubRepoListMenu'
-  ),
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'GitHubRepoListMenu' */
+      'universal/modules/outcomeCard/components/GitHubRepoListMenu/GitHubRepoListMenu'
+    ),
   loading,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
@@ -43,7 +51,6 @@ const subscriptions = [
   ProviderAddedSubscription,
   IntegrationLeftSubscription(GITHUB),
   IntegrationJoinedSubscription(GITHUB)
-
 ];
 
 const cacheConfig = {ttl: DEFAULT_TTL};
@@ -71,7 +78,15 @@ const GitHubReposMenuRoot = (rootProps) => {
           LoadableComponent={LoadableGitHubRepoListMenu}
           loading={loading}
           readyState={readyState}
-          extraProps={{area, closePortal, handleAddTask, teamId, taskId, setError, clearError}}
+          extraProps={{
+            area,
+            closePortal,
+            handleAddTask,
+            teamId,
+            taskId,
+            setError,
+            clearError
+          }}
         />
       )}
     />

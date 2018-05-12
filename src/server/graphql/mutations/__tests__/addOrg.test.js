@@ -19,8 +19,7 @@ describe('addOrg', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {organization, user} = await mockDB.init()
-      .organization(0);
+    const {organization, user} = await mockDB.init().organization(0);
     const org = organization[0];
     auth0ManagementClient.__initMock(mockDB.db);
     const authToken = mockAuthToken(user[0]);
@@ -31,16 +30,35 @@ describe('addOrg', () => {
       name: 'addOrg|1|NewTeamName'
     };
     const orgName = 'addOrg|1|NewOrgName';
-    const res = await addOrg.resolve(undefined, {newTeam, orgName}, {authToken, dataLoader, socket});
+    const res = await addOrg.resolve(
+      undefined,
+      {newTeam, orgName},
+      {authToken, dataLoader, socket}
+    );
 
     const {orgId, teamId} = res;
     // VERIFY
-    const db = await fetchAndSerialize({
-      organization: r.table('Organization').getAll(orgId, {index: 'id'}).orderBy('name'),
-      team: r.table('Team').getAll(orgId, {index: 'orgId'}).orderBy('name'),
-      teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName'),
-      user: r.table('User').getAll(org.id, orgId, {index: 'userOrgs'}).orderBy('preferredName')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        organization: r
+          .table('Organization')
+          .getAll(orgId, {index: 'id'})
+          .orderBy('name'),
+        team: r
+          .table('Team')
+          .getAll(orgId, {index: 'orgId'})
+          .orderBy('name'),
+        teamMember: r
+          .table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .orderBy('preferredName'),
+        user: r
+          .table('User')
+          .getAll(org.id, orgId, {index: 'userOrgs'})
+          .orderBy('preferredName')
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
   });
 });

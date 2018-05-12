@@ -2,7 +2,12 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import getWordAt from 'universal/components/TaskEditor/getWordAt';
 import resolvers from 'universal/components/TaskEditor/resolvers';
-import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
+import ui, {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from 'universal/styles/ui';
 import completeEntity from 'universal/utils/draftjs/completeEnitity';
 import getDraftCoords from 'universal/utils/getDraftCoords';
 import getAnchorLocation from './getAnchorLocation';
@@ -11,21 +16,27 @@ import LoadableLoading from 'universal/components/LoadableLoading';
 import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal';
 
 const LoadableEditorSuggestions = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'EditorSuggestions' */
-    'universal/components/EditorSuggestions/EditorSuggestions'
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'EditorSuggestions' */
+      'universal/components/EditorSuggestions/EditorSuggestions'
+    ),
+  loading: (props) => (
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
-  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
 });
 
 const LoadableMentionableUsersRoot = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'SuggestMentionableUsersRoot' */
-    'universal/components/SuggestMentionableUsersRoot'
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'SuggestMentionableUsersRoot' */
+      'universal/components/SuggestMentionableUsersRoot'
+    ),
+  loading: (props) => (
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
-  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
 });
@@ -178,7 +189,7 @@ const withSuggestions = (ComposedComponent) => {
       if (!inASuggestion && suggestionType) {
         this.removeModal();
       }
-    }
+    };
 
     initialize = () => {
       const {suggestionType} = this.state;
@@ -187,7 +198,7 @@ const withSuggestions = (ComposedComponent) => {
         return {renderModal, removeModal, keyBindingFn, handleReturn};
       }
       return {};
-    }
+    };
 
     renderModal = () => {
       const {active, triggerWord, suggestions, suggestionType} = this.state;
@@ -242,13 +253,9 @@ const withSuggestions = (ComposedComponent) => {
       );
     };
 
-    render() {
+    render () {
       const modalProps = this.initialize();
-      return (<ComposedComponent
-        {...this.props}
-        {...modalProps}
-        handleChange={this.handleChange}
-      />);
+      return <ComposedComponent {...this.props} {...modalProps} handleChange={this.handleChange} />;
     }
   }
   return WithSuggestions;

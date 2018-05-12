@@ -75,7 +75,7 @@ class AddReflectionButton extends Component<Props> {
     CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted);
   };
 
-  render() {
+  render () {
     const {error, submitting} = this.props;
     return (
       <React.Fragment>
@@ -95,6 +95,7 @@ export default createFragmentContainer(
     fragment AddReflectionButton_retroPhaseItem on RetroPhaseItem {
       retroPhaseItemId: id
     }
+
     fragment AddReflectionButton_meeting on RetrospectiveMeeting {
       meetingId: id
     }

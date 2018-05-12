@@ -19,7 +19,7 @@ type Props = {|
   orgMember: OrgMember,
   organization: Organization,
   ...MutationProps
-|}
+|};
 
 const BillingLeaderActionMenu = (props: Props) => {
   const {
@@ -46,24 +46,33 @@ const BillingLeaderActionMenu = (props: Props) => {
   };
 
   return (
-    <MenuWithShortcuts
-      ariaLabel={'Select your action'}
-      closePortal={closePortal}
-    >
-      {isBillingLeader && !isViewerLastBillingLeader &&
-      <MenuItemWithShortcuts label="Remove Billing Leader role" onClick={setRole(null)} />}
-      {!isBillingLeader && <MenuItemWithShortcuts label="Promote to Billing Leader" onClick={setRole(BILLING_LEADER)} />}
-      {viewerId === userId && !isViewerLastBillingLeader &&
-      <LeaveOrgModal orgId={orgId} userId={userId} toggle={<MenuItemWithShortcuts label="Leave Organization" />} />
-      }
-      {viewerId !== userId &&
-      <RemoveFromOrgModal
-        orgId={orgId}
-        preferredName={preferredName}
-        userId={userId}
-        toggle={<MenuItemWithShortcuts label="Remove from Organization" />}
-      />
-      }
+    <MenuWithShortcuts ariaLabel={'Select your action'} closePortal={closePortal}>
+      {isBillingLeader &&
+        !isViewerLastBillingLeader && (
+        <MenuItemWithShortcuts label="Remove Billing Leader role" onClick={setRole(null)} />
+      )}
+      {!isBillingLeader && (
+        <MenuItemWithShortcuts
+          label="Promote to Billing Leader"
+          onClick={setRole(BILLING_LEADER)}
+        />
+      )}
+      {viewerId === userId &&
+        !isViewerLastBillingLeader && (
+        <LeaveOrgModal
+          orgId={orgId}
+          userId={userId}
+          toggle={<MenuItemWithShortcuts label="Leave Organization" />}
+        />
+      )}
+      {viewerId !== userId && (
+        <RemoveFromOrgModal
+          orgId={orgId}
+          preferredName={preferredName}
+          userId={userId}
+          toggle={<MenuItemWithShortcuts label="Remove from Organization" />}
+        />
+      )}
     </MenuWithShortcuts>
   );
 };
@@ -74,6 +83,7 @@ export default createFragmentContainer(
     fragment BillingLeaderActionMenu_organization on Organization {
       orgId: id
     }
+
     fragment BillingLeaderActionMenu_orgMember on OrganizationMember {
       isBillingLeader
       user {

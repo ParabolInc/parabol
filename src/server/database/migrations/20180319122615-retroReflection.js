@@ -1,4 +1,13 @@
-import {CHECKIN, DISCUSS, GROUP, LOBBY, REFLECT, RETROSPECTIVE, SUMMARY, VOTE} from 'universal/utils/constants';
+import {
+  CHECKIN,
+  DISCUSS,
+  GROUP,
+  LOBBY,
+  REFLECT,
+  RETROSPECTIVE,
+  SUMMARY,
+  VOTE
+} from 'universal/utils/constants';
 
 exports.up = async (r) => {
   try {
@@ -21,7 +30,8 @@ exports.up = async (r) => {
     // noop
   }
   try {
-    await r.table('MeetingSettings')
+    await r
+      .table('MeetingSettings')
       .filter({meetingType: RETROSPECTIVE})
       .update({
         phaseTypes: [LOBBY, CHECKIN, REFLECT, GROUP, VOTE, DISCUSS, SUMMARY]

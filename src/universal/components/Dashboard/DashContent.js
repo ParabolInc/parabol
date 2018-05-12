@@ -7,10 +7,7 @@ import ui from 'universal/styles/ui';
 const DashContent = (props) => {
   const {children, hasOverlay, padding, styles} = props;
   const style = {padding};
-  const rootStyles = css(
-    styles.root,
-    hasOverlay && styles.hasOverlay
-  );
+  const rootStyles = css(styles.root, hasOverlay && styles.hasOverlay);
   return (
     <div className={rootStyles} style={style}>
       {children}

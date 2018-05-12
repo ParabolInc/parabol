@@ -16,14 +16,14 @@ export default class Toast extends React.Component {
     toasts: PropTypes.array
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.el = null;
     // Maintains a mapping between toast IDs (number) -> 'react-notification-system' IDs (number)
     this.toastToNotification = new Map();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {toasts: currentToasts} = this.props;
     const {toasts: nextToasts} = nextProps;
 
@@ -58,11 +58,11 @@ export default class Toast extends React.Component {
     return toast;
   };
 
-  system() {
+  system () {
     return this.el;
   }
 
-  render() {
+  render () {
     /*
      * NOTE: these true inline styles
      */

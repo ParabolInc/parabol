@@ -13,12 +13,18 @@ const makeRetroGroupTitle = (meetingId, reflections) => {
 
   // create a distance vector for each reflection
   const distanceMatrix = computeDistanceMatrix(allReflectionEntities, uniqueLemmaArr);
-  const smartTitle = getTitleFromComputedGroup(uniqueLemmaArr, distanceMatrix, allReflectionEntities);
+  const smartTitle = getTitleFromComputedGroup(
+    uniqueLemmaArr,
+    distanceMatrix,
+    allReflectionEntities
+  );
   if (smartTitle) {
     // need to filter out the current group if we want to check for dupes. but a dupe is good, it makes it obvious they should be merged
     return {smartTitle, title: smartTitle};
   }
-  const title = reflections[0] ? extractTextFromDraftString(reflections[0].content).slice(0, 20) : 'Unnamed group';
+  const title = reflections[0]
+    ? extractTextFromDraftString(reflections[0].content).slice(0, 20)
+    : 'Unnamed group';
   return {title};
 };
 

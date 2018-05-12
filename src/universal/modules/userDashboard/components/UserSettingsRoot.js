@@ -21,9 +21,7 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [
-  NotificationSubscription
-];
+const subscriptions = [NotificationSubscription];
 
 type Props = {
   atmosphere: Object,
@@ -31,10 +29,18 @@ type Props = {
   history: RouterHistory,
   location: Location,
   match: Match
-}
+};
 
 const UserSettingsRoot = (props: Props) => {
-  const {atmosphere, dispatch, history, location, match: {params: {teamId}}} = props;
+  const {
+    atmosphere,
+    dispatch,
+    history,
+    location,
+    match: {
+      params: {teamId}
+    }
+  } = props;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

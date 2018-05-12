@@ -59,11 +59,7 @@ WelcomeContainer.propTypes = {
 };
 
 export default createFragmentContainer(
-  withReducer({welcome: welcomeReducer})(
-    connect(mapStateToProps)(
-      withRouter(WelcomeContainer)
-    )
-  ),
+  withReducer({welcome: welcomeReducer})(connect(mapStateToProps)(withRouter(WelcomeContainer))),
   graphql`
     fragment WelcomeContainer_viewer on User {
       preferredName

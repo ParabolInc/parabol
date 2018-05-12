@@ -10,14 +10,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 //  • Add animation state (turning off/on) (TA)
 
 const Toggle = (props) => {
-  const {
-    active,
-    block,
-    disabled,
-    label,
-    onClick,
-    styles
-  } = props;
+  const {active, block, disabled, label, onClick, styles} = props;
 
   const toggleStyles = css(
     styles.toggle,
@@ -28,9 +21,7 @@ const Toggle = (props) => {
 
   return (
     <div className={toggleStyles} onClick={onClick}>
-      <span className={css(styles.label)}>
-        {label}
-      </span>
+      <span className={css(styles.label)}>{label}</span>
     </div>
   );
 };

@@ -43,25 +43,20 @@ type Props = {
   gotoStageId: (stageId: string) => void,
   meetingType: MeetingTypeEnum,
   viewer: Viewer
-}
+};
 
 const NewMeetingSidebar = (props: Props) => {
+  const {gotoStageId, meetingType, viewer} = props;
   const {
-    gotoStageId,
-    meetingType,
-    viewer
-  } = props;
-  const {team: {teamId, teamName}} = viewer;
+    team: {teamId, teamName}
+  } = viewer;
   const meetingSlug = meetingTypeToSlug[meetingType];
   const meetingLabel = meetingTypeToLabel[meetingType];
   const relativeLink = `/${meetingSlug}/${teamId}`;
   return (
     <SidebarParent>
       <SidebarHeader>
-        <TeamDashboardLink
-          to={`/team/${teamId}`}
-          title={`Go to the ${teamName} Team Dashboard`}
-        >
+        <TeamDashboardLink to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>
           {teamName}
         </TeamDashboardLink>
         <CopyShortLink icon="link" label="Meeting Link" url={makeHref(relativeLink)} />

@@ -25,15 +25,15 @@ class MenuWithShortcuts extends Component {
 
   state = {
     active: null
-  }
+  };
 
-  componentWillMount() {
+  componentWillMount () {
     const {children, defaultActiveIdx} = this.props;
     const childArr = Children.toArray(children);
     this.state.active = defaultActiveIdx || childArr.findIndex((child) => isValidMenuItem(child));
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (!this.props.keepParentFocus) {
       this.menuRef.focus();
     }
@@ -63,18 +63,31 @@ class MenuWithShortcuts extends Component {
         }
       }
     }
-    if (nextIdx === null || nextIdx === undefined || nextIdx === active || nextIdx < 0 || nextIdx >= children.length) return;
+    if (
+      nextIdx === null ||
+      nextIdx === undefined ||
+      nextIdx === active ||
+      nextIdx < 0 ||
+      nextIdx >= children.length
+    ) {
+      return;
+    }
     this.setState({
       active: nextIdx
     });
-  }
+  };
 
-  makeSmartChildren(children, active) {
+  makeSmartChildren (children, active) {
     const {closePortal} = this.props;
     return Children.map(children, (child, idx) => {
       if (isValidMenuItem(child)) {
         const activate = () => this.setActiveIndex(idx);
-        return cloneElement(child, {closePortal, isActive: active === idx, menuRef: this.menuRef, activate});
+        return cloneElement(child, {
+          closePortal,
+          isActive: active === idx,
+          menuRef: this.menuRef,
+          activate
+        });
       }
       return child;
     });
@@ -91,7 +104,7 @@ class MenuWithShortcuts extends Component {
     } else if (e.key === 'ArrowUp') {
       handled = true;
       this.setActiveIndex(active - 1);
-    } else if (e.key === 'Enter' || tabReturns && e.key === 'Tab') {
+    } else if (e.key === 'Enter' || (tabReturns && e.key === 'Tab')) {
       const smartChild = Children.toArray(children)[active];
       if (smartChild && smartChild.props.onClick) {
         handled = true;
@@ -108,7 +121,7 @@ class MenuWithShortcuts extends Component {
     return handled;
   };
 
-  render() {
+  render () {
     const {ariaLabel, children} = this.props;
     const {active} = this.state;
     return (
@@ -117,7 +130,9 @@ class MenuWithShortcuts extends Component {
         aria-label={ariaLabel}
         tabIndex={-1}
         onKeyDown={this.handleKeyDown}
-        innerRef={(c) => { this.menuRef = c; }}
+        innerRef={(c) => {
+          this.menuRef = c;
+        }}
       >
         {this.makeSmartChildren(children, active)}
       </MenuStyles>

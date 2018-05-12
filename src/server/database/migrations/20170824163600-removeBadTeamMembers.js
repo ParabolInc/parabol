@@ -1,10 +1,20 @@
 import {auth0ManagementClient} from '../../utils/auth0Helpers';
 
 exports.up = async (r) => {
-  const changes = await r.table('User').pluck('id', 'tms')
-    .filter((doc) => doc('tms').count().ne(0))
+  const changes = await r
+    .table('User')
+    .pluck('id', 'tms')
+    .filter((doc) =>
+      doc('tms')
+        .count()
+        .ne(0)
+    )
     .concatMap((userDoc) => {
-      return r.map(userDoc('tms'), (teamId) => userDoc('id').add('::').add(teamId));
+      return r.map(userDoc('tms'), (teamId) =>
+        userDoc('id')
+          .add('::')
+          .add(teamId)
+      );
     })
     .coerceTo('array')
     .do((teamMemberIds) => {
@@ -16,12 +26,17 @@ exports.up = async (r) => {
         .coerceTo('array');
     })
     .forEach((badTeamMember) => {
-      return r.table('User')
+      return r
+        .table('User')
         .get(badTeamMember('userId'))
-        .update((doc) => ({
-          tms: doc('tms').difference([badTeamMember('teamId')])
-        }), {returnChanges: true});
-    })('changes').default([]);
+        .update(
+          (doc) => ({
+            tms: doc('tms').difference([badTeamMember('teamId')])
+          }),
+          {returnChanges: true}
+        );
+    })('changes')
+    .default([]);
 
   if (changes.length === 0) return;
 
@@ -36,7 +51,10 @@ exports.up = async (r) => {
 
   const userIds = Object.keys(smallestTMSperUser);
   await userIds.map((userId) => {
-    return auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms: smallestTMSperUser[userId]});
+    return auth0ManagementClient.users.updateAppMetadata(
+      {id: userId},
+      {tms: smallestTMSperUser[userId]}
+    );
   });
   console.log(`Removed ${userIds.length} users from ${changes.length} teams`);
   const affectedUsers = changes.map((change) => change.new_val.preferredName).join();

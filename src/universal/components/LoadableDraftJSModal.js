@@ -33,7 +33,15 @@ type Props = {
 };
 
 const LoadableDraftJSModal = (props: Props) => {
-  const {closePortal, coords, isClosing, setModalRef, LoadableComponent, queryVars, terminatePortal} = props;
+  const {
+    closePortal,
+    coords,
+    isClosing,
+    setModalRef,
+    LoadableComponent,
+    queryVars,
+    terminatePortal
+  } = props;
   return (
     <Modal onClose={closePortal} isOpen>
       <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>

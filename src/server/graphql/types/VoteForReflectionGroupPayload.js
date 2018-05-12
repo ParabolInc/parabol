@@ -1,5 +1,10 @@
 import {GraphQLObjectType, GraphQLList, GraphQLNonNull} from 'graphql';
-import {makeResolve, resolveMeetingMember, resolveNewMeeting, resolveUnlockedStages} from 'server/graphql/resolvers';
+import {
+  makeResolve,
+  resolveMeetingMember,
+  resolveNewMeeting,
+  resolveUnlockedStages
+} from 'server/graphql/resolvers';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember';

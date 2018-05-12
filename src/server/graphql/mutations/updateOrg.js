@@ -18,7 +18,7 @@ export default {
       description: 'the updated org including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -27,19 +27,27 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, updatedOrg.id);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc);
+    }
 
     // VALIDATION
     const schema = updateOrgValidation();
-    const {errors, data: {id: orgId, ...org}} = schema(updatedOrg);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    const {
+      errors,
+      data: {id: orgId, ...org}
+    } = schema(updatedOrg);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
     const dbUpdate = {
       ...org,
       updatedAt: now
     };
-    await r.table('Organization')
+    await r
+      .table('Organization')
       .get(orgId)
       .update(dbUpdate);
 

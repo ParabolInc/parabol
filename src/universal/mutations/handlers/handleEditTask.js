@@ -19,7 +19,10 @@ const handleEditTask = (payload, store) => {
       newTaskEditors.push(taskEditor);
     }
     const preferredName = editor.getValue('preferredName');
-    const newTaskEditor = createProxyRecord(store, 'TaskEditorDetails', {userId, preferredName});
+    const newTaskEditor = createProxyRecord(store, 'TaskEditorDetails', {
+      userId,
+      preferredName
+    });
     newTaskEditors.push(newTaskEditor);
   } else {
     for (let ii = 0; ii < taskEditors.length; ii++) {

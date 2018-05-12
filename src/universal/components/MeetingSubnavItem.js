@@ -26,23 +26,24 @@ const ItemRoot = styled('div')(
       opacity: !isDisabled && 1
     }
   }),
-  ({isUnsyncedFacilitatorStage}) => isUnsyncedFacilitatorStage && ({
-    color: ui.palette.warm,
-    opacity: 1,
-    '&::after': {
-      backgroundColor: ui.palette.warm,
-      borderRadius: '100%',
-      content: '""',
-      display: 'block',
-      left: '.875rem',
-      marginTop: '-.1875rem',
-      position: 'absolute',
-      height: '.375rem',
-      top: '50%',
-      transition: 'opacity .1s ease-in',
-      width: '.375rem'
+  ({isUnsyncedFacilitatorStage}) =>
+    isUnsyncedFacilitatorStage && {
+      color: ui.palette.warm,
+      opacity: 1,
+      '&::after': {
+        backgroundColor: ui.palette.warm,
+        borderRadius: '100%',
+        content: '""',
+        display: 'block',
+        left: '.875rem',
+        marginTop: '-.1875rem',
+        position: 'absolute',
+        height: '.375rem',
+        top: '50%',
+        transition: 'opacity .1s ease-in',
+        width: '.375rem'
+      }
     }
-  })
 );
 
 const ItemOrderLabel = styled('div')({
@@ -87,15 +88,9 @@ const MeetingSubnavItem = (props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : null}
     >
-      <ItemOrderLabel>
-        {orderLabel}
-      </ItemOrderLabel>
-      <ItemLabel isComplete={isComplete}>
-        {label}
-      </ItemLabel>
-      <ItemMeta>
-        {metaContent}
-      </ItemMeta>
+      <ItemOrderLabel>{orderLabel}</ItemOrderLabel>
+      <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
+      <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
   );
 };

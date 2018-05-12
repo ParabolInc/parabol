@@ -5,7 +5,7 @@ const GitHubMemberRemovedPayload = new GraphQLObjectType({
   name: 'GitHubMemberRemovedPayload',
   fields: () => ({
     leaveIntegration: {
-      type: new GraphQLList((LeaveIntegrationPayload))
+      type: new GraphQLList(LeaveIntegrationPayload)
     }
   })
 });

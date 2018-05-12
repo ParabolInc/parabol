@@ -7,26 +7,27 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import withStyles from 'universal/styles/withStyles';
 
 const DashboardAvatars = (props) => {
-  const {team: {teamMembers}, styles} = props;
+  const {
+    team: {teamMembers},
+    styles
+  } = props;
   return (
     <div className={css(styles.root)}>
-      {
-        teamMembers.map((avatar) => {
-          const picture = avatar.picture || defaultUserAvatar;
-          return (
-            <div className={css(styles.item)} key={`dbAvatar${avatar.id}`}>
-              <Avatar
-                {...avatar}
-                picture={picture}
-                hasBadge
-                isCheckedIn={avatar.isCheckedIn}
-                isConnected={avatar.isConnected || avatar.isSelf}
-                size="smaller"
-              />
-            </div>
-          );
-        })
-      }
+      {teamMembers.map((avatar) => {
+        const picture = avatar.picture || defaultUserAvatar;
+        return (
+          <div className={css(styles.item)} key={`dbAvatar${avatar.id}`}>
+            <Avatar
+              {...avatar}
+              picture={picture}
+              hasBadge
+              isCheckedIn={avatar.isCheckedIn}
+              isConnected={avatar.isConnected || avatar.isSelf}
+              size="smaller"
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -59,6 +60,6 @@ export default createFragmentContainer(
         isSelf
         picture
       }
-    }`
+    }
+  `
 );
-

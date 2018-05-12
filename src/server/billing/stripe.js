@@ -26,7 +26,11 @@ if (!stripe.mock) {
       }
     });
   });
-  stripe.invoices.retrieveLines = tryCatchWrapper(stripe.invoices.retrieveLines.bind(stripe.invoices));
-  stripe.invoices.retrieveUpcoming = tryCatchWrapper(stripe.invoices.retrieveUpcoming.bind(stripe.invoices));
+  stripe.invoices.retrieveLines = tryCatchWrapper(
+    stripe.invoices.retrieveLines.bind(stripe.invoices)
+  );
+  stripe.invoices.retrieveUpcoming = tryCatchWrapper(
+    stripe.invoices.retrieveUpcoming.bind(stripe.invoices)
+  );
 }
 export default stripe;

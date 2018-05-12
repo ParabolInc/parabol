@@ -169,7 +169,7 @@ const rally = rallyList[Math.floor(Math.random() * rallyList.length)];
 
 const rallyPhrase = `${rally.phrase}!`;
 
-export default function getRallyLink() {
+export default function getRallyLink () {
   return (
     <a
       href={rally.link}

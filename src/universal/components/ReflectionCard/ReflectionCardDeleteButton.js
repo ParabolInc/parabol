@@ -60,22 +60,26 @@ const Icon = styled(FontAwesome)({
 
 class ReflectionCardDeleteButton extends Component<Props> {
   handleDelete = () => {
-    const {atmosphere, onCompleted, onError, meeting: {meetingId}, reflection: {reflectionId}, submitMutation, submitting} = this.props;
+    const {
+      atmosphere,
+      onCompleted,
+      onError,
+      meeting: {meetingId},
+      reflection: {reflectionId},
+      submitMutation,
+      submitting
+    } = this.props;
     if (submitting) return;
     submitMutation();
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
   };
 
-  render() {
+  render () {
     const {submitting} = this.props;
     const userLabel = 'Delete this reflection card';
     if (submitting) return null;
     return (
-      <DeleteButton
-        aria-label={userLabel}
-        onClick={this.handleDelete}
-        title={userLabel}
-      >
+      <DeleteButton aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
         <Icon name="times-circle" />
         <Background />
       </DeleteButton>
@@ -89,6 +93,7 @@ export default createFragmentContainer(
     fragment ReflectionCardDeleteButton_meeting on RetrospectiveMeeting {
       meetingId: id
     }
+
     fragment ReflectionCardDeleteButton_reflection on RetroReflection {
       reflectionId: id
     }

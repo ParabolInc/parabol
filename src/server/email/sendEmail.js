@@ -72,7 +72,7 @@ const maybeMailgun = (fn, mailgunApiData) => {
   return false;
 };
 
-export function sendBatchEmail(recipients, template, props, recipientVariables) {
+export function sendBatchEmail (recipients, template, props, recipientVariables) {
   if (!Array.isArray(recipients)) {
     throw new Error('`recipients` must be an Array');
   }
@@ -81,21 +81,22 @@ export function sendBatchEmail(recipients, template, props, recipientVariables) 
     console.warn(
       `Email for template ${template} exceeded mailgun maximum batch size of ${MAILGUN_MAX_BATCH_SIZE} ` +
         `with ${recipients.length} requested recipients.  ` +
-        `Sending ${chunkedRecipients.length} mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
+        `Sending ${
+          chunkedRecipients.length
+        } mailgun requests of up to ${MAILGUN_MAX_BATCH_SIZE} recipients each.`
     );
-    return Promise.all(chunkedRecipients.map((chunk) => sendBatchEmail(chunk, template, props, recipientVariables)));
+    return Promise.all(
+      chunkedRecipients.map((chunk) => sendBatchEmail(chunk, template, props, recipientVariables))
+    );
   }
   const mailgunApiData = makeMailgunApiData(recipients, template, props);
   if (recipientVariables) {
     mailgunApiData['recipient-variables'] = JSON.stringify(recipientVariables);
   }
-  return maybeMailgun(
-    (mg) => mg.messages().send(mailgunApiData),
-    mailgunApiData
-  );
+  return maybeMailgun((mg) => mg.messages().send(mailgunApiData), mailgunApiData);
 }
 
-export default async function sendEmailPromise(to, template, props) {
+export default async function sendEmailPromise (to, template, props) {
   if (!to || typeof to !== 'string') {
     throw new Error('Expected `to` to be a string of comma-seperated emails');
   }
@@ -109,7 +110,11 @@ export default async function sendEmailPromise(to, template, props) {
     message: message.toString('ascii')
   };
   return maybeMailgun(
-    (mg) => mg.messages().sendMime(mimeData).then(() => true),
+    (mg) =>
+      mg
+        .messages()
+        .sendMime(mimeData)
+        .then(() => true),
     mailOptions
   );
 }

@@ -85,14 +85,21 @@ type Props = {
   gotoStage: () => void,
   isFacilitatorStage: boolean,
   newMeeting: NewMeeting,
-  teamMember: TeamMember,
-}
+  teamMember: TeamMember
+};
 const NewMeetingAvatar = (props: Props) => {
   const {gotoStage, isFacilitatorStage, newMeeting, teamMember} = props;
   const {facilitatorUserId, localPhase, localStage} = newMeeting || {};
   const localPhaseType = localPhase && localPhase.phaseType;
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES;
-  const {teamMemberId, isConnected, isSelf, meetingMember, picture = defaultUserAvatar, userId} = teamMember;
+  const {
+    teamMemberId,
+    isConnected,
+    isSelf,
+    meetingMember,
+    picture = defaultUserAvatar,
+    userId
+  } = teamMember;
   const isCheckedIn = meetingMember ? meetingMember.isCheckedIn : null;
   const avatarIsFacilitating = userId === facilitatorUserId;
   const handleNavigate = canNavigate ? gotoStage : undefined;
@@ -114,21 +121,23 @@ const NewMeetingAvatar = (props: Props) => {
             teamMember
           }}
           targetAnchor={targetAnchor}
-          toggle={<Avatar
-            hasBadge
-            isClickable
-            picture={picture}
-            isConnected={isConnected || isSelf}
-            isCheckedIn={isCheckedIn}
-            size="fill"
-          />}
+          toggle={
+            <Avatar
+              hasBadge
+              isClickable
+              picture={picture}
+              isConnected={isConnected || isSelf}
+              isCheckedIn={isCheckedIn}
+              size="fill"
+            />
+          }
         />
       </AvatarBlock>
-      {avatarIsFacilitating &&
-      <TagBlock>
-        <Tag colorPalette="gray" label="Facilitator" />
-      </TagBlock>
-      }
+      {avatarIsFacilitating && (
+        <TagBlock>
+          <Tag colorPalette="gray" label="Facilitator" />
+        </TagBlock>
+      )}
     </Item>
   );
 };
@@ -139,7 +148,7 @@ export default createFragmentContainer(
     fragment NewMeetingAvatar_teamMember on TeamMember {
       teamMemberId: id
       meetingMember {
-        isCheckedIn 
+        isCheckedIn
       }
       isConnected
       isSelf
@@ -147,6 +156,7 @@ export default createFragmentContainer(
       userId
       ...NewMeetingAvatarMenu_teamMember
     }
+
     fragment NewMeetingAvatar_newMeeting on NewMeeting {
       facilitatorUserId
       localStage {

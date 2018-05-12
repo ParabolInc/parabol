@@ -61,17 +61,19 @@ const popDeniedOrgApprovalToast = (payload, {dispatch, history}) => {
   const inviteeEmails = getInProxy(notifications, 'inviteeEmail');
   if (!inviteeEmails || inviteeEmails.length === 0) return;
   const [email] = inviteeEmails;
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'Oh no!',
-    message: `${email} was denied to join the team.`,
-    action: {
-      label: 'Find out why',
-      callback: () => {
-        history.push('/me/notifications');
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'Oh no!',
+      message: `${email} was denied to join the team.`,
+      action: {
+        label: 'Find out why',
+        callback: () => {
+          history.push('/me/notifications');
+        }
       }
-    }
-  }));
+    })
+  );
 };
 
 export const rejectOrgApprovalOrgApprovalUpdater = (payload, store) => {

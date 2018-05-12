@@ -6,27 +6,36 @@ import appTheme from 'universal/styles/theme/appTheme';
 import lockup from 'universal/styles/theme/images/brand/parabol-lockup-v-dark.svg';
 
 const InvoiceFooter = (props) => {
-  const {
-    styles
-  } = props;
+  const {styles} = props;
 
   return (
     <div className={css(styles.footer)}>
-      <div className={css(styles.heading)}>
-        {'Thank you for using Parabol!'}
-      </div>
+      <div className={css(styles.heading)}>{'Thank you for using Parabol!'}</div>
       <div className={css(styles.copy)}>
-        {'Questions? Concerns?'}<br />
-        {'Get in touch: '}<a href="mailto:billing@parabol.co" title="Contact Us"><b>{'billing@parabol.co'}</b></a>
+        {'Questions? Concerns?'}
+        <br />
+        {'Get in touch: '}
+        <a href="mailto:billing@parabol.co" title="Contact Us">
+          <b>{'billing@parabol.co'}</b>
+        </a>
       </div>
       <img alt="Logo for Parabol" className={css(styles.lockup)} src={lockup} />
       <div className={css(styles.finePrint)}>
-        {'Parabol, Inc.'}<br />
-        {'68 3rd Street'}<br />
-        {'Brooklyn, NY, 11231'}<br />
-        {'United States'}<br />
-        <a href="tel:6122275673" title="Call us: 612-227-5673">{'612-227-5673'}</a><br />
-        <a href="mailto:love@parabol.co" title="Email us:love@parabol.co">{'love@parabol.co'}</a>
+        {'Parabol, Inc.'}
+        <br />
+        {'68 3rd Street'}
+        <br />
+        {'Brooklyn, NY, 11231'}
+        <br />
+        {'United States'}
+        <br />
+        <a href="tel:6122275673" title="Call us: 612-227-5673">
+          {'612-227-5673'}
+        </a>
+        <br />
+        <a href="mailto:love@parabol.co" title="Email us:love@parabol.co">
+          {'love@parabol.co'}
+        </a>
       </div>
     </div>
   );

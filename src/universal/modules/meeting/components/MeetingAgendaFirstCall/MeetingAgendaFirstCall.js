@@ -16,31 +16,21 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import {AGENDA_ITEM_LABEL, FIRST_CALL} from 'universal/utils/constants';
 
 const MeetingAgendaFirstCall = (props) => {
-  const {
-    facilitatorName,
-    gotoNext,
-    hideMoveMeetingControls,
-    styles
-  } = props;
+  const {facilitatorName, gotoNext, hideMoveMeetingControls, styles} = props;
   const phaseName = actionMeeting.agendaitems.name;
   return (
     <MeetingMain hasHelpFor={FIRST_CALL}>
       <MeetingSection flexToFill paddingBottom="2rem">
         <MeetingSection paddingBottom="2rem">
           <div className={css(styles.main)}>
+            <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>
 
-            <MeetingPhaseHeading>
-              {'Now, what do you need?'}
-            </MeetingPhaseHeading>
-
-            <MeetingCopy>
-              {`Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}
-            </MeetingCopy>
+            <MeetingCopy>{`Time to add your ${AGENDA_ITEM_LABEL}s to the list.`}</MeetingCopy>
 
             <AgendaShortcutHint />
 
             <div className={css(styles.controlBlock)}>
-              {!hideMoveMeetingControls ?
+              {!hideMoveMeetingControls ? (
                 <BounceBlock animationDelay="30s">
                   <Button
                     buttonSize="large"
@@ -52,11 +42,12 @@ const MeetingAgendaFirstCall = (props) => {
                     label={`Let’s begin: ${phaseName}`}
                     onClick={gotoNext}
                   />
-                </BounceBlock> :
+                </BounceBlock>
+              ) : (
                 <MeetingFacilitationHint>
                   {'Waiting for'} <b>{facilitatorName}</b> {`to start the ${phaseName}`}
                 </MeetingFacilitationHint>
-              }
+              )}
             </div>
           </div>
         </MeetingSection>

@@ -4,15 +4,8 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 
 const MeetingMainHeader = (props) => {
-  const {
-    children,
-    styles
-  } = props;
-  return (
-    <div className={css(styles.meetingMainHeaderRoot)}>
-      {children}
-    </div>
-  );
+  const {children, styles} = props;
+  return <div className={css(styles.meetingMainHeaderRoot)}>{children}</div>;
 };
 
 MeetingMainHeader.propTypes = {

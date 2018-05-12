@@ -89,16 +89,17 @@ const UserNoNewOutcomes = (props) => {
 
   const makeMemberCells = (arr) => {
     const cells = () =>
-      arr.map((member) =>
-        (<td align="center" style={cellStyle} width={cellWidth} key={member.id}>
+      arr.map((member) => (
+        <td align="center" style={cellStyle} width={cellWidth} key={member.id}>
           <img height={avatarSize} src={member.picture} style={avatarStyles} width={avatarSize} />
           <div style={nameStyle}>{member.preferredName}</div>
-          {member.present ?
-            <div style={presentStyles}>Present</div> :
+          {member.present ? (
+            <div style={presentStyles}>Present</div>
+          ) : (
             <div style={absentStyles}>Absent</div>
-          }
-        </td>)
-      );
+          )}
+        </td>
+      ));
     return cells();
   };
 
@@ -114,29 +115,25 @@ const UserNoNewOutcomes = (props) => {
         <tr>
           <td style={cardsCell}>
             <div style={{padding: '0 8px'}}>
-              <div style={emptyOutcomesMessage}>
-                {'No Done or New Tasks…'}
-              </div>
+              <div style={emptyOutcomesMessage}>{'No Done or New Tasks…'}</div>
             </div>
             <EmptySpace height={24} />
           </td>
         </tr>
-        {members.length &&
+        {members.length && (
           <tr>
             <td align="center">
               <table align="center" style={ui.emailTableBase}>
                 <tbody>
-                  {memberCells.map((row, idx) =>
-                    (<tr key={`memberCell${idx}`}>
-                      {makeMemberCells(row)}
-                    </tr>)
-                  )}
+                  {memberCells.map((row, idx) => (
+                    <tr key={`memberCell${idx}`}>{makeMemberCells(row)}</tr>
+                  ))}
                 </tbody>
               </table>
               <EmptySpace height={24} />
             </td>
           </tr>
-        }
+        )}
       </tbody>
     </table>
   );
@@ -144,11 +141,13 @@ const UserNoNewOutcomes = (props) => {
 };
 
 UserNoNewOutcomes.propTypes = {
-  members: PropTypes.arrayOf(PropTypes.shape({
-    present: PropTypes.bool.isRequired,
-    picture: PropTypes.string.isRequired,
-    preferredName: PropTypes.string.isRequired
-  }))
+  members: PropTypes.arrayOf(
+    PropTypes.shape({
+      present: PropTypes.bool.isRequired,
+      picture: PropTypes.string.isRequired,
+      preferredName: PropTypes.string.isRequired
+    })
+  )
 };
 
 export default UserNoNewOutcomes;

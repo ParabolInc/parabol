@@ -25,29 +25,34 @@ type State = {
   focusedEditorState: ?Object,
   suggestedEmojis: Array<EmojiSuggestion>,
   query: string
-}
+};
 
 class EmojiMenu extends Component<Props, State> {
-  static filterByQuery(query: string) {
+  static filterByQuery (query: string) {
     if (!query) {
       return emojiArray.slice(2, 8);
     }
-    return emojiArray.map((obj) => ({
-      ...obj,
-      score: stringScore(obj.value, query)
-    }))
-      .sort((a, b) => a.score < b.score ? 1 : -1)
-      .slice(0, 6)
-      // ":place of worship:" shouldn't pop up when i type ":poop"
-      .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3);
+    return (
+      emojiArray
+        .map((obj) => ({
+          ...obj,
+          score: stringScore(obj.value, query)
+        }))
+        .sort((a, b) => (a.score < b.score ? 1 : -1))
+        .slice(0, 6)
+        // ":place of worship:" shouldn't pop up when i type ":poop"
+        .filter((obj, idx, arr) => obj.score > 0 && arr[0].score - obj.score < 0.3)
+    );
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
     const {editorState, query} = nextProps;
     if (query && query === prevState.query) return null;
     return {
       // clicking on a menu will cause the editorStateSelection to lose focus, so we persist the last state before that point
-      focusedEditorState: editorState.getSelection().getHasFocus() ? editorState : prevState.focusedEditorState,
+      focusedEditorState: editorState.getSelection().getHasFocus()
+        ? editorState
+        : prevState.focusedEditorState,
       query,
       suggestedEmojis: EmojiMenu.filterByQuery(query)
     };
@@ -59,7 +64,7 @@ class EmojiMenu extends Component<Props, State> {
     query: ''
   };
 
-  render() {
+  render () {
     const {closePortal, menuRef, menuItemClickFactory} = this.props;
     const {focusedEditorState} = this.state;
     const {suggestedEmojis} = this.state;

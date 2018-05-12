@@ -38,8 +38,14 @@ describe('acceptTeamInvite', () => {
     const inviteToken = makeInviteToken();
     const {id} = parseInviteToken(inviteToken);
     const hashedToken = await hashInviteTokenKey(inviteToken);
-    await mockDB.init()
-      .newUser({name: 'inviteeGuy', tms: [], userOrgs: [], email: invitee.email})
+    await mockDB
+      .init()
+      .newUser({
+        name: 'inviteeGuy',
+        tms: [],
+        userOrgs: [],
+        email: invitee.email
+      })
       .newNotification(undefined, {type: TEAM_INVITE, email: invitee.email})
       .newInvitation({id, hashedToken, email: invitee.email})
       .newSoftTeamMember({email: invitee.email});
@@ -55,20 +61,31 @@ describe('acceptTeamInvite', () => {
     await acceptTeamInvite.resolve(undefined, {inviteToken}, {authToken, dataLoader});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      user: r.table('User').get(inviteeUser.id),
-      teamMember: r.table('TeamMember').get(`${inviteeUser.id}::${teamId}`),
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}).orderBy('userIds').coerceTo('array'),
-      invitation: r.table('Invitation')
-        .getAll(inviteeUser.email, {index: 'email'})
-        .filter({teamId})
-        .orderBy('tokenExpiration')
-        .coerceTo('array')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        user: r.table('User').get(inviteeUser.id),
+        teamMember: r.table('TeamMember').get(`${inviteeUser.id}::${teamId}`),
+        notification: r
+          .table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .orderBy('userIds')
+          .coerceTo('array'),
+        invitation: r
+          .table('Invitation')
+          .getAll(inviteeUser.email, {index: 'email'})
+          .filter({teamId})
+          .orderBy('tokenExpiration')
+          .coerceTo('array')
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     // expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
     expect(adjustUserCount.default).toHaveBeenCalledWith(inviteeUser.id, orgId, ADD_USER);
-    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms});
+    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith(
+      {id: inviteeUser.id},
+      {tms}
+    );
   });
   test('adds an invitee who was previously in the org', async () => {
     // SETUP
@@ -81,9 +98,13 @@ describe('acceptTeamInvite', () => {
     const inviteToken = makeInviteToken();
     const {id} = parseInviteToken(inviteToken);
     const hashedToken = await hashInviteTokenKey(inviteToken);
-    await mockDB.init()
+    await mockDB
+      .init()
       .newTeam({orgId: mockDB.context.organization.id})
-      .newNotification(undefined, {type: TEAM_INVITE, email: mockDB.db.user[1].email})
+      .newNotification(undefined, {
+        type: TEAM_INVITE,
+        email: mockDB.db.user[1].email
+      })
       .newInvitation({id, hashedToken, email: mockDB.db.user[1].email});
     const teamId = mockDB.context.team.id;
     const inviteeUser = mockDB.db.user[1];
@@ -97,19 +118,30 @@ describe('acceptTeamInvite', () => {
     await acceptTeamInvite.resolve(undefined, {inviteToken}, {authToken, dataLoader});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      user: r.table('User').get(inviteeUser.id),
-      teamMember: r.table('TeamMember').get(`${inviteeUser.id}::${teamId}`),
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}).orderBy('userIds').coerceTo('array'),
-      invitation: r.table('Invitation')
-        .getAll(inviteeUser.email, {index: 'email'})
-        .filter({teamId})
-        .orderBy('tokenExpiration')
-        .coerceTo('array')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        user: r.table('User').get(inviteeUser.id),
+        teamMember: r.table('TeamMember').get(`${inviteeUser.id}::${teamId}`),
+        notification: r
+          .table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .orderBy('userIds')
+          .coerceTo('array'),
+        invitation: r
+          .table('Invitation')
+          .getAll(inviteeUser.email, {index: 'email'})
+          .filter({teamId})
+          .orderBy('tokenExpiration')
+          .coerceTo('array')
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
     expect(adjustUserCount.default).toHaveBeenCalledTimes(0);
-    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith({id: inviteeUser.id}, {tms});
+    expect(auth0ManagementClient.users.updateAppMetadata).toHaveBeenCalledWith(
+      {id: inviteeUser.id},
+      {tms}
+    );
   });
 });

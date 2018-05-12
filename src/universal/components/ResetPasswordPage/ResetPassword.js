@@ -6,13 +6,14 @@
 
 import React, {Fragment} from 'react';
 import styled from 'react-emotion';
-import {ErrorAlert, PlainButton} from 'universal/components';
 import PasswordResetForm from './ResetPasswordForm';
+import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 
 type Props = {
   error: ?string,
   emailSent: boolean,
-  handleSubmitResetPassword: ({ email: string }) => Promise<any>,
+  handleSubmitResetPassword: ({email: string}) => Promise<any>,
   tryAgain: () => void
 };
 
@@ -34,7 +35,9 @@ const PasswordReset = (props: Props) => (
         <P>{'You’re all set!'}</P>
         <P>{'We’ve sent you an email with password recovery instructions.'}</P>
         <P>
-          {'Didn’t get it? Check your spam folder, or '}<LinkButton onClick={props.tryAgain}>click here</LinkButton>{' to try again.'}
+          {'Didn’t get it? Check your spam folder, or '}
+          <LinkButton onClick={props.tryAgain}>click here</LinkButton>
+          {' to try again.'}
         </P>
       </Fragment>
     ) : (

@@ -1,7 +1,7 @@
 import makeAppLink from 'server/utils/makeAppLink';
 import sendEmailPromise from 'server/email/sendEmail';
 
-export default function createEmailPromises(inviterInfoAndTeamName, inviteesWithTokens) {
+export default function createEmailPromises (inviterInfoAndTeamName, inviteesWithTokens) {
   return inviteesWithTokens.map((invitee) => {
     const emailProps = {
       ...inviterInfoAndTeamName,

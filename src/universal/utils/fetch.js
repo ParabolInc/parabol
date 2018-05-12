@@ -1,4 +1,3 @@
-
 /*
  * Polyfill if native fetch is supported
  */

@@ -17,7 +17,7 @@ export default {
       description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve(source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
@@ -26,7 +26,9 @@ export default {
     const {userId, teamId} = fromTeamMemberId(teamMemberId);
     const isSelf = viewerId === userId;
     if (!isSelf) {
-      if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
+      if (!(await isTeamLead(viewerId, teamId))) {
+        return sendTeamLeadAccessError(authToken, teamId);
+      }
     }
 
     // RESOLUTION
@@ -40,7 +42,14 @@ export default {
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
 
     const taskIds = [...archivedTaskIds, ...reassignedTaskIds];
-    const data = {teamId, teamMemberId, taskIds, notificationId, removedNotifications, userId};
+    const data = {
+      teamId,
+      teamMemberId,
+      taskIds,
+      notificationId,
+      removedNotifications,
+      userId
+    };
     // messages to the rest of the team reporting the kick out
     publish(TEAM_MEMBER, teamId, RemoveTeamMemberPayload, data, subOptions);
     teamMembers.forEach(({teamMemberUserId}) => {

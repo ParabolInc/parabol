@@ -14,12 +14,12 @@ export default class AsyncComponent extends Component {
     loading: false
   };
 
-  componentWillMount() {
+  componentWillMount () {
     this._mounted = true;
     this.ensureMod();
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._mounted = false;
   }
 
@@ -40,19 +40,20 @@ export default class AsyncComponent extends Component {
     }
   };
 
-  render() {
+  render () {
     const {Mod} = this.state;
     const {fetchMod, loadingWidth = 'inherit', loadingHeight = '5rem', ...props} = this.props;
     return (
       <TransitionGroup appear style={{overflow: 'hidden'}}>
-        {Mod ?
+        {Mod ? (
           <AnimatedFade>
             <Mod {...props} />
-          </AnimatedFade> :
+          </AnimatedFade>
+        ) : (
           <AnimatedFade exit={false} unmountOnExit>
             <LoadingComponent height={loadingHeight} width={loadingWidth} />
           </AnimatedFade>
-        }
+        )}
       </TransitionGroup>
     );
   }

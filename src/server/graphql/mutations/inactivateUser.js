@@ -19,13 +19,16 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve(source, {userId}, {authToken}) {
+  async resolve (source, {userId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
-    if (!await isOrgLeaderOfUser(authToken, userId)) return sendOrgLeadOfUserAccessError(authToken, userId, false);
+    if (!(await isOrgLeaderOfUser(authToken, userId))) {
+      return sendOrgLeadOfUserAccessError(authToken, userId, false);
+    }
 
-    const orgDocs = await r.table('Organization')
+    const orgDocs = await r
+      .table('Organization')
       .getAll(userId, {index: 'orgUsers'})
       .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId', 'tier');
     const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId);
@@ -38,8 +41,11 @@ export default {
       if (tier === PERSONAL) return undefined;
       const periodStartInSeconds = toEpochSeconds(periodStart);
       const periodEndInSeconds = toEpochSeconds(periodEnd);
-      return r.table('InvoiceItemHook')
-        .between(periodStartInSeconds, periodEndInSeconds, {index: 'prorationDate'})
+      return r
+        .table('InvoiceItemHook')
+        .between(periodStartInSeconds, periodEndInSeconds, {
+          index: 'prorationDate'
+        })
         .filter({
           stripeSubscriptionId,
           type: PAUSE_USER,
@@ -63,7 +69,8 @@ export default {
 
     // RESOLUTION
     await r({
-      orgUpdate: r.table('Organization')
+      orgUpdate: r
+        .table('Organization')
         .getAll(userId, {index: 'orgUsers'})
         .update((org) => ({
           orgUsers: org('orgUsers').map((orgUser) => {
@@ -76,7 +83,8 @@ export default {
             );
           })
         })),
-      userUpdate: r.table('User')
+      userUpdate: r
+        .table('User')
         .get(userId)
         .update({
           inactive: true

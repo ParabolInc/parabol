@@ -11,13 +11,10 @@ type Props = {
 };
 
 class ArchiveTeamForm extends Component<Props> {
-  validate = (value) => (
-    value !== this.props.teamName
-      ? 'The team name entered was incorrect.'
-      : undefined
-  );
+  validate = (value) =>
+    value !== this.props.teamName ? 'The team name entered was incorrect.' : undefined;
 
-  render() {
+  render () {
     const {handleFormSubmit, handleFormBlur, handleSubmit} = this.props;
     return (
       <form onSubmit={handleSubmit(handleFormSubmit)}>
@@ -27,7 +24,7 @@ class ArchiveTeamForm extends Component<Props> {
           label="Enter your team name to delete it."
           component={InputField}
           name="archivedTeamName"
-          placeholder='E.g. "My Team"'
+          placeholder="E.g. &quot;My Team&quot;"
           type="text"
           validate={this.validate}
         />

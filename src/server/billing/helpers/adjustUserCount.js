@@ -11,26 +11,31 @@ import shortid from 'shortid';
 import {toEpochSeconds} from 'server/utils/epochTime';
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 
-
 const changePause = (inactive) => (orgIds, userId) => {
   const r = getRethink();
-  return r.table('User').get(userId)
+  return r
+    .table('User')
+    .get(userId)
     .update({inactive})
     .do(() => {
-      return r.table('Organization')
+      return r
+        .table('Organization')
         .getAll(r.args(orgIds), {index: 'id'})
-        .update((org) => ({
-          orgUsers: org('orgUsers').map((orgUser) => {
-            return r.branch(
-              orgUser('id').eq(userId),
-              orgUser.merge({
-                inactive
-              }),
-              orgUser
-            );
+        .update(
+          (org) => ({
+            orgUsers: org('orgUsers').map((orgUser) => {
+              return r.branch(
+                orgUser('id').eq(userId),
+                orgUser.merge({
+                  inactive
+                }),
+                orgUser
+              );
+            }),
+            updatedAt: new Date()
           }),
-          updatedAt: new Date()
-        }), {returnChanges: true});
+          {returnChanges: true}
+        );
     })
     .run();
 };
@@ -41,38 +46,57 @@ const addUser = (orgIds, userId) => {
     id,
     role: null
   }));
-  return r.table('User').get(userId)
+  return r
+    .table('User')
+    .get(userId)
     .update((user) => ({
       // we may have already added them in the previous step, so use distinct
-      userOrgs: user('userOrgs').add(userOrgAdditions).distinct()
+      userOrgs: user('userOrgs')
+        .add(userOrgAdditions)
+        .distinct()
     }))
     .do(() => {
-      return r.table('Organization')
+      return r
+        .table('Organization')
         .getAll(r.args(orgIds), {index: 'id'})
-        .update((org) => ({
-          orgUsers: org('orgUsers').append({
-            id: userId,
-            inactive: false
+        .update(
+          (org) => ({
+            orgUsers: org('orgUsers').append({
+              id: userId,
+              inactive: false
+            }),
+            updatedAt: new Date()
           }),
-          updatedAt: new Date()
-        }), {returnChanges: true});
+          {returnChanges: true}
+        );
     })
     .run();
 };
 
 const deleteUser = (orgIds, userId) => {
   const r = getRethink();
-  return r.table('User').get(userId)
+  return r
+    .table('User')
+    .get(userId)
     .update((user) => ({
-      userOrgs: user('userOrgs').filter((userOrg) => r.expr(orgIds).contains(userOrg('id')).not())
+      userOrgs: user('userOrgs').filter((userOrg) =>
+        r
+          .expr(orgIds)
+          .contains(userOrg('id'))
+          .not()
+      )
     }))
     .do(() => {
-      return r.table('Organization')
+      return r
+        .table('Organization')
         .getAll(r.args(orgIds), {index: 'id'})
-        .update((org) => ({
-          orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
-          updatedAt: new Date()
-        }), {returnChanges: true});
+        .update(
+          (org) => ({
+            orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
+            updatedAt: new Date()
+          }),
+          {returnChanges: true}
+        );
     })
     .run();
 };
@@ -85,7 +109,7 @@ const typeLookup = {
   [UNPAUSE_USER]: changePause(false)
 };
 
-export default async function adjustUserCount(userId, orgInput, type) {
+export default async function adjustUserCount (userId, orgInput, type) {
   const r = getRethink();
   const now = new Date();
 
@@ -115,7 +139,7 @@ export default async function adjustUserCount(userId, orgInput, type) {
       arr.push(
         stripe.subscriptions.update(stripeSubscriptionId, {
           proration_date: prorationDate,
-          quantity: orgUsers.reduce((count, orgUser) => orgUser.inactive ? count : count + 1, 0)
+          quantity: orgUsers.reduce((count, orgUser) => (orgUser.inactive ? count : count + 1), 0)
         })
       );
     }

@@ -7,7 +7,11 @@ import Type from 'universal/components/Type/Type';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import WelcomeHeading from 'universal/modules/welcome/components/WelcomeHeading/WelcomeHeading';
 import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
-import {nextPage, setWelcomeTeam, updateCompleted} from 'universal/modules/welcome/ducks/welcomeDuck';
+import {
+  nextPage,
+  setWelcomeTeam,
+  updateCompleted
+} from 'universal/modules/welcome/ducks/welcomeDuck';
 import CreateFirstTeamMutation from 'universal/mutations/CreateFirstTeamMutation';
 import formError from 'universal/styles/helpers/formError';
 import withStyles from 'universal/styles/withStyles';
@@ -21,10 +25,21 @@ const validate = (values) => {
 };
 
 const Step2TeamName = (props) => {
-  const {atmosphere, error, dispatch, handleSubmit, preferredName, styles, submitting, teamName} = props;
+  const {
+    atmosphere,
+    error,
+    dispatch,
+    handleSubmit,
+    preferredName,
+    styles,
+    submitting,
+    teamName
+  } = props;
   const onTeamNameSubmit = (submissionData) => {
     return new Promise((resolve, reject) => {
-      const {data: {teamName: normalizedTeamName}} = step2Validation()(submissionData);
+      const {
+        data: {teamName: normalizedTeamName}
+      } = step2Validation()(submissionData);
       const onError = (err) => {
         reject(new SubmissionError(err));
       };
@@ -34,7 +49,13 @@ const Step2TeamName = (props) => {
           onError(serverError.message);
           return;
         }
-        const {createFirstTeam: {jwt: newToken, team: {id: teamId}, teamLead: {id: teamMemberId}}} = res;
+        const {
+          createFirstTeam: {
+            jwt: newToken,
+            team: {id: teamId},
+            teamLead: {id: teamMemberId}
+          }
+        } = res;
         atmosphere.setAuthToken(newToken);
         dispatch(setWelcomeTeam({teamId, teamMemberId}));
         dispatch(updateCompleted(2));
@@ -98,15 +119,10 @@ const styleThunk = () => ({
   }
 });
 
-
 const formOptions = {
   form: 'welcomeWizard',
   destroyOnUnmount: false,
   validate
 };
 
-export default withAtmosphere(
-  reduxForm(formOptions)(
-    withStyles(styleThunk)(Step2TeamName)
-  )
-);
+export default withAtmosphere(reduxForm(formOptions)(withStyles(styleThunk)(Step2TeamName)));

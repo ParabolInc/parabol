@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'react-emotion';
 import {withRouter} from 'react-router-dom';
-import {DashNavControl} from 'universal/components';
-import {DashSectionHeading} from 'universal/components/Dashboard';
+import DashNavControl from 'universal/components/DashNavControl/DashNavControl';
+import DashSectionHeading from 'universal/components/Dashboard/DashSectionHeading';
 
 const RootBlock = styled('div')({
   alignItems: 'center',
@@ -17,16 +17,8 @@ const TeamArchiveHeader = (props) => {
   const goToTeamDash = () => history.push(`/team/${teamId}/`);
   return (
     <RootBlock>
-      <DashSectionHeading
-        icon="archive"
-        label="Archived Tasks"
-        margin="0 2rem 0 0"
-      />
-      <DashNavControl
-        icon="arrow-circle-left"
-        label="Back to Team Tasks"
-        onClick={goToTeamDash}
-      />
+      <DashSectionHeading icon="archive" label="Archived Tasks" margin="0 2rem 0 0" />
+      <DashNavControl icon="arrow-circle-left" label="Back to Team Tasks" onClick={goToTeamDash} />
     </RootBlock>
   );
 };

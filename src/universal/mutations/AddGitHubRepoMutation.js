@@ -53,7 +53,8 @@ const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, onError, onCo
     optimisticUpdater: (store) => {
       const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId);
       const repoId = `addGitHubRepo:${tempId++}`;
-      const repo = store.create(repoId, GITHUB)
+      const repo = store
+        .create(repoId, GITHUB)
         .setValue(nameWithOwner, 'nameWithOwner')
         .setValue(repoId, 'id')
         .setLinkedRecords([teamMemberNode], 'teamMembers');

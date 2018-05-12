@@ -3,7 +3,6 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer';
 
-
 export default {
   name: 'StripeUpdateCreditCard',
   description: 'When stripe tells us a credit card was updated, update the details in our own DB',
@@ -22,8 +21,12 @@ export default {
     const r = getRethink();
     const customer = await stripe.customers.retrieve(customerId);
     const creditCard = getCCFromCustomer(customer);
-    const {metadata: {orgId}} = customer;
-    await r.table('Organization').get(orgId)
+    const {
+      metadata: {orgId}
+    } = customer;
+    await r
+      .table('Organization')
+      .get(orgId)
       .update({creditCard});
     return true;
   }

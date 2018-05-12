@@ -19,7 +19,7 @@ const underlineStyles = {
 
 const getStyles = ({disabled, fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
-  return ({
+  return {
     field: {
       ...ui.fieldBaseStyles,
       ...ui.fieldSizeStyles[size],
@@ -57,7 +57,7 @@ const getStyles = ({disabled, fieldSize}) => {
         underlineStyles
       }
     }
-  });
+  };
 };
 
 const InputField = (props) => {
@@ -105,7 +105,7 @@ const InputField = (props) => {
 
   return (
     <FieldBlock>
-      {label &&
+      {label && (
         <FieldLabel
           customStyles={{paddingBottom: ui.fieldLabelGutter}}
           fieldSize={fieldSize}
@@ -113,7 +113,7 @@ const InputField = (props) => {
           indent
           label={label}
         />
-      }
+      )}
       <div className={css(styles.inputBlock)}>
         <input
           {...input}
@@ -123,10 +123,15 @@ const InputField = (props) => {
           disabled={disabled || readyOnly}
           placeholder={placeholder}
           onKeyDown={onButtonClick && submitOnEnter}
-          ref={(c) => { ref = c; }}
+          ref={(c) => {
+            ref = c;
+          }}
         />
       </div>
-      {touched && !autofilled && dirty && invalid && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
+      {touched &&
+        !autofilled &&
+        dirty &&
+        invalid && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
       {shortcutHint && <FieldShortcutHint disabled={shortcutDisabled} hint={shortcutHint} />}
     </FieldBlock>
   );

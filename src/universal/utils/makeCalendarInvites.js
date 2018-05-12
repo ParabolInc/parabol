@@ -38,7 +38,11 @@ export const createGoogleCalendarInviteURL = (maybeCreatedAt, meetingUrl, teamNa
   const createdAt = ensureDate(maybeCreatedAt);
   const text = `${MEETING_NAME} for ${teamName}`;
   // eslint-disable-next-line max-len
-  return encodeURI(`http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(createdAt)}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} ${MEETING_NAME}`);
+  return encodeURI(
+    `http://www.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${description}&dates=${getStartTime(
+      createdAt
+    )}&trp=true&location=${meetingUrl}&sprop=${meetingUrl}&sprop=name:${teamName} ${MEETING_NAME}`
+  );
 };
 
 export const createICS = (maybeCreatedAt, meetingUrl, teamName) => {

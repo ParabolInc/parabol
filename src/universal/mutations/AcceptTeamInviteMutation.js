@@ -79,11 +79,13 @@ const popJoinedYourTeamToast = (payload, dispatch) => {
   const teamName = getInProxy(payload, 'team', 'name');
   const preferredName = getInProxy(payload, 'teamMember', 'preferredName');
   if (!preferredName) return;
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'Ahoy, a new crewmate!',
-    message: `${preferredName} just joined team ${teamName}`
-  }));
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'Ahoy, a new crewmate!',
+      message: `${preferredName} just joined team ${teamName}`
+    })
+  );
 };
 
 export const acceptTeamInviteTeamUpdater = (payload, store, viewerId) => {
@@ -114,7 +116,13 @@ export const acceptTeamInviteInvitationUpdater = (payload, store) => {
   handleRemoveInvitations(invitation, store);
 };
 
-const AcceptTeamInviteMutation = (atmosphere, variables, {dispatch, history}, onError, onCompleted) => {
+const AcceptTeamInviteMutation = (
+  atmosphere,
+  variables,
+  {dispatch, history},
+  onError,
+  onCompleted
+) => {
   const {viewerId} = atmosphere;
   return commitMutation(atmosphere, {
     mutation,
@@ -136,16 +144,20 @@ const AcceptTeamInviteMutation = (atmosphere, variables, {dispatch, history}, on
         history.push('/');
         return;
       }
-      const {acceptTeamInvite: {team, authToken}} = data;
+      const {
+        acceptTeamInvite: {team, authToken}
+      } = data;
       const {id: teamId, name: teamName} = team;
       const {tms} = jwtDecode(authToken);
       atmosphere.setAuthToken(authToken);
-      dispatch(showInfo({
-        autoDismiss: 10,
-        title: 'Congratulations!',
-        message: `You’ve been added to team ${teamName}`,
-        action: {label: 'Great!'}
-      }));
+      dispatch(
+        showInfo({
+          autoDismiss: 10,
+          title: 'Congratulations!',
+          message: `You’ve been added to team ${teamName}`,
+          action: {label: 'Great!'}
+        })
+      );
       if (tms.length <= 1) {
         dispatch(setWelcomeActivity(`/team/${teamId}`));
         history.push('/me/settings');

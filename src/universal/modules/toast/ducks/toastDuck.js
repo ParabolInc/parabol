@@ -10,7 +10,7 @@ const INFO = 'info';
 
 const initialState = [];
 
-export default function reducer(state = initialState, action = {type: ''}) {
+export default function reducer (state = initialState, action = {type: ''}) {
   switch (action.type) {
     case TOAST_SHOW: {
       return state.concat(action.payload);
@@ -24,7 +24,7 @@ export default function reducer(state = initialState, action = {type: ''}) {
 
 const ids = count(1);
 
-export function show(opts, level = SUCCESS) {
+export function show (opts, level = SUCCESS) {
   return {
     type: TOAST_SHOW,
     payload: {
@@ -36,19 +36,19 @@ export function show(opts, level = SUCCESS) {
   };
 }
 
-export function showSuccess(opts) {
+export function showSuccess (opts) {
   return show(opts, SUCCESS);
 }
 
-export function showError(opts) {
+export function showError (opts) {
   return show(opts, ERROR);
 }
 
-export function showWarning(opts) {
+export function showWarning (opts) {
   return show(opts, WARNING);
 }
 
-export function showInfo(opts) {
+export function showInfo (opts) {
   return show(opts, INFO);
 }
 

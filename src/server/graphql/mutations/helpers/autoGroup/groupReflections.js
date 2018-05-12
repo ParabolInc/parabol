@@ -14,7 +14,8 @@ const groupReflections = async (meetingId, groupingThreshold) => {
   const now = new Date();
   // get reflections
   const r = getRethink();
-  const reflections = await r.table('RetroReflection')
+  const reflections = await r
+    .table('RetroReflection')
     .getAll(meetingId, {index: 'meetingId'})
     .filter({isActive: true});
 
@@ -24,7 +25,10 @@ const groupReflections = async (meetingId, groupingThreshold) => {
   const uniqueLemmaArr = getAllLemmasFromReflections(allReflectionEntities);
   // create a distance vector for each reflection
   const distanceMatrix = computeDistanceMatrix(allReflectionEntities, uniqueLemmaArr);
-  const {groups: groupedArrays, thresh, nextThresh} = getGroupMatrix(distanceMatrix, groupingThreshold);
+  const {groups: groupedArrays, thresh, nextThresh} = getGroupMatrix(
+    distanceMatrix,
+    groupingThreshold
+  );
   // replace the arrays with reflections
   const updatedReflections = [];
   const newGroups = groupedArrays.map((group, sortOrder) => {
@@ -34,13 +38,19 @@ const groupReflections = async (meetingId, groupingThreshold) => {
       const idx = distanceMatrix.indexOf(reflectionDistanceArr);
       return reflections[idx];
     });
-    const groupedReflectionEntities = groupedReflections.map(({entities}) => entities).filter(Boolean);
+    const groupedReflectionEntities = groupedReflections
+      .map(({entities}) => entities)
+      .filter(Boolean);
     const smartTitle = getTitleFromComputedGroup(uniqueLemmaArr, group, groupedReflectionEntities);
 
     // put all the reflections in the column where most of them are
     const getField = ({retroPhaseItemId}) => retroPhaseItemId;
     const retroPhaseItemIdMode = mode(groupedReflections, getField);
-    const updatedReflectionsForGroup = sortGroupedReflections(groupedReflections, retroPhaseItemIdMode, reflectionGroupId);
+    const updatedReflectionsForGroup = sortGroupedReflections(
+      groupedReflections,
+      retroPhaseItemIdMode,
+      reflectionGroupId
+    );
     updatedReflections.push(...updatedReflectionsForGroup);
     return {
       id: reflectionGroupId,

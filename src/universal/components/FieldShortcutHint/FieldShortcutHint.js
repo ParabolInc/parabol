@@ -7,15 +7,8 @@ import ui from 'universal/styles/ui';
 
 const FieldShortcutHint = (props) => {
   const {disabled, hint, styles} = props;
-  const shortcutHintStyles = css(
-    styles.shortcutHint,
-    disabled && styles.disabled
-  );
-  return (
-    <div className={shortcutHintStyles}>
-      {hint}
-    </div>
-  );
+  const shortcutHintStyles = css(styles.shortcutHint, disabled && styles.disabled);
+  return <div className={shortcutHintStyles}>{hint}</div>;
 };
 
 FieldShortcutHint.propTypes = {

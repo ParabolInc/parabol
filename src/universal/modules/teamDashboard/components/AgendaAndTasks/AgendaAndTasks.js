@@ -81,7 +81,10 @@ const AgendaContent = styled('div')({
 
 const AgendaAndTasks = (props) => {
   const {viewer} = props;
-  const {teamMember: {hideAgenda}, team} = viewer;
+  const {
+    teamMember: {hideAgenda},
+    team
+  } = viewer;
   const {teamId, teamName} = team;
   return (
     <RootBlock>
@@ -93,7 +96,6 @@ const AgendaAndTasks = (props) => {
           <Inner>
             <TeamTasksHeaderContainer team={team} />
           </Inner>
-
         </TasksHeader>
         <TasksContent hideAgenda={hideAgenda}>
           <Inner>
@@ -105,11 +107,16 @@ const AgendaAndTasks = (props) => {
       {/* Agenda */}
       <AgendaMain hideAgenda={hideAgenda}>
         <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
-        {!hideAgenda &&
+        {!hideAgenda && (
           <AgendaContent>
-            <AgendaListAndInput canNavigate={false} context="dashboard" disabled={false} team={team} />
+            <AgendaListAndInput
+              canNavigate={false}
+              context="dashboard"
+              disabled={false}
+              team={team}
+            />
           </AgendaContent>
-        }
+        )}
       </AgendaMain>
     </RootBlock>
   );

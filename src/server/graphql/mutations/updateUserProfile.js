@@ -18,7 +18,7 @@ const updateUserProfile = {
       description: 'The input object containing the user profile fields that can be changed'
     }
   },
-  async resolve(source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -31,7 +31,9 @@ const updateUserProfile = {
     // VALIDATION
     const schema = makeUserServerSchema();
     const {data: validUpdatedUser, errors} = schema(updatedUser);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
     const updates = {
@@ -40,11 +42,13 @@ const updateUserProfile = {
     };
     // propagate denormalized changes to TeamMember
     const {user, teamMembers} = await r({
-      teamMembers: r.table('TeamMember')
+      teamMembers: r
+        .table('TeamMember')
         .getAll(userId, {index: 'userId'})
         .update(updates, {returnChanges: true})('changes')('new_val')
         .default([]),
-      user: r.table('User')
+      user: r
+        .table('User')
         .get(userId)
         .update(updates, {returnChanges: true})('changes')(0)('new_val')
         .default(null)

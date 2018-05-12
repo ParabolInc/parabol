@@ -22,18 +22,18 @@ class Bundle extends Component {
     mod: null
   };
 
-  componentWillMount() {
+  componentWillMount () {
     this.loadMod(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {mod} = nextProps;
     if (mod !== this.props.mod) {
       this.loadMod(nextProps);
     }
   }
 
-  loadMod(props) {
+  loadMod (props) {
     this.setState({Mod: null});
     const {isPrivate, mod} = props;
     mod().then((res) => {
@@ -47,7 +47,7 @@ class Bundle extends Component {
     });
   }
 
-  render() {
+  render () {
     const {Mod} = this.state;
     if (!Mod) return null;
     const {history, location, match, extraProps} = this.props;

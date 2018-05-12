@@ -19,17 +19,20 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
     // teamMemberId is of format 'userId::teamId'
     const [, teamId] = teamMemberId.split('::');
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
-    await r.table('TeamMember')
+    await r
+      .table('TeamMember')
       .get(teamMemberId)
       .update({isCheckedIn});
 

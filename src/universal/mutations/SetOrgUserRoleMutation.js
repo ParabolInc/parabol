@@ -61,17 +61,19 @@ const popPromoteToBillingLeaderToast = (payload, {dispatch, history}) => {
   const orgId = getInProxy(payload, 'organization', 'id');
   if (!orgId) return;
   const orgName = getInProxy(payload, 'organization', 'name');
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'Congratulations!',
-    message: `You’ve been promoted to billing leader for ${orgName}`,
-    action: {
-      label: 'Check it out!',
-      callback: () => {
-        history.push(`/me/organizations/${orgId}/members`);
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'Congratulations!',
+      message: `You’ve been promoted to billing leader for ${orgName}`,
+      action: {
+        label: 'Check it out!',
+        callback: () => {
+          history.push(`/me/organizations/${orgId}/members`);
+        }
       }
-    }
-  }));
+    })
+  );
 };
 
 export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId, options) => {

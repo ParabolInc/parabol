@@ -39,11 +39,7 @@ const MeetingMemberTaskListItem = (props: Props) => {
           <tbody>
             <tr>
               <td style={userStats}>
-                {tasks.length > 0 &&
-                <span style={labelStyle}>
-                  {label}
-                </span>
-                }
+                {tasks.length > 0 && <span style={labelStyle}>{label}</span>}
               </td>
             </tr>
             <tr>

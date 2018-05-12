@@ -11,15 +11,25 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state, props) => {
-  const {atmosphere: {viewerId}, match: {params: {teamId}}} = props;
+  const {
+    atmosphere: {viewerId},
+    match: {
+      params: {teamId}
+    }
+  } = props;
   return {
     teamMemberId: toTeamMemberId(teamId, viewerId)
   };
 };
 
-const agendaTasks = () => System.import('universal/modules/teamDashboard/components/AgendaAndTasksRoot');
-const teamSettings = () => System.import('universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper');
-const archivedTasks = () => System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot');
+const agendaTasks = () =>
+  System.import('universal/modules/teamDashboard/components/AgendaAndTasksRoot');
+const teamSettings = () =>
+  System.import(
+    'universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper'
+  );
+const archivedTasks = () =>
+  System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot');
 
 const TeamContainer = (props) => {
   const {
@@ -29,9 +39,11 @@ const TeamContainer = (props) => {
     viewer
   } = props;
   const team = viewer && viewer.team;
-  const isSettings = Boolean(matchPath(pathname, {
-    path: '/team/:teamId/settings'
-  }));
+  const isSettings = Boolean(
+    matchPath(pathname, {
+      path: '/team/:teamId/settings'
+    })
+  );
   return (
     <Team
       hasMeetingAlert={viewer && viewer.hasMeetingAlert}
@@ -42,7 +54,11 @@ const TeamContainer = (props) => {
       <Switch>
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
         <AsyncRoute exact path={match.path} mod={agendaTasks} />
-        <AsyncRoute path={`${match.path}/settings`} mod={teamSettings} extraProps={{teamMemberId}} />
+        <AsyncRoute
+          path={`${match.path}/settings`}
+          mod={teamSettings}
+          extraProps={{teamMemberId}}
+        />
         <AsyncRoute path={`${match.path}/archive`} extraProps={{team}} mod={archivedTasks} />
       </Switch>
     </Team>
@@ -59,9 +75,9 @@ TeamContainer.propTypes = {
 };
 
 export default createFragmentContainer(
-  withAtmosphere(withReducer({teamDashboard: teamDashReducer})(
-    connect(mapStateToProps)(TeamContainer)
-  )),
+  withAtmosphere(
+    withReducer({teamDashboard: teamDashReducer})(connect(mapStateToProps)(TeamContainer))
+  ),
   graphql`
     fragment TeamContainer_viewer on User {
       hasMeetingAlert

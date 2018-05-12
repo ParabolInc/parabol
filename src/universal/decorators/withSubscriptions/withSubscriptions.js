@@ -11,7 +11,7 @@ export default (subscription, options = {}) => (ComposedComponent) => {
     static displayName = `WithSubscriptions(${getDisplayName(ComposedComponent)})`;
     static timeouts = {};
 
-    componentDidMount() {
+    componentDidMount () {
       const {unsubDelay, unsubKey} = options;
       this._queryKey = unsubKey ? unsubKey(this.props) : WithSubscriptions.displayName;
       if (unsubDelay) {
@@ -28,7 +28,7 @@ export default (subscription, options = {}) => (ComposedComponent) => {
       keyArray.forEach((subKey) => atmosphere.safeSocketUnsubscribe(subKey));
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
       // by default, never unsub! Keeping a little extra state on the server is far cheaper than a refetch
       const {unsubDelay, unsubKey} = options;
 
@@ -43,7 +43,7 @@ export default (subscription, options = {}) => (ComposedComponent) => {
       }
     }
 
-    render() {
+    render () {
       return <ComposedComponent {...this.props} unsubscribe={this.unsubscribe} />;
     }
   }

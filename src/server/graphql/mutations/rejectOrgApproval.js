@@ -6,7 +6,13 @@ import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgAppr
 import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import shortid from 'shortid';
-import {DENY_NEW_USER, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
+import {
+  DENY_NEW_USER,
+  NOTIFICATION,
+  ORG_APPROVAL,
+  TASK,
+  TEAM_MEMBER
+} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import getActiveTeamsByOrgId from 'server/safeQueries/getActiveTeamsByOrgId';
 import getTasksByAssigneeIds from 'server/safeQueries/getTasksByAssigneeIds';
@@ -30,7 +36,7 @@ export default {
       type: GraphQLString
     }
   },
-  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -40,25 +46,45 @@ export default {
     const {notificationId} = args;
     const viewerId = getUserId(authToken);
     const rejectionNotification = await r.table('Notification').get(notificationId);
-    if (!rejectionNotification) return sendNotificationAccessError(authToken, notificationId);
+    if (!rejectionNotification) {
+      return sendNotificationAccessError(authToken, notificationId);
+    }
     const {orgId, inviteeEmail} = rejectionNotification;
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc);
+    }
 
     // VALIDATION
-    const {data: {reason}, errors} = rejectOrgApprovalValidation()(args);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    const {
+      data: {reason},
+      errors
+    } = rejectOrgApprovalValidation()(args);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
-    const deniedByName = await r.table('User').get(viewerId)('preferredName').default('A Billing Leader');
+    const deniedByName = await r
+      .table('User')
+      .get(viewerId)('preferredName')
+      .default('A Billing Leader');
 
     const {removeOrgApp, teamsInOrg} = await promiseAllObj({
-      removeOrgApp: removeOrgApprovalAndNotification(orgId, inviteeEmail, {deniedBy: viewerId}),
+      removeOrgApp: removeOrgApprovalAndNotification(orgId, inviteeEmail, {
+        deniedBy: viewerId
+      }),
       teamsInOrg: getActiveTeamsByOrgId(orgId, dataLoader)
     });
     const teamIdsInOrg = teamsInOrg.map(({id}) => id);
-    const softTeamMembersInOrg = await getActiveSoftTeamMembersByEmail(inviteeEmail, teamIdsInOrg, dataLoader);
-    await Promise.all(softTeamMembersInOrg.map(({email, teamId}) => removeSoftTeamMember(email, teamId, dataLoader)));
+    const softTeamMembersInOrg = await getActiveSoftTeamMembersByEmail(
+      inviteeEmail,
+      teamIdsInOrg,
+      dataLoader
+    );
+    await Promise.all(
+      softTeamMembersInOrg.map(({email, teamId}) => removeSoftTeamMember(email, teamId, dataLoader))
+    );
     const softTeamMemberIdsInOrg = softTeamMembersInOrg.map(({id}) => id);
     const softTasksInOrg = await getTasksByAssigneeIds(softTeamMemberIdsInOrg, dataLoader);
     const archivedSoftTasks = await archiveTasksForDB(softTasksInOrg, dataLoader);

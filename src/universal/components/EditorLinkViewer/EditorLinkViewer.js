@@ -2,25 +2,18 @@ import {css} from 'aphrodite-local-styles/no-important';
 import React, {Component} from 'react';
 import Button from 'universal/components/Button/Button';
 import removeLink from 'universal/utils/draftjs/removeLink';
-import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import PropTypes from 'prop-types';
 import dontTellDraft from 'universal/utils/draftjs/dontTellDraft';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 class EditorLinkViewer extends Component {
-  render() {
-    const {
-      href,
-      styles,
-      addHyperlink,
-      innerRef
-    } = this.props;
+  render () {
+    const {href, styles, addHyperlink, innerRef} = this.props;
 
-    const menuStyles = css(
-      styles.modal,
-    );
+    const menuStyles = css(styles.modal);
 
     const handleRemove = () => {
       const {editorState, setEditorState, removeModal} = this.props;
@@ -35,10 +28,24 @@ class EditorLinkViewer extends Component {
     return (
       <div className={menuStyles} onMouseDown={dontTellDraft} ref={innerRef}>
         <span className={css(styles.url)}>
-          <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">{href}</a>
+          <a className={css(styles.linkText)} href={href} rel="noopener noreferrer" target="_blank">
+            {href}
+          </a>
         </span>
-        <Button buttonStyle="flat" buttonSize="small" colorPalette="mid" label="Change" onClick={changeLink} />
-        <Button buttonStyle="flat" buttonSize="small" colorPalette="mid" label="Remove" onClick={handleRemove} />
+        <Button
+          buttonStyle="flat"
+          buttonSize="small"
+          colorPalette="mid"
+          label="Change"
+          onClick={changeLink}
+        />
+        <Button
+          buttonStyle="flat"
+          buttonSize="small"
+          colorPalette="mid"
+          label="Remove"
+          onClick={handleRemove}
+        />
       </div>
     );
   }

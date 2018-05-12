@@ -10,7 +10,6 @@ import withStyles from 'universal/styles/withStyles';
 import {textTags} from 'universal/utils/constants';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 
-
 class EditorInputWrapper extends Component {
   static propTypes = {
     ariaLabel: PropTypes.string,
@@ -98,7 +97,7 @@ class EditorInputWrapper extends Component {
       return handleBeforeInput(char);
     }
     return undefined;
-  }
+  };
 
   handlePastedText = (text) => {
     if (text) {
@@ -116,7 +115,7 @@ class EditorInputWrapper extends Component {
     return 'not-handled';
   };
 
-  render() {
+  render () {
     const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props;
     return (
       <Editor
@@ -163,10 +162,4 @@ const styleThunk = () => ({
   }
 });
 
-export default withMarkdown(
-  withKeyboardShortcuts(
-    withStyles(styleThunk)(
-      EditorInputWrapper
-    )
-  )
-);
+export default withMarkdown(withKeyboardShortcuts(withStyles(styleThunk)(EditorInputWrapper)));

@@ -48,11 +48,13 @@ const Team = new GraphQLObjectType({
     // },
     isPaid: {
       type: GraphQLBoolean,
-      description: 'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
+      description:
+        'true if the underlying org has a validUntil date greater than now. if false, subs do not work'
     },
     meetingNumber: {
       type: GraphQLInt,
-      description: 'The current or most recent meeting number (also the number of meetings the team has had'
+      description:
+        'The current or most recent meeting number (also the number of meetings the team has had'
     },
     name: {
       type: new GraphQLNonNull(GraphQLString),
@@ -107,7 +109,8 @@ const Team = new GraphQLObjectType({
       resolve: ({id: teamId}) => {
         const r = getRethink();
         const now = new Date();
-        return r.table('Invitation')
+        return r
+          .table('Invitation')
           .getAll(teamId, {index: 'teamId'})
           .filter(r.row('tokenExpiration').ge(now))
           .orderBy('createdAt')
@@ -116,7 +119,8 @@ const Team = new GraphQLObjectType({
     },
     meetingPhase: {
       type: ActionMeetingPhaseEnum,
-      description: 'The phase of the meeting, usually matches the facilitator phase, be could be further along'
+      description:
+        'The phase of the meeting, usually matches the facilitator phase, be could be further along'
     },
     meetingPhaseItem: {
       type: GraphQLInt,
@@ -150,7 +154,8 @@ const Team = new GraphQLObjectType({
       description: 'The outstanding invitations to join the team',
       resolve: ({id: teamId}) => {
         const r = getRethink();
-        return r.table('OrgApproval')
+        return r
+          .table('OrgApproval')
           .getAll(teamId, {index: 'teamId'})
           .filter({status: PENDING, isActive: true})
           .orderBy('email')
@@ -164,9 +169,9 @@ const Team = new GraphQLObjectType({
     agendaItems: {
       type: new GraphQLList(AgendaItem),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve({id: teamId}, args, {dataLoader}) {
+      async resolve ({id: teamId}, args, {dataLoader}) {
         const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId);
-        agendaItems.sort((a, b) => a.sortOrder > b.sortOrder ? 1 : -1);
+        agendaItems.sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1));
         return agendaItems;
       }
     },
@@ -180,8 +185,10 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All of the tasks for this team',
-      async resolve({id: teamId}, args, {authToken, dataLoader}) {
-        if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
+      async resolve ({id: teamId}, args, {authToken, dataLoader}) {
+        if (!isTeamMember(authToken, teamId)) {
+          return sendTeamAccessError(authToken, teamId, null);
+        }
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId);
         return connectionFromTasks(tasks);
       }
@@ -189,9 +196,9 @@ const Team = new GraphQLObjectType({
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),
       description: 'All the soft team members actively associated with the team',
-      async resolve({id: teamId}, args, {dataLoader}) {
+      async resolve ({id: teamId}, args, {dataLoader}) {
         const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId);
-        softTeamMembers.sort((a, b) => a.preferredName > b.preferredName ? 1 : -1);
+        softTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1));
         return softTeamMembers;
       }
     },
@@ -204,9 +211,9 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
+      async resolve ({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
-        teamMembers.sort((a, b) => a[sortBy] > b[sortBy] ? 1 : -1);
+        teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1));
         return teamMembers;
       }
     },

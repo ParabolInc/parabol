@@ -14,7 +14,9 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const channelName = `${INVITATION}.${teamId}`;

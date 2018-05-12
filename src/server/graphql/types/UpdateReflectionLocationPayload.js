@@ -21,7 +21,8 @@ const UpdateReflectionLocationPayload = new GraphQLObjectType({
     },
     reflectionGroup: {
       type: RetroReflectionGroup,
-      description: 'The group encapsulating the new reflection. A new one was created if one was not provided.',
+      description:
+        'The group encapsulating the new reflection. A new one was created if one was not provided.',
       resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
     },
     oldReflectionGroup: {

@@ -102,11 +102,13 @@ const popKickedOutToast = (payload, {dispatch, history, location}) => {
   const notifications = payload.getLinkedRecords('kickOutNotifications');
   const teamIds = getInProxy(notifications, 'team', 'id');
   if (!teamIds) return;
-  dispatch(showWarning({
-    autoDismiss: 10,
-    title: 'So long!',
-    message: `You have been removed from ${orgName} and all its teams`
-  }));
+  dispatch(
+    showWarning({
+      autoDismiss: 10,
+      title: 'So long!',
+      message: `You have been removed from ${orgName} and all its teams`
+    })
+  );
 
   const {pathname} = location;
   for (let ii = 0; ii < teamIds.length; ii++) {
@@ -191,9 +193,16 @@ export const removeOrgUserTeamOnNext = (payload, context) => {
 
 export const removeOrgUserOrganizationOnNext = (payload, context) => {
   // FIXME currently, the server doesn't send this to the user in other tabs, so they don't get redirected in their other tabs
-  const {atmosphere: {viewerId}, history, location} = context;
+  const {
+    atmosphere: {viewerId},
+    history,
+    location
+  } = context;
   const {pathname} = location;
-  const {user: {id: userId}, organization: {id: orgId}} = payload;
+  const {
+    user: {id: userId},
+    organization: {id: orgId}
+  } = payload;
   if (userId === viewerId && onExOrgRoute(pathname, orgId)) {
     history.push('/me');
   }
@@ -221,7 +230,10 @@ const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onComple
         onCompleted(res, errors);
       }
 
-      removeOrgUserOrganizationOnNext(res.removeOrgUser, {...context, atmosphere});
+      removeOrgUserOrganizationOnNext(res.removeOrgUser, {
+        ...context,
+        atmosphere
+      });
     },
     onError
   });

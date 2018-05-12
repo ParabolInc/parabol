@@ -17,7 +17,8 @@ export default {
 
     // RESOLUTION
     // TODO consider moving the requestedFields to all queries
-    const nodes = await r.table('Notification')
+    const nodes = await r
+      .table('Notification')
       .getAll(userId, {index: 'userIds'})
       .filter((row) => row('startAt').le(r.now()))
       .orderBy(r.desc('startAt'));

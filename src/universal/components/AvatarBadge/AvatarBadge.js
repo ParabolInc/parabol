@@ -4,7 +4,7 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import FontAwesome from 'react-fontawesome';
-import {srOnly} from 'universal/styles/helpers';
+import srOnly from 'universal/styles/helpers/srOnly';
 
 const checkInStatus = {
   null: {
@@ -25,19 +25,14 @@ const AvatarBadge = (props) => {
   const {isCheckedIn = null, isConnected, styles} = props;
   const connection = isConnected ? 'online' : 'offline';
   const checkIn = isCheckedIn ? 'present' : 'absent';
-  const iconStyles = css(
-    styles.badgeIcon,
-    styles[connection]
-  );
+  const iconStyles = css(styles.badgeIcon, styles[connection]);
   const {icon, statusName} = checkInStatus[isCheckedIn];
   const title = `${isConnected ? 'Online' : 'Offline'}${statusName}`;
   const description = `${connection}, ${checkIn}`;
   return (
     <div className={css(styles.badge)}>
       <FontAwesome className={iconStyles} name={icon} title={title} />
-      <span className={css(styles.srOnly)}>
-        {description}
-      </span>
+      <span className={css(styles.srOnly)}>{description}</span>
     </div>
   );
 };

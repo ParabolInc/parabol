@@ -14,9 +14,10 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
 
     // SETUP
     const db = new MockDB();
-    const {user: [user], team: [team]} = await db
-      .newUser({name: 'non-team-member'})
-      .newTeam({tier: PRO});
+    const {
+      user: [user],
+      team: [team]
+    } = await db.newUser({name: 'non-team-member'}).newTeam({tier: PRO});
     const authToken = mockAuthToken(user);
     const dataLoader = makeDataLoader(authToken);
 
@@ -34,9 +35,10 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
 
     // SETUP
     const db = new MockDB();
-    const {user: [user], team: [team]} = await db
-      .newTeam({tier: PERSONAL})
-      .newUser({name: 'personal-user'});
+    const {
+      user: [user],
+      team: [team]
+    } = await db.newTeam({tier: PERSONAL}).newUser({name: 'personal-user'});
     await db.newTeamMember({teamId: team.id, userId: user.id});
     const authToken = mockAuthToken(user);
     const dataLoader = makeDataLoader(authToken);
@@ -54,9 +56,10 @@ describe('updateTeamCheckInQuestion mutation resolver', () => {
     const r = getRethink();
     // SETUP
     const db = new MockDB();
-    const {user: [user], team: [team]} = await db
-      .newTeam({tier: ENTERPRISE})
-      .newUser({name: 'enterprise-user'});
+    const {
+      user: [user],
+      team: [team]
+    } = await db.newTeam({tier: ENTERPRISE}).newUser({name: 'enterprise-user'});
     await db.newTeamMember({teamId: team.id, userId: user.id});
     const authToken = mockAuthToken(user);
     const dataLoader = makeDataLoader(authToken);

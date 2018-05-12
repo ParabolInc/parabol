@@ -31,14 +31,8 @@ LoadableLoading.propTypes = {
   timedOut: PropTypes.bool,
   pastDelay: PropTypes.bool,
   spinnerSize: PropTypes.number,
-  height: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string
-  ]),
-  width: PropTypes.oneOfType([
-    PropTypes.number,
-    PropTypes.string
-  ]),
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   styles: PropTypes.object
 };
 

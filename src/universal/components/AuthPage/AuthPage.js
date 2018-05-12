@@ -40,8 +40,6 @@ export default ({children, title}: Props) => (
   <PageContainer>
     <Helmet title={title} />
     <Header />
-    <CenteredBlock>
-      {children}
-    </CenteredBlock>
+    <CenteredBlock>{children}</CenteredBlock>
   </PageContainer>
 );

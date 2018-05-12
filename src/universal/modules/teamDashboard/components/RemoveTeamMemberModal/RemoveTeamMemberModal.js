@@ -3,19 +3,32 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import {DashModal} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 import portal from 'react-portal-hoc';
 import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import DashModal from 'universal/components/Dashboard/DashModal';
 
 const RemoveTeamMemberModal = (props) => {
-  const {atmosphere, dispatch, history, location, closeAfter, closePortal, isClosing, teamMember} = props;
+  const {
+    atmosphere,
+    dispatch,
+    history,
+    location,
+    closeAfter,
+    closePortal,
+    isClosing,
+    teamMember
+  } = props;
   const {teamMemberId, preferredName} = teamMember;
   const handleClick = () => {
     closePortal();
-    RemoveTeamMemberMutation(atmosphere, teamMemberId, {dispatch, history, location});
+    RemoveTeamMemberMutation(atmosphere, teamMemberId, {
+      dispatch,
+      history,
+      location
+    });
   };
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
@@ -52,7 +65,9 @@ RemoveTeamMemberModal.propTypes = {
 };
 
 export default createFragmentContainer(
-  withRouter(connect()(portal({escToClose: true, closeAfter: 100})(withAtmosphere(RemoveTeamMemberModal)))),
+  withRouter(
+    connect()(portal({escToClose: true, closeAfter: 100})(withAtmosphere(RemoveTeamMemberModal)))
+  ),
   graphql`
     fragment RemoveTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id

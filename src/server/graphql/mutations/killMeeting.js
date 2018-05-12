@@ -15,16 +15,20 @@ export default {
       description: 'The team that will be having the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     // reset the meeting
-    await r.table('Team').get(teamId)
+    await r
+      .table('Team')
+      .get(teamId)
       .update({
         facilitatorPhase: LOBBY,
         meetingPhase: LOBBY,

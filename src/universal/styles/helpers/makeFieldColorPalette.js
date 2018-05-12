@@ -1,7 +1,10 @@
-
 import ui from 'universal/styles/ui';
 
-export default function makeFieldColorPalette(colorPalette, hasPseudoClassStyles = true, customStyles) {
+export default function makeFieldColorPalette (
+  colorPalette,
+  hasPseudoClassStyles = true,
+  customStyles
+) {
   const defaultCustomStyles = {
     base: {},
     placeholder: {},
@@ -11,14 +14,7 @@ export default function makeFieldColorPalette(colorPalette, hasPseudoClassStyles
     active: {},
     ...customStyles
   };
-  const {
-    base,
-    placeholder,
-    selection,
-    hover,
-    focus,
-    active
-  } = defaultCustomStyles;
+  const {base, placeholder, selection, hover, focus, active} = defaultCustomStyles;
   const palettes = ui.fieldColorPalettes;
   const hoverFocusActive = {
     borderColor: palettes[colorPalette].focusBorderColor,

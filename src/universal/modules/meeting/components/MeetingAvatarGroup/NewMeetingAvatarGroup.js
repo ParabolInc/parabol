@@ -28,25 +28,33 @@ type Props = {
 };
 
 const NewMeetingAvatarGroup = (props: Props) => {
-  const {gotoStageId, team: {newMeeting = {}, teamMembers}} = props;
+  const {
+    gotoStageId,
+    team: {newMeeting = {}, teamMembers}
+  } = props;
   const {facilitatorStageId, phases, localPhase} = newMeeting || {};
   const facilitatorStageRes = findStageById(phases, facilitatorStageId);
-  const facilitatorStageTeamMemberId = facilitatorStageRes && facilitatorStageRes.stage.teamMemberId;
+  const facilitatorStageTeamMemberId =
+    facilitatorStageRes && facilitatorStageRes.stage.teamMemberId;
   return (
     <MeetingAvatarGroupRoot>
       <MeetingAvatarGroupInner>
         {teamMembers.map((teamMember) => {
-          return (<NewMeetingAvatar
-            key={teamMember.id}
-            gotoStage={() => {
-              const teamMemberStage = localPhase && localPhase.stages.find((stage) => stage.teamMemberId === teamMember.id);
-              const teamMemberStageId = teamMemberStage && teamMemberStage.id || '';
-              gotoStageId(teamMemberStageId);
-            }}
-            isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
-            newMeeting={newMeeting}
-            teamMember={teamMember}
-          />);
+          return (
+            <NewMeetingAvatar
+              key={teamMember.id}
+              gotoStage={() => {
+                const teamMemberStage =
+                  localPhase &&
+                  localPhase.stages.find((stage) => stage.teamMemberId === teamMember.id);
+                const teamMemberStageId = (teamMemberStage && teamMemberStage.id) || '';
+                gotoStageId(teamMemberStageId);
+              }}
+              isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
+              newMeeting={newMeeting}
+              teamMember={teamMember}
+            />
+          );
         })}
       </MeetingAvatarGroupInner>
     </MeetingAvatarGroupRoot>
@@ -85,5 +93,6 @@ export default createFragmentContainer(
         }
         ...NewMeetingAvatar_newMeeting
       }
-    }`
+    }
+  `
 );

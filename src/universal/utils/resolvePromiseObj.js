@@ -16,4 +16,3 @@ const resolvePromiseObj = async (promiseObj) => {
 };
 
 export default resolvePromiseObj;
-

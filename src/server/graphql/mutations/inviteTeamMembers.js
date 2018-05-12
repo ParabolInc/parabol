@@ -2,7 +2,12 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
 import Invitee from 'server/graphql/types/Invitee';
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload';
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers';
-import {getUserId, getUserOrgDoc, isOrgBillingLeader, isTeamMember} from 'server/utils/authorization';
+import {
+  getUserId,
+  getUserOrgDoc,
+  isOrgBillingLeader,
+  isTeamMember
+} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
@@ -24,14 +29,17 @@ export default {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
     }
   },
-  async resolve(source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
     const r = getRethink();
 
     // AUTH
     const viewerId = getUserId(authToken);
     if (!isTeamMember(authToken, teamId)) {
-      const orgId = await r.table('Team').get(teamId)('orgId').default('');
+      const orgId = await r
+        .table('Team')
+        .get(teamId)('orgId')
+        .default('');
       const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
       if (!isOrgBillingLeader(userOrgDoc)) {
         return sendTeamAccessError(authToken, teamId);
@@ -80,7 +88,9 @@ export default {
     });
 
     inviteNotifications.forEach((notification) => {
-      const {userIds: [userId]} = notification;
+      const {
+        userIds: [userId]
+      } = notification;
       publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions);
     });
 
@@ -113,4 +123,3 @@ export default {
     return data;
   }
 };
-

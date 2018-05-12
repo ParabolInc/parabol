@@ -12,7 +12,7 @@ const createImposterToken = {
       description: 'The target userId to impersonate'
     }
   },
-  async resolve(source, {userId}, {authToken, dataLoader}) {
+  async resolve (source, {userId}, {authToken, dataLoader}) {
     // AUTH
     requireSU(authToken);
 

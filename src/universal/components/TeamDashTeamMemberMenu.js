@@ -7,17 +7,17 @@ import type {TeamDashTeamMemberMenu_team as Team} from './__generated__/TeamDash
 
 import type {Dispatch} from 'react-redux';
 import {connect} from 'react-redux';
-import {textOverflow} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 type Props = {
   closePortal: () => void,
   dispatch: Dispatch<*>,
   team: Team,
-  teamMemberFilterId: ?string,
-}
+  teamMemberFilterId: ?string
+};
 
 const Label = styled('div')({
   ...textOverflow,
@@ -33,7 +33,8 @@ const Label = styled('div')({
 const TeamDashTeamMemberMenu = (props: Props) => {
   const {closePortal, dispatch, team, teamMemberFilterId} = props;
   const {teamMembers} = team;
-  const defaultActiveIdx = teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2;
+  const defaultActiveIdx =
+    teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2;
   return (
     <MenuWithShortcuts
       ariaLabel={'Select the team member to filter by'}
@@ -46,15 +47,13 @@ const TeamDashTeamMemberMenu = (props: Props) => {
         label={'All members'}
         onClick={() => dispatch(filterTeamMember(null))}
       />
-      {
-        teamMembers.map((teamMember) => (
-          <MenuItemWithShortcuts
-            key={`teamMemberFilter${teamMember.id}`}
-            label={teamMember.preferredName}
-            onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
-          />
-        ))
-      }
+      {teamMembers.map((teamMember) => (
+        <MenuItemWithShortcuts
+          key={`teamMemberFilter${teamMember.id}`}
+          label={teamMember.preferredName}
+          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+        />
+      ))}
     </MenuWithShortcuts>
   );
 };

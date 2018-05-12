@@ -13,36 +13,24 @@ class Radio extends Component {
     inline: PropTypes.bool,
     input: PropTypes.object.isRequired,
     label: PropTypes.any,
-    labelPlacement: PropTypes.oneOf([
-      'left',
-      'right'
-    ]),
+    labelPlacement: PropTypes.oneOf(['left', 'right']),
     styles: PropTypes.object
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       selected: null
     };
   }
 
-  render() {
-    const {
-      name,
-      label,
-      input,
-      styles
-    } = this.props;
+  render () {
+    const {name, label, input, styles} = this.props;
 
     return (
       <label className={css(styles.radioBase)}>
         <input {...input} className={css(styles.radioInput)} name={name} type="radio" />
-        {label &&
-        <div className={css(styles.radioLabel)}>
-          {label}
-        </div>
-        }
+        {label && <div className={css(styles.radioLabel)}>{label}</div>}
       </label>
     );
   }
@@ -58,9 +46,9 @@ const styleThunk = (theme, {customStyles, fieldSize, indent, inline, labelPlacem
     paddingBottom: ui.controlBlockPaddingVertical[size],
     paddingTop: ui.controlBlockPaddingVertical[size]
   };
-  const paddingLeft = (fieldSize && indent) ? ui.controlBlockPaddingHorizontal[size] : 0;
-  const useInlineStyles = (fieldSize && inline) && inlineStyles;
-  return ({
+  const paddingLeft = fieldSize && indent ? ui.controlBlockPaddingHorizontal[size] : 0;
+  const useInlineStyles = fieldSize && inline && inlineStyles;
+  return {
     radioBase: {
       alignItems: 'center',
       display: 'flex',
@@ -83,7 +71,7 @@ const styleThunk = (theme, {customStyles, fieldSize, indent, inline, labelPlacem
       paddingLeft: placement === 'right' && '.5rem',
       paddingRight: placement === 'left' && '.5rem'
     }
-  });
+  };
 };
 
 export default withStyles(styleThunk)(Radio);

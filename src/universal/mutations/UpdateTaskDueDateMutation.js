@@ -15,7 +15,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpdateTaskDueDateMutation_task @relay (mask: false)
+      ...UpdateTaskDueDateMutation_task @relay(mask: false)
     }
   }
 `;

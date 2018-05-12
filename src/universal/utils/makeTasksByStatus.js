@@ -1,7 +1,7 @@
 import {ACTIVE, STUCK, DONE, FUTURE, columnArray} from './constants';
 
 // sorts post-split to be a little more efficient
-export default function makeTasksByStatus(tasks) {
+export default function makeTasksByStatus (tasks) {
   const tasksByStatus = {
     [ACTIVE]: [],
     [STUCK]: [],

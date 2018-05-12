@@ -76,7 +76,7 @@ class AddGitHubRepo extends Component {
     teamMemberId: PropTypes.string
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this._mounted = true;
     this.state = {
@@ -88,7 +88,7 @@ class AddGitHubRepo extends Component {
     this.fetchOptions(props.accessToken);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {accessToken} = nextProps;
     if (!this.props.accessToken !== accessToken) {
       this.fetchOptions(accessToken);
@@ -96,7 +96,7 @@ class AddGitHubRepo extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._mounted = false;
   }
 
@@ -104,7 +104,6 @@ class AddGitHubRepo extends Component {
     // TODO refactor all of this. DRY it out between slack & GH, add loading & empty state
     if (option.id === null) {
       // there are no options
-
     }
     this.setState({
       selectedRepo: {
@@ -118,10 +117,18 @@ class AddGitHubRepo extends Component {
 
   handleAddRepo = () => {
     const {environment, teamId} = this.props;
-    const {selectedRepo: {repoId, nameWithOwner}} = this.state;
+    const {
+      selectedRepo: {repoId, nameWithOwner}
+    } = this.state;
     if (!repoId) return;
 
-    AddGitHubRepoMutation(environment, nameWithOwner, teamId, setError.bind(this), clearError.bind(this));
+    AddGitHubRepoMutation(
+      environment,
+      nameWithOwner,
+      teamId,
+      setError.bind(this),
+      clearError.bind(this)
+    );
     this.setState({
       selectedRepo: defaultSelectedRepo(),
       showHint: false
@@ -144,7 +151,9 @@ class AddGitHubRepo extends Component {
     const isStale = now - this.lastUpdated > ms('30s');
     if (accessToken && isStale) {
       this.lastUpdated = now;
-      const postOptions = makeGitHubPostOptions(accessToken, {query: getReposQuery});
+      const postOptions = makeGitHubPostOptions(accessToken, {
+        query: getReposQuery
+      });
       const res = await fetch(GITHUB_ENDPOINT, postOptions);
       const resJson = await res.json();
       if (!this._mounted) return;
@@ -157,14 +166,19 @@ class AddGitHubRepo extends Component {
         setError.call(this, `GitHub Error: ${message}. Try refreshing your token`);
         throw message;
       }
-      const {viewer: {organizations: {nodes: orgs}, repositories: {nodes: personalRepos}}} = data;
+      const {
+        viewer: {
+          organizations: {nodes: orgs},
+          repositories: {nodes: personalRepos}
+        }
+      } = data;
       const repos = getUniqueRepos(orgs, personalRepos);
       const {subbedRepos} = this.props;
       const subbedRepoIds = subbedRepos.map(({nameWithOwner}) => nameWithOwner);
       const options = repos
         .filter((repo) => repo.viewerCanAdminister && !subbedRepoIds.includes(repo.nameWithOwner))
         .map((repo) => ({id: repo.nameWithOwner, label: repo.nameWithOwner}))
-        .sort((a, b) => a.label < b.label ? -1 : 1);
+        .sort((a, b) => (a.label < b.label ? -1 : 1));
       this.setState({
         isLoaded: true,
         options
@@ -172,14 +186,18 @@ class AddGitHubRepo extends Component {
     }
   };
 
-
-  render() {
+  render () {
     const {styles} = this.props;
-    const {error, isLoaded, options, selectedRepo: {nameWithOwner}, showHint} = this.state;
-    const footerMessage = error || (showHint && 'Repo 404? Make sure you have admin privileges in GitHub!');
-    const footerStyle = css(
-      error ? styles.error : styles.footer
-    );
+    const {
+      error,
+      isLoaded,
+      options,
+      selectedRepo: {nameWithOwner},
+      showHint
+    } = this.state;
+    const footerMessage =
+      error || (showHint && 'Repo 404? Make sure you have admin privileges in GitHub!');
+    const footerStyle = css(error ? styles.error : styles.footer);
     return (
       <div className={css(styles.addRepo)}>
         <div className={css(styles.dropdownAndError)}>
@@ -190,9 +208,7 @@ class AddGitHubRepo extends Component {
             options={options}
             isLoaded={isLoaded}
           />
-          <div className={footerStyle}>
-            {footerMessage}
-          </div>
+          <div className={footerStyle}>{footerMessage}</div>
         </div>
         <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
           <Button
@@ -204,7 +220,6 @@ class AddGitHubRepo extends Component {
           />
         </div>
       </div>
-
     );
   }
 }
@@ -228,6 +243,5 @@ const styleThunk = () => ({
     textAlign: 'right'
   }
 });
-
 
 export default withStyles(styleThunk)(AddGitHubRepo);

@@ -29,13 +29,20 @@ describe('UpdateCreditCard', () => {
     const dataLoader = makeDataLoader(authToken);
 
     // TEST
-    await updateCreditCard.resolve(undefined, {orgId, stripeToken: 'tok_4242424242424242'}, {authToken, dataLoader});
+    await updateCreditCard.resolve(
+      undefined,
+      {orgId, stripeToken: 'tok_4242424242424242'},
+      {authToken, dataLoader}
+    );
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      organization: r.table('Organization').get(orgId),
-      team: r.table('Team').getAll(orgId, {index: 'orgId'})
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        organization: r.table('Organization').get(orgId),
+        team: r.table('Team').getAll(orgId, {index: 'orgId'})
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });

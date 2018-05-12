@@ -5,11 +5,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat';
-import {
-  ADDED_USERS,
-  REMOVED_USERS,
-  INACTIVITY_ADJUSTMENTS
-} from 'universal/utils/constants';
+import {ADDED_USERS, REMOVED_USERS, INACTIVITY_ADJUSTMENTS} from 'universal/utils/constants';
 import makeDateString from 'universal/utils/makeDateString';
 
 const detailDescriptionMaker = {
@@ -21,29 +17,25 @@ const detailDescriptionMaker = {
     } else if (!detail.startAt) {
       return `${detail.email} was paused until ${makeDateString(detail.startAt)}`;
     }
-    return `${detail.email} was paused from ${makeDateString(detail.startAt)} to ${makeDateString(detail.endAt)}`;
+    return `${detail.email} was paused from ${makeDateString(detail.startAt)} to ${makeDateString(
+      detail.endAt
+    )}`;
   }
 };
 
 const InvoiceLineItem = (props) => {
-  const {
-    detailsOpen,
-    detailsToggle,
-    item,
-    styles
-  } = props;
+  const {detailsOpen, detailsToggle, item, styles} = props;
 
   const {type} = item;
 
-  const detailsInnerStyles = css(
-    styles.detailsInner,
-    detailsOpen && styles.detailsOpen
-  );
+  const detailsInnerStyles = css(styles.detailsInner, detailsOpen && styles.detailsOpen);
 
   const makeToggle = () => {
     const label = detailsOpen ? 'Hide Details' : 'View Details';
     return (
-      <div className={css(styles.detailsToggle)} onClick={detailsToggle}>{label}</div>
+      <div className={css(styles.detailsToggle)} onClick={detailsToggle}>
+        {label}
+      </div>
     );
   };
 
@@ -66,14 +58,12 @@ const InvoiceLineItem = (props) => {
         <div className={css(styles.fill)}>{item.desc}</div>
         <div>{item.amount}</div>
       </div>
-      {item.details &&
+      {item.details && (
         <div className={`${css(styles.details)} hide-print`}>
           {makeToggle()}
-          <div className={detailsInnerStyles}>
-            {makeDetails(item.details)}
-          </div>
+          <div className={detailsInnerStyles}>{makeDetails(item.details)}</div>
         </div>
-      }
+      )}
     </div>
   );
 };

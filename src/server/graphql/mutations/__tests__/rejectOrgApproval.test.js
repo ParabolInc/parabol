@@ -1,4 +1,3 @@
-
 import DynamicSerializer from 'dynamic-serializer';
 import MockDate from 'mockdate';
 import MockPubSub from 'server/__mocks__/MockPubSub';
@@ -23,10 +22,16 @@ describe('rejectOrgApproval', () => {
     const mockPubSub = new MockPubSub();
     const mockDB = new MockDB();
     const invitee = newInvitee();
-    await mockDB.init()
-      .user(1, {userOrgs: [{role: BILLING_LEADER, id: mockDB.context.organization.id}]})
+    await mockDB
+      .init()
+      .user(1, {
+        userOrgs: [{role: BILLING_LEADER, id: mockDB.context.organization.id}]
+      })
       .newOrgApproval({email: invitee.email})
-      .newNotification(undefined, {type: REQUEST_NEW_USER, email: invitee.email});
+      .newNotification(undefined, {
+        type: REQUEST_NEW_USER,
+        email: invitee.email
+      });
     const notificationId = mockDB.context.notification.id;
     const reason = 'bad hombre';
     const billingLeader = mockDB.db.user[0];
@@ -37,10 +42,19 @@ describe('rejectOrgApproval', () => {
     await rejectOrgApproval.resolve(undefined, {notificationId, reason}, {authToken, dataLoader});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      orgApproval: r.table('OrgApproval').getAll(teamId, {index: 'teamId'}).orderBy('email'),
-      notification: r.table('Notification').getAll(billingLeader.id, {index: 'userIds'}).orderBy('userIds')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        orgApproval: r
+          .table('OrgApproval')
+          .getAll(teamId, {index: 'teamId'})
+          .orderBy('email'),
+        notification: r
+          .table('Notification')
+          .getAll(billingLeader.id, {index: 'userIds'})
+          .orderBy('userIds')
+      },
+      dynamicSerializer
+    );
 
     expect(db).toMatchSnapshot();
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();

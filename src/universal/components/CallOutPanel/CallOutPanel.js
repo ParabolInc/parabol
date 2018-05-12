@@ -7,18 +7,9 @@ import Panel from 'universal/components/Panel/Panel';
 import Type from 'universal/components/Type/Type';
 
 const CallOutPanel = (props) => {
-  const {
-    children,
-    control,
-    heading,
-    panelLabel,
-    styles
-  } = props;
+  const {children, control, heading, panelLabel, styles} = props;
 
-  const panelBodyStyles = css(
-    styles.panelBody,
-    panelLabel && styles.panelBodyWithHeader
-  );
+  const panelBodyStyles = css(styles.panelBody, panelLabel && styles.panelBodyWithHeader);
 
   return (
     <Panel label={panelLabel}>

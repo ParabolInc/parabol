@@ -18,14 +18,14 @@ const validate = (values) => {
 };
 
 class EditorLinkChanger extends Component {
-  componentWillMount() {
+  componentWillMount () {
     const {trackEditingComponent} = this.props;
     if (trackEditingComponent) {
       trackEditingComponent('editor-link-changer', true);
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const {trackEditingComponent} = this.props;
     if (trackEditingComponent) {
       trackEditingComponent('editor-link-changer', false);
@@ -39,7 +39,9 @@ class EditorLinkChanger extends Component {
     const href = linkify.match(data.link)[0].url;
     removeModal(true);
     const focusedEditorState = EditorState.forceSelection(editorState, selectionState);
-    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text, {keepSelection: true});
+    const nextEditorState = completeEntity(focusedEditorState, 'LINK', {href}, data.text, {
+      keepSelection: true
+    });
     setEditorState(nextEditorState);
     setTimeout(() => editorRef.focus(), 0);
   };
@@ -58,15 +60,8 @@ class EditorLinkChanger extends Component {
     }
   };
 
-  render() {
-    const {
-      link,
-      styles,
-      handleSubmit,
-      valid,
-      innerRef,
-      text
-    } = this.props;
+  render () {
+    const {link, styles, handleSubmit, valid, innerRef, text} = this.props;
 
     const label = text ? 'Update' : 'Add';
     return (
@@ -78,17 +73,12 @@ class EditorLinkChanger extends Component {
         ref={innerRef}
       >
         <form onSubmit={handleSubmit(this.onSubmit)} className={css(styles.form)}>
-          {text !== null &&
-          <div className={css(styles.textBlock)}>
-            <span className={css(styles.inputLabel)}>{'Text'}</span>
-            <Field
-              autoFocus
-              component={PlainInputField}
-              fieldSize="small"
-              name="text"
-            />
-          </div>
-          }
+          {text !== null && (
+            <div className={css(styles.textBlock)}>
+              <span className={css(styles.inputLabel)}>{'Text'}</span>
+              <Field autoFocus component={PlainInputField} fieldSize="small" name="text" />
+            </div>
+          )}
           <div className={css(styles.textBlock)}>
             <span className={css(styles.inputLabel)}>{'Link'}</span>
             <Field
@@ -168,6 +158,9 @@ const styleThunk = () => ({
   }
 });
 
-export default reduxForm({form: 'linkChanger', validate, shouldValidate, immutableProps: ['editorState', 'selectionState']})(
-  withStyles(styleThunk)(EditorLinkChanger)
-);
+export default reduxForm({
+  form: 'linkChanger',
+  validate,
+  shouldValidate,
+  immutableProps: ['editorState', 'selectionState']
+})(withStyles(styleThunk)(EditorLinkChanger));

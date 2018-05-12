@@ -24,7 +24,7 @@ const ChildrenWrapper = styled('div')({
 
 const getActiveMeetings = (viewer) => {
   const activeMeetings = [];
-  const teams = viewer && viewer.teams || [];
+  const teams = (viewer && viewer.teams) || [];
   teams.forEach((team) => {
     const {meetingId, newMeeting} = team;
     if (meetingId) {
@@ -45,18 +45,13 @@ type Props = {|
 |};
 
 const DashLayout = (props: Props) => {
-  const {
-    children,
-    viewer
-  } = props;
+  const {children, viewer} = props;
   const activeMeetings = getActiveMeetings(viewer);
   return (
     <StyledDashLayout>
       {/* Shows over any dashboard view when there is a meeting. */}
       {activeMeetings.length > 0 && <MeetingDashAlert activeMeetings={activeMeetings} />}
-      <ChildrenWrapper>
-        {children}
-      </ChildrenWrapper>
+      <ChildrenWrapper>{children}</ChildrenWrapper>
     </StyledDashLayout>
   );
 };

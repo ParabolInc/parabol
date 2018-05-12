@@ -26,21 +26,31 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(source, {userId, meetingId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (
+    source,
+    {userId, meetingId, isCheckedIn},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null);
+    const meeting = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .default(null);
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
     const {endedAt, teamId} = meeting;
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const meetingMemberId = toTeamMemberId(meetingId, userId);
-    await r.table('MeetingMember')
+    await r
+      .table('MeetingMember')
       .get(meetingMemberId)
       .update({isCheckedIn});
 

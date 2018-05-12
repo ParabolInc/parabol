@@ -9,7 +9,9 @@ export default {
   type: new GraphQLNonNull(TeamMemberSubscriptionPayload),
   subscribe: async (source, args, {authToken, socketId, dataLoader}) => {
     // AUTH
-    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError(authToken);
+    if (!isAuthenticated(authToken)) {
+      return sendNotAuthenticatedAccessError(authToken);
+    }
 
     // RESOLUTION
     const userId = getUserId(authToken);

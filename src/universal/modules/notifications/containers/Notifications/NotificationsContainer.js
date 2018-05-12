@@ -7,9 +7,7 @@ const NotificationsContainer = (props) => {
   const {dispatch, notifications} = props;
   // to avoid a waterfall we push notifications down the DOMs throat, but here it's worth the wait
   if (!notifications) return null;
-  return (
-    <Notifications dispatch={dispatch} notifications={notifications} />
-  );
+  return <Notifications dispatch={dispatch} notifications={notifications} />;
 };
 
 NotificationsContainer.propTypes = {

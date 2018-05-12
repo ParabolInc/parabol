@@ -40,7 +40,8 @@ const KillMeetingMutation = (environment, teamId, history, onError, onCompleted)
       killMeetingTeamUpdater();
     },
     optimisticUpdater: (store) => {
-      store.get(teamId)
+      store
+        .get(teamId)
         .setValue(LOBBY, 'facilitatorPhase')
         .setValue(LOBBY, 'meetingPhase')
         .setValue(null, 'meetingId')

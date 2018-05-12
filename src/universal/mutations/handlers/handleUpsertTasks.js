@@ -25,12 +25,7 @@ const handleUpsertTask = (task, store, viewerId) => {
   const meeting = meetingId && store.get(meetingId);
   const safePutNodeInConn = (conn) => {
     if (conn && !getNodeById(taskId, conn)) {
-      const newEdge = ConnectionHandler.createEdge(
-        store,
-        conn,
-        task,
-        'TaskEdge'
-      );
+      const newEdge = ConnectionHandler.createEdge(store, conn, task, 'TaskEdge');
       newEdge.setValue(task.getValue('updatedAt'), 'cursor');
       insertEdgeAfter(conn, newEdge, 'updatedAt');
     }

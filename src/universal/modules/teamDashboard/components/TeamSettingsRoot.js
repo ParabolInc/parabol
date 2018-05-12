@@ -18,10 +18,7 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [
-  InvitationSubscription,
-  OrgApprovalSubscription
-];
+const subscriptions = [InvitationSubscription, OrgApprovalSubscription];
 
 const TeamSettingsRoot = ({atmosphere, teamId}) => {
   return (

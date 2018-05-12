@@ -5,7 +5,11 @@ import publish from 'server/utils/publish';
 import {TEAM} from 'universal/utils/constants';
 import {sendNotMeetingFacilitatorError} from 'server/utils/authorizationErrors';
 import NavigateMeetingPayload from 'server/graphql/types/NavigateMeetingPayload';
-import {sendMeetingNotFoundError, sendStageNotFoundError, sendStageNotUnlockedError} from 'server/utils/docNotFoundErrors';
+import {
+  sendMeetingNotFoundError,
+  sendStageNotFoundError,
+  sendStageNotUnlockedError
+} from 'server/utils/docNotFoundErrors';
 import findStageById from 'universal/utils/meetings/findStageById';
 import handleCompletedStage from 'server/graphql/mutations/helpers/handleCompletedStage';
 import unlockNextStages from 'server/graphql/mutations/helpers/unlockNextStages';
@@ -27,9 +31,11 @@ export default {
       description: 'The meeting ID'
     }
   },
-  async resolve(source,
+  async resolve (
+    source,
     {completedStageId, facilitatorStageId, meetingId},
-    {authToken, socketId: mutatorId, dataLoader}) {
+    {authToken, socketId: mutatorId, dataLoader}
+  ) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -37,19 +43,28 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null);
+    const meeting = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .default(null);
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
     const {facilitatorUserId, phases, teamId} = meeting;
-    if (viewerId !== facilitatorUserId) return sendNotMeetingFacilitatorError(authToken, viewerId);
+    if (viewerId !== facilitatorUserId) {
+      return sendNotMeetingFacilitatorError(authToken, viewerId);
+    }
 
     // VALIDATION
     let phaseCompleteData;
     let unlockedStageIds;
     if (completedStageId) {
       const completedStageRes = findStageById(phases, completedStageId);
-      if (!completedStageRes) return sendStageNotFoundError(authToken, completedStageId);
+      if (!completedStageRes) {
+        return sendStageNotFoundError(authToken, completedStageId);
+      }
       const {stage} = completedStageRes;
-      if (!stage.isNavigableByFacilitator) return sendStageNotUnlockedError(authToken, completedStageId);
+      if (!stage.isNavigableByFacilitator) {
+        return sendStageNotUnlockedError(authToken, completedStageId);
+      }
       if (!stage.isComplete) {
         // MUTATIVE
         stage.isComplete = true;
@@ -60,9 +75,13 @@ export default {
     }
     if (facilitatorStageId) {
       const facilitatorStageRes = findStageById(phases, facilitatorStageId);
-      if (!facilitatorStageRes) return sendStageNotFoundError(authToken, facilitatorStageId);
+      if (!facilitatorStageRes) {
+        return sendStageNotFoundError(authToken, facilitatorStageId);
+      }
       const {stage: facilitatorStage} = facilitatorStageRes;
-      if (!facilitatorStage.isNavigableByFacilitator) return sendStageNotUnlockedError(authToken, facilitatorStageId);
+      if (!facilitatorStage.isNavigableByFacilitator) {
+        return sendStageNotUnlockedError(authToken, facilitatorStageId);
+      }
 
       // mutative
       facilitatorStage.startAt = facilitatorStage.startAt || now;
@@ -73,14 +92,25 @@ export default {
     }
 
     // RESOLUTION
-    const oldFacilitatorStageId = await r.table('NewMeeting').get(meetingId)
-      .update({
-        facilitatorStageId,
-        phases,
-        updatedAt: now
-      }, {returnChanges: true})('changes')(0)('old_val')('facilitatorStageId');
+    const oldFacilitatorStageId = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .update(
+        {
+          facilitatorStageId,
+          phases,
+          updatedAt: now
+        },
+        {returnChanges: true}
+      )('changes')(0)('old_val')('facilitatorStageId');
 
-    const data = {meetingId, oldFacilitatorStageId, facilitatorStageId, unlockedStageIds, ...phaseCompleteData};
+    const data = {
+      meetingId,
+      oldFacilitatorStageId,
+      facilitatorStageId,
+      unlockedStageIds,
+      ...phaseCompleteData
+    };
     publish(TEAM, teamId, NavigateMeetingPayload, data, subOptions);
     return data;
   }

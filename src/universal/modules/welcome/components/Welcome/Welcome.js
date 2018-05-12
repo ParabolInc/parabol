@@ -18,7 +18,11 @@ const Signout = styled(Link)({
 });
 
 const Welcome = (props) => {
-  const {progressDotClickFactory, title, welcome: {page, completed}} = props;
+  const {
+    progressDotClickFactory,
+    title,
+    welcome: {page, completed}
+  } = props;
   const headingText = page === 1 ? 'Hello!' : 'Invite your team';
   return (
     <WelcomeLayout>
@@ -35,13 +39,8 @@ const Welcome = (props) => {
         {page === 2 && <Step2TeamName {...props} completed={completed} />}
         {page === 3 && <Step3InviteTeam {...props} />}
       </WelcomeContent>
-      <Signout
-        title="Sign Out"
-        to="/signout"
-      >
-        <FontAwesome
-          name="sign-out"
-        />
+      <Signout title="Sign Out" to="/signout">
+        <FontAwesome name="sign-out" />
       </Signout>
     </WelcomeLayout>
   );

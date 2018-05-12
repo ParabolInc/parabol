@@ -5,7 +5,6 @@ import {getUserId, isTeamMember} from 'server/utils/authorization';
 import {SLACK} from 'universal/utils/constants';
 import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 
-
 export default {
   type: new GraphQLNonNull(AddProviderPayload),
   args: {
@@ -15,14 +14,19 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader}) => {
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
     const subscriberUserId = getUserId(authToken);
 
     // RESOLUTION
     const channelName = `providerAdded.${teamId}`;
     const resolve = (value) => {
       const {providerAdded} = value;
-      const {provider: {service, userId}, providerRow} = providerAdded;
+      const {
+        provider: {service, userId},
+        providerRow
+      } = providerAdded;
       // we know what the providerRow for slack will look like because everyone uses the same token
       if (service === SLACK || subscriberUserId === userId) {
         return value;

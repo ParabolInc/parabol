@@ -11,7 +11,7 @@ import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
 
 export default {
   type: UpdateNewCheckInQuestionPayload,
-  description: 'Update a Team\'s Check-in question in a new meeting',
+  description: "Update a Team's Check-in question in a new meeting",
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -19,10 +19,14 @@ export default {
     },
     checkInQuestion: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The Team\'s new Check-in question'
+      description: "The Team's new Check-in question"
     }
   },
-  async resolve(source, {meetingId, checkInQuestion}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (
+    source,
+    {meetingId, checkInQuestion},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
@@ -31,8 +35,12 @@ export default {
     const meeting = await r.table('NewMeeting').get(meetingId);
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
     const {phases, teamId} = meeting;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
-    if (!await isPaidTier(teamId)) return sendTeamPaidTierError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
+    if (!(await isPaidTier(teamId))) {
+      return sendTeamPaidTierError(authToken, teamId);
+    }
 
     // VALIDATION
     const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion);
@@ -41,7 +49,8 @@ export default {
     const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN);
     // mutative
     checkInPhase.checkInQuestion = normalizedCheckInQuestion;
-    await r.table('NewMeeting')
+    await r
+      .table('NewMeeting')
       .get(meetingId)
       .update({
         phases,

@@ -10,7 +10,7 @@ export default class LabeledFieldArray extends Component {
     labelSource: PropTypes.string.isRequired
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       hoverRow: null
@@ -20,7 +20,7 @@ export default class LabeledFieldArray extends Component {
   onHoverRow = (index) => this.setState({hoverRow: index});
   onLeaveRow = () => this.setState({hoverRow: null});
 
-  render() {
+  render () {
     const {existingInvites, labelSource} = this.props;
     const {hoverRow} = this.state;
     return (

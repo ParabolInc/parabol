@@ -19,12 +19,7 @@ const ARCHIVED = {
 
 const labels = {
   taskStatus: {
-    slugs: [
-      DONE,
-      ACTIVE,
-      STUCK,
-      FUTURE
-    ],
+    slugs: [DONE, ACTIVE, STUCK, FUTURE],
     [ACTIVE]: {
       color: stateColor.active,
       label: 'Active',

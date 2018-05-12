@@ -19,7 +19,7 @@ export default {
       description: 'The id of the invitation'
     }
   },
-  async resolve(source, {inviteId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {inviteId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
@@ -29,7 +29,9 @@ export default {
     if (!invitation) return sendInvitationNotFoundError(authToken, inviteId);
 
     const {email, fullName, orgId, teamId} = invitation;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const inviterInfoAndTeamName = await getInviterInfoAndTeamName(teamId, userId);

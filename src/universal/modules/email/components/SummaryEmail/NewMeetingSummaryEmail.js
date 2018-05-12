@@ -71,40 +71,42 @@ const teamDashLinkStyle = {
 
 type Props = {|
   meeting: Object,
-  referrer: | 'meeting'
-    | 'email'
-    | 'history',
+  referrer: 'meeting' | 'email' | 'history',
   referrerUrl?: string,
   teamDashUrl: string,
   meetingUrl?: string
-|}
+|};
 
 const SummaryEmail = (props: Props) => {
+  const {meeting, referrer, referrerUrl, teamDashUrl} = props;
   const {
-    meeting,
-    referrer,
-    referrerUrl,
-    teamDashUrl
-  } = props;
-  const {createdAt, meetingNumber, meetingType, team: {name: teamName}} = meeting;
+    createdAt,
+    meetingNumber,
+    meetingType,
+    team: {name: teamName}
+  } = meeting;
   const meetingLabel = meetingTypeToLabel[meetingType];
   return (
     <Layout>
-      {referrer === 'email' &&
-      <table style={ui.emailTableBase} width="100%">
-        <tbody>
-          <tr>
-            <td style={bannerStyle}>
-              <EmptySpace height={8} />
-              <div style={topMessageStyles}>
-                <span><a href={referrerUrl} style={bannerLink}>{'View this in your browser'}</a></span>
-              </div>
-              <EmptySpace height={8} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      }
+      {referrer === 'email' && (
+        <table style={ui.emailTableBase} width="100%">
+          <tbody>
+            <tr>
+              <td style={bannerStyle}>
+                <EmptySpace height={8} />
+                <div style={topMessageStyles}>
+                  <span>
+                    <a href={referrerUrl} style={bannerLink}>
+                      {'View this in your browser'}
+                    </a>
+                  </span>
+                </div>
+                <EmptySpace height={8} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
       <Body verticalGutter={0}>
         <table align="center" style={ui.emailTableBase} width="100%">
           <tbody>
@@ -130,34 +132,32 @@ const SummaryEmail = (props: Props) => {
             <tr>
               <td>
                 {/* Team Dashboard Button */}
-                {referrer === 'email' ?
-                  <a
-                    href={teamDashUrl}
-                    style={teamDashLinkStyle}
-                    title={teamDashLabel}
-                  >
+                {referrer === 'email' ? (
+                  <a href={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
                     {teamDashLabel}
-                  </a> :
-                  <Link
-                    to={teamDashUrl}
-                    style={teamDashLinkStyle}
-                    title={teamDashLabel}
-                  >
+                  </a>
+                ) : (
+                  <Link to={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
                     {teamDashLabel}
                   </Link>
-                }
+                )}
                 <EmptySpace height={32} />
               </td>
             </tr>
           </tbody>
         </table>
-        {meetingType === RETROSPECTIVE && <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />}
+        {meetingType === RETROSPECTIVE && (
+          <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />
+        )}
         <EmptySpace height={0} />
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
-        {meetingType === RETROSPECTIVE &&
-          <RetroDiscussionTopics imageSource={referrer === 'email' ? 'static' : 'local'} topics={meeting.reflectionGroups} />
-        }
+        {meetingType === RETROSPECTIVE && (
+          <RetroDiscussionTopics
+            imageSource={referrer === 'email' ? 'static' : 'local'}
+            topics={meeting.reflectionGroups}
+          />
+        )}
         <div>
           <EmptySpace height={48} />
           <hr style={ruleStyle} />

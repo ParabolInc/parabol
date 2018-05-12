@@ -84,7 +84,11 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
           removeOrgUserTaskUpdater(payload, store, viewerId);
           break;
         case 'UpdateTaskPayload':
-          updateTaskTaskUpdater(payload, store, viewerId, {dispatch, history, location});
+          updateTaskTaskUpdater(payload, store, viewerId, {
+            dispatch,
+            history,
+            location
+          });
           break;
         case 'UpdateTaskDueDatePayload':
           break;

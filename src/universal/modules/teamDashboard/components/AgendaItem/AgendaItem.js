@@ -14,7 +14,7 @@ import MeetingSubnavItem from 'universal/components/MeetingSubnavItem';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 
 const taskSource = {
-  beginDrag(props) {
+  beginDrag (props) {
     return {
       id: props.agendaItem.id
     };
@@ -80,7 +80,7 @@ class AgendaItem extends Component {
     teamMember: PropTypes.object
   };
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.ensureVisible) {
       requestIdleCallback(() => {
         // does not force centering; no animation for initial load
@@ -89,7 +89,7 @@ class AgendaItem extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     if (!prevProps.ensureVisible && this.props.ensureVisible) {
       // without RIC only gets called ~20% of the time in Chrome64 on Ubuntu 16.04 if behavior: smooth
       requestIdleCallback(() => {
@@ -100,7 +100,7 @@ class AgendaItem extends Component {
 
   el = null;
 
-  render() {
+  render () {
     const {
       agendaItem,
       agendaLength,
@@ -136,15 +136,22 @@ class AgendaItem extends Component {
     );
     const deleteLabel = 'Remove this agenda topic';
     return connectDragSource(
-      <div className={rootStyles} title={content} ref={(el) => { this.el = el; }}>
+      <div
+        className={rootStyles}
+        title={content}
+        ref={(el) => {
+          this.el = el;
+        }}
+      >
         <MeetingSubnavItem
           label={content}
           metaContent={avatar}
-          onClick={(canNavigate && !disabled) ? gotoAgendaItem : null}
+          onClick={canNavigate && !disabled ? gotoAgendaItem : null}
           orderLabel={`${idx + 1}.`}
           {...navItemState}
         />
-        {canDelete && !isUnsyncedFacilitatorStage &&
+        {canDelete &&
+          !isUnsyncedFacilitatorStage && (
           <DeleteIconButton
             aria-label={deleteLabel}
             agendaLength={agendaLength}
@@ -154,7 +161,7 @@ class AgendaItem extends Component {
           >
             <DeleteIcon name="times-circle" />
           </DeleteIconButton>
-        }
+        )}
       </div>
     );
   }
@@ -176,5 +183,6 @@ export default createFragmentContainer(
       teamMember {
         picture
       }
-    }`
+    }
+  `
 );

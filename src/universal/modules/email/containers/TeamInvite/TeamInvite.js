@@ -57,7 +57,6 @@ const TeamInvite = (props) => {
   const nameOrEmail = inviteeName || inviteeEmail;
   return (
     <Layout>
-
       <Header />
 
       <Body verticalGutter={32}>
@@ -68,8 +67,11 @@ const TeamInvite = (props) => {
                 <img src={inviterAvatar} height="64" width="64" />
               </td>
               <td style={{paddingLeft: '16px', textAlign: 'left'}}>
-                {inviterName}<br />
-                <a href={`mailto:${inviterEmail}`} style={{...textColor, fontSize: '14px'}}>{inviterEmail}</a>
+                {inviterName}
+                <br />
+                <a href={`mailto:${inviterEmail}`} style={{...textColor, fontSize: '14px'}}>
+                  {inviterEmail}
+                </a>
               </td>
             </tr>
           </tbody>
@@ -80,8 +82,15 @@ const TeamInvite = (props) => {
               <td style={{paddingLeft: '16px', paddingRight: '16px'}}>
                 <Callout fontSize={18} width="100%">
                   <span style={calloutTextStyle}>
-                    {'Hi '}<a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{nameOrEmail}</a>!<br />
-                    {inviterName}{' has invited you to join a team on Parabol:'}
+                    {'Hi '}
+                    <a
+                      href={`mailto:${inviteeEmail}`}
+                      style={{...colorWarm, textDecoration: 'none'}}
+                    >
+                      {nameOrEmail}
+                    </a>!<br />
+                    {inviterName}
+                    {' has invited you to join a team on Parabol:'}
                   </span>
                   <EmptySpace height={12} />
                   <span style={teamNameStyle}>{teamName}</span>
@@ -94,7 +103,10 @@ const TeamInvite = (props) => {
           {'Join Team'}
         </Button>
         <EmptySpace height={16} />
-        {'Or go to: '}<a href={inviteLink} style={colorWarm}>{inviteLink}</a>
+        {'Or go to: '}
+        <a href={inviteLink} style={colorWarm}>
+          {inviteLink}
+        </a>
         <EmptySpace height={32} />
         <div style={ruleStyle} />
         <EmptySpace height={32} />
@@ -106,8 +118,13 @@ const TeamInvite = (props) => {
             title="How to Navigate Uncertainty using the Action Rhythm"
           >
             {'develop a weekly rhythm'}
-          </a>{'.'}<br />
-          <a href={inviteLink} style={boldLinkStyle}>{'Add a task to the board'}</a>{' to get started.'}
+          </a>
+          {'.'}
+          <br />
+          <a href={inviteLink} style={boldLinkStyle}>
+            {'Add a task to the board'}
+          </a>
+          {' to get started.'}
         </div>
         <EmptySpace height={32} />
       </Body>

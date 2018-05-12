@@ -37,7 +37,7 @@ const getRemovalRanges = (entities, entityRanges, text) => {
       removalRanges.push({start, end});
     }
   }
-  removalRanges.sort((a, b) => a.end < b.end ? 1 : -1);
+  removalRanges.sort((a, b) => (a.end < b.end ? 1 : -1));
   return removalRanges;
 };
 
@@ -69,7 +69,9 @@ const removeAllRangesForEntity = (content, entityType, eqFn) => {
       });
     }
   }
-  return contentState === editorState.getCurrentContent() ? null : JSON.stringify(convertToRaw(contentState));
+  return contentState === editorState.getCurrentContent()
+    ? null
+    : JSON.stringify(convertToRaw(contentState));
 };
 
 export default removeAllRangesForEntity;

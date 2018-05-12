@@ -3,13 +3,19 @@ exports.up = async (r) => {
     r.table('Action'),
     r.table('Project').replace((project) => {
       return r.branch(
-        project('isArchived').eq(true).default(false),
-        project.merge({
-          tags: ['#archived']
-        }).without('isArchived'),
-        project.merge({
-          tags: []
-        }).without('isArchived')
+        project('isArchived')
+          .eq(true)
+          .default(false),
+        project
+          .merge({
+            tags: ['#archived']
+          })
+          .without('isArchived'),
+        project
+          .merge({
+            tags: []
+          })
+          .without('isArchived')
       );
     })
   ];
@@ -43,25 +49,19 @@ exports.up = async (r) => {
     //
   }
 
-  const indices = [
-    r.table('Project').indexCreate('tags', {multi: true})
-  ];
+  const indices = [r.table('Project').indexCreate('tags', {multi: true})];
   try {
     await Promise.all(indices);
   } catch (e) {
     // ignore
   }
 
-  const waitIndices = [
-    r.table('Project').indexWait('tags')
-  ];
+  const waitIndices = [r.table('Project').indexWait('tags')];
   await Promise.all(waitIndices);
 };
 
 exports.down = async (r) => {
-  const tables = [
-    r.tableCreate('Action')
-  ];
+  const tables = [r.tableCreate('Action')];
   try {
     await Promise.all(tables);
   } catch (e) {
@@ -84,11 +84,7 @@ exports.down = async (r) => {
 
   const mutations = [
     r.table('Project').update((project) => ({
-      isArchived: r.branch(
-        project('tags').contains('#archived'),
-        true,
-        false
-      )
+      isArchived: r.branch(project('tags').contains('#archived'), true, false)
     }))
   ];
 

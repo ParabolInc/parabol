@@ -1,4 +1,11 @@
-import {GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql';
 import connectionDefinitions from 'server/graphql/connectionDefinitions';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
@@ -25,7 +32,8 @@ const Invoice = new GraphQLObjectType({
     },
     amountDue: {
       type: GraphQLFloat,
-      description: 'The amount the card will be charged (total + startingBalance with a min value of 0)'
+      description:
+        'The amount the card will be charged (total + startingBalance with a min value of 0)'
     },
     createdAt: {
       type: GraphQLISO8601Type,
@@ -85,7 +93,8 @@ const Invoice = new GraphQLObjectType({
     },
     status: {
       type: InvoiceStatusEnum,
-      description: 'the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded'
+      description:
+        'the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded'
     }
   })
 });

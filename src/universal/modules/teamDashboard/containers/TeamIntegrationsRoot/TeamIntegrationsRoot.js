@@ -52,15 +52,15 @@ const TeamIntegrationsRoot = ({atmosphere, teamMemberId}) => {
           return <ErrorComponent height={'14rem'} error={error} />;
         }
         if (props) {
-          return <TeamIntegrations viewer={props.viewer} jwt={atmosphere.authToken} teamId={teamId} />;
+          return (
+            <TeamIntegrations viewer={props.viewer} jwt={atmosphere.authToken} teamId={teamId} />
+          );
         }
         return <LoadingComponent height={'14rem'} />;
       }}
-
     />
   );
 };
-
 
 TeamIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,

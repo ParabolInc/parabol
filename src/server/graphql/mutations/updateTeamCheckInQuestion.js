@@ -9,7 +9,7 @@ import {sendTeamAccessError, sendTeamPaidTierError} from 'server/utils/authoriza
 
 export default {
   type: UpdateCheckInQuestionPayload,
-  description: 'Update a Team\'s Check-in question',
+  description: "Update a Team's Check-in question",
   args: {
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -17,23 +17,28 @@ export default {
     },
     checkInQuestion: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The Team\'s new Check-in question'
+      description: "The Team's new Check-in question"
     }
   },
-  async resolve(source, {teamId, checkInQuestion}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {teamId, checkInQuestion}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
-    if (!await isPaidTier(teamId)) return sendTeamPaidTierError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
+    if (!(await isPaidTier(teamId))) {
+      return sendTeamPaidTierError(authToken, teamId);
+    }
 
     // VALIDATION
     const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion);
 
     // RESOLUTION
-    await r.table('Team')
+    await r
+      .table('Team')
       .get(teamId)
       .update({checkInQuestion: normalizedCheckInQuestion});
 

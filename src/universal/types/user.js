@@ -15,11 +15,9 @@ export type UserOrg = {
 };
 
 export type Identity = {
-  connection:
-    | 'Username-Password-Authentication',
+  connection: 'Username-Password-Authentication',
   isSocial: boolean,
-  provider:
-    | 'auth0',
+  provider: 'auth0',
   user_id: string
 };
 

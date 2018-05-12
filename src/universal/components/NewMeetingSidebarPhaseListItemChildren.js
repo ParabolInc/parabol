@@ -13,13 +13,15 @@ type Props = {|
   gotoStageId: (stageId: string) => void,
   phaseType: NewMeetingPhaseTypeEnum,
   viewer: Viewer
-|}
+|};
 
 const NewMeetingSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, phaseType, viewer} = props;
   const {team} = viewer;
   const {newMeeting} = team;
-  if (!newMeeting || !newMeeting.localPhase || newMeeting.localPhase.phaseType !== phaseType) return null;
+  if (!newMeeting || !newMeeting.localPhase || newMeeting.localPhase.phaseType !== phaseType) {
+    return null;
+  }
   if (phaseType === VOTE) {
     return <RetroSidebarVoteSection viewer={viewer} />;
   } else if (phaseType === DISCUSS) {

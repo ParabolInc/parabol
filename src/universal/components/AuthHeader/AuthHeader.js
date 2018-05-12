@@ -37,13 +37,12 @@ const linkStyles = {
   textDecoration: 'underline'
 };
 
-const brandStyledLink = (tag: Tag): StyledComponent<*> => (
+const brandStyledLink = (tag: Tag): StyledComponent<*> =>
   styled(tag)({
     ...linkStyles,
     ':hover': linkStyles,
     ':focus': linkStyles
-  })
-);
+  });
 
 const BrandedLink = brandStyledLink(Link);
 

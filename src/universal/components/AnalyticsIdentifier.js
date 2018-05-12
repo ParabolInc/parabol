@@ -14,21 +14,23 @@ type Props = {
 
 type State = {
   viewer: ?Viewer
-}
+};
 
 class AnalyticsIdentifier extends Component<Props, State> {
   static propTypes = {
     viewer: PropTypes.object
   };
 
-  static identify(viewer) {
+  static identify (viewer) {
     if (!viewer) return;
     const {created, email, viewerId, avatar, name} = viewer;
     raven.setUserContext({
       id: viewerId,
       email
     });
-    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
+    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') {
+      return;
+    }
     window.analytics.identify(viewerId, {
       avatar,
       created,
@@ -37,7 +39,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     });
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
     const {viewer} = nextProps;
     if (viewer && viewer !== prevState.viewer) {
       // a little side-effecty, but if we didn't do this, we'd need to track isIdentified in the state
@@ -49,8 +51,10 @@ class AnalyticsIdentifier extends Component<Props, State> {
     return null;
   }
 
-  static page(prevPath) {
-    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
+  static page (prevPath) {
+    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') {
+      return;
+    }
     // helmet sets titles async, so we have to wait awhile until it updates
     setTimeout(() => {
       const title = document.title || '';
@@ -65,18 +69,22 @@ class AnalyticsIdentifier extends Component<Props, State> {
 
   state = {
     viewer: null
-  }
+  };
 
-  componentDidUpdate(prevProps) {
-    const {location: {pathname: nextPath}} = this.props;
-    const {location: {pathname: prevPath}} = prevProps;
+  componentDidUpdate (prevProps) {
+    const {
+      location: {pathname: nextPath}
+    } = this.props;
+    const {
+      location: {pathname: prevPath}
+    } = prevProps;
 
     if (prevPath !== nextPath) {
       AnalyticsIdentifier.page(prevPath);
     }
   }
 
-  render() {
+  render () {
     return null;
   }
 }
@@ -95,4 +103,3 @@ export default createFragmentContainer(
     }
   `
 );
-

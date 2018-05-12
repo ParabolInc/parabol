@@ -36,7 +36,6 @@ const underlineStyles = {
   boxShadow: 'none !important'
 };
 
-
 const PencilIcon = styled(StyledFontAwesome)({
   color: ui.hintColor,
   height: ui.iconSize,
@@ -96,12 +95,20 @@ const getValidationError = (title: ?string, reflectionGroups, reflectionGroupId)
 };
 
 class ReflectionGroupTitleEditor extends Component<Props> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.initialTitle = props.reflectionGroup.title;
   }
   onChange = (e) => {
-    const {atmosphere, dirty, error, onCompleted, onError, meeting: {reflectionGroups}, reflectionGroup: {reflectionGroupId}} = this.props;
+    const {
+      atmosphere,
+      dirty,
+      error,
+      onCompleted,
+      onError,
+      meeting: {reflectionGroups},
+      reflectionGroup: {reflectionGroupId}
+    } = this.props;
     const title = e.target.value;
     commitLocalUpdate(atmosphere, (store) => {
       const reflectionGroup = store.get(reflectionGroupId);
@@ -109,7 +116,11 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     });
     if (dirty) {
       const normalizedTitle = title.trim();
-      const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId);
+      const validationError = getValidationError(
+        normalizedTitle,
+        reflectionGroups,
+        reflectionGroupId
+      );
       if (!validationError) {
         if (error) {
           onCompleted();
@@ -143,21 +154,34 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     // validate
     setDirty();
     const normalizedTitle = title.trim();
-    const validationError = getValidationError(normalizedTitle, reflectionGroups, reflectionGroupId);
+    const validationError = getValidationError(
+      normalizedTitle,
+      reflectionGroups,
+      reflectionGroupId
+    );
     if (validationError) {
       onError({message: validationError});
       return;
     }
 
     submitMutation();
-    UpdateReflectionGroupTitleMutation(atmosphere, {title: normalizedTitle, reflectionGroupId}, onError, onCompleted);
+    UpdateReflectionGroupTitleMutation(
+      atmosphere,
+      {title: normalizedTitle, reflectionGroupId},
+      onError,
+      onCompleted
+    );
   };
 
   initialTitle: string;
   inputRef = React.createRef();
 
-  render() {
-    const {error, readOnly, reflectionGroup: {title}} = this.props;
+  render () {
+    const {
+      error,
+      readOnly,
+      reflectionGroup: {title}
+    } = this.props;
     return (
       <React.Fragment>
         <RootBlock>
@@ -189,6 +213,7 @@ export default createFragmentContainer(
       reflectionGroupId: id
       title
     }
+
     fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {
       reflectionGroups {
         id

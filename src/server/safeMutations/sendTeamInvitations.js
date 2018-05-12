@@ -38,27 +38,30 @@ const sendTeamInvitations = async (invitees, inviter, inviteId, dataLoader) => {
   const {orgId, inviterName, inviterUserId, teamId, teamName} = inviter;
   const inviteeUsers = invitees.filter((invitee) => Boolean(invitee.userId));
 
-  const teamInviteNotifications = inviteeUsers
-    .map((invitee) => ({
-      id: shortid.generate(),
-      type: TEAM_INVITE,
-      startAt: now,
-      orgId,
-      userIds: [invitee.userId],
-      inviteeEmail: invitee.email,
-      inviterUserId,
-      inviterName,
-      teamId,
-      teamName
-    }));
+  const teamInviteNotifications = inviteeUsers.map((invitee) => ({
+    id: shortid.generate(),
+    type: TEAM_INVITE,
+    startAt: now,
+    orgId,
+    userIds: [invitee.userId],
+    inviteeEmail: invitee.email,
+    inviterUserId,
+    inviterName,
+    teamId,
+    teamName
+  }));
 
   const userIds = inviteeUsers.map(({userId}) => userId);
   const {upsertedInvitations} = await promiseAllObj({
-    newNotifications: r.table('Notification')
+    newNotifications: r
+      .table('Notification')
       .getAll(r.args(userIds), {index: 'userIds'})
-      .filter({type: TEAM_INVITE, teamId})('userIds')(0).default([])
+      .filter({type: TEAM_INVITE, teamId})('userIds')(0)
+      .default([])
       .do((userIdsWithNote) => {
-        return r.expr(teamInviteNotifications).filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
+        return r
+          .expr(teamInviteNotifications)
+          .filter((invitation) => userIdsWithNote.contains(invitation('userIds')(0)).not());
       })
       .do((newNotifications) => r.table('Notification').insert(newNotifications)),
     upsertedInvitations: emailTeamInvitations(invitees, inviter, inviteId),

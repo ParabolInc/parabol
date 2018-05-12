@@ -14,7 +14,6 @@ import ui from 'universal/styles/ui';
 import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion';
 import styled from 'react-emotion';
 
-
 const iconStyle = {
   color: ui.colorText,
   display: 'block',
@@ -31,7 +30,6 @@ const buttonStyle = {
   color: ui.colorText,
   display: 'block'
 };
-
 
 const QuestionBlock = styled('div')({
   alignContent: 'center',
@@ -53,22 +51,34 @@ class CheckInQuestion extends Component {
     team: PropTypes.object.isRequired
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
-    const {team: {checkInQuestion}} = props;
+    const {
+      team: {checkInQuestion}
+    } = props;
     const contentState = convertFromRaw(JSON.parse(checkInQuestion));
     this.state = {
-      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+      editorState: EditorState.createWithContent(
+        contentState,
+        editorDecorators(this.getEditorState)
+      )
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {team: {checkInQuestion}} = nextProps;
-    const {team: {oldCheckInQuestion}} = this.props;
+  componentWillReceiveProps (nextProps) {
+    const {
+      team: {checkInQuestion}
+    } = nextProps;
+    const {
+      team: {oldCheckInQuestion}
+    } = this.props;
     if (checkInQuestion !== oldCheckInQuestion) {
       const contentState = convertFromRaw(JSON.parse(checkInQuestion));
       this.setState({
-        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+        editorState: EditorState.createWithContent(
+          contentState,
+          editorDecorators(this.getEditorState)
+        )
       });
     }
   }
@@ -79,7 +89,10 @@ class CheckInQuestion extends Component {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused && !isFocused) {
-      const {atmosphere, team: {id: teamId}} = this.props;
+      const {
+        atmosphere,
+        team: {id: teamId}
+      } = this.props;
       const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
       UpdateCheckInQuestionMutation(atmosphere, teamId, checkInQuestion);
     }
@@ -103,8 +116,11 @@ class CheckInQuestion extends Component {
     this.setEditorState(nextEditorState);
   };
 
-  render() {
-    const {isFacilitating, team: {tier}} = this.props;
+  render () {
+    const {
+      isFacilitating,
+      team: {tier}
+    } = this.props;
     const {editorState} = this.state;
     const canEdit = tierSupportsUpdateCheckInQuestion(tier);
     const isEditing = editorState.getSelection().getHasFocus();
@@ -126,7 +142,7 @@ class CheckInQuestion extends Component {
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
         maxHeight={40}
-        isOpen={(isFacilitating && !isEditing) ? undefined : false}
+        isOpen={isFacilitating && !isEditing ? undefined : false}
       >
         <QuestionBlock>
           <EditorBlock>
@@ -140,16 +156,17 @@ class CheckInQuestion extends Component {
               }}
             />
           </EditorBlock>
-          {isFacilitating &&
+          {isFacilitating && (
             <div>
-              {canEdit ?
+              {canEdit ? (
                 <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
                   <FontAwesome name="cog" style={buttonIconStyle} />
-                </PlainButton> :
+                </PlainButton>
+              ) : (
                 <FontAwesome name="cog" style={iconStyle} />
-              }
+              )}
             </div>
-          }
+          )}
         </QuestionBlock>
       </Tooltip>
     );
@@ -163,5 +180,6 @@ export default createFragmentContainer(
       id
       checkInQuestion
       tier
-    }`
+    }
+  `
 );

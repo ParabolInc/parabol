@@ -1,5 +1,5 @@
 import styled from 'react-emotion';
-import {Row} from 'universal/components';
+import Row from 'universal/components/Row/Row';
 
 const IntegrationRow = styled(Row)({paddingLeft: 0});
 

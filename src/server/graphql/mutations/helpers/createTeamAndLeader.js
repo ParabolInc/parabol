@@ -23,7 +23,7 @@ import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg';
 import shortid from 'shortid';
 
 // used for addorg, addTeam, createFirstTeam
-export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
+export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
   const r = getRethink();
 
   const {id: teamId, orgId} = newTeam;
@@ -82,13 +82,19 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
   ];
   const res = await r({
     // insert team
-    team: r.table('Team').insert(verifiedTeam, {returnChanges: true})('changes')(0)('new_val').default(null),
+    team: r
+      .table('Team')
+      .insert(verifiedTeam, {returnChanges: true})('changes')(0)('new_val')
+      .default(null),
     // add meeting settings
     teamSettings: r.table('MeetingSettings').insert(meetingSettings),
     // add customizable phase items for meetings
     customPhaseItems: r.table('CustomPhaseItem').insert(customPhaseItems),
     // denormalize common fields to team member
-    teamLead: insertNewTeamMember(userId, teamId, {isLead: true, checkInOrder: 0}),
+    teamLead: insertNewTeamMember(userId, teamId, {
+      isLead: true,
+      checkInOrder: 0
+    }),
     // add teamId to user tms array
     tms: addUserToTMSUserOrg(userId, teamId, orgId, options)('changes')(0)('new_val')('tms')
   });

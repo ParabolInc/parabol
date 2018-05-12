@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLObjectType} from 'graphql';
 import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage';
-import NewMeetingTeamMemberStage, {newMeetingTeamMemberStageFields} from 'server/graphql/types/NewMeetingTeamMemberStage';
+import NewMeetingTeamMemberStage, {
+  newMeetingTeamMemberStageFields
+} from 'server/graphql/types/NewMeetingTeamMemberStage';
 
 const CheckInStage = new GraphQLObjectType({
   name: 'CheckInStage',

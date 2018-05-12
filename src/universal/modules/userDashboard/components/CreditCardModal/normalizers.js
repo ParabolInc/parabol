@@ -12,9 +12,9 @@ export const normalizeExpiry = (value = '', previousValue = '') => {
   if (numValue.length >= 2) {
     const prefix = `${numValue.substr(0, 2)}/`;
     const year = numValue.substr(2);
-    const currentYear = String((new Date()).getFullYear()).substr(2);
+    const currentYear = String(new Date().getFullYear()).substr(2);
     // only 201x+
-    if (year.length === 0 || year.length === 1 && year < currentYear[0]) {
+    if (year.length === 0 || (year.length === 1 && year < currentYear[0])) {
       return prefix;
     }
     // only 2017+

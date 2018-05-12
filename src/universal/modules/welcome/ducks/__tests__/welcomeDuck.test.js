@@ -12,7 +12,8 @@ test('initial state', () => {
 
 test('setWelcomeTeam() updates teamId, teamMemberId', () => {
   expect(
-    reducer(undefined,
+    reducer(
+      undefined,
       setWelcomeTeam({
         teamId: 'apple1',
         teamMemberId: 'banana2'
@@ -23,8 +24,7 @@ test('setWelcomeTeam() updates teamId, teamMemberId', () => {
 
 test('nextPage() increments', () => {
   const initialState = reducer();
-  expect(reducer(initialState, nextPage()))
-    .toMatchSnapshot();
+  expect(reducer(initialState, nextPage())).toMatchSnapshot();
 });
 
 test('nextPage() does not exceed 3', () => {

@@ -8,7 +8,14 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, isAuthenticated} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import tmsSignToken from 'server/utils/tmsSignToken';
-import {INVITATION, NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {
+  INVITATION,
+  NEW_AUTH_TOKEN,
+  TASK,
+  TEAM,
+  TEAM_MEMBER,
+  UPDATED
+} from 'universal/utils/constants';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds';
 import {
@@ -18,10 +25,10 @@ import {
   sendTeamAlreadyJoinedError
 } from 'server/utils/authorizationErrors';
 import {
-  sendInvitationNotFoundError, sendNoInvitationProvidedError,
+  sendInvitationNotFoundError,
+  sendNoInvitationProvidedError,
   sendNotificationAccessError
 } from 'server/utils/docNotFoundErrors';
-
 
 const validateInviteToken = async (inviteToken, authToken) => {
   const r = getRethink();
@@ -29,10 +36,17 @@ const validateInviteToken = async (inviteToken, authToken) => {
   const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken);
 
   // see if the invitation exists
-  const invitation = await r.table('Invitation').get(inviteId).update({
-    tokenExpiration: new Date(0),
-    updatedAt: now
-  }, {returnChanges: true})('changes')(0)('old_val').default(null);
+  const invitation = await r
+    .table('Invitation')
+    .get(inviteId)
+    .update(
+      {
+        tokenExpiration: new Date(0),
+        updatedAt: now
+      },
+      {returnChanges: true}
+    )('changes')(0)('old_val')
+    .default(null);
 
   if (!invitation) {
     return sendInvitationNotFoundError(authToken, inviteToken);
@@ -73,7 +87,11 @@ export default {
       description: 'The notification id of the team invite'
     }
   },
-  async resolve(source, {inviteToken, notificationId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (
+    source,
+    {inviteToken, notificationId},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
@@ -92,7 +110,9 @@ export default {
       teamId = errorOrInvitation.teamId;
     } else if (notificationId) {
       const notification = await r.table('Notification').get(notificationId);
-      if (!notification || !notification.userIds.includes(viewerId)) return sendNotificationAccessError(authToken, notificationId);
+      if (!notification || !notification.userIds.includes(viewerId)) {
+        return sendNotificationAccessError(authToken, notificationId);
+      }
       inviteeEmail = notification.inviteeEmail;
       teamId = notification.teamId;
     } else {
@@ -143,4 +163,3 @@ export default {
     return {...data, authToken: newAuthToken};
   }
 };
-

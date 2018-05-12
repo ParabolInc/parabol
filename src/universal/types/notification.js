@@ -43,5 +43,5 @@ const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
 ]);
 
 // eslint-disable-next-line import/prefer-default-export
-export const requiresAction = (n: Notification): bool =>
+export const requiresAction = (n: Notification): boolean =>
   NOTIFICATION_TYPES_REQUIRING_ACTION.has(n.type);

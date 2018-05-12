@@ -1,12 +1,15 @@
 exports.up = async (r) => {
   const fields = [
-    r.table('Project').replace((row) => {
-      return row
-        .merge({
-          sortOrder: row('teamSort').default(r.random())
-        })
-        .without('teamSort', 'userSort');
-    }, {nonAtomic: true})
+    r.table('Project').replace(
+      (row) => {
+        return row
+          .merge({
+            sortOrder: row('teamSort').default(r.random())
+          })
+          .without('teamSort', 'userSort');
+      },
+      {nonAtomic: true}
+    )
   ];
   await Promise.all(fields);
 

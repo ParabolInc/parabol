@@ -37,7 +37,9 @@ const subscriptions = [
 ];
 
 const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
-  const {params: {localPhase, localPhaseItem, teamId}} = match;
+  const {
+    params: {localPhase, localPhaseItem, teamId}
+  } = match;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -52,23 +54,24 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
         return (
           <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
-            <AnimatedFade key="1">
-              <MeetingContainer
-                localPhase={localPhase}
-                localPhaseItem={localPhaseItem && Number(localPhaseItem)}
-                teamId={teamId}
-                myTeamMemberId={myTeamMemberId}
-                userId={userId}
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>
-            }
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView />
-            </AnimatedFade>
-            }
+            {renderProps && (
+              <AnimatedFade key="1">
+                <MeetingContainer
+                  localPhase={localPhase}
+                  localPhaseItem={localPhaseItem && Number(localPhaseItem)}
+                  teamId={teamId}
+                  myTeamMemberId={myTeamMemberId}
+                  userId={userId}
+                  viewer={renderProps.viewer}
+                />
+              </AnimatedFade>
+            )}
+            {!renderProps &&
+              !error && (
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingView />
+              </AnimatedFade>
+            )}
           </TransitionGroup>
         );
       }}

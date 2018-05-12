@@ -11,8 +11,12 @@ const getMergedSelection = (oldEditorState, newContentState) => {
   const oldContent = oldEditorState.getCurrentContent();
   const oldStartKey = oldSelection.getStartKey();
   const oldStartOffset = oldSelection.getStartOffset();
-  const {offset: startOffset, key: startKey} =
-    getBestFitSelection(oldContent, newContentState, oldStartKey, oldStartOffset);
+  const {offset: startOffset, key: startKey} = getBestFitSelection(
+    oldContent,
+    newContentState,
+    oldStartKey,
+    oldStartOffset
+  );
   if (oldSelection.isCollapsed()) {
     return oldSelection.merge({
       anchorOffset: startOffset,
@@ -21,8 +25,12 @@ const getMergedSelection = (oldEditorState, newContentState) => {
       focusKey: startKey
     });
   }
-  const {offset: endOffset, key: endKey} =
-    getBestFitSelection(oldContent, newContentState, oldSelection.getEndKey(), oldSelection.getEndOffset());
+  const {offset: endOffset, key: endKey} = getBestFitSelection(
+    oldContent,
+    newContentState,
+    oldSelection.getEndKey(),
+    oldSelection.getEndOffset()
+  );
   return oldSelection.merge({
     anchorOffset: startOffset,
     focusOffset: endOffset,

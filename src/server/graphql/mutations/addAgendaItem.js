@@ -19,19 +19,23 @@ export default {
       description: 'The new task including an id, teamMemberId, and content'
     }
   },
-  async resolve(source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
     // AUTH
     const {teamId} = newAgendaItem;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
     const schema = makeAgendaItemSchema();
     const {errors, data: validNewAgendaItem} = schema(newAgendaItem);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
     const now = new Date();

@@ -3,7 +3,6 @@ import stripe from 'server/billing/stripe';
 import getRethink from 'server/database/rethinkDriver';
 import {PAID} from 'universal/utils/constants';
 
-
 export default {
   name: 'StripeSucceedPayment',
   description: 'When stripe tells us an invoice payment was successful, update it in our DB',
@@ -25,18 +24,25 @@ export default {
 
     // VALIDATION
     const {customer: customerId} = await stripe.invoices.retrieve(invoiceId);
-    const {metadata: {orgId}} = await stripe.customers.retrieve(customerId);
+    const {
+      metadata: {orgId}
+    } = await stripe.customers.retrieve(customerId);
     const org = await r.table('Organization').get(orgId);
     if (!org) {
-      throw new Error(`Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`);
+      throw new Error(
+        `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`
+      );
     }
     const {creditCard} = org;
 
     // RESOLUTION
-    await r.table('Invoice').get(invoiceId).update({
-      creditCard,
-      paidAt: now,
-      status: PAID
-    });
+    await r
+      .table('Invoice')
+      .get(invoiceId)
+      .update({
+        creditCard,
+        paidAt: now,
+        status: PAID
+      });
   }
 };

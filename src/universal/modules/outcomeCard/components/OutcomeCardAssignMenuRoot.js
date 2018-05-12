@@ -2,7 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {cacheConfig} from 'universal/utils/constants';
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
+import {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from 'universal/styles/ui';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';
 import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup';
@@ -16,13 +21,16 @@ const query = graphql`
   }
 `;
 
-const loading = (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />;
+const loading = (props) => (
+  <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
+);
 
 const LoadableOutcomeCardAssignMenu = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'OutcomeCardAssignMenu' */
-    'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu'
-  ),
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'OutcomeCardAssignMenu' */
+      'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignMenu'
+    ),
   loading,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME

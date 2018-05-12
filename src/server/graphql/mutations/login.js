@@ -11,7 +11,11 @@ import {
 import {getUserId} from 'server/utils/authorization';
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
-import {sendAuth0Error, sendBadAuthTokenError, sendSegmentIdentifyError} from 'server/utils/authorizationErrors';
+import {
+  sendAuth0Error,
+  sendBadAuthTokenError,
+  sendSegmentIdentifyError
+} from 'server/utils/authorizationErrors';
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj';
 import ensureDate from 'universal/utils/ensureDate';
 
@@ -26,14 +30,16 @@ const login = {
       description: 'The ID Token from auth0, a base64 JWT'
     }
   },
-  async resolve(source, {auth0Token}, {dataLoader}) {
+  async resolve (source, {auth0Token}, {dataLoader}) {
     const r = getRethink();
     const now = new Date();
 
     // VALIDATION
     let authToken;
     try {
-      authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
+      authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {
+        audience: auth0ClientId
+      });
     } catch (e) {
       return sendBadAuthTokenError();
     }
@@ -73,7 +79,8 @@ const login = {
       return sendAuth0Error(authToken, e);
     }
 
-    const preferredName = userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname;
+    const preferredName =
+      userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname;
     const newUser = {
       id: userInfo.user_id,
       cachedAt: now,

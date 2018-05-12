@@ -8,16 +8,11 @@ const DashHeaderInfo = (props) => {
   const {children, styles, title} = props;
   return (
     <div className={css(styles.root)}>
-      {title &&
-        <div className={css(styles.title)}>
-          {title}
-        </div>
-      }
+      {title && <div className={css(styles.title)}>{title}</div>}
       {children}
     </div>
   );
 };
-
 
 DashHeaderInfo.propTypes = {
   children: PropTypes.any,

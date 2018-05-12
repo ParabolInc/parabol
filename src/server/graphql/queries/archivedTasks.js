@@ -21,27 +21,33 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(source, {first, after, teamId}, {authToken}) {
+  async resolve (source, {first, after, teamId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
     const userId = getUserId(authToken);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId, null);
+    }
 
     // RESOLUTION
     const teamMemberId = `${userId}::${teamId}`;
     const tier = await r.table('Team').get(teamId)('tier');
     const oldestTask = tier === PERSONAL ? new Date(Date.now() - ms('14d')) : r.minval;
     const dbAfter = after ? new Date(after) : r.maxval;
-    const tasks = await r.table('Task')
-    // use a compound index so we can easily paginate later
-      .between([teamId, oldestTask], [teamId, dbAfter], {index: 'teamIdUpdatedAt'})
-      .filter((task) => task('tags').contains('archived')
-        .and(r.branch(
-          task('tags').contains('private'),
-          task('teamMemberId').eq(teamMemberId),
-          true
-        )))
+    const tasks = await r
+      .table('Task')
+      // use a compound index so we can easily paginate later
+      .between([teamId, oldestTask], [teamId, dbAfter], {
+        index: 'teamIdUpdatedAt'
+      })
+      .filter((task) =>
+        task('tags')
+          .contains('archived')
+          .and(
+            r.branch(task('tags').contains('private'), task('teamMemberId').eq(teamMemberId), true)
+          )
+      )
       .orderBy(r.desc('updatedAt'))
       .limit(first + 1)
       .coerceTo('array');

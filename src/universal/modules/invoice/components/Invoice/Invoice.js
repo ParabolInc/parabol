@@ -40,25 +40,24 @@ const chargeStatus = {
 };
 
 const Invoice = (props) => {
-  const {
-    viewer,
-    styles
-  } = props;
+  const {viewer, styles} = props;
 
-  const {invoiceDetails: {
-    amountDue,
-    total,
-    billingLeaderEmails,
-    creditCard,
-    picture,
-    endAt,
-    lines,
-    nextMonthCharges,
-    orgName,
-    startAt,
-    status,
-    startingBalance
-  }} = viewer;
+  const {
+    invoiceDetails: {
+      amountDue,
+      total,
+      billingLeaderEmails,
+      creditCard,
+      picture,
+      endAt,
+      lines,
+      nextMonthCharges,
+      orgName,
+      startAt,
+      status,
+      startingBalance
+    }
+  } = viewer;
 
   const {nextPeriodEnd} = nextMonthCharges;
   const {brand, last4} = creditCard;
@@ -88,29 +87,24 @@ const Invoice = (props) => {
       return <InvoiceLineItemContainer key={lineId} item={li} />;
     });
 
-  const makeAsterisk = () =>
-    <span className={css(styles.asterisk)}>{'*'}</span>;
+  const makeAsterisk = () => <span className={css(styles.asterisk)}>{'*'}</span>;
 
   return (
     <div className={css(styles.invoice)}>
       <Helmet title={`Invoice | ${subject}`} />
       <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture} />
       <div className={css(styles.panel)}>
-        {status === FAILED &&
-          <div className={css(styles.failedStamp)}>
-            {'Payment Failed'}
-          </div>
-        }
-        {status === UPCOMING &&
+        {status === FAILED && <div className={css(styles.failedStamp)}>{'Payment Failed'}</div>}
+        {status === UPCOMING && (
           <div className={css(styles.tagBlock)}>
             <Tag colorPalette="light" label="Current Estimation" />
           </div>
-        }
-        {status === PENDING &&
+        )}
+        {status === PENDING && (
           <div className={css(styles.tagBlock)}>
             <Tag colorPalette="gray" label="Payment Processing" />
           </div>
-        }
+        )}
         <div className={css(styles.label)}>{'Invoice'}</div>
         <div className={css(styles.subject)}>{subject}</div>
 
@@ -121,21 +115,23 @@ const Invoice = (props) => {
 
         <InvoiceLineItem item={nextUsage} />
 
-        {lines.length > 0 &&
+        {lines.length > 0 && (
           <div className={css(styles.sectionHeader)}>
             <div className={css(styles.heading)}>
-              {'Last month’s adjustments'}{makeAsterisk()}
+              {'Last month’s adjustments'}
+              {makeAsterisk()}
               <div className={css(styles.headingLabel)}>
-                {makeAsterisk()}{'Prorated'}
+                {makeAsterisk()}
+                {'Prorated'}
               </div>
             </div>
             <div className={css(styles.meta)}>{chargeDates}</div>
           </div>
-        }
+        )}
         {makeLineItems(lines)}
 
         <div className={css(styles.amountSection)}>
-          {startingBalance !== 0 &&
+          {startingBalance !== 0 && (
             <div>
               <div className={css(styles.amountLineSub)}>
                 <div>{'Total'}</div>
@@ -146,16 +142,19 @@ const Invoice = (props) => {
                 <div>{invoiceLineFormat(startingBalance)}</div>
               </div>
             </div>
-          }
+          )}
           <div className={css(styles.amountLine)}>
             <div>{'Amount due'}</div>
             <div>{invoiceLineFormat(amountDue)}</div>
           </div>
-          {brand &&
+          {brand && (
             <div className={css(styles.meta, status === FAILED && styles.metaError)}>
-              {chargeStatus[status]}{' to '}<b>{brand}</b> {'ending in '}<b>{last4}</b>
+              {chargeStatus[status]}
+              {' to '}
+              <b>{brand}</b> {'ending in '}
+              <b>{last4}</b>
             </div>
-          }
+          )}
         </div>
       </div>
       <InvoiceFooter />

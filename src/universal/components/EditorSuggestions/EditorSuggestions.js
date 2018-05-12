@@ -17,22 +17,11 @@ const suggestionTypes = {
 };
 
 const EditorSuggestions = (props) => {
-  const {
-    active,
-    handleSelect,
-    isClosing,
-    innerRef,
-    styles,
-    suggestions,
-    suggestionType
-  } = props;
+  const {active, handleSelect, isClosing, innerRef, styles, suggestions, suggestionType} = props;
 
   const SuggestionItem = suggestionTypes[suggestionType];
 
-  const menuStyles = css(
-    styles.mentionMenu,
-    isClosing && styles.closing
-  );
+  const menuStyles = css(styles.mentionMenu, isClosing && styles.closing);
   return (
     <div className={menuStyles} ref={innerRef}>
       {suggestions.map((suggestion, idx) => {

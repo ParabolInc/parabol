@@ -14,11 +14,11 @@ export default (ComposedComponent) => {
       dirty: false
     };
 
-    componentWillMount() {
+    componentWillMount () {
       this._mounted = true;
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
       this._mounted = false;
     }
 
@@ -54,18 +54,20 @@ export default (ComposedComponent) => {
       }
     };
 
-    render() {
+    render () {
       const {dirty, error, submitting} = this.state;
-      return (<ComposedComponent
-        {...this.props}
-        dirty={dirty}
-        error={error}
-        setDirty={this.setDirty}
-        submitting={submitting}
-        submitMutation={this.submitMutation}
-        onCompleted={this.onCompleted}
-        onError={this.onError}
-      />);
+      return (
+        <ComposedComponent
+          {...this.props}
+          dirty={dirty}
+          error={error}
+          setDirty={this.setDirty}
+          submitting={submitting}
+          submitMutation={this.submitMutation}
+          onCompleted={this.onCompleted}
+          onError={this.onError}
+        />
+      );
     }
   };
 };

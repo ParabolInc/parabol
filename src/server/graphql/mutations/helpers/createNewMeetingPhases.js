@@ -8,7 +8,8 @@ import shortid from 'shortid';
 
 const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingType, dataLoader) => {
   const r = getRethink();
-  const meetingSettings = await r.table('MeetingSettings')
+  const meetingSettings = await r
+    .table('MeetingSettings')
     .getAll(teamId, {index: 'teamId'})
     .filter({meetingType})
     .nth(0)
@@ -18,26 +19,28 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
   }
   const {phaseTypes} = meetingSettings;
 
-  return Promise.all(phaseTypes.map(async (phaseType, idx) => {
-    if (phaseType === CHECKIN) {
-      return {
-        id: shortid.generate(),
-        phaseType,
-        checkInGreeting: makeCheckinGreeting(meetingCount, teamId),
-        checkInQuestion: convertToTaskContent(makeCheckinQuestion(meetingCount, teamId)),
-        stages: await makeCheckinStages(teamId, meetingId, dataLoader, idx)
-      };
-    }
-    const standardRetroPhases = [REFLECT, GROUP, VOTE, DISCUSS];
-    if (standardRetroPhases.includes(phaseType)) {
-      return {
-        id: shortid.generate(),
-        phaseType,
-        stages: [makeRetroStage(phaseType, meetingId, idx)]
-      };
-    }
-    throw new Error('Unhandled phaseType', phaseType);
-  }));
+  return Promise.all(
+    phaseTypes.map(async (phaseType, idx) => {
+      if (phaseType === CHECKIN) {
+        return {
+          id: shortid.generate(),
+          phaseType,
+          checkInGreeting: makeCheckinGreeting(meetingCount, teamId),
+          checkInQuestion: convertToTaskContent(makeCheckinQuestion(meetingCount, teamId)),
+          stages: await makeCheckinStages(teamId, meetingId, dataLoader, idx)
+        };
+      }
+      const standardRetroPhases = [REFLECT, GROUP, VOTE, DISCUSS];
+      if (standardRetroPhases.includes(phaseType)) {
+        return {
+          id: shortid.generate(),
+          phaseType,
+          stages: [makeRetroStage(phaseType, meetingId, idx)]
+        };
+      }
+      throw new Error('Unhandled phaseType', phaseType);
+    })
+  );
 };
 
 export default createNewMeetingPhases;

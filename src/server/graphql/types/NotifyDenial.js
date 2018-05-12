@@ -4,7 +4,8 @@ import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyDenial = new GraphQLObjectType({
   name: 'NotifyDenial',
-  description: 'A notification alerting the user that their request was denied by the org billing leader',
+  description:
+    'A notification alerting the user that their request was denied by the org billing leader',
   interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     reason: {

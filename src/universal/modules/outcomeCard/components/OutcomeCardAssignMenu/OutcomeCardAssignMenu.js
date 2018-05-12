@@ -5,34 +5,48 @@ import {css} from 'aphrodite-local-styles/no-important';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember';
-import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 class OutcomeCardAssignMenu extends Component {
   state = {
     assignees: []
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.setAssignees(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {team: {teamMembers, softTeamMembers}}} = nextProps;
-    const {viewer: {team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}}} = this.props;
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {
+        team: {teamMembers, softTeamMembers}
+      }
+    } = nextProps;
+    const {
+      viewer: {
+        team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}
+      }
+    } = this.props;
     if (teamMembers !== oldTeamMembers || oldSoftTeamMembers !== softTeamMembers) {
       this.setAssignees(nextProps);
     }
   }
 
-  setAssignees(props) {
-    const {viewer: {team: {teamMembers, softTeamMembers}}, task: {assignee: {assigneeId}}} = props;
+  setAssignees (props) {
+    const {
+      viewer: {
+        team: {teamMembers, softTeamMembers}
+      },
+      task: {
+        assignee: {assigneeId}
+      }
+    } = props;
     this.setState({
       assignees: teamMembers
         .concat(softTeamMembers)
@@ -44,7 +58,10 @@ class OutcomeCardAssignMenu extends Component {
     const {
       atmosphere,
       area,
-      task: {taskId, assignee: {assigneeId}}
+      task: {
+        taskId,
+        assignee: {assigneeId}
+      }
     } = this.props;
     if (newOwner === assigneeId) {
       return;
@@ -60,7 +77,7 @@ class OutcomeCardAssignMenu extends Component {
     this.handleTaskUpdate(assignee.id);
   };
 
-  render() {
+  render () {
     const {
       area,
       closePortal,
@@ -71,10 +88,7 @@ class OutcomeCardAssignMenu extends Component {
     const {assignees} = this.state;
 
     return (
-      <MenuWithShortcuts
-        ariaLabel={'Assign this task to a teammate'}
-        closePortal={closePortal}
-      >
+      <MenuWithShortcuts ariaLabel={'Assign this task to a teammate'} closePortal={closePortal}>
         <div className={css(styles.label)}>{'Assign to:'}</div>
         {assignees.map((teamMember) => {
           return (
@@ -87,12 +101,7 @@ class OutcomeCardAssignMenu extends Component {
           );
         })}
         <MenuItemWithShortcuts noCloseOnClick>
-          <AddSoftTeamMember
-            area={area}
-            closePortal={closePortal}
-            taskId={taskId}
-            team={team}
-          />
+          <AddSoftTeamMember area={area} closePortal={closePortal} taskId={taskId} team={team} />
         </MenuItemWithShortcuts>
       </MenuWithShortcuts>
     );
@@ -139,6 +148,7 @@ export default createFragmentContainer(
         ...AddSoftTeamMember_team
       }
     }
+
     fragment OutcomeCardAssignMenu_task on Task {
       taskId: id
       assignee {

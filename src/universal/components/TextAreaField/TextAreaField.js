@@ -22,15 +22,11 @@ const TextAreaField = (props) => {
     styles
   } = props;
 
-  const inputStyles = css(
-    styles.field,
-    disabled && styles.disabled,
-    readOnly && styles.readOnly,
-  );
+  const inputStyles = css(styles.field, disabled && styles.disabled, readOnly && styles.readOnly);
 
   return (
     <FieldBlock>
-      {label &&
+      {label && (
         <FieldLabel
           customStyles={{paddingBottom: ui.fieldLabelGutter}}
           fieldSize={fieldSize}
@@ -38,7 +34,7 @@ const TextAreaField = (props) => {
           indent
           label={label}
         />
-      }
+      )}
       <div className={css(styles.inputBlock)}>
         <textarea
           {...input}
@@ -50,7 +46,8 @@ const TextAreaField = (props) => {
           value={undefined}
         />
       </div>
-      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
+      {touched &&
+        error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
   );
 };
@@ -77,7 +74,7 @@ TextAreaField.propTypes = {
 
 const styleThunk = (theme, {disabled, fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
-  return ({
+  return {
     field: {
       ...ui.fieldBaseStyles,
       ...ui.fieldSizeStyles[size],
@@ -86,7 +83,7 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
     },
     disabled: ui.fieldDisabled,
     readOnly: ui.fieldReadOnly
-  });
+  };
 };
 
 export default withStyles(styleThunk)(TextAreaField);

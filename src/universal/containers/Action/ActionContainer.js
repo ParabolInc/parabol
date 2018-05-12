@@ -17,12 +17,12 @@ class ActionContainer extends Component {
     params: PropTypes.object
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     injectGlobal(globalStyles);
   }
 
-  render() {
+  render () {
     return <Action {...this.props} />;
   }
 }

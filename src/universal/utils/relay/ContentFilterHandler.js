@@ -4,7 +4,7 @@
 import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString';
 
 const ContentTextHandler = {
-  update(store, payload) {
+  update (store, payload) {
     const record = store.get(payload.dataID);
     if (!record) return;
     const content = record.getValue(payload.fieldKey);

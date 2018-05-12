@@ -34,4 +34,3 @@ const types = [
 ];
 
 export default graphQLSubscriptionType('TaskSubscriptionPayload', types);
-

@@ -4,7 +4,6 @@ const subscription = graphql`
   }
 `;
 
-
 const NewAuthTokenSubscription = () => ({subscription});
 
 export default NewAuthTokenSubscription;

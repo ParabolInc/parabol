@@ -59,8 +59,16 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation NavigateMeetingMutation($meetingId: ID!, $completedStageId: ID, $facilitatorStageId: ID) {
-    navigateMeeting(meetingId: $meetingId, completedStageId: $completedStageId, facilitatorStageId: $facilitatorStageId) {
+  mutation NavigateMeetingMutation(
+    $meetingId: ID!
+    $completedStageId: ID
+    $facilitatorStageId: ID
+  ) {
+    navigateMeeting(
+      meetingId: $meetingId
+      completedStageId: $completedStageId
+      facilitatorStageId: $facilitatorStageId
+    ) {
       error {
         message
       }
@@ -71,7 +79,10 @@ const mutation = graphql`
 
 export const navigateMeetingTeamOnNext = (payload, context) => {
   const {environment} = context;
-  const {meeting: {id: meetingId, facilitatorStageId}, oldFacilitatorStage: {id: oldFacilitatorStageId}} = payload;
+  const {
+    meeting: {id: meetingId, facilitatorStageId},
+    oldFacilitatorStage: {id: oldFacilitatorStageId}
+  } = payload;
   commitLocalUpdate(environment, (store) => {
     const meetingProxy = store.get(meetingId);
     const viewerStageId = getInProxy(meetingProxy, 'localStage', 'id');
@@ -82,11 +93,13 @@ export const navigateMeetingTeamOnNext = (payload, context) => {
 };
 
 const optimisticallyCreateRetroTopics = (store, discussPhase, meetingId) => {
-  if (!discussPhase || discussPhase.getLinkedRecords('stages').length > 1) return;
+  if (!discussPhase || discussPhase.getLinkedRecords('stages').length > 1) {
+    return;
+  }
   const meeting = store.get(meetingId);
   const reflectionGroups = meeting.getLinkedRecords('reflectionGroups');
   const topReflectionGroups = reflectionGroups.filter((group) => group.getValue('voteCount') > 0);
-  topReflectionGroups.sort((a, b) => a.getValue('voteCount') < b.getValue('voteCount') ? 1 : -1);
+  topReflectionGroups.sort((a, b) => (a.getValue('voteCount') < b.getValue('voteCount') ? 1 : -1));
   const discussStages = topReflectionGroups.map((reflectionGroup) => {
     const reflectionGroupId = reflectionGroup.getValue('id');
     const proxyStage = createProxyRecord(store, 'RetroDiscussStage', {
@@ -103,7 +116,12 @@ const optimisticallyCreateRetroTopics = (store, discussPhase, meetingId) => {
 };
 
 export const navigateMeetingTeamUpdater = (payload, store) => {
-  const emptyReflectionGroupIds = getInProxy(payload, 'phaseComplete', 'reflect', 'emptyReflectionGroupIds');
+  const emptyReflectionGroupIds = getInProxy(
+    payload,
+    'phaseComplete',
+    'reflect',
+    'emptyReflectionGroupIds'
+  );
   if (!emptyReflectionGroupIds) return;
   const meetingId = getInProxy(payload, 'meeting', 'id');
   handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store);

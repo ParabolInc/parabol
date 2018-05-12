@@ -5,13 +5,11 @@ import tmsSignToken from '../tmsSignToken';
 
 describe('tmsSignToken', () => {
   it('throws an error when no auth token is provided', () => {
-    expect(() => tmsSignToken(undefined, []))
-      .toThrow('Must provide valid auth token with `sub`');
+    expect(() => tmsSignToken(undefined, [])).toThrow('Must provide valid auth token with `sub`');
   });
 
   it('throws an error when no `sub` field is provided', () => {
-    expect(() => tmsSignToken({}, []))
-      .toThrow('Must provide valid auth token with `sub`');
+    expect(() => tmsSignToken({}, [])).toThrow('Must provide valid auth token with `sub`');
   });
 
   it('replaces the `tms` field with the provided value', () => {

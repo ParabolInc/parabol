@@ -40,7 +40,7 @@ class CopyShortLink extends Component {
     url: PropTypes.string
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.confirmationTimeout = null;
   }
@@ -49,7 +49,7 @@ class CopyShortLink extends Component {
     confirmingCopied: false
   };
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.clearConfirmationTimeout();
   }
 
@@ -67,7 +67,7 @@ class CopyShortLink extends Component {
     this.setState({confirmingCopied: true});
   };
 
-  render() {
+  render () {
     const {icon, label, url} = this.props;
     const {confirmingCopied} = this.state;
     const theIcon = icon || 'link';

@@ -20,7 +20,8 @@ const ChangeTaskTeamPayload = new GraphQLObjectType({
     },
     removedTaskId: {
       type: GraphQLID,
-      description: 'the taskId sent to a user who is not on the new team so they can remove it from their client',
+      description:
+        'the taskId sent to a user who is not on the new team so they can remove it from their client',
       resolve: async ({taskId}) => {
         return taskId;
       }

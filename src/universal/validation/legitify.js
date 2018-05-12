@@ -1,64 +1,64 @@
 class Legitity {
-  constructor(value) {
+  constructor (value) {
     this.value = value;
     this.error = undefined;
   }
 
-  boolean(msg) {
+  boolean (msg) {
     if (!this.error && this.value !== undefined && this.value !== true && this.value !== false) {
       this.error = msg || 'boolean';
     }
     return this;
   }
 
-  float(msg) {
+  float (msg) {
     if (!this.error && this.value !== undefined && !Number.isFinite(this.value)) {
       this.error = msg || 'float';
     }
     return this;
   }
 
-  int(msg) {
+  int (msg) {
     if (!this.error && this.value !== parseInt(this.value, 10)) {
       this.error = msg || 'int';
     }
     return this;
   }
 
-  matches(regex, msg) {
+  matches (regex, msg) {
     if (!this.error && this.value && !regex.test(this.value)) {
       this.error = msg || 'regex';
     }
     return this;
   }
 
-  max(len, msg) {
+  max (len, msg) {
     if (!this.error && this.value && this.value.length > len) {
       this.error = msg || 'max';
     }
     return this;
   }
 
-  min(len, msg) {
+  min (len, msg) {
     if (!this.error && this.value && this.value.length < len) {
       this.error = msg || 'min';
     }
     return this;
   }
 
-  required(msg) {
+  required (msg) {
     if (!this.error && !this.value) {
       this.error = msg || 'required';
     }
     return this;
   }
 
-  trim() {
+  trim () {
     this.value = this.value && this.value.trim ? this.value.trim() : this.value;
     return this;
   }
 
-  normalize(fn, msg) {
+  normalize (fn, msg) {
     if (!this.error) {
       this.value = this.value !== undefined && fn(this.value);
       if (this.value === null) {
@@ -68,7 +68,7 @@ class Legitity {
     return this;
   }
 
-  test(check) {
+  test (check) {
     if (!this.error) {
       this.error = check(this.value);
     }

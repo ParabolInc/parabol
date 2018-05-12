@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {Link} from 'react-router-dom';
-import {LabelHeading, LogoBlock} from 'universal/components';
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
@@ -11,8 +10,18 @@ import AgendaListAndInput from 'universal/modules/teamDashboard/components/Agend
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES, LAST_CALL} from 'universal/utils/constants';
+import {
+  AGENDA_ITEMS,
+  CHECKIN,
+  FIRST_CALL,
+  phaseArray,
+  SUMMARY,
+  UPDATES,
+  LAST_CALL
+} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
+import LogoBlock from 'universal/components/LogoBlock/LogoBlock';
 
 const Sidebar = (props) => {
   const {
@@ -26,15 +35,24 @@ const Sidebar = (props) => {
     styles,
     team
   } = props;
-  const {teamId, teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team;
+  const {
+    teamId,
+    teamName,
+    agendaItems,
+    facilitatorPhase,
+    facilitatorPhaseItem,
+    meetingPhase
+  } = team;
   const meetingUrl = makeHref(`/meeting/${teamId}`);
-  const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
-    agendaItems.findIndex((a) => a.isComplete === false) + 1 : 0;
+  const agendaPhaseItem =
+    actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index
+      ? agendaItems.findIndex((a) => a.isComplete === false) + 1
+      : 0;
   const canNavigateTo = (phase) => {
     const adjustForFacilitator = isFacilitating ? 1 : 0;
     const phaseInfo = actionMeeting[phase];
     const meetingPhaseInfo = actionMeeting[meetingPhase];
-    return Boolean(meetingPhaseInfo.index >= (phaseInfo.index - adjustForFacilitator));
+    return Boolean(meetingPhaseInfo.index >= phaseInfo.index - adjustForFacilitator);
   };
 
   // Nav item bullet states
@@ -123,27 +141,27 @@ const Sidebar = (props) => {
             </div>
           </li>
         </ul>
-        {localPhase !== SUMMARY &&
-        <div className={css(styles.agendaListBlock)}>
-          <div className={css(styles.agendaLabelBlock)}>
-            <LabelHeading>{'Agenda Topics'}</LabelHeading>
+        {localPhase !== SUMMARY && (
+          <div className={css(styles.agendaListBlock)}>
+            <div className={css(styles.agendaLabelBlock)}>
+              <LabelHeading>{'Agenda Topics'}</LabelHeading>
+            </div>
+            <AgendaListAndInput
+              agendaPhaseItem={agendaPhaseItem}
+              canNavigate={agendaListCanNavigate}
+              context={'meeting'}
+              disabled={agendaListDisabled}
+              facilitatorPhase={facilitatorPhase}
+              facilitatorPhaseItem={facilitatorPhaseItem}
+              gotoAgendaItem={gotoAgendaItem}
+              inSync={inSync}
+              localPhase={localPhase}
+              localPhaseItem={localPhaseItem}
+              setAgendaInputRef={setAgendaInputRef}
+              team={team}
+            />
           </div>
-          <AgendaListAndInput
-            agendaPhaseItem={agendaPhaseItem}
-            canNavigate={agendaListCanNavigate}
-            context={'meeting'}
-            disabled={agendaListDisabled}
-            facilitatorPhase={facilitatorPhase}
-            facilitatorPhaseItem={facilitatorPhaseItem}
-            gotoAgendaItem={gotoAgendaItem}
-            inSync={inSync}
-            localPhase={localPhase}
-            localPhaseItem={localPhaseItem}
-            setAgendaInputRef={setAgendaInputRef}
-            team={team}
-          />
-        </div>
-        }
+        )}
       </nav>
       <LogoBlock variant="primary" />
     </div>

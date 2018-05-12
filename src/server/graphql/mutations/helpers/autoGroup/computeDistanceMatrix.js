@@ -1,4 +1,3 @@
-
 /*
  * for each entity mentioned in all the reflections,
  * see if it exists for this reflection in particular.

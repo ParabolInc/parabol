@@ -103,10 +103,7 @@ export const notificationTypes = [
   TEAM_INVITE
 ];
 
-export const billingLeaderTypes = [
-  PAYMENT_REJECTED,
-  REQUEST_NEW_USER
-];
+export const billingLeaderTypes = [PAYMENT_REJECTED, REQUEST_NEW_USER];
 
 /* User Settings */
 export const SETTINGS = 'settings';
@@ -167,7 +164,6 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
 /* JavaScript specifics */
 export const MAX_INT = 2147483647;
 
-
 // InvitationResultTypes
 // the invitation has been sent
 export const SUCCESS = 'SUCCESS';
@@ -222,7 +218,11 @@ export const MENTIONEE = 'MENTIONEE';
 
 /* Third-party authentication providers */
 export const THIRD_PARTY_AUTH_PROVIDERS = [
-  {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
+  {
+    displayName: 'Google',
+    auth0Connection: 'google-oauth2',
+    iconName: 'google'
+  }
 ];
 
 /* Default auth0 email/password db */

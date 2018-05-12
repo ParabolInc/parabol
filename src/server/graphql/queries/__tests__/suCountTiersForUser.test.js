@@ -12,8 +12,7 @@ test('return counts for a userId', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[0], {rol: 'su'});
   // TEST
-  const result = await suCountTiersForUser.resolve(
-    undefined, {userId: user[0].id}, {authToken});
+  const result = await suCountTiersForUser.resolve(undefined, {userId: user[0].id}, {authToken});
 
   // VERIFY
   expect(result.tierPersonalCount).toBeGreaterThanOrEqual(0);
@@ -25,12 +24,14 @@ test('return counts for a userId', async () => {
 test('pro count increments on new Pro Org for userId', async () => {
   // SETUP
   const mockDB = new MockDB();
-  await mockDB.init()
-    .newOrg({name: 'Marvel', tier: PRO});
+  await mockDB.init().newOrg({name: 'Marvel', tier: PRO});
   const authToken = mockAuthToken(mockDB.context.user, {rol: 'su'});
   // TEST
   const result = await suCountTiersForUser.resolve(
-    undefined, {userId: mockDB.context.user.id}, {authToken});
+    undefined,
+    {userId: mockDB.context.user.id},
+    {authToken}
+  );
 
   // VERIFY
   expect(result.tierPersonalCount).toBeGreaterThanOrEqual(0);

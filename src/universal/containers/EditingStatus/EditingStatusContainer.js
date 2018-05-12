@@ -11,14 +11,14 @@ class EditingStatusContainer extends Component {
     task: PropTypes.object.isRequired
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       timestampType: 'createdAt'
     };
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.resetTimeout();
   }
 
@@ -27,14 +27,16 @@ class EditingStatusContainer extends Component {
     this.setState({timestampType});
   };
 
-  resetTimeout() {
+  resetTimeout () {
     clearTimeout(this.refreshTimer);
     this.refreshTimer = undefined;
   }
 
-  queueNextRender() {
+  queueNextRender () {
     this.resetTimeout();
-    const {task: {createdAt, updatedAt}} = this.props;
+    const {
+      task: {createdAt, updatedAt}
+    } = this.props;
     const timestamp = this.state.timestampType === 'createdAt' ? createdAt : updatedAt;
     const timeTilRefresh = getRefreshPeriod(timestamp);
     this.refreshTimer = setTimeout(() => {
@@ -42,7 +44,7 @@ class EditingStatusContainer extends Component {
     }, timeTilRefresh);
   }
 
-  render() {
+  render () {
     const {cardIsActive, isEditing, task} = this.props;
     const {createdAt, updatedAt} = task;
     const {timestampType} = this.state;
@@ -68,5 +70,6 @@ export default createFragmentContainer(
       createdAt
       updatedAt
       ...EditingStatus_task
-    }`
+    }
+  `
 );

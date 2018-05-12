@@ -20,9 +20,12 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
     },
     removedOrgApprovals: {
       type: new GraphQLList(OrgApproval),
-      description: 'The list of org approvals to remove. There may be multiple if many inviters requested the same email',
+      description:
+        'The list of org approvals to remove. There may be multiple if many inviters requested the same email',
       resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
-        if (!removedOrgApprovalIds || removedOrgApprovalIds.length === 0) return null;
+        if (!removedOrgApprovalIds || removedOrgApprovalIds.length === 0) {
+          return null;
+        }
         return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
       }
     },
@@ -33,10 +36,13 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
     },
     removedRequestNotifications: {
       type: new GraphQLList(NotifyRequestNewUser),
-      description: 'The list of notifications to remove. There may be multiple if many inviters requested the same email',
+      description:
+        'The list of notifications to remove. There may be multiple if many inviters requested the same email',
       resolve: ({removedRequestNotifications}, args, {authToken}) => {
         const viewerId = getUserId(authToken);
-        if (!removedRequestNotifications || removedRequestNotifications.length === 0) return null;
+        if (!removedRequestNotifications || removedRequestNotifications.length === 0) {
+          return null;
+        }
         return removedRequestNotifications.filter(({userIds}) => userIds.includes(viewerId));
       }
     },

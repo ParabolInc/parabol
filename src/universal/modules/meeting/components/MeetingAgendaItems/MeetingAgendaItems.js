@@ -60,32 +60,44 @@ const SpacedMeetingControlBar = styled(MeetingControlBar)({
 class MeetingAgendaItems extends Component {
   state = {agendaTasks: []};
 
-  componentWillMount() {
+  componentWillMount () {
     this.makeAgendaTasks(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {tasks: oldTasks}, localPhaseItem: oldLocalPhaseItem} = this.props;
-    const {viewer: {tasks}, localPhaseItem} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {tasks: oldTasks},
+      localPhaseItem: oldLocalPhaseItem
+    } = this.props;
+    const {
+      viewer: {tasks},
+      localPhaseItem
+    } = nextProps;
     if (tasks !== oldTasks || localPhaseItem !== oldLocalPhaseItem) {
       this.makeAgendaTasks(nextProps);
     }
   }
 
-  makeAgendaTasks(props) {
-    const {localPhaseItem, viewer: {team: {agendaItems}, tasks}} = props;
+  makeAgendaTasks (props) {
+    const {
+      localPhaseItem,
+      viewer: {
+        team: {agendaItems},
+        tasks
+      }
+    } = props;
     const agendaItem = agendaItems[localPhaseItem - 1];
     const agendaTasks = tasks.edges
       .map(({node}) => node)
       .filter((node) => node.agendaId === agendaItem.id)
-      .sort((a, b) => a.sortOrder < b.sortOrder ? 1 : -1);
+      .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1));
 
     this.setState({
       agendaTasks
     });
   }
 
-  render() {
+  render () {
     const {
       atmosphere,
       history,
@@ -100,7 +112,12 @@ class MeetingAgendaItems extends Component {
     const {agendaItems, id: teamId, teamMembers} = team;
     const agendaItem = agendaItems[localPhaseItem - 1];
     const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
-    const subHeading = (<span><b>{currentTeamMember.preferredName}</b>{', what do you need?'}</span>);
+    const subHeading = (
+      <span>
+        <b>{currentTeamMember.preferredName}</b>
+        {', what do you need?'}
+      </span>
+    );
     const endMeeting = () => {
       EndMeetingMutation(atmosphere, teamId, history);
     };
@@ -117,22 +134,19 @@ class MeetingAgendaItems extends Component {
                 />
               </Prompt>
               <Nav>
-                {hideMoveMeetingControls &&
+                {hideMoveMeetingControls && (
                   <MeetingFacilitationHint>
-                    {'Waiting for'} <b>{facilitatorName}</b> {`to wrap up the ${actionMeeting.agendaitems.name}`}
+                    {'Waiting for'} <b>{facilitatorName}</b>{' '}
+                    {`to wrap up the ${actionMeeting.agendaitems.name}`}
                   </MeetingFacilitationHint>
-                }
+                )}
               </Nav>
-              <MeetingAgendaCards
-                agendaId={agendaItem.id}
-                tasks={agendaTasks}
-                teamId={team.id}
-              />
+              <MeetingAgendaCards agendaId={agendaItem.id} tasks={agendaTasks} teamId={team.id} />
               <EditorHelpModalContainer />
             </Layout>
           </MeetingSection>
         </MeetingSection>
-        {showMoveMeetingControls &&
+        {showMoveMeetingControls && (
           <SpacedMeetingControlBar>
             <ControlButtonBlock />
             <BounceBlock animationDelay="120s" key={`agendaItem${localPhaseItem}buttonAnimation`}>
@@ -165,7 +179,7 @@ class MeetingAgendaItems extends Component {
               />
             </ControlButtonBlock>
           </SpacedMeetingControlBar>
-        }
+        )}
       </MeetingMain>
     );
   }
@@ -212,5 +226,6 @@ export default createFragmentContainer(
           }
         }
       }
-    }`
+    }
+  `
 );

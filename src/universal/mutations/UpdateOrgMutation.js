@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 
 graphql`
-  fragment UpdateOrgMutation_organization on UpdateOrgPayload{
+  fragment UpdateOrgMutation_organization on UpdateOrgPayload {
     organization {
       name
       picture

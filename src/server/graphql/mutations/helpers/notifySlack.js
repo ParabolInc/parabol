@@ -6,7 +6,8 @@ import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 
 const getIntegrationsForNotification = (teamId, notification) => {
   const r = getRethink();
-  return r.table(SLACK)
+  return r
+    .table(SLACK)
     .getAll(teamId, {index: 'teamId'})
     .filter({isActive: true})
     .filter((integration) => integration('notifications').contains(notification));
@@ -15,7 +16,8 @@ const getIntegrationsForNotification = (teamId, notification) => {
 /* eslint-disable no-await-in-loop */
 const notifySlack = async (integrations, teamId, slackText) => {
   const r = getRethink();
-  const provider = await r.table('Provider')
+  const provider = await r
+    .table('Provider')
     .getAll(teamId, {index: 'teamId'})
     .filter({service: SLACK, isActive: true})
     .nth(0)
@@ -33,7 +35,9 @@ const notifySlack = async (integrations, teamId, slackText) => {
     const resJson = await res.json();
     const {error} = resJson;
     if (error === 'channel_not_found') {
-      await r.table(SLACK).get(integration.id)
+      await r
+        .table(SLACK)
+        .get(integration.id)
         .update({
           isActive: false
         });
@@ -68,6 +72,8 @@ export const endSlackMeeting = async (meetingId, teamId, isNewMeeting) => {
   const team = await r.table('Team').get(teamId);
   const summarySlug = isNewMeeting ? 'new-summary' : 'summary';
   const summaryUrl = makeAppLink(`${summarySlug}/${meetingId}`);
-  const slackText = `The meeting for ${team.name} has ended!\n Check out the summary here: ${summaryUrl}`;
+  const slackText = `The meeting for ${
+    team.name
+  } has ended!\n Check out the summary here: ${summaryUrl}`;
   notifySlack(integrations, teamId, slackText);
 };

@@ -15,7 +15,7 @@ type Props = {|
   Atmosphere: Object,
   task: Task,
   ...MutationProps
-|}
+|};
 
 const PickerTitle = styled('div')({
   fontSize: '.875rem',
@@ -33,15 +33,24 @@ const Hint = styled('div')({
 class DueDatePicker extends React.Component<Props> {
   handleDayClick = (day, {disabled, selected}) => {
     if (disabled) return;
-    const {atmosphere, closePortal, task: {taskId}, submitMutation, onCompleted, onError} = this.props;
+    const {
+      atmosphere,
+      closePortal,
+      task: {taskId},
+      submitMutation,
+      onCompleted,
+      onError
+    } = this.props;
     submitMutation();
     const dueDate = selected ? null : day;
     UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, onCompleted, onError);
     closePortal();
   };
 
-  render() {
-    const {task: {dueDate}} = this.props;
+  render () {
+    const {
+      task: {dueDate}
+    } = this.props;
     const selectedDate = dueDate && new Date(dueDate);
     const showHint = false;
     const now = new Date();

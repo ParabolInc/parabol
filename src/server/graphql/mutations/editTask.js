@@ -18,7 +18,7 @@ export default {
       description: 'true if the editing is starting, false if it is stopping'
     }
   },
-  async resolve(source, {taskId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {taskId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
@@ -26,7 +26,9 @@ export default {
     const task = await dataLoader.get('tasks').load(taskId);
     const viewerId = getUserId(authToken);
     const {tags, teamId, userId: taskUserId} = task;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     // grab the task to see if it's private, don't share with other if it is

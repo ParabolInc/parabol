@@ -35,7 +35,8 @@ export const ChangeModule = new GraphQLEnumType({
 
 const TaskHistory = new GraphQLObjectType({
   name: 'TaskHistory',
-  description: 'An up-to-date history of every change to content, ownership, and status for every task.',
+  description:
+    'An up-to-date history of every change to content, ownership, and status for every task.',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -54,7 +55,10 @@ const TaskHistory = new GraphQLObjectType({
       type: GraphQLID,
       description: 'Owner of the task'
     },
-    status: {type: new GraphQLNonNull(TaskStatusEnum), description: 'The status of the task'},
+    status: {
+      type: new GraphQLNonNull(TaskStatusEnum),
+      description: 'The status of the task'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was changed'

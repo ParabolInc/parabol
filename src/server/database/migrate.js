@@ -5,7 +5,7 @@ import {parse} from 'url';
 getDotenv();
 
 const startMigration = () => {
-  const [,, direction, count] = process.argv;
+  const [, , direction, count] = process.argv;
   const all = count === '--all';
   if (process.env.NODE_ENV === 'test') {
     console.log('NODE_ENV is test, loading .env.test...');

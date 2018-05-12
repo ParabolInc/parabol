@@ -2,7 +2,6 @@ import path from 'path';
 import url from 'url';
 import protocolRelativeUrl from '../protocolRelativeUrl';
 
-
 test('parses protocol-relative URL', () => {
   const testUrl = '//s3-host.prbl.co/test';
   const result = protocolRelativeUrl.parse(testUrl);
@@ -44,11 +43,9 @@ test('formats protocol-relative URLs', () => {
     path: '/test',
     href: '//s3-host.prbl.co/test'
   };
-  expect('//s3-host.prbl.co/test')
-    .toEqual(protocolRelativeUrl.format(parsedUrl));
+  expect('//s3-host.prbl.co/test').toEqual(protocolRelativeUrl.format(parsedUrl));
   parsedUrl.pathname = path.join(parsedUrl.pathname, '/subdir');
-  expect('//s3-host.prbl.co/test/subdir')
-    .toEqual(protocolRelativeUrl.format(parsedUrl));
+  expect('//s3-host.prbl.co/test/subdir').toEqual(protocolRelativeUrl.format(parsedUrl));
 });
 
 test('still formats regular URLs', () => {
@@ -66,9 +63,7 @@ test('still formats regular URLs', () => {
     path: '/test',
     href: 'http://s3-host.prbl.co/test'
   };
-  expect('http://s3-host.prbl.co/test')
-    .toEqual(protocolRelativeUrl.format(parsedUrl));
+  expect('http://s3-host.prbl.co/test').toEqual(protocolRelativeUrl.format(parsedUrl));
   parsedUrl.pathname = path.join(parsedUrl.pathname, '/subdir');
-  expect('http://s3-host.prbl.co/test/subdir')
-    .toEqual(protocolRelativeUrl.format(parsedUrl));
+  expect('http://s3-host.prbl.co/test/subdir').toEqual(protocolRelativeUrl.format(parsedUrl));
 });

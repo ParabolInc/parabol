@@ -31,7 +31,7 @@ export default {
       description: 'The name of the new team'
     }
   },
-  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
@@ -39,8 +39,13 @@ export default {
     const viewerId = getUserId(authToken);
 
     // VALIDATION
-    const {data: {invitees, newTeam, orgName}, errors} = addOrgValidation()(args);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    const {
+      data: {invitees, newTeam, orgName},
+      errors
+    } = addOrgValidation()(args);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
     const orgId = shortid.generate();
@@ -54,15 +59,27 @@ export default {
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
-    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId, dataLoader);
+    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(
+      invitees,
+      teamId,
+      viewerId,
+      dataLoader
+    );
     const teamMemberId = toTeamMemberId(teamId, viewerId);
-    const data = {orgId, teamId, teamMemberId, invitationIds, teamInviteNotifications};
+    const data = {
+      orgId,
+      teamId,
+      teamMemberId,
+      invitationIds,
+      teamInviteNotifications
+    };
     teamInviteNotifications.forEach((notification) => {
-      const {userIds: [inviteeUserId]} = notification;
+      const {
+        userIds: [inviteeUserId]
+      } = notification;
       publish(NOTIFICATION, inviteeUserId, AddOrgPayload, data, subOptions);
     });
     publish(ORGANIZATION, viewerId, AddOrgPayload, data, subOptions);
-
 
     return data;
   }

@@ -1,4 +1,3 @@
-
 const printStyles = `
   @media print {
     html,

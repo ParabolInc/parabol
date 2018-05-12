@@ -40,7 +40,8 @@ const JoinIntegrationMutation = (environment, globalId, teamId, onError, onCompl
     },
     optimisticUpdater: (store) => {
       const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId);
-      const payload = store.create(`client:joinIntegration:${tempId++}`, 'JoinIntegrationPayload')
+      const payload = store
+        .create(`client:joinIntegration:${tempId++}`, 'JoinIntegrationPayload')
         .setValue(globalId, 'globalId')
         .setLinkedRecord(teamMemberNode, 'teamMember');
       const viewer = store.get(viewerId);

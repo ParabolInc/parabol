@@ -26,7 +26,6 @@ const handleCompletedRetrospectiveStage = async (stage, meeting, dataLoader) => 
   return {};
 };
 
-
 const handleCompletedStage = async (stage, meeting, dataLoader) => {
   if (meeting.meetingType === RETROSPECTIVE) {
     return handleCompletedRetrospectiveStage(stage, meeting, dataLoader);

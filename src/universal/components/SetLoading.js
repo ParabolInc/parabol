@@ -5,13 +5,13 @@ import PropTypes from 'prop-types';
 export default class SetLoading extends Component {
   static propTypes = {
     setLoading: PropTypes.func.isRequired
-  }
+  };
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.setLoading(true);
   }
 
-  render() {
+  render () {
     return null;
   }
 }

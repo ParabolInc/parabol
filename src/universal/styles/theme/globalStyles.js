@@ -6,7 +6,8 @@ import ui from 'universal/styles/ui';
 const placeholderStyles = makePlaceholderStylesString(ui.placeholderColor);
 
 const fontFaceDefinitions = fontLoader
-  .map((fontFace) => `
+  .map(
+    (fontFace) => `
     @font-face {
       font-family: "${fontFace.fontFamily}";
       src: ${fontFace.src};
@@ -14,7 +15,8 @@ const fontFaceDefinitions = fontLoader
       font-weight: ${fontFace.fontWeight};
       font-stretch: ${fontFace.fontStretch};
     }
-  `)
+  `
+  )
   .join('\n');
 
 export default `

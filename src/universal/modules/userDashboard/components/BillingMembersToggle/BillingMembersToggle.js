@@ -5,7 +5,12 @@ import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 import {matchPath, withRouter} from 'react-router-dom';
 
 const BillingMembersToggle = (props) => {
-  const {history, location: {pathname}, match, orgId} = props;
+  const {
+    history,
+    location: {pathname},
+    match,
+    orgId
+  } = props;
   const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`});
   const activeOrgDetail = areaMatch.params.area || BILLING_PAGE;
   const items = [
@@ -23,9 +28,7 @@ const BillingMembersToggle = (props) => {
     }
   ];
 
-  return (
-    <ToggleNav items={items} />
-  );
+  return <ToggleNav items={items} />;
 };
 
 BillingMembersToggle.propTypes = {

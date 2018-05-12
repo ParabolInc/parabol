@@ -11,9 +11,7 @@ const protocolRelativeUrl = {
   parse: (urlString, parseQueryString, slashesDenoteHost) => {
     if (urlString.startsWith('//')) {
       const urlStringWithProto = `http:${urlString}`;
-      const result = url.parse(
-        urlStringWithProto, parseQueryString, slashesDenoteHost
-      );
+      const result = url.parse(urlStringWithProto, parseQueryString, slashesDenoteHost);
       result.protocol = '//';
       result.href = urlString;
 

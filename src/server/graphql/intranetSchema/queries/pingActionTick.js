@@ -4,7 +4,7 @@ import {requireSU} from 'server/utils/authorization';
 const pingActionTick = {
   type: GraphQLString,
   description: 'Check if this server is alive (an example query).',
-  async resolve(source, args, {authToken}) {
+  async resolve (source, args, {authToken}) {
     requireSU(authToken);
     return 'pong!';
   }

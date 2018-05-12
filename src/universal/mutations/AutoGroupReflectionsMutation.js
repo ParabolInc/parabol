@@ -20,7 +20,7 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation AutoGroupReflectionsMutation($meetingId: ID! $groupingThreshold: Float!) {
+  mutation AutoGroupReflectionsMutation($meetingId: ID!, $groupingThreshold: Float!) {
     autoGroupReflections(meetingId: $meetingId, groupingThreshold: $groupingThreshold) {
       ...AutoGroupReflectionsMutation_team @relay(mask: false)
     }

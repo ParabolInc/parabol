@@ -39,7 +39,8 @@ export const notificationInterfaceFields = {
   },
   orgId: {
     type: GraphQLID,
-    description: '*The unique organization ID for this notification. Can be blank for targeted notifications'
+    description:
+      '*The unique organization ID for this notification. Can be blank for targeted notifications'
   },
   startAt: {
     type: GraphQLISO8601Type,
@@ -57,7 +58,7 @@ export const notificationInterfaceFields = {
 const Notification = new GraphQLInterfaceType({
   name: 'Notification',
   fields: () => notificationInterfaceFields,
-  resolveType(value) {
+  resolveType (value) {
     // type lookup needs to be resolved in a thunk since there is a circular reference when loading
     // alternative to treating it like a DB driver if GCing is an issue
     const resolveTypeLookup = {

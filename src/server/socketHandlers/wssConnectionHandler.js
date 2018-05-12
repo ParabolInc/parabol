@@ -11,7 +11,7 @@ import handleConnect from 'server/socketHandlers/handleConnect';
 import {GRAPHQL_WS} from 'subscriptions-transport-ws';
 
 class ConnectionContext {
-  constructor(socket, authToken, sharedDataLoader) {
+  constructor (socket, authToken, sharedDataLoader) {
     this.authToken = authToken;
     this.availableResubs = [];
     this.cancelKeepAlive = null;
@@ -23,13 +23,15 @@ class ConnectionContext {
   }
 }
 
-export default function connectionHandler(sharedDataLoader) {
-  return async function socketConnectionHandler(socket) {
+export default function connectionHandler (sharedDataLoader) {
+  return async function socketConnectionHandler (socket) {
     const req = socket.upgradeReq;
     const {headers} = req;
     const protocol = headers['sec-websocket-protocol'];
     if (protocol !== GRAPHQL_WS) {
-      sendMessage(socket, GQL_CONNECTION_ERROR, {errors: [{message: 'Invalid protocol'}]});
+      sendMessage(socket, GQL_CONNECTION_ERROR, {
+        errors: [{message: 'Invalid protocol'}]
+      });
       return;
     }
     const {query} = url.parse(req.url, true);
@@ -37,7 +39,9 @@ export default function connectionHandler(sharedDataLoader) {
     try {
       authToken = verify(query.token, Buffer.from(auth0ClientSecret, 'base64'));
     } catch (e) {
-      sendMessage(socket, GQL_CONNECTION_ERROR, {errors: [{message: 'Invalid auth token'}]});
+      sendMessage(socket, GQL_CONNECTION_ERROR, {
+        errors: [{message: 'Invalid auth token'}]
+      });
       socket.close();
       return;
     }

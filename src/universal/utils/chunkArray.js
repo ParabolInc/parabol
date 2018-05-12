@@ -2,7 +2,7 @@
  * Splits an array into chunks of the specified size.
  * E.g. chunkArray([1, 2, 3, 4, 5], 2) === [[1, 2], [3, 4], [5]]
  */
-export default function chunkArray(array, chunkSize) {
+export default function chunkArray (array, chunkSize) {
   if (!Array.isArray(array)) {
     throw new Error('First argument `array` must be an Array.');
   }

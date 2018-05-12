@@ -1,7 +1,5 @@
 exports.up = async (r) => {
-  const tables = [
-    r.tableCreate('GitHubIntegration')
-  ];
+  const tables = [r.tableCreate('GitHubIntegration')];
   try {
     await Promise.all(tables);
   } catch (e) {
@@ -19,9 +17,7 @@ exports.up = async (r) => {
 };
 
 exports.down = async (r) => {
-  const tables = [
-    r.tableDrop('GitHubIntegration')
-  ];
+  const tables = [r.tableDrop('GitHubIntegration')];
   try {
     await Promise.all(tables);
   } catch (e) {

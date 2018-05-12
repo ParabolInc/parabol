@@ -16,7 +16,6 @@ import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
 import Task from 'server/graphql/types/Task';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
-
 const InviteTeamMembersPayload = new GraphQLObjectType({
   name: 'InviteTeamMembersPayload',
   description: 'A list of all the possible outcomes when trying to invite a team member',
@@ -43,7 +42,8 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
     // org leader fields
     removedRequestNotification: {
       type: NotifyRequestNewUser,
-      description: 'A removed request notification if the org leader invited the invitee instead of approving',
+      description:
+        'A removed request notification if the org leader invited the invitee instead of approving',
       resolve: makeResolveNotificationForViewer('-', 'removedRequestNotifications')
     },
     requestNotification: {
@@ -56,7 +56,9 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       type: new GraphQLList(TeamMember),
       description: 'The list of emails that turned out to be reactivated team members',
       resolve: ({reactivatedTeamMemberIds}, args, {dataLoader}) => {
-        if (!reactivatedTeamMemberIds || reactivatedTeamMemberIds.length === 0) return null;
+        if (!reactivatedTeamMemberIds || reactivatedTeamMemberIds.length === 0) {
+          return null;
+        }
         return dataLoader.get('teamMembers').loadMany(reactivatedTeamMemberIds);
       }
     },
@@ -78,15 +80,19 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
     },
     orgApprovalsRemoved: {
       type: new GraphQLList(OrgApproval),
-      description: 'The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval',
+      description:
+        'The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval',
       resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
-        if (!removedOrgApprovalIds || removedOrgApprovalIds.length === 0) return null;
+        if (!removedOrgApprovalIds || removedOrgApprovalIds.length === 0) {
+          return null;
+        }
         return dataLoader.get('orgApprovals').loadMany(removedOrgApprovalIds);
       }
     },
     newSoftTeamMembers: {
       type: new GraphQLList(SoftTeamMember),
-      description: 'The new invitees who have yet to accept the invite or get approved to receive an invite',
+      description:
+        'The new invitees who have yet to accept the invite or get approved to receive an invite',
       resolve: resolveSoftTeamMembers
     },
     unarchivedSoftTasks: {

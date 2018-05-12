@@ -7,7 +7,8 @@ const getNextFacilitatorStage = (facilitatorStageId, teamMemberStageId, phases) 
   const facilitatorOnStage = facilitatorStageId === teamMemberStageId;
   if (!facilitatorOnStage) return facilitatorStageId;
   // get the next stage. if this is the last stage, get the previous one
-  const {stage: nextStage} = findStageAfterId(phases, teamMemberStageId) || findStageBeforeId(phases, teamMemberStageId);
+  const {stage: nextStage} =
+    findStageAfterId(phases, teamMemberStageId) || findStageBeforeId(phases, teamMemberStageId);
   return nextStage;
 };
 /*
@@ -20,7 +21,10 @@ const removeTeamMemberFromNewMeeting = async (teamMemberId, teamId, dataLoader) 
   const {meetingId} = team;
   if (meetingId) {
     // make sure it's a new meeting
-    const newMeeting = await r.table('NewMeeting').get(meetingId).default(null);
+    const newMeeting = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .default(null);
     if (!newMeeting) return false;
     const {facilitatorStageId, phases} = newMeeting;
     const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN);
@@ -38,7 +42,8 @@ const removeTeamMemberFromNewMeeting = async (teamMemberId, teamId, dataLoader) 
       nextStage.viewCount = nextStage.viewCount ? nextStage.viewCount + 1 : 1;
     }
     stages.splice(teamMemberStageIdx, 1);
-    await r.table('NewMeeting')
+    await r
+      .table('NewMeeting')
       .get(meetingId)
       .update({
         facilitatorStageId: nextStageId,

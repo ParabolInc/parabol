@@ -1,7 +1,6 @@
 import {GraphQLID, GraphQLObjectType} from 'graphql';
 import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum';
 
-
 const UserOrg = new GraphQLObjectType({
   name: 'UserOrg',
   description: 'The user/org M:F join, denormalized on the user/org tables',

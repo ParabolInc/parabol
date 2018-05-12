@@ -3,7 +3,7 @@ import React from 'react';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
-import {srOnly} from 'universal/styles/helpers';
+import srOnly from 'universal/styles/helpers/srOnly';
 
 const ProgressDots = (props) => {
   const {currentDot, clickFactory, numCompleted, styles} = props;
@@ -15,12 +15,7 @@ const ProgressDots = (props) => {
       dotNumber === currentDot && styles.progressDotCurrent
     );
     return (
-      <a
-        className={dotStyle}
-        href="#"
-        key={dotNumber}
-        onClick={clickFactory(dotNumber)}
-      >
+      <a className={dotStyle} href="#" key={dotNumber} onClick={clickFactory(dotNumber)}>
         <span className={css(styles.progressDotLabel)}>Step {dotNumber}</span>
       </a>
     );
@@ -32,11 +27,7 @@ const ProgressDots = (props) => {
     }
     return dots;
   };
-  return (
-    <div className={css(styles.progressDotGroup)}>
-      {renderDots()}
-    </div>
-  );
+  return <div className={css(styles.progressDotGroup)}>{renderDots()}</div>;
 };
 
 ProgressDots.propTypes = {

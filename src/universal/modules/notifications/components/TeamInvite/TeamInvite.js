@@ -22,11 +22,21 @@ const TeamInvite = (props) => {
     onError,
     onCompleted
   } = props;
-  const {notificationId, inviter: {inviterName}, team} = notification;
+  const {
+    notificationId,
+    inviter: {inviterName},
+    team
+  } = notification;
   const {teamName} = team;
   const accept = () => {
     submitMutation();
-    AcceptTeamInviteMutation(atmosphere, {notificationId}, {dispatch, history}, onError, onCompleted);
+    AcceptTeamInviteMutation(
+      atmosphere,
+      {notificationId},
+      {dispatch, history},
+      onError,
+      onCompleted
+    );
   };
 
   return (
@@ -80,5 +90,6 @@ export default createFragmentContainer(
       team {
         teamName: name
       }
-    }`
+    }
+  `
 );

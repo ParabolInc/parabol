@@ -2,7 +2,6 @@ import {css} from 'aphrodite-local-styles/no-important';
 import {convertToRaw} from 'draft-js';
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {textOverflow} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
@@ -14,12 +13,18 @@ import {createFragmentContainer} from 'react-relay';
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
 import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
 import MenuItemHR from 'universal/modules/menu/components/MenuItem/MenuItemHR';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const statusItems = labels.taskStatus.slugs.slice();
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToTask = (tag) => () => {
-    const {area, atmosphere, task: {taskId}, editorState} = this.props;
+    const {
+      area,
+      atmosphere,
+      task: {taskId},
+      editorState
+    } = this.props;
     const contentState = editorState.getCurrentContent();
     const newContent = addTagToTask(contentState, tag);
     const rawContentStr = JSON.stringify(convertToRaw(newContent));
@@ -31,7 +36,11 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   deleteOutcome = () => {
-    const {atmosphere, onComplete, task: {taskId, teamId}} = this.props;
+    const {
+      atmosphere,
+      onComplete,
+      task: {taskId, teamId}
+    } = this.props;
     DeleteTaskMutation(atmosphere, taskId, teamId);
     if (onComplete) {
       onComplete();
@@ -39,58 +48,85 @@ class OutcomeCardStatusMenu extends Component {
   };
 
   itemFactory = () => {
-    const {closePortal, isAgenda, isPrivate, removeContentTag, styles, task: {taskStatus}} = this.props;
-    const listItems = statusItems
-      .filter((status) => status !== taskStatus)
-      .map((status) => {
-        const {color, label} = labels.taskStatus[status];
-        return (
-          <MenuItemWithShortcuts
-            hasDotIcon
-            iconColor={color}
-            key={status}
-            label={<div className={css(styles.label)}>{`Move to ${label}`}</div>}
-            onClick={this.handleTaskUpdateFactory(status)}
-            closePortal={closePortal}
-          />
-        );
-      });
+    const {
+      closePortal,
+      isAgenda,
+      isPrivate,
+      removeContentTag,
+      styles,
+      task: {taskStatus}
+    } = this.props;
+    const listItems = statusItems.filter((status) => status !== taskStatus).map((status) => {
+      const {color, label} = labels.taskStatus[status];
+      return (
+        <MenuItemWithShortcuts
+          hasDotIcon
+          iconColor={color}
+          key={status}
+          label={<div className={css(styles.label)}>{`Move to ${label}`}</div>}
+          onClick={this.handleTaskUpdateFactory(status)}
+          closePortal={closePortal}
+        />
+      );
+    });
     listItems.push(<MenuItemHR key="HR1" />);
-    listItems.push(isPrivate ?
-      (<MenuItemWithShortcuts
-        hasDotIcon
-        iconColor={labels.taskStatus.private.color}
-        key="private"
-        label={<div className={css(styles.label)}>{'Remove '}<b>{'#private'}</b></div>}
-        onClick={removeContentTag('private')}
-        closePortal={closePortal}
-      />) :
-      (<MenuItemWithShortcuts
-        hasDotIcon
-        iconColor={labels.taskStatus.private.color}
-        key="private"
-        label={<div className={css(styles.label)}>{'Set as '}<b>{'#private'}</b></div>}
-        onClick={this.makeAddTagToTask('#private')}
-        closePortal={closePortal}
-      />)
+    listItems.push(
+      isPrivate ? (
+        <MenuItemWithShortcuts
+          hasDotIcon
+          iconColor={labels.taskStatus.private.color}
+          key="private"
+          label={
+            <div className={css(styles.label)}>
+              {'Remove '}
+              <b>{'#private'}</b>
+            </div>
+          }
+          onClick={removeContentTag('private')}
+          closePortal={closePortal}
+        />
+      ) : (
+        <MenuItemWithShortcuts
+          hasDotIcon
+          iconColor={labels.taskStatus.private.color}
+          key="private"
+          label={
+            <div className={css(styles.label)}>
+              {'Set as '}
+              <b>{'#private'}</b>
+            </div>
+          }
+          onClick={this.makeAddTagToTask('#private')}
+          closePortal={closePortal}
+        />
+      )
     );
-    listItems.push(isAgenda ?
-      (<MenuItemWithShortcuts
-        hasDotIcon
-        iconColor={ui.colorError}
-        key="delete"
-        label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
-        onClick={this.deleteOutcome}
-        closePortal={closePortal}
-      />) :
-      (<MenuItemWithShortcuts
-        hasDotIcon
-        iconColor={labels.taskStatus.archived.color}
-        key="archive"
-        label={<div className={css(styles.label)}>{'Set as '}<b>{'#archived'}</b></div>}
-        onClick={this.makeAddTagToTask('#archived')}
-        closePortal={closePortal}
-      />));
+    listItems.push(
+      isAgenda ? (
+        <MenuItemWithShortcuts
+          hasDotIcon
+          iconColor={ui.colorError}
+          key="delete"
+          label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
+          onClick={this.deleteOutcome}
+          closePortal={closePortal}
+        />
+      ) : (
+        <MenuItemWithShortcuts
+          hasDotIcon
+          iconColor={labels.taskStatus.archived.color}
+          key="archive"
+          label={
+            <div className={css(styles.label)}>
+              {'Set as '}
+              <b>{'#archived'}</b>
+            </div>
+          }
+          onClick={this.makeAddTagToTask('#archived')}
+          closePortal={closePortal}
+        />
+      )
+    );
     return listItems;
   };
 
@@ -110,14 +146,10 @@ class OutcomeCardStatusMenu extends Component {
     }
   };
 
-
-  render() {
+  render () {
     const {closePortal} = this.props;
     return (
-      <MenuWithShortcuts
-        ariaLabel={'Change the status of the task'}
-        closePortal={closePortal}
-      >
+      <MenuWithShortcuts ariaLabel={'Change the status of the task'} closePortal={closePortal}>
         {this.itemFactory()}
       </MenuWithShortcuts>
     );
@@ -153,5 +185,6 @@ export default createFragmentContainer(
       taskId: id
       taskStatus: status
       teamId
-    }`
+    }
+  `
 );

@@ -5,7 +5,15 @@ import notificationTemplate from 'server/__tests__/utils/notificationTemplate';
 import getRethink from 'server/database/rethinkDriver';
 import {ADD_USER, INVITATION_LIFESPAN, PENDING} from 'server/utils/serverConstants';
 import shortid from 'shortid';
-import {ACTIVE, ADDED_USERS, BILLING_LEADER, CHECKIN, LOBBY, PERSONAL, PRO} from 'universal/utils/constants';
+import {
+  ACTIVE,
+  ADDED_USERS,
+  BILLING_LEADER,
+  CHECKIN,
+  LOBBY,
+  PERSONAL,
+  PRO
+} from 'universal/utils/constants';
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy';
@@ -20,7 +28,7 @@ const meetingTask = ({id, content, status, teamMemberId}) => ({
 });
 
 class MockDB {
-  constructor() {
+  constructor () {
     this.db = {
       agendaItem: [],
       invitation: [],
@@ -52,24 +60,26 @@ class MockDB {
     });
   }
 
-  closeout(table, doc) {
+  closeout (table, doc) {
     this.db[table] = this.db[table] || [];
     this.db[table].push(doc);
     this.context[table] = doc;
     return this;
   }
 
-  init(template = {}) {
+  init (template = {}) {
     const orgId = shortid.generate();
     // underscore for a static seed based on the first char
     const teamId = `_${shortid.generate()}`;
     // this.context.team = {id: shortid.generate()};
     const users = testUsers.map((user, idx) => ({
       ...user,
-      userOrgs: [{
-        id: orgId,
-        role: idx === 0 ? BILLING_LEADER : null
-      }]
+      userOrgs: [
+        {
+          id: orgId,
+          role: idx === 0 ? BILLING_LEADER : null
+        }
+      ]
     }));
     this.newTeam({id: teamId, orgId});
     users.forEach(this.newUser.bind(this));
@@ -87,14 +97,20 @@ class MockDB {
     }));
     if (template.plan === PRO) {
       const creditCard = creditCardByToken.tok_4012888888881881;
-      this.newOrg({id: orgId, orgUsers, stripeId: true, stripeSubscriptionId: true, creditCard});
+      this.newOrg({
+        id: orgId,
+        orgUsers,
+        stripeId: true,
+        stripeSubscriptionId: true,
+        creditCard
+      });
     } else {
       this.newOrg({id: orgId, orgUsers});
     }
     return this;
   }
 
-  newAgendaItem(overrides = {}) {
+  newAgendaItem (overrides = {}) {
     const teamMemberId = this.context.teamMember.id;
     const [userId, teamId] = teamMemberId.split('::');
     const table = this.db.agendaItem;
@@ -113,7 +129,7 @@ class MockDB {
     });
   }
 
-  newInvitation(overrides = {}) {
+  newInvitation (overrides = {}) {
     const invitee = newInvitee();
     const table = this.db.invitation;
     return this.closeout('invitation', {
@@ -132,7 +148,7 @@ class MockDB {
     });
   }
 
-  newInvoice(overrides = {}) {
+  newInvoice (overrides = {}) {
     const {id: orgId, name: orgName, picture} = this.context.organization;
     const addedUsersLineId = shortid.generate();
     return this.closeout('invoice', {
@@ -140,27 +156,32 @@ class MockDB {
       amountDue: 500,
       createdAt: new Date(__anHourAgo),
       total: 500,
-      billingLeaderEmails:
-        this.db.user
-          .filter((user) => user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER))
-          .map((user) => user.email),
+      billingLeaderEmails: this.db.user
+        .filter((user) =>
+          user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER)
+        )
+        .map((user) => user.email),
       creditCard: this.context.organization.creditCard,
       endAt: new Date(__anHourAgo),
       invoiceDate: new Date(__anHourAgo),
-      lines: [{
-        id: addedUsersLineId,
-        amount: 10,
-        details: [{
-          id: shortid.generate(),
+      lines: [
+        {
+          id: addedUsersLineId,
           amount: 10,
-          email: this.db.user[7].email,
-          endAt: new Date(__anHourAgo),
-          startAt: new Date(__anHourAgo - 100),
-          parentId: addedUsersLineId
-        }],
-        quantity: 1,
-        type: ADDED_USERS
-      }],
+          details: [
+            {
+              id: shortid.generate(),
+              amount: 10,
+              email: this.db.user[7].email,
+              endAt: new Date(__anHourAgo),
+              startAt: new Date(__anHourAgo - 100),
+              parentId: addedUsersLineId
+            }
+          ],
+          quantity: 1,
+          type: ADDED_USERS
+        }
+      ],
       nextMonthCharges: 1000,
       orgId,
       orgName,
@@ -173,7 +194,7 @@ class MockDB {
     });
   }
 
-  newInvoiceItemHook(overrides = {}) {
+  newInvoiceItemHook (overrides = {}) {
     return this.closeout('invoiceItemHook', {
       id: shortid.generate(),
       type: ADD_USER,
@@ -184,14 +205,15 @@ class MockDB {
     });
   }
 
-  newMeeting(overrides, template = {}) {
+  newMeeting (overrides, template = {}) {
     const {inProgress, activeFacilitatorIdx = 0} = template;
     const meetingId = shortid.generate();
     const teamId = this.context.team.id;
     const baseMeeting = {
       id: meetingId,
       createdAt: inProgress ? new Date() : new Date(__anHourAgo),
-      meetingNumber: this.db.meeting.filter((meeting) => meeting.teamId === this.context.team).length + 1,
+      meetingNumber:
+        this.db.meeting.filter((meeting) => meeting.teamId === this.context.team).length + 1,
       teamId,
       teamName: this.context.team.name,
       ...overrides
@@ -199,15 +221,29 @@ class MockDB {
     // 3 agenda items, #1 has 1 private task, #2 has 1 task, #3 has 1 of each
     const tasks = [];
     this.newAgendaItem({isComplete: true});
-    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
+    this.newTask({
+      agendaId: this.context.agendaItem.id,
+      sortOrder: undefined,
+      tags: ['private']
+    });
     this.teamMember(1);
     this.newAgendaItem({isComplete: true});
-    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    this.newTask({
+      agendaId: this.context.agendaItem.id,
+      sortOrder: undefined
+    });
     tasks.push(meetingTask(this.context.task));
     this.teamMember(2);
     this.newAgendaItem({isComplete: true});
-    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined, tags: ['private']});
-    this.newTask({agendaId: this.context.agendaItem.id, sortOrder: undefined});
+    this.newTask({
+      agendaId: this.context.agendaItem.id,
+      sortOrder: undefined,
+      tags: ['private']
+    });
+    this.newTask({
+      agendaId: this.context.agendaItem.id,
+      sortOrder: undefined
+    });
     tasks.push(meetingTask(this.context.task));
     if (inProgress) {
       const week = getWeekOfYear(new Date());
@@ -242,7 +278,7 @@ class MockDB {
     return this.closeout('meeting', baseMeeting);
   }
 
-  newNotification(overrides = {}, template = {}) {
+  newNotification (overrides = {}, template = {}) {
     return this.closeout('notification', {
       id: `${template.type}|${shortid.generate()}`,
       startAt: new Date(__anHourAgo + this.db.notification.length),
@@ -253,7 +289,7 @@ class MockDB {
     });
   }
 
-  newOrg(overrides = {}) {
+  newOrg (overrides = {}) {
     const anHourAgo = new Date(__anHourAgo);
     const {id = shortid.generate()} = this.context.organizaton || {};
     const newOverrides = {...overrides};
@@ -275,18 +311,22 @@ class MockDB {
       createdAt: anHourAgo,
       creditCard: {},
       name: 'The Averagers, Inc.',
-      orgUsers: this.context.user ? [{
-        id: this.context.user.id,
-        role: BILLING_LEADER,
-        inactive: false
-      }] : [],
+      orgUsers: this.context.user
+        ? [
+          {
+            id: this.context.user.id,
+            role: BILLING_LEADER,
+            inactive: false
+          }
+        ]
+        : [],
       updatedAt: anHourAgo,
       periodStart: anHourAgo,
       ...newOverrides
     });
   }
 
-  newOrgApproval(overrides = {}) {
+  newOrgApproval (overrides = {}) {
     const anHourAgo = new Date(__anHourAgo);
     return this.closeout('orgApproval', {
       id: shortid.generate(),
@@ -300,7 +340,7 @@ class MockDB {
     });
   }
 
-  newTask(overrides = {}) {
+  newTask (overrides = {}) {
     const teamMemberId = this.context.teamMember.id;
     const [userId] = teamMemberId.split('::');
     const teamId = this.context.team.id;
@@ -321,8 +361,10 @@ class MockDB {
     });
   }
 
-  newTaskHistory(overrides = {}) {
-    const {task: {id, content, assigneeId, status, updatedAt}} = this.context;
+  newTaskHistory (overrides = {}) {
+    const {
+      task: {id, content, assigneeId, status, updatedAt}
+    } = this.context;
     return this.closeout('taskHistory', {
       id: `${id}::${shortid.generate()}`,
       taskId: id,
@@ -334,7 +376,7 @@ class MockDB {
     });
   }
 
-  newSoftTeamMember(overrides = {}) {
+  newSoftTeamMember (overrides = {}) {
     const table = this.db.softTeamMember;
     return this.closeout('softTeamMember', {
       id: shortid.generate(),
@@ -347,7 +389,7 @@ class MockDB {
     });
   }
 
-  newTeam(overrides = {}) {
+  newTeam (overrides = {}) {
     const id = shortid.generate();
     const orgId = shortid.generate();
     return this.closeout('team', {
@@ -367,7 +409,7 @@ class MockDB {
     });
   }
 
-  newTeamMember(overrides = {}) {
+  newTeamMember (overrides = {}) {
     return this.closeout('teamMember', {
       id: `${this.context.user.id}::${this.context.team.id}`,
       isLead: false,
@@ -382,7 +424,7 @@ class MockDB {
     });
   }
 
-  newUser(overrides = {}) {
+  newUser (overrides = {}) {
     const anHourAgo = new Date(__anHourAgo);
     const {id: orgId = shortid.generate()} = this.context.organization || {};
     const {id: teamId = shortid.generate()} = this.context.team || {};
@@ -400,16 +442,18 @@ class MockDB {
       preferredName: overrides.name,
       tms: [teamId],
       updatedAt: anHourAgo,
-      userOrgs: [{
-        id: orgId,
-        role: null
-      }],
+      userOrgs: [
+        {
+          id: orgId,
+          role: null
+        }
+      ],
       welcomeSentAt: anHourAgo,
       ...overrides
     });
   }
 
-  async run() {
+  async run () {
     const r = getRethink();
     const tables = Object.keys(this.db).map((name) => name[0].toUpperCase() + name.substr(1));
     const docsToInsert = Object.values(this.db);
@@ -425,7 +469,7 @@ class MockDB {
   }
 
   // sugar so we don't have to call run all the time
-  then(resolve, reject) {
+  then (resolve, reject) {
     return this.run().then(resolve, reject);
   }
 }

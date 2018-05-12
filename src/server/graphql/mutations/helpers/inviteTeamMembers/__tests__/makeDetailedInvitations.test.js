@@ -83,4 +83,3 @@ describe('makeDetailedInvitations', () => {
     expect(result[1].isApproved).toEqual(false);
   });
 });
-

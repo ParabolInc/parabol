@@ -12,7 +12,7 @@ type Sortable = {
  * Computes the sort order of a task to be sandwiched between
  * `target` and `bounding`.
  */
-export default function sortOrderBetween(
+export default function sortOrderBetween (
   target: ?Sortable,
   bounding: ?Sortable,
   toInsert: ?Sortable,
@@ -27,7 +27,7 @@ export default function sortOrderBetween(
     throw new Error('`target` cannot be null if `bounding` is not null');
   }
   if (bounding == null) {
-    return target.sortOrder + ((SORT_STEP + dndNoise()) * (before ? 1 : -1));
+    return target.sortOrder + (SORT_STEP + dndNoise()) * (before ? 1 : -1);
   }
   return toInsert && toInsert.id === bounding.id
     ? bounding.sortOrder

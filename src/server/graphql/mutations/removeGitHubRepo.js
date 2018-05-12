@@ -10,7 +10,6 @@ import {sendTeamAccessError, sendTeamLeadAccessError} from 'server/utils/authori
 import {sendAlreadyRemovedIntegrationError} from 'server/utils/alreadyMutatedErrors';
 import {sendGitHubProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
-
 export default {
   name: 'RemoveGitHubRepo',
   description: 'Remove a github repo integration from a team',
@@ -27,19 +26,31 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     const integration = await r.table(GITHUB).get(id);
-    if (!integration) return sendGitHubProviderNotFoundError(authToken, {globalId: githubGlobalId});
+    if (!integration) {
+      return sendGitHubProviderNotFoundError(authToken, {
+        globalId: githubGlobalId
+      });
+    }
     const {teamId, isActive, userIds, nameWithOwner} = integration;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
-    if (!isActive) return sendAlreadyRemovedIntegrationError(authToken, githubGlobalId);
+    if (!isActive) {
+      return sendAlreadyRemovedIntegrationError(authToken, githubGlobalId);
+    }
 
     if (!userIds.includes(viewerId)) {
-      if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
+      if (!(await isTeamLead(viewerId, teamId))) {
+        return sendTeamLeadAccessError(authToken, teamId);
+      }
     }
 
     // RESOLUTION
-    await r.table(GITHUB).get(id)
+    await r
+      .table(GITHUB)
+      .get(id)
       .update({
         isActive: false,
         userIds: []
@@ -50,7 +61,10 @@ export default {
       deletedId: githubGlobalId,
       archivedTaskIds
     };
-    getPubSub().publish(`githubRepoRemoved.${teamId}`, {githubRepoRemoved, mutatorId});
+    getPubSub().publish(`githubRepoRemoved.${teamId}`, {
+      githubRepoRemoved,
+      mutatorId
+    });
     return githubRepoRemoved;
   }
 };

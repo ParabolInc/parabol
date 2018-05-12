@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay';
 
 graphql`
-  fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload{
+  fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload {
     organization {
       creditCard {
         brand
@@ -14,7 +14,7 @@ graphql`
 `;
 
 graphql`
-  fragment UpdateCreditCardMutation_team on UpdateCreditCardPayload{
+  fragment UpdateCreditCardMutation_team on UpdateCreditCardPayload {
     teamsUpdated {
       isPaid
       updatedAt

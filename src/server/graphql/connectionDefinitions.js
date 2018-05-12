@@ -2,11 +2,11 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
 import PageInfo from 'server/graphql/types/PageInfo';
 
-function resolveMaybeThunk(thingOrThunk) {
+function resolveMaybeThunk (thingOrThunk) {
   return typeof thingOrThunk === 'function' ? thingOrThunk() : thingOrThunk;
 }
 
-export default function connectionDefinitions(config) {
+export default function connectionDefinitions (config) {
   const {nodeType} = config;
   const name = config.name || nodeType.name;
   const edgeFields = config.edgeFields || {};
@@ -27,7 +27,7 @@ export default function connectionDefinitions(config) {
         resolve: resolveCursor,
         description: 'A cursor for use in pagination'
       },
-      ...(resolveMaybeThunk(edgeFields))
+      ...resolveMaybeThunk(edgeFields)
     })
   });
 
@@ -43,7 +43,7 @@ export default function connectionDefinitions(config) {
         type: new GraphQLList(edgeType),
         description: 'A list of edges.'
       },
-      ...(resolveMaybeThunk(connectionFields))
+      ...resolveMaybeThunk(connectionFields)
     })
   });
   return {edgeType, connectionType};

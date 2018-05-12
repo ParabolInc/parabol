@@ -1,6 +1,6 @@
 import {WebAuth} from 'auth0-js/build/auth0';
 
-export default function getWebAuth() {
+export default function getWebAuth () {
   if (typeof __CLIENT__ !== 'undefined' && __CLIENT__) {
     return new WebAuth({
       domain: __ACTION__.auth0Domain,

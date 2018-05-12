@@ -2,16 +2,16 @@ import PropTypes from 'prop-types';
 import {Children, Component} from 'react';
 
 export default class ThemeProvider extends Component {
-  constructor(props, context) {
+  constructor (props, context) {
     super(props, context);
     this.customTheme = props.customTheme;
   }
 
-  getChildContext() {
+  getChildContext () {
     return {customTheme: this.customTheme};
   }
 
-  render() {
+  render () {
     return Children.only(this.props.children);
   }
 }

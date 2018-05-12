@@ -5,17 +5,15 @@ import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import UserColumnsContainer from 'universal/modules/userDashboard/containers/UserColumns/UserColumnsContainer';
 import UserTasksHeaderContainer from 'universal/modules/userDashboard/containers/UserTasksHeader/UserTasksHeaderContainer';
-import {
-  DashContent,
-  DashHeader,
-  DashHeaderInfo,
-  DashMain
-} from 'universal/components/Dashboard';
 import UserDashSearch from 'universal/modules/userDashboard/components/UserDashSearch/UserDashSearch';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
 import Helmet from 'react-helmet';
 import makeDateString from 'universal/utils/makeDateString';
 import {createFragmentContainer} from 'react-relay';
+import DashMain from 'universal/components/Dashboard/DashMain';
+import DashHeader from 'universal/components/Dashboard/DashHeader';
+import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo';
+import DashContent from 'universal/components/Dashboard/DashContent';
 
 const LayoutBlock = styled('div')({
   display: 'flex',
@@ -54,9 +52,11 @@ const UserDashMain = (props) => {
         <DashHeaderInfo>
           <UserDashSearch viewer={viewer} />
           <HeaderCopy>
-            {makeDateString(new Date(), {showDay: true})}<br />
+            {makeDateString(new Date(), {showDay: true})}
+            <br />
             <RallyLink>
-              {getRallyLink()}{'!'}
+              {getRallyLink()}
+              {'!'}
             </RallyLink>
           </HeaderCopy>
         </DashHeaderInfo>

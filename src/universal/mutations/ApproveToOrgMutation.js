@@ -10,7 +10,6 @@ import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamIn
 import filterNodesInConn from 'universal/utils/relay/filterNodesInConn';
 import getInProxy from 'universal/utils/relay/getInProxy';
 
-
 graphql`
   fragment ApproveToOrgMutation_organization on ApproveToOrgPayload {
     removedRequestNotifications {
@@ -58,7 +57,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...ApproveToOrgMutation_organization @relay(mask: false)    
+      ...ApproveToOrgMutation_organization @relay(mask: false)
       ...ApproveToOrgMutation_orgApproval @relay(mask: false)
       ...ApproveToOrgMutation_invitation @relay(mask: false)
     }
@@ -71,20 +70,22 @@ const popInviteeApprovedToast = (payload, {dispatch, environment}) => {
   if (!inviteeEmails || inviteeEmails.length === 0) return;
   // the server reutrns a notification for each team the invitee was approved to, but we only need 1 toast
   const [inviteeEmail] = inviteeEmails;
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'Approved!',
-    message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`,
-    action: {
-      label: 'Great!',
-      callback: () => {
-        const notificationIds = getInProxy(notifications, 'id');
-        notificationIds.forEach((notificationId) => {
-          ClearNotificationMutation(environment, notificationId);
-        });
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'Approved!',
+      message: `${inviteeEmail} has been approved by your organization. We just sent them an invitation.`,
+      action: {
+        label: 'Great!',
+        callback: () => {
+          const notificationIds = getInProxy(notifications, 'id');
+          notificationIds.forEach((notificationId) => {
+            ClearNotificationMutation(environment, notificationId);
+          });
+        }
       }
-    }
-  }));
+    })
+  );
 };
 
 export const approveToOrgOrganizationUpdater = (payload, store, viewerId) => {

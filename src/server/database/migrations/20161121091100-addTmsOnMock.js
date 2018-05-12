@@ -13,10 +13,12 @@ const engineeringTeam = [
 ];
 exports.up = async (r) => {
   const fields = [
-    r.table('User')
+    r
+      .table('User')
       .getAll(r.args(engineeringTeam), {index: 'id'})
       .update({tms: ['team123', 'team456']}),
-    r.table('User')
+    r
+      .table('User')
       .get(productTeam[0])
       .update({tms: ['team123']})
   ];
@@ -25,7 +27,8 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   const fields = [
-    r.table('User')
+    r
+      .table('User')
       .getAll(r.args(productTeam))
       .update({tms: []})
   ];

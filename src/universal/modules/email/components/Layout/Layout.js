@@ -36,9 +36,7 @@ const Layout = (props) => {
             <table align="center" style={innerStyle} width="600">
               <tbody>
                 <tr>
-                  <td style={cellStyle}>
-                    {props.children}
-                  </td>
+                  <td style={cellStyle}>{props.children}</td>
                 </tr>
               </tbody>
             </table>

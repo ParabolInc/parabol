@@ -1,6 +1,8 @@
 import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
-import TeamMeetingSettings, {teamMeetingSettingsFields} from 'server/graphql/types/TeamMeetingSettings';
+import TeamMeetingSettings, {
+  teamMeetingSettingsFields
+} from 'server/graphql/types/TeamMeetingSettings';
 import {RETRO_PHASE_ITEM} from 'universal/utils/constants';
 
 const RetrospectiveMeetingSettings = new GraphQLObjectType({
@@ -23,7 +25,8 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType({
     },
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),
-      description: 'The maximum number of votes a team member can vote for a single reflection group'
+      description:
+        'The maximum number of votes a team member can vote for a single reflection group'
     }
   })
 });

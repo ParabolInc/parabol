@@ -1,5 +1,9 @@
 import {
-  GQL_CONNECTION_KEEP_ALIVE, GQL_CONNECTION_TERMINATE, GQL_DATA, GQL_ERROR, GQL_START,
+  GQL_CONNECTION_KEEP_ALIVE,
+  GQL_CONNECTION_TERMINATE,
+  GQL_DATA,
+  GQL_ERROR,
+  GQL_START,
   GQL_STOP
 } from 'universal/utils/constants';
 import handleDisconnect from 'server/socketHandlers/handleDisconnect';

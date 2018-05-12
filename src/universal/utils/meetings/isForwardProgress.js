@@ -1,9 +1,12 @@
 // @flow
 
-
 // import type {NewMeetingPhase} from 'universal/types/schema.flow';
 
-const isForwardProgress = (phases: $ReadOnlyArray<Object>, stageId: string, nextStageId: string) => {
+const isForwardProgress = (
+  phases: $ReadOnlyArray<Object>,
+  stageId: string,
+  nextStageId: string
+) => {
   if (!phases || !stageId || !nextStageId) return false;
   let stageFound = false;
   for (let ii = 0; ii < phases.length; ii++) {

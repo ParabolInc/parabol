@@ -1,6 +1,8 @@
 // import storeDebugger from 'relay-runtime/lib/RelayStoreProxyDebugger';
 import {
-  removeIntegrations, removeProviderUpdater, removeUserFromIntegrations,
+  removeIntegrations,
+  removeProviderUpdater,
+  removeUserFromIntegrations,
   updateProviderMap
 } from 'universal/mutations/RemoveProviderMutation';
 

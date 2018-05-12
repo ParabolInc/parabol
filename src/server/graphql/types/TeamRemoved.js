@@ -8,7 +8,8 @@ const TeamRemoved = new GraphQLObjectType({
   fields: () => ({
     notification: {
       type: TeamRemovedNotification,
-      description: 'The notification that a team was just archived or the viewer was just kicked out',
+      description:
+        'The notification that a team was just archived or the viewer was just kicked out',
       resolve: resolveNotification
     },
     team: {

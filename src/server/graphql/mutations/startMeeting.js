@@ -20,14 +20,16 @@ export default {
       description: 'The team starting the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
     // AUTH
     const userId = getUserId(authToken);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const facilitatorId = toTeamMemberId(teamId, userId);
@@ -38,7 +40,8 @@ export default {
 
     const now = new Date();
     const meetingId = shortid.generate();
-    const meetingCount = await r.table('Meeting')
+    const meetingCount = await r
+      .table('Meeting')
       .getAll(teamId, {index: 'teamId'})
       .count()
       .default(0)
@@ -55,7 +58,10 @@ export default {
       meetingPhaseItem: 1
     };
     await r({
-      team: r.table('Team').get(teamId).update(updatedTeam),
+      team: r
+        .table('Team')
+        .get(teamId)
+        .update(updatedTeam),
       meeting: r.table('Meeting').insert({
         id: meetingId,
         createdAt: now,

@@ -28,14 +28,16 @@ const clientIds = {
 };
 
 let cachedPage;
-export default function createSSR(req, res) {
+export default function createSSR (req, res) {
   const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore);
   const store = finalCreateStore(makeReducer(), {});
   if (process.env.NODE_ENV === 'production') {
     if (!cachedPage) {
       // eslint-disable-next-line global-require
       const assets = require('../../build/assets.json');
-      const htmlString = renderToStaticMarkup(<Html store={store} assets={assets} clientIds={clientIds} />);
+      const htmlString = renderToStaticMarkup(
+        <Html store={store} assets={assets} clientIds={clientIds} />
+      );
       cachedPage = `<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`);
     }
     res.send(cachedPage);
@@ -45,7 +47,9 @@ export default function createSSR(req, res) {
      * snippet here. For production use, refer to the Html.js component.
      */
     const segKey = process.env.SEGMENT_WRITE_KEY;
-    const segmentSnippet = segKey && `
+    const segmentSnippet =
+      segKey &&
+      `
     <script>
       ${makeSegmentSnippet.min({
     host: 'cdn.segment.com',

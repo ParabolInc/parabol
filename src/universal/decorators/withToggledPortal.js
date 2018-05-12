@@ -16,14 +16,8 @@ const withToggledPortal = (ComposedComponent) => {
       toggle: PropTypes.any.isRequired,
       LoadableComponent: PropTypes.func.isRequired,
       queryVars: PropTypes.object,
-      maxWidth: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-      ]),
-      maxHeight: PropTypes.oneOfType([
-        PropTypes.number,
-        PropTypes.string
-      ]),
+      maxWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      maxHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
       setOriginRef: PropTypes.func
     };
     state = {
@@ -31,12 +25,12 @@ const withToggledPortal = (ComposedComponent) => {
       isClosing: false
     };
 
-    componentWillMount() {
+    componentWillMount () {
       const {toggle} = this.props;
       this.smartToggle = this.makeSmartToggle(toggle);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps (nextProps) {
       const {toggle} = nextProps;
       if (this.props.toggle !== toggle) {
         this.smartToggle = this.makeSmartToggle(toggle);
@@ -69,7 +63,7 @@ const withToggledPortal = (ComposedComponent) => {
       }
     };
 
-    makeSmartToggle(toggle) {
+    makeSmartToggle (toggle) {
       // strings are plain DOM nodes
       return React.cloneElement(toggle, {
         'aria-haspopup': 'true',
@@ -105,7 +99,7 @@ const withToggledPortal = (ComposedComponent) => {
       });
     }
 
-    render() {
+    render () {
       const {isClosing, isOpen} = this.state;
       return (
         <React.Fragment>

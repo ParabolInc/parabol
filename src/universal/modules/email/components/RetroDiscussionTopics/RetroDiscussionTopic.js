@@ -49,18 +49,17 @@ const reflectionCard = {
 type Reflection = {
   id: string,
   content: string
-}
+};
 type Topic = {
   reflections: Array<Reflection>,
   title: string,
   voteCount: number
-}
+};
 
 type Props = {
-  imageSource: | 'local'
-    | 'static',
+  imageSource: 'local' | 'static',
   topic: Topic
-}
+};
 
 const RetroDiscussionTopic = (props: Props) => {
   const {imageSource, topic} = props;
@@ -80,7 +79,9 @@ const RetroDiscussionTopic = (props: Props) => {
         </tr>
         <tr>
           <td style={votesBlock}>
-            {voteRange.map((idx) => <img key={idx} height="10" src={src} style={voteIcon} width="14" />)}
+            {voteRange.map((idx) => (
+              <img key={idx} height="10" src={src} style={voteIcon} width="14" />
+            ))}
           </td>
         </tr>
         <tr>

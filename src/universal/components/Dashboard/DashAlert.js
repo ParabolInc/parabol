@@ -6,22 +6,12 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const DashAlert = (props) => {
   const {children, styles} = props;
-  return (
-    <div className={css(styles.bar)}>
-      {children}
-    </div>
-  );
+  return <div className={css(styles.bar)}>{children}</div>;
 };
 
 DashAlert.propTypes = {
   children: PropTypes.any,
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'warm',
-    'dark',
-    'mid',
-    'light'
-  ]),
+  colorPalette: PropTypes.oneOf(['cool', 'warm', 'dark', 'mid', 'light']),
   styles: PropTypes.object
 };
 

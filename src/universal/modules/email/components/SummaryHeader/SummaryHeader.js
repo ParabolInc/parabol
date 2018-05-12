@@ -54,7 +54,11 @@ const SummaryHeader = (props) => {
             <td style={blockStyle}>
               <div style={labelStyles}>{'Meeting Summary'}</div>
               <div style={teamNameStyle}>{teamName}</div>
-              <div style={meetingDateStyle}>{`${meetingLabel} Meeting #${meetingNumber}`}{' • '}{meetingDate}</div>
+              <div style={meetingDateStyle}>
+                {`${meetingLabel} Meeting #${meetingNumber}`}
+                {' • '}
+                {meetingDate}
+              </div>
             </td>
           </tr>
         </tbody>

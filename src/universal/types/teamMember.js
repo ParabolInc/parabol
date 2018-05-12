@@ -13,8 +13,7 @@ export type TeamMemberID = string;
 // export const getUserId = (tmId: TeamMemberID): UserID =>
 //  tmId.split('::')[0];
 
-export const getTeamId = (tmId: TeamMemberID): TeamID =>
-  tmId.split('::')[1];
+export const getTeamId = (tmId: TeamMemberID): TeamID => tmId.split('::')[1];
 
 export const getIds = (tmId: TeamMemberID): [UserID, TeamID] => {
   const [userId, teamId] = tmId.split('::');

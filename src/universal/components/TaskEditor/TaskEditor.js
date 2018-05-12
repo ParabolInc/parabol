@@ -34,7 +34,7 @@ class TaskEditor extends Component {
 
   state = {};
 
-  componentDidMount() {
+  componentDidMount () {
     const {editorState} = this.props;
     if (!editorState.getCurrentContent().hasText()) {
       setTimeout(() => {
@@ -128,7 +128,7 @@ class TaskEditor extends Component {
       return handleBeforeInput(char);
     }
     return undefined;
-  }
+  };
 
   handlePastedText = (text) => {
     if (text) {
@@ -146,14 +146,11 @@ class TaskEditor extends Component {
     return 'not-handled';
   };
 
-  render() {
+  render () {
     const {editorState, readOnly, renderModal, styles, setEditorRef} = this.props;
     // console.log('es', Editor.getClipboard())
     const noText = !editorState.getCurrentContent().hasText();
-    const rootStyles = css(
-      styles.root,
-      noText && styles.rootNoText
-    );
+    const rootStyles = css(styles.root, noText && styles.rootNoText);
     const placeholder = 'Describe what “Done” looks like';
     return (
       <div className={rootStyles}>
@@ -207,15 +204,5 @@ const styleThunk = () => ({
 });
 
 export default withSuggestions(
-  withEmojis(
-    withLinks(
-      withMarkdown(
-        withKeyboardShortcuts(
-          withStyles(styleThunk)(
-            TaskEditor
-          )
-        )
-      )
-    )
-  )
+  withEmojis(withLinks(withMarkdown(withKeyboardShortcuts(withStyles(styleThunk)(TaskEditor)))))
 );

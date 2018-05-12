@@ -51,12 +51,14 @@ const withKeyboardShortcuts = (ComposedComponent) => {
       return undefined;
     };
 
-    render() {
-      return (<ComposedComponent
-        {...this.props}
-        handleKeyCommand={this.handleKeyCommand}
-        keyBindingFn={this.keyBindingFn}
-      />);
+    render () {
+      return (
+        <ComposedComponent
+          {...this.props}
+          handleKeyCommand={this.handleKeyCommand}
+          keyBindingFn={this.keyBindingFn}
+        />
+      );
     }
   }
   return WithKeyboardShortcuts;

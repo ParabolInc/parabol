@@ -28,7 +28,10 @@ const Task = new GraphQLObjectType({
       type: GraphQLID,
       description: 'the agenda item that created this task, if any'
     },
-    content: {type: GraphQLString, description: 'The body of the task. If null, it is a new task.'},
+    content: {
+      type: GraphQLString,
+      description: 'The body of the task. If null, it is a new task.'
+    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was created'
@@ -43,7 +46,8 @@ const Task = new GraphQLObjectType({
     },
     editors: {
       type: new GraphQLList(TaskEditorDetails),
-      description: 'a list of users currently editing the task (fed by a subscription, so queries return null)',
+      description:
+        'a list of users currently editing the task (fed by a subscription, so queries return null)',
       resolve: ({editors = []}) => {
         return editors;
       }
@@ -92,9 +96,9 @@ const Task = new GraphQLObjectType({
       type: Assignee,
       description: 'The team member (or soft team member) that owns this task',
       resolve: ({assigneeId, isSoftTask}, args, {dataLoader}) => {
-        return isSoftTask ?
-          dataLoader.get('softTeamMembers').load(assigneeId) :
-          dataLoader.get('teamMembers').load(assigneeId);
+        return isSoftTask
+          ? dataLoader.get('softTeamMembers').load(assigneeId)
+          : dataLoader.get('teamMembers').load(assigneeId);
       }
     },
     assigneeId: {
@@ -107,7 +111,8 @@ const Task = new GraphQLObjectType({
     },
     userId: {
       type: GraphQLID,
-      description: '* The userId, index useful for server-side methods getting all tasks under a user'
+      description:
+        '* The userId, index useful for server-side methods getting all tasks under a user'
     }
   })
 });

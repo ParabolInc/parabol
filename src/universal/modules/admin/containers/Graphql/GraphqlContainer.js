@@ -12,17 +12,16 @@ import {getGraphQLHost, getGraphQLProtocol} from 'universal/utils/graphQLConfig'
 const graphQLHost = getGraphQLHost();
 const graphQLProtocol = getGraphQLProtocol();
 
-const graphiqlStylesheet = __PRODUCTION__ ?
-  'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.8.0/graphiql.min.css' :
-  '/static/css/graphiql.css';
+const graphiqlStylesheet = __PRODUCTION__
+  ? 'https://cdnjs.cloudflare.com/ajax/libs/graphiql/0.8.0/graphiql.min.css'
+  : '/static/css/graphiql.css';
 
 const makeGraphQLFetcher = (authToken) => {
   return async (graphQLParams) => {
     if (!__CLIENT__) {
       return undefined;
     }
-    const variables = graphQLParams.variables ?
-      graphQLParams.variables : undefined;
+    const variables = graphQLParams.variables ? graphQLParams.variables : undefined;
     const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
       method: 'post',
       headers: {
@@ -57,18 +56,20 @@ export default class Graphiql extends Component {
     stylesLoaded: PropTypes.bool
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {graphQLFetcher: null};
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (nextProps.stylesLoaded) {
-      this.setState({graphQLFetcher: makeGraphQLFetcher(nextProps.atmosphere.authToken)});
+      this.setState({
+        graphQLFetcher: makeGraphQLFetcher(nextProps.atmosphere.authToken)
+      });
     }
   }
 
-  render() {
+  render () {
     const {styles} = this.props;
     const {graphQLFetcher} = this.state;
     if (!graphQLFetcher) {

@@ -18,7 +18,7 @@ type MeetingMember = {
 
 type Props = {
   members: Array<MeetingMember>
-}
+};
 
 const MeetingMemberNoTasksRow = (props: Props) => {
   const {members} = props;
@@ -56,16 +56,17 @@ const MeetingMemberNoTasksRow = (props: Props) => {
   };
 
   const cellWidth = members.length === 1 ? 320 : 132;
-  return members.map((member) =>
-    (<td align="center" style={cellStyle} width={cellWidth} key={member.id}>
+  return members.map((member) => (
+    <td align="center" style={cellStyle} width={cellWidth} key={member.id}>
       <img height={avatarSize} src={member.user.picture} style={avatarStyles} width={avatarSize} />
       <div style={nameStyle}>{member.user.preferredName}</div>
-      {member.isCheckedIn ?
-        <div style={presentStyles}>Present</div> :
+      {member.isCheckedIn ? (
+        <div style={presentStyles}>Present</div>
+      ) : (
         <div style={absentStyles}>Absent</div>
-      }
-    </td>)
-  );
+      )}
+    </td>
+  ));
 };
 
 export default MeetingMemberNoTasksRow;

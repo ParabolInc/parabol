@@ -7,13 +7,13 @@ import {createFragmentContainer} from 'react-relay';
 import Tooltip from 'universal/components/Tooltip/Tooltip';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import AddAgendaItemMutation from 'universal/mutations/AddAgendaItemMutation';
-import {makePlaceholderStyles} from 'universal/styles/helpers';
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
 
 const iconStyle = {
   color: appTheme.palette.warm70l,
@@ -30,9 +30,7 @@ const iconStyle = {
   zIndex: 200
 };
 
-const hasFocus = (element) => (
-  element && document.activeElement === element
-);
+const hasFocus = (element) => element && document.activeElement === element;
 
 class AgendaInputField extends Component {
   static propTypes = {
@@ -47,18 +45,18 @@ class AgendaInputField extends Component {
     team: PropTypes.object.isRequired
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {disabled, bindHotkey} = this.props;
     if (!disabled) {
       bindHotkey('+', this.focusOnInput);
     }
   }
 
-  componentWillUpdate() {
+  componentWillUpdate () {
     this.maybeSaveFocus();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate () {
     this.maybeRefocus();
   }
 
@@ -81,7 +79,11 @@ class AgendaInputField extends Component {
   };
 
   handleAgendaItemSubmit = (submittedData) => {
-    const {afterSubmitAgendaItem, atmosphere, team: {agendaItems, teamId}} = this.props;
+    const {
+      afterSubmitAgendaItem,
+      atmosphere,
+      team: {agendaItems, teamId}
+    } = this.props;
     const content = submittedData.agendaItem;
     if (!content) return;
     const newAgendaItem = {
@@ -95,14 +97,8 @@ class AgendaInputField extends Component {
 
   makeForm = () => {
     const {disabled, handleSubmit, styles} = this.props;
-    const rootStyles = css(
-      styles.root,
-      disabled && styles.rootDisabled
-    );
-    const inputStyles = css(
-      styles.input,
-      !disabled && styles.inputNotDisabled
-    );
+    const rootStyles = css(styles.root, disabled && styles.rootDisabled);
+    const inputStyles = css(styles.input, !disabled && styles.inputNotDisabled);
     return (
       <form className={rootStyles} onSubmit={handleSubmit(this.handleAgendaItemSubmit)}>
         <input
@@ -124,7 +120,9 @@ class AgendaInputField extends Component {
 
   makeTooltip = () => (
     <div style={{textAlign: 'center'}}>
-      {'Add meeting topics to discuss,'}<br />{'like “upcoming vacation”'}
+      {'Add meeting topics to discuss,'}
+      <br />
+      {'like “upcoming vacation”'}
     </div>
   );
 
@@ -147,7 +145,7 @@ class AgendaInputField extends Component {
     }
   };
 
-  render() {
+  render () {
     const {
       disabled,
       team: {agendaItems}
@@ -232,5 +230,6 @@ export default createFragmentContainer(
       agendaItems {
         sortOrder
       }
-    }`
+    }
+  `
 );

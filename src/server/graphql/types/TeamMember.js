@@ -27,7 +27,10 @@ const TeamMember = new GraphQLObjectType({
       description: 'true if the user is a part of the team, false if they no longer are'
     },
     isLead: {type: GraphQLBoolean, description: 'Is user a team lead?'},
-    isFacilitator: {type: GraphQLBoolean, description: 'Is user a team facilitator?'},
+    isFacilitator: {
+      type: GraphQLBoolean,
+      description: 'Is user a team facilitator?'
+    },
     hideAgenda: {
       type: GraphQLBoolean,
       description: 'hide the agenda list on the dashboard'
@@ -110,7 +113,7 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: User,
       description: 'The user for the team member',
-      resolve({userId}, args, {dataLoader}) {
+      resolve ({userId}, args, {dataLoader}) {
         return dataLoader.get('users').load(userId);
       }
     },
@@ -127,7 +130,9 @@ const TeamMember = new GraphQLObjectType({
       resolve: async ({teamId, userId}, args, {dataLoader}) => {
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId);
         const tasksForUserId = allTasks.filter((task) => task.userId === userId);
-        const publicTasksForUserId = tasksForUserId.filter((task) => !task.tags.includes('private'));
+        const publicTasksForUserId = tasksForUserId.filter(
+          (task) => !task.tags.includes('private')
+        );
         return connectionFromTasks(publicTasksForUserId);
       }
     }

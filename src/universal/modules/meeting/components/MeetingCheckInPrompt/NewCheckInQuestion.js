@@ -43,7 +43,9 @@ const EditorBlock = styled('div')({
 });
 
 const getCheckInQuestion = (props) => {
-  const {team: {newMeeting}} = props;
+  const {
+    team: {newMeeting}
+  } = props;
   if (!newMeeting) return '';
   return newMeeting.localPhase.checkInQuestion;
 };
@@ -51,29 +53,35 @@ const getCheckInQuestion = (props) => {
 type Props = {
   atmosphere: Object,
   team: Team
-}
+};
 
 type State = {
   editorState: Object
-}
+};
 
 class NewCheckInQuestion extends Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     const checkInQuestion = getCheckInQuestion(props);
     const contentState = convertFromRaw(JSON.parse(checkInQuestion));
     this.state = {
-      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+      editorState: EditorState.createWithContent(
+        contentState,
+        editorDecorators(this.getEditorState)
+      )
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const checkInQuestion = getCheckInQuestion(nextProps);
     const oldCheckInQuestion = getCheckInQuestion(this.props);
     if (checkInQuestion !== oldCheckInQuestion) {
       const contentState = convertFromRaw(JSON.parse(checkInQuestion));
       this.setState({
-        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+        editorState: EditorState.createWithContent(
+          contentState,
+          editorDecorators(this.getEditorState)
+        )
       });
     }
   }
@@ -84,9 +92,17 @@ class NewCheckInQuestion extends Component<Props, State> {
     const wasFocused = this.state.editorState.getSelection().getHasFocus();
     const isFocused = editorState.getSelection().getHasFocus();
     if (wasFocused && !isFocused) {
-      const {atmosphere, team: {newMeeting: {meetingId}}} = this.props;
+      const {
+        atmosphere,
+        team: {
+          newMeeting: {meetingId}
+        }
+      } = this.props;
       const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
-      UpdateNewCheckInQuestionMutation(atmosphere, {meetingId, checkInQuestion});
+      UpdateNewCheckInQuestionMutation(atmosphere, {
+        meetingId,
+        checkInQuestion
+      });
     }
     this.setState({
       editorState
@@ -110,8 +126,11 @@ class NewCheckInQuestion extends Component<Props, State> {
     this.setEditorState(nextEditorState);
   };
 
-  render() {
-    const {atmosphere, team: {newMeeting, tier}} = this.props;
+  render () {
+    const {
+      atmosphere,
+      team: {newMeeting, tier}
+    } = this.props;
     if (!newMeeting) return null;
     const {facilitatorUserId} = newMeeting;
     const {editorState} = this.state;
@@ -144,16 +163,17 @@ class NewCheckInQuestion extends Component<Props, State> {
               }}
             />
           </EditorBlock>
-          {isFacilitating &&
-          <div>
-            {canEdit ?
-              <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
+          {isFacilitating && (
+            <div>
+              {canEdit ? (
+                <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
+                  <CogIcon name="cog" canEdit={canEdit} isEditing={isEditing} />
+                </PlainButton>
+              ) : (
                 <CogIcon name="cog" canEdit={canEdit} isEditing={isEditing} />
-              </PlainButton> :
-              <CogIcon name="cog" canEdit={canEdit} isEditing={isEditing} />
-            }
-          </div>
-          }
+              )}
+            </div>
+          )}
         </QuestionBlock>
       </Tooltip>
     );
@@ -181,5 +201,6 @@ export default createFragmentContainer(
         }
       }
       tier
-    }`
+    }
+  `
 );

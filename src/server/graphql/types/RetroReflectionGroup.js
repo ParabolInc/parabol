@@ -1,4 +1,13 @@
-import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroReflection from 'server/graphql/types/RetroReflection';
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
@@ -46,8 +55,10 @@ const RetroReflectionGroup = new GraphQLObjectType({
       resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
         // use meetingId so we only hit the DB once instead of once per group
         const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId);
-        const filteredReflections = reflections.filter((reflection) => reflection.reflectionGroupId === reflectionGroupId);
-        filteredReflections.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
+        const filteredReflections = reflections.filter(
+          (reflection) => reflection.reflectionGroupId === reflectionGroupId
+        );
+        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1));
         return filteredReflections;
       }
     },
@@ -111,7 +122,9 @@ const RetroReflectionGroup = new GraphQLObjectType({
       description: 'The number of votes the viewer has given this group',
       resolve: ({voterIds}, args, {authToken}) => {
         const viewerId = getUserId(authToken);
-        return voterIds ? voterIds.reduce((sum, voterId) => voterId === viewerId ? sum + 1 : sum, 0) : 0;
+        return voterIds
+          ? voterIds.reduce((sum, voterId) => (voterId === viewerId ? sum + 1 : sum), 0)
+          : 0;
       }
     }
   })

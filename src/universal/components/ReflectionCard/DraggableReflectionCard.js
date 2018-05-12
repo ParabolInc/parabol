@@ -21,7 +21,7 @@ type Props = {
   dndIndex: number,
   reflection: Reflection,
   showOriginFooter: boolean,
-  ...ReflectionCardProps,
+  ...ReflectionCardProps
 };
 
 const DragStyles = styled('div')(({isDragging}) => ({
@@ -30,11 +30,11 @@ const DragStyles = styled('div')(({isDragging}) => ({
 }));
 
 class DraggableReflectionCard extends React.Component<Props> {
-  componentDidMount() {
+  componentDidMount () {
     const {connectDragPreview} = this.props;
     connectDragPreview(getEmptyImage());
   }
-  render() {
+  render () {
     const {
       connectDragSource,
       initialCursorOffset,
@@ -51,7 +51,12 @@ class DraggableReflectionCard extends React.Component<Props> {
         {connectDragSource(
           <div>
             <DragStyles isDragging={isDragging} isOver={isOver}>
-              <ReflectionCard isCollapsed={isCollapsed} meeting={meeting} reflection={reflection} showOriginFooter={showOriginFooter} />
+              <ReflectionCard
+                isCollapsed={isCollapsed}
+                meeting={meeting}
+                reflection={reflection}
+                showOriginFooter={showOriginFooter}
+              />
             </DragStyles>
           </div>
         )}
@@ -68,8 +73,13 @@ class DraggableReflectionCard extends React.Component<Props> {
 }
 
 const reflectionDragSpec = {
-  beginDrag(props) {
-    const {atmosphere, reflection: {reflectionId, reflectionGroupId}, currentRetroPhaseItemId, isSingleCardGroup} = props;
+  beginDrag (props) {
+    const {
+      atmosphere,
+      reflection: {reflectionId, reflectionGroupId},
+      currentRetroPhaseItemId,
+      isSingleCardGroup
+    } = props;
     DragReflectionMutation(atmosphere, {reflectionId, isDragging: true});
     return {
       reflectionId,
@@ -81,8 +91,11 @@ const reflectionDragSpec = {
   // isDragging(props, monitor) {
   //   return props.reflection.reflectionId === monitor.getItem().reflectionId;
   // },
-  endDrag(props: Props) {
-    const {atmosphere, reflection: {reflectionId}} = props;
+  endDrag (props: Props) {
+    const {
+      atmosphere,
+      reflection: {reflectionId}
+    } = props;
     DragReflectionMutation(atmosphere, {reflectionId, isDragging: false});
   }
 };
@@ -97,9 +110,7 @@ const reflectionDragCollect = (connectSource, monitor) => ({
 
 export default createFragmentContainer(
   withAtmosphere(
-    dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(
-      DraggableReflectionCard
-    )
+    dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(DraggableReflectionCard)
   ),
   graphql`
     fragment DraggableReflectionCard_reflection on RetroReflection {

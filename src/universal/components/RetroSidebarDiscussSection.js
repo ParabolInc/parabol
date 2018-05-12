@@ -7,14 +7,14 @@ import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import ui from 'universal/styles/ui';
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock';
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem';
-import {LabelHeading} from 'universal/components';
 import {RETRO_TOPIC_LABEL, RETRO_VOTED_LABEL} from 'universal/utils/constants';
 import plural from 'universal/utils/plural';
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 
 type Props = {|
   gotoStageId: (stageId: string) => void,
   viewer: Viewer
-|}
+|};
 
 const SidebarPhaseItemChild = styled('div')({
   display: 'flex',
@@ -31,7 +31,12 @@ const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
 }));
 
 const RetroSidebarDiscussSection = (props: Props) => {
-  const {gotoStageId, viewer: {team: {newMeeting}}} = props;
+  const {
+    gotoStageId,
+    viewer: {
+      team: {newMeeting}
+    }
+  } = props;
   const {localPhase, localStage, facilitatorStageId} = newMeeting || {};
   if (!localPhase || !localPhase.stages || !localStage) return null;
   const {stages} = localPhase;
@@ -41,7 +46,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
   return (
     <SidebarPhaseItemChild>
       <MeetingSidebarLabelBlock>
-        <LabelHeading>{plural(stages.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}</LabelHeading>
+        <LabelHeading>
+          {plural(stages.length, `${RETRO_VOTED_LABEL} ${RETRO_TOPIC_LABEL}`)}
+        </LabelHeading>
       </MeetingSidebarLabelBlock>
       {stages.map((stage, idx) => {
         const {reflectionGroup} = stage;

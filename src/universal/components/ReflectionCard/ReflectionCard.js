@@ -65,17 +65,19 @@ export const ReflectionCardRoot = styled('div')(
     position: 'relative',
     width: ui.retroCardWidth
   },
-  ({hasDragLock}) => hasDragLock && ({
-    borderColor: appTheme.palette.warm50a
-  }),
-  ({isCollapsed}) => isCollapsed && ({
-    height: `${ui.retroCardCollapsedHeightRem}rem`,
-    overflow: 'hidden'
-  })
+  ({hasDragLock}) =>
+    hasDragLock && {
+      borderColor: appTheme.palette.warm50a
+    },
+  ({isCollapsed}) =>
+    isCollapsed && {
+      height: `${ui.retroCardCollapsedHeightRem}rem`,
+      overflow: 'hidden'
+    }
 );
 
 class ReflectionCard extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
     const {reflection} = nextProps;
     const {content} = reflection;
     if (content === prevState.content) return null;
@@ -84,7 +86,10 @@ class ReflectionCard extends Component<Props, State> {
     // const contentState = ContentState.createFromText(DEBUG_TEXT);
     return {
       content,
-      editorState: EditorState.createWithContent(contentState, editorDecorators(prevState.getEditorState))
+      editorState: EditorState.createWithContent(
+        contentState,
+        editorDecorators(prevState.getEditorState)
+      )
     };
   }
 
@@ -100,18 +105,28 @@ class ReflectionCard extends Component<Props, State> {
 
   setEditorRef = (c) => {
     this.editorRef = c;
-  }
+  };
 
   editorRef: ?HTMLElement;
 
   handleEditorFocus = () => {
-    const {atmosphere, reflection: {reflectionId}} = this.props;
+    const {
+      atmosphere,
+      reflection: {reflectionId}
+    } = this.props;
     if (isTempId(reflectionId)) return;
     EditReflectionMutation(atmosphere, {isEditing: true, reflectionId});
   };
 
   handleContentUpdate = () => {
-    const {atmosphere, meeting: {meetingId}, reflection: {content, reflectionId}, submitMutation, onError, onCompleted} = this.props;
+    const {
+      atmosphere,
+      meeting: {meetingId},
+      reflection: {content, reflectionId},
+      submitMutation,
+      onError,
+      onCompleted
+    } = this.props;
     const {editorState} = this.state;
     if (!editorState) return;
     const contentState = editorState.getCurrentContent();
@@ -119,24 +134,41 @@ class ReflectionCard extends Component<Props, State> {
       const nextContent = JSON.stringify(convertToRaw(contentState));
       if (content === nextContent) return;
       submitMutation();
-      UpdateReflectionContentMutation(atmosphere, {content: nextContent, reflectionId}, onError, onCompleted);
+      UpdateReflectionContentMutation(
+        atmosphere,
+        {content: nextContent, reflectionId},
+        onError,
+        onCompleted
+      );
     } else {
       RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted);
     }
   };
 
   handleEditorBlur = () => {
-    const {atmosphere, reflection: {reflectionId}} = this.props;
+    const {
+      atmosphere,
+      reflection: {reflectionId}
+    } = this.props;
     if (isTempId(reflectionId)) return;
     this.handleContentUpdate();
     EditReflectionMutation(atmosphere, {isEditing: false, reflectionId});
   };
 
-  render() {
+  render () {
     const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props;
     const {editorState} = this.state;
-    const {localPhase: {phaseType}, localStage: {isComplete}, teamId} = meeting;
-    const {draggerUser, isViewerCreator, phaseItem: {question}, reflectionId} = reflection;
+    const {
+      localPhase: {phaseType},
+      localStage: {isComplete},
+      teamId
+    } = meeting;
+    const {
+      draggerUser,
+      isViewerCreator,
+      phaseItem: {question},
+      reflectionId
+    } = reflection;
     const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete;
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId;
     return (
@@ -184,6 +216,7 @@ export default createFragmentContainer(
       }
       ...ReflectionCardDeleteButton_meeting
     }
+
     fragment ReflectionCard_reflection on RetroReflection {
       draggerUser {
         id

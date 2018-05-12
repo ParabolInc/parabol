@@ -27,13 +27,19 @@ const CheckInControls = (props) => {
 
   const nextLabel = (
     <span>
-      {`${currentMemberName} is `}<u>{'h'}</u>{'ere – '}{nextMemberName ? `Move to ${nextMemberName}` : `move to ${nextPhaseName}`}
+      {`${currentMemberName} is `}
+      <u>{'h'}</u>
+      {'ere – '}
+      {nextMemberName ? `Move to ${nextMemberName}` : `move to ${nextPhaseName}`}
     </span>
   );
 
   const skipLabel = (
     <span>
-      {`${currentMemberName} is `}<u>{'n'}</u>{'ot here – '}{nextMemberName ? `Skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
+      {`${currentMemberName} is `}
+      <u>{'n'}</u>
+      {'ot here – '}
+      {nextMemberName ? `Skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
     </span>
   );
 

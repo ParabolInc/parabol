@@ -1,8 +1,5 @@
 exports.up = async (r) => {
-  const tables = [
-    r.tableCreate('Provider'),
-    r.tableCreate('SlackIntegration')
-  ];
+  const tables = [r.tableCreate('Provider'), r.tableCreate('SlackIntegration')];
   try {
     await Promise.all(tables);
   } catch (e) {
@@ -21,10 +18,7 @@ exports.up = async (r) => {
 };
 
 exports.down = async (r) => {
-  const tables = [
-    r.tableDrop('SlackIntegration'),
-    r.tableDrop('Provider')
-  ];
+  const tables = [r.tableDrop('SlackIntegration'), r.tableDrop('Provider')];
   try {
     await Promise.all(tables);
   } catch (e) {

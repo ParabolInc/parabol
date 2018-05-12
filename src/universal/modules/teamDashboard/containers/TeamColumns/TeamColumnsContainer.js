@@ -9,7 +9,10 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 
 const mapStateToProps = (state, props) => {
-  const {atmosphere: {viewerId}, teamId} = props;
+  const {
+    atmosphere: {viewerId},
+    teamId
+  } = props;
   const {teamMemberFilterId} = state.teamDashboard;
   return {
     myTeamMemberId: toTeamMemberId(teamId, viewerId),
@@ -17,32 +20,54 @@ const mapStateToProps = (state, props) => {
   };
 };
 
-
 class TeamColumnsContainer extends Component {
-  componentWillMount() {
+  componentWillMount () {
     this.filterTasks(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {teamMemberFilterId: oldFilter, viewer: {tasks: oldTasks, team: {contentFilter: oldContentFilter}}} = this.props;
-    const {teamMemberFilterId, viewer: {tasks, team: {contentFilter}}} = nextProps;
-    if (oldFilter !== teamMemberFilterId || oldTasks !== tasks || oldContentFilter !== contentFilter) {
+  componentWillReceiveProps (nextProps) {
+    const {
+      teamMemberFilterId: oldFilter,
+      viewer: {
+        tasks: oldTasks,
+        team: {contentFilter: oldContentFilter}
+      }
+    } = this.props;
+    const {
+      teamMemberFilterId,
+      viewer: {
+        tasks,
+        team: {contentFilter}
+      }
+    } = nextProps;
+    if (
+      oldFilter !== teamMemberFilterId ||
+      oldTasks !== tasks ||
+      oldContentFilter !== contentFilter
+    ) {
       this.filterTasks(nextProps);
     }
   }
 
-  filterTasks(props) {
-    const {teamMemberFilterId, viewer: {tasks, team: {contentFilter, teamMembers}}} = props;
+  filterTasks (props) {
+    const {
+      teamMemberFilterId,
+      viewer: {
+        tasks,
+        team: {contentFilter, teamMembers}
+      }
+    } = props;
     const contentFilterRegex = new RegExp(contentFilter, 'i');
-    const contentFilteredEdges = contentFilter ?
-      tasks.edges.filter(({node}) => {
+    const contentFilteredEdges = contentFilter
+      ? tasks.edges.filter(({node}) => {
         const {contentText} = node;
         return contentText && node.contentText.match(contentFilterRegex);
-      }) : tasks.edges;
+      })
+      : tasks.edges;
 
-    const teamMemberFilteredEdges = teamMemberFilterId ?
-      contentFilteredEdges.filter(({node}) => node.assignee.id === teamMemberFilterId) :
-      contentFilteredEdges;
+    const teamMemberFilteredEdges = teamMemberFilterId
+      ? contentFilteredEdges.filter(({node}) => node.assignee.id === teamMemberFilterId)
+      : contentFilteredEdges;
 
     const edgesWithTeamMembers = teamMemberFilteredEdges.map((edge) => {
       return {
@@ -61,8 +86,12 @@ class TeamColumnsContainer extends Component {
     });
   }
 
-  render() {
-    const {myTeamMemberId, teamMemberFilterId, viewer: {tasks: allTasks}} = this.props;
+  render () {
+    const {
+      myTeamMemberId,
+      teamMemberFilterId,
+      viewer: {tasks: allTasks}
+    } = this.props;
     const {tasks} = this.state;
     return (
       <TaskColumns
@@ -111,5 +140,6 @@ export default createFragmentContainer(
           }
         }
       }
-    }`
+    }
+  `
 );

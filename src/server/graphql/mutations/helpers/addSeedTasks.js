@@ -5,7 +5,6 @@ import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
-
 const SEED_TASKS = [
   {
     status: ACTIVE,
@@ -57,7 +56,9 @@ export default (userId, teamId) => {
     updatedAt: now
   }));
 
-  return r.table('Task').insert(seedTasks, {returnChanges: true})
+  return r
+    .table('Task')
+    .insert(seedTasks, {returnChanges: true})
     .do((result) => {
       return r.table('TaskHistory').insert(
         result('changes').map((change) => ({

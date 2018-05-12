@@ -18,7 +18,7 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -26,26 +26,35 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
+    if (!(await isTeamLead(viewerId, teamId))) {
+      return sendTeamLeadAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', viewerId, {teamId});
     const {team, users, removedTeamNotifications} = await r({
-      team: r.table('Team').get(teamId)
+      team: r
+        .table('Team')
+        .get(teamId)
         .update({isArchived: true}, {returnChanges: true})('changes')(0)('new_val')
         .default(null),
-      users: r.table('TeamMember')
+      users: r
+        .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
         .coerceTo('array')
         .do((userIds) => {
-          return r.table('User')
+          return r
+            .table('User')
             .getAll(r.args(userIds), {index: 'id'})
-            .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})('changes')('new_val')
+            .update((user) => ({tms: user('tms').difference([teamId])}), {
+              returnChanges: true
+            })('changes')('new_val')
             .default([]);
         }),
-      removedTeamNotifications: r.table('Notification')
-      // TODO index
+      removedTeamNotifications: r
+        .table('Notification')
+        // TODO index
         .filter({teamId})
         .delete({returnChanges: true})('changes')('new_val')
         .default([])

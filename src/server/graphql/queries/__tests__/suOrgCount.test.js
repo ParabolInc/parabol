@@ -19,7 +19,9 @@ test('counts the number of Pro orgs', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
-  const initial = await suOrgCount.resolve(undefined, defaultResolverArgs, {authToken});
+  const initial = await suOrgCount.resolve(undefined, defaultResolverArgs, {
+    authToken
+  });
 
   // VERIFY
   expect(initial >= 0).toBe(true);
@@ -31,9 +33,13 @@ test('new Pro org increments counts of Pro orgs', async () => {
   const {user} = await mockDB.init();
   const authToken = mockAuthToken(user[1], {rol: 'su'});
   // TEST
-  const initial = await suOrgCount.resolve(undefined, defaultResolverArgs, {authToken});
+  const initial = await suOrgCount.resolve(undefined, defaultResolverArgs, {
+    authToken
+  });
   await mockDB.newOrg({tier: PRO});
-  const next = await suOrgCount.resolve(undefined, defaultResolverArgs, {authToken});
+  const next = await suOrgCount.resolve(undefined, defaultResolverArgs, {
+    authToken
+  });
 
   // VERIFY
   expect(next !== initial).toBe(true);
@@ -74,7 +80,5 @@ test('user token requires su role', async () => {
   const authToken = mockAuthToken(user[1]);
 
   // TEST & VERIFY
-  await expectAsyncToThrow(
-    suOrgCount.resolve(undefined, defaultResolverArgs, {authToken})
-  );
+  await expectAsyncToThrow(suOrgCount.resolve(undefined, defaultResolverArgs, {authToken}));
 });

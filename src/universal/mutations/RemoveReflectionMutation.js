@@ -12,7 +12,7 @@ type Context = {
 };
 
 type Variables = {
-  reflectionId: string,
+  reflectionId: string
 };
 
 graphql`
@@ -45,11 +45,13 @@ export const removeReflectionTeamUpdater = (payload, store) => {
   handleRemoveReflectionGroups(reflectionGroupId, meetingId, store);
 };
 
-const RemoveReflectionMutation = (environment: Object,
+const RemoveReflectionMutation = (
+  environment: Object,
   variables: Variables,
   context: Context,
   onError?: ErrorHandler,
-  onCompleted?: CompletedHandler) => {
+  onCompleted?: CompletedHandler
+) => {
   return commitMutation(environment, {
     mutation,
     variables,

@@ -37,30 +37,16 @@ const getExpandedSelectionState = (editorState) => {
 export const makeContentWithEntity = (contentState, selectionState, mention, entityKey) => {
   if (!mention) {
     // anchorKey && focusKey should be different here (used for EditorLinkChanger)
-    return Modifier.applyEntity(
-      contentState,
-      selectionState,
-      entityKey
-    );
+    return Modifier.applyEntity(contentState, selectionState, entityKey);
   }
-  return Modifier.replaceText(
-    contentState,
-    selectionState,
-    mention,
-    null,
-    entityKey
-  );
+  return Modifier.replaceText(contentState, selectionState, mention, null, entityKey);
 };
 
 export const autoCompleteEmoji = (editorState, emoji) => {
   const contentState = editorState.getCurrentContent();
   const expandedSelectionState = getExpandedSelectionState(editorState);
 
-  const nextContentState = Modifier.replaceText(
-    contentState,
-    expandedSelectionState,
-    emoji
-  );
+  const nextContentState = Modifier.replaceText(contentState, expandedSelectionState, emoji);
   const endKey = nextContentState.getSelectionAfter().getEndKey();
   const endOffset = nextContentState.getSelectionAfter().getEndOffset();
   const collapsedSelectionState = expandedSelectionState.merge({
@@ -80,11 +66,17 @@ const completeEntity = (editorState, entityName, entityData, mention, options = 
   const {keepSelection} = options;
   const {editorChangeType, entityType} = operationTypes[entityName];
   const contentState = editorState.getCurrentContent();
-  const contentStateWithEntity = contentState
-    .createEntity(entityName, entityType, entityData);
+  const contentStateWithEntity = contentState.createEntity(entityName, entityType, entityData);
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-  const expandedSelectionState = keepSelection ? editorState.getSelection() : getExpandedSelectionState(editorState);
-  const contentWithEntity = makeContentWithEntity(contentState, expandedSelectionState, mention, entityKey);
+  const expandedSelectionState = keepSelection
+    ? editorState.getSelection()
+    : getExpandedSelectionState(editorState);
+  const contentWithEntity = makeContentWithEntity(
+    contentState,
+    expandedSelectionState,
+    mention,
+    entityKey
+  );
   const endKey = contentWithEntity.getSelectionAfter().getEndKey();
   const endOffset = contentWithEntity.getSelectionAfter().getEndOffset();
   const collapsedSelectionState = expandedSelectionState.merge({

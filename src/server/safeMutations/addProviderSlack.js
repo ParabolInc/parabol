@@ -21,7 +21,8 @@ const addProviderSlack = async (code, teamId, userId) => {
   const uri = `https://slack.com/api/oauth.access?${stringify(queryParams)}`;
   const slackRes = await fetch(uri, postOptions);
   const json = await slackRes.json();
-  const {ok,
+  const {
+    ok,
     error,
     access_token: accessToken,
     scope,
@@ -35,7 +36,8 @@ const addProviderSlack = async (code, teamId, userId) => {
   if (scope !== SLACK_SCOPE) {
     throw new Error(`bad scope: ${scope}`);
   }
-  const provider = await r.table('Provider')
+  const provider = await r
+    .table('Provider')
     .getAll(teamId, {index: 'teamId'})
     .filter({service: SLACK})
     .nth(0)('id')
@@ -43,8 +45,8 @@ const addProviderSlack = async (code, teamId, userId) => {
     .do((providerId) => {
       return r.branch(
         providerId.eq(null),
-        r.table('Provider')
-          .insert({
+        r.table('Provider').insert(
+          {
             id: shortid.generate(),
             accessToken,
             createdAt: now,
@@ -55,14 +57,20 @@ const addProviderSlack = async (code, teamId, userId) => {
             teamId,
             updatedAt: now,
             userId
-          }, {returnChanges: true})('changes')(0)('new_val'),
-        r.table('Provider')
+          },
+          {returnChanges: true}
+        )('changes')(0)('new_val'),
+        r
+          .table('Provider')
           .get(providerId)
-          .update({
-            accessToken,
-            isActive: true,
-            updatedAt: now
-          }, {returnChanges: true})('changes')(0)('new_val')
+          .update(
+            {
+              accessToken,
+              isActive: true,
+              updatedAt: now
+            },
+            {returnChanges: true}
+          )('changes')(0)('new_val')
       );
     });
 

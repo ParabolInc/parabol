@@ -26,14 +26,20 @@ const GetStarted = () => {
         <tr>
           <td style={cellStyle}>
             <EmptySpace height={8} />
-            <span style={headingStyle}>Getting Started</span><br />
-            {'Read '}<a
+            <span style={headingStyle}>Getting Started</span>
+            <br />
+            {'Read '}
+            <a
               href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
               rel="noopener noreferrer"
               style={linkStyle}
               target="_blank"
               title="How to Navigate Uncertainty using the Action Rhythm"
-            >{'How to Navigate Uncertainty'}</a>{' so you'}<br />
+            >
+              {'How to Navigate Uncertainty'}
+            </a>
+            {' so you'}
+            <br />
             {'can get into the swing of things.'}
           </td>
         </tr>

@@ -53,9 +53,7 @@ export const ORG1_OTHER_TEAM_MEMBERS = [
   })
 ];
 
-export const ORG1_ALL_TEAM_MEMBERS = [
-  ORG1_BILLING_LEADER, ...ORG1_OTHER_TEAM_MEMBERS
-];
+export const ORG1_ALL_TEAM_MEMBERS = [ORG1_BILLING_LEADER, ...ORG1_OTHER_TEAM_MEMBERS];
 
 export const ORG1_TEAM = {
   id: shortid.generate(),

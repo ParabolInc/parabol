@@ -28,7 +28,7 @@ export default {
       description: 'The base type of the meeting (action, retro, etc)'
     }
   },
-  async resolve(source, {teamId, meetingType}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {teamId, meetingType}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -36,24 +36,35 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
     const {team, meetingCount} = await r({
       team: r.table('Team').get(teamId),
-      meetingCount: r.table('NewMeeting')
+      meetingCount: r
+        .table('NewMeeting')
         .getAll(teamId, {index: 'teamId'})
         .count()
         .default(0)
     });
 
-    if (team.meetingId) return sendAlreadyStartedMeetingError(authToken, teamId);
+    if (team.meetingId) {
+      return sendAlreadyStartedMeetingError(authToken, teamId);
+    }
 
     // RESOLUTION
     const meetingId = shortid.generate();
     let phases;
     try {
-      phases = await createNewMeetingPhases(teamId, meetingId, meetingCount, meetingType, dataLoader);
+      phases = await createNewMeetingPhases(
+        teamId,
+        meetingId,
+        meetingCount,
+        meetingType,
+        dataLoader
+      );
     } catch (e) {
       const breadcrumb = {
         message: e.message,
@@ -81,7 +92,9 @@ export default {
     const meetingMembersBase = teamMembers.map(createMemberForMeeting);
     const meetingMembers = await extendMeetingMembersForType(meetingMembersBase, dataLoader);
     await r({
-      team: r.table('Team').get(teamId)
+      team: r
+        .table('Team')
+        .get(teamId)
         .update({meetingId}),
       meeting: r.table('NewMeeting').insert(newMeeting),
       members: r.table('MeetingMember').insert(meetingMembers)

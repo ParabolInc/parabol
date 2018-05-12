@@ -6,11 +6,7 @@ import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/Me
 import CheckInQuestion from './CheckInQuestion';
 
 const MeetingCheckinPrompt = (props) => {
-  const {
-    isFacilitating,
-    localPhaseItem,
-    team
-  } = props;
+  const {isFacilitating, localPhaseItem, team} = props;
   const {teamMembers} = team;
   const currentMember = teamMembers[localPhaseItem - 1];
   const heading = (
@@ -23,13 +19,7 @@ const MeetingCheckinPrompt = (props) => {
       <CheckInQuestion isFacilitating={isFacilitating} team={team} />
     </div>
   );
-  return (
-    <MeetingPrompt
-      avatar={currentMember.picture}
-      avatarLarge
-      heading={heading}
-    />
-  );
+  return <MeetingPrompt avatar={currentMember.picture} avatarLarge heading={heading} />;
 };
 
 MeetingCheckinPrompt.propTypes = {
@@ -48,5 +38,6 @@ export default createFragmentContainer(
       }
       ...CheckInQuestion_team
       ...MeetingCheckInGreeting_team
-    }`
+    }
+  `
 );

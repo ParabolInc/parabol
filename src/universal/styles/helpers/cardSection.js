@@ -1,6 +1,6 @@
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import {cardBorderTop} from 'universal/styles/helpers';
+import cardBorderTop from 'universal/styles/helpers/cardBorderTop';
 
 const cardSection = {
   display: 'flex',

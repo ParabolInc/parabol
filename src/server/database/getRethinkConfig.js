@@ -6,7 +6,7 @@ import getDotenv from '../../universal/utils/dotenv';
 // Import .env and expand variables:
 getDotenv();
 
-export default function getRethinkConfig() {
+export default function getRethinkConfig () {
   const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment';
   const u = url.parse(urlString);
 

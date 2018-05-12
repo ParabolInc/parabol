@@ -21,7 +21,8 @@ exports.up = async (r) => {
     // noop
   }
   try {
-    await r.table('MeetingSettings')
+    await r
+      .table('MeetingSettings')
       .filter({meetingType: RETROSPECTIVE})
       .update({
         totalVotes: RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
@@ -34,7 +35,8 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await r.table('MeetingSettings')
+    await r
+      .table('MeetingSettings')
       .filter({meetingType: RETROSPECTIVE})
       .replace((settings) => settings.without('totalVotes', 'maxVotesPerGroup'));
   } catch (e) {

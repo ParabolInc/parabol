@@ -7,22 +7,19 @@ type DataloaderData = {
   key: string,
   keys: Array<string>,
   indexedResults: Map<string, any>
-}
+};
 
 type GraphQLData = {
   query: string,
-  variables?: { [name: string]: any },
+  variables?: {[name: string]: any},
   firstError?: any
 };
 
 type MembershipData = {
   teamId: string
-}
+};
 
-type Data =
-  | DataloaderData
-  | GraphQLData
-  | MembershipData
+type Data = DataloaderData | GraphQLData | MembershipData;
 
 type Breadcrumb = {
   message: string,
@@ -32,7 +29,7 @@ type Breadcrumb = {
 
 type AuthToken = {
   sub: string
-}
+};
 
 const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb, error?: Object) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -49,7 +46,8 @@ const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb, e
   let user;
   if (authToken) {
     const userId = getUserId(authToken);
-    user = await r.table('User')
+    user = await r
+      .table('User')
       .get(userId)
       .pluck('id', 'email', 'preferredName', 'picture')
       .default(null);
@@ -61,7 +59,7 @@ const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb, e
     if (breadcrumb) {
       Raven.captureBreadcrumb(breadcrumb);
     }
-    const event = error || breadcrumb && breadcrumb.message || new Error('Unknown Error');
+    const event = error || (breadcrumb && breadcrumb.message) || new Error('Unknown Error');
     Raven.captureException(event);
   });
 };

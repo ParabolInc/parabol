@@ -38,5 +38,6 @@ export default createFragmentContainer(
     fragment HelpTextForTeam_currentTeamMember on TeamMember {
       preferredName
       isCheckedIn
-    }`
+    }
+  `
 );

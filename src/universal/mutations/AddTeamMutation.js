@@ -38,10 +38,12 @@ const popTeamCreatedToast = (payload, {dispatch, history}) => {
   const teamId = getInProxy(payload, 'team', 'id');
   if (!teamId) return;
   const teamName = getInProxy(payload, 'team', 'name');
-  dispatch(showSuccess({
-    title: 'Team successfully created!',
-    message: `Here's your new team dashboard for ${teamName}`
-  }));
+  dispatch(
+    showSuccess({
+      title: 'Team successfully created!',
+      message: `Here's your new team dashboard for ${teamName}`
+    })
+  );
   history.push(`/team/${teamId}`);
 };
 
@@ -69,7 +71,10 @@ const AddTeamMutation = (environment, variables, options, onCompleted, onError) 
     },
     optimisticUpdater: (store) => {
       const {newTeam} = variables;
-      const team = createProxyRecord(store, 'Team', {...newTeam, isPaid: true});
+      const team = createProxyRecord(store, 'Team', {
+        ...newTeam,
+        isPaid: true
+      });
       handleAddTeams(team, store, viewerId);
     },
     onCompleted,

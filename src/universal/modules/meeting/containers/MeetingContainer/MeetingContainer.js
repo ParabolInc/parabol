@@ -31,7 +31,15 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation';
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, LAST_CALL, LOBBY, phaseArray, UPDATES} from 'universal/utils/constants';
+import {
+  AGENDA_ITEMS,
+  CHECKIN,
+  FIRST_CALL,
+  LAST_CALL,
+  LOBBY,
+  phaseArray,
+  UPDATES
+} from 'universal/utils/constants';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {withRouter} from 'react-router-dom';
 
@@ -72,14 +80,8 @@ class MeetingContainer extends Component {
 
   state = {updateUserHasTasks: null};
 
-  componentWillMount() {
-    const {
-      atmosphere,
-      bindHotkey,
-      history,
-      teamId,
-      submitting
-    } = this.props;
+  componentWillMount () {
+    const {atmosphere, bindHotkey, history, teamId, submitting} = this.props;
     this.unsafeRoute = !handleRedirects({}, this.props);
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting));
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting));
@@ -94,10 +96,17 @@ class MeetingContainer extends Component {
     }, 5000);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {team}, localPhase, localPhaseItem, myTeamMemberId} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {team},
+      localPhase,
+      localPhaseItem,
+      myTeamMemberId
+    } = nextProps;
     const {activeFacilitator, id: teamId, facilitatorPhase, facilitatorPhaseItem} = team;
-    const {viewer: {team: oldTeam}} = this.props;
+    const {
+      viewer: {team: oldTeam}
+    } = this.props;
     const {activeFacilitator: oldFacilitator} = oldTeam;
     // if promoted to facilitator, ensure the facilitator is where you are
     // check activeFacilitator to make sure the meeting has started & we've got all the data
@@ -119,7 +128,7 @@ class MeetingContainer extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate (nextProps) {
     this.unsafeRoute = !handleRedirects(this.props, nextProps);
     if (!this.unsafeRoute) {
       return true;
@@ -127,7 +136,14 @@ class MeetingContainer extends Component {
     // if we call history.push
     if (this.unsafeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
-        const {dispatch, teamId, myTeamMemberId, viewer: {team: {activeFacilitator}}} = this.props;
+        const {
+          dispatch,
+          teamId,
+          myTeamMemberId,
+          viewer: {
+            team: {activeFacilitator}
+          }
+        } = this.props;
         const isFacilitating = myTeamMemberId === activeFacilitator;
         // if we're changing locations 10 times in a second, it's probably infinite
         if (isFacilitating) {
@@ -145,10 +161,13 @@ class MeetingContainer extends Component {
           }
         }
         this.gotoItem(1, CHECKIN);
-        dispatch(showError({
-          title: 'Awh shoot',
-          message: 'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
-        }));
+        dispatch(
+          showError({
+            title: 'Awh shoot',
+            message:
+              'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
+          })
+        );
         raven.captureMessage(
           'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered'
         );
@@ -160,7 +179,7 @@ class MeetingContainer extends Component {
     return false;
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearTimeout(this.electionTimer);
   }
 
@@ -174,8 +193,14 @@ class MeetingContainer extends Component {
     }
   };
 
-  electFacilitatorIfNone() {
-    const {atmosphere, dispatch, viewer: {team: {activeFacilitator, teamMembers}}} = this.props;
+  electFacilitatorIfNone () {
+    const {
+      atmosphere,
+      dispatch,
+      viewer: {
+        team: {activeFacilitator, teamMembers}
+      }
+    } = this.props;
     if (!activeFacilitator) return;
 
     const facilitator = teamMembers.find((m) => m.id === activeFacilitator);
@@ -184,10 +209,14 @@ class MeetingContainer extends Component {
       const callingMember = onlineMembers[0];
       const nextFacilitator = onlineMembers.find((m) => m.isFacilitator) || callingMember;
       if (callingMember.isSelf) {
-        PromoteFacilitatorMutation(atmosphere, {
-          facilitatorId: nextFacilitator.id,
-          disconnectedFacilitatorId: facilitator.id
-        }, dispatch);
+        PromoteFacilitatorMutation(
+          atmosphere,
+          {
+            facilitatorId: nextFacilitator.id,
+            disconnectedFacilitatorId: facilitator.id
+          },
+          dispatch
+        );
       }
     }
   }
@@ -205,7 +234,11 @@ class MeetingContainer extends Component {
     const {activeFacilitator, meetingPhase} = team;
     const isFacilitating = myTeamMemberId === activeFacilitator;
     const meetingPhaseInfo = actionMeeting[meetingPhase];
-    const safeRoute = generateMeetingRoute(maybeNextPhaseItem, maybeNextPhase || localPhase, this.props);
+    const safeRoute = generateMeetingRoute(
+      maybeNextPhaseItem,
+      maybeNextPhase || localPhase,
+      this.props
+    );
     if (!safeRoute) return;
     const {nextPhase, nextPhaseItem} = safeRoute;
     const nextPhaseInfo = actionMeeting[nextPhase];
@@ -251,20 +284,21 @@ class MeetingContainer extends Component {
   };
 
   rejoinFacilitator = () => {
-    const {history, teamId, viewer: {team: {facilitatorPhase, facilitatorPhaseItem}}} = this.props;
+    const {
+      history,
+      teamId,
+      viewer: {
+        team: {facilitatorPhase, facilitatorPhaseItem}
+      }
+    } = this.props;
     const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem);
     history.push(pushURL);
   };
 
-  render() {
+  render () {
     if (this.unsafeRoute) return <div />;
 
-    const {
-      localPhase,
-      localPhaseItem,
-      myTeamMemberId,
-      viewer
-    } = this.props;
+    const {localPhase, localPhaseItem, myTeamMemberId, viewer} = this.props;
     const {team} = viewer;
     const {
       activeFacilitator,
@@ -277,13 +311,15 @@ class MeetingContainer extends Component {
     } = team;
     const isFacilitating = activeFacilitator === myTeamMemberId;
 
-    const inSync = isFacilitating || facilitatorPhase === localPhase &&
-      // FIXME remove || when changing to relay. right now it's a null & an undefined
-      (facilitatorPhaseItem === localPhaseItem || !facilitatorPhaseItem && !localPhaseItem);
+    const inSync =
+      isFacilitating ||
+      (facilitatorPhase === localPhase &&
+        // FIXME remove || when changing to relay. right now it's a null & an undefined
+        (facilitatorPhaseItem === localPhaseItem || (!facilitatorPhaseItem && !localPhaseItem)));
 
     const isBehindMeeting = phaseArray.indexOf(localPhase) < phaseArray.indexOf(meetingPhase);
     const isLastPhaseItem = isLastItemOfPhase(localPhase, localPhaseItem, teamMembers, agendaItems);
-    const hideMoveMeetingControls = isFacilitating ? false : (!isBehindMeeting && isLastPhaseItem);
+    const hideMoveMeetingControls = isFacilitating ? false : !isBehindMeeting && isLastPhaseItem;
     const showMoveMeetingControls = isFacilitating;
     const facilitatorName = getFacilitatorName(activeFacilitator, teamMembers);
 
@@ -308,66 +344,64 @@ class MeetingContainer extends Component {
               localPhaseItem={localPhaseItem}
               team={team}
             />
-            {localPhase === UPDATES &&
-            <MeetingUpdatesPrompt
-              agendaInputRef={this.agendaInputRef}
-              gotoNext={this.gotoNext}
-              localPhaseItem={localPhaseItem}
-              updateUserHasTasks={this.state.updateUserHasTasks}
-              team={team}
-            />
-            }
+            {localPhase === UPDATES && (
+              <MeetingUpdatesPrompt
+                agendaInputRef={this.agendaInputRef}
+                gotoNext={this.gotoNext}
+                localPhaseItem={localPhaseItem}
+                updateUserHasTasks={this.state.updateUserHasTasks}
+                team={team}
+              />
+            )}
           </MeetingMainHeader>
           {localPhase === LOBBY && <MeetingLobby team={team} />}
-          {localPhase === CHECKIN &&
-          <MeetingCheckIn
-            facilitatorName={facilitatorName}
-            gotoItem={this.gotoItem}
-            gotoNext={this.gotoNext}
-            isFacilitating={isFacilitating}
-            localPhaseItem={localPhaseItem}
-            showMoveMeetingControls={showMoveMeetingControls}
-            team={team}
-          />
-          }
-          {localPhase === UPDATES &&
-          <MeetingUpdates
-            gotoItem={this.gotoItem}
-            gotoNext={this.gotoNext}
-            localPhaseItem={localPhaseItem}
-            setUpdateUserHasTasks={this.setUpdateUserHasTasks}
-            showMoveMeetingControls={showMoveMeetingControls}
-            viewer={viewer}
-          />
-          }
-          {localPhase === FIRST_CALL &&
-          <MeetingAgendaFirstCall
-            facilitatorName={facilitatorName}
-            gotoNext={this.gotoNext}
-            hideMoveMeetingControls={hideMoveMeetingControls}
-          />
-          }
-          {localPhase === AGENDA_ITEMS &&
-          <MeetingAgendaItems
-            facilitatorName={facilitatorName}
-            gotoNext={this.gotoNext}
-            hideMoveMeetingControls={hideMoveMeetingControls}
-            localPhaseItem={localPhaseItem}
-            showMoveMeetingControls={showMoveMeetingControls}
-            viewer={viewer}
-          />
-          }
-          {localPhase === LAST_CALL &&
-          <MeetingAgendaLastCall
-            facilitatorName={facilitatorName}
-            gotoNext={this.gotoNext}
-            hideMoveMeetingControls={hideMoveMeetingControls}
-            team={team}
-          />
-          }
-          {!inSync &&
-          <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator} />
-          }
+          {localPhase === CHECKIN && (
+            <MeetingCheckIn
+              facilitatorName={facilitatorName}
+              gotoItem={this.gotoItem}
+              gotoNext={this.gotoNext}
+              isFacilitating={isFacilitating}
+              localPhaseItem={localPhaseItem}
+              showMoveMeetingControls={showMoveMeetingControls}
+              team={team}
+            />
+          )}
+          {localPhase === UPDATES && (
+            <MeetingUpdates
+              gotoItem={this.gotoItem}
+              gotoNext={this.gotoNext}
+              localPhaseItem={localPhaseItem}
+              setUpdateUserHasTasks={this.setUpdateUserHasTasks}
+              showMoveMeetingControls={showMoveMeetingControls}
+              viewer={viewer}
+            />
+          )}
+          {localPhase === FIRST_CALL && (
+            <MeetingAgendaFirstCall
+              facilitatorName={facilitatorName}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+            />
+          )}
+          {localPhase === AGENDA_ITEMS && (
+            <MeetingAgendaItems
+              facilitatorName={facilitatorName}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+              localPhaseItem={localPhaseItem}
+              showMoveMeetingControls={showMoveMeetingControls}
+              viewer={viewer}
+            />
+          )}
+          {localPhase === LAST_CALL && (
+            <MeetingAgendaLastCall
+              facilitatorName={facilitatorName}
+              gotoNext={this.gotoNext}
+              hideMoveMeetingControls={hideMoveMeetingControls}
+              team={team}
+            />
+          )}
+          {!inSync && <RejoinFacilitatorButton onClickHandler={this.rejoinFacilitator} />}
         </MeetingMain>
       </MeetingLayout>
     );
@@ -377,15 +411,7 @@ class MeetingContainer extends Component {
 export default createFragmentContainer(
   connect()(
     dragDropContext(HTML5Backend)(
-      withHotkey(
-        withAtmosphere(
-          withMutationProps(
-            withRouter(
-              MeetingContainer
-            )
-          )
-        )
-      )
+      withHotkey(withAtmosphere(withMutationProps(withRouter(MeetingContainer))))
     )
   ),
   graphql`

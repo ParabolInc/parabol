@@ -23,10 +23,14 @@ export default {
     // RESOLUTION
     const stripeLineItems = await fetchAllLines(invoiceId);
     const invoice = await stripe.invoices.retrieve(invoiceId);
-    const {metadata: {orgId}} = await stripe.customers.retrieve(invoice.customer);
+    const {
+      metadata: {orgId}
+    } = await stripe.customers.retrieve(invoice.customer);
     await resolvePromiseObj({
       newInvoice: generateInvoice(invoice, stripeLineItems, orgId, invoiceId),
-      updatedStripeMetadata: stripe.invoices.update(invoiceId, {metadata: {orgId}})
+      updatedStripeMetadata: stripe.invoices.update(invoiceId, {
+        metadata: {orgId}
+      })
     });
     return true;
   }

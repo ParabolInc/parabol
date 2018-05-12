@@ -28,23 +28,36 @@ export default {
     const now = new Date();
 
     // VALIDATION
-    const {amount_due: amountDue, customer: customerId, metadata, subscription, paid} = await stripe.invoices.retrieve(invoiceId);
+    const {
+      amount_due: amountDue,
+      customer: customerId,
+      metadata,
+      subscription,
+      paid
+    } = await stripe.invoices.retrieve(invoiceId);
     let orgId = metadata.orgId;
     if (!orgId) {
-      ({metadata: {orgId}} = await stripe.customers.retrieve(customerId));
+      ({
+        metadata: {orgId}
+      } = await stripe.customers.retrieve(customerId));
       if (!orgId) {
         throw new Error(`Could not find orgId on invoice ${invoiceId}`);
       }
     }
-    const org = await r.table('Organization').get(orgId).pluck('creditCard', 'stripeSubscriptionId');
+    const org = await r
+      .table('Organization')
+      .get(orgId)
+      .pluck('creditCard', 'stripeSubscriptionId');
     const {creditCard, stripeSubscriptionId} = org;
 
     if (paid || stripeSubscriptionId !== subscription) return {orgId};
 
     // RESOLUTION
     const stripeLineItems = await fetchAllLines(invoiceId);
-    const nextMonthCharges = stripeLineItems.find((line) => line.description === null && line.proration === false);
-    const nextMonthAmount = nextMonthCharges && nextMonthCharges.amount || 0;
+    const nextMonthCharges = stripeLineItems.find(
+      (line) => line.description === null && line.proration === false
+    );
+    const nextMonthAmount = (nextMonthCharges && nextMonthCharges.amount) || 0;
 
     const orgDoc = await terminateSubscription(orgId);
     const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
@@ -71,7 +84,10 @@ export default {
     };
 
     await r({
-      update: r.table('Invoice').get(invoiceId).update({status: FAILED}),
+      update: r
+        .table('Invoice')
+        .get(invoiceId)
+        .update({status: FAILED}),
       insert: r.table('Notification').insert(notification)
     });
     const data = {orgId, notificationId};

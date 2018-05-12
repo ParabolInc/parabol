@@ -10,10 +10,7 @@ const TRIAL_EXPIRES_SOON_DELAY = ms('14d');
 /* eslint-disable max-len */
 
 exports.up = async (r) => {
-  const tables = [
-    r.tableCreate('Organization'),
-    r.tableCreate('Notification')
-  ];
+  const tables = [r.tableCreate('Organization'), r.tableCreate('Notification')];
   try {
     await Promise.all(tables);
   } catch (e) {
@@ -88,23 +85,31 @@ exports.up = async (r) => {
     }
   }
   const orgIds = Object.keys(orgs);
-  const stripeCustomers = await Promise.all(orgIds.map((orgId) => stripe.customers.create({metadata: {orgId}})));
-  const subscriptions = await Promise.all(stripeCustomers.map((customer) => {
-    return stripe.subscriptions.create({
-      customer: customer.id,
-      metadata: customer.metadata,
-      plan: ACTION_MONTHLY,
-      quantity: Object.keys(orgs[customer.metadata.orgId].orgUserMap).length,
-      trial_period_days: TRIAL_PERIOD_DAYS
-    });
-  }));
+  const stripeCustomers = await Promise.all(
+    orgIds.map((orgId) => stripe.customers.create({metadata: {orgId}}))
+  );
+  const subscriptions = await Promise.all(
+    stripeCustomers.map((customer) => {
+      return stripe.subscriptions.create({
+        customer: customer.id,
+        metadata: customer.metadata,
+        plan: ACTION_MONTHLY,
+        quantity: Object.keys(orgs[customer.metadata.orgId].orgUserMap).length,
+        trial_period_days: TRIAL_PERIOD_DAYS
+      });
+    })
+  );
   const orgsForDB = [];
   const notificationsForDB = [];
   for (let i = 0; i < subscriptions.length; i++) {
     const subscription = subscriptions[i];
     const currentPeriodStart = subscription.current_period_start;
     const currentPeriodEnd = subscription.current_period_end;
-    const {metadata: {orgId}, customer, id} = subscription;
+    const {
+      metadata: {orgId},
+      customer,
+      id
+    } = subscription;
     const periodEnd = fromEpochSeconds(currentPeriodEnd);
     const {leaderId, name, orgUserMap} = orgs[orgId];
     const orgUserIds = Object.keys(orgUserMap);
@@ -172,27 +177,35 @@ exports.up = async (r) => {
     };
   }
 
-  const teamUpdates = r.expr(teamsForDB).forEach((team) => r.table('Team').get(team('id')).update({
-    orgId: team('orgId'),
-    isPaid: true
-  }));
+  const teamUpdates = r.expr(teamsForDB).forEach((team) =>
+    r
+      .table('Team')
+      .get(team('id'))
+      .update({
+        orgId: team('orgId'),
+        isPaid: true
+      })
+  );
 
-  const userUpdates = r.expr(usersForDB).forEach((user) => r.table('User').get(user('id')).update({
-    inactive: false,
-    trialOrg: user('trialOrg').default(null),
-    userOrgs: user('userOrgs')
-  }, {returnChanges: true}));
+  const userUpdates = r.expr(usersForDB).forEach((user) =>
+    r
+      .table('User')
+      .get(user('id'))
+      .update(
+        {
+          inactive: false,
+          trialOrg: user('trialOrg').default(null),
+          userOrgs: user('userOrgs')
+        },
+        {returnChanges: true}
+      )
+  );
 
   const orgInserts = r.table('Organization').insert(orgsForDB);
   const notificationInserts = r.table('Notification').insert(notificationsForDB);
 
   try {
-    await Promise.all([
-      teamUpdates,
-      userUpdates,
-      orgInserts,
-      notificationInserts
-    ]);
+    await Promise.all([teamUpdates, userUpdates, orgInserts, notificationInserts]);
   } catch (e) {
     console.log(e);
   }

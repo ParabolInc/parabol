@@ -1,10 +1,18 @@
-import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLNonNull, GraphQLString} from 'graphql';
-
+import {
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+  GraphQLString
+} from 'graphql';
 
 const CreateAgendaItemInput = new GraphQLInputObjectType({
   name: 'CreateAgendaItemInput',
   fields: () => ({
-    content: {type: new GraphQLNonNull(GraphQLString), description: 'The content of the agenda item'},
+    content: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The content of the agenda item'
+    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)
     },

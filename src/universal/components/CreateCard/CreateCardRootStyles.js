@@ -1,5 +1,5 @@
-import {cardRootStyles} from 'universal/styles/helpers';
 import ui from 'universal/styles/ui';
+import cardRootStyles from 'universal/styles/helpers/cardRootStyles';
 
 const CreateCardRootStyles = {
   ...cardRootStyles,

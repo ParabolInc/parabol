@@ -21,7 +21,9 @@ const lightenedBase = '#fff';
 
 Object.keys(theme).forEach((color) => {
   alphaValues.forEach((value) => {
-    const alphaColor = tinycolor(theme[color]).setAlpha(value * 0.01).toRgbString();
+    const alphaColor = tinycolor(theme[color])
+      .setAlpha(value * 0.01)
+      .toRgbString();
     const alphaSlug = `${color}${value}a`;
     theme[alphaSlug] = alphaColor;
 

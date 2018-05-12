@@ -5,13 +5,13 @@ import {createFragmentContainer} from 'react-relay';
 import {NavLink} from 'react-router-dom';
 import Avatar from 'universal/components/Avatar/Avatar';
 import Badge from 'universal/components/Badge/Badge';
-import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import ui from 'universal/styles/ui';
 import styled, {css} from 'react-emotion';
 import LoadableStandardHubUserMenu from 'universal/components/LoadableStandardHubUserMenu';
 import LoadableMenu from 'universal/components/LoadableMenu';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -107,17 +107,16 @@ const StandardHub = (props) => {
   const notificationsCount = notifications ? notifications.length : 0;
   const {picture = '', preferredName = ''} = viewer || {};
 
-  const navLinkStyles = css(
-    notificationsStyles,
-    notificationsCount > 0 && notificationsWithBadge
-  );
+  const navLinkStyles = css(notificationsStyles, notificationsCount > 0 && notificationsWithBadge);
   const userAvatar = picture || defaultUserAvatar;
 
   return (
     <StandardHubRoot>
       <User>
         <Avatar hasBadge={false} picture={userAvatar} size="smaller" />
-        <PreferredName><span>{preferredName}</span></PreferredName>
+        <PreferredName>
+          <span>{preferredName}</span>
+        </PreferredName>
         <LoadableMenu
           LoadableComponent={LoadableStandardHubUserMenu}
           maxWidth={450}
@@ -136,11 +135,11 @@ const StandardHub = (props) => {
         to="/me/notifications"
       >
         <NotificationIcon name="bell" />
-        {notificationsCount > 0 &&
-        <BadgeBlock>
-          <Badge value={notificationsCount} />
-        </BadgeBlock>
-        }
+        {notificationsCount > 0 && (
+          <BadgeBlock>
+            <Badge value={notificationsCount} />
+          </BadgeBlock>
+        )}
       </NavLink>
     </StandardHubRoot>
   );

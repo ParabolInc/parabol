@@ -67,8 +67,22 @@ type Props = {
 };
 
 const NewMeetingLobby = (props: Props) => {
-  const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = props;
-  const {meetingSettings: {meetingsOffered, meetingsRemaining}, teamId, teamName, tier} = team;
+  const {
+    atmosphere,
+    history,
+    onError,
+    onCompleted,
+    meetingType,
+    submitMutation,
+    submitting,
+    team
+  } = props;
+  const {
+    meetingSettings: {meetingsOffered, meetingsRemaining},
+    teamId,
+    teamName,
+    tier
+  } = team;
   const onStartMeetingClick = () => {
     submitMutation();
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted);
@@ -81,33 +95,41 @@ const NewMeetingLobby = (props: Props) => {
     <Lobby>
       <LabelHeading>{`${meetingLabel} Meeting Lobby`}</LabelHeading>
       <MeetingPhaseHeading>{`${teamName} ${meetingLabel}`}</MeetingPhaseHeading>
+      {!isPro && (
+        <RetroExpository>
+          {
+            'A retrospective lets your team reflect on past work and discover opportunities for how to work better in the future'
+          }
+        </RetroExpository>
+      )}
       {!isPro &&
-      <RetroExpository>
-        {'A retrospective lets your team reflect on past work and discover opportunities for how to work better in the future'}
-      </RetroExpository>
-      }
-      {!isPro && !meetingsOffered &&
-      <GetAccessCopy>
-        <span>{'As a free user, you can start running retrospectives immediately with your team'}</span>
-        <LoadableModal
-          LoadableComponent={GetRetroAccessLoadable}
-          maxWidth={350}
-          maxHeight={225}
-          toggle={<Button
-            aria-label="Get Access Now"
-            buttonSize="large"
-            buttonStyle="solid"
-            colorPalette="cool"
-            depth={1}
-            isBlock
-            label="GET ACCESS NOW"
-            textTransform="uppercase"
-          />}
-        />
-      </GetAccessCopy>
-      }
+        !meetingsOffered && (
+        <GetAccessCopy>
+          <span>
+            {'As a free user, you can start running retrospectives immediately with your team'}
+          </span>
+          <LoadableModal
+            LoadableComponent={GetRetroAccessLoadable}
+            maxWidth={350}
+            maxHeight={225}
+            toggle={
+              <Button
+                aria-label="Get Access Now"
+                buttonSize="large"
+                buttonStyle="solid"
+                colorPalette="cool"
+                depth={1}
+                isBlock
+                label="GET ACCESS NOW"
+                textTransform="uppercase"
+              />
+            }
+          />
+        </GetAccessCopy>
+      )}
       <MeetingCopy>
-        {'The person who presses “Start Meeting” will be today’s Facilitator.'}<br />
+        {'The person who presses “Start Meeting” will be today’s Facilitator.'}
+        <br />
         {'Everyone’s display automatically follows the Facilitator.'}
       </MeetingCopy>
       <ButtonBlock>

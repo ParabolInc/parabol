@@ -1,4 +1,11 @@
-import {GraphQLEnumType, GraphQLFloat, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
+import {
+  GraphQLEnumType,
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType
+} from 'graphql';
 import NewMeeting, {newMeetingFields} from 'server/graphql/types/NewMeeting';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
 import {resolveForSU} from 'server/graphql/resolvers';
@@ -11,7 +18,8 @@ import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetin
 
 const ReflectionGroupSortEnum = new GraphQLEnumType({
   name: 'ReflectionGroupSortEnum',
-  description: 'sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.',
+  description:
+    'sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.',
   values: {
     voteCount: {}
   }
@@ -25,12 +33,14 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     ...newMeetingFields(),
     autoGroupThreshold: {
       type: GraphQLFloat,
-      description: 'the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.',
+      description:
+        'the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.',
       resolve: resolveForSU('autoGroupThreshold')
     },
     nextAutoGroupThreshold: {
       type: GraphQLFloat,
-      description: 'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved'
+      description:
+        'the next smallest distance threshold to guarantee at least 1 more grouping will be achieved'
     },
     reflectionGroups: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflectionGroup))),
@@ -41,13 +51,15 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         }
       },
       resolve: async ({id: meetingId}, {sortBy}, {dataLoader}) => {
-        const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId);
+        const reflectionGroups = await dataLoader
+          .get('retroReflectionGroupsByMeetingId')
+          .load(meetingId);
         if (sortBy === 'voteCount') {
           const groupsWithVotes = reflectionGroups.filter(({voterIds}) => voterIds.length > 0);
-          groupsWithVotes.sort((a, b) => a.voterIds.length < b.voterIds.length ? 1 : -1);
+          groupsWithVotes.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1));
           return groupsWithVotes;
         }
-        reflectionGroups.sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1);
+        reflectionGroups.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1));
         return reflectionGroups;
       }
     },
@@ -73,10 +85,14 @@ const RetrospectiveMeeting = new GraphQLObjectType({
     },
     votesRemaining: {
       type: new GraphQLNonNull(GraphQLInt),
-      description: 'The sum total of the votes remaining for the meeting members that are present in the meeting',
+      description:
+        'The sum total of the votes remaining for the meeting members that are present in the meeting',
       resolve: async ({id: meetingId}, args, {dataLoader}) => {
         const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId);
-        return meetingMembers.reduce((sum, member) => member.isCheckedIn ? sum + member.votesRemaining : sum, 0);
+        return meetingMembers.reduce(
+          (sum, member) => (member.isCheckedIn ? sum + member.votesRemaining : sum),
+          0
+        );
       }
     },
     viewerMeetingMember: {

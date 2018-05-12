@@ -17,7 +17,9 @@ const entitizeText = (contentState, selectionState) => {
       const tag = textTags[i];
       const startIdx = blockText.indexOf(tag);
       if (startIdx !== -1) {
-        const contentStateWithEntity = cs.createEntity('TAG', 'IMMUTABLE', {value: tag.slice(1)});
+        const contentStateWithEntity = cs.createEntity('TAG', 'IMMUTABLE', {
+          value: tag.slice(1)
+        });
         const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
         cs = Modifier.applyEntity(
           cs,
@@ -32,9 +34,11 @@ const entitizeText = (contentState, selectionState) => {
       }
     }
     if (focusKey === currentKey) {
-      return contentState === cs ? null : cs.merge({
-        selectionAfter: contentState.getSelectionAfter()
-      });
+      return contentState === cs
+        ? null
+        : cs.merge({
+          selectionAfter: contentState.getSelectionAfter()
+        });
     }
     currentKey = contentState.getKeyAfter(currentKey);
   }

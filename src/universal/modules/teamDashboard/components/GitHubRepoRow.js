@@ -14,20 +14,24 @@ import withStyles from 'universal/styles/withStyles';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 
 const getViewerInIntegration = (props) => {
-  const {environment: {userId}, teamId, repo: {teamMembers}} = props;
+  const {
+    environment: {userId},
+    teamId,
+    repo: {teamMembers}
+  } = props;
   const teamMemberId = `${userId}::${teamId}`;
   return Boolean(teamMembers.find((teamMember) => teamMember.id === teamMemberId));
 };
 
 class GitHubRepoRow extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       viewerInIntegration: getViewerInIntegration(props)
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {repo} = nextProps;
     if (this.props.repo !== repo) {
       const viewerInIntegration = getViewerInIntegration(nextProps);
@@ -49,7 +53,7 @@ class GitHubRepoRow extends Component {
     }
   };
 
-  render() {
+  render () {
     const {accessToken, environment, error, submitting, styles, repo} = this.props;
     const {id, adminUserId, nameWithOwner, teamMembers} = repo;
     const {userId} = environment;
@@ -78,16 +82,17 @@ class GitHubRepoRow extends Component {
             ))}
           </div>
           <div className={css(styles.actionButton)}>
-            {accessToken && !isCreator &&
-            <Button
-              buttonSize="small"
-              buttonStyle="flat"
-              colorPalette="dark"
-              waiting={submitting}
-              label={this.viewerInIntegration ? 'Unlink Me' : 'Link Me'}
-              onClick={this.toggleIntegrationMembership(id)}
-            />
-            }
+            {accessToken &&
+              !isCreator && (
+              <Button
+                buttonSize="small"
+                buttonStyle="flat"
+                colorPalette="dark"
+                waiting={submitting}
+                label={this.viewerInIntegration ? 'Unlink Me' : 'Link Me'}
+                onClick={this.toggleIntegrationMembership(id)}
+              />
+            )}
           </div>
         </IntegrationRow>
         {error && <div className={css(styles.errorRow)}>{error.message}</div>}

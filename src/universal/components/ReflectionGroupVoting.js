@@ -44,13 +44,28 @@ const CheckColumn = styled('div')({
 class ReflectionGroupVoting extends Component<Props> {
   vote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props;
-    const {meetingId, viewerMeetingMember: {isCheckedIn}} = meeting;
+    const {
+      meetingId,
+      viewerMeetingMember: {isCheckedIn}
+    } = meeting;
     const {reflectionGroupId} = reflectionGroup;
     submitMutation();
-    const sendVote = () => VoteForReflectionGroupMutation(atmosphere, {reflectionGroupId}, {meetingId}, onError, onCompleted);
+    const sendVote = () =>
+      VoteForReflectionGroupMutation(
+        atmosphere,
+        {reflectionGroupId},
+        {meetingId},
+        onError,
+        onCompleted
+      );
     if (!isCheckedIn) {
       const {viewerId: userId} = atmosphere;
-      NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: true}, onError, sendVote);
+      NewMeetingCheckInMutation(
+        atmosphere,
+        {meetingId, userId, isCheckedIn: true},
+        onError,
+        sendVote
+      );
     } else {
       sendVote();
     }
@@ -61,10 +76,16 @@ class ReflectionGroupVoting extends Component<Props> {
     const {meetingId} = meeting;
     const {reflectionGroupId} = reflectionGroup;
     submitMutation();
-    VoteForReflectionGroupMutation(atmosphere, {isUnvote: true, reflectionGroupId}, {meetingId}, onError, onCompleted);
+    VoteForReflectionGroupMutation(
+      atmosphere,
+      {isUnvote: true, reflectionGroupId},
+      {meetingId},
+      onError,
+      onCompleted
+    );
   };
 
-  render() {
+  render () {
     const {error, meeting, reflectionGroup} = this.props;
     const {viewerVoteCount = 0} = reflectionGroup;
     const {settings, viewerMeetingMember} = meeting;
@@ -75,7 +96,9 @@ class ReflectionGroupVoting extends Component<Props> {
     return (
       <CheckColumn>
         <CheckMarkRow>
-          {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.warm} onClick={this.unvote} />)}
+          {checkMarks.map((idx) => (
+            <CheckIcon key={idx} name="check" color={ui.palette.warm} onClick={this.unvote} />
+          ))}
           {canVote && <CheckIcon name="check" color={ui.palette.midGray} onClick={this.vote} />}
         </CheckMarkRow>
         {error && <StyledError>{error.message}</StyledError>}
@@ -100,6 +123,7 @@ export default createFragmentContainer(
         totalVotes
       }
     }
+
     fragment ReflectionGroupVoting_reflectionGroup on RetroReflectionGroup {
       reflectionGroupId: id
       viewerVoteCount

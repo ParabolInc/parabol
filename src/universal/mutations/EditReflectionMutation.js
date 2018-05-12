@@ -38,7 +38,12 @@ export const editReflectionTeamUpdater = (payload, store) => {
   handleEditReflection(payload, store);
 };
 
-const EditReflectionMutation = (atmosphere: Object, variables: Variables, onError?: ErrorHandler, onCompleted?: CompletedHandler) => {
+const EditReflectionMutation = (
+  atmosphere: Object,
+  variables: Variables,
+  onError?: ErrorHandler,
+  onCompleted?: CompletedHandler
+) => {
   commitMutation(atmosphere, {
     mutation,
     variables,
@@ -53,12 +58,13 @@ const EditReflectionMutation = (atmosphere: Object, variables: Variables, onErro
       const {reflectionId, isEditing} = variables;
       const reflection = store.get(reflectionId);
       const reflectionEditorIds = reflection.getValue('editorIds') || [];
-      const nextEditorIds = isEditing ? reflectionEditorIds.concat('tmpUser') : reflectionEditorIds.slice(1);
+      const nextEditorIds = isEditing
+        ? reflectionEditorIds.concat('tmpUser')
+        : reflectionEditorIds.slice(1);
       reflection.setValue(nextEditorIds, 'editorIds');
       reflection.setValue(nextEditorIds.length > 0, 'isEditing');
     }
   });
 };
-
 
 export default EditReflectionMutation;

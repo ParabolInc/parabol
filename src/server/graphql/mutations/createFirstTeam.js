@@ -24,7 +24,7 @@ export default {
       description: 'The new team object with exactly 1 team member'
     }
   },
-  async resolve(source, {newTeam}, {authToken}) {
+  async resolve (source, {newTeam}, {authToken}) {
     const r = getRethink();
 
     // AUTH
@@ -32,7 +32,8 @@ export default {
     const viewerId = getUserId(authToken);
 
     // VALIDATION
-    const user = await r.table('User')
+    const user = await r
+      .table('User')
       .get(viewerId)
       .pluck('id', 'preferredName', 'userOrgs');
 
@@ -45,8 +46,13 @@ export default {
     }
 
     const schema = createFirstTeamValidation();
-    const {data: {name}, errors} = schema(newTeam);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    const {
+      data: {name},
+      errors
+    } = schema(newTeam);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
     const orgId = shortid.generate();
@@ -54,7 +60,9 @@ export default {
     const validNewTeam = {id: teamId, orgId, name};
     const orgName = `${user.preferredName}’s Org`;
     await createNewOrg(orgId, orgName, viewerId);
-    const {newTeamUpdatedUser: {team, teamLead, tms}} = await resolvePromiseObj({
+    const {
+      newTeamUpdatedUser: {team, teamLead, tms}
+    } = await resolvePromiseObj({
       newTeamUpdatedUser: createTeamAndLeader(viewerId, validNewTeam, true),
       seedTeam: addSeedTasks(viewerId, teamId)
     });

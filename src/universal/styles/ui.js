@@ -124,13 +124,14 @@ const filterBlur = 'blur(1.5px)';
 // Theme Gradients TODO: theme-able?
 const gradientPurple = makeGradient(purpleLightened, purple);
 const gradientWarm = makeGradient(red, rose);
-const gradientWarmDarkened = makeGradient(
-  tinycolor(red).darken(3),
-  tinycolor(rose).darken(3)
-);
+const gradientWarmDarkened = makeGradient(tinycolor(red).darken(3), tinycolor(rose).darken(3));
 const gradientWarmLightened = makeGradient(
-  tinycolor(red).desaturate().lighten(),
-  tinycolor(rose).desaturate().lighten()
+  tinycolor(red)
+    .desaturate()
+    .lighten(),
+  tinycolor(rose)
+    .desaturate()
+    .lighten()
 );
 
 // Icons
@@ -277,11 +278,7 @@ const ui = {
       boxShadow: 'none'
     }
   },
-  buttonSizeOptions: [
-    BUTTON_SIZE_SMALL,
-    BUTTON_SIZE_MEDIUM,
-    BUTTON_SIZE_LARGE
-  ],
+  buttonSizeOptions: [BUTTON_SIZE_SMALL, BUTTON_SIZE_MEDIUM, BUTTON_SIZE_LARGE],
   buttonSizeStyles: {
     [BUTTON_SIZE_SMALL]: {
       fontSize: CONTROL_SMALL_FONT_SIZE,
@@ -398,7 +395,8 @@ const ui = {
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
-  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
+  emailFontFamily:
+    '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l, // email rule color
   emailRuleHeight: '1px', // email rule height
   emailRuleStyle: {
@@ -467,11 +465,7 @@ const ui = {
     cursor: 'not-allowed',
     opacity: '.5'
   },
-  fieldSizeOptions: [
-    FIELD_SIZE_SMALL,
-    FIELD_SIZE_MEDIUM,
-    FIELD_SIZE_LARGE
-  ],
+  fieldSizeOptions: [FIELD_SIZE_SMALL, FIELD_SIZE_MEDIUM, FIELD_SIZE_LARGE],
   fieldSizeStyles: {
     [FIELD_SIZE_SMALL]: {
       fontSize: CONTROL_SMALL_FONT_SIZE,
@@ -698,16 +692,7 @@ const ui = {
   tagGutter: '.75rem',
   tagHeight: '1rem',
   tagPadding: '0 .5rem',
-  tagPalette: [
-    'cool',
-    'gray',
-    'midGray',
-    'light',
-    'warm',
-    'yellow',
-    'blue',
-    'white'
-  ],
+  tagPalette: ['cool', 'gray', 'midGray', 'light', 'warm', 'yellow', 'blue', 'white'],
 
   // Tooltips
   // ---------------------------------------------------------------------------

@@ -13,7 +13,6 @@ import React, {Component, Fragment} from 'react';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken';
-import {AuthPage, LoadingView} from 'universal/components';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
 import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
@@ -21,6 +20,8 @@ import getWebAuth from 'universal/utils/getWebAuth';
 import promisify from 'es6-promisify';
 import SignIn from './SignIn';
 import autoLogin from 'universal/decorators/autoLogin';
+import LoadingView from 'universal/components/LoadingView/LoadingView';
+import AuthPage from 'universal/components/AuthPage/AuthPage';
 
 type Props = {
   atmosphere: Object,
@@ -43,7 +44,7 @@ class SignInPage extends Component<Props, State> {
     submittingCredentials: false
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this.maybeCaptureAuthResponse();
   }
 
@@ -96,19 +97,19 @@ class SignInPage extends Component<Props, State> {
 
   renderLoading = () => {
     return <LoadingView />;
-  }
+  };
 
   renderLoadingError = () => {
     return (
       <Fragment>
-        <h1>
-          🤭 Oops!
-        </h1>
+        <h1>🤭 Oops!</h1>
+        <p>We had some trouble signing you in!</p>
         <p>
-          We had some trouble signing you in!
-        </p>
-        <p>
-          Try going back to the <Link to="/signin" onClick={this.resetState}>Sign in page</Link> in order to sign in again.
+          Try going back to the{' '}
+          <Link to="/signin" onClick={this.resetState}>
+            Sign in page
+          </Link>{' '}
+          in order to sign in again.
         </p>
       </Fragment>
     );
@@ -127,7 +128,7 @@ class SignInPage extends Component<Props, State> {
     );
   };
 
-  render() {
+  render () {
     const {loggingIn, error} = this.state;
     let pageContent: Node;
     if (loggingIn && !error) {
@@ -137,18 +138,8 @@ class SignInPage extends Component<Props, State> {
     } else {
       pageContent = this.renderSignIn();
     }
-    return (
-      <AuthPage title="Sign In | Parabol">
-        {pageContent}
-      </AuthPage>
-    );
+    return <AuthPage title="Sign In | Parabol">{pageContent}</AuthPage>;
   }
 }
 
-export default withAtmosphere(
-  autoLogin(
-    withRouter(
-      connect()(SignInPage)
-    )
-  )
-);
+export default withAtmosphere(autoLogin(withRouter(connect()(SignInPage))));

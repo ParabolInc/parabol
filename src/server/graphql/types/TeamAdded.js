@@ -10,7 +10,8 @@ const TeamAdded = new GraphQLObjectType({
   fields: () => ({
     notification: {
       type: NotifyAddedToTeam,
-      description: 'The notification that you were just added, if this is a reactivation or acceptance',
+      description:
+        'The notification that you were just added, if this is a reactivation or acceptance',
       resolve: resolveNotification
     },
     removedTeamInviteNotification: {

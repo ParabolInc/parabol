@@ -7,12 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 
 const MeetingFacilitationHint = (props) => {
-  const {
-    children,
-    showEllipsis,
-    showParens,
-    styles
-  } = props;
+  const {children, showEllipsis, showParens, styles} = props;
   const ellipsis = showEllipsis && <Ellipsis />;
   return (
     <div className={css(styles.facilitationHint)}>

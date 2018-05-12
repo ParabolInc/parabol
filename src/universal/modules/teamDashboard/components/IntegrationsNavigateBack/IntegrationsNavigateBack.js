@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router-dom';
 import styled from 'react-emotion';
-import {DashNavControl} from 'universal/components';
+import DashNavControl from 'universal/components/DashNavControl/DashNavControl';
 
 const RootBlock = styled('div')({
   margin: '1rem 0'

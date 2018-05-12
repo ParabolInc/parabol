@@ -16,7 +16,12 @@ const query = graphql`
   }
 `;
 
-const NewTeamRoot = ({atmosphere, match: {params: {defaultOrgId}}}) => {
+const NewTeamRoot = ({
+  atmosphere,
+  match: {
+    params: {defaultOrgId}
+  }
+}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -25,24 +30,23 @@ const NewTeamRoot = ({atmosphere, match: {params: {defaultOrgId}}}) => {
         return (
           <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps && <AnimatedFade key="1">
-              <NewTeam
-                defaultOrgId={defaultOrgId}
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>}
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
-            </AnimatedFade>
-            }
+            {renderProps && (
+              <AnimatedFade key="1">
+                <NewTeam defaultOrgId={defaultOrgId} viewer={renderProps.viewer} />
+              </AnimatedFade>
+            )}
+            {!renderProps &&
+              !error && (
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingComponent height={'5rem'} />
+              </AnimatedFade>
+            )}
           </TransitionGroup>
         );
       }}
     />
   );
 };
-
 
 NewTeamRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,

@@ -8,13 +8,13 @@ export default (reducerObj) => (ComposedComponent) => {
       store: PropTypes.object
     };
 
-    componentWillMount() {
+    componentWillMount () {
       const {store} = this.context;
       const newReducers = makeReducer(reducerObj);
       store.replaceReducer(newReducers);
     }
 
-    render() {
+    render () {
       return <ComposedComponent {...this.props} />;
     }
   }

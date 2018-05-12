@@ -53,10 +53,7 @@ const HelpCopy = styled('div')({
 });
 
 const NewTeam = (props) => {
-  const {
-    defaultOrgId,
-    viewer
-  } = props;
+  const {defaultOrgId, viewer} = props;
 
   const {organizations} = viewer;
   const firstOrgId = organizations[0] && organizations[0].id;
@@ -71,9 +68,7 @@ const NewTeam = (props) => {
         />
         <HelpLayout>
           <HelpBlock>
-            <HelpHeading>
-              {'What’s an Organization?'}
-            </HelpHeading>
+            <HelpHeading>{'What’s an Organization?'}</HelpHeading>
             <HelpCopy>
               {`It’s the billing entity for a group of teams
               such as a company, non-profit, or
@@ -83,7 +78,8 @@ const NewTeam = (props) => {
             </HelpCopy>
             <HelpCopy>
               {'New Organizations start out on the '}
-              <b>{'Free Personal Plan'}</b>{'.'}
+              <b>{'Free Personal Plan'}</b>
+              {'.'}
             </HelpCopy>
             <Button
               buttonSize="small"
@@ -92,7 +88,7 @@ const NewTeam = (props) => {
               icon="external-link-square"
               iconPlacement="right"
               label="Learn More"
-              onClick={() => (window.open(PRICING_LINK, '_blank'))}
+              onClick={() => window.open(PRICING_LINK, '_blank')}
             />
           </HelpBlock>
         </HelpLayout>

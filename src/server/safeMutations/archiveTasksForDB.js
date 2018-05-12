@@ -20,12 +20,16 @@ const archiveTasksForDB = async (tasks, dataLoader) => {
     };
   });
   const updatedTasks = await r(tasksToArchive).forEach((task) => {
-    return r.table('Task')
+    return r
+      .table('Task')
       .get(task('id'))
-      .update({
-        content: task('content'),
-        tags: task('tags')
-      }, {returnChanges: true});
+      .update(
+        {
+          content: task('content'),
+          tags: task('tags')
+        },
+        {returnChanges: true}
+      );
   })('changes')('new_val');
 
   if (dataLoader) {

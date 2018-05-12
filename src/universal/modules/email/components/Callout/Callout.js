@@ -36,10 +36,7 @@ const Callout = (props) => {
 Callout.propTypes = {
   children: PropTypes.any,
   fontSize: PropTypes.number,
-  fontWeight: PropTypes.oneOf([
-    400,
-    600
-  ]),
+  fontWeight: PropTypes.oneOf([400, 600]),
   lineHeight: PropTypes.number,
   padding: PropTypes.number,
   vSpacing: PropTypes.number,

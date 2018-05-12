@@ -26,9 +26,10 @@ const Header = (props) => {
   };
 
   const variantLogo = 'email-header-branding-white';
-  const provider = imgProvider === 'hubspot' ?
-    'https://email.parabol.co/hubfs/app-emails/' :
-    '/static/images/email/email-header-branding/';
+  const provider =
+    imgProvider === 'hubspot'
+      ? 'https://email.parabol.co/hubfs/app-emails/'
+      : '/static/images/email/email-header-branding/';
   const imageSrc = `${provider}${variantLogo}@2x.png`;
 
   return (
@@ -51,10 +52,7 @@ const Header = (props) => {
 };
 
 Header.propTypes = {
-  imgProvider: PropTypes.oneOf([
-    'app',
-    'hubspot'
-  ])
+  imgProvider: PropTypes.oneOf(['app', 'hubspot'])
 };
 
 Header.defaultProps = {

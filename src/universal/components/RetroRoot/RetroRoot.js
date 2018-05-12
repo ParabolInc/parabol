@@ -45,7 +45,9 @@ type Props = {
 
 const meetingType = RETROSPECTIVE;
 const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
-  const {params: {localPhase, teamId}} = match;
+  const {
+    params: {localPhase, teamId}
+  } = match;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -59,7 +61,13 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight="50vh" />}
-          ready={<NewMeetingWithLocalState localPhase={localPhase} match={match} meetingType={meetingType} />}
+          ready={
+            <NewMeetingWithLocalState
+              localPhase={localPhase}
+              match={match}
+              meetingType={meetingType}
+            />
+          }
         />
       )}
     />

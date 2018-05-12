@@ -87,7 +87,7 @@ type Props = {
   meetingType: MeetingTypeEnum,
   submitting: boolean,
   viewer: Viewer
-}
+};
 
 type Variables = {
   meetingId: string,
@@ -96,7 +96,7 @@ type Variables = {
 };
 
 class NewMeeting extends Component<Props> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     const {bindHotkey} = props;
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext));
@@ -105,25 +105,42 @@ class NewMeeting extends Component<Props> {
   }
 
   endMeeting = () => {
-    const {atmosphere, dispatch, history, viewer: {team: {newMeeting}}} = this.props;
+    const {
+      atmosphere,
+      dispatch,
+      history,
+      viewer: {
+        team: {newMeeting}
+      }
+    } = this.props;
     if (!newMeeting) return;
     const {meetingId} = newMeeting;
     EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history});
-  }
+  };
 
   gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
-    const {atmosphere, submitting, viewer: {team: {newMeeting}}} = this.props;
+    const {
+      atmosphere,
+      submitting,
+      viewer: {
+        team: {newMeeting}
+      }
+    } = this.props;
     if (submitting) return;
     if (!newMeeting) return;
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting;
     const {viewerId} = atmosphere;
     const isViewerFacilitator = viewerId === facilitatorUserId;
-    const {stage: {isNavigable, isNavigableByFacilitator}} = findStageById(phases, facilitatorStageId);
+    const {
+      stage: {isNavigable, isNavigableByFacilitator}
+    } = findStageById(phases, facilitatorStageId);
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
     if (!canNavigate) return;
     updateLocalStage(atmosphere, meetingId, stageId);
     if (isViewerFacilitator && isNavigableByFacilitator) {
-      const {stage: {isComplete}} = findStageById(phases, facilitatorStageId);
+      const {
+        stage: {isComplete}
+      } = findStageById(phases, facilitatorStageId);
       const variables: Variables = {meetingId, facilitatorStageId: stageId};
       if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
         variables.completedStageId = facilitatorStageId;
@@ -134,9 +151,20 @@ class NewMeeting extends Component<Props> {
   };
 
   gotoNext = (options) => {
-    const {atmosphere, submitting, viewer: {team: {newMeeting}}} = this.props;
+    const {
+      atmosphere,
+      submitting,
+      viewer: {
+        team: {newMeeting}
+      }
+    } = this.props;
     if (!newMeeting || submitting) return;
-    const {meetingId, localPhase: {phaseType}, localStage: {localStageId, teamMember}, phases} = newMeeting;
+    const {
+      meetingId,
+      localPhase: {phaseType},
+      localStage: {localStageId, teamMember},
+      phases
+    } = newMeeting;
     // it feels dirty to put phase-specific logic here,
     // but if we didn't each phase would have to handle the keybinding & unbind it on a setTimeout, which is dirtier
     if (phaseType === CHECKIN) {
@@ -146,26 +174,41 @@ class NewMeeting extends Component<Props> {
       const {isCheckedIn} = meetingMember;
       const nextCheckedInValue = options ? options.isCheckedIn : true;
       if (isCheckedIn !== nextCheckedInValue) {
-        NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: nextCheckedInValue});
+        NewMeetingCheckInMutation(atmosphere, {
+          meetingId,
+          userId,
+          isCheckedIn: nextCheckedInValue
+        });
       }
     }
     const nextStageRes = findStageAfterId(phases, localStageId);
     if (!nextStageRes) return;
-    const {stage: {id: nextStageId}} = nextStageRes;
+    const {
+      stage: {id: nextStageId}
+    } = nextStageRes;
     this.gotoStageId(nextStageId);
-  }
+  };
 
   gotoPrev = () => {
-    const {viewer: {team: {newMeeting}}} = this.props;
+    const {
+      viewer: {
+        team: {newMeeting}
+      }
+    } = this.props;
     if (!newMeeting) return;
-    const {localStage: {localStageId}, phases} = newMeeting;
+    const {
+      localStage: {localStageId},
+      phases
+    } = newMeeting;
     const nextStageRes = findStageBeforeId(phases, localStageId);
     if (!nextStageRes) return;
-    const {stage: {id: nextStageId}} = nextStageRes;
+    const {
+      stage: {id: nextStageId}
+    } = nextStageRes;
     this.gotoStageId(nextStageId);
-  }
+  };
 
-  render() {
+  render () {
     const {atmosphere, meetingType, viewer} = this.props;
     const {team} = viewer;
     const {newMeeting, teamName} = team;
@@ -178,27 +221,36 @@ class NewMeeting extends Component<Props> {
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
-        <NewMeetingSidebar gotoStageId={this.gotoStageId} meetingType={meetingType} viewer={viewer} />
+        <NewMeetingSidebar
+          gotoStageId={this.gotoStageId}
+          meetingType={meetingType}
+          viewer={viewer}
+        />
         <MeetingArea>
           <MeetingAreaHeader>
             <NewMeetingPhaseHeading meeting={newMeeting} />
-            <NewMeetingAvatarGroup
-              gotoStageId={this.gotoStageId}
-              team={team}
-            />
+            <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
           </MeetingAreaHeader>
           <ErrorBoundary>
             <React.Fragment>
-              {localPhaseType === CHECKIN && <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />}
-              {localPhaseType === REFLECT && <RetroReflectPhase gotoNext={this.gotoNext} team={team} />}
+              {localPhaseType === CHECKIN && (
+                <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />
+              )}
+              {localPhaseType === REFLECT && (
+                <RetroReflectPhase gotoNext={this.gotoNext} team={team} />
+              )}
               {localPhaseType === GROUP && <RetroGroupPhase gotoNext={this.gotoNext} team={team} />}
               {localPhaseType === VOTE && <RetroVotePhase gotoNext={this.gotoNext} team={team} />}
-              {localPhaseType === DISCUSS && <RetroDiscussPhase gotoNext={this.gotoNext} team={team} />}
+              {localPhaseType === DISCUSS && (
+                <RetroDiscussPhase gotoNext={this.gotoNext} team={team} />
+              )}
               {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
             </React.Fragment>
           </ErrorBoundary>
         </MeetingArea>
-        {!inSync && <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />}
+        {!inSync && (
+          <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />
+        )}
         <MeetingHelpBlock isFacilitating={isFacilitating}>
           <MeetingHelpDialog phase={localPhaseType || LOBBY} />
         </MeetingHelpBlock>
@@ -209,17 +261,7 @@ class NewMeeting extends Component<Props> {
 
 export default createFragmentContainer(
   dragDropContext(HTML5Backend)(
-    withHotkey(
-      withAtmosphere(
-        withMutationProps(
-          withRouter(
-            connect()(
-              NewMeeting
-            )
-          )
-        )
-      )
-    )
+    withHotkey(withAtmosphere(withMutationProps(withRouter(connect()(NewMeeting)))))
   ),
   graphql`
     fragment NewMeeting_viewer on User {

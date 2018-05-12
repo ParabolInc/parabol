@@ -6,10 +6,7 @@ import mentionBaseStyles from '../MentionBase/mentionBaseStyles';
 
 const MentionTag = (props) => {
   const {active, description, name, styles} = props;
-  const itemStyle = css(
-    styles.row,
-    active && styles.active
-  );
+  const itemStyle = css(styles.row, active && styles.active);
   return (
     <div className={itemStyle}>
       <div className={css(styles.value)}>{name}</div>

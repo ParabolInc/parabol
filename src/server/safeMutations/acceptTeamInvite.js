@@ -12,7 +12,10 @@ const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
   const r = getRethink();
   const now = new Date();
   const userId = getUserId(authToken);
-  const {team: {orgId}, user} = await r({
+  const {
+    team: {orgId},
+    user
+  } = await r({
     team: r.table('Team').get(teamId),
     user: r.table('User').get(userId)
   });
@@ -23,19 +26,25 @@ const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
     userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
     teamMember: insertNewTeamMember(userId, teamId),
     // find all possible emails linked to this person and mark them as accepted
-    removedInvitationId: r.table('Invitation')
+    removedInvitationId: r
+      .table('Invitation')
       .getAll(email, {index: 'email'})
       .filter({teamId})
-      .update({
-        acceptedAt: now,
-        // flag the token as expired so they cannot reuse the token
-        tokenExpiration: new Date(0),
-        updatedAt: now
-      }, {returnChanges: true})('changes')(0)('new_val')('id').default(null),
+      .update(
+        {
+          acceptedAt: now,
+          // flag the token as expired so they cannot reuse the token
+          tokenExpiration: new Date(0),
+          updatedAt: now
+        },
+        {returnChanges: true}
+      )('changes')(0)('new_val')('id')
+      .default(null),
     removedNotification: getTeamInviteNotifications(orgId, teamId, [email])
       .delete({returnChanges: true})('changes')(0)('old_val')
       .default(null),
-    removedSoftTeamMember: r.table('SoftTeamMember')
+    removedSoftTeamMember: r
+      .table('SoftTeamMember')
       .getAll(email, {index: 'email'})
       .filter({isActive: true, teamId})
       .nth(0)
@@ -44,9 +53,12 @@ const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
   });
   const teamMemberId = toTeamMemberId(teamId, userId);
 
-  const hardenedTasks = await r.table('Task')
+  const hardenedTasks = await r
+    .table('Task')
     .getAll(removedSoftTeamMember.id, {index: 'assigneeId'})
-    .update({assigneeId: teamMemberId, isSoftTask: false}, {returnChanges: true})('changes')('new_val')
+    .update({assigneeId: teamMemberId, isSoftTask: false}, {returnChanges: true})('changes')(
+      'new_val'
+    )
     .default([]);
 
   if (!userInOrg) {

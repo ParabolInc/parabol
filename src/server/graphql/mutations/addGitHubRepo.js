@@ -11,13 +11,17 @@ import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions';
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos';
 import fetch from 'node-fetch';
 import {
-  sendGitHubAdministratorError, sendGitHubPassedThoughError, sendTeamAccessError
+  sendGitHubAdministratorError,
+  sendGitHubPassedThoughError,
+  sendTeamAccessError
 } from 'server/utils/authorizationErrors';
 import {sendGitHubProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
 const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {
   const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`;
-  const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
+  const res = await fetch(endpoint, {
+    headers: {Authorization: `Bearer ${accessToken}`}
+  });
   const webhooks = await res.json();
   // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
   if (Array.isArray(webhooks) && webhooks.length === 0) {
@@ -44,7 +48,9 @@ query getOrg($login: String!) {
 const createOrgWebhook = async (accessToken, nameWithOwner) => {
   const [owner] = nameWithOwner.split('/');
   const endpoint = `https://api.github.com/orgs/${owner}/hooks`;
-  const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
+  const res = await fetch(endpoint, {
+    headers: {Authorization: `Bearer ${accessToken}`}
+  });
   const webhooks = await res.json();
   // no need for an extra call to repositoryOwner to find out if its an org because personal or no access is handled the same
   if (Array.isArray(webhooks) && webhooks.length === 0) {
@@ -57,7 +63,11 @@ const createOrgWebhook = async (accessToken, nameWithOwner) => {
     if (profileRes.errors) {
       throw profileRes.errors;
     }
-    const {data: {organization: {databaseId}}} = profileRes;
+    const {
+      data: {
+        organization: {databaseId}
+      }
+    } = profileRes;
     const publickKey = String(databaseId);
     const createHookParams = makeGitHubWebhookParams(publickKey, ['organization']);
     fetch(endpoint, makeGitHubPostOptions(accessToken, createHookParams));
@@ -79,24 +89,36 @@ export default {
     const r = getRethink();
     const now = new Date();
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
     const userId = getUserId(authToken);
 
     // VALIDATION
-    const allTeamProviders = await r.table('Provider')
+    const allTeamProviders = await r
+      .table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({service: GITHUB, isActive: true});
 
     const viewerProviderIdx = allTeamProviders.findIndex((provider) => provider.userId === userId);
-    if (viewerProviderIdx === -1) return sendGitHubProviderNotFoundError(authToken, {teamId, nameWithOwner});
+    if (viewerProviderIdx === -1) {
+      return sendGitHubProviderNotFoundError(authToken, {
+        teamId,
+        nameWithOwner
+      });
+    }
     // first check if the viewer has permission. then, check the rest
     const {accessToken} = allTeamProviders[viewerProviderIdx];
     const viewerPermissions = await tokenCanAccessRepo(accessToken, nameWithOwner);
     const {data, errors} = viewerPermissions;
     if (errors) return sendGitHubPassedThoughError(authToken, errors);
 
-    const {repository: {viewerCanAdminister, databaseId: ghRepoId}} = data;
-    if (!viewerCanAdminister) return sendGitHubAdministratorError(authToken, nameWithOwner);
+    const {
+      repository: {viewerCanAdminister, databaseId: ghRepoId}
+    } = data;
+    if (!viewerCanAdminister) {
+      return sendGitHubAdministratorError(authToken, nameWithOwner);
+    }
 
     // RESOLUTION
 
@@ -105,7 +127,8 @@ export default {
     createOrgWebhook(accessToken, nameWithOwner);
 
     // create or rehydrate the integration
-    const newRepo = await r.table(GITHUB)
+    const newRepo = await r
+      .table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({nameWithOwner})
       .nth(0)('id')
@@ -113,8 +136,8 @@ export default {
       .do((integrationId) => {
         return r.branch(
           integrationId.eq(null),
-          r.table(GITHUB)
-            .insert({
+          r.table(GITHUB).insert(
+            {
               id: shortid.generate(),
               adminUserId: userId,
               createdAt: now,
@@ -123,15 +146,21 @@ export default {
               nameWithOwner,
               teamId,
               userIds: [userId]
-            }, {returnChanges: true})('changes')(0)('new_val'),
-          r.table(GITHUB)
+            },
+            {returnChanges: true}
+          )('changes')(0)('new_val'),
+          r
+            .table(GITHUB)
             .get(integrationId)
-            .update({
-              adminUserId: userId,
-              isActive: true,
-              userIds: [userId],
-              updatedAt: now
-            }, {returnChanges: true})('changes')(0)('new_val')
+            .update(
+              {
+                adminUserId: userId,
+                isActive: true,
+                userIds: [userId],
+                updatedAt: now
+              },
+              {returnChanges: true}
+            )('changes')(0)('new_val')
         );
       });
 
@@ -148,15 +177,18 @@ export default {
     const repo = {
       ...newRepo,
       userIds,
-      teamMembers: await r.table('TeamMember')
+      teamMembers: await r
+        .table('TeamMember')
         .getAll(r.args(userIds), {index: 'userId'})
         .filter({teamId})
         .pluck('preferredName', 'picture', 'id')
     };
 
     const githubRepoAdded = {repo};
-    getPubSub().publish(`githubRepoAdded.${teamId}`, {githubRepoAdded, mutatorId});
-
+    getPubSub().publish(`githubRepoAdded.${teamId}`, {
+      githubRepoAdded,
+      mutatorId
+    });
 
     // set up webhooks
     // const createHookParams = {

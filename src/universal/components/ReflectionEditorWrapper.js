@@ -27,7 +27,7 @@ type Props = {
   removeModal?: () => void,
   renderModal?: () => void,
   setEditorState: () => void,
-  innerRef: () => void,
+  innerRef: () => void
 };
 
 const editorBlockquote = css({
@@ -61,7 +61,7 @@ const EditorStyles = styled('div')(({isBlurred}) => ({
 }));
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
-  componentDidMount() {
+  componentDidMount () {
     const {editorState} = this.props;
     if (!editorState.getCurrentContent().hasText()) {
       setTimeout(() => {
@@ -153,7 +153,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       return handleBeforeInput(char);
     }
     return undefined;
-  }
+  };
 
   handlePastedText = (text) => {
     if (text) {
@@ -178,8 +178,17 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   };
 
-  render() {
-    const {ariaLabel, editorState, isBlurred, onBlur, onFocus, placeholder, renderModal, readOnly} = this.props;
+  render () {
+    const {
+      ariaLabel,
+      editorState,
+      isBlurred,
+      onBlur,
+      onFocus,
+      placeholder,
+      renderModal,
+      readOnly
+    } = this.props;
     // Folks may want to copy text from reflection cards to quote in task cards,
     // so going to allow unless AnonymousReflectionCard.
     // If isBlurred is true or false it’s probably from the AnonymousReflectionCard.
@@ -202,7 +211,11 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
           placeholder={placeholder}
           readOnly={readOnly}
           ref={this.setEditorRef}
-          style={{padding: '.75rem', userSelect, WebkitUserSelect: userSelect}}
+          style={{
+            padding: '.75rem',
+            userSelect,
+            WebkitUserSelect: userSelect
+          }}
         />
         {renderModal && renderModal()}
       </EditorStyles>
@@ -210,7 +223,4 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
   }
 }
 
-export default withEmojis(withMarkdown(
-  withKeyboardShortcuts((ReflectionEditorWrapper)
-  ))
-);
+export default withEmojis(withMarkdown(withKeyboardShortcuts(ReflectionEditorWrapper)));

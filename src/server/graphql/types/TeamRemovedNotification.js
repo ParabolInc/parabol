@@ -8,7 +8,7 @@ import {KICKED_OUT, TEAM_ARCHIVED} from 'universal/utils/constants';
 const TeamRemovedNotification = new GraphQLInterfaceType({
   name: 'TeamRemovedNotification',
   fields: () => notificationInterfaceFields,
-  resolveType(value) {
+  resolveType (value) {
     // type lookup needs to be resolved in a thunk since there is a circular reference when loading
     // alternative to treating it like a DB driver if GCing is an issue
     const resolveTypeLookup = {

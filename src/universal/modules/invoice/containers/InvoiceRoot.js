@@ -16,7 +16,12 @@ const query = graphql`
   }
 `;
 
-const InvoiceRoot = ({atmosphere, match: {params: {invoiceId}}}) => {
+const InvoiceRoot = ({
+  atmosphere,
+  match: {
+    params: {invoiceId}
+  }
+}) => {
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -26,14 +31,17 @@ const InvoiceRoot = ({atmosphere, match: {params: {invoiceId}}}) => {
         return (
           <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {queryProps && <AnimatedFade key="1">
-              <Invoice viewer={queryProps.viewer} />
-            </AnimatedFade>}
-            {!queryProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
-            </AnimatedFade>
-            }
+            {queryProps && (
+              <AnimatedFade key="1">
+                <Invoice viewer={queryProps.viewer} />
+              </AnimatedFade>
+            )}
+            {!queryProps &&
+              !error && (
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingComponent height={'5rem'} />
+              </AnimatedFade>
+            )}
           </TransitionGroup>
         );
       }}

@@ -15,7 +15,9 @@ import withStyles from 'universal/styles/withStyles';
 import inviteUserValidation from './inviteUserValidation';
 
 const makeSchemaProps = (props) => {
-  const {team: {invitations, orgApprovals, teamMembers}} = props;
+  const {
+    team: {invitations, orgApprovals, teamMembers}
+  } = props;
   const inviteEmails = invitations.map((i) => i.email);
   const teamMemberEmails = teamMembers.map((i) => i.email);
   const orgApprovalEmails = orgApprovals.map((i) => i.email);
@@ -36,22 +38,16 @@ const fieldStyles = {
 };
 
 const InviteUser = (props) => {
-  const {
-    atmosphere,
-    dispatch,
-    handleSubmit,
-    styles,
-    submitting,
-    team,
-    touch,
-    untouch
-  } = props;
+  const {atmosphere, dispatch, handleSubmit, styles, submitting, team, touch, untouch} = props;
   const {teamId} = team;
 
   const updateEditable = async (submissionData) => {
     const schemaProps = makeSchemaProps(props);
     const schema = inviteUserValidation(schemaProps);
-    const {data: {inviteTeamMember}, errors} = schema(submissionData);
+    const {
+      data: {inviteTeamMember},
+      errors
+    } = schema(submissionData);
     if (Object.keys(errors).length) {
       throw new SubmissionError(errors);
     }
@@ -128,9 +124,7 @@ const styleThunk = () => ({
  */
 export default createFragmentContainer(
   withAtmosphere(
-    reduxForm({form: 'inviteTeamMember', validate})(
-      withStyles(styleThunk)(InviteUser)
-    )
+    reduxForm({form: 'inviteTeamMember', validate})(withStyles(styleThunk)(InviteUser))
   ),
   graphql`
     fragment InviteUser_team on Team {
@@ -145,6 +139,5 @@ export default createFragmentContainer(
         email
       }
     }
-
   `
 );

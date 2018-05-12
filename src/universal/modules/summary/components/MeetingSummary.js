@@ -7,9 +7,10 @@ import ui from 'universal/styles/ui';
 import {MEETING_NAME, MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
 
-
 const MeetingSummary = (props) => {
-  const {viewer: {meeting}} = props;
+  const {
+    viewer: {meeting}
+  } = props;
   const {meetingNumber, teamId, teamName} = meeting;
   const title = `${MEETING_NAME} ${MEETING_SUMMARY_LABEL} | ${teamName} | ${meetingNumber}`;
   const meetingUrl = makeHref(`/meeting/${teamId}`);

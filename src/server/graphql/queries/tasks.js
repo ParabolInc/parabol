@@ -19,12 +19,14 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(source, {teamId}, {authToken, dataLoader}) {
+  async resolve (source, {teamId}, {authToken, dataLoader}) {
     // AUTH
     const userId = getUserId(authToken);
     let tasks;
     if (teamId) {
-      if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
+      if (!isTeamMember(authToken, teamId)) {
+        return sendTeamAccessError(authToken, teamId, null);
+      }
       tasks = await dataLoader.get('tasksByTeamId').load(teamId);
     } else {
       tasks = await dataLoader.get('tasksByUserId').load(userId);

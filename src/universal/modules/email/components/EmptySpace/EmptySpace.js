@@ -19,7 +19,6 @@ const EmptySpace = (props) => {
         <tr>
           <td
             dangerouslySetInnerHTML={{__html: '&nbsp;'}} // eslint-disable-line react/no-danger
-
             height={`${props.height}px`}
             style={cellStyle}
             width="100%"

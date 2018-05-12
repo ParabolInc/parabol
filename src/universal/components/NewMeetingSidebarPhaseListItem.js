@@ -83,8 +83,15 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   const label = phaseLabelLookup[phaseType];
   return (
     <NavListItem>
-      <NavListItemLink isDisabled={!handleClick} isActive={isActive} onClick={handleClick} title={label}>
-        <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>{listPrefix}</NavItemBullet>
+      <NavListItemLink
+        isDisabled={!handleClick}
+        isActive={isActive}
+        onClick={handleClick}
+        title={label}
+      >
+        <NavItemBullet isFacilitatorPhaseGroup={isFacilitatorPhaseGroup}>
+          {listPrefix}
+        </NavItemBullet>
         <NavItemLabel>{label}</NavItemLabel>
       </NavListItemLink>
       {children}
@@ -93,4 +100,3 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
 };
 
 export default NewMeetingSidebarPhaseListItem;
-

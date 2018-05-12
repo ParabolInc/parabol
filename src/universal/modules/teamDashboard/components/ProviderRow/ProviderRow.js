@@ -3,13 +3,18 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import {Button, ConditionalLink, Row, RowActions, RowInfo, RowInfoCopy} from 'universal/components';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants';
 import makeHref from 'universal/utils/makeHref';
 import styled, {css} from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
+import RowActions from 'universal/components/Row/RowActions';
+import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink';
+import RowInfo from 'universal/components/Row/RowInfo';
+import RowInfoCopy from 'universal/components/Row/RowInfoCopy';
+import Button from 'universal/components/Button/Button';
+import Row from 'universal/components/Row/Row';
 
 const StyledRow = styled(Row)({
   justifyContent: 'flex-start'
@@ -81,7 +86,9 @@ export const providerLookup = {
       // const redirect = makeHref('/auth/github/entry');
       const state = `${teamId}::${jwt}`;
       // eslint-disable-next-line
-      return `https://github.com/login/oauth/authorize?client_id=${window.__ACTION__.github}&scope=${GITHUB_SCOPE}&state=${state}`
+      return `https://github.com/login/oauth/authorize?client_id=${
+        window.__ACTION__.github
+      }&scope=${GITHUB_SCOPE}&state=${state}`;
     }
   },
   [SLACK]: {
@@ -92,7 +99,9 @@ export const providerLookup = {
       // state is useful for CSRF, but we jwt to make sure the person isn't overwriting the int for another team
       const state = `${teamId}::${jwt}`;
       // eslint-disable-next-line
-      return `https://slack.com/oauth/authorize?client_id=${window.__ACTION__.slack}&scope=${SLACK_SCOPE}&state=${state}&redirect_uri=${redirect}`;
+      return `https://slack.com/oauth/authorize?client_id=${
+        window.__ACTION__.slack
+      }&scope=${SLACK_SCOPE}&state=${state}&redirect_uri=${redirect}`;
     }
   }
 };
@@ -103,20 +112,14 @@ const defaultDetails = {
 };
 
 const ProviderRow = (props) => {
-  const {
-    comingSoon,
-    history,
-    jwt,
-    name,
-    providerDetails,
-    teamId
-  } = props;
+  const {comingSoon, history, jwt, name, providerDetails, teamId} = props;
   const {
     accessToken,
     userCount,
     integrationCount
     // providerUserName
-  } = providerDetails || defaultDetails;
+  } =
+    providerDetails || defaultDetails;
   const {color, icon, description, makeUri, providerName, route} = providerLookup[name];
   const openOauth = () => {
     const uri = makeUri(jwt, teamId);
@@ -145,7 +148,7 @@ const ProviderRow = (props) => {
           <NameAndMeta>
             <ProviderName>
               {providerName}
-              {hasActivity &&
+              {hasActivity && (
                 <ProviderMeta>
                   <ProviderMetaItem>
                     <FontAwesome name="user-circle" style={metaIconStyle} /> {userCount}
@@ -154,7 +157,7 @@ const ProviderRow = (props) => {
                     <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
                   </ProviderMetaItem>
                 </ProviderMeta>
-              }
+              )}
             </ProviderName>
           </NameAndMeta>
           <RowInfoCopy>
@@ -163,30 +166,31 @@ const ProviderRow = (props) => {
           </RowInfoCopy>
         </ConditionalLink>
       </RowInfo>
-      {!comingSoon &&
-      <ProviderActions>
-        {accessToken ?
-          <Button
-            buttonSize="small"
-            buttonStyle="solid"
-            colorPalette="gray"
-            isBlock
-            key="teamSettings"
-            label="Team Settings"
-            onClick={() => history.push(to)}
-          /> :
-          <Button
-            buttonSize="small"
-            buttonStyle="solid"
-            colorPalette="warm"
-            isBlock
-            key="linkAccount"
-            label="Link My Account"
-            onClick={openOauth}
-          />
-        }
-      </ProviderActions>
-      }
+      {!comingSoon && (
+        <ProviderActions>
+          {accessToken ? (
+            <Button
+              buttonSize="small"
+              buttonStyle="solid"
+              colorPalette="gray"
+              isBlock
+              key="teamSettings"
+              label="Team Settings"
+              onClick={() => history.push(to)}
+            />
+          ) : (
+            <Button
+              buttonSize="small"
+              buttonStyle="solid"
+              colorPalette="warm"
+              isBlock
+              key="linkAccount"
+              label="Link My Account"
+              onClick={openOauth}
+            />
+          )}
+        </ProviderActions>
+      )}
     </StyledRow>
   );
 };

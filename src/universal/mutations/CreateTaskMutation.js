@@ -9,7 +9,6 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord';
 import getOptimisticTaskEditor from 'universal/utils/relay/getOptimisticTaskEditor';
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
 
-
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
     task {
@@ -35,7 +34,7 @@ graphql`
         status
         tags
         assignee {
-          ...on TeamMember {
+          ... on TeamMember {
             picture
           }
           preferredName

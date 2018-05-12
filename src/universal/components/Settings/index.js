@@ -1,1 +1,0 @@
-export SettingsWrapper from './SettingsWrapper';

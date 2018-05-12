@@ -33,15 +33,15 @@ type Props = {
   match: Match,
   meetingType: MeetingTypeEnum,
   viewer: Viewer
-}
+};
 
 type State = {
   // true if the initial URL is legit, else false
   safeRoute: boolean
-}
+};
 
 class NewMeetingWithLocalState extends Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     const safeRoute = this.updateRelayFromURL(props.match.params);
     this.state = {
@@ -49,13 +49,27 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {team: {newMeeting}}} = nextProps;
-    const {viewer: {team: {newMeeting: oldMeeting}}} = this.props;
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {
+        team: {newMeeting}
+      }
+    } = nextProps;
+    const {
+      viewer: {
+        team: {newMeeting: oldMeeting}
+      }
+    } = this.props;
     const localStageId = newMeeting && newMeeting.localStage && newMeeting.localStage.id;
     const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id;
     if (localStageId !== oldLocalStageId) {
-      const {history, match: {params: {teamId}}, meetingType} = nextProps;
+      const {
+        history,
+        match: {
+          params: {teamId}
+        },
+        meetingType
+      } = nextProps;
       const meetingSlug = meetingTypeToSlug[meetingType];
       if (!newMeeting && teamId) {
         // goto lobby
@@ -71,7 +85,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  updateRelayFromURL(params) {
+  updateRelayFromURL (params) {
     /*
      * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
      * the additional logic here has 2 benefits:
@@ -79,13 +93,23 @@ class NewMeetingWithLocalState extends Component<Props, State> {
      *  2) guaranteed 1 redirect maximum (no URL flickering)
      */
     const {localPhaseSlug, stageIdxSlug} = params;
-    const {atmosphere, history, match: {params: {teamId}}, viewer, meetingType} = this.props;
+    const {
+      atmosphere,
+      history,
+      match: {
+        params: {teamId}
+      },
+      viewer,
+      meetingType
+    } = this.props;
     if (!viewer) {
       // server error
       history.push('/');
       return false;
     }
-    const {team: {newMeeting}} = viewer;
+    const {
+      team: {newMeeting}
+    } = viewer;
     const meetingSlug = meetingTypeToSlug[meetingType];
     const {viewerId} = atmosphere;
 
@@ -126,7 +150,9 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     const isViewerFacilitator = viewerId === facilitatorUserId;
     const itemStage = findStageById(phases, stageId);
     if (!itemStage) return false;
-    const {stage: {isNavigable, isNavigableByFacilitator}} = itemStage;
+    const {
+      stage: {isNavigable, isNavigableByFacilitator}
+    } = itemStage;
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
@@ -141,7 +167,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     return true;
   }
 
-  render() {
+  render () {
     return this.state.safeRoute ? <NewMeeting {...this.props} /> : null;
   }
 }

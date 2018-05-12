@@ -28,7 +28,6 @@ const mutation = graphql`
       }
       ...DeleteTaskMutation_notification @relay(mask: false)
       ...DeleteTaskMutation_task @relay(mask: false)
-      
     }
   }
 `;

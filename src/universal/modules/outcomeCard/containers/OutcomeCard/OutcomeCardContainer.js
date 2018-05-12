@@ -12,23 +12,30 @@ import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
 import mergeServerContent from 'universal/utils/mergeServerContent';
 
 class OutcomeCardContainer extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
-    const {atmosphere: {userId}, contentState, task: {editors}} = props;
+    const {
+      atmosphere: {userId},
+      contentState,
+      task: {editors}
+    } = props;
     this.state = {
       activeEditingComponents: Set(),
       cardHasHover: false,
       cardHasFocus: Boolean(editors.find((editor) => editor.userId === userId), editors, userId),
-      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState)),
+      editorState: EditorState.createWithContent(
+        contentState,
+        editorDecorators(this.getEditorState)
+      ),
       cardHasMenuOpen: false
     };
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this._mounted = true;
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {contentState: nextContentState} = nextProps;
     const {contentState: initialContentState} = this.props;
     if (initialContentState !== nextContentState) {
@@ -43,7 +50,7 @@ class OutcomeCardContainer extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate (prevProps, prevState) {
     const curEditingComponents = this.state.activeEditingComponents;
     const prevEditingComponents = prevState.activeEditingComponents;
     if (curEditingComponents.isEmpty() !== prevEditingComponents.isEmpty()) {
@@ -51,7 +58,7 @@ class OutcomeCardContainer extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._mounted = false;
   }
 
@@ -80,9 +87,7 @@ class OutcomeCardContainer extends Component {
   trackEditingComponent = (uid, isEditing) => {
     this.setState((curState) => {
       const currentClients = curState.activeEditingComponents;
-      const updatedClients = isEditing
-        ? currentClients.add(uid)
-        : currentClients.remove(uid);
+      const updatedClients = isEditing ? currentClients.add(uid) : currentClients.remove(uid);
       return {activeEditingComponents: updatedClients};
     });
   };
@@ -97,7 +102,15 @@ class OutcomeCardContainer extends Component {
 
   handleCardUpdate = () => {
     const {cardHasMenuOpen, cardHasFocus, editorState} = this.state;
-    const {area, atmosphere, task: {taskId, team: {teamId}}, contentState: initialContentState} = this.props;
+    const {
+      area,
+      atmosphere,
+      task: {
+        taskId,
+        team: {teamId}
+      },
+      contentState: initialContentState
+    } = this.props;
     const contentState = editorState.getCurrentContent();
     if (!cardHasFocus && !contentState.hasText() && !cardHasMenuOpen) {
       // it's possible the user calls update, then delete, then the update timeout fires, so clear it here
@@ -132,12 +145,22 @@ class OutcomeCardContainer extends Component {
   handleCardFocus = () => this.setState({cardHasFocus: true});
 
   announceEditing = (isEditing) => {
-    const {atmosphere, task: {taskId}} = this.props;
+    const {
+      atmosphere,
+      task: {taskId}
+    } = this.props;
     EditTaskMutation(atmosphere, taskId, isEditing);
   };
 
-  render() {
-    const {activeEditingComponents, cardHasFocus, cardHasHover, cardHasMenuOpen, editorRef, editorState} = this.state;
+  render () {
+    const {
+      activeEditingComponents,
+      cardHasFocus,
+      cardHasHover,
+      cardHasMenuOpen,
+      editorRef,
+      editorState
+    } = this.state;
     const {area, handleAddTask, hasDragStyles, isAgenda, task, isDragging} = this.props;
     return (
       <div
@@ -197,5 +220,6 @@ export default createFragmentContainer(
         teamId: id
       }
       ...OutcomeCard_task
-    }`
+    }
+  `
 );

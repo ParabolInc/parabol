@@ -18,22 +18,20 @@ exports.up = async (r) => {
   }
   try {
     await r({
-      project: r.table('Project')
-        .replace((row) => {
-          return row
-            .merge({
-              assigneeId: row('teamMemberId'),
-              isSoftProject: false
-            })
-            .without('teamMemberId');
-        }),
-      history: r.table('ProjectHistory')
-        .replace((row) => {
-          return row.merge({
+      project: r.table('Project').replace((row) => {
+        return row
+          .merge({
             assigneeId: row('teamMemberId'),
             isSoftProject: false
-          });
-        })
+          })
+          .without('teamMemberId');
+      }),
+      history: r.table('ProjectHistory').replace((row) => {
+        return row.merge({
+          assigneeId: row('teamMemberId'),
+          isSoftProject: false
+        });
+      })
     });
   } catch (e) {
     // noop
@@ -56,11 +54,17 @@ exports.down = async (r) => {
   }
 
   try {
-    await r.table('Project').filter({isSoftProject: true}).delete();
+    await r
+      .table('Project')
+      .filter({isSoftProject: true})
+      .delete();
     await r.table('Project').update((row) => ({
       teamMemberId: row('assigneeId')
     }));
-    await r.table('ProjectHistory').filter({isSoftProject: true}).delete();
+    await r
+      .table('ProjectHistory')
+      .filter({isSoftProject: true})
+      .delete();
     await r.table('ProjectHistory').update((row) => ({
       teamMemberId: row('assigneeId')
     }));

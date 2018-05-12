@@ -12,7 +12,8 @@ const OrganizationAdded = new GraphQLObjectType({
     },
     notificationsAdded: {
       type: new GraphQLList(OrganizationAddedNotification),
-      description: 'If the org is added because the viewer was promoted, notify them and give them all other admin notifications',
+      description:
+        'If the org is added because the viewer was promoted, notify them and give them all other admin notifications',
       resolve: ({notificationIds}, args, {dataLoader}) => {
         if (!notificationIds || notificationIds.length === 0) return null;
         return dataLoader.get('notifications').loadMany(notificationIds);

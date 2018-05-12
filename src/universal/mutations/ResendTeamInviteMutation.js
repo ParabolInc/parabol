@@ -13,7 +13,7 @@ const mutation = graphql`
       error {
         message
       }
-     ...ResendTeamInviteMutation_invitation @relay(mask: false) 
+      ...ResendTeamInviteMutation_invitation @relay(mask: false)
     }
   }
 `;

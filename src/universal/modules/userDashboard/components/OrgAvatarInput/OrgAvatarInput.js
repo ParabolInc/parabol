@@ -27,7 +27,9 @@ const uploadPicture = async (atmosphere, orgId, pictureFile) => {
       reject(JSON.stringify(err));
     };
     const onCompleted = async (res) => {
-      const {createOrgPicturePutUrl: {url}} = res;
+      const {
+        createOrgPicturePutUrl: {url}
+      } = res;
       const pathname = await sendAssetToS3(pictureFile, url);
       resolve(pathname);
     };
@@ -77,7 +79,5 @@ OrgAvatarInput.propTypes = {
 };
 
 export default withAtmosphere(
-  reduxForm({form: 'orgAvatar', shouldValidate, validate})(
-    OrgAvatarInput
-  )
+  reduxForm({form: 'orgAvatar', shouldValidate, validate})(OrgAvatarInput)
 );

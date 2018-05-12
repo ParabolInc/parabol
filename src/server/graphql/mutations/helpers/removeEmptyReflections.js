@@ -4,7 +4,8 @@ import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromD
 const removeEmptyReflections = async (meeting) => {
   const r = getRethink();
   const {id: meetingId} = meeting;
-  const reflections = await r.table('RetroReflection')
+  const reflections = await r
+    .table('RetroReflection')
     .getAll(meetingId, {index: 'meetingId'})
     .filter({isActive: true});
   const emptyReflectionGroupIds = [];
@@ -18,12 +19,14 @@ const removeEmptyReflections = async (meeting) => {
   });
   if (emptyReflectionGroupIds.length > 0) {
     await r({
-      reflections: r.table('RetroReflection')
+      reflections: r
+        .table('RetroReflection')
         .getAll(r.args(emptyReflectionIds), {index: 'id'})
         .update({
           isActive: false
         }),
-      reflectionGroups: r.table('RetroReflectionGroup')
+      reflectionGroups: r
+        .table('RetroReflectionGroup')
         .getAll(r.args(emptyReflectionGroupIds), {index: 'id'})
         .update({
           isActive: false

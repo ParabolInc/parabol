@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import withRouter from 'react-router-dom/es/withRouter';
-import {Button, IconAvatar, Row} from 'universal/components';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation';
 import ui from 'universal/styles/ui';
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants';
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal';
+import Button from 'universal/components/Button/Button';
+import Row from 'universal/components/Row/Row';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 
 const RequestNewUser = (props) => {
   const {
@@ -20,7 +22,13 @@ const RequestNewUser = (props) => {
     onCompleted,
     history
   } = props;
-  const {notificationId, inviter: {inviterName}, inviteeEmail, orgId, team} = notification;
+  const {
+    notificationId,
+    inviter: {inviterName},
+    inviteeEmail,
+    orgId,
+    team
+  } = notification;
   const {teamName, teamId, tier} = team;
   const acceptInvite = () => {
     submitMutation();
@@ -47,9 +55,15 @@ const RequestNewUser = (props) => {
         <IconAvatar icon="user-circle-o" size="small" />
       </div>
       <div className={css(defaultStyles.message)}>
-        <b>{inviterName}</b>{' requested to add '}
-        <b>{inviteeEmail}</b>{' to '}
-        <span className={css(defaultStyles.messageVar, defaultStyles.notifLink)} onClick={goToTeam}>{teamName}</span>{'.'}<br />
+        <b>{inviterName}</b>
+        {' requested to add '}
+        <b>{inviteeEmail}</b>
+        {' to '}
+        <span className={css(defaultStyles.messageVar, defaultStyles.notifLink)} onClick={goToTeam}>
+          {teamName}
+        </span>
+        {'.'}
+        <br />
         {tier === PRO && <span>{`Your monthly invoice will increase by $${MONTHLY_PRICE}.`}</span>}
       </div>
       <div className={css(defaultStyles.buttonGroup)}>

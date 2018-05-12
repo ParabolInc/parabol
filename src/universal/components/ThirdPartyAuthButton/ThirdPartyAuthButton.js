@@ -34,12 +34,7 @@ export default ({action, waiting, provider, handleClick}: Props) => {
   const label = `${action} with ${provider.displayName}`;
   return (
     <ButtonContainer>
-      <StyledAuthButton
-        buttonPalette="white"
-        onClick={handleClick}
-        type="button"
-        waiting={waiting}
-      >
+      <StyledAuthButton buttonPalette="white" onClick={handleClick} type="button" waiting={waiting}>
         <StyledIcon name={provider.iconName} />
         <div>{label}</div>
       </StyledAuthButton>

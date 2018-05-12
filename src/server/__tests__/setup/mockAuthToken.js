@@ -1,7 +1,7 @@
 import {JWT_LIFESPAN} from 'server/utils/serverConstants';
 import {toEpochSeconds} from 'server/utils/epochTime';
 
-export default function mockAuthToken(user, overrides = {}) {
+export default function mockAuthToken (user, overrides = {}) {
   return {
     iss: 'action-test',
     sub: user.id,

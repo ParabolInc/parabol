@@ -31,13 +31,15 @@ const mutation = graphql`
 `;
 
 export const popEndNewMeetingToast = (dispatch) => {
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'It’s dead!',
-    message: `You killed the meeting. 
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'It’s dead!',
+      message: `You killed the meeting. 
     Just like your goldfish.`,
-    action: {label: 'Good.'}
-  }));
+      action: {label: 'Good.'}
+    })
+  );
 };
 
 export const endNewMeetingTeamOnNext = (payload, context) => {

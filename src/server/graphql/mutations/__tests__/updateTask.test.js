@@ -20,8 +20,7 @@ describe('updateTask', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {task, user} = await mockDB.init()
-      .newTask();
+    const {task, user} = await mockDB.init().newTask();
     const taskId = task[0].id;
     const authToken = mockAuthToken(user[7]);
     const dataLoader = makeDataLoader(authToken);
@@ -34,12 +33,18 @@ describe('updateTask', () => {
     await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      task: r.table('Task').get(taskId),
-      taskHistory: r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
-        .orderBy({index: 'taskIdUpdatedAt'})
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        task: r.table('Task').get(taskId),
+        taskHistory: r
+          .table('TaskHistory')
+          .between([taskId, r.minval], [taskId, r.maxval], {
+            index: 'taskIdUpdatedAt'
+          })
+          .orderBy({index: 'taskIdUpdatedAt'})
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(dataLoader.isShared()).toEqual(true);
   });
@@ -49,8 +54,7 @@ describe('updateTask', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {task, user} = await mockDB.init()
-      .newTask();
+    const {task, user} = await mockDB.init().newTask();
     const taskId = task[0].id;
     const authToken = mockAuthToken(user[7]);
     const dataLoader = makeDataLoader(authToken);
@@ -62,12 +66,18 @@ describe('updateTask', () => {
     await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      task: r.table('Task').get(taskId),
-      taskHistory: r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
-        .orderBy({index: 'taskIdUpdatedAt'})
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        task: r.table('Task').get(taskId),
+        taskHistory: r
+          .table('TaskHistory')
+          .between([taskId, r.minval], [taskId, r.maxval], {
+            index: 'taskIdUpdatedAt'
+          })
+          .orderBy({index: 'taskIdUpdatedAt'})
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(dataLoader.isShared()).toEqual(true);
   });
@@ -77,7 +87,8 @@ describe('updateTask', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {task, teamMember, user} = await mockDB.init()
+    const {task, teamMember, user} = await mockDB
+      .init()
       .newTask({updatedAt: new Date(__anHourAgo)})
       .newTaskHistory();
     const taskId = task[0].id;
@@ -92,12 +103,18 @@ describe('updateTask', () => {
     await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      task: r.table('Task').get(taskId),
-      taskHistory: r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
-        .orderBy({index: 'taskIdUpdatedAt'})
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        task: r.table('Task').get(taskId),
+        taskHistory: r
+          .table('TaskHistory')
+          .between([taskId, r.minval], [taskId, r.maxval], {
+            index: 'taskIdUpdatedAt'
+          })
+          .orderBy({index: 'taskIdUpdatedAt'})
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(dataLoader.isShared()).toEqual(true);
   });
@@ -107,7 +124,8 @@ describe('updateTask', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {task, user} = await mockDB.init()
+    const {task, user} = await mockDB
+      .init()
       .newTask({updatedAt: new Date(__aMinuteAgo)})
       .newTaskHistory();
     const taskId = task[0].id;
@@ -122,12 +140,18 @@ describe('updateTask', () => {
     await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      task: r.table('Task').get(taskId),
-      taskHistory: r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
-        .orderBy({index: 'taskIdUpdatedAt'})
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        task: r.table('Task').get(taskId),
+        taskHistory: r
+          .table('TaskHistory')
+          .between([taskId, r.minval], [taskId, r.maxval], {
+            index: 'taskIdUpdatedAt'
+          })
+          .orderBy({index: 'taskIdUpdatedAt'})
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(dataLoader.isShared()).toEqual(true);
   });
@@ -137,8 +161,7 @@ describe('updateTask', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {task, user} = await mockDB.init()
-      .newTask();
+    const {task, user} = await mockDB.init().newTask();
     const taskId = task[0].id;
     const authToken = mockAuthToken(user[7]);
     const dataLoader = makeDataLoader(authToken);
@@ -151,12 +174,18 @@ describe('updateTask', () => {
     await updateTask.resolve(undefined, {updatedTask}, {authToken, dataLoader, socket});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      task: r.table('Task').get(taskId),
-      taskHistory: r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
-        .orderBy({index: 'taskIdUpdatedAt'})
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        task: r.table('Task').get(taskId),
+        taskHistory: r
+          .table('TaskHistory')
+          .between([taskId, r.minval], [taskId, r.maxval], {
+            index: 'taskIdUpdatedAt'
+          })
+          .orderBy({index: 'taskIdUpdatedAt'})
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(dataLoader.isShared()).toEqual(true);
   });
@@ -164,8 +193,7 @@ describe('updateTask', () => {
   test('return error when the caller is not a team member', async () => {
     // SETUP
     const mockDB = new MockDB();
-    const {task, user} = await mockDB.init()
-      .newTask();
+    const {task, user} = await mockDB.init().newTask();
     const authToken = mockAuthToken(user[1], {tms: ['foo']});
     const taskId = task[0].id;
     const dataLoader = makeDataLoader(authToken);

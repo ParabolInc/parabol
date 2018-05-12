@@ -46,7 +46,9 @@ const handleConnectPublish = async (connectionContext) => {
   const result = await wsGraphQLHandler(connectionContext, {payload});
   const {data} = result;
   if (data) {
-    const {connectSocket: {tmsDB}} = data;
+    const {
+      connectSocket: {tmsDB}
+    } = data;
     sendFreshTokenIfNeeded(connectionContext, tmsDB);
     return true;
   }

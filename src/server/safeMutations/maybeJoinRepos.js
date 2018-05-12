@@ -7,21 +7,27 @@ import fetch from 'node-fetch';
 
 const getCollabsOnPersonalRepos = async (personalRepos, providerUserName, accessToken) => {
   const integrationIdsToJoin = [];
-  await Promise.all(personalRepos.map(async (repo) => {
-    const {nameWithOwner} = repo;
-    const endpoint = `https://api.github.com/repos/${nameWithOwner}/collaborators/${providerUserName}`;
-    const res = await fetch(endpoint, {headers: {Authorization: `Bearer ${accessToken}`}});
-    if (res.status === 204) {
-      integrationIdsToJoin.push(repo.id);
-    }
-  }));
+  await Promise.all(
+    personalRepos.map(async (repo) => {
+      const {nameWithOwner} = repo;
+      const endpoint = `https://api.github.com/repos/${nameWithOwner}/collaborators/${providerUserName}`;
+      const res = await fetch(endpoint, {
+        headers: {Authorization: `Bearer ${accessToken}`}
+      });
+      if (res.status === 204) {
+        integrationIdsToJoin.push(repo.id);
+      }
+    })
+  );
   return integrationIdsToJoin;
 };
 
 const getIntegrationIdsToJoin = async (integrations, accessToken, providerUserName) => {
-  const permissionArray = await Promise.all(integrations.map((integration) => {
-    return tokenCanAccessRepo(accessToken, integration.nameWithOwner);
-  }));
+  const permissionArray = await Promise.all(
+    integrations.map((integration) => {
+      return tokenCanAccessRepo(accessToken, integration.nameWithOwner);
+    })
+  );
   const orgRepoIds = [];
   const personalRepos = [];
   for (let i = 0; i < permissionArray.length; i++) {
@@ -35,10 +41,13 @@ const getIntegrationIdsToJoin = async (integrations, accessToken, providerUserNa
       personalRepos.push(integrations[i]);
     }
   }
-  const personalRepoIds = await getCollabsOnPersonalRepos(personalRepos, providerUserName, accessToken);
+  const personalRepoIds = await getCollabsOnPersonalRepos(
+    personalRepos,
+    providerUserName,
+    accessToken
+  );
   return [...orgRepoIds, ...personalRepoIds];
 };
-
 
 // this is tricky logic, might as well make this handle an M:N for integrations & providers
 const maybeJoinRepos = async (integrations, providers) => {
@@ -47,19 +56,28 @@ const maybeJoinRepos = async (integrations, providers) => {
 
   const maybeJoinReposForProvider = async (provider) => {
     const {accessToken, userId, providerUserName} = provider;
-    const integrationIdArray = await getIntegrationIdsToJoin(integrations, accessToken, providerUserName);
-    await r.table(GITHUB)
+    const integrationIdArray = await getIntegrationIdsToJoin(
+      integrations,
+      accessToken,
+      providerUserName
+    );
+    await r
+      .table(GITHUB)
       .getAll(r.args(integrationIdArray), {index: 'id'})
       .update((doc) => ({
-        userIds: doc('userIds').append(userId).distinct()
+        userIds: doc('userIds')
+          .append(userId)
+          .distinct()
       }));
     return integrationIdArray.map((id) => toGlobalId(GITHUB, id));
   };
 
-  return resolvePromiseObj(providers.reduce((obj, provider) => {
-    obj[provider.userId] = maybeJoinReposForProvider(provider);
-    return obj;
-  }, {}));
+  return resolvePromiseObj(
+    providers.reduce((obj, provider) => {
+      obj[provider.userId] = maybeJoinReposForProvider(provider);
+      return obj;
+    }, {})
+  );
 };
 
 export default maybeJoinRepos;

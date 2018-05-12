@@ -7,12 +7,10 @@
 import type {Task, TaskID} from 'universal/types/task';
 
 type PaginatedTasksArray = {
-  edges: Array<{ node: Task }>
+  edges: Array<{node: Task}>
 };
 
 const getTaskById = (tasks: PaginatedTasksArray) => (taskId: TaskID): ?Task =>
-  tasks.edges
-    .map(({node}) => node)
-    .find(({id}) => taskId === id);
+  tasks.edges.map(({node}) => node).find(({id}) => taskId === id);
 
 export default getTaskById;

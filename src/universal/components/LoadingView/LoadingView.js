@@ -7,13 +7,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import Pato from 'universal/styles/theme/images/graphics/pato.svg';
 
 const LoadingDuck = (props) => {
-  return (
-    <img
-      alt={'Duck by Sergey Demushkin'}
-      className={props.className}
-      src={Pato}
-    />
-  );
+  return <img alt={'Duck by Sergey Demushkin'} className={props.className} src={Pato} />;
 };
 
 LoadingDuck.propTypes = {
@@ -27,12 +21,12 @@ const LoadingView = (props) => {
   return (
     <div className={css(styles.root)}>
       <h1 className={css(styles.heading)}>{'Welcome to Parabol!'}</h1>
-      {duckStyles.map((delayClass, idx) =>
-        (<LoadingDuck
+      {duckStyles.map((delayClass, idx) => (
+        <LoadingDuck
           className={css(delayClass, styles.patoStyles)}
           key={idx} // eslint-disable-line react/no-array-index-key
-        />)
-      )}
+        />
+      ))}
       <h2 className={css(styles.message)}>{'Just putting our ducks in a row…'}</h2>
       {children}
     </div>

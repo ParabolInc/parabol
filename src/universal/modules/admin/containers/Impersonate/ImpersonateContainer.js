@@ -6,7 +6,6 @@ import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireA
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import CreateImposterTokenMutation from 'universal/mutations/CreateImposterTokenMutation';
 
-
 const showDucks = () => {
   return (
     <div>
@@ -28,24 +27,36 @@ export default class Impersonate extends Component {
     location: PropTypes.object.isRequired
   };
 
-  componentWillMount() {
-    const {atmosphere, dispatch, match: {params: {newUserId}}, history, location} = this.props;
+  componentWillMount () {
+    const {
+      atmosphere,
+      dispatch,
+      match: {
+        params: {newUserId}
+      },
+      history,
+      location
+    } = this.props;
     if (newUserId) {
-      CreateImposterTokenMutation(atmosphere, newUserId, {dispatch, history, location});
+      CreateImposterTokenMutation(atmosphere, newUserId, {
+        dispatch,
+        history,
+        location
+      });
     }
   }
 
-  render() {
-    const {match: {params: {newUserId}}} = this.props;
+  render () {
+    const {
+      match: {
+        params: {newUserId}
+      }
+    } = this.props;
     if (!__CLIENT__) {
       return showDucks();
     }
     if (!newUserId) {
-      return (
-        <div>
-          No newUserId provided!
-        </div>
-      );
+      return <div>No newUserId provided!</div>;
     }
     return showDucks();
   }

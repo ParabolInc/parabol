@@ -119,7 +119,7 @@ type Props = {|
 |};
 
 class OrgPlanSqueeze extends Component<Props> {
-  state = {showCost: false}
+  state = {showCost: false};
 
   getCost = () => {
     this.setState({
@@ -127,8 +127,15 @@ class OrgPlanSqueeze extends Component<Props> {
     });
   };
 
-  render() {
-    const {organization: {isBillingLeader, billingLeaders, orgUserCount: {activeUserCount}, orgId}} = this.props;
+  render () {
+    const {
+      organization: {
+        isBillingLeader,
+        billingLeaders,
+        orgUserCount: {activeUserCount},
+        orgId
+      }
+    } = this.props;
     const estimatedCost = activeUserCount * MONTHLY_PRICE;
     const {showCost} = this.state;
     const primaryButtonProps = {
@@ -137,28 +144,27 @@ class OrgPlanSqueeze extends Component<Props> {
       depth: 2,
       isBlock: true
     };
-    const toggle = (<Button
-      {...primaryButtonProps}
-      label="Upgrade to the Pro Plan"
-    />);
+    const toggle = <Button {...primaryButtonProps} label="Upgrade to the Pro Plan" />;
     const openUrl = (url) => () => window.open(url, '_blank');
 
     const billingLeaderSqueeze = (
       <TierPanelBody>
         <div>
-          {'This could be you.'}<br />
+          {'This could be you.'}
+          <br />
           {'Ready for the full experience?'}
         </div>
         <ButtonBlock>
-          <CreditCardModalContainer
-            orgId={orgId}
-            toggle={toggle}
-          />
+          <CreditCardModalContainer orgId={orgId} toggle={toggle} />
         </ButtonBlock>
-        {showCost ?
+        {showCost ? (
           <InlineHint>
-            {`${activeUserCount} Active ${plural(activeUserCount, 'User')} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
-          </InlineHint> :
+            {`${activeUserCount} Active ${plural(
+              activeUserCount,
+              'User'
+            )} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
+          </InlineHint>
+        ) : (
           <Button
             buttonSize="medium"
             buttonStyle="flat"
@@ -168,19 +174,25 @@ class OrgPlanSqueeze extends Component<Props> {
             label="How much will it cost?"
             onClick={this.getCost}
           />
-        }
+        )}
       </TierPanelBody>
     );
 
-    const makeEmail = (email) => <Email href={`mailto:${email}`} title={`Email ${email}`}>{email}</Email>;
+    const makeEmail = (email) => (
+      <Email href={`mailto:${email}`} title={`Email ${email}`}>
+        {email}
+      </Email>
+    );
 
     const nudgeTheBillingLeader = () => {
       const {email, preferredName} = billingLeaders[0];
       return (
         <TierPanelBody>
           <div>
-            {'Contact your billing leader,'}<br />
-            <b>{preferredName}</b>{', to upgrade:'}
+            {'Contact your billing leader,'}
+            <br />
+            <b>{preferredName}</b>
+            {', to upgrade:'}
           </div>
           {makeEmail(email)}
         </TierPanelBody>
@@ -194,11 +206,7 @@ class OrgPlanSqueeze extends Component<Props> {
           <EmailBlock>
             {billingLeaders.map((billingLeader) => {
               const {billingLeaderId, email} = billingLeader;
-              return (
-                <div key={billingLeaderId}>
-                  {makeEmail(email)}
-                </div>
-              );
+              return <div key={billingLeaderId}>{makeEmail(email)}</div>;
             })}
           </EmailBlock>
         </TierPanelBody>
@@ -213,14 +221,18 @@ class OrgPlanSqueeze extends Component<Props> {
             <TierPanelHeader tier={PERSONAL}>{PERSONAL_LABEL}</TierPanelHeader>
             <TierPanelBody>
               <CopyWithStatus>
-                <b>{'Your current plan.'}</b><br />
+                <b>{'Your current plan.'}</b>
+                <br />
                 {'The basics, for free!'}
               </CopyWithStatus>
             </TierPanelBody>
           </TierPanel>
           {/* Professional Panel */}
           <TierPanel tier={PRO}>
-            <TierPanelHeader tier={PRO}>{'Upgrade to '}{PRO_LABEL}</TierPanelHeader>
+            <TierPanelHeader tier={PRO}>
+              {'Upgrade to '}
+              {PRO_LABEL}
+            </TierPanelHeader>
             {isBillingLeader && billingLeaderSqueeze}
             {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
             {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}

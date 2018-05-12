@@ -1,7 +1,7 @@
 import getRethink from '../../database/rethinkDriver';
 import junit from 'jest-junit-reporter';
 
-export default async function teardown(results) {
+export default async function teardown (results) {
   junit(results);
 
   // maybe consider thinking about flushing the DB

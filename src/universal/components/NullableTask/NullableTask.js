@@ -23,7 +23,7 @@ class NullableTask extends Component {
     contentState: convertFromRaw(JSON.parse(this.props.task.content))
   };
 
-  componentDidMount() {
+  componentDidMount () {
     this._mounted = true;
     if (this.props.measure) {
       setTimeout(() => {
@@ -34,7 +34,7 @@ class NullableTask extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (nextProps.task.content !== this.props.task.content) {
       this.setState({
         contentState: convertFromRaw(JSON.parse(nextProps.task.content))
@@ -42,22 +42,26 @@ class NullableTask extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    return Boolean(!nextProps.isPreview ||
-      nextProps.task.status !== this.props.task.status ||
-      nextProps.task.content !== this.props.task.content
+  shouldComponentUpdate (nextProps) {
+    return Boolean(
+      !nextProps.isPreview ||
+        nextProps.task.status !== this.props.task.status ||
+        nextProps.task.content !== this.props.task.content
     );
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._mounted = false;
   }
-  render() {
+  render () {
     const {area, handleAddTask, hasDragStyles, isAgenda, myUserId, task, isDragging} = this.props;
     const {contentState} = this.state;
-    const {createdBy, assignee: {preferredName}} = task;
+    const {
+      createdBy,
+      assignee: {preferredName}
+    } = task;
     const showOutcome = contentState.hasText() || createdBy === myUserId;
-    return showOutcome ?
+    return showOutcome ? (
       <OutcomeCardContainer
         area={area}
         contentState={contentState}
@@ -67,8 +71,10 @@ class NullableTask extends Component {
         isAgenda={isAgenda}
         task={task}
         myUserId={myUserId}
-      /> :
-      <NullCard preferredName={preferredName} />;
+      />
+    ) : (
+      <NullCard preferredName={preferredName} />
+    );
   }
 }
 
@@ -85,5 +91,6 @@ export default createFragmentContainer(
         }
       }
       ...OutcomeCardContainer_task
-    }`
+    }
+  `
 );

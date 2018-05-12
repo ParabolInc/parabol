@@ -8,7 +8,7 @@ import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyle
 import FontAwesome from 'react-fontawesome';
 
 class Editable extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       isEditing: false
@@ -43,10 +43,7 @@ class Editable extends Component {
       submitOnBlur,
       touch
     } = this.props;
-    const inputStyles = css(
-      styles.static,
-      styles.input
-    );
+    const inputStyles = css(styles.static, styles.input);
 
     const submitAndSet = async (e) => {
       e.preventDefault();
@@ -81,35 +78,19 @@ class Editable extends Component {
   };
 
   renderStatic = () => {
-    const {
-      hideIconOnValue,
-      icon,
-      initialValue,
-      placeholder,
-      styles
-    } = this.props;
-    const staticStyles = css(
-      styles.static,
-      !initialValue && styles.placeholder
-    );
+    const {hideIconOnValue, icon, initialValue, placeholder, styles} = this.props;
+    const staticStyles = css(styles.static, !initialValue && styles.placeholder);
 
     const hideIcon = initialValue && hideIconOnValue;
     return (
       <div className={css(styles.staticBlock)} onClick={this.setEditing}>
-        <div className={staticStyles}>
-          {initialValue || placeholder}
-        </div>
-        {!hideIcon &&
-          <FontAwesome
-            className={css(styles.icon)}
-            name={icon || 'pencil'}
-          />
-        }
+        <div className={staticStyles}>{initialValue || placeholder}</div>
+        {!hideIcon && <FontAwesome className={css(styles.icon)} name={icon || 'pencil'} />}
       </div>
     );
   };
 
-  render() {
+  render () {
     const {styles} = this.props;
     return (
       <div className={css(styles.editableRoot)}>
@@ -148,7 +129,6 @@ Editable.propTypes = {
   }),
   touch: PropTypes.func,
   untouch: PropTypes.func
-
 };
 
 const styleThunk = (custom, {typeStyles}) => ({

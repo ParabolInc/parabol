@@ -2,10 +2,9 @@ import getRethink from 'server/database/rethinkDriver';
 
 const flushSocketConnections = async () => {
   const r = getRethink();
-  return r.table('User')
-    .update({
-      connectedSockets: []
-    });
+  return r.table('User').update({
+    connectedSockets: []
+  });
 };
 
 const postDeploy = async () => {

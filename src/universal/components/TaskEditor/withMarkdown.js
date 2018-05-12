@@ -17,14 +17,16 @@ const inlineMatchers = {
 const blockQuoteRegex = /^(\s*>\s*)(.*)$/;
 const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/;
 
-
 const CODE_FENCE = '```';
 
 const styles = Object.keys(inlineMatchers);
 
 const extractStyle = (editorState, getNextState, style, blockKey, extractedStyles) => {
   const {regex, matchIdx} = inlineMatchers[style];
-  const blockText = editorState.getCurrentContent().getBlockForKey(blockKey).getText();
+  const blockText = editorState
+    .getCurrentContent()
+    .getBlockForKey(blockKey)
+    .getText();
   const result = regex.exec(blockText);
   if (result) {
     const es = extractedStyles.length === 0 ? getNextState() : editorState;
@@ -40,14 +42,20 @@ const extractStyle = (editorState, getNextState, style, blockKey, extractedStyle
     });
     // style **`b`** not `**b**`
     if (extractedStyles.indexOf('CODE') !== -1) {
-      const hasCode = contentState.getBlockForKey(blockKey).getInlineStyleAt(result.index).has('CODE');
+      const hasCode = contentState
+        .getBlockForKey(blockKey)
+        .getInlineStyleAt(result.index)
+        .has('CODE');
       if (hasCode) return editorState;
     }
     extractedStyles.push(style);
 
     const phraseShrink = beforePhrase.length - afterPhrase.length;
     // if it's a split block, then go to 0
-    const nextCaret = selectionState.getAnchorKey() === blockKey ? selectionState.getFocusOffset() - phraseShrink : 0;
+    const nextCaret =
+      selectionState.getAnchorKey() === blockKey
+        ? selectionState.getFocusOffset() - phraseShrink
+        : 0;
     const selectionAfter = selectionState.merge({
       anchorOffset: nextCaret,
       focusOffset: nextCaret
@@ -128,7 +136,9 @@ const withMarkdown = (ComposedComponent) => {
       const currentBlockKey = selectionState.getAnchorKey();
       const currentBlock = contentState.getBlockForKey(currentBlockKey);
       const currentBlockText = currentBlock.getText();
-      if (!currentBlockText.startsWith(CODE_FENCE) || selectionState.getAnchorOffset() < 3) return undefined;
+      if (!currentBlockText.startsWith(CODE_FENCE) || selectionState.getAnchorOffset() < 3) {
+        return undefined;
+      }
       const lastCodeBlock = contentState.getBlockBefore(currentBlockKey);
       let cb = lastCodeBlock;
       while (cb) {
@@ -145,9 +155,7 @@ const withMarkdown = (ComposedComponent) => {
         data: Map()
       });
       const contentStateWithoutFences = contentState.merge({
-        blockMap: blockMap
-          .set(currentBlockKey, updatedLastline)
-          .delete(cb.getKey())
+        blockMap: blockMap.set(currentBlockKey, updatedLastline).delete(cb.getKey())
       });
       const firstCodeBlock = contentState.getBlockAfter(cb.getKey());
       const selectedCode = selectionState.merge({
@@ -157,14 +165,16 @@ const withMarkdown = (ComposedComponent) => {
         focusKey: lastCodeBlock.getKey()
       });
 
-      const styledContent = Modifier
-        .setBlockType(contentStateWithoutFences, selectedCode, 'code-block')
-        .merge({
-          selectionAfter: selectionState.merge({
-            anchorOffset: 0,
-            focusOffset: 0
-          })
-        });
+      const styledContent = Modifier.setBlockType(
+        contentStateWithoutFences,
+        selectedCode,
+        'code-block'
+      ).merge({
+        selectionAfter: selectionState.merge({
+          anchorOffset: 0,
+          focusOffset: 0
+        })
+      });
       return EditorState.push(editorState, styledContent, 'change-block-type');
     };
 
@@ -200,13 +210,15 @@ const withMarkdown = (ComposedComponent) => {
       const fullBlockSelection = selectionToRemove.merge({
         focusOffset: currentBlock.getLength()
       });
-      const styledContent = Modifier
-        .setBlockType(contentWithoutTrigger, fullBlockSelection, 'blockquote')
-        .merge({
-          selectionAfter: fullBlockSelection.merge({
-            anchorOffset: fullBlockSelection.getFocusOffset()
-          })
-        });
+      const styledContent = Modifier.setBlockType(
+        contentWithoutTrigger,
+        fullBlockSelection,
+        'blockquote'
+      ).merge({
+        selectionAfter: fullBlockSelection.merge({
+          anchorOffset: fullBlockSelection.getFocusOffset()
+        })
+      });
       return EditorState.push(startingEditorState, styledContent, 'change-block-type');
     };
 
@@ -238,11 +250,13 @@ const withMarkdown = (ComposedComponent) => {
         entityKey
       );
 
-      const selectionAfter = command === 'split-block' ? preSplitES.getSelection() :
-        linkifiedContent.getSelectionAfter().merge({
-          anchorOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1,
-          focusOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1
-        });
+      const selectionAfter =
+        command === 'split-block'
+          ? preSplitES.getSelection()
+          : linkifiedContent.getSelectionAfter().merge({
+            anchorOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1,
+            focusOffset: linkifiedContent.getSelectionAfter().getAnchorOffset() + 1
+          });
       const adjustedSelectionContent = linkifiedContent.merge({
         selectionAfter,
         selectionBefore: selectionAfter
@@ -300,7 +314,8 @@ const withMarkdown = (ComposedComponent) => {
       }
       if (char === ' ') {
         const getNextState = () => addSpace(editorState);
-        const updatedEditorState = this.getMaybeMarkdownState(getNextState, editorState) ||
+        const updatedEditorState =
+          this.getMaybeMarkdownState(getNextState, editorState) ||
           this.getMaybeBlockquote(editorState, 'space') ||
           this.getMaybeLink(editorState, 'space');
         if (updatedEditorState) {
@@ -319,14 +334,16 @@ const withMarkdown = (ComposedComponent) => {
       this.undoMarkdown = undefined;
     };
 
-    render() {
-      return (<ComposedComponent
-        {...this.props}
-        handleBeforeInput={this.handleBeforeInput}
-        handleChange={this.handleChange}
-        handleKeyCommand={this.handleKeyCommand}
-        keyBindingFn={this.keyBindingFn}
-      />);
+    render () {
+      return (
+        <ComposedComponent
+          {...this.props}
+          handleBeforeInput={this.handleBeforeInput}
+          handleChange={this.handleChange}
+          handleKeyCommand={this.handleKeyCommand}
+          keyBindingFn={this.keyBindingFn}
+        />
+      );
     }
   };
 };

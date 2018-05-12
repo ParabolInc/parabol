@@ -37,16 +37,23 @@ class Step1PreferredName extends Component {
     completed: PropTypes.number
   };
 
-  componentWillMount() {
-    const {atmosphere, dispatch, viewer: {preferredName}} = this.props;
+  componentWillMount () {
+    const {
+      atmosphere,
+      dispatch,
+      viewer: {preferredName}
+    } = this.props;
     SendClientSegmentEventMutation(atmosphere, 'Welcome Step1 Reached');
     if (preferredName) {
       dispatch(initialize('welcomeWizard', {preferredName}));
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {dispatch, viewer: {preferredName}} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      dispatch,
+      viewer: {preferredName}
+    } = nextProps;
     if (preferredName && !this.props.viewer.preferredName) {
       dispatch(initialize('welcomeWizard', {preferredName}));
     }
@@ -55,7 +62,9 @@ class Step1PreferredName extends Component {
   onPreferredNameSubmit = (submissionData) => {
     return new Promise((resolve, reject) => {
       const {atmosphere, dispatch} = this.props;
-      const {data: {preferredName}} = step1Validation()(submissionData);
+      const {
+        data: {preferredName}
+      } = step1Validation()(submissionData);
       const updatedUser = {preferredName};
       const onError = (err) => {
         reject(new SubmissionError(err));
@@ -75,7 +84,7 @@ class Step1PreferredName extends Component {
     });
   };
 
-  render() {
+  render () {
     const {error, handleSubmit, preferredName, styles, submitting} = this.props;
     const copy = <span>{'What do you prefer your teammates to call you?'}</span>;
     return (
@@ -124,11 +133,7 @@ const reduxFormOptions = {
 };
 
 export default createFragmentContainer(
-  withAtmosphere(
-    withStyles(styleThunk)(
-      reduxForm(reduxFormOptions)(Step1PreferredName)
-    )
-  ),
+  withAtmosphere(withStyles(styleThunk)(reduxForm(reduxFormOptions)(Step1PreferredName))),
   graphql`
     fragment Step1PreferredName_viewer on User {
       preferredName

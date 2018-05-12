@@ -11,7 +11,8 @@ const AddFeatureFlagPayload = new GraphQLObjectType({
     },
     user: {
       type: User,
-      description: 'the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users',
+      description:
+        'the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users',
       resolve: resolveUser
     },
     users: {

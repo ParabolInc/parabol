@@ -25,14 +25,7 @@ export type TeamID = string;
 
 type MeetingID = string;
 
-type MeetingPhase =
-  | LOBBY
-  | CHECKIN
-  | UPDATES
-  | FIRST_CALL
-  | AGENDA_ITEMS
-  | LAST_CALL
-  | SUMMARY;
+type MeetingPhase = LOBBY | CHECKIN | UPDATES | FIRST_CALL | AGENDA_ITEMS | LAST_CALL | SUMMARY;
 
 export type Team = {
   activeFacilitator: ?UserID,
@@ -51,9 +44,6 @@ export type Team = {
   meetingPhaseItem: ?number,
   name: string,
   orgId: OrgID,
-  tier:
-    | PERSONAL
-    | PRO
-    | ENTERPRISE,
+  tier: PERSONAL | PRO | ENTERPRISE,
   updatedAt?: Date
 };

@@ -62,17 +62,15 @@ class CreditCardModalContainer extends Component {
   };
 
   addStripeBilling = async (submittedData) => {
-    const {
-      atmosphere,
-      closePortal,
-      createToken,
-      handleToken,
-      isUpdate,
-      orgId
-    } = this.props;
+    const {atmosphere, closePortal, createToken, handleToken, isUpdate, orgId} = this.props;
     const {creditCardNumber: number, expiry, cvc} = submittedData;
     const [expMonth, expYear] = expiry.split('/');
-    const {error, id: stripeToken, card} = await createToken({number, exp_month: expMonth, exp_year: expYear, cvc});
+    const {error, id: stripeToken, card} = await createToken({
+      number,
+      exp_month: expMonth,
+      exp_year: expYear,
+      cvc
+    });
     if (error) {
       const errorMessage = {_error: error.message};
       const field = stripeFieldLookup[error.param];
@@ -120,7 +118,7 @@ class CreditCardModalContainer extends Component {
     }
   };
 
-  render() {
+  render () {
     const {isUpdate} = this.props;
     const crudAction = isUpdate ? 'Update' : 'Add';
     return (
@@ -150,11 +148,12 @@ const stripeCb = () => {
   const stripe = window.Stripe;
   stripe.setPublishableKey(window.__ACTION__.stripe);
   return {
-    createToken: (fields) => new Promise((resolve) => {
-      stripe.card.createToken(fields, (status, response) => {
-        resolve(response);
-      });
-    }),
+    createToken: (fields) =>
+      new Promise((resolve) => {
+        stripe.card.createToken(fields, (status, response) => {
+          resolve(response);
+        });
+      }),
     stripeCard: stripe.card
   };
 };
@@ -162,9 +161,7 @@ const stripeCb = () => {
 export default portal({escToClose: true, closeAfter: 100})(
   withAtmosphere(
     withAsync({'https://js.stripe.com/v2/': stripeCb})(
-      connect(mapStateToProps)(
-        CreditCardModalContainer
-      )
+      connect(mapStateToProps)(CreditCardModalContainer)
     )
   )
 );

@@ -9,8 +9,8 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation UpdateCheckInQuestionMutation($teamId: ID! $checkInQuestion: String!) {
-    updateCheckInQuestion(teamId: $teamId checkInQuestion: $checkInQuestion) {
+  mutation UpdateCheckInQuestionMutation($teamId: ID!, $checkInQuestion: String!) {
+    updateCheckInQuestion(teamId: $teamId, checkInQuestion: $checkInQuestion) {
       error {
         message
       }
@@ -19,13 +19,18 @@ const mutation = graphql`
   }
 `;
 
-const UpdateCheckInQuestionMutation = (environment, teamId, checkInQuestion, onCompleted, onError) => {
+const UpdateCheckInQuestionMutation = (
+  environment,
+  teamId,
+  checkInQuestion,
+  onCompleted,
+  onError
+) => {
   return commitMutation(environment, {
     mutation,
     variables: {teamId, checkInQuestion},
     optimisticUpdater: (store) => {
-      store.get(teamId)
-        .setValue(checkInQuestion, 'checkInQuestion');
+      store.get(teamId).setValue(checkInQuestion, 'checkInQuestion');
     },
     onCompleted,
     onError

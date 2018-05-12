@@ -31,7 +31,11 @@ const TeamCallsToActionMenu = (props: Props) => {
       ariaLabel={'Select the meeting you would like start'}
       closePortal={closePortal}
     >
-      <MenuItemWithShortcuts icon="arrow-circle-o-right" label="Start Action Meeting" onClick={goToMeetingLobby} />
+      <MenuItemWithShortcuts
+        icon="arrow-circle-o-right"
+        label="Start Action Meeting"
+        onClick={goToMeetingLobby}
+      />
       <MenuItemWithShortcuts icon="clock-o" label="Start Retro Meeting" onClick={goToRetroLobby} />
     </MenuWithShortcuts>
   );

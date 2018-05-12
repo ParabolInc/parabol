@@ -58,7 +58,7 @@ type MeetingMember = {
 type Props = {
   members: Array<MeetingMember>,
   meetingType: MeetingTypeEnum
-}
+};
 
 const getHeaderText = (meetingType) => {
   switch (meetingType) {
@@ -85,9 +85,7 @@ const MeetingMemberNoTasks = (props: Props) => {
         <tr>
           <td style={cardsCell}>
             <div style={{padding: '0 8px'}}>
-              <div style={emptyOutcomesMessage}>
-                {getHeaderText(meetingType)}
-              </div>
+              <div style={emptyOutcomesMessage}>{getHeaderText(meetingType)}</div>
             </div>
             <EmptySpace height={24} />
           </td>
@@ -96,11 +94,11 @@ const MeetingMemberNoTasks = (props: Props) => {
           <td align="center">
             <table align="center" style={ui.emailTableBase}>
               <tbody>
-                {memberRows.map((row, idx) =>
-                  (<tr key={`memberCell${idx}`}>
+                {memberRows.map((row, idx) => (
+                  <tr key={`memberCell${idx}`}>
                     <MeetingMemberNoTasksRow members={row} />
-                  </tr>)
-                )}
+                  </tr>
+                ))}
               </tbody>
             </table>
             <EmptySpace height={24} />

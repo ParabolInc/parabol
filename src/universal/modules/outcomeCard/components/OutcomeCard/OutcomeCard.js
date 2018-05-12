@@ -8,13 +8,13 @@ import TaskWatermark from 'universal/components/TaskWatermark';
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer';
 import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter';
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator';
-import {cardRootStyles} from 'universal/styles/helpers';
 import labels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import isTaskArchived from 'universal/utils/isTaskArchived';
 import isTaskPrivate from 'universal/utils/isTaskPrivate';
 import isTempId from 'universal/utils/relay/isTempId';
+import cardRootStyles from 'universal/styles/helpers/cardRootStyles';
 
 const OutcomeCard = (props) => {
   const {
@@ -53,7 +53,9 @@ const OutcomeCard = (props) => {
   const statusTitle = `Card status: ${labels.taskStatus[status].label}`;
   const privateTitle = ', marked as #private';
   const archivedTitle = ', set as #archived';
-  const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${isArchived ? archivedTitle : ''}`;
+  const statusIndicatorTitle = `${statusTitle}${isPrivate ? privateTitle : ''}${
+    isArchived ? archivedTitle : ''
+  }`;
   const cardIsActive = cardHasFocus || cardHasHover || cardHasMenuOpen;
   return (
     <div className={rootStyles}>
@@ -65,11 +67,7 @@ const OutcomeCard = (props) => {
             {isPrivate && <OutcomeCardStatusIndicator status="private" />}
             {isArchived && <OutcomeCardStatusIndicator status="archived" />}
           </div>
-          <EditingStatusContainer
-            cardIsActive={cardIsActive}
-            isEditing={isEditing}
-            task={task}
-          />
+          <EditingStatusContainer cardIsActive={cardIsActive} isEditing={isEditing} task={task} />
         </div>
         <TaskEditor
           editorRef={editorRef}
@@ -179,5 +177,6 @@ export default createFragmentContainer(
       userId
       ...EditingStatusContainer_task
       ...OutcomeCardFooter_task
-    }`
+    }
+  `
 );

@@ -19,20 +19,20 @@ class AtmosphereProvider extends Component {
     children: PropTypes.element.isRequired
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     if (typeof __CLIENT__ !== 'undefined' && __CLIENT__) {
       atmosphere.getAuthToken(window);
     }
   }
 
-  getChildContext() {
+  getChildContext () {
     return {
       atmosphere
     };
   }
 
-  render() {
+  render () {
     return Children.only(this.props.children);
   }
 }

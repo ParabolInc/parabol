@@ -26,17 +26,20 @@ export default {
 
     // AUTH
     const userId = getUserId(authToken);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
-
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId, null);
+    }
 
     // RESOLUTION
-    const allProviders = await r.table('Provider')
+    const allProviders = await r
+      .table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .group('service')
       .ungroup()
       .merge((row) => ({
-        integrationCount: r.table(row('group'))
+        integrationCount: r
+          .table(row('group'))
           .getAll(teamId, {index: 'teamId'})
           .filter({isActive: true})
           .count()

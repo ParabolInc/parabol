@@ -6,8 +6,9 @@ import {requireSU} from 'server/utils/authorization';
 
 const sendBatchNotificationEmails = {
   type: new GraphQLList(GraphQLString),
-  description: 'Send summary emails of unread notifications to all users who have not been seen within the last 24 hours',
-  async resolve(source, args, {authToken}) {
+  description:
+    'Send summary emails of unread notifications to all users who have not been seen within the last 24 hours',
+  async resolve (source, args, {authToken}) {
     // AUTH
     requireSU(authToken);
 
@@ -30,10 +31,16 @@ const sendBatchNotificationEmails = {
       // join with the users table
       .eqJoin('userId', r.table('User'))
       // filter to active users not seen within the last day
-      .filter(r.and(
-        r.row('right')('inactive').eq(false),
-        r.row('right')('lastSeenAt').lt(yesterday)
-      ))
+      .filter(
+        r.and(
+          r
+            .row('right')('inactive')
+            .eq(false),
+          r
+            .row('right')('lastSeenAt')
+            .lt(yesterday)
+        )
+      )
       // clean up the join
       .map((join) => ({
         userId: join('right')('id'),
@@ -52,18 +59,15 @@ const sendBatchNotificationEmails = {
       }));
 
     const emails = userNotifications.map(({email}) => email);
-    const recipientVariables = userNotifications
-      .reduce((addressMap, {email, name, numNotifications}) => ({
+    const recipientVariables = userNotifications.reduce(
+      (addressMap, {email, name, numNotifications}) => ({
         ...addressMap,
         [email]: {name, numNotifications}
-      }), {});
+      }),
+      {}
+    );
     if (emails.length) {
-      await sendBatchEmail(
-        emails,
-        'notificationSummary',
-        {date: today},
-        recipientVariables
-      );
+      await sendBatchEmail(emails, 'notificationSummary', {date: today}, recipientVariables);
     }
     return emails;
   }

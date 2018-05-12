@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashContent, DashHeader, DashMain} from 'universal/components/Dashboard';
 import SettingsHeader from 'universal/modules/userDashboard/components/SettingsHeader/SettingsHeader';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
+import DashMain from 'universal/components/Dashboard/DashMain';
+import DashHeader from 'universal/components/Dashboard/DashHeader';
+import DashContent from 'universal/components/Dashboard/DashContent';
 
 const SettingsContentBlock = styled('div')({
   alignItems: 'center',
@@ -22,12 +24,9 @@ const UserSettingsWrapper = (props) => {
         <SettingsHeader />
       </DashHeader>
       <DashContent padding="0 0 0 1rem">
-        <SettingsContentBlock>
-          {children}
-        </SettingsContentBlock>
+        <SettingsContentBlock>{children}</SettingsContentBlock>
       </DashContent>
     </DashMain>
-
   );
 };
 
