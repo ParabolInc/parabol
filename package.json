@@ -249,7 +249,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "yarn prettier",
+      "prettier-standard",
       "git add"
     ]
   },

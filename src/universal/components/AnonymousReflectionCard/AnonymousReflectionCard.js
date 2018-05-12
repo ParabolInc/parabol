@@ -20,15 +20,15 @@ import ui from 'universal/styles/ui';
 
 type Props = {
   meeting: Meeting,
-  reflection: Reflection,
+  reflection: Reflection
 };
 
 type State = {
   editorState: EditorState,
   content: string,
   isBlurred: boolean,
-  isEditing: boolean,
-}
+  isEditing: boolean
+};
 
 const AnonymousStyles = styled('div')({
   backgroundColor: ui.palette.white,
@@ -38,7 +38,7 @@ const AnonymousStyles = styled('div')({
   minHeight: ui.retroCardMinHeight,
   position: 'relative',
   width: ui.retroCardWidth,
-  userSelect: 'none'
+  userSelect: 'none',
 });
 
 const DEFAULT_TEXT = 'Somebody is typing...';
