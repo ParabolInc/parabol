@@ -49,7 +49,7 @@ const obfuscate = (content: string): string => {
       // $FlowFixMe
       (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - ROT * 2
     );
-  });
+  })
 }
 
 const getContentState = (contentText) => {
