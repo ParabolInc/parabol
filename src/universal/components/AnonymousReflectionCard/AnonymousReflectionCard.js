@@ -27,7 +27,7 @@ type State = {
   editorState: EditorState,
   content: string,
   isBlurred: boolean,
-  isEditing: boolean
+  isEditing: boolean,
 };
 
 const AnonymousStyles = styled('div')({
@@ -50,7 +50,7 @@ const obfuscate = (content: string): string => {
       (c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + ROT) ? c : c - ROT * 2
     );
   });
-};
+}
 
 const getContentState = (contentText) => {
   const contentState = ContentState.createFromText(contentText);
