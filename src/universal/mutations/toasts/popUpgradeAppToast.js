@@ -1,4 +1,4 @@
-import {showWarning} from 'universal/modules/toast/ducks/toastDuck';
+import {showWarning} from 'universal/modules/toast/ducks/toastDuck'
 
 const popUpgradeAppToast = ({dispatch}) => {
   dispatch(
@@ -9,11 +9,11 @@ const popUpgradeAppToast = ({dispatch}) => {
       action: {
         label: 'Refresh to upgrade',
         callback: () => {
-          window.location.reload();
+          window.location.reload()
         }
       }
     })
-  );
-};
+  )
+}
 
-export default popUpgradeAppToast;
+export default popUpgradeAppToast

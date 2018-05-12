@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
   fragment UpdateCreditCardMutation_organization on UpdateCreditCardPayload {
@@ -11,7 +11,7 @@ graphql`
       updatedAt
     }
   }
-`;
+`
 
 graphql`
   fragment UpdateCreditCardMutation_team on UpdateCreditCardPayload {
@@ -20,7 +20,7 @@ graphql`
       updatedAt
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpdateCreditCardMutation($orgId: ID!, $stripeToken: ID!) {
@@ -32,7 +32,7 @@ const mutation = graphql`
       ...UpdateCreditCardMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const UpdateCreditCardMutation = (environment, orgId, stripeToken, onError, onCompleted) => {
   return commitMutation(environment, {
@@ -43,7 +43,7 @@ const UpdateCreditCardMutation = (environment, orgId, stripeToken, onError, onCo
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default UpdateCreditCardMutation;
+export default UpdateCreditCardMutation

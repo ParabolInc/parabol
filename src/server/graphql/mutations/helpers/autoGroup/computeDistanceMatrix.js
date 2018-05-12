@@ -5,12 +5,12 @@
  */
 const computeDistanceMatrix = (reflectionEntities, uniqueLemmaArr) => {
   return reflectionEntities.map((entities) => {
-    if (!entities) return new Array(uniqueLemmaArr.length).fill(0);
+    if (!entities) return new Array(uniqueLemmaArr.length).fill(0)
     return uniqueLemmaArr.map((lemma) => {
-      const entity = entities.find((ent) => ent.lemma === lemma);
-      return entity ? entity.salience : 0;
-    });
-  });
-};
+      const entity = entities.find((ent) => ent.lemma === lemma)
+      return entity ? entity.salience : 0
+    })
+  })
+}
 
-export default computeDistanceMatrix;
+export default computeDistanceMatrix

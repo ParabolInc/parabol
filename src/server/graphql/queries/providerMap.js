@@ -1,16 +1,16 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import ProviderMap from 'server/graphql/types/ProviderMap';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import ProviderMap from 'server/graphql/types/ProviderMap'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 const getUserReduction = (service, reduction, userId) => {
   if (service === SLACK) {
-    return reduction[0];
+    return reduction[0]
   }
-  return reduction.find((doc) => doc.userId === userId) || {};
-};
+  return reduction.find((doc) => doc.userId === userId) || {}
+}
 
 export default {
   type: ProviderMap,
@@ -22,12 +22,12 @@ export default {
     }
   },
   resolve: async (source, {teamId}, {authToken}) => {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
-    const userId = getUserId(authToken);
+    const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, null);
+      return sendTeamAccessError(authToken, teamId, null)
     }
 
     // RESOLUTION
@@ -43,7 +43,7 @@ export default {
           .getAll(teamId, {index: 'teamId'})
           .filter({isActive: true})
           .count()
-      }));
+      }))
 
     const defaultMap = CURRENT_PROVIDERS.reduce((obj, service) => {
       obj[service] = {
@@ -52,24 +52,24 @@ export default {
         teamId,
         userCount: 0,
         integrationCount: 0
-      };
-      return obj;
-    }, {});
+      }
+      return obj
+    }, {})
 
     const providerMap = allProviders.reduce((map, obj) => {
-      const service = obj.group;
-      const userDoc = getUserReduction(service, obj.reduction, userId);
+      const service = obj.group
+      const userDoc = getUserReduction(service, obj.reduction, userId)
       map[service] = {
         ...map[service],
         ...userDoc,
         userCount: obj.reduction.length,
         integrationCount: obj.integrationCount
-      };
-      return map;
-    }, defaultMap);
+      }
+      return map
+    }, defaultMap)
 
     // add teamId so the resolver can generate an ID for easy updates
-    providerMap.teamId = teamId;
-    return providerMap;
+    providerMap.teamId = teamId
+    return providerMap
   }
-};
+}

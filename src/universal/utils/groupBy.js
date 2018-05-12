@@ -16,14 +16,14 @@ groupBy(arr, 'foo')
 */
 
 const groupBy = (arr, prop) => {
-  const res = {};
+  const res = {}
   for (let ii = 0; ii < arr.length; ii++) {
-    const obj = arr[ii];
-    const val = typeof prop === 'function' ? prop(obj) : obj[prop];
-    res[val] = res[val] || [];
-    res[val].push(obj);
+    const obj = arr[ii]
+    const val = typeof prop === 'function' ? prop(obj) : obj[prop]
+    res[val] = res[val] || []
+    res[val].push(obj)
   }
-  return res;
-};
+  return res
+}
 
-export default groupBy;
+export default groupBy

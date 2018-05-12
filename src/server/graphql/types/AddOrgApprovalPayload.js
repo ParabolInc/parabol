@@ -1,5 +1,5 @@
-import {GraphQLObjectType} from 'graphql';
-import OrgApproval from 'server/graphql/types/OrgApproval';
+import {GraphQLObjectType} from 'graphql'
+import OrgApproval from 'server/graphql/types/OrgApproval'
 
 const AddOrgApprovalPayload = new GraphQLObjectType({
   name: 'AddOrgApprovalPayload',
@@ -8,6 +8,6 @@ const AddOrgApprovalPayload = new GraphQLObjectType({
       type: OrgApproval
     }
   })
-});
+})
 
-export default AddOrgApprovalPayload;
+export default AddOrgApprovalPayload

@@ -1,8 +1,8 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import MeetingTask from 'server/graphql/types/MeetingTask';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
+import MeetingTask from 'server/graphql/types/MeetingTask'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const MeetingInvitee = new GraphQLObjectType({
   name: 'MeetingInvitee',
@@ -34,14 +34,14 @@ const MeetingInvitee = new GraphQLObjectType({
       type: TeamMember,
       description: 'All of the fields from the team member table',
       resolve ({id}) {
-        const r = getRethink();
+        const r = getRethink()
         return r
           .table('TeamMember')
           .get(id)
-          .run();
+          .run()
       }
     }
   })
-});
+})
 
-export default MeetingInvitee;
+export default MeetingInvitee

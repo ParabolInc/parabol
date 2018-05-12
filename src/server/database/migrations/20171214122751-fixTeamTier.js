@@ -4,9 +4,9 @@ exports.up = (r) => {
       tier: r.table('Organization').get(team('orgId'))('tier')
     }),
     {nonAtomic: true}
-  );
-};
+  )
+}
 
 exports.down = () => {
   // noop
-};
+}

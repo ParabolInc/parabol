@@ -1,5 +1,5 @@
-import {commitMutation} from 'react-relay';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {commitMutation} from 'react-relay'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const mutation = graphql`
   mutation ToggleAgendaListMutation($teamId: ID!) {
@@ -7,29 +7,29 @@ const mutation = graphql`
       hideAgenda
     }
   }
-`;
+`
 
 const ToggleAgendaListMutation = (environment, teamId, onError, onCompleted) => {
-  const {viewerId} = environment;
+  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
     updater: (store) => {
-      const payload = store.getRootField('toggleAgendaList');
-      if (!payload) return;
-      const nextValue = payload.getValue('hideAgenda');
-      const teamMemberId = toTeamMemberId(teamId, viewerId);
-      store.get(teamMemberId).setValue(nextValue, 'hideAgenda');
+      const payload = store.getRootField('toggleAgendaList')
+      if (!payload) return
+      const nextValue = payload.getValue('hideAgenda')
+      const teamMemberId = toTeamMemberId(teamId, viewerId)
+      store.get(teamMemberId).setValue(nextValue, 'hideAgenda')
     },
     optimisticUpdater: (store) => {
-      const teamMemberId = toTeamMemberId(teamId, viewerId);
-      const teamMember = store.get(teamMemberId);
-      const currentValue = teamMember.getValue('hideAgenda') || false;
-      teamMember.setValue(!currentValue, 'hideAgenda');
+      const teamMemberId = toTeamMemberId(teamId, viewerId)
+      const teamMember = store.get(teamMemberId)
+      const currentValue = teamMember.getValue('hideAgenda') || false
+      teamMember.setValue(!currentValue, 'hideAgenda')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default ToggleAgendaListMutation;
+export default ToggleAgendaListMutation

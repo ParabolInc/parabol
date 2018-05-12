@@ -5,9 +5,9 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import TeamMember from 'server/graphql/types/TeamMember';
+} from 'graphql'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const AgendaItem = new GraphQLObjectType({
   name: 'AgendaItem',
@@ -54,10 +54,10 @@ const AgendaItem = new GraphQLObjectType({
       type: TeamMember,
       description: 'The team member that created the agenda item',
       resolve: async ({teamMemberId}, args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(teamMemberId);
+        return dataLoader.get('teamMembers').load(teamMemberId)
       }
     }
   })
-});
+})
 
-export default AgendaItem;
+export default AgendaItem

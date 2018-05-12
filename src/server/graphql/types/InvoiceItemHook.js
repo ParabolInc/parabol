@@ -1,5 +1,5 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import InvoiceItemHookEnum from 'server/graphql/types/InvoiceItemHookEnum';
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import InvoiceItemHookEnum from 'server/graphql/types/InvoiceItemHookEnum'
 
 const InvoiceItemHook = new GraphQLObjectType({
   name: 'InvoiceItemHook',
@@ -24,6 +24,6 @@ const InvoiceItemHook = new GraphQLObjectType({
       description: 'The user that was added/removed/paused/unpaused'
     }
   })
-});
+})
 
-export default InvoiceItemHook;
+export default InvoiceItemHook

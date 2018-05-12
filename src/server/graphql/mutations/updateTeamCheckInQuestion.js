@@ -1,11 +1,11 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
-import {isPaidTier, isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {TEAM} from 'universal/utils/constants';
-import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
-import {sendTeamAccessError, sendTeamPaidTierError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload'
+import {isPaidTier, isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {TEAM} from 'universal/utils/constants'
+import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
+import {sendTeamAccessError, sendTeamPaidTierError} from 'server/utils/authorizationErrors'
 
 export default {
   type: UpdateCheckInQuestionPayload,
@@ -21,29 +21,29 @@ export default {
     }
   },
   async resolve (source, {teamId, checkInQuestion}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
     if (!(await isPaidTier(teamId))) {
-      return sendTeamPaidTierError(authToken, teamId);
+      return sendTeamPaidTierError(authToken, teamId)
     }
 
     // VALIDATION
-    const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion);
+    const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion)
 
     // RESOLUTION
     await r
       .table('Team')
       .get(teamId)
-      .update({checkInQuestion: normalizedCheckInQuestion});
+      .update({checkInQuestion: normalizedCheckInQuestion})
 
-    const data = {teamId};
-    publish(TEAM, teamId, UpdateCheckInQuestionPayload, data, subOptions);
-    return data;
+    const data = {teamId}
+    publish(TEAM, teamId, UpdateCheckInQuestionPayload, data, subOptions)
+    return data
   }
-};
+}

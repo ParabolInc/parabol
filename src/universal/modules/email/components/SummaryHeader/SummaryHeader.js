@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import EmptySpace from '../EmptySpace/EmptySpace';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import makeDateString from 'universal/utils/makeDateString';
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
+import PropTypes from 'prop-types'
+import React from 'react'
+import EmptySpace from '../EmptySpace/EmptySpace'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import makeDateString from 'universal/utils/makeDateString'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 const SummaryHeader = (props) => {
-  const {createdAt, meetingNumber, meetingType, teamName} = props;
-  const meetingLabel = meetingTypeToLabel[meetingType];
+  const {createdAt, meetingNumber, meetingType, teamName} = props
+  const meetingLabel = meetingTypeToLabel[meetingType]
   const blockStyle = {
     backgroundColor: '#fff',
     color: appTheme.palette.dark,
@@ -17,24 +17,24 @@ const SummaryHeader = (props) => {
     lineHeight: `${props.lineHeight}`,
     padding: `${props.padding}px`,
     textAlign: 'center'
-  };
+  }
 
   const textStyle = {
     fontFamily: ui.emailFontFamily
-  };
+  }
 
   const meetingDateStyle = {
     ...textStyle,
     fontSize: '18px',
     fontWeight: 400
-  };
+  }
 
   const teamNameStyle = {
     ...textStyle,
     fontSize: '36px',
     fontWeight: 600
-  };
-  const meetingDate = makeDateString(createdAt, {showDay: true});
+  }
+  const meetingDate = makeDateString(createdAt, {showDay: true})
 
   const labelStyles = {
     color: appTheme.palette.dark70l,
@@ -43,7 +43,7 @@ const SummaryHeader = (props) => {
     padding: '0 0 16px',
     textAlign: 'center',
     textTransform: 'uppercase'
-  };
+  }
 
   return (
     <div style={{padding: '0 16px'}}>
@@ -64,8 +64,8 @@ const SummaryHeader = (props) => {
         </tbody>
       </table>
     </div>
-  );
-};
+  )
+}
 
 SummaryHeader.propTypes = {
   children: PropTypes.any,
@@ -82,7 +82,7 @@ SummaryHeader.propTypes = {
   teamName: PropTypes.string,
   vSpacing: PropTypes.number,
   width: PropTypes.string
-};
+}
 
 SummaryHeader.defaultProps = {
   fontSize: 24,
@@ -90,6 +90,6 @@ SummaryHeader.defaultProps = {
   padding: 24,
   vSpacing: 16,
   width: '100%'
-};
+}
 
-export default SummaryHeader;
+export default SummaryHeader

@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLID, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLID, GraphQLObjectType, GraphQLString} from 'graphql'
 
 const AuthIdentityType = new GraphQLObjectType({
   name: 'AuthIdentityType',
@@ -22,6 +22,6 @@ const AuthIdentityType = new GraphQLObjectType({
       description: 'true if the identity provider is a social provider, false otherwise'
     }
   })
-});
+})
 
-export default AuthIdentityType;
+export default AuthIdentityType

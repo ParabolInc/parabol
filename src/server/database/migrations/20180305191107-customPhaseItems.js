@@ -1,4 +1,4 @@
-import {LOBBY, SUMMARY} from 'universal/utils/constants';
+import {LOBBY, SUMMARY} from 'universal/utils/constants'
 
 exports.up = async (r) => {
   try {
@@ -7,7 +7,7 @@ exports.up = async (r) => {
       .filter({
         title: 'Change'
       })
-      .delete();
+      .delete()
   } catch (e) {
     // noop
   }
@@ -18,8 +18,8 @@ exports.up = async (r) => {
         .merge({
           phaseItemType: customPhaseItem('type')
         })
-        .without('type');
-    });
+        .without('type')
+    })
   } catch (e) {
     // noop
   }
@@ -30,12 +30,12 @@ exports.up = async (r) => {
         .merge({
           phaseTypes: settings('phases').difference([LOBBY, SUMMARY])
         })
-        .without('phases');
-    });
+        .without('phases')
+    })
   } catch (e) {
     // noop
   }
-};
+}
 
 exports.down = async (r) => {
   // DOES NOT REPLACE REMOVED "CHANGED" CATEGORY BECAUSE A NEW ID WOULD CAUSE SADNESS
@@ -45,8 +45,8 @@ exports.down = async (r) => {
         .merge({
           type: customPhaseItem('type')
         })
-        .without('phaseItemType');
-    });
+        .without('phaseItemType')
+    })
   } catch (e) {
     // noop
   }
@@ -59,9 +59,9 @@ exports.down = async (r) => {
             phases: settings('phaseTypes')
           })
           .without('phaseTypes')
-      );
-    });
+      )
+    })
   } catch (e) {
     // noop
   }
-};
+}

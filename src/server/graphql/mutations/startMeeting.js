@@ -1,15 +1,15 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack';
-import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import shortid from 'shortid';
-import {CHECKIN, TEAM} from 'universal/utils/constants';
-import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
-import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting';
-import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
+import StartMeetingPayload from 'server/graphql/types/StartMeetingPayload'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import shortid from 'shortid'
+import {CHECKIN, TEAM} from 'universal/utils/constants'
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
+import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting'
+import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 export default {
   type: StartMeetingPayload,
@@ -21,31 +21,31 @@ export default {
     }
   },
   async resolve (source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const userId = getUserId(authToken);
+    const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId);
+      return sendTeamAccessError(authToken, teamId)
     }
 
     // RESOLUTION
-    const facilitatorId = toTeamMemberId(teamId, userId);
-    const facilitatorMembership = await r.table('TeamMember').get(facilitatorId);
+    const facilitatorId = toTeamMemberId(teamId, userId)
+    const facilitatorMembership = await r.table('TeamMember').get(facilitatorId)
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId});
+      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId})
     }
 
-    const now = new Date();
-    const meetingId = shortid.generate();
+    const now = new Date()
+    const meetingId = shortid.generate()
     const meetingCount = await r
       .table('Meeting')
       .getAll(teamId, {index: 'teamId'})
       .count()
       .default(0)
-      .add(1);
+      .add(1)
 
     const updatedTeam = {
       checkInGreeting: makeCheckinGreeting(meetingCount, teamId),
@@ -56,7 +56,7 @@ export default {
       facilitatorPhaseItem: 1,
       meetingPhase: CHECKIN,
       meetingPhaseItem: 1
-    };
+    }
     await r({
       team: r
         .table('Team')
@@ -69,11 +69,11 @@ export default {
         teamId,
         teamName: r.table('Team').get(teamId)('name')
       })
-    });
-    startSlackMeeting(teamId);
+    })
+    startSlackMeeting(teamId)
 
-    const data = {teamId};
-    publish(TEAM, teamId, StartMeetingPayload, data, subOptions);
-    return data;
+    const data = {teamId}
+    publish(TEAM, teamId, StartMeetingPayload, data, subOptions)
+    return data
   }
-};
+}

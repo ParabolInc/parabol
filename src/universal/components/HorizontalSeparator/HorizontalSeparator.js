@@ -5,11 +5,11 @@
  * @flow
  */
 
-import React, {Fragment} from 'react';
-import styled from 'react-emotion';
+import React, {Fragment} from 'react'
+import styled from 'react-emotion'
 
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const SeparatorContainer = styled('div')(({margin}) => ({
   color: ui.labelHeadingColor,
@@ -21,33 +21,33 @@ const SeparatorContainer = styled('div')(({margin}) => ({
   margin,
   padding: '1rem 0',
   textTransform: 'uppercase'
-}));
+}))
 
 const separatorLineStyles = {
   borderBottom: `0.0625rem solid ${appTheme.palette.mid20a}`,
   margin: 'auto',
   width: '10rem'
-};
+}
 
 const LeftSeparator = styled('div')({
   ...separatorLineStyles,
   marginRight: '0.5rem'
-});
+})
 
 const RightSeparator = styled('div')({
   ...separatorLineStyles,
   marginLeft: '0.5rem'
-});
+})
 
 const FullSeparator = styled('div')({
   ...separatorLineStyles,
   width: '20rem'
-});
+})
 
 type Props = {
   margin?: string,
   text?: string
-};
+}
 
 export default ({margin, text}: Props) => (
   <SeparatorContainer margin={margin}>
@@ -61,4 +61,4 @@ export default ({margin, text}: Props) => (
       <FullSeparator />
     )}
   </SeparatorContainer>
-);
+)

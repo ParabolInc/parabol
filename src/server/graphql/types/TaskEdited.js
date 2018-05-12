@@ -1,7 +1,7 @@
-import {GraphQLBoolean, GraphQLObjectType} from 'graphql';
-import {resolveTask} from 'server/graphql/resolvers';
-import Task from 'server/graphql/types/Task';
-import User from 'server/graphql/types/User';
+import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
+import {resolveTask} from 'server/graphql/resolvers'
+import Task from 'server/graphql/types/Task'
+import User from 'server/graphql/types/User'
 
 const TaskEdited = new GraphQLObjectType({
   name: 'TaskEdited',
@@ -13,7 +13,7 @@ const TaskEdited = new GraphQLObjectType({
     editor: {
       type: User,
       resolve: ({editorUserId}, args, {dataLoader}) => {
-        return dataLoader.get('users').load(editorUserId);
+        return dataLoader.get('users').load(editorUserId)
       }
     },
     isEditing: {
@@ -21,6 +21,6 @@ const TaskEdited = new GraphQLObjectType({
       description: 'true if the editor is editing, false if they stopped editing'
     }
   })
-});
+})
 
-export default TaskEdited;
+export default TaskEdited

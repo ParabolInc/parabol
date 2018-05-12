@@ -55,7 +55,7 @@ const greetings = [
     content: 'Zdravo',
     language: 'Slovenian'
   }
-];
+]
 
 // The trailing question mark “?” is added in the presentation component.
 const questions = [
@@ -81,16 +81,16 @@ const questions = [
   'What music have you enjoyed recently?',
   'What are your plans for the weekend?',
   'Heard any good tips lately?'
-];
+]
 
 export const makeCheckinGreeting = (meetingCount, seedId = '') => {
-  const seed = seedId.charCodeAt(0);
-  const idx = (seed + meetingCount) % greetings.length;
-  return greetings[idx];
-};
+  const seed = seedId.charCodeAt(0)
+  const idx = (seed + meetingCount) % greetings.length
+  return greetings[idx]
+}
 
 export const makeCheckinQuestion = (meetingCount, seedId = '') => {
-  const seed = seedId.charCodeAt(0);
-  const idx = (seed + meetingCount) % questions.length;
-  return questions[idx];
-};
+  const seed = seedId.charCodeAt(0)
+  const idx = (seed + meetingCount) % questions.length
+  return questions[idx]
+}

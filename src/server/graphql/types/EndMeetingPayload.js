@@ -1,9 +1,9 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveMeeting, resolveTeam} from 'server/graphql/resolvers';
-import Team from 'server/graphql/types/Team';
-import Task from 'server/graphql/types/Task';
-import Meeting from 'server/graphql/types/Meeting';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {resolveMeeting, resolveTeam} from 'server/graphql/resolvers'
+import Team from 'server/graphql/types/Team'
+import Task from 'server/graphql/types/Task'
+import Meeting from 'server/graphql/types/Meeting'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const EndMeetingPayload = new GraphQLObjectType({
   name: 'EndMeetingPayload',
@@ -24,6 +24,6 @@ const EndMeetingPayload = new GraphQLObjectType({
       resolve: resolveMeeting
     }
   })
-});
+})
 
-export default EndMeetingPayload;
+export default EndMeetingPayload

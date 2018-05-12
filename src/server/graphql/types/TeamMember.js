@@ -1,17 +1,17 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
-import {forwardConnectionArgs} from 'graphql-relay';
-import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks';
-import {resolveTeam} from 'server/graphql/resolvers';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
-import {TaskConnection} from 'server/graphql/types/Task';
-import Team from 'server/graphql/types/Team';
-import User from 'server/graphql/types/User';
-import {getUserId} from 'server/utils/authorization';
-import Assignee from 'server/graphql/types/Assignee';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
+import {forwardConnectionArgs} from 'graphql-relay'
+import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
+import {resolveTeam} from 'server/graphql/resolvers'
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
+import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember'
+import {TaskConnection} from 'server/graphql/types/Task'
+import Team from 'server/graphql/types/Team'
+import User from 'server/graphql/types/User'
+import {getUserId} from 'server/utils/authorization'
+import Assignee from 'server/graphql/types/Assignee'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
@@ -58,11 +58,11 @@ const TeamMember = new GraphQLObjectType({
       description: 'true if the user is connected',
       resolve: async (source, args, {dataLoader}) => {
         if (source.hasOwnProperty('isConnected')) {
-          return source.isConnected;
+          return source.isConnected
         }
-        const {userId} = source;
-        const {connectedSockets} = await dataLoader.get('users').load(userId);
-        return Array.isArray(connectedSockets) && connectedSockets.length > 0;
+        const {userId} = source
+        const {connectedSockets} = await dataLoader.get('users').load(userId)
+        return Array.isArray(connectedSockets) && connectedSockets.length > 0
       }
     },
     isCheckedIn: {
@@ -73,8 +73,8 @@ const TeamMember = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'true if this team member belongs to the user that queried it',
       resolve: (source, args, {authToken}) => {
-        const userId = getUserId(authToken);
-        return source.userId === userId;
+        const userId = getUserId(authToken)
+        return source.userId === userId
       }
     },
     meetingMember: {
@@ -86,13 +86,13 @@ const TeamMember = new GraphQLObjectType({
         }
       },
       resolve: async ({teamId, userId}, args, {dataLoader}) => {
-        let meetingId = args.meetingId;
+        let meetingId = args.meetingId
         if (!meetingId) {
-          const team = await dataLoader.get('teams').load(teamId);
-          meetingId = team.meetingId;
+          const team = await dataLoader.get('teams').load(teamId)
+          meetingId = team.meetingId
         }
-        const meetingMemberId = toTeamMemberId(meetingId, userId);
-        return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined;
+        const meetingMemberId = toTeamMemberId(meetingId, userId)
+        return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
     },
     /* Foreign keys */
@@ -114,7 +114,7 @@ const TeamMember = new GraphQLObjectType({
       type: User,
       description: 'The user for the team member',
       resolve ({userId}, args, {dataLoader}) {
-        return dataLoader.get('users').load(userId);
+        return dataLoader.get('users').load(userId)
       }
     },
     tasks: {
@@ -128,15 +128,13 @@ const TeamMember = new GraphQLObjectType({
         }
       },
       resolve: async ({teamId, userId}, args, {dataLoader}) => {
-        const allTasks = await dataLoader.get('tasksByTeamId').load(teamId);
-        const tasksForUserId = allTasks.filter((task) => task.userId === userId);
-        const publicTasksForUserId = tasksForUserId.filter(
-          (task) => !task.tags.includes('private')
-        );
-        return connectionFromTasks(publicTasksForUserId);
+        const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        const tasksForUserId = allTasks.filter((task) => task.userId === userId)
+        const publicTasksForUserId = tasksForUserId.filter((task) => !task.tags.includes('private'))
+        return connectionFromTasks(publicTasksForUserId)
       }
     }
   })
-});
+})
 
-export default TeamMember;
+export default TeamMember

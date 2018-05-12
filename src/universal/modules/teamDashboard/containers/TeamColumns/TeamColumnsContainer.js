@@ -1,28 +1,28 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {createFragmentContainer} from 'react-relay';
-import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
-import {TEAM_DASH} from 'universal/utils/constants';
-import getTaskById from 'universal/utils/getTaskById';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {createFragmentContainer} from 'react-relay'
+import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
+import {TEAM_DASH} from 'universal/utils/constants'
+import getTaskById from 'universal/utils/getTaskById'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 
 const mapStateToProps = (state, props) => {
   const {
     atmosphere: {viewerId},
     teamId
-  } = props;
-  const {teamMemberFilterId} = state.teamDashboard;
+  } = props
+  const {teamMemberFilterId} = state.teamDashboard
   return {
     myTeamMemberId: toTeamMemberId(teamId, viewerId),
     teamMemberFilterId
-  };
-};
+  }
+}
 
 class TeamColumnsContainer extends Component {
   componentWillMount () {
-    this.filterTasks(this.props);
+    this.filterTasks(this.props)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -32,20 +32,20 @@ class TeamColumnsContainer extends Component {
         tasks: oldTasks,
         team: {contentFilter: oldContentFilter}
       }
-    } = this.props;
+    } = this.props
     const {
       teamMemberFilterId,
       viewer: {
         tasks,
         team: {contentFilter}
       }
-    } = nextProps;
+    } = nextProps
     if (
       oldFilter !== teamMemberFilterId ||
       oldTasks !== tasks ||
       oldContentFilter !== contentFilter
     ) {
-      this.filterTasks(nextProps);
+      this.filterTasks(nextProps)
     }
   }
 
@@ -56,18 +56,18 @@ class TeamColumnsContainer extends Component {
         tasks,
         team: {contentFilter, teamMembers}
       }
-    } = props;
-    const contentFilterRegex = new RegExp(contentFilter, 'i');
+    } = props
+    const contentFilterRegex = new RegExp(contentFilter, 'i')
     const contentFilteredEdges = contentFilter
       ? tasks.edges.filter(({node}) => {
-        const {contentText} = node;
-        return contentText && node.contentText.match(contentFilterRegex);
+        const {contentText} = node
+        return contentText && node.contentText.match(contentFilterRegex)
       })
-      : tasks.edges;
+      : tasks.edges
 
     const teamMemberFilteredEdges = teamMemberFilterId
       ? contentFilteredEdges.filter(({node}) => node.assignee.id === teamMemberFilterId)
-      : contentFilteredEdges;
+      : contentFilteredEdges
 
     const edgesWithTeamMembers = teamMemberFilteredEdges.map((edge) => {
       return {
@@ -76,14 +76,14 @@ class TeamColumnsContainer extends Component {
           ...edge.node,
           teamMembers
         }
-      };
-    });
+      }
+    })
     this.setState({
       tasks: {
         ...tasks,
         edges: edgesWithTeamMembers
       }
-    });
+    })
   }
 
   render () {
@@ -91,8 +91,8 @@ class TeamColumnsContainer extends Component {
       myTeamMemberId,
       teamMemberFilterId,
       viewer: {tasks: allTasks}
-    } = this.props;
-    const {tasks} = this.state;
+    } = this.props
+    const {tasks} = this.state
     return (
       <TaskColumns
         getTaskById={getTaskById(allTasks)}
@@ -101,7 +101,7 @@ class TeamColumnsContainer extends Component {
         teamMemberFilterId={teamMemberFilterId}
         area={TEAM_DASH}
       />
-    );
+    )
   }
 }
 
@@ -110,7 +110,7 @@ TeamColumnsContainer.propTypes = {
   teamId: PropTypes.string.isRequired,
   teamMemberFilterId: PropTypes.string,
   viewer: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   withAtmosphere(connect(mapStateToProps)(TeamColumnsContainer)),
@@ -142,4 +142,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

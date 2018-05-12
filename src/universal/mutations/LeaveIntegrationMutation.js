@@ -1,8 +1,8 @@
-import {commitMutation} from 'react-relay';
-import {removeGitHubRepoUpdater} from 'universal/mutations/RemoveGitHubRepoMutation';
-import {GITHUB} from 'universal/utils/constants';
-import fromGlobalId from 'universal/utils/relay/fromGlobalId';
-import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
+import {commitMutation} from 'react-relay'
+import {removeGitHubRepoUpdater} from 'universal/mutations/RemoveGitHubRepoMutation'
+import {GITHUB} from 'universal/utils/constants'
+import fromGlobalId from 'universal/utils/relay/fromGlobalId'
+import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds'
 
 const mutation = graphql`
   mutation LeaveIntegrationMutation($globalId: ID!) {
@@ -14,21 +14,21 @@ const mutation = graphql`
       userId
     }
   }
-`;
+`
 
 export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
-  const globalId = payload.getValue('globalId');
-  const userId = payload.getValue('userId');
-  const {type} = fromGlobalId(globalId);
+  const globalId = payload.getValue('globalId')
+  const userId = payload.getValue('userId')
+  const {type} = fromGlobalId(globalId)
   // a null userId is interpreted as removing the whole repo
   if (userId) {
-    const integration = store.get(globalId);
+    const integration = store.get(globalId)
     if (integration) {
-      const teamMembers = integration.getLinkedRecords('teamMembers');
+      const teamMembers = integration.getLinkedRecords('teamMembers')
       if (teamMembers) {
-        const teamMemberId = `${userId}::${teamId}`;
-        const newNodes = getArrayWithoutIds(teamMembers, teamMemberId);
-        integration.setLinkedRecords(newNodes, 'teamMembers');
+        const teamMemberId = `${userId}::${teamId}`
+        const newNodes = getArrayWithoutIds(teamMembers, teamMemberId)
+        integration.setLinkedRecords(newNodes, 'teamMembers')
       }
       // FIXME https://github.com/facebook/relay/issues/1963
       // const userIds = integration.getValue('userIds');
@@ -38,34 +38,34 @@ export const leaveIntegrationUpdater = (store, viewer, teamId, payload) => {
       // }
     }
   } else if (type === GITHUB) {
-    removeGitHubRepoUpdater(viewer, teamId, globalId);
+    removeGitHubRepoUpdater(viewer, teamId, globalId)
   }
-};
+}
 
-let tempId = 0;
+let tempId = 0
 const LeaveIntegrationMutation = (environment, globalId, teamId, onError, onCompleted) => {
-  const {viewerId} = environment;
+  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {globalId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
-      const payload = store.getRootField('leaveIntegration');
-      if (!payload) return;
-      leaveIntegrationUpdater(store, viewer, teamId, payload);
+      const viewer = store.get(viewerId)
+      const payload = store.getRootField('leaveIntegration')
+      if (!payload) return
+      leaveIntegrationUpdater(store, viewer, teamId, payload)
     },
     optimisticUpdater: (store) => {
-      const {userId} = environment;
+      const {userId} = environment
       const leaveIntegration = store
         .create(`client:leaveIntegration:${tempId++}`, 'LeaveIntegrationPayload')
         .setValue(userId, 'userId')
-        .setValue(globalId, 'globalId');
-      const viewer = store.get(viewerId);
-      leaveIntegrationUpdater(store, viewer, teamId, leaveIntegration);
+        .setValue(globalId, 'globalId')
+      const viewer = store.get(viewerId)
+      leaveIntegrationUpdater(store, viewer, teamId, leaveIntegration)
     },
     onError,
     onCompleted
-  });
-};
+  })
+}
 
-export default LeaveIntegrationMutation;
+export default LeaveIntegrationMutation

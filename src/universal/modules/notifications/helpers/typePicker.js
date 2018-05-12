@@ -9,7 +9,7 @@ import {
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
   TEAM_INVITE
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 
 export default {
   [ADD_TO_TEAM]: () =>
@@ -33,4 +33,4 @@ export default {
     System.import('universal/modules/notifications/components/TeamArchived/TeamArchived'),
   [TEAM_INVITE]: () =>
     System.import('universal/modules/notifications/components/TeamInvite/TeamInvite')
-};
+}

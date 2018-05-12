@@ -1,23 +1,23 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import Button from 'universal/components/Button/Button';
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import StartMeetingMutation from 'universal/mutations/StartMeetingMutation';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import makeHref from 'universal/utils/makeHref';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {LOBBY} from 'universal/utils/constants';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import Button from 'universal/components/Button/Button'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import StartMeetingMutation from 'universal/mutations/StartMeetingMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import makeHref from 'universal/utils/makeHref'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {LOBBY} from 'universal/utils/constants'
 
 const MeetingLobby = (props) => {
   const {
@@ -29,13 +29,13 @@ const MeetingLobby = (props) => {
     submitting,
     team,
     styles
-  } = props;
-  const {teamId, teamName} = team;
+  } = props
+  const {teamId, teamName} = team
   const onStartMeetingClick = () => {
-    submitMutation();
-    StartMeetingMutation(atmosphere, teamId, history, onError, onCompleted);
-  };
-  const meetingUrl = makeHref(`/meeting/${teamId}`);
+    submitMutation()
+    StartMeetingMutation(atmosphere, teamId, history, onError, onCompleted)
+  }
+  const meetingUrl = makeHref(`/meeting/${teamId}`)
   return (
     <MeetingMain hasHelpFor={LOBBY}>
       {/* */}
@@ -54,11 +54,11 @@ const MeetingLobby = (props) => {
         </MeetingCopy>
         <div className={css(styles.buttonBlock)}>
           <Button
-            buttonStyle="primary"
-            colorPalette="warm"
-            label="Start Action Meeting"
+            buttonStyle='primary'
+            colorPalette='warm'
+            label='Start Action Meeting'
             onClick={onStartMeetingClick}
-            buttonSize="large"
+            buttonSize='large'
             waiting={submitting}
           />
         </div>
@@ -68,8 +68,8 @@ const MeetingLobby = (props) => {
       </div>
       {/* */}
     </MeetingMain>
-  );
-};
+  )
+}
 
 MeetingLobby.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -83,7 +83,7 @@ MeetingLobby.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired
-};
+}
 
 const styleThunk = () => ({
   root: {
@@ -121,7 +121,7 @@ const styleThunk = () => ({
     display: 'inline-block',
     verticalAlign: 'middle'
   }
-});
+})
 
 export default createFragmentContainer(
   withRouter(withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingLobby)))),
@@ -131,4 +131,4 @@ export default createFragmentContainer(
       teamName: name
     }
   `
-);
+)

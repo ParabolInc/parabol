@@ -14,10 +14,10 @@ export default function shouldValidate ({
   structure
 }) {
   if (initialRender) {
-    return false;
+    return false
   }
   return (
     !structure.deepEqual(values, nextProps.values) ||
     !structure.deepEqual(lastFieldValidatorKeys, fieldValidatorKeys)
-  );
+  )
 }

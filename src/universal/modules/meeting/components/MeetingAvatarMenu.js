@@ -1,14 +1,14 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import textOverflow from 'universal/styles/helpers/textOverflow';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const MeetingAvatarMenu = (props) => {
   const {
@@ -19,13 +19,13 @@ const MeetingAvatarMenu = (props) => {
     handleRequest,
     localPhase,
     styles
-  } = props;
-  const {isCheckedIn, isConnected, preferredName} = avatar;
-  const connected = isConnected ? 'connected' : 'disconnected';
-  const checkedIn = isCheckedIn ? ' and checked in' : '';
-  const headerLabel = `${preferredName} is ${connected} ${checkedIn}`;
-  const phaseInfo = actionMeeting[localPhase];
-  const {name: phaseName} = phaseInfo;
+  } = props
+  const {isCheckedIn, isConnected, preferredName} = avatar
+  const connected = isConnected ? 'connected' : 'disconnected'
+  const checkedIn = isCheckedIn ? ' and checked in' : ''
+  const headerLabel = `${preferredName} is ${connected} ${checkedIn}`
+  const phaseInfo = actionMeeting[localPhase]
+  const {name: phaseName} = phaseInfo
   return (
     <MenuWithShortcuts
       ariaLabel={'Select what to do with this team member'}
@@ -34,28 +34,28 @@ const MeetingAvatarMenu = (props) => {
       <div className={css(styles.label)}>{headerLabel}</div>
       {handleNavigate && (
         <MenuItemWithShortcuts
-          key="handleNavigate"
+          key='handleNavigate'
           label={`See ${preferredName}’s ${phaseName}`}
           onClick={handleNavigate}
         />
       )}
       {handlePromote && (
         <MenuItemWithShortcuts
-          key="promoteToFacilitator"
+          key='promoteToFacilitator'
           label={`Promote ${preferredName} to Facilitator`}
           onClick={handlePromote}
         />
       )}
       {handleRequest && (
         <MenuItemWithShortcuts
-          key="requestFacilitator"
+          key='requestFacilitator'
           label={'Request to become Facilitator'}
           onClick={handleRequest}
         />
       )}
     </MenuWithShortcuts>
-  );
-};
+  )
+}
 
 MeetingAvatarMenu.propTypes = {
   avatar: PropTypes.shape({
@@ -69,7 +69,7 @@ MeetingAvatarMenu.propTypes = {
   handleRequest: PropTypes.func,
   localPhase: PropTypes.string.isRequired,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   label: {
@@ -83,7 +83,7 @@ const styleThunk = () => ({
     padding: `0 ${ui.menuGutterHorizontal}`,
     userSelect: 'none'
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(MeetingAvatarMenu),
@@ -94,4 +94,4 @@ export default createFragmentContainer(
       preferredName
     }
   `
-);
+)

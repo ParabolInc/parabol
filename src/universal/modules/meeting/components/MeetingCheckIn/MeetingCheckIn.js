@@ -1,20 +1,20 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
-import MeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/MeetingCheckInPrompt';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {CHECKIN} from 'universal/utils/constants';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls'
+import MeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/MeetingCheckInPrompt'
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import MeetingCheckInMutation from 'universal/mutations/MeetingCheckInMutation'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {CHECKIN} from 'universal/utils/constants'
 
 const MeetingCheckin = (props) => {
   const {
@@ -30,23 +30,23 @@ const MeetingCheckin = (props) => {
     onCompleted,
     styles,
     team
-  } = props;
+  } = props
 
   const makeCheckinPressFactory = (teamMemberId) => (isCheckedIn) => () => {
-    if (submitting) return;
-    submitMutation();
-    MeetingCheckInMutation(atmosphere, teamMemberId, isCheckedIn, onError, onCompleted);
-    gotoNext();
-  };
+    if (submitting) return
+    submitMutation()
+    MeetingCheckInMutation(atmosphere, teamMemberId, isCheckedIn, onError, onCompleted)
+    gotoNext()
+  }
 
-  const {teamMembers} = team;
-  const memberIdx = localPhaseItem - 1;
-  const currentMember = teamMembers[memberIdx];
-  const {isSelf: isMyMeetingSection} = currentMember;
-  const nextMember = teamMembers[memberIdx + 1];
+  const {teamMembers} = team
+  const memberIdx = localPhaseItem - 1
+  const currentMember = teamMembers[memberIdx]
+  const {isSelf: isMyMeetingSection} = currentMember
+  const nextMember = teamMembers[memberIdx + 1]
   return (
     <MeetingMain hasHelpFor={CHECKIN} isFacilitating={isFacilitating}>
-      <MeetingSection flexToFill paddingBottom="1rem">
+      <MeetingSection flexToFill paddingBottom='1rem'>
         <MeetingCheckInPrompt
           isFacilitating={isFacilitating}
           localPhaseItem={localPhaseItem}
@@ -90,8 +90,8 @@ const MeetingCheckin = (props) => {
         </MeetingControlBar>
       )}
     </MeetingMain>
-  );
-};
+  )
+}
 
 MeetingCheckin.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -106,7 +106,7 @@ MeetingCheckin.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired
-};
+}
 
 const styleThunk = () => ({
   base: {
@@ -131,7 +131,7 @@ const styleThunk = () => ({
   hint: {
     marginTop: '2.5rem'
   }
-});
+})
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withStyles(styleThunk)(MeetingCheckin))),
@@ -145,4 +145,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

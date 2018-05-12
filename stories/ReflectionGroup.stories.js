@@ -4,25 +4,25 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState} from 'draft-js';
-import React from 'react';
-import shortid from 'shortid';
-import {action} from '@storybook/addon-actions';
-import {storiesOf} from '@storybook/react';
+import {ContentState} from 'draft-js'
+import React from 'react'
+import shortid from 'shortid'
+import {action} from '@storybook/addon-actions'
+import {storiesOf} from '@storybook/react'
 
-import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup';
+import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
 
-import Grid from './components/Grid';
-import RetroBackground from './components/RetroBackground';
-import StoryContainer from './components/StoryContainer';
+import Grid from './components/Grid'
+import RetroBackground from './components/RetroBackground'
+import StoryContainer from './components/StoryContainer'
 
-const newId = () => shortid.generate();
+const newId = () => shortid.generate()
 
 storiesOf('Reflection Group', module)
   .add('with a few cards', () => (
     <RetroBackground>
       <StoryContainer
-        description="Note: we only render the top four cards in the collapsed state"
+        description='Note: we only render the top four cards in the collapsed state'
         render={() => (
           <Grid>
             <ReflectionGroup
@@ -157,4 +157,4 @@ storiesOf('Reflection Group', module)
         )}
       />
     </RetroBackground>
-  ));
+  ))

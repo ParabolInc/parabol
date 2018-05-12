@@ -1,16 +1,16 @@
-import React from 'react';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import {BILLING_LEADER} from 'universal/utils/constants';
-import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation';
-import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal';
-import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal';
-import {createFragmentContainer} from 'react-relay';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import type {MutationProps} from 'universal/utils/relay/withMutationProps';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import {BillingLeaderActionMenu_organization as Organization} from './__generated__/BillingLeaderActionMenu_organization.graphql';
-import {BillingLeaderActionMenu_orgMember as OrgMember} from './__generated__/BillingLeaderActionMenu_orgMember.graphql';
+import React from 'react'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import {BILLING_LEADER} from 'universal/utils/constants'
+import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
+import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal'
+import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal'
+import {createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {BillingLeaderActionMenu_organization as Organization} from './__generated__/BillingLeaderActionMenu_organization.graphql'
+import {BillingLeaderActionMenu_orgMember as OrgMember} from './__generated__/BillingLeaderActionMenu_orgMember.graphql'
 
 type Props = {|
   atmosphere: Object,
@@ -19,7 +19,7 @@ type Props = {|
   orgMember: OrgMember,
   organization: Organization,
   ...MutationProps
-|};
+|}
 
 const BillingLeaderActionMenu = (props: Props) => {
   const {
@@ -32,50 +32,50 @@ const BillingLeaderActionMenu = (props: Props) => {
     onError,
     onCompleted,
     organization
-  } = props;
-  const {orgId} = organization;
-  const {viewerId} = atmosphere;
-  const {isBillingLeader, user} = orgMember;
-  const {userId, preferredName} = user;
+  } = props
+  const {orgId} = organization
+  const {viewerId} = atmosphere
+  const {isBillingLeader, user} = orgMember
+  const {userId, preferredName} = user
 
   const setRole = (role = null) => () => {
-    if (submitting) return;
-    submitMutation();
-    const variables = {orgId, userId, role};
-    SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted);
-  };
+    if (submitting) return
+    submitMutation()
+    const variables = {orgId, userId, role}
+    SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted)
+  }
 
   return (
     <MenuWithShortcuts ariaLabel={'Select your action'} closePortal={closePortal}>
       {isBillingLeader &&
         !isViewerLastBillingLeader && (
-        <MenuItemWithShortcuts label="Remove Billing Leader role" onClick={setRole(null)} />
-      )}
+          <MenuItemWithShortcuts label='Remove Billing Leader role' onClick={setRole(null)} />
+        )}
       {!isBillingLeader && (
         <MenuItemWithShortcuts
-          label="Promote to Billing Leader"
+          label='Promote to Billing Leader'
           onClick={setRole(BILLING_LEADER)}
         />
       )}
       {viewerId === userId &&
         !isViewerLastBillingLeader && (
-        <LeaveOrgModal
-          orgId={orgId}
-          userId={userId}
-          toggle={<MenuItemWithShortcuts label="Leave Organization" />}
-        />
-      )}
+          <LeaveOrgModal
+            orgId={orgId}
+            userId={userId}
+            toggle={<MenuItemWithShortcuts label='Leave Organization' />}
+          />
+        )}
       {viewerId !== userId && (
         <RemoveFromOrgModal
           orgId={orgId}
           preferredName={preferredName}
           userId={userId}
-          toggle={<MenuItemWithShortcuts label="Remove from Organization" />}
+          toggle={<MenuItemWithShortcuts label='Remove from Organization' />}
         />
       )}
     </MenuWithShortcuts>
-  );
-};
+  )
+}
 
 export default createFragmentContainer(
   withMutationProps(withAtmosphere(BillingLeaderActionMenu)),
@@ -92,4 +92,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

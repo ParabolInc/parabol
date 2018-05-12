@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
   fragment UpdateCheckInQuestionMutation_team on UpdateCheckInQuestionPayload {
@@ -6,7 +6,7 @@ graphql`
       checkInQuestion
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpdateCheckInQuestionMutation($teamId: ID!, $checkInQuestion: String!) {
@@ -17,7 +17,7 @@ const mutation = graphql`
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const UpdateCheckInQuestionMutation = (
   environment,
@@ -30,11 +30,11 @@ const UpdateCheckInQuestionMutation = (
     mutation,
     variables: {teamId, checkInQuestion},
     optimisticUpdater: (store) => {
-      store.get(teamId).setValue(checkInQuestion, 'checkInQuestion');
+      store.get(teamId).setValue(checkInQuestion, 'checkInQuestion')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default UpdateCheckInQuestionMutation;
+export default UpdateCheckInQuestionMutation

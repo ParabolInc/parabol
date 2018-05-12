@@ -1,18 +1,18 @@
-import getRethink from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver'
 import {
   ADD_USER,
   AUTO_PAUSE_USER,
   PAUSE_USER,
   REMOVE_USER,
   UNPAUSE_USER
-} from 'server/utils/serverConstants';
-import stripe from 'server/billing/stripe';
-import shortid from 'shortid';
-import {toEpochSeconds} from 'server/utils/epochTime';
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
+} from 'server/utils/serverConstants'
+import stripe from 'server/billing/stripe'
+import shortid from 'shortid'
+import {toEpochSeconds} from 'server/utils/epochTime'
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 
 const changePause = (inactive) => (orgIds, userId) => {
-  const r = getRethink();
+  const r = getRethink()
   return r
     .table('User')
     .get(userId)
@@ -30,22 +30,22 @@ const changePause = (inactive) => (orgIds, userId) => {
                   inactive
                 }),
                 orgUser
-              );
+              )
             }),
             updatedAt: new Date()
           }),
           {returnChanges: true}
-        );
+        )
     })
-    .run();
-};
+    .run()
+}
 
 const addUser = (orgIds, userId) => {
-  const r = getRethink();
+  const r = getRethink()
   const userOrgAdditions = orgIds.map((id) => ({
     id,
     role: null
-  }));
+  }))
   return r
     .table('User')
     .get(userId)
@@ -68,13 +68,13 @@ const addUser = (orgIds, userId) => {
             updatedAt: new Date()
           }),
           {returnChanges: true}
-        );
+        )
     })
-    .run();
-};
+    .run()
+}
 
 const deleteUser = (orgIds, userId) => {
-  const r = getRethink();
+  const r = getRethink()
   return r
     .table('User')
     .get(userId)
@@ -96,10 +96,10 @@ const deleteUser = (orgIds, userId) => {
             updatedAt: new Date()
           }),
           {returnChanges: true}
-        );
+        )
     })
-    .run();
-};
+    .run()
+}
 
 const typeLookup = {
   [ADD_USER]: addUser,
@@ -107,19 +107,19 @@ const typeLookup = {
   [PAUSE_USER]: changePause(true),
   [REMOVE_USER]: deleteUser,
   [UNPAUSE_USER]: changePause(false)
-};
+}
 
 export default async function adjustUserCount (userId, orgInput, type) {
-  const r = getRethink();
-  const now = new Date();
+  const r = getRethink()
+  const now = new Date()
 
-  const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput];
-  const dbAction = typeLookup[type];
-  const {changes: orgChanges} = await dbAction(orgIds, userId);
-  const orgs = orgChanges.map((change) => change.new_val);
-  const prorationDate = toEpochSeconds(now);
+  const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
+  const dbAction = typeLookup[type]
+  const {changes: orgChanges} = await dbAction(orgIds, userId)
+  const orgs = orgChanges.map((change) => change.new_val)
+  const prorationDate = toEpochSeconds(now)
   const hooks = orgs.reduce((arr, org) => {
-    const {stripeSubscriptionId} = org;
+    const {stripeSubscriptionId} = org
     if (stripeSubscriptionId) {
       arr.push({
         id: shortid.generate(),
@@ -127,26 +127,26 @@ export default async function adjustUserCount (userId, orgInput, type) {
         prorationDate,
         type,
         userId
-      });
+      })
     }
-    return arr;
-  }, []);
+    return arr
+  }, [])
   // wait here to make sure the webhook finds what it's looking for
-  await r.table('InvoiceItemHook').insert(hooks);
+  await r.table('InvoiceItemHook').insert(hooks)
   const stripePromises = orgs.reduce((arr, org) => {
-    const {orgUsers, stripeSubscriptionId} = org;
+    const {orgUsers, stripeSubscriptionId} = org
     if (stripeSubscriptionId) {
       arr.push(
         stripe.subscriptions.update(stripeSubscriptionId, {
           proration_date: prorationDate,
           quantity: orgUsers.reduce((count, orgUser) => (orgUser.inactive ? count : count + 1), 0)
         })
-      );
+      )
     }
-    return arr;
-  }, []);
+    return arr
+  }, [])
 
-  await Promise.all(stripePromises);
+  await Promise.all(stripePromises)
   // publish any changes to user traits (like tier counts) to segment:
-  await sendSegmentIdentify(userId);
+  await sendSegmentIdentify(userId)
 }

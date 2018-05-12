@@ -1,4 +1,4 @@
-import {GraphQLEnumType} from 'graphql';
+import {GraphQLEnumType} from 'graphql'
 import {
   AGENDA_ITEMS,
   CHECKIN,
@@ -9,7 +9,7 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'universal/utils/constants';
+} from 'universal/utils/constants'
 
 const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
   name: 'NewMeetingPhaseTypeEnum',
@@ -28,6 +28,6 @@ const NewMeetingPhaseTypeEnum = new GraphQLEnumType({
     [VOTE]: {},
     [DISCUSS]: {}
   }
-});
+})
 
-export default NewMeetingPhaseTypeEnum;
+export default NewMeetingPhaseTypeEnum

@@ -1,8 +1,8 @@
-let tempId = 0;
+let tempId = 0
 
 const clientTempId = (prefix) => {
-  const prefixWithSeparator = prefix ? `${prefix}::` : '';
-  return `${prefixWithSeparator}${tempId++}-tmp`;
-};
+  const prefixWithSeparator = prefix ? `${prefix}::` : ''
+  return `${prefixWithSeparator}${tempId++}-tmp`
+}
 
-export default clientTempId;
+export default clientTempId

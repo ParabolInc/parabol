@@ -1,9 +1,9 @@
-import getRethink from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver'
 
 const removeEmptyReflectionGroup = (reflectionGroupId, oldReflectionGroupId) => {
-  const r = getRethink();
-  const now = new Date();
-  if (!reflectionGroupId) return false;
+  const r = getRethink()
+  const now = new Date()
+  if (!reflectionGroupId) return false
   return r
     .table('RetroReflection')
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
@@ -20,8 +20,8 @@ const removeEmptyReflectionGroup = (reflectionGroupId, oldReflectionGroupId) => 
             updatedAt: now
           }),
         null
-      );
-    });
-};
+      )
+    })
+}
 
-export default removeEmptyReflectionGroup;
+export default removeEmptyReflectionGroup

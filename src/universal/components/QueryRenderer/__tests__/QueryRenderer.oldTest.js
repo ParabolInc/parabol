@@ -1,12 +1,14 @@
-import Atmosphere from 'universal/Atmosphere';
-import {shallow} from 'enzyme';
-import React from 'react';
-import QueryRenderer from '../QueryRenderer';
-import * as SubscriptionTransport from 'subscriptions-transport-ws';
-import SubscriptionClient from 'client/__mocks__/SubscriptionClient';
+/* eslint-env jest */
 
-SubscriptionTransport.SubscriptionClient = SubscriptionClient;
-QueryRenderer._fetch = jest.fn();
+import Atmosphere from 'universal/Atmosphere'
+import {shallow} from 'enzyme'
+import React from 'react'
+import QueryRenderer from '../QueryRenderer'
+import * as SubscriptionTransport from 'subscriptions-transport-ws'
+import SubscriptionClient from 'client/__mocks__/SubscriptionClient'
+
+SubscriptionTransport.SubscriptionClient = SubscriptionClient
+QueryRenderer._fetch = jest.fn()
 
 const query = () => ({
   fragment: {
@@ -74,7 +76,7 @@ const query = () => ({
     ]
   },
   text: 'query GitHubIntegrationsRootQuery {\n  viewer {\n    preferredName\n    id\n  }\n}\n'
-});
+})
 
 const sub = () => ({
   fragment: {
@@ -164,17 +166,17 @@ const sub = () => ({
   },
   text:
     'subscription GitHubRepoRemovedSubscription(\n  $teamId: ID!\n) {\n  githubRepoRemoved(teamId: $teamId) {\n    deletedId\n  }\n}\n'
-});
+})
 
 describe('ReactRelayQueryRenderer', () => {
   // let TestQuery;
   // let cacheConfig;
-  let environment;
-  let render;
+  let environment
+  let render
   // let store;
-  let variables;
+  let variables
   beforeEach(() => {
-    jest.resetModules();
+    jest.resetModules()
     // expect.extend({
     //  toBeRendered(readyState) {
     //    const calls = render.mock.calls;
@@ -183,21 +185,21 @@ describe('ReactRelayQueryRenderer', () => {
     //    return {pass: true};
     //  },
     // });
-    environment = new Atmosphere();
-    environment.setSocket();
-    environment.authToken = 'foo';
-    environment.dispatch = () => {};
-    environment.history = {};
+    environment = new Atmosphere()
+    environment.setSocket()
+    environment.authToken = 'foo'
+    environment.dispatch = () => {}
+    environment.history = {}
 
     // store = environment.getStore();
-    render = jest.fn(() => <div />);
-    variables = {teamId: 1};
-  });
+    render = jest.fn(() => <div />)
+    variables = {teamId: 1}
+  })
 
   describe('all', () => {
     it('on mount, calls subscribe, sets unsubscribe, creates a querySub record', () => {
-      const Sub = jest.fn(() => ({subscription: sub, variables}));
-      const subscriptions = [Sub];
+      const Sub = jest.fn(() => ({subscription: sub, variables}))
+      const subscriptions = [Sub]
       const wrapper = shallow(
         <QueryRenderer
           query={query}
@@ -206,16 +208,16 @@ describe('ReactRelayQueryRenderer', () => {
           variables={variables}
           subscriptions={subscriptions}
         />
-      );
-      const instance = wrapper.instance();
+      )
+      const instance = wrapper.instance()
 
-      expect(instance.unsubscribe).toBeDefined();
-      expect(environment.querySubscriptions.length).toBe(1);
-    });
+      expect(instance.unsubscribe).toBeDefined()
+      expect(environment.querySubscriptions.length).toBe(1)
+    })
 
     it('on unmount, it does not release if subscriptions are provided', () => {
-      const Sub = jest.fn(() => ({subscription: sub, variables}));
-      const subscriptions = [Sub];
+      const Sub = jest.fn(() => ({subscription: sub, variables}))
+      const subscriptions = [Sub]
       const wrapper = shallow(
         <QueryRenderer
           query={query}
@@ -224,10 +226,10 @@ describe('ReactRelayQueryRenderer', () => {
           variables={variables}
           subscriptions={subscriptions}
         />
-      );
-      wrapper.unmount();
-      expect(environment.querySubscriptions.length).toBe(1);
-    });
+      )
+      wrapper.unmount()
+      expect(environment.querySubscriptions.length).toBe(1)
+    })
 
     // it('on unmount, it does release if subscriptions are not provided', () => {
     //   const wrapper = shallow(
@@ -241,5 +243,5 @@ describe('ReactRelayQueryRenderer', () => {
     //   wrapper.unmount();
     //   expect(environment.querySubscriptions.length).toBe(0);
     // });
-  });
-});
+  })
+})

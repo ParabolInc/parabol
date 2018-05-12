@@ -1,7 +1,7 @@
 exports.up = async (r) => {
-  const tables = [r.tableCreate('Invoice'), r.tableCreate('InvoiceItemHook')];
+  const tables = [r.tableCreate('Invoice'), r.tableCreate('InvoiceItemHook')]
   try {
-    await Promise.all(tables);
+    await Promise.all(tables)
   } catch (e) {
     // ignore
   }
@@ -10,15 +10,15 @@ exports.up = async (r) => {
     r.table('InvoiceItemHook').indexCreate('prorationDate'),
     r.table('InvoiceItemHook').indexCreate('userId')
     // r.table('InvoiceItemHook').indexCreate('prorationDateSubId', (row) => [row('prorationDate'), row('subId')])
-  ];
+  ]
   try {
-    await Promise.all(indices);
+    await Promise.all(indices)
   } catch (e) {
     // ignore
   }
-};
+}
 
 exports.down = async (r) => {
-  const tables = [r.tableDrop('Invoice'), r.tableDrop('InvoiceItemHook')];
-  await Promise.all(tables);
-};
+  const tables = [r.tableDrop('Invoice'), r.tableDrop('InvoiceItemHook')]
+  await Promise.all(tables)
+}

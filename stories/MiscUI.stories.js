@@ -3,12 +3,12 @@
  *
  * @flow
  */
-import React from 'react';
-import {storiesOf} from '@storybook/react';
-import RetroBackground from './components/RetroBackground';
-import StoryContainer from './components/StoryContainer';
-import Button from 'universal/components/Button/Button';
-import LoadingView from 'universal/components/LoadingView/LoadingView';
+import React from 'react'
+import {storiesOf} from '@storybook/react'
+import RetroBackground from './components/RetroBackground'
+import StoryContainer from './components/StoryContainer'
+import Button from 'universal/components/Button/Button'
+import LoadingView from 'universal/components/LoadingView/LoadingView'
 
 storiesOf('Misc. UI Components', module)
   .add('Button variants', () => (
@@ -17,18 +17,18 @@ storiesOf('Misc. UI Components', module)
         render={() => (
           <div style={{backgroundColor: 'white', width: '600px', padding: '20px'}}>
             <Button
-              colorPalette="gray"
-              buttonSize="small"
-              buttonStyle="solid"
-              label="Take Action Now"
+              colorPalette='gray'
+              buttonSize='small'
+              buttonStyle='solid'
+              label='Take Action Now'
             />
             <Button
-              colorPalette="dark"
-              buttonSize="medium"
-              buttonStyle="solid"
-              label="Take Action Now"
+              colorPalette='dark'
+              buttonSize='medium'
+              buttonStyle='solid'
+              label='Take Action Now'
             />
-            <Button buttonSize="large" buttonStyle="primary" label="Take Action Now" />
+            <Button buttonSize='large' buttonStyle='primary' label='Take Action Now' />
           </div>
         )}
       />
@@ -38,4 +38,4 @@ storiesOf('Misc. UI Components', module)
     <RetroBackground>
       <StoryContainer render={() => <LoadingView />} />
     </RetroBackground>
-  ));
+  ))

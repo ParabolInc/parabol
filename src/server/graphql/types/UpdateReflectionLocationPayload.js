@@ -1,9 +1,9 @@
-import {GraphQLObjectType} from 'graphql';
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
-import RetroReflection from 'server/graphql/types/RetroReflection';
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
+import {GraphQLObjectType} from 'graphql'
+import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import RetroReflection from 'server/graphql/types/RetroReflection'
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
+import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
 
 const UpdateReflectionLocationPayload = new GraphQLObjectType({
   name: 'UpdateReflectionLocationPayload',
@@ -31,6 +31,6 @@ const UpdateReflectionLocationPayload = new GraphQLObjectType({
       resolve: makeResolve('oldReflectionGroupId', 'oldReflectionGroup', 'retroReflectionGroups')
     }
   })
-});
+})
 
-export default UpdateReflectionLocationPayload;
+export default UpdateReflectionLocationPayload

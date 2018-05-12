@@ -1,10 +1,10 @@
 // @flow
 
-import React from 'react';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
+import React from 'react'
+import Button from 'universal/components/Button/Button'
+import Type from 'universal/components/Type/Type'
 
-import ArchiveTeamForm from './ArchiveTeamForm';
+import ArchiveTeamForm from './ArchiveTeamForm'
 
 type Props = {
   teamName: string,
@@ -12,7 +12,7 @@ type Props = {
   handleFormSubmit: () => any,
   handleClick: () => any,
   showConfirmationField: boolean
-};
+}
 
 const ArchiveTeam = ({
   handleClick,
@@ -25,13 +25,13 @@ const ArchiveTeam = ({
     {!showConfirmationField ? (
       <div>
         <Button
-          buttonSize="small"
-          colorPalette="warm"
-          label="Delete Team"
-          aria-label="Click to permanently delete this team."
+          buttonSize='small'
+          colorPalette='warm'
+          label='Delete Team'
+          aria-label='Click to permanently delete this team.'
           onClick={handleClick}
         />
-        <Type width="auto" marginTop=".5rem" scale="s2">
+        <Type width='auto' marginTop='.5rem' scale='s2'>
           <b>Note</b>: {'This can’t be undone.'}
         </Type>
       </div>
@@ -43,6 +43,6 @@ const ArchiveTeam = ({
       />
     )}
   </div>
-);
+)
 
-export default ArchiveTeam;
+export default ArchiveTeam

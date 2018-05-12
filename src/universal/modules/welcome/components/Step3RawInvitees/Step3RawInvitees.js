@@ -1,44 +1,44 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import InputField from 'universal/components/InputField/InputField';
-import {Field, reduxForm, arrayPush, change} from 'redux-form';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
-import makeStep3RawSchema from 'universal/validation/makeStep3RawSchema';
-import {updateExistingInvites} from 'universal/modules/welcome/ducks/welcomeDuck';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
-import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
+import PropTypes from 'prop-types'
+import React from 'react'
+import InputField from 'universal/components/InputField/InputField'
+import {Field, reduxForm, arrayPush, change} from 'redux-form'
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
+import makeStep3RawSchema from 'universal/validation/makeStep3RawSchema'
+import {updateExistingInvites} from 'universal/modules/welcome/ducks/welcomeDuck'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton'
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 
 const validate = (values) => {
-  const schema = makeStep3RawSchema();
-  return schema(values).errors;
-};
+  const schema = makeStep3RawSchema()
+  return schema(values).errors
+}
 
 const Step3RawInvitees = (props) => {
-  const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch, styles} = props;
+  const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch, styles} = props
 
   const onAddInviteesButtonClick = () => {
-    const parsedAddresses = parseEmailAddressList(inviteesRaw);
+    const parsedAddresses = parseEmailAddressList(inviteesRaw)
     // clear the inviteesRaw form component:
-    dispatch(change('welcomeWizardRawInvitees', 'inviteesRaw', ''));
+    dispatch(change('welcomeWizardRawInvitees', 'inviteesRaw', ''))
     if (!parsedAddresses) {
-      return;
+      return
     }
-    const uniqueEmails = new Set();
+    const uniqueEmails = new Set()
     const distinctParsedAddresses = parsedAddresses.reduce((set, email) => {
       if (!uniqueEmails.has(email.address)) {
-        uniqueEmails.add(email.address);
-        set.push(email);
+        uniqueEmails.add(email.address)
+        set.push(email)
       }
-      return set;
-    }, []);
-    const inviteeEmails = invitees.map((i) => i.email);
-    const existingInvites = [];
+      return set
+    }, [])
+    const inviteeEmails = invitees.map((i) => i.email)
+    const existingInvites = []
     distinctParsedAddresses.forEach((email, idx) => {
       if (inviteeEmails.includes(email.address)) {
         // highlight that email then fade
-        existingInvites.push(idx);
+        existingInvites.push(idx)
       } else {
         dispatch(
           arrayPush('welcomeWizard', 'invitees', {
@@ -46,14 +46,14 @@ const Step3RawInvitees = (props) => {
             fullName: email.name,
             label: email.name ? `"${email.name}" <${email.address}>` : email.address
           })
-        );
+        )
       }
-    });
+    })
     if (existingInvites.length) {
-      dispatch(updateExistingInvites(existingInvites));
+      dispatch(updateExistingInvites(existingInvites))
     }
-    untouch('inviteesRaw');
-  };
+    untouch('inviteesRaw')
+  }
   return (
     <form className={css(styles.formBlock)} onSubmit={handleSubmit(onAddInviteesButtonClick)}>
       <Field
@@ -61,15 +61,15 @@ const Step3RawInvitees = (props) => {
         component={InputField}
         isLarger
         isWider
-        name="inviteesRaw"
+        name='inviteesRaw'
         placeholder={randomPlaceholderTheme.emailMulti}
-        type="text"
+        type='text'
         underline
       />
       <WelcomeSubmitButton disabled={!inviteesRaw} />
     </form>
-  );
-};
+  )
+}
 
 Step3RawInvitees.propTypes = {
   dispatch: PropTypes.func.isRequired,
@@ -78,7 +78,7 @@ Step3RawInvitees.propTypes = {
   inviteesRaw: PropTypes.string,
   untouch: PropTypes.func.isRequired,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   formBlock: {
@@ -89,11 +89,11 @@ const styleThunk = () => ({
     paddingLeft: '2.5rem',
     width: '45.5rem'
   }
-});
+})
 
 const formOptions = {
   form: 'welcomeWizardRawInvitees',
   validate
-};
+}
 
-export default reduxForm(formOptions)(withStyles(styleThunk)(Step3RawInvitees));
+export default reduxForm(formOptions)(withStyles(styleThunk)(Step3RawInvitees))

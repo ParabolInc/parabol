@@ -4,23 +4,23 @@
  *
  * @flow
  */
-import * as React from 'react';
-import styled from 'react-emotion';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation';
-import getNextSortOrder from 'universal/utils/getNextSortOrder';
-import {createFragmentContainer} from 'react-relay';
-import type {MutationProps} from 'universal/utils/relay/withMutationProps';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import StyledError from 'universal/components/StyledError';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import PlainButton from 'universal/components/PlainButton/PlainButton';
-import type {RetroReflectionGroup} from 'universal/types/schema.flow';
-import type {AddReflectionButton_retroPhaseItem as RetroPhaseItem} from './__generated__/AddReflectionButton_retroPhaseItem.graphql';
-import type {AddReflectionButton_meeting as Meeting} from './__generated__/AddReflectionButton_meeting.graphql';
+import * as React from 'react'
+import styled from 'react-emotion'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation'
+import getNextSortOrder from 'universal/utils/getNextSortOrder'
+import {createFragmentContainer} from 'react-relay'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import StyledError from 'universal/components/StyledError'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import PlainButton from 'universal/components/PlainButton/PlainButton'
+import type {RetroReflectionGroup} from 'universal/types/schema.flow'
+import type {AddReflectionButton_retroPhaseItem as RetroPhaseItem} from './__generated__/AddReflectionButton_retroPhaseItem.graphql'
+import type {AddReflectionButton_meeting as Meeting} from './__generated__/AddReflectionButton_meeting.graphql'
 
-const {Component} = React;
+const {Component} = React
 
 type Props = {
   atmosphere: Object,
@@ -28,11 +28,11 @@ type Props = {
   retroPhaseItem: RetroPhaseItem,
   meeting: Meeting,
   ...MutationProps
-};
+}
 
 const Plus = styled('span')({
   paddingRight: '.5rem'
-});
+})
 
 const AddButton = styled(PlainButton)({
   backgroundColor: ui.cardControlBackgroundColor,
@@ -52,7 +52,7 @@ const AddButton = styled(PlainButton)({
     boxShadow: ui.cardBoxShadow, // intended to match ReflectionCard
     cursor: 'pointer'
   }
-});
+})
 
 class AddReflectionButton extends Component<Props> {
   handleClick = () => {
@@ -65,18 +65,18 @@ class AddReflectionButton extends Component<Props> {
       submitMutation,
       onCompleted,
       onError
-    } = this.props;
-    if (submitting) return;
+    } = this.props
+    if (submitting) return
     const input = {
       retroPhaseItemId,
       sortOrder: getNextSortOrder(columnReflectionGroups)
-    };
-    submitMutation();
-    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted);
-  };
+    }
+    submitMutation()
+    CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
+  }
 
   render () {
-    const {error, submitting} = this.props;
+    const {error, submitting} = this.props
     return (
       <React.Fragment>
         <AddButton onClick={this.handleClick} waiting={submitting}>
@@ -85,7 +85,7 @@ class AddReflectionButton extends Component<Props> {
         </AddButton>
         {error && <StyledError>{error.message}</StyledError>}
       </React.Fragment>
-    );
+    )
   }
 }
 
@@ -100,4 +100,4 @@ export default createFragmentContainer(
       meetingId: id
     }
   `
-);
+)

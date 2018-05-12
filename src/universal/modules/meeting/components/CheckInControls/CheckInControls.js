@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import styled from 'react-emotion';
-import withHotkey from 'react-hotkey-hoc';
-import Button from 'universal/components/Button/Button';
-import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
+import PropTypes from 'prop-types'
+import React from 'react'
+import styled from 'react-emotion'
+import withHotkey from 'react-hotkey-hoc'
+import Button from 'universal/components/Button/Button'
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 
 const ButtonBlock = styled('div')({
   display: 'flex'
-});
+})
 
 const CheckInControls = (props) => {
   const {
@@ -17,13 +17,13 @@ const CheckInControls = (props) => {
     localPhaseItem,
     nextMemberName,
     nextPhaseName
-  } = props;
+  } = props
 
-  const handleOnClickPresent = checkInPressFactory(true);
-  const handleOnClickAbsent = checkInPressFactory(false);
+  const handleOnClickPresent = checkInPressFactory(true)
+  const handleOnClickAbsent = checkInPressFactory(false)
 
-  bindHotkey('h', handleOnClickPresent);
-  bindHotkey('n', handleOnClickAbsent);
+  bindHotkey('h', handleOnClickPresent)
+  bindHotkey('n', handleOnClickAbsent)
 
   const nextLabel = (
     <span>
@@ -32,7 +32,7 @@ const CheckInControls = (props) => {
       {'ere – '}
       {nextMemberName ? `Move to ${nextMemberName}` : `move to ${nextPhaseName}`}
     </span>
-  );
+  )
 
   const skipLabel = (
     <span>
@@ -41,43 +41,43 @@ const CheckInControls = (props) => {
       {'ot here – '}
       {nextMemberName ? `Skip to ${nextMemberName}` : `skip to ${nextPhaseName}`}
     </span>
-  );
+  )
 
   // TODO: theme-able? (button colors)
 
   return (
     <ButtonBlock>
-      <BounceBlock animationDelay="30s" key={`checkIn${localPhaseItem}buttonAnimation`}>
+      <BounceBlock animationDelay='30s' key={`checkIn${localPhaseItem}buttonAnimation`}>
         <Button
           aria-label={`Mark ${currentMemberName} as “here” and move on`}
-          buttonStyle="flat"
-          colorPalette="dark"
-          icon="check-circle"
+          buttonStyle='flat'
+          colorPalette='dark'
+          icon='check-circle'
           iconLarge
-          iconPalette="green"
-          iconPlacement="left"
+          iconPalette='green'
+          iconPlacement='left'
           key={`checkIn${localPhaseItem}nextButton`}
           label={nextLabel}
           onClick={handleOnClickPresent}
-          buttonSize="medium"
+          buttonSize='medium'
         />
       </BounceBlock>
       <Button
         aria-label={`Mark ${currentMemberName} as “not here” and move on`}
-        buttonStyle="flat"
-        colorPalette="dark"
-        icon="minus-circle"
+        buttonStyle='flat'
+        colorPalette='dark'
+        icon='minus-circle'
         iconLarge
-        iconPalette="red"
-        iconPlacement="left"
+        iconPalette='red'
+        iconPlacement='left'
         key={`checkIn${localPhaseItem}skipButton`}
         label={skipLabel}
         onClick={handleOnClickAbsent}
-        buttonSize="medium"
+        buttonSize='medium'
       />
     </ButtonBlock>
-  );
-};
+  )
+}
 
 CheckInControls.propTypes = {
   bindHotkey: PropTypes.func.isRequired,
@@ -86,6 +86,6 @@ CheckInControls.propTypes = {
   localPhaseItem: PropTypes.number,
   nextMemberName: PropTypes.string,
   nextPhaseName: PropTypes.string
-};
+}
 
-export default withHotkey(CheckInControls);
+export default withHotkey(CheckInControls)

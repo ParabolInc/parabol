@@ -1,26 +1,26 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {connect} from 'react-redux';
-import Avatar from 'universal/components/Avatar/Avatar';
-import Tag from 'universal/components/Tag/Tag';
-import appTheme from 'universal/styles/theme/appTheme';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {connect} from 'react-redux'
+import Avatar from 'universal/components/Avatar/Avatar'
+import Tag from 'universal/components/Tag/Tag'
+import appTheme from 'universal/styles/theme/appTheme'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui, {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation';
-import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation';
-import {createFragmentContainer} from 'react-relay';
-import Loadable from 'react-loadable';
-import LoadableLoading from 'universal/components/LoadableLoading';
-import LoadableMenu from 'universal/components/LoadableMenu';
+} from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {CHECKIN, phaseArray, UPDATES} from 'universal/utils/constants'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import RequestFacilitatorMutation from 'universal/mutations/RequestFacilitatorMutation'
+import PromoteFacilitatorMutation from 'universal/mutations/PromoteFacilitatorMutation'
+import {createFragmentContainer} from 'react-relay'
+import Loadable from 'react-loadable'
+import LoadableLoading from 'universal/components/LoadableLoading'
+import LoadableMenu from 'universal/components/LoadableMenu'
 
 const LoadableMeetingAvatarMenu = Loadable({
   loader: () =>
@@ -33,17 +33,17 @@ const LoadableMeetingAvatarMenu = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
+}
 
 const MeetingAvatarGroup = (props) => {
   const {
@@ -55,39 +55,38 @@ const MeetingAvatarGroup = (props) => {
     localPhaseItem,
     styles,
     team: {activeFacilitator, teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers}
-  } = props;
-  const onFacilitatorPhase = facilitatorPhase === localPhase;
-  const canNavigate = localPhase === CHECKIN || localPhase === UPDATES;
+  } = props
+  const onFacilitatorPhase = facilitatorPhase === localPhase
+  const canNavigate = localPhase === CHECKIN || localPhase === UPDATES
   return (
     <div className={css(styles.meetingAvatarGroupRoot)}>
       <div className={css(styles.meetingAvatarGroupInner)}>
         {teamMembers.map((avatar, idx) => {
-          const {isConnected, isSelf} = avatar;
-          const picture = avatar.picture || defaultUserAvatar;
-          const count = idx + 1;
-          const itemStyles = css(styles.item, !canNavigate && styles.itemReadOnly);
+          const {isConnected, isSelf} = avatar
+          const picture = avatar.picture || defaultUserAvatar
+          const count = idx + 1
+          const itemStyles = css(styles.item, !canNavigate && styles.itemReadOnly)
           const avatarBlockStyles = css(
             styles.avatarBlock,
             count === localPhaseItem && styles.avatarBlockLocal,
             count === facilitatorPhaseItem && onFacilitatorPhase && styles.avatarBlockFacilitator,
             !canNavigate && styles.avatarBlockReadOnly
-          );
-          const tagBlockStyles = css(styles.tagBlock, !canNavigate && styles.tagBlockReadOnly);
+          )
+          const tagBlockStyles = css(styles.tagBlock, !canNavigate && styles.tagBlockReadOnly)
           const navigateTo = () => {
-            gotoItem(count);
-          };
+            gotoItem(count)
+          }
           const promoteToFacilitator = () => {
-            PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, dispatch);
-          };
+            PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, dispatch)
+          }
           const requestFacilitator = () => {
-            RequestFacilitatorMutation(atmosphere, teamId);
-          };
-          const avatarIsFacilitating = activeFacilitator === avatar.id;
-          const handleNavigate = (canNavigate && navigateTo) || undefined;
+            RequestFacilitatorMutation(atmosphere, teamId)
+          }
+          const avatarIsFacilitating = activeFacilitator === avatar.id
+          const handleNavigate = (canNavigate && navigateTo) || undefined
           const handlePromote =
-            (isFacilitating && !isSelf && isConnected && promoteToFacilitator) || undefined;
-          const handleRequest =
-            (avatarIsFacilitating && !isSelf && requestFacilitator) || undefined;
+            (isFacilitating && !isSelf && isConnected && promoteToFacilitator) || undefined
+          const handleRequest = (avatarIsFacilitating && !isSelf && requestFacilitator) || undefined
           return (
             <div className={itemStyles} key={avatar.id}>
               <div className={avatarBlockStyles}>
@@ -111,23 +110,23 @@ const MeetingAvatarGroup = (props) => {
                       picture={picture}
                       isConnected={avatar.isConnected || avatar.isSelf}
                       isCheckedIn={avatar.isCheckedIn}
-                      size="fill"
+                      size='fill'
                     />
                   }
                 />
               </div>
               {avatarIsFacilitating && (
                 <div className={tagBlockStyles}>
-                  <Tag colorPalette="gray" label="Facilitator" />
+                  <Tag colorPalette='gray' label='Facilitator' />
                 </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
 MeetingAvatarGroup.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -138,13 +137,13 @@ MeetingAvatarGroup.propTypes = {
   localPhaseItem: PropTypes.number,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
-};
+}
 
-const borderActive = appTheme.brand.secondary.yellow;
-const borderLocal = appTheme.palette.mid30l;
-const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px';
-const boxShadowWarm = `${boxShadowBase} ${borderActive}`;
-const boxShadowLocal = `${boxShadowBase} ${borderLocal}`;
+const borderActive = appTheme.brand.secondary.yellow
+const borderLocal = appTheme.palette.mid30l
+const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px'
+const boxShadowWarm = `${boxShadowBase} ${borderActive}`
+const boxShadowLocal = `${boxShadowBase} ${borderLocal}`
 
 const styleThunk = () => ({
   meetingAvatarGroupRoot: {
@@ -217,7 +216,7 @@ const styleThunk = () => ({
   tagBlockReadOnly: {
     // Define
   }
-});
+})
 
 export default createFragmentContainer(
   connect()(withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup))),
@@ -237,4 +236,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

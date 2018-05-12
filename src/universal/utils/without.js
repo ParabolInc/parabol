@@ -7,6 +7,6 @@
 const without = (obj: Object, ...keys: Array<string>): Object =>
   Object.entries(obj)
     .filter(([k]) => !keys.includes(k))
-    .reduce((acc, [k, v]) => ({...acc, [k]: v}), {});
+    .reduce((acc, [k, v]) => ({...acc, [k]: v}), {})
 
-export default without;
+export default without

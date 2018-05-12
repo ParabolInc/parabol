@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 const mutation = graphql`
   mutation CreateFirstTeamMutation($newTeam: NewTeamInput!) {
@@ -21,7 +21,7 @@ const mutation = graphql`
       }
     }
   }
-`;
+`
 
 const CreateFirstTeamMutation = (environment, newTeam, onError, onCompleted) => {
   return commitMutation(environment, {
@@ -29,7 +29,7 @@ const CreateFirstTeamMutation = (environment, newTeam, onError, onCompleted) => 
     variables: {newTeam},
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default CreateFirstTeamMutation;
+export default CreateFirstTeamMutation

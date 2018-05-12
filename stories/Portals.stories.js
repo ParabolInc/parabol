@@ -4,17 +4,17 @@
  * @flow
  */
 
-import React from 'react';
-import {storiesOf} from '@storybook/react';
+import React from 'react'
+import {storiesOf} from '@storybook/react'
 
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog';
-import phaseHelpLookup from 'universal/utils/meetings/helpLookups';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
+import phaseHelpLookup from 'universal/utils/meetings/helpLookups'
 
-import RetroBackground from './components/RetroBackground';
-import StoryContainer from './components/StoryContainer';
+import RetroBackground from './components/RetroBackground'
+import StoryContainer from './components/StoryContainer'
 
-const EXAMPLE_PHASE = 'firstcall';
+const EXAMPLE_PHASE = 'firstcall'
 
 storiesOf('Loadable Help Dialog', module).add('toggle the help dialog', () => (
   <RetroBackground>
@@ -33,4 +33,4 @@ storiesOf('Loadable Help Dialog', module).add('toggle the help dialog', () => (
       )}
     />
   </RetroBackground>
-));
+))

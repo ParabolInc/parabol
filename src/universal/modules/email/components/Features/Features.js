@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import EmptySpace from '../EmptySpace/EmptySpace';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import EmptySpace from '../EmptySpace/EmptySpace'
+import ui from 'universal/styles/ui'
 
 const Features = (props) => {
   const copyStyle = {
@@ -12,7 +12,7 @@ const Features = (props) => {
     paddingBottom: '8px',
     paddingTop: '8px',
     textAlign: 'left'
-  };
+  }
 
   return (
     <div>
@@ -44,19 +44,19 @@ const Features = (props) => {
       </table>
       <EmptySpace height={props.vSpacing} />
     </div>
-  );
-};
+  )
+}
 
 Features.propTypes = {
   fontSize: PropTypes.number,
   lineHeight: PropTypes.number,
   vSpacing: PropTypes.number
-};
+}
 
 Features.defaultProps = {
   fontSize: 16,
   lineHeight: 1.5,
   vSpacing: 32
-};
+}
 
-export default Features;
+export default Features

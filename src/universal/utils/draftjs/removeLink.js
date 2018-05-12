@@ -1,11 +1,11 @@
-import {EditorState, Modifier} from 'draft-js';
-import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
+import {EditorState, Modifier} from 'draft-js'
+import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection'
 
 const removeLink = (editorState) => {
-  const selectionState = editorState.getSelection();
+  const selectionState = editorState.getSelection()
   const linkSelection = selectionState.isCollapsed()
     ? getFullLinkSelection(editorState)
-    : selectionState;
+    : selectionState
   const contentWithoutLink = Modifier.applyEntity(
     editorState.getCurrentContent(),
     linkSelection,
@@ -13,8 +13,8 @@ const removeLink = (editorState) => {
   ).merge({
     selectionAfter: selectionState,
     selectionBefore: selectionState
-  });
-  return EditorState.push(editorState, contentWithoutLink, 'apply-entity');
-};
+  })
+  return EditorState.push(editorState, contentWithoutLink, 'apply-entity')
+}
 
-export default removeLink;
+export default removeLink

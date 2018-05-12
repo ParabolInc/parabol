@@ -1,5 +1,5 @@
-import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql';
-import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum';
+import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql'
+import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum'
 
 const OrgUser = new GraphQLObjectType({
   name: 'OrgUser',
@@ -18,6 +18,6 @@ const OrgUser = new GraphQLObjectType({
       description: 'true if the user is paused and the orgs are not being billed'
     }
   })
-});
+})
 
-export default OrgUser;
+export default OrgUser

@@ -1,5 +1,5 @@
-const path = require('path');
-const resolve = require('resolve'); // eslint-disable-line import/no-extraneous-dependencies
+const path = require('path')
+const resolve = require('resolve') // eslint-disable-line import/no-extraneous-dependencies
 
 require('babel-register')({
   // eslint-disable-line import/no-extraneous-dependencies
@@ -8,7 +8,7 @@ require('babel-register')({
       basedir: path.resolve(filename, '..'),
       extensions: ['.js'],
       moduleDirectory: ['src', 'node_modules']
-    });
+    })
   }
-});
-require('./debug.js');
+})
+require('./debug.js')

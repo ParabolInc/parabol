@@ -1,3 +1,3 @@
-const isKeyboardEvent = (e) => e && e.key;
+const isKeyboardEvent = (e) => e && e.key
 
-export default isKeyboardEvent;
+export default isKeyboardEvent

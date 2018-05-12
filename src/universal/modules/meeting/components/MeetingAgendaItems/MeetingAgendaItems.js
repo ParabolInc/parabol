@@ -1,22 +1,22 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import Button from 'universal/components/Button/Button';
-import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
-import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer';
-import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {AGENDA_ITEMS} from 'universal/utils/constants';
-import EndMeetingMutation from 'universal/mutations/EndMeetingMutation';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {withRouter} from 'react-router';
-import styled from 'react-emotion';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import Button from 'universal/components/Button/Button'
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
+import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
+import MeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/MeetingPrompt'
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import {AGENDA_ITEMS} from 'universal/utils/constants'
+import EndMeetingMutation from 'universal/mutations/EndMeetingMutation'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {withRouter} from 'react-router'
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 const Layout = styled('div')({
   margin: '0 auto',
@@ -35,46 +35,46 @@ const Layout = styled('div')({
   [ui.breakpoint.widest]: {
     paddingBottom: '12rem'
   }
-});
+})
 
 const Prompt = styled('div')({
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center'
-});
+})
 
 const Nav = styled('div')({
   paddingTop: '1rem',
   textAlign: 'center',
   width: '100%'
-});
+})
 
 const ControlButtonBlock = styled('div')({
   width: '12rem'
-});
+})
 
 const SpacedMeetingControlBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
-});
+})
 
 class MeetingAgendaItems extends Component {
-  state = {agendaTasks: []};
+  state = {agendaTasks: []}
 
   componentWillMount () {
-    this.makeAgendaTasks(this.props);
+    this.makeAgendaTasks(this.props)
   }
 
   componentWillReceiveProps (nextProps) {
     const {
       viewer: {tasks: oldTasks},
       localPhaseItem: oldLocalPhaseItem
-    } = this.props;
+    } = this.props
     const {
       viewer: {tasks},
       localPhaseItem
-    } = nextProps;
+    } = nextProps
     if (tasks !== oldTasks || localPhaseItem !== oldLocalPhaseItem) {
-      this.makeAgendaTasks(nextProps);
+      this.makeAgendaTasks(nextProps)
     }
   }
 
@@ -85,16 +85,16 @@ class MeetingAgendaItems extends Component {
         team: {agendaItems},
         tasks
       }
-    } = props;
-    const agendaItem = agendaItems[localPhaseItem - 1];
+    } = props
+    const agendaItem = agendaItems[localPhaseItem - 1]
     const agendaTasks = tasks.edges
       .map(({node}) => node)
       .filter((node) => node.agendaId === agendaItem.id)
-      .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1));
+      .sort((a, b) => (a.sortOrder < b.sortOrder ? 1 : -1))
 
     this.setState({
       agendaTasks
-    });
+    })
   }
 
   render () {
@@ -107,23 +107,23 @@ class MeetingAgendaItems extends Component {
       localPhaseItem,
       showMoveMeetingControls,
       viewer: {team}
-    } = this.props;
-    const {agendaTasks} = this.state;
-    const {agendaItems, id: teamId, teamMembers} = team;
-    const agendaItem = agendaItems[localPhaseItem - 1];
-    const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id);
+    } = this.props
+    const {agendaTasks} = this.state
+    const {agendaItems, id: teamId, teamMembers} = team
+    const agendaItem = agendaItems[localPhaseItem - 1]
+    const currentTeamMember = teamMembers.find((m) => m.id === agendaItem.teamMember.id)
     const subHeading = (
       <span>
         <b>{currentTeamMember.preferredName}</b>
         {', what do you need?'}
       </span>
-    );
+    )
     const endMeeting = () => {
-      EndMeetingMutation(atmosphere, teamId, history);
-    };
+      EndMeetingMutation(atmosphere, teamId, history)
+    }
     return (
       <MeetingMain hasHelpFor={AGENDA_ITEMS} isFacilitating={showMoveMeetingControls}>
-        <MeetingSection flexToFill paddingBottom="2rem">
+        <MeetingSection flexToFill paddingBottom='2rem'>
           <MeetingSection flexToFill>
             <Layout>
               <Prompt>
@@ -149,31 +149,31 @@ class MeetingAgendaItems extends Component {
         {showMoveMeetingControls && (
           <SpacedMeetingControlBar>
             <ControlButtonBlock />
-            <BounceBlock animationDelay="120s" key={`agendaItem${localPhaseItem}buttonAnimation`}>
+            <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
               <Button
-                buttonSize="medium"
-                buttonStyle="flat"
-                colorPalette="dark"
+                buttonSize='medium'
+                buttonStyle='flat'
+                colorPalette='dark'
                 hasBounce
-                bounceDelay="10s"
-                icon="arrow-circle-right"
+                bounceDelay='10s'
+                icon='arrow-circle-right'
                 iconLarge
-                iconPalette="warm"
-                iconPlacement="right"
+                iconPalette='warm'
+                iconPlacement='right'
                 key={`agendaItem${localPhaseItem}`}
-                label="Done! Next…"
+                label='Done! Next…'
                 onClick={gotoNext}
               />
             </BounceBlock>
             <ControlButtonBlock>
               <Button
-                buttonSize="medium"
-                buttonStyle="flat"
-                colorPalette="dark"
-                icon="flag-checkered"
+                buttonSize='medium'
+                buttonStyle='flat'
+                colorPalette='dark'
+                icon='flag-checkered'
                 iconLarge
-                iconPalette="midGray"
-                iconPlacement="left"
+                iconPalette='midGray'
+                iconPlacement='left'
                 label={'End Meeting'}
                 onClick={endMeeting}
               />
@@ -181,7 +181,7 @@ class MeetingAgendaItems extends Component {
           </SpacedMeetingControlBar>
         )}
       </MeetingMain>
-    );
+    )
   }
 }
 
@@ -194,7 +194,7 @@ MeetingAgendaItems.propTypes = {
   localPhaseItem: PropTypes.number.isRequired,
   showMoveMeetingControls: PropTypes.bool,
   viewer: PropTypes.object
-};
+}
 
 export default createFragmentContainer(
   withAtmosphere(withRouter(MeetingAgendaItems)),
@@ -228,4 +228,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

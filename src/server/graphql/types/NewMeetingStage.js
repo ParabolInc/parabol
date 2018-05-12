@@ -1,12 +1,12 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
-import NewMeeting from 'server/graphql/types/NewMeeting';
-import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum';
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants';
-import CheckInStage from 'server/graphql/types/CheckInStage';
-import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
-import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import NewMeeting from 'server/graphql/types/NewMeeting'
+import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import CheckInStage from 'server/graphql/types/CheckInStage'
+import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage'
+import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase'
 
 /*
  * Each meeting has many phases.
@@ -37,7 +37,7 @@ export const newMeetingStageFields = () => ({
     type: NewMeeting,
     description: 'The meeting this stage belongs to',
     resolve: ({meetingId}, args, {dataLoader}) => {
-      return dataLoader.get('newMeetings').load(meetingId);
+      return dataLoader.get('newMeetings').load(meetingId)
     }
   },
   isComplete: {
@@ -57,9 +57,9 @@ export const newMeetingStageFields = () => ({
     type: NewMeetingPhase,
     description: 'The phase this stage belongs to',
     resolve: async ({meetingId, phaseType}, args, {dataLoader}) => {
-      const meeting = await dataLoader.get('newMeetings').load(meetingId);
-      const {phases} = meeting;
-      return phases.find((phase) => phase.phaseType === phaseType);
+      const meeting = await dataLoader.get('newMeetings').load(meetingId)
+      const {phases} = meeting
+      return phases.find((phase) => phase.phaseType === phaseType)
     }
   },
   phaseType: {
@@ -82,7 +82,7 @@ export const newMeetingStageFields = () => ({
   //   description: 'true if the meeting phase automatically advances to the next (eg Phase1.part2 completes when part1 completes)',
   //   type: GraphQLBoolean
   // }
-});
+})
 
 const NewMeetingStage = new GraphQLInterfaceType({
   name: 'NewMeetingStage',
@@ -96,9 +96,9 @@ const NewMeetingStage = new GraphQLInterfaceType({
       [GROUP]: GenericMeetingStage,
       [VOTE]: GenericMeetingStage,
       [DISCUSS]: RetroDiscussStage
-    };
-    return resolveTypeLookup[phaseType];
+    }
+    return resolveTypeLookup[phaseType]
   }
-});
+})
 
-export default NewMeetingStage;
+export default NewMeetingStage

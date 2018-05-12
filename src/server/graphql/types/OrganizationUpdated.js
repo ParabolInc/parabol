@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveNotification, resolveOrganization} from 'server/graphql/resolvers';
-import Organization from 'server/graphql/types/Organization';
-import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
-import OrganizationMember from 'server/graphql/types/OrganizationMember';
+import {GraphQLObjectType} from 'graphql'
+import {resolveNotification, resolveOrganization} from 'server/graphql/resolvers'
+import Organization from 'server/graphql/types/Organization'
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification'
+import OrganizationMember from 'server/graphql/types/OrganizationMember'
 
 const OrganizationUpdated = new GraphQLObjectType({
   name: 'OrganizationUpdated',
@@ -21,6 +21,6 @@ const OrganizationUpdated = new GraphQLObjectType({
       resolve: resolveNotification
     }
   })
-});
+})
 
-export default OrganizationUpdated;
+export default OrganizationUpdated

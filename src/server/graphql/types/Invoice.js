@@ -5,16 +5,16 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
-import CreditCard from 'server/graphql/types/CreditCard';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import InvoiceChargeNextMonth from 'server/graphql/types/InvoiceChargeNextMonth';
-import InvoiceLineItem from 'server/graphql/types/InvoiceLineItem';
-import InvoiceStatusEnum from 'server/graphql/types/InvoiceStatusEnum';
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
+} from 'graphql'
+import connectionDefinitions from 'server/graphql/connectionDefinitions'
+import CreditCard from 'server/graphql/types/CreditCard'
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
+import InvoiceChargeNextMonth from 'server/graphql/types/InvoiceChargeNextMonth'
+import InvoiceLineItem from 'server/graphql/types/InvoiceLineItem'
+import InvoiceStatusEnum from 'server/graphql/types/InvoiceStatusEnum'
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 
 /* Each invoice has 3 levels.
  * L1 is a the invoice itself: how much to pay.
@@ -97,7 +97,7 @@ const Invoice = new GraphQLObjectType({
         'the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded'
     }
   })
-});
+})
 
 const {connectionType, edgeType} = connectionDefinitions({
   nodeType: Invoice,
@@ -112,8 +112,8 @@ const {connectionType, edgeType} = connectionDefinitions({
       description: 'Page info with cursors coerced to ISO8601 dates'
     }
   })
-});
+})
 
-export const InvoiceConnection = connectionType;
-export const InvoiceEdge = edgeType;
-export default Invoice;
+export const InvoiceConnection = connectionType
+export const InvoiceEdge = edgeType
+export default Invoice

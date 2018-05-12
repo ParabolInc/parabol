@@ -1,8 +1,8 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import OrgApprovalStatusEnum from 'server/graphql/types/OrgApprovalStatusEnum';
-import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType';
-import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import OrgApprovalStatusEnum from 'server/graphql/types/OrgApprovalStatusEnum'
+import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
+import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember'
 
 const OrgApproval = new GraphQLObjectType({
   name: 'OrgApproval',
@@ -49,6 +49,6 @@ const OrgApproval = new GraphQLObjectType({
       description: 'The datetime the approval was last updated'
     }
   })
-});
+})
 
-export default OrgApproval;
+export default OrgApproval

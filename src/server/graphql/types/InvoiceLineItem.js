@@ -6,9 +6,9 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import InvoiceLineItemEnum from 'server/graphql/types/InvoiceLineItemEnum';
-import InvoiceLineItemDetails from 'server/graphql/types/InvoiceLineItemDetails';
+} from 'graphql'
+import InvoiceLineItemEnum from 'server/graphql/types/InvoiceLineItemEnum'
+import InvoiceLineItemDetails from 'server/graphql/types/InvoiceLineItemDetails'
 
 const InvoiceLineItem = new GraphQLObjectType({
   name: 'InvoiceLineItem',
@@ -41,6 +41,6 @@ const InvoiceLineItem = new GraphQLObjectType({
       description: 'The line item type for a monthly billing invoice'
     }
   })
-});
+})
 
-export default InvoiceLineItem;
+export default InvoiceLineItem

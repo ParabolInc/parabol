@@ -33,4 +33,4 @@ export default {
   team: ['id', 'activeFacilitator', 'meetingId', 'orgId'],
   teamMember: ['id', 'checkInOrder', 'teamId', 'userId'],
   user: ['id', 'tms', 'userOrgs.id']
-};
+}

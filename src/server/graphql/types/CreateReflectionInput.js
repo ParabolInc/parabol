@@ -4,7 +4,7 @@ import {
   GraphQLInputObjectType,
   GraphQLNonNull,
   GraphQLString
-} from 'graphql';
+} from 'graphql'
 
 const CreateReflectionInput = new GraphQLInputObjectType({
   name: 'CreateReflectionInput',
@@ -21,6 +21,6 @@ const CreateReflectionInput = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLFloat)
     }
   })
-});
+})
 
-export default CreateReflectionInput;
+export default CreateReflectionInput

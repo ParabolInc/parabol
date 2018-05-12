@@ -3,10 +3,10 @@ import {
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui';
-import Loadable from 'react-loadable';
-import LoadableLoading from 'universal/components/LoadableLoading';
-import React from 'react';
+} from 'universal/styles/ui'
+import Loadable from 'react-loadable'
+import LoadableLoading from 'universal/components/LoadableLoading'
+import React from 'react'
 
 const GetRetroAccessLoadable = Loadable({
   loader: () =>
@@ -19,6 +19,6 @@ const GetRetroAccessLoadable = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
-export default GetRetroAccessLoadable;
+export default GetRetroAccessLoadable

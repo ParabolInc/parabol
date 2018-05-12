@@ -1,13 +1,13 @@
-import {commitMutation} from 'react-relay';
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
-import handleEditTask from 'universal/mutations/handlers/handleEditTask';
-import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks';
-import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast';
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr';
-import clientTempId from 'universal/utils/relay/clientTempId';
-import createProxyRecord from 'universal/utils/relay/createProxyRecord';
-import getOptimisticTaskEditor from 'universal/utils/relay/getOptimisticTaskEditor';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import {commitMutation} from 'react-relay'
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
+import handleEditTask from 'universal/mutations/handlers/handleEditTask'
+import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
+import popInvolvementToast from 'universal/mutations/toasts/popInvolvementToast'
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
+import clientTempId from 'universal/utils/relay/clientTempId'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import getOptimisticTaskEditor from 'universal/utils/relay/getOptimisticTaskEditor'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 graphql`
   fragment CreateTaskMutation_task on CreateTaskPayload {
@@ -15,7 +15,7 @@ graphql`
       ...CompleteTaskFrag @relay(mask: false)
     }
   }
-`;
+`
 
 graphql`
   fragment CreateTaskMutation_notification on CreateTaskPayload {
@@ -42,7 +42,7 @@ graphql`
       }
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation CreateTaskMutation($newTask: CreateTaskInput!, $area: AreaEnum) {
@@ -53,32 +53,32 @@ const mutation = graphql`
       ...CreateTaskMutation_task @relay(mask: false)
     }
   }
-`;
+`
 
 export const createTaskTaskUpdater = (payload, store, viewerId, isEditing) => {
-  const task = payload.getLinkedRecord('task');
-  if (!task) return;
-  const taskId = task.getValue('id');
-  const userId = task.getValue('userId');
-  const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing);
-  handleEditTask(editorPayload, store);
-  handleUpsertTasks(task, store, viewerId);
-};
+  const task = payload.getLinkedRecord('task')
+  if (!task) return
+  const taskId = task.getValue('id')
+  const userId = task.getValue('userId')
+  const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
+  handleEditTask(editorPayload, store)
+  handleUpsertTasks(task, store, viewerId)
+}
 
 export const createTaskNotificationUpdater = (payload, store, viewerId, options) => {
-  const notification = payload.getLinkedRecord('involvementNotification');
-  if (!notification) return;
-  handleAddNotifications(notification, store, viewerId);
+  const notification = payload.getLinkedRecord('involvementNotification')
+  if (!notification) return
+  handleAddNotifications(notification, store, viewerId)
 
   // No need to pass options for the mutation because you can't notify yourself of your involvement
   if (options) {
-    popInvolvementToast(notification, options);
+    popInvolvementToast(notification, options)
   }
-};
+}
 
 const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) => {
-  const {viewerId} = environment;
-  const isEditing = !newTask.content;
+  const {viewerId} = environment
+  const isEditing = !newTask.content
   return commitMutation(environment, {
     mutation,
     variables: {
@@ -86,15 +86,15 @@ const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) =>
       newTask
     },
     updater: (store) => {
-      const payload = store.getRootField('createTask');
-      if (!payload) return;
-      createTaskTaskUpdater(payload, store, viewerId, isEditing);
+      const payload = store.getRootField('createTask')
+      if (!payload) return
+      createTaskTaskUpdater(payload, store, viewerId, isEditing)
     },
     optimisticUpdater: (store) => {
-      const {teamId, userId} = newTask;
-      const assigneeId = toTeamMemberId(teamId, userId);
-      const now = new Date().toJSON();
-      const taskId = clientTempId(teamId);
+      const {teamId, userId} = newTask
+      const assigneeId = toTeamMemberId(teamId, userId)
+      const now = new Date().toJSON()
+      const taskId = clientTempId(teamId)
       const optimisticTask = {
         ...newTask,
         id: taskId,
@@ -106,17 +106,17 @@ const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) =>
         tags: [],
         assigneeId,
         content: newTask.content || makeEmptyStr()
-      };
+      }
       const task = createProxyRecord(store, 'Task', optimisticTask)
         .setLinkedRecord(store.get(assigneeId), 'assignee')
-        .setLinkedRecord(store.get(teamId), 'team');
-      const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing);
-      handleEditTask(editorPayload, store);
-      handleUpsertTasks(task, store, viewerId);
+        .setLinkedRecord(store.get(teamId), 'team')
+      const editorPayload = getOptimisticTaskEditor(store, userId, taskId, isEditing)
+      handleEditTask(editorPayload, store)
+      handleUpsertTasks(task, store, viewerId)
     },
     onError,
     onCompleted
-  });
-};
+  })
+}
 
-export default CreateTaskMutation;
+export default CreateTaskMutation

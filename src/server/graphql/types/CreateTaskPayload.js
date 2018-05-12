@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveNotificationForViewer, resolveTask} from 'server/graphql/resolvers';
-import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveNotificationForViewer, resolveTask} from 'server/graphql/resolvers'
+import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const CreateTaskPayload = new GraphQLObjectType({
   name: 'CreateTaskPayload',
@@ -19,6 +19,6 @@ const CreateTaskPayload = new GraphQLObjectType({
       resolve: resolveNotificationForViewer
     }
   })
-});
+})
 
-export default CreateTaskPayload;
+export default CreateTaskPayload

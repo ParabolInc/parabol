@@ -1,10 +1,10 @@
-import getRethink from 'server/database/rethinkDriver';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import getRethink from 'server/database/rethinkDriver'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const insertNewTeamMember = (userId, teamId, options = {}) => {
-  const r = getRethink();
-  const {isLead = false, checkInOrder} = options;
-  const teamMemberId = toTeamMemberId(teamId, userId);
+  const r = getRethink()
+  const {isLead = false, checkInOrder} = options
+  const teamMemberId = toTeamMemberId(teamId, userId)
   return r
     .table('User')
     .get(userId)
@@ -38,8 +38,8 @@ const insertNewTeamMember = (userId, teamId, options = {}) => {
           },
           {conflict: 'update', returnChanges: true}
         )('changes')(0)('new_val')
-        .default(null);
-    });
-};
+        .default(null)
+    })
+}
 
-export default insertNewTeamMember;
+export default insertNewTeamMember

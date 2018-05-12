@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql'
 
 const NewTeamInput = new GraphQLInputObjectType({
   name: 'NewTeamInput',
@@ -9,6 +9,6 @@ const NewTeamInput = new GraphQLInputObjectType({
       description: 'The unique orginization ID that pays for the team'
     }
   })
-});
+})
 
-export default NewTeamInput;
+export default NewTeamInput

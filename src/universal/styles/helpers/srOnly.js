@@ -7,6 +7,6 @@ const srOnly = {
   padding: 0,
   position: 'absolute',
   width: '1px'
-};
+}
 
-export default srOnly;
+export default srOnly

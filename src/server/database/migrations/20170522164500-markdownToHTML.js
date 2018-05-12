@@ -56,7 +56,7 @@ exports.up = async () => {
   // } catch (e) {
   //  console.log('ERR', e);
   // }
-};
+}
 
 exports.down = async () => {
   // const dom = new jsdom.JSDOM('');
@@ -86,4 +86,4 @@ exports.down = async () => {
   // } catch (e) {
   //  // noop
   // }
-};
+}

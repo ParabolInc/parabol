@@ -1,7 +1,7 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require('path')
+const webpack = require('webpack')
 
-const root = process.cwd();
+const root = process.cwd()
 
 module.exports = {
   context: process.cwd(),
@@ -50,4 +50,4 @@ module.exports = {
   module: {
     loaders: [{test: /\.flow$/, loader: 'ignore-loader'}]
   }
-};
+}

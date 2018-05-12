@@ -1,27 +1,27 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import Button from 'universal/components/Button/Button';
-import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
-import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
-import withStyles from 'universal/styles/withStyles';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import {css} from 'aphrodite-local-styles/no-important';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import {AGENDA_ITEM_LABEL, FIRST_CALL} from 'universal/utils/constants';
+import PropTypes from 'prop-types'
+import React from 'react'
+import Button from 'universal/components/Button/Button'
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
+import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
+import withStyles from 'universal/styles/withStyles'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import {css} from 'aphrodite-local-styles/no-important'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import {AGENDA_ITEM_LABEL, FIRST_CALL} from 'universal/utils/constants'
 
 const MeetingAgendaFirstCall = (props) => {
-  const {facilitatorName, gotoNext, hideMoveMeetingControls, styles} = props;
-  const phaseName = actionMeeting.agendaitems.name;
+  const {facilitatorName, gotoNext, hideMoveMeetingControls, styles} = props
+  const phaseName = actionMeeting.agendaitems.name
   return (
     <MeetingMain hasHelpFor={FIRST_CALL}>
-      <MeetingSection flexToFill paddingBottom="2rem">
-        <MeetingSection paddingBottom="2rem">
+      <MeetingSection flexToFill paddingBottom='2rem'>
+        <MeetingSection paddingBottom='2rem'>
           <div className={css(styles.main)}>
             <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>
 
@@ -31,14 +31,14 @@ const MeetingAgendaFirstCall = (props) => {
 
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls ? (
-                <BounceBlock animationDelay="30s">
+                <BounceBlock animationDelay='30s'>
                   <Button
-                    buttonSize="large"
-                    buttonStyle="primary"
-                    colorPalette="warm"
-                    icon="arrow-circle-right"
+                    buttonSize='large'
+                    buttonStyle='primary'
+                    colorPalette='warm'
+                    icon='arrow-circle-right'
                     iconLarge
-                    iconPlacement="right"
+                    iconPlacement='right'
                     label={`Let’s begin: ${phaseName}`}
                     onClick={gotoNext}
                   />
@@ -53,15 +53,15 @@ const MeetingAgendaFirstCall = (props) => {
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
-  );
-};
+  )
+}
 
 MeetingAgendaFirstCall.propTypes = {
   facilitatorName: PropTypes.string.isRequired,
   gotoNext: PropTypes.func,
   hideMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   main: {
@@ -83,6 +83,6 @@ const styleThunk = () => ({
     marginTop: '2.5rem',
     padding: '.25rem 1rem'
   }
-});
+})
 
-export default withStyles(styleThunk)(MeetingAgendaFirstCall);
+export default withStyles(styleThunk)(MeetingAgendaFirstCall)

@@ -1,5 +1,5 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import CustomPhaseItem, {customPhaseItemFields} from 'server/graphql/types/CustomPhaseItem';
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import CustomPhaseItem, {customPhaseItemFields} from 'server/graphql/types/CustomPhaseItem'
 
 const RetroPhaseItem = new GraphQLObjectType({
   name: 'RetroPhaseItem',
@@ -19,6 +19,6 @@ const RetroPhaseItem = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString)
     }
   })
-});
+})
 
-export default RetroPhaseItem;
+export default RetroPhaseItem

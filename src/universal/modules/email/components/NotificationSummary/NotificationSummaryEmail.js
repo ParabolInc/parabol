@@ -1,24 +1,24 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from 'prop-types'
+import React from 'react'
 
-import makeAppLink from 'server/utils/makeAppLink';
-import appTheme from 'universal/styles/theme/appTheme';
+import makeAppLink from 'server/utils/makeAppLink'
+import appTheme from 'universal/styles/theme/appTheme'
 
-import Body from '../Body/Body';
-import Button from '../Button/Button';
-import Header from '../Header/Header';
-import Layout from '../Layout/Layout';
+import Body from '../Body/Body'
+import Button from '../Button/Button'
+import Header from '../Header/Header'
+import Layout from '../Layout/Layout'
 
 export default function NotificationSummaryEmail () {
-  const notificationPageUrl = makeAppLink('me/notifications');
+  const notificationPageUrl = makeAppLink('me/notifications')
   const linkStyle = {
     color: appTheme.palette.warm
-  };
-  const gutter = 48;
+  }
+  const gutter = 48
   return (
     <Layout>
-      <Header imgProvider="hubspot" />
-      <Body align="left" verticalGutter={gutter}>
+      <Header imgProvider='hubspot' />
+      <Body align='left' verticalGutter={gutter}>
         <div style={{padding: `0px ${gutter}px`}}>
           <p>
             {'Hi there, '}%recipient.name%{'!'}
@@ -44,7 +44,7 @@ export default function NotificationSummaryEmail () {
           </p>
           <p>
             {'Email us at '}
-            <a style={linkStyle} href="mailto:love@parabol.co">
+            <a style={linkStyle} href='mailto:love@parabol.co'>
               {'love@parabol.co'}
             </a>
             {' with any feedback or questions you may have about our software.'}
@@ -52,16 +52,16 @@ export default function NotificationSummaryEmail () {
           <p>
             {'Or, schedule a video chat with our product team: '}
             <br />
-            <a style={linkStyle} href="https://calendly.com/parabol/product/">
+            <a style={linkStyle} href='https://calendly.com/parabol/product/'>
               {'https://calendly.com/parabol/product/'}
             </a>
           </p>
         </div>
       </Body>
     </Layout>
-  );
+  )
 }
 
 NotificationSummaryEmail.propTypes = {
   date: PropTypes.instanceOf(Date)
-};
+}

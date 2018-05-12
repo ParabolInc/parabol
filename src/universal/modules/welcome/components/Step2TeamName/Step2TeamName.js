@@ -1,28 +1,28 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {Field, reduxForm, SubmissionError} from 'redux-form';
-import InputField from 'universal/components/InputField/InputField';
-import Type from 'universal/components/Type/Type';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import WelcomeHeading from 'universal/modules/welcome/components/WelcomeHeading/WelcomeHeading';
-import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {Field, reduxForm, SubmissionError} from 'redux-form'
+import InputField from 'universal/components/InputField/InputField'
+import Type from 'universal/components/Type/Type'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import WelcomeHeading from 'universal/modules/welcome/components/WelcomeHeading/WelcomeHeading'
+import WelcomeSubmitButton from 'universal/modules/welcome/components/WelcomeSubmitButton/WelcomeSubmitButton'
 import {
   nextPage,
   setWelcomeTeam,
   updateCompleted
-} from 'universal/modules/welcome/ducks/welcomeDuck';
-import CreateFirstTeamMutation from 'universal/mutations/CreateFirstTeamMutation';
-import formError from 'universal/styles/helpers/formError';
-import withStyles from 'universal/styles/withStyles';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
-import step2Validation from './step2Validation';
-import getGraphQLError from 'universal/utils/relay/getGraphQLError';
+} from 'universal/modules/welcome/ducks/welcomeDuck'
+import CreateFirstTeamMutation from 'universal/mutations/CreateFirstTeamMutation'
+import formError from 'universal/styles/helpers/formError'
+import withStyles from 'universal/styles/withStyles'
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
+import step2Validation from './step2Validation'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
 const validate = (values) => {
-  const welcomeSchema = step2Validation();
-  return welcomeSchema(values).errors;
-};
+  const welcomeSchema = step2Validation()
+  return welcomeSchema(values).errors
+}
 
 const Step2TeamName = (props) => {
   const {
@@ -34,20 +34,20 @@ const Step2TeamName = (props) => {
     styles,
     submitting,
     teamName
-  } = props;
+  } = props
   const onTeamNameSubmit = (submissionData) => {
     return new Promise((resolve, reject) => {
       const {
         data: {teamName: normalizedTeamName}
-      } = step2Validation()(submissionData);
+      } = step2Validation()(submissionData)
       const onError = (err) => {
-        reject(new SubmissionError(err));
-      };
+        reject(new SubmissionError(err))
+      }
       const onCompleted = (res, errors) => {
-        const serverError = getGraphQLError(res, errors);
+        const serverError = getGraphQLError(res, errors)
         if (serverError) {
-          onError(serverError.message);
-          return;
+          onError(serverError.message)
+          return
         }
         const {
           createFirstTeam: {
@@ -55,20 +55,20 @@ const Step2TeamName = (props) => {
             team: {id: teamId},
             teamLead: {id: teamMemberId}
           }
-        } = res;
-        atmosphere.setAuthToken(newToken);
-        dispatch(setWelcomeTeam({teamId, teamMemberId}));
-        dispatch(updateCompleted(2));
-        dispatch(nextPage());
-        resolve();
-      };
-      const newTeam = {name: normalizedTeamName};
-      CreateFirstTeamMutation(atmosphere, newTeam, onError, onCompleted);
-    });
-  };
+        } = res
+        atmosphere.setAuthToken(newToken)
+        dispatch(setWelcomeTeam({teamId, teamMemberId}))
+        dispatch(updateCompleted(2))
+        dispatch(nextPage())
+        resolve()
+      }
+      const newTeam = {name: normalizedTeamName}
+      CreateFirstTeamMutation(atmosphere, newTeam, onError, onCompleted)
+    })
+  }
   return (
     <div style={{width: '100%'}}>
-      <Type align="center" italic scale="s6">
+      <Type align='center' italic scale='s6'>
         Nice to meet you, {preferredName}!
       </Type>
       <WelcomeHeading copy={<span>Please type in your team name:</span>} />
@@ -78,18 +78,18 @@ const Step2TeamName = (props) => {
           autoFocus
           component={InputField}
           isLarger
-          name="teamName"
+          name='teamName'
           placeholder={randomPlaceholderTheme.teamName}
-          shortcutHint="Press enter"
+          shortcutHint='Press enter'
           shortcutDisabled={!teamName}
-          type="text"
+          type='text'
           underline
         />
         <WelcomeSubmitButton disabled={submitting || !teamName} />
       </form>
     </div>
-  );
-};
+  )
+}
 
 Step2TeamName.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -102,7 +102,7 @@ Step2TeamName.propTypes = {
   submitting: PropTypes.bool,
   teamName: PropTypes.string,
   completed: PropTypes.number
-};
+}
 
 const styleThunk = () => ({
   error: {
@@ -117,12 +117,12 @@ const styleThunk = () => ({
     paddingLeft: '2.5rem',
     width: '100%'
   }
-});
+})
 
 const formOptions = {
   form: 'welcomeWizard',
   destroyOnUnmount: false,
   validate
-};
+}
 
-export default withAtmosphere(reduxForm(formOptions)(withStyles(styleThunk)(Step2TeamName)));
+export default withAtmosphere(reduxForm(formOptions)(withStyles(styleThunk)(Step2TeamName)))

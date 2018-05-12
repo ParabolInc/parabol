@@ -7,15 +7,15 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import RetroReflection from 'server/graphql/types/RetroReflection';
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
-import Team from 'server/graphql/types/Team';
-import {resolveForSU} from 'server/graphql/resolvers';
-import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
-import {getUserId} from 'server/utils/authorization';
-import Task from 'server/graphql/types/Task';
+} from 'graphql'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import RetroReflection from 'server/graphql/types/RetroReflection'
+import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
+import Team from 'server/graphql/types/Team'
+import {resolveForSU} from 'server/graphql/resolvers'
+import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
+import {getUserId} from 'server/utils/authorization'
+import Task from 'server/graphql/types/Task'
 
 const RetroReflectionGroup = new GraphQLObjectType({
   name: 'RetroReflectionGroup',
@@ -41,25 +41,25 @@ const RetroReflectionGroup = new GraphQLObjectType({
       type: RetrospectiveMeeting,
       description: 'The retrospective meeting this reflection was created in',
       resolve: ({meetingId}, args, {dataLoader}) => {
-        return dataLoader.get('newMeetings').load(meetingId);
+        return dataLoader.get('newMeetings').load(meetingId)
       }
     },
     phaseItem: {
       type: RetroPhaseItem,
       resolve: ({retroPhaseItemId}, args, {dataLoader}) => {
-        return dataLoader.get('customPhaseItems').load(retroPhaseItemId);
+        return dataLoader.get('customPhaseItems').load(retroPhaseItemId)
       }
     },
     reflections: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroReflection))),
       resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
         // use meetingId so we only hit the DB once instead of once per group
-        const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId);
+        const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
         const filteredReflections = reflections.filter(
           (reflection) => reflection.reflectionGroupId === reflectionGroupId
-        );
-        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1));
-        return filteredReflections;
+        )
+        filteredReflections.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        return filteredReflections
       }
     },
     retroPhaseItemId: {
@@ -79,18 +79,18 @@ const RetroReflectionGroup = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created for this group in the discussion phase',
       resolve: async ({id: reflectionGroupId, meetingId}, args, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId);
-        const {teamId} = meeting;
-        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId);
-        return teamTasks.filter((task) => task.reflectionGroupId === reflectionGroupId);
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const {teamId} = meeting
+        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        return teamTasks.filter((task) => task.reflectionGroupId === reflectionGroupId)
       }
     },
     team: {
       type: Team,
       description: 'The team that is running the retro',
       resolve: async ({meetingId}, args, {dataLoader}) => {
-        const meeting = await dataLoader.get('newMeetings').load(meetingId);
-        return dataLoader.get('teams').load(meeting.teamId);
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        return dataLoader.get('teams').load(meeting.teamId)
       }
     },
     title: {
@@ -114,20 +114,20 @@ const RetroReflectionGroup = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The number of votes this group has received',
       resolve: ({voterIds}) => {
-        return voterIds ? voterIds.length : 0;
+        return voterIds ? voterIds.length : 0
       }
     },
     viewerVoteCount: {
       type: GraphQLInt,
       description: 'The number of votes the viewer has given this group',
       resolve: ({voterIds}, args, {authToken}) => {
-        const viewerId = getUserId(authToken);
+        const viewerId = getUserId(authToken)
         return voterIds
           ? voterIds.reduce((sum, voterId) => (voterId === viewerId ? sum + 1 : sum), 0)
-          : 0;
+          : 0
       }
     }
   })
-});
+})
 
-export default RetroReflectionGroup;
+export default RetroReflectionGroup

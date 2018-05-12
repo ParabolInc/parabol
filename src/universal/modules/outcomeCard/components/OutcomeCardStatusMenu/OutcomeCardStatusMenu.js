@@ -1,21 +1,21 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import {convertToRaw} from 'draft-js';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import labels from 'universal/styles/theme/labels';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import addTagToTask from 'universal/utils/draftjs/addTagToTask';
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import DeleteTaskMutation from 'universal/mutations/DeleteTaskMutation';
-import {createFragmentContainer} from 'react-relay';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import MenuItemHR from 'universal/modules/menu/components/MenuItem/MenuItemHR';
-import textOverflow from 'universal/styles/helpers/textOverflow';
+import {css} from 'aphrodite-local-styles/no-important'
+import {convertToRaw} from 'draft-js'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import labels from 'universal/styles/theme/labels'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import addTagToTask from 'universal/utils/draftjs/addTagToTask'
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import DeleteTaskMutation from 'universal/mutations/DeleteTaskMutation'
+import {createFragmentContainer} from 'react-relay'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuItemHR from 'universal/modules/menu/components/MenuItem/MenuItemHR'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
-const statusItems = labels.taskStatus.slugs.slice();
+const statusItems = labels.taskStatus.slugs.slice()
 
 class OutcomeCardStatusMenu extends Component {
   makeAddTagToTask = (tag) => () => {
@@ -24,28 +24,28 @@ class OutcomeCardStatusMenu extends Component {
       atmosphere,
       task: {taskId},
       editorState
-    } = this.props;
-    const contentState = editorState.getCurrentContent();
-    const newContent = addTagToTask(contentState, tag);
-    const rawContentStr = JSON.stringify(convertToRaw(newContent));
+    } = this.props
+    const contentState = editorState.getCurrentContent()
+    const newContent = addTagToTask(contentState, tag)
+    const rawContentStr = JSON.stringify(convertToRaw(newContent))
     const updatedTask = {
       id: taskId,
       content: rawContentStr
-    };
-    UpdateTaskMutation(atmosphere, updatedTask, area);
-  };
+    }
+    UpdateTaskMutation(atmosphere, updatedTask, area)
+  }
 
   deleteOutcome = () => {
     const {
       atmosphere,
       onComplete,
       task: {taskId, teamId}
-    } = this.props;
-    DeleteTaskMutation(atmosphere, taskId, teamId);
+    } = this.props
+    DeleteTaskMutation(atmosphere, taskId, teamId)
     if (onComplete) {
-      onComplete();
+      onComplete()
     }
-  };
+  }
 
   itemFactory = () => {
     const {
@@ -55,9 +55,9 @@ class OutcomeCardStatusMenu extends Component {
       removeContentTag,
       styles,
       task: {taskStatus}
-    } = this.props;
+    } = this.props
     const listItems = statusItems.filter((status) => status !== taskStatus).map((status) => {
-      const {color, label} = labels.taskStatus[status];
+      const {color, label} = labels.taskStatus[status]
       return (
         <MenuItemWithShortcuts
           hasDotIcon
@@ -67,15 +67,15 @@ class OutcomeCardStatusMenu extends Component {
           onClick={this.handleTaskUpdateFactory(status)}
           closePortal={closePortal}
         />
-      );
-    });
-    listItems.push(<MenuItemHR key="HR1" />);
+      )
+    })
+    listItems.push(<MenuItemHR key='HR1' />)
     listItems.push(
       isPrivate ? (
         <MenuItemWithShortcuts
           hasDotIcon
           iconColor={labels.taskStatus.private.color}
-          key="private"
+          key='private'
           label={
             <div className={css(styles.label)}>
               {'Remove '}
@@ -89,7 +89,7 @@ class OutcomeCardStatusMenu extends Component {
         <MenuItemWithShortcuts
           hasDotIcon
           iconColor={labels.taskStatus.private.color}
-          key="private"
+          key='private'
           label={
             <div className={css(styles.label)}>
               {'Set as '}
@@ -100,13 +100,13 @@ class OutcomeCardStatusMenu extends Component {
           closePortal={closePortal}
         />
       )
-    );
+    )
     listItems.push(
       isAgenda ? (
         <MenuItemWithShortcuts
           hasDotIcon
           iconColor={ui.colorError}
-          key="delete"
+          key='delete'
           label={<div className={css(styles.label)}>{'Delete this Task'}</div>}
           onClick={this.deleteOutcome}
           closePortal={closePortal}
@@ -115,7 +115,7 @@ class OutcomeCardStatusMenu extends Component {
         <MenuItemWithShortcuts
           hasDotIcon
           iconColor={labels.taskStatus.archived.color}
-          key="archive"
+          key='archive'
           label={
             <div className={css(styles.label)}>
               {'Set as '}
@@ -126,33 +126,33 @@ class OutcomeCardStatusMenu extends Component {
           closePortal={closePortal}
         />
       )
-    );
-    return listItems;
-  };
+    )
+    return listItems
+  }
 
   handleTaskUpdateFactory = (newStatus) => () => {
-    const {area, atmosphere, onComplete, task} = this.props;
-    const {taskId, taskStatus} = task;
+    const {area, atmosphere, onComplete, task} = this.props
+    const {taskId, taskStatus} = task
     if (newStatus === taskStatus) {
-      return;
+      return
     }
     const updatedTask = {
       id: taskId,
       status: newStatus
-    };
-    UpdateTaskMutation(atmosphere, updatedTask, area);
-    if (onComplete) {
-      onComplete();
     }
-  };
+    UpdateTaskMutation(atmosphere, updatedTask, area)
+    if (onComplete) {
+      onComplete()
+    }
+  }
 
   render () {
-    const {closePortal} = this.props;
+    const {closePortal} = this.props
     return (
       <MenuWithShortcuts ariaLabel={'Change the status of the task'} closePortal={closePortal}>
         {this.itemFactory()}
       </MenuWithShortcuts>
-    );
+    )
   }
 }
 
@@ -167,7 +167,7 @@ OutcomeCardStatusMenu.propTypes = {
   onComplete: PropTypes.func,
   removeContentTag: PropTypes.func.isRequired,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   label: {
@@ -176,7 +176,7 @@ const styleThunk = () => ({
     lineHeight: ui.menuItemHeight,
     padding: `0 ${ui.menuGutterHorizontal} 0 0`
   }
-});
+})
 
 export default createFragmentContainer(
   withAtmosphere(withStyles(styleThunk)(OutcomeCardStatusMenu)),
@@ -187,4 +187,4 @@ export default createFragmentContainer(
       teamId
     }
   `
-);
+)

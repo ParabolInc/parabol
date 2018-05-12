@@ -1,13 +1,13 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import {forwardConnectionArgs} from 'graphql-relay';
-import getRethink from 'server/database/rethinkDriver';
-import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {InvoiceConnection} from 'server/graphql/types/Invoice';
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
-import {UPCOMING} from 'universal/utils/constants';
-import resolvePromiseObj from 'universal/utils/resolvePromiseObj';
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {forwardConnectionArgs} from 'graphql-relay'
+import getRethink from 'server/database/rethinkDriver'
+import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import {InvoiceConnection} from 'server/graphql/types/Invoice'
+import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {UPCOMING} from 'universal/utils/constants'
+import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
+import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: InvoiceConnection,
@@ -23,21 +23,21 @@ export default {
     }
   },
   async resolve (source, {orgId, first, after}, {authToken}) {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
-    const userId = getUserId(authToken);
-    const userOrgDoc = await getUserOrgDoc(userId, orgId);
+    const userId = getUserId(authToken)
+    const userOrgDoc = await getUserOrgDoc(userId, orgId)
     if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc, null);
+      return sendOrgLeadAccessError(authToken, userOrgDoc, null)
     }
 
     // RESOLUTION
     const {stripeId, stripeSubscriptionId} = await r
       .table('Organization')
       .get(orgId)
-      .pluck('stripeId', 'stripeSubscriptionId');
-    const dbAfter = after ? new Date(after) : r.maxval;
+      .pluck('stripeId', 'stripeSubscriptionId')
+    const dbAfter = after ? new Date(after) : r.maxval
     const {tooManyInvoices, upcomingInvoice} = await resolvePromiseObj({
       tooManyInvoices: r
         .table('Invoice')
@@ -55,17 +55,17 @@ export default {
       upcomingInvoice: after
         ? Promise.resolve(undefined)
         : makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId)
-    });
+    })
 
     const allInvoices = upcomingInvoice
       ? [upcomingInvoice].concat(tooManyInvoices)
-      : tooManyInvoices;
-    const nodes = allInvoices.slice(0, first);
+      : tooManyInvoices
+    const nodes = allInvoices.slice(0, first)
     const edges = nodes.map((node) => ({
       cursor: node.startAt,
       node
-    }));
-    const firstEdge = edges[0];
+    }))
+    const firstEdge = edges[0]
     return {
       edges,
       pageInfo: {
@@ -73,6 +73,6 @@ export default {
         endCursor: firstEdge && edges[edges.length - 1].cursor,
         hasNextPage: allInvoices.length > nodes.length
       }
-    };
+    }
   }
-};
+}

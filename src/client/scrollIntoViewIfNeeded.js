@@ -5,7 +5,7 @@
 /* eslint-disable */
 if (!Element.prototype.scrollIntoViewIfNeeded) {
   Element.prototype.scrollIntoViewIfNeeded = function(centerIfNeeded) {
-    centerIfNeeded = arguments.length === 0 ? true : !!centerIfNeeded;
+    centerIfNeeded = arguments.length === 0 ? true : !!centerIfNeeded
 
     let parent = this.parentNode,
       parentComputedStyle = window.getComputedStyle(parent, null),
@@ -19,7 +19,7 @@ if (!Element.prototype.scrollIntoViewIfNeeded) {
       overRight =
         this.offsetLeft - parent.offsetLeft + this.clientWidth - parentBorderLeftWidth >
         parent.scrollLeft + parent.clientWidth,
-      alignWithTop = overTop && !overBottom;
+      alignWithTop = overTop && !overBottom
 
     if ((overTop || overBottom) && centerIfNeeded) {
       parent.scrollTop =
@@ -27,7 +27,7 @@ if (!Element.prototype.scrollIntoViewIfNeeded) {
         parent.offsetTop -
         parent.clientHeight / 2 -
         parentBorderTopWidth +
-        this.clientHeight / 2;
+        this.clientHeight / 2
     }
 
     if ((overLeft || overRight) && centerIfNeeded) {
@@ -36,11 +36,11 @@ if (!Element.prototype.scrollIntoViewIfNeeded) {
         parent.offsetLeft -
         parent.clientWidth / 2 -
         parentBorderLeftWidth +
-        this.clientWidth / 2;
+        this.clientWidth / 2
     }
 
     if ((overTop || overBottom || overLeft || overRight) && !centerIfNeeded) {
-      this.scrollIntoView(alignWithTop);
+      this.scrollIntoView(alignWithTop)
     }
-  };
+  }
 }

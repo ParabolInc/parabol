@@ -1,27 +1,27 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ui from 'universal/styles/ui';
-import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel';
-import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
-import LoadableMenu from 'universal/components/LoadableMenu';
-import LoadableUserDashTeamMenu from 'universal/components/LoadableUserDashTeamMenu';
-import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader';
-import DashHeading from 'universal/components/Dashboard/DashHeading';
-import DashSectionControls from 'universal/components/Dashboard/DashSectionControls';
-import DashSectionControl from 'universal/components/Dashboard/DashSectionControl';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ui from 'universal/styles/ui'
+import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel'
+import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle'
+import LoadableMenu from 'universal/components/LoadableMenu'
+import LoadableUserDashTeamMenu from 'universal/components/LoadableUserDashTeamMenu'
+import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader'
+import DashHeading from 'universal/components/Dashboard/DashHeading'
+import DashSectionControls from 'universal/components/Dashboard/DashSectionControls'
+import DashSectionControl from 'universal/components/Dashboard/DashSectionControl'
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
+}
 
 const UserTasksHeader = (props) => {
-  const {teams, teamFilterId, teamFilterName} = props;
+  const {teams, teamFilterId, teamFilterName} = props
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
@@ -47,8 +47,8 @@ const UserTasksHeader = (props) => {
         </DashSectionControl>
       </DashSectionControls>
     </DashSectionHeader>
-  );
-};
+  )
+}
 
 UserTasksHeader.propTypes = {
   children: PropTypes.any,
@@ -56,6 +56,6 @@ UserTasksHeader.propTypes = {
   teams: PropTypes.array,
   teamFilterId: PropTypes.string,
   teamFilterName: PropTypes.string
-};
+}
 
-export default UserTasksHeader;
+export default UserTasksHeader

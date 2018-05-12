@@ -1,5 +1,5 @@
-import {GraphQLObjectType} from 'graphql';
-import Invitation from 'server/graphql/types/Invitation';
+import {GraphQLObjectType} from 'graphql'
+import Invitation from 'server/graphql/types/Invitation'
 
 const RemoveInvitationPayload = new GraphQLObjectType({
   name: 'RemoveInvitationPayload',
@@ -8,6 +8,6 @@ const RemoveInvitationPayload = new GraphQLObjectType({
       type: Invitation
     }
   })
-});
+})
 
-export default RemoveInvitationPayload;
+export default RemoveInvitationPayload

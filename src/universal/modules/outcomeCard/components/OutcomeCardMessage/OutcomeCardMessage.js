@@ -1,38 +1,38 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import FontAwesome from 'react-fontawesome';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import FontAwesome from 'react-fontawesome'
 
 const OutcomeCardMessage = (props) => {
-  const {onClose, message, styles} = props;
+  const {onClose, message, styles} = props
 
-  const messageInnerStyles = css(styles.messageInner, onClose && styles.onClose);
+  const messageInnerStyles = css(styles.messageInner, onClose && styles.onClose)
 
   return (
     <div className={css(styles.message)}>
       <div className={messageInnerStyles}>
         {message}
         {onClose && (
-          <div className={css(styles.messageClose)} onClick={onClose} tabIndex="0">
-            <FontAwesome className={css(styles.messageCloseIcon)} name="times-circle" />
+          <div className={css(styles.messageClose)} onClick={onClose} tabIndex='0'>
+            <FontAwesome className={css(styles.messageCloseIcon)} name='times-circle' />
           </div>
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 OutcomeCardMessage.propTypes = {
   colorPalette: PropTypes.oneOf(['cool', 'dark', 'warm']),
   onClose: PropTypes.func,
   message: PropTypes.string,
   styles: PropTypes.object
-};
+}
 
-const textShadow = '0 1px rgba(0, 0, 0, .15)';
+const textShadow = '0 1px rgba(0, 0, 0, .15)'
 
 const styleThunk = (theme, {colorPalette}) => ({
   message: {
@@ -81,6 +81,6 @@ const styleThunk = (theme, {colorPalette}) => ({
     lineHeight: `${ui.iconSize} !important`,
     width: `${ui.iconSize} !important`
   }
-});
+})
 
-export default withStyles(styleThunk)(OutcomeCardMessage);
+export default withStyles(styleThunk)(OutcomeCardMessage)

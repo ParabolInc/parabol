@@ -1,9 +1,9 @@
-import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql';
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
-import NewMeeting from 'server/graphql/types/NewMeeting';
-import RetroReflection from 'server/graphql/types/RetroReflection';
-import User from 'server/graphql/types/User';
+import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql'
+import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import NewMeeting from 'server/graphql/types/NewMeeting'
+import RetroReflection from 'server/graphql/types/RetroReflection'
+import User from 'server/graphql/types/User'
 
 const DragReflectionPayload = new GraphQLObjectType({
   name: 'DragReflectionPayload',
@@ -32,6 +32,6 @@ const DragReflectionPayload = new GraphQLObjectType({
       description: 'true if the reflection is being dragged, else false'
     }
   })
-});
+})
 
-export default DragReflectionPayload;
+export default DragReflectionPayload

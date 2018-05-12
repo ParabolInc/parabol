@@ -1,25 +1,25 @@
-import {EditorState, KeyBindingUtil} from 'draft-js';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import getAnchorLocation from 'universal/components/TaskEditor/getAnchorLocation';
-import getSelectionLink from 'universal/components/TaskEditor/getSelectionLink';
-import getSelectionText from 'universal/components/TaskEditor/getSelectionText';
-import getWordAt from 'universal/components/TaskEditor/getWordAt';
+import {EditorState, KeyBindingUtil} from 'draft-js'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import getAnchorLocation from 'universal/components/TaskEditor/getAnchorLocation'
+import getSelectionLink from 'universal/components/TaskEditor/getSelectionLink'
+import getSelectionText from 'universal/components/TaskEditor/getSelectionText'
+import getWordAt from 'universal/components/TaskEditor/getWordAt'
 import ui, {
   DEFAULT_MENU_HEIGHT,
   DEFAULT_MENU_WIDTH,
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
-} from 'universal/styles/ui';
-import addSpace from 'universal/utils/draftjs/addSpace';
-import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
-import makeAddLink from 'universal/utils/draftjs/makeAddLink';
-import splitBlock from 'universal/utils/draftjs/splitBlock';
-import getDraftCoords from 'universal/utils/getDraftCoords';
-import linkify from 'universal/utils/linkify';
-import Loadable from 'react-loadable';
-import LoadableLoading from 'universal/components/LoadableLoading';
-import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal';
+} from 'universal/styles/ui'
+import addSpace from 'universal/utils/draftjs/addSpace'
+import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection'
+import makeAddLink from 'universal/utils/draftjs/makeAddLink'
+import splitBlock from 'universal/utils/draftjs/splitBlock'
+import getDraftCoords from 'universal/utils/getDraftCoords'
+import linkify from 'universal/utils/linkify'
+import Loadable from 'react-loadable'
+import LoadableLoading from 'universal/components/LoadableLoading'
+import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal'
 
 const LoadableEditorLinkChanger = Loadable({
   loader: () =>
@@ -32,7 +32,7 @@ const LoadableEditorLinkChanger = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const LoadableEditorLinkViewer = Loadable({
   loader: () =>
@@ -45,48 +45,48 @@ const LoadableEditorLinkViewer = Loadable({
   ),
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const originAnchor = {
   vertical: 'top',
   horizontal: 'left'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'left'
-};
+}
 
 const getEntityKeyAtCaret = (editorState) => {
-  const selectionState = editorState.getSelection();
-  const contentState = editorState.getCurrentContent();
-  const anchorOffset = selectionState.getAnchorOffset();
-  const blockKey = selectionState.getAnchorKey();
-  const block = contentState.getBlockForKey(blockKey);
-  return block.getEntityAt(anchorOffset - 1);
-};
+  const selectionState = editorState.getSelection()
+  const contentState = editorState.getCurrentContent()
+  const anchorOffset = selectionState.getAnchorOffset()
+  const blockKey = selectionState.getAnchorKey()
+  const block = contentState.getBlockForKey(blockKey)
+  return block.getEntityAt(anchorOffset - 1)
+}
 
 const getCtrlKSelection = (editorState) => {
-  const selectionState = editorState.getSelection();
+  const selectionState = editorState.getSelection()
   if (selectionState.isCollapsed()) {
-    const entityKey = getEntityKeyAtCaret(editorState);
+    const entityKey = getEntityKeyAtCaret(editorState)
     if (entityKey) {
-      return getFullLinkSelection(editorState);
+      return getFullLinkSelection(editorState)
     }
-    const {block, anchorOffset} = getAnchorLocation(editorState);
-    const blockText = block.getText();
-    const {word, begin, end} = getWordAt(blockText, anchorOffset - 1);
+    const {block, anchorOffset} = getAnchorLocation(editorState)
+    const blockText = block.getText()
+    const {word, begin, end} = getWordAt(blockText, anchorOffset - 1)
     if (word) {
       return selectionState.merge({
         anchorOffset: begin,
         focusOffset: end
-      });
+      })
     }
   }
-  return selectionState;
-};
+  return selectionState
+}
 
-const {hasCommandModifier} = KeyBindingUtil;
+const {hasCommandModifier} = KeyBindingUtil
 
 const withLinks = (ComposedComponent) => {
   return class WithLinks extends Component {
@@ -103,175 +103,175 @@ const withLinks = (ComposedComponent) => {
       // could be readOnly, so not strictly required
       setEditorState: PropTypes.func,
       trackEditingComponent: PropTypes.func
-    };
+    }
 
     constructor (props) {
-      super(props);
-      this.state = {};
+      super(props)
+      this.state = {}
     }
 
     getMaybeLinkifiedState = (getNextState, editorState) => {
-      this.undoLink = undefined;
-      const {block, anchorOffset} = getAnchorLocation(editorState);
-      const blockText = block.getText();
+      this.undoLink = undefined
+      const {block, anchorOffset} = getAnchorLocation(editorState)
+      const blockText = block.getText()
       // -1 to remove the link from the current caret state
-      const {begin, end, word} = getWordAt(blockText, anchorOffset - 1, true);
-      if (!word) return undefined;
-      const entityKey = block.getEntityAt(anchorOffset - 1);
+      const {begin, end, word} = getWordAt(blockText, anchorOffset - 1, true)
+      if (!word) return undefined
+      const entityKey = block.getEntityAt(anchorOffset - 1)
 
       if (entityKey) {
-        const contentState = editorState.getCurrentContent();
-        const entity = contentState.getEntity(entityKey);
+        const contentState = editorState.getCurrentContent()
+        const entity = contentState.getEntity(entityKey)
         if (entity.getType() === 'LINK') {
           // the character that is to the left of the caret is a link
           //  const {begin, end, word} = getWordAt(blockText, anchorOffset, true);
-          const entityKeyToRight = block.getEntityAt(anchorOffset);
+          const entityKeyToRight = block.getEntityAt(anchorOffset)
           // if they're putting a space within the link, keep it contiguous
           if (entityKey !== entityKeyToRight) {
             // hitting space should close the modal
             if (this.props.renderModal) {
-              this.props.removeModal();
+              this.props.removeModal()
             } else {
-              const {linkViewerData, linkChangerData} = this.state;
+              const {linkViewerData, linkChangerData} = this.state
               if (linkViewerData || linkChangerData) {
-                this.removeModal();
+                this.removeModal()
               }
             }
-            return getNextState();
+            return getNextState()
           }
         }
       } else {
-        const links = linkify.match(word);
+        const links = linkify.match(word)
         // make sure the link starts at the beginning of the word otherwise we get conflicts with markdown and junk
         if (links && links[0].index === 0) {
-          const {url} = links[0];
-          const linkifier = makeAddLink(block.getKey(), begin, end, url);
-          this.undoLink = true;
+          const {url} = links[0]
+          const linkifier = makeAddLink(block.getKey(), begin, end, url)
+          this.undoLink = true
           // getNextState is a thunk because 99% of the time, we won't ever use it,
-          return linkifier(getNextState());
+          return linkifier(getNextState())
         }
       }
-      return undefined;
-    };
+      return undefined
+    }
 
     // LinkChanger can take focus, so sometimes we don't want to blur
     removeModal = (allowFocus) => {
-      const {linkChangerData} = this.state;
+      const {linkChangerData} = this.state
       if (!linkChangerData || allowFocus) {
-        this.cachedCoords = null;
+        this.cachedCoords = null
         this.setState({
           linkViewerData: undefined,
           linkChangerData: undefined
-        });
+        })
       }
-    };
+    }
 
     handleBeforeInput = (char) => {
-      const {handleBeforeInput, editorState, setEditorState} = this.props;
+      const {handleBeforeInput, editorState, setEditorState} = this.props
       if (handleBeforeInput) {
-        const result = handleBeforeInput(char);
+        const result = handleBeforeInput(char)
         if (result === 'handled' || result === true) {
-          return result;
+          return result
         }
       }
       if (char === ' ') {
-        const getNextState = () => addSpace(editorState);
-        const nextEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
+        const getNextState = () => addSpace(editorState)
+        const nextEditorState = this.getMaybeLinkifiedState(getNextState, editorState)
         if (nextEditorState) {
-          setEditorState(nextEditorState);
-          return 'handled';
+          setEditorState(nextEditorState)
+          return 'handled'
         }
       }
-      return undefined;
-    };
+      return undefined
+    }
 
     handleChange = (editorState) => {
-      const {handleChange} = this.props;
-      const {linkChangerData, linkViewerData} = this.state;
+      const {handleChange} = this.props
+      const {linkChangerData, linkViewerData} = this.state
       if (handleChange) {
-        handleChange(editorState);
+        handleChange(editorState)
       }
-      this.undoLink = undefined;
-      const {block, anchorOffset} = getAnchorLocation(editorState);
-      const entityKey = block.getEntityAt(Math.max(0, anchorOffset - 1));
+      this.undoLink = undefined
+      const {block, anchorOffset} = getAnchorLocation(editorState)
+      const entityKey = block.getEntityAt(Math.max(0, anchorOffset - 1))
       if (entityKey && !linkChangerData) {
-        const contentState = editorState.getCurrentContent();
-        const entity = contentState.getEntity(entityKey);
+        const contentState = editorState.getCurrentContent()
+        const entity = contentState.getEntity(entityKey)
         if (entity.getType() === 'LINK') {
           this.setState({
             linkViewerData: entity.getData()
-          });
-          return;
+          })
+          return
         }
       }
       if (linkViewerData) {
-        this.removeModal();
+        this.removeModal()
       }
-    };
+    }
 
     handleKeyCommand = (command) => {
-      const {handleKeyCommand, editorState, setEditorState} = this.props;
+      const {handleKeyCommand, editorState, setEditorState} = this.props
       if (handleKeyCommand) {
-        const result = handleKeyCommand(command);
+        const result = handleKeyCommand(command)
         if (result === 'handled' || result === true) {
-          return result;
+          return result
         }
       }
 
       if (command === 'split-block') {
-        const getNextState = () => splitBlock(editorState);
-        const nextEditorState = this.getMaybeLinkifiedState(getNextState, editorState);
+        const getNextState = () => splitBlock(editorState)
+        const nextEditorState = this.getMaybeLinkifiedState(getNextState, editorState)
         if (nextEditorState) {
-          setEditorState(nextEditorState);
-          return 'handled';
+          setEditorState(nextEditorState)
+          return 'handled'
         }
       }
 
       if (command === 'backspace' && this.undoLink) {
-        setEditorState(EditorState.undo(editorState));
-        this.undoLink = undefined;
-        return 'handled';
+        setEditorState(EditorState.undo(editorState))
+        this.undoLink = undefined
+        return 'handled'
       }
 
       if (command === 'add-hyperlink') {
-        this.addHyperlink();
-        return 'handled';
+        this.addHyperlink()
+        return 'handled'
       }
-      return 'not-handled';
-    };
+      return 'not-handled'
+    }
 
     initialize = () => {
-      const {linkViewerData, linkChangerData} = this.state;
+      const {linkViewerData, linkChangerData} = this.state
       if (linkViewerData || linkChangerData) {
-        const renderModal = linkViewerData ? this.renderViewerModal : this.renderChangerModal;
-        const {removeModal} = this;
+        const renderModal = linkViewerData ? this.renderViewerModal : this.renderChangerModal
+        const {removeModal} = this
         return {
           renderModal,
           removeModal
-        };
+        }
       }
-      return {};
-    };
+      return {}
+    }
 
     keyBindingFn = (e) => {
-      const {keyBindingFn} = this.props;
+      const {keyBindingFn} = this.props
       if (keyBindingFn) {
-        const result = keyBindingFn(e);
+        const result = keyBindingFn(e)
         if (result) {
-          return result;
+          return result
         }
       }
       if (e.key === 'k' && hasCommandModifier(e)) {
-        return 'add-hyperlink';
+        return 'add-hyperlink'
       }
-      return undefined;
-    };
+      return undefined
+    }
 
     addHyperlink = () => {
-      const {editorState} = this.props;
-      const selectionState = getCtrlKSelection(editorState);
-      const text = getSelectionText(editorState, selectionState);
-      const link = getSelectionLink(editorState, selectionState);
+      const {editorState} = this.props
+      const selectionState = getCtrlKSelection(editorState)
+      const text = getSelectionText(editorState, selectionState)
+      const link = getSelectionLink(editorState, selectionState)
       this.setState({
         linkViewerData: undefined,
         linkChangerData: {
@@ -279,35 +279,35 @@ const withLinks = (ComposedComponent) => {
           text,
           selectionState
         }
-      });
-    };
+      })
+    }
 
     innerRef = (c) => {
-      const {innerRef} = this.props;
+      const {innerRef} = this.props
       if (innerRef) {
-        innerRef(c);
+        innerRef(c)
       }
-      this.editorRef = c;
-    };
+      this.editorRef = c
+    }
 
     renderChangerModal = () => {
-      const {linkChangerData} = this.state;
-      const {text, link, selectionState} = linkChangerData;
-      const {editorState, setEditorState, trackEditingComponent, editorRef} = this.props;
-      const coords = getDraftCoords(editorRef);
+      const {linkChangerData} = this.state
+      const {text, link, selectionState} = linkChangerData
+      const {editorState, setEditorState, trackEditingComponent, editorRef} = this.props
+      const coords = getDraftCoords(editorRef)
       // in this case, coords can be good, then bad as soon as the changer takes focus
       // so, the container must handle bad then good as well as good then bad
-      this.cachedCoords = coords || this.cachedCoords;
+      this.cachedCoords = coords || this.cachedCoords
       if (!this.cachedCoords) {
         setTimeout(() => {
-          this.forceUpdate();
-        });
-        return null;
+          this.forceUpdate()
+        })
+        return null
       }
       // keys are very important because all modals feed into the same renderModal, which could replace 1 with the other
       return (
         <LoadableDraftJSModal
-          key="EditorLinkChanger"
+          key='EditorLinkChanger'
           LoadableComponent={LoadableEditorLinkChanger}
           maxWidth={320}
           maxHeight={200}
@@ -330,24 +330,24 @@ const withLinks = (ComposedComponent) => {
           left={this.left}
           height={this.height}
         />
-      );
-    };
+      )
+    }
 
     renderViewerModal = () => {
-      const {linkViewerData} = this.state;
-      const {editorRef, editorState, setEditorState} = this.props;
+      const {linkViewerData} = this.state
+      const {editorRef, editorState, setEditorState} = this.props
 
-      const coords = getDraftCoords(editorRef);
+      const coords = getDraftCoords(editorRef)
       if (!coords) {
         setTimeout(() => {
-          this.forceUpdate();
-        });
-        return null;
+          this.forceUpdate()
+        })
+        return null
       }
 
       return (
         <LoadableDraftJSModal
-          key="EditorLinkViewer"
+          key='EditorLinkViewer'
           LoadableComponent={LoadableEditorLinkViewer}
           maxWidth={400}
           maxHeight={100}
@@ -366,11 +366,11 @@ const withLinks = (ComposedComponent) => {
           left={this.left}
           height={this.height}
         />
-      );
-    };
+      )
+    }
 
     render () {
-      const modalProps = this.initialize();
+      const modalProps = this.initialize()
       return (
         <ComposedComponent
           {...this.props}
@@ -381,9 +381,9 @@ const withLinks = (ComposedComponent) => {
           handleKeyCommand={this.handleKeyCommand}
           keyBindingFn={this.keyBindingFn}
         />
-      );
+      )
     }
-  };
-};
+  }
+}
 
-export default withLinks;
+export default withLinks
