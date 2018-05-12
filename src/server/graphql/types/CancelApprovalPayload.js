@@ -1,5 +1,9 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveArchivedSoftTasks, resolveOrgApproval, resolveSoftTeamMember} from 'server/graphql/resolvers';
+import {
+  resolveArchivedSoftTasks,
+  resolveOrgApproval,
+  resolveSoftTeamMember
+} from 'server/graphql/resolvers';
 import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
 import OrgApproval from 'server/graphql/types/OrgApproval';
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember';

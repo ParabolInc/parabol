@@ -83,7 +83,10 @@ const stripeWebhookHandler = (sharedDataLoader) => async (req, res) => {
   const verifiedBody = verifyBody(req);
   if (!verifiedBody) return;
 
-  const {data: {object: payload}, type} = verifiedBody;
+  const {
+    data: {object: payload},
+    type
+  } = verifiedBody;
   const {event, subEvent, action} = splitType(type);
 
   const parentHandler = eventLookup[event];

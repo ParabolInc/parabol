@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Button} from 'universal/components';
+import Button from 'universal/components/Button/Button';
 
-const AcknowledgeButton = (props) =>
-  (<Button
+const AcknowledgeButton = (props) => (
+  <Button
     aria-label={props['aria-label']}
     buttonSize="small"
     colorPalette="gray"
@@ -12,7 +12,8 @@ const AcknowledgeButton = (props) =>
     type="submit"
     onClick={props.onClick}
     waiting={props.waiting}
-  />);
+  />
+);
 
 AcknowledgeButton.propTypes = {
   'aria-label': PropTypes.string,

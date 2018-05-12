@@ -1,7 +1,8 @@
 exports.up = async (r) => {
   // these are the only notification types in the prod database as of 9/6/17
   const tables = [
-    r.table('Notification')
+    r
+      .table('Notification')
       .filter({type: 'REQUEST_NEW_USER'})
       .replace((row) => {
         return row
@@ -14,7 +15,8 @@ exports.up = async (r) => {
           })
           .without('varList');
       }),
-    r.table('Notification')
+    r
+      .table('Notification')
       .filter({type: 'TEAM_ARCHIVED'})
       .replace((row) => {
         return row
@@ -23,7 +25,8 @@ exports.up = async (r) => {
           })
           .without('varList');
       }),
-    r.table('Notification')
+    r
+      .table('Notification')
       .filter((row) => row('type').match('^TRIAL_'))
       .replace((row) => {
         return row

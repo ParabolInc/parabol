@@ -6,7 +6,8 @@ import {AUTO_PAUSE_THRESH, AUTO_PAUSE_USER} from 'server/utils/serverConstants';
 
 const autopauseUsers = {
   type: GraphQLInt,
-  description: 'automatically pause users that have been inactive for 30 days. returns the number of users paused',
+  description:
+    'automatically pause users that have been inactive for 30 days. returns the number of users paused',
   resolve: async (source, args, {authToken}) => {
     const r = getRethink();
 
@@ -15,7 +16,8 @@ const autopauseUsers = {
 
     // RESOLUTION
     const activeThresh = new Date(Date.now() - AUTO_PAUSE_THRESH);
-    const users = await r.table('User')
+    const users = await r
+      .table('User')
       .filter((user) => user('lastSeenAt').le(activeThresh))
       .filter({
         inactive: false
@@ -23,7 +25,8 @@ const autopauseUsers = {
       .pluck('id', 'userOrgs');
     const userIds = users.map(({id}) => id);
     const updates = userIds.map((userId) => {
-      return r.table('Organization')
+      return r
+        .table('Organization')
         .getAll(userId, {index: 'orgUsers'})
         .update((org) => ({
           orgUsers: org('orgUsers').map((orgUser) => {
@@ -37,7 +40,8 @@ const autopauseUsers = {
           })
         }))
         .do(() => {
-          return r.table('User')
+          return r
+            .table('User')
             .get(userId)
             .update({
               inactive: true

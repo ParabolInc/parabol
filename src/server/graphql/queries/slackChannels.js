@@ -18,10 +18,13 @@ export default {
     const r = getRethink();
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, []);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId, []);
+    }
 
     // RESOLUTION
-    return r.table(SLACK)
+    return r
+      .table(SLACK)
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('channelName');

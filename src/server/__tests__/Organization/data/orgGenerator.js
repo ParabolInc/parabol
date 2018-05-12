@@ -2,7 +2,7 @@ import Chance from 'chance';
 import shortid from 'shortid';
 import testOrgMember from './testOrgMember';
 
-function randomTeamMember() {
+function randomTeamMember () {
   const chance = new Chance();
   return testOrgMember({
     id: `jest|${shortid()}`,

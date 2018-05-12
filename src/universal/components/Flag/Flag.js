@@ -1,19 +1,17 @@
 // @flow
 import type {Node} from 'react';
 
-type NodeOrThunk = Node | () => Node;
+type NodeOrThunk = Node | (() => Node);
 
 type Props<T> = {
-  when: T | () => T,
-  switchOnVal?: T => NodeOrThunk,
+  when: T | (() => T),
+  switchOnVal?: (T) => NodeOrThunk,
   render?: NodeOrThunk,
   otherwise?: NodeOrThunk
 };
 
 const getNode = (nodeOrThunk: NodeOrThunk): Node =>
-  typeof nodeOrThunk === 'function'
-    ? nodeOrThunk()
-    : nodeOrThunk;
+  typeof nodeOrThunk === 'function' ? nodeOrThunk() : nodeOrThunk;
 
 /**
  * Conditionally renders components based on a `when` function.
@@ -57,7 +55,9 @@ const Flag = <T>(props: Props<T>) => {
     }
     return otherwise ? getNode(otherwise) : null;
   }
-  throw new Error('Must provide one of: `switchOnVal`, `render`, or both (`render` and `otherwise`)');
+  throw new Error(
+    'Must provide one of: `switchOnVal`, `render`, or both (`render` and `otherwise`)'
+  );
 };
 
 export default Flag;

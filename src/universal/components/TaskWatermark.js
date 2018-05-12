@@ -29,7 +29,7 @@ const WatermarkIcon = styled(FontAwesome)({
   height: '8rem',
   lineHeight: '8rem !important',
   margin: 'auto -1.5rem -1.5rem auto',
-  opacity: 0.20,
+  opacity: 0.2,
   position: 'absolute',
   right: 0,
   width: '8rem'

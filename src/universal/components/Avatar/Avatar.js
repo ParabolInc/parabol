@@ -19,10 +19,7 @@ const Avatar = (props) => {
     styles
   } = props;
 
-  const rootStyles = css(
-    styles.avatar,
-    styles[size]
-  );
+  const rootStyles = css(styles.avatar, styles[size]);
   const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
   const imageBlockStyles = css(
     styles.avatarImageBlock,
@@ -36,26 +33,15 @@ const Avatar = (props) => {
     backgroundSize: 'cover'
   };
   return (
-    <div
-      className={rootStyles}
-      onClick={onClick}
-      ref={innerRef}
-      style={rootInlineStyle}
-    >
-      <div
-        className={imageBlockStyles}
-        style={imageBlockInlineStyle}
-      >
-        {hasBadge &&
+    <div className={rootStyles} onClick={onClick} ref={innerRef} style={rootInlineStyle}>
+      <div className={imageBlockStyles} style={imageBlockInlineStyle}>
+        {hasBadge && (
           <div className={css(styles.badgeBlock)}>
             <div className={css(styles.badgeBlockInner)}>
-              <AvatarBadge
-                isCheckedIn={isCheckedIn}
-                isConnected={isConnected}
-              />
+              <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} />
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
   );

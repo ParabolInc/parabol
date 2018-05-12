@@ -16,16 +16,12 @@ import shortid from 'shortid';
 
 exports.up = async (r) => {
   try {
-    await Promise.all([
-      r.tableCreate('MeetingSettings')
-    ]);
+    await Promise.all([r.tableCreate('MeetingSettings')]);
   } catch (e) {
     // noop
   }
   try {
-    await Promise.all([
-      r.table('MeetingSettings').indexCreate('teamId')
-    ]);
+    await Promise.all([r.table('MeetingSettings').indexCreate('teamId')]);
   } catch (e) {
     // noop
   }
@@ -45,7 +41,7 @@ exports.up = async (r) => {
           meetingType: ACTION,
           teamId,
           phases: [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY]
-        },
+        }
       );
     });
     await r.table('MeetingSettings').insert(inserts);
@@ -56,9 +52,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await Promise.all([
-      r.tableDrop('MeetingSettings')
-    ]);
+    await Promise.all([r.tableDrop('MeetingSettings')]);
   } catch (e) {
     // noop
   }

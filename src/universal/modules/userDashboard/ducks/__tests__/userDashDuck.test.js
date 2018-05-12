@@ -1,6 +1,4 @@
-import reducer, {
-  filterTeam
-} from '../userDashDuck';
+import reducer, {filterTeam} from '../userDashDuck';
 
 test('initial state', () => {
   const initialState = reducer();

@@ -36,5 +36,6 @@ export default createFragmentContainer(
         content
         language
       }
-    }`
+    }
+  `
 );

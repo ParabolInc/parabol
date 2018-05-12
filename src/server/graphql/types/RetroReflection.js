@@ -1,4 +1,12 @@
-import {GraphQLBoolean, GraphQLFloat, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
@@ -19,7 +27,8 @@ const RetroReflection = new GraphQLObjectType({
     },
     autoReflectionGroupId: {
       type: GraphQLID,
-      description: 'The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()',
+      description:
+        'The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()',
       resolve: resolveForSU('autoGroupThreshold')
     },
     createdAt: {
@@ -70,7 +79,8 @@ const RetroReflection = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString)
     },
     entities: {
-      description: 'The entities (i.e. nouns) parsed from the content and their respective salience',
+      description:
+        'The entities (i.e. nouns) parsed from the content and their respective salience',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GoogleAnalyzedEntity))),
       resolve: resolveForSU('entities')
     },
@@ -93,7 +103,8 @@ const RetroReflection = new GraphQLObjectType({
     },
     retroPhaseItemId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
+      description:
+        'The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.'
     },
     reflectionGroupId: {
       type: GraphQLID,
@@ -120,7 +131,8 @@ const RetroReflection = new GraphQLObjectType({
     },
     updatedAt: {
       type: GraphQLISO8601Type,
-      description: 'The timestamp the meeting was updated. Used to determine how long it took to write a reflection'
+      description:
+        'The timestamp the meeting was updated. Used to determine how long it took to write a reflection'
     }
   })
 });

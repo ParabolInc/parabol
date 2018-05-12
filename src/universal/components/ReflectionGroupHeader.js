@@ -34,15 +34,24 @@ const Spacer = styled('div')({width: ui.votingCheckmarksWidth});
 
 const ReflectionGroupHeader = (props: Props) => {
   const {meeting, reflectionGroup} = props;
-  const {localStage, localPhase: {phaseType}} = meeting;
+  const {
+    localStage,
+    localPhase: {phaseType}
+  } = meeting;
   const canEdit = phaseType === GROUP && localStage.isComplete === false;
   return (
     <GroupHeader phaseType={phaseType}>
       {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
-        <ReflectionGroupTitleEditor reflectionGroup={reflectionGroup} meeting={meeting} readOnly={!canEdit} />
+        <ReflectionGroupTitleEditor
+          reflectionGroup={reflectionGroup}
+          meeting={meeting}
+          readOnly={!canEdit}
+        />
       </TitleAndCount>
-      {phaseType === VOTE && <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />}
+      {phaseType === VOTE && (
+        <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />
+      )}
     </GroupHeader>
   );
 };
@@ -60,6 +69,7 @@ export default createFragmentContainer(
       ...ReflectionGroupTitleEditor_meeting
       ...ReflectionGroupVoting_meeting
     }
+
     fragment ReflectionGroupHeader_reflectionGroup on RetroReflectionGroup {
       ...ReflectionGroupTitleEditor_reflectionGroup
       ...ReflectionGroupVoting_reflectionGroup

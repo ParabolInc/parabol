@@ -5,7 +5,12 @@ import getAnchorLocation from 'universal/components/TaskEditor/getAnchorLocation
 import getSelectionLink from 'universal/components/TaskEditor/getSelectionLink';
 import getSelectionText from 'universal/components/TaskEditor/getSelectionText';
 import getWordAt from 'universal/components/TaskEditor/getWordAt';
-import ui, {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
+import ui, {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from 'universal/styles/ui';
 import addSpace from 'universal/utils/draftjs/addSpace';
 import getFullLinkSelection from 'universal/utils/draftjs/getFullLinkSelection';
 import makeAddLink from 'universal/utils/draftjs/makeAddLink';
@@ -17,25 +22,30 @@ import LoadableLoading from 'universal/components/LoadableLoading';
 import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal';
 
 const LoadableEditorLinkChanger = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'EditorLinkChanger' */
-    'universal/components/EditorLinkChanger/EditorLinkChanger'
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'EditorLinkChanger' */
+      'universal/components/EditorLinkChanger/EditorLinkChanger'
+    ),
+  loading: (props) => (
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
-  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
 });
 
 const LoadableEditorLinkViewer = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'EditorLinkViewer' */
-    'universal/components/EditorLinkViewer/EditorLinkViewer'
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'EditorLinkViewer' */
+      'universal/components/EditorLinkViewer/EditorLinkViewer'
+    ),
+  loading: (props) => (
+    <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
-  loading: (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
 });
-
 
 const originAnchor = {
   vertical: 'top',
@@ -95,7 +105,7 @@ const withLinks = (ComposedComponent) => {
       trackEditingComponent: PropTypes.func
     };
 
-    constructor(props) {
+    constructor (props) {
       super(props);
       this.state = {};
     }
@@ -359,17 +369,19 @@ const withLinks = (ComposedComponent) => {
       );
     };
 
-    render() {
+    render () {
       const modalProps = this.initialize();
-      return (<ComposedComponent
-        {...this.props}
-        {...modalProps}
-        innerRef={this.innerRef}
-        handleBeforeInput={this.handleBeforeInput}
-        handleChange={this.handleChange}
-        handleKeyCommand={this.handleKeyCommand}
-        keyBindingFn={this.keyBindingFn}
-      />);
+      return (
+        <ComposedComponent
+          {...this.props}
+          {...modalProps}
+          innerRef={this.innerRef}
+          handleBeforeInput={this.handleBeforeInput}
+          handleChange={this.handleChange}
+          handleKeyCommand={this.handleKeyCommand}
+          keyBindingFn={this.keyBindingFn}
+        />
+      );
     }
   };
 };

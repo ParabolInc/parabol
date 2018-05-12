@@ -25,7 +25,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -34,10 +34,13 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc);
+    }
 
     // VALIDATION
-    const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r.table('Organization')
+    const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r
+      .table('Organization')
       .get(orgId)
       .pluck('orgUsers', 'stripeId', 'stripeSubscriptionId');
 
@@ -45,9 +48,9 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    const customer = stripeId ?
-      await stripe.customers.update(stripeId, {source: stripeToken}) :
-      await stripe.customers.create({
+    const customer = stripeId
+      ? await stripe.customers.update(stripeId, {source: stripeToken})
+      : await stripe.customers.create({
         source: stripeToken,
         metadata: {
           orgId
@@ -67,22 +70,30 @@ export default {
     const currentPeriodEnd = subscription.current_period_end;
     const creditCard = getCCFromCustomer(customer);
     const {teamIds} = await r({
-      updatedOrg: r.table('Organization').get(orgId).update({
-        creditCard,
-        tier: PRO,
-        periodEnd: fromEpochSeconds(currentPeriodEnd),
-        periodStart: fromEpochSeconds(currentPeriodStart),
-        stripeId: customer.id,
-        stripeSubscriptionId: subscription.id,
-        updatedAt: now
-      }),
-      teamIds: r.table('Team')
-        .getAll(orgId, {index: 'orgId'})
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
         .update({
-          isPaid: true,
+          creditCard,
           tier: PRO,
+          periodEnd: fromEpochSeconds(currentPeriodEnd),
+          periodStart: fromEpochSeconds(currentPeriodStart),
+          stripeId: customer.id,
+          stripeSubscriptionId: subscription.id,
           updatedAt: now
-        }, {returnChanges: true})('changes')('new_val')('id').default([])
+        }),
+      teamIds: r
+        .table('Team')
+        .getAll(orgId, {index: 'orgId'})
+        .update(
+          {
+            isPaid: true,
+            tier: PRO,
+            updatedAt: now
+          },
+          {returnChanges: true}
+        )('changes')('new_val')('id')
+        .default([])
     });
     sendSegmentEvent('Upgrade to Pro', userId, {orgId});
     const data = {orgId, teamIds};

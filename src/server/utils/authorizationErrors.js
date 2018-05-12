@@ -87,7 +87,6 @@ export const sendOrgLeadOfUserAccessError = (authToken, userId, returnValue) => 
   return sendAuthRaven(authToken, 'Not billing leader for user', breadcrumb, returnValue);
 };
 
-
 export const sendGitHubAdministratorError = (authToken, nameWithOwner, returnValue) => {
   const breadcrumb = {
     message: `You must be an administrator of ${nameWithOwner} to integrate`,
@@ -98,14 +97,13 @@ export const sendGitHubAdministratorError = (authToken, nameWithOwner, returnVal
 };
 
 export const sendGitHubPassedThoughError = (authToken, errors, returnValue) => {
-  const firstError = Array.isArray(errors) && errors[0].message || 'Unknown GitHub error';
+  const firstError = (Array.isArray(errors) && errors[0].message) || 'Unknown GitHub error';
   const breadcrumb = {
     message: firstError,
     category: 'GitHub Error'
   };
   return sendAuthRaven(authToken, 'GitHub Error', breadcrumb, returnValue);
 };
-
 
 export const sendSlackChannelArchivedError = (authToken, name, returnValue) => {
   const breadcrumb = {

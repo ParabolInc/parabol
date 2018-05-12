@@ -4,7 +4,9 @@ exports.up = async (r) => {
       return row
         .merge({
           teamId: row('teamIds')(0).default(null),
-          isActive: row('teamIds').count().ne(0)
+          isActive: row('teamIds')
+            .count()
+            .ne(0)
         })
         .without('teamIds');
     })
@@ -30,11 +32,7 @@ exports.down = async (r) => {
     r.tableDrop('Provider').replace((row) => {
       return row
         .merge({
-          teamIds: r.branch(
-            row('teamId'),
-            [row('teamId')],
-            []
-          )
+          teamIds: r.branch(row('teamId'), [row('teamId')], [])
         })
         .without('teamId', 'isActive');
     })

@@ -12,7 +12,9 @@ import firstErrorMessage from 'universal/utils/relay/firstErrorMessage';
 
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}));
-  const {payload: {query, variables}} = parsedMessage;
+  const {
+    payload: {query, variables}
+  } = parsedMessage;
   const context = {authToken, dataLoader, socketId};
   const document = parse(query);
   try {
@@ -37,11 +39,23 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
   }
 
   connectionContext.subs[opId] = {status: 'pending'};
-  const {asyncIterator, errors} = await trySubscribe(authToken, parsedMessage, socketId, sharedDataLoader, isResub);
+  const {asyncIterator, errors} = await trySubscribe(
+    authToken,
+    parsedMessage,
+    socketId,
+    sharedDataLoader,
+    isResub
+  );
   if (!asyncIterator) {
     if (errors) {
       const {query, variables} = parsedMessage;
-      sendGraphQLErrorResult('WebSocket-Subscription', firstErrorMessage(errors), query, variables, authToken);
+      sendGraphQLErrorResult(
+        'WebSocket-Subscription',
+        firstErrorMessage(errors),
+        query,
+        variables,
+        authToken
+      );
       sendMessage(socket, GQL_ERROR, {errors}, opId);
     }
     return;
@@ -76,6 +90,6 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
   }
 };
 
-export default function wsRelaySubscribeHandler(connectionContext, parsedMessage) {
+export default function wsRelaySubscribeHandler (connectionContext, parsedMessage) {
   handleSubscribe(connectionContext, parsedMessage);
 }

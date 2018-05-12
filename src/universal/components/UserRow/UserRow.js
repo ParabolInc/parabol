@@ -1,53 +1,55 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {
-  Avatar,
-  Row,
-  RowActions,
-  RowInfo,
-  RowInfoHeader,
-  RowInfoHeading,
-  RowInfoCopy,
-  RowInfoLink,
-  Tag
-} from 'universal/components';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import fromNow from 'universal/utils/fromNow';
+import Row from 'universal/components/Row/Row';
+import Avatar from 'universal/components/Avatar/Avatar';
+import RowInfo from 'universal/components/Row/RowInfo';
+import RowInfoHeader from 'universal/components/Row/RowInfoHeader';
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading';
+import RowInfoCopy from 'universal/components/Row/RowInfoCopy';
+import RowInfoLink from 'universal/components/Row/RowInfoLink';
+import RowActions from 'universal/components/Row/RowActions';
 
 const UserRow = (props) => {
   const {actions, possibleTeamMember} = props;
-  const {__typename: type, email, isLead, picture, preferredName, createdAt, updatedAt} = possibleTeamMember;
+  const {
+    __typename: type,
+    email,
+    isLead,
+    picture,
+    preferredName,
+    createdAt,
+    updatedAt
+  } = possibleTeamMember;
   return (
     <Row>
       <div>
-        {picture ?
-          <Avatar hasBadge={false} picture={picture} size="small" /> :
+        {picture ? (
+          <Avatar hasBadge={false} picture={picture} size="small" />
+        ) : (
           <img alt="" src={defaultUserAvatar} />
-        }
+        )}
       </div>
       <RowInfo>
-        {type === 'TeamMember' ?
+        {type === 'TeamMember' ? (
           <RowInfoHeader>
             <RowInfoHeading>{preferredName}</RowInfoHeading>
             {isLead && <Tag colorPalette="blue" label="Team Lead" />}
-          </RowInfoHeader> :
+          </RowInfoHeader>
+        ) : (
           <RowInfoHeading>{email}</RowInfoHeading>
-        }
-        {type !== 'TeamMember' ?
-          <RowInfoCopy useHintCopy>
-            {`Invited ${fromNow(createdAt || updatedAt)}`}
-          </RowInfoCopy> :
+        )}
+        {type !== 'TeamMember' ? (
+          <RowInfoCopy useHintCopy>{`Invited ${fromNow(createdAt || updatedAt)}`}</RowInfoCopy>
+        ) : (
           <RowInfoLink href={`mailto:${email}`} title="Send an email">
             {email}
           </RowInfoLink>
-        }
+        )}
       </RowInfo>
-      {actions &&
-        <RowActions>
-          {actions}
-        </RowActions>
-      }
+      {actions && <RowActions>{actions}</RowActions>}
     </Row>
   );
 };

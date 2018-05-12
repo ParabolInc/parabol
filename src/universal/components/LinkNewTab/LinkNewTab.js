@@ -4,12 +4,7 @@ import React from 'react';
 const LinkNewTab = (props) => {
   const {children, href, title} = props;
   return (
-    <a
-      href={href}
-      rel="noopener noreferrer"
-      target="_blank"
-      title={title}
-    >
+    <a href={href} rel="noopener noreferrer" target="_blank" title={title}>
       {children}
     </a>
   );

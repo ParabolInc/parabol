@@ -1,7 +1,6 @@
-
 const mutation = graphql`
   mutation SendClientSegmentEventMutation($event: String!, $options: SegmentEventTrackOptions) {
-    segmentEventTrack(event: $event options: $options)
+    segmentEventTrack(event: $event, options: $options)
   }
 `;
 

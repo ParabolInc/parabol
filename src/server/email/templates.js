@@ -4,10 +4,10 @@ import teamInvite from 'universal/modules/email/containers/TeamInvite/index';
 import welcomeEmail from 'universal/modules/email/containers/WelcomeEmail/index';
 import newMeetingSummaryEmailCreator from 'universal/modules/email/components/SummaryEmail/newMeetingSummaryEmailCreator';
 
-export default ({
+export default {
   newMeetingSummaryEmailCreator,
   notificationSummary,
   summaryEmail,
   teamInvite,
   welcomeEmail
-});
+};

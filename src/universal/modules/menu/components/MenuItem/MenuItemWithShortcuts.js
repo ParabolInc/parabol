@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import FontAwesome from 'react-fontawesome';
 import ui from 'universal/styles/ui';
-import {textOverflow} from 'universal/styles/helpers';
 import styled, {css, cx} from 'react-emotion';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const rootStyle = css({
   alignItems: 'center',
@@ -55,13 +55,13 @@ class MenuItemWithShortcuts extends Component {
     title: PropTypes.string
   };
 
-  componentDidMount() {
+  componentDidMount () {
     const {isActive} = this.props;
     if (isActive) {
       this.itemRef.scrollIntoViewIfNeeded();
     }
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {isActive} = nextProps;
     if (isActive && !this.props.isActive) {
       this.itemRef.scrollIntoViewIfNeeded();
@@ -69,12 +69,7 @@ class MenuItemWithShortcuts extends Component {
   }
 
   handleClick = (e) => {
-    const {
-      activate,
-      noCloseOnClick,
-      closePortal,
-      onClick
-    } = this.props;
+    const {activate, noCloseOnClick, closePortal, onClick} = this.props;
     if (noCloseOnClick) {
       activate();
     } else if (closePortal) {
@@ -85,7 +80,7 @@ class MenuItemWithShortcuts extends Component {
     }
   };
 
-  render() {
+  render () {
     const {
       avatar,
       children,
@@ -98,12 +93,18 @@ class MenuItemWithShortcuts extends Component {
       menuRef,
       title
     } = this.props;
-    const labelEl = typeof label === 'string' ?
-      <Label hasIcon={Boolean(avatar || icon)} disabled={disabled}>{label}</Label> : label;
+    const labelEl =
+      typeof label === 'string' ? (
+        <Label hasIcon={Boolean(avatar || icon)} disabled={disabled}>
+          {label}
+        </Label>
+      ) : (
+        label
+      );
     const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
     const titleStr = title || titleFallbackStr;
-    const makeDot = () =>
-      (<div
+    const makeDot = () => (
+      <div
         className={css({
           backgroundColor: iconColor || 'inherit',
           borderRadius: '.375rem',
@@ -112,9 +113,10 @@ class MenuItemWithShortcuts extends Component {
           marginRight: ui.menuGutterInner,
           width: '.375rem'
         })}
-      />);
-    const makeIcon = () =>
-      (<FontAwesome
+      />
+    );
+    const makeIcon = () => (
+      <FontAwesome
         name={icon}
         className={css({
           color: iconColor || ui.menuItemIconColor,
@@ -125,9 +127,10 @@ class MenuItemWithShortcuts extends Component {
           textAlign: 'center',
           width: '1.25rem'
         })}
-      />);
-    const makeAvatar = () =>
-      (<img
+      />
+    );
+    const makeAvatar = () => (
+      <img
         alt={titleStr}
         className={css({
           borderRadius: '100%',
@@ -138,12 +141,15 @@ class MenuItemWithShortcuts extends Component {
           width: '1.5rem'
         })}
         src={avatar}
-      />);
+      />
+    );
     return (
       <div
         role="menuitem"
         title={titleStr}
-        ref={(c) => { this.itemRef = c; }}
+        ref={(c) => {
+          this.itemRef = c;
+        }}
         className={cx(rootStyle, isActive && activeStyle)}
         onClick={this.handleClick}
       >

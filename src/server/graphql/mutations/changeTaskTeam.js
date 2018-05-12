@@ -23,7 +23,7 @@ export default {
       description: 'The new team to assign the task to'
     }
   },
-  async resolve(source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -31,13 +31,17 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
     const task = await r.table('Task').get(taskId);
     if (!task) {
       return sendTaskNotFoundError(authToken, taskId);
     }
     const {content, tags, teamId: oldTeamId} = task;
-    if (!isTeamMember(authToken, oldTeamId)) return sendTeamAccessError(authToken, oldTeamId);
+    if (!isTeamMember(authToken, oldTeamId)) {
+      return sendTeamAccessError(authToken, oldTeamId);
+    }
     if (task.userId !== viewerId) {
       const breadcrumb = {
         message: 'Cannot change team for a task assigned to someone else',
@@ -47,14 +51,17 @@ export default {
     }
 
     // RESOLUTION
-    const [oldTeamMembers, newTeamMembers] = await dataLoader.get('teamMembersByTeamId').loadMany([oldTeamId, teamId]);
+    const [oldTeamMembers, newTeamMembers] = await dataLoader
+      .get('teamMembersByTeamId')
+      .loadMany([oldTeamId, teamId]);
     const oldTeamUserIds = oldTeamMembers.map(({userId}) => userId);
     const newTeamUserIds = newTeamMembers.map(({userId}) => userId);
     const userIdsOnlyOnOldTeam = oldTeamUserIds.filter((oldTeamUserId) => {
       return !newTeamUserIds.find((newTeamUserId) => newTeamUserId === oldTeamUserId);
     });
     const rawContent = JSON.parse(content);
-    const eqFn = (entity) => entity.type === 'MENTION' &&
+    const eqFn = (entity) =>
+      entity.type === 'MENTION' &&
       Boolean(userIdsOnlyOnOldTeam.find((userId) => userId === entity.data.userId));
     const {rawContent: nextRawContent, removedEntities} = removeEntityKeepText(rawContent, eqFn);
 
@@ -64,9 +71,15 @@ export default {
       teamId
     };
     const {newTask} = await r({
-      newTask: r.table('Task').get(taskId).update(updates),
-      taskHistory: r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
+      newTask: r
+        .table('Task')
+        .get(taskId)
+        .update(updates),
+      taskHistory: r
+        .table('TaskHistory')
+        .between([taskId, r.minval], [taskId, r.maxval], {
+          index: 'taskIdUpdatedAt'
+        })
         .orderBy({index: 'taskIdUpdatedAt'})
         .nth(-1)
         .default(null)
@@ -74,22 +87,30 @@ export default {
           // prepopulated cards will not have a history
           return r.branch(
             taskHistoryRecord.ne(null),
-            r.table('TaskHistory').insert(taskHistoryRecord.merge(updates, {id: shortid.generate()})),
+            r
+              .table('TaskHistory')
+              .insert(taskHistoryRecord.merge(updates, {id: shortid.generate()})),
             null
           );
         })
     });
 
-    const mentioneeUserIdsToRemove = Array.from(new Set(removedEntities.map(({data}) => data.userId)));
-    const notificationsToRemove = mentioneeUserIdsToRemove.length === 0 ? [] : await r.table('Notification')
-      .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
-      .filter({
-        taskId,
-        type: TASK_INVOLVES
-      })
-      .delete({returnChanges: true})('changes')('old_val')
-      .pluck('id', 'userIds')
-      .default([]);
+    const mentioneeUserIdsToRemove = Array.from(
+      new Set(removedEntities.map(({data}) => data.userId))
+    );
+    const notificationsToRemove =
+      mentioneeUserIdsToRemove.length === 0
+        ? []
+        : await r
+          .table('Notification')
+          .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
+          .filter({
+            taskId,
+            type: TASK_INVOLVES
+          })
+          .delete({returnChanges: true})('changes')('old_val')
+          .pluck('id', 'userIds')
+          .default([]);
 
     const isPrivate = tags.includes('private');
     const data = {taskId, notificationsToRemove};

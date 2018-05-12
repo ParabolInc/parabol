@@ -7,17 +7,19 @@ type Props = {
   content: string
 };
 
-
 class ReflectionEditorWrapperForEmail extends Component<Props> {
   state = {
-    editorState: EditorState.createWithContent(truncateCard(this.props.content, 6, 64), editorDecorators(this.getEditorState))
+    editorState: EditorState.createWithContent(
+      truncateCard(this.props.content, 6, 64),
+      editorDecorators(this.getEditorState)
+    )
   };
 
-  getEditorState() {
+  getEditorState () {
     return this.state.editorState;
   }
 
-  render() {
+  render () {
     const {editorState} = this.state;
     const userSelect = 'text';
     return (

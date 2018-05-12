@@ -1,14 +1,6 @@
 import ensureDate from 'universal/utils/ensureDate';
 
-export const days = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday'
-];
+export const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export const months = [
   'January',
@@ -40,7 +32,7 @@ export const shortMonths = [
   'Dec'
 ];
 
-export default function makeDateString(datetime, options = {}) {
+export default function makeDateString (datetime, options = {}) {
   const timestamp = ensureDate(datetime);
   const {showDay} = options;
   const day = timestamp.getDay();

@@ -21,7 +21,11 @@ export const isTeamMember = (authToken, teamId) => {
 export const isTeamLead = async (userId, teamId) => {
   const r = getRethink();
   const teamMemberId = toTeamMemberId(teamId, userId);
-  return r.table('TeamMember').get(teamMemberId)('isLead').default(false).run();
+  return r
+    .table('TeamMember')
+    .get(teamMemberId)('isLead')
+    .default(false)
+    .run();
 };
 
 export const requireSU = (authToken) => {
@@ -33,7 +37,9 @@ export const requireSU = (authToken) => {
 // undefined orgId will disable the filter
 export const getUserOrgDoc = (userId, orgId = '') => {
   const r = getRethink();
-  return r.table('User').get(userId)('userOrgs')
+  return r
+    .table('User')
+    .get(userId)('userOrgs')
     .filter({id: orgId})
     .nth(0)
     .default(null)
@@ -41,12 +47,13 @@ export const getUserOrgDoc = (userId, orgId = '') => {
 };
 
 export const isOrgBillingLeader = (userOrgDoc) => {
-  return (userOrgDoc && userOrgDoc.role === BILLING_LEADER);
+  return userOrgDoc && userOrgDoc.role === BILLING_LEADER;
 };
 
 export const isOrgLeaderOfUser = async (authToken, userId) => {
   const r = getRethink();
-  return r.table('User')
+  return r
+    .table('User')
     .get(authToken.sub)('userOrgs')
     .filter({
       role: BILLING_LEADER
@@ -54,8 +61,7 @@ export const isOrgLeaderOfUser = async (authToken, userId) => {
     .do((leaderOrgs) => {
       return {
         leaderOrgs,
-        memberOrgs: r.table('User')
-          .get(userId)('userOrgs')('id')
+        memberOrgs: r.table('User').get(userId)('userOrgs')('id')
       };
     })
     .do((res) => {
@@ -63,14 +69,16 @@ export const isOrgLeaderOfUser = async (authToken, userId) => {
         .union(res('memberOrgs'))
         .distinct()
         .count()
-        .lt(res('leaderOrgs').count().add(res('memberOrgs').count()));
+        .lt(
+          res('leaderOrgs')
+            .count()
+            .add(res('memberOrgs').count())
+        );
     });
 };
 
 export const isPaidTier = async (teamId) => {
   const r = getRethink();
-  const tier = await r
-    .table('Team')
-    .get(teamId)('tier');
+  const tier = await r.table('Team').get(teamId)('tier');
   return tier !== PERSONAL;
 };

@@ -25,10 +25,11 @@ const ScrollableShadow = styled('div')(
     position: 'relative',
     zIndex: 200
   },
-  ({overflown}) => overflown && ({
-    boxShadow: overflown === 'top' ? ui.scrollableTopShadow : ui.scrollableBottomShadow,
-    top: overflown === 'top' ? '-.0625rem' : '.0625rem'
-  })
+  ({overflown}) =>
+    overflown && {
+      boxShadow: overflown === 'top' ? ui.scrollableTopShadow : ui.scrollableBottomShadow,
+      top: overflown === 'top' ? '-.0625rem' : '.0625rem'
+    }
 );
 
 class ScrollableBlock extends Component {
@@ -48,7 +49,9 @@ class ScrollableBlock extends Component {
       overflownAbove: this.isOverflownAbove(),
       overflownBelow: this.isOverflownBelow()
     });
-    if (!el) { return; }
+    if (!el) {
+      return;
+    }
     this.overflowContainerEl.addEventListener('scroll', () => {
       const overflownAbove = this.isOverflownAbove();
       const overflownBelow = this.isOverflownBelow();
@@ -63,23 +66,30 @@ class ScrollableBlock extends Component {
         this.setState(newState);
       }
     });
-  }
+  };
 
   overflowContainerEl = null;
 
   isOverflownAbove = () => {
     const {overflowContainerEl} = this;
-    if (!overflowContainerEl) { return false; }
+    if (!overflowContainerEl) {
+      return false;
+    }
     return overflowContainerEl.scrollTop > 0;
   };
 
   isOverflownBelow = () => {
     const {overflowContainerEl} = this;
-    if (!overflowContainerEl) { return false; }
-    return overflowContainerEl.scrollHeight - overflowContainerEl.scrollTop > overflowContainerEl.clientHeight;
+    if (!overflowContainerEl) {
+      return false;
+    }
+    return (
+      overflowContainerEl.scrollHeight - overflowContainerEl.scrollTop >
+      overflowContainerEl.clientHeight
+    );
   };
 
-  render() {
+  render () {
     const {children} = this.props;
     const {overflownAbove, overflownBelow} = this.state;
     return (

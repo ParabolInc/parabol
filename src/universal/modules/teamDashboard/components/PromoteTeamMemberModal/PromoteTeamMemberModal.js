@@ -3,11 +3,11 @@ import React from 'react';
 import portal from 'react-portal-hoc';
 import {createFragmentContainer} from 'react-relay';
 import Button from 'universal/components/Button/Button';
-import {DashModal} from 'universal/components/Dashboard';
 import Type from 'universal/components/Type/Type';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import DashModal from 'universal/components/Dashboard/DashModal';
 
 const PromoteTeamMemberModal = (props) => {
   const {
@@ -67,7 +67,9 @@ PromoteTeamMemberModal.propTypes = {
 };
 
 export default createFragmentContainer(
-  portal({escToClose: true, closeAfter: 100})(withMutationProps(withAtmosphere(PromoteTeamMemberModal))),
+  portal({escToClose: true, closeAfter: 100})(
+    withMutationProps(withAtmosphere(PromoteTeamMemberModal))
+  ),
   graphql`
     fragment PromoteTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id

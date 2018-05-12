@@ -2,7 +2,13 @@ import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflect
 import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup';
 import moveReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/moveReflectionGroup';
 
-const handleUpdatedLocation = (reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder, context) => {
+const handleUpdatedLocation = (
+  reflectionId,
+  reflectionGroupId,
+  retroPhaseItemId,
+  sortOrder,
+  context
+) => {
   // adding to group requires reflectionId and reflectionGroupId
   // removing from group (into a column) requires reflectionId, retroPhaseItemId, and a null reflectionGroupId
   // moving a group requires reflectionGroupId & retroPhaseItemId

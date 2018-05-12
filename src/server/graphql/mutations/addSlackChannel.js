@@ -8,7 +8,9 @@ import {SLACK} from 'universal/utils/constants';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 import fetch from 'node-fetch';
 import {
-  sendSlackChannelArchivedError, sendSlackPassedThoughError, sendTeamAccessError
+  sendSlackChannelArchivedError,
+  sendSlackPassedThoughError,
+  sendTeamAccessError
 } from 'server/utils/authorizationErrors';
 import {sendSlackProviderNotFoundError} from 'server/utils/docNotFoundErrors';
 
@@ -35,24 +37,36 @@ export default {
       type: new GraphQLNonNull(AddSlackChannelInput)
     }
   },
-  resolve: async (source, {input: {teamMemberId, slackChannelId}}, {authToken, socketId: mutatorId}) => {
+  resolve: async (
+    source,
+    {input: {teamMemberId, slackChannelId}},
+    {authToken, socketId: mutatorId}
+  ) => {
     const r = getRethink();
 
     // AUTH
     // TODO replace teamMemberId with teamId, no need for the userId here?
     const {teamId} = fromTeamMemberId(teamMemberId);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
 
     // get the user's token
-    const provider = await r.table('Provider')
+    const provider = await r
+      .table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({service: SLACK, isActive: true})
       .nth(0)
       .default(null);
 
-    if (!provider || !provider.accessToken) return sendSlackProviderNotFoundError(authToken, {teamMemberId, slackChannelId});
+    if (!provider || !provider.accessToken) {
+      return sendSlackProviderNotFoundError(authToken, {
+        teamMemberId,
+        slackChannelId
+      });
+    }
 
     // see if the slackChannelId is legit
     const {accessToken} = provider;
@@ -60,7 +74,9 @@ export default {
     const channelInfo = await fetch(channelInfoUrl);
     const channelInfoJson = await channelInfo.json();
     const {ok, channel} = channelInfoJson;
-    if (!ok) return sendSlackPassedThoughError(authToken, channelInfoJson.error);
+    if (!ok) {
+      return sendSlackPassedThoughError(authToken, channelInfoJson.error);
+    }
 
     const {is_archived: isArchived, name} = channel;
     if (isArchived) return sendSlackChannelArchivedError(authToken, name);
@@ -70,7 +86,10 @@ export default {
     const slackChannelAdded = {
       channel: newChannel
     };
-    getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded, mutatorId});
+    getPubSub().publish(`slackChannelAdded.${teamId}`, {
+      slackChannelAdded,
+      mutatorId
+    });
     return slackChannelAdded;
   }
 };

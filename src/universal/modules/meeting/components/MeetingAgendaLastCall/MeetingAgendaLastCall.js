@@ -35,12 +35,13 @@ const MeetingAgendaLastCall = (props) => {
         <MeetingSection paddingBottom="2rem">
           <div className={css(styles.main)}>
             <MeetingPhaseHeading>
-              {agendaItemCount === 0 ?
-                <span>{`No ${labelAgendaItems}?`}</span> :
+              {agendaItemCount === 0 ? (
+                <span>{`No ${labelAgendaItems}?`}</span>
+              ) : (
                 <span>{'Last Call:'}</span>
-              }
+              )}
             </MeetingPhaseHeading>
-            {agendaItemCount === 0 ?
+            {agendaItemCount === 0 ? (
               <MeetingCopy>
                 <span>
                   {`Looks like you didn’t process any ${labelAgendaItems}.`}
@@ -49,16 +50,17 @@ const MeetingAgendaLastCall = (props) => {
                   <br />
                   {'Simply tap on any items you create to process them.'}
                 </span>
-              </MeetingCopy> :
+              </MeetingCopy>
+            ) : (
               <MeetingCopy>
                 {'We’ve worked on '}
                 <b>{`${agendaItemCount} ${plural(agendaItemCount, AGENDA_ITEM_LABEL)}`}</b>
                 {' so far—need anything else?'}
               </MeetingCopy>
-            }
+            )}
             <AgendaShortcutHint />
             <div className={css(styles.controlBlock)}>
-              {!hideMoveMeetingControls &&
+              {!hideMoveMeetingControls && (
                 <BounceBlock animationDelay="30s">
                   <Button
                     aria-label="End Meeting"
@@ -69,7 +71,7 @@ const MeetingAgendaLastCall = (props) => {
                     onClick={gotoNext}
                   />
                 </BounceBlock>
-              }
+              )}
             </div>
             <div className={css(styles.hintBlock)}>
               <MeetingFacilitationHint>
@@ -126,5 +128,6 @@ export default createFragmentContainer(
       agendaItems {
         isComplete
       }
-    }`
+    }
+  `
 );

@@ -22,7 +22,7 @@ const ArchiveTeam = ({
   teamName
 }: Props) => (
   <div>
-    {!showConfirmationField ?
+    {!showConfirmationField ? (
       <div>
         <Button
           buttonSize="small"
@@ -34,13 +34,14 @@ const ArchiveTeam = ({
         <Type width="auto" marginTop=".5rem" scale="s2">
           <b>Note</b>: {'This can’t be undone.'}
         </Type>
-      </div> :
+      </div>
+    ) : (
       <ArchiveTeamForm
         handleFormBlur={handleFormBlur}
         handleFormSubmit={handleFormSubmit}
         teamName={teamName}
       />
-    }
+    )}
   </div>
 );
 

@@ -5,14 +5,12 @@
  */
 import promisify from 'es6-promisify';
 import React, {Component} from 'react';
-import {
-  AuthHeader,
-  AuthPage,
-  HorizontalSeparator
-} from 'universal/components';
 import {AUTH0_DB_CONNECTION} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 import PasswordReset from './ResetPassword';
+import AuthPage from 'universal/components/AuthPage/AuthPage';
+import AuthHeader from 'universal/components/AuthHeader/AuthHeader';
+import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator';
 
 type Props = {};
 
@@ -50,7 +48,7 @@ export default class PasswordResetPage extends Component<Props, State> {
     this.setState({error: null, emailSent: false});
   };
 
-  render() {
+  render () {
     const {error, emailSent} = this.state;
     return (
       <AuthPage title="Reset Password | Parabol">

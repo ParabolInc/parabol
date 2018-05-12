@@ -12,7 +12,7 @@ export default {
       description: 'the team to hide the agenda for'
     }
   },
-  async resolve(source, {teamId}, {authToken}) {
+  async resolve (source, {teamId}, {authToken}) {
     const r = getRethink();
 
     // AUTH
@@ -22,10 +22,16 @@ export default {
     // RESOLUTION
     const userId = getUserId(authToken);
     const myTeamMemberId = `${userId}::${teamId}`;
-    return r.table('TeamMember')
+    return r
+      .table('TeamMember')
       .get(myTeamMemberId)
-      .update((teamMember) => ({
-        hideAgenda: teamMember('hideAgenda').default(false).not()
-      }), {returnChanges: true})('changes')(0)('new_val');
+      .update(
+        (teamMember) => ({
+          hideAgenda: teamMember('hideAgenda')
+            .default(false)
+            .not()
+        }),
+        {returnChanges: true}
+      )('changes')(0)('new_val');
   }
 };

@@ -3,8 +3,7 @@
  * Uses the most salient entities to create a 40-character theme to summarize the content of the reflections
  */
 
-
-const SALIENT_THRESHOLD = 0.60;
+const SALIENT_THRESHOLD = 0.6;
 const MIN_ENTITIES = 2;
 const MAX_CHARS = 30;
 
@@ -35,7 +34,7 @@ const getTitleFromComputedGroup = (uniqueLemmaArr, group, reflectionEntities) =>
     arrWithIdx[i] = [sumArr[i], i];
   }
   // add the existing idx & sort greatest to smallest so we can get the most salient entities
-  arrWithIdx.sort((a, b) => a[0] < b[0] ? 1 : -1);
+  arrWithIdx.sort((a, b) => (a[0] < b[0] ? 1 : -1));
   let cumlSalience = 0;
   const titleArr = [];
   for (let ii = 0; ii < arrWithIdx.length; ii++) {

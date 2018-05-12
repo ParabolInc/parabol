@@ -9,24 +9,29 @@ import truncateCard from 'universal/utils/draftjs/truncateCard';
 import isTaskPrivate from 'universal/utils/isTaskPrivate';
 import EmptySpace from '../EmptySpace/EmptySpace';
 
-
 class Card extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     const {content} = props;
     const contentState = truncateCard(content);
     this.state = {
-      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+      editorState: EditorState.createWithContent(
+        contentState,
+        editorDecorators(this.getEditorState)
+      )
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {content: oldContent} = this.props;
     const {content} = nextProps;
     if (content !== oldContent) {
       const contentState = truncateCard(content);
       this.setState({
-        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+        editorState: EditorState.createWithContent(
+          contentState,
+          editorDecorators(this.getEditorState)
+        )
       });
       this.setEditorState(content);
     }
@@ -34,7 +39,7 @@ class Card extends Component {
 
   getEditorState = () => this.state.editorState;
 
-  render() {
+  render () {
     const {status, tags} = this.props;
     const {editorState} = this.state;
     const isPrivate = isTaskPrivate(tags);

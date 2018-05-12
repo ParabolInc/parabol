@@ -13,7 +13,6 @@ const InvitationRemoved = new GraphQLObjectType({
     notification: {
       type: NotifyNewTeamMember,
       description: 'A notification annoucing that the invitee is now a team member'
-
     }
   })
 });

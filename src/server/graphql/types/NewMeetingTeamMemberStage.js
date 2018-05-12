@@ -19,7 +19,8 @@ export const newMeetingTeamMemberStageFields = () => ({
 
 const NewMeetingTeamMemberStage = new GraphQLInterfaceType({
   name: 'NewMeetingTeamMemberStage',
-  description: 'An instance of a meeting phase item. On the client, this usually represents a single view',
+  description:
+    'An instance of a meeting phase item. On the client, this usually represents a single view',
   fields: newMeetingTeamMemberStageFields,
   resolveType: ({phaseType}) => {
     const resolveTypeLookup = {

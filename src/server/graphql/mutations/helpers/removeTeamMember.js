@@ -23,50 +23,74 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
   }
 
   if (activeTeamMembers.length === 1) {
-    await r.table('Team')
+    await r
+      .table('Team')
       .get(teamId)
       .update({isArchived: true});
   } else if (isLead) {
     await r({
-      newTeamLead: r.table('TeamMember').get(teamLeader.id)
+      newTeamLead: r
+        .table('TeamMember')
+        .get(teamLeader.id)
         .update({
           isLead: true
         }),
-      oldTeamLead: r.table('TeamMember').get(teamMemberId).update({isLead: false})
+      oldTeamLead: r
+        .table('TeamMember')
+        .get(teamMemberId)
+        .update({isLead: false})
     });
   }
 
   // assign active tasks to the team lead
   const {changedProviders, reassignedTasks, removedNotifications, user} = await r({
-    teamMember: r.table('TeamMember')
+    teamMember: r
+      .table('TeamMember')
       .get(teamMemberId)
       .update({
         isNotRemoved: false,
         updatedAt: now
       }),
-    reassignedTasks: r.table('Task')
+    reassignedTasks: r
+      .table('Task')
       .getAll(teamMemberId, {index: 'assigneeId'})
-      .filter((task) => task('tags').contains('archived').not())
-      .update({
-        assigneeId: teamLeader.id,
-        userId: teamLeader.userId
-      }, {returnChanges: true})('changes')('new_val')
+      .filter((task) =>
+        task('tags')
+          .contains('archived')
+          .not()
+      )
+      .update(
+        {
+          assigneeId: teamLeader.id,
+          userId: teamLeader.userId
+        },
+        {returnChanges: true}
+      )('changes')('new_val')
       .default([]),
-    user: r.table('User')
+    user: r
+      .table('User')
       .get(userId)
-      .update((myUser) => ({
-        tms: myUser('tms').difference([teamId])
-      }), {returnChanges: true})('changes')(0)('new_val')
+      .update(
+        (myUser) => ({
+          tms: myUser('tms').difference([teamId])
+        }),
+        {returnChanges: true}
+      )('changes')(0)('new_val')
       .default(null),
-    changedProviders: r.table('Provider')
+    changedProviders: r
+      .table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({userId, isActive: true})
-      .update({
-        isActive: false
-      }, {returnChanges: true})('changes')('new_val')
+      .update(
+        {
+          isActive: false
+        },
+        {returnChanges: true}
+      )('changes')('new_val')
       .default([]),
     // note this may be too aggressive since 1 notification could have multiple userIds. we need to refactor to a single userId
-    removedNotifications: r.table('Notification')
+    removedNotifications: r
+      .table('Notification')
       .getAll(userId, {index: 'userIds'})
       .filter({teamId})
       .delete({returnChanges: true})('changes')('old_val')
@@ -103,7 +127,6 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
     archivedTaskIds,
     reassignedTaskIds: reassignedTasks.map(({id}) => id)
   };
-}
-;
+};
 
 export default removeTeamMember;

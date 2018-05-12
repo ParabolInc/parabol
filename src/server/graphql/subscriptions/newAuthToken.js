@@ -9,7 +9,9 @@ export default {
   type: GraphQLString,
   subscribe: (source, args, {authToken, dataLoader}) => {
     // AUTH
-    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError(authToken, null);
+    if (!isAuthenticated(authToken)) {
+      return sendNotAuthenticatedAccessError(authToken, null);
+    }
 
     // RESOLUTION
     const viewerId = getUserId(authToken);

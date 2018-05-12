@@ -22,12 +22,16 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken);
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
     const requestorId = toTeamMemberId(teamId, viewerId);
     const {activeFacilitator} = await dataLoader.get('teams').load(teamId);
-    if (activeFacilitator === requestorId) return sendAlreadyCurrentFacilitatorError(authToken, requestorId);
+    if (activeFacilitator === requestorId) {
+      return sendAlreadyCurrentFacilitatorError(authToken, requestorId);
+    }
 
     // RESOLUTION
     const [currentFacilitatorUserId] = activeFacilitator.split('::');

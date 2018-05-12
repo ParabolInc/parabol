@@ -31,8 +31,8 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpgradeToProMutation_organization @relay(mask:false)
-      ...UpgradeToProMutation_team @relay(mask:false)
+      ...UpgradeToProMutation_organization @relay(mask: false)
+      ...UpgradeToProMutation_team @relay(mask: false)
     }
   }
 `;

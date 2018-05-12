@@ -20,7 +20,7 @@ type Props = {
   atmosphere: Object,
   gotoStageId: (stageId: string) => void,
   viewer: Viewer
-}
+};
 
 const getItemStage = (name: string, phases: $ReadOnlyArray<Object>, facilitatorStageId: string) => {
   const stageRes = findStageById(phases, facilitatorStageId);
@@ -35,7 +35,13 @@ const getItemStage = (name: string, phases: $ReadOnlyArray<Object>, facilitatorS
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
   const {gotoStageId, viewer} = props;
-  const {viewerId, team: {meetingSettings: {phaseTypes}, newMeeting}} = viewer;
+  const {
+    viewerId,
+    team: {
+      meetingSettings: {phaseTypes},
+      newMeeting
+    }
+  } = viewer;
   const {facilitatorUserId, facilitatorStageId, localPhase = {}, phases = []} = newMeeting || {};
   const localGroup = phaseTypeToPhaseGroup[localPhase.phaseType];
   const facilitatorStageRes = findStageById(phases, facilitatorStageId);
@@ -44,27 +50,31 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
   const isViewerFacilitator = facilitatorUserId === viewerId;
   return (
     <NavList>
-      {phaseTypes
-        .map((phaseType, idx) => {
-          const itemStage = getItemStage(phaseType, phases, facilitatorStageId);
-          const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} = itemStage || {};
-          const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
-          const handleClick = canNavigate ? () => gotoStageId(itemStageId) : undefined;
-          // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
-          const activeHasSubItems = phaseType === DISCUSS || phaseType === AGENDA_ITEMS;
-          return (
-            <NewMeetingSidebarPhaseListItem
-              key={phaseType}
+      {phaseTypes.map((phaseType, idx) => {
+        const itemStage = getItemStage(phaseType, phases, facilitatorStageId);
+        const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
+          itemStage || {};
+        const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable;
+        const handleClick = canNavigate ? () => gotoStageId(itemStageId) : undefined;
+        // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
+        const activeHasSubItems = phaseType === DISCUSS || phaseType === AGENDA_ITEMS;
+        return (
+          <NewMeetingSidebarPhaseListItem
+            key={phaseType}
+            phaseType={phaseType}
+            listPrefix={String(idx + 1)}
+            isActive={!activeHasSubItems && localGroup === phaseType}
+            isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
+            handleClick={handleClick}
+          >
+            <NewMeetingSidebarPhaseListItemChildren
+              gotoStageId={gotoStageId}
               phaseType={phaseType}
-              listPrefix={String(idx + 1)}
-              isActive={!activeHasSubItems && localGroup === phaseType}
-              isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
-              handleClick={handleClick}
-            >
-              <NewMeetingSidebarPhaseListItemChildren gotoStageId={gotoStageId} phaseType={phaseType} viewer={viewer} />
-            </NewMeetingSidebarPhaseListItem>
-          );
-        })}
+              viewer={viewer}
+            />
+          </NewMeetingSidebarPhaseListItem>
+        );
+      })}
     </NavList>
   );
 };

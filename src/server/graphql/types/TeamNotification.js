@@ -32,7 +32,7 @@ const TeamNotification = new GraphQLInterfaceType({
       type: NotificationEnum
     }
   },
-  resolveType({type}) {
+  resolveType ({type}) {
     const resolveTypeLookup = {
       [ADD_TO_TEAM]: NotifyAddedToTeam,
       [DENY_NEW_USER]: NotifyDenial,

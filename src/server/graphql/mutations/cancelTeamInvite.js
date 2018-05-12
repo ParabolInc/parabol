@@ -21,37 +21,49 @@ export default {
       description: 'The id of the invitation'
     }
   },
-  async resolve(source, {invitationId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {invitationId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
     // AUTH
-    const {email, teamId} = await r.table('Invitation').get(invitationId).default({});
+    const {email, teamId} = await r
+      .table('Invitation')
+      .get(invitationId)
+      .default({});
     if (!teamId) {
       return sendInvitationNotFoundError(authToken, invitationId);
     }
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const {removedTeamInviteNotification} = await r({
-      invitation: r.table('Invitation').get(invitationId).update({
-        // set expiration to epoch
-        tokenExpiration: new Date(0),
-        updatedAt: now
-      }),
-      orgApproval: r.table('OrgApproval')
+      invitation: r
+        .table('Invitation')
+        .get(invitationId)
+        .update({
+          // set expiration to epoch
+          tokenExpiration: new Date(0),
+          updatedAt: now
+        }),
+      orgApproval: r
+        .table('OrgApproval')
         .getAll(email, {index: 'email'})
         .filter({teamId})
         .update({
           isActive: false
         }),
-      removedTeamInviteNotification: r.table('User')
+      removedTeamInviteNotification: r
+        .table('User')
         .getAll(email, {index: 'email'})
-        .nth(0)('id').default(null)
+        .nth(0)('id')
+        .default(null)
         .do((userId) => {
-          return r.table('Notification')
+          return r
+            .table('Notification')
             .getAll(userId, {index: 'userIds'})
             .filter({
               type: TEAM_INVITE,
@@ -67,7 +79,12 @@ export default {
     const softTasksToArchive = await getTasksByAssigneeId(softTeamMemberId, dataLoader);
     const archivedSoftTasks = await archiveTasksForDB(softTasksToArchive, dataLoader);
     const archivedSoftTaskIds = archivedSoftTasks.map(({id}) => id);
-    const data = {invitationId, removedTeamInviteNotification, archivedSoftTaskIds, softTeamMemberId};
+    const data = {
+      invitationId,
+      removedTeamInviteNotification,
+      archivedSoftTaskIds,
+      softTeamMemberId
+    };
 
     if (archivedSoftTaskIds.length > 0) {
       const teamMembers = await getActiveTeamMembersByTeamIds(teamId, dataLoader);
@@ -80,7 +97,9 @@ export default {
     publish(TEAM_MEMBER, teamId, CancelTeamInvitePayload, data, subOptions);
     publish(INVITATION, teamId, CancelTeamInvitePayload, data, subOptions);
     if (removedTeamInviteNotification) {
-      const {userIds: [userId]} = removedTeamInviteNotification;
+      const {
+        userIds: [userId]
+      } = removedTeamInviteNotification;
       publish(NOTIFICATION, userId, CancelTeamInvitePayload, data, subOptions);
     }
     return data;

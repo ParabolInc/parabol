@@ -18,10 +18,13 @@ export default {
     const r = getRethink();
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, []);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId, []);
+    }
 
     // RESOLUTION
-    return r.table(GITHUB)
+    return r
+      .table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('nameWithOwner');

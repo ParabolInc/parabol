@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Button} from 'universal/components';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ToggleAgendaListMutation from 'universal/mutations/ToggleAgendaListMutation';
 import ui from 'universal/styles/ui';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import styled from 'react-emotion';
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants';
+import Button from 'universal/components/Button/Button';
 
 const RootBlock = styled('div')({
   alignItems: 'flex-end',

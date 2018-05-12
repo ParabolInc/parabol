@@ -7,13 +7,15 @@ import protocolRelativeUrl from './protocolRelativeUrl';
  * Initializing AWS S3 implicitly uses environment variables
  * AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
  */
-const s3 = (typeof process.env.CDN_BASE_URL !== 'undefined') && new aws.S3({
-  endpoint: protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname,
-  s3BucketEndpoint: true,
-  signatureVersion: 'v4'
-});
+const s3 =
+  typeof process.env.CDN_BASE_URL !== 'undefined' &&
+  new aws.S3({
+    endpoint: protocolRelativeUrl.parse(process.env.CDN_BASE_URL).hostname,
+    s3BucketEndpoint: true,
+    signatureVersion: 'v4'
+  });
 
-function s3CheckInitialized() {
+function s3CheckInitialized () {
   if (!s3) {
     throw new Error('S3 uninitialized, did you set process.env.CDN_BASE_URL?');
   }
@@ -27,7 +29,7 @@ function s3CheckInitialized() {
  */
 const keyifyPath = (path) => path.replace(/^\//, '');
 
-export function s3DeleteObject(url) {
+export function s3DeleteObject (url) {
   s3CheckInitialized();
   const s3Params = {
     Bucket: process.env.AWS_S3_BUCKET,
@@ -36,8 +38,13 @@ export function s3DeleteObject(url) {
   return s3.deleteObject(s3Params).promise();
 }
 
-export function s3SignUrl(operation, pathname, contentType,
-  contentLength = null, acl = 'authenticated-read') {
+export function s3SignUrl (
+  operation,
+  pathname,
+  contentType,
+  contentLength = null,
+  acl = 'authenticated-read'
+) {
   s3CheckInitialized();
   if (operation !== 'getObject' && operation !== 'putObject') {
     throw new Error('S3 operation must be getObject or putObject');
@@ -54,8 +61,7 @@ export function s3SignUrl(operation, pathname, contentType,
   }
 
   const req = s3.makeRequest(operation, s3Params);
-  if (contentLength !== null &&
-    typeof contentLength === 'number' && contentLength >= 0) {
+  if (contentLength !== null && typeof contentLength === 'number' && contentLength >= 0) {
     req.on('build', () => {
       // see: https://github.com/aws/aws-sdk-js/issues/502
       req.httpRequest.path += `?Content-Length=${contentLength}`;
@@ -75,7 +81,7 @@ export const s3SignPutObject = (pathname, contentType, contentLength, acl) =>
  *
  * Returns Boolean
  */
-export function urlIsPossiblyOnS3(url) {
+export function urlIsPossiblyOnS3 (url) {
   if (!url) {
     return false;
   }

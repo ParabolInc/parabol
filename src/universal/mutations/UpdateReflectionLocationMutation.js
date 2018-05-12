@@ -29,14 +29,14 @@ graphql`
     reflection {
       ...CompleteReflectionFrag @relay(mask: false)
     }
-    
+
     reflectionGroup {
       id
       meetingId
       sortOrder
       retroPhaseItemId
       reflections {
-        ...CompleteReflectionFrag @relay(mask: false)  
+        ...CompleteReflectionFrag @relay(mask: false)
       }
       title
       tasks {
@@ -51,9 +51,18 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation UpdateReflectionLocationMutation($reflectionGroupId: ID, $reflectionId: ID, $retroPhaseItemId: ID, $sortOrder: Float!) {
+  mutation UpdateReflectionLocationMutation(
+    $reflectionGroupId: ID
+    $reflectionId: ID
+    $retroPhaseItemId: ID
+    $sortOrder: Float!
+  ) {
     updateReflectionLocation(
-      reflectionGroupId: $reflectionGroupId, reflectionId: $reflectionId, retroPhaseItemId: $retroPhaseItemId, sortOrder: $sortOrder) {
+      reflectionGroupId: $reflectionGroupId
+      reflectionId: $reflectionId
+      retroPhaseItemId: $retroPhaseItemId
+      sortOrder: $sortOrder
+    ) {
       error {
         message
       }
@@ -128,7 +137,10 @@ const UpdateReflectionLocationMutation = (
       // move an entire group somewhere else
       if (!reflectionId) {
         const reflectionGroupProxy = store.get(reflectionGroupId);
-        updateProxyRecord(reflectionGroupProxy, {sortOrder, retroPhaseItemId});
+        updateProxyRecord(reflectionGroupProxy, {
+          sortOrder,
+          retroPhaseItemId
+        });
         moveGroupLocation(reflectionGroupProxy, store);
         return;
       }
@@ -160,7 +172,11 @@ const UpdateReflectionLocationMutation = (
       } else {
         // move a card into another group
         const groupRetroPhaseItemId = reflectionGroupProxy.getValue('retroPhaseItemId');
-        updateProxyRecord(reflectionProxy, {sortOrder, reflectionGroupId, retroPhaseItemId: groupRetroPhaseItemId});
+        updateProxyRecord(reflectionProxy, {
+          sortOrder,
+          reflectionGroupId,
+          retroPhaseItemId: groupRetroPhaseItemId
+        });
         const phaseItemProxy = store.get(groupRetroPhaseItemId);
         reflectionProxy.setLinkedRecord(phaseItemProxy, 'phaseItem');
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup');

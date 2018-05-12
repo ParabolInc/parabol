@@ -20,7 +20,7 @@ export default {
       description: 'the id of the integration to remove'
     }
   },
-  async resolve(source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink();
     const {id: localId, type: service} = fromGlobalId(globalId);
 
@@ -31,10 +31,14 @@ export default {
       return sendIntegrationNotFoundError(globalId);
     }
     const {adminUserId, teamId, userIds} = integration;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     if (!userIds.includes(userId)) {
       const breadcrumb = {
@@ -55,11 +59,19 @@ export default {
     }
 
     // RESOLUTION
-    const updatedIntegration = await r.table(service).get(localId)
-      .update((doc) => ({
-        userIds: doc('userIds').difference([userId]),
-        isActive: doc('adminUserId').eq(userId).not()
-      }), {returnChanges: true})('changes')(0)('new_val').default(null);
+    const updatedIntegration = await r
+      .table(service)
+      .get(localId)
+      .update(
+        (doc) => ({
+          userIds: doc('userIds').difference([userId]),
+          isActive: doc('adminUserId')
+            .eq(userId)
+            .not()
+        }),
+        {returnChanges: true}
+      )('changes')(0)('new_val')
+      .default(null);
 
     if (!updatedIntegration) {
       return sendAlreadyUpdatedIntegrationError(authToken, globalId);
@@ -78,8 +90,10 @@ export default {
       userId: isActive ? userId : null,
       archivedTaskIds
     };
-    getPubSub().publish(`integrationLeft.${teamId}.${service}`, {integrationLeft, mutatorId});
+    getPubSub().publish(`integrationLeft.${teamId}.${service}`, {
+      integrationLeft,
+      mutatorId
+    });
     return integrationLeft;
   }
 };
-

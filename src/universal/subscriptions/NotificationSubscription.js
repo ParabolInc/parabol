@@ -38,7 +38,7 @@ const subscription = graphql`
         tms
       }
 
-      # DisconnectSocket 
+      # DisconnectSocket
       ... on DisconnectSocketPayload {
         user {
           id
@@ -52,7 +52,7 @@ const subscription = graphql`
           ...PaymentRejected_notification @relay(mask: false)
         }
       }
-      
+
       # Feature flags
       ... on AddFeatureFlagPayload {
         user {
@@ -96,17 +96,19 @@ const popPaymentFailedToast = (payload, {dispatch, history}) => {
   const orgId = getInProxy(payload, 'organization', 'id');
   const orgName = getInProxy(payload, 'organization', 'name');
   // TODO add brand and last 4
-  dispatch(showWarning({
-    autoDismiss: 10,
-    title: 'Oh no!',
-    message: `Your credit card for ${orgName} was rejected.`,
-    action: {
-      label: 'Fix it!',
-      callback: () => {
-        history.push(`/me/organizations/${orgId}`);
+  dispatch(
+    showWarning({
+      autoDismiss: 10,
+      title: 'Oh no!',
+      message: `Your credit card for ${orgName} was rejected.`,
+      action: {
+        label: 'Fix it!',
+        callback: () => {
+          history.push(`/me/organizations/${orgId}`);
+        }
       }
-    }
-  }));
+    })
+  );
 };
 
 const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options) => {

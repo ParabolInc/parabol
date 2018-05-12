@@ -4,24 +4,21 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 
 const Ellipsis = (props) => {
-  const {
-    fontSize,
-    isAnimated,
-    styles
-  } = props;
+  const {fontSize, isAnimated, styles} = props;
   const dotStyles1 = css(styles.dot, styles.dot1, isAnimated && styles.dotAnimated);
   const dotStyles2 = css(styles.dot, styles.dot2, isAnimated && styles.dotAnimated);
   const dotStyles3 = css(styles.dot, styles.dot3, isAnimated && styles.dotAnimated);
   return (
     <div className={css(styles.root)} style={{fontSize}}>
-      {isAnimated ?
+      {isAnimated ? (
         <span>
           <span className={dotStyles1}>.</span>
           <span className={dotStyles2}>.</span>
           <span className={dotStyles3}>.</span>
-        </span> :
+        </span>
+      ) : (
         <span>…</span>
-      }
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-export function clearError() {
+export function clearError () {
   if (this.state.error) {
     this.setState({
       error: null
@@ -6,7 +6,7 @@ export function clearError() {
   }
 }
 
-export function setError(error) {
+export function setError (error) {
   this.setState({
     error
   });

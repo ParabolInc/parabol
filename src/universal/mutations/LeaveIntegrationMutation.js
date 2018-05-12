@@ -56,7 +56,8 @@ const LeaveIntegrationMutation = (environment, globalId, teamId, onError, onComp
     },
     optimisticUpdater: (store) => {
       const {userId} = environment;
-      const leaveIntegration = store.create(`client:leaveIntegration:${tempId++}`, 'LeaveIntegrationPayload')
+      const leaveIntegration = store
+        .create(`client:leaveIntegration:${tempId++}`, 'LeaveIntegrationPayload')
         .setValue(userId, 'userId')
         .setValue(globalId, 'globalId');
       const viewer = store.get(viewerId);

@@ -75,7 +75,7 @@ type Props = {
   helpText: any,
   subHeading: any,
   teamMember: TeamMember
-}
+};
 
 const NewMeetingPrompt = (props: Props) => {
   const {
@@ -105,19 +105,9 @@ const NewMeetingPrompt = (props: Props) => {
         <Avatar picture={picture || defaultUserAvatar} size="fill" />
       </AvatarBlock>
       <Body>
-        <Heading>
-          {heading}
-        </Heading>
-        {subHeading &&
-        <SubHeading>
-          {subHeading}
-        </SubHeading>
-        }
-        {helpText &&
-        <HelpText>
-          {helpText}
-        </HelpText>
-        }
+        <Heading>{heading}</Heading>
+        {subHeading && <SubHeading>{subHeading}</SubHeading>}
+        {helpText && <HelpText>{helpText}</HelpText>}
       </Body>
     </MeetingPromptRoot>
   );

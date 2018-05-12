@@ -22,7 +22,11 @@ describe('ArchiveTeam', () => {
     const dynamicSerializer = new DynamicSerializer();
     const mockPubSub = new MockPubSub();
     const mockDB = new MockDB();
-    const {user, team: [updatedTeam], teamMember} = await mockDB.init();
+    const {
+      user,
+      team: [updatedTeam],
+      teamMember
+    } = await mockDB.init();
     updatedTeam.isArchived = true;
     const teamLeadId = teamMember.find((tm) => tm.teamId === updatedTeam.id && tm.isLead).userId;
     const teamLead = user.find((usr) => usr.id === teamLeadId);
@@ -35,13 +39,18 @@ describe('ArchiveTeam', () => {
     await archiveTeam.resolve(undefined, {teamId: updatedTeam.id}, {authToken, dataLoader, socket});
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      notification: r.table('Notification').getAll(updatedTeam.orgId, {index: 'orgId'}).orderBy('startAt'),
-      team: r.table('Team').get(updatedTeam.id)
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        notification: r
+          .table('Notification')
+          .getAll(updatedTeam.orgId, {index: 'orgId'})
+          .orderBy('startAt'),
+        team: r.table('Team').get(updatedTeam.id)
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
-    expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length)
-      .toBe(teamMember.length);
+    expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length).toBe(teamMember.length);
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 });

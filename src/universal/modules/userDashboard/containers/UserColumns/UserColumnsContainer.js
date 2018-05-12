@@ -13,29 +13,39 @@ const mapStateToProps = (state) => {
 };
 
 class UserColumnsContainer extends Component {
-  componentWillMount() {
+  componentWillMount () {
     this.filterTasks(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {teamFilterId: oldFilter, viewer: {contentFilter: oldContentFilter, tasks: oldTasks}} = this.props;
-    const {teamFilterId, viewer: {contentFilter, tasks}} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      teamFilterId: oldFilter,
+      viewer: {contentFilter: oldContentFilter, tasks: oldTasks}
+    } = this.props;
+    const {
+      teamFilterId,
+      viewer: {contentFilter, tasks}
+    } = nextProps;
     if (oldFilter !== teamFilterId || oldTasks !== tasks || oldContentFilter !== contentFilter) {
       this.filterTasks(nextProps);
     }
   }
 
-  filterTasks(props) {
-    const {teamFilterId, viewer: {contentFilter, tasks}} = props;
+  filterTasks (props) {
+    const {
+      teamFilterId,
+      viewer: {contentFilter, tasks}
+    } = props;
     const contentFilterRegex = new RegExp(contentFilter, 'i');
-    const contentFilteredEdges = contentFilter ?
-      tasks.edges.filter(({node}) => {
+    const contentFilteredEdges = contentFilter
+      ? tasks.edges.filter(({node}) => {
         const {contentText} = node;
         return contentText && node.contentText.match(contentFilterRegex);
-      }) : tasks.edges;
-    const teamFilteredEdges = teamFilterId ?
-      contentFilteredEdges.filter(({node}) => node.team.id === teamFilterId) :
-      contentFilteredEdges;
+      })
+      : tasks.edges;
+    const teamFilteredEdges = teamFilterId
+      ? contentFilteredEdges.filter(({node}) => node.team.id === teamFilterId)
+      : contentFilteredEdges;
     const edgesWithTeams = teamFilteredEdges.map((edge) => {
       return {
         ...edge,
@@ -52,8 +62,12 @@ class UserColumnsContainer extends Component {
     });
   }
 
-  render() {
-    const {teams, userId, viewer: {tasks: allTasks}} = this.props;
+  render () {
+    const {
+      teams,
+      userId,
+      viewer: {tasks: allTasks}
+    } = this.props;
     const {tasks} = this.state;
     return (
       <TaskColumns
@@ -74,7 +88,6 @@ UserColumnsContainer.propTypes = {
   userId: PropTypes.string,
   viewer: PropTypes.object
 };
-
 
 export default createFragmentContainer(
   connect(mapStateToProps)(UserColumnsContainer),

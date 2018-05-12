@@ -4,7 +4,7 @@ import shortid from 'shortid';
 import {BILLING_LEADER, REQUEST_NEW_USER} from 'universal/utils/constants';
 import makeNewSoftTeamMembers from 'server/safeMutations/makeNewSoftTeamMembers';
 
-export default async function createPendingApprovals(outOfOrgEmails, inviteSender, dataLoader) {
+export default async function createPendingApprovals (outOfOrgEmails, inviteSender, dataLoader) {
   if (outOfOrgEmails.length === 0) {
     return {
       requestNotifications: [],
@@ -18,12 +18,21 @@ export default async function createPendingApprovals(outOfOrgEmails, inviteSende
   const now = new Date();
   // add a notification to the Billing Leaders
   const {userIds, inviter} = await r({
-    userIds: r.table('User')
+    userIds: r
+      .table('User')
       .getAll(orgId, {index: 'userOrgs'})
-      .filter((user) => user('userOrgs')
-        .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('id')
+      .filter((user) =>
+        user('userOrgs').contains((userOrg) =>
+          userOrg('id')
+            .eq(orgId)
+            .and(userOrg('role').eq(BILLING_LEADER))
+        )
+      )('id')
       .coerceTo('array'),
-    inviter: r.table('User').get(userId).pluck('preferredName', 'id')
+    inviter: r
+      .table('User')
+      .get(userId)
+      .pluck('preferredName', 'id')
   });
   const requestNotifications = outOfOrgEmails.map((inviteeEmail) => ({
     id: shortid.generate(),

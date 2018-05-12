@@ -32,15 +32,15 @@ const ContactUs = (props) => {
         <tr>
           <td style={cellStyle}>
             <EmptySpace height={props.vSpacing} />
-            <span style={headingStyle}>
-              {props.prompt}
-            </span><br />
-            {props.tagline}<br />
+            <span style={headingStyle}>{props.prompt}</span>
+            <br />
+            {props.tagline}
+            <br />
             {'Email us:'}&nbsp;
             <a href="mailto:love@parabol.co" style={linkStyle} title="Email us: love@parabol.co">
               {'love@parabol.co'}
             </a>
-            {props.hasLearningLink &&
+            {props.hasLearningLink && (
               <span>
                 <br />
                 <a
@@ -51,9 +51,10 @@ const ContactUs = (props) => {
                   title="How to Navigate Uncertainty using the Action Rhythm"
                 >
                   Learn More
-                </a> {`about the ${MEETING_NAME} Process.`}
+                </a>{' '}
+                {`about the ${MEETING_NAME} Process.`}
               </span>
-            }
+            )}
             <EmptySpace height={props.vSpacing} />
           </td>
         </tr>

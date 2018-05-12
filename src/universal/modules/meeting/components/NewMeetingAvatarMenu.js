@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {textOverflow} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
@@ -13,6 +12,7 @@ import {LOBBY} from 'universal/utils/constants';
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 import type {NewMeetingAvatarMenu_newMeeting as NewMeeting} from './__generated__/NewMeetingAvatarMenu_newMeeting.graphql';
 import PromoteNewMeetingFacilitatorMutation from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const Label = styled('div')({
   ...textOverflow,
@@ -32,8 +32,8 @@ type Props = {
   newMeeting: NewMeeting,
   teamMember: Object,
   closePortal: () => void,
-  handleNavigate: ?() => void,
-}
+  handleNavigate: ?() => void
+};
 
 const NewMeetingAvatarMenu = (props: Props) => {
   const {atmosphere, dispatch, newMeeting, teamMember, closePortal, handleNavigate} = props;
@@ -44,7 +44,11 @@ const NewMeetingAvatarMenu = (props: Props) => {
   const checkedIn = isCheckedIn ? ' and checked in' : '';
   const headerLabel = `${isSelf ? 'You are' : `${preferredName} is`} ${connected} ${checkedIn}`;
   const promoteToFacilitator = () => {
-    PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: userId, meetingId}, {dispatch});
+    PromoteNewMeetingFacilitatorMutation(
+      atmosphere,
+      {facilitatorUserId: userId, meetingId},
+      {dispatch}
+    );
   };
   const avatarIsFacilitating = teamMember.userId === facilitatorUserId;
   const handlePromote = isConnected ? promoteToFacilitator : undefined;
@@ -56,20 +60,20 @@ const NewMeetingAvatarMenu = (props: Props) => {
       closePortal={closePortal}
     >
       <Label>{headerLabel}</Label>
-      {handleNavigate &&
-      <MenuItemWithShortcuts
-        key="handleNavigate"
-        label={`See ${owner} ${phaseLabel}`}
-        onClick={handleNavigate}
-      />
-      }
-      {!avatarIsFacilitating &&
-      <MenuItemWithShortcuts
-        key="promoteToFacilitator"
-        label={`Promote ${isSelf ? 'yourself' : preferredName} to Facilitator`}
-        onClick={handlePromote}
-      />
-      }
+      {handleNavigate && (
+        <MenuItemWithShortcuts
+          key="handleNavigate"
+          label={`See ${owner} ${phaseLabel}`}
+          onClick={handleNavigate}
+        />
+      )}
+      {!avatarIsFacilitating && (
+        <MenuItemWithShortcuts
+          key="promoteToFacilitator"
+          label={`Promote ${isSelf ? 'yourself' : preferredName} to Facilitator`}
+          onClick={handlePromote}
+        />
+      )}
     </MenuWithShortcuts>
   );
 };
@@ -84,6 +88,7 @@ export default createFragmentContainer(
         phaseType
       }
     }
+
     fragment NewMeetingAvatarMenu_teamMember on TeamMember {
       meetingMember {
         isCheckedIn

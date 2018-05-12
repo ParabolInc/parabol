@@ -11,16 +11,16 @@ export default {
       description: 'the user for which you want the count of tier membership'
     }
   },
-  async resolve(source, args, {authToken}) {
+  async resolve (source, args, {authToken}) {
     const {userId} = args;
 
     // AUTH
     requireSU(authToken);
 
     // RESOLUTION
-    return ({
-      ...await countTiersForUserId(userId),
+    return {
+      ...(await countTiersForUserId(userId)),
       userId
-    });
+    };
   }
 };

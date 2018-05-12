@@ -21,8 +21,12 @@ export default {
     }
 
     const invoiceItem = await stripe.invoiceItems.retrieve(invoiceItemId);
-    const {subscription, period: {start}} = invoiceItem;
-    const hook = await r.table('InvoiceItemHook')
+    const {
+      subscription,
+      period: {start}
+    } = invoiceItem;
+    const hook = await r
+      .table('InvoiceItemHook')
       .getAll(start, {index: 'prorationDate'})
       .filter({stripeSubscriptionId: subscription})
       .nth(0)

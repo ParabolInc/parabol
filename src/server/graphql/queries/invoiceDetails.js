@@ -14,7 +14,7 @@ export default {
       description: 'The id of the invoice'
     }
   },
-  async resolve(source, {invoiceId}, {authToken}) {
+  async resolve (source, {invoiceId}, {authToken}) {
     const r = getRethink();
     const now = new Date();
 
@@ -22,13 +22,21 @@ export default {
     const userId = getUserId(authToken);
     const [type, maybeOrgId] = invoiceId.split('_');
     const isUpcoming = type === 'upcoming';
-    const currentInvoice = await r.table('Invoice').get(invoiceId).default(null);
-    const orgId = currentInvoice && currentInvoice.orgId || maybeOrgId;
+    const currentInvoice = await r
+      .table('Invoice')
+      .get(invoiceId)
+      .default(null);
+    const orgId = (currentInvoice && currentInvoice.orgId) || maybeOrgId;
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc, null);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc, null);
+    }
 
     // RESOLUTION
-    if (!isUpcoming || (currentInvoice && currentInvoice.createdAt.getTime() + UPCOMING_INVOICE_TIME_VALID > now)) {
+    if (
+      !isUpcoming ||
+      (currentInvoice && currentInvoice.createdAt.getTime() + UPCOMING_INVOICE_TIME_VALID > now)
+    ) {
       return currentInvoice;
     }
     return generateUpcomingInvoice(orgId);

@@ -3,10 +3,7 @@ import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {Redirect, Switch, withRouter} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
-import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
-import {DashNavControl} from 'universal/components';
-import {TagBlock, TagPro} from 'universal/components/Tag';
 import Helmet from 'react-helmet';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
@@ -20,10 +17,17 @@ import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
 import Avatar from 'universal/components/Avatar/Avatar';
 import ui from 'universal/styles/ui';
+import DashNavControl from 'universal/components/DashNavControl/DashNavControl';
+import SettingsWrapper from 'universal/components/Settings/SettingsWrapper';
+import TagBlock from 'universal/components/Tag/TagBlock';
+import TagPro from 'universal/components/Tag/TagPro';
 
-const orgSqueeze = () => System.import('universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze');
-const orgBilling = () => System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
-const orgMembers = () => System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot');
+const orgSqueeze = () =>
+  System.import('universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze');
+const orgBilling = () =>
+  System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot');
+const orgMembers = () =>
+  System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot');
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -71,14 +75,22 @@ const OrgNameBlock = styled('div')({
 });
 
 const Organization = (props) => {
-  const {history, match, viewer: {organization}} = props;
+  const {
+    history,
+    match,
+    viewer: {organization}
+  } = props;
   if (!organization) {
     // trying to be somewhere they shouldn't be
     return <Redirect to="/me" />;
   }
   const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
-  const toggle = <div><EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled /></div>;
+  const toggle = (
+    <div>
+      <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />
+    </div>
+  );
   const goToOrgs = () => history.push('/me/organizations');
   const onlyShowMembers = !isBillingLeader && tier !== PERSONAL;
   const billingMod = isBillingLeader && tier !== PERSONAL ? orgBilling : orgSqueeze;
@@ -94,38 +106,52 @@ const Organization = (props) => {
           />
         </BackControlBlock>
         <AvatarAndName>
-          {isBillingLeader ?
+          {isBillingLeader ? (
             <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
               <OrgAvatarInput orgId={orgId} />
-            </PhotoUploadModal> :
+            </PhotoUploadModal>
+          ) : (
             <AvatarBlock>
               <Avatar picture={pictureOrDefault} size="fill" sansRadius sansShadow />
             </AvatarBlock>
-          }
+          )}
           <OrgNameAndDetails>
-            {isBillingLeader ?
-              <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} /> :
+            {isBillingLeader ? (
+              <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
+            ) : (
               <OrgNameBlock>{orgName}</OrgNameBlock>
-            }
+            )}
             <OrgDetails>
-              {'Created '}{makeDateString(createdAt)}
-              {tier === PRO &&
-              <StyledTagBlock>
-                <TagPro />
-              </StyledTagBlock>
-              }
+              {'Created '}
+              {makeDateString(createdAt)}
+              {tier === PRO && (
+                <StyledTagBlock>
+                  <TagPro />
+                </StyledTagBlock>
+              )}
             </OrgDetails>
             {!onlyShowMembers && <BillingMembersToggle orgId={orgId} />}
           </OrgNameAndDetails>
         </AvatarAndName>
-        {onlyShowMembers ?
-          <AsyncRoute path={`${match.url}`} mod={orgMembers} extraProps={{orgId}} /> :
+        {onlyShowMembers ? (
+          <AsyncRoute path={`${match.url}`} mod={orgMembers} extraProps={{orgId}} />
+        ) : (
           <Switch>
             <AsyncRoute exact path={`${match.url}`} mod={billingMod} extraProps={{organization}} />
-            <AsyncRoute exact path={`${match.url}/${BILLING_PAGE}`} mod={billingMod} extraProps={{organization}} />
-            <AsyncRoute exact path={`${match.url}/${MEMBERS_PAGE}`} mod={orgMembers} extraProps={{orgId}} />
+            <AsyncRoute
+              exact
+              path={`${match.url}/${BILLING_PAGE}`}
+              mod={billingMod}
+              extraProps={{organization}}
+            />
+            <AsyncRoute
+              exact
+              path={`${match.url}/${MEMBERS_PAGE}`}
+              mod={orgMembers}
+              extraProps={{orgId}}
+            />
           </Switch>
-        }
+        )}
       </SettingsWrapper>
     </UserSettingsWrapper>
   );

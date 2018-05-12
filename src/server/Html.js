@@ -12,13 +12,15 @@ import sendSentryEvent from 'server/utils/sendSentryEvent';
 
 const webpackPublicPath = getWebpackPublicPath();
 const segKey = process.env.SEGMENT_WRITE_KEY;
-const segmentSnippet = segKey && makeSegmentSnippet.min({
-  host: 'cdn.segment.com',
-  apiKey: segKey
-});
+const segmentSnippet =
+  segKey &&
+  makeSegmentSnippet.min({
+    host: 'cdn.segment.com',
+    apiKey: segKey
+  });
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets, clientIds}) {
+export default function Html ({store, assets, clientIds}) {
   // const ActionContainer = require('../../build/prerender');
   const {default: ActionContainer, Atmosphere, EmotionServer} = require('../../build/prerender');
   const {manifest, app, vendor} = assets;
@@ -29,15 +31,17 @@ export default function Html({store, assets, clientIds}) {
   const atmosphere = new Atmosphere();
   let critical;
   try {
-    critical = EmotionServer.extractCritical(renderToString(
-      <Provider store={store}>
-        <AtmosphereProvider atmosphere={atmosphere}>
-          <StaticRouter location={'/'} context={context}>
-            <ActionContainer />
-          </StaticRouter>
-        </AtmosphereProvider>
-      </Provider>
-    ));
+    critical = EmotionServer.extractCritical(
+      renderToString(
+        <Provider store={store}>
+          <AtmosphereProvider atmosphere={atmosphere}>
+            <StaticRouter location={'/'} context={context}>
+              <ActionContainer />
+            </StaticRouter>
+          </AtmosphereProvider>
+        </Provider>
+      )
+    );
   } catch (e) {
     sendSentryEvent(undefined, {message: e.message});
     throw e;
@@ -45,7 +49,8 @@ export default function Html({store, assets, clientIds}) {
   }
   const dehydratedStyles = dehydrate('__EMOTION__', critical.ids);
   const dehydratedClientIds = dehydrate('__ACTION__', clientIds);
-  const fontAwesomeUrl = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
+  const fontAwesomeUrl =
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
   return (
     <html>
       <head>

@@ -8,24 +8,19 @@ import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {AGENDA_ITEMS, phaseArray} from 'universal/utils/constants';
 
-const meetingOnAgendaItem = (props) => (
-  props.facilitatorPhase === AGENDA_ITEMS && props.facilitatorPhaseItem != null
-);
+const meetingOnAgendaItem = (props) =>
+  props.facilitatorPhase === AGENDA_ITEMS && props.facilitatorPhaseItem != null;
 
-const meetingChangingAgendaItem = (curProps, nextProps) => (
+const meetingChangingAgendaItem = (curProps, nextProps) =>
   nextProps.facilitatorPhase === AGENDA_ITEMS &&
-  nextProps.facilitatorPhaseItem !== curProps.facilitatorPhaseItem
-);
+  nextProps.facilitatorPhaseItem !== curProps.facilitatorPhaseItem;
 
 class AgendaListAndInput extends Component {
   static propTypes = {
     agenda: PropTypes.array,
     agendaPhaseItem: PropTypes.number,
     canNavigate: PropTypes.bool,
-    context: PropTypes.oneOf([
-      'dashboard',
-      'meeting'
-    ]),
+    context: PropTypes.oneOf(['dashboard', 'meeting']),
     disabled: PropTypes.bool,
     facilitatorPhase: PropTypes.oneOf(phaseArray),
     facilitatorPhaseItem: PropTypes.number,
@@ -38,45 +33,61 @@ class AgendaListAndInput extends Component {
     team: PropTypes.object.isRequired
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
-    const {facilitatorPhaseItem, team: {agendaItems}} = props;
+    const {
+      facilitatorPhaseItem,
+      team: {agendaItems}
+    } = props;
     const agendaItem = meetingOnAgendaItem(props) && agendaItems[facilitatorPhaseItem - 1];
     this.state = {
       visibleAgendaItemId: agendaItem ? agendaItem.id : null
     };
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (meetingOnAgendaItem(this.props)) {
       this.scrollToFacilitatedAgendaItem(this.props);
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {team: {agendaItems}} = this.props;
-    if (!agendaItems.length) { return; }
+  componentWillReceiveProps (nextProps) {
+    const {
+      team: {agendaItems}
+    } = this.props;
+    if (!agendaItems.length) {
+      return;
+    }
     if (meetingChangingAgendaItem(this.props, nextProps)) {
       this.scrollToFacilitatedAgendaItem(nextProps);
     }
   }
 
   scrollToFacilitatedAgendaItem = (props) => {
-    const {facilitatorPhaseItem, team: {agendaItems}} = props;
+    const {
+      facilitatorPhaseItem,
+      team: {agendaItems}
+    } = props;
     if (!meetingOnAgendaItem(props)) {
       return;
     }
-    this.setState({visibleAgendaItemId: agendaItems[facilitatorPhaseItem - 1].id});
+    this.setState({
+      visibleAgendaItemId: agendaItems[facilitatorPhaseItem - 1].id
+    });
   };
 
   scrollToLatestAgendaItem = () => {
-    const {team: {agendaItems}} = this.props;
-    if (!agendaItems.length) { return; }
+    const {
+      team: {agendaItems}
+    } = this.props;
+    if (!agendaItems.length) {
+      return;
+    }
     const visibleAgendaItemId = agendaItems[agendaItems.length - 1].id;
     this.setState({visibleAgendaItemId});
   };
 
-  render() {
+  render () {
     const {
       agendaPhaseItem,
       canNavigate,
@@ -93,10 +104,7 @@ class AgendaListAndInput extends Component {
       team
     } = this.props;
     const {visibleAgendaItemId} = this.state;
-    const rootStyles = css(
-      styles.root,
-      disabled && styles.disabled
-    );
+    const rootStyles = css(styles.root, disabled && styles.disabled);
     return (
       <div className={rootStyles}>
         <div className={css(styles.inner)}>
@@ -165,5 +173,6 @@ export default createFragmentContainer(
       }
       ...AgendaInputField_team
       ...AgendaList_team
-    }`
+    }
+  `
 );

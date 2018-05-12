@@ -16,7 +16,8 @@ const generateMeetingRoute = (_nextPhaseItem, _nextPhase, props) => {
   if (nextPhaseInfo.index > maxIndex) return undefined;
 
   // set the phase
-  while (true) { // eslint-disable-line no-constant-condition
+  while (true) {
+    // eslint-disable-line no-constant-condition
     const startingPhase = nextPhase;
     // if we're trying to go someplace we can only visit once & we've already been there, go next
     if (nextPhaseInfo.visitOnce && meetingPhaseInfo.index > nextPhaseInfo.index) {

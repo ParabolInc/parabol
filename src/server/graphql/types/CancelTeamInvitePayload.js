@@ -1,5 +1,9 @@
 import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveArchivedSoftTasks, resolveInvitation, resolveSoftTeamMember} from 'server/graphql/resolvers';
+import {
+  resolveArchivedSoftTasks,
+  resolveInvitation,
+  resolveSoftTeamMember
+} from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';
 import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
 import {getUserId} from 'server/utils/authorization';

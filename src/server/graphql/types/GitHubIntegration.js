@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql';
 import {globalIdField} from 'graphql-relay';
 import TeamMember from 'server/graphql/types/TeamMember';
 import getRethink from 'server/database/rethinkDriver';
@@ -43,8 +50,7 @@ const GitHubIntegration = new GraphQLObjectType({
         // no auth needed because everything returning a GitHubIntegration has already checked for teamId
         const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
         const r = getRethink();
-        return r.table('TeamMember')
-          .getAll(r.args(teamMemberIds), {index: 'id'});
+        return r.table('TeamMember').getAll(r.args(teamMemberIds), {index: 'id'});
       }
     },
     updatedAt: {
@@ -59,4 +65,3 @@ const GitHubIntegration = new GraphQLObjectType({
 });
 
 export default GitHubIntegration;
-

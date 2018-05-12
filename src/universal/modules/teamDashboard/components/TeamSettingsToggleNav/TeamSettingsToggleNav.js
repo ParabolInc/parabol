@@ -7,9 +7,11 @@ import ToggleNav from 'universal/components/ToggleNav/ToggleNav';
 const TeamSettingsToggleNav = (props) => {
   const {activeKey, history, teamId} = props;
   const makeOnClick = (area = '') => {
-    return area === activeKey ? undefined : () => {
-      history.push(`/team/${teamId}/settings/${area}`);
-    };
+    return area === activeKey
+      ? undefined
+      : () => {
+        history.push(`/team/${teamId}/settings/${area}`);
+      };
   };
 
   const items = [

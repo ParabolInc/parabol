@@ -25,7 +25,9 @@ const OrganizationMember = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: async ({orgId, userId}, args, {dataLoader}) => {
         const user = await dataLoader.get('users').load(userId);
-        return Boolean(user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
+        return Boolean(
+          user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER)
+        );
       }
     }
   })

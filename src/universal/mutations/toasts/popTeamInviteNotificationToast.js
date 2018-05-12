@@ -8,17 +8,19 @@ const popTeamInviteNotificationToast = (teamInviteNotification, options) => {
   if (!inviterName) return;
   const teamName = getInProxy(teamInviteNotification, 'team', 'name');
   const notificationId = getInProxy(teamInviteNotification, 'id');
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'You’re invited!',
-    message: `${inviterName} would like you to join their team ${teamName}`,
-    action: {
-      label: 'Accept!',
-      callback: () => {
-        AcceptTeamInviteMutation(environment, {notificationId}, options);
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'You’re invited!',
+      message: `${inviterName} would like you to join their team ${teamName}`,
+      action: {
+        label: 'Accept!',
+        callback: () => {
+          AcceptTeamInviteMutation(environment, {notificationId}, options);
+        }
       }
-    }
-  }));
+    })
+  );
 };
 
 export default popTeamInviteNotificationToast;

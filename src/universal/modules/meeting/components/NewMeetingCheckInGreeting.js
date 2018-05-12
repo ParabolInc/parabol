@@ -21,16 +21,14 @@ const GreetingSpan = styled('span')({
 type Props = {
   teamMember: TeamMember,
   checkInGreeting: CheckInGreeting
-}
+};
 const NewMeetingCheckInGreeting = (props: Props) => {
   const {teamMember, checkInGreeting} = props;
   const {content, language} = checkInGreeting;
   const {preferredName} = teamMember;
   return (
     <GreetingBlock>
-      <GreetingSpan title={`${content} means “hello” in ${language}`}>
-        {content}
-      </GreetingSpan>
+      <GreetingSpan title={`${content} means “hello” in ${language}`}>{content}</GreetingSpan>
       {`, ${preferredName || 'Unknown user'}:`}
     </GreetingBlock>
   );
@@ -42,8 +40,10 @@ export default createFragmentContainer(
     fragment NewMeetingCheckInGreeting_teamMember on TeamMember {
       preferredName
     }
+
     fragment NewMeetingCheckInGreeting_checkInGreeting on MeetingGreeting {
       content
       language
-    }`
+    }
+  `
 );

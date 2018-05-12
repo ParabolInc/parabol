@@ -2,7 +2,8 @@ import {CHECKIN, DISCUSS, GROUP, REFLECT, RETROSPECTIVE, VOTE} from 'universal/u
 
 exports.up = async (r) => {
   try {
-    await r.table('MeetingSettings')
+    await r
+      .table('MeetingSettings')
       .filter({meetingType: RETROSPECTIVE})
       .update({
         phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS]

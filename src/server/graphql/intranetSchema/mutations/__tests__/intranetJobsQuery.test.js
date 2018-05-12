@@ -26,12 +26,16 @@ describe('sendBatchNotificationEmails', () => {
 
     // SETUP
     const db = new MockDB();
-    const {user: [nonSuperUser]} = await db.newUser({name: 'not-a-superuser'});
+    const {
+      user: [nonSuperUser]
+    } = await db.newUser({name: 'not-a-superuser'});
     const nonSuperUserAuthToken = mockAuthToken(nonSuperUser);
 
     // TEST
     try {
-      await sendBatchNotificationEmails.resolve(null, null, {authToken: nonSuperUserAuthToken});
+      await sendBatchNotificationEmails.resolve(null, null, {
+        authToken: nonSuperUserAuthToken
+      });
     } catch (error) {
       expect(error.message).toMatch('Unauthorized');
       expect(sendBatchEmail.mock.calls).toEqual([]);
@@ -43,7 +47,9 @@ describe('sendBatchNotificationEmails', () => {
 
     // SETUP
     const db = new MockDB();
-    const {user: [superUser]} = await db
+    const {
+      user: [superUser]
+    } = await db
       .newUser({name: 'superUser'})
       .newUser({
         name: 'user-within-24-hours',
@@ -54,7 +60,9 @@ describe('sendBatchNotificationEmails', () => {
     const authToken = mockAuthToken(superUser, {rol: 'su'});
 
     // TEST
-    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
+    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {
+      authToken
+    });
     expect(emailedUsers).toEqual([]);
     expect(sendBatchEmail.mock.calls).toEqual([]);
   });
@@ -64,16 +72,18 @@ describe('sendBatchNotificationEmails', () => {
 
     // SETUP
     const db = new MockDB();
-    const {user: [superUser]} = await db
-      .newUser({name: 'superUser'})
-      .newUser({
-        name: 'user-over-24-hours',
-        lastSeenAt: new Date(__overADayAgo)
-      });
+    const {
+      user: [superUser]
+    } = await db.newUser({name: 'superUser'}).newUser({
+      name: 'user-over-24-hours',
+      lastSeenAt: new Date(__overADayAgo)
+    });
     const authToken = mockAuthToken(superUser, {rol: 'su'});
 
     // TEST
-    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
+    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {
+      authToken
+    });
     expect(emailedUsers).toEqual([]);
     expect(sendBatchEmail.mock.calls).toEqual([]);
   });
@@ -83,7 +93,9 @@ describe('sendBatchNotificationEmails', () => {
 
     // SETUP
     const db = new MockDB();
-    const {user: [superUser]} = await db
+    const {
+      user: [superUser]
+    } = await db
       .newUser({name: 'superUser'})
       .newUser({
         name: 'user-over-24-hours',
@@ -94,7 +106,9 @@ describe('sendBatchNotificationEmails', () => {
     const authToken = mockAuthToken(superUser, {rol: 'su'});
 
     // TEST
-    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
+    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {
+      authToken
+    });
     expect(emailedUsers).toEqual([]);
     expect(sendBatchEmail.mock.calls).toEqual([]);
   });
@@ -104,7 +118,9 @@ describe('sendBatchNotificationEmails', () => {
 
     // SETUP
     const db = new MockDB();
-    const {user: [superUser, notifiedUser]} = await db
+    const {
+      user: [superUser, notifiedUser]
+    } = await db
       .newUser({name: 'superUser'})
       .newUser({
         name: 'user-not-within-24-hours',
@@ -115,18 +131,22 @@ describe('sendBatchNotificationEmails', () => {
     const authToken = mockAuthToken(superUser, {rol: 'su'});
 
     // TEST
-    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {authToken});
+    const emailedUsers = await sendBatchNotificationEmails.resolve(null, null, {
+      authToken
+    });
     expect(emailedUsers).toEqual([notifiedUser.email]);
-    expect(sendBatchEmail.mock.calls).toEqual([[
-      [notifiedUser.email],
-      'notificationSummary',
-      {date: new Date(__now)},
-      {
-        [notifiedUser.email]: {
-          name: notifiedUser.name,
-          numNotifications: 1
+    expect(sendBatchEmail.mock.calls).toEqual([
+      [
+        [notifiedUser.email],
+        'notificationSummary',
+        {date: new Date(__now)},
+        {
+          [notifiedUser.email]: {
+            name: notifiedUser.name,
+            numNotifications: 1
+          }
         }
-      }
-    ]]);
+      ]
+    ]);
   });
 });

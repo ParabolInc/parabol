@@ -7,7 +7,9 @@ const handleEditReflection = (payload, store) => {
   const editorId = payload.getValue('editorId');
   const isEditing = payload.getValue('isEditing');
   const reflectionEditorIds = reflection.getValue('editorIds') || [];
-  const nextEditorIds = isEditing ? reflectionEditorIds.concat(editorId) : reflectionEditorIds.filter((id) => id !== editorId);
+  const nextEditorIds = isEditing
+    ? reflectionEditorIds.concat(editorId)
+    : reflectionEditorIds.filter((id) => id !== editorId);
   reflection.setValue(nextEditorIds, 'editorIds');
   reflection.setValue(nextEditorIds.length > 0, 'isEditing');
 };

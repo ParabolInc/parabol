@@ -46,8 +46,13 @@ const StartMeetingMutation = (environment, teamId, history, onError, onCompleted
         language: ''
       };
 
-      const checkInGreeting = createProxyRecord(store, 'MeetingGreeting', optimisticCheckInGreeting);
-      store.get(teamId)
+      const checkInGreeting = createProxyRecord(
+        store,
+        'MeetingGreeting',
+        optimisticCheckInGreeting
+      );
+      store
+        .get(teamId)
         .setLinkedRecord(checkInGreeting, 'checkInGreeting')
         .setValue(makeEmptyStr(), 'checkInQuestion')
         .setValue(activeFacilitator, 'activeFacilitator')

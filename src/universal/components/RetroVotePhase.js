@@ -4,21 +4,25 @@ import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemCol
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import {Button} from 'universal/components';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
 import {DISCUSS} from 'universal/utils/constants';
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
+import Button from 'universal/components/Button/Button';
 
 type Props = {|
   atmosphere: Object,
   gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
-  team: Object,
+  team: Object
 |};
 
 const RetroVotePhase = (props: Props) => {
-  const {atmosphere: {viewerId}, gotoNext, team} = props;
+  const {
+    atmosphere: {viewerId},
+    gotoNext,
+    team
+  } = props;
   const {newMeeting, meetingSettings} = team;
   const {facilitatorUserId, phases} = newMeeting || {};
   const {phaseItems = []} = meetingSettings;
@@ -30,27 +34,27 @@ const RetroVotePhase = (props: Props) => {
     <React.Fragment>
       <ScrollableBlock>
         <MeetingPhaseWrapper>
-          {phaseItems.map((phaseItem) =>
+          {phaseItems.map((phaseItem) => (
             <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-          )}
+          ))}
         </MeetingPhaseWrapper>
       </ScrollableBlock>
-      {isFacilitating &&
-      <MeetingControlBar>
-        <Button
-          buttonSize="medium"
-          buttonStyle="flat"
-          colorPalette="dark"
-          disabled={!discussStage.isNavigableByFacilitator}
-          icon="arrow-circle-right"
-          iconLarge
-          iconPalette="warm"
-          iconPlacement="right"
-          label={`Done! Let’s ${nextPhaseLabel}`}
-          onClick={gotoNext}
-        />
-      </MeetingControlBar>
-      }
+      {isFacilitating && (
+        <MeetingControlBar>
+          <Button
+            buttonSize="medium"
+            buttonStyle="flat"
+            colorPalette="dark"
+            disabled={!discussStage.isNavigableByFacilitator}
+            icon="arrow-circle-right"
+            iconLarge
+            iconPalette="warm"
+            iconPlacement="right"
+            label={`Done! Let’s ${nextPhaseLabel}`}
+            onClick={gotoNext}
+          />
+        </MeetingControlBar>
+      )}
     </React.Fragment>
   );
 };

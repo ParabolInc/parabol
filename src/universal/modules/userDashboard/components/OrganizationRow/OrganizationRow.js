@@ -1,22 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  Avatar,
-  Button,
-  Row,
-  RowActions,
-  RowInfo,
-  RowInfoHeader,
-  RowInfoHeading,
-  RowInfoCopy
-} from 'universal/components';
-import {TagBlock, TagPro} from 'universal/components/Tag';
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg';
 import {PERSONAL, PRO, PRO_LABEL} from 'universal/utils/constants';
 import withRouter from 'react-router-dom/es/withRouter';
 import plural from 'universal/utils/plural';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
+import Row from 'universal/components/Row/Row';
+import Avatar from 'universal/components/Avatar/Avatar';
+import RowInfo from 'universal/components/Row/RowInfo';
+import RowInfoHeader from 'universal/components/Row/RowInfoHeader';
+import TagPro from 'universal/components/Tag/TagPro';
+import RowInfoCopy from 'universal/components/Row/RowInfoCopy';
+import RowActions from 'universal/components/Row/RowActions';
+import Button from 'universal/components/Button/Button';
+import TagBlock from 'universal/components/Tag/TagBlock';
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading';
 
 const OrgAvatar = styled('div')({
   cursor: 'pointer'
@@ -37,10 +36,7 @@ const OrganizationRow = (props) => {
     organization: {
       id: orgId,
       name,
-      orgUserCount: {
-        activeUserCount,
-        inactiveUserCount
-      },
+      orgUserCount: {activeUserCount, inactiveUserCount},
       picture,
       tier
     }
@@ -49,7 +45,12 @@ const OrganizationRow = (props) => {
   const onRowClick = () => history.push(`/me/organizations/${orgId}`);
   const totalUsers = activeUserCount + inactiveUserCount;
   const showUpgradeCTA = tier === PERSONAL;
-  const upgradeCTALabel = <span>{'Upgrade to '}<b>{PRO_LABEL}</b></span>;
+  const upgradeCTALabel = (
+    <span>
+      {'Upgrade to '}
+      <b>{PRO_LABEL}</b>
+    </span>
+  );
   return (
     <Row>
       <OrgAvatar onClick={onRowClick}>
@@ -59,11 +60,11 @@ const OrganizationRow = (props) => {
         <RowInfoHeader>
           <Name onClick={onRowClick}>
             {name}
-            {tier === PRO &&
-            <StyledTagBlock>
-              <TagPro />
-            </StyledTagBlock>
-            }
+            {tier === PRO && (
+              <StyledTagBlock>
+                <TagPro />
+              </StyledTagBlock>
+            )}
           </Name>
         </RowInfoHeader>
         <RowInfoCopy useHintCopy>
@@ -71,7 +72,7 @@ const OrganizationRow = (props) => {
         </RowInfoCopy>
       </RowInfo>
       <RowActions>
-        {showUpgradeCTA &&
+        {showUpgradeCTA && (
           <Button
             buttonStyle="flat"
             colorPalette={ui.upgradeColorOption}
@@ -79,7 +80,7 @@ const OrganizationRow = (props) => {
             onClick={onRowClick}
             buttonSize="small"
           />
-        }
+        )}
         <Button
           buttonStyle="flat"
           colorPalette="dark"

@@ -1,7 +1,7 @@
 // polyfill for node. can remove in node ~8ish, and browser is ready now
 if (!String.prototype.padStart) {
   // eslint-disable-next-line no-extend-native
-  String.prototype.padStart = function padStart(targetLength, padString) {
+  String.prototype.padStart = function padStart (targetLength, padString) {
     // eslint-disable-next-line no-bitwise
     targetLength >>= 0; // floor if number or convert non-number to 0;
     padString = String(padString || ' ');

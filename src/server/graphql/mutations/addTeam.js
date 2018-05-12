@@ -27,7 +27,7 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(Invitee))
     }
   },
-  async resolve(source, args, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
 
@@ -38,8 +38,13 @@ export default {
     if (!userOrgDoc) return sendOrgAccessError(authToken, orgId);
 
     // VALIDATION
-    const {data: {invitees, newTeam}, errors} = addTeamValidation()(args);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    const {
+      data: {invitees, newTeam},
+      errors
+    } = addTeamValidation()(args);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
     const teamId = shortid.generate();
@@ -51,12 +56,25 @@ export default {
     publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms});
     auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms});
 
-    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(invitees, teamId, viewerId, dataLoader);
+    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(
+      invitees,
+      teamId,
+      viewerId,
+      dataLoader
+    );
     const teamMemberId = toTeamMemberId(teamId, viewerId);
-    const data = {orgId, teamId, teamMemberId, invitationIds, teamInviteNotifications};
+    const data = {
+      orgId,
+      teamId,
+      teamMemberId,
+      invitationIds,
+      teamInviteNotifications
+    };
 
     teamInviteNotifications.forEach((notification) => {
-      const {userIds: [invitedUserId]} = notification;
+      const {
+        userIds: [invitedUserId]
+      } = notification;
       publish(NOTIFICATION, invitedUserId, AddTeamPayload, data, subOptions);
     });
     publish(TEAM, viewerId, AddTeamPayload, data, subOptions);

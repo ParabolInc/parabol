@@ -3,7 +3,7 @@ import getDotenv from '../../universal/utils/dotenv';
 import ms from 'ms';
 
 getDotenv();
-export default function getIntranetToken() {
+export default function getIntranetToken () {
   const jwt = {
     iss: 'action-test',
     sub: 'admin@parabol.co',

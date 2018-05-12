@@ -1,6 +1,5 @@
 exports.up = async (r) => {
-  const projects = await r.table('Project')
-    .pluck('id', 'content', 'tags');
+  const projects = await r.table('Project').pluck('id', 'content', 'tags');
   const promises = [];
   projects.forEach((project) => {
     let contentWithTag = project.content || '';
@@ -10,7 +9,12 @@ exports.up = async (r) => {
       }
     });
     if (contentWithTag !== project.content) {
-      promises.push(r.table('Project').get(project.id).update({content: contentWithTag}));
+      promises.push(
+        r
+          .table('Project')
+          .get(project.id)
+          .update({content: contentWithTag})
+      );
     }
   });
   try {

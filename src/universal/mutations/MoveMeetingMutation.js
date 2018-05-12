@@ -21,8 +21,18 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation MoveMeetingMutation($teamId: ID!, $nextPhase: ActionMeetingPhaseEnum, $nextPhaseItem: Int, $force: Boolean) {
-    moveMeeting(teamId: $teamId, nextPhase: $nextPhase, nextPhaseItem: $nextPhaseItem, force: $force) {
+  mutation MoveMeetingMutation(
+    $teamId: ID!
+    $nextPhase: ActionMeetingPhaseEnum
+    $nextPhaseItem: Int
+    $force: Boolean
+  ) {
+    moveMeeting(
+      teamId: $teamId
+      nextPhase: $nextPhase
+      nextPhaseItem: $nextPhaseItem
+      force: $force
+    ) {
       error {
         message
       }

@@ -31,7 +31,10 @@ const addProviderUpdater = (store, viewer, teamId, payload) => {
 
   const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
   if (newIntegrationProvider) {
-    viewer.setLinkedRecord(newIntegrationProvider, 'integrationProvider', {teamId, service});
+    viewer.setLinkedRecord(newIntegrationProvider, 'integrationProvider', {
+      teamId,
+      service
+    });
   } else if (oldProviderMap) {
     // if there is no provider, then the mutation was not caused by the viewer, so ignore the accessToken change
     const oldProviderRow = oldProviderMap.getLinkedRecord(service);

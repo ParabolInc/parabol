@@ -29,7 +29,8 @@ const SoftTeamMember = new GraphQLObjectType({
     },
     isActive: {
       type: GraphQLBoolean,
-      description: 'True if this is still a soft team member, false if they were rejected or became a team member'
+      description:
+        'True if this is still a soft team member, false if they were rejected or became a team member'
     },
     preferredName: {
       type: GraphQLString,
@@ -49,8 +50,10 @@ const SoftTeamMember = new GraphQLObjectType({
         const viewerId = getUserId(authToken);
         const allTasks = await dataLoader.get('tasksByTeamId').load(teamId);
         const tasksForUserId = allTasks.filter((task) => task.assigneeId === assigneeId);
-        const publicTasksForUserId = viewerId === userId ? tasksForUserId :
-          tasksForUserId.filter((task) => !task.tags.includes('private'));
+        const publicTasksForUserId =
+          viewerId === userId
+            ? tasksForUserId
+            : tasksForUserId.filter((task) => !task.tags.includes('private'));
         return connectionFromTasks(publicTasksForUserId);
       }
     },

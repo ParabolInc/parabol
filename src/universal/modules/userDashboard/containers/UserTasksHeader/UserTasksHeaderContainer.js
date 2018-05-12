@@ -14,7 +14,12 @@ const UserTasksHeaderContainer = (props) => {
   const {dispatch, teams, teamFilterId, teamFilterName} = props;
   const teamsArray = teams || [];
   return (
-    <UserTasksHeader dispatch={dispatch} teams={teamsArray} teamFilterId={teamFilterId} teamFilterName={teamFilterName} />
+    <UserTasksHeader
+      dispatch={dispatch}
+      teams={teamsArray}
+      teamFilterId={teamFilterId}
+      teamFilterName={teamFilterName}
+    />
   );
 };
 

@@ -6,7 +6,6 @@ import schema from 'server/graphql/rootSchema';
 const buildDir = path.join(process.cwd(), 'build');
 const schemaPath = path.join(buildDir, 'schema.graphql');
 const jsonPath = path.join(buildDir, 'schema.json');
-
 (async () => {
   const result = await graphql(schema, introspectionQuery);
   if (!fs.existsSync(buildDir)) {

@@ -63,7 +63,11 @@ const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
 
 const Tag = (props) => {
   const {colorPalette, hasDepth, label} = props;
-  return <TagRoot colorPalette={colorPalette || 'midGray'} hasDepth={hasDepth}>{label}</TagRoot>;
+  return (
+    <TagRoot colorPalette={colorPalette || 'midGray'} hasDepth={hasDepth}>
+      {label}
+    </TagRoot>
+  );
 };
 
 Tag.propTypes = {

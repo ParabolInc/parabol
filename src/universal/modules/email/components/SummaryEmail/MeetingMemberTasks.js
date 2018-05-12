@@ -18,10 +18,10 @@ const MeetingMemberTasks = (props: Props) => {
   const showMembersWithoutTasks = true;
   return (
     <React.Fragment>
-      {membersWithTasks.map((member) =>
-        <MeetingMemberTaskList member={member} key={member.id} />
+      {membersWithTasks.map((member) => <MeetingMemberTaskList member={member} key={member.id} />)}
+      {showMembersWithoutTasks && (
+        <MeetingMemberNoTasks meetingType={meetingType} members={membersWithoutTasks} />
       )}
-      {showMembersWithoutTasks && <MeetingMemberNoTasks meetingType={meetingType} members={membersWithoutTasks} />}
     </React.Fragment>
   );
 };

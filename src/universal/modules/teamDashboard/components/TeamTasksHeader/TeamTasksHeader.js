@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {NavLink, withRouter} from 'react-router-dom';
-import {DashHeading, DashSectionControl, DashSectionControls, DashSectionHeader} from 'universal/components/Dashboard';
-import {DashNavControl, LabelHeading} from 'universal/components';
 import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
 import ui from 'universal/styles/ui';
@@ -11,6 +9,12 @@ import appTheme from 'universal/styles/theme/appTheme';
 import LoadableTeamDashTeamMemberMenu from 'universal/components/LoadableTeamDashTeamMemberMenu';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import styled, {css} from 'react-emotion';
+import DashNavControl from 'universal/components/DashNavControl/DashNavControl';
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
+import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader';
+import DashHeading from 'universal/components/Dashboard/DashHeading';
+import DashSectionControls from 'universal/components/Dashboard/DashSectionControls';
+import DashSectionControl from 'universal/components/Dashboard/DashSectionControl';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -46,21 +50,14 @@ const TeamTasksHeader = (props) => {
     <DashSectionHeader>
       <div>
         <LabelHeading>{'Team Dashboard'}</LabelHeading>
-        <DashHeading>
-          {`${teamName} Tasks`}
-        </DashHeading>
+        <DashHeading>{`${teamName} Tasks`}</DashHeading>
         <OrgInfoBlock>
-          <NavLink
-            className={orgLinkStyles}
-            title={orgName}
-            to={`/me/organizations/${orgId}`}
-          >
+          <NavLink className={orgLinkStyles} title={orgName} to={`/me/organizations/${orgId}`}>
             {orgName}
           </NavLink>
         </OrgInfoBlock>
       </div>
       <DashSectionControls>
-
         {/* Archive Link */}
         <DashNavControl
           icon="archive"
@@ -70,7 +67,10 @@ const TeamTasksHeader = (props) => {
 
         {/* Filter by Owner */}
         <DashSectionControl>
-          <DashFilterLabel><b>{'Show Tasks for'}</b>{': '}</DashFilterLabel>
+          <DashFilterLabel>
+            <b>{'Show Tasks for'}</b>
+            {': '}
+          </DashFilterLabel>
           <LoadableMenu
             LoadableComponent={LoadableTeamDashTeamMemberMenu}
             maxWidth={350}

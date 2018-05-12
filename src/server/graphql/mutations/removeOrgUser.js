@@ -7,7 +7,15 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers';
 import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
 import {REMOVE_USER} from 'server/utils/serverConstants';
-import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants';
+import {
+  NEW_AUTH_TOKEN,
+  NOTIFICATION,
+  ORGANIZATION,
+  TASK,
+  TEAM,
+  TEAM_MEMBER,
+  UPDATED
+} from 'universal/utils/constants';
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors';
 
 const removeOrgUser = {
@@ -23,7 +31,7 @@ const removeOrgUser = {
       description: 'the org that does not want them anymore'
     }
   },
-  async resolve(source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -33,19 +41,23 @@ const removeOrgUser = {
     const viewerId = getUserId(authToken);
     if (viewerId !== userId) {
       const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId);
-      if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+      if (!isOrgBillingLeader(userOrgDoc)) {
+        return sendOrgLeadAccessError(authToken, userOrgDoc);
+      }
     }
 
     // RESOLUTION
-    const teamIds = await r.table('Team')
-      .getAll(orgId, {index: 'orgId'})('id');
-    const teamMemberIds = await r.table('TeamMember')
+    const teamIds = await r.table('Team').getAll(orgId, {index: 'orgId'})('id');
+    const teamMemberIds = await r
+      .table('TeamMember')
       .getAll(r.args(teamIds), {index: 'teamId'})
       .filter({userId, isNotRemoved: true})('id');
 
-    const perTeamRes = await Promise.all(teamMemberIds.map((teamMemberId) => {
-      return removeTeamMember(teamMemberId, {isKickout: true}, dataLoader);
-    }));
+    const perTeamRes = await Promise.all(
+      teamMemberIds.map((teamMemberId) => {
+        return removeTeamMember(teamMemberId, {isKickout: true}, dataLoader);
+      })
+    );
 
     const taskIds = perTeamRes.reduce((arr, res) => {
       arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds);
@@ -63,37 +75,58 @@ const removeOrgUser = {
     }, []);
 
     const {allRemovedOrgNotifications, updatedUser} = await r({
-      updatedOrg: r.table('Organization').get(orgId)
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
         .update((org) => ({
           orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
           updatedAt: now
         })),
-      updatedUser: r.table('User').get(userId)
-        .update((row) => ({
-          userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
-          updatedAt: now
-        }), {returnChanges: true})('changes')(0)('new_val')
+      updatedUser: r
+        .table('User')
+        .get(userId)
+        .update(
+          (row) => ({
+            userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
+            updatedAt: now
+          }),
+          {returnChanges: true}
+        )('changes')(0)('new_val')
         .default(null),
       // remove stale notifications
-      allRemovedOrgNotifications: r.table('Notification')
+      allRemovedOrgNotifications: r
+        .table('Notification')
         .getAll(userId, {index: 'userIds'})
         .filter({orgId})
-        .update((notification) => ({
-          // if this was for many people, remove them from it
-          userIds: notification('userIds').filter((id) => id.ne(userId))
-        }), {returnChanges: true})('changes')('new_val').default([])
+        .update(
+          (notification) => ({
+            // if this was for many people, remove them from it
+            userIds: notification('userIds').filter((id) => id.ne(userId))
+          }),
+          {returnChanges: true}
+        )('changes')('new_val')
+        .default([])
         .do((allNotifications) => {
           return {
             notifications: allNotifications,
             // if this was for them, delete it
-            deletions: r.table('Notification').getAll(r.args(allNotifications('id')), {index: 'id'})
-              .filter((notification) => notification('userIds').count().eq(0))
+            deletions: r
+              .table('Notification')
+              .getAll(r.args(allNotifications('id')), {index: 'id'})
+              .filter((notification) =>
+                notification('userIds')
+                  .count()
+                  .eq(0)
+              )
               .delete()
           };
         }),
-      inactivatedApprovals: r.table('User').get(userId)('email')
+      inactivatedApprovals: r
+        .table('User')
+        .get(userId)('email')
         .do((email) => {
-          return r.table('OrgApproval')
+          return r
+            .table('OrgApproval')
             .getAll(email, {index: 'email'})
             .filter({orgId})
             .update({

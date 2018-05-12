@@ -8,34 +8,22 @@ import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpD
 
 const MeetingMain = (props) => {
   const {children, hasBoxShadow, hasHelpFor, isFacilitating, styles} = props;
-  const rootStyles = css(
-    styles.meetingMainRoot,
-    hasBoxShadow && styles.hasBoxShadow
-  );
-  const innerBlockStyles = css(
-    styles.meetingMainRoot,
-    styles.innerBlockStyles
-  );
-  const helpStyles = css(
-    styles.helpStyles,
-    isFacilitating && styles.helpIsFacilitating
-  );
+  const rootStyles = css(styles.meetingMainRoot, hasBoxShadow && styles.hasBoxShadow);
+  const innerBlockStyles = css(styles.meetingMainRoot, styles.innerBlockStyles);
+  const helpStyles = css(styles.helpStyles, isFacilitating && styles.helpIsFacilitating);
   return (
     <ErrorBoundary>
       <div className={rootStyles}>
-        {hasHelpFor &&
+        {hasHelpFor && (
           <div className={helpStyles}>
             <MeetingHelpDialog phase={hasHelpFor} />
           </div>
-        }
-        <div className={innerBlockStyles}>
-          {children}
-        </div>
+        )}
+        <div className={innerBlockStyles}>{children}</div>
       </div>
     </ErrorBoundary>
   );
 };
-
 
 MeetingMain.propTypes = {
   children: PropTypes.any,

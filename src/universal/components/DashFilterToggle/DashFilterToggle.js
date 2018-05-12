@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Button} from 'universal/components';
+import Button from 'universal/components/Button/Button';
 
 const DashFilterToggle = (props) => {
   const {label, innerRef, onClick} = props;

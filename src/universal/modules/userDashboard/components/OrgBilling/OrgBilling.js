@@ -88,21 +88,23 @@ class OrgBilling extends Component {
   };
 
   loadMore = () => {
-    const {relay: {hasMore, isLoading, loadMore}} = this.props;
+    const {
+      relay: {hasMore, isLoading, loadMore}
+    } = this.props;
     if (!hasMore() || isLoading()) return;
     loadMore(5);
-  }
+  };
 
-  render() {
-    const {organization, viewer: {invoices}, relay: {hasMore}} = this.props;
+  render () {
+    const {
+      organization,
+      viewer: {invoices},
+      relay: {hasMore}
+    } = this.props;
     const hasInvoices = invoices.edges.length > 0;
     const {creditCard = {}, id: orgId} = organization;
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard;
-    const update = (<Button
-      buttonSize="small"
-      colorPalette="mid"
-      label="Update"
-    />);
+    const update = <Button buttonSize="small" colorPalette="mid" label="Update" />;
     return (
       <div>
         <Panel label="Credit Card Information">
@@ -110,7 +112,10 @@ class OrgBilling extends Component {
             <CreditCardInfo>
               <CreditCardIcon name="credit-card" />
               <CreditCardProvider>{brand || '???'}</CreditCardProvider>
-              <CreditCardNumber>{'•••• •••• •••• '}{last4 || '••••'}</CreditCardNumber>
+              <CreditCardNumber>
+                {'•••• •••• •••• '}
+                {last4 || '••••'}
+              </CreditCardNumber>
               <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
               <span>{expiry || '??/??'}</span>
             </CreditCardInfo>
@@ -120,28 +125,34 @@ class OrgBilling extends Component {
         <Panel label="Invoices">
           <div>
             {hasInvoices &&
-            invoices.edges.map(({node: invoice}) =>
-              <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} hasCard={Boolean(creditCard.last4)} />
-            )
-            }
-            {hasMore() &&
-            <LoadMore>
-              <Button
-                buttonSize="medium"
-                buttonStyle="flat"
-                colorPalette="warm"
-                label="Load More"
-                onClick={this.loadMore}
-              />
-            </LoadMore>
-            }
+              invoices.edges.map(({node: invoice}) => (
+                <InvoiceRow
+                  key={`invoiceRow${invoice.id}`}
+                  invoice={invoice}
+                  hasCard={Boolean(creditCard.last4)}
+                />
+              ))}
+            {hasMore() && (
+              <LoadMore>
+                <Button
+                  buttonSize="medium"
+                  buttonStyle="flat"
+                  colorPalette="warm"
+                  label="Load More"
+                  onClick={this.loadMore}
+                />
+              </LoadMore>
+            )}
           </div>
         </Panel>
         <Panel label="Danger Zone">
           <PanelRow>
             <Unsubscribe>
               <span>{'Need to cancel? It’s painless. '}</span>
-              <a href="mailto:love@parabol.co?subject=Instant Unsubscribe from Pro" title="Instant Unsubscribe from Pro">
+              <a
+                href="mailto:love@parabol.co?subject=Instant Unsubscribe from Pro"
+                title="Instant Unsubscribe from Pro"
+              >
                 <u>{'Contact us'}</u>
                 <EnvelopeIcon name="envelope" />
               </a>
@@ -157,7 +168,8 @@ export default createPaginationContainer(
   OrgBilling,
   graphql`
     fragment OrgBilling_viewer on User {
-      invoices(first: $first, orgId: $orgId, after: $after) @connection(key: "OrgBilling_invoices") {
+      invoices(first: $first, orgId: $orgId, after: $after)
+        @connection(key: "OrgBilling_invoices") {
         edges {
           cursor
           node {
@@ -178,16 +190,16 @@ export default createPaginationContainer(
   `,
   {
     direction: 'forward',
-    getConnectionFromProps(props) {
+    getConnectionFromProps (props) {
       return props.viewer && props.viewer.invoices;
     },
-    getFragmentVariables(prevVars, totalCount) {
+    getFragmentVariables (prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       };
     },
-    getVariables(props, {count, cursor}, fragmentVariables) {
+    getVariables (props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

@@ -9,17 +9,22 @@ const removeOrgApprovalAndNotification = async (orgId, maybeEmails, type) => {
   const emails = Array.isArray(maybeEmails) ? maybeEmails : [maybeEmails];
   const r = getRethink();
   const {removedOrgApprovals, removedRequestNotifications} = await r({
-    removedOrgApprovals: r.table('OrgApproval')
+    removedOrgApprovals: r
+      .table('OrgApproval')
       .getAll(r.args(emails), {index: 'email'})
       .filter({orgId, status: PENDING})
-      .update({
-        status,
-        approvedBy,
-        deniedBy,
-        updatedAt: now
-      }, {returnChanges: true})('changes')('new_val')
+      .update(
+        {
+          status,
+          approvedBy,
+          deniedBy,
+          updatedAt: now
+        },
+        {returnChanges: true}
+      )('changes')('new_val')
       .default([]),
-    removedRequestNotifications: r.table('Notification')
+    removedRequestNotifications: r
+      .table('Notification')
       .getAll(orgId, {index: 'orgId'})
       .filter({
         type: REQUEST_NEW_USER

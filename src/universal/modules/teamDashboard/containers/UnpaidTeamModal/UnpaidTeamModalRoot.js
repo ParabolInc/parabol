@@ -32,11 +32,13 @@ const UnpaidTeamModalRoot = (props) => {
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight="50vh" />}
-          ready={<UnpaidTeamModal
-            closeAfter={closeAfter}
-            isClosing={isClosing}
-            modalLayout={modalLayout}
-          />}
+          ready={
+            <UnpaidTeamModal
+              closeAfter={closeAfter}
+              isClosing={isClosing}
+              modalLayout={modalLayout}
+            />
+          }
         />
       )}
     />

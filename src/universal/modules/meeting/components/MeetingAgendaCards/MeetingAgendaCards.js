@@ -35,13 +35,11 @@ const makePlaceholders = (length, itemStyle) => {
   const rowLength = 4;
   const emptyCardCount = rowLength - (length % rowLength + 1);
   /* eslint-disable react/no-array-index-key */
-  return new Array(emptyCardCount).fill(undefined).map((item, idx) =>
-    (<div
-      className={css(itemStyle)}
-      key={`CreateCardPlaceholder${idx}`}
-    >
+  return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
+    <div className={css(itemStyle)} key={`CreateCardPlaceholder${idx}`}>
       <CreateCard />
-    </div>));
+    </div>
+  ));
   /* eslint-enable */
 };
 
@@ -58,7 +56,7 @@ type Props = {
 };
 
 class MeetingAgendaCards extends Component<Props> {
-  componentWillMount() {
+  componentWillMount () {
     const {bindHotkey} = this.props;
     bindHotkey('t', this.handleAddTask());
   }
@@ -68,9 +66,7 @@ class MeetingAgendaCards extends Component<Props> {
     const tasks = this.props.tasks || [];
     const {userId} = atmosphere;
     const maybeLastTask = tasks[tasks.length - 1];
-    const sortOrder = sortOrderBetween(
-      maybeLastTask, null, null, false
-    );
+    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false);
     const newTask = {
       content,
       status: ACTIVE,
@@ -82,20 +78,20 @@ class MeetingAgendaCards extends Component<Props> {
       teamId
     };
     CreateTaskMutation(atmosphere, newTask, MEETING);
-  }
+  };
 
-  render() {
-    const {atmosphere: {userId}, styles} = this.props;
+  render () {
+    const {
+      atmosphere: {userId},
+      styles
+    } = this.props;
     const tasks = this.props.tasks || [];
     return (
       <div className={css(styles.root)}>
         {makeCards(tasks, userId, styles.item, this.handleAddTask)}
         {/* Input Card */}
         <div className={css(styles.item)}>
-          <CreateCard
-            handleAddTask={this.handleAddTask()}
-            hasControls
-          />
+          <CreateCard handleAddTask={this.handleAddTask()} hasControls />
         </div>
         {/* Placeholder Cards */}
         {makePlaceholders(tasks.length, styles.item)}

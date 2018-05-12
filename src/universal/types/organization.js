@@ -6,5 +6,4 @@
 
 export type OrgID = string;
 
-export type Role =
-  | 'billingLeader';
+export type Role = 'billingLeader';

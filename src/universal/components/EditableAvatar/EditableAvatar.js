@@ -45,9 +45,9 @@ const EditableAvatarEditOverlay = styled('div')(({hasPanel, size}) => ({
 }));
 
 const EditableAvatarImgBlock = styled('div')(({hasPanel, size}) => ({
-  height: hasPanel ? (size - 18) : size,
+  height: hasPanel ? size - 18 : size,
   position: 'relative',
-  width: hasPanel ? (size - 18) : size,
+  width: hasPanel ? size - 18 : size,
   zIndex: 100
 }));
 
@@ -71,11 +71,7 @@ EditableAvatar.propTypes = {
   onClick: PropTypes.func,
   picture: PropTypes.string,
   size: PropTypes.number,
-  type: PropTypes.oneOf([
-    'user',
-    'team',
-    'organization'
-  ]),
+  type: PropTypes.oneOf(['user', 'team', 'organization']),
   unstyled: PropTypes.bool
 };
 

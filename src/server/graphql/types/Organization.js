@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql';
 import {forwardConnectionArgs} from 'graphql-relay';
 import CreditCard from 'server/graphql/types/CreditCard';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
@@ -11,12 +18,14 @@ import {getUserId} from 'server/utils/authorization';
 import {BILLING_LEADER} from 'universal/utils/constants';
 import {resolveForBillingLeaders} from 'server/graphql/resolvers';
 
-
 const Organization = new GraphQLObjectType({
   name: 'Organization',
   description: 'An organization',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The unique organization ID'
+    },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
@@ -29,9 +38,11 @@ const Organization = new GraphQLObjectType({
     isBillingLeader: {
       type: GraphQLBoolean,
       description: 'true if the viewer is the billing leader for the org',
-      resolve({orgUsers}, args, {authToken}) {
+      resolve ({orgUsers}, args, {authToken}) {
         const viewerId = getUserId(authToken);
-        return Boolean(orgUsers.find((user) => user.id === viewerId && user.role === BILLING_LEADER));
+        return Boolean(
+          orgUsers.find((user) => user.id === viewerId && user.role === BILLING_LEADER)
+        );
       }
     },
     mainBillingLeader: {
@@ -84,7 +95,7 @@ const Organization = new GraphQLObjectType({
         ...forwardConnectionArgs
       },
       type: OrganizationMemberConnection,
-      async resolve({id: orgId, orgUsers}, {first}, {dataLoader}) {
+      async resolve ({id: orgId, orgUsers}, {first}, {dataLoader}) {
         if (!Array.isArray(orgUsers)) return null;
 
         // RESOLUTION
@@ -92,7 +103,9 @@ const Organization = new GraphQLObjectType({
 
         const userIds = limitedOrgUsers.map(({id}) => id);
         const users = await dataLoader.get('users').loadMany(userIds);
-        users.sort((a, b) => a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1);
+        users.sort(
+          (a, b) => (a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1)
+        );
         const edges = users.map((user) => ({
           cursor: user.preferredName.toLowerCase(),
           node: {

@@ -26,9 +26,7 @@ const DashNavItem = (props) => {
       title={label}
       to={href}
     >
-      {icon &&
-        <FontAwesome name={icon} style={iconStyle} />
-      }
+      {icon && <FontAwesome name={icon} style={iconStyle} />}
       <div className={css(styles.label)}>{label}</div>
     </NavLink>
   );

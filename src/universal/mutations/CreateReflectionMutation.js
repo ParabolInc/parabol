@@ -15,7 +15,7 @@ graphql`
       sortOrder
       retroPhaseItemId
       reflections {
-        ...CompleteReflectionFrag@relay(mask: false)
+        ...CompleteReflectionFrag @relay(mask: false)
       }
       tasks {
         id

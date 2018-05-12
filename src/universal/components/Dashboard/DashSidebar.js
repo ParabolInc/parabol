@@ -4,7 +4,6 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
 import {NavLink} from 'react-router-dom';
-import {LogoBlock} from 'universal/components';
 import tinycolor from 'tinycolor2';
 import DashNavList from 'universal/components/DashNavList/DashNavList';
 import StandardHub from 'universal/components/StandardHub/StandardHub';
@@ -13,6 +12,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import DashNavItem from './DashNavItem';
+import LogoBlock from 'universal/components/LogoBlock/LogoBlock';
 
 const DashSidebar = (props) => {
   const {location, styles, viewer} = props;
@@ -23,16 +23,9 @@ const DashSidebar = (props) => {
         <nav className={css(styles.nav)}>
           <div className={css(styles.navTop)}>
             <div className={css(styles.singleNavItem)}>
-              <DashNavItem
-                location={location}
-                href="/me"
-                icon="table"
-                label="My Dashboard"
-              />
+              <DashNavItem location={location} href="/me" icon="table" label="My Dashboard" />
             </div>
-            <div className={css(styles.navLabel)}>
-              {'My Teams'}
-            </div>
+            <div className={css(styles.navLabel)}>{'My Teams'}</div>
           </div>
           <div className={css(styles.navMain)}>
             <DashNavList location={location} viewer={viewer} />
@@ -47,9 +40,7 @@ const DashSidebar = (props) => {
               <div className={css(styles.addTeamIcon)}>
                 <FontAwesome name="plus-circle" />
               </div>
-              <div className={css(styles.addTeamLabel)}>
-                {'Add New Team'}
-              </div>
+              <div className={css(styles.addTeamLabel)}>{'Add New Team'}</div>
             </NavLink>
           </div>
         </nav>

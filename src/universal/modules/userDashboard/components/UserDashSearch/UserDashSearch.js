@@ -1,18 +1,21 @@
 import PropTypes from 'prop-types';
 import React, {Component} from 'react';
-import {DashSearchControl} from 'universal/components/Dashboard';
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import DashSearchControl from 'universal/components/Dashboard/DashSearchControl';
 
 class UserDashSearch extends Component {
-  componentWillUnmount() {
+  componentWillUnmount () {
     if (this.props.viewer.contentFilter) {
       this.setContentFilter('');
     }
   }
 
-  setContentFilter(nextValue) {
-    const {atmosphere, viewer: {userId}} = this.props;
+  setContentFilter (nextValue) {
+    const {
+      atmosphere,
+      viewer: {userId}
+    } = this.props;
     commitLocalUpdate(atmosphere, (store) => {
       const userProxy = store.get(userId);
       userProxy.setValue(nextValue, 'contentFilter');
@@ -23,10 +26,8 @@ class UserDashSearch extends Component {
     this.setContentFilter(e.target.value);
   };
 
-  render() {
-    return (
-      <DashSearchControl onChange={this.updateFilter} placeholder="Search My Tasks" />
-    );
+  render () {
+    return <DashSearchControl onChange={this.updateFilter} placeholder="Search My Tasks" />;
   }
 }
 

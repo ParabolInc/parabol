@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React, {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
 import withRouter from 'react-router-dom/es/withRouter';
-import {Button, IconAvatar, Row} from 'universal/components';
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator';
 import editorDecorators from 'universal/components/TaskEditor/decorators';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
@@ -13,6 +12,9 @@ import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants';
 import {clearNotificationLabel} from '../helpers/constants';
 import {css} from 'react-emotion';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
+import Row from 'universal/components/Row/Row';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import Button from 'universal/components/Button/Button';
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -34,22 +36,40 @@ const localStyles = {
 };
 
 class TaskInvolves extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
-    const {notification: {task: {content}}} = props;
+    const {
+      notification: {
+        task: {content}
+      }
+    } = props;
     const contentState = convertFromRaw(JSON.parse(content));
     this.state = {
-      editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+      editorState: EditorState.createWithContent(
+        contentState,
+        editorDecorators(this.getEditorState)
+      )
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {notification: {task: {content: oldContent}}} = this.props;
-    const {notification: {task: {content}}} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      notification: {
+        task: {content: oldContent}
+      }
+    } = this.props;
+    const {
+      notification: {
+        task: {content}
+      }
+    } = nextProps;
     if (content !== oldContent) {
       const contentState = convertFromRaw(JSON.parse(content));
       this.setState({
-        editorState: EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+        editorState: EditorState.createWithContent(
+          contentState,
+          editorDecorators(this.getEditorState)
+        )
       });
     }
   }
@@ -57,26 +77,13 @@ class TaskInvolves extends Component {
   getEditorState = () => this.state.editorState;
 
   acknowledge = () => {
-    const {
-      atmosphere,
-      notification,
-      submitMutation,
-      onError,
-      onCompleted
-    } = this.props;
+    const {atmosphere, notification, submitMutation, onError, onCompleted} = this.props;
     const {notificationId} = notification;
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
   };
   gotoBoard = () => {
-    const {
-      atmosphere,
-      notification,
-      submitMutation,
-      onError,
-      onCompleted,
-      history
-    } = this.props;
+    const {atmosphere, notification, submitMutation, onError, onCompleted, history} = this.props;
     const {notificationId, task, team} = notification;
     const {tags} = task;
     const {teamId} = team;
@@ -86,10 +93,15 @@ class TaskInvolves extends Component {
     history.push(`/team/${teamId}${archiveSuffix}`);
   };
 
-  render() {
+  render () {
     const {editorState} = this.state;
     const {notification, submitting} = this.props;
-    const {team, task, involvement, changeAuthor: {changeAuthorName}} = notification;
+    const {
+      team,
+      task,
+      involvement,
+      changeAuthor: {changeAuthorName}
+    } = notification;
     const {teamName} = team;
     const {status, tags, assignee} = task;
     const action = involvementWord[involvement];
@@ -102,7 +114,9 @@ class TaskInvolves extends Component {
           <div className={css(defaultStyles.messageText)}>
             <b>{changeAuthorName}</b>
             <span>{' has '}</span>
-            <b><i>{`${action} you`}</i></b>
+            <b>
+              <i>{`${action} you`}</i>
+            </b>
             {involvement === MENTIONEE ? ' in' : ''}
             <span>{' a task for '}</span>
             <span
@@ -120,18 +134,17 @@ class TaskInvolves extends Component {
               {tags.includes('private') && <OutcomeCardStatusIndicator status="private" />}
               {tags.includes('archived') && <OutcomeCardStatusIndicator status="archived" />}
             </div>
-            <Editor
-              readOnly
-              editorState={editorState}
-            />
-            {assignee &&
-            <div className={css(defaultStyles.owner)}>
-              <img alt="Avatar" className={css(defaultStyles.ownerAvatar)} src={assignee.picture} />
-              <div className={css(defaultStyles.ownerName)}>
-                {assignee.preferredName}
+            <Editor readOnly editorState={editorState} />
+            {assignee && (
+              <div className={css(defaultStyles.owner)}>
+                <img
+                  alt="Avatar"
+                  className={css(defaultStyles.ownerAvatar)}
+                  src={assignee.picture}
+                />
+                <div className={css(defaultStyles.ownerName)}>{assignee.preferredName}</div>
               </div>
-            </div>
-            }
+            )}
           </div>
         </div>
         <div className={css(defaultStyles.buttonGroup)}>
@@ -192,7 +205,7 @@ export default createFragmentContainer(
         status
         tags
         assignee {
-          ...on TeamMember {
+          ... on TeamMember {
             picture
             preferredName
           }

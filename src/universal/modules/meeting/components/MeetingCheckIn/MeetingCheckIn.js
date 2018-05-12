@@ -53,24 +53,32 @@ const MeetingCheckin = (props) => {
           team={team}
         />
         <div className={css(styles.base)}>
-          {!showMoveMeetingControls &&
+          {!showMoveMeetingControls && (
             <div className={css(styles.hint)}>
               <MeetingFacilitationHint showEllipsis={!nextMember || !isMyMeetingSection}>
-                {nextMember ?
+                {nextMember ? (
                   <span>
-                    {isMyMeetingSection ?
-                      <span>{'Share with your teammates!'}</span> :
-                      <span>{'Waiting for'} <b>{currentMember.preferredName}</b> {'to share with the team'}</span>
-                    }
-                  </span> :
-                  <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
-                }
+                    {isMyMeetingSection ? (
+                      <span>{'Share with your teammates!'}</span>
+                    ) : (
+                      <span>
+                        {'Waiting for'} <b>{currentMember.preferredName}</b>{' '}
+                        {'to share with the team'}
+                      </span>
+                    )}
+                  </span>
+                ) : (
+                  <span>
+                    {'Waiting for'} <b>{facilitatorName}</b>{' '}
+                    {`to advance to ${actionMeeting.updates.name}`}
+                  </span>
+                )}
               </MeetingFacilitationHint>
             </div>
-          }
+          )}
         </div>
       </MeetingSection>
-      {showMoveMeetingControls &&
+      {showMoveMeetingControls && (
         <MeetingControlBar>
           <CheckInControls
             checkInPressFactory={makeCheckinPressFactory(currentMember.id)}
@@ -80,7 +88,7 @@ const MeetingCheckin = (props) => {
             nextPhaseName={actionMeeting.updates.name}
           />
         </MeetingControlBar>
-      }
+      )}
     </MeetingMain>
   );
 };
@@ -135,5 +143,6 @@ export default createFragmentContainer(
         isSelf
         preferredName
       }
-    }`
+    }
+  `
 );

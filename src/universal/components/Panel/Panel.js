@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'react-emotion';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import {Badge} from 'universal/components';
+import Badge from 'universal/components/Badge/Badge';
 
 const bgThemeValues = {
   light: appTheme.palette.yellow30l,
@@ -39,14 +39,14 @@ const PanelLabel = styled('div')(({compact}) => ({
 
 const PanelControls = styled('div')(({compact}) => {
   const padding = compact ? ui.panelCompactGutter : ui.panelGutter;
-  return ({
+  return {
     display: 'flex',
     flex: 1,
     height: '2.75rem',
     justifyContent: 'flex-end',
     lineHeight: '2.75rem',
     padding: `0 ${padding}`
-  });
+  };
 });
 
 const PanelBody = styled('div')(({hideFirstRowBorder}) => ({
@@ -56,29 +56,17 @@ const PanelBody = styled('div')(({hideFirstRowBorder}) => ({
 }));
 
 const Panel = (props) => {
-  const {
-    badgeCount,
-    bgTheme,
-    children,
-    compact,
-    controls,
-    hideFirstRowBorder,
-    label
-  } = props;
+  const {badgeCount, bgTheme, children, compact, controls, hideFirstRowBorder, label} = props;
 
   return (
     <PanelRoot bgTheme={bgTheme}>
-      {label &&
+      {label && (
         <PanelHeader>
-          <PanelLabel compact={compact}>
-            {label}
-          </PanelLabel>
+          <PanelLabel compact={compact}>{label}</PanelLabel>
           {badgeCount && <Badge colorPalette="midGray" value={badgeCount} />}
-          <PanelControls>
-            {controls}
-          </PanelControls>
+          <PanelControls>{controls}</PanelControls>
         </PanelHeader>
-      }
+      )}
       {/*
           NOTE: “hideFirstRowBorder”
           children may only be a set of rows,
@@ -86,19 +74,14 @@ const Panel = (props) => {
           we may want to avoid fuzzies by hiding
           the first row’s top border
       */}
-      <PanelBody hideFirstRowBorder={hideFirstRowBorder}>
-        {children}
-      </PanelBody>
+      <PanelBody hideFirstRowBorder={hideFirstRowBorder}>{children}</PanelBody>
     </PanelRoot>
   );
 };
 
 Panel.propTypes = {
   badgeCount: PropTypes.number,
-  bgTheme: PropTypes.oneOf([
-    'light',
-    'white'
-  ]),
+  bgTheme: PropTypes.oneOf(['light', 'white']),
   children: PropTypes.any,
   compact: PropTypes.bool,
   controls: PropTypes.any,

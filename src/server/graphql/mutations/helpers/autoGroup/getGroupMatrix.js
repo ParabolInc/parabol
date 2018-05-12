@@ -1,6 +1,5 @@
 import * as clusterfck from 'tayden-clusterfck';
 
-
 /*
  * Use hierarchical agglomerative clustering to group the reflections by theme
  * Since a group can have more than 2 cards, simpler techniques (e.g. blossom algorithm) are insufficient
@@ -18,7 +17,7 @@ import * as clusterfck from 'tayden-clusterfck';
  */
 const MAX_GROUP_SIZE = 5;
 const MIN_REDUCTION_PERCENT = 0.01;
-const MAX_REDUCTION_PERCENT = 0.80;
+const MAX_REDUCTION_PERCENT = 0.8;
 
 const traverseTree = (initialTree, groupingThreshold) => {
   const groups = [];

@@ -5,13 +5,14 @@ const initialState = {
   teamMemberFilterName: 'All members'
 };
 
-export default function reducer(state = initialState, action = {type: ''}) {
+export default function reducer (state = initialState, action = {type: ''}) {
   switch (action.type) {
     case FILTER_TEAM_MEMBER: {
       return {
         ...state,
         teamMemberFilterId: action.payload.teamMemberFilterId,
-        teamMemberFilterName: action.payload.teamMemberFilterName || initialState.teamMemberFilterName
+        teamMemberFilterName:
+          action.payload.teamMemberFilterName || initialState.teamMemberFilterName
       };
     }
     default:

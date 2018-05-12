@@ -7,13 +7,13 @@ import type {Credentials} from 'universal/types/auth';
 import type {Dispatch} from 'redux';
 import promisify from 'es6-promisify';
 import React, {Component} from 'react';
-import {AuthPage} from 'universal/components';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import auth0Login from 'universal/utils/auth0Login';
 import {AUTH0_DB_CONNECTION, THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants';
 import getWebAuth from 'universal/utils/getWebAuth';
 import SignUp from './SignUp';
 import autoLogin from 'universal/decorators/autoLogin';
+import AuthPage from 'universal/components/AuthPage/AuthPage';
 
 type Props = {
   atmosphere: Object,
@@ -61,7 +61,7 @@ class SignUpPage extends Component<Props, State> {
     this.setState({submittingCredentials: false});
   };
 
-  render() {
+  render () {
     const {error} = this.state;
     return (
       <AuthPage title="Sign Up | Parabol">
@@ -77,6 +77,4 @@ class SignUpPage extends Component<Props, State> {
   }
 }
 
-export default autoLogin(
-  withAtmosphere(SignUpPage)
-);
+export default autoLogin(withAtmosphere(SignUpPage));

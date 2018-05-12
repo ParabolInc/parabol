@@ -9,14 +9,14 @@ class EditorHelpModalContainer extends Component {
     bindHotkey: PropTypes.func
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       isOpen: false
     };
   }
 
-  componentWillMount() {
+  componentWillMount () {
     const {bindHotkey} = this.props;
     bindHotkey('?', this.toggleModal);
     bindHotkey('escape', this.closeModal);
@@ -24,19 +24,14 @@ class EditorHelpModalContainer extends Component {
 
   toggleModal = () => {
     this.setState({isOpen: !this.state.isOpen});
-  }
+  };
 
   closeModal = () => {
     this.setState({isOpen: false});
-  }
+  };
 
-  render() {
-    return (
-      <EditorHelpModal
-        handleCloseModal={this.closeModal}
-        isOpen={this.state.isOpen}
-      />
-    );
+  render () {
+    return <EditorHelpModal handleCloseModal={this.closeModal} isOpen={this.state.isOpen} />;
   }
 }
 

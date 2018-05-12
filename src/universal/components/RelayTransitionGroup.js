@@ -11,7 +11,7 @@ class RelayTransitionGroup extends Component {
     ready: PropTypes.element.isRequired
   };
 
-  render() {
+  render () {
     const {error: errorEl, loading, ready, readyState} = this.props;
     const {error, props} = readyState;
     if (!props && this.renderProps) {

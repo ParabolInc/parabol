@@ -7,7 +7,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import ArchiveTeam from 'universal/modules/teamDashboard/components/ArchiveTeam/ArchiveTeam';
 import ArchiveTeamMutation from 'universal/mutations/ArchiveTeamMutation';
 
-
 class ArchiveTeamContainer extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
@@ -17,26 +16,34 @@ class ArchiveTeamContainer extends Component {
     location: PropTypes.object.isRequired
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {showConfirmationField: false};
   }
 
   handleClick = () => {
     this.setState({showConfirmationField: true});
-  }
+  };
 
   formBlurred = () => {
     this.setState({showConfirmationField: false});
-  }
+  };
 
   archiveTeam = async () => {
-    const {atmosphere, dispatch, team: {teamId}, history, location} = this.props;
+    const {
+      atmosphere,
+      dispatch,
+      team: {teamId},
+      history,
+      location
+    } = this.props;
     ArchiveTeamMutation(atmosphere, teamId, {dispatch, history, location});
-  }
+  };
 
-  render() {
-    const {team: {teamName}} = this.props;
+  render () {
+    const {
+      team: {teamName}
+    } = this.props;
     const {showConfirmationField} = this.state;
     return (
       <ArchiveTeam

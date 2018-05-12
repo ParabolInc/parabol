@@ -33,9 +33,7 @@ const DashModal = (props) => {
   };
   return (
     <div className={backdropStyles} onClick={onBackdropClick ? onClick : null}>
-      <div className={modalStyles}>
-        {children}
-      </div>
+      <div className={modalStyles}>{children}</div>
     </div>
   );
 };
@@ -53,10 +51,7 @@ DashModal.propTypes = {
   //       Use 'absolute' to show over 'main' or 'mainHasDashAlert'.
   //       SEE: ui.modalLayout for options
 
-  position: PropTypes.oneOf([
-    'absolute',
-    'fixed'
-  ]),
+  position: PropTypes.oneOf(['absolute', 'fixed']),
   modalLayout: PropTypes.oneOf(ui.modalLayout),
   styles: PropTypes.object,
   width: PropTypes.string
@@ -66,7 +61,6 @@ const animateIn = {
   '0%': {
     opacity: '0',
     transform: 'translate3d(0, -50px, 0)'
-
   },
   '100%': {
     opacity: '1',
@@ -78,7 +72,6 @@ const animateOut = {
   '0%': {
     opacity: '1',
     transform: 'translate3d(0, 0, 0)'
-
   },
   '100%': {
     opacity: '0',

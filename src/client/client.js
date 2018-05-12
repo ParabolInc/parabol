@@ -11,10 +11,7 @@ const store = makeStore(initialState);
 if (__PRODUCTION__) {
   hydrate(window.__EMOTION__);
 }
-render(
-  <Root store={store} />,
-  document.getElementById('root')
-);
+render(<Root store={store} />, document.getElementById('root'));
 
 /*
  * react-hot-loader currently doesn't support React 16.3, so we'll need to disable it for now

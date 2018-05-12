@@ -4,13 +4,7 @@ import EmptySpace from '../EmptySpace/EmptySpace';
 import ui from 'universal/styles/ui';
 
 const Body = (props) => {
-  const {
-    align,
-    children,
-    fontSize,
-    lineHeight,
-    verticalGutter
-  } = props;
+  const {align, children, fontSize, lineHeight, verticalGutter} = props;
 
   const cellStyle = {
     color: ui.colorText,
@@ -38,10 +32,7 @@ const Body = (props) => {
 };
 
 Body.propTypes = {
-  align: PropTypes.oneOf([
-    'center',
-    'left'
-  ]),
+  align: PropTypes.oneOf(['center', 'left']),
   children: PropTypes.any,
   fontSize: PropTypes.number,
   lineHeight: PropTypes.number,

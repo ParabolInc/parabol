@@ -18,7 +18,7 @@ export default {
       description: 'The updated item including an id, content, status, sortOrder'
     }
   },
-  async resolve(source, {updatedAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {updatedAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const now = new Date();
     const r = getRethink();
     const operationId = dataLoader.share();
@@ -27,15 +27,24 @@ export default {
     // AUTH
     const {id: agendaItemId} = updatedAgendaItem;
     const [teamId] = agendaItemId.split('::');
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
     const schema = makeUpdateAgendaItemSchema();
-    const {errors, data: {id, ...doc}} = schema(updatedAgendaItem);
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    const {
+      errors,
+      data: {id, ...doc}
+    } = schema(updatedAgendaItem);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
 
     // RESOLUTION
-    await r.table('AgendaItem').get(id)
+    await r
+      .table('AgendaItem')
+      .get(id)
       .update({
         ...doc,
         updatedAt: now

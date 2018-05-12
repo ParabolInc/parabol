@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import React, {Children, cloneElement} from 'react';
 import appTheme from 'universal/styles/theme/appTheme';
 
-
 const Tabs = (props) => {
   const {activeKey, children, styles} = props;
   const tabWidth = 100 / Children.count(children);
@@ -25,9 +24,7 @@ const Tabs = (props) => {
   };
   return (
     <div className={css(styles.tabsAndBar)}>
-      <div className={css(styles.tabs)}>
-        {properChildren}
-      </div>
+      <div className={css(styles.tabs)}>{properChildren}</div>
       <div style={inkBarStyles} />
     </div>
   );
@@ -50,7 +47,6 @@ const styleThunk = () => ({
   tabs: {
     display: 'flex',
     width: '100%'
-
   },
   inkBar: {}
 });

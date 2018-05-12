@@ -1,6 +1,5 @@
 // @flow
 
-
 // import type {NewMeetingPhase} from 'universal/types/schema.flow';
 
 const findMeetingStage = (phases: $ReadOnlyArray<Object>) => {

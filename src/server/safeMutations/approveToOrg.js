@@ -9,7 +9,8 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
   const r = getRethink();
   const now = new Date();
   // get all notifications for this email to join this org
-  const removedNotifications = await r.table('Notification')
+  const removedNotifications = await r
+    .table('Notification')
     .getAll(userId, {index: 'userIds'})
     .filter({
       orgId,
@@ -21,17 +22,21 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
   if (removedNotifications.length === 0) return sendNotificationAccessError();
   // RESOLUTION
   // send 1 team invite per notification
-  const inviterUserIds = Array.from(removedNotifications.reduce((userIds, notification) => {
-    return userIds.add(notification.inviterUserId);
-  }, new Set()));
+  const inviterUserIds = Array.from(
+    removedNotifications.reduce((userIds, notification) => {
+      return userIds.add(notification.inviterUserId);
+    }, new Set())
+  );
 
   const teamIds = removedNotifications.map(({teamId}) => teamId);
   const {inviterUsers, teams} = await r({
-    inviterUsers: r.table('User')
+    inviterUsers: r
+      .table('User')
       .getAll(r.args(inviterUserIds), {index: 'id'})
       .pluck('id', 'email', 'picture', 'preferredName')
       .coerceTo('array'),
-    teams: r.table('Team')
+    teams: r
+      .table('Team')
       .getAll(r.args(teamIds), {index: 'id'})
       .pluck('id', 'name')
       .coerceTo('array')
@@ -69,23 +74,33 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
   // send the invitee a series of team invites
   const {inviteeUser, removedOrgApprovals} = await r({
     insertInviteeApproved: r.table('Notification').insert(inviteeApprovedNotifications),
-    removedOrgApprovals: r.table('OrgApproval')
+    removedOrgApprovals: r
+      .table('OrgApproval')
       .getAll(email, {index: 'email'})
       .filter({orgId, status: PENDING, isActive: true})
-      .update({
-        status: APPROVED,
-        approvedBy: userId,
-        updatedAt: now
-      }, {returnChanges: true})('changes')('new_val')
+      .update(
+        {
+          status: APPROVED,
+          approvedBy: userId,
+          updatedAt: now
+        },
+        {returnChanges: true}
+      )('changes')('new_val')
       .default([]),
-    inviteeUser: r.table('User').getAll(email, {index: 'email'}).nth(0).default(null)
+    inviteeUser: r
+      .table('User')
+      .getAll(email, {index: 'email'})
+      .nth(0)
+      .default(null)
   });
 
   const invitees = inviteeUser ? [{email, userId: inviteeUser.id}] : [{email}];
 
-  const sentTeamInvitations = await Promise.all(inviters.map((inviter) => {
-    return sendTeamInvitations(invitees, inviter, undefined, dataLoader);
-  }));
+  const sentTeamInvitations = await Promise.all(
+    inviters.map((inviter) => {
+      return sendTeamInvitations(invitees, inviter, undefined, dataLoader);
+    })
+  );
 
   const newInvitations = sentTeamInvitations.reduce((arr, upserts) => {
     arr.push(...upserts.newInvitations);
@@ -107,4 +122,3 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
 };
 
 export default approveToOrg;
-

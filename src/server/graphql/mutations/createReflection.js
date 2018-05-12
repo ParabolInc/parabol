@@ -5,7 +5,10 @@ import shortid from 'shortid';
 import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors';
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload';
 import {sendMeetingNotFoundError, sendPhaseItemNotFoundError} from 'server/utils/docNotFoundErrors';
-import {sendAlreadyCompletedMeetingPhaseError, sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors';
+import {
+  sendAlreadyCompletedMeetingPhaseError,
+  sendAlreadyEndedMeetingError
+} from 'server/utils/alreadyMutatedErrors';
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
 import publish from 'server/utils/publish';
 import {GROUP, REFLECT, TEAM} from 'universal/utils/constants';
@@ -21,7 +24,13 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve(source, {input: {content, retroPhaseItemId, sortOrder}}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (
+    source,
+    {
+      input: {content, retroPhaseItemId, sortOrder}
+    },
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const now = new Date();
@@ -30,17 +39,28 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken);
     const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId);
-    if (!phaseItem) return sendPhaseItemNotFoundError(authToken, retroPhaseItemId);
-    if (!phaseItem.isActive) return sendPhaseItemNotActiveError(authToken, retroPhaseItemId);
+    if (!phaseItem) {
+      return sendPhaseItemNotFoundError(authToken, retroPhaseItemId);
+    }
+    if (!phaseItem.isActive) {
+      return sendPhaseItemNotActiveError(authToken, retroPhaseItemId);
+    }
     const {teamId} = phaseItem;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
     const team = await dataLoader.get('teams').load(teamId);
     const {meetingId} = team;
-    const meeting = await r.table('NewMeeting').get(meetingId).default(null);
+    const meeting = await r
+      .table('NewMeeting')
+      .get(meetingId)
+      .default(null);
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
     const {endedAt, phases} = meeting;
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId);
-    if (isPhaseComplete(REFLECT, phases)) return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT);
+    if (isPhaseComplete(REFLECT, phases)) {
+      return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT);
+    }
 
     // VALIDATION
     const normalizedContent = normalizeRawDraftJS(content);
@@ -78,12 +98,19 @@ export default {
     let unlockedStageIds;
     if (reflections.length === 1) {
       unlockedStageIds = unlockAllStagesForPhase(phases, GROUP, true);
-      await r.table('NewMeeting').get(meetingId)
+      await r
+        .table('NewMeeting')
+        .get(meetingId)
         .update({
           phases
         });
     }
-    const data = {meetingId, reflectionId: reflection.id, reflectionGroupId, unlockedStageIds};
+    const data = {
+      meetingId,
+      reflectionId: reflection.id,
+      reflectionGroupId,
+      unlockedStageIds
+    };
     publish(TEAM, teamId, CreateReflectionPayload, data, subOptions);
     return data;
   }

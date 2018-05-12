@@ -16,10 +16,7 @@ const sectionHeading = {
 };
 
 const RetroDiscussionTopics = (props) => {
-  const {
-    imageSource,
-    topics
-  } = props;
+  const {imageSource, topics} = props;
 
   return (
     <table style={ui.emailTableBase} width="100%">
@@ -33,7 +30,9 @@ const RetroDiscussionTopics = (props) => {
         </tr>
         <tr>
           <td>
-            {topics.map((topic) => <RetroDiscussionTopic key={topic.id} imageSource={imageSource} topic={topic} />)}
+            {topics.map((topic) => (
+              <RetroDiscussionTopic key={topic.id} imageSource={imageSource} topic={topic} />
+            ))}
           </td>
         </tr>
       </tbody>
@@ -42,10 +41,7 @@ const RetroDiscussionTopics = (props) => {
 };
 
 RetroDiscussionTopics.propTypes = {
-  imageSource: PropTypes.oneOf([
-    'local',
-    'static'
-  ]),
+  imageSource: PropTypes.oneOf(['local', 'static']),
   topics: PropTypes.array
 };
 

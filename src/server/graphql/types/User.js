@@ -127,7 +127,8 @@ const User = new GraphQLObjectType({
     },
     inactive: {
       type: GraphQLBoolean,
-      description: 'true if the user is not currently being billed for service. removed on every websocket handshake'
+      description:
+        'true if the user is not currently being billed for service. removed on every websocket handshake'
     },
     isBillingLeader,
     preferredName: {
@@ -139,7 +140,7 @@ const User = new GraphQLObjectType({
       description: 'the orgs and roles for this user on each',
       resolve: (source, args, {authToken}) => {
         const userId = getUserId(authToken);
-        return (userId === source.id) ? source.userOrgs : undefined;
+        return userId === source.id ? source.userOrgs : undefined;
       }
     },
     welcomeSentAt: {
@@ -161,18 +162,21 @@ const User = new GraphQLObjectType({
           description: 'The meeting ID'
         }
       },
-      async resolve(source, {meetingId}, {authToken, dataLoader}) {
+      async resolve (source, {meetingId}, {authToken, dataLoader}) {
         const meeting = await dataLoader.get('meetings').load(meetingId);
         if (!meeting) {
           return sendMeetingNotFoundError(authToken, meetingId);
         }
-        if (!isTeamMember(authToken, meeting.teamId)) return sendTeamAccessError(authToken, meeting.teamId, null);
+        if (!isTeamMember(authToken, meeting.teamId)) {
+          return sendTeamAccessError(authToken, meeting.teamId, null);
+        }
         return meeting;
       }
     },
     meetingMember: {
       type: MeetingMember,
-      description: 'The meeting member associated with this user, if a meeting is currently in progress',
+      description:
+        'The meeting member associated with this user, if a meeting is currently in progress',
       args: {
         meetingId: {
           type: GraphQLID,
@@ -204,11 +208,13 @@ const User = new GraphQLObjectType({
           description: 'The meeting ID'
         }
       },
-      async resolve(source, {meetingId}, {authToken, dataLoader}) {
+      async resolve (source, {meetingId}, {authToken, dataLoader}) {
         const meeting = await dataLoader.get('newMeetings').load(meetingId);
         if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
         const {teamId} = meeting;
-        if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
+        if (!isTeamMember(authToken, teamId)) {
+          return sendTeamAccessError(authToken, teamId, null);
+        }
         return meeting;
       }
     },
@@ -232,7 +238,7 @@ const User = new GraphQLObjectType({
           teamIds = user.tms.filter((teamId) => authToken.tms.includes(teamId));
         }
         const teams = await dataLoader.get('teams').loadMany(teamIds);
-        teams.sort((a, b) => a.name > b.name ? 1 : -1);
+        teams.sort((a, b) => (a.name > b.name ? 1 : -1));
         return teams;
       }
     },
@@ -247,7 +253,9 @@ const User = new GraphQLObjectType({
       },
       resolve: (source, {teamId}, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken);
-        if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, null);
+        if (!isTeamMember(authToken, teamId)) {
+          return sendTeamAccessError(authToken, teamId, null);
+        }
         const teamMemberId = toTeamMemberId(teamId, viewerId);
         return dataLoader.get('teamMembers').load(teamMemberId);
       }
@@ -257,7 +265,9 @@ const User = new GraphQLObjectType({
       description: 'all the teams the user is a part of that the viewer can see',
       resolve: (source, args, {authToken}) => {
         const viewerId = getUserId(authToken);
-        return (viewerId === source.id) ? source.tms : source.tms.filter((teamId) => authToken.tms.includes(teamId));
+        return viewerId === source.id
+          ? source.tms
+          : source.tms.filter((teamId) => authToken.tms.includes(teamId));
       }
     }
   })

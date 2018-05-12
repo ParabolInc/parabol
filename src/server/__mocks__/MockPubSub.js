@@ -2,36 +2,17 @@ import dataFieldsToSerialize from 'server/__tests__/utils/dataFieldsToSerialize'
 import * as getPubSub from 'server/utils/getPubSub';
 
 const fieldsToSerialize = {
-  invitation: [
-    ...dataFieldsToSerialize
-  ],
-  newAuthToken: [
-    'channelId',
-    'message.data.tms'
-  ],
-  notification: [
-    ...dataFieldsToSerialize
-  ],
-  organization: [
-    ...dataFieldsToSerialize
-  ],
-  orgApproval: [
-    ...dataFieldsToSerialize
-  ],
-  task: [
-    ...dataFieldsToSerialize
-  ],
-  team: [
-    ...dataFieldsToSerialize
-  ],
-  teamMember: [
-    ...dataFieldsToSerialize
-  ]
+  invitation: [...dataFieldsToSerialize],
+  newAuthToken: ['channelId', 'message.data.tms'],
+  notification: [...dataFieldsToSerialize],
+  organization: [...dataFieldsToSerialize],
+  orgApproval: [...dataFieldsToSerialize],
+  task: [...dataFieldsToSerialize],
+  team: [...dataFieldsToSerialize],
+  teamMember: [...dataFieldsToSerialize]
 };
 
-const untestablePayloads = [
-  'message.data.removedRequestNotifications'
-];
+const untestablePayloads = ['message.data.removedRequestNotifications'];
 
 // const getPath = (str, obj) => str.split('.').reduce((o, i) => o[i], obj);
 const replacePath = (str, docArr, newVal) => {
@@ -51,12 +32,12 @@ const replacePath = (str, docArr, newVal) => {
 };
 
 export default class MockPubSub {
-  constructor() {
+  constructor () {
     getPubSub.default = () => this;
     this.db = {};
   }
 
-  __serialize(dynamicSerializer) {
+  __serialize (dynamicSerializer) {
     const channels = Object.keys(this.db).sort();
     const snapshot = {};
     for (let i = 0; i < channels.length; i++) {
@@ -77,10 +58,9 @@ export default class MockPubSub {
     return snapshot;
   }
 
-  publish(channel, message) {
+  publish (channel, message) {
     const [channelName, channelId] = channel.split('.');
     this.db[channelName] = this.db[channelName] || [];
     this.db[channelName].push({channelId, message});
   }
 }
-

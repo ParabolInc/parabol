@@ -17,7 +17,9 @@ const query = graphql`
 `;
 
 const TeamArchiveRoot = ({atmosphere, match, team}) => {
-  const {params: {teamId}} = match;
+  const {
+    params: {teamId}
+  } = match;
   const {userId} = atmosphere;
   return (
     <QueryRenderer
@@ -28,21 +30,23 @@ const TeamArchiveRoot = ({atmosphere, match, team}) => {
         return (
           <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps && team &&
-            <AnimatedFade key="1">
-              <TeamArchive
-                teamId={teamId}
-                team={team}
-                userId={userId}
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>
-            }
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} />
-            </AnimatedFade>
-            }
+            {renderProps &&
+              team && (
+              <AnimatedFade key="1">
+                <TeamArchive
+                  teamId={teamId}
+                  team={team}
+                  userId={userId}
+                  viewer={renderProps.viewer}
+                />
+              </AnimatedFade>
+            )}
+            {!renderProps &&
+              !error && (
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingComponent height={'5rem'} />
+              </AnimatedFade>
+            )}
           </TransitionGroup>
         );
       }}

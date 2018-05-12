@@ -18,7 +18,9 @@ const query = graphql`
 `;
 
 const MeetingSummaryRoot = ({atmosphere, match}) => {
-  const {params: {meetingId}} = match;
+  const {
+    params: {meetingId}
+  } = match;
   return (
     <QueryRenderer
       environment={atmosphere}
@@ -28,18 +30,17 @@ const MeetingSummaryRoot = ({atmosphere, match}) => {
         return (
           <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
-            <AnimatedFade key="1">
-              <MeetingSummary
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>
-            }
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingView />
-            </AnimatedFade>
-            }
+            {renderProps && (
+              <AnimatedFade key="1">
+                <MeetingSummary viewer={renderProps.viewer} />
+              </AnimatedFade>
+            )}
+            {!renderProps &&
+              !error && (
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingView />
+              </AnimatedFade>
+            )}
           </TransitionGroup>
         );
       }}

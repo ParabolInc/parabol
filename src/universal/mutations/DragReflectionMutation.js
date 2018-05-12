@@ -26,7 +26,12 @@ const mutation = graphql`
   }
 `;
 
-const DragReflectionMutation = (atmosphere: Object, variables: Variables, onError?: ErrorHandler, onCompleted?: CompletedHandler) => {
+const DragReflectionMutation = (
+  atmosphere: Object,
+  variables: Variables,
+  onError?: ErrorHandler,
+  onCompleted?: CompletedHandler
+) => {
   commitMutation(atmosphere, {
     mutation,
     variables,

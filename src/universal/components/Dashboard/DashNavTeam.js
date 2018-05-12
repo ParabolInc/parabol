@@ -22,13 +22,10 @@ const DashNavTeam = (props) => {
   const {styles, team} = props;
   return (
     <div className={css(styles.iconAndLink)}>
-      {!team.isPaid &&
-      <FontAwesome name="warning" styles={iconStyles} title="Team is disabled for nonpayment" />}
-      <DashNavItem
-        href={`/team/${team.id}`}
-        label={team.name}
-        icon={team.isPaid && 'group'}
-      />
+      {!team.isPaid && (
+        <FontAwesome name="warning" styles={iconStyles} title="Team is disabled for nonpayment" />
+      )}
+      <DashNavItem href={`/team/${team.id}`} label={team.name} icon={team.isPaid && 'group'} />
     </div>
   );
 };

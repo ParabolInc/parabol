@@ -1,7 +1,11 @@
 import {ContentState, convertToRaw} from 'draft-js';
 import entitizeText from 'universal/utils/draftjs/entitizeText';
 
-const removeSpaces = (str) => str.split(/\s/).filter((s) => s.length).join(' ');
+const removeSpaces = (str) =>
+  str
+    .split(/\s/)
+    .filter((s) => s.length)
+    .join(' ');
 
 const convertToProjetContent = (spacedText) => {
   const text = removeSpaces(spacedText);

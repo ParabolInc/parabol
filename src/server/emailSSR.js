@@ -14,7 +14,7 @@ const EMAIL_ALL_PROPS = {
   }
 };
 
-export default async function emailSSR(req, res) {
+export default async function emailSSR (req, res) {
   const emailFactory = templates[EMAIL_TEMPLATE];
   const props = EMAIL_ALL_PROPS[EMAIL_TEMPLATE];
 

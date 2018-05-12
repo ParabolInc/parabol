@@ -7,7 +7,6 @@ import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers';
 import {getUserId} from 'server/utils/authorization';
 import {GITHUB, SLACK} from 'universal/utils/constants';
 
-
 export default {
   name: 'AddProvider',
   // currently, don't return anything since this is called by the server

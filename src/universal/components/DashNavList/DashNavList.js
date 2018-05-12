@@ -13,12 +13,13 @@ const DashNavList = (props) => {
   const hasTeams = teams && teams.length > 0;
   return (
     <div className={css(styles.root)}>
-      {hasTeams ?
+      {hasTeams ? (
         <div>
           {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
-        </div> :
+        </div>
+      ) : (
         <div className={css(styles.emptyTeams)}>It appears you are not a member of any team!</div>
-      }
+      )}
     </div>
   );
 };

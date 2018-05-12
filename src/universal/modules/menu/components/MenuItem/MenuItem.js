@@ -4,17 +4,17 @@ import FontAwesome from 'react-fontawesome';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
-import {textOverflow} from 'universal/styles/helpers';
+import textOverflow from 'universal/styles/helpers/textOverflow';
 
 class MenuItem extends Component {
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {isActive} = nextProps;
     if (isActive && !this.props.isActive) {
       this.itemRef.scrollIntoViewIfNeeded();
     }
   }
 
-  render() {
+  render () {
     const {
       avatar,
       closePortal,
@@ -54,16 +54,16 @@ class MenuItem extends Component {
       textAlign: 'center',
       width: '1.25rem'
     };
-    const makeIcon = () =>
-      <FontAwesome name={icon} style={iconStyle} />;
-    const makeAvatar = () =>
-      (<img
-        alt={titleStr}
-        className={css(styles.avatar)}
-        src={avatar}
-      />);
+    const makeIcon = () => <FontAwesome name={icon} style={iconStyle} />;
+    const makeAvatar = () => <img alt={titleStr} className={css(styles.avatar)} src={avatar} />;
     return (
-      <div role="menuitem" title={titleStr} ref={(c) => { this.itemRef = c; }}>
+      <div
+        role="menuitem"
+        title={titleStr}
+        ref={(c) => {
+          this.itemRef = c;
+        }}
+      >
         {hr === 'before' && <hr className={css(styles.hr)} />}
         <div className={rootStyles} onClick={handleClick}>
           {avatar && makeAvatar()}
@@ -79,10 +79,7 @@ class MenuItem extends Component {
 MenuItem.propTypes = {
   avatar: PropTypes.string,
   closePortal: PropTypes.func,
-  hr: PropTypes.oneOf([
-    'before',
-    'after'
-  ]),
+  hr: PropTypes.oneOf(['before', 'after']),
   icon: PropTypes.string,
   iconColor: PropTypes.string,
   isActive: PropTypes.bool,
@@ -101,7 +98,6 @@ const hoverFocusStyles = {
 const activeHoverFocusStyles = {
   backgroundColor: ui.menuItemBackgroundColorActive
 };
-
 
 const styleThunk = (theme, {onClick}) => ({
   root: {

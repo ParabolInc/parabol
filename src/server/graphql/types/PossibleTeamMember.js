@@ -18,7 +18,7 @@ export const possibleTeamMemberInterfaceFields = {
 const PossibleTeamMember = new GraphQLInterfaceType({
   name: 'PossibleTeamMember',
   fields: () => possibleTeamMemberInterfaceFields,
-  resolveType(value) {
+  resolveType (value) {
     if (value.userId) return TeamMember;
     if (value.orgId) return OrgApproval;
     if (value.tokenExpiration) return Invitation;

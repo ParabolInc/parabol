@@ -28,12 +28,14 @@ export default {
     }
 
     // look the person up by their github user name on the provider table
-    const providers = await r.table('Provider')
+    const providers = await r
+      .table('Provider')
       .getAll(userName, {index: 'providerUserId'})
       .filter({service: GITHUB, isActive: true})
       .pluck('accessToken', 'userId', 'teamId')
       .merge((provider) => ({
-        repos: r.table(GITHUB)
+        repos: r
+          .table(GITHUB)
           .getAll(provider('teamId'), {index: 'teamId'})
           .filter({isActive: true})
           .filter((doc) => doc('nameWithOwner').match(`^${orgName}`))
@@ -42,12 +44,15 @@ export default {
       }));
 
     const joinedIntegrationsByTeam = [];
-    await Promise.all(providers.map((provider) => {
-      const {repos, userId} = provider;
-      // get an objlike {userId: [int1, int2]}
-      return maybeJoinRepos(repos, [provider])
-        .then((obj) => joinedIntegrationsByTeam.push(...obj[userId]));
-    }));
+    await Promise.all(
+      providers.map((provider) => {
+        const {repos, userId} = provider;
+        // get an objlike {userId: [int1, int2]}
+        return maybeJoinRepos(repos, [provider]).then((obj) =>
+          joinedIntegrationsByTeam.push(...obj[userId])
+        );
+      })
+    );
 
     // tell all the listeners about all the repos this guy just joined
 
@@ -63,15 +68,18 @@ export default {
         }
         const {teamId} = integration;
         const teamMemberId = `${userId}::${teamId}`;
-        r.table('TeamMember').get(teamMemberId).then((teamMember) => {
-          const channelName = `integrationJoined.${teamId}.${GITHUB}`;
-          const integrationJoined = {
-            globalId: globalIntegrationId,
-            teamMember
-          };
-          // no need for a special payload/channel, nothing but joining a repo will occur for now
-          getPubSub().publish(channelName, {integrationJoined});
-        });
+        r
+          .table('TeamMember')
+          .get(teamMemberId)
+          .then((teamMember) => {
+            const channelName = `integrationJoined.${teamId}.${GITHUB}`;
+            const integrationJoined = {
+              globalId: globalIntegrationId,
+              teamMember
+            };
+            // no need for a special payload/channel, nothing but joining a repo will occur for now
+            getPubSub().publish(channelName, {integrationJoined});
+          });
       }
     }
     return true;

@@ -1,11 +1,6 @@
 import getWeekOfYear from 'universal/utils/getWeekOfYear';
 
-const expressions = [
-  'Great job',
-  'High five',
-  'Nice work',
-  'Excellent'
-];
+const expressions = ['Great job', 'High five', 'Nice work', 'Excellent'];
 
 const statements = [
   'Iteration is key!',

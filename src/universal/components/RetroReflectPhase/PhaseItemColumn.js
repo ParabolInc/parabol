@@ -9,7 +9,6 @@ import type {PhaseItemColumn_retroPhaseItem as RetroPhaseItem} from './__generat
 // $FlowFixMe
 import React, {Component} from 'react';
 import styled from 'react-emotion';
-
 import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton';
 import ui from 'universal/styles/ui';
 import {GROUP, REFLECT, REFLECTION_CARD, VOTE} from 'universal/utils/constants';
@@ -19,14 +18,13 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard';
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard';
-
-import {LabelHeading} from 'universal/components';
 import {DropTarget as dropTarget} from 'react-dnd';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import dndNoise from 'universal/utils/dndNoise';
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation';
 import appTheme from 'universal/styles/theme/appTheme';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading';
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -47,7 +45,6 @@ const ReflectionsArea = styled('div')({
 const ReflectionsList = styled('div')(({canDrop}) => ({
   background: canDrop && appTheme.palette.light60l
 }));
-
 
 const TypeDescription = styled('div')({
   fontSize: '1.25rem',
@@ -83,14 +80,18 @@ type State = {
 };
 
 class PhaseItemColumn extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
-    const {meeting: {reflectionGroups: nextReflectionGroups}, retroPhaseItem: {retroPhaseItemId}} = nextProps;
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
+    const {
+      meeting: {reflectionGroups: nextReflectionGroups},
+      retroPhaseItem: {retroPhaseItemId}
+    } = nextProps;
     if (nextReflectionGroups === prevState.reflectionGroups) return null;
     const reflectionGroups = nextReflectionGroups || [];
     return {
       reflectionGroups,
-      columnReflectionGroups: reflectionGroups
-        .filter((group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0)
+      columnReflectionGroups: reflectionGroups.filter(
+        (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0
+      )
     };
   }
 
@@ -101,42 +102,51 @@ class PhaseItemColumn extends Component<Props, State> {
 
   setGroupRef = (groupId) => (c) => {
     this.groupRefs[groupId] = c;
-  }
+  };
 
   groupRefs = {};
 
-  render() {
+  render () {
     const {connectDropTarget, canDrop, meeting, retroPhaseItem} = this.props;
     const {columnReflectionGroups} = this.state;
-    const {localPhase: {phaseType}, localStage: {isComplete}} = meeting;
+    const {
+      localPhase: {phaseType},
+      localStage: {isComplete}
+    } = meeting;
     const {retroPhaseItemId, title, question} = retroPhaseItem;
     return connectDropTarget(
       <div>
         <ColumnWrapper>
-          {phaseType !== VOTE &&
+          {phaseType !== VOTE && (
             <TypeHeader>
               <LabelHeading>{title.toUpperCase()}</LabelHeading>
               <TypeDescription>{question}</TypeDescription>
             </TypeHeader>
-          }
+          )}
           <ReflectionsArea>
-            {phaseType === REFLECT && !isComplete &&
+            {phaseType === REFLECT &&
+              !isComplete && (
               <ColumnChild>
                 <ButtonBlock>
-                  <AddReflectionButton columnReflectionGroups={columnReflectionGroups} meeting={meeting} retroPhaseItem={retroPhaseItem} />
+                  <AddReflectionButton
+                    columnReflectionGroups={columnReflectionGroups}
+                    meeting={meeting}
+                    retroPhaseItem={retroPhaseItem}
+                  />
                 </ButtonBlock>
               </ColumnChild>
-            }
+            )}
             <ReflectionsList canDrop={canDrop}>
               {columnReflectionGroups.map((group) => {
                 if (phaseType === REFLECT) {
                   return group.reflections.map((reflection) => {
                     return (
                       <ColumnChild key={reflection.id}>
-                        {reflection.isViewerCreator ?
-                          <ReflectionCard meeting={meeting} reflection={reflection} /> :
+                        {reflection.isViewerCreator ? (
+                          <ReflectionCard meeting={meeting} reflection={reflection} />
+                        ) : (
                           <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-                        }
+                        )}
                       </ColumnChild>
                     );
                   });
@@ -175,15 +185,22 @@ class PhaseItemColumn extends Component<Props, State> {
 reactLifecyclesCompat(PhaseItemColumn);
 
 const reflectionDropSpec = {
-  canDrop(props: Props, monitor) {
+  canDrop (props: Props, monitor) {
     const {isSingleCardGroup, currentRetroPhaseItemId} = monitor.getItem();
-    return monitor.isOver({shallow: true}) && !isSingleCardGroup && currentRetroPhaseItemId === props.retroPhaseItem.retroPhaseItemId;
+    return (
+      monitor.isOver({shallow: true}) &&
+      !isSingleCardGroup &&
+      currentRetroPhaseItemId === props.retroPhaseItem.retroPhaseItemId
+    );
   },
 
   // Makes the card-dropped-into available in the dragSpec's endDrag method.
-  drop(props: Props, monitor, component) {
+  drop (props: Props, monitor, component) {
     // if (monitor.didDrop()) return;
-    const {groupRefs, state: {columnReflectionGroups}} = component;
+    const {
+      groupRefs,
+      state: {columnReflectionGroups}
+    } = component;
     const {y} = monitor.getClientOffset();
     let idx = columnReflectionGroups.length;
 
@@ -197,14 +214,24 @@ const reflectionDropSpec = {
       }
     }
     const {reflectionId} = monitor.getItem();
-    const {atmosphere, submitMutation, meeting: {meetingId}, onError, onCompleted, retroPhaseItem: {retroPhaseItemId}} = props;
+    const {
+      atmosphere,
+      submitMutation,
+      meeting: {meetingId},
+      onError,
+      onCompleted,
+      retroPhaseItem: {retroPhaseItemId}
+    } = props;
     let sortOrder;
     if (idx === 0) {
       sortOrder = columnReflectionGroups[0].sortOrder - 1 + dndNoise();
     } else if (idx === columnReflectionGroups.length) {
-      sortOrder = columnReflectionGroups[columnReflectionGroups.length - 1].sortOrder + 1 + dndNoise();
+      sortOrder =
+        columnReflectionGroups[columnReflectionGroups.length - 1].sortOrder + 1 + dndNoise();
     } else {
-      sortOrder = (columnReflectionGroups[idx - 1].sortOrder + columnReflectionGroups[idx].sortOrder) / 2 + dndNoise();
+      sortOrder =
+        (columnReflectionGroups[idx - 1].sortOrder + columnReflectionGroups[idx].sortOrder) / 2 +
+        dndNoise();
     }
     const variables = {
       reflectionId,
@@ -226,8 +253,7 @@ const reflectionDropCollect = (connect, monitor) => ({
 export default createFragmentContainer(
   withAtmosphere(
     withMutationProps(
-      dropTarget(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(
-        PhaseItemColumn)
+      dropTarget(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(PhaseItemColumn)
     )
   ),
   graphql`

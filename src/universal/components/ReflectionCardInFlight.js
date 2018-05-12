@@ -20,7 +20,7 @@ type Props = {|
   initialComponentOffset: Coords,
   initialCursorOffset: Coords,
   reflection: Reflection
-|}
+|};
 
 const ModalBlock = styled('div')({
   top: 0,
@@ -32,23 +32,28 @@ const ModalBlock = styled('div')({
 });
 
 class ReflectionCardInFlight extends React.Component<Props> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.initialComponentOffset = props.initialComponentOffset;
     this.initialCursorOffset = props.initialCursorOffset;
-    this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(this.props.reflection.content)));
+    this.editorState = EditorState.createWithContent(
+      convertFromRaw(JSON.parse(this.props.reflection.content))
+    );
   }
 
-  componentDidMount() {
+  componentDidMount () {
     window.addEventListener('drag', this.setDragState);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     window.removeEventListener('drag', this.setDragState);
   }
 
   setDragState = (e) => {
-    const {atmosphere, reflection: {reflectionId, dragX, dragY}} = this.props;
+    const {
+      atmosphere,
+      reflection: {reflectionId, dragX, dragY}
+    } = this.props;
     const xDiff = e.x - this.initialCursorOffset.x;
     const yDiff = e.y - this.initialCursorOffset.y;
     const x = this.initialComponentOffset.x + xDiff;
@@ -60,23 +65,22 @@ class ReflectionCardInFlight extends React.Component<Props> {
         reflection.setValue(y, 'dragY');
       });
     }
-  }
+  };
 
   editorState: Object;
   initialComponentOffset: Coords;
   initialCursorOffset: Coords;
 
-  render() {
-    const {reflection: {dragX, dragY}} = this.props;
+  render () {
+    const {
+      reflection: {dragX, dragY}
+    } = this.props;
     if (!dragX || !dragY) return null;
     const transform = `translate3d(${dragX}px, ${dragY}px, 0px)`;
     return (
       <ModalBlock style={{transform}}>
         <ReflectionCardRoot>
-          <ReflectionEditorWrapper
-            editorState={this.editorState}
-            readOnly
-          />
+          <ReflectionEditorWrapper editorState={this.editorState} readOnly />
         </ReflectionCardRoot>
       </ModalBlock>
     );

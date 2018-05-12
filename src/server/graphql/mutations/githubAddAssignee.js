@@ -32,15 +32,15 @@ export default {
       throw new Error('Don’t be rude.');
     }
 
-    const integrations = await r.table(GITHUB)
-      .getAll(nameWithOwner, {index: 'nameWithOwner'});
+    const integrations = await r.table(GITHUB).getAll(nameWithOwner, {index: 'nameWithOwner'});
 
     if (integrations.length === 0) {
       throw new Error(`No integrations for ${nameWithOwner}`);
     }
 
     // plural for each organization
-    const providers = await r.table('Provider')
+    const providers = await r
+      .table('Provider')
       .getAll(assigneeLogin, {index: 'providerUserId'})
       .filter({service: GITHUB, isActive: true});
     // .nth(0)('userId')
@@ -50,8 +50,7 @@ export default {
       throw new Error(`${assigneeLogin} does not have a GitHub integration with Parabol`);
     }
 
-    const tasks = await r.table('Task')
-      .getAll(integrationId, {index: 'integrationId'});
+    const tasks = await r.table('Task').getAll(integrationId, {index: 'integrationId'});
 
     const maybeUpdateTask = (integration) => {
       const {teamId, userIds} = integration;
@@ -59,7 +58,9 @@ export default {
       const task = tasks.find((proj) => proj.teamId === teamId);
 
       if (!provider) {
-        throw new Error(`${assigneeLogin} does not have a GitHub integration with Parabol for ${teamId}`);
+        throw new Error(
+          `${assigneeLogin} does not have a GitHub integration with Parabol for ${teamId}`
+        );
       }
       const {userId} = provider;
       if (!task) {
@@ -93,7 +94,8 @@ export default {
       };
       // TODO set this up
       getPubSub().publish(`taskUpdated.${teamId}`, {taskUpdated});
-      return r.table('Task')
+      return r
+        .table('Task')
         .get(task.id)
         .update(updateObj)
         .run();

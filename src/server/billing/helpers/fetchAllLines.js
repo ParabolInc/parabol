@@ -1,6 +1,6 @@
 import stripe from 'server/billing/stripe';
 
-export default async function fetchAllLines(invoiceId, customerId) {
+export default async function fetchAllLines (invoiceId, customerId) {
   const stripeLineItems = [];
   const options = {limit: 100};
   // used for upcoming invoices

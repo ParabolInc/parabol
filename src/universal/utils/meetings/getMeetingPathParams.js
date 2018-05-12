@@ -10,19 +10,21 @@ import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/looku
 
 type MeetingParams = {
   meetingSlug?: ?string,
-  meetingType?: ?MeetingTypeEnum|string,
+  meetingType?: ?MeetingTypeEnum | string,
   teamId?: ?string,
   phaseSlug?: ?string,
-  phaseType?: ?NewMeetingPhaseTypeEnum|string,
+  phaseType?: ?NewMeetingPhaseTypeEnum | string,
   stageIdx?: ?number
-}
+};
 
 const getMeetingPathParams = (): MeetingParams => {
   const matchRes = matchPath(location.pathname, {
     path: '/:meetingSlug/:teamId/:phaseSlug?/:stageIdxSlug?'
   });
   if (!matchRes) return {};
-  const {params: {meetingSlug, teamId, phaseSlug, stageIdxSlug}} = matchRes;
+  const {
+    params: {meetingSlug, teamId, phaseSlug, stageIdxSlug}
+  } = matchRes;
   return {
     meetingSlug,
     meetingType: findKeyByValue(meetingTypeToSlug, meetingSlug),

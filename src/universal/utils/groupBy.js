@@ -15,7 +15,6 @@ groupBy(arr, 'foo')
 }
 */
 
-
 const groupBy = (arr, prop) => {
   const res = {};
   for (let ii = 0; ii < arr.length; ii++) {

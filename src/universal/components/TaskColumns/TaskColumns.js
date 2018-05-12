@@ -29,12 +29,12 @@ const ColumnsBlock = styled('div')({
 });
 
 class TaskColumns extends Component {
-  componentWillMount() {
+  componentWillMount () {
     const {tasks} = this.props;
     this.groupTasksByStatus(tasks);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {tasks} = nextProps;
     const {tasks: oldTasks} = this.props;
     if (tasks !== oldTasks) {
@@ -42,16 +42,16 @@ class TaskColumns extends Component {
     }
   }
 
-  groupTasksByStatus(tasks) {
+  groupTasksByStatus (tasks) {
     const nodes = tasks.edges.map(({node}) => node);
     this.setState({
       tasks: makeTasksByStatus(nodes)
     });
   }
 
-  render() {
-  // myTeamMemberId is undefined if this is coming from USER_DASH
-  // TODO we only need userId, we can compute myTeamMemberId
+  render () {
+    // myTeamMemberId is undefined if this is coming from USER_DASH
+    // TODO we only need userId, we can compute myTeamMemberId
     const {
       area,
       getTaskById,
@@ -65,21 +65,21 @@ class TaskColumns extends Component {
     return (
       <RootBlock>
         <ColumnsBlock>
-          {lanes.map((status, idx) =>
-            (<TaskColumn
+          {lanes.map((status, idx) => (
+            <TaskColumn
               key={`taskCol${status}`}
               area={area}
               isMyMeetingSection={isMyMeetingSection}
               firstColumn={idx === 0}
               getTaskById={getTaskById}
-              lastColumn={idx === (lanes.length - 1)}
+              lastColumn={idx === lanes.length - 1}
               myTeamMemberId={myTeamMemberId}
               teamMemberFilterId={teamMemberFilterId}
               tasks={tasks[status]}
               status={status}
               teams={teams}
-            />)
-          )}
+            />
+          ))}
         </ColumnsBlock>
         <EditorHelpModalContainer />
       </RootBlock>

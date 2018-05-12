@@ -18,14 +18,15 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const makeValidationSchema = (allAssignees) => {
   return legitify({
-    inviteeEmail: (value) => value
-      .trim()
-      .required()
-      .matches(emailRegex, 'That doesn’t look like an email address.')
-      .test((inviteeEmail) => {
-        const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
-        return alreadyInList && 'That person is already in the list';
-      })
+    inviteeEmail: (value) =>
+      value
+        .trim()
+        .required()
+        .matches(emailRegex, 'That doesn’t look like an email address.')
+        .test((inviteeEmail) => {
+          const alreadyInList = allAssignees.find(({email}) => email === inviteeEmail);
+          return alreadyInList && 'That person is already in the list';
+        })
   });
 };
 
@@ -61,7 +62,7 @@ class AddSoftTeamMember extends Component {
 
   state = {inviteeEmail: ''};
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {isActive, menuRef} = nextProps;
     if (isActive !== this.props.isActive) {
       if (isActive) {
@@ -103,7 +104,9 @@ class AddSoftTeamMember extends Component {
     submitMutation();
     const handleCompleted = (res, errors) => {
       onCompleted(res, errors);
-      const {inviteTeamMembers: {newSoftTeamMembers, reactivatedTeamMembers}} = res;
+      const {
+        inviteTeamMembers: {newSoftTeamMembers, reactivatedTeamMembers}
+      } = res;
       const newSoftTeamMemberId = newSoftTeamMembers && newSoftTeamMembers[0].id;
       const reactivatedTeamMemberId = reactivatedTeamMembers && reactivatedTeamMembers[0].id;
       submitMutation();
@@ -133,13 +136,9 @@ class AddSoftTeamMember extends Component {
     this.inputRef.focus();
   };
 
-  render() {
+  render () {
     const {inviteeEmail} = this.state;
-    const {
-      isActive,
-      error,
-      styles
-    } = this.props;
+    const {isActive, error, styles} = this.props;
     const rootStyles = css(styles.root, isActive && styles.active);
     const inputStyles = css(styles.input, isActive && styles.inputActive);
     const labelText = 'Invite a new teammate by their email address';
@@ -153,7 +152,9 @@ class AddSoftTeamMember extends Component {
               className={inputStyles}
               onChange={this.onChange}
               placeholder="name@company.co"
-              ref={(c) => { this.inputRef = c; }}
+              ref={(c) => {
+                this.inputRef = c;
+              }}
               value={inviteeEmail}
             />
           </form>

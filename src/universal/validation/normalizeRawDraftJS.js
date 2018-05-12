@@ -8,10 +8,11 @@ const normalizeRawDraftJS = (str) => {
     return makeEmptyStr();
   }
   const keys = Object.keys(parsedContent);
-  if (keys.length !== 2 ||
+  if (
+    keys.length !== 2 ||
     typeof parsedContent.entityMap !== 'object' ||
-    !Array.isArray(parsedContent.blocks ||
-      parsedContent.blocks.length === 0)) {
+    !Array.isArray(parsedContent.blocks || parsedContent.blocks.length === 0)
+  ) {
     return makeEmptyStr();
   }
   // remove empty first block

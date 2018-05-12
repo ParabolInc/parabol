@@ -28,7 +28,15 @@ const mutation = graphql`
 
 export const startNewMeetingTeamOnNext = (payload, context) => {
   const {environment} = context;
-  const {error, team: {newMeeting: {id: meetingId, phases: [firstPhase]}}} = payload;
+  const {
+    error,
+    team: {
+      newMeeting: {
+        id: meetingId,
+        phases: [firstPhase]
+      }
+    }
+  } = payload;
   updateLocalStage(environment, meetingId, firstPhase.stages[0].id);
   handleMutationError(error, context);
 };

@@ -31,7 +31,7 @@ const iconSizes = {
 
 const IconAvatarRoot = styled('div')(({size}) => {
   const {fontSize, height, width} = iconSizes[size];
-  return ({
+  return {
     alignItems: 'center',
     backgroundColor: appTheme.palette.mid70l,
     borderRadius: '100%',
@@ -42,7 +42,7 @@ const IconAvatarRoot = styled('div')(({size}) => {
     justifyContent: 'center',
     textAlign: 'center',
     width
-  });
+  };
 });
 
 const IconStyled = styled(StyledFontAwesome)({
@@ -61,11 +61,7 @@ const IconAvatar = (props) => {
 
 IconAvatar.propTypes = {
   icon: PropTypes.string,
-  size: PropTypes.oneOf([
-    'small',
-    'medium',
-    'large'
-  ]),
+  size: PropTypes.oneOf(['small', 'medium', 'large']),
   title: PropTypes.string
 };
 

@@ -3,7 +3,13 @@ import getRethink from 'server/database/rethinkDriver';
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload';
 import {isTeamMember} from 'server/utils/authorization';
 import publish from 'server/utils/publish';
-import {NOTIFICATION, ORG_APPROVAL, REQUEST_NEW_USER, TASK, TEAM_MEMBER} from 'universal/utils/constants';
+import {
+  NOTIFICATION,
+  ORG_APPROVAL,
+  REQUEST_NEW_USER,
+  TASK,
+  TEAM_MEMBER
+} from 'universal/utils/constants';
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB';
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember';
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds';
@@ -19,7 +25,7 @@ export default {
       description: 'org approval id to cancel'
     }
   },
-  async resolve(source, {orgApprovalId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {orgApprovalId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
@@ -27,23 +33,29 @@ export default {
     // AUTH
     const orgApprovalDoc = await r.table('OrgApproval').get(orgApprovalId);
     const {email, orgId, teamId} = orgApprovalDoc;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const {removedRequestNotification} = await r({
-      orgApproval: r.table('OrgApproval')
+      orgApproval: r
+        .table('OrgApproval')
         .get(orgApprovalId)
         .update({
           isActive: false
         }),
-      removedRequestNotification: r.table('Notification')
+      removedRequestNotification: r
+        .table('Notification')
         .getAll(orgId, {index: 'orgId'})
         .filter({
           type: REQUEST_NEW_USER,
           teamId,
           inviteeEmail: email
         })
-        .delete({returnChanges: true})('changes')(0)('old_val').pluck('id', 'userIds').default(null)
+        .delete({returnChanges: true})('changes')(0)('old_val')
+        .pluck('id', 'userIds')
+        .default(null)
     });
 
     const removedSoftTeamMember = await removeSoftTeamMember(email, teamId, dataLoader);
@@ -51,7 +63,12 @@ export default {
     const softTasksToArchive = await getTasksByAssigneeId(softTeamMemberId, dataLoader);
     const archivedSoftTasks = await archiveTasksForDB(softTasksToArchive, dataLoader);
     const archivedSoftTaskIds = archivedSoftTasks.map(({id}) => id);
-    const data = {orgApprovalId, removedRequestNotification, softTeamMemberId, archivedSoftTaskIds};
+    const data = {
+      orgApprovalId,
+      removedRequestNotification,
+      softTeamMemberId,
+      archivedSoftTaskIds
+    };
 
     if (removedRequestNotification) {
       const {userIds} = removedRequestNotification;

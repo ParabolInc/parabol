@@ -23,11 +23,13 @@ const createOrgPicturePutUrl = {
       description: 'The organization id to update'
     }
   },
-  async resolve(source, {orgId, contentType, contentLength}, {authToken}) {
+  async resolve (source, {orgId, contentType, contentLength}, {authToken}) {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc);
+    }
 
     // VALIDATION
     const ext = validateAvatarUpload(contentType, contentLength);

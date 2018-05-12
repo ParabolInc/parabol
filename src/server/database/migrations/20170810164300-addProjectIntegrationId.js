@@ -1,6 +1,8 @@
 exports.up = async (r) => {
   const indices = [
-    r.table('Project').indexCreate('integrationId', (project) => project('integration')('integrationId')),
+    r
+      .table('Project')
+      .indexCreate('integrationId', (project) => project('integration')('integrationId')),
     r.table('GitHubIntegration').indexCreate('nameWithOwner')
   ];
   try {

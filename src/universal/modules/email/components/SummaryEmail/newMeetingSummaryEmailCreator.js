@@ -8,7 +8,12 @@ import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lo
 
 const newMeetingSummaryEmailCreator = (props) => {
   const {meeting} = props;
-  const {id: meetingId, meetingType, team: {id: teamId, name: teamName}, endedAt} = meeting;
+  const {
+    id: meetingId,
+    meetingType,
+    team: {id: teamId, name: teamName},
+    endedAt
+  } = meeting;
   const dateStr = makeDateString(endedAt);
   const meetingLabel = meetingTypeToLabel[meetingType];
   const meetingSlug = meetingTypeToSlug[meetingType];
@@ -26,10 +31,12 @@ const newMeetingSummaryEmailCreator = (props) => {
         referrer="email"
         referrerUrl={referrerUrl}
         teamDashUrl={teamDashUrl}
-      />, {
+      />,
+      {
         title: subject,
         previewText: subject
-      })
+      }
+    )
   };
 };
 

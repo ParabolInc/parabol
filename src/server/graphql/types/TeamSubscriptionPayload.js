@@ -31,7 +31,6 @@ import NewMeetingCheckInPayload from 'server/graphql/types/NewMeetingCheckInPayl
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload';
 import DragReflectionPayload from 'server/graphql/types/DragReflectionPayload';
 
-
 const types = [
   AcceptTeamInvitePayload,
   AddTeamPayload,

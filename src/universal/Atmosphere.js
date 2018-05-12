@@ -17,7 +17,9 @@ export default class Atmosphere extends Environment {
   };
 
   registerQuery = async (queryKey, subscriptions, subParams, queryVariables, queryFetcher) => {
-    const subConfigs = subscriptions.map((subCreator) => subCreator(this, queryVariables, subParams));
+    const subConfigs = subscriptions.map((subCreator) =>
+      subCreator(this, queryVariables, subParams)
+    );
     const subscriptionClient = await this.ensureSubscriptionClient();
     if (!subscriptionClient) return;
     const newQuerySubs = subConfigs.map((config) => {
@@ -35,7 +37,7 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.push(...newQuerySubs);
   };
 
-  constructor() {
+  constructor () {
     // deal with Environment
     const store = new Store(new RecordSource());
     super({store, handlerProvider});
@@ -82,7 +84,7 @@ export default class Atmosphere extends Environment {
     return this.makeDisposable(subKey);
   };
 
-  makeSubscriptionClient() {
+  makeSubscriptionClient () {
     if (!this.authToken) {
       throw new Error('No Auth Token provided!');
     }
@@ -163,7 +165,7 @@ export default class Atmosphere extends Environment {
     if (!authToken) return;
     this.authObj = jwtDecode(authToken);
     const {exp, sub: viewerId} = this.authObj;
-    if (exp < (Date.now() / 1000)) {
+    if (exp < Date.now() / 1000) {
       this.authToken = null;
       this.authObj = null;
       window.localStorage.removeItem(APP_TOKEN_KEY);
@@ -191,7 +193,9 @@ export default class Atmosphere extends Environment {
     return {
       dispose: () => {
         // get every query that is powered by this subscription
-        const associatedQueries = this.querySubscriptions.filter(({subKey}) => subKey === subKeyToRemove);
+        const associatedQueries = this.querySubscriptions.filter(
+          ({subKey}) => subKey === subKeyToRemove
+        );
         // these queries are no longer supported, so drop them
         associatedQueries.forEach(({queryFetcher}) => {
           if (queryFetcher.readyToGC()) {
@@ -217,7 +221,9 @@ export default class Atmosphere extends Environment {
 
     peerSubKeys.forEach((subKey) => {
       // for each peerSubKey, see if there exists a query that is not affected.
-      const unaffectedQuery = this.querySubscriptions.find((qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey));
+      const unaffectedQuery = this.querySubscriptions.find(
+        (qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey)
+      );
       if (!unaffectedQuery) {
         this.subscriptions[subKey].client.unsubscribe();
       }
@@ -228,7 +234,7 @@ export default class Atmosphere extends Environment {
     });
   };
 
-  async ensureSubscriptionClient() {
+  async ensureSubscriptionClient () {
     if (!this.subscriptionClientPromise) {
       this.subscriptionClientPromise = new Promise((resolve) => {
         this.subscriptionClient = this.makeSubscriptionClient();

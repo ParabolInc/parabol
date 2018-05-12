@@ -27,21 +27,12 @@ type UpdateTaskMutationArgs = {
 
 // Represents the trailing space at the end of a column.  Acts as a drop target
 // for cards being dragged over a column rather than cards in that column.
-const TaskColumnDropZone = (props: Props) => (
-  props.connectDropTarget(
-    <div style={{height: '100%'}} />
-  )
-);
+const TaskColumnDropZone = (props: Props) =>
+  props.connectDropTarget(<div style={{height: '100%'}} />);
 
 const spec = {
   hover: (props: Props, monitor) => {
-    const {
-      area,
-      atmosphere,
-      getTaskById,
-      lastTask,
-      status
-    } = props;
+    const {area, atmosphere, getTaskById, lastTask, status} = props;
     const draggedTaskId = monitor.getItem().taskId;
     const draggedTask = getTaskById(draggedTaskId);
 
@@ -69,8 +60,4 @@ const collect = (connect) => ({
   connectDropTarget: connect.dropTarget()
 });
 
-export default withAtmosphere(
-  DropTarget(TASK, spec, collect)(
-    TaskColumnDropZone
-  )
-);
+export default withAtmosphere(DropTarget(TASK, spec, collect)(TaskColumnDropZone));

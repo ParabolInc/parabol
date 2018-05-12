@@ -14,7 +14,10 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   const {meetingId} = team;
   if (!meetingId) return false;
   // make sure it's a new meeting
-  const newMeeting = await r.table('NewMeeting').get(meetingId).default(null);
+  const newMeeting = await r
+    .table('NewMeeting')
+    .get(meetingId)
+    .default(null);
   if (!newMeeting) return false;
   const {meetingType, phases} = newMeeting;
   const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN);
@@ -26,7 +29,8 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   const meetingMember = createMeetingMember(meetingId, meetingType)(teamMember);
   const [extendedMeetingMember] = extendMeetingMembersForType([meetingMember], dataLoader);
   await r({
-    meeting: r.table('NewMeeting')
+    meeting: r
+      .table('NewMeeting')
       .get(meetingId)
       .update({
         phases,

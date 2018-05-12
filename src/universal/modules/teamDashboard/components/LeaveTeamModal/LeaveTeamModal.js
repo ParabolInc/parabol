@@ -5,13 +5,23 @@ import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
 import Button from 'universal/components/Button/Button';
-import {DashModal} from 'universal/components/Dashboard';
 import Type from 'universal/components/Type/Type';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation';
+import DashModal from 'universal/components/Dashboard/DashModal';
 
 const LeaveTeamModal = (props) => {
-  const {atmosphere, closeAfter, closePortal, dispatch, isClosing, location, history, team, teamMember} = props;
+  const {
+    atmosphere,
+    closeAfter,
+    closePortal,
+    dispatch,
+    isClosing,
+    location,
+    history,
+    team,
+    teamMember
+  } = props;
   const {teamMembers} = team;
   const {teamMemberId} = teamMember;
   const teamLead = teamMembers.find((m) => m.isLead === true);
@@ -20,7 +30,11 @@ const LeaveTeamModal = (props) => {
     // the KICKED_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
     history.push('/me');
     closePortal();
-    RemoveTeamMemberMutation(atmosphere, teamMemberId, {dispatch, location, history});
+    RemoveTeamMemberMutation(atmosphere, teamMemberId, {
+      dispatch,
+      location,
+      history
+    });
   };
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
@@ -69,6 +83,7 @@ export default createFragmentContainer(
         preferredName
       }
     }
+
     fragment LeaveTeamModal_teamMember on TeamMember {
       teamMemberId: id
     }

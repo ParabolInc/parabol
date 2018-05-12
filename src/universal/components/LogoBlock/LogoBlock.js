@@ -29,7 +29,12 @@ const LogoBlock = (props) => {
   const logoSrc = variant === 'primary' ? logoMarkPrimary : logoMarkWhite;
   return (
     <RootBlock variant={variant}>
-      <Anchor href="http://www.parabol.co/" rel="noopener noreferrer" title="Parabol" target="_blank">
+      <Anchor
+        href="http://www.parabol.co/"
+        rel="noopener noreferrer"
+        title="Parabol"
+        target="_blank"
+      >
         <Image alt="Parabol" src={logoSrc} />
       </Anchor>
     </RootBlock>
@@ -37,10 +42,7 @@ const LogoBlock = (props) => {
 };
 
 LogoBlock.propTypes = {
-  variant: PropTypes.oneOf([
-    'primary',
-    'white'
-  ])
+  variant: PropTypes.oneOf(['primary', 'white'])
 };
 
 export default LogoBlock;

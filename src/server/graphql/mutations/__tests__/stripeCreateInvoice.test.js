@@ -22,24 +22,32 @@ describe('stripeCreateInvoice', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {organization} = await mockDB
-      .init({plan: PRO});
+    const {organization} = await mockDB.init({plan: PRO});
     const org = organization[0];
-    const sharedDataLoader = new SharedDataLoader({ttl: 1000, onShare: '_share'});
+    const sharedDataLoader = new SharedDataLoader({
+      ttl: 1000,
+      onShare: '_share'
+    });
     stripe.__setMockData(org);
     const subscription = stripe.__db.subscriptions[org.stripeSubscriptionId];
-    await stripe.invoices.create({customer: org.stripeId, id: invoiceId, subscription});
+    await stripe.invoices.create({
+      customer: org.stripeId,
+      id: invoiceId,
+      subscription
+    });
 
     // TEST
     await stripeWebhookHandler(sharedDataLoader)(req, res);
 
     // VERIFY
     expect(res.sendStatus).toBeCalledWith(200);
-    const db = await fetchAndSerialize({
-      invoice: r.table('Invoice').get(invoiceId)
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        invoice: r.table('Invoice').get(invoiceId)
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeId, dynamicSerializer)).toMatchSnapshot();
   });
 });
-

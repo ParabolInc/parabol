@@ -26,7 +26,9 @@ const PromoteFacilitatorPayload = new GraphQLObjectType({
       type: TeamMember,
       description: 'The team member that disconnected',
       resolve: ({disconnectedFacilitatorId}, args, {dataLoader}) => {
-        return disconnectedFacilitatorId ? dataLoader.get('teamMembers').load(disconnectedFacilitatorId) : null;
+        return disconnectedFacilitatorId
+          ? dataLoader.get('teamMembers').load(disconnectedFacilitatorId)
+          : null;
       }
     }
   })

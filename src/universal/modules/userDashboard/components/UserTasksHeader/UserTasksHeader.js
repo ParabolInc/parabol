@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ui from 'universal/styles/ui';
-import {DashHeading, DashSectionControl, DashSectionControls, DashSectionHeader} from 'universal/components/Dashboard';
 import DashFilterLabel from 'universal/components/DashFilterLabel/DashFilterLabel';
 import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterToggle';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import LoadableUserDashTeamMenu from 'universal/components/LoadableUserDashTeamMenu';
+import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader';
+import DashHeading from 'universal/components/Dashboard/DashHeading';
+import DashSectionControls from 'universal/components/Dashboard/DashSectionControls';
+import DashSectionControl from 'universal/components/Dashboard/DashSectionControl';
 
 const originAnchor = {
   vertical: 'bottom',
@@ -22,12 +25,13 @@ const UserTasksHeader = (props) => {
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
-      <DashHeading>
-        {'My Dashboard'}
-      </DashHeading>
+      <DashHeading>{'My Dashboard'}</DashHeading>
       <DashSectionControls>
         <DashSectionControl>
-          <DashFilterLabel><b>{'Show Tasks for'}</b>{': '}</DashFilterLabel>
+          <DashFilterLabel>
+            <b>{'Show Tasks for'}</b>
+            {': '}
+          </DashFilterLabel>
           <LoadableMenu
             LoadableComponent={LoadableUserDashTeamMenu}
             maxWidth={350}

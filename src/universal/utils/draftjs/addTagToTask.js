@@ -11,10 +11,7 @@ const addTagToTask = (contentState, tag) => {
     isBackward: false,
     hasFocus: false
   });
-  const contentStateWithNewBlock = Modifier.splitBlock(
-    contentState,
-    selectionState
-  );
+  const contentStateWithNewBlock = Modifier.splitBlock(contentState, selectionState);
   const newBlock = contentStateWithNewBlock.getLastBlock();
   const lastSelection = selectionState.merge({
     anchorKey: newBlock.getKey(),
@@ -23,17 +20,10 @@ const addTagToTask = (contentState, tag) => {
     focusOffset: 0
   });
 
-  const contentStateWithEntity = contentStateWithNewBlock
-    .createEntity('TAG', 'IMMUTABLE', {value});
+  const contentStateWithEntity = contentStateWithNewBlock.createEntity('TAG', 'IMMUTABLE', {value});
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
 
-  return Modifier.replaceText(
-    contentStateWithEntity,
-    lastSelection,
-    tag,
-    null,
-    entityKey
-  );
+  return Modifier.replaceText(contentStateWithEntity, lastSelection, tag, null, entityKey);
 };
 
 export default addTagToTask;

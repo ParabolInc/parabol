@@ -7,10 +7,7 @@ import Avatar from 'universal/components/Avatar/Avatar';
 
 const MentionUser = (props) => {
   const {active, preferredName, picture, styles} = props;
-  const itemStyle = css(
-    styles.row,
-    active && styles.active
-  );
+  const itemStyle = css(styles.row, active && styles.active);
   return (
     <div className={itemStyle}>
       <Avatar picture={picture} size="smallest" />

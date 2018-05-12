@@ -11,7 +11,8 @@ const MeetingTask = new GraphQLObjectType({
     },
     content: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The stringified Draft-js raw description of the action created during the meeting'
+      description:
+        'The stringified Draft-js raw description of the action created during the meeting'
     },
     status: {
       type: TaskStatusEnum,
@@ -94,4 +95,3 @@ export default MeetingTask;
 //     }
 //   }),
 // });
-

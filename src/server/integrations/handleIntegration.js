@@ -10,7 +10,9 @@ const query = `
 
 export default (service) => async (req, res) => {
   closeClientPage(res);
-  const {query: {code, state}} = req;
+  const {
+    query: {code, state}
+  } = req;
   const variables = {code, state, service};
   const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET};
   graphql(schema, query, {}, context, variables);

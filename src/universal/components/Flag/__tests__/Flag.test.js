@@ -79,8 +79,8 @@ describe('Flag', () => {
   });
 
   it('lets you know if you called it with ambiguous arguments', () => {
-    expect(
-      () => shallow(<Flag when render={<Foo />} otherwise={<Bar />} switchOnVal={() => <Baz />} />)
+    expect(() =>
+      shallow(<Flag when render={<Foo />} otherwise={<Bar />} switchOnVal={() => <Baz />} />)
     ).toThrow(/Must provide one of/);
   });
 });

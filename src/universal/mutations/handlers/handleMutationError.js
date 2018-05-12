@@ -3,13 +3,17 @@ import type {StandardMutationError} from 'universal/types/schema.flow';
 
 type Context = {
   environment: Object
-}
+};
 
 type Options = {
-  popToast?: boolean,
-}
+  popToast?: boolean
+};
 
-const handleMutationError = (error: StandardMutationError, context: Context, options: Options = {}) => {
+const handleMutationError = (
+  error: StandardMutationError,
+  context: Context,
+  options: Options = {}
+) => {
   if (!error) return;
   const {title, message} = error;
   console.error(title, message);

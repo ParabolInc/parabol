@@ -1,6 +1,5 @@
 export default class MockRes {
-  constructor() {
+  constructor () {
     this.sendStatus = jest.fn();
   }
 }
-

@@ -46,7 +46,6 @@ const Hint = styled('div')({
   marginTop: '2.5rem'
 });
 
-
 type Props = {
   atmosphere: Object,
   match: Match,
@@ -61,54 +60,64 @@ class NewMeetingCheckIn extends Component<Props> {
     gotoNext({isCheckedIn});
   };
 
-  render() {
+  render () {
     const {atmosphere, team} = this.props;
     const {newMeeting} = team;
-    const {facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
+    const {
+      facilitator: {facilitatorName, facilitatorUserId},
+      localStage: {localStageId, teamMember},
+      phases
+    } = newMeeting;
     const {isSelf: isMyMeetingSection} = teamMember;
     const nextStageRes = findStageAfterId(phases, localStageId);
     // in case the checkin is the last phase of the meeting
     if (!nextStageRes) return null;
     const {stage: nextStage, phase: nextPhase} = nextStageRes;
     const lastCheckInStage = nextPhase.phaseType !== CHECKIN;
-    const nextMemberName = nextStage && nextStage.teamMember && nextStage.teamMember.preferredName || '';
+    const nextMemberName =
+      (nextStage && nextStage.teamMember && nextStage.teamMember.preferredName) || '';
     const {viewerId} = atmosphere;
     const isFacilitating = facilitatorUserId === viewerId;
     return (
       <React.Fragment>
         <MeetingSection flexToFill paddingBottom="1rem">
-          <NewMeetingCheckInPrompt
-            team={team}
-            teamMember={teamMember}
-          />
+          <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
-            {!isFacilitating &&
-            <Hint>
-              <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
-                {!lastCheckInStage ?
-                  <span>
-                    {isMyMeetingSection ?
-                      <span>{'Share with your teammates!'}</span> :
-                      <span>{'Waiting for'} <b>{teamMember.preferredName}</b> {'to share with the team'}</span>
-                    }
-                  </span> :
-                  <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
-                }
-              </MeetingFacilitationHint>
-            </Hint>
-            }
+            {!isFacilitating && (
+              <Hint>
+                <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
+                  {!lastCheckInStage ? (
+                    <span>
+                      {isMyMeetingSection ? (
+                        <span>{'Share with your teammates!'}</span>
+                      ) : (
+                        <span>
+                          {'Waiting for'} <b>{teamMember.preferredName}</b>{' '}
+                          {'to share with the team'}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span>
+                      {'Waiting for'} <b>{facilitatorName}</b>{' '}
+                      {`to advance to ${actionMeeting.updates.name}`}
+                    </span>
+                  )}
+                </MeetingFacilitationHint>
+              </Hint>
+            )}
           </CheckIn>
         </MeetingSection>
-        {isFacilitating &&
-        <MeetingControlBar>
-          <CheckInControls
-            checkInPressFactory={this.checkinPressFactory}
-            currentMemberName={teamMember.preferredName}
-            nextMemberName={nextMemberName}
-            nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
-          />
-        </MeetingControlBar>
-        }
+        {isFacilitating && (
+          <MeetingControlBar>
+            <CheckInControls
+              checkInPressFactory={this.checkinPressFactory}
+              currentMemberName={teamMember.preferredName}
+              nextMemberName={nextMemberName}
+              nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
+            />
+          </MeetingControlBar>
+        )}
       </React.Fragment>
     );
   }

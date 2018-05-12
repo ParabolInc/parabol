@@ -8,11 +8,11 @@ import React from 'react';
 import styled from 'react-emotion';
 import {Link} from 'react-router-dom';
 import {Field, reduxForm} from 'redux-form';
-import {InputField} from 'universal/components';
 import StyledButton from 'universal/components/StyledButton';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
 import appTheme from 'universal/styles/theme/appTheme';
+import InputField from 'universal/components/InputField/InputField';
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
@@ -67,7 +67,12 @@ const SignInEmailPasswordForm = (props: Props) => (
         disabled={props.submitting}
       />
     </Block>
-    <StyledButton buttonPalette="primary" disabled={!props.valid} type="submit" waiting={props.submitting}>
+    <StyledButton
+      buttonPalette="primary"
+      disabled={!props.valid}
+      type="submit"
+      waiting={props.submitting}
+    >
       {'Sign In'}
     </StyledButton>
     <ForgotPasswordLink to="/reset-password">{'Forgot your password?'}</ForgotPasswordLink>

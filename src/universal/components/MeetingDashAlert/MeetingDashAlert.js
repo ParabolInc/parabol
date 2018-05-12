@@ -4,12 +4,12 @@ import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import {Link} from 'react-router-dom';
 import plural from 'universal/utils/plural';
-import {DashAlert} from 'universal/components/Dashboard';
 import {commitLocalUpdate} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import DashAlert from 'universal/components/Dashboard/DashAlert';
 
 class MeetingDashAlert extends Component {
-  componentDidMount() {
+  componentDidMount () {
     const {atmosphere} = this.props;
     const {viewerId} = atmosphere;
     commitLocalUpdate(atmosphere, (store) => {
@@ -17,7 +17,7 @@ class MeetingDashAlert extends Component {
     });
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const {atmosphere} = this.props;
     const {viewerId} = atmosphere;
     commitLocalUpdate(atmosphere, (store) => {
@@ -25,7 +25,7 @@ class MeetingDashAlert extends Component {
     });
   }
 
-  render() {
+  render () {
     const {activeMeetings, styles} = this.props;
     return (
       <DashAlert colorPalette="warm">
@@ -35,7 +35,12 @@ class MeetingDashAlert extends Component {
         <div className={css(styles.inlineBlock)}>
           {activeMeetings.map((meeting) => {
             return (
-              <Link key={meeting.link} className={css(styles.link)} title="Join Active Meeting" to={meeting.link}>
+              <Link
+                key={meeting.link}
+                className={css(styles.link)}
+                title="Join Active Meeting"
+                to={meeting.link}
+              >
                 {meeting.name}
               </Link>
             );

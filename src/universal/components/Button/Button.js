@@ -9,8 +9,10 @@ import appTheme from 'universal/styles/theme/appTheme';
 import textOverflow from 'universal/styles/helpers/textOverflow';
 
 const makeSolidTheme = (themeColor, textColor = '#fff', buttonStyle = 'solid') => {
-  const buttonColor = buttonStyle === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
-  const color = buttonStyle === 'inverted' ? tinycolor.mix(textColor, '#000', 10).toHexString() : textColor;
+  const buttonColor =
+    buttonStyle === 'inverted' ? tinycolor.mix(themeColor, '#fff', 90).toHexString() : themeColor;
+  const color =
+    buttonStyle === 'inverted' ? tinycolor.mix(textColor, '#000', 10).toHexString() : textColor;
 
   return {
     backgroundColor: buttonColor,
@@ -46,7 +48,7 @@ const makeLinkTheme = (color) => {
     boxShadow: 'none !important',
     color: tinycolor.mix(color, '#000', 15).toHexString()
   };
-  return ({
+  return {
     backgroundColor: 'transparent',
     boxShadow: 'none !important',
     color,
@@ -60,7 +62,7 @@ const makeLinkTheme = (color) => {
     ':focus': {
       ...hoverFocusStyles
     }
-  });
+  };
 };
 
 const makePrimaryTheme = () => ({
@@ -70,8 +72,10 @@ const makePrimaryTheme = () => ({
 const makePropColors = (buttonStyle, colorPalette) => {
   const color = ui.palette[colorPalette];
   const baseTextColor = buttonStyle === 'inverted' ? color : ui.palette.white;
-  const textColor = (colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray') ?
-    ui.palette.dark : baseTextColor;
+  const textColor =
+    colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray'
+      ? ui.palette.dark
+      : baseTextColor;
   if (buttonStyle === 'flat' || buttonStyle === 'outlined') {
     return makeFlatTheme(buttonStyle, color);
   }
@@ -94,10 +98,7 @@ class Button extends Component {
     icon: PropTypes.string,
     iconLarge: PropTypes.bool,
     iconPalette: PropTypes.oneOf(ui.paletteOptions),
-    iconPlacement: PropTypes.oneOf([
-      'left',
-      'right'
-    ]),
+    iconPlacement: PropTypes.oneOf(['left', 'right']),
     innerRef: PropTypes.func,
     isBlock: PropTypes.bool,
     label: PropTypes.any,
@@ -105,32 +106,17 @@ class Button extends Component {
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
     buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
-    buttonStyle: PropTypes.oneOf([
-      'flat',
-      'inverted',
-      'link',
-      'outlined',
-      'primary',
-      'solid'
-    ]),
+    buttonStyle: PropTypes.oneOf(['flat', 'inverted', 'link', 'outlined', 'primary', 'solid']),
     styles: PropTypes.object,
-    textTransform: PropTypes.oneOf([
-      'none',
-      'uppercase'
-    ]),
+    textTransform: PropTypes.oneOf(['none', 'uppercase']),
     title: PropTypes.string,
-    type: PropTypes.oneOf([
-      'button',
-      'menu',
-      'reset',
-      'submit'
-    ]),
+    type: PropTypes.oneOf(['button', 'menu', 'reset', 'submit']),
     // https://github.com/facebook/react/issues/4251
     visuallyDisabled: PropTypes.bool,
     waiting: PropTypes.bool
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       pressedDown: null
@@ -164,7 +150,7 @@ class Button extends Component {
     }
   };
 
-  render() {
+  render () {
     const {
       'aria-label': ariaLabel,
       depth,
@@ -210,21 +196,21 @@ class Button extends Component {
       };
       const iconPlacementStyle = css(
         thisIconPlacement === 'left' && styles.iconLeft,
-        thisIconPlacement === 'right' && styles.iconRight,
+        thisIconPlacement === 'right' && styles.iconRight
       );
       const iconMargin = iconOnly ? '' : iconPlacementStyle;
-      const makeIcon = () =>
-        <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
+      const makeIcon = () => <FontAwesome className={iconMargin} name={icon} style={iconStyle} />;
       return (
         <span className={css(styles.buttonInner)}>
-          {iconOnly ?
-            makeIcon() :
+          {iconOnly ? (
+            makeIcon()
+          ) : (
             <span className={css(styles.buttonInner)}>
               {thisIconPlacement === 'left' && makeIcon()}
               <span className={css(styles.label)}>{label}</span>
               {thisIconPlacement === 'right' && makeIcon()}
             </span>
-          }
+          )}
         </span>
       );
     };
@@ -243,21 +229,25 @@ class Button extends Component {
         type={type || 'button'}
         aria-label={ariaLabel}
       >
-        {icon ?
-          makeIconLabel() :
+        {icon ? (
+          makeIconLabel()
+        ) : (
           <span className={css(styles.buttonInner)}>
             <span className={css(styles.label)}>{label}</span>
           </span>
-        }
+        )}
       </button>
     );
   }
 }
 
-const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabled, textTransform}) => {
+const styleThunk = (
+  theme,
+  {buttonSize, buttonStyle, colorPalette, depth, disabled, textTransform}
+) => {
   const size = buttonSize || ui.buttonSizeOptions[1];
   const buttonSizeStyles = ui.buttonSizeStyles[size];
-  return ({
+  return {
     // Button base
     base: {
       ...ui.buttonBaseStyles,
@@ -336,7 +326,7 @@ const styleThunk = (theme, {buttonSize, buttonStyle, colorPalette, depth, disabl
       ...ui.buttonDisabledStyles,
       cursor: 'wait'
     }
-  });
+  };
 };
 
 export default withStyles(styleThunk)(Button);

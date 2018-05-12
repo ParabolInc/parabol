@@ -7,7 +7,8 @@ import TeamNotification from 'server/graphql/types/TeamNotification';
 
 const NotifyInviteeApproved = new GraphQLObjectType({
   name: 'NotifyInviteeApproved',
-  description: 'A notification sent to a user when the person they invited got approved by the org leader',
+  description:
+    'A notification sent to a user when the person they invited got approved by the org leader',
   interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     inviteeEmail: {

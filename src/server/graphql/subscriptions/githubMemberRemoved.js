@@ -13,7 +13,9 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader}) => {
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const channelName = `githubMemberRemoved.${teamId}`;

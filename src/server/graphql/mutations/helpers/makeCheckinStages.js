@@ -17,7 +17,7 @@ export const makeCheckInStage = (teamMember, meetingId, isFirstStage) => ({
 const makeCheckinStages = async (teamId, meetingId, dataLoader, phaseIdx) => {
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId);
   return teamMembers
-    .sort((a, b) => a.checkInOrder > b.checkInOrder ? 1 : -1)
+    .sort((a, b) => (a.checkInOrder > b.checkInOrder ? 1 : -1))
     .map((teamMember, idx) => makeCheckInStage(teamMember, meetingId, phaseIdx === 0 && idx === 0));
 };
 

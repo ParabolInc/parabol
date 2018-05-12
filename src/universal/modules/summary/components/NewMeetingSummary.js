@@ -15,8 +15,14 @@ type Props = {|
 |};
 
 const NewMeetingSummary = (props: Props) => {
-  const {viewer: {newMeeting}} = props;
-  const {meetingNumber, meetingType, team: {id: teamId, name: teamName}} = newMeeting;
+  const {
+    viewer: {newMeeting}
+  } = props;
+  const {
+    meetingNumber,
+    meetingType,
+    team: {id: teamId, name: teamName}
+  } = newMeeting;
   const meetingLabel = meetingTypeToLabel[meetingType];
   const title = `${meetingLabel} Meeting ${MEETING_SUMMARY_LABEL} | ${teamName} ${meetingNumber}`;
   const meetingUrl = makeHref(`/meeting/${teamId}`);

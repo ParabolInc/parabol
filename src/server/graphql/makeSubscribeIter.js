@@ -29,17 +29,17 @@ const makeSubscribeIter = (channelName, options = {}) => {
   };
 
   return {
-    next() {
+    next () {
       return getNextPromise();
     },
-    return() {
+    return () {
       dataLoader.dispose({force: true});
       return asyncIterator.return();
     },
-    throw(error) {
+    throw (error) {
       return asyncIterator.throw(error);
     },
-    [$$asyncIterator]() {
+    [$$asyncIterator] () {
       return this;
     }
   };

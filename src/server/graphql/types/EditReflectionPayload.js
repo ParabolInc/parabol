@@ -26,7 +26,8 @@ const EditReflectionPayload = new GraphQLObjectType({
     },
     editorId: {
       type: GraphQLID,
-      description: 'The socketId of the client editing the card (uses socketId to maintain anonymity)'
+      description:
+        'The socketId of the client editing the card (uses socketId to maintain anonymity)'
     },
     isEditing: {
       type: GraphQLBoolean,

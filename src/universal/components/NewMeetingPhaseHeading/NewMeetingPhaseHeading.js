@@ -31,12 +31,14 @@ const PhaseDescription = styled('h2')({
 
 type Props = {|
   meeting: Meeting
-|}
+|};
 
 const NewMeetingPhaseHeading = (props: Props) => {
   const {meeting} = props;
   if (!meeting || !meeting.localPhase) return <div />;
-  const {localPhase: {phaseType}} = meeting;
+  const {
+    localPhase: {phaseType}
+  } = meeting;
   const label = phaseLabelLookup[phaseType];
   const description = phaseDescriptionLookup[phaseType];
   if (!label || !description) return <div />;

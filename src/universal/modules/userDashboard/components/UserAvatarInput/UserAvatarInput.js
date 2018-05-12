@@ -26,7 +26,9 @@ const uploadPicture = async (atmosphere, pictureFile) => {
       reject(JSON.stringify(err));
     };
     const onCompleted = async (res) => {
-      const {createUserPicturePutUrl: {url}} = res;
+      const {
+        createUserPicturePutUrl: {url}
+      } = res;
       const pathname = await sendAssetToS3(pictureFile, url);
       resolve(pathname);
     };

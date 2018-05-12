@@ -13,14 +13,16 @@ const handleUpdateTeamMember = (updatedTeamMember, store) => {
     sorts.forEach((sortBy) => {
       const teamMembers = team.getLinkedRecords('teamMembers', {sortBy});
       if (!teamMembers) return;
-      teamMembers.sort((a, b) => a.getValue(sortBy) > b.getValue(sortBy) ? 1 : -1);
+      teamMembers.sort((a, b) => (a.getValue(sortBy) > b.getValue(sortBy) ? 1 : -1));
       team.setLinkedRecords(teamMembers, 'teamMembers', {sortBy});
     });
   } else {
     const teamMemberId = updatedTeamMember.getValue('id');
     sorts.forEach((sortBy) => {
       const teamMembers = team.getLinkedRecords('teamMembers', {sortBy});
-      safeRemoveNodeFromArray(teamMemberId, teamMembers, 'teamMembers', {storageKeyArgs: {sortBy}});
+      safeRemoveNodeFromArray(teamMemberId, teamMembers, 'teamMembers', {
+        storageKeyArgs: {sortBy}
+      });
     });
   }
 };

@@ -1,8 +1,5 @@
 exports.up = async (r) => {
-  const tables = [
-    r.tableCreate('Invoice'),
-    r.tableCreate('InvoiceItemHook')
-  ];
+  const tables = [r.tableCreate('Invoice'), r.tableCreate('InvoiceItemHook')];
   try {
     await Promise.all(tables);
   } catch (e) {
@@ -22,9 +19,6 @@ exports.up = async (r) => {
 };
 
 exports.down = async (r) => {
-  const tables = [
-    r.tableDrop('Invoice'),
-    r.tableDrop('InvoiceItemHook')
-  ];
+  const tables = [r.tableDrop('Invoice'), r.tableDrop('InvoiceItemHook')];
   await Promise.all(tables);
 };

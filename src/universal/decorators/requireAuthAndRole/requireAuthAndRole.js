@@ -29,9 +29,14 @@ export default ({
       location: PropTypes.object.isRequired
     };
 
-    constructor(props) {
+    constructor (props) {
       super(props);
-      const {atmosphere: {authObj}, dispatch, history, location: {pathname}} = props;
+      const {
+        atmosphere: {authObj},
+        dispatch,
+        history,
+        location: {pathname}
+      } = props;
       if (authObj) {
         const {rol} = authObj;
         if (role && role !== rol) {
@@ -45,12 +50,15 @@ export default ({
         if (!silent) {
           setTimeout(() => dispatch(showError(unauthenticated)));
         }
-        history.push({pathname: unauthRoute, search: `?redirectTo=${encodeURIComponent(pathname)}`});
+        history.push({
+          pathname: unauthRoute,
+          search: `?redirectTo=${encodeURIComponent(pathname)}`
+        });
         this.redir = true;
       }
     }
 
-    render() {
+    render () {
       if (this.redir) return null;
       return <ComposedComponent {...this.props} />;
     }

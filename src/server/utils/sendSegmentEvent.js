@@ -5,7 +5,8 @@ import countTiersForUserId from 'server/graphql/queries/helpers/countTiersForUse
 
 const getTraits = (userIds) => {
   const r = getRethink();
-  return r.table('User')
+  return r
+    .table('User')
     .getAll(r.args(userIds), {index: 'id'})
     .map({
       avatar: r.row('picture').default(''),
@@ -21,7 +22,6 @@ const getOrgId = (teamId) => {
   const r = getRethink();
   return teamId ? r.table('Team').get(teamId)('orgId') : undefined;
 };
-
 
 const getSegmentProps = (userIds, teamId) => {
   return resolvePromiseObj({

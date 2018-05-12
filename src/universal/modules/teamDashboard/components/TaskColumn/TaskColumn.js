@@ -8,10 +8,8 @@ import AddTaskButton from 'universal/components/AddTaskButton/AddTaskButton';
 import DraggableTask from 'universal/containers/TaskCard/DraggableTask';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import sortOrderBetween from 'universal/dnd/sortOrderBetween';
-import {Menu, MenuItem} from 'universal/modules/menu';
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation';
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
-import {overflowTouch} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/appTheme';
 import themeLabels from 'universal/styles/theme/labels';
 import ui from 'universal/styles/ui';
@@ -22,6 +20,9 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
 import TaskColumnDropZone from './TaskColumnDropZone';
+import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem';
+import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer';
+import overflowTouch from 'universal/styles/helpers/overflowTouch';
 
 // The `ScrollZone` component manages an overflowed block-level element,
 // scrolling its contents when another element is dragged close to its edges.
@@ -93,18 +94,14 @@ class TaskColumn extends Component {
       }
       const itemFactory = () => {
         const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder);
-        return menuItems.map((item) =>
-          (<MenuItem
-            key={`MenuItem${item.label}`}
-            label={item.label}
-            onClick={item.handleClick}
-          />)
-        );
+        return menuItems.map((item) => (
+          <MenuItem key={`MenuItem${item.label}`} label={item.label} onClick={item.handleClick} />
+        ));
       };
 
       const toggle = <AddTaskButton label={label} />;
       return (
-        <Menu
+        <MenuContainer
           itemFactory={itemFactory}
           originAnchor={originAnchor}
           maxHeight={ui.dashMenuHeight}
@@ -122,9 +119,7 @@ class TaskColumn extends Component {
     const {tasks} = this.props;
     const targetIndex = tasks.findIndex((p) => p.id === targetTask.id);
     const boundingTask = tasks[targetIndex + (before ? -1 : 1)];
-    return Boolean(
-      boundingTask && boundingTask.id === draggedTask.id
-    );
+    return Boolean(boundingTask && boundingTask.id === draggedTask.id);
   };
 
   /**
@@ -152,10 +147,7 @@ class TaskColumn extends Component {
   };
 
   makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
-    const {
-      status,
-      teams
-    } = this.props;
+    const {status, teams} = this.props;
     const {userId} = atmosphere;
     return teams.map((team) => ({
       label: team.name,
@@ -171,7 +163,7 @@ class TaskColumn extends Component {
     }));
   };
 
-  render() {
+  render () {
     const {
       area,
       atmosphere,
@@ -200,14 +192,8 @@ class TaskColumn extends Component {
         <div className={css(styles.columnHeader)}>
           {this.makeAddTask()}
           <div className={statusLabelBlockStyles}>
-            <span className={css(styles.statusLabel)}>
-              {label}
-            </span>
-            {(tasks.length > 0) &&
-            <span className={css(styles.tasksCount)}>
-              {tasks.length}
-            </span>
-            }
+            <span className={css(styles.statusLabel)}>{label}</span>
+            {tasks.length > 0 && <span className={css(styles.tasksCount)}>{tasks.length}</span>}
           </div>
         </div>
         <div className={css(styles.columnBody)}>
@@ -307,10 +293,4 @@ const styleThunk = () => ({
   }
 });
 
-export default connect()(
-  withAtmosphere(
-    withRouter(
-      withStyles(styleThunk)(TaskColumn)
-    )
-  )
-);
+export default connect()(withAtmosphere(withRouter(withStyles(styleThunk)(TaskColumn))));

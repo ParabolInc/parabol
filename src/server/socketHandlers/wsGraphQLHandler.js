@@ -4,7 +4,7 @@ import RethinkDataLoader from 'server/utils/RethinkDataLoader';
 import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult';
 import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors';
 
-export default async function wsGraphQLHandler(connectionContext, parsedMessage) {
+export default async function wsGraphQLHandler (connectionContext, parsedMessage) {
   const {payload} = parsedMessage;
   const {query, variables} = payload;
   const {id: socketId, authToken, sharedDataLoader} = connectionContext;

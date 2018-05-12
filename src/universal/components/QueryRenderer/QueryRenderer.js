@@ -23,24 +23,28 @@ import type {
   IEnvironment,
   RelayContext,
   Snapshot,
-  Variables,
+  Variables
 } from 'relay-runtime';
 
 type RetryCallbacks = {
   handleDataChange: ({
     error?: Error,
-    snapshot?: Snapshot,
+    snapshot?: Snapshot
   }) => void,
-  handleRetryAfterError: (error: Error) => void,
+  handleRetryAfterError: (error: Error) => void
 };
 
 export type RenderProps = {
   error: ?Error,
   props: ?Object,
-  retry: ?() => void,
+  retry: ?() => void
 };
 
-type Subscription = (environment: IEnvironment, queryVariables: Variables, subParams?: Object) => GraphQLSubscriptionConfig;
+type Subscription = (
+  environment: IEnvironment,
+  queryVariables: Variables,
+  subParams?: Object
+) => GraphQLSubscriptionConfig;
 
 export type Props = {
   cacheConfig?: ?CacheConfig,
@@ -50,7 +54,7 @@ export type Props = {
   render: (renderProps: RenderProps) => React.Node,
   subscriptions?: Array<Subscription>,
   subParams?: Object,
-  variables: Variables,
+  variables: Variables
 };
 
 type State = {
@@ -62,12 +66,13 @@ type State = {
   relayContextEnvironment: IEnvironment,
   relayContextVariables: Variables,
   renderProps: RenderProps,
-  retryCallbacks: RetryCallbacks,
+  retryCallbacks: RetryCallbacks
 };
 
 const MAX_INT = 2147483647;
 const makeQueryKey = (name, variables) => JSON.stringify({name, variables});
-const isCacheable = (subs, cacheConfig: CacheConfig = {}) => Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
+const isCacheable = (subs, cacheConfig: CacheConfig = {}) =>
+  Boolean(subs || cacheConfig.force === false || cacheConfig.ttl);
 
 class SafeQueryFetcher extends ReactRelayQueryFetcher {
   readyToGC() {
@@ -92,32 +97,21 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
   // TODO T25783053 Update this component to use the new React context API,
   // Once we have confirmed that it's okay to raise min React version to 16.3.
   static childContextTypes = {
-    relay: RelayPropTypes.Relay,
+    relay: RelayPropTypes.Relay
   };
 
   _relayContext: RelayContext = {
     // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
     environment: (this.props.environment: IEnvironment),
-    variables: this.props.variables,
+    variables: this.props.variables
   };
 
   constructor(props: Props, context: Object) {
     super(props, context);
 
-    const handleDataChange = ({
-      error,
-      snapshot,
-    }: {
-      error?: Error,
-      snapshot?: Snapshot,
-    }): void => {
+    const handleDataChange = ({error, snapshot}: {error?: Error, snapshot?: Snapshot}): void => {
       this.setState({
-        renderProps: getRenderProps(
-          error,
-          snapshot,
-          queryFetcher,
-          retryCallbacks,
-        ),
+        renderProps: getRenderProps(error, snapshot, queryFetcher, retryCallbacks)
       });
     };
 
@@ -126,7 +120,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
 
     const retryCallbacks = {
       handleDataChange,
-      handleRetryAfterError,
+      handleRetryAfterError
     };
 
     const queryFetcher = new SafeQueryFetcher();
@@ -140,11 +134,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
       prevQuery: props.query,
       queryFetcher,
       retryCallbacks,
-      ...fetchQueryAndComputeStateFromProps(
-        props,
-        queryFetcher,
-        retryCallbacks,
-      ),
+      ...fetchQueryAndComputeStateFromProps(props, queryFetcher, retryCallbacks)
     };
   }
 
@@ -155,10 +145,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     delete ReactRelayQueryRenderer.timeouts[queryKey];
   }
 
-  static getDerivedStateFromProps(
-    nextProps: Props,
-    prevState: State,
-  ): $Shape<State> | null {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     if (
       prevState.prevQuery !== nextProps.query ||
       prevState.prevPropsEnvironment !== nextProps.environment ||
@@ -171,8 +158,8 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
         ...fetchQueryAndComputeStateFromProps(
           nextProps,
           prevState.queryFetcher,
-          prevState.retryCallbacks,
-        ),
+          prevState.retryCallbacks
+        )
       };
     }
 
@@ -185,14 +172,13 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     return (
-      nextProps.render !== this.props.render ||
-      nextState.renderProps !== this.state.renderProps
+      nextProps.render !== this.props.render || nextState.renderProps !== this.state.renderProps
     );
   }
 
   getChildContext(): Object {
     return {
-      relay: this._relayContext,
+      relay: this._relayContext
     };
   }
 
@@ -221,11 +207,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
   }
 
   render() {
-    const {
-      relayContextEnvironment,
-      relayContextVariables,
-      renderProps,
-    } = this.state;
+    const {relayContextEnvironment, relayContextVariables, renderProps} = this.state;
 
     // HACK Mutate the context.relay object before updating children,
     // To account for any changes made by static gDSFP.
@@ -243,7 +225,7 @@ function getLoadingRenderProps(): RenderProps {
   return {
     error: null,
     props: null, // `props: null` indicates that the data is being fetched (i.e. loading)
-    retry: null,
+    retry: null
   };
 }
 
@@ -251,7 +233,7 @@ function getEmptyRenderProps(): RenderProps {
   return {
     error: null,
     props: {}, // `props: {}` indicates no data available
-    retry: null,
+    retry: null
   };
 }
 
@@ -259,7 +241,7 @@ function getRenderProps(
   error: ?Error,
   snapshot: ?Snapshot,
   queryFetcher: ReactRelayQueryFetcher,
-  retryCallbacks: RetryCallbacks,
+  retryCallbacks: RetryCallbacks
 ): RenderProps {
   return {
     error: error ? error : null,
@@ -273,30 +255,33 @@ function getRenderProps(
         // reset the render props
         retryCallbacks.handleRetryAfterError(error);
       }
-    },
+    }
   };
 }
 
 function fetchQueryAndComputeStateFromProps(
   props: Props,
   queryFetcher: ReactRelayQueryFetcher,
-  retryCallbacks: RetryCallbacks,
+  retryCallbacks: RetryCallbacks
 ): $Shape<State> {
   const {environment, query, variables} = props;
   if (query) {
     // $FlowFixMe TODO t16225453 QueryRenderer works with old+new environment.
     const genericEnvironment = (environment: IEnvironment);
 
-    const {
-      createOperationSelector,
-      getRequest,
-    } = genericEnvironment.unstable_internal;
+    const {createOperationSelector, getRequest} = genericEnvironment.unstable_internal;
     const request = getRequest(query);
     const operation = createOperationSelector(request, variables);
     const queryKey = makeQueryKey(request.name, operation.variables);
     ReactRelayQueryRenderer.renewTTL(queryKey);
     if (props.subscriptions) {
-      environment.registerQuery(queryKey, props.subscriptions, props.subParams, operation.variables, queryFetcher);
+      environment.registerQuery(
+        queryKey,
+        props.subscriptions,
+        props.subParams,
+        operation.variables,
+        queryFetcher
+      );
     }
 
     try {
@@ -305,14 +290,14 @@ function fetchQueryAndComputeStateFromProps(
         dataFrom: props.dataFrom || 'STORE_THEN_NETWORK',
         environment: genericEnvironment,
         onDataChange: retryCallbacks.handleDataChange,
-        operation,
+        operation
       });
       if (!snapshot) {
         return {
           queryKey,
           relayContextEnvironment: environment,
           relayContextVariables: operation.variables,
-          renderProps: getLoadingRenderProps(),
+          renderProps: getLoadingRenderProps()
         };
       }
 
@@ -320,19 +305,14 @@ function fetchQueryAndComputeStateFromProps(
         queryKey,
         relayContextEnvironment: environment,
         relayContextVariables: operation.variables,
-        renderProps: getRenderProps(
-          null,
-          snapshot,
-          queryFetcher,
-          retryCallbacks,
-        ),
+        renderProps: getRenderProps(null, snapshot, queryFetcher, retryCallbacks)
       };
     } catch (error) {
       return {
         queryKey,
         relayContextEnvironment: environment,
         relayContextVariables: operation.variables,
-        renderProps: getRenderProps(error, null, queryFetcher, retryCallbacks),
+        renderProps: getRenderProps(error, null, queryFetcher, retryCallbacks)
       };
     }
   } else {
@@ -341,7 +321,7 @@ function fetchQueryAndComputeStateFromProps(
     return {
       relayContextEnvironment: environment,
       relayContextVariables: variables,
-      renderProps: getEmptyRenderProps(),
+      renderProps: getEmptyRenderProps()
     };
   }
 }

@@ -4,7 +4,6 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {createFragmentContainer} from 'react-relay';
 import InviteUser from 'universal/components/InviteUser/InviteUser';
-import {Button, Panel, Tooltip, UserRow, Row} from 'universal/components';
 import Helmet from 'react-helmet';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import LeaveTeamModal from 'universal/modules/teamDashboard/components/LeaveTeamModal/LeaveTeamModal';
@@ -21,6 +20,11 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import styled from 'react-emotion';
 import {PERSONAL, PRO_LABEL} from 'universal/utils/constants';
+import Tooltip from 'universal/components/Tooltip/Tooltip';
+import Panel from 'universal/components/Panel/Panel';
+import Row from 'universal/components/Row/Row';
+import Button from 'universal/components/Button/Button';
+import UserRow from 'universal/components/UserRow/UserRow';
 
 const originAnchor = {
   vertical: 'center',
@@ -97,60 +101,52 @@ class TeamSettings extends Component {
     onError: PropTypes.func.isRequired
   };
   teamMemberRowActions = (teamMember) => {
-    const {viewer: {team}} = this.props;
+    const {
+      viewer: {team}
+    } = this.props;
     const {teamMembers} = team;
     const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     const {teamMemberId, preferredName} = teamMember;
     const {isLead: viewerIsLead, teamMemberId: myTeamMemberId} = viewerTeamMember;
     return (
       <ActionsBlock>
-        {viewerIsLead && myTeamMemberId !== teamMemberId &&
-        <PromoteTeamMemberModal
-          toggle={
-            <ActionLink>
-              {`Promote ${preferredName} to Team Lead`}
-            </ActionLink>
-          }
-          teamMember={teamMember}
-        />
-        }
-        {viewerIsLead && myTeamMemberId !== teamMemberId &&
-        <RemoveTeamMemberModal
-          toggle={<ActionLink>{'Remove'}</ActionLink>}
-          teamMember={teamMember}
-        />
-        }
-        {!viewerIsLead && myTeamMemberId === teamMemberId &&
-        <LeaveTeamModal
-          toggle={<ActionLink>{'Leave Team'}</ActionLink>}
-          team={team}
-          teamMember={teamMember}
-        />
-
-        }
+        {viewerIsLead &&
+          myTeamMemberId !== teamMemberId && (
+          <PromoteTeamMemberModal
+            toggle={<ActionLink>{`Promote ${preferredName} to Team Lead`}</ActionLink>}
+            teamMember={teamMember}
+          />
+        )}
+        {viewerIsLead &&
+          myTeamMemberId !== teamMemberId && (
+          <RemoveTeamMemberModal
+            toggle={<ActionLink>{'Remove'}</ActionLink>}
+            teamMember={teamMember}
+          />
+        )}
+        {!viewerIsLead &&
+          myTeamMemberId === teamMemberId && (
+          <LeaveTeamModal
+            toggle={<ActionLink>{'Leave Team'}</ActionLink>}
+            team={team}
+            teamMember={teamMember}
+          />
+        )}
       </ActionsBlock>
     );
   };
   orgApprovalRowActions = (orgApprovalId) => {
-    const {
-      atmosphere,
-      submitMutation,
-      submitting,
-      onCompleted,
-      onError
-    } = this.props;
+    const {atmosphere, submitMutation, submitting, onCompleted, onError} = this.props;
 
     const cancel = () => {
       if (submitting) return;
       submitMutation();
       CancelApprovalMutation(atmosphere, orgApprovalId, onError, onCompleted);
     };
-    const tip = (<div>{'Waiting for the organization billing leader to approve.'}</div>);
+    const tip = <div>{'Waiting for the organization billing leader to approve.'}</div>;
     return (
       <ActionsBlock>
-        <ActionLink onClick={cancel}>
-          {'Cancel Pending Approval'}
-        </ActionLink>
+        <ActionLink onClick={cancel}>{'Cancel Pending Approval'}</ActionLink>
         <span>
           <Tooltip
             maxHeight={40}
@@ -166,23 +162,27 @@ class TeamSettings extends Component {
     );
   };
 
-  invitationRowActions(invitationId) {
+  invitationRowActions (invitationId) {
     const {
       atmosphere,
       dispatch,
       submitMutation,
       onCompleted,
       onError,
-      viewer: {team: {teamId}}
+      viewer: {
+        team: {teamId}
+      }
     } = this.props;
 
     const resend = () => {
       submitMutation();
       const onResendCompleted = () => {
-        dispatch(showSuccess({
-          title: 'Invitation sent!',
-          message: 'We sent your friend a nice little reminder'
-        }));
+        dispatch(
+          showSuccess({
+            title: 'Invitation sent!',
+            message: 'We sent your friend a nice little reminder'
+          })
+        );
         onCompleted();
       };
       ResendTeamInviteMutation(atmosphere, invitationId, onError, onResendCompleted);
@@ -193,18 +193,18 @@ class TeamSettings extends Component {
     };
     return (
       <ActionsBlock>
-        <ActionLink onClick={resend}>
-          {'Resend Invitation'}
-        </ActionLink>
-        <ActionLink onClick={cancel}>
-          {'Cancel Invitation'}
-        </ActionLink>
+        <ActionLink onClick={resend}>{'Resend Invitation'}</ActionLink>
+        <ActionLink onClick={cancel}>{'Cancel Invitation'}</ActionLink>
       </ActionsBlock>
     );
   }
 
-  render() {
-    const {dispatch, history, viewer: {team}} = this.props;
+  render () {
+    const {
+      dispatch,
+      history,
+      viewer: {team}
+    } = this.props;
     const {invitations, orgApprovals, orgId, teamName, teamMembers, tier} = team;
     const viewerTeamMember = teamMembers.find((m) => m.isSelf);
     // if kicked out, the component might reload before the redirect occurs
@@ -215,25 +215,27 @@ class TeamSettings extends Component {
       <TeamSettingsLayout>
         <Helmet title={`Team Settings | ${teamName}`} />
         <PanelsLayout>
-          {tier === PERSONAL &&
+          {tier === PERSONAL && (
             <Panel>
               <Row>
                 <div>{'This team is currently on a personal plan.'}</div>
                 <Button
                   buttonSize="small"
                   buttonStyle="primary"
-                  label={<span>{'Upgrade Team to '}<b>{PRO_LABEL}</b></span>}
+                  label={
+                    <span>
+                      {'Upgrade Team to '}
+                      <b>{PRO_LABEL}</b>
+                    </span>
+                  }
                   onClick={() => history.push(`/me/organizations/${orgId}`)}
                 />
               </Row>
             </Panel>
-          }
+          )}
           <Panel label="Manage Team">
             <PanelInner>
-              <InviteUser
-                dispatch={dispatch}
-                team={team}
-              />
+              <InviteUser dispatch={dispatch} team={team} />
               {teamMembers.map((teamMember) => {
                 const {teamMemberId} = teamMember;
                 return (
@@ -243,8 +245,7 @@ class TeamSettings extends Component {
                     possibleTeamMember={teamMember}
                   />
                 );
-              })
-              }
+              })}
               {invitations.map((invitation) => {
                 const {invitationId} = invitation;
                 return (
@@ -254,8 +255,7 @@ class TeamSettings extends Component {
                     possibleTeamMember={invitation}
                   />
                 );
-              })
-              }
+              })}
               {orgApprovals.map((orgApproval) => {
                 const {orgApprovalId} = orgApproval;
                 return (
@@ -268,13 +268,13 @@ class TeamSettings extends Component {
               })}
             </PanelInner>
           </Panel>
-          {viewerIsLead &&
-          <Panel label="Danger Zone">
-            <PanelRow>
-              <ArchiveTeamContainer team={team} />
-            </PanelRow>
-          </Panel>
-          }
+          {viewerIsLead && (
+            <Panel label="Danger Zone">
+              <PanelRow>
+                <ArchiveTeamContainer team={team} />
+              </PanelRow>
+            </Panel>
+          )}
         </PanelsLayout>
       </TeamSettingsLayout>
     );
@@ -282,13 +282,7 @@ class TeamSettings extends Component {
 }
 
 export default createFragmentContainer(
-  withAtmosphere(
-    withMutationProps(
-      withRouter(
-        connect()(TeamSettings)
-      )
-    )
-  ),
+  withAtmosphere(withMutationProps(withRouter(connect()(TeamSettings)))),
   graphql`
     fragment TeamSettings_viewer on User {
       team(teamId: $teamId) {

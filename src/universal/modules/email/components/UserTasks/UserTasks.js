@@ -66,18 +66,14 @@ const UserTasks = (props) => {
   const doneTasksLabel = `${doneTasks.length} ${plural(doneTasks.length, 'Task')} Done`;
   const newTasksLabel = `${newTasks.length} New ${plural(newTasks.length, 'Task')}`;
 
-  const makeTaskGroup = (taskArr, label, space) =>
-    (<tr>
+  const makeTaskGroup = (taskArr, label, space) => (
+    <tr>
       <td>
         <table style={emailTableBase} align="center" width="100%">
           <tbody>
             <tr>
               <td style={userStats}>
-                {taskArr.length > 0 &&
-                  <span style={labelStyle}>
-                    {label}
-                  </span>
-                }
+                {taskArr.length > 0 && <span style={labelStyle}>{label}</span>}
               </td>
             </tr>
             <tr>
@@ -89,7 +85,8 @@ const UserTasks = (props) => {
           </tbody>
         </table>
       </td>
-    </tr>);
+    </tr>
+  );
 
   return (
     <table style={emailTableBase} align="center" width="100%">

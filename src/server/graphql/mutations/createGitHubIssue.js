@@ -34,7 +34,9 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner, authT
     if (code === 'invalid') {
       if (field === 'assignees') {
         if (getIsSoftTeamMember(assigneeTeamMemberId)) {
-          const assigneeName = await r.table('SoftTeamMember').get(assigneeTeamMemberId)('preferredName');
+          const assigneeName = await r.table('SoftTeamMember').get(assigneeTeamMemberId)(
+            'preferredName'
+          );
           const breadcrumb = {
             message: `Assignment failed! Ask ${assigneeName} to join Parabol and add GitHub in Team Settings`,
             category: 'Create GitHub Issue'
@@ -86,7 +88,11 @@ export default {
       description: 'The owner/repo string'
     }
   },
-  resolve: async (source, {nameWithOwner, taskId}, {authToken, dataLoader, socketId: mutatorId}) => {
+  resolve: async (
+    source,
+    {nameWithOwner, taskId},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) => {
     const r = getRethink();
     const now = new Date();
     const operationId = dataLoader.share();
@@ -98,7 +104,9 @@ export default {
       return sendTaskNotFoundError(authToken);
     }
     const {teamId} = task;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
     const viewerId = getUserId(authToken);
@@ -119,7 +127,8 @@ export default {
       };
       return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb);
     }
-    const adminUserId = await r.table(GITHUB)
+    const adminUserId = await r
+      .table(GITHUB)
       .getAll(nameWithOwner, {index: 'nameWithOwner'})
       .filter({isActive: true, teamId})
       .nth(0)('adminUserId')
@@ -137,7 +146,8 @@ export default {
     // RESOLUTION
     const {assigneeId, content: rawContentStr} = task;
     const {userId: assigneeUserId} = fromTeamMemberId(assigneeId);
-    const providers = await r.table('Provider')
+    const providers = await r
+      .table('Provider')
       .getAll(teamId, {index: 'teamId'})
       .filter({service: GITHUB, isActive: true});
     const assigneeProvider = providers.find((provider) => provider.userId === assigneeUserId);
@@ -182,7 +192,8 @@ export default {
     } else {
       title = title.slice(0, 256);
     }
-    const contentState = blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent);
+    const contentState =
+      blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent);
     let body = stateToMarkdown(contentState);
     if (!creatorProvider) {
       const creatorName = await r.table('User').get(viewerId)('preferredName');
@@ -210,11 +221,18 @@ export default {
         body: JSON.stringify({assignees: payload.assignees})
       });
       const assignedIssueJson = await assignedIssue.json();
-      const assigneeError = await makeAssigneeError(assignedIssueJson, assigneeId, nameWithOwner, authToken);
+      const assigneeError = await makeAssigneeError(
+        assignedIssueJson,
+        assigneeId,
+        nameWithOwner,
+        authToken
+      );
       if (assigneeError) return assigneeError;
     }
 
-    await r.table('Task').get(taskId)
+    await r
+      .table('Task')
+      .get(taskId)
       .update({
         integration: {
           integrationId,

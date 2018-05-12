@@ -8,12 +8,12 @@ import {withRouter} from 'react-router-dom';
 import type {TeamID} from 'universal/types/team';
 import React from 'react';
 import styled from 'react-emotion';
-import {Button} from 'universal/components';
 import ui from 'universal/styles/ui';
 import LoadableTeamCallsToActionMenu from 'universal/modules/teamDashboard/components/TeamCallsToAction/LoadableTeamCallsToActionMenu';
 import LoadableMenu from 'universal/components/LoadableMenu';
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups';
 import {ACTION} from 'universal/utils/constants';
+import Button from 'universal/components/Button/Button';
 
 type Props = {
   isRetroEnabled: boolean,
@@ -62,7 +62,7 @@ const TeamCallToAction = (props: Props) => {
 
   return (
     <ButtonGroup>
-      {isRetroEnabled ?
+      {isRetroEnabled ? (
         <LoadableMenu
           LoadableComponent={LoadableTeamCallsToActionMenu}
           maxWidth={208}
@@ -71,7 +71,8 @@ const TeamCallToAction = (props: Props) => {
           queryVars={{teamId}}
           targetAnchor={targetAnchor}
           toggle={buttonToggle}
-        /> :
+        />
+      ) : (
         <Button
           buttonSize="small"
           buttonStyle="primary"
@@ -82,7 +83,7 @@ const TeamCallToAction = (props: Props) => {
           label="Start Action Meeting"
           onClick={goToMeetingLobby}
         />
-      }
+      )}
     </ButtonGroup>
   );
 };

@@ -37,7 +37,8 @@ const query = graphql`
   }
 `;
 
-const userDashboard = () => System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
+const userDashboard = () =>
+  System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard');
 const teamRoot = () => System.import('universal/modules/teamDashboard/components/TeamRoot');
 const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot');
 
@@ -60,8 +61,8 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
       subParams={{dispatch, history, location}}
       subscriptions={subscriptions}
       render={({props: renderProps}) => {
-        const notifications = (renderProps && renderProps.viewer) ?
-          renderProps.viewer.notifications : undefined;
+        const notifications =
+          renderProps && renderProps.viewer ? renderProps.viewer.notifications : undefined;
         const viewer = renderProps ? renderProps.viewer : null;
         return (
           <DashLayout viewer={viewer}>
@@ -72,7 +73,6 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
           </DashLayout>
         );
       }}
-
     />
   );
 };
@@ -85,4 +85,6 @@ DashboardWrapper.propTypes = {
   notifications: PropTypes.object
 };
 
-export default dragDropContext(HTML5Backend)(connect()(withRouter(withAtmosphere(DashboardWrapper))));
+export default dragDropContext(HTML5Backend)(
+  connect()(withRouter(withAtmosphere(DashboardWrapper)))
+);

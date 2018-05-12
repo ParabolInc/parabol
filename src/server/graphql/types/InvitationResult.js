@@ -23,7 +23,6 @@ const InvitationResult = new GraphQLObjectType({
       type: InvitationResultEnum,
       description: 'The outcome of trying to invite an email address'
     }
-
   })
 });
 

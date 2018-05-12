@@ -21,10 +21,9 @@ const GitHubMemberRemovedSubscription = (environment, queryVariables) => {
       const viewer = store.get(viewerId);
       const payload = store.getRootField('githubMemberRemoved');
       if (!payload) return;
-      payload.getLinkedRecords('leaveIntegration')
-        .forEach((leaveIntegration) => {
-          leaveIntegrationUpdater(store, viewer, teamId, leaveIntegration);
-        });
+      payload.getLinkedRecords('leaveIntegration').forEach((leaveIntegration) => {
+        leaveIntegrationUpdater(store, viewer, teamId, leaveIntegration);
+      });
     }
   };
 };

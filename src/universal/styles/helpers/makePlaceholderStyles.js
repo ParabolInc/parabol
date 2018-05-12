@@ -1,4 +1,4 @@
-export default function makePlaceholderStyles(color) {
+export default function makePlaceholderStyles (color) {
   return {
     '::placeholder': {color},
 

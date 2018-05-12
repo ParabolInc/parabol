@@ -22,29 +22,44 @@ export default {
       description: 'The id of the organization'
     }
   },
-  async resolve(source, {orgId, first, after}, {authToken}) {
+  async resolve (source, {orgId, first, after}, {authToken}) {
     const r = getRethink();
 
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc, null);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc, null);
+    }
 
     // RESOLUTION
-    const {stripeId, stripeSubscriptionId} = await r.table('Organization')
+    const {stripeId, stripeSubscriptionId} = await r
+      .table('Organization')
       .get(orgId)
       .pluck('stripeId', 'stripeSubscriptionId');
     const dbAfter = after ? new Date(after) : r.maxval;
     const {tooManyInvoices, upcomingInvoice} = await resolvePromiseObj({
-      tooManyInvoices: r.table('Invoice')
-        .between([orgId, r.minval], [orgId, dbAfter], {index: 'orgIdStartAt', leftBound: 'open'})
-        .filter((invoice) => invoice('status').ne(UPCOMING).and(invoice('total').ne(0)))
+      tooManyInvoices: r
+        .table('Invoice')
+        .between([orgId, r.minval], [orgId, dbAfter], {
+          index: 'orgIdStartAt',
+          leftBound: 'open'
+        })
+        .filter((invoice) =>
+          invoice('status')
+            .ne(UPCOMING)
+            .and(invoice('total').ne(0))
+        )
         .orderBy(r.desc('startAt'))
         .limit(first + 1),
-      upcomingInvoice: after ? Promise.resolve(undefined) : makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId)
+      upcomingInvoice: after
+        ? Promise.resolve(undefined)
+        : makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId)
     });
 
-    const allInvoices = upcomingInvoice ? [upcomingInvoice].concat(tooManyInvoices) : tooManyInvoices;
+    const allInvoices = upcomingInvoice
+      ? [upcomingInvoice].concat(tooManyInvoices)
+      : tooManyInvoices;
     const nodes = allInvoices.slice(0, first);
     const edges = nodes.map((node) => ({
       cursor: node.startAt,

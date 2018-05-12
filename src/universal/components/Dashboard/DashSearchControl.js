@@ -37,10 +37,7 @@ const DashSearchControl = (props) => {
   return (
     <DashSearch>
       <DashSearchIcon name="search" />
-      <DashSearchInput
-        onChange={onChange}
-        placeholder={placeholder}
-      />
+      <DashSearchInput onChange={onChange} placeholder={placeholder} />
     </DashSearch>
   );
 };

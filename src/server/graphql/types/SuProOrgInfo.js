@@ -1,8 +1,4 @@
-import {
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLObjectType
-} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import Organization from 'server/graphql/types/Organization';
 
 const SuProOrgInfo = new GraphQLObjectType({

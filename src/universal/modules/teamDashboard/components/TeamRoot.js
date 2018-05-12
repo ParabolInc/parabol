@@ -15,7 +15,9 @@ const query = graphql`
 `;
 
 const TeamRoot = ({atmosphere, location, match}) => {
-  const {params: {teamId}} = match;
+  const {
+    params: {teamId}
+  } = match;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -24,10 +26,13 @@ const TeamRoot = ({atmosphere, location, match}) => {
       variables={{teamId}}
       render={({props: renderProps}) => {
         return (
-          <TeamContainer viewer={renderProps && renderProps.viewer} location={location} match={match} />
+          <TeamContainer
+            viewer={renderProps && renderProps.viewer}
+            location={location}
+            match={match}
+          />
         );
       }}
-
     />
   );
 };

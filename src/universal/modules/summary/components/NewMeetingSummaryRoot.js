@@ -17,7 +17,9 @@ const query = graphql`
 `;
 
 const NewMeetingSummaryRoot = ({atmosphere, match}) => {
-  const {params: {meetingId}} = match;
+  const {
+    params: {meetingId}
+  } = match;
   return (
     <QueryRenderer
       environment={atmosphere}

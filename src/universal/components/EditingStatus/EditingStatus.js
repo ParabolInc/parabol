@@ -30,26 +30,59 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated ';
 
   if (editors.length === 0) {
-    editingStatus = isEditing ? <span>{'Editing'}<Ellipsis /></span> : <span>{`${timestampLabel}${fromNow(timestamp)}`}</span>;
+    editingStatus = isEditing ? (
+      <span>
+        {'Editing'}
+        <Ellipsis />
+      </span>
+    ) : (
+      <span>{`${timestampLabel}${fromNow(timestamp)}`}</span>
+    );
   } else {
     const editorNames = editors.map((editor) => editor.preferredName);
     // one other is editing
     if (editors.length === 1) {
       const editor = editorNames[0];
-      editingStatus = <span>{editor}{' editing'}{isEditing ? ' too' : ''}<Ellipsis /></span>;
+      editingStatus = (
+        <span>
+          {editor}
+          {' editing'}
+          {isEditing ? ' too' : ''}
+          <Ellipsis />
+        </span>
+      );
     } else if (editors.length === 2) {
-      editingStatus = isEditing ?
-        <span>several are editing<Ellipsis /></span> :
-        <span>{`${editorNames[0]} and ${editorNames[1]} editing`}<Ellipsis /></span>;
+      editingStatus = isEditing ? (
+        <span>
+          several are editing<Ellipsis />
+        </span>
+      ) : (
+        <span>
+          {`${editorNames[0]} and ${editorNames[1]} editing`}
+          <Ellipsis />
+        </span>
+      );
     } else {
-      editingStatus = <span>{'Several are editing'}<Ellipsis /></span>;
+      editingStatus = (
+        <span>
+          {'Several are editing'}
+          <Ellipsis />
+        </span>
+      );
     }
   }
   return editingStatus;
 };
 
 const EditingStatus = (props) => {
-  const {atmosphere: {userId: myUserId}, cardIsActive, handleClick, task, timestamp, timestampType} = props;
+  const {
+    atmosphere: {userId: myUserId},
+    cardIsActive,
+    handleClick,
+    task,
+    timestamp,
+    timestampType
+  } = props;
   const {editors} = task;
   const otherEditors = editors.filter((editor) => editor.userId !== myUserId);
   const isEditing = editors.length > otherEditors.length;
@@ -83,5 +116,6 @@ export default createFragmentContainer(
         preferredName
       }
       ...DueDateToggle_task
-    }`
+    }
+  `
 );

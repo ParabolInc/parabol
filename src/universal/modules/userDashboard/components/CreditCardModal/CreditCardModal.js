@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {DashModal} from 'universal/components/Dashboard';
 import Button from 'universal/components/Button/Button';
 import Type from 'universal/components/Type/Type';
 import appTheme from 'universal/styles/theme/appTheme';
@@ -15,6 +14,7 @@ import makeCreditCardSchema from 'universal/validation/makeCreditCardSchema';
 import formError from 'universal/styles/helpers/formError';
 import {normalizeExpiry, normalizeNumeric} from './normalizers';
 import shouldValidate from 'universal/validation/shouldValidate';
+import DashModal from 'universal/components/Dashboard/DashModal';
 
 const lockIconStyles = {
   lineHeight: appTheme.typography.s5,
@@ -49,12 +49,23 @@ const CreditCardModal = (props) => {
   } = props;
   const anyError = error || syncFormError;
   return (
-    <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
+    <DashModal
+      onBackdropClick={closePortal}
+      inputModal
+      isClosing={isClosing}
+      closeAfter={closeAfter}
+    >
       <div className={css(styles.modalBody)}>
         <div className={css(styles.iconAvatarBlock)}>
           <IconAvatar icon={cardTypeIcon} size="large" />
         </div>
-        <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
+        <Type
+          align="center"
+          colorPalette="mid"
+          lineHeight="1.875rem"
+          marginBottom=".25rem"
+          scale="s6"
+        >
           {crudAction} Credit Card
         </Type>
         <Type align="center" colorPalette="mid" lineHeight={appTheme.typography.s5} scale="s3">
@@ -216,7 +227,5 @@ const styleThunk = () => ({
 });
 
 export default reduxForm({form: 'creditCardInfo', validate, shouldValidate})(
-  withStyles(styleThunk)(
-    CreditCardModal
-  )
+  withStyles(styleThunk)(CreditCardModal)
 );

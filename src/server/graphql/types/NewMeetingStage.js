@@ -42,7 +42,8 @@ export const newMeetingStageFields = () => ({
   },
   isComplete: {
     type: GraphQLBoolean,
-    description: 'true if the facilitator has completed this stage, else false. Should be boolean(endAt)'
+    description:
+      'true if the facilitator has completed this stage, else false. Should be boolean(endAt)'
   },
   isNavigable: {
     type: GraphQLBoolean,
@@ -85,7 +86,8 @@ export const newMeetingStageFields = () => ({
 
 const NewMeetingStage = new GraphQLInterfaceType({
   name: 'NewMeetingStage',
-  description: 'An instance of a meeting phase item. On the client, this usually represents a single view',
+  description:
+    'An instance of a meeting phase item. On the client, this usually represents a single view',
   fields: newMeetingStageFields,
   resolveType: ({phaseType}) => {
     const resolveTypeLookup = {

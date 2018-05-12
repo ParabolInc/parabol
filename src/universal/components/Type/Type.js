@@ -44,31 +44,15 @@ const Type = (props) => {
     }
   });
 
-  return (
-    <div style={styleTag}>
-      {children}
-    </div>
-  );
+  return <div style={styleTag}>{children}</div>;
 };
 
 Type.propTypes = {
-  align: PropTypes.oneOf([
-    'left',
-    'center',
-    'right'
-  ]),
+  align: PropTypes.oneOf(['left', 'center', 'right']),
   bold: PropTypes.bool,
   children: PropTypes.any,
-  display: PropTypes.oneOf([
-    'block',
-    'inline',
-    'inlineBlock'
-  ]),
-  family: PropTypes.oneOf([
-    'monospace',
-    'sansSerif',
-    'serif'
-  ]),
+  display: PropTypes.oneOf(['block', 'inline', 'inlineBlock']),
+  family: PropTypes.oneOf(['monospace', 'sansSerif', 'serif']),
   italic: PropTypes.bool,
   lineHeight: PropTypes.string,
   marginBottom: PropTypes.string,
@@ -84,19 +68,8 @@ Type.propTypes = {
     's7', // 36px
     's8' // 48px
   ]),
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'warm',
-    'dark',
-    'mid',
-    'light',
-    'black',
-    'white'
-  ]),
-  width: PropTypes.oneOf([
-    'auto',
-    'full'
-  ])
+  colorPalette: PropTypes.oneOf(['cool', 'warm', 'dark', 'mid', 'light', 'black', 'white']),
+  width: PropTypes.oneOf(['auto', 'full'])
 };
 
 Type.defaultProps = {

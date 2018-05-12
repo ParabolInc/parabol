@@ -22,7 +22,7 @@ const PlainInputField = (props) => {
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
-    disabled && styles.disabled,
+    disabled && styles.disabled
   );
 
   return (
@@ -37,7 +37,8 @@ const PlainInputField = (props) => {
           placeholder={placeholder}
         />
       </div>
-      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
+      {touched &&
+        error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
   );
 };
@@ -62,7 +63,7 @@ PlainInputField.propTypes = {
 
 const styleThunk = (theme, {disabled, fieldSize}) => {
   const size = fieldSize || ui.fieldSizeOptions[1];
-  return ({
+  return {
     field: {
       ...ui.fieldBaseStyles,
       ...ui.fieldSizeStyles[size],
@@ -74,7 +75,7 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
     inputBlock: {
       position: 'relative'
     }
-  });
+  };
 };
 
 export default withStyles(styleThunk)(PlainInputField);

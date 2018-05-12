@@ -24,7 +24,9 @@ const EditOrgName = (props) => {
   const {atmosphere, orgName, orgId, handleSubmit} = props;
   const updateEditable = async (submissionData) => {
     const schema = editOrgNameValidation();
-    const {data: {orgName: validatedOrgName}} = schema(submissionData);
+    const {
+      data: {orgName: validatedOrgName}
+    } = schema(submissionData);
     if (validatedOrgName && validatedOrgName !== orgName) {
       const updatedOrg = {
         id: orgId,
@@ -53,4 +55,6 @@ EditOrgName.propTypes = {
   handleSubmit: PropTypes.func.isRequired
 };
 
-export default withAtmosphere(reduxForm({form: 'orgName', enableReinitialize: true, validate})(EditOrgName));
+export default withAtmosphere(
+  reduxForm({form: 'orgName', enableReinitialize: true, validate})(EditOrgName)
+);

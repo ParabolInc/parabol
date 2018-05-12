@@ -17,7 +17,6 @@ const getOffset = (orientation, fullWidth) => {
   return 0;
 };
 
-
 export default (ComposedComponent) => {
   class WithCoordsV2 extends Component {
     static displayName = `WithCoordsV2(${getDisplayName(ComposedComponent)})`;
@@ -41,27 +40,31 @@ export default (ComposedComponent) => {
       top: 0
     };
 
-    componentWillMount() {
+    componentWillMount () {
       const {originCoords} = this.props;
       if (originCoords) {
         this.originCoords = originCoords;
       }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps (nextProps) {
       const {originCoords} = nextProps;
       if (originCoords) {
-        if (!this.originCoords ||
+        if (
+          !this.originCoords ||
           this.originCoords.top !== originCoords.top ||
-          this.originCoords.left !== originCoords.left) {
+          this.originCoords.left !== originCoords.left
+        ) {
           this.originCoords = originCoords;
           this.updateModalCoords();
         }
       }
     }
 
-    componentWillUnmount() {
-      window.removeEventListener('resize', this.resizeWindow, {passive: true});
+    componentWillUnmount () {
+      window.removeEventListener('resize', this.resizeWindow, {
+        passive: true
+      });
     }
 
     setOriginRef = (c) => {
@@ -69,7 +72,7 @@ export default (ComposedComponent) => {
         this.originRef = c;
         this.updateModalCoords();
       }
-    }
+    };
 
     setModalRef = (c) => {
       if (c) {
@@ -113,7 +116,8 @@ export default (ComposedComponent) => {
       if (targetAnchor.vertical !== 'bottom') {
         const originTopOffset = getOffset(originAnchor.vertical, this.originCoords.height);
         const targetTopOffset = getOffset(targetAnchor.vertical, modalHeight);
-        const top = scrollY + this.originCoords.top + originTopOffset - targetTopOffset + marginFromOrigin;
+        const top =
+          scrollY + this.originCoords.top + originTopOffset - targetTopOffset + marginFromOrigin;
         const isBelow = top + modalHeight < innerHeight + scrollY;
         if (isBelow) {
           nextCoords.top = top;
@@ -148,14 +152,16 @@ export default (ComposedComponent) => {
       }
     };
 
-    render() {
+    render () {
       const {...coords} = this.state;
-      return (<ComposedComponent
-        {...this.props}
-        coords={coords}
-        setModalRef={this.setModalRef}
-        setOriginRef={this.setOriginRef}
-      />);
+      return (
+        <ComposedComponent
+          {...this.props}
+          coords={coords}
+          setModalRef={this.setModalRef}
+          setOriginRef={this.setOriginRef}
+        />
+      );
     }
   }
 
@@ -167,7 +173,7 @@ export type WithCoordsProps = {
     left?: number,
     right?: number,
     top?: number,
-    bottom?: number,
+    bottom?: number
   },
   setModalRef: (component: any) => void,
   setOriginRef: (component: any) => void

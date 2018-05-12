@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {Link, withRouter} from 'react-router-dom';
 import {destroy, reduxForm} from 'redux-form';
-import {Button} from 'universal/components';
 import LabeledFieldArray from 'universal/containers/LabeledFieldArray/LabeledFieldArrayContainer';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation';
 import withStyles from 'universal/styles/withStyles';
 import makeStep3Schema from 'universal/validation/makeStep3Schema';
+import Button from 'universal/components/Button/Button';
 
 const validate = (values) => {
   const schema = makeStep3Schema();
@@ -17,9 +17,18 @@ const validate = (values) => {
 };
 
 const Step3InviteeList = (props) => {
-  const {atmosphere, dispatch, existingInvites, handleSubmit, invitees, history, styles, teamId} = props;
+  const {
+    atmosphere,
+    dispatch,
+    existingInvites,
+    handleSubmit,
+    invitees,
+    history,
+    styles,
+    teamId
+  } = props;
   const onInviteTeamSubmit = () => {
-    const inviteeCount = invitees && invitees.length || 0;
+    const inviteeCount = (invitees && invitees.length) || 0;
     const gotoTeamDash = () => {
       history.push(`/team/${teamId}`);
     };
@@ -34,14 +43,22 @@ const Step3InviteeList = (props) => {
       });
       // We shouldn't need to wait until this mutation completes, but relay flags softTeamMembers for GC & then reruns
       // the optimisticUpdater before the GC had a chance to clean it so it borks on the sentinel. Still a bug in v1.5.0.
-      InviteTeamMembersMutation(atmosphere, {invitees: serverInvitees, teamId}, dispatch, undefined, gotoTeamDash);
+      InviteTeamMembersMutation(
+        atmosphere,
+        {invitees: serverInvitees, teamId},
+        dispatch,
+        undefined,
+        gotoTeamDash
+      );
     } else {
       gotoTeamDash();
     }
 
     // loading that user dashboard is really expensive and causes dropped frames, so let's lighten the load
     setTimeout(() => {
-      SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {inviteeCount});
+      SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {
+        inviteeCount
+      });
       dispatch(destroy('welcomeWizard')); // bye bye form data!
     }, 1000);
   };
@@ -81,7 +98,9 @@ const Step3InviteeList = (props) => {
         System.import('universal/modules/teamDashboard/components/TeamRoot');
       }}
       onClick={() => {
-        SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {inviteeCount: 0});
+        SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {
+          inviteeCount: 0
+        });
       }}
       style={{margin: '1rem auto', maxWidth: '45.5rem', padding: '0 2.5rem'}}
       title="I’ll invite them later"
@@ -111,8 +130,10 @@ const styleThunk = () => ({
   }
 });
 
-export default withAtmosphere(reduxForm({
-  form: 'welcomeWizard',
-  destroyOnUnmount: false,
-  validate
-})(withRouter(withStyles(styleThunk)(Step3InviteeList))));
+export default withAtmosphere(
+  reduxForm({
+    form: 'welcomeWizard',
+    destroyOnUnmount: false,
+    validate
+  })(withRouter(withStyles(styleThunk)(Step3InviteeList)))
+);

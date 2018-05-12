@@ -45,10 +45,14 @@ type Props = {|
       preferredName: string
     }
   }
-|}
+|};
 const MeetingMemberTaskList = (props: Props) => {
   const {member} = props;
-  const {tasks, user: {picture, preferredName}, isCheckedIn} = member;
+  const {
+    tasks,
+    user: {picture, preferredName},
+    isCheckedIn
+  } = member;
   const presentLabel = isCheckedIn ? 'Present' : 'Absent';
   const presentLabelStyles = {
     ...presentLabelBase,

@@ -1,7 +1,6 @@
 import {GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 
-
 const InvoiceChargeNextMonth = new GraphQLObjectType({
   name: 'InvoiceChargeNextMonth',
   description: 'A single line item for the charges for next month',
@@ -16,7 +15,8 @@ const InvoiceChargeNextMonth = new GraphQLObjectType({
     },
     quantity: {
       type: GraphQLInt,
-      description: 'The total number of days that all org users have been inactive during the billing cycle'
+      description:
+        'The total number of days that all org users have been inactive during the billing cycle'
     },
     unitPrice: {
       type: GraphQLFloat,

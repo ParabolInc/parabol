@@ -18,12 +18,15 @@ const query = graphql`
   }
 `;
 
-const subscriptions = [
-  AgendaItemSubscription
-];
+const subscriptions = [AgendaItemSubscription];
 
 const AgendaAndTasksRoot = (props) => {
-  const {atmosphere, match: {params: {teamId}}} = props;
+  const {
+    atmosphere,
+    match: {
+      params: {teamId}
+    }
+  } = props;
   return (
     <QueryRenderer
       // FIXME remove when relay merges PR https://github.com/facebook/relay/pull/2416

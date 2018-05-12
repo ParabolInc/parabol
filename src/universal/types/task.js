@@ -9,12 +9,7 @@ import type {TeamID} from './team';
 import type {TeamMemberID} from './teamMember';
 import type {UserID} from './user';
 
-import {
-  ACTIVE,
-  DONE,
-  FUTURE,
-  STUCK
-} from '../utils/constants';
+import {ACTIVE, DONE, FUTURE, STUCK} from '../utils/constants';
 import getTypeFromEntityMap from '../utils/draftjs/getTypeFromEntityMap';
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
 
@@ -38,8 +33,7 @@ export type Task = {
   userId: UserID
 };
 
-export const getMentions = (p: Task): UserID[] =>
-  getTypeFromEntityMap('MENTION', p.content);
+export const getMentions = (p: Task): UserID[] => getTypeFromEntityMap('MENTION', p.content);
 
 export const getAssignee = (p: Task): UserID => {
   return fromTeamMemberId(p.teamMemberId).userId;

@@ -7,8 +7,12 @@ const handleRemoveTeamMember = (teamMemberId, store) => {
   if (!teamMember) return;
   const {teamId} = fromTeamMemberId(teamMemberId);
   const team = store.get(teamId);
-  safeRemoveNodeFromArray(teamMemberId, team, 'teamMembers', {storageKeyArgs: {sortBy: 'checkInOrder'}});
-  safeRemoveNodeFromArray(teamMemberId, team, 'teamMembers', {storageKeyArgs: {sortBy: 'preferredName'}});
+  safeRemoveNodeFromArray(teamMemberId, team, 'teamMembers', {
+    storageKeyArgs: {sortBy: 'checkInOrder'}
+  });
+  safeRemoveNodeFromArray(teamMemberId, team, 'teamMembers', {
+    storageKeyArgs: {sortBy: 'preferredName'}
+  });
 };
 
 const handleRemoveTeamMembers = pluralizeHandler(handleRemoveTeamMember);

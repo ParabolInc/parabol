@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {withRouter} from 'react-router-dom';
 import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {Button, Panel} from 'universal/components';
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
 import InputField from 'universal/components/InputField/InputField';
 import Radio from 'universal/components/Radio/Radio';
@@ -19,6 +18,8 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import addOrgSchema from 'universal/validation/addOrgSchema';
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import Panel from 'universal/components/Panel/Panel';
+import Button from 'universal/components/Button/Button';
 
 const radioStyles = {
   color: ui.palette.dark
@@ -31,10 +32,12 @@ const validate = (values, props) => {
 };
 
 const makeInvitees = (invitees) => {
-  return invitees ? invitees.map((email) => ({
-    email: email.address,
-    fullName: email.fullName
-  })) : [];
+  return invitees
+    ? invitees.map((email) => ({
+      email: email.address,
+      fullName: email.fullName
+    }))
+    : [];
 };
 
 const mapStateToProps = (state) => {
@@ -51,7 +54,10 @@ class NewTeamForm extends Component {
     const {atmosphere, dispatch, isNewOrganization, history} = this.props;
     if (isNewOrganization) {
       const schema = addOrgSchema();
-      const {data: {teamName, inviteesRaw, orgName}, errors} = schema(submittedData);
+      const {
+        data: {teamName, inviteesRaw, orgName},
+        errors
+      } = schema(submittedData);
       if (Object.keys(errors).length) {
         throw new SubmissionError(errors);
       }
@@ -67,7 +73,9 @@ class NewTeamForm extends Component {
       AddOrgMutation(atmosphere, variables, {dispatch, history}, handleError);
     } else {
       const schema = makeAddTeamSchema();
-      const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
+      const {
+        data: {teamName, inviteesRaw, orgId}
+      } = schema(submittedData);
       const parsedInvitees = parseEmailAddressList(inviteesRaw);
       const invitees = makeInvitees(parsedInvitees);
       const newTeam = {
@@ -79,14 +87,8 @@ class NewTeamForm extends Component {
     }
   };
 
-  render() {
-    const {
-      handleSubmit,
-      isNewOrganization,
-      styles,
-      submitting,
-      organizations
-    } = this.props;
+  render () {
+    const {handleSubmit, isNewOrganization, styles, submitting, organizations} = this.props;
 
     const controlSize = 'medium';
 
@@ -96,11 +98,7 @@ class NewTeamForm extends Component {
           <div className={css(styles.formInner)}>
             <div className={css(styles.formHeading)}>{'Create a New Team'}</div>
             <div className={css(styles.formBlock)}>
-              <FieldLabel
-                fieldSize={controlSize}
-                indent
-                label="Add Team to…"
-              />
+              <FieldLabel fieldSize={controlSize} indent label="Add Team to…" />
             </div>
             <div className={css(styles.formBlock)}>
               <Field
@@ -246,11 +244,6 @@ const styleThunk = () => ({
 
 export default withAtmosphere(
   reduxForm({form: 'newTeam', validate})(
-    connect(mapStateToProps)(
-      withRouter(withStyles(styleThunk)(
-        NewTeamForm
-      )
-      )
-    )
+    connect(mapStateToProps)(withRouter(withStyles(styleThunk)(NewTeamForm)))
   )
 );

@@ -20,16 +20,24 @@ const iconStyles = {
 };
 
 class TeamArchiveSqueeze extends Component {
-  componentWillReceiveProps(nextProps) {
-    const {tasksAvailableCount: oldCount, relay: {refetch}} = this.props;
+  componentWillReceiveProps (nextProps) {
+    const {
+      tasksAvailableCount: oldCount,
+      relay: {refetch}
+    } = this.props;
     const {tasksAvailableCount: newCount} = nextProps;
     if (newCount !== oldCount) {
       refetch();
     }
   }
-  render() {
+  render () {
     const {history, orgId, tasksAvailableCount, styles, viewer} = this.props;
-    const {archivedTasksCount, team: {organization: {isBillingLeader, mainBillingLeader}}} = viewer;
+    const {
+      archivedTasksCount,
+      team: {
+        organization: {isBillingLeader, mainBillingLeader}
+      }
+    } = viewer;
     const unavailableTasks = archivedTasksCount - tasksAvailableCount;
     if (unavailableTasks < 1) {
       // https://github.com/reactjs/react-transition-group/issues/208
@@ -47,24 +55,35 @@ class TeamArchiveSqueeze extends Component {
                 {`${unavailableTasks} Cards Unavailable!`}
               </h2>
               <p className={css(styles.archiveSqueezeCopy)}>
-                {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can see cards archived up to '}<b>{'14 days ago'}</b>{'.'}<br />
-                {'For full access to your team’s archive, upgrade to the '}<b>{`${PRO_LABEL} Plan`}</b>{'.'}<br />
+                {'With the '}
+                <b>{`${PERSONAL_LABEL} Plan`}</b>
+                {' you can see cards archived up to '}
+                <b>{'14 days ago'}</b>
+                {'.'}
+                <br />
+                {'For full access to your team’s archive, upgrade to the '}
+                <b>{`${PRO_LABEL} Plan`}</b>
+                {'.'}
+                <br />
                 <a href={PRICING_LINK} target="_blank" title={linkLabel}>
                   <b>{linkLabel}</b> <FontAwesome name="external-link-square" style={iconStyles} />
                 </a>
               </p>
             </div>
             <div className={css(styles.archiveSqueezeButtonBlock)}>
-              {isBillingLeader ?
+              {isBillingLeader ? (
                 <Button
                   buttonSize="medium"
                   colorPalette="warm"
                   depth={1}
                   label={`Upgrade to the ${PRO_LABEL} Plan`}
                   onClick={handleUpgrade}
-                /> :
+                />
+              ) : (
                 <div className={css(styles.contactCopy)}>
-                  {'Talk with your '}<b>{'Billing Leader'}</b>{':'}
+                  {'Talk with your '}
+                  <b>{'Billing Leader'}</b>
+                  {':'}
                   <a
                     className={css(styles.contactLink)}
                     href={`mailto:${mainBillingLeader.email}`}
@@ -76,7 +95,7 @@ class TeamArchiveSqueeze extends Component {
                     <FontAwesome name="envelope" style={iconStyles} />
                   </a>
                 </div>
-              }
+              )}
             </div>
           </div>
         </Panel>

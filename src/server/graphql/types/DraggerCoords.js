@@ -6,11 +6,13 @@ const DraggerCoords = new GraphQLObjectType({
   fields: () => ({
     height: {
       type: GraphQLFloat,
-      description: 'The width of the client of the person dragging (useful to standardize across screen sizes)'
+      description:
+        'The width of the client of the person dragging (useful to standardize across screen sizes)'
     },
     width: {
       type: GraphQLFloat,
-      description: 'The width of the client of the person dragging (useful to standardize across screen sizes)'
+      description:
+        'The width of the client of the person dragging (useful to standardize across screen sizes)'
     },
     x: {
       type: GraphQLFloat,

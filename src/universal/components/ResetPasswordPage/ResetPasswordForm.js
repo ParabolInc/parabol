@@ -7,10 +7,10 @@
 import React from 'react';
 import styled from 'react-emotion';
 import {Field, reduxForm} from 'redux-form';
-import {InputField} from 'universal/components';
 import StyledButton from 'universal/components/StyledButton';
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
 import shouldValidate from 'universal/validation/shouldValidate';
+import InputField from 'universal/components/InputField/InputField';
 
 type Props = {
   handleSubmit: () => void, // from redux-form
@@ -45,7 +45,12 @@ const PasswordResetForm = (props: Props) => {
           disabled={props.submitting}
         />
       </Block>
-      <StyledButton buttonPalette="primary" disabled={!props.valid} type="submit" waiting={props.submitting}>
+      <StyledButton
+        buttonPalette="primary"
+        disabled={!props.valid}
+        type="submit"
+        waiting={props.submitting}
+      >
         {'Submit'}
       </StyledButton>
     </Form>
@@ -53,9 +58,7 @@ const PasswordResetForm = (props: Props) => {
 };
 
 const validate = ({email}) => ({
-  email: parseEmailAddressList(email)
-    ? null
-    : 'Enter a valid email address'
+  email: parseEmailAddressList(email) ? null : 'Enter a valid email address'
 });
 
 export default reduxForm({form: 'passwordReset', shouldValidate, validate})(PasswordResetForm);

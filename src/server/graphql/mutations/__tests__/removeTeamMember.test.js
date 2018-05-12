@@ -14,9 +14,7 @@ MockDate.set(__now);
 console.error = jest.fn();
 
 describe('removeTeamMember', () => {
-  test('promotes another member if the person removed was the lead', async () => {
-
-  });
+  test('promotes another member if the person removed was the lead', async () => {});
 
   test('removes the teamMember, reassigns active tasks to the lead', async () => {
     // SETUP
@@ -24,9 +22,7 @@ describe('removeTeamMember', () => {
     const mockPubSub = new MockPubSub();
     const mockDB = new MockDB();
     const dynamicSerializer = new DynamicSerializer();
-    await mockDB
-      .init()
-      .newTask();
+    await mockDB.init().newTask();
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     const userToBoot = mockDB.db.user[7];
@@ -37,14 +33,19 @@ describe('removeTeamMember', () => {
     const teamMemberId = mockDB.db.teamMember[7].id;
     await removeTeamMember.resolve(undefined, {teamMemberId}, {authToken, dataLoader});
 
-    const db = await fetchAndSerialize({
-      teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('checkInOrder'),
-      task: r.table('Task').getAll(teamId, {index: 'teamId'}),
-      user: r.table('User').get(userToBoot.id)
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        teamMember: r
+          .table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .orderBy('checkInOrder'),
+        task: r.table('Task').getAll(teamId, {index: 'teamId'}),
+        user: r.table('User').get(userToBoot.id)
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
-    expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length)
-      .toBe(1);
+    expect(auth0ManagementClient.users.updateAppMetadata.mock.calls.length).toBe(1);
     expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
   });
 
@@ -64,20 +65,14 @@ describe('removeTeamMember', () => {
     // archive githug tasks attached to those repos
     // SETUP
     const mockDB = new MockDB();
-    await mockDB
-      .init()
-      .newTask();
+    await mockDB.init().newTask();
     auth0ManagementClient.__initMock(mockDB.db);
     auth0ManagementClient.users.updateAppMetadata.mockReset();
     const authToken = mockAuthToken(mockDB.db.user[1]);
     const dataLoader = makeDataLoader(authToken);
     // TEST
     const teamMemberId = mockDB.db.teamMember[7].id;
-    const res = await removeTeamMember.resolve(
-      undefined,
-      {teamMemberId},
-      {authToken, dataLoader}
-    );
+    const res = await removeTeamMember.resolve(undefined, {teamMemberId}, {authToken, dataLoader});
     expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

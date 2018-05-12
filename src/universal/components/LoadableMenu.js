@@ -35,7 +35,18 @@ type Props = {
 };
 
 const LoadableMenu = (props: Props) => {
-  const {closePortal, coords, isClosing, isOpen, maxHeight, maxWidth, setModalRef, LoadableComponent, queryVars, terminatePortal} = props;
+  const {
+    closePortal,
+    coords,
+    isClosing,
+    isOpen,
+    maxHeight,
+    maxWidth,
+    setModalRef,
+    LoadableComponent,
+    queryVars,
+    terminatePortal
+  } = props;
   return (
     <Modal clickToClose escToClose onClose={closePortal} isOpen={isOpen}>
       <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>

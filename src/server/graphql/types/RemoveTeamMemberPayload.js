@@ -15,7 +15,6 @@ import User from 'server/graphql/types/User';
 import {getUserId} from 'server/utils/authorization';
 import StandardMutationError from 'server/graphql/types/StandardMutationError';
 
-
 const RemoveTeamMemberPayload = new GraphQLObjectType({
   name: 'RemoveTeamMemberPayload',
   fields: () => ({

@@ -1,4 +1,3 @@
-
 // brand.js
 
 const brand = {

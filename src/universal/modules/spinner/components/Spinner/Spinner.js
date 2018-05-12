@@ -29,15 +29,20 @@ const Spinner = (props) => {
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.block)}>
-        <svg className={css(styles.leaves)} viewBox="0 0 31 28" version="1.1" xmlns="http://www.w3.org/2000/svg">
-          {PATHS.map((p, i) =>
-            (<path
+        <svg
+          className={css(styles.leaves)}
+          viewBox="0 0 31 28"
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {PATHS.map((p, i) => (
+            <path
               style={{fill: ui.palette[fillColor]}}
               className={css(styles.leaf, styles[`leaf${i + 1}`])}
               key={`path${i + 1}`}
               d={p}
-            />)
-          )}
+            />
+          ))}
         </svg>
       </div>
     </div>

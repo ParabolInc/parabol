@@ -35,19 +35,26 @@ describe('stripeUpdateInvoiceItem', () => {
       metadata: {orgId: org.id},
       periodStart: hook.prorationDate
     });
-    const req = new MockReq({body: invoiceItemCreatedEvent(invoiceItemId, org.stripeId, org.stripeSubscriptionId)});
+    const req = new MockReq({
+      body: invoiceItemCreatedEvent(invoiceItemId, org.stripeId, org.stripeSubscriptionId)
+    });
 
     // TEST
-    const sharedDataLoader = new SharedDataLoader({ttl: 1000, onShare: '_share'});
+    const sharedDataLoader = new SharedDataLoader({
+      ttl: 1000,
+      onShare: '_share'
+    });
     await stripeWebhookHandler(sharedDataLoader)(req, res);
 
     // VERIFY
     expect(res.sendStatus).toBeCalledWith(200);
-    const db = await fetchAndSerialize({
-      invoiceItemHook: r.table('InvoiceItemHook').get(hookId)
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        invoiceItemHook: r.table('InvoiceItemHook').get(hookId)
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(stripe.__snapshot(org.stripeSubscriptionId, dynamicSerializer)).toMatchSnapshot();
   });
 });
-

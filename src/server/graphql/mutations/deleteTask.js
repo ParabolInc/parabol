@@ -17,7 +17,7 @@ export default {
       description: 'The taskId to delete'
     }
   },
-  async resolve(source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
@@ -28,15 +28,24 @@ export default {
       return sendTaskNotFoundError(authToken, taskId);
     }
     const {teamId} = task;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const {subscribedUserIds} = await r({
-      task: r.table('Task').get(taskId).delete(),
-      taskHistory: r.table('TaskHistory')
-        .between([taskId, r.minval], [taskId, r.maxval], {index: 'taskIdUpdatedAt'})
+      task: r
+        .table('Task')
+        .get(taskId)
         .delete(),
-      subscribedUserIds: r.table('TeamMember')
+      taskHistory: r
+        .table('TaskHistory')
+        .between([taskId, r.minval], [taskId, r.maxval], {
+          index: 'taskIdUpdatedAt'
+        })
+        .delete(),
+      subscribedUserIds: r
+        .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
         .coerceTo('array')
@@ -46,7 +55,8 @@ export default {
     // handle notifications
     const {entityMap} = JSON.parse(content);
     const userIdsWithNotifications = getTypeFromEntityMap('MENTION', entityMap).concat(taskUserId);
-    const clearedNotifications = await r.table('Notification')
+    const clearedNotifications = await r
+      .table('Notification')
       .getAll(r.args(userIdsWithNotifications), {index: 'userIds'})
       .filter({
         taskId,
@@ -57,7 +67,9 @@ export default {
 
     const data = {task, notifications: clearedNotifications};
     clearedNotifications.forEach((notification) => {
-      const {userIds: [notificationUserId]} = notification;
+      const {
+        userIds: [notificationUserId]
+      } = notification;
       publish(NOTIFICATION, notificationUserId, DeleteTaskPayload, data, subOptions);
     });
 

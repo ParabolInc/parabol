@@ -22,13 +22,16 @@ describe('stripeUpdateCreditCard', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {organization} = await mockDB
-      .init({plan: PRO});
+    const {organization} = await mockDB.init({plan: PRO});
     const org = organization[0];
     const req = new MockReq({body: customerSourceUpdatedEvent(org.stripeId)});
     stripe.__setMockData(org);
     const subscription = stripe.__db.subscriptions[org.stripeSubscriptionId];
-    await stripe.invoices.create({customer: org.stripeId, id: invoiceId, subscription});
+    await stripe.invoices.create({
+      customer: org.stripeId,
+      id: invoiceId,
+      subscription
+    });
 
     // mutate stripe DB so it doesn't match our own DB (they know something we don't)
     const oldCCs = stripe.__db.customers[org.stripeId].sources.data;
@@ -41,15 +44,20 @@ describe('stripeUpdateCreditCard', () => {
     };
 
     // TEST
-    const sharedDataLoader = new SharedDataLoader({ttl: 1000, onShare: '_share'});
+    const sharedDataLoader = new SharedDataLoader({
+      ttl: 1000,
+      onShare: '_share'
+    });
     await stripeWebhookHandler(sharedDataLoader)(req, res);
 
     // VERIFY
     expect(res.sendStatus).toBeCalledWith(200);
-    const db = await fetchAndSerialize({
-      organization: r.table('Organization').get(org.id)
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        organization: r.table('Organization').get(org.id)
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
   });
 });
-

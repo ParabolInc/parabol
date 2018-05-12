@@ -11,11 +11,7 @@ test('initial state', () => {
 });
 
 test('setActivity() ACTIVITY_WELCOME updates activity, nextPage', () => {
-  expect(
-    reducer(undefined,
-      setActivity(ACTIVITY_WELCOME, '/team/baddad')
-    )
-  ).toMatchSnapshot();
+  expect(reducer(undefined, setActivity(ACTIVITY_WELCOME, '/team/baddad'))).toMatchSnapshot();
 });
 
 test('setActivity() of invalid activity throws error', () => {
@@ -25,17 +21,11 @@ test('setActivity() of invalid activity throws error', () => {
 test('setWelcomeActivity() updates activity, nextPage', () => {
   const state = reducer();
 
-  expect(
-    reducer(state,
-      setWelcomeActivity('/team/baddad')
-    )
-  ).toMatchSnapshot();
+  expect(reducer(state, setWelcomeActivity('/team/baddad'))).toMatchSnapshot();
 });
 
 test('clearWelcomeActivity() resets state', () => {
   const state = reducer();
 
-  expect(
-    reducer(state, clearActivity())
-  ).toMatchSnapshot();
+  expect(reducer(state, clearActivity())).toMatchSnapshot();
 });

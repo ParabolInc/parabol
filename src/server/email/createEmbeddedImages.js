@@ -27,37 +27,37 @@ const fileExists = (filePath) => {
  * @param {String} fsPath
  * @return {Object} replaced html key and attachments key
  */
-export default function createEmbeddedImages(html, urnPrefix = '/static', fsPath = STATIC_ASSETS) {
+export default function createEmbeddedImages (html, urnPrefix = '/static', fsPath = STATIC_ASSETS) {
   if (!html) {
     throw new Error('No html provided for email');
   }
   const attachments = [];
 
   const $ = cheerio.load(html);
-  $('body').find('img').each((i, img) => {
-    const pathname = $(img).attr('src');
+  $('body')
+    .find('img')
+    .each((i, img) => {
+      const pathname = $(img).attr('src');
 
-    if (!pathname || !pathname.startsWith(urnPrefix)) {
-      return;
-    }
+      if (!pathname || !pathname.startsWith(urnPrefix)) {
+        return;
+      }
 
-    const relPath = path.normalize(
-      path.join(fsPath, pathname.slice(urnPrefix.length))
-    );
+      const relPath = path.normalize(path.join(fsPath, pathname.slice(urnPrefix.length)));
 
-    if (!fileExists(relPath)) {
-      return;
-    }
+      if (!fileExists(relPath)) {
+        return;
+      }
 
-    const filename = path.parse(pathname).base;
-    const cid = shortid.generate();
-    attachments.push({
-      filename,
-      path: relPath,
-      cid
+      const filename = path.parse(pathname).base;
+      const cid = shortid.generate();
+      attachments.push({
+        filename,
+        path: relPath,
+        cid
+      });
+      $(img).attr('src', `cid:${cid}`);
     });
-    $(img).attr('src', `cid:${cid}`);
-  });
 
   return {
     html: $.html(),

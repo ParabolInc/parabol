@@ -1,5 +1,4 @@
 import React from 'react';
-import {Avatar, Row, RowActions, RowInfo, RowInfoHeader, RowInfoHeading, RowInfoLink, Tag} from 'universal/components';
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
 import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck';
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation';
@@ -20,6 +19,14 @@ import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import type {Dispatch} from 'react-redux';
 import {OrgMemberRow_organization as Organization} from './__generated__/OrgMemberRow_organization.graphql';
 import {OrgMemberRow_orgMember as OrgMember} from './__generated__/OrgMemberRow_orgMember.graphql';
+import Row from 'universal/components/Row/Row';
+import Avatar from 'universal/components/Avatar/Avatar';
+import RowInfo from 'universal/components/Row/RowInfo';
+import RowInfoHeader from 'universal/components/Row/RowInfoHeader';
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading';
+import Tag from 'universal/components/Tag/Tag';
+import RowInfoLink from 'universal/components/Row/RowInfoLink';
+import RowActions from 'universal/components/Row/RowActions';
 
 const originAnchor = {
   vertical: 'top',
@@ -30,7 +37,6 @@ const targetAnchor = {
   vertical: 'top',
   horizontal: 'left'
 };
-
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -65,7 +71,7 @@ type Props = {|
   orgMember: OrgMember,
   organization: Organization,
   ...MutationProps
-|}
+|};
 
 const OrgMemberRow = (props: Props) => {
   const {
@@ -82,7 +88,8 @@ const OrgMemberRow = (props: Props) => {
   const {user, isBillingLeader} = orgMember;
   const {email, inactive, picture, preferredName, userId} = user;
   const isPersonalTier = tier === PERSONAL;
-  const isViewerLastBillingLeader = isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1;
+  const isViewerLastBillingLeader =
+    isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1;
   const {viewerId} = atmosphere;
 
   const toggleHandler = () => {
@@ -90,10 +97,12 @@ const OrgMemberRow = (props: Props) => {
     if (!inactive) {
       submitMutation();
       const handleError = (error) => {
-        dispatch(showError({
-          title: 'Oh no',
-          message: error || 'Cannot pause user'
-        }));
+        dispatch(
+          showError({
+            title: 'Oh no',
+            message: error || 'Cannot pause user'
+          })
+        );
         onError(error);
       };
       InactivateUserMutation(atmosphere, userId, handleError, onCompleted);
@@ -101,7 +110,8 @@ const OrgMemberRow = (props: Props) => {
       dispatch(
         showInfo({
           title: 'We’ve got you covered!',
-          message: 'We’ll reactivate that user the next time they log in so you don’t pay a penny too much'
+          message:
+            'We’ll reactivate that user the next time they log in so you don’t pay a penny too much'
         })
       );
     }
@@ -109,20 +119,17 @@ const OrgMemberRow = (props: Props) => {
   return (
     <Row>
       <div>
-        {picture ?
-          <Avatar hasBadge={false} picture={picture} size="small" /> :
+        {picture ? (
+          <Avatar hasBadge={false} picture={picture} size="small" />
+        ) : (
           <img alt="" src={defaultUserAvatar} />
-        }
+        )}
       </div>
       <RowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
-          {isBillingLeader &&
-          <Tag colorPalette="blue" label="Billing Leader" />
-          }
-          {inactive && !isViewerBillingLeader &&
-          <Tag colorPalette="midGray" label="Inactive" />
-          }
+          {isBillingLeader && <Tag colorPalette="blue" label="Billing Leader" />}
+          {inactive && !isViewerBillingLeader && <Tag colorPalette="midGray" label="Inactive" />}
         </RowInfoHeader>
         <RowInfoLink href={`mailto:${email}`} title="Send an email">
           {email}
@@ -130,60 +137,72 @@ const OrgMemberRow = (props: Props) => {
       </RowInfo>
       <RowActions>
         <ActionsBlock>
-          {!isBillingLeader && viewerId === userId &&
-          <LeaveOrgModal
-            orgId={orgId}
-            userId={userId}
-            toggle={<Button
-              buttonSize="small"
-              buttonStyle="flat"
-              colorPalette="dark"
-              label="Leave Organization"
-            />}
-          />
-          }
-          {!isPersonalTier && isViewerBillingLeader &&
-          <ToggleBlock>
-            <Toggle
-              active={!inactive}
-              block
-              disabled={isPersonalTier}
-              label={inactive ? 'Inactive' : 'Active'}
-              onClick={toggleHandler}
+          {!isBillingLeader &&
+            viewerId === userId && (
+            <LeaveOrgModal
+              orgId={orgId}
+              userId={userId}
+              toggle={
+                <Button
+                  buttonSize="small"
+                  buttonStyle="flat"
+                  colorPalette="dark"
+                  label="Leave Organization"
+                />
+              }
             />
-          </ToggleBlock>
-          }
-          {isViewerLastBillingLeader && userId === viewerId &&
-          <Tooltip
-            tip={<div>{'You need to promote another Billing Leader'}<br />{'before you can leave this role or Organization.'}</div>}
-            maxHeight={60}
-            maxWidth={200}
-            originAnchor={{vertical: 'top', horizontal: 'right'}}
-            targetAnchor={{vertical: 'bottom', horizontal: 'right'}}
-          >
+          )}
+          {!isPersonalTier &&
+            isViewerBillingLeader && (
+            <ToggleBlock>
+              <Toggle
+                active={!inactive}
+                block
+                disabled={isPersonalTier}
+                label={inactive ? 'Inactive' : 'Active'}
+                onClick={toggleHandler}
+              />
+            </ToggleBlock>
+          )}
+          {isViewerLastBillingLeader &&
+            userId === viewerId && (
+            <Tooltip
+              tip={
+                <div>
+                  {'You need to promote another Billing Leader'}
+                  <br />
+                  {'before you can leave this role or Organization.'}
+                </div>
+              }
+              maxHeight={60}
+              maxWidth={200}
+              originAnchor={{vertical: 'top', horizontal: 'right'}}
+              targetAnchor={{vertical: 'bottom', horizontal: 'right'}}
+            >
+              <MenuToggleBlock>
+                {/* https://github.com/facebook/react/issues/4251 */}
+                <Button {...menuButtonProps} visuallyDisabled />
+              </MenuToggleBlock>
+            </Tooltip>
+          )}
+          {isViewerBillingLeader &&
+            !(isViewerLastBillingLeader && userId === viewerId) && (
             <MenuToggleBlock>
-              {/* https://github.com/facebook/react/issues/4251 */}
-              <Button {...menuButtonProps} visuallyDisabled />
+              <LoadableMenu
+                LoadableComponent={LoadableBillingLeaderActionMenu}
+                maxWidth={224}
+                maxHeight={200}
+                originAnchor={originAnchor}
+                queryVars={{
+                  isViewerLastBillingLeader,
+                  orgMember,
+                  organization
+                }}
+                targetAnchor={targetAnchor}
+                toggle={<Button {...menuButtonProps} />}
+              />
             </MenuToggleBlock>
-          </Tooltip>
-          }
-          {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) &&
-          <MenuToggleBlock>
-            <LoadableMenu
-              LoadableComponent={LoadableBillingLeaderActionMenu}
-              maxWidth={224}
-              maxHeight={200}
-              originAnchor={originAnchor}
-              queryVars={{
-                isViewerLastBillingLeader,
-                orgMember,
-                organization
-              }}
-              targetAnchor={targetAnchor}
-              toggle={<Button {...menuButtonProps} />}
-            />
-          </MenuToggleBlock>
-          }
+          )}
         </ActionsBlock>
       </RowActions>
     </Row>
@@ -199,6 +218,7 @@ export default createFragmentContainer(
       tier
       ...BillingLeaderActionMenu_organization
     }
+
     fragment OrgMemberRow_orgMember on OrganizationMember {
       user {
         userId: id

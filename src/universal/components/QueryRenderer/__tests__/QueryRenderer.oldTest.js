@@ -162,7 +162,8 @@ const sub = () => ({
       }
     ]
   },
-  text: 'subscription GitHubRepoRemovedSubscription(\n  $teamId: ID!\n) {\n  githubRepoRemoved(teamId: $teamId) {\n    deletedId\n  }\n}\n'
+  text:
+    'subscription GitHubRepoRemovedSubscription(\n  $teamId: ID!\n) {\n  githubRepoRemoved(teamId: $teamId) {\n    deletedId\n  }\n}\n'
 });
 
 describe('ReactRelayQueryRenderer', () => {

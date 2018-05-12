@@ -2,7 +2,11 @@
 import shortid from 'shortid';
 import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow';
 
-const makeRetroStage = (phaseType: NewMeetingPhaseTypeEnum, meetingId: string, phaseIdx: number) => {
+const makeRetroStage = (
+  phaseType: NewMeetingPhaseTypeEnum,
+  meetingId: string,
+  phaseIdx: number
+) => {
   return {
     id: shortid.generate(),
     meetingId,

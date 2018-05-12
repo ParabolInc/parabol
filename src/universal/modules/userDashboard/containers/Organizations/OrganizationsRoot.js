@@ -18,7 +18,7 @@ const query = graphql`
 
 type Props = {|
   atmosphere: Object
-|}
+|};
 
 const OrganizationsRoot = (props: Props) => {
   const {atmosphere} = props;

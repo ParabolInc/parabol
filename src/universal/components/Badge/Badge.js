@@ -23,13 +23,7 @@ const BadgeRoot = styled('div')(({colorPalette, flat}) => ({
 const Badge = (props) => <BadgeRoot {...props}>{props.value || 0}</BadgeRoot>;
 
 Badge.propTypes = {
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'dark',
-    'mid',
-    'midGray',
-    'warm'
-  ]),
+  colorPalette: PropTypes.oneOf(['cool', 'dark', 'mid', 'midGray', 'warm']),
   flat: PropTypes.bool,
   value: PropTypes.number
 };

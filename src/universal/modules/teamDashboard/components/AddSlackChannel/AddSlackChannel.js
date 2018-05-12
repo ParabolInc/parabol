@@ -29,7 +29,7 @@ class AddSlackChannel extends Component {
     onError: PropTypes.func.isRequired
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       options: [],
@@ -39,7 +39,7 @@ class AddSlackChannel extends Component {
     this.fetchOptions(props.accessToken);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {accessToken} = nextProps;
     if (!this.props.accessToken !== accessToken) {
       this.fetchOptions(accessToken);
@@ -80,7 +80,8 @@ class AddSlackChannel extends Component {
       }
       const {subbedChannels} = this.props;
       const subbedChannelIds = subbedChannels.map((channel) => channel.channelId);
-      const options = channels.filter((channel) => !subbedChannelIds.includes(channel.id))
+      const options = channels
+        .filter((channel) => !subbedChannelIds.includes(channel.id))
         .map((channel) => ({id: channel.id, label: channel.name}));
       this.setState({
         isLoaded: true,
@@ -89,8 +90,12 @@ class AddSlackChannel extends Component {
     }
   };
 
-  render() {
-    const {isLoaded, options, selectedChannel: {channelName}} = this.state;
+  render () {
+    const {
+      isLoaded,
+      options,
+      selectedChannel: {channelName}
+    } = this.state;
     const {accessToken, error, styles} = this.props;
     return (
       <div className={css(styles.addChannel)}>
@@ -102,9 +107,7 @@ class AddSlackChannel extends Component {
             options={options}
             isLoaded={isLoaded}
           />
-          <div className={css(styles.error)}>
-            {error && error.message}
-          </div>
+          <div className={css(styles.error)}>{error && error.message}</div>
         </div>
         <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
           <Button
@@ -116,7 +119,6 @@ class AddSlackChannel extends Component {
           />
         </div>
       </div>
-
     );
   }
 }
@@ -136,6 +138,5 @@ const styleThunk = () => ({
     textAlign: 'right'
   }
 });
-
 
 export default withStyles(styleThunk)(withMutationProps(AddSlackChannel));

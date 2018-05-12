@@ -9,7 +9,7 @@ export const thresholds = {
   inf: Infinity
 };
 
-export default function fromNow(maybeTime) {
+export default function fromNow (maybeTime) {
   const time = new Date(maybeTime);
   const now = Date.now();
   const distance = Math.abs(now - time) || 0;

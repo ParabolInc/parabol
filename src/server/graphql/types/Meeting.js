@@ -1,4 +1,11 @@
-import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql';
 import getRethink from 'server/database/rethinkDriver';
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
 import MeetingInvitee from 'server/graphql/types/MeetingInvitee';
@@ -9,7 +16,10 @@ const Meeting = new GraphQLObjectType({
   name: 'Meeting',
   description: 'A team meeting history for all previous meetings',
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique meeting id. shortid.'},
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The unique meeting id. shortid.'
+    },
     agendaItemsCompleted: {
       type: GraphQLInt,
       description: 'The number of agenda items completed during the meeting'
@@ -39,7 +49,8 @@ const Meeting = new GraphQLObjectType({
     },
     sinceTime: {
       type: GraphQLISO8601Type,
-      description: 'The start time used to create the diff (all taskDiffs occurred between this time and the endTime'
+      description:
+        'The start time used to create the diff (all taskDiffs occurred between this time and the endTime'
     },
     successExpression: {
       type: GraphQLString,
@@ -53,15 +64,22 @@ const Meeting = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The time the meeting summary was emailed to the team'
     },
-    teamId: {type: new GraphQLNonNull(GraphQLID), description: 'The team associated with this meeting'},
-    teamName: {type: GraphQLString, description: 'The name as it was when the meeting occurred'},
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The team associated with this meeting'
+    },
+    teamName: {
+      type: GraphQLString,
+      description: 'The name as it was when the meeting occurred'
+    },
     /* GraphQL Sugar */
     teamMembers: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
-      resolve({teamId}) {
+      resolve ({teamId}) {
         const r = getRethink();
-        return r.table('TeamMember')
+        return r
+          .table('TeamMember')
           .getAll(teamId, {index: 'teamId'})
           .run();
       }

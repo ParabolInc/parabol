@@ -9,7 +9,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import TeamArchiveSqueeze from 'universal/modules/teamDashboard/components/TeamArchiveSqueeze/TeamArchiveSqueeze';
 import ui from 'universal/styles/ui';
 
-
 const query = graphql`
   query TeamArchiveSqueezeRootQuery($teamId: ID!) {
     viewer {
@@ -28,21 +27,22 @@ const TeamArchiveSqueezeRoot = ({atmosphere, orgId, tasksAvailableCount, teamId}
         return (
           <TransitionGroup appear component={React.Fragment}>
             {error && <ErrorComponent height={'14rem'} error={error} />}
-            {renderProps &&
-            <AnimatedFade key="1">
-              <TeamArchiveSqueeze
-                orgId={orgId}
-                tasksAvailableCount={tasksAvailableCount}
-                teamId={teamId}
-                viewer={renderProps.viewer}
-              />
-            </AnimatedFade>
-            }
-            {!renderProps && !error &&
-            <AnimatedFade key="2" unmountOnExit exit={false}>
-              <LoadingComponent height={'5rem'} width={ui.taskColumnsMaxWidth} />
-            </AnimatedFade>
-            }
+            {renderProps && (
+              <AnimatedFade key="1">
+                <TeamArchiveSqueeze
+                  orgId={orgId}
+                  tasksAvailableCount={tasksAvailableCount}
+                  teamId={teamId}
+                  viewer={renderProps.viewer}
+                />
+              </AnimatedFade>
+            )}
+            {!renderProps &&
+              !error && (
+              <AnimatedFade key="2" unmountOnExit exit={false}>
+                <LoadingComponent height={'5rem'} width={ui.taskColumnsMaxWidth} />
+              </AnimatedFade>
+            )}
           </TransitionGroup>
         );
       }}

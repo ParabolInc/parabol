@@ -28,7 +28,7 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newTask, area}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {newTask, area}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink();
     const operationId = dataLoader.share();
     const now = new Date();
@@ -38,9 +38,13 @@ export default {
     const viewerId = getUserId(authToken);
     const schema = makeTaskSchema();
     const {errors, data: validNewTask} = schema({content: 1, ...newTask});
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors);
+    }
     const {teamId, userId, content} = validNewTask;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const teamMemberId = toTeamMemberId(teamId, userId);
@@ -75,7 +79,8 @@ export default {
     const {teamMembers} = await r({
       task: r.table('Task').insert(task),
       history: r.table('TaskHistory').insert(history),
-      teamMembers: r.table('TeamMember')
+      teamMembers: r
+        .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isNotRemoved: true
@@ -102,7 +107,10 @@ export default {
     }
 
     getTypeFromEntityMap('MENTION', entityMap)
-      .filter((mention) => mention !== viewerId && mention !== task.userId && !usersToIgnore.includes(mention))
+      .filter(
+        (mention) =>
+          mention !== viewerId && mention !== task.userId && !usersToIgnore.includes(mention)
+      )
       .forEach((mentioneeUserId) => {
         notificationsToAdd.push({
           id: shortid.generate(),
@@ -120,7 +128,9 @@ export default {
     if (notificationsToAdd.length) {
       await r.table('Notification').insert(notificationsToAdd);
       notificationsToAdd.forEach((notification) => {
-        const {userIds: [notificationUserId]} = notification;
+        const {
+          userIds: [notificationUserId]
+        } = notification;
         publish(NOTIFICATION, notificationUserId, CreateTaskPayload, data, subOptions);
       });
     }

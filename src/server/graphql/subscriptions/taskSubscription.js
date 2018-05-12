@@ -9,7 +9,9 @@ const taskSubscription = {
   type: new GraphQLNonNull(TaskSubscriptionPayload),
   subscribe: async (source, args, {authToken, socketId, dataLoader}) => {
     // AUTH
-    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError(authToken);
+    if (!isAuthenticated(authToken)) {
+      return sendNotAuthenticatedAccessError(authToken);
+    }
 
     // RESOLUTION
     const viewerId = getUserId(authToken);

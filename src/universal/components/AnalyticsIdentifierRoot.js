@@ -16,7 +16,7 @@ const query = graphql`
 type Props = {|
   atmosphere: Object,
   location: Location
-|}
+|};
 
 const AnalyticsIdentifierRoot = (props: Props) => {
   const {atmosphere, location} = props;
@@ -26,7 +26,12 @@ const AnalyticsIdentifierRoot = (props: Props) => {
       query={query}
       variables={{}}
       render={({props: renderProps}) => {
-        return <AnalyticsIdentifier location={location} viewer={renderProps ? renderProps.viewer : null} />;
+        return (
+          <AnalyticsIdentifier
+            location={location}
+            viewer={renderProps ? renderProps.viewer : null}
+          />
+        );
       }}
     />
   );

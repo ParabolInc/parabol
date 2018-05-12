@@ -5,11 +5,7 @@ import {css} from 'aphrodite-local-styles/no-important';
 
 const DashMain = (props) => {
   const {children, styles} = props;
-  return (
-    <div className={css(styles.root)}>
-      {children}
-    </div>
-  );
+  return <div className={css(styles.root)}>{children}</div>;
 };
 
 DashMain.propTypes = {

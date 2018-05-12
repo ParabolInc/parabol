@@ -43,5 +43,6 @@ export default createFragmentContainer(
     fragment TaskIntegrationLink_integration on GitHubTask {
       issueNumber
       nameWithOwner
-    }`
+    }
+  `
 );

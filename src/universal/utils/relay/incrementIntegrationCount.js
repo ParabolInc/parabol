@@ -3,7 +3,10 @@ const incrementIntegrationCount = (viewer, teamId, service, amount) => {
   const oldProviderMap = viewer.getLinkedRecord('providerMap', {teamId});
   if (oldProviderMap) {
     const oldProviderRow = oldProviderMap.getLinkedRecord(service);
-    oldProviderRow.setValue(oldProviderRow.getValue('integrationCount') + amount, 'integrationCount');
+    oldProviderRow.setValue(
+      oldProviderRow.getValue('integrationCount') + amount,
+      'integrationCount'
+    );
   }
 };
 

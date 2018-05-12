@@ -9,25 +9,20 @@ const dontTellDraft = (e) => {
 };
 
 const AsyncEditorSuggestions = (props) => {
-  const {
-    activeIdx,
-    handleSelect,
-    styles,
-    suggestions,
-    SuggestionItem
-  } = props;
+  const {activeIdx, handleSelect, styles, suggestions, SuggestionItem} = props;
 
   const menuStyles = css(styles.mentionMenu);
   return (
     <div className={menuStyles}>
-      {suggestions && suggestions.map((suggestion, idx) => {
-        return (
-          // eslint-disable-next-line
-          <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
-            <SuggestionItem active={activeIdx === idx} {...suggestion} />
-          </div>
-        );
-      })}
+      {suggestions &&
+        suggestions.map((suggestion, idx) => {
+          return (
+            // eslint-disable-next-line
+            <div key={idx} onMouseDown={dontTellDraft} onClick={handleSelect(idx)}>
+              <SuggestionItem active={activeIdx === idx} {...suggestion} />
+            </div>
+          );
+        })}
     </div>
   );
 };

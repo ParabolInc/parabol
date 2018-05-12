@@ -5,7 +5,8 @@ const getOptimisticTeamMember = (store, viewerId, teamId) => {
   const currentTeamMember = store.get(teamMemberId);
   if (currentTeamMember) return currentTeamMember;
   const tempTeamMemberId = clientTempId();
-  return store.create(tempTeamMemberId, 'TeamMember')
+  return store
+    .create(tempTeamMemberId, 'TeamMember')
     .setValue(null, 'picture')
     .setValue('Me', 'preferredName')
     .setValue(tempTeamMemberId, 'id');

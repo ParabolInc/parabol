@@ -7,7 +7,6 @@ import {UNPAUSE_USER} from 'server/utils/serverConstants';
 import {NOTIFICATION} from 'universal/utils/constants';
 import sendSegmentEvent from 'server/utils/sendSegmentEvent';
 
-
 export default {
   name: 'ConnectSocket',
   description: 'a server-side mutation called when a client connects',
@@ -23,13 +22,21 @@ export default {
     const userId = getUserId(authToken);
 
     // RESOLUTION
-    const userChanges = await r.table('User').get(userId)
-      .update((user) => ({
-        inactive: false,
-        updatedAt: now,
-        lastSeenAt: now,
-        connectedSockets: user('connectedSockets').default([]).append(socketId)
-      }), {returnChanges: true})('changes')(0).default({});
+    const userChanges = await r
+      .table('User')
+      .get(userId)
+      .update(
+        (user) => ({
+          inactive: false,
+          updatedAt: now,
+          lastSeenAt: now,
+          connectedSockets: user('connectedSockets')
+            .default([])
+            .append(socketId)
+        }),
+        {returnChanges: true}
+      )('changes')(0)
+      .default({});
 
     const {old_val: oldUser, new_val: user} = userChanges;
     const {inactive, userOrgs} = oldUser;
@@ -45,7 +52,8 @@ export default {
     if (connectedSockets.length === 1) {
       const operationId = dataLoader.share();
       const subOptions = {mutatorId: socketId, operationId};
-      const listeningUserIds = await r.table('TeamMember')
+      const listeningUserIds = await r
+        .table('TeamMember')
         .getAll(r.args(tms), {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
         .distinct();
@@ -56,7 +64,11 @@ export default {
       });
     }
 
-    sendSegmentEvent('Connect WebSocket', userId, {connectedSockets, socketId, tms});
+    sendSegmentEvent('Connect WebSocket', userId, {
+      connectedSockets,
+      socketId,
+      tms
+    });
     return user;
   }
 };

@@ -1,4 +1,4 @@
-export default function makeAllTasks(teamOrMembers) {
+export default function makeAllTasks (teamOrMembers) {
   const taskIds = new Set();
   const allTasks = [];
   for (let i = 0; i < teamOrMembers.length; i++) {

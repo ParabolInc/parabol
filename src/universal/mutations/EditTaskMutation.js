@@ -22,7 +22,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...EditTaskMutation_task @relay(mask: false)      
+      ...EditTaskMutation_task @relay(mask: false)
     }
   }
 `;

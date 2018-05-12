@@ -13,7 +13,7 @@ class SocketHealthMonitor extends Component {
     dispatch: PropTypes.func.isRequired
   };
 
-  componentWillMount() {
+  componentWillMount () {
     const {atmosphere} = this.props;
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
       const {subscriptionClient} = atmosphere;
@@ -30,11 +30,13 @@ class SocketHealthMonitor extends Component {
     if (version !== versionInStorage) {
       popUpgradeAppToast({dispatch});
     } else {
-      dispatch(showSuccess({
-        autoDismiss: 5,
-        title: 'You’re back online!',
-        message: 'You were offline for a bit, but we’ve reconnected you.'
-      }));
+      dispatch(
+        showSuccess({
+          autoDismiss: 5,
+          title: 'You’re back online!',
+          message: 'You were offline for a bit, but we’ve reconnected you.'
+        })
+      );
     }
   };
   onConnected = (payload) => {
@@ -46,13 +48,18 @@ class SocketHealthMonitor extends Component {
     }
   };
   onDisconnected = () => {
-    const {atmosphere: {subscriptionClient}, dispatch} = this.props;
+    const {
+      atmosphere: {subscriptionClient},
+      dispatch
+    } = this.props;
     if (!subscriptionClient.reconnecting) {
-      dispatch(showWarning({
-        autoDismiss: 10,
-        title: 'You’re offline!',
-        message: 'We’re trying to reconnect you'
-      }));
+      dispatch(
+        showWarning({
+          autoDismiss: 10,
+          title: 'You’re offline!',
+          message: 'We’re trying to reconnect you'
+        })
+      );
     }
   };
 
@@ -63,15 +70,17 @@ class SocketHealthMonitor extends Component {
       level: 'error',
       message: 'WebSockets Disabled'
     });
-    dispatch(showError({
-      autoDismiss: 0,
-      title: 'WebSockets Disabled',
-      message: `We weren't able to create a live connection to our server. 
+    dispatch(
+      showError({
+        autoDismiss: 0,
+        title: 'WebSockets Disabled',
+        message: `We weren't able to create a live connection to our server. 
           Ask your network administrator to enable WebSockets.`
-    }));
+      })
+    );
   };
 
-  render() {
+  render () {
     return null;
   }
 }

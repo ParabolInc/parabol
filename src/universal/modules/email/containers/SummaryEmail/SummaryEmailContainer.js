@@ -16,7 +16,6 @@ const SummaryEmailContainer = (props) => {
       referrer="email"
       referrerUrl={referrerUrl}
       teamDashUrl={teamDashUrl}
-
     />
   );
 };

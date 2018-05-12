@@ -2,21 +2,15 @@ import {css} from 'react-emotion';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {IconAvatar, Row} from 'universal/components';
 import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import {clearNotificationLabel} from '../../helpers/constants';
+import Row from 'universal/components/Row/Row';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
 
 const DenyNewUser = (props) => {
-  const {
-    atmosphere,
-    notification,
-    submitting,
-    submitMutation,
-    onError,
-    onCompleted
-  } = props;
+  const {atmosphere, notification, submitting, submitMutation, onError, onCompleted} = props;
   const {notificationId, reason, deniedByName, inviteeEmail} = notification;
   const acknowledge = () => {
     submitMutation();
@@ -32,8 +26,14 @@ const DenyNewUser = (props) => {
         <b>{deniedByName}</b>
         {' has denied '}
         <b>{inviteeEmail}</b>
-        {' from joining the organization.'}<br />
-        <b><i>{'Reason'}</i></b>{': “'}<i>{safeReason}</i>{'”'}
+        {' from joining the organization.'}
+        <br />
+        <b>
+          <i>{'Reason'}</i>
+        </b>
+        {': “'}
+        <i>{safeReason}</i>
+        {'”'}
       </div>
       <div className={css(defaultStyles.iconButton)}>
         <AcknowledgeButton

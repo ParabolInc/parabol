@@ -34,8 +34,8 @@ const PlainButton = styled('button')(
     },
     textAlign: 'inherit'
   },
-  (({disabled, waiting}) => (disabled || waiting) && disabledStyles),
-  (({waiting}) => ({cursor: waiting && 'wait'}))
+  ({disabled, waiting}) => (disabled || waiting) && disabledStyles,
+  ({waiting}) => ({cursor: waiting && 'wait'})
 );
 
 export default PlainButton;

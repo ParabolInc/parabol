@@ -10,7 +10,7 @@ export default (ComposedComponent) => {
     };
     static displayName = `WithAtmosphere(${getDisplayName(ComposedComponent)})`;
 
-    render() {
+    render () {
       const {atmosphere} = this.context;
       return <ComposedComponent {...this.props} atmosphere={atmosphere} />;
     }

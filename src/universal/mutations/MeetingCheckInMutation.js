@@ -24,8 +24,7 @@ const MeetingCheckInMutation = (environment, teamMemberId, isCheckedIn, onError,
     mutation,
     variables: {teamMemberId, isCheckedIn},
     optimisticUpdater: (store) => {
-      store.get(teamMemberId)
-        .setValue(isCheckedIn, 'isCheckedIn');
+      store.get(teamMemberId).setValue(isCheckedIn, 'isCheckedIn');
     },
     onCompleted,
     onError

@@ -1,14 +1,12 @@
 import * as React from 'react';
 import FontAwesome from 'react-fontawesome';
 
-const domProps = [
-  'onClick'
-];
+const domProps = ['onClick'];
 const propSet = new Set([...Object.keys(FontAwesome.propTypes), ...domProps]);
 
 // eslint-disable-next-line react/prefer-stateless-function
 class StyledFontAwesome extends React.Component {
-  render() {
+  render () {
     const goodProps = {};
     Object.keys(this.props).forEach((propName) => {
       if (propSet.has(propName)) {

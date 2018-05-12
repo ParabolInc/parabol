@@ -12,7 +12,6 @@ import {sendTeamAccessError} from 'server/utils/authorizationErrors';
 import {sendIntegrationNotFoundError} from 'server/utils/docNotFoundErrors';
 import sendAuthRaven from 'server/utils/sendAuthRaven';
 
-
 const getPayload = async (service, integrationChanges, teamId, userId) => {
   const deletedIntegrationIds = integrationChanges
     .filter((change) => !change.new_val.isActive)
@@ -49,18 +48,26 @@ export default {
     const r = getRethink();
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // RESOLUTION
     const {id: dbProviderId} = fromGlobalId(providerId);
     // unlink the team from the user's token
-    const res = await r.table('Provider')
+    const res = await r
+      .table('Provider')
       .get(dbProviderId)
-      .update({
-        isActive: false
-      }, {returnChanges: true});
+      .update(
+        {
+          isActive: false
+        },
+        {returnChanges: true}
+      );
 
-    if (res.skipped === 1) return sendIntegrationNotFoundError(authToken, providerId);
+    if (res.skipped === 1) {
+      return sendIntegrationNotFoundError(authToken, providerId);
+    }
 
     // remove the user from every integration under the service
     const updatedProvider = res.changes[0];
@@ -75,14 +82,22 @@ export default {
     const {service} = updatedProvider.new_val;
     const userId = getUserId(authToken);
     if (service === SLACK) {
-      const channelChanges = await r.table(SLACK)
+      const channelChanges = await r
+        .table(SLACK)
         .getAll(teamId, {index: 'teamId'})
         .filter({isActive: true})
-        .update({
-          isActive: false
-        }, {returnChanges: true})('changes').default([]);
+        .update(
+          {
+            isActive: false
+          },
+          {returnChanges: true}
+        )('changes')
+        .default([]);
       const providerRemoved = await getPayload(service, channelChanges, teamId, userId);
-      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId});
+      getPubSub().publish(`providerRemoved.${teamId}`, {
+        providerRemoved,
+        mutatorId
+      });
       return providerRemoved;
     } else if (service === GITHUB) {
       const repoChanges = await removeGitHubReposForUserId(userId, [teamId]);
@@ -93,7 +108,10 @@ export default {
         return arr;
       }, []);
 
-      getPubSub().publish(`providerRemoved.${teamId}`, {providerRemoved, mutatorId});
+      getPubSub().publish(`providerRemoved.${teamId}`, {
+        providerRemoved,
+        mutatorId
+      });
       return providerRemoved;
     }
     // will never hit this

@@ -9,14 +9,12 @@ import Helmet from 'react-helmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
 import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
-import {ib} from 'universal/styles/helpers';
 import appTheme from 'universal/styles/theme/theme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants';
 
 const iconStyle = {
-  ...ib,
   fontSize: ui.iconSize,
   marginRight: '.25rem'
 };
@@ -32,35 +30,49 @@ const getColumnCount = () => {
 };
 
 class TeamArchive extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.columnCount = getColumnCount();
     this.archiveWidth = this.columnCount * CARD_WIDTH + 16;
   }
 
-  componentWillUpdate(nextProps) {
-    const {viewer: {archivedTasks: {edges: oldEdges}}} = this.props;
-    const {viewer: {archivedTasks: {edges}}} = nextProps;
+  componentWillUpdate (nextProps) {
+    const {
+      viewer: {
+        archivedTasks: {edges: oldEdges}
+      }
+    } = this.props;
+    const {
+      viewer: {
+        archivedTasks: {edges}
+      }
+    } = nextProps;
     this.invalidateOnAddRemove(oldEdges, edges);
   }
 
-  getGridIndex(index) {
+  getGridIndex (index) {
     const rowIndex = Math.floor(index / this.columnCount);
     const columnIndex = index % this.columnCount;
     return {rowIndex, columnIndex};
   }
 
-  getIndex(columnIndex, rowIndex) {
+  getIndex (columnIndex, rowIndex) {
     return this.columnCount * rowIndex + columnIndex;
   }
 
   isRowLoaded = ({index}) => {
-    const {viewer: {archivedTasks: {edges}}} = this.props;
+    const {
+      viewer: {
+        archivedTasks: {edges}
+      }
+    } = this.props;
     return index < edges.length;
   };
 
   loadMore = () => {
-    const {relay: {hasMore, isLoading, loadMore}} = this.props;
+    const {
+      relay: {hasMore, isLoading, loadMore}
+    } = this.props;
     if (!hasMore() || isLoading()) return;
     loadMore(this.columnCount * 10);
   };
@@ -71,11 +83,21 @@ class TeamArchive extends Component {
     fixedWidth: true
   });
 
-  invalidateOnAddRemove(oldEdges, edges) {
-    if (edges !== oldEdges && edges.length !== oldEdges.length && edges.length > 0 && oldEdges.length > 0) {
+  invalidateOnAddRemove (oldEdges, edges) {
+    if (
+      edges !== oldEdges &&
+      edges.length !== oldEdges.length &&
+      edges.length > 0 &&
+      oldEdges.length > 0
+    ) {
       const minLen = Math.min(oldEdges.length, edges.length);
       // if a new page is added, don't bother resizing, it isn't from a subscription or mutation
-      if (oldEdges.length === minLen && oldEdges[minLen - 1].node.id === edges[minLen - 1].node.id) return;
+      if (
+        oldEdges.length === minLen &&
+        oldEdges[minLen - 1].node.id === edges[minLen - 1].node.id
+      ) {
+        return;
+      }
       // find the edge that changed. imperatively/efficiently since this can get large
       let ii;
       for (ii = 0; ii < minLen; ii++) {
@@ -93,7 +115,12 @@ class TeamArchive extends Component {
 
   rowRenderer = ({columnIndex, parent, rowIndex, key, style}) => {
     // TODO render a very inexpensive lo-fi card while scrolling. We should reuse that cheap card for drags, too
-    const {viewer: {archivedTasks: {edges}}, userId} = this.props;
+    const {
+      viewer: {
+        archivedTasks: {edges}
+      },
+      userId
+    } = this.props;
     const index = this.getIndex(columnIndex, rowIndex);
     if (!this.isRowLoaded({index})) return undefined;
     const task = edges[index].node;
@@ -108,7 +135,10 @@ class TeamArchive extends Component {
         {({measure}) => {
           return (
             // put styles here because aphrodite is async
-            <div key={`cardBlockFor${task.id}`} style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem 0'}}>
+            <div
+              key={`cardBlockFor${task.id}`}
+              style={{...style, width: CARD_WIDTH, padding: '1rem 0.5rem 0'}}
+            >
               <NullableTask
                 key={key}
                 area={TEAM_DASH}
@@ -130,8 +160,14 @@ class TeamArchive extends Component {
     });
   };
 
-  render() {
-    const {relay: {hasMore}, styles, team, teamId, viewer} = this.props;
+  render () {
+    const {
+      relay: {hasMore},
+      styles,
+      team,
+      teamId,
+      viewer
+    } = this.props;
     const {teamName, tier, orgId} = team;
     const {archivedTasks} = viewer;
     const {edges} = archivedTasks;
@@ -147,7 +183,7 @@ class TeamArchive extends Component {
         </div>
 
         <div className={css(styles.body)}>
-          {edges.length ?
+          {edges.length ? (
             <div className={css(styles.cardGrid)}>
               <InfiniteLoader
                 isRowLoaded={this.isRowLoaded}
@@ -187,25 +223,26 @@ class TeamArchive extends Component {
                   );
                 }}
               </InfiniteLoader>
-            </div> :
+            </div>
+          ) : (
             <div className={css(styles.emptyMsg)}>
               <FontAwesome name="smile-o" style={iconStyle} />
-              <span style={ib}>
+              <span>
                 {'Hi there! There are zero archived tasks. '}
                 {'Nothing to see here. How about a fun rally video? '}
                 <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
             </div>
-          }
-          {showArchiveSqueeze &&
-          <div className={css(styles.archiveSqueezeBlock)}>
-            <TeamArchiveSqueezeRoot
-              tasksAvailableCount={edges.length}
-              orgId={orgId}
-              teamId={teamId}
-            />
-          </div>
-          }
+          )}
+          {showArchiveSqueeze && (
+            <div className={css(styles.archiveSqueezeBlock)}>
+              <TeamArchiveSqueezeRoot
+                tasksAvailableCount={edges.length}
+                orgId={orgId}
+                teamId={teamId}
+              />
+            </div>
+          )}
         </div>
       </div>
     );
@@ -295,7 +332,8 @@ export default createPaginationContainer(
   withStyles(styleThunk)(TeamArchive),
   graphql`
     fragment TeamArchive_viewer on User {
-      archivedTasks(first: $first, teamId: $teamId, after: $after) @connection(key: "TeamArchive_archivedTasks") {
+      archivedTasks(first: $first, teamId: $teamId, after: $after)
+        @connection(key: "TeamArchive_archivedTasks") {
         edges {
           cursor
           node {
@@ -309,6 +347,7 @@ export default createPaginationContainer(
         }
       }
     }
+
     fragment TeamArchive_team on Team {
       teamName: name
       orgId
@@ -317,16 +356,16 @@ export default createPaginationContainer(
   `,
   {
     direction: 'forward',
-    getConnectionFromProps(props) {
+    getConnectionFromProps (props) {
       return props.viewer && props.viewer.archivedTasks;
     },
-    getFragmentVariables(prevVars, totalCount) {
+    getFragmentVariables (prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       };
     },
-    getVariables(props, {count, cursor}, fragmentVariables) {
+    getVariables (props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

@@ -13,13 +13,17 @@ class SignoutContainer extends Component {
     history: PropTypes.object.isRequired
   };
 
-  componentWillMount() {
-    const {store: {dispatch}} = this.context;
+  componentWillMount () {
+    const {
+      store: {dispatch}
+    } = this.context;
     const {atmosphere, history} = this.props;
     signout(atmosphere, dispatch, history);
   }
 
-  render() { return null; }
+  render () {
+    return null;
+  }
 }
 
 export default withAtmosphere(SignoutContainer);

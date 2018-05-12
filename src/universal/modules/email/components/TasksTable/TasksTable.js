@@ -12,15 +12,11 @@ const cardRowCell = {
 
 /* eslint-disable react/no-array-index-key */
 const makeTaskCards = (arr) => {
-  return arr.map((card, idx) =>
-    (<td style={cardRowCell} key={`taskCard${idx}`}>
-      <Card
-        content={card.content}
-        status={card.status}
-        tags={card.tags}
-      />
-    </td>)
-  );
+  return arr.map((card, idx) => (
+    <td style={cardRowCell} key={`taskCard${idx}`}>
+      <Card content={card.content} status={card.status} tags={card.tags} />
+    </td>
+  ));
 };
 
 type Task = {
@@ -38,11 +34,7 @@ const TasksTable = (props: TasksTableProps) => {
   return (
     <table align="center" style={ui.emailTableBase}>
       <tbody>
-        {taskRows.map((row, idx) =>
-          (<tr key={`taskRow${idx}`}>
-            {makeTaskCards(row)}
-          </tr>)
-        )}
+        {taskRows.map((row, idx) => <tr key={`taskRow${idx}`}>{makeTaskCards(row)}</tr>)}
       </tbody>
     </table>
   );

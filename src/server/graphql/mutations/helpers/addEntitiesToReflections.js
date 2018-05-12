@@ -9,17 +9,17 @@ import addLemmaToEntities from 'server/graphql/mutations/helpers/autoGroup/addLe
 
 const addEntitiesToReflections = async (meetingId) => {
   const r = getRethink();
-  const reflections = await r.table('RetroReflection')
+  const reflections = await r
+    .table('RetroReflection')
     .getAll(meetingId, {index: 'meetingId'})
     .filter((reflection) => {
-      return r.and(
-        reflection('isActive').eq(true),
-        reflection.hasFields('entities').not()
-      );
+      return r.and(reflection('isActive').eq(true), reflection.hasFields('entities').not());
     });
 
   // get text for each reflection
-  const contentTexts = reflections.map((reflection) => extractTextFromDraftString(reflection.content));
+  const contentTexts = reflections.map((reflection) =>
+    extractTextFromDraftString(reflection.content)
+  );
 
   // intelligently extract the entities from the body of the text
   const {reflectionResponses, reflectionSyntax} = await promiseAllObj({
@@ -33,14 +33,17 @@ const addEntitiesToReflections = async (meetingId) => {
   // run a distance matrix on the lemma
   // sanitize reflection responses, nulling out anything without a full response tree
   const sanitizedReflectionResponses = reflectionResponses.map(sanitizeAnalyzedEntitiesResponse);
-  const responsesWithLemma = sanitizedReflectionResponses.map((response, idx) => addLemmaToEntities(response, reflectionSyntax[idx]));
+  const responsesWithLemma = sanitizedReflectionResponses.map((response, idx) =>
+    addLemmaToEntities(response, reflectionSyntax[idx])
+  );
   const nextReflections = reflections.map((reflection, idx) => ({
     id: reflection.id,
     entities: responsesWithLemma[idx]
   }));
 
   return r(nextReflections).forEach((reflection) => {
-    return r.table('RetroReflection')
+    return r
+      .table('RetroReflection')
       .get(reflection('id'))
       .update({entities: reflection('entities')});
   });

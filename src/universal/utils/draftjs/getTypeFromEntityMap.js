@@ -1,4 +1,3 @@
-
 const keyLookup = {
   TAG: 'value',
   MENTION: 'userId'
@@ -19,4 +18,3 @@ const getTypeFromEntityMap = (type, entityMap) => {
 };
 
 export default getTypeFromEntityMap;
-

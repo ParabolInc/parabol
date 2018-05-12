@@ -18,11 +18,7 @@ const truncateByBlock = (contentState) => {
       isBackward: false,
       hasFocus: false
     });
-    return Modifier.removeRange(
-      contentState,
-      selectionState,
-      'forward'
-    );
+    return Modifier.removeRange(contentState, selectionState, 'forward');
   }
   return contentState;
 };
@@ -46,11 +42,7 @@ const truncateCard = (content, maxBlocks = MAX_BLOCKS, maxChars = MAX_CHARS) => 
         isBackward: false,
         hasFocus: false
       });
-      return Modifier.replaceText(
-        contentState,
-        selection,
-        ELLIPSIS
-      );
+      return Modifier.replaceText(contentState, selection, ELLIPSIS);
     }
     block = contentState.getBlockAfter(key);
     if (!block) break;

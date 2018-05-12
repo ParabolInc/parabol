@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay';
-import {SettingsWrapper} from 'universal/components/Settings';
-import {Button, Panel} from 'universal/components';
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel';
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow';
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack';
@@ -15,11 +13,21 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withStyles from 'universal/styles/withStyles';
 import {SLACK} from 'universal/utils/constants';
+import SettingsWrapper from 'universal/components/Settings/SettingsWrapper';
+import Button from 'universal/components/Button/Button';
+import Panel from 'universal/components/Panel/Panel';
 
 const {makeUri} = providerLookup[SLACK];
 
 const SlackIntegrations = (props) => {
-  const {relay: {environment}, jwt, styles, teamId, teamMemberId, viewer} = props;
+  const {
+    relay: {environment},
+    jwt,
+    styles,
+    teamId,
+    teamMemberId,
+    viewer
+  } = props;
   const {slackChannels, integrationProvider} = viewer;
   const handleRemoveChannel = (slackGlobalId) => () => {
     RemoveSlackChannelMutation(environment, slackGlobalId, teamId);
@@ -39,36 +47,34 @@ const SlackIntegrations = (props) => {
         </div>
         <div className={css(styles.providerInfo)}>
           <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.providerName)}>
-              {ui.providers.slack.providerName}
-            </div>
-            <div className={css(styles.subHeading)}>
-              {ui.providers.slack.description}
-            </div>
+            <div className={css(styles.providerName)}>{ui.providers.slack.providerName}</div>
+            <div className={css(styles.subHeading)}>{ui.providers.slack.description}</div>
           </div>
         </div>
-        {accessToken &&
-        <div className={css(styles.providerActions)}>
-          <Button
-            buttonSize="small"
-            buttonStyle="flat"
-            colorPalette="warm"
-            label="Remove Slack"
-            onClick={() => RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)}
-          />
-          <Button
-            buttonSize="small"
-            buttonStyle="flat"
-            colorPalette="warm"
-            label="Refresh Token"
-            onClick={openOauth}
-          />
-        </div>
-        }
+        {accessToken && (
+          <div className={css(styles.providerActions)}>
+            <Button
+              buttonSize="small"
+              buttonStyle="flat"
+              colorPalette="warm"
+              label="Remove Slack"
+              onClick={() =>
+                RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)
+              }
+            />
+            <Button
+              buttonSize="small"
+              buttonStyle="flat"
+              colorPalette="warm"
+              label="Refresh Token"
+              onClick={openOauth}
+            />
+          </div>
+        )}
       </div>
       <Panel label="Channels">
         <div className={css(styles.integrations)}>
-          {accessToken ?
+          {accessToken ? (
             <div className={css(styles.addChannel)}>
               <AddSlackChannel
                 accessToken={accessToken}
@@ -76,7 +82,8 @@ const SlackIntegrations = (props) => {
                 teamMemberId={teamMemberId}
                 subbedChannels={slackChannels}
               />
-            </div> :
+            </div>
+          ) : (
             <div className={css(styles.addSlack)}>
               <Button
                 buttonSize="medium"
@@ -86,26 +93,26 @@ const SlackIntegrations = (props) => {
                 onClick={openOauth}
               />
             </div>
-          }
-          {slackChannels &&
-          <div className={css(styles.integrationsList)}>
-            {slackChannels.map((channel) => {
-              const {id, channelId, channelName} = channel;
-              return (
-                <IntegrationRow key={`${channelId}-row`}>
-                  <div className={css(styles.channelName)}>{channelName}</div>
-                  <Button
-                    buttonStyle="flat"
-                    colorPalette="dark"
-                    label="Remove"
-                    onClick={handleRemoveChannel(id)}
-                    buttonSize="small"
-                  />
-                </IntegrationRow>
-              );
-            })}
-          </div>
-          }
+          )}
+          {slackChannels && (
+            <div className={css(styles.integrationsList)}>
+              {slackChannels.map((channel) => {
+                const {id, channelId, channelName} = channel;
+                return (
+                  <IntegrationRow key={`${channelId}-row`}>
+                    <div className={css(styles.channelName)}>{channelName}</div>
+                    <Button
+                      buttonStyle="flat"
+                      colorPalette="dark"
+                      label="Remove"
+                      onClick={handleRemoveChannel(id)}
+                      buttonSize="small"
+                    />
+                  </IntegrationRow>
+                );
+              })}
+            </div>
+          )}
         </div>
       </Panel>
     </SettingsWrapper>
@@ -182,7 +189,6 @@ const styleThunk = () => ({
     fontWeight: 600
   }
 });
-
 
 export default createFragmentContainer(
   withStyles(styleThunk)(SlackIntegrations),

@@ -22,7 +22,7 @@ graphql`
 `;
 
 const mutation = graphql`
-  mutation VoteForReflectionGroupMutation($reflectionGroupId: ID! $isUnvote: Boolean) {
+  mutation VoteForReflectionGroupMutation($reflectionGroupId: ID!, $isUnvote: Boolean) {
     voteForReflectionGroup(reflectionGroupId: $reflectionGroupId, isUnvote: $isUnvote) {
       ...VoteForReflectionGroupMutation_team @relay(mask: false)
     }

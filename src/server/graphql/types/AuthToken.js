@@ -9,7 +9,6 @@ import {
   GraphQLString
 } from 'graphql';
 
-
 const AuthTokenRole = new GraphQLEnumType({
   name: 'AuthTokenRole',
   description: 'A role describing super user privileges',

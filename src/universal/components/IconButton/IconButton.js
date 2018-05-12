@@ -3,7 +3,7 @@ import React from 'react';
 import FontAwesome from 'react-fontawesome';
 import appTheme from 'universal/styles/theme/appTheme';
 import styled from 'react-emotion';
-import {PlainButton} from 'universal/components';
+import PlainButton from 'universal/components/PlainButton/PlainButton';
 
 const {warm} = appTheme.palette;
 const color = appTheme.palette.warm40l;
@@ -21,10 +21,24 @@ const ButtonBase = styled(PlainButton)(({disabled}) => ({
 }));
 
 const IconButton = (props) => {
-  const {'aria-label': ariaLabel, disabled, iconName, iconSize, onClick, title, type = 'button'} = props;
+  const {
+    'aria-label': ariaLabel,
+    disabled,
+    iconName,
+    iconSize,
+    onClick,
+    title,
+    type = 'button'
+  } = props;
   // must declare type="button" or it gets treated as a submit in the welcome wizard. wtf react
   return (
-    <ButtonBase aria-label={ariaLabel} disabled={disabled} onClick={onClick} title={title} type={type}>
+    <ButtonBase
+      aria-label={ariaLabel}
+      disabled={disabled}
+      onClick={onClick}
+      title={title}
+      type={type}
+    >
       <FontAwesome name={iconName} size={iconSize} />
     </ButtonBase>
   );

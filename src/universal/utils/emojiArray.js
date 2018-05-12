@@ -8,4 +8,3 @@ export default Object.keys(emojis).map((name) => {
     emoji: emojis[name]
   };
 });
-

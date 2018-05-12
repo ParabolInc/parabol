@@ -21,7 +21,9 @@ const FileInput = (props) => {
   } = props;
   let errorString = error;
   if (typeof error === 'object') {
-    errorString = Object.keys(error).map((k) => error[k]).join(', ');
+    errorString = Object.keys(error)
+      .map((k) => error[k])
+      .join(', ');
   }
   let el;
   return (
@@ -32,7 +34,9 @@ const FileInput = (props) => {
           buttonSize={size}
           colorPalette={colorPalette}
           type="button"
-          onClick={() => { el.click(); }}
+          onClick={() => {
+            el.click();
+          }}
         />
         <input
           accept={accept}
@@ -45,15 +49,12 @@ const FileInput = (props) => {
           style={hiddenUglyButton}
           type="file"
           value={undefined} // required to avoid value change security console message
-          ref={(c) => { el = c; }}
+          ref={(c) => {
+            el = c;
+          }}
         />
       </div>
-      {touched && error &&
-        <FieldHelpText
-          hasErrorText
-          helpText={errorString}
-        />
-      }
+      {touched && error && <FieldHelpText hasErrorText helpText={errorString} />}
     </div>
   );
 };

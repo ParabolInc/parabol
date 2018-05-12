@@ -14,18 +14,18 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
   const oldMentions = wasPrivate ? [] : getTypeFromEntityMap('MENTION', oldEntityMap);
   const mentions = isPrivate ? [] : getTypeFromEntityMap('MENTION', entityMap);
   // intersect the mentions to get the ones to add and remove
-  const userIdsToRemove = oldMentions
-    .filter((userId) => !mentions.includes(userId));
+  const userIdsToRemove = oldMentions.filter((userId) => !mentions.includes(userId));
   const notificationsToAdd = mentions
-    .filter((userId) =>
-      // it didn't already exist
-      !oldMentions.includes(userId) &&
-      // it isn't the owner (they get the assign notification)
-      userId !== task.userId &&
-      // it isn't the person changing it
-      changeUserId !== userId &&
-      // it isn't someone in a meeting
-      !usersToIgnore.includes(userId)
+    .filter(
+      (userId) =>
+        // it didn't already exist
+        !oldMentions.includes(userId) &&
+        // it isn't the owner (they get the assign notification)
+        userId !== task.userId &&
+        // it isn't the person changing it
+        changeUserId !== userId &&
+        // it isn't someone in a meeting
+        !usersToIgnore.includes(userId)
     )
     .map((userId) => ({
       id: shortid.generate(),
@@ -61,7 +61,8 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
     const contentLen = blocks[0] ? blocks[0].text.length : 0;
     if (contentLen > oldContentLen) {
       const maybeInvolvedUserIds = mentions.concat(task.userId);
-      const existingTaskNotifications = await r.table('Notification')
+      const existingTaskNotifications = await r
+        .table('Notification')
         .getAll(r.args(maybeInvolvedUserIds), {index: 'userIds'})
         .filter({
           taskId: task.id,
@@ -73,16 +74,21 @@ const publishChangeNotifications = async (task, oldTask, changeUserId, usersToIg
 
   // update changes in the db
   const {notificationsToRemove} = await r({
-    notificationsToRemove: userIdsToRemove.length === 0 ? [] : r.table('Notification')
-      .getAll(r.args(userIdsToRemove), {index: 'userIds'})
-      .filter({
-        taskId: oldTask.id,
-        type: TASK_INVOLVES
-      })
-      .delete({returnChanges: true})('changes')('old_val')
-      .pluck('id', 'userIds')
-      .default([]),
-    insertedNotifications: notificationsToAdd.length === 0 ? [] : r.table('Notification').insert(notificationsToAdd)
+    notificationsToRemove:
+      userIdsToRemove.length === 0
+        ? []
+        : r
+          .table('Notification')
+          .getAll(r.args(userIdsToRemove), {index: 'userIds'})
+          .filter({
+            taskId: oldTask.id,
+            type: TASK_INVOLVES
+          })
+          .delete({returnChanges: true})('changes')('old_val')
+          .pluck('id', 'userIds')
+          .default([]),
+    insertedNotifications:
+      notificationsToAdd.length === 0 ? [] : r.table('Notification').insert(notificationsToAdd)
   });
   return {notificationsToRemove, notificationsToAdd};
 };

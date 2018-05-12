@@ -29,9 +29,7 @@ const DashHeader = (props) => {
   const {children, hasOverlay} = props;
   return (
     <RootBlock hasOverlay={hasOverlay}>
-      <InnerBlock>
-        {children}
-      </InnerBlock>
+      <InnerBlock>{children}</InnerBlock>
     </RootBlock>
   );
 };

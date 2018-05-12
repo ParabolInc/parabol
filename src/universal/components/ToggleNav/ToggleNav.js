@@ -17,10 +17,7 @@ const iconStyles = {
 };
 
 const ToggleNav = (props) => {
-  const {
-    items,
-    styles
-  } = props;
+  const {items, styles} = props;
 
   const renderItems = () =>
     items.map((item, index) => {
@@ -29,21 +26,16 @@ const ToggleNav = (props) => {
         // Avoid className order conflicts and set active here
         item.isActive && styles.itemActive,
         index === 0 && styles.itemFirst,
-        index === (items.length - 1) && styles.itemLast
+        index === items.length - 1 && styles.itemLast
       );
       return (
         <div className={itemStyles} key={item.label} onClick={item.onClick} title={item.label}>
           <FontAwesome name={item.icon} style={iconStyles} /> {item.label}
         </div>
       );
-    }
-    );
+    });
 
-  return (
-    <div className={css(styles.nav)}>
-      {renderItems()}
-    </div>
-  );
+  return <div className={css(styles.nav)}>{renderItems()}</div>;
 };
 
 ToggleNav.propTypes = {

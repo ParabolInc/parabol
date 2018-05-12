@@ -1,13 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Button} from 'universal/components';
+import Button from 'universal/components/Button/Button';
 
 const DashNavControl = (props) => {
-  const {
-    icon,
-    iconPlacement,
-    label,
-    onClick} = props;
+  const {icon, iconPlacement, label, onClick} = props;
   return (
     <Button
       aria-label={label}
@@ -25,10 +21,7 @@ const DashNavControl = (props) => {
 
 DashNavControl.propTypes = {
   icon: PropTypes.string,
-  iconPlacement: PropTypes.oneOf([
-    'left',
-    'right'
-  ]),
+  iconPlacement: PropTypes.oneOf(['left', 'right']),
   label: PropTypes.string,
   onClick: PropTypes.func
 };

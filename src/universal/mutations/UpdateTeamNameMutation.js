@@ -14,7 +14,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpdateTeamNameMutation_team @relay(mask:false)
+      ...UpdateTeamNameMutation_team @relay(mask: false)
     }
   }
 `;

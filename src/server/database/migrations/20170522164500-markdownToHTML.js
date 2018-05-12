@@ -12,13 +12,11 @@
 // import entitizeText from 'universal/utils/draftjs/entitizeText';
 // import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
 
-
 // const options = {
 //  breaks: true,
 //  linkify: true,
 //  typographer: true
 // };
-
 
 exports.up = async () => {
   // const dom = new jsdom.JSDOM('');
@@ -61,7 +59,6 @@ exports.up = async () => {
 };
 
 exports.down = async () => {
-
   // const dom = new jsdom.JSDOM('');
   // global.window = dom.window;
   // global.document = dom.window.document;

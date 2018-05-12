@@ -15,13 +15,20 @@ class Invitation extends Component {
     history: PropTypes.object.isRequired
   };
 
-  componentDidMount() {
-    const {atmosphere, dispatch, match: {params: {inviteToken}}, history} = this.props;
+  componentDidMount () {
+    const {
+      atmosphere,
+      dispatch,
+      match: {
+        params: {inviteToken}
+      },
+      history
+    } = this.props;
     if (!inviteToken) return;
     AcceptTeamInviteMutation(atmosphere, {inviteToken}, {dispatch, history});
   }
 
-  render() {
+  render () {
     return (
       <div>
         <LoadingView />
@@ -31,10 +38,5 @@ class Invitation extends Component {
 }
 
 export default withReducer({userDashboardSettings: userSettingsReducer})(
-  withAtmosphere(
-    requireAuthAndRole({silent: true, unauthRoute: '/signup'})(
-      Invitation
-    )
-  )
+  withAtmosphere(requireAuthAndRole({silent: true, unauthRoute: '/signup'})(Invitation))
 );
-

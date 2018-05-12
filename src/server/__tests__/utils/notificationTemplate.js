@@ -15,15 +15,18 @@ import {
 MockDate.set(__now);
 const now = new Date();
 
-const billingLeadersOnly = (users, orgId) => users.reduce((list, user) => {
-  const isBillingLeader = user.userOrgs.find((org) => org.id === orgId && org.role === BILLING_LEADER);
-  if (isBillingLeader) {
-    list.push(user.id);
-  }
-  return list;
-}, []);
+const billingLeadersOnly = (users, orgId) =>
+  users.reduce((list, user) => {
+    const isBillingLeader = user.userOrgs.find(
+      (org) => org.id === orgId && org.role === BILLING_LEADER
+    );
+    if (isBillingLeader) {
+      list.push(user.id);
+    }
+    return list;
+  }, []);
 
-export default function notificationTemplate(template) {
+export default function notificationTemplate (template) {
   const {type} = template;
   if (type === ADD_TO_TEAM) {
     return {

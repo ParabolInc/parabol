@@ -14,7 +14,7 @@ const layerStyles = {
   zIndex: ui.ziCardDragLayer
 };
 
-function getItemStyles(props) {
+function getItemStyles (props) {
   const {area, currentOffset} = props;
   if (!currentOffset) {
     return {
@@ -64,12 +64,12 @@ export default class TaskDragLayer extends Component {
       y: PropTypes.number
     })
   };
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate (nextProps) {
     const {x, y} = this.props.currentOffset;
     const {currentOffset} = nextProps;
     return !currentOffset || x !== currentOffset.x || y !== currentOffset.y;
   }
-  render() {
+  render () {
     return (
       <div style={getItemStyles(this.props)}>
         <div style={ui.cardDragStyle}>

@@ -7,7 +7,7 @@ export default class InvoiceLineItemContainer extends Component {
     item: PropTypes.object
   };
 
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
       detailsOpen: false
@@ -18,7 +18,7 @@ export default class InvoiceLineItemContainer extends Component {
     this.setState({detailsOpen: !this.state.detailsOpen});
   };
 
-  render() {
+  render () {
     return (
       <InvoiceLineItem
         detailsOpen={this.state.detailsOpen}

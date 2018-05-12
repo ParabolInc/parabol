@@ -7,7 +7,15 @@ import {reduxForm, Field} from 'redux-form';
 import AgendaInputField from './AgendaInputField';
 
 const AgendaInput = (props) => {
-  const {afterSubmitAgendaItem, agenda, disabled, handleSubmit, setAgendaInputRef, team, styles} = props;
+  const {
+    afterSubmitAgendaItem,
+    agenda,
+    disabled,
+    handleSubmit,
+    setAgendaInputRef,
+    team,
+    styles
+  } = props;
   return (
     <div className={css(styles.agendaInputBlock)}>
       <Field
@@ -47,6 +55,4 @@ const styleThunk = () => ({
  *
  * See: universal/redux/makeReducer.js
  */
-export default reduxForm({form: 'agendaInput'})(
-  withStyles(styleThunk)(AgendaInput)
-);
+export default reduxForm({form: 'agendaInput'})(withStyles(styleThunk)(AgendaInput));

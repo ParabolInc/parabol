@@ -23,22 +23,35 @@ export default {
     const {id} = fromGlobalId(slackGlobalId);
     // AUTH
     const integration = await r.table(SLACK).get(id);
-    if (!integration) return sendSlackProviderNotFoundError(authToken, {globalId: slackGlobalId});
+    if (!integration) {
+      return sendSlackProviderNotFoundError(authToken, {
+        globalId: slackGlobalId
+      });
+    }
     const {teamId, isActive} = integration;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId);
+    }
 
     // VALIDATION
-    if (!isActive) return sendAlreadyRemovedIntegrationError(authToken, slackGlobalId);
+    if (!isActive) {
+      return sendAlreadyRemovedIntegrationError(authToken, slackGlobalId);
+    }
     // RESOLUTION
 
-    await r.table(SLACK).get(id)
+    await r
+      .table(SLACK)
+      .get(id)
       .update({
         isActive: false
       });
     const slackChannelRemoved = {
       deletedId: slackGlobalId
     };
-    getPubSub().publish(`slackChannelRemoved.${teamId}`, {slackChannelRemoved, mutatorId});
+    getPubSub().publish(`slackChannelRemoved.${teamId}`, {
+      slackChannelRemoved,
+      mutatorId
+    });
     return slackChannelRemoved;
   }
 };

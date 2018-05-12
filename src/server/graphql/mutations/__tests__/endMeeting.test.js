@@ -20,7 +20,8 @@ describe('endMeeting', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {teamMember, user} = await mockDB.init()
+    const {teamMember, user} = await mockDB
+      .init()
       .newMeeting({createdAt: new Date(__anHourAgo - 10000)}, {inProgress: true});
     const authToken = mockAuthToken(user[0]);
     const meetingId = mockDB.context.meeting.id;
@@ -31,13 +32,25 @@ describe('endMeeting', () => {
     // TEST
     await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket});
     // VERIFY
-    const db = await fetchAndSerialize({
-      agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('teamMemberId'),
-      task: r.table('Task').getAll(r.args(teamMemberIds), {index: 'assigneeId'}).orderBy('content'),
-      meeting: r.table('Meeting').get(meetingId),
-      team: r.table('Team').get(teamId),
-      teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        agendaItem: r
+          .table('AgendaItem')
+          .getAll(teamId, {index: 'teamId'})
+          .orderBy('teamMemberId'),
+        task: r
+          .table('Task')
+          .getAll(r.args(teamMemberIds), {index: 'assigneeId'})
+          .orderBy('content'),
+        meeting: r.table('Meeting').get(meetingId),
+        team: r.table('Team').get(teamId),
+        teamMember: r
+          .table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .orderBy('preferredName')
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(dataLoader.isShared()).toEqual(true);
   });
@@ -48,7 +61,8 @@ describe('endMeeting', () => {
     const r = getRethink();
     const dynamicSerializer = new DynamicSerializer();
     const mockDB = new MockDB();
-    const {teamMember, user} = await mockDB.init()
+    const {teamMember, user} = await mockDB
+      .init()
       .newTask()
       .newMeeting({createdAt: new Date(__anHourAgo - 10000)}, {inProgress: true});
     const authToken = mockAuthToken(user[0]);
@@ -60,13 +74,25 @@ describe('endMeeting', () => {
     // TEST
     await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader, socket});
     // VERIFY
-    const db = await fetchAndSerialize({
-      agendaItem: r.table('AgendaItem').getAll(teamId, {index: 'teamId'}).orderBy('content'),
-      task: r.table('Task').getAll(r.args(teamMemberIds), {index: 'assigneeId'}).orderBy('content'),
-      meeting: r.table('Meeting').get(meetingId),
-      team: r.table('Team').get(teamId),
-      teamMember: r.table('TeamMember').getAll(teamId, {index: 'teamId'}).orderBy('preferredName')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        agendaItem: r
+          .table('AgendaItem')
+          .getAll(teamId, {index: 'teamId'})
+          .orderBy('content'),
+        task: r
+          .table('Task')
+          .getAll(r.args(teamMemberIds), {index: 'assigneeId'})
+          .orderBy('content'),
+        meeting: r.table('Meeting').get(meetingId),
+        team: r.table('Team').get(teamId),
+        teamMember: r
+          .table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .orderBy('preferredName')
+      },
+      dynamicSerializer
+    );
     expect(db).toMatchSnapshot();
     expect(dataLoader.isShared()).toEqual(true);
   });
@@ -74,8 +100,7 @@ describe('endMeeting', () => {
   test('return error if called after meeting ended or no active meeting', async () => {
     // SETUP
     const mockDB = new MockDB();
-    const {user} = await mockDB.init()
-      .newMeeting();
+    const {user} = await mockDB.init().newMeeting();
     const authToken = mockAuthToken(user[0]);
     const teamId = mockDB.context.team.id;
     const dataLoader = makeDataLoader(authToken);
@@ -106,7 +131,11 @@ describe('endMeeting', () => {
     const dataLoader = makeDataLoader(authToken);
 
     // TEST
-    const res = await endMeeting.resolve(undefined, {teamId: 'foo'}, {authToken, dataLoader, socket});
+    const res = await endMeeting.resolve(
+      undefined,
+      {teamId: 'foo'},
+      {authToken, dataLoader, socket}
+    );
     expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
   });
 });

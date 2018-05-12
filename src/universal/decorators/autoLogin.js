@@ -9,14 +9,18 @@ const {Component} = React;
 type Props = {
   atmosphere: Object,
   history: RouterHistory,
-  location: Location,
-}
+  location: Location
+};
 
 const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
   class AutoLogin extends Component<Props> {
-    constructor(props) {
+    constructor (props) {
       super(props);
-      const {atmosphere: {authObj}, history, location: {search}} = props;
+      const {
+        atmosphere: {authObj},
+        history,
+        location: {search}
+      } = props;
       if (authObj) {
         const isNew = !authObj.tms;
         if (isNew) {
@@ -34,7 +38,7 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
 
     redir: boolean;
 
-    render() {
+    render () {
       if (this.redir) return null;
       return <ComposedComponent {...this.props} />;
     }
@@ -44,4 +48,3 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
 };
 
 export default autoLogin;
-

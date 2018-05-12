@@ -61,7 +61,7 @@ const targetAnchor = {
 type Props = {|
   cardIsActive: Boolean,
   task: Object
-|}
+|};
 
 const formatDueDate = (dueDate) => {
   const date = new Date(dueDate);

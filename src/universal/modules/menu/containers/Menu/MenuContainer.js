@@ -30,12 +30,12 @@ export default class MenuContainer extends Component {
     toggle: PropTypes.object
   };
 
-  constructor() {
+  constructor () {
     super();
     this.state = {};
   }
 
-  render() {
+  render () {
     const {originAnchor, targetAnchor, toggle} = this.props;
     const smartToggle = React.cloneElement(toggle, {
       onClick: (e) => {
@@ -47,7 +47,12 @@ export default class MenuContainer extends Component {
         this.setState({
           coords: {
             [targetAnchor.vertical]: calculateMenuPosY(height, top, originY, targetAnchor.vertical),
-            [targetAnchor.horizontal]: calculateMenuPosX(width, left, originX, targetAnchor.horizontal)
+            [targetAnchor.horizontal]: calculateMenuPosX(
+              width,
+              left,
+              originX,
+              targetAnchor.horizontal
+            )
           }
         });
         const {onClick} = toggle.props;
@@ -57,12 +62,6 @@ export default class MenuContainer extends Component {
         }
       }
     });
-    return (
-      <Menu
-        {...this.props}
-        coords={this.state.coords}
-        toggle={smartToggle}
-      />
-    );
+    return <Menu {...this.props} coords={this.state.coords} toggle={smartToggle} />;
   }
 }

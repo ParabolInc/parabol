@@ -9,7 +9,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 type Props = {
   viewer: Viewer
-}
+};
 
 const SidebarPhaseItemChild = styled('div')({
   display: 'flex',
@@ -47,7 +47,14 @@ const TeamVotesLabel = styled('div')({
 });
 
 const RetroSidebarVoteSection = (props: Props) => {
-  const {viewer: {team: {meetingSettings: {totalVotes = 0}, newMeeting}}} = props;
+  const {
+    viewer: {
+      team: {
+        meetingSettings: {totalVotes = 0},
+        newMeeting
+      }
+    }
+  } = props;
   const {teamVotesRemaining = 0, viewerMeetingMember} = newMeeting || {};
   const {myVotesRemaining = 0} = viewerMeetingMember || {};
   const checkMarks = [...Array(totalVotes).keys()];
@@ -55,7 +62,9 @@ const RetroSidebarVoteSection = (props: Props) => {
     <SidebarPhaseItemChild>
       <Label>{'My Votes Remaining'}</Label>
       <CheckMarkRow>
-        {checkMarks.map((idx) => <CheckIcon key={idx} name="check" isDark={idx < myVotesRemaining} />)}
+        {checkMarks.map((idx) => (
+          <CheckIcon key={idx} name="check" isDark={idx < myVotesRemaining} />
+        ))}
       </CheckMarkRow>
       <Label>{'Team Votes Remaining'}</Label>
       <TeamVotesLabel>{teamVotesRemaining}</TeamVotesLabel>

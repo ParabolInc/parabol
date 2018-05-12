@@ -7,7 +7,10 @@ import {initialize, reduxForm} from 'redux-form';
 import withReducer from 'universal/decorators/withReducer/withReducer';
 import {showSuccess} from 'universal/modules/toast/ducks/toastDuck';
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings';
-import userSettingsReducer, {ACTIVITY_WELCOME, clearActivity} from 'universal/modules/userDashboard/ducks/settingsDuck';
+import userSettingsReducer, {
+  ACTIVITY_WELCOME,
+  clearActivity
+} from 'universal/modules/userDashboard/ducks/settingsDuck';
 import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation';
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema';
 import shouldValidate from 'universal/validation/shouldValidate';
@@ -44,7 +47,7 @@ class UserSettingsContainer extends Component {
     viewer: PropTypes.object.isRequired
   };
 
-  componentWillMount() {
+  componentWillMount () {
     this.initializeForm();
   }
 
@@ -83,18 +86,16 @@ class UserSettingsContainer extends Component {
     });
   };
 
-  initializeForm() {
-    const {dispatch, viewer: {preferredName}} = this.props;
+  initializeForm () {
+    const {
+      dispatch,
+      viewer: {preferredName}
+    } = this.props;
     return dispatch(initialize('userSettings', {preferredName}));
   }
 
-  render() {
-    return (
-      <UserSettings
-        {...this.props}
-        onSubmit={this.onSubmit}
-      />
-    );
+  render () {
+    return <UserSettings {...this.props} onSubmit={this.onSubmit} />;
   }
 }
 
@@ -102,11 +103,7 @@ export default createFragmentContainer(
   withAtmosphere(
     withReducer({userDashboardSettings: userSettingsReducer})(
       reduxForm({form: 'userSettings', shouldValidate, validate})(
-        connect(mapStateToProps)(
-          withRouter(
-            UserSettingsContainer
-          )
-        )
+        connect(mapStateToProps)(withRouter(UserSettingsContainer))
       )
     )
   ),
@@ -117,4 +114,3 @@ export default createFragmentContainer(
     }
   `
 );
-

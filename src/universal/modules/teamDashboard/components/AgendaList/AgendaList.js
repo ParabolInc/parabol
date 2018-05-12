@@ -39,32 +39,40 @@ class AgendaList extends Component {
     visibleAgendaItemId: PropTypes.string,
     submittedCount: PropTypes.number,
     team: PropTypes.object.isRequired
-  }
+  };
 
   state = {
     filteredAgendaItems: []
   };
 
-  componentWillMount() {
+  componentWillMount () {
     this.setFilteredAgendaItems(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {team: {agendaItems, contentFilter}} = nextProps;
-    const {team: {agendaItems: oldAgendaItems, contentFilter: oldContentFilter}} = this.props;
+  componentWillReceiveProps (nextProps) {
+    const {
+      team: {agendaItems, contentFilter}
+    } = nextProps;
+    const {
+      team: {agendaItems: oldAgendaItems, contentFilter: oldContentFilter}
+    } = this.props;
     if (agendaItems !== oldAgendaItems || contentFilter !== oldContentFilter) {
       this.setFilteredAgendaItems(nextProps);
     }
   }
 
   setFilteredAgendaItems = (props) => {
-    const {team: {agendaItems, contentFilter}} = props;
+    const {
+      team: {agendaItems, contentFilter}
+    } = props;
     this.setState({
-      filteredAgendaItems: contentFilter ? agendaItems.filter(({content}) => content.match(contentFilter)) : agendaItems
+      filteredAgendaItems: contentFilter
+        ? agendaItems.filter(({content}) => content.match(contentFilter))
+        : agendaItems
     });
   };
 
-  makeLoadingState() {
+  makeLoadingState () {
     const {styles} = this.props;
     const loadingItem = <div className={css(styles.agendaItemLoading)} />;
     return (
@@ -76,17 +84,20 @@ class AgendaList extends Component {
     );
   }
 
-  makeEmptyState() {
+  makeEmptyState () {
     const {context, styles} = this.props;
     const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
-    return (<div className={css(styles.emptyBlock)}>
-      <div className={css(styles.emptyEmoji)}>
-        🤓
+    return (
+      <div className={css(styles.emptyBlock)}>
+        <div className={css(styles.emptyEmoji)}>🤓</div>
+        <div className={css(styles.emptyMessage)}>
+          {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}
+          <b>
+            <i>{'upcoming vacation'}</i>
+          </b>
+          {'.”'}
+        </div>
       </div>
-      <div className={css(styles.emptyMessage)}>
-        {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}<b><i>{'upcoming vacation'}</i></b>{'.”'}
-      </div>
-    </div>
     );
   }
 
@@ -95,7 +106,7 @@ class AgendaList extends Component {
     RemoveAgendaItemMutation(atmosphere, agendaId);
   };
 
-  render() {
+  render () {
     const {
       agendaPhaseItem,
       canNavigate,
@@ -120,10 +131,10 @@ class AgendaList extends Component {
     const isLoading = false;
     return connectDropTarget(
       <div className={css(styles.root)}>
-        {filteredAgendaItems.length > 0 ?
+        {filteredAgendaItems.length > 0 ? (
           <ScrollableBlock>
-            {filteredAgendaItems.map((item, idx) =>
-              (<AgendaItem
+            {filteredAgendaItems.map((item, idx) => (
+              <AgendaItem
                 key={`agendaItem${item.id}`}
                 agendaItem={item}
                 agendaLength={filteredAgendaItems.length}
@@ -145,13 +156,12 @@ class AgendaList extends Component {
                     dragState.components.push(c);
                   }
                 }}
-              />)
-            )}
-          </ScrollableBlock> :
-          <div>
-            {isLoading ? this.makeLoadingState() : this.makeEmptyState()}
-          </div>
-        }
+              />
+            ))}
+          </ScrollableBlock>
+        ) : (
+          <div>{isLoading ? this.makeLoadingState() : this.makeEmptyState()}</div>
+        )}
       </div>
     );
   }
@@ -224,11 +234,11 @@ const dropTargetCb = (connectTarget) => ({
 });
 
 export default createFragmentContainer(
-  withAtmosphere(withDragState(
-    dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
-      withStyles(styleThunk)(AgendaList)
+  withAtmosphere(
+    withDragState(
+      dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(withStyles(styleThunk)(AgendaList))
     )
-  )),
+  ),
   graphql`
     fragment AgendaList_team on Team {
       contentFilter
@@ -240,5 +250,6 @@ export default createFragmentContainer(
         sortOrder
         ...AgendaItem_agendaItem
       }
-    }`
+    }
+  `
 );

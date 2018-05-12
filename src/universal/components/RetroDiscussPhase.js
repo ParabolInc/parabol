@@ -21,7 +21,7 @@ type Props = {|
   history: RouterHistory,
   gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
-  team: Object,
+  team: Object
 |};
 
 const DiscussHeader = styled('div')({
@@ -119,7 +119,13 @@ const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, gotoNext, history, team} = props;
   const {viewerId} = atmosphere;
   const {newMeeting, teamId} = team;
-  const {facilitatorUserId, localStage: {localStageId, reflectionGroup}, meetingId, phases} = newMeeting || {};
+  const {
+    facilitatorUserId,
+    localStage: {localStageId, reflectionGroup},
+    meetingId,
+    phases
+  } =
+    newMeeting || {};
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null;
   const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup;
@@ -136,16 +142,25 @@ const RetroDiscussPhase = (props: Props) => {
           <ScrollableBlock>
             <ReflectionSectionInner>
               <DiscussHeader>
-                <TopicHeading><span>{'“'}</span>{`${title}”`}</TopicHeading>
+                <TopicHeading>
+                  <span>{'“'}</span>
+                  {`${title}”`}
+                </TopicHeading>
                 <CheckColumn>
-                  {checkMarks.map((idx) => <CheckIcon key={idx} name="check" color={ui.palette.mid} />)}
+                  {checkMarks.map((idx) => (
+                    <CheckIcon key={idx} name="check" color={ui.palette.mid} />
+                  ))}
                 </CheckColumn>
               </DiscussHeader>
               <ReflectionGrid>
                 {reflections.map((reflection) => {
                   return (
                     <ReflectionGridBlock key={`GridBlock-${reflection.id}`}>
-                      <ReflectionCard key={reflection.id} meeting={newMeeting} reflection={reflection} />
+                      <ReflectionCard
+                        key={reflection.id}
+                        meeting={newMeeting}
+                        reflection={reflection}
+                      />
                     </ReflectionGridBlock>
                   );
                 })}
@@ -164,42 +179,44 @@ const RetroDiscussPhase = (props: Props) => {
           </TaskCardBlock>
         </ScrollableBlock>
       </PhaseWrapper>
-      {isFacilitating &&
-      <SpacedMeetingControlBar>
-        {/* placeholder for layout */}
-        <ControlButtonBlock />
-        {nextStageRes && <ControlButtonBlock>
-          <Button
-            buttonSize="medium"
-            buttonStyle="flat"
-            colorPalette="dark"
-            icon="arrow-circle-right"
-            iconLarge
-            iconPalette="warm"
-            iconPlacement="right"
-            isBlock
-            label={'Done! Next topic'}
-            onClick={gotoNext}
-          />
-        </ControlButtonBlock>}
-        <ControlButtonBlock>
-          <Button
-            buttonSize="medium"
-            buttonStyle="flat"
-            colorPalette="dark"
-            icon="flag-checkered"
-            iconLarge
-            iconPalette="midGray"
-            iconPlacement="left"
-            isBlock
-            label={'End Meeting'}
-            onClick={endMeeting}
-          />
-        </ControlButtonBlock>
-        {/* placeholder for layout */}
-        {!nextStageRes && <ControlButtonBlock />}
-      </SpacedMeetingControlBar>
-      }
+      {isFacilitating && (
+        <SpacedMeetingControlBar>
+          {/* placeholder for layout */}
+          <ControlButtonBlock />
+          {nextStageRes && (
+            <ControlButtonBlock>
+              <Button
+                buttonSize="medium"
+                buttonStyle="flat"
+                colorPalette="dark"
+                icon="arrow-circle-right"
+                iconLarge
+                iconPalette="warm"
+                iconPlacement="right"
+                isBlock
+                label={'Done! Next topic'}
+                onClick={gotoNext}
+              />
+            </ControlButtonBlock>
+          )}
+          <ControlButtonBlock>
+            <Button
+              buttonSize="medium"
+              buttonStyle="flat"
+              colorPalette="dark"
+              icon="flag-checkered"
+              iconLarge
+              iconPalette="midGray"
+              iconPlacement="left"
+              isBlock
+              label={'End Meeting'}
+              onClick={endMeeting}
+            />
+          </ControlButtonBlock>
+          {/* placeholder for layout */}
+          {!nextStageRes && <ControlButtonBlock />}
+        </SpacedMeetingControlBar>
+      )}
     </React.Fragment>
   );
 };

@@ -18,15 +18,14 @@ const query = graphql`
 
 type Props = {|
   atmosphere: Object,
-  match: Match,
-|}
+  match: Match
+|};
 
 const OrganizationRoot = (props: Props) => {
+  const {atmosphere, match} = props;
   const {
-    atmosphere,
-    match
-  } = props;
-  const {params: {orgId}} = match;
+    params: {orgId}
+  } = match;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

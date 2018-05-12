@@ -2,7 +2,11 @@
 import shortid from 'shortid';
 import {DISCUSS} from 'universal/utils/constants';
 
-export const makeDiscussionStage = (reflectionGroupId: string, meetingId: string, placeholderId: ?string) => ({
+export const makeDiscussionStage = (
+  reflectionGroupId: string,
+  meetingId: string,
+  placeholderId: ?string
+) => ({
   id: placeholderId || shortid.generate(),
   meetingId,
   isComplete: false,
@@ -18,7 +22,7 @@ const mapGroupsToStages = (reflectionGroups) => {
   const importantReflectionGroups = reflectionGroups.filter((group) => group.voterIds.length > 0);
   // handle edge case that no one votes
   if (importantReflectionGroups.length === 0) return reflectionGroups;
-  importantReflectionGroups.sort((a, b) => a.voterIds.length < b.voterIds.length ? 1 : -1);
+  importantReflectionGroups.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1));
   return importantReflectionGroups;
 };
 

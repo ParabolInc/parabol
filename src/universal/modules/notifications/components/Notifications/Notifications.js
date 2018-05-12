@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Atmosphere from 'universal/Atmosphere';
-import {Button, Panel} from 'universal/components';
-import {SettingsWrapper} from 'universal/components/Settings';
 import Helmet from 'react-helmet';
 import {requiresAction} from 'universal/types/notification';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
@@ -13,6 +11,9 @@ import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import styled from 'react-emotion';
+import SettingsWrapper from 'universal/components/Settings/SettingsWrapper';
+import Button from 'universal/components/Button/Button';
+import Panel from 'universal/components/Panel/Panel';
 
 const ClearAllButtonBlock = styled('div')({
   alignSelf: 'center',
@@ -77,21 +78,28 @@ const Notifications = (props) => {
     <UserSettingsWrapper>
       <Helmet title="My Notifications | Parabol" />
       <SettingsWrapper>
-        <Panel compact label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
-          {notifications && notifications.edges.length ?
+        <Panel
+          compact
+          label="Notifications"
+          controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}
+        >
+          {notifications && notifications.edges.length ? (
             <NotificationListBlock>
-              {notifications.edges.filter(({node}) => Boolean(node)).map(({node}) =>
-                (<NotificationRow
-                  dispatch={dispatch}
-                  key={`notification${node.id}`}
-                  notification={node}
-                />)
-              )}
-            </NotificationListBlock> :
+              {notifications.edges
+                .filter(({node}) => Boolean(node))
+                .map(({node}) => (
+                  <NotificationRow
+                    dispatch={dispatch}
+                    key={`notification${node.id}`}
+                    notification={node}
+                  />
+                ))}
+            </NotificationListBlock>
+          ) : (
             <NotificationsEmptyBlock>
               {'Hey there! You’re all caught up! 💯'}
             </NotificationsEmptyBlock>
-          }
+          )}
         </Panel>
       </SettingsWrapper>
     </UserSettingsWrapper>
@@ -108,6 +116,4 @@ Notifications.propTypes = {
   submitMutation: PropTypes.func.isRequired
 };
 
-export default withAtmosphere(
-  withMutationProps(Notifications)
-);
+export default withAtmosphere(withMutationProps(Notifications));

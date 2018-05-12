@@ -58,7 +58,8 @@ const AcceptTeamInvitePayload = new GraphQLObjectType({
     },
     hardenedTasks: {
       type: new GraphQLList(Task),
-      description: 'The tasks that got reassigned from the soft team member to the real team member',
+      description:
+        'The tasks that got reassigned from the soft team member to the real team member',
       resolve: resolveTasks
     }
   })

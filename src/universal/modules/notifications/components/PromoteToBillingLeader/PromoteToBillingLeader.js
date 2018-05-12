@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {withRouter} from 'react-router-dom';
-import {Button, IconAvatar, Row} from 'universal/components';
 import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton';
 import defaultStyles from 'universal/modules/notifications/helpers/styles';
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
 import ui from 'universal/styles/ui';
 import {clearNotificationLabel} from '../../helpers/constants';
+import Row from 'universal/components/Row/Row';
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
+import Button from 'universal/components/Button/Button';
 
 const PromoteToBillingLeader = (props) => {
   const {
@@ -20,7 +22,10 @@ const PromoteToBillingLeader = (props) => {
     onError,
     onCompleted
   } = props;
-  const {notificationId, organization: {orgName, orgId}} = notification;
+  const {
+    notificationId,
+    organization: {orgName, orgId}
+  } = notification;
   const acknowledge = () => {
     submitMutation();
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
@@ -37,8 +42,15 @@ const PromoteToBillingLeader = (props) => {
         <IconAvatar icon="building" size="small" />
       </div>
       <div className={css(defaultStyles.message)}>
-        {'You are now a '}<b><i>{'Billing Leader'}</i></b>{' for '}
-        <span className={css(defaultStyles.messageVar, defaultStyles.notifLink)} onClick={goToOrg}>{orgName}</span>{'.'}
+        {'You are now a '}
+        <b>
+          <i>{'Billing Leader'}</i>
+        </b>
+        {' for '}
+        <span className={css(defaultStyles.messageVar, defaultStyles.notifLink)} onClick={goToOrg}>
+          {orgName}
+        </span>
+        {'.'}
       </div>
       <div className={css(defaultStyles.widerButton)}>
         <Button

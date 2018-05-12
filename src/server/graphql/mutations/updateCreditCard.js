@@ -22,7 +22,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
     const subOptions = {mutatorId, operationId};
     const r = getRethink();
@@ -31,7 +31,9 @@ export default {
     // AUTH
     const userId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(userId, orgId);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc);
+    }
 
     // VALIDATION
     const {stripeId} = await r.table('Organization').get(orgId);
@@ -46,19 +48,28 @@ export default {
     }
 
     // RESOLUTION
-    const customer = await stripe.customers.update(stripeId, {source: stripeToken});
+    const customer = await stripe.customers.update(stripeId, {
+      source: stripeToken
+    });
     const creditCard = getCCFromCustomer(customer);
     const {updatedTeams} = await r({
-      updatedOrg: r.table('Organization').get(orgId).update({
-        creditCard,
-        updatedAt: now
-      }),
-      updatedTeams: r.table('Team')
-        .getAll(orgId, {index: 'orgId'})
+      updatedOrg: r
+        .table('Organization')
+        .get(orgId)
         .update({
-          isPaid: true,
+          creditCard,
           updatedAt: now
-        }, {returnChanges: true})('changes')('new_val')
+        }),
+      updatedTeams: r
+        .table('Team')
+        .getAll(orgId, {index: 'orgId'})
+        .update(
+          {
+            isPaid: true,
+            updatedAt: now
+          },
+          {returnChanges: true}
+        )('changes')('new_val')
         .default([])
     });
 

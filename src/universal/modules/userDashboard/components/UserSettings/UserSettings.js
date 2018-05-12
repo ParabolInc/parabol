@@ -22,7 +22,9 @@ const renderActivity = (activity) => {
   if (activity === ACTIVITY_WELCOME) {
     return (
       <div>
-        {'Hey, welcome aboard! In order for your team to recognize who you are, do you mind telling us your name?'}
+        {
+          'Hey, welcome aboard! In order for your team to recognize who you are, do you mind telling us your name?'
+        }
       </div>
     );
   }
@@ -30,9 +32,19 @@ const renderActivity = (activity) => {
 };
 
 const UserSettings = (props) => {
-  const {activity, handleSubmit, onSubmit, styles, viewer: {userId, picture}} = props;
+  const {
+    activity,
+    handleSubmit,
+    onSubmit,
+    styles,
+    viewer: {userId, picture}
+  } = props;
   const pictureOrDefault = picture || defaultUserAvatar;
-  const toggle = <div><EditableAvatar picture={pictureOrDefault} size={96} /></div>;
+  const toggle = (
+    <div>
+      <EditableAvatar picture={pictureOrDefault} size={96} />
+    </div>
+  );
   const controlSize = 'medium';
   return (
     <UserSettingsWrapper>
@@ -46,11 +58,9 @@ const UserSettings = (props) => {
               </PhotoUploadModal>
             </div>
             <div className={css(styles.infoBlock)}>
-              {activity &&
-                <div className={css(styles.activityBlock)}>
-                  {renderActivity(activity)}
-                </div>
-              }
+              {activity && (
+                <div className={css(styles.activityBlock)}>{renderActivity(activity)}</div>
+              )}
               <FieldLabel
                 customStyles={{paddingBottom: ui.fieldLabelGutter}}
                 label="Name"

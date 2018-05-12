@@ -82,7 +82,7 @@ const withEmojis = (ComposedComponent) => {
       } else if (this.state.isOpen) {
         this.removeModal();
       }
-    }
+    };
 
     initialize = () => {
       const {isOpen} = this.state;
@@ -91,7 +91,7 @@ const withEmojis = (ComposedComponent) => {
         return {renderModal, removeModal, keyBindingFn};
       }
       return {};
-    }
+    };
 
     renderModal = () => {
       const {query} = this.state;
@@ -122,7 +122,7 @@ const withEmojis = (ComposedComponent) => {
       );
     };
 
-    render() {
+    render () {
       return (
         <ComposedComponent
           {...this.props}

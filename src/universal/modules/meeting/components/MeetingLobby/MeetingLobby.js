@@ -20,7 +20,16 @@ import withMutationProps from 'universal/utils/relay/withMutationProps';
 import {LOBBY} from 'universal/utils/constants';
 
 const MeetingLobby = (props) => {
-  const {atmosphere, history, onError, onCompleted, submitMutation, submitting, team, styles} = props;
+  const {
+    atmosphere,
+    history,
+    onError,
+    onCompleted,
+    submitMutation,
+    submitting,
+    team,
+    styles
+  } = props;
   const {teamId, teamName} = team;
   const onStartMeetingClick = () => {
     submitMutation();
@@ -32,18 +41,16 @@ const MeetingLobby = (props) => {
       {/* */}
       <div className={css(styles.root)}>
         <LabelHeading>{'Welcome to the Meeting Lobby'}</LabelHeading>
-        <MeetingPhaseHeading>
-          {`Hi, ${teamName} Team!`}
-        </MeetingPhaseHeading>
+        <MeetingPhaseHeading>{`Hi, ${teamName} Team!`}</MeetingPhaseHeading>
+        <MeetingCopy>{'Is the whole team here?'}</MeetingCopy>
         <MeetingCopy>
-          {'Is the whole team here?'}
-        </MeetingCopy>
-        <MeetingCopy>
-          {'The person who presses “Start Meeting” will be today’s Facilitator.'}<br />
+          {'The person who presses “Start Meeting” will be today’s Facilitator.'}
+          <br />
           {'Everyone’s display automatically follows the Facilitator.'}
         </MeetingCopy>
         <MeetingCopy>
-          <b>{'Today’s Facilitator'}</b>{`: begin the ${actionMeeting.checkin.name}!`}
+          <b>{'Today’s Facilitator'}</b>
+          {`: begin the ${actionMeeting.checkin.name}!`}
         </MeetingCopy>
         <div className={css(styles.buttonBlock)}>
           <Button

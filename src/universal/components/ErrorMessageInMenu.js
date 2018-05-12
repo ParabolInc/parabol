@@ -11,16 +11,27 @@ class ErrorMessageInMenu extends Component {
     styles: PropTypes.object.isRequired
   };
 
-  componentDidMount() {
-    this.errorRef.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+  componentDidMount () {
+    this.errorRef.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+      inline: 'nearest'
+    });
   }
 
-  render() {
+  render () {
     const {error, styles} = this.props;
     // TODO remove this when we are guaranteed a string from the server
     const errorStr = typeof error === 'string' ? error : error._error;
     return (
-      <div className={css(styles.error)} ref={(c) => { this.errorRef = c; }}>{errorStr}</div>
+      <div
+        className={css(styles.error)}
+        ref={(c) => {
+          this.errorRef = c;
+        }}
+      >
+        {errorStr}
+      </div>
     );
   }
 }

@@ -83,18 +83,20 @@ const popKickedOutNotification = (payload, {dispatch, environment, history}) => 
   const teamId = getInProxy(kickOutNotification, 'team', 'id');
   if (!teamId) return;
   const teamName = getInProxy(kickOutNotification, 'team', 'name');
-  dispatch(showWarning({
-    autoDismiss: 10,
-    title: 'So long!',
-    message: `You have been removed from ${teamName}`,
-    action: {
-      label: 'OK',
-      callback: () => {
-        const notificationId = kickOutNotification.getValue('id');
-        ClearNotificationMutation(environment, notificationId);
+  dispatch(
+    showWarning({
+      autoDismiss: 10,
+      title: 'So long!',
+      message: `You have been removed from ${teamName}`,
+      action: {
+        label: 'OK',
+        callback: () => {
+          const notificationId = kickOutNotification.getValue('id');
+          ClearNotificationMutation(environment, notificationId);
+        }
       }
-    }
-  }));
+    })
+  );
   const {pathname} = history.location;
   if (onExTeamRoute(pathname, teamId)) {
     history.push('/me');
@@ -144,7 +146,11 @@ const RemoveTeamMemberMutation = (environment, teamMemberId, options) => {
     updater: (store) => {
       const payload = store.getRootField('removeTeamMember');
       if (!payload) return;
-      removeTeamMemberUpdater(payload, store, viewerId, {environment, store, ...options});
+      removeTeamMemberUpdater(payload, store, viewerId, {
+        environment,
+        store,
+        ...options
+      });
     }
   });
 };

@@ -13,6 +13,8 @@ export default {
   resolve: async (source, {orgId}, {dataLoader}) => {
     const {id: userId} = source;
     const user = await dataLoader.get('users').load(userId);
-    return Boolean(user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
+    return Boolean(
+      user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER)
+    );
   }
 };

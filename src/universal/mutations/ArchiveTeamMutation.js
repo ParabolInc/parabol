@@ -34,21 +34,23 @@ const mutation = graphql`
 const popTeamArchivedToast = (payload, {dispatch, history, location, environment}) => {
   const teamId = getInProxy(payload, 'team', 'id');
   const teamName = getInProxy(payload, 'team', 'name');
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'That’s it, folks!',
-    message: `${teamName} has been archived.`,
-    action: {
-      label: 'OK',
-      callback: () => {
-        const notificationId = getInProxy(payload, 'notification', 'id');
-        // notification is not persisted for the mutator
-        if (notificationId) {
-          ClearNotificationMutation(environment, notificationId);
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'That’s it, folks!',
+      message: `${teamName} has been archived.`,
+      action: {
+        label: 'OK',
+        callback: () => {
+          const notificationId = getInProxy(payload, 'notification', 'id');
+          // notification is not persisted for the mutator
+          if (notificationId) {
+            ClearNotificationMutation(environment, notificationId);
+          }
         }
       }
-    }
-  }));
+    })
+  );
   const {pathname} = location;
   if (onExTeamRoute(pathname, teamId)) {
     history.push('/me');
@@ -75,7 +77,11 @@ const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted)
     updater: (store) => {
       const payload = store.getRootField('archiveTeam');
       if (!payload) return;
-      archiveTeamTeamUpdater(payload, store, viewerId, {...options, store, environment});
+      archiveTeamTeamUpdater(payload, store, viewerId, {
+        ...options,
+        store,
+        environment
+      });
     },
     onCompleted,
     onError

@@ -7,7 +7,8 @@ import {PERSONAL, PRO} from 'universal/utils/constants';
 const countTiersForUserId = (userId) => {
   const r = getRethink();
 
-  return r.table('Organization')
+  return r
+    .table('Organization')
     .getAll(userId, {index: 'orgUsers'})
     .fold(
       {
@@ -19,7 +20,9 @@ const countTiersForUserId = (userId) => {
         tierPersonalCount: r.add(
           acc('tierPersonalCount'),
           r.branch(
-            org('tier').default(PERSONAL).eq(PERSONAL),
+            org('tier')
+              .default(PERSONAL)
+              .eq(PERSONAL),
             org('orgUsers').count((ou) => ou('inactive').not()),
             0
           )
@@ -27,7 +30,9 @@ const countTiersForUserId = (userId) => {
         tierProCount: r.add(
           acc('tierProCount'),
           r.branch(
-            org('tier').default(PERSONAL).eq(PRO),
+            org('tier')
+              .default(PERSONAL)
+              .eq(PRO),
             org('orgUsers').count((ou) => ou('inactive').not()),
             0
           )
@@ -35,11 +40,17 @@ const countTiersForUserId = (userId) => {
         tierProBillingLeaderCount: r.add(
           acc('tierProBillingLeaderCount'),
           r.branch(
-            org('tier').default(PERSONAL).eq(PRO),
-            org('orgUsers').count((ou) => r.and(
-              ou('id').eq(userId),
-              ou('role').default('').eq('billingLeader')
-            )),
+            org('tier')
+              .default(PERSONAL)
+              .eq(PRO),
+            org('orgUsers').count((ou) =>
+              r.and(
+                ou('id').eq(userId),
+                ou('role')
+                  .default('')
+                  .eq('billingLeader')
+              )
+            ),
             0
           )
         )

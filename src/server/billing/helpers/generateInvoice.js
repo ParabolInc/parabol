@@ -23,7 +23,10 @@ import {fromEpochSeconds} from 'server/utils/epochTime';
 
 const getEmailLookup = async (userIds) => {
   const r = getRethink();
-  const usersAndEmails = await r.table('User').getAll(r.args(userIds), {index: 'id'}).pluck('id', 'email');
+  const usersAndEmails = await r
+    .table('User')
+    .getAll(r.args(userIds), {index: 'id'})
+    .pluck('id', 'email');
   return usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email;
     return dict;
@@ -53,7 +56,11 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
       const firstLineItem = lineItems[0];
       if (lineItems.length !== 2) {
         if (firstLineItem.quantity !== 1) {
-          console.warn(`We did not get 2 line items and qty > 1. What do? Invoice: ${invoiceId}, ${JSON.stringify(lineItems)}`);
+          console.warn(
+            `We did not get 2 line items and qty > 1. What do? Invoice: ${invoiceId}, ${JSON.stringify(
+              lineItems
+            )}`
+          );
           continue;
         }
       }
@@ -72,7 +79,10 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
 const makeDetailedPauseEvents = (pausedItems, unpausedItems) => {
   const inactivityDetails = [];
   // if an unpause happened before a pause, we know they came into this period paused, so we don't want a start date
-  if (unpausedItems.length > 0 && (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)) {
+  if (
+    unpausedItems.length > 0 &&
+    (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)
+  ) {
     // mutative
     const firstUnpausedItem = unpausedItems.shift();
     inactivityDetails.push(firstUnpausedItem);
@@ -136,13 +146,18 @@ const makeDetailedLineItems = async (itemDict, invoiceId) => {
     const unpausedItems = reducedItemsByType[UNPAUSE_USER];
     detailedLineItems[ADDED_USERS].push(...reducedItemsByType[ADD_USER]);
     detailedLineItems[REMOVED_USERS].push(...reducedItemsByType[REMOVE_USER]);
-    detailedLineItems[INACTIVITY_ADJUSTMENTS].push(...makeDetailedPauseEvents(pausedItems, unpausedItems));
+    detailedLineItems[INACTIVITY_ADJUSTMENTS].push(
+      ...makeDetailedPauseEvents(pausedItems, unpausedItems)
+    );
   }
   return detailedLineItems;
 };
 
 const addToDict = (itemDict, lineItem) => {
-  const {metadata: {userId, type}, period: {start}} = lineItem;
+  const {
+    metadata: {userId, type},
+    period: {start}
+  } = lineItem;
   const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type;
   itemDict[userId] = itemDict[userId] || {};
   itemDict[userId][safeType] = itemDict[userId][safeType] || {};
@@ -156,7 +171,14 @@ const makeItemDict = (stripeLineItems) => {
   let nextMonthCharges;
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i];
-    const {amount, metadata, description, period: {end}, proration, quantity} = lineItem;
+    const {
+      amount,
+      metadata,
+      description,
+      period: {end},
+      proration,
+      quantity
+    } = lineItem;
     if (description === null && proration === false) {
       // this must be the next month's charge
       nextMonthCharges = {
@@ -184,7 +206,8 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
     const unknownLineItem = unknownLineItems[i];
     // this could be inefficient but if all goes as planned, we'll never use this function
 
-    const hook = await r.table('InvoiceItemHook') // eslint-disable-line no-await-in-loop
+    const hook = await r
+      .table('InvoiceItemHook') // eslint-disable-line no-await-in-loop
       .getAll(unknownLineItem.period.start, {index: 'prorationDate'})
       .filter({stripeSubscriptionId})
       .nth(0)
@@ -211,14 +234,17 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
   return unknowns;
 };
 
-
-export default async function generateInvoice(invoice, stripeLineItems, orgId, invoiceId) {
+export default async function generateInvoice (invoice, stripeLineItems, orgId, invoiceId) {
   const r = getRethink();
   const now = new Date();
 
   const {itemDict, nextMonthCharges, unknownLineItems} = makeItemDict(stripeLineItems);
   // technically, invoice.created could be called before invoiceitem.created is if there is a network hiccup. mutates itemDict!
-  const unknownInvoiceLines = await maybeReduceUnknowns(unknownLineItems, itemDict, invoice.subscription);
+  const unknownInvoiceLines = await maybeReduceUnknowns(
+    unknownLineItems,
+    itemDict,
+    invoice.subscription
+  );
   const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId);
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems);
   const invoiceLineItems = [
@@ -230,12 +256,18 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
       type: OTHER_ADJUSTMENTS
     })),
     ...quantityChangeLineItems
-  ].sort((a, b) => a.type > b.type ? 1 : -1);
+  ].sort((a, b) => (a.type > b.type ? 1 : -1));
 
   // sanity check
-  const calculatedTotal = invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;
+  const calculatedTotal =
+    invoiceLineItems.reduce((sum, {amount}) => sum + amount, 0) + nextMonthCharges.amount;
   if (calculatedTotal !== invoice.total) {
-    console.warn('Calculated invoice does not match stripe invoice', invoiceId, calculatedTotal, invoice.total);
+    console.warn(
+      'Calculated invoice does not match stripe invoice',
+      invoiceId,
+      calculatedTotal,
+      invoice.total
+    );
   }
 
   const [type] = invoiceId.split('_');
@@ -247,30 +279,41 @@ export default async function generateInvoice(invoice, stripeLineItems, orgId, i
   }
   const paidAt = status === PAID ? now : undefined;
 
-  return r.table('Organization').get(orgId)
+  return r
+    .table('Organization')
+    .get(orgId)
     .do((org) => {
-      return r.table('Invoice').insert({
-        id: invoiceId,
-        amountDue: invoice.amount_due,
-        createdAt: now,
-        total: invoice.total,
-        billingLeaderEmails: r.table('User')
-          .getAll(orgId, {index: 'userOrgs'})
-          .filter((user) => user('userOrgs')
-            .contains((userOrg) => userOrg('id').eq(orgId).and(userOrg('role').eq(BILLING_LEADER))))('email')
-          .coerceTo('array'),
-        creditCard: org('creditCard').default({}),
-        endAt: fromEpochSeconds(invoice.period_end),
-        invoiceDate: fromEpochSeconds(invoice.date),
-        lines: invoiceLineItems,
-        nextMonthCharges,
-        orgId,
-        orgName: org('name').default(null),
-        paidAt,
-        picture: org('picture').default(null),
-        startAt: fromEpochSeconds(invoice.period_start),
-        startingBalance: invoice.starting_balance,
-        status
-      }, {conflict: 'replace', returnChanges: true})('changes')(0)('new_val');
+      return r.table('Invoice').insert(
+        {
+          id: invoiceId,
+          amountDue: invoice.amount_due,
+          createdAt: now,
+          total: invoice.total,
+          billingLeaderEmails: r
+            .table('User')
+            .getAll(orgId, {index: 'userOrgs'})
+            .filter((user) =>
+              user('userOrgs').contains((userOrg) =>
+                userOrg('id')
+                  .eq(orgId)
+                  .and(userOrg('role').eq(BILLING_LEADER))
+              )
+            )('email')
+            .coerceTo('array'),
+          creditCard: org('creditCard').default({}),
+          endAt: fromEpochSeconds(invoice.period_end),
+          invoiceDate: fromEpochSeconds(invoice.date),
+          lines: invoiceLineItems,
+          nextMonthCharges,
+          orgId,
+          orgName: org('name').default(null),
+          paidAt,
+          picture: org('picture').default(null),
+          startAt: fromEpochSeconds(invoice.period_start),
+          startingBalance: invoice.starting_balance,
+          status
+        },
+        {conflict: 'replace', returnChanges: true}
+      )('changes')(0)('new_val');
     });
 }

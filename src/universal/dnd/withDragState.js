@@ -3,11 +3,11 @@ import DragState from 'universal/dnd/DragState';
 
 const withDragState = (WrappedComponent) => {
   return class WithDragState extends Component {
-    componentWillMount() {
+    componentWillMount () {
       this.dragState = new DragState();
     }
 
-    render() {
+    render () {
       return <WrappedComponent dragState={this.dragState} {...this.props} />;
     }
   };

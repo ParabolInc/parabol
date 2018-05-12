@@ -3,7 +3,7 @@ import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation';
 import {AGENDA_ITEMS} from 'universal/utils/constants';
 import makePushURL from './makePushURL';
 
-export default function handleRedirects(oldProps, nextProps) {
+export default function handleRedirects (oldProps, nextProps) {
   const {isFacilitating, localPhaseItem, history, localPhase, viewer} = nextProps;
   const {team} = viewer;
   const {viewer: oldViewer = {}} = oldProps;
@@ -80,10 +80,13 @@ export default function handleRedirects(oldProps, nextProps) {
   }
 
   // is the facilitator making moves?
-  if (facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
-    facilitatorPhase !== oldTeam.facilitatorPhase) {
+  if (
+    facilitatorPhaseItem !== oldTeam.facilitatorPhaseItem ||
+    facilitatorPhase !== oldTeam.facilitatorPhase
+  ) {
     // were we n'sync?
-    const inSync = localPhase === oldTeam.facilitatorPhase &&
+    const inSync =
+      localPhase === oldTeam.facilitatorPhase &&
       (localPhaseItem === undefined || localPhaseItem === oldTeam.facilitatorPhaseItem);
     // Ideally, we'd do this without the DOM & ensure it's an active task card, but this works for now
     if (inSync && document.activeElement.contentEditable !== 'true') {

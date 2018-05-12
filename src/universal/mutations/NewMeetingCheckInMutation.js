@@ -32,8 +32,7 @@ const NewMeetingCheckInMutation = (environment, variables, onError, onCompleted)
     optimisticUpdater: (store) => {
       const {meetingId, userId, isCheckedIn} = variables;
       const meetingMemberId = toTeamMemberId(meetingId, userId);
-      store.get(meetingMemberId)
-        .setValue(isCheckedIn, 'isCheckedIn');
+      store.get(meetingMemberId).setValue(isCheckedIn, 'isCheckedIn');
     },
     onCompleted,
     onError

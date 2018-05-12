@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
-import {Row, RowInfo, Tag} from 'universal/components';
 import makeDateString from 'universal/utils/makeDateString';
 import makeMonthString from 'universal/utils/makeMonthString';
 import {Link} from 'react-router-dom';
@@ -10,6 +9,9 @@ import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineForm
 import {PAID, PENDING, UPCOMING} from 'universal/utils/constants';
 import StyledFontAwesome from 'universal/components/StyledFontAwesome';
 import styled, {css, cx} from 'react-emotion';
+import Row from 'universal/components/Row/Row';
+import RowInfo from 'universal/components/Row/RowInfo';
+import Tag from 'universal/components/Tag/Tag';
 
 const FileIcon = styled(StyledFontAwesome)({
   alignItems: 'center',
@@ -83,13 +85,7 @@ const styledInfoLink = css({
 const InvoiceRow = (props) => {
   const {
     hasCard,
-    invoice: {
-      id: invoiceId,
-      amountDue,
-      endAt,
-      paidAt,
-      status
-    }
+    invoice: {id: invoiceId, amountDue, endAt, paidAt, status}
   } = props;
   const isEstimate = status === UPCOMING;
   return (
@@ -100,43 +96,45 @@ const InvoiceRow = (props) => {
       <InvoiceInfo>
         <InfoRow>
           <div>
-            <InvoiceTitle>
-              {makeMonthString(endAt)}
-            </InvoiceTitle>
-            {isEstimate &&
-              <Tag colorPalette="blue" label="Current Estimate" />
-            }
+            <InvoiceTitle>{makeMonthString(endAt)}</InvoiceTitle>
+            {isEstimate && <Tag colorPalette="blue" label="Current Estimate" />}
           </div>
           <InfoRowRight>
-            <InvoiceAmount>
-              {invoiceLineFormat(amountDue)}
-            </InvoiceAmount>
+            <InvoiceAmount>{invoiceLineFormat(amountDue)}</InvoiceAmount>
           </InfoRowRight>
         </InfoRow>
         <InfoRow>
           <div>
-            <Link className={styledInfoLink} rel="noopener noreferrer" target="_blank" to={`/invoice/${invoiceId}`}>
+            <Link
+              className={styledInfoLink}
+              rel="noopener noreferrer"
+              target="_blank"
+              to={`/invoice/${invoiceId}`}
+            >
               {'See Details'}
             </Link>
           </div>
           <InfoRowRight>
-            {status === UPCOMING &&
+            {status === UPCOMING && (
               <span className={cx(styledDate, styledToPay)}>
-                {hasCard ? `card will be charged on ${makeDateString(endAt)}` :
-                  `Make sure to add billing info before ${makeDateString(endAt)}!`
-                }
+                {hasCard
+                  ? `card will be charged on ${makeDateString(endAt)}`
+                  : `Make sure to add billing info before ${makeDateString(endAt)}!`}
               </span>
-            }
-            {status === PAID &&
+            )}
+            {status === PAID && (
               <span className={cx(styledDate, styledPaid)}>
-                {'Paid on '}{makeDateString(paidAt)}
+                {'Paid on '}
+                {makeDateString(paidAt)}
               </span>
-            }
-            {status !== PAID && status !== UPCOMING &&
+            )}
+            {status !== PAID &&
+              status !== UPCOMING && (
               <span className={status === PENDING ? styledPaid : styledUnpaid}>
-                {'Status: '}{status}
+                {'Status: '}
+                {status}
               </span>
-            }
+            )}
           </InfoRowRight>
         </InfoRow>
       </InvoiceInfo>

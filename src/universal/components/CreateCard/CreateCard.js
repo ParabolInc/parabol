@@ -57,16 +57,20 @@ const CreateCard = (props) => {
   const cardStyles = cx(CardBlock, hasControls && CardWithControls);
   return (
     <div className={cardStyles}>
-      {hasControls &&
+      {hasControls && (
         <ControlBlock onClick={handleAddTask} title="Add a Task (just press “t”)">
           <ControlLabel>
-            {'Add a '}<u>{'T'}</u>{'ask'}
+            {'Add a '}
+            <u>{'T'}</u>
+            {'ask'}
           </ControlLabel>
           <ControlHint>
-            {'(tag '}<b>{'#private'}</b>{' for personal Tasks)'}
+            {'(tag '}
+            <b>{'#private'}</b>
+            {' for personal Tasks)'}
           </ControlHint>
         </ControlBlock>
-      }
+      )}
     </div>
   );
 };

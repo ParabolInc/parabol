@@ -5,7 +5,7 @@ import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds';
 
 const mutation = graphql`
   mutation RemoveProviderMutation($providerId: ID!, $teamId: ID!) {
-    removeProvider(providerId: $providerId teamId: $teamId) {
+    removeProvider(providerId: $providerId, teamId: $teamId) {
       error {
         message
       }
@@ -22,7 +22,10 @@ const mutation = graphql`
 `;
 
 export const removeProviderUpdater = (viewer, teamId, service, mutatorUserId) => {
-  const integrationProvider = viewer.getLinkedRecord('integrationProvider', {teamId, service});
+  const integrationProvider = viewer.getLinkedRecord('integrationProvider', {
+    teamId,
+    service
+  });
   if (integrationProvider) {
     const {id: userId} = fromGlobalId(viewer.getDataID());
     if (service === SLACK || userId === mutatorUserId) {
@@ -57,7 +60,6 @@ export const removeIntegrations = (viewer, teamId, service, deletedIntegrationId
   }
 };
 
-
 const getIntegrationIdsToRemove = (viewer, teamId, service) => {
   const {id: userId} = fromGlobalId(viewer.getDataID());
   const teamMemberId = `${userId}::${teamId}`;
@@ -82,9 +84,14 @@ export const removeUserFromIntegrations = (viewer, teamId, service, userId) => {
     const teamMemberId = `${userId}::${teamId}`;
     repos.forEach((repo) => {
       const teamMembers = repo.getLinkedRecords('teamMembers');
-      const removedTeamMemberIdx = teamMembers.findIndex((teamMember) => teamMember.getValue('id') === teamMemberId);
+      const removedTeamMemberIdx = teamMembers.findIndex(
+        (teamMember) => teamMember.getValue('id') === teamMemberId
+      );
       if (removedTeamMemberIdx !== -1) {
-        const updatedTeamMembers = [...teamMembers.slice(0, removedTeamMemberIdx), ...teamMembers.slice(removedTeamMemberIdx + 1)];
+        const updatedTeamMembers = [
+          ...teamMembers.slice(0, removedTeamMemberIdx),
+          ...teamMembers.slice(removedTeamMemberIdx + 1)
+        ];
         repo.setLinkedRecords(updatedTeamMembers, 'teamMembers');
       }
     });
@@ -132,13 +139,16 @@ const RemoveProviderMutation = (environment, providerId, service, teamId) => {
       if (oldProviderMap) {
         const oldProviderRow = oldProviderMap.getLinkedRecord(service);
         const oldUserCount = oldProviderRow.getValue('userCount') || 1;
-        const oldIntegrationCount = oldProviderRow.getValue('integrationCount') || deletedIntegrationIds.length;
-        const providerRow = store.create(`client:ProviderRow:${tempId++}`, 'ProviderRow')
+        const oldIntegrationCount =
+          oldProviderRow.getValue('integrationCount') || deletedIntegrationIds.length;
+        const providerRow = store
+          .create(`client:ProviderRow:${tempId++}`, 'ProviderRow')
           .setValue(service, 'service')
           .setValue(null, 'accessToken')
           .setValue(oldUserCount - 1, 'userCount')
           .setValue(oldIntegrationCount - deletedIntegrationIds.length, 'integrationCount');
-        const payload = store.create(`client:removeProvider:${tempId++}`, 'RemoveProviderPayload')
+        const payload = store
+          .create(`client:removeProvider:${tempId++}`, 'RemoveProviderPayload')
           .setValue(userId, 'userId')
           .setLinkedRecord(providerRow, 'providerRow');
         updateProviderMap(viewer, teamId, service, payload);

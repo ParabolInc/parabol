@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {Type} from 'universal/components';
+import Type from 'universal/components/Type/Type';
 
 const MeetingPhaseHeading = (props) => {
   const {align, children} = props;
@@ -11,13 +11,8 @@ const MeetingPhaseHeading = (props) => {
   );
 };
 
-
 MeetingPhaseHeading.propTypes = {
-  align: PropTypes.oneOf([
-    'left',
-    'center',
-    'right'
-  ]),
+  align: PropTypes.oneOf(['left', 'center', 'right']),
   children: PropTypes.any
 };
 

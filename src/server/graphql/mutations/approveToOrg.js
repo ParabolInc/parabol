@@ -17,13 +17,15 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(source, {email, orgId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {email, orgId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share();
 
     // AUTH
     const viewerId = getUserId(authToken);
     const userOrgDoc = await getUserOrgDoc(viewerId, orgId);
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc);
+    if (!isOrgBillingLeader(userOrgDoc)) {
+      return sendOrgLeadAccessError(authToken, userOrgDoc);
+    }
 
     // RESOLUTION
     const subOptions = {mutatorId, operationId};
@@ -60,17 +62,20 @@ export default {
 
     // tell the inviter that their invitee got approved and sent an invitation
     inviteeApprovedNotifications.forEach((notification) => {
-      const {userIds: [inviterUserId]} = notification;
+      const {
+        userIds: [inviterUserId]
+      } = notification;
       publish(NOTIFICATION, inviterUserId, ApproveToOrgPayload, data, subOptions);
     });
 
     // tell the invitee that they've been invited
     if (teamInviteNotifications.length) {
       const [teamInvite] = teamInviteNotifications;
-      const {userIds: [inviteeUserId]} = teamInvite;
+      const {
+        userIds: [inviteeUserId]
+      } = teamInvite;
       publish(NOTIFICATION, inviteeUserId, ApproveToOrgPayload, data, subOptions);
     }
     return data;
   }
 };
-

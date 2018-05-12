@@ -1,6 +1,8 @@
 import {GraphQLObjectType, GraphQLList} from 'graphql';
 import {
-  makeResolveNotificationForViewer, resolveInvitations, resolveTeam,
+  makeResolveNotificationForViewer,
+  resolveInvitations,
+  resolveTeam,
   resolveTeamMember
 } from 'server/graphql/resolvers';
 import Invitation from 'server/graphql/types/Invitation';

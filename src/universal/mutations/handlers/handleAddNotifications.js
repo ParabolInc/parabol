@@ -10,12 +10,7 @@ const handleAddNotification = (newNode, store, viewerId) => {
   const nodeId = newNode.getValue('id');
   const matchingNodes = filterNodesInConn(conn, (node) => node.getValue('id') === nodeId);
   if (matchingNodes.length === 0) {
-    const newEdge = ConnectionHandler.createEdge(
-      store,
-      conn,
-      newNode,
-      'NotificationEdge'
-    );
+    const newEdge = ConnectionHandler.createEdge(store, conn, newNode, 'NotificationEdge');
     newEdge.setValue(newNode.getValue('startAt'), 'cursor');
     ConnectionHandler.insertEdgeBefore(conn, newEdge);
   }

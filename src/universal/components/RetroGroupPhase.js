@@ -9,7 +9,6 @@ import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemCol
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import {Button} from 'universal/components';
 import ScrollableBlock from 'universal/components/ScrollableBlock';
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper';
 import type {MutationProps} from 'universal/utils/relay/withMutationProps';
@@ -18,6 +17,7 @@ import StyledError from 'universal/components/StyledError';
 import {VOTE} from 'universal/utils/constants';
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation';
+import Button from 'universal/components/Button/Button';
 
 type Props = {
   atmosphere: Object,
@@ -46,39 +46,44 @@ const RetroGroupPhase = (props: Props) => {
       <ScrollableBlock>
         {error && <StyledError>{error.message}</StyledError>}
         <MeetingPhaseWrapper>
-          {phaseItems.map((phaseItem, idx) =>
-            <PhaseItemColumn dndIndex={idx} meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-          )}
+          {phaseItems.map((phaseItem, idx) => (
+            <PhaseItemColumn
+              dndIndex={idx}
+              meeting={newMeeting}
+              key={phaseItem.id}
+              retroPhaseItem={phaseItem}
+            />
+          ))}
         </MeetingPhaseWrapper>
       </ScrollableBlock>
-      {isFacilitating &&
-      <MeetingControlBar>
-        <Button
-          buttonSize="medium"
-          buttonStyle="flat"
-          colorPalette="dark"
-          icon="arrow-circle-right"
-          iconLarge
-          iconPalette="warm"
-          iconPlacement="right"
-          label={`Done! Let’s ${nextPhaseLabel}`}
-          onClick={gotoNext}
-        />
-        {canAutoGroup &&
-        <Button
-          buttonSize="medium"
-          buttonStyle="flat"
-          colorPalette="dark"
-          icon="magic"
-          iconLarge
-          iconPalette="midGray"
-          iconPlacement="left"
-          label={'Auto Group'}
-          onClick={autoGroup}
-        />
-        }
-      </MeetingControlBar>
-      }
+      {isFacilitating && (
+        <MeetingControlBar>
+          <Button
+            buttonSize="medium"
+            buttonStyle="flat"
+            colorPalette="dark"
+            icon="arrow-circle-right"
+            iconLarge
+            iconPalette="warm"
+            iconPlacement="right"
+            label={`Done! Let’s ${nextPhaseLabel}`}
+            onClick={gotoNext}
+          />
+          {canAutoGroup && (
+            <Button
+              buttonSize="medium"
+              buttonStyle="flat"
+              colorPalette="dark"
+              icon="magic"
+              iconLarge
+              iconPalette="midGray"
+              iconPlacement="left"
+              label={'Auto Group'}
+              onClick={autoGroup}
+            />
+          )}
+        </MeetingControlBar>
+      )}
     </React.Fragment>
   );
 };

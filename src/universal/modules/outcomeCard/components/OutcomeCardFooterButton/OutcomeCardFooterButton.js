@@ -12,17 +12,9 @@ const faStyle = {
 };
 
 const OutcomeCardFooterButton = (props) => {
-  const {
-    icon,
-    onClick,
-    onMouseEnter,
-    styles,
-    innerRef
-  } = props;
+  const {icon, onClick, onMouseEnter, styles, innerRef} = props;
 
-  const buttonStyles = css(
-    styles.cardFooterButton
-  );
+  const buttonStyles = css(styles.cardFooterButton);
 
   const handleOnClick = (e) => {
     if (onClick) onClick(e);

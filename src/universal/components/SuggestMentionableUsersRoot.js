@@ -3,7 +3,12 @@ import React from 'react';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import {cacheConfig} from 'universal/utils/constants';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
+import {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from 'universal/styles/ui';
 import Loadable from 'react-loadable';
 import LoadableLoading from 'universal/components/LoadableLoading';
 import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup';
@@ -16,19 +21,30 @@ const query = graphql`
   }
 `;
 
-const loading = (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />;
+const loading = (props) => (
+  <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
+);
 const LoadableSuggestMentionableUsers = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'SuggestMentionableUsers' */
-    'universal/components/SuggestMentionableUsers'
-  ),
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'SuggestMentionableUsers' */
+      'universal/components/SuggestMentionableUsers'
+    ),
   loading,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
 });
 
 const SuggestMentionableUsersRoot = (props) => {
-  const {activeIdx, atmosphere, handleSelect, setSuggestions, suggestions, triggerWord, teamId} = props;
+  const {
+    activeIdx,
+    atmosphere,
+    handleSelect,
+    setSuggestions,
+    suggestions,
+    triggerWord,
+    teamId
+  } = props;
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -40,7 +56,13 @@ const SuggestMentionableUsersRoot = (props) => {
           LoadableComponent={LoadableSuggestMentionableUsers}
           loading={loading}
           readyState={readyState}
-          extraProps={{activeIdx, handleSelect, setSuggestions, suggestions, triggerWord}}
+          extraProps={{
+            activeIdx,
+            handleSelect,
+            setSuggestions,
+            suggestions,
+            triggerWord
+          }}
         />
       )}
     />

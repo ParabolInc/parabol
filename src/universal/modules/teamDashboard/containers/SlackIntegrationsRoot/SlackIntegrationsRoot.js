@@ -43,20 +43,20 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
           return <ErrorComponent height={'14rem'} error={error} />;
         } else if (props) {
           const {viewer} = props;
-          return (<SlackIntegrations
-            jwt={atmosphere.authToken}
-            viewer={viewer}
-            teamId={teamId}
-            teamMemberId={teamMemberId}
-          />);
+          return (
+            <SlackIntegrations
+              jwt={atmosphere.authToken}
+              viewer={viewer}
+              teamId={teamId}
+              teamMemberId={teamMemberId}
+            />
+          );
         }
         return <LoadingComponent height={'14rem'} />;
       }}
-
     />
   );
 };
-
 
 SlackIntegrationsRoot.propTypes = {
   atmosphere: PropTypes.object.isRequired,

@@ -3,12 +3,21 @@ import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import AsyncComponent from 'universal/components/AsyncComponent';
 import typePicker from 'universal/modules/notifications/helpers/typePicker';
-import {FormError} from 'universal/components';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import FormError from 'universal/components/FormError/FormError';
 
 const NotificationRow = (props) => {
-  const {atmosphere, dispatch, error, submitting, submitMutation, onCompleted, onError, notification} = props;
+  const {
+    atmosphere,
+    dispatch,
+    error,
+    submitting,
+    submitMutation,
+    onCompleted,
+    onError,
+    notification
+  } = props;
   const {type} = notification;
   const fetchMod = typePicker[type];
   return (
@@ -43,9 +52,7 @@ NotificationRow.propTypes = {
 };
 
 export default createFragmentContainer(
-  withAtmosphere(
-    withMutationProps(NotificationRow)
-  ),
+  withAtmosphere(withMutationProps(NotificationRow)),
   graphql`
     fragment NotificationRow_notification on Notification {
       type

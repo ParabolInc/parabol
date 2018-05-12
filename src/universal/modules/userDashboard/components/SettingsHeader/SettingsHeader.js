@@ -19,10 +19,7 @@ const heading = {
 };
 
 const SettingsHeader = (props) => {
-  const {
-    location,
-    styles
-  } = props;
+  const {location, styles} = props;
   const [area] = location.pathname.slice(4).split('/');
   return (
     <div className={css(styles.root)}>

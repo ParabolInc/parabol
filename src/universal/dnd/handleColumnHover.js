@@ -13,9 +13,9 @@ import {DND_THROTTLE} from 'universal/utils/constants';
  */
 
 let lastSentAt = 0;
-export default function handleTaskHover(targetProps, monitor) {
+export default function handleTaskHover (targetProps, monitor) {
   const now = new Date();
-  if (lastSentAt > (now - DND_THROTTLE)) return;
+  if (lastSentAt > now - DND_THROTTLE) return;
   const {atmosphere, dragState, tasks, status: targetStatus} = targetProps;
   const sourceProps = monitor.getItem();
   const {status: sourceStatus} = sourceProps;

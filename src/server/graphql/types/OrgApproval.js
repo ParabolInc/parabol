@@ -9,7 +9,10 @@ const OrgApproval = new GraphQLObjectType({
   description: 'The state of approving an email address to join a team and org',
   interfaces: () => [PossibleTeamMember],
   fields: () => ({
-    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique approval ID'},
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The unique approval ID'
+    },
     approvedBy: {
       type: GraphQLID,
       description: 'The userId of the billing leader that approved the invitee'

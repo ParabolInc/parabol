@@ -33,7 +33,12 @@ const eventLookup = {
   organization: {
     _getPublickKey: ({organization: {id}}) => String(id),
     member_added: {
-      getVars: ({membership: {user: {login: userName}}, organization: {login: orgName}}) => ({userName, orgName}),
+      getVars: ({
+        membership: {
+          user: {login: userName}
+        },
+        organization: {login: orgName}
+      }) => ({userName, orgName}),
       query: `
         mutation GitHubAddMember($userName: ID! $orgName: ID!) {
           githubAddMember(userName: $userName, orgName: $orgName)
@@ -41,7 +46,12 @@ const eventLookup = {
       `
     },
     member_removed: {
-      getVars: ({membership: {user: {login: userName}}, organization: {login: orgName}}) => ({userName, orgName}),
+      getVars: ({
+        membership: {
+          user: {login: userName}
+        },
+        organization: {login: orgName}
+      }) => ({userName, orgName}),
       query: `
         mutation GitHubRemoveMember($userName: ID! $orgName: ID!) {
           githubRemoveMember(userName: $userName, orgName: $orgName)
@@ -61,7 +71,9 @@ export default async (req, res) => {
   if (!body || !hexDigest || !eventHandler) return;
 
   const actionHandler = eventHandler[body.action];
-  const publicKey = eventHandler._getPublickKey ? eventHandler._getPublickKey(body) : getPublicKey(body);
+  const publicKey = eventHandler._getPublickKey
+    ? eventHandler._getPublickKey(body)
+    : getPublicKey(body);
   if (!actionHandler || !publicKey) return;
 
   const [shaType, hash] = hexDigest.split('=');

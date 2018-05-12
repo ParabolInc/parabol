@@ -6,11 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme';
 
 const WelcomeHeading = (props) => {
   const {copy, styles} = props;
-  return (
-    <h2 className={css(styles.root)}>
-      {copy}
-    </h2>
-  );
+  return <h2 className={css(styles.root)}>{copy}</h2>;
 };
 WelcomeHeading.propTypes = {
   copy: PropTypes.object,

@@ -7,19 +7,11 @@ import ui from 'universal/styles/ui';
 
 const Tab = (props) => {
   const {icon, isActive, label, onClick, styles} = props;
-  const activeStyles = css(
-    styles.root,
-    isActive && styles.isActive,
-    onClick && styles.canClick
-  );
+  const activeStyles = css(styles.root, isActive && styles.isActive, onClick && styles.canClick);
   return (
     <div className={activeStyles} onClick={onClick}>
-      <div className={css(styles.icon)}>
-        {icon}
-      </div>
-      <div className={css(styles.label)}>
-        {label}
-      </div>
+      <div className={css(styles.icon)}>{icon}</div>
+      <div className={css(styles.label)}>{label}</div>
     </div>
   );
 };

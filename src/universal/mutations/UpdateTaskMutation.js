@@ -14,7 +14,7 @@ graphql`
   fragment UpdateTaskMutation_task on UpdateTaskPayload {
     task {
       # Entire frag needed in case it is deprivatized
-      ...CompleteTaskFrag @relay(mask:false)
+      ...CompleteTaskFrag @relay(mask: false)
       editors {
         userId
         preferredName
@@ -37,7 +37,7 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpdateTaskMutation_task @relay (mask: false)
+      ...UpdateTaskMutation_task @relay(mask: false)
     }
   }
 `;
@@ -49,7 +49,10 @@ export const updateTaskTaskUpdater = (payload, store, viewerId, options) => {
   const addedNotification = payload.getLinkedRecord('addedNotification');
   handleAddNotifications(addedNotification, store, viewerId);
   if (task) {
-    ContentFilterHandler.update(store, {dataID: task.getDataID(), fieldKey: 'content'});
+    ContentFilterHandler.update(store, {
+      dataID: task.getDataID(),
+      fieldKey: 'content'
+    });
   }
 
   if (options) {

@@ -17,35 +17,53 @@ import isTaskPrivate from 'universal/utils/isTaskPrivate';
 class MeetingUpdates extends Component {
   state = {tasks: {}};
 
-  componentWillMount() {
+  componentWillMount () {
     this.filterTasks(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {tasks: oldTasks}, localPhaseItem: oldLocalPhaseItem} = this.props;
-    const {viewer: {tasks}, localPhaseItem} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {tasks: oldTasks},
+      localPhaseItem: oldLocalPhaseItem
+    } = this.props;
+    const {
+      viewer: {tasks},
+      localPhaseItem
+    } = nextProps;
     if (tasks !== oldTasks || localPhaseItem !== oldLocalPhaseItem) {
       this.filterTasks(nextProps);
     }
   }
 
-  filterTasks(props) {
-    const {localPhaseItem, setUpdateUserHasTasks, viewer: {tasks, team: {teamMembers}}} = props;
+  filterTasks (props) {
+    const {
+      localPhaseItem,
+      setUpdateUserHasTasks,
+      viewer: {
+        tasks,
+        team: {teamMembers}
+      }
+    } = props;
     const currentTeamMember = teamMembers[localPhaseItem - 1];
-    const edges = tasks.edges.filter(({node}) => node.assignee.id === currentTeamMember.id && !isTaskPrivate(node.tags));
+    const edges = tasks.edges.filter(
+      ({node}) => node.assignee.id === currentTeamMember.id && !isTaskPrivate(node.tags)
+    );
     this.setState({
       tasks: {edges}
     });
     setUpdateUserHasTasks(Boolean(edges.length));
   }
 
-  render() {
+  render () {
     const {
       gotoNext,
       localPhaseItem,
       showMoveMeetingControls,
       styles,
-      viewer: {team: {teamMembers}, tasks: allTasks}
+      viewer: {
+        team: {teamMembers},
+        tasks: allTasks
+      }
     } = this.props;
     const {tasks} = this.state;
     const self = teamMembers.find((m) => m.isSelf);
@@ -68,7 +86,7 @@ class MeetingUpdates extends Component {
             />
           </div>
         </MeetingSection>
-        {showMoveMeetingControls &&
+        {showMoveMeetingControls && (
           <MeetingControlBar>
             <BounceBlock animationDelay="120s" key={`update${localPhaseItem}buttonAnimation`}>
               <Button
@@ -79,13 +97,17 @@ class MeetingUpdates extends Component {
                 iconPalette="warm"
                 iconPlacement="right"
                 key={`update${localPhaseItem}`}
-                label={isLastMember ? `Advance to the ${nextPhaseName}` : `Move to ${nextTeamMember.preferredName}`}
+                label={
+                  isLastMember
+                    ? `Advance to the ${nextPhaseName}`
+                    : `Move to ${nextTeamMember.preferredName}`
+                }
                 onClick={gotoNext}
                 buttonSize="medium"
               />
             </BounceBlock>
           </MeetingControlBar>
-        }
+        )}
       </MeetingMain>
     );
   }
@@ -143,5 +165,6 @@ export default createFragmentContainer(
           }
         }
       }
-    }`
+    }
+  `
 );
