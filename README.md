@@ -3,6 +3,7 @@
 [![Slack Status](http://slackin.parabol.co/badge.svg)](http://slackin.parabol.co/)
 [![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
 [![codecov](https://codecov.io/gh/ParabolInc/action/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/action)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Overview
 
