@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": false,
+  "javascript.validate.enable": false,
+  "javascript.format.insertSpaceAfterConstructor": true,
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "prettier.requireConfig": true,
+  "standard.autoFixOnSave": true,
+  "standard.usePackageJson": true
+}
