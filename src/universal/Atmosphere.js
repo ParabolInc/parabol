@@ -24,7 +24,10 @@ export default class Atmosphere extends Environment {
       const {subscription, variables = {}} = config;
       const {name} = subscription();
       const subKey = JSON.stringify({name, variables});
-      requestSubscription(this, {onError: defaultErrorHandler, ...config});
+      const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey));
+      if (!isRequested) {
+        requestSubscription(this, {onError: defaultErrorHandler, ...config});
+      }
       return {
         subKey,
         queryKey,
