@@ -19,6 +19,7 @@ import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/Meetin
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
 import {CHECKIN} from 'universal/utils/constants';
 import withHotkey from 'react-hotkey-hoc';
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
 
 const {Component} = React;
 
@@ -104,6 +105,7 @@ class NewMeetingCheckIn extends Component<Props> {
             checkInPressFactory={this.checkinPressFactory}
             currentMemberName={teamMember.preferredName}
             nextMemberName={nextMemberName}
+            nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
           />
         </MeetingControlBar>
         }

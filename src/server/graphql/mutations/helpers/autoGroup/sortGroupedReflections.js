@@ -7,14 +7,13 @@ const sortGroupedReflections = (groupedReflections, retroPhaseItemIdMode, reflec
   const firstReflection = groupedReflections
     .slice()
     .filter((reflection) => reflection.retroPhaseItemId === retroPhaseItemIdMode)
-    .sort((a, b) => a < b ? -1 : 1)[0];
+    .sort((a, b) => a.sortOrder < b.sortOrder ? -1 : 1)[0];
 
   // increment all other cards by 0.01 (with a 5 card max, we won't bump against the next card unless they have sorted in that spot 5 times)
   return groupedReflections.map((reflection, idx) => ({
     ...reflection,
     sortOrder: firstReflection.sortOrder + idx * 0.01,
-    reflectionGroupId,
-    retroPhaseItemId: retroPhaseItemIdMode
+    reflectionGroupId
   }));
 };
 

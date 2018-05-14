@@ -3,6 +3,10 @@ import {GraphQLFloat, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'gr
 const GoogleAnalyzedEntity = new GraphQLObjectType({
   name: 'GoogleAnalyzedEntity',
   fields: () => ({
+    lemma: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.'
+    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun.'

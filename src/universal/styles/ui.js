@@ -386,6 +386,15 @@ const ui = {
   dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
   draftModalMargin: 32,
 
+  // Dates
+  // ---------------------------------------------------------------------------
+  dueDateBg: light,
+  dueDateColor: '#65637A',
+  dueDatePastBg: '#FFE2E2',
+  dueDatePastColor: red,
+  dueDateSoonBg: '#FFF0D1',
+  dueDateSoonColor: '#F28934',
+
   // Email
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,

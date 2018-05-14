@@ -25,6 +25,21 @@ export const months = [
   'December'
 ];
 
+export const shortMonths = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec'
+];
+
 export default function makeDateString(datetime, options = {}) {
   const timestamp = ensureDate(datetime);
   const {showDay} = options;

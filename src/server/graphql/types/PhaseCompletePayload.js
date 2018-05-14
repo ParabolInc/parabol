@@ -1,11 +1,17 @@
 import {GraphQLObjectType} from 'graphql';
-import {GROUP, VOTE} from 'universal/utils/constants';
+import {GROUP, REFLECT, VOTE} from 'universal/utils/constants';
 import GroupPhaseCompletePayload from 'server/graphql/types/GroupPhaseCompletePayload';
 import VotePhaseCompletePayload from 'server/graphql/types/VotePhaseCompletePayload';
+import ReflectPhaseCompletePayload from 'server/graphql/types/ReflectPhaseCompletePayload';
 
 const PhaseCompletePayload = new GraphQLObjectType({
   name: 'PhaseCompletePayload',
   fields: () => ({
+    [REFLECT]: {
+      type: ReflectPhaseCompletePayload,
+      description: 'payload provided if the retro reflect phase was completed',
+      resolve: (source) => source[REFLECT]
+    },
     [GROUP]: {
       type: GroupPhaseCompletePayload,
       description: 'payload provided if the retro grouping phase was completed',

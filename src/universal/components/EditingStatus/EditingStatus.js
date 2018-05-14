@@ -1,20 +1,36 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
 import appTheme from 'universal/styles/theme/appTheme';
 import ui from 'universal/styles/ui';
 import fromNow from 'universal/utils/fromNow';
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis';
 import {createFragmentContainer} from 'react-relay';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import DueDateToggle from 'universal/components/DueDateToggle';
+import styled from 'react-emotion';
+
+const StatusHeader = styled('div')({
+  alignItems: 'center',
+  color: appTheme.palette.dark80l,
+  display: 'flex',
+  fontSize: ui.cardEditingStatusFontSize,
+  fontWeight: 400,
+  justifyContent: 'space-between',
+  lineHeight: ui.cardEditingStatusLineHeight,
+  padding: `.25rem ${ui.cardPaddingBase}`,
+  textAlign: 'left'
+});
+
+const EditingText = styled('span')(({isEditing}) => ({
+  cursor: isEditing ? 'default' : 'pointer'
+}));
 
 const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
   let editingStatus = null;
   const timestampLabel = timestampType === 'createdAt' ? 'Created ' : 'Updated ';
 
   if (editors.length === 0) {
-    editingStatus = isEditing ? <span>{'Editing'}<Ellipsis /></span> : `${timestampLabel} ${fromNow(timestamp)}`;
+    editingStatus = isEditing ? <span>{'Editing'}<Ellipsis /></span> : <span>{`${timestampLabel}${fromNow(timestamp)}`}</span>;
   } else {
     const editorNames = editors.map((editor) => editor.preferredName);
     // one other is editing
@@ -33,19 +49,24 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 };
 
 const EditingStatus = (props) => {
-  const {atmosphere: {userId: myUserId}, handleClick, task: {editors}, timestamp, timestampType, styles} = props;
+  const {atmosphere: {userId: myUserId}, cardIsActive, handleClick, task, timestamp, timestampType} = props;
+  const {editors} = task;
   const otherEditors = editors.filter((editor) => editor.userId !== myUserId);
   const isEditing = editors.length > otherEditors.length;
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated';
   return (
-    <div className={css(styles.cardEditingStatus)} onClick={handleClick} title={title}>
-      {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
-    </div>
+    <StatusHeader>
+      <EditingText isEditing={isEditing} onClick={handleClick} title={title}>
+        {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
+      </EditingText>
+      <DueDateToggle cardIsActive={cardIsActive} task={task} />
+    </StatusHeader>
   );
 };
 
 EditingStatus.propTypes = {
   atmosphere: PropTypes.object.isRequired,
+  cardIsActive: PropTypes.bool,
   handleClick: PropTypes.func,
   task: PropTypes.object.isRequired,
   timestamp: PropTypes.string.isRequired,
@@ -53,26 +74,14 @@ EditingStatus.propTypes = {
   styles: PropTypes.object
 };
 
-const styleThunk = (custom, {isEditing}) => ({
-  cardEditingStatus: {
-    color: appTheme.palette.dark80l,
-    cursor: isEditing ? 'default' : 'pointer',
-    display: 'inline-block',
-    fontSize: ui.cardEditingStatusFontSize,
-    fontWeight: 400,
-    lineHeight: ui.cardEditingStatusLineHeight,
-    padding: `.25rem ${ui.cardPaddingBase}`,
-    textAlign: 'left'
-  }
-});
-
 export default createFragmentContainer(
-  withAtmosphere(withStyles(styleThunk)(EditingStatus)),
+  withAtmosphere(EditingStatus),
   graphql`
     fragment EditingStatus_task on Task {
       editors {
         userId
         preferredName
       }
+      ...DueDateToggle_task
     }`
 );

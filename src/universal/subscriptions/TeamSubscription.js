@@ -12,7 +12,7 @@ import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberM
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation';
 import {removeOrgUserTeamOnNext, removeOrgUserTeamUpdater} from 'universal/mutations/RemoveOrgUserMutation';
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation';
-import {navigateMeetingTeamOnNext} from 'universal/mutations/NavigateMeetingMutation';
+import {navigateMeetingTeamOnNext, navigateMeetingTeamUpdater} from 'universal/mutations/NavigateMeetingMutation';
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation';
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation';
 import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation';
@@ -26,6 +26,7 @@ const subscription = graphql`
       ...AddTeamMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
+      ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
       ...DragReflectionMutation_team @relay(mask: false)
       ...EditReflectionMutation_team @relay(mask: false)
@@ -84,6 +85,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'AddTeamCreatorPayload':
           addTeamMutationNotificationUpdater(payload, store, viewerId, options);
           break;
+        case 'AutoGroupReflectionsPayload':
+          break;
         case 'CreateGitHubIssuePayload':
           break;
         case 'CreateReflectionPayload':
@@ -122,6 +125,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'MoveMeetingPayload':
           break;
         case 'NavigateMeetingPayload':
+          navigateMeetingTeamUpdater(payload, store, viewerId);
           break;
         case 'NewMeetingCheckInPayload':
           break;

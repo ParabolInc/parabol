@@ -7,12 +7,15 @@ import Type from 'universal/components/Type/Type';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation';
 import withMutationProps from 'universal/utils/relay/withMutationProps';
+import {withRouter} from 'react-router-dom';
 
 const LeaveOrgModal = (props) => {
   const {
     atmosphere,
     closeAfter,
     closePortal,
+    history,
+    location,
     isClosing,
     submitting,
     submitMutation,
@@ -23,7 +26,7 @@ const LeaveOrgModal = (props) => {
   } = props;
   const handleClick = () => {
     submitMutation();
-    RemoveOrgUserMutation(atmosphere, orgId, userId, onError, onCompleted);
+    RemoveOrgUserMutation(atmosphere, {orgId, userId}, {history, location}, onError, onCompleted);
   };
   return (
     <DashModal closeAfter={closeAfter} closePortal={closePortal} isClosing={isClosing} onBackdropClick={closePortal}>
@@ -53,6 +56,8 @@ LeaveOrgModal.propTypes = {
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
   orgId: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   submitting: PropTypes.bool,
@@ -61,4 +66,4 @@ LeaveOrgModal.propTypes = {
   onError: PropTypes.func.isRequired
 };
 
-export default withAtmosphere(withMutationProps(portal({escToClose: true, closeAfter: 100})(LeaveOrgModal)));
+export default withRouter(withAtmosphere(withMutationProps(portal({escToClose: true, closeAfter: 100})(LeaveOrgModal))));

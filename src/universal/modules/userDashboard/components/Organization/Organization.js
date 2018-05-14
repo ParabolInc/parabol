@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {Switch, withRouter} from 'react-router-dom';
+import {Redirect, Switch, withRouter} from 'react-router-dom';
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
@@ -72,6 +72,10 @@ const OrgNameBlock = styled('div')({
 
 const Organization = (props) => {
   const {history, match, viewer: {organization}} = props;
+  if (!organization) {
+    // trying to be somewhere they shouldn't be
+    return <Redirect to="/me" />;
+  }
   const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization;
   const pictureOrDefault = orgAvatar || defaultOrgAvatar;
   const toggle = <div><EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled /></div>;

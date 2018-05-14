@@ -80,6 +80,7 @@ import voteForReflectionGroup from 'server/graphql/mutations/voteForReflectionGr
 import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn';
 import autoGroupReflections from 'server/graphql/mutations/autoGroupReflections';
 import dragReflection from 'server/graphql/mutations/dragReflection';
+import updateTaskDueDate from 'server/graphql/mutations/updateTaskDueDate';
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -160,6 +161,7 @@ export default new GraphQLObjectType({
     updateReflectionGroupTitle,
     updateReflectionLocation,
     updateTask,
+    updateTaskDueDate,
     updateTeamName,
     updateUserProfile,
     voteForReflectionGroup,
