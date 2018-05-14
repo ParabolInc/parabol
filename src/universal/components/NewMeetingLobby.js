@@ -6,7 +6,6 @@ import type {MutationProps} from 'universal/utils/relay/withMutationProps';
 import {PRO} from 'universal/utils/constants';
 import styled from 'react-emotion';
 import LoadableModal from 'universal/components/LoadableModal';
-import UpgradeModalLoadable from 'universal/components/UpgradeModalLoadable';
 import type {NewMeetingLobby_team as Team} from './__generated__/NewMeetingLobby_team.graphql';
 import type {MeetingTypeEnum} from 'universal/types/schema.flow';
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation';
