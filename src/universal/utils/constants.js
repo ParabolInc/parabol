@@ -122,6 +122,7 @@ export const MEMBERS_PAGE = 'members';
 
 /* User Org Roles */
 export const BILLING_LEADER = 'billingLeader';
+export const BILLING_LEADER_LABEL = 'Billing Leader';
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI

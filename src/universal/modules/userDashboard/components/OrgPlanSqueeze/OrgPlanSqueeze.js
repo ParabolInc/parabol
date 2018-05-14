@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from 'universal/components/Button/Button';
-import {PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal/utils/constants';
+import {PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL, BILLING_LEADER_LABEL} from 'universal/utils/constants';
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer';
 import {PRICING_LINK} from 'universal/utils/externalLinks';
 import styled from 'react-emotion';
@@ -119,6 +119,7 @@ const OrgPlanSqueeze = (props: Props) => {
     label="Upgrade to the Pro Plan"
   />);
   const openUrl = (url) => () => window.open(url, '_blank');
+  const hasManyBillingLeaders = billingLeaders.length !== 1;
 
   const billingLeaderSqueeze = (
     <TierPanelBody>
@@ -143,7 +144,7 @@ const OrgPlanSqueeze = (props: Props) => {
     return (
       <TierPanelBody>
         <div>
-          {'Contact your billing leader,'}<br />
+          {`Contact your ${BILLING_LEADER_LABEL},`}<br />
           <b>{preferredName}</b>{', to upgrade:'}
         </div>
         {makeEmail(email)}
@@ -154,7 +155,7 @@ const OrgPlanSqueeze = (props: Props) => {
   const nudgeAnyBillingLeader = () => {
     return (
       <TierPanelBody>
-        <div>{'Contact a billing leader to upgrade:'}</div>
+        <div>{`Contact a ${BILLING_LEADER_LABEL} to upgrade:`}</div>
         <EmailBlock>
           {billingLeaders.map((billingLeader) => {
             const {billingLeaderId, email} = billingLeader;
@@ -186,8 +187,8 @@ const OrgPlanSqueeze = (props: Props) => {
         <TierPanel tier={PRO}>
           <TierPanelHeader tier={PRO}>{'Upgrade to '}{PRO_LABEL}</TierPanelHeader>
           {isBillingLeader && billingLeaderSqueeze}
-          {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
-          {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
+          {!isBillingLeader && !hasManyBillingLeaders && nudgeTheBillingLeader()}
+          {!isBillingLeader && hasManyBillingLeaders && nudgeAnyBillingLeader()}
         </TierPanel>
       </TierPanelLayout>
       {/* Learn More Link */}
