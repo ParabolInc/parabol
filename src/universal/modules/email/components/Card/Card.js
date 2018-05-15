@@ -10,19 +10,19 @@ import isTaskPrivate from 'universal/utils/isTaskPrivate'
 import EmptySpace from '../EmptySpace/EmptySpace'
 
 class Card extends Component {
-  constructor(props) {
-    super(props);
-    const {content} = props;
-    const contentState = truncateCard(content);
-    this.editorState = EditorState.createWithContent(contentState, editorDecorators(this.getEditorState));
+  constructor (props) {
+    super(props)
+    const {content} = props
+    const contentState = truncateCard(content)
+    this.editorState = EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
   }
 
-  getEditorState = () => this.editorState;
+  getEditorState = () => this.editorState
 
-  render() {
-    const {status, tags} = this.props;
-    const isPrivate = isTaskPrivate(tags);
-    const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF';
+  render () {
+    const {status, tags} = this.props
+    const isPrivate = isTaskPrivate(tags)
+    const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF'
 
     const cellStyle = {
       padding: 0,
