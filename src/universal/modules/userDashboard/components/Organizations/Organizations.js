@@ -3,7 +3,7 @@ import React from 'react';
 import {createFragmentContainer} from 'react-relay';
 import {SettingsWrapper} from 'universal/components/Settings';
 import {Button, Panel} from 'universal/components';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOrgsCallOut/EmptyOrgsCallOut';
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow';
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';

@@ -178,7 +178,7 @@ class NewMeeting extends Component<Props> {
     const retroLobbyHelpContent = tier === PRO ? RETRO_LOBBY_PAID : RETRO_LOBBY_FREE;
     return (
       <MeetingContainer>
-        <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
+        <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
         <NewMeetingSidebar gotoStageId={this.gotoStageId} meetingType={meetingType} viewer={viewer} />
         <MeetingArea>
           <MeetingAreaHeader>

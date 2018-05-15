@@ -5,6 +5,7 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute';
 import Toast from 'universal/modules/toast/containers/Toast/Toast';
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor';
 import SignInPage from 'universal/components/SignInPage/SignInPage';
+import AnalyticsIdentifierRoot from 'universal/components/AnalyticsIdentifierRoot';
 
 const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot');
 const meetingSummary = () => System.import('universal/modules/summary/components/MeetingSummaryRoot');
@@ -33,12 +34,13 @@ const Action = () => {
     <ActionStyles>
       <Toast />
       <SocketHealthMonitor />
+      <AnalyticsIdentifierRoot />
       <Switch>
         <Route exact path="/" component={SignInPage} />
         <Route exact path="/signin" component={SignInPage} />
         <AsyncRoute exact path="/signup" mod={signUpPage} />
         <AsyncRoute exact path="/reset-password" mod={resetPasswordPage} />
-        <AsyncRoute isAbstract isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
+        <AsyncRoute isPrivate path="(/me|/newteam|/team)" mod={dashWrapper} />
         <AsyncRoute isPrivate path="/meeting/:teamId/:localPhase?/:localPhaseItem?" mod={meetingRoot} />
         <AsyncRoute isPrivate path="/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?" mod={retroRoot} />
         <AsyncRoute isPrivate path="/invoice/:invoiceId" mod={invoice} />

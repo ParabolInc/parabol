@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {createFragmentContainer} from 'react-relay';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import AgendaToggle from 'universal/modules/teamDashboard/components/AgendaToggle/AgendaToggle';
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
 import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
@@ -85,7 +85,7 @@ const AgendaAndTasks = (props) => {
   const {teamId, teamName} = team;
   return (
     <RootBlock>
-      <Helmet title={`${teamName} | Parabol`} />
+      <Helmet title={`Team Dashboard | ${teamName}`} />
 
       {/* Tasks */}
       <TasksMain>

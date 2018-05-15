@@ -37,7 +37,7 @@ const WelcomeContainer = (props) => {
       teamName={teamName}
       welcome={welcome}
       progressDotClickFactory={progressDotClickFactory}
-      title="Welcome"
+      title="Welcome | Parabol"
       viewer={viewer}
     />
   );

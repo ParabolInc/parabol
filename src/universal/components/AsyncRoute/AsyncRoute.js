@@ -9,14 +9,13 @@ import Bundle from '../Bundle/Bundle';
 * Used to determine whether or not to tell segment.io that the page changed
 *
 */
-const AsyncRoute = ({mod, exact, path, isAbstract, isPrivate, extraProps}) => {
+const AsyncRoute = ({mod, exact, path, isPrivate, extraProps}) => {
   return (
     <Route
       exact={exact}
       path={path}
       render={({history, location, match}) => (
         <Bundle
-          isAbstractRoute={isAbstract}
           extraProps={extraProps}
           history={history}
           isPrivate={isPrivate}
@@ -32,7 +31,6 @@ const AsyncRoute = ({mod, exact, path, isAbstract, isPrivate, extraProps}) => {
 AsyncRoute.propTypes = {
   exact: PropTypes.bool,
   extraProps: PropTypes.object,
-  isAbstract: PropTypes.bool,
   isPrivate: PropTypes.bool,
   mod: PropTypes.func.isRequired,
   path: PropTypes.string

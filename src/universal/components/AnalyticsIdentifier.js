@@ -1,16 +1,14 @@
 // @flow
-/*
- * Currently, we only use this in the dashboard views, not the meeting views. That's probably OK for now, but not perfect.
- */
 import PropTypes from 'prop-types';
 import {Component} from 'react';
 import {createFragmentContainer} from 'react-relay';
-import {selectSegmentTraits} from 'universal/redux/segmentActions';
 import raven from 'raven-js';
 import reactLifecyclesCompat from 'react-lifecycles-compat';
 import type {AnalyticsIdentifier_viewer as Viewer} from './__generated__/AnalyticsIdentifier_viewer.graphql';
+import makeHref from 'universal/utils/makeHref';
 
 type Props = {
+  location: Location,
   viewer: Viewer
 };
 
@@ -24,28 +22,58 @@ class AnalyticsIdentifier extends Component<Props, State> {
   };
 
   static identify(viewer) {
-    if (!viewer || !__PRODUCTION__) return;
-    const {email, viewerId} = viewer;
+    if (!viewer) return;
+    const {created, email, viewerId, avatar, name} = viewer;
     raven.setUserContext({
       id: viewerId,
       email
     });
-    selectSegmentTraits(viewer);
+    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
+    window.analytics.identify(viewerId, {
+      avatar,
+      created,
+      email,
+      name
+    });
   }
 
   static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {viewer} = nextProps;
-    if (!viewer || viewer === prevState.viewer) return null;
+    if (viewer && viewer !== prevState.viewer) {
+      // a little side-effecty, but if we didn't do this, we'd need to track isIdentified in the state
+      AnalyticsIdentifier.identify(viewer);
+      return {
+        viewer
+      };
+    }
+    return null;
+  }
 
-    // a little side-effecty, but if we didn't do this, we'd need to track isIdentified in the state
-    AnalyticsIdentifier.identify(viewer);
-    return {
-      viewer
-    };
+  static page(prevPath) {
+    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') return;
+    // helmet sets titles async, so we have to wait awhile until it updates
+    setTimeout(() => {
+      const title = document.title || '';
+      // This is the magic. Ignore everything after hitting the pipe
+      const [pageName] = title.split(' | ');
+      window.analytics.page(pageName, {
+        referrer: makeHref(prevPath),
+        title
+      });
+    }, 300);
   }
 
   state = {
     viewer: null
+  }
+
+  componentDidUpdate(prevProps) {
+    const {location: {pathname: nextPath}} = this.props;
+    const {location: {pathname: prevPath}} = prevProps;
+
+    if (prevPath !== nextPath) {
+      AnalyticsIdentifier.page(prevPath);
+    }
   }
 
   render() {
@@ -60,9 +88,9 @@ export default createFragmentContainer(
   graphql`
     fragment AnalyticsIdentifier_viewer on User {
       viewerId: id
-      createdAt
-      picture
-      preferredName
+      created: createdAt
+      avatar: picture
+      name: preferredName
       email
     }
   `
