@@ -1,0 +1,21 @@
+{
+  schema: {
+    files: "build/schema.json"
+  },
+  query: {
+    files: [
+      {
+        match: 'src/**/*.js',
+        parser: [ 'EmbeddedQueryParser', { startTag: 'graphql`', endTag: '`' } ],
+        validate: {
+          extends: 'gql-rules-query-relay',
+          rules: {
+            // disable directive validation
+            KnownDirectives: 'off'
+          },
+        },
+        isRelay: true
+      },
+    ]
+  }
+}

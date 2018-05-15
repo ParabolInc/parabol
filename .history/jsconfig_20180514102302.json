@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "paths": {
+      "universal/*": [
+        "src/universal/*"
+      ],
+      "server/*": [
+        "src/server/*"
+      ],
+      "client/*": [
+        "src/client/*"
+      ]
+    }
+  }
+}

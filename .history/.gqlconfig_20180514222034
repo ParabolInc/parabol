@@ -1,0 +1,10 @@
+{
+    schema: {
+        files: 'build/schema.graphql'
+    },
+    query: {
+     files: [
+       {
+         match: 'ui/src/**/*.js',
+         parser: ['EmbeddedQueryParser', { startTag: 'graphql`', endTag: '`' }],
+}

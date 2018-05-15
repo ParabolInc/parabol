@@ -1,0 +1,32 @@
+extend interface NewMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+}
+
+extend type RetrospectiveMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+}
+
+extend type Team {
+  contentFilter: String
+}
+
+extend type User {
+  contentFilter: String
+  hasMeetingAlert: Boolean
+}
+
+extend type Task {
+  contentText: String
+}
+
+extend type RetroReflectionGroup {
+  isExpanded: Boolean
+}
+
+extend type RetroReflection {
+  dragX: Float Float,
+  dragCoords: dragUpdatedAt: DateTime,
+  dragCoords: Coords2D
+}
