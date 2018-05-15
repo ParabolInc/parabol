@@ -3,14 +3,14 @@
  *
  * @flow
  */
-import {commitMutation} from 'react-relay';
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay';
-import updateProxyRecord from 'universal/utils/relay/updateProxyRecord';
+import {commitMutation} from 'react-relay'
+import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
+import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
 
 type Variables = {
   title: string,
   reflectionGroupId: string
-};
+}
 
 graphql`
   fragment UpdateReflectionGroupTitleMutation_team on UpdateReflectionGroupTitlePayload {
@@ -18,7 +18,7 @@ graphql`
       title
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpdateReflectionGroupTitleMutation($title: String!, $reflectionGroupId: ID!) {
@@ -26,7 +26,7 @@ const mutation = graphql`
       ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const CreateReflectionMutation = (
   environment: Object,
@@ -40,16 +40,16 @@ const CreateReflectionMutation = (
     onCompleted,
     onError,
     optimisticUpdater: (store) => {
-      const {reflectionGroupId, title} = variables;
-      const reflectionGroupProxy = store.get(reflectionGroupId);
-      const nowISO = new Date().toJSON();
+      const {reflectionGroupId, title} = variables
+      const reflectionGroupProxy = store.get(reflectionGroupId)
+      const nowISO = new Date().toJSON()
       const optimisticReflection = {
         title,
         updatedAt: nowISO
-      };
-      updateProxyRecord(reflectionGroupProxy, optimisticReflection);
+      }
+      updateProxyRecord(reflectionGroupProxy, optimisticReflection)
     }
-  });
-};
+  })
+}
 
-export default CreateReflectionMutation;
+export default CreateReflectionMutation

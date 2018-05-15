@@ -6,15 +6,15 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
-import GitHubTask from 'server/graphql/types/GitHubTask';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor';
-import TaskEditorDetails from 'server/graphql/types/TaskEditorDetails';
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum';
-import Team from 'server/graphql/types/Team';
-import Assignee from 'server/graphql/types/Assignee';
+} from 'graphql'
+import connectionDefinitions from 'server/graphql/connectionDefinitions'
+import GitHubTask from 'server/graphql/types/GitHubTask'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
+import TaskEditorDetails from 'server/graphql/types/TaskEditorDetails'
+import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
+import Team from 'server/graphql/types/Team'
+import Assignee from 'server/graphql/types/Assignee'
 
 const Task = new GraphQLObjectType({
   name: 'Task',
@@ -28,7 +28,10 @@ const Task = new GraphQLObjectType({
       type: GraphQLID,
       description: 'the agenda item that created this task, if any'
     },
-    content: {type: GraphQLString, description: 'The body of the task. If null, it is a new task.'},
+    content: {
+      type: GraphQLString,
+      description: 'The body of the task. If null, it is a new task.'
+    },
     createdAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was created'
@@ -43,9 +46,10 @@ const Task = new GraphQLObjectType({
     },
     editors: {
       type: new GraphQLList(TaskEditorDetails),
-      description: 'a list of users currently editing the task (fed by a subscription, so queries return null)',
+      description:
+        'a list of users currently editing the task (fed by a subscription, so queries return null)',
       resolve: ({editors = []}) => {
-        return editors;
+        return editors
       }
     },
     integration: {
@@ -85,16 +89,16 @@ const Task = new GraphQLObjectType({
       type: Team,
       description: 'The team this task belongs to',
       resolve: ({teamId}, args, {dataLoader}) => {
-        return dataLoader.get('teams').load(teamId);
+        return dataLoader.get('teams').load(teamId)
       }
     },
     assignee: {
       type: Assignee,
       description: 'The team member (or soft team member) that owns this task',
       resolve: ({assigneeId, isSoftTask}, args, {dataLoader}) => {
-        return isSoftTask ?
-          dataLoader.get('softTeamMembers').load(assigneeId) :
-          dataLoader.get('teamMembers').load(assigneeId);
+        return isSoftTask
+          ? dataLoader.get('softTeamMembers').load(assigneeId)
+          : dataLoader.get('teamMembers').load(assigneeId)
       }
     },
     assigneeId: {
@@ -107,10 +111,11 @@ const Task = new GraphQLObjectType({
     },
     userId: {
       type: GraphQLID,
-      description: '* The userId, index useful for server-side methods getting all tasks under a user'
+      description:
+        '* The userId, index useful for server-side methods getting all tasks under a user'
     }
   })
-});
+})
 
 const {connectionType, edgeType} = connectionDefinitions({
   nodeType: Task,
@@ -125,8 +130,8 @@ const {connectionType, edgeType} = connectionDefinitions({
       description: 'Page info with cursors coerced to ISO8601 dates'
     }
   })
-});
+})
 
-export const TaskConnection = connectionType;
-export const TaskEdge = edgeType;
-export default Task;
+export const TaskConnection = connectionType
+export const TaskEdge = edgeType
+export default Task

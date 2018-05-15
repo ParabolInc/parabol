@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLObjectType, GraphQLString} from 'graphql'
 
 const AcceptTeamInviteError = new GraphQLObjectType({
   name: 'AcceptTeamInviteError',
@@ -12,6 +12,6 @@ const AcceptTeamInviteError = new GraphQLObjectType({
       description: 'The full error'
     }
   })
-});
+})
 
-export default AcceptTeamInviteError;
+export default AcceptTeamInviteError

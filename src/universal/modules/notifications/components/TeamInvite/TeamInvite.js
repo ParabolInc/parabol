@@ -1,15 +1,15 @@
-import {css} from 'react-emotion';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {connect} from 'react-redux';
-import {createFragmentContainer} from 'react-relay';
-import Button from 'universal/components/Button/Button';
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import Row from 'universal/components/Row/Row';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation';
-import ui from 'universal/styles/ui';
-import {withRouter} from 'react-router-dom';
+import {css} from 'react-emotion'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {connect} from 'react-redux'
+import {createFragmentContainer} from 'react-relay'
+import Button from 'universal/components/Button/Button'
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
+import Row from 'universal/components/Row/Row'
+import defaultStyles from 'universal/modules/notifications/helpers/styles'
+import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation'
+import ui from 'universal/styles/ui'
+import {withRouter} from 'react-router-dom'
 
 const TeamInvite = (props) => {
   const {
@@ -21,18 +21,28 @@ const TeamInvite = (props) => {
     submitMutation,
     onError,
     onCompleted
-  } = props;
-  const {notificationId, inviter: {inviterName}, team} = notification;
-  const {teamName} = team;
+  } = props
+  const {
+    notificationId,
+    inviter: {inviterName},
+    team
+  } = notification
+  const {teamName} = team
   const accept = () => {
-    submitMutation();
-    AcceptTeamInviteMutation(atmosphere, {notificationId}, {dispatch, history}, onError, onCompleted);
-  };
+    submitMutation()
+    AcceptTeamInviteMutation(
+      atmosphere,
+      {notificationId},
+      {dispatch, history},
+      onError,
+      onCompleted
+    )
+  }
 
   return (
     <Row compact>
       <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon="users" size="small" />
+        <IconAvatar icon='users' size='small' />
       </div>
       <div className={css(defaultStyles.message)}>
         {'You have been invited by '}
@@ -43,20 +53,20 @@ const TeamInvite = (props) => {
       </div>
       <div className={css(defaultStyles.button)}>
         <Button
-          aria-label="Accept team invitation"
+          aria-label='Accept team invitation'
           buttonSize={ui.notificationButtonSize}
-          colorPalette="warm"
+          colorPalette='warm'
           isBlock
-          label="Accept"
+          label='Accept'
           onClick={accept}
-          title="Accept team invitation"
-          type="submit"
+          title='Accept team invitation'
+          type='submit'
           waiting={submitting}
         />
       </div>
     </Row>
-  );
-};
+  )
+}
 
 TeamInvite.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -67,7 +77,7 @@ TeamInvite.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
   notification: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   connect()(withRouter(TeamInvite)),
@@ -80,5 +90,6 @@ export default createFragmentContainer(
       team {
         teamName: name
       }
-    }`
-);
+    }
+  `
+)

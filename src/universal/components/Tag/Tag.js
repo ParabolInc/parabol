@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import styled from 'react-emotion';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 const tagTheme = {
   cool: {
@@ -43,7 +43,7 @@ const tagTheme = {
     backgroundColor: ui.palette.white,
     color: ui.palette.mid
   }
-};
+}
 
 const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
   backgroundColor: tagTheme[colorPalette].backgroundColor,
@@ -59,17 +59,21 @@ const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
   padding: ui.tagPadding,
   textAlign: 'center',
   verticalAlign: 'middle'
-}));
+}))
 
 const Tag = (props) => {
-  const {colorPalette, hasDepth, label} = props;
-  return <TagRoot colorPalette={colorPalette || 'midGray'} hasDepth={hasDepth}>{label}</TagRoot>;
-};
+  const {colorPalette, hasDepth, label} = props
+  return (
+    <TagRoot colorPalette={colorPalette || 'midGray'} hasDepth={hasDepth}>
+      {label}
+    </TagRoot>
+  )
+}
 
 Tag.propTypes = {
   colorPalette: PropTypes.oneOf(ui.tagPalette),
   hasDepth: PropTypes.bool,
   label: PropTypes.string
-};
+}
 
-export default Tag;
+export default Tag

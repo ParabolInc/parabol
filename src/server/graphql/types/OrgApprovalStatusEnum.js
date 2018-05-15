@@ -1,6 +1,6 @@
-import {GraphQLEnumType} from 'graphql';
+import {GraphQLEnumType} from 'graphql'
 
-import {APPROVED, DENIED, PENDING} from 'server/utils/serverConstants';
+import {APPROVED, DENIED, PENDING} from 'server/utils/serverConstants'
 
 const OrgApprovalStatusEnum = new GraphQLEnumType({
   name: 'OrgApprovalStatusEnum',
@@ -10,6 +10,6 @@ const OrgApprovalStatusEnum = new GraphQLEnumType({
     [PENDING]: {},
     [DENIED]: {}
   }
-});
+})
 
-export default OrgApprovalStatusEnum;
+export default OrgApprovalStatusEnum

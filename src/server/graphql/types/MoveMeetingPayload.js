@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveAgendaItem, resolveTeam} from 'server/graphql/resolvers';
-import AgendaItem from 'server/graphql/types/AgendaItem';
-import Team from 'server/graphql/types/Team';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveAgendaItem, resolveTeam} from 'server/graphql/resolvers'
+import AgendaItem from 'server/graphql/types/AgendaItem'
+import Team from 'server/graphql/types/Team'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const MoveMeetingPayload = new GraphQLObjectType({
   name: 'MoveMeetingPayload',
@@ -20,6 +20,6 @@ const MoveMeetingPayload = new GraphQLObjectType({
       resolve: resolveAgendaItem
     }
   })
-});
+})
 
-export default MoveMeetingPayload;
+export default MoveMeetingPayload

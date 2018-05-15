@@ -5,18 +5,18 @@
  */
 
 const promiseAllPartial = async (promiseArr, catchValue = null) => {
-  const arr = [];
+  const arr = []
   for (let ii = 0; ii < promiseArr.length; ii++) {
-    const promise = promiseArr[ii];
+    const promise = promiseArr[ii]
     try {
       // eslint-disable-next-line no-await-in-loop
-      const res = await promise;
-      arr.push(res);
+      const res = await promise
+      arr.push(res)
     } catch (e) {
-      arr.push(catchValue);
+      arr.push(catchValue)
     }
   }
-  return arr;
-};
+  return arr
+}
 
-export default promiseAllPartial;
+export default promiseAllPartial

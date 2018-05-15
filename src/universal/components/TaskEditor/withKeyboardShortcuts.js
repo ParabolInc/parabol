@@ -1,9 +1,8 @@
-import {RichUtils} from 'draft-js';
-import React, {Component} from 'react';
-import {KeyBindingUtil} from 'draft-js';
-import PropTypes from 'prop-types';
+import {KeyBindingUtil, RichUtils} from 'draft-js'
+import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 
-const {hasCommandModifier} = KeyBindingUtil;
+const {hasCommandModifier} = KeyBindingUtil
 
 const withKeyboardShortcuts = (ComposedComponent) => {
   class WithKeyboardShortcuts extends Component {
@@ -13,53 +12,55 @@ const withKeyboardShortcuts = (ComposedComponent) => {
       keyBindingFn: PropTypes.func,
       // could be readOnly, so not strictly required
       setEditorState: PropTypes.func
-    };
+    }
 
     handleKeyCommand = (command) => {
-      const {handleKeyCommand, editorState, setEditorState} = this.props;
+      const {handleKeyCommand, editorState, setEditorState} = this.props
       if (handleKeyCommand) {
-        const result = handleKeyCommand(command);
+        const result = handleKeyCommand(command)
         if (result === 'handled' || result === true) {
-          return result;
+          return result
         }
       }
 
       if (command === 'strikethrough') {
-        setEditorState(RichUtils.toggleInlineStyle(editorState, 'STRIKETHROUGH'));
-        return 'handled';
+        setEditorState(RichUtils.toggleInlineStyle(editorState, 'STRIKETHROUGH'))
+        return 'handled'
       }
 
-      const newState = RichUtils.handleKeyCommand(editorState, command);
+      const newState = RichUtils.handleKeyCommand(editorState, command)
       if (newState) {
-        setEditorState(newState);
-        return 'handled';
+        setEditorState(newState)
+        return 'handled'
       }
-      return 'not-handled';
-    };
+      return 'not-handled'
+    }
 
     keyBindingFn = (e) => {
-      const {keyBindingFn} = this.props;
+      const {keyBindingFn} = this.props
       if (keyBindingFn) {
-        const result = keyBindingFn(e);
+        const result = keyBindingFn(e)
         if (result) {
-          return result;
+          return result
         }
       }
       if (hasCommandModifier(e) && e.shiftKey && e.key === 'x') {
-        return 'strikethrough';
+        return 'strikethrough'
       }
-      return undefined;
-    };
+      return undefined
+    }
 
-    render() {
-      return (<ComposedComponent
-        {...this.props}
-        handleKeyCommand={this.handleKeyCommand}
-        keyBindingFn={this.keyBindingFn}
-      />);
+    render () {
+      return (
+        <ComposedComponent
+          {...this.props}
+          handleKeyCommand={this.handleKeyCommand}
+          keyBindingFn={this.keyBindingFn}
+        />
+      )
     }
   }
-  return WithKeyboardShortcuts;
-};
+  return WithKeyboardShortcuts
+}
 
-export default withKeyboardShortcuts;
+export default withKeyboardShortcuts

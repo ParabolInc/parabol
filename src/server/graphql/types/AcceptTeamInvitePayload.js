@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql';
+import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
 import {
   resolveIfViewer,
   resolveInvitation,
@@ -7,15 +7,15 @@ import {
   resolveTeam,
   resolveTeamMember,
   resolveUser
-} from 'server/graphql/resolvers';
-import Invitation from 'server/graphql/types/Invitation';
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
-import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
-import User from 'server/graphql/types/User';
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+} from 'server/graphql/resolvers'
+import Invitation from 'server/graphql/types/Invitation'
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite'
+import Team from 'server/graphql/types/Team'
+import TeamMember from 'server/graphql/types/TeamMember'
+import User from 'server/graphql/types/User'
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const AcceptTeamInvitePayload = new GraphQLObjectType({
   name: 'AcceptTeamInvitePayload',
@@ -58,10 +58,11 @@ const AcceptTeamInvitePayload = new GraphQLObjectType({
     },
     hardenedTasks: {
       type: new GraphQLList(Task),
-      description: 'The tasks that got reassigned from the soft team member to the real team member',
+      description:
+        'The tasks that got reassigned from the soft team member to the real team member',
       resolve: resolveTasks
     }
   })
-});
+})
 
-export default AcceptTeamInvitePayload;
+export default AcceptTeamInvitePayload

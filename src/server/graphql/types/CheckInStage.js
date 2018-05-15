@@ -1,6 +1,8 @@
-import {GraphQLBoolean, GraphQLObjectType} from 'graphql';
-import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage';
-import NewMeetingTeamMemberStage, {newMeetingTeamMemberStageFields} from 'server/graphql/types/NewMeetingTeamMemberStage';
+import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
+import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
+import NewMeetingTeamMemberStage, {
+  newMeetingTeamMemberStageFields
+} from 'server/graphql/types/NewMeetingTeamMemberStage'
 
 const CheckInStage = new GraphQLObjectType({
   name: 'CheckInStage',
@@ -16,6 +18,6 @@ const CheckInStage = new GraphQLObjectType({
       description: 'true if the team member is present for the meeting'
     }
   })
-});
+})
 
-export default CheckInStage;
+export default CheckInStage

@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLObjectType, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLBoolean, GraphQLObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
 
 const PageInfo = new GraphQLObjectType({
   name: 'PageInfo',
@@ -21,6 +21,6 @@ const PageInfo = new GraphQLObjectType({
       description: 'When paginating forwards, the cursor to continue.'
     }
   })
-});
+})
 
-export default PageInfo;
+export default PageInfo

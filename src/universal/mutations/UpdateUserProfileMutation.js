@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
   fragment UpdateUserProfileMutation_notification on UpdateUserProfilePayload {
@@ -7,7 +7,7 @@ graphql`
       picture
     }
   }
-`;
+`
 
 graphql`
   fragment UpdateUserProfileMutation_teamMember on UpdateUserProfilePayload {
@@ -16,7 +16,7 @@ graphql`
       picture
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpdateUserProfileMutation($updatedUser: UpdateUserProfileInput!) {
@@ -28,26 +28,26 @@ const mutation = graphql`
       ...UpdateUserProfileMutation_teamMember @relay(mask: false)
     }
   }
-`;
+`
 
 const UpdateUserProfileMutation = (environment, updatedUser, onError, onCompleted) => {
-  const {viewerId} = environment;
+  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {updatedUser},
     optimisticUpdater: (store) => {
-      const viewer = store.get(viewerId);
-      const {picture, preferredName} = updatedUser;
+      const viewer = store.get(viewerId)
+      const {picture, preferredName} = updatedUser
       if (preferredName) {
-        viewer.setValue(preferredName, 'preferredName');
+        viewer.setValue(preferredName, 'preferredName')
       }
       if (picture) {
-        viewer.setValue(picture, 'picture');
+        viewer.setValue(picture, 'picture')
       }
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default UpdateUserProfileMutation;
+export default UpdateUserProfileMutation

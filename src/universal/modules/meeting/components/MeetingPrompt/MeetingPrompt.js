@@ -1,43 +1,27 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import Avatar from 'universal/components/Avatar/Avatar';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import Avatar from 'universal/components/Avatar/Avatar'
 
 const MeetingPrompt = (props) => {
-  const {
-    avatar,
-    heading,
-    helpText,
-    styles,
-    subHeading
-  } = props;
+  const {avatar, heading, helpText, styles, subHeading} = props
   return (
     <div className={css(styles.meetingPromptRoot)}>
       <div className={css(styles.avatarBlock)}>
-        <Avatar picture={avatar || defaultUserAvatar} size="fill" />
+        <Avatar picture={avatar || defaultUserAvatar} size='fill' />
       </div>
       <div className={css(styles.body)}>
-        <div className={css(styles.heading)}>
-          {heading}
-        </div>
-        {subHeading &&
-          <div className={css(styles.subHeading)}>
-            {subHeading}
-          </div>
-        }
-        {helpText &&
-          <div className={css(styles.helpText)}>
-            {helpText}
-          </div>
-        }
+        <div className={css(styles.heading)}>{heading}</div>
+        {subHeading && <div className={css(styles.subHeading)}>{subHeading}</div>}
+        {helpText && <div className={css(styles.helpText)}>{helpText}</div>}
       </div>
     </div>
-  );
-};
+  )
+}
 
 MeetingPrompt.propTypes = {
   avatar: PropTypes.string,
@@ -46,9 +30,9 @@ MeetingPrompt.propTypes = {
   helpText: PropTypes.any,
   styles: PropTypes.object,
   subHeading: PropTypes.any
-};
+}
 
-const promptBreakpoint = ui.breakpoint.wider;
+const promptBreakpoint = ui.breakpoint.wider
 
 const styleThunk = (theme, {avatarLarge}) => ({
   meetingPromptRoot: {
@@ -122,6 +106,6 @@ const styleThunk = (theme, {avatarLarge}) => ({
       width: avatarLarge ? '10rem' : '8rem'
     }
   }
-});
+})
 
-export default withStyles(styleThunk)(MeetingPrompt);
+export default withStyles(styleThunk)(MeetingPrompt)

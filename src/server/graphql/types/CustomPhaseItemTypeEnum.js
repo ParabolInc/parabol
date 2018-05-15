@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
 
 const CustomPhaseItemTypeEnum = new GraphQLEnumType({
   name: 'CustomPhaseItemTypeEnum',
@@ -7,6 +7,6 @@ const CustomPhaseItemTypeEnum = new GraphQLEnumType({
   values: {
     [RETRO_PHASE_ITEM]: {}
   }
-});
+})
 
-export default CustomPhaseItemTypeEnum;
+export default CustomPhaseItemTypeEnum

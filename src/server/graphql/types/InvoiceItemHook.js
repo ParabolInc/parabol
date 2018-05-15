@@ -1,9 +1,10 @@
-import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import InvoiceItemHookEnum from 'server/graphql/types/InvoiceItemHookEnum';
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import InvoiceItemHookEnum from 'server/graphql/types/InvoiceItemHookEnum'
 
 const InvoiceItemHook = new GraphQLObjectType({
   name: 'InvoiceItemHook',
-  description: 'A hook to link the subscription update to the correlating invoice items that stripe will make',
+  description:
+    'A hook to link the subscription update to the correlating invoice items that stripe will make',
   fields: () => ({
     id: {type: new GraphQLNonNull(GraphQLID), description: 'shortid'},
     type: {
@@ -23,6 +24,6 @@ const InvoiceItemHook = new GraphQLObjectType({
       description: 'The user that was added/removed/paused/unpaused'
     }
   })
-});
+})
 
-export default InvoiceItemHook;
+export default InvoiceItemHook

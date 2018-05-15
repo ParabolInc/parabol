@@ -1,20 +1,16 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
 
 const WelcomeLayout = (props) => {
-  const {children, styles} = props;
-  return (
-    <div className={css(styles.root)}>
-      {children}
-    </div>
-  );
-};
+  const {children, styles} = props
+  return <div className={css(styles.root)}>{children}</div>
+}
 WelcomeLayout.propTypes = {
   children: PropTypes.any,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   root: {
@@ -29,6 +25,6 @@ const styleThunk = () => ({
     padding: '0',
     width: '100%'
   }
-});
+})
 
-export default withStyles(styleThunk)(WelcomeLayout);
+export default withStyles(styleThunk)(WelcomeLayout)

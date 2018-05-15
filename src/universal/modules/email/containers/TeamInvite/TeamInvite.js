@@ -1,47 +1,47 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import Layout from '../../components/Layout/Layout';
-import Button from '../../components/Button/Button';
-import EmptySpace from '../../components/EmptySpace/EmptySpace';
-import Body from '../../components/Body/Body';
-import Header from '../../components/Header/Header';
-import Callout from '../../components/Callout/Callout';
-import Footer from '../../components/Footer/Footer';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import Layout from '../../components/Layout/Layout'
+import Button from '../../components/Button/Button'
+import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import Body from '../../components/Body/Body'
+import Header from '../../components/Header/Header'
+import Callout from '../../components/Callout/Callout'
+import Footer from '../../components/Footer/Footer'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const textColor = {
   color: ui.colorText
-};
+}
 
 const colorWarm = {
   color: appTheme.palette.warm
-};
+}
 
 const boldLinkStyle = {
   color: appTheme.palette.warm,
   textDecoration: 'none'
-};
+}
 
 const teamNameStyle = {
   color: ui.colorText,
   fontSize: '36px'
-};
+}
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
   width: '80%'
-};
+}
 
 const calloutTextStyle = {
   color: ui.colorText
-};
+}
 
 const secondaryMessage = {
   color: ui.colorText,
   fontSize: '20px',
   lineHeight: '30px'
-};
+}
 
 const TeamInvite = (props) => {
   const {
@@ -53,35 +53,44 @@ const TeamInvite = (props) => {
     // firstTask,
     teamName,
     inviteLink
-  } = props;
-  const nameOrEmail = inviteeName || inviteeEmail;
+  } = props
+  const nameOrEmail = inviteeName || inviteeEmail
   return (
     <Layout>
-
       <Header />
 
       <Body verticalGutter={32}>
-        <table style={ui.emailTableBase} align="center">
+        <table style={ui.emailTableBase} align='center'>
           <tbody>
             <tr>
-              <td width="64">
-                <img src={inviterAvatar} height="64" width="64" />
+              <td width='64'>
+                <img src={inviterAvatar} height='64' width='64' />
               </td>
               <td style={{paddingLeft: '16px', textAlign: 'left'}}>
-                {inviterName}<br />
-                <a href={`mailto:${inviterEmail}`} style={{...textColor, fontSize: '14px'}}>{inviterEmail}</a>
+                {inviterName}
+                <br />
+                <a href={`mailto:${inviterEmail}`} style={{...textColor, fontSize: '14px'}}>
+                  {inviterEmail}
+                </a>
               </td>
             </tr>
           </tbody>
         </table>
-        <table style={ui.emailTableBase} width="100%">
+        <table style={ui.emailTableBase} width='100%'>
           <tbody>
             <tr>
               <td style={{paddingLeft: '16px', paddingRight: '16px'}}>
-                <Callout fontSize={18} width="100%">
+                <Callout fontSize={18} width='100%'>
                   <span style={calloutTextStyle}>
-                    {'Hi '}<a href={`mailto:${inviteeEmail}`} style={{...colorWarm, textDecoration: 'none'}}>{nameOrEmail}</a>!<br />
-                    {inviterName}{' has invited you to join a team on Parabol:'}
+                    {'Hi '}
+                    <a
+                      href={`mailto:${inviteeEmail}`}
+                      style={{...colorWarm, textDecoration: 'none'}}
+                    >
+                      {nameOrEmail}
+                    </a>!<br />
+                    {inviterName}
+                    {' has invited you to join a team on Parabol:'}
                   </span>
                   <EmptySpace height={12} />
                   <span style={teamNameStyle}>{teamName}</span>
@@ -94,27 +103,35 @@ const TeamInvite = (props) => {
           {'Join Team'}
         </Button>
         <EmptySpace height={16} />
-        {'Or go to: '}<a href={inviteLink} style={colorWarm}>{inviteLink}</a>
+        {'Or go to: '}
+        <a href={inviteLink} style={colorWarm}>
+          {inviteLink}
+        </a>
         <EmptySpace height={32} />
         <div style={ruleStyle} />
         <EmptySpace height={32} />
         <div className={secondaryMessage}>
           Parabol helps teams{' '}
           <a
-            href="https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830"
+            href='https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830'
             style={boldLinkStyle}
-            title="How to Navigate Uncertainty using the Action Rhythm"
+            title='How to Navigate Uncertainty using the Action Rhythm'
           >
             {'develop a weekly rhythm'}
-          </a>{'.'}<br />
-          <a href={inviteLink} style={boldLinkStyle}>{'Add a task to the board'}</a>{' to get started.'}
+          </a>
+          {'.'}
+          <br />
+          <a href={inviteLink} style={boldLinkStyle}>
+            {'Add a task to the board'}
+          </a>
+          {' to get started.'}
         </div>
         <EmptySpace height={32} />
       </Body>
       <Footer color={ui.colorText} />
     </Layout>
-  );
-};
+  )
+}
 
 // TODO: Don’t show this until we actually transfer it to the dashboard as a task? (TA)
 // {firstTask &&
@@ -135,7 +152,7 @@ TeamInvite.propTypes = {
   firstTask: PropTypes.string,
   teamName: PropTypes.string.isRequired,
   inviteLink: PropTypes.string.isRequired
-};
+}
 
 export const teamInviteText = (props) => `
 Hello ${props.inviteeName || props.inviteeEmail},
@@ -148,6 +165,6 @@ Get started here: ${props.inviteLink}
 
 Your friends,
 The Parabol Crew
-`;
+`
 
-export default TeamInvite;
+export default TeamInvite

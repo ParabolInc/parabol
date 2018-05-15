@@ -1,1 +1,1 @@
-export default ['iss', 'sub', 'aud', 'iat', 'exp', 'tms', 'bet'];
+export default ['iss', 'sub', 'aud', 'iat', 'exp', 'tms', 'bet']

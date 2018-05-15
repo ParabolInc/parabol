@@ -1,5 +1,5 @@
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 export default {
   message: {
@@ -57,4 +57,4 @@ export default {
     fontWeight: 600,
     paddingLeft: '.375rem'
   }
-};
+}

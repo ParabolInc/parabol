@@ -8,18 +8,18 @@
  * @flow
  */
 
-type MultiArityFn = (...args: Array<any>) => any;
+type MultiArityFn = (...args: Array<any>) => any
 
-type SingleArityFn = (any) => any;
+type SingleArityFn = (any) => any
 
 const compose = (...fns: Array<SingleArityFn>): MultiArityFn => (...args: Array<any>) => {
   if (!fns.length) {
-    return args;
+    return args
   }
   return fns
     .slice(1)
     .filter((item) => typeof item === 'function')
-    .reduce((acc, fn) => fn(acc), fns[0](...args));
-};
+    .reduce((acc, fn) => fn(acc), fns[0](...args))
+}
 
-export default compose;
+export default compose

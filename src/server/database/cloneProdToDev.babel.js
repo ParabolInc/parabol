@@ -1,3 +1,3 @@
-require('babel-register'); // eslint-disable-line
-require('babel-polyfill');
-require('./cloneProdToDev').default();
+require('babel-register') // eslint-disable-line
+require('babel-polyfill')
+require('./cloneProdToDev').default()

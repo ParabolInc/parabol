@@ -1,36 +1,36 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
-import FontAwesome from 'react-fontawesome';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
+import FontAwesome from 'react-fontawesome'
 
 class Editable extends Component {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       isEditing: false
-    };
+    }
   }
 
   setEditing = () => {
     this.setState({
       isEditing: true
-    });
-  };
+    })
+  }
 
   unsetEditing = () => {
-    const {input, untouch} = this.props;
+    const {input, untouch} = this.props
     this.setState({
       isEditing: false
-    });
-    input.onBlur();
+    })
+    input.onBlur()
     if (untouch) {
-      untouch(input.name);
+      untouch(input.name)
     }
-  };
+  }
 
   renderEditing = () => {
     const {
@@ -42,29 +42,26 @@ class Editable extends Component {
       styles,
       submitOnBlur,
       touch
-    } = this.props;
-    const inputStyles = css(
-      styles.static,
-      styles.input
-    );
+    } = this.props
+    const inputStyles = css(styles.static, styles.input)
 
     const submitAndSet = async (e) => {
-      e.preventDefault();
-      const didSubmit = await handleSubmit();
+      e.preventDefault()
+      const didSubmit = await handleSubmit()
       if (!didSubmit) {
-        this.unsetEditing();
+        this.unsetEditing()
       }
-    };
+    }
     const maybeSubmitOnBlur = (e) => {
       if (touch) {
-        touch(input.name);
+        touch(input.name)
       }
       if (submitOnBlur) {
-        submitAndSet(e);
+        submitAndSet(e)
       } else if (!input.value || (!error && !dirty)) {
-        this.unsetEditing();
+        this.unsetEditing()
       }
-    };
+    }
     return (
       <form onSubmit={submitAndSet}>
         <input
@@ -77,45 +74,29 @@ class Editable extends Component {
         />
         {touched && error && <div className={css(styles.error)}>{error}</div>}
       </form>
-    );
-  };
+    )
+  }
 
   renderStatic = () => {
-    const {
-      hideIconOnValue,
-      icon,
-      initialValue,
-      placeholder,
-      styles
-    } = this.props;
-    const staticStyles = css(
-      styles.static,
-      !initialValue && styles.placeholder
-    );
+    const {hideIconOnValue, icon, initialValue, placeholder, styles} = this.props
+    const staticStyles = css(styles.static, !initialValue && styles.placeholder)
 
-    const hideIcon = initialValue && hideIconOnValue;
+    const hideIcon = initialValue && hideIconOnValue
     return (
       <div className={css(styles.staticBlock)} onClick={this.setEditing}>
-        <div className={staticStyles}>
-          {initialValue || placeholder}
-        </div>
-        {!hideIcon &&
-          <FontAwesome
-            className={css(styles.icon)}
-            name={icon || 'pencil'}
-          />
-        }
+        <div className={staticStyles}>{initialValue || placeholder}</div>
+        {!hideIcon && <FontAwesome className={css(styles.icon)} name={icon || 'pencil'} />}
       </div>
-    );
-  };
+    )
+  }
 
-  render() {
-    const {styles} = this.props;
+  render () {
+    const {styles} = this.props
     return (
       <div className={css(styles.editableRoot)}>
         {this.state.isEditing ? this.renderEditing() : this.renderStatic()}
       </div>
-    );
+    )
   }
 }
 
@@ -148,8 +129,7 @@ Editable.propTypes = {
   }),
   touch: PropTypes.func,
   untouch: PropTypes.func
-
-};
+}
 
 const styleThunk = (custom, {typeStyles}) => ({
   editableRoot: {
@@ -209,6 +189,6 @@ const styleThunk = (custom, {typeStyles}) => ({
 
     ...makePlaceholderStyles(typeStyles.placeholderColor)
   }
-});
+})
 
-export default withStyles(styleThunk)(Editable);
+export default withStyles(styleThunk)(Editable)

@@ -1,4 +1,13 @@
-import {CHECKIN, DISCUSS, GROUP, LOBBY, REFLECT, RETROSPECTIVE, SUMMARY, VOTE} from 'universal/utils/constants';
+import {
+  CHECKIN,
+  DISCUSS,
+  GROUP,
+  LOBBY,
+  REFLECT,
+  RETROSPECTIVE,
+  SUMMARY,
+  VOTE
+} from 'universal/utils/constants'
 
 exports.up = async (r) => {
   try {
@@ -7,7 +16,7 @@ exports.up = async (r) => {
       r.tableDrop('RetroThoughtGroup'),
       r.tableCreate('RetroReflection'),
       r.tableCreate('RetroReflectionGroup')
-    ]);
+    ])
   } catch (e) {
     // noop
   }
@@ -16,20 +25,21 @@ exports.up = async (r) => {
       r.table('RetroReflection').indexCreate('meetingId'),
       r.table('RetroReflection').indexCreate('reflectionGroupId'),
       r.table('RetroReflectionGroup').indexCreate('meetingId')
-    ]);
+    ])
   } catch (e) {
     // noop
   }
   try {
-    await r.table('MeetingSettings')
+    await r
+      .table('MeetingSettings')
       .filter({meetingType: RETROSPECTIVE})
       .update({
         phaseTypes: [LOBBY, CHECKIN, REFLECT, GROUP, VOTE, DISCUSS, SUMMARY]
-      });
+      })
   } catch (e) {
     // noop
   }
-};
+}
 
 exports.down = async (r) => {
   try {
@@ -38,8 +48,8 @@ exports.down = async (r) => {
       r.tableCreate('RetroThoughtGroup'),
       r.tableDrop('RetroReflection'),
       r.tableDrop('RetroReflectionGroup')
-    ]);
+    ])
   } catch (e) {
     // noop
   }
-};
+}

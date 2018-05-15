@@ -1,3 +1,3 @@
-const toOrgMemberId = (orgId, userId) => `${userId}::${orgId}`;
+const toOrgMemberId = (orgId, userId) => `${userId}::${orgId}`
 
-export default toOrgMemberId;
+export default toOrgMemberId

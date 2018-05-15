@@ -14,6 +14,6 @@ const typography = {
   s6: '1.5rem', // 24px
   s7: '2.125rem', // 34px
   s8: '3rem' // 48px
-};
+}
 
-export default typography;
+export default typography

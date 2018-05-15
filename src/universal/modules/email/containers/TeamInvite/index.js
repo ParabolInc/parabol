@@ -1,8 +1,8 @@
-import React from 'react';
-import Oy from 'oy-vey';
-import TeamInvite, {teamInviteText} from './TeamInvite';
+import React from 'react'
+import Oy from 'oy-vey'
+import TeamInvite, {teamInviteText} from './TeamInvite'
 
-const subject = 'You’ve been invited to Parabol';
+const subject = 'You’ve been invited to Parabol'
 
 export default (props) => ({
   subject,
@@ -11,4 +11,4 @@ export default (props) => ({
     title: subject,
     previewText: subject
   })
-});
+})

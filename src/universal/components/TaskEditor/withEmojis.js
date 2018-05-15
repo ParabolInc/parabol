@@ -1,22 +1,22 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import getWordAt from 'universal/components/TaskEditor/getWordAt';
-import ui from 'universal/styles/ui';
-import getDraftCoords from 'universal/utils/getDraftCoords';
-import getAnchorLocation from './getAnchorLocation';
-import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal';
-import LoadableEmojiMenu from 'universal/components/LoadableEmojiMenu';
-import {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import getWordAt from 'universal/components/TaskEditor/getWordAt'
+import ui from 'universal/styles/ui'
+import getDraftCoords from 'universal/utils/getDraftCoords'
+import getAnchorLocation from './getAnchorLocation'
+import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal'
+import LoadableEmojiMenu from 'universal/components/LoadableEmojiMenu'
+import {autoCompleteEmoji} from 'universal/utils/draftjs/completeEnitity'
 
 const originAnchor = {
   vertical: 'top',
   horizontal: 'left'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'left'
-};
+}
 
 const withEmojis = (ComposedComponent) => {
   class WithEmojis extends Component {
@@ -27,79 +27,79 @@ const withEmojis = (ComposedComponent) => {
       keyBindingFn: PropTypes.func,
       // could be readOnly, so not strictly required
       setEditorState: PropTypes.func
-    };
+    }
 
     state = {
       isOpen: false,
       query: ''
-    };
+    }
 
     keyBindingFn = (e) => {
-      const {keyBindingFn} = this.props;
+      const {keyBindingFn} = this.props
       if (keyBindingFn) {
-        const result = keyBindingFn(e);
-        if (result) return result;
+        const result = keyBindingFn(e)
+        if (result) return result
       }
       if (this.menuRef.current) {
-        const handled = this.menuRef.current.handleKeyDown(e);
-        if (handled) return handled;
+        const handled = this.menuRef.current.handleKeyDown(e)
+        if (handled) return handled
       }
-      return undefined;
-    };
+      return undefined
+    }
 
-    menuRef = React.createRef();
+    menuRef = React.createRef()
 
     menuItemClickFactory = (emoji, editorState) => (e) => {
-      e.preventDefault();
-      const {setEditorState} = this.props;
-      const nextEditorState = autoCompleteEmoji(editorState, emoji);
-      setEditorState(nextEditorState);
-    };
+      e.preventDefault()
+      const {setEditorState} = this.props
+      const nextEditorState = autoCompleteEmoji(editorState, emoji)
+      setEditorState(nextEditorState)
+    }
 
     removeModal = () => {
       this.setState({
         isOpen: false,
         query: ''
-      });
-    };
+      })
+    }
 
     handleChange = (editorState) => {
-      const {handleChange} = this.props;
+      const {handleChange} = this.props
       if (handleChange) {
-        handleChange(editorState);
+        handleChange(editorState)
       }
-      const {block, anchorOffset} = getAnchorLocation(editorState);
-      const blockText = block.getText();
-      const entityKey = block.getEntityAt(anchorOffset - 1);
-      const {word} = getWordAt(blockText, anchorOffset - 1);
+      const {block, anchorOffset} = getAnchorLocation(editorState)
+      const blockText = block.getText()
+      const entityKey = block.getEntityAt(anchorOffset - 1)
+      const {word} = getWordAt(blockText, anchorOffset - 1)
 
-      const inASuggestion = word && !entityKey && word[0] === ':';
+      const inASuggestion = word && !entityKey && word[0] === ':'
       if (inASuggestion) {
         this.setState({
           isOpen: true,
           query: word.slice(1)
-        });
+        })
       } else if (this.state.isOpen) {
-        this.removeModal();
+        this.removeModal()
       }
     }
 
     initialize = () => {
-      const {isOpen} = this.state;
+      const {isOpen} = this.state
       if (isOpen) {
-        const {renderModal, removeModal, keyBindingFn} = this;
-        return {renderModal, removeModal, keyBindingFn};
+        const {renderModal, removeModal, keyBindingFn} = this
+        return {renderModal, removeModal, keyBindingFn}
       }
-      return {};
+      return {}
     }
 
     renderModal = () => {
-      const {query} = this.state;
-      const {editorRef, editorState} = this.props;
-      const coords = getDraftCoords(editorRef);
-      this.cachedCoords = coords || this.cachedCoords;
+      const {query} = this.state
+      const {editorRef, editorState} = this.props
+      const coords = getDraftCoords(editorRef)
+      this.cachedCoords = coords || this.cachedCoords
       if (!this.cachedCoords) {
-        return null;
+        return null
       }
       return (
         <LoadableDraftJSModal
@@ -119,20 +119,20 @@ const withEmojis = (ComposedComponent) => {
           marginFromOrigin={ui.draftModalMargin}
           originCoords={this.cachedCoords}
         />
-      );
-    };
+      )
+    }
 
-    render() {
+    render () {
       return (
         <ComposedComponent
           {...this.props}
           {...this.initialize()}
           handleChange={this.handleChange}
         />
-      );
+      )
     }
   }
-  return WithEmojis;
-};
+  return WithEmojis
+}
 
-export default withEmojis;
+export default withEmojis

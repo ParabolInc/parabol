@@ -1,19 +1,23 @@
-import {GraphQLNonNull, GraphQLString} from 'graphql';
-import {verify} from 'jsonwebtoken';
-import getRethink from 'server/database/rethinkDriver';
-import sendEmail from 'server/email/sendEmail';
-import LoginPayload from 'server/graphql/types/LoginPayload';
+import {GraphQLNonNull, GraphQLString} from 'graphql'
+import {verify} from 'jsonwebtoken'
+import getRethink from 'server/database/rethinkDriver'
+import sendEmail from 'server/email/sendEmail'
+import LoginPayload from 'server/graphql/types/LoginPayload'
 import {
   auth0ManagementClient,
   clientId as auth0ClientId,
   clientSecret as auth0ClientSecret
-} from 'server/utils/auth0Helpers';
-import {getUserId} from 'server/utils/authorization';
-import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent';
-import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
-import {sendAuth0Error, sendBadAuthTokenError, sendSegmentIdentifyError} from 'server/utils/authorizationErrors';
-import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj';
-import ensureDate from 'universal/utils/ensureDate';
+} from 'server/utils/auth0Helpers'
+import {getUserId} from 'server/utils/authorization'
+import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
+import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
+import {
+  sendAuth0Error,
+  sendBadAuthTokenError,
+  sendSegmentIdentifyError
+} from 'server/utils/authorizationErrors'
+import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
+import ensureDate from 'universal/utils/ensureDate'
 
 const login = {
   type: LoginPayload,
@@ -26,22 +30,24 @@ const login = {
       description: 'The ID Token from auth0, a base64 JWT'
     }
   },
-  async resolve(source, {auth0Token}, {dataLoader}) {
-    const r = getRethink();
-    const now = new Date();
+  async resolve (source, {auth0Token}, {dataLoader}) {
+    const r = getRethink()
+    const now = new Date()
 
     // VALIDATION
-    let authToken;
+    let authToken
     try {
-      authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {audience: auth0ClientId});
+      authToken = verify(auth0Token, Buffer.from(auth0ClientSecret, 'base64'), {
+        audience: auth0ClientId
+      })
     } catch (e) {
-      return sendBadAuthTokenError();
+      return sendBadAuthTokenError()
     }
-    const viewerId = getUserId(authToken);
+    const viewerId = getUserId(authToken)
 
     // RESOLUTION
     if (authToken.tms) {
-      const user = await dataLoader.get('users').load(viewerId);
+      const user = await dataLoader.get('users').load(viewerId)
       // LOGIN
       if (user) {
         /*
@@ -54,26 +60,27 @@ const login = {
          *
          * See also: https://community.segment.com/t/631m9s/identify-per-signup-or-signin
          */
-        await sendSegmentIdentify(user.id);
+        await sendSegmentIdentify(user.id)
         return {
           userId: viewerId,
           // create a brand new auth token using the tms in our DB, not auth0s
           authToken: encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms: user.tms}))
-        };
+        }
       }
       // should never reach this line in production. that means our DB !== auth0 DB
     }
 
-    let userInfo;
+    let userInfo
     try {
       userInfo = await auth0ManagementClient.getUser({
         id: authToken.sub
-      });
+      })
     } catch (e) {
-      return sendAuth0Error(authToken, e);
+      return sendAuth0Error(authToken, e)
     }
 
-    const preferredName = userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname;
+    const preferredName =
+      userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname
     const newUser = {
       id: userInfo.user_id,
       cachedAt: now,
@@ -90,22 +97,22 @@ const login = {
       createdAt: ensureDate(userInfo.created_at),
       userOrgs: [],
       welcomeSentAt: now
-    };
-    await r.table('User').insert(newUser);
+    }
+    await r.table('User').insert(newUser)
 
     try {
-      await sendSegmentIdentify(newUser.id);
+      await sendSegmentIdentify(newUser.id)
     } catch (e) {
-      return sendSegmentIdentifyError(authToken, e);
+      return sendSegmentIdentifyError(authToken, e)
     }
 
     // don't await
-    setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0);
+    setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0)
     return {
       authToken: auth0Token,
       userId: viewerId
-    };
+    }
   }
-};
+}
 
-export default login;
+export default login

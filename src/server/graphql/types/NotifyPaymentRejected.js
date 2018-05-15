@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveOrganization} from 'server/graphql/resolvers';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import Organization from 'server/graphql/types/Organization';
-import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
+import {GraphQLObjectType} from 'graphql'
+import {resolveOrganization} from 'server/graphql/resolvers'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import Organization from 'server/graphql/types/Organization'
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification'
 
 const NotifyPaymentRejected = new GraphQLObjectType({
   name: 'NotifyPaymentRejected',
@@ -15,6 +15,6 @@ const NotifyPaymentRejected = new GraphQLObjectType({
     },
     ...notificationInterfaceFields
   })
-});
+})
 
-export default NotifyPaymentRejected;
+export default NotifyPaymentRejected

@@ -1,15 +1,14 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import 'universal/components/TaskEditor/Draft.css';
-import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts';
-import withMarkdown from 'universal/components/TaskEditor/withMarkdown';
-import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
-import {textTags} from 'universal/utils/constants';
-import entitizeText from 'universal/utils/draftjs/entitizeText';
-
+import {css} from 'aphrodite-local-styles/no-important'
+import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import 'universal/components/TaskEditor/Draft.css'
+import withKeyboardShortcuts from 'universal/components/TaskEditor/withKeyboardShortcuts'
+import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
+import appTheme from 'universal/styles/theme/appTheme'
+import withStyles from 'universal/styles/withStyles'
+import {textTags} from 'universal/utils/constants'
+import entitizeText from 'universal/utils/draftjs/entitizeText'
 
 class EditorInputWrapper extends Component {
   static propTypes = {
@@ -27,97 +26,97 @@ class EditorInputWrapper extends Component {
     setEditorState: PropTypes.func,
     innerRef: PropTypes.func,
     styles: PropTypes.object
-  };
+  }
 
   blockStyleFn = (contentBlock) => {
-    const {styles} = this.props;
-    const type = contentBlock.getType();
+    const {styles} = this.props
+    const type = contentBlock.getType()
     if (type === 'blockquote') {
-      return css(styles.editorBlockquote);
+      return css(styles.editorBlockquote)
     } else if (type === 'code-block') {
-      return css(styles.codeBlock);
+      return css(styles.codeBlock)
     }
-    return undefined;
-  };
+    return undefined
+  }
 
   handleChange = (editorState) => {
-    const {handleChange, setEditorState} = this.props;
+    const {handleChange, setEditorState} = this.props
     if (this.entityPasteStart) {
-      const {anchorOffset, anchorKey} = this.entityPasteStart;
+      const {anchorOffset, anchorKey} = this.entityPasteStart
       const selectionState = editorState.getSelection().merge({
         anchorOffset,
         anchorKey
-      });
-      const contentState = entitizeText(editorState.getCurrentContent(), selectionState);
-      this.entityPasteStart = undefined;
+      })
+      const contentState = entitizeText(editorState.getCurrentContent(), selectionState)
+      this.entityPasteStart = undefined
       if (contentState) {
-        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'));
-        return;
+        setEditorState(EditorState.push(editorState, contentState, 'apply-entity'))
+        return
       }
     }
     if (editorState.getSelection().getHasFocus() && handleChange) {
-      handleChange(editorState);
+      handleChange(editorState)
     }
-    setEditorState(editorState);
-  };
+    setEditorState(editorState)
+  }
 
   handleReturn = (e) => {
-    const {handleReturn} = this.props;
+    const {handleReturn} = this.props
     if (handleReturn) {
-      return handleReturn(e);
+      return handleReturn(e)
     }
     if (e.shiftKey || !this.editorRef) {
-      return 'not-handled';
+      return 'not-handled'
     }
-    this.editorRef.blur();
-    return 'handled';
-  };
+    this.editorRef.blur()
+    return 'handled'
+  }
 
   handleKeyCommand = (command) => {
-    const {handleKeyCommand} = this.props;
+    const {handleKeyCommand} = this.props
     if (handleKeyCommand) {
-      return handleKeyCommand(command);
+      return handleKeyCommand(command)
     }
-    return undefined;
-  };
+    return undefined
+  }
 
   keyBindingFn = (e) => {
-    const {keyBindingFn} = this.props;
+    const {keyBindingFn} = this.props
     if (keyBindingFn) {
-      const result = keyBindingFn(e);
+      const result = keyBindingFn(e)
       if (result) {
-        return result;
+        return result
       }
     }
-    return getDefaultKeyBinding(e);
-  };
+    return getDefaultKeyBinding(e)
+  }
 
   handleBeforeInput = (char) => {
-    const {handleBeforeInput} = this.props;
+    const {handleBeforeInput} = this.props
     if (handleBeforeInput) {
-      return handleBeforeInput(char);
+      return handleBeforeInput(char)
     }
-    return undefined;
+    return undefined
   }
 
   handlePastedText = (text) => {
     if (text) {
       for (let i = 0; i < textTags.length; i++) {
-        const tag = textTags[i];
+        const tag = textTags[i]
         if (text.indexOf(tag) !== -1) {
-          const selection = this.props.editorState.getSelection();
+          const selection = this.props.editorState.getSelection()
           this.entityPasteStart = {
             anchorOffset: selection.getAnchorOffset(),
             anchorKey: selection.getAnchorKey()
-          };
+          }
         }
       }
     }
-    return 'not-handled';
-  };
+    return 'not-handled'
+  }
 
-  render() {
-    const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props;
+  render () {
+    const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props
     return (
       <Editor
         ariaLabel={ariaLabel}
@@ -134,12 +133,12 @@ class EditorInputWrapper extends Component {
         readOnly={readOnly}
         ref={(c) => {
           if (innerRef) {
-            innerRef(c);
+            innerRef(c)
           }
-          this.editorRef = c;
+          this.editorRef = c
         }}
       />
-    );
+    )
   }
 }
 
@@ -161,12 +160,6 @@ const styleThunk = () => ({
     margin: '0',
     padding: '0 .5rem'
   }
-});
+})
 
-export default withMarkdown(
-  withKeyboardShortcuts(
-    withStyles(styleThunk)(
-      EditorInputWrapper
-    )
-  )
-);
+export default withMarkdown(withKeyboardShortcuts(withStyles(styleThunk)(EditorInputWrapper)))

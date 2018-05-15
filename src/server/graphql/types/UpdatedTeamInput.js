@@ -1,5 +1,5 @@
-import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
+import {GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
 
 const UpdatedTeamInput = new GraphQLInputObjectType({
   name: 'UpdatedTeamInput',
@@ -11,6 +11,6 @@ const UpdatedTeamInput = new GraphQLInputObjectType({
       description: 'A link to the team’s profile image.'
     }
   })
-});
+})
 
-export default UpdatedTeamInput;
+export default UpdatedTeamInput

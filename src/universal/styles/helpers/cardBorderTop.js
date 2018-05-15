@@ -1,5 +1,5 @@
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 
 const cardBorderTop = {
   backgroundColor: 'currentColor',
@@ -12,6 +12,6 @@ const cardBorderTop = {
   position: 'absolute',
   right: '-1px',
   top: '-1px'
-};
+}
 
-export default cardBorderTop;
+export default cardBorderTop

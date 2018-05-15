@@ -1,4 +1,4 @@
-export default function makePlaceholderStyles(color) {
+export default function makePlaceholderStyles (color) {
   return {
     '::placeholder': {color},
 
@@ -7,7 +7,7 @@ export default function makePlaceholderStyles(color) {
 
     // IE 10+
     ':-ms-input-placeholder': {color}
-  };
+  }
 }
 
 export const makePlaceholderStylesString = (color) => `
@@ -22,4 +22,4 @@ export const makePlaceholderStylesString = (color) => `
   :-ms-input-placeholder {
     color: ${color};
   }
-`;
+`

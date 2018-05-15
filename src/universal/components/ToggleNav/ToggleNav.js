@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import FontAwesome from 'react-fontawesome';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import FontAwesome from 'react-fontawesome'
 
 //    TODO:
 //  • Add themes, not just mid/purple (TA)
@@ -14,13 +14,10 @@ import FontAwesome from 'react-fontawesome';
 const iconStyles = {
   lineHeight: 'inherit',
   paddingRight: '.25rem'
-};
+}
 
 const ToggleNav = (props) => {
-  const {
-    items,
-    styles
-  } = props;
+  const {items, styles} = props
 
   const renderItems = () =>
     items.map((item, index) => {
@@ -29,27 +26,22 @@ const ToggleNav = (props) => {
         // Avoid className order conflicts and set active here
         item.isActive && styles.itemActive,
         index === 0 && styles.itemFirst,
-        index === (items.length - 1) && styles.itemLast
-      );
+        index === items.length - 1 && styles.itemLast
+      )
       return (
         <div className={itemStyles} key={item.label} onClick={item.onClick} title={item.label}>
           <FontAwesome name={item.icon} style={iconStyles} /> {item.label}
         </div>
-      );
-    }
-    );
+      )
+    })
 
-  return (
-    <div className={css(styles.nav)}>
-      {renderItems()}
-    </div>
-  );
-};
+  return <div className={css(styles.nav)}>{renderItems()}</div>
+}
 
 ToggleNav.propTypes = {
   items: PropTypes.array.isRequired,
   styles: PropTypes.object
-};
+}
 
 ToggleNav.defaultProps = {
   items: [
@@ -66,9 +58,9 @@ ToggleNav.defaultProps = {
       onClick: () => {}
     }
   ]
-};
+}
 
-const borderRadius = ui.borderRadiusSmall;
+const borderRadius = ui.borderRadiusSmall
 
 const styleThunk = () => ({
   nav: {
@@ -130,6 +122,6 @@ const styleThunk = () => ({
     borderBottomRightRadius: borderRadius,
     borderTopRightRadius: borderRadius
   }
-});
+})
 
-export default withStyles(styleThunk)(ToggleNav);
+export default withStyles(styleThunk)(ToggleNav)

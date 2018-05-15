@@ -1,5 +1,5 @@
-import {ContentState, convertToRaw} from 'draft-js';
+import {ContentState, convertToRaw} from 'draft-js'
 
-const makeEmptyStr = () => JSON.stringify(convertToRaw(ContentState.createFromText('')));
+const makeEmptyStr = () => JSON.stringify(convertToRaw(ContentState.createFromText('')))
 
-export default makeEmptyStr;
+export default makeEmptyStr

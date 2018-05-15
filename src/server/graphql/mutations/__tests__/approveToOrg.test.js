@@ -1,148 +1,206 @@
-import DynamicSerializer from 'dynamic-serializer';
-import MockDate from 'mockdate';
-import MockPubSub from 'server/__mocks__/MockPubSub';
-import socket from 'server/__mocks__/socket';
-import makeDataLoader from 'server/__tests__/setup/makeDataLoader';
-import mockAuthToken from 'server/__tests__/setup/mockAuthToken';
-import MockDB from 'server/__tests__/setup/MockDB';
-import {__now} from 'server/__tests__/setup/mockTimes';
-import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize';
-import getRethink from 'server/database/rethinkDriver';
-import * as sendEmailPromise from 'server/email/sendEmail';
-import * as hashInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembers/hashInviteTokenKey';
-import approveToOrg from 'server/graphql/mutations/approveToOrg';
-import {REQUEST_NEW_USER} from 'universal/utils/constants';
+/* eslint-env jest */
+import DynamicSerializer from 'dynamic-serializer'
+import MockDate from 'mockdate'
+import MockPubSub from 'server/__mocks__/MockPubSub'
+import socket from 'server/__mocks__/socket'
+import makeDataLoader from 'server/__tests__/setup/makeDataLoader'
+import mockAuthToken from 'server/__tests__/setup/mockAuthToken'
+import MockDB from 'server/__tests__/setup/MockDB'
+import {__now} from 'server/__tests__/setup/mockTimes'
+import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize'
+import getRethink from 'server/database/rethinkDriver'
+import * as sendEmailPromise from 'server/email/sendEmail'
+import * as hashInviteTokenKey from 'server/graphql/mutations/helpers/inviteTeamMembers/hashInviteTokenKey'
+import approveToOrg from 'server/graphql/mutations/approveToOrg'
+import {REQUEST_NEW_USER} from 'universal/utils/constants'
 
-MockDate.set(__now);
-console.error = jest.fn();
+MockDate.set(__now)
+console.error = jest.fn()
 
 describe('approveToOrg', () => {
   test('for a 1-team approval, sends teamInvite, clears requestNewUser, sends inviteeApproved', async () => {
     // SETUP
-    hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'));
-    sendEmailPromise.default = jest.fn(() => true);
-    const r = getRethink();
-    const dynamicSerializer = new DynamicSerializer();
-    const mockPubSub = new MockPubSub();
-    const mockDB = new MockDB();
-    await mockDB.init()
+    hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'))
+    sendEmailPromise.default = jest.fn(() => true)
+    const r = getRethink()
+    const dynamicSerializer = new DynamicSerializer()
+    const mockPubSub = new MockPubSub()
+    const mockDB = new MockDB()
+    await mockDB
+      .init()
       .user(1)
       .newNotification(undefined, {type: REQUEST_NEW_USER})
-      .newUser({name: 'invitee', email: mockDB.context.notification.inviteeEmail})
-      .newOrgApproval({email: mockDB.context.notification.inviteeEmail});
-    const {notification} = mockDB.context;
-    const approver = mockDB.db.user[0];
-    const authToken = mockAuthToken(approver);
-    const dataLoader = makeDataLoader(authToken);
-    const orgId = mockDB.context.organization.id;
-    const email = notification.inviteeEmail;
+      .newUser({
+        name: 'invitee',
+        email: mockDB.context.notification.inviteeEmail
+      })
+      .newOrgApproval({email: mockDB.context.notification.inviteeEmail})
+    const {notification} = mockDB.context
+    const approver = mockDB.db.user[0]
+    const authToken = mockAuthToken(approver)
+    const dataLoader = makeDataLoader(authToken)
+    const orgId = mockDB.context.organization.id
+    const email = notification.inviteeEmail
 
     // TEST
-    await approveToOrg.resolve(undefined, {email, orgId}, {authToken, dataLoader, socket});
+    await approveToOrg.resolve(undefined, {email, orgId}, {authToken, dataLoader, socket})
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}).orderBy('teamName', 'type'),
-      orgApproval: r.table('OrgApproval').getAll(email, {index: 'email'}).orderBy('createdAt'),
-      invitation: r.table('Invitation').getAll(email, {index: 'email'}).orderBy('teamId')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        notification: r
+          .table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .orderBy('teamName', 'type'),
+        orgApproval: r
+          .table('OrgApproval')
+          .getAll(email, {index: 'email'})
+          .orderBy('createdAt'),
+        invitation: r
+          .table('Invitation')
+          .getAll(email, {index: 'email'})
+          .orderBy('teamId')
+      },
+      dynamicSerializer
+    )
 
-    expect(db).toMatchSnapshot();
-    expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
-  });
+    expect(db).toMatchSnapshot()
+    expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot()
+  })
 
   test('for a 2-team approval with the same inviter, sends teamInvite, clears requestNewUser, sends inviteeApproved', async () => {
     // SETUP
-    hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'));
-    sendEmailPromise.default = jest.fn(() => true);
-    const r = getRethink();
-    const dynamicSerializer = new DynamicSerializer();
+    hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'))
+    sendEmailPromise.default = jest.fn(() => true)
+    const r = getRethink()
+    const dynamicSerializer = new DynamicSerializer()
     // const mockPubSub = new MockPubSub();
-    const mockDB = new MockDB();
-    await mockDB.init()
+    const mockDB = new MockDB()
+    await mockDB
+      .init()
       .user(1)
       .newNotification(undefined, {type: REQUEST_NEW_USER})
-      .newUser({name: 'invitee', email: mockDB.context.notification.inviteeEmail})
+      .newUser({
+        name: 'invitee',
+        email: mockDB.context.notification.inviteeEmail
+      })
       .newOrgApproval({email: mockDB.context.notification.inviteeEmail})
       .newTeam({name: 'team 2', orgId: mockDB.context.organization.id})
       .user(1)
-      .newNotification(undefined, {type: REQUEST_NEW_USER, email: mockDB.context.notification.inviteeEmail})
-      .newOrgApproval({email: mockDB.context.notification.inviteeEmail});
+      .newNotification(undefined, {
+        type: REQUEST_NEW_USER,
+        email: mockDB.context.notification.inviteeEmail
+      })
+      .newOrgApproval({email: mockDB.context.notification.inviteeEmail})
 
-    const {notification} = mockDB.context;
-    const approver = mockDB.db.user[0];
-    const authToken = mockAuthToken(approver);
-    const dataLoader = makeDataLoader(authToken);
-    const orgId = mockDB.context.organization.id;
-    const email = notification.inviteeEmail;
+    const {notification} = mockDB.context
+    const approver = mockDB.db.user[0]
+    const authToken = mockAuthToken(approver)
+    const dataLoader = makeDataLoader(authToken)
+    const orgId = mockDB.context.organization.id
+    const email = notification.inviteeEmail
 
     // TEST
-    await approveToOrg.resolve(undefined, {email, orgId}, {authToken, dataLoader, socket});
+    await approveToOrg.resolve(undefined, {email, orgId}, {authToken, dataLoader, socket})
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}).orderBy('teamName', 'type'),
-      orgApproval: r.table('OrgApproval').getAll(email, {index: 'email'}).orderBy('createdAt'),
-      invitation: r.table('Invitation').getAll(email, {index: 'email'}).orderBy('teamId')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        notification: r
+          .table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .orderBy('teamName', 'type'),
+        orgApproval: r
+          .table('OrgApproval')
+          .getAll(email, {index: 'email'})
+          .orderBy('createdAt'),
+        invitation: r
+          .table('Invitation')
+          .getAll(email, {index: 'email'})
+          .orderBy('teamId')
+      },
+      dynamicSerializer
+    )
 
-    expect(db).toMatchSnapshot();
+    expect(db).toMatchSnapshot()
     // expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
-  });
+  })
 
   test('for a 2-team approval with different inviters, sends teamInvite, clears requestNewUser, sends inviteeApproved', async () => {
     // SETUP
-    hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'));
-    sendEmailPromise.default = jest.fn(() => true);
-    const r = getRethink();
-    const dynamicSerializer = new DynamicSerializer();
+    hashInviteTokenKey.default = jest.fn(() => Promise.resolve('HA$H'))
+    sendEmailPromise.default = jest.fn(() => true)
+    const r = getRethink()
+    const dynamicSerializer = new DynamicSerializer()
     // const mockPubSub = new MockPubSub();
-    const mockDB = new MockDB();
-    await mockDB.init()
+    const mockDB = new MockDB()
+    await mockDB
+      .init()
       .user(1)
       .newNotification(undefined, {type: REQUEST_NEW_USER})
-      .newUser({name: 'invitee', email: mockDB.context.notification.inviteeEmail})
+      .newUser({
+        name: 'invitee',
+        email: mockDB.context.notification.inviteeEmail
+      })
       .newOrgApproval({email: mockDB.context.notification.inviteeEmail})
       .newTeam({name: 'team 2', orgId: mockDB.context.organization.id})
       .user(2)
-      .newNotification(undefined, {type: REQUEST_NEW_USER, email: mockDB.context.notification.inviteeEmail})
-      .newOrgApproval({email: mockDB.context.notification.inviteeEmail});
+      .newNotification(undefined, {
+        type: REQUEST_NEW_USER,
+        email: mockDB.context.notification.inviteeEmail
+      })
+      .newOrgApproval({email: mockDB.context.notification.inviteeEmail})
 
-    const {notification} = mockDB.context;
-    const approver = mockDB.db.user[0];
-    const authToken = mockAuthToken(approver);
-    const dataLoader = makeDataLoader(authToken);
-    const orgId = mockDB.context.organization.id;
-    const email = notification.inviteeEmail;
+    const {notification} = mockDB.context
+    const approver = mockDB.db.user[0]
+    const authToken = mockAuthToken(approver)
+    const dataLoader = makeDataLoader(authToken)
+    const orgId = mockDB.context.organization.id
+    const email = notification.inviteeEmail
 
     // TEST
-    await approveToOrg.resolve(undefined, {email, orgId}, {authToken, dataLoader, socket});
+    await approveToOrg.resolve(undefined, {email, orgId}, {authToken, dataLoader, socket})
 
     // VERIFY
-    const db = await fetchAndSerialize({
-      notification: r.table('Notification').getAll(orgId, {index: 'orgId'}).orderBy('teamName', 'type'),
-      orgApproval: r.table('OrgApproval').getAll(email, {index: 'email'}).orderBy('createdAt'),
-      invitation: r.table('Invitation').getAll(email, {index: 'email'}).orderBy('teamId')
-    }, dynamicSerializer);
+    const db = await fetchAndSerialize(
+      {
+        notification: r
+          .table('Notification')
+          .getAll(orgId, {index: 'orgId'})
+          .orderBy('teamName', 'type'),
+        orgApproval: r
+          .table('OrgApproval')
+          .getAll(email, {index: 'email'})
+          .orderBy('createdAt'),
+        invitation: r
+          .table('Invitation')
+          .getAll(email, {index: 'email'})
+          .orderBy('teamId')
+      },
+      dynamicSerializer
+    )
 
-    expect(db).toMatchSnapshot();
+    expect(db).toMatchSnapshot()
     // TODO fix
     // expect(mockPubSub.__serialize(dynamicSerializer)).toMatchSnapshot();
-  });
+  })
 
   test('returns error if the caller does not own the notification', async () => {
     // SETUP
-    const mockDB = new MockDB();
-    await mockDB.init()
-      .newNotification(undefined, {type: REQUEST_NEW_USER});
-    const {notification} = mockDB.context;
-    const wrongUser = mockDB.db.user[1];
-    const authToken = mockAuthToken(wrongUser);
-    const dataLoader = makeDataLoader(authToken);
+    const mockDB = new MockDB()
+    await mockDB.init().newNotification(undefined, {type: REQUEST_NEW_USER})
+    const {notification} = mockDB.context
+    const wrongUser = mockDB.db.user[1]
+    const authToken = mockAuthToken(wrongUser)
+    const dataLoader = makeDataLoader(authToken)
 
     // TEST
-    const {id: dbNotificationId} = notification;
-    const res = await approveToOrg.resolve(undefined, {dbNotificationId}, {authToken, dataLoader, socket});
-    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}));
-  });
-});
+    const {id: dbNotificationId} = notification
+    const res = await approveToOrg.resolve(
+      undefined,
+      {dbNotificationId},
+      {authToken, dataLoader, socket}
+    )
+    expect(res).toEqual(expect.objectContaining({error: expect.any(Object)}))
+  })
+})

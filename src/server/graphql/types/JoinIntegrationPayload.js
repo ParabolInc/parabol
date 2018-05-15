@@ -1,6 +1,6 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import TeamMember from 'server/graphql/types/TeamMember';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import TeamMember from 'server/graphql/types/TeamMember'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const JoinIntegrationPayload = new GraphQLObjectType({
   name: 'JoinIntegrationPayload',
@@ -16,6 +16,6 @@ const JoinIntegrationPayload = new GraphQLObjectType({
       type: new GraphQLNonNull(TeamMember)
     }
   })
-});
+})
 
-export default JoinIntegrationPayload;
+export default JoinIntegrationPayload

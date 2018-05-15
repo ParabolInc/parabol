@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import styled from 'react-emotion'
 
-const lineHeight = ui.navTopicLineHeight;
+const lineHeight = ui.navTopicLineHeight
 
 const ItemRoot = styled('div')(
   ({isActive, isComplete, isDisabled, onClick}) => ({
@@ -26,24 +26,25 @@ const ItemRoot = styled('div')(
       opacity: !isDisabled && 1
     }
   }),
-  ({isUnsyncedFacilitatorStage}) => isUnsyncedFacilitatorStage && ({
-    color: ui.palette.warm,
-    opacity: 1,
-    '&::after': {
-      backgroundColor: ui.palette.warm,
-      borderRadius: '100%',
-      content: '""',
-      display: 'block',
-      left: '.875rem',
-      marginTop: '-.1875rem',
-      position: 'absolute',
-      height: '.375rem',
-      top: '50%',
-      transition: 'opacity .1s ease-in',
-      width: '.375rem'
+  ({isUnsyncedFacilitatorStage}) =>
+    isUnsyncedFacilitatorStage && {
+      color: ui.palette.warm,
+      opacity: 1,
+      '&::after': {
+        backgroundColor: ui.palette.warm,
+        borderRadius: '100%',
+        content: '""',
+        display: 'block',
+        left: '.875rem',
+        marginTop: '-.1875rem',
+        position: 'absolute',
+        height: '.375rem',
+        top: '50%',
+        transition: 'opacity .1s ease-in',
+        width: '.375rem'
+      }
     }
-  })
-);
+)
 
 const ItemOrderLabel = styled('div')({
   height: lineHeight,
@@ -52,7 +53,7 @@ const ItemOrderLabel = styled('div')({
   paddingRight: '.75rem',
   textAlign: 'right',
   width: ui.meetingSidebarGutterInner
-});
+})
 
 const ItemLabel = styled('div')(({isComplete}) => ({
   color: 'inherit',
@@ -61,11 +62,11 @@ const ItemLabel = styled('div')(({isComplete}) => ({
   lineHeight,
   textDecoration: isComplete && 'line-through',
   wordBreak: 'break-word'
-}));
+}))
 
 const ItemMeta = styled('div')({
   paddingLeft: '.25rem'
-});
+})
 
 const MeetingSubnavItem = (props) => {
   const {
@@ -77,7 +78,7 @@ const MeetingSubnavItem = (props) => {
     metaContent,
     onClick,
     orderLabel
-  } = props;
+  } = props
 
   return (
     <ItemRoot
@@ -87,18 +88,12 @@ const MeetingSubnavItem = (props) => {
       isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
       onClick={!isDisabled ? onClick : null}
     >
-      <ItemOrderLabel>
-        {orderLabel}
-      </ItemOrderLabel>
-      <ItemLabel isComplete={isComplete}>
-        {label}
-      </ItemLabel>
-      <ItemMeta>
-        {metaContent}
-      </ItemMeta>
+      <ItemOrderLabel>{orderLabel}</ItemOrderLabel>
+      <ItemLabel isComplete={isComplete}>{label}</ItemLabel>
+      <ItemMeta>{metaContent}</ItemMeta>
     </ItemRoot>
-  );
-};
+  )
+}
 
 MeetingSubnavItem.propTypes = {
   isActive: PropTypes.bool,
@@ -109,6 +104,6 @@ MeetingSubnavItem.propTypes = {
   metaContent: PropTypes.any,
   onClick: PropTypes.func,
   orderLabel: PropTypes.string
-};
+}
 
-export default MeetingSubnavItem;
+export default MeetingSubnavItem

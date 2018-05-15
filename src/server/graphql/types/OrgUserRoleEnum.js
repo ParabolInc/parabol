@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {BILLING_LEADER} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {BILLING_LEADER} from 'universal/utils/constants'
 
 const OrgUserRole = new GraphQLEnumType({
   name: 'OrgUserRole',
@@ -7,6 +7,6 @@ const OrgUserRole = new GraphQLEnumType({
   values: {
     [BILLING_LEADER]: {}
   }
-});
+})
 
-export default OrgUserRole;
+export default OrgUserRole

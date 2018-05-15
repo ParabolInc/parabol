@@ -1,19 +1,19 @@
 // @flow
-import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import Avatar from 'universal/components/Avatar/Avatar';
-import styled from 'react-emotion';
-import {createFragmentContainer} from 'react-relay';
+import React from 'react'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import Avatar from 'universal/components/Avatar/Avatar'
+import styled from 'react-emotion'
+import {createFragmentContainer} from 'react-relay'
 
-import type {NewMeetingPrompt_teamMember as TeamMember} from './__generated__/NewMeetingPrompt_teamMember.graphql';
+import type {NewMeetingPrompt_teamMember as TeamMember} from './__generated__/NewMeetingPrompt_teamMember.graphql'
 
-const promptBreakpoint = ui.breakpoint.wider;
+const promptBreakpoint = ui.breakpoint.wider
 const MeetingPromptRoot = styled('div')({
   display: 'flex',
   overflow: 'hidden'
-});
+})
 
 const Body = styled('div')({
   display: 'flex',
@@ -26,7 +26,7 @@ const Body = styled('div')({
     minHeight: '5.25rem',
     padding: '1rem 1.5rem 1rem 0'
   }
-});
+})
 
 const Heading = styled('div')({
   color: appTheme.palette.dark,
@@ -40,7 +40,7 @@ const Heading = styled('div')({
   [promptBreakpoint]: {
     fontSize: appTheme.typography.s6
   }
-});
+})
 
 const SubHeading = styled('div')({
   color: appTheme.palette.dark90l,
@@ -54,7 +54,7 @@ const SubHeading = styled('div')({
   [promptBreakpoint]: {
     fontSize: appTheme.typography.s5
   }
-});
+})
 
 const HelpText = styled('div')({
   color: appTheme.palette.dark90l,
@@ -67,7 +67,7 @@ const HelpText = styled('div')({
   [promptBreakpoint]: {
     fontSize: appTheme.typography.s3
   }
-});
+})
 
 type Props = {
   avatarLarge: boolean,
@@ -84,7 +84,7 @@ const NewMeetingPrompt = (props: Props) => {
     helpText,
     subHeading,
     teamMember: {picture}
-  } = props;
+  } = props
 
   const AvatarBlock = styled('div')({
     alignItems: 'center',
@@ -97,31 +97,21 @@ const NewMeetingPrompt = (props: Props) => {
       padding: '1rem',
       width: avatarLarge ? '10rem' : '8rem'
     }
-  });
+  })
 
   return (
     <MeetingPromptRoot>
       <AvatarBlock>
-        <Avatar picture={picture || defaultUserAvatar} size="fill" />
+        <Avatar picture={picture || defaultUserAvatar} size='fill' />
       </AvatarBlock>
       <Body>
-        <Heading>
-          {heading}
-        </Heading>
-        {subHeading &&
-        <SubHeading>
-          {subHeading}
-        </SubHeading>
-        }
-        {helpText &&
-        <HelpText>
-          {helpText}
-        </HelpText>
-        }
+        <Heading>{heading}</Heading>
+        {subHeading && <SubHeading>{subHeading}</SubHeading>}
+        {helpText && <HelpText>{helpText}</HelpText>}
       </Body>
     </MeetingPromptRoot>
-  );
-};
+  )
+}
 
 export default createFragmentContainer(
   NewMeetingPrompt,
@@ -130,4 +120,4 @@ export default createFragmentContainer(
       picture
     }
   `
-);
+)

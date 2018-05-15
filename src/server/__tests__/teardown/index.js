@@ -1,7 +1,7 @@
-require('babel-register');
-const teardown = require('./teardown');
+require('babel-register')
+const teardown = require('./teardown')
 
 module.exports = (results) => {
-  teardown.default(results);
-  return results;
-};
+  teardown.default(results)
+  return results
+}

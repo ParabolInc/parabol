@@ -1,5 +1,5 @@
-import {GraphQLObjectType} from 'graphql';
-import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage';
+import {GraphQLObjectType} from 'graphql'
+import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
 
 const GenericMeetingStage = new GraphQLObjectType({
   name: 'GenericMeetingStage',
@@ -8,6 +8,6 @@ const GenericMeetingStage = new GraphQLObjectType({
   fields: () => ({
     ...newMeetingStageFields()
   })
-});
+})
 
-export default GenericMeetingStage;
+export default GenericMeetingStage

@@ -1,5 +1,5 @@
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const DashSectionHeader = styled('div')({
   alignItems: 'flex-end',
@@ -13,6 +13,6 @@ const DashSectionHeader = styled('div')({
   [ui.dashBreakpoint]: {
     padding: `2rem ${ui.dashGutterLarge} 2.25rem`
   }
-});
+})
 
-export default DashSectionHeader;
+export default DashSectionHeader

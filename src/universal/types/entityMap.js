@@ -1,3 +1,3 @@
 // @flow
 
-export type EntityMap = string;
+export type EntityMap = string

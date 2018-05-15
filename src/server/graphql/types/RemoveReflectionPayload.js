@@ -1,9 +1,9 @@
-import {GraphQLObjectType, GraphQLList, GraphQLNonNull} from 'graphql';
-import {makeResolve, resolveNewMeeting, resolveUnlockedStages} from 'server/graphql/resolvers';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
-import NewMeeting from 'server/graphql/types/NewMeeting';
-import RetroReflection from 'server/graphql/types/RetroReflection';
-import NewMeetingStage from 'server/graphql/types/NewMeetingStage';
+import {GraphQLObjectType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {makeResolve, resolveNewMeeting, resolveUnlockedStages} from 'server/graphql/resolvers'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import NewMeeting from 'server/graphql/types/NewMeeting'
+import RetroReflection from 'server/graphql/types/RetroReflection'
+import NewMeetingStage from 'server/graphql/types/NewMeetingStage'
 
 const RemoveReflectionPayload = new GraphQLObjectType({
   name: 'RemoveReflectionPayload',
@@ -25,6 +25,6 @@ const RemoveReflectionPayload = new GraphQLObjectType({
       resolve: resolveUnlockedStages
     }
   })
-});
+})
 
-export default RemoveReflectionPayload;
+export default RemoveReflectionPayload

@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLString} from 'graphql';
-import TeamMember from 'server/graphql/types/TeamMember';
-import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember';
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
+import {GraphQLID, GraphQLInterfaceType, GraphQLString} from 'graphql'
+import TeamMember from 'server/graphql/types/TeamMember'
+import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
 
 export const assigneeInterfaceFields = {
   id: {
@@ -16,12 +16,12 @@ export const assigneeInterfaceFields = {
     type: GraphQLID,
     description: 'foreign key to Team table'
   }
-};
+}
 
 const Assignee = new GraphQLInterfaceType({
   name: 'Assignee',
   fields: () => assigneeInterfaceFields,
-  resolveType: (value) => getIsSoftTeamMember(value.id) ? SoftTeamMember : TeamMember
-});
+  resolveType: (value) => (getIsSoftTeamMember(value.id) ? SoftTeamMember : TeamMember)
+})
 
-export default Assignee;
+export default Assignee

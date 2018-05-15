@@ -1,4 +1,4 @@
-import {joinIntegrationUpdater} from 'universal/mutations/JoinIntegrationMutation';
+import {joinIntegrationUpdater} from 'universal/mutations/JoinIntegrationMutation'
 
 const subscription = graphql`
   subscription IntegrationJoinedSubscription($service: IntegrationService!, $teamId: ID!) {
@@ -11,21 +11,21 @@ const subscription = graphql`
       }
     }
   }
-`;
+`
 
 const IntegrationJoinedSubscription = (service) => (environment, queryVariables) => {
-  const {viewerId} = environment;
-  const {teamId} = queryVariables;
+  const {viewerId} = environment
+  const {teamId} = queryVariables
   return {
     subscription,
     variables: {service, teamId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
-      const payload = store.getRootField('integrationJoined');
-      if (!payload) return;
-      joinIntegrationUpdater(store, viewer, teamId, payload);
+      const viewer = store.get(viewerId)
+      const payload = store.getRootField('integrationJoined')
+      if (!payload) return
+      joinIntegrationUpdater(store, viewer, teamId, payload)
     }
-  };
-};
+  }
+}
 
-export default IntegrationJoinedSubscription;
+export default IntegrationJoinedSubscription

@@ -1,33 +1,26 @@
-import PropTypes from 'prop-types';
-import React, {Children, cloneElement} from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import {textOverflow} from 'universal/styles/helpers';
-import portal from 'react-portal-hoc';
-import Spinner from '../../../spinner/components/Spinner/Spinner';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import PropTypes from 'prop-types'
+import React, {Children, cloneElement} from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import portal from 'react-portal-hoc'
+import Spinner from '../../../spinner/components/Spinner/Spinner'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 /*
  * DEPRECATED! Use MenuWithShortcuts instead. It has shortcut keys & accessibility & a delightful transition animation.
  */
 const Menu = (props) => {
-  const {
-    children,
-    closePortal,
-    coords,
-    isLoaded,
-    itemFactory,
-    label,
-    menuWidth,
-    styles
-  } = props;
+  const {children, closePortal, coords, isLoaded, itemFactory, label, menuWidth, styles} = props
   const menuBlockStyle = {
     width: menuWidth,
     ...coords
-  };
-  const kids = Children.map(itemFactory && itemFactory() || children, (child) => cloneElement(child, {closePortal}));
+  }
+  const kids = Children.map((itemFactory && itemFactory()) || children, (child) =>
+    cloneElement(child, {closePortal})
+  )
   return (
     <div className={css(styles.menuBlock)} style={menuBlockStyle}>
       <div className={css(styles.menu)}>
@@ -43,22 +36,22 @@ const Menu = (props) => {
           transitionLeave={false}
           transitionAppearTimeout={300}
         >
-          {
-            kids.length === 0 && !isLoaded &&
-            <div key="spinner" className={css(styles.spinner)}>
-              <Spinner fillColor="cool" width={40} />
-            </div>
-          }
+          {kids.length === 0 &&
+            !isLoaded && (
+              <div key='spinner' className={css(styles.spinner)}>
+                <Spinner fillColor='cool' width={40} />
+              </div>
+            )}
         </ReactCSSTransitionGroup>
       </div>
     </div>
-  );
-};
+  )
+}
 
 Menu.defaultProps = {
   menuOrientation: 'left',
   verticalAlign: 'middle'
-};
+}
 
 Menu.propTypes = {
   children: PropTypes.any,
@@ -67,20 +60,14 @@ Menu.propTypes = {
   isLoaded: PropTypes.bool,
   itemFactory: PropTypes.func,
   label: PropTypes.string,
-  menuOrientation: PropTypes.oneOf([
-    'left',
-    'right'
-  ]),
+  menuOrientation: PropTypes.oneOf(['left', 'right']),
   maxHeight: PropTypes.string,
   menuWidth: PropTypes.string,
   styles: PropTypes.object,
   toggle: PropTypes.any,
-  verticalAlign: PropTypes.oneOf([
-    'middle',
-    'top'
-  ]),
+  verticalAlign: PropTypes.oneOf(['middle', 'top']),
   zIndex: PropTypes.string
-};
+}
 
 const styleThunk = (theme, {maxHeight}) => ({
   menuBlock: {
@@ -131,6 +118,6 @@ const styleThunk = (theme, {maxHeight}) => ({
     transform: 'translate3d(0, 0, 0)',
     transition: 'all 300ms ease-in'
   }
-});
+})
 
-export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu));
+export default portal({escToClose: true, clickToClose: true})(withStyles(styleThunk)(Menu))

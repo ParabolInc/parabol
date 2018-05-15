@@ -1,10 +1,10 @@
-import {commitMutation} from 'react-relay';
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications';
-import getInProxy from 'universal/utils/relay/getInProxy';
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
-import onExTeamRoute from 'universal/utils/onExTeamRoute';
+import {commitMutation} from 'react-relay'
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
+import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
+import getInProxy from 'universal/utils/relay/getInProxy'
+import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import onExTeamRoute from 'universal/utils/onExTeamRoute'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
@@ -18,7 +18,7 @@ graphql`
       ...TeamArchived_notification
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation ArchiveTeamMutation($teamId: ID!) {
@@ -29,57 +29,63 @@ const mutation = graphql`
       ...ArchiveTeamMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const popTeamArchivedToast = (payload, {dispatch, history, location, environment}) => {
-  const teamId = getInProxy(payload, 'team', 'id');
-  const teamName = getInProxy(payload, 'team', 'name');
-  dispatch(showInfo({
-    autoDismiss: 10,
-    title: 'That’s it, folks!',
-    message: `${teamName} has been archived.`,
-    action: {
-      label: 'OK',
-      callback: () => {
-        const notificationId = getInProxy(payload, 'notification', 'id');
-        // notification is not persisted for the mutator
-        if (notificationId) {
-          ClearNotificationMutation(environment, notificationId);
+  const teamId = getInProxy(payload, 'team', 'id')
+  const teamName = getInProxy(payload, 'team', 'name')
+  dispatch(
+    showInfo({
+      autoDismiss: 10,
+      title: 'That’s it, folks!',
+      message: `${teamName} has been archived.`,
+      action: {
+        label: 'OK',
+        callback: () => {
+          const notificationId = getInProxy(payload, 'notification', 'id')
+          // notification is not persisted for the mutator
+          if (notificationId) {
+            ClearNotificationMutation(environment, notificationId)
+          }
         }
       }
-    }
-  }));
-  const {pathname} = location;
+    })
+  )
+  const {pathname} = location
   if (onExTeamRoute(pathname, teamId)) {
-    history.push('/me');
+    history.push('/me')
   }
-};
+}
 
 export const archiveTeamTeamUpdater = (payload, store, viewerId, options) => {
-  const viewer = store.get(viewerId);
-  const teamId = getInProxy(payload, 'team', 'id');
-  safeRemoveNodeFromArray(teamId, viewer, 'teams');
+  const viewer = store.get(viewerId)
+  const teamId = getInProxy(payload, 'team', 'id')
+  safeRemoveNodeFromArray(teamId, viewer, 'teams')
 
-  const notification = payload.getLinkedRecord('notification');
-  handleAddNotifications(notification, store, viewerId);
+  const notification = payload.getLinkedRecord('notification')
+  handleAddNotifications(notification, store, viewerId)
 
-  popTeamArchivedToast(payload, options);
-};
+  popTeamArchivedToast(payload, options)
+}
 
 // We technically don't need dispatch on this mutation since our biz logic guarantees the archiver won't get a toast
 const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted) => {
-  const {viewerId} = environment;
+  const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
     updater: (store) => {
-      const payload = store.getRootField('archiveTeam');
-      if (!payload) return;
-      archiveTeamTeamUpdater(payload, store, viewerId, {...options, store, environment});
+      const payload = store.getRootField('archiveTeam')
+      if (!payload) return
+      archiveTeamTeamUpdater(payload, store, viewerId, {
+        ...options,
+        store,
+        environment
+      })
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default ArchiveTeamMutation;
+export default ArchiveTeamMutation

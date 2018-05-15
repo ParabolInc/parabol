@@ -1,12 +1,13 @@
-import {makePlaceholderStylesString} from 'universal/styles/helpers/makePlaceholderStyles';
-import appTheme from 'universal/styles/theme/appTheme';
-import fontLoader from 'universal/styles/theme/fontLoader';
-import ui from 'universal/styles/ui';
+import {makePlaceholderStylesString} from 'universal/styles/helpers/makePlaceholderStyles'
+import appTheme from 'universal/styles/theme/appTheme'
+import fontLoader from 'universal/styles/theme/fontLoader'
+import ui from 'universal/styles/ui'
 
-const placeholderStyles = makePlaceholderStylesString(ui.placeholderColor);
+const placeholderStyles = makePlaceholderStylesString(ui.placeholderColor)
 
 const fontFaceDefinitions = fontLoader
-  .map((fontFace) => `
+  .map(
+    (fontFace) => `
     @font-face {
       font-family: "${fontFace.fontFamily}";
       src: ${fontFace.src};
@@ -14,8 +15,9 @@ const fontFaceDefinitions = fontLoader
       font-weight: ${fontFace.fontWeight};
       font-stretch: ${fontFace.fontStretch};
     }
-  `)
-  .join('\n');
+  `
+  )
+  .join('\n')
 
 export default `
   * {
@@ -82,4 +84,4 @@ export default `
   ${placeholderStyles}
 
   ${fontFaceDefinitions}
-`;
+`

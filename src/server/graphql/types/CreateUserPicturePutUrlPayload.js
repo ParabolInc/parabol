@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import GraphQLURLType from 'server/graphql/types/GraphQLURLType';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const CreateUserPicturePutUrlPayload = new GraphQLObjectType({
   name: 'CreateUserPicturePutUrlPayload',
@@ -12,6 +12,6 @@ const CreateUserPicturePutUrlPayload = new GraphQLObjectType({
       type: GraphQLURLType
     }
   })
-});
+})
 
-export default CreateUserPicturePutUrlPayload;
+export default CreateUserPicturePutUrlPayload

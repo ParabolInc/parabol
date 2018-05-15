@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveTeam} from 'server/graphql/resolvers';
-import Team from 'server/graphql/types/Team';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveTeam} from 'server/graphql/resolvers'
+import Team from 'server/graphql/types/Team'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const StartMeetingPayload = new GraphQLObjectType({
   name: 'StartMeetingPayload',
@@ -14,6 +14,6 @@ const StartMeetingPayload = new GraphQLObjectType({
       resolve: resolveTeam
     }
   })
-});
+})
 
-export default StartMeetingPayload;
+export default StartMeetingPayload

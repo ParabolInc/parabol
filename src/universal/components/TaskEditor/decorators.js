@@ -1,34 +1,29 @@
-import EditorLink from './EditorLink';
-import {CompositeDecorator} from 'draft-js';
-import Hashtag from 'universal/components/TaskEditor/Hashtag';
-import Mention from 'universal/components/TaskEditor/Mention';
+import EditorLink from './EditorLink'
+import {CompositeDecorator} from 'draft-js'
+import Hashtag from 'universal/components/TaskEditor/Hashtag'
+import Mention from 'universal/components/TaskEditor/Mention'
 
 const findEntity = (entityType) => (contentBlock, callback, contentState) => {
-  contentBlock.findEntityRanges(
-    (character) => {
-      const entityKey = character.getEntity();
-      return (
-        entityKey !== null &&
-        contentState.getEntity(entityKey).getType() === entityType
-      );
+  contentBlock.findEntityRanges((character) => {
+    const entityKey = character.getEntity()
+    return entityKey !== null && contentState.getEntity(entityKey).getType() === entityType
+  }, callback)
+}
+
+const decorators = (getEditorState) =>
+  new CompositeDecorator([
+    {
+      strategy: findEntity('LINK'),
+      component: EditorLink(getEditorState)
     },
-    callback
-  );
-};
+    {
+      strategy: findEntity('TAG'),
+      component: Hashtag
+    },
+    {
+      strategy: findEntity('MENTION'),
+      component: Mention
+    }
+  ])
 
-const decorators = (getEditorState) => new CompositeDecorator([
-  {
-    strategy: findEntity('LINK'),
-    component: EditorLink(getEditorState)
-  },
-  {
-    strategy: findEntity('TAG'),
-    component: Hashtag
-  },
-  {
-    strategy: findEntity('MENTION'),
-    component: Mention
-  }
-]);
-
-export default decorators;
+export default decorators

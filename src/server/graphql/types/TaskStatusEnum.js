@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {ACTIVE, DONE, FUTURE, STUCK} from 'universal/utils/constants'
 
 const TaskStatusEnum = new GraphQLEnumType({
   name: 'TaskStatusEnum',
@@ -10,6 +10,6 @@ const TaskStatusEnum = new GraphQLEnumType({
     [DONE]: {},
     [FUTURE]: {}
   }
-});
+})
 
-export default TaskStatusEnum;
+export default TaskStatusEnum

@@ -1,9 +1,9 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import GitHubIntegration from 'server/graphql/types/GitHubIntegration';
-import {isTeamMember} from 'server/utils/authorization';
-import {GITHUB} from 'universal/utils/constants';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import GitHubIntegration from 'server/graphql/types/GitHubIntegration'
+import {isTeamMember} from 'server/utils/authorization'
+import {GITHUB} from 'universal/utils/constants'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: new GraphQLList(GitHubIntegration),
@@ -15,15 +15,18 @@ export default {
     }
   },
   resolve: async (source, {teamId}, {authToken}) => {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, []);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId, [])
+    }
 
     // RESOLUTION
-    return r.table(GITHUB)
+    return r
+      .table(GITHUB)
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
-      .orderBy('nameWithOwner');
+      .orderBy('nameWithOwner')
   }
-};
+}

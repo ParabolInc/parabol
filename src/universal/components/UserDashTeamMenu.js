@@ -1,20 +1,20 @@
-import React from 'react';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import type {Team} from 'universal/types/schema.flow';
-import type {Dispatch} from 'react-redux';
-import {connect} from 'react-redux';
-import {textOverflow} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import styled from 'react-emotion';
-import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck';
+import React from 'react'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import type {Team} from 'universal/types/schema.flow'
+import type {Dispatch} from 'react-redux'
+import {connect} from 'react-redux'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import styled from 'react-emotion'
+import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 type Props = {
   closePortal: () => void,
   dispatch: Dispatch<*>,
   teams: Array<Team>,
-  teamFilterId: ?string,
+  teamFilterId: ?string
 }
 
 const Label = styled('div')({
@@ -26,11 +26,11 @@ const Label = styled('div')({
   lineHeight: ui.menuItemHeight,
   marginBottom: ui.menuGutterVertical,
   padding: `0 ${ui.menuGutterHorizontal}`
-});
+})
 
 const UserDashTeamMenu = (props: Props) => {
-  const {closePortal, dispatch, teams, teamFilterId} = props;
-  const defaultActiveIdx = teams.findIndex((team) => team.id === teamFilterId) + 2;
+  const {closePortal, dispatch, teams, teamFilterId} = props
+  const defaultActiveIdx = teams.findIndex((team) => team.id === teamFilterId) + 2
   return (
     <MenuWithShortcuts
       ariaLabel={'Select the team to filter by'}
@@ -43,17 +43,15 @@ const UserDashTeamMenu = (props: Props) => {
         label={'All teams'}
         onClick={() => dispatch(filterTeam(null))}
       />
-      {
-        teams.map((team) => (
-          <MenuItemWithShortcuts
-            key={`teamFilter${team.id}`}
-            label={team.name}
-            onClick={() => dispatch(filterTeam(team.id, team.name))}
-          />
-        ))
-      }
+      {teams.map((team) => (
+        <MenuItemWithShortcuts
+          key={`teamFilter${team.id}`}
+          label={team.name}
+          onClick={() => dispatch(filterTeam(team.id, team.name))}
+        />
+      ))}
     </MenuWithShortcuts>
-  );
-};
+  )
+}
 
-export default connect()(UserDashTeamMenu);
+export default connect()(UserDashTeamMenu)

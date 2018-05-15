@@ -1,27 +1,27 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import StyledFontAwesome from 'universal/components/StyledFontAwesome';
-import {createFragmentContainer} from 'react-relay';
-import {NavLink} from 'react-router-dom';
-import Avatar from 'universal/components/Avatar/Avatar';
-import Badge from 'universal/components/Badge/Badge';
-import {textOverflow} from 'universal/styles/helpers';
-import appTheme from 'universal/styles/theme/appTheme';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import ui from 'universal/styles/ui';
-import styled, {css} from 'react-emotion';
-import LoadableStandardHubUserMenu from 'universal/components/LoadableStandardHubUserMenu';
-import LoadableMenu from 'universal/components/LoadableMenu';
+import PropTypes from 'prop-types'
+import React from 'react'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import {createFragmentContainer} from 'react-relay'
+import {NavLink} from 'react-router-dom'
+import Avatar from 'universal/components/Avatar/Avatar'
+import Badge from 'universal/components/Badge/Badge'
+import appTheme from 'universal/styles/theme/appTheme'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import ui from 'universal/styles/ui'
+import styled, {css} from 'react-emotion'
+import LoadableStandardHubUserMenu from 'universal/components/LoadableStandardHubUserMenu'
+import LoadableMenu from 'universal/components/LoadableMenu'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'left'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'left'
-};
+}
 
 const StandardHubRoot = styled('div')({
   alignItems: 'center',
@@ -30,7 +30,7 @@ const StandardHubRoot = styled('div')({
   minHeight: ui.dashHeaderMinHeight,
   padding: '.5625rem 1rem',
   width: '100%'
-});
+})
 
 const User = styled('div')({
   display: 'flex',
@@ -42,7 +42,7 @@ const User = styled('div')({
   ':hover': {
     opacity: '.5'
   }
-});
+})
 
 // Make a single clickable area, over user details, to trigger the menu
 const MenuToggle = styled('div')({
@@ -51,7 +51,7 @@ const MenuToggle = styled('div')({
   position: 'absolute',
   right: 0,
   top: 0
-});
+})
 
 const PreferredName = styled('div')({
   alignItems: 'center',
@@ -62,7 +62,7 @@ const PreferredName = styled('div')({
   maxWidth: '9rem',
   padding: '0 .25rem 0 1rem',
   '& > span': {...textOverflow}
-});
+})
 
 const notificationsStyles = {
   alignItems: 'center',
@@ -77,47 +77,46 @@ const notificationsStyles = {
   '&:hover,:focus': {
     backgroundColor: ui.navMenuDarkBackgroundColorHover
   }
-};
+}
 
 const notificationsWithBadge = {
   backgroundColor: ui.navMenuDarkBackgroundColorHover
-};
+}
 
 const notificationsActive = {
   backgroundColor: ui.navMenuDarkBackgroundColorActive,
   '&:hover,:focus': {
     backgroundColor: ui.navMenuDarkBackgroundColorActive
   }
-};
+}
 
 const BadgeBlock = styled('div')({
   bottom: '-.375rem',
   position: 'absolute',
   right: '-.375rem'
-});
+})
 
 const NotificationIcon = styled(StyledFontAwesome)({
   lineHeight: 'inherit',
   color: 'white'
-});
+})
 
 const StandardHub = (props) => {
-  const {viewer} = props;
-  const notifications = viewer && viewer.notifications && viewer.notifications.edges;
-  const notificationsCount = notifications ? notifications.length : 0;
-  const {picture = '', preferredName = ''} = viewer || {};
+  const {viewer} = props
+  const notifications = viewer && viewer.notifications && viewer.notifications.edges
+  const notificationsCount = notifications ? notifications.length : 0
+  const {picture = '', preferredName = ''} = viewer || {}
 
-  const navLinkStyles = css(
-    notificationsStyles,
-    notificationsCount > 0 && notificationsWithBadge
-  );
-  const userAvatar = picture || defaultUserAvatar;
+  const navLinkStyles = css(notificationsStyles, notificationsCount > 0 && notificationsWithBadge)
+  const userAvatar = picture || defaultUserAvatar
 
   return (
     <StandardHubRoot>
       <User>
-        <Avatar hasBadge={false} picture={userAvatar} size="smaller" />
-        <PreferredName><span>{preferredName}</span></PreferredName>
+        <Avatar hasBadge={false} picture={userAvatar} size='smaller' />
+        <PreferredName>
+          <span>{preferredName}</span>
+        </PreferredName>
         <LoadableMenu
           LoadableComponent={LoadableStandardHubUserMenu}
           maxWidth={450}
@@ -133,23 +132,23 @@ const StandardHub = (props) => {
       <NavLink
         activeClassName={css(notificationsActive)}
         className={navLinkStyles}
-        to="/me/notifications"
+        to='/me/notifications'
       >
-        <NotificationIcon name="bell" />
-        {notificationsCount > 0 &&
-        <BadgeBlock>
-          <Badge value={notificationsCount} />
-        </BadgeBlock>
-        }
+        <NotificationIcon name='bell' />
+        {notificationsCount > 0 && (
+          <BadgeBlock>
+            <Badge value={notificationsCount} />
+          </BadgeBlock>
+        )}
       </NavLink>
     </StandardHubRoot>
-  );
-};
+  )
+}
 
 StandardHub.propTypes = {
   notificationsCount: PropTypes.number,
   viewer: PropTypes.object
-};
+}
 
 export default createFragmentContainer(
   StandardHub,
@@ -167,4 +166,4 @@ export default createFragmentContainer(
       ...StandardHubUserMenu_viewer
     }
   `
-);
+)

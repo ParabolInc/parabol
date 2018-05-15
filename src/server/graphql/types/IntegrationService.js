@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {GITHUB, SLACK} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {GITHUB, SLACK} from 'universal/utils/constants'
 
 const IntegrationService = new GraphQLEnumType({
   name: 'IntegrationService',
@@ -8,6 +8,6 @@ const IntegrationService = new GraphQLEnumType({
     [GITHUB]: {},
     [SLACK]: {}
   }
-});
+})
 
-export default IntegrationService;
+export default IntegrationService

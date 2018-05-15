@@ -1,6 +1,6 @@
-import brand from 'universal/styles/theme/brand';
-import appTheme from 'universal/styles/theme/appTheme';
-import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants';
+import brand from 'universal/styles/theme/brand'
+import appTheme from 'universal/styles/theme/appTheme'
+import {ACTIVE, STUCK, DONE, FUTURE} from 'universal/utils/constants'
 
 const stateColor = {
   done: '#7C5FB0', // variant of primary purple, TODO: needs approximate generated palette value
@@ -9,22 +9,17 @@ const stateColor = {
   active: brand.secondary.green, // TODO: needs generated palette value
   archive: '#A2A1AC', // TODO: needs generated palette value (gray variant)
   private: brand.secondary.yellow // TODO: needs generated palette value
-};
+}
 
 const ARCHIVED = {
   color: stateColor.archive,
   label: 'Archived',
   slug: 'archived'
-};
+}
 
 const labels = {
   taskStatus: {
-    slugs: [
-      DONE,
-      ACTIVE,
-      STUCK,
-      FUTURE
-    ],
+    slugs: [DONE, ACTIVE, STUCK, FUTURE],
     [ACTIVE]: {
       color: stateColor.active,
       label: 'Active',
@@ -67,6 +62,6 @@ const labels = {
     label: 'Task',
     slug: 'task'
   }
-};
+}
 
-export default labels;
+export default labels

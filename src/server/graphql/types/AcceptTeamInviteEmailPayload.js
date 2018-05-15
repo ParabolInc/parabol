@@ -1,6 +1,7 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql';
-import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload';
-import {acceptTeamInviteFields} from 'server/graphql/types/AcceptTeamInvitePayload';
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import AcceptTeamInvitePayload, {
+  acceptTeamInviteFields
+} from 'server/graphql/types/AcceptTeamInvitePayload'
 
 const AcceptTeamInviteEmailPayload = new GraphQLObjectType({
   name: 'AcceptTeamInviteEmailPayload',
@@ -12,6 +13,6 @@ const AcceptTeamInviteEmailPayload = new GraphQLObjectType({
       description: 'The new JWT'
     }
   })
-});
+})
 
-export default AcceptTeamInviteEmailPayload;
+export default AcceptTeamInviteEmailPayload

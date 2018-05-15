@@ -6,4 +6,4 @@ graphql`
     meetingId
     isArchived
   }
-`;
+`

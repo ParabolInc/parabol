@@ -28,4 +28,4 @@ export default (invoiceItemId, customer, subscription) => ({
       subscription_item: 'si_00000000000000'
     }
   }
-});
+})

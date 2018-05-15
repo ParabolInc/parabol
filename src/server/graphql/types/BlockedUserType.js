@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLObjectType, GraphQLString} from 'graphql'
 
 const BlockedUserType = new GraphQLObjectType({
   name: 'BlockedUserType',
@@ -13,6 +13,6 @@ const BlockedUserType = new GraphQLObjectType({
       description: 'The IP address of the blocked user'
     }
   })
-});
+})
 
-export default BlockedUserType;
+export default BlockedUserType

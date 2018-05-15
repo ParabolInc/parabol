@@ -1,10 +1,10 @@
-export default function getBestPhaseItem(nextPhase, team) {
-  const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem} = team;
+export default function getBestPhaseItem (nextPhase, team) {
+  const {facilitatorPhase, facilitatorPhaseItem, meetingPhase, meetingPhaseItem} = team
   if (facilitatorPhase === nextPhase) {
-    return facilitatorPhaseItem;
+    return facilitatorPhaseItem
   }
   if (meetingPhase === nextPhase) {
-    return meetingPhaseItem;
+    return meetingPhaseItem
   }
-  return 1;
+  return 1
 }

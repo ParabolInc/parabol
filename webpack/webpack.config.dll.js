@@ -1,7 +1,7 @@
-const path = require('path');
-const webpack = require('webpack');
+const path = require('path')
+const webpack = require('webpack')
 
-const root = process.cwd();
+const root = process.cwd()
 
 module.exports = {
   context: process.cwd(),
@@ -48,8 +48,6 @@ module.exports = {
     new webpack.DllPlugin({name: '[name]', path: path.join(root, 'dll', '[name].json')}) // eslint-disable-line no-new
   ],
   module: {
-    loaders: [
-      {test: /\.flow$/, loader: 'ignore-loader'}
-    ]
+    loaders: [{test: /\.flow$/, loader: 'ignore-loader'}]
   }
-};
+}

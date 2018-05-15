@@ -1,11 +1,11 @@
 // @flow
-import React from 'react';
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
-import AnimatedFade from 'universal/components/AnimatedFade';
-import Modal from 'universal/components/Modal';
-import withToggledPortal from 'universal/decorators/withToggledPortal';
-import type {ToggledPortalProps} from 'universal/decorators/withToggledPortal';
+import React from 'react'
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
+import AnimatedFade from 'universal/components/AnimatedFade'
+import Modal from 'universal/components/Modal'
+import withToggledPortal from 'universal/decorators/withToggledPortal'
+import type {ToggledPortalProps} from 'universal/decorators/withToggledPortal'
 
 const ModalBlock = styled('div')({
   top: 0,
@@ -17,7 +17,7 @@ const ModalBlock = styled('div')({
   position: 'fixed',
   alignItems: 'center',
   justifyContent: 'center'
-});
+})
 
 const ModalContents = styled('div')({
   display: 'flex',
@@ -27,23 +27,23 @@ const ModalContents = styled('div')({
   // comment out for confetti
   // overflowY: 'auto',
   position: 'relative'
-});
+})
 
 const Backdrop = styled('div')({
   background: ui.modalBackdropBackgroundColor,
   width: '100%',
   height: '100%',
   position: 'fixed'
-});
+})
 
 type Props = {
   LoadableComponent: typeof React.Component,
   queryVars?: Object,
   ...ToggledPortalProps
-};
+}
 
 const LoadableModal = (props: Props) => {
-  const {isClosing, isOpen, closePortal, LoadableComponent, queryVars, terminatePortal} = props;
+  const {isClosing, isOpen, closePortal, LoadableComponent, queryVars, terminatePortal} = props
   return (
     <Modal clickToClose escToClose onClose={closePortal} isOpen={isOpen}>
       <ModalBlock>
@@ -57,7 +57,7 @@ const LoadableModal = (props: Props) => {
         </AnimatedFade>
       </ModalBlock>
     </Modal>
-  );
-};
+  )
+}
 
-export default withToggledPortal(LoadableModal);
+export default withToggledPortal(LoadableModal)

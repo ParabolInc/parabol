@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 
 const TaskEditorDetails = new GraphQLObjectType({
   name: 'TaskEditorDetails',
@@ -12,6 +12,6 @@ const TaskEditorDetails = new GraphQLObjectType({
       description: 'The name of the userId editing the task'
     }
   })
-});
+})
 
-export default TaskEditorDetails;
+export default TaskEditorDetails

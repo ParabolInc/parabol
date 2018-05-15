@@ -1,14 +1,14 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
-import {getUserId, isTeamLead} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import sendSegmentEvent from 'server/utils/sendSegmentEvent';
-import shortid from 'shortid';
-import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants';
-import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors';
-import {sendAlreadyArchivedTeamError} from 'server/utils/alreadyMutatedErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import ArchiveTeamPayload from 'server/graphql/types/ArchiveTeamPayload'
+import {auth0ManagementClient} from 'server/utils/auth0Helpers'
+import {getUserId, isTeamLead} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
+import shortid from 'shortid'
+import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants'
+import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors'
+import {sendAlreadyArchivedTeamError} from 'server/utils/alreadyMutatedErrors'
 
 export default {
   type: ArchiveTeamPayload,
@@ -18,41 +18,50 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const now = new Date();
-    const operationId = dataLoader.share();
-    const subOptions = {operationId, mutatorId};
+  async resolve (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = getRethink()
+    const now = new Date()
+    const operationId = dataLoader.share()
+    const subOptions = {operationId, mutatorId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
-    if (!await isTeamLead(viewerId, teamId)) return sendTeamLeadAccessError(authToken, teamId);
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamLead(viewerId, teamId))) {
+      return sendTeamLeadAccessError(authToken, teamId)
+    }
 
     // RESOLUTION
-    sendSegmentEvent('Archive Team', viewerId, {teamId});
+    sendSegmentEvent('Archive Team', viewerId, {teamId})
     const {team, users, removedTeamNotifications} = await r({
-      team: r.table('Team').get(teamId)
+      team: r
+        .table('Team')
+        .get(teamId)
         .update({isArchived: true}, {returnChanges: true})('changes')(0)('new_val')
         .default(null),
-      users: r.table('TeamMember')
+      users: r
+        .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({isNotRemoved: true})('userId')
         .coerceTo('array')
         .do((userIds) => {
-          return r.table('User')
+          return r
+            .table('User')
             .getAll(r.args(userIds), {index: 'id'})
-            .update((user) => ({tms: user('tms').difference([teamId])}), {returnChanges: true})('changes')('new_val')
-            .default([]);
+            .update((user) => ({tms: user('tms').difference([teamId])}), {
+              returnChanges: true
+            })('changes')('new_val')
+            .default([])
         }),
-      removedTeamNotifications: r.table('Notification')
-      // TODO index
+      removedTeamNotifications: r
+        .table('Notification')
+        // TODO index
         .filter({teamId})
         .delete({returnChanges: true})('changes')('new_val')
         .default([])
-    });
+    })
 
     if (!team) {
-      return sendAlreadyArchivedTeamError(authToken, teamId);
+      return sendAlreadyArchivedTeamError(authToken, teamId)
     }
 
     const notifications = users
@@ -64,24 +73,24 @@ export default {
         type: TEAM_ARCHIVED,
         userIds: [notifiedUserId],
         teamId
-      }));
+      }))
     if (notifications.length) {
-      await r.table('Notification').insert(notifications);
+      await r.table('Notification').insert(notifications)
     }
 
     const data = {
       teamId,
       notificationIds: notifications.map(({id}) => id),
       removedTeamNotifications
-    };
-    publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions);
+    }
+    publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions)
 
     users.forEach((user) => {
-      const {id, tms} = user;
-      auth0ManagementClient.users.updateAppMetadata({id}, {tms});
-      publish(NEW_AUTH_TOKEN, id, UPDATED, {tms});
-    });
+      const {id, tms} = user
+      auth0ManagementClient.users.updateAppMetadata({id}, {tms})
+      publish(NEW_AUTH_TOKEN, id, UPDATED, {tms})
+    })
 
-    return data;
+    return data
   }
-};
+}

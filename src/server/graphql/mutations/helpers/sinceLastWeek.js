@@ -98,7 +98,6 @@
 //       .update(res('meetingUpdates'))
 //   });
 
-
 // r.db('actionDevelopment')
 //   .table('Meeting')
 //   .getAll('team123', {index: 'teamId'})

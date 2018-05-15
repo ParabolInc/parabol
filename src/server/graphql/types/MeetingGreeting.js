@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 
 const MeetingGreeting = new GraphQLObjectType({
   name: 'MeetingGreeting',
@@ -12,6 +12,6 @@ const MeetingGreeting = new GraphQLObjectType({
       description: 'The source language for the greeting'
     }
   })
-});
+})
 
-export default MeetingGreeting;
+export default MeetingGreeting

@@ -1,80 +1,94 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {css} from 'aphrodite-local-styles/no-important';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation';
-import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember';
-import {textOverflow} from 'universal/styles/helpers';
-import appTheme from 'universal/styles/theme/appTheme';
-import avatarUser from 'universal/styles/theme/images/avatar-user.svg';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {css} from 'aphrodite-local-styles/no-important'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
+import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember'
+import appTheme from 'universal/styles/theme/appTheme'
+import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 class OutcomeCardAssignMenu extends Component {
   state = {
     assignees: []
-  };
-
-  componentDidMount() {
-    this.setAssignees(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {team: {teamMembers, softTeamMembers}}} = nextProps;
-    const {viewer: {team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}}} = this.props;
+  componentDidMount () {
+    this.setAssignees(this.props)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {
+        team: {teamMembers, softTeamMembers}
+      }
+    } = nextProps
+    const {
+      viewer: {
+        team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}
+      }
+    } = this.props
     if (teamMembers !== oldTeamMembers || oldSoftTeamMembers !== softTeamMembers) {
-      this.setAssignees(nextProps);
+      this.setAssignees(nextProps)
     }
   }
 
-  setAssignees(props) {
-    const {viewer: {team: {teamMembers, softTeamMembers}}, task: {assignee: {assigneeId}}} = props;
+  setAssignees (props) {
+    const {
+      viewer: {
+        team: {teamMembers, softTeamMembers}
+      },
+      task: {
+        assignee: {assigneeId}
+      }
+    } = props
     this.setState({
       assignees: teamMembers
         .concat(softTeamMembers)
         .filter((teamMember) => teamMember.id !== assigneeId)
-    });
+    })
   }
 
   handleTaskUpdate = (newOwner) => {
     const {
       atmosphere,
       area,
-      task: {taskId, assignee: {assigneeId}}
-    } = this.props;
+      task: {
+        taskId,
+        assignee: {assigneeId}
+      }
+    } = this.props
     if (newOwner === assigneeId) {
-      return;
+      return
     }
     const updatedTask = {
       id: taskId,
       assigneeId: newOwner
-    };
-    UpdateTaskMutation(atmosphere, updatedTask, area);
-  };
+    }
+    UpdateTaskMutation(atmosphere, updatedTask, area)
+  }
 
   handleMenuItemClick = (assignee) => () => {
-    this.handleTaskUpdate(assignee.id);
-  };
+    this.handleTaskUpdate(assignee.id)
+  }
 
-  render() {
+  render () {
     const {
       area,
       closePortal,
       styles,
       task: {taskId},
       viewer: {team}
-    } = this.props;
-    const {assignees} = this.state;
+    } = this.props
+    const {assignees} = this.state
 
     return (
-      <MenuWithShortcuts
-        ariaLabel={'Assign this task to a teammate'}
-        closePortal={closePortal}
-      >
+      <MenuWithShortcuts ariaLabel={'Assign this task to a teammate'} closePortal={closePortal}>
         <div className={css(styles.label)}>{'Assign to:'}</div>
         {assignees.map((teamMember) => {
           return (
@@ -84,18 +98,13 @@ class OutcomeCardAssignMenu extends Component {
               label={teamMember.preferredName}
               onClick={this.handleMenuItemClick(teamMember)}
             />
-          );
+          )
         })}
         <MenuItemWithShortcuts noCloseOnClick>
-          <AddSoftTeamMember
-            area={area}
-            closePortal={closePortal}
-            taskId={taskId}
-            team={team}
-          />
+          <AddSoftTeamMember area={area} closePortal={closePortal} taskId={taskId} team={team} />
         </MenuItemWithShortcuts>
       </MenuWithShortcuts>
-    );
+    )
   }
 }
 
@@ -106,7 +115,7 @@ OutcomeCardAssignMenu.propTypes = {
   styles: PropTypes.object.isRequired,
   task: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired
-};
+}
 
 const styleThunk = () => ({
   label: {
@@ -119,7 +128,7 @@ const styleThunk = () => ({
     marginBottom: ui.menuGutterVertical,
     padding: `0 ${ui.menuGutterHorizontal}`
   }
-});
+})
 
 export default createFragmentContainer(
   withAtmosphere(withStyles(styleThunk)(OutcomeCardAssignMenu)),
@@ -139,6 +148,7 @@ export default createFragmentContainer(
         ...AddSoftTeamMember_team
       }
     }
+
     fragment OutcomeCardAssignMenu_task on Task {
       taskId: id
       assignee {
@@ -146,4 +156,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

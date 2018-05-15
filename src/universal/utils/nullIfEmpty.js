@@ -3,7 +3,7 @@
  * Useful when a function is using filter behind the scenes
  */
 const nullIfEmpty = (arr) => {
-  return arr.length > 0 ? arr : null;
-};
+  return arr.length > 0 ? arr : null
+}
 
-export default nullIfEmpty;
+export default nullIfEmpty

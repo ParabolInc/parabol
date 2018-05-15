@@ -1,9 +1,8 @@
-import {ConnectionHandler} from 'relay-runtime';
+import {ConnectionHandler} from 'relay-runtime'
 
-const getArchivedTasksConn = (viewer, teamId) => ConnectionHandler.getConnection(
-  viewer,
-  'TeamArchive_archivedTasks',
-  {teamId}
-);
+const getArchivedTasksConn = (viewer, teamId) =>
+  ConnectionHandler.getConnection(viewer, 'TeamArchive_archivedTasks', {
+    teamId
+  })
 
-export default getArchivedTasksConn;
+export default getArchivedTasksConn

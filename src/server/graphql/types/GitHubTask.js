@@ -1,6 +1,6 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import IntegrationService from 'server/graphql/types/IntegrationService';
-import TaskIntegration from 'server/graphql/types/TaskIntegration';
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import IntegrationService from 'server/graphql/types/IntegrationService'
+import TaskIntegration from 'server/graphql/types/TaskIntegration'
 
 const GitHubTask = new GraphQLObjectType({
   name: 'GitHubTask',
@@ -20,6 +20,6 @@ const GitHubTask = new GraphQLObjectType({
       type: GraphQLInt
     }
   })
-});
+})
 
-export default GitHubTask;
+export default GitHubTask

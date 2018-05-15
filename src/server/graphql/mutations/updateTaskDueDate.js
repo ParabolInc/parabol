@@ -1,12 +1,12 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {TASK} from 'universal/utils/constants';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import isValidDate from 'universal/utils/isValidDate';
-import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors';
-import getRethink from 'server/database/rethinkDriver';
-import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayload';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {TASK} from 'universal/utils/constants'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import isValidDate from 'universal/utils/isValidDate'
+import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
+import getRethink from 'server/database/rethinkDriver'
+import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayload'
 
 export default {
   type: UpdateTaskDueDatePayload,
@@ -21,40 +21,43 @@ export default {
       description: 'the new due date. if not a valid date, it will unset the due date'
     }
   },
-  async resolve(source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+  async resolve (source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const viewerId = getUserId(authToken);
+    const viewerId = getUserId(authToken)
 
     // VALIDATION
-    const formattedDueDate = new Date(dueDate);
-    const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null;
-    const task = await r.table('Task').get(taskId);
-    if (!task || !isTeamMember(authToken, task.teamId)) return sendTaskNotFoundError(authToken, taskId);
+    const formattedDueDate = new Date(dueDate)
+    const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
+    const task = await r.table('Task').get(taskId)
+    if (!task || !isTeamMember(authToken, task.teamId)) {
+      return sendTaskNotFoundError(authToken, taskId)
+    }
 
     // RESOLUTION
-    await r.table('Task')
+    await r
+      .table('Task')
       .get(taskId)
       .update({
         dueDate: nextDueDate
-      });
+      })
 
-    const data = {taskId};
+    const data = {taskId}
 
     // send task updated messages
-    const isPrivate = task.tags.includes('private');
+    const isPrivate = task.tags.includes('private')
     if (isPrivate) {
-      publish(TASK, viewerId, UpdateTaskDueDatePayload, data, subOptions);
+      publish(TASK, viewerId, UpdateTaskDueDatePayload, data, subOptions)
     } else {
-      const teamMembers = await dataLoader.get('teamMembersByTeamId').load(task.teamId);
+      const teamMembers = await dataLoader.get('teamMembersByTeamId').load(task.teamId)
       teamMembers.forEach((teamMember) => {
-        const {userId} = teamMember;
-        publish(TASK, userId, UpdateTaskDueDatePayload, data, subOptions);
-      });
+        const {userId} = teamMember
+        publish(TASK, userId, UpdateTaskDueDatePayload, data, subOptions)
+      })
     }
-    return data;
+    return data
   }
-};
+}

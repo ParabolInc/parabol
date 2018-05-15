@@ -6,9 +6,9 @@ const preferredNames = [
   'Nikola Tesla',
   'Bilbo Baggins',
   'Optimus Prime'
-];
+]
 
-const getRandomValue = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const getRandomValue = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
 const themes = [
   {
@@ -53,7 +53,7 @@ const themes = [
     email: 'lucky@ami.go',
     emailMulti: 'lucky@ami.go, dusty@ami.go, ned@ami.go'
   }
-];
+]
 
-export const randomPreferredName = getRandomValue(preferredNames);
-export const randomPlaceholderTheme = getRandomValue(themes);
+export const randomPreferredName = getRandomValue(preferredNames)
+export const randomPlaceholderTheme = getRandomValue(themes)

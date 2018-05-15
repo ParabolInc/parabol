@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLList} from 'graphql';
+import {GraphQLObjectType, GraphQLList} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveFilterByTeam,
@@ -7,16 +7,16 @@ import {
   resolveTeamMembers,
   resolveTeams,
   resolveUser
-} from 'server/graphql/resolvers';
-import Organization from 'server/graphql/types/Organization';
-import Task from 'server/graphql/types/Task';
-import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
-import User from 'server/graphql/types/User';
-import OrganizationMember from 'server/graphql/types/OrganizationMember';
-import Notification from 'server/graphql/types/Notification';
-import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+} from 'server/graphql/resolvers'
+import Organization from 'server/graphql/types/Organization'
+import Task from 'server/graphql/types/Task'
+import Team from 'server/graphql/types/Team'
+import TeamMember from 'server/graphql/types/TeamMember'
+import User from 'server/graphql/types/User'
+import OrganizationMember from 'server/graphql/types/OrganizationMember'
+import Notification from 'server/graphql/types/Notification'
+import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const RemoveOrgUserPayload = new GraphQLObjectType({
   name: 'RemoveOrgUserPayload',
@@ -73,6 +73,6 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
       resolve: (source) => source
     }
   })
-});
+})
 
-export default RemoveOrgUserPayload;
+export default RemoveOrgUserPayload

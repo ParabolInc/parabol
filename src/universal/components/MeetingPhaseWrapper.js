@@ -1,5 +1,5 @@
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const MeetingPhaseWrapper = styled('div')({
   display: 'flex',
@@ -8,6 +8,6 @@ const MeetingPhaseWrapper = styled('div')({
   margin: '0 auto',
   maxWidth: ui.meetingTopicPhaseMaxWidth,
   width: '100%'
-});
+})
 
-export default MeetingPhaseWrapper;
+export default MeetingPhaseWrapper

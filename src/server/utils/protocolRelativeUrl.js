@@ -1,4 +1,4 @@
-import url from 'url';
+import url from 'url'
 
 /*
  * Node's url.parse is unable to handle protocol-relative URLs
@@ -10,32 +10,30 @@ const protocolRelativeUrl = {
   ...url,
   parse: (urlString, parseQueryString, slashesDenoteHost) => {
     if (urlString.startsWith('//')) {
-      const urlStringWithProto = `http:${urlString}`;
-      const result = url.parse(
-        urlStringWithProto, parseQueryString, slashesDenoteHost
-      );
-      result.protocol = '//';
-      result.href = urlString;
+      const urlStringWithProto = `http:${urlString}`
+      const result = url.parse(urlStringWithProto, parseQueryString, slashesDenoteHost)
+      result.protocol = '//'
+      result.href = urlString
 
-      return result;
+      return result
     }
 
-    return url.parse(urlString, parseQueryString, slashesDenoteHost);
+    return url.parse(urlString, parseQueryString, slashesDenoteHost)
   },
   format: (urlObject) => {
     if (typeof urlObject === 'string') {
-      urlObject = protocolRelativeUrl.parse(urlObject);
+      urlObject = protocolRelativeUrl.parse(urlObject)
     }
     if (urlObject.protocol === '//') {
       const urlObjectWithProto = Object.assign({}, urlObject, {
         protocol: 'http:',
         href: `http:${urlObject.href}`
-      });
-      return url.format(urlObjectWithProto).replace('http:', '');
+      })
+      return url.format(urlObjectWithProto).replace('http:', '')
     }
 
-    return url.format(urlObject);
+    return url.format(urlObject)
   }
-};
+}
 
-export default protocolRelativeUrl;
+export default protocolRelativeUrl
