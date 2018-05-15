@@ -6,7 +6,7 @@
 import type {Node} from 'react';
 import React from 'react';
 import styled from 'react-emotion';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import ui from 'universal/styles/ui';
 import appTheme from 'universal/styles/theme/appTheme';
 import Header from './Header';

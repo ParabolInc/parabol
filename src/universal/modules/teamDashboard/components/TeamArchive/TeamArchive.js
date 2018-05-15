@@ -5,7 +5,7 @@ import FontAwesome from 'react-fontawesome';
 import {createPaginationContainer} from 'react-relay';
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized';
 import NullableTask from 'universal/components/NullableTask/NullableTask';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader';
 import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
@@ -140,7 +140,7 @@ class TeamArchive extends Component {
 
     return (
       <div className={css(styles.root)}>
-        <Helmet title={`${teamName} Archive | Parabol`} />
+        <Helmet title={`Team Archive | ${teamName}`} />
         <div className={css(styles.header)}>
           <TeamArchiveHeader teamId={teamId} />
           <div className={css(styles.border)} />

@@ -7,7 +7,7 @@ import {SettingsWrapper} from 'universal/components/Settings';
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar';
 import {DashNavControl} from 'universal/components';
 import {TagBlock, TagPro} from 'universal/components/Tag';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal';
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle';
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName';
@@ -84,7 +84,7 @@ const Organization = (props) => {
   const billingMod = isBillingLeader && tier !== PERSONAL ? orgBilling : orgSqueeze;
   return (
     <UserSettingsWrapper>
-      <Helmet title={`${orgName} | Parabol`} />
+      <Helmet title={`Organization Settings | ${orgName}`} />
       <SettingsWrapper narrow>
         <BackControlBlock>
           <DashNavControl

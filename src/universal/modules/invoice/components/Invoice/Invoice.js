@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import withStyles from 'universal/styles/withStyles';
 import {css} from 'aphrodite-local-styles/no-important';
 import ui from 'universal/styles/ui';
@@ -93,7 +93,7 @@ const Invoice = (props) => {
 
   return (
     <div className={css(styles.invoice)}>
-      <Helmet title={`Parabol Invoice for ${subject}`} />
+      <Helmet title={`Invoice | ${subject}`} />
       <InvoiceHeader orgName={orgName} emails={billingLeaderEmails} picture={picture} />
       <div className={css(styles.panel)}>
         {status === FAILED &&

@@ -13,7 +13,7 @@ import {
 } from 'universal/components/Dashboard';
 import UserDashSearch from 'universal/modules/userDashboard/components/UserDashSearch/UserDashSearch';
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import makeDateString from 'universal/utils/makeDateString';
 import {createFragmentContainer} from 'react-relay';
 

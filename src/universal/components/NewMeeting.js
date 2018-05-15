@@ -177,7 +177,7 @@ class NewMeeting extends Component<Props> {
     const localPhaseType = localPhase && localPhase.phaseType;
     return (
       <MeetingContainer>
-        <Helmet title={`${meetingLabel} Meeting for ${teamName} | Parabol`} />
+        <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
         <NewMeetingSidebar gotoStageId={this.gotoStageId} meetingType={meetingType} viewer={viewer} />
         <MeetingArea>
           <MeetingAreaHeader>

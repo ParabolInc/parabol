@@ -15,13 +15,11 @@ import NotificationSubscription from 'universal/subscriptions/NotificationSubscr
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext as dragDropContext} from 'react-dnd';
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import AnalyticsIdentifier from 'universal/components/AnalyticsIdentifier';
 import DashLayout from 'universal/components/Dashboard/DashLayout';
 
 const query = graphql`
   query DashboardWrapperQuery {
     viewer {
-      ...AnalyticsIdentifier_viewer
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {
           node {
@@ -67,10 +65,9 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
         const viewer = renderProps ? renderProps.viewer : null;
         return (
           <DashLayout viewer={viewer}>
-            <AnalyticsIdentifier viewer={viewer} />
             <DashSidebar viewer={viewer} location={location} />
-            <AsyncRoute isAbstract path="/me" mod={userDashboard} extraProps={{notifications}} />
-            <AsyncRoute isAbstract path="/team/:teamId" mod={teamRoot} />
+            <AsyncRoute path="/me" mod={userDashboard} extraProps={{notifications}} />
+            <AsyncRoute path="/team/:teamId" mod={teamRoot} />
             <AsyncRoute path="/newteam/:defaultOrgId?" mod={newTeam} />
           </DashLayout>
         );

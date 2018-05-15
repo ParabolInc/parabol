@@ -3,7 +3,7 @@ import React from 'react';
 import Atmosphere from 'universal/Atmosphere';
 import {Button, Panel} from 'universal/components';
 import {SettingsWrapper} from 'universal/components/Settings';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
+import Helmet from 'react-helmet';
 import {requiresAction} from 'universal/types/notification';
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
