@@ -1,6 +1,0 @@
-{
- "include": [
-     "src/**/*",
-     "src/universal/**/*"
-    ],
-}
