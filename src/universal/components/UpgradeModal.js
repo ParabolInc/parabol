@@ -20,17 +20,20 @@ class UpgradeModal extends React.Component<Props, State> {
   }
 
   onSuccess = () => {
-    this.setState({
-      isPaid: true
-    });
+    // if switched too quickly, this will unmount before the modal click listener can verify that the button clicked is in fact in the modal
+    setTimeout(() => {
+      this.setState({
+        isPaid: true
+      });
+    })
   };
 
   render() {
     const {isPaid} = this.state;
     const {closePortal, viewer: {organization}} = this.props;
     return isPaid ?
-      <UpgradeSuccess closePortal={closePortal} /> :
-      <UpgradeSqueeze organization={organization} onSuccess={this.onSuccess} />;
+    <UpgradeSuccess closePortal={closePortal} /> :
+    <UpgradeSqueeze organization={organization} onSuccess={this.onSuccess} />;
   }
 }
 

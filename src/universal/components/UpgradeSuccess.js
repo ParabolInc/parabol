@@ -72,12 +72,24 @@ class UpgradeSuccess extends React.Component<Props, State> {
     super(props);
     setTimeout(() => {
       this.setState({active: true});
-      setTimeout(() => this.setState({active: false}), 100);
+      setTimeout(() => {
+        if (this._mounted) {
+          this.setState({active: false}), 100;
+        }
+      })
     });
   }
 
   state = {
     active: false
+  }
+
+  componentDidMount() {
+    this._mounted = true;
+  }
+  
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   render() {

@@ -77,17 +77,32 @@ const AlertAction = styled('span')({
   textDecoration: 'underline'
 });
 
-const NewMeetingLobby = (props: Props) => {
-  const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = props;
-  const {orgId, organization, teamId, teamName, tier} = team;
-  const {retroMeetingsOffered = 3, retroMeetingsRemaining = 3} = organization;
-  // const retroMeetingsOffered = 3;
-  // const retroMeetingsRemaining = 0;
-  const onStartMeetingClick = () => {
+class NewMeetingLobby extends React.Component {
+  state = {
+    initialTier: this.props.team.tier
+  }
+
+  updateInitialTier = () => {
+    const {team: {tier}} = this.props;
+    if (this.state.initialTier !== tier) {
+    this.setState({
+      initialTier: tier
+    })
+  }
+  }
+  
+  render() {
+    const {initialTier} = this.state;
+    const {atmosphere, history, onError, onCompleted, meetingType, submitMutation, submitting, team} = this.props;
+    const {orgId, organization, teamId, teamName, tier} = team;
+    const {retroMeetingsOffered, retroMeetingsRemaining} = organization;
+    const onStartMeetingClick = () => {
     submitMutation();
     StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted);
   };
   const isPro = tier === PRO;
+  const initiallyPro = initialTier === PRO;
+
   // const isPro = true;
   const canStartMeeting = isPro || retroMeetingsRemaining > 0;
   const meetingLabel = meetingTypeToLabel[meetingType];
@@ -106,47 +121,51 @@ const NewMeetingLobby = (props: Props) => {
           {'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'}
         </MeetingCopy>
       }
-      {!isPro &&
-        <StyledInlineAlert>
-          <span>{`${retroMeetingsRemaining} of ${retroMeetingsOffered} Meetings Remaining — `}</span>
-          <LoadableModal
-            LoadableComponent={UpgradeModalRootLoadable}
-            maxWidth={350}
-            maxHeight={225}
-            queryVars={{orgId}}
-            toggle={<AlertAction>Upgrade to Pro</AlertAction>}
-          />
-          <span>{' to unlock unlimited retrospectives'}</span>
-        </StyledInlineAlert>
-      }
-      <ButtonGroup>
-        <ButtonBlock>
-          {isPro || retroMeetingsRemaining > 0 ?
-            <Button
-              buttonStyle="primary"
-              depth={1}
-              disabled={!canStartMeeting}
-              isBlock
-              label={`Start ${meetingLabel} Meeting`}
-              onClick={onStartMeetingClick}
-              buttonSize="large"
-              waiting={submitting}
-            /> :
+      {!initiallyPro &&
+            <StyledInlineAlert>
+            <span>{`${retroMeetingsRemaining} of ${retroMeetingsOffered} Meetings Remaining — `}</span>
             <LoadableModal
               LoadableComponent={UpgradeModalRootLoadable}
               maxWidth={350}
               maxHeight={225}
+              onClose={this.updateInitialTier}
               queryVars={{orgId}}
-              toggle={<Button
-                aria-label="Get Access Now"
-                buttonSize="large"
+              toggle={<AlertAction>Upgrade to Pro</AlertAction>}
+              />
+            <span>{' to unlock unlimited retrospectives'}</span>
+        </StyledInlineAlert>
+            }
+      <ButtonGroup>
+        <ButtonBlock>
+          {(initiallyPro || retroMeetingsRemaining > 0) &&
+                <Button
                 buttonStyle="primary"
                 depth={1}
+                disabled={!canStartMeeting}
                 isBlock
-                label="Get Access Now"
-              />}
-            />
-          }
+                label={`Start ${meetingLabel} Meeting`}
+                onClick={onStartMeetingClick}
+                buttonSize="large"
+                waiting={submitting}
+                />
+              }
+            {!initiallyPro && retroMeetingsRemaining === 0 && 
+                  <LoadableModal
+                  LoadableComponent={UpgradeModalRootLoadable}
+                  maxWidth={350}
+                  maxHeight={225}
+                  onClose={this.updateInitialTier}
+                  queryVars={{orgId}}
+                  toggle={<Button
+                    aria-label="Get Access Now"
+                    buttonSize="large"
+                    buttonStyle="primary"
+                    depth={1}
+                    isBlock
+                    label="Get Access Now"
+                    />}
+                    />
+              }
         </ButtonBlock>
       </ButtonGroup>
       <UrlBlock>
@@ -154,6 +173,7 @@ const NewMeetingLobby = (props: Props) => {
       </UrlBlock>
     </Lobby>
   );
+  }
 };
 
 export default createFragmentContainer(
