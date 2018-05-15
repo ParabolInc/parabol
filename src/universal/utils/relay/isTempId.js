@@ -1,3 +1,3 @@
-const isTempId = (id) => id.endsWith('-tmp');
+const isTempId = (id) => id.endsWith('-tmp')
 
-export default isTempId;
+export default isTempId

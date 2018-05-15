@@ -11,6 +11,6 @@
  * the client app.
  */
 const dehydrate = (globalScopeName: string, data: any): string =>
-  `window.${globalScopeName} = ${JSON.stringify(data)}`;
+  `window.${globalScopeName} = ${JSON.stringify(data)}`
 
-export default dehydrate;
+export default dehydrate

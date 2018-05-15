@@ -1,70 +1,89 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import FontAwesome from 'react-fontawesome';
-import {createRefetchContainer} from 'react-relay';
-import withRouter from 'react-router-dom/es/withRouter';
-import Button from 'universal/components/Button/Button';
-import Panel from 'universal/components/Panel/Panel';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants';
-import {PRICING_LINK} from 'universal/utils/externalLinks';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import FontAwesome from 'react-fontawesome'
+import {createRefetchContainer} from 'react-relay'
+import withRouter from 'react-router-dom/es/withRouter'
+import Button from 'universal/components/Button/Button'
+import Panel from 'universal/components/Panel/Panel'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants'
+import {PRICING_LINK} from 'universal/utils/externalLinks'
 
-const linkLabel = 'Compare Plans';
+const linkLabel = 'Compare Plans'
 const iconStyles = {
   fontSize: ui.iconSize,
   marginLeft: '.25rem',
   verticalAlign: 'middle'
-};
+}
 
 class TeamArchiveSqueeze extends Component {
-  componentWillReceiveProps(nextProps) {
-    const {tasksAvailableCount: oldCount, relay: {refetch}} = this.props;
-    const {tasksAvailableCount: newCount} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      tasksAvailableCount: oldCount,
+      relay: {refetch}
+    } = this.props
+    const {tasksAvailableCount: newCount} = nextProps
     if (newCount !== oldCount) {
-      refetch();
+      refetch()
     }
   }
-  render() {
-    const {history, orgId, tasksAvailableCount, styles, viewer} = this.props;
-    const {archivedTasksCount, team: {organization: {isBillingLeader, mainBillingLeader}}} = viewer;
-    const unavailableTasks = archivedTasksCount - tasksAvailableCount;
+  render () {
+    const {history, orgId, tasksAvailableCount, styles, viewer} = this.props
+    const {
+      archivedTasksCount,
+      team: {
+        organization: {isBillingLeader, mainBillingLeader}
+      }
+    } = viewer
+    const unavailableTasks = archivedTasksCount - tasksAvailableCount
     if (unavailableTasks < 1) {
       // https://github.com/reactjs/react-transition-group/issues/208
-      return <br />;
+      return <br />
     }
     const handleUpgrade = () => {
-      history.push(`/me/organizations/${orgId}`);
-    };
+      history.push(`/me/organizations/${orgId}`)
+    }
     return (
       <div className={css(styles.archiveSqueezeOuter)}>
-        <Panel bgTheme="light" depth={0}>
+        <Panel bgTheme='light' depth={0}>
           <div className={css(styles.archiveSqueezeInner)}>
             <div className={css(styles.archiveSqueezeContent)}>
               <h2 className={css(styles.archiveSqueezeHeading)}>
                 {`${unavailableTasks} Cards Unavailable!`}
               </h2>
               <p className={css(styles.archiveSqueezeCopy)}>
-                {'With the '}<b>{`${PERSONAL_LABEL} Plan`}</b>{' you can see cards archived up to '}<b>{'14 days ago'}</b>{'.'}<br />
-                {'For full access to your team’s archive, upgrade to the '}<b>{`${PRO_LABEL} Plan`}</b>{'.'}<br />
-                <a href={PRICING_LINK} target="_blank" title={linkLabel}>
-                  <b>{linkLabel}</b> <FontAwesome name="external-link-square" style={iconStyles} />
+                {'With the '}
+                <b>{`${PERSONAL_LABEL} Plan`}</b>
+                {' you can see cards archived up to '}
+                <b>{'14 days ago'}</b>
+                {'.'}
+                <br />
+                {'For full access to your team’s archive, upgrade to the '}
+                <b>{`${PRO_LABEL} Plan`}</b>
+                {'.'}
+                <br />
+                <a href={PRICING_LINK} target='_blank' title={linkLabel}>
+                  <b>{linkLabel}</b> <FontAwesome name='external-link-square' style={iconStyles} />
                 </a>
               </p>
             </div>
             <div className={css(styles.archiveSqueezeButtonBlock)}>
-              {isBillingLeader ?
+              {isBillingLeader ? (
                 <Button
-                  buttonSize="medium"
-                  colorPalette="warm"
+                  buttonSize='medium'
+                  colorPalette='warm'
                   depth={1}
                   label={`Upgrade to the ${PRO_LABEL} Plan`}
                   onClick={handleUpgrade}
-                /> :
+                />
+              ) : (
                 <div className={css(styles.contactCopy)}>
-                  {'Talk with your '}<b>{'Billing Leader'}</b>{':'}
+                  {'Talk with your '}
+                  <b>{'Billing Leader'}</b>
+                  {':'}
                   <a
                     className={css(styles.contactLink)}
                     href={`mailto:${mainBillingLeader.email}`}
@@ -73,15 +92,15 @@ class TeamArchiveSqueeze extends Component {
                     <div className={css(styles.contactLinkLabel)}>
                       {mainBillingLeader.preferredName}
                     </div>
-                    <FontAwesome name="envelope" style={iconStyles} />
+                    <FontAwesome name='envelope' style={iconStyles} />
                   </a>
                 </div>
-              }
+              )}
             </div>
           </div>
         </Panel>
       </div>
-    );
+    )
   }
 }
 
@@ -92,7 +111,7 @@ TeamArchiveSqueeze.propTypes = {
   relay: PropTypes.object.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
-};
+}
 
 const styleThunk = () => ({
   archiveSqueezeOuter: {
@@ -148,7 +167,7 @@ const styleThunk = () => ({
     paddingRight: '.25rem',
     verticalAlign: 'middle'
   }
-});
+})
 
 export default createRefetchContainer(
   withRouter(withStyles(styleThunk)(TeamArchiveSqueeze)),
@@ -173,4 +192,4 @@ export default createRefetchContainer(
       }
     }
   `
-);
+)

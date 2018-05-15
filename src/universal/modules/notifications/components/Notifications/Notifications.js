@@ -1,27 +1,28 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import Atmosphere from 'universal/Atmosphere';
-import {Button, Panel} from 'universal/components';
-import {SettingsWrapper} from 'universal/components/Settings';
-import Helmet from 'react-helmet';
-import {requiresAction} from 'universal/types/notification';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow';
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import React from 'react'
+import Atmosphere from 'universal/Atmosphere'
+import Helmet from 'react-helmet'
+import {requiresAction} from 'universal/types/notification'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow'
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import styled from 'react-emotion'
+import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
+import Button from 'universal/components/Button/Button'
+import Panel from 'universal/components/Panel/Panel'
 
 const ClearAllButtonBlock = styled('div')({
   alignSelf: 'center',
   minWidth: '5.75rem'
-});
+})
 
 const NotificationListBlock = styled('div')({
   width: '100%'
-});
+})
 
 const NotificationsEmptyBlock = styled('div')({
   alignItems: 'center',
@@ -35,7 +36,7 @@ const NotificationsEmptyBlock = styled('div')({
   padding: ui.rowGutter,
   textAlign: 'center',
   width: '100%'
-});
+})
 
 const Notifications = (props) => {
   const {
@@ -46,57 +47,64 @@ const Notifications = (props) => {
     onCompleted,
     onError,
     submitting
-  } = props;
+  } = props
 
-  const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node));
+  const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node))
   const clearAllNotifications = () => {
-    submitMutation();
+    submitMutation()
     clearableNotifs.forEach(({node}) => {
-      ClearNotificationMutation(atmosphere, node.id, onError, onCompleted);
-    });
-  };
+      ClearNotificationMutation(atmosphere, node.id, onError, onCompleted)
+    })
+  }
 
   const clearAllButton = () => (
     <ClearAllButtonBlock>
       <Button
-        aria-label="Clear all notifications"
-        buttonSize="small"
-        buttonStyle="flat"
-        colorPalette="dark"
-        icon="check"
-        iconPlacement="right"
+        aria-label='Clear all notifications'
+        buttonSize='small'
+        buttonStyle='flat'
+        colorPalette='dark'
+        icon='check'
+        iconPlacement='right'
         isBlock
-        label="Clear All"
+        label='Clear All'
         onClick={clearAllNotifications}
-        title="Clear all notifications"
+        title='Clear all notifications'
       />
     </ClearAllButtonBlock>
-  );
+  )
 
   return (
     <UserSettingsWrapper>
-      <Helmet title="My Notifications | Parabol" />
+      <Helmet title='My Notifications | Parabol' />
       <SettingsWrapper>
-        <Panel compact label="Notifications" controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}>
-          {notifications && notifications.edges.length ?
+        <Panel
+          compact
+          label='Notifications'
+          controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}
+        >
+          {notifications && notifications.edges.length ? (
             <NotificationListBlock>
-              {notifications.edges.filter(({node}) => Boolean(node)).map(({node}) =>
-                (<NotificationRow
-                  dispatch={dispatch}
-                  key={`notification${node.id}`}
-                  notification={node}
-                />)
-              )}
-            </NotificationListBlock> :
+              {notifications.edges
+                .filter(({node}) => Boolean(node))
+                .map(({node}) => (
+                  <NotificationRow
+                    dispatch={dispatch}
+                    key={`notification${node.id}`}
+                    notification={node}
+                  />
+                ))}
+            </NotificationListBlock>
+          ) : (
             <NotificationsEmptyBlock>
               {'Hey there! You’re all caught up! 💯'}
             </NotificationsEmptyBlock>
-          }
+          )}
         </Panel>
       </SettingsWrapper>
     </UserSettingsWrapper>
-  );
-};
+  )
+}
 
 Notifications.propTypes = {
   atmosphere: PropTypes.instanceOf(Atmosphere),
@@ -106,8 +114,6 @@ Notifications.propTypes = {
   onError: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
   submitMutation: PropTypes.func.isRequired
-};
+}
 
-export default withAtmosphere(
-  withMutationProps(Notifications)
-);
+export default withAtmosphere(withMutationProps(Notifications))

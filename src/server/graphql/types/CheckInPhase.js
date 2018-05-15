@@ -1,7 +1,7 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase';
-import MeetingGreeting from 'server/graphql/types/MeetingGreeting';
-import CheckInStage from 'server/graphql/types/CheckInStage';
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase'
+import MeetingGreeting from 'server/graphql/types/MeetingGreeting'
+import CheckInStage from 'server/graphql/types/CheckInStage'
 
 const CheckInPhase = new GraphQLObjectType({
   name: 'CheckInPhase',
@@ -21,6 +21,6 @@ const CheckInPhase = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(CheckInStage)))
     }
   })
-});
+})
 
-export default CheckInPhase;
+export default CheckInPhase

@@ -1,24 +1,17 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
 
 const MeetingMainHeader = (props) => {
-  const {
-    children,
-    styles
-  } = props;
-  return (
-    <div className={css(styles.meetingMainHeaderRoot)}>
-      {children}
-    </div>
-  );
-};
+  const {children, styles} = props
+  return <div className={css(styles.meetingMainHeaderRoot)}>{children}</div>
+}
 
 MeetingMainHeader.propTypes = {
   children: PropTypes.any,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   meetingMainHeaderRoot: {
@@ -32,6 +25,6 @@ const styleThunk = () => ({
     padding: '1rem',
     width: '100%'
   }
-});
+})
 
-export default withStyles(styleThunk)(MeetingMainHeader);
+export default withStyles(styleThunk)(MeetingMainHeader)

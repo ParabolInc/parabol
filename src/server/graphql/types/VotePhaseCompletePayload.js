@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
-import {resolveNewMeeting} from 'server/graphql/resolvers';
+import {GraphQLObjectType} from 'graphql'
+import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
+import {resolveNewMeeting} from 'server/graphql/resolvers'
 
 const VotePhaseCompletePayload = new GraphQLObjectType({
   name: 'VotePhaseCompletePayload',
@@ -11,6 +11,6 @@ const VotePhaseCompletePayload = new GraphQLObjectType({
       resolve: resolveNewMeeting
     }
   })
-});
+})
 
-export default VotePhaseCompletePayload;
+export default VotePhaseCompletePayload

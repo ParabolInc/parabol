@@ -1,18 +1,26 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import ui from 'universal/styles/ui';
-import {css} from 'aphrodite-local-styles/no-important';
-import {reduxForm, Field} from 'redux-form';
-import AgendaInputField from './AgendaInputField';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import ui from 'universal/styles/ui'
+import {css} from 'aphrodite-local-styles/no-important'
+import {reduxForm, Field} from 'redux-form'
+import AgendaInputField from './AgendaInputField'
 
 const AgendaInput = (props) => {
-  const {afterSubmitAgendaItem, agenda, disabled, handleSubmit, setAgendaInputRef, team, styles} = props;
+  const {
+    afterSubmitAgendaItem,
+    agenda,
+    disabled,
+    handleSubmit,
+    setAgendaInputRef,
+    team,
+    styles
+  } = props
   return (
     <div className={css(styles.agendaInputBlock)}>
       <Field
         agenda={agenda}
-        name="agendaItem"
+        name='agendaItem'
         component={AgendaInputField}
         disabled={disabled}
         handleSubmit={handleSubmit}
@@ -21,8 +29,8 @@ const AgendaInput = (props) => {
         team={team}
       />
     </div>
-  );
-};
+  )
+}
 
 AgendaInput.propTypes = {
   agenda: PropTypes.array,
@@ -32,14 +40,14 @@ AgendaInput.propTypes = {
   setAgendaInputRef: PropTypes.func,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
-};
+}
 
 const styleThunk = () => ({
   agendaInputBlock: {
     padding: `${ui.meetingSidebarGutter} 0`,
     position: 'relative'
   }
-});
+})
 
 /*
  * This form's redux data is automatically cleared after it is
@@ -47,6 +55,4 @@ const styleThunk = () => ({
  *
  * See: universal/redux/makeReducer.js
  */
-export default reduxForm({form: 'agendaInput'})(
-  withStyles(styleThunk)(AgendaInput)
-);
+export default reduxForm({form: 'agendaInput'})(withStyles(styleThunk)(AgendaInput))

@@ -1,5 +1,5 @@
-import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum';
+import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql'
+import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 
 const CreateTaskInput = new GraphQLInputObjectType({
   name: 'CreateTaskInput',
@@ -34,6 +34,6 @@ const CreateTaskInput = new GraphQLInputObjectType({
       description: 'userId, the owner of the task'
     }
   })
-});
+})
 
-export default CreateTaskInput;
+export default CreateTaskInput

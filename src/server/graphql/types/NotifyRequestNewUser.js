@@ -1,10 +1,10 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import {resolveTeam} from 'server/graphql/resolvers';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification';
-import Team from 'server/graphql/types/Team';
-import User from 'server/graphql/types/User';
-import TeamNotification from 'server/graphql/types/TeamNotification';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {resolveTeam} from 'server/graphql/resolvers'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import OrganizationAddedNotification from 'server/graphql/types/OrganizationNotification'
+import Team from 'server/graphql/types/Team'
+import User from 'server/graphql/types/User'
+import TeamNotification from 'server/graphql/types/TeamNotification'
 
 const NotifyRequestNewUser = new GraphQLObjectType({
   name: 'NotifyRequestNewUser',
@@ -31,7 +31,7 @@ const NotifyRequestNewUser = new GraphQLObjectType({
       type: User,
       description: 'The user that triggered the invitation',
       resolve: ({inviterUserId}, args, {dataLoader}) => {
-        return dataLoader.get('users').load(inviterUserId);
+        return dataLoader.get('users').load(inviterUserId)
       }
     },
     team: {
@@ -40,6 +40,6 @@ const NotifyRequestNewUser = new GraphQLObjectType({
     },
     ...notificationInterfaceFields
   })
-});
+})
 
-export default NotifyRequestNewUser;
+export default NotifyRequestNewUser

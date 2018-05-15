@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveOrgApproval} from 'server/graphql/resolvers';
-import OrgApproval from 'server/graphql/types/OrgApproval';
+import {GraphQLObjectType} from 'graphql'
+import {resolveOrgApproval} from 'server/graphql/resolvers'
+import OrgApproval from 'server/graphql/types/OrgApproval'
 
 const OrgApprovalRemoved = new GraphQLObjectType({
   name: 'OrgApprovalRemoved',
@@ -10,6 +10,6 @@ const OrgApprovalRemoved = new GraphQLObjectType({
       resolve: resolveOrgApproval
     }
   })
-});
+})
 
-export default OrgApprovalRemoved;
+export default OrgApprovalRemoved

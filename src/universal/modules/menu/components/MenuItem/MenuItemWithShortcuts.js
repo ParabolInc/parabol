@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
-import {textOverflow} from 'universal/styles/helpers';
-import styled, {css, cx} from 'react-emotion';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import FontAwesome from 'react-fontawesome'
+import ui from 'universal/styles/ui'
+import styled, {css, cx} from 'react-emotion'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const rootStyle = css({
   alignItems: 'center',
@@ -17,7 +17,7 @@ const rootStyle = css({
     color: ui.menuItemColorHoverActive,
     outline: 0
   }
-});
+})
 
 const activeStyle = css({
   backgroundColor: ui.menuItemBackgroundColorActive,
@@ -25,7 +25,7 @@ const activeStyle = css({
   '&:hover,:focus': {
     backgroundColor: ui.menuItemBackgroundColorActive
   }
-});
+})
 
 const Label = styled('div')(({hasIcon, disabled}) => ({
   ...textOverflow,
@@ -34,7 +34,7 @@ const Label = styled('div')(({hasIcon, disabled}) => ({
   padding: `0 ${ui.menuGutterHorizontal}`,
   paddingLeft: hasIcon && 0,
   color: disabled && 'grey'
-}));
+}))
 
 class MenuItemWithShortcuts extends Component {
   static propTypes = {
@@ -48,44 +48,39 @@ class MenuItemWithShortcuts extends Component {
     iconColor: PropTypes.string,
     isActive: PropTypes.bool,
     label: PropTypes.any,
-    menuRef: PropTypes.instanceOf(Element),
+    menuRef: PropTypes.instanceOf(window.Element),
     noCloseOnClick: PropTypes.bool,
     onClick: PropTypes.func,
     styles: PropTypes.object,
     title: PropTypes.string
-  };
+  }
 
-  componentDidMount() {
-    const {isActive} = this.props;
+  componentDidMount () {
+    const {isActive} = this.props
     if (isActive) {
-      this.itemRef.scrollIntoViewIfNeeded();
+      this.itemRef.scrollIntoViewIfNeeded()
     }
   }
-  componentWillReceiveProps(nextProps) {
-    const {isActive} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {isActive} = nextProps
     if (isActive && !this.props.isActive) {
-      this.itemRef.scrollIntoViewIfNeeded();
+      this.itemRef.scrollIntoViewIfNeeded()
     }
   }
 
   handleClick = (e) => {
-    const {
-      activate,
-      noCloseOnClick,
-      closePortal,
-      onClick
-    } = this.props;
+    const {activate, noCloseOnClick, closePortal, onClick} = this.props
     if (noCloseOnClick) {
-      activate();
+      activate()
     } else if (closePortal) {
-      closePortal();
+      closePortal()
     }
     if (onClick) {
-      onClick(e);
+      onClick(e)
     }
-  };
+  }
 
-  render() {
+  render () {
     const {
       avatar,
       children,
@@ -97,13 +92,19 @@ class MenuItemWithShortcuts extends Component {
       label,
       menuRef,
       title
-    } = this.props;
-    const labelEl = typeof label === 'string' ?
-      <Label hasIcon={Boolean(avatar || icon)} disabled={disabled}>{label}</Label> : label;
-    const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item';
-    const titleStr = title || titleFallbackStr;
-    const makeDot = () =>
-      (<div
+    } = this.props
+    const labelEl =
+      typeof label === 'string' ? (
+        <Label hasIcon={Boolean(avatar || icon)} disabled={disabled}>
+          {label}
+        </Label>
+      ) : (
+        label
+      )
+    const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item'
+    const titleStr = title || titleFallbackStr
+    const makeDot = () => (
+      <div
         className={css({
           backgroundColor: iconColor || 'inherit',
           borderRadius: '.375rem',
@@ -112,9 +113,10 @@ class MenuItemWithShortcuts extends Component {
           marginRight: ui.menuGutterInner,
           width: '.375rem'
         })}
-      />);
-    const makeIcon = () =>
-      (<FontAwesome
+      />
+    )
+    const makeIcon = () => (
+      <FontAwesome
         name={icon}
         className={css({
           color: iconColor || ui.menuItemIconColor,
@@ -125,9 +127,10 @@ class MenuItemWithShortcuts extends Component {
           textAlign: 'center',
           width: '1.25rem'
         })}
-      />);
-    const makeAvatar = () =>
-      (<img
+      />
+    )
+    const makeAvatar = () => (
+      <img
         alt={titleStr}
         className={css({
           borderRadius: '100%',
@@ -138,12 +141,15 @@ class MenuItemWithShortcuts extends Component {
           width: '1.5rem'
         })}
         src={avatar}
-      />);
+      />
+    )
     return (
       <div
-        role="menuitem"
+        role='menuitem'
         title={titleStr}
-        ref={(c) => { this.itemRef = c; }}
+        ref={(c) => {
+          this.itemRef = c
+        }}
         className={cx(rootStyle, isActive && activeStyle)}
         onClick={this.handleClick}
       >
@@ -152,8 +158,8 @@ class MenuItemWithShortcuts extends Component {
         {!avatar && hasDotIcon && makeDot()}
         {children ? React.cloneElement(children, {isActive, menuRef}) : labelEl}
       </div>
-    );
+    )
   }
 }
 
-export default MenuItemWithShortcuts;
+export default MenuItemWithShortcuts

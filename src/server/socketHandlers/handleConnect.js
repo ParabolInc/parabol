@@ -1,36 +1,36 @@
-import {GQL_CONNECTION_ACK} from 'universal/utils/constants';
-import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants';
-import sendNewAuthToken from 'server/socketHelpers/sendNewAuthToken';
-import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler';
-import makeAuthTokenObj from 'server/utils/makeAuthTokenObj';
-import {fromEpochSeconds} from 'server/utils/epochTime';
-import sendMessage from 'server/socketHelpers/sendMessage';
-import packageJSON from '../../../package.json';
-import handleDisconnect from 'server/socketHandlers/handleDisconnect';
+import {GQL_CONNECTION_ACK} from 'universal/utils/constants'
+import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants'
+import sendNewAuthToken from 'server/socketHelpers/sendNewAuthToken'
+import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
+import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
+import {fromEpochSeconds} from 'server/utils/epochTime'
+import sendMessage from 'server/socketHelpers/sendMessage'
+import packageJSON from '../../../package.json'
+import handleDisconnect from 'server/socketHandlers/handleDisconnect'
 
-const APP_VERSION = packageJSON.version;
+const APP_VERSION = packageJSON.version
 
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
-  if (tmsFromDB.length !== tmsFromToken.length) return false;
+  if (tmsFromDB.length !== tmsFromToken.length) return false
   for (let i = 0; i < tmsFromDB.length; i++) {
-    if (tmsFromDB[i] !== tmsFromToken[i]) return false;
+    if (tmsFromDB[i] !== tmsFromToken[i]) return false
   }
-  return true;
-};
+  return true
+}
 
 const sendFreshTokenIfNeeded = (connectionContext, tmsDB) => {
-  const now = new Date();
-  const {authToken} = connectionContext;
-  const {exp, tms} = authToken;
-  const tokenExpiration = fromEpochSeconds(exp);
-  const timeLeftOnToken = tokenExpiration - now;
-  const tmsIsValid = isTmsValid(tmsDB, tms);
+  const now = new Date()
+  const {authToken} = connectionContext
+  const {exp, tms} = authToken
+  const tokenExpiration = fromEpochSeconds(exp)
+  const timeLeftOnToken = tokenExpiration - now
+  const tmsIsValid = isTmsValid(tmsDB, tms)
   if (timeLeftOnToken < REFRESH_JWT_AFTER || !tmsIsValid) {
-    const nextAuthToken = makeAuthTokenObj({...authToken, tms: tmsDB});
-    connectionContext.authToken = nextAuthToken;
-    sendNewAuthToken(connectionContext.socket, nextAuthToken);
+    const nextAuthToken = makeAuthTokenObj({...authToken, tms: tmsDB})
+    connectionContext.authToken = nextAuthToken
+    sendNewAuthToken(connectionContext.socket, nextAuthToken)
   }
-};
+}
 
 const handleConnectPublish = async (connectionContext) => {
   const payload = {
@@ -41,26 +41,28 @@ const handleConnectPublish = async (connectionContext) => {
       }
     }
   `
-  };
-
-  const result = await wsGraphQLHandler(connectionContext, {payload});
-  const {data} = result;
-  if (data) {
-    const {connectSocket: {tmsDB}} = data;
-    sendFreshTokenIfNeeded(connectionContext, tmsDB);
-    return true;
   }
-  handleDisconnect(connectionContext, {exitCode: 4401})();
-  return false;
-};
+
+  const result = await wsGraphQLHandler(connectionContext, {payload})
+  const {data} = result
+  if (data) {
+    const {
+      connectSocket: {tmsDB}
+    } = data
+    sendFreshTokenIfNeeded(connectionContext, tmsDB)
+    return true
+  }
+  handleDisconnect(connectionContext, {exitCode: 4401})()
+  return false
+}
 
 const handleConnect = async (connectionContext) => {
-  const {socket} = connectionContext;
-  const success = await handleConnectPublish(connectionContext);
+  const {socket} = connectionContext
+  const success = await handleConnectPublish(connectionContext)
   if (success) {
-    sendMessage(socket, GQL_CONNECTION_ACK, {version: APP_VERSION});
+    sendMessage(socket, GQL_CONNECTION_ACK, {version: APP_VERSION})
   }
-  return success;
-};
+  return success
+}
 
-export default handleConnect;
+export default handleConnect

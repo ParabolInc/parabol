@@ -1,19 +1,19 @@
-import {GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore';
-import AreaEnum from 'server/graphql/types/AreaEnum';
-import CreateTaskInput from 'server/graphql/types/CreateTaskInput';
-import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload';
-import {getUserId, isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import shortid from 'shortid';
-import {ASSIGNEE, MENTIONEE, NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import makeTaskSchema from 'universal/validation/makeTaskSchema';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation';
+import {GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import getUsersToIgnore from 'server/graphql/mutations/helpers/getUsersToIgnore'
+import AreaEnum from 'server/graphql/types/AreaEnum'
+import CreateTaskInput from 'server/graphql/types/CreateTaskInput'
+import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import shortid from 'shortid'
+import {ASSIGNEE, MENTIONEE, NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants'
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
+import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import makeTaskSchema from 'universal/validation/makeTaskSchema'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 
 export default {
   type: CreateTaskPayload,
@@ -28,25 +28,29 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newTask, area}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const now = new Date();
-    const subOptions = {operationId, mutatorId};
+  async resolve (source, {newTask, area}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const now = new Date()
+    const subOptions = {operationId, mutatorId}
     // AUTH
     // VALIDATION
-    const viewerId = getUserId(authToken);
-    const schema = makeTaskSchema();
-    const {errors, data: validNewTask} = schema({content: 1, ...newTask});
-    if (Object.keys(errors).length) return sendFailedInputValidation(authToken, errors);
-    const {teamId, userId, content} = validNewTask;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    const viewerId = getUserId(authToken)
+    const schema = makeTaskSchema()
+    const {errors, data: validNewTask} = schema({content: 1, ...newTask})
+    if (Object.keys(errors).length) {
+      return sendFailedInputValidation(authToken, errors)
+    }
+    const {teamId, userId, content} = validNewTask
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId)
+    }
 
     // RESOLUTION
-    const teamMemberId = toTeamMemberId(teamId, userId);
-    const taskId = shortid.generate();
-    const {entityMap} = JSON.parse(content);
-    const tags = getTagsFromEntityMap(entityMap);
+    const teamMemberId = toTeamMemberId(teamId, userId)
+    const taskId = shortid.generate()
+    const {entityMap} = JSON.parse(content)
+    const tags = getTagsFromEntityMap(entityMap)
     const task = {
       id: taskId,
       agendaId: validNewTask.agendaId,
@@ -63,7 +67,7 @@ export default {
       assigneeId: teamMemberId,
       updatedAt: now,
       userId
-    };
+    }
     const history = {
       id: shortid.generate(),
       content: task.content,
@@ -71,23 +75,24 @@ export default {
       status: task.status,
       assigneeId: task.assigneeId,
       updatedAt: task.updatedAt
-    };
+    }
     const {teamMembers} = await r({
       task: r.table('Task').insert(task),
       history: r.table('TaskHistory').insert(history),
-      teamMembers: r.table('TeamMember')
+      teamMembers: r
+        .table('TeamMember')
         .getAll(teamId, {index: 'teamId'})
         .filter({
           isNotRemoved: true
         })
         .coerceTo('array')
-    });
-    const usersToIgnore = getUsersToIgnore(area, teamMembers);
+    })
+    const usersToIgnore = getUsersToIgnore(area, teamMembers)
 
     // Handle notifications
     // Almost always you start out with a blank card assigned to you (except for filtered team dash)
-    const changeAuthorId = toTeamMemberId(teamId, viewerId);
-    const notificationsToAdd = [];
+    const changeAuthorId = toTeamMemberId(teamId, viewerId)
+    const notificationsToAdd = []
     if (changeAuthorId !== task.assigneeId && !usersToIgnore.includes(task.userId)) {
       notificationsToAdd.push({
         id: shortid.generate(),
@@ -98,11 +103,14 @@ export default {
         taskId: task.id,
         changeAuthorId,
         teamId
-      });
+      })
     }
 
     getTypeFromEntityMap('MENTION', entityMap)
-      .filter((mention) => mention !== viewerId && mention !== task.userId && !usersToIgnore.includes(mention))
+      .filter(
+        (mention) =>
+          mention !== viewerId && mention !== task.userId && !usersToIgnore.includes(mention)
+      )
       .forEach((mentioneeUserId) => {
         notificationsToAdd.push({
           id: shortid.generate(),
@@ -113,24 +121,26 @@ export default {
           taskId: task.id,
           changeAuthorId,
           teamId
-        });
-      });
-    const data = {taskId, notifications: notificationsToAdd};
+        })
+      })
+    const data = {taskId, notifications: notificationsToAdd}
 
     if (notificationsToAdd.length) {
-      await r.table('Notification').insert(notificationsToAdd);
+      await r.table('Notification').insert(notificationsToAdd)
       notificationsToAdd.forEach((notification) => {
-        const {userIds: [notificationUserId]} = notification;
-        publish(NOTIFICATION, notificationUserId, CreateTaskPayload, data, subOptions);
-      });
+        const {
+          userIds: [notificationUserId]
+        } = notification
+        publish(NOTIFICATION, notificationUserId, CreateTaskPayload, data, subOptions)
+      })
     }
 
-    const isPrivate = tags.includes('private');
+    const isPrivate = tags.includes('private')
     teamMembers.forEach((teamMember) => {
       if (!isPrivate || teamMember.userId === userId) {
-        publish(TASK, teamMember.userId, CreateTaskPayload, data, subOptions);
+        publish(TASK, teamMember.userId, CreateTaskPayload, data, subOptions)
       }
-    });
-    return data;
+    })
+    return data
   }
-};
+}

@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLObjectType} from 'graphql';
+import {GraphQLInt, GraphQLObjectType} from 'graphql'
 
 const OrgUserCount = new GraphQLObjectType({
   name: 'OrgUserCount',
@@ -12,6 +12,6 @@ const OrgUserCount = new GraphQLObjectType({
       description: 'The number of orgUsers who do not have an inactive flag'
     }
   })
-});
+})
 
-export default OrgUserCount;
+export default OrgUserCount

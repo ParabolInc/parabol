@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
 
 //    TODO:
 //  • Add hover/focus/disabled states (TA)
@@ -10,30 +10,21 @@ import appTheme from 'universal/styles/theme/appTheme';
 //  • Add animation state (turning off/on) (TA)
 
 const Toggle = (props) => {
-  const {
-    active,
-    block,
-    disabled,
-    label,
-    onClick,
-    styles
-  } = props;
+  const {active, block, disabled, label, onClick, styles} = props
 
   const toggleStyles = css(
     styles.toggle,
     active && styles.active,
     block && styles.block,
     disabled && styles.disabled
-  );
+  )
 
   return (
     <div className={toggleStyles} onClick={onClick}>
-      <span className={css(styles.label)}>
-        {label}
-      </span>
+      <span className={css(styles.label)}>{label}</span>
     </div>
-  );
-};
+  )
+}
 
 Toggle.propTypes = {
   active: PropTypes.bool,
@@ -42,16 +33,16 @@ Toggle.propTypes = {
   label: PropTypes.string,
   onClick: PropTypes.func,
   styles: PropTypes.object
-};
+}
 
 Toggle.defaultProps = {
   active: false,
   label: 'Off'
-};
+}
 
-const gutter = 3;
-const size = '2rem';
-const innerSize = '1.625rem';
+const gutter = 3
+const size = '2rem'
+const innerSize = '1.625rem'
 
 const styleThunk = () => ({
   toggle: {
@@ -122,6 +113,6 @@ const styleThunk = () => ({
     padding: '0 .5rem',
     textShadow: '0 1px 0 rgba(0, 0, 0, .2)'
   }
-});
+})
 
-export default withStyles(styleThunk)(Toggle);
+export default withStyles(styleThunk)(Toggle)

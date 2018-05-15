@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql';
-import {resolveUser} from 'server/graphql/resolvers';
-import User from 'server/graphql/types/User';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {resolveUser} from 'server/graphql/resolvers'
+import User from 'server/graphql/types/User'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const LoginPayload = new GraphQLObjectType({
   name: 'LoginPayload',
@@ -19,6 +19,6 @@ const LoginPayload = new GraphQLObjectType({
       description: 'The new JWT'
     }
   })
-});
+})
 
-export default LoginPayload;
+export default LoginPayload

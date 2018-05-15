@@ -1,7 +1,7 @@
-import sendSentryEvent from 'server/utils/sendSentryEvent';
+import sendSentryEvent from 'server/utils/sendSentryEvent'
 
 const sendGraphQLErrorResult = (protocol, firstError, query, variables, authToken) => {
-  const message = `${protocol} GraphQL Error`;
+  const message = `${protocol} GraphQL Error`
   const breadcrumb = {
     message,
     category: 'graphql',
@@ -10,8 +10,8 @@ const sendGraphQLErrorResult = (protocol, firstError, query, variables, authToke
       variables,
       firstError
     }
-  };
-  sendSentryEvent(authToken, breadcrumb);
-};
+  }
+  sendSentryEvent(authToken, breadcrumb)
+}
 
-export default sendGraphQLErrorResult;
+export default sendGraphQLErrorResult

@@ -1,13 +1,14 @@
-import {css} from 'react-emotion';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import {IconAvatar, Row} from 'universal/components';
-import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import {clearNotificationLabel} from '../../helpers/constants';
+import {css} from 'react-emotion'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
+import defaultStyles from 'universal/modules/notifications/helpers/styles'
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
+import {clearNotificationLabel} from '../../helpers/constants'
+import Row from 'universal/components/Row/Row'
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 
 const AddedToTeam = (props) => {
   const {
@@ -18,31 +19,29 @@ const AddedToTeam = (props) => {
     submitMutation,
     onError,
     onCompleted
-  } = props;
-  const {notificationId, team} = notification;
-  const {teamId, teamName} = team;
+  } = props
+  const {notificationId, team} = notification
+  const {teamId, teamName} = team
   const acknowledge = () => {
-    submitMutation();
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
-  };
+    submitMutation()
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+  }
   const goToTeam = () => {
-    submitMutation();
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
-    history.push(`/team/${teamId}`);
-  };
+    submitMutation()
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+    history.push(`/team/${teamId}`)
+  }
   return (
     <Row compact>
       <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon="users" size="small" />
+        <IconAvatar icon='users' size='small' />
       </div>
       <div className={css(defaultStyles.message)}>
         {'Congratulations! You are now a part of the team '}
-        <span
-          className={css(defaultStyles.messageVar, defaultStyles.notifLink)}
-          onClick={goToTeam}
-        >
+        <span className={css(defaultStyles.messageVar, defaultStyles.notifLink)} onClick={goToTeam}>
           {teamName}
-        </span>{'.'}
+        </span>
+        {'.'}
       </div>
       <div className={css(defaultStyles.iconButton)}>
         <AcknowledgeButton
@@ -52,8 +51,8 @@ const AddedToTeam = (props) => {
         />
       </div>
     </Row>
-  );
-};
+  )
+}
 
 AddedToTeam.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -63,7 +62,7 @@ AddedToTeam.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
   notification: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   withRouter(AddedToTeam),
@@ -76,4 +75,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

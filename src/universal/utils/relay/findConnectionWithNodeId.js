@@ -1,4 +1,4 @@
-import findNodeInConn from 'universal/utils/relay/findNodeInConn';
+import findNodeInConn from 'universal/utils/relay/findNodeInConn'
 
 /*
  * Given that a nodeId only exists in 1 of many connections
@@ -6,11 +6,11 @@ import findNodeInConn from 'universal/utils/relay/findNodeInConn';
  */
 const findConnectionWithNodeId = (connections, nodeId) => {
   for (let ii = 0; ii < connections.length; ii++) {
-    const connection = connections[ii];
-    const node = findNodeInConn(connection, nodeId);
-    if (node) return connection;
+    const connection = connections[ii]
+    const node = findNodeInConn(connection, nodeId)
+    if (node) return connection
   }
-  return undefined;
-};
+  return undefined
+}
 
-export default findConnectionWithNodeId;
+export default findConnectionWithNodeId

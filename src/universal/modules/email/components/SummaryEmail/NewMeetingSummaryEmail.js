@@ -1,31 +1,31 @@
 // @flow
-import React from 'react';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import Body from '../../components/Body/Body';
-import ContactUs from '../../components/ContactUs/ContactUs';
-import EmptySpace from '../../components/EmptySpace/EmptySpace';
-import Footer from '../../components/Footer/Footer';
-import Layout from '../../components/Layout/Layout';
-import SummaryHeader from '../../components/SummaryHeader/SummaryHeader';
-import {Link} from 'react-router-dom';
-import {ACTION, RETROSPECTIVE} from 'universal/utils/constants';
-import RetroQuickStats from 'universal/modules/email/components/QuickStats/RetroQuickStats';
-import MeetingMemberTasks from 'universal/modules/email/components/SummaryEmail/MeetingMemberTasks';
-import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscussionTopics/RetroDiscussionTopics';
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups';
+import React from 'react'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import Body from '../../components/Body/Body'
+import ContactUs from '../../components/ContactUs/ContactUs'
+import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import Footer from '../../components/Footer/Footer'
+import Layout from '../../components/Layout/Layout'
+import SummaryHeader from '../../components/SummaryHeader/SummaryHeader'
+import {Link} from 'react-router-dom'
+import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
+import RetroQuickStats from 'universal/modules/email/components/QuickStats/RetroQuickStats'
+import MeetingMemberTasks from 'universal/modules/email/components/SummaryEmail/MeetingMemberTasks'
+import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscussionTopics/RetroDiscussionTopics'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
-const teamDashLabel = 'Go to Team Dashboard';
+const teamDashLabel = 'Go to Team Dashboard'
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
   width: '100%'
-};
+}
 
 const bannerStyle = {
   backgroundColor: '#ffffff',
   textAlign: 'center'
-};
+}
 
 const topMessageStyles = {
   color: ui.palette.mid,
@@ -34,22 +34,22 @@ const topMessageStyles = {
   fontWeight: 400,
   textAlign: 'right',
   padding: '0 16px'
-};
+}
 
 const bannerLink = {
   color: ui.palette.dark,
   cursor: 'pointer',
   textDecoration: 'underline'
-};
+}
 
 const quickStatsBlock = {
   padding: '0 8px',
   textAlign: 'center'
-};
+}
 
 const textStyle = {
   fontFamily: ui.emailFontFamily
-};
+}
 
 const teamDashLinkStyle = {
   ...textStyle,
@@ -67,49 +67,51 @@ const teamDashLinkStyle = {
   textAlign: 'center',
   textDecoration: 'none',
   width: '186px'
-};
+}
 
 type Props = {|
   meeting: Object,
-  referrer: | 'meeting'
-    | 'email'
-    | 'history',
+  referrer: 'meeting' | 'email' | 'history',
   referrerUrl?: string,
   teamDashUrl: string,
   meetingUrl?: string
 |}
 
 const SummaryEmail = (props: Props) => {
+  const {meeting, referrer, referrerUrl, teamDashUrl} = props
   const {
-    meeting,
-    referrer,
-    referrerUrl,
-    teamDashUrl
-  } = props;
-  const {createdAt, meetingNumber, meetingType, team: {name: teamName}} = meeting;
-  const meetingLabel = meetingTypeToLabel[meetingType];
+    createdAt,
+    meetingNumber,
+    meetingType,
+    team: {name: teamName}
+  } = meeting
+  const meetingLabel = meetingTypeToLabel[meetingType]
   return (
     <Layout>
-      {referrer === 'email' &&
-      <table style={ui.emailTableBase} width="100%">
-        <tbody>
-          <tr>
-            <td style={bannerStyle}>
-              <EmptySpace height={8} />
-              <div style={topMessageStyles}>
-                <span><a href={referrerUrl} style={bannerLink}>{'View this in your browser'}</a></span>
-              </div>
-              <EmptySpace height={8} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      }
-      <Body verticalGutter={0}>
-        <table align="center" style={ui.emailTableBase} width="100%">
+      {referrer === 'email' && (
+        <table style={ui.emailTableBase} width='100%'>
           <tbody>
             <tr>
-              <td align="center" style={{padding: 0}}>
+              <td style={bannerStyle}>
+                <EmptySpace height={8} />
+                <div style={topMessageStyles}>
+                  <span>
+                    <a href={referrerUrl} style={bannerLink}>
+                      {'View this in your browser'}
+                    </a>
+                  </span>
+                </div>
+                <EmptySpace height={8} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+      <Body verticalGutter={0}>
+        <table align='center' style={ui.emailTableBase} width='100%'>
+          <tbody>
+            <tr>
+              <td align='center' style={{padding: 0}}>
                 {/* Summary Header */}
                 <SummaryHeader
                   createdAt={createdAt}
@@ -122,7 +124,7 @@ const SummaryEmail = (props: Props) => {
               </td>
             </tr>
             <tr>
-              <td align="center" style={quickStatsBlock}>
+              <td align='center' style={quickStatsBlock}>
                 {/* Quick Stats */}
                 {meetingType === RETROSPECTIVE && <RetroQuickStats meeting={meeting} />}
               </td>
@@ -130,34 +132,32 @@ const SummaryEmail = (props: Props) => {
             <tr>
               <td>
                 {/* Team Dashboard Button */}
-                {referrer === 'email' ?
-                  <a
-                    href={teamDashUrl}
-                    style={teamDashLinkStyle}
-                    title={teamDashLabel}
-                  >
+                {referrer === 'email' ? (
+                  <a href={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
                     {teamDashLabel}
-                  </a> :
-                  <Link
-                    to={teamDashUrl}
-                    style={teamDashLinkStyle}
-                    title={teamDashLabel}
-                  >
+                  </a>
+                ) : (
+                  <Link to={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
                     {teamDashLabel}
                   </Link>
-                }
+                )}
                 <EmptySpace height={32} />
               </td>
             </tr>
           </tbody>
         </table>
-        {meetingType === RETROSPECTIVE && <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />}
+        {meetingType === RETROSPECTIVE && (
+          <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />
+        )}
         <EmptySpace height={0} />
         <hr style={ruleStyle} />
         <EmptySpace height={48} />
-        {meetingType === RETROSPECTIVE &&
-          <RetroDiscussionTopics imageSource={referrer === 'email' ? 'static' : 'local'} topics={meeting.reflectionGroups} />
-        }
+        {meetingType === RETROSPECTIVE && (
+          <RetroDiscussionTopics
+            imageSource={referrer === 'email' ? 'static' : 'local'}
+            topics={meeting.reflectionGroups}
+          />
+        )}
         <div>
           <EmptySpace height={48} />
           <hr style={ruleStyle} />
@@ -167,7 +167,7 @@ const SummaryEmail = (props: Props) => {
             hasLearningLink={meetingType === ACTION}
             lineHeight={1.5}
             prompt={`How’d your ${meetingLabel} meeting go?`}
-            tagline="We’re eager for your feedback!"
+            tagline='We’re eager for your feedback!'
             vSpacing={0}
           />
         </div>
@@ -175,7 +175,7 @@ const SummaryEmail = (props: Props) => {
       </Body>
       <Footer color={appTheme.palette.dark} />
     </Layout>
-  );
-};
+  )
+}
 
-export default SummaryEmail;
+export default SummaryEmail

@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
 
 const Avatar = (props) => {
   const {
@@ -17,49 +17,35 @@ const Avatar = (props) => {
     innerRef,
     size,
     styles
-  } = props;
+  } = props
 
-  const rootStyles = css(
-    styles.avatar,
-    styles[size]
-  );
-  const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'};
+  const rootStyles = css(styles.avatar, styles[size])
+  const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'}
   const imageBlockStyles = css(
     styles.avatarImageBlock,
     sansRadius && styles.sansRadius,
     sansShadow && styles.sansShadow
-  );
+  )
   const imageBlockInlineStyle = {
     backgroundImage: `url(${picture})`,
     backgroundPosition: 'center center',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover'
-  };
+  }
   return (
-    <div
-      className={rootStyles}
-      onClick={onClick}
-      ref={innerRef}
-      style={rootInlineStyle}
-    >
-      <div
-        className={imageBlockStyles}
-        style={imageBlockInlineStyle}
-      >
-        {hasBadge &&
+    <div className={rootStyles} onClick={onClick} ref={innerRef} style={rootInlineStyle}>
+      <div className={imageBlockStyles} style={imageBlockInlineStyle}>
+        {hasBadge && (
           <div className={css(styles.badgeBlock)}>
             <div className={css(styles.badgeBlockInner)}>
-              <AvatarBadge
-                isCheckedIn={isCheckedIn}
-                isConnected={isConnected}
-              />
+              <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} />
             </div>
           </div>
-        }
+        )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 Avatar.propTypes = {
   hasBadge: PropTypes.bool,
@@ -82,7 +68,7 @@ Avatar.propTypes = {
     'largest'
   ]),
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   avatar: {
@@ -151,6 +137,6 @@ const styleThunk = () => ({
     transform: 'translate(-50%, -50%)',
     width: '14px'
   }
-});
+})
 
-export default withStyles(styleThunk)(Avatar);
+export default withStyles(styleThunk)(Avatar)

@@ -1,10 +1,10 @@
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const fontStyles = {
   color: appTheme.palette.dark,
   fontFamily: ui.emailFontFamily
-};
+}
 
 const quickStatsStyles = {
   cellStyles: {
@@ -38,6 +38,6 @@ const quickStatsStyles = {
     maxWidth: '440px',
     width: '100%'
   }
-};
+}
 
-export default quickStatsStyles;
+export default quickStatsStyles

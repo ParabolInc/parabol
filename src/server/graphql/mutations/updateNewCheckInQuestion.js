@@ -1,17 +1,17 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload';
-import {isPaidTier, isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {CHECKIN, TEAM} from 'universal/utils/constants';
-import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS';
-import {sendTeamAccessError, sendTeamPaidTierError} from 'server/utils/authorizationErrors';
-import UpdateNewCheckInQuestionPayload from 'server/graphql/types/UpdateNewCheckInQuestionPayload';
-import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors';
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload'
+import {isPaidTier, isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {CHECKIN, TEAM} from 'universal/utils/constants'
+import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
+import {sendTeamAccessError, sendTeamPaidTierError} from 'server/utils/authorizationErrors'
+import UpdateNewCheckInQuestionPayload from 'server/graphql/types/UpdateNewCheckInQuestionPayload'
+import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
 
 export default {
   type: UpdateNewCheckInQuestionPayload,
-  description: 'Update a Team\'s Check-in question in a new meeting',
+  description: "Update a Team's Check-in question in a new meeting",
   args: {
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
@@ -19,37 +19,46 @@ export default {
     },
     checkInQuestion: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The Team\'s new Check-in question'
+      description: "The Team's new Check-in question"
     }
   },
-  async resolve(source, {meetingId, checkInQuestion}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
-    const now = new Date();
+  async resolve (
+    source,
+    {meetingId, checkInQuestion},
+    {authToken, dataLoader, socketId: mutatorId}
+  ) {
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
+    const now = new Date()
     // AUTH
-    const meeting = await r.table('NewMeeting').get(meetingId);
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId);
-    const {phases, teamId} = meeting;
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
-    if (!await isPaidTier(teamId)) return sendTeamPaidTierError(authToken, teamId);
+    const meeting = await r.table('NewMeeting').get(meetingId)
+    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    const {phases, teamId} = meeting
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId)
+    }
+    if (!(await isPaidTier(teamId))) {
+      return sendTeamPaidTierError(authToken, teamId)
+    }
 
     // VALIDATION
-    const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion);
+    const normalizedCheckInQuestion = normalizeRawDraftJS(checkInQuestion)
 
     // RESOLUTION
-    const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN);
+    const checkInPhase = phases.find((phase) => phase.phaseType === CHECKIN)
     // mutative
-    checkInPhase.checkInQuestion = normalizedCheckInQuestion;
-    await r.table('NewMeeting')
+    checkInPhase.checkInQuestion = normalizedCheckInQuestion
+    await r
+      .table('NewMeeting')
       .get(meetingId)
       .update({
         phases,
         updatedAt: now
-      });
+      })
 
-    const data = {meetingId};
-    publish(TEAM, teamId, UpdateCheckInQuestionPayload, data, subOptions);
-    return data;
+    const data = {meetingId}
+    publish(TEAM, teamId, UpdateCheckInQuestionPayload, data, subOptions)
+    return data
   }
-};
+}

@@ -1,30 +1,21 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
 
 const MeetingSection = (props) => {
-  const {
-    children,
-    flexToFill,
-    paddingBottom,
-    paddingTop,
-    styles
-  } = props;
+  const {children, flexToFill, paddingBottom, paddingTop, styles} = props
   const stylePadding = {
     paddingBottom,
     paddingTop
-  };
-  const rootStyles = css(
-    styles.root,
-    flexToFill && styles.flex
-  );
+  }
+  const rootStyles = css(styles.root, flexToFill && styles.flex)
   return (
     <div className={rootStyles} style={stylePadding}>
       {children}
     </div>
-  );
-};
+  )
+}
 
 MeetingSection.propTypes = {
   children: PropTypes.any,
@@ -32,12 +23,12 @@ MeetingSection.propTypes = {
   paddingBottom: PropTypes.string,
   paddingTop: PropTypes.string,
   styles: PropTypes.object
-};
+}
 
 MeetingSection.defaultProps = {
   paddingBottom: '0px',
   paddingTop: '0px'
-};
+}
 
 const styleThunk = () => ({
   root: {
@@ -52,6 +43,6 @@ const styleThunk = () => ({
   flex: {
     flex: 1
   }
-});
+})
 
-export default withStyles(styleThunk)(MeetingSection);
+export default withStyles(styleThunk)(MeetingSection)

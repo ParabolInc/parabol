@@ -1,10 +1,9 @@
-import shortid from 'shortid';
-import getRethink from 'server/database/rethinkDriver';
-import {ACTIVE, FUTURE} from 'server/../universal/utils/constants';
-import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
-import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-
+import shortid from 'shortid'
+import getRethink from 'server/database/rethinkDriver'
+import {ACTIVE, FUTURE} from 'server/../universal/utils/constants'
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const SEED_TASKS = [
   {
@@ -39,11 +38,11 @@ const SEED_TASKS = [
       See the Integrations tab under Team Settings
     `)
   }
-];
+]
 
 export default (userId, teamId) => {
-  const r = getRethink();
-  const now = new Date();
+  const r = getRethink()
+  const now = new Date()
 
   const seedTasks = SEED_TASKS.map((proj) => ({
     ...proj,
@@ -55,9 +54,11 @@ export default (userId, teamId) => {
     assigneeId: toTeamMemberId(teamId, userId),
     userId,
     updatedAt: now
-  }));
+  }))
 
-  return r.table('Task').insert(seedTasks, {returnChanges: true})
+  return r
+    .table('Task')
+    .insert(seedTasks, {returnChanges: true})
     .do((result) => {
       return r.table('TaskHistory').insert(
         result('changes').map((change) => ({
@@ -68,6 +69,6 @@ export default (userId, teamId) => {
           assigneeId: change('new_val')('assigneeId'),
           updatedAt: change('new_val')('updatedAt')
         }))
-      );
-    });
-};
+      )
+    })
+}

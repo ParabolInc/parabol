@@ -1,7 +1,7 @@
-import styled from 'react-emotion';
+import styled from 'react-emotion'
 
-import formError from 'universal/styles/helpers/formError';
+import formError from 'universal/styles/helpers/formError'
 
-const FormError = styled('div')({...formError});
+const FormError = styled('div')({...formError})
 
-export default FormError;
+export default FormError

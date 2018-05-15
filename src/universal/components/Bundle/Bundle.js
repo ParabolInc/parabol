@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import requireAuth from 'universal/decorators/requireAuth/requireAuth';
-import ErrorBoundary from 'universal/components/ErrorBoundary';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import requireAuth from 'universal/decorators/requireAuth/requireAuth'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
 
 class Bundle extends Component {
   static contextTypes = {
     analytics: PropTypes.object,
     store: PropTypes.object
-  };
+  }
 
   static propTypes = {
     extraProps: PropTypes.object,
@@ -16,47 +16,47 @@ class Bundle extends Component {
     location: PropTypes.object.isRequired,
     match: PropTypes.object,
     mod: PropTypes.func.isRequired
-  };
+  }
 
   state = {
     mod: null
-  };
+  }
 
   componentWillMount() {
-    this.loadMod(this.props);
+    this.loadMod(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
-    const {mod} = nextProps;
+    const {mod} = nextProps
     if (mod !== this.props.mod) {
-      this.loadMod(nextProps);
+      this.loadMod(nextProps)
     }
   }
 
   loadMod(props) {
-    this.setState({Mod: null});
-    const {isPrivate, mod} = props;
+    this.setState({Mod: null})
+    const {isPrivate, mod} = props
     mod().then((res) => {
-      let component = res.default;
+      let component = res.default
       if (isPrivate) {
-        component = requireAuth(component);
+        component = requireAuth(component)
       }
       this.setState({
         Mod: component
-      });
-    });
+      })
+    })
   }
 
   render() {
-    const {Mod} = this.state;
-    if (!Mod) return null;
-    const {history, location, match, extraProps} = this.props;
+    const {Mod} = this.state
+    if (!Mod) return null
+    const {history, location, match, extraProps} = this.props
     return (
       <ErrorBoundary>
         <Mod {...extraProps} history={history} location={location} match={match} />
       </ErrorBoundary>
-    );
+    )
   }
 }
 
-export default Bundle;
+export default Bundle

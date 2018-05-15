@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import styled from 'react-emotion'
 
-const boxShadow = '.0625rem .0625rem .125rem rgba(0, 0, 0, .5)';
+const boxShadow = '.0625rem .0625rem .125rem rgba(0, 0, 0, .5)'
 
 const BadgeRoot = styled('div')(({colorPalette, flat}) => ({
   backgroundColor: ui.palette[colorPalette] || ui.palette.warm,
@@ -18,20 +18,14 @@ const BadgeRoot = styled('div')(({colorPalette, flat}) => ({
   minWidth: '1rem',
   padding: '0 .25rem',
   textAlign: 'center'
-}));
+}))
 
-const Badge = (props) => <BadgeRoot {...props}>{props.value || 0}</BadgeRoot>;
+const Badge = (props) => <BadgeRoot {...props}>{props.value || 0}</BadgeRoot>
 
 Badge.propTypes = {
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'dark',
-    'mid',
-    'midGray',
-    'warm'
-  ]),
+  colorPalette: PropTypes.oneOf(['cool', 'dark', 'mid', 'midGray', 'warm']),
   flat: PropTypes.bool,
   value: PropTypes.number
-};
+}
 
-export default Badge;
+export default Badge

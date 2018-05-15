@@ -1,7 +1,7 @@
-import {PropTypes} from 'prop-types';
-import React, {Children, cloneElement, Component} from 'react';
-import {TransitionGroup} from 'react-transition-group';
-import AnimatedFade from 'universal/components/AnimatedFade';
+import {PropTypes} from 'prop-types'
+import React, {Children, cloneElement, Component} from 'react'
+import {TransitionGroup} from 'react-transition-group'
+import AnimatedFade from 'universal/components/AnimatedFade'
 
 class RelayTransitionGroup extends Component {
   static propTypes = {
@@ -9,27 +9,27 @@ class RelayTransitionGroup extends Component {
     error: PropTypes.element.isRequired,
     loading: PropTypes.element.isRequired,
     ready: PropTypes.element.isRequired
-  };
+  }
 
-  render() {
-    const {error: errorEl, loading, ready, readyState} = this.props;
-    const {error, props} = readyState;
+  render () {
+    const {error: errorEl, loading, ready, readyState} = this.props
+    const {error, props} = readyState
     if (!props && this.renderProps) {
-      return Children.only(loading);
+      return Children.only(loading)
     } else if (!this.renderProps && props) {
-      this.renderProps = true;
+      this.renderProps = true
     }
-    let child;
-    let key;
+    let child
+    let key
     if (error) {
-      key = 'Error';
-      child = cloneElement(errorEl, {error});
+      key = 'Error'
+      child = cloneElement(errorEl, {error})
     } else if (props) {
-      key = 'Ready';
-      child = cloneElement(ready, {viewer: props.viewer});
+      key = 'Ready'
+      child = cloneElement(ready, {viewer: props.viewer})
     } else {
-      key = 'Loading';
-      child = loading;
+      key = 'Loading'
+      child = loading
     }
     return (
       <TransitionGroup appear component={React.Fragment}>
@@ -37,8 +37,8 @@ class RelayTransitionGroup extends Component {
           {child}
         </AnimatedFade>
       </TransitionGroup>
-    );
+    )
   }
 }
 
-export default RelayTransitionGroup;
+export default RelayTransitionGroup

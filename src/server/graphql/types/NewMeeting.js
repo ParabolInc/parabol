@@ -1,15 +1,15 @@
-import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {makeResolve, resolveTeam} from 'server/graphql/resolvers';
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting';
-import Team from 'server/graphql/types/Team';
-import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase';
-import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum';
-import {RETROSPECTIVE} from 'universal/utils/constants';
-import User from 'server/graphql/types/User';
-import MeetingMember from 'server/graphql/types/MeetingMember';
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
-import {getUserId} from 'server/utils/authorization';
+import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import {makeResolve, resolveTeam} from 'server/graphql/resolvers'
+import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
+import Team from 'server/graphql/types/Team'
+import NewMeetingPhase from 'server/graphql/types/NewMeetingPhase'
+import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
+import {RETROSPECTIVE} from 'universal/utils/constants'
+import User from 'server/graphql/types/User'
+import MeetingMember from 'server/graphql/types/MeetingMember'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import {getUserId} from 'server/utils/authorization'
 
 export const newMeetingFields = () => ({
   id: {
@@ -41,7 +41,7 @@ export const newMeetingFields = () => ({
     type: new GraphQLList(MeetingMember),
     description: 'The team members that were active during the time of the meeting',
     resolve: ({id: meetingId}, args, {dataLoader}) => {
-      return dataLoader.get('meetingMembersByMeetingId').load(meetingId);
+      return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
     }
   },
   meetingNumber: {
@@ -76,12 +76,12 @@ export const newMeetingFields = () => ({
     type: MeetingMember,
     description: 'The meeting member of the viewer',
     resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
-      const viewerId = getUserId(authToken);
-      const meetingMemberId = toTeamMemberId(meetingId, viewerId);
-      return dataLoader.get('meetingMembers').load(meetingMemberId);
+      const viewerId = getUserId(authToken)
+      const meetingMemberId = toTeamMemberId(meetingId, viewerId)
+      return dataLoader.get('meetingMembers').load(meetingMemberId)
     }
   }
-});
+})
 
 const NewMeeting = new GraphQLInterfaceType({
   name: 'NewMeeting',
@@ -90,9 +90,9 @@ const NewMeeting = new GraphQLInterfaceType({
   resolveType: ({meetingType}) => {
     const resolveTypeLookup = {
       [RETROSPECTIVE]: RetrospectiveMeeting
-    };
-    return resolveTypeLookup[meetingType];
+    }
+    return resolveTypeLookup[meetingType]
   }
-});
+})
 
-export default NewMeeting;
+export default NewMeeting

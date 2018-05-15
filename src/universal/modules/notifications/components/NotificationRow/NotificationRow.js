@@ -1,22 +1,31 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import AsyncComponent from 'universal/components/AsyncComponent';
-import typePicker from 'universal/modules/notifications/helpers/typePicker';
-import {FormError} from 'universal/components';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import AsyncComponent from 'universal/components/AsyncComponent'
+import typePicker from 'universal/modules/notifications/helpers/typePicker'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import FormError from 'universal/components/FormError/FormError'
 
 const NotificationRow = (props) => {
-  const {atmosphere, dispatch, error, submitting, submitMutation, onCompleted, onError, notification} = props;
-  const {type} = notification;
-  const fetchMod = typePicker[type];
+  const {
+    atmosphere,
+    dispatch,
+    error,
+    submitting,
+    submitMutation,
+    onCompleted,
+    onError,
+    notification
+  } = props
+  const {type} = notification
+  const fetchMod = typePicker[type]
   return (
     <div>
       <AsyncComponent
         atmosphere={atmosphere}
-        loadingWidth="inherit"
-        loadingHeight="5rem"
+        loadingWidth='inherit'
+        loadingHeight='5rem'
         fetchMod={fetchMod}
         dispatch={dispatch}
         notification={notification}
@@ -27,8 +36,8 @@ const NotificationRow = (props) => {
       />
       {error && <FormError>{error.message}</FormError>}
     </div>
-  );
-};
+  )
+}
 
 NotificationRow.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -40,12 +49,10 @@ NotificationRow.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired
-};
+}
 
 export default createFragmentContainer(
-  withAtmosphere(
-    withMutationProps(NotificationRow)
-  ),
+  withAtmosphere(withMutationProps(NotificationRow)),
   graphql`
     fragment NotificationRow_notification on Notification {
       type
@@ -61,4 +68,4 @@ export default createFragmentContainer(
       ...TeamInvite_notification
     }
   `
-);
+)

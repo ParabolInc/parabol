@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation';
-import {MEETING} from 'universal/utils/constants';
-import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation'
+import {MEETING} from 'universal/utils/constants'
+import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {
@@ -22,45 +22,61 @@ class GitHubRepoListMenu extends Component {
     teamId: PropTypes.string.isRequired
   }
 
-  componentWillMount() {
-    const {viewer: {githubRepos}} = this.props;
-    this.filterRepos(githubRepos);
+  componentWillMount () {
+    const {
+      viewer: {githubRepos}
+    } = this.props
+    this.filterRepos(githubRepos)
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {githubRepos}} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {githubRepos}
+    } = nextProps
     if (githubRepos !== this.props.viewer.githubRepos) {
-      this.filterRepos(githubRepos);
+      this.filterRepos(githubRepos)
     }
   }
 
-  filterRepos(githubRepos) {
-    const {relay: {environment}} = this.props;
-    const {userId} = environment;
-    const filteredRepos = githubRepos.filter((repo) => repo.userIds.includes(userId));
+  filterRepos (githubRepos) {
+    const {
+      relay: {environment}
+    } = this.props
+    const {userId} = environment
+    const filteredRepos = githubRepos.filter((repo) => repo.userIds.includes(userId))
     // technically, someone could leave all integrations but still be integrated.
-    this.filteredRepos = filteredRepos.length === 0 ? githubRepos : filteredRepos;
+    this.filteredRepos = filteredRepos.length === 0 ? githubRepos : filteredRepos
   }
 
-  render() {
-    const {area, handleAddTask, relay: {environment}, history, closePortal, taskId, setError, clearError, teamId} = this.props;
+  render () {
+    const {
+      area,
+      handleAddTask,
+      relay: {environment},
+      history,
+      closePortal,
+      taskId,
+      setError,
+      clearError,
+      teamId
+    } = this.props
     if (this.filteredRepos.length === 0) {
-      const inMeeting = area === MEETING;
-      const handleClick = inMeeting ?
-        handleAddTask(convertToTaskContent('#private Connect my GitHub account in Team Settings after the meeting')) :
-        () => history.push(`/team/${teamId}/settings/integrations/github`);
-      const label = inMeeting ? 'No repos! Remind me to set up GitHub' : 'Add your first GitHub repo';
+      const inMeeting = area === MEETING
+      const handleClick = inMeeting
+        ? handleAddTask(
+          convertToTaskContent(
+            '#private Connect my GitHub account in Team Settings after the meeting'
+          )
+        )
+        : () => history.push(`/team/${teamId}/settings/integrations/github`)
+      const label = inMeeting
+        ? 'No repos! Remind me to set up GitHub'
+        : 'Add your first GitHub repo'
       return (
-        <MenuWithShortcuts
-          ariaLabel={'Link your GitHub Account'}
-          closePortal={closePortal}
-        >
-          <MenuItemWithShortcuts
-            label={label}
-            onClick={handleClick}
-          />
+        <MenuWithShortcuts ariaLabel={'Link your GitHub Account'} closePortal={closePortal}>
+          <MenuItemWithShortcuts label={label} onClick={handleClick} />
         </MenuWithShortcuts>
-      );
+      )
     }
     return (
       <MenuWithShortcuts
@@ -68,21 +84,23 @@ class GitHubRepoListMenu extends Component {
         closePortal={closePortal}
       >
         {this.filteredRepos.map((repo) => {
-          const {nameWithOwner} = repo;
+          const {nameWithOwner} = repo
           return (
             <MenuItemWithShortcuts
               key={`githubReposMenItem${nameWithOwner}`}
               label={nameWithOwner}
-              onClick={() => CreateGitHubIssueMutation(environment, nameWithOwner, taskId, setError, clearError)}
+              onClick={() =>
+                CreateGitHubIssueMutation(environment, nameWithOwner, taskId, setError, clearError)
+              }
             />
-          );
+          )
         })}
       </MenuWithShortcuts>
-    );
+    )
   }
 }
 
-GitHubRepoListMenu.propTypes = {};
+GitHubRepoListMenu.propTypes = {}
 
 export default createFragmentContainer(
   withRouter(GitHubRepoListMenu),
@@ -94,4 +112,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

@@ -1,35 +1,34 @@
-import {css} from 'react-emotion';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {IconAvatar, Row} from 'universal/components';
-import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton';
-import defaultStyles from 'universal/modules/notifications/helpers/styles';
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';
-import {clearNotificationLabel} from '../../helpers/constants';
+import {css} from 'react-emotion'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
+import defaultStyles from 'universal/modules/notifications/helpers/styles'
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
+import {clearNotificationLabel} from '../../helpers/constants'
+import Row from 'universal/components/Row/Row'
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 
 const TeamArchived = (props) => {
+  const {atmosphere, notification, submitting, submitMutation, onError, onCompleted} = props
   const {
-    atmosphere,
-    notification,
-    submitting,
-    submitMutation,
-    onError,
-    onCompleted
-  } = props;
-  const {notificationId, team: {teamName}} = notification;
+    notificationId,
+    team: {teamName}
+  } = notification
   const acknowledge = () => {
-    submitMutation();
-    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted);
-  };
+    submitMutation()
+    ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
+  }
 
   return (
     <Row compact>
       <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon="archive" size="small" />
+        <IconAvatar icon='archive' size='small' />
       </div>
       <div className={css(defaultStyles.message)}>
-        {'The team '}<b>{teamName}</b>{' was archived.'}
+        {'The team '}
+        <b>{teamName}</b>
+        {' was archived.'}
       </div>
       <div className={css(defaultStyles.iconButton)}>
         <AcknowledgeButton
@@ -39,8 +38,8 @@ const TeamArchived = (props) => {
         />
       </div>
     </Row>
-  );
-};
+  )
+}
 
 TeamArchived.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -49,7 +48,7 @@ TeamArchived.propTypes = {
   submitMutation: PropTypes.func.isRequired,
   submitting: PropTypes.bool,
   notification: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   TeamArchived,
@@ -61,4 +60,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

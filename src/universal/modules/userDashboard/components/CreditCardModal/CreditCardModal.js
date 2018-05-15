@@ -1,35 +1,35 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {DashModal} from 'universal/components/Dashboard';
-import Button from 'universal/components/Button/Button';
-import Type from 'universal/components/Type/Type';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import {reduxForm, Field} from 'redux-form';
-import CreditCardField from './CreditCardField';
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar';
-import FontAwesome from 'react-fontawesome';
-import makeCreditCardSchema from 'universal/validation/makeCreditCardSchema';
-import formError from 'universal/styles/helpers/formError';
-import {normalizeExpiry, normalizeNumeric} from './normalizers';
-import shouldValidate from 'universal/validation/shouldValidate';
+import PropTypes from 'prop-types'
+import React from 'react'
+import Button from 'universal/components/Button/Button'
+import Type from 'universal/components/Type/Type'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import {reduxForm, Field} from 'redux-form'
+import CreditCardField from './CreditCardField'
+import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
+import FontAwesome from 'react-fontawesome'
+import makeCreditCardSchema from 'universal/validation/makeCreditCardSchema'
+import formError from 'universal/styles/helpers/formError'
+import {normalizeExpiry, normalizeNumeric} from './normalizers'
+import shouldValidate from 'universal/validation/shouldValidate'
+import DashModal from 'universal/components/Dashboard/DashModal'
 
 const lockIconStyles = {
   lineHeight: appTheme.typography.s5,
   marginRight: '.2em'
-};
+}
 
 const validate = (values, props) => {
-  const {stripeCard} = props;
+  const {stripeCard} = props
   // stripeCard loads async, so until it loads, don't bother validating
   if (stripeCard) {
-    const schema = makeCreditCardSchema(stripeCard);
-    return schema(values).errors;
+    const schema = makeCreditCardSchema(stripeCard)
+    return schema(values).errors
   }
-  return {};
-};
+  return {}
+}
 
 const CreditCardModal = (props) => {
   const {
@@ -46,34 +46,45 @@ const CreditCardModal = (props) => {
     styles,
     submitting,
     syncFormError
-  } = props;
-  const anyError = error || syncFormError;
+  } = props
+  const anyError = error || syncFormError
   return (
-    <DashModal onBackdropClick={closePortal} inputModal isClosing={isClosing} closeAfter={closeAfter}>
+    <DashModal
+      onBackdropClick={closePortal}
+      inputModal
+      isClosing={isClosing}
+      closeAfter={closeAfter}
+    >
       <div className={css(styles.modalBody)}>
         <div className={css(styles.iconAvatarBlock)}>
-          <IconAvatar icon={cardTypeIcon} size="large" />
+          <IconAvatar icon={cardTypeIcon} size='large' />
         </div>
-        <Type align="center" colorPalette="mid" lineHeight="1.875rem" marginBottom=".25rem" scale="s6">
+        <Type
+          align='center'
+          colorPalette='mid'
+          lineHeight='1.875rem'
+          marginBottom='.25rem'
+          scale='s6'
+        >
           {crudAction} Credit Card
         </Type>
-        <Type align="center" colorPalette="mid" lineHeight={appTheme.typography.s5} scale="s3">
-          <FontAwesome name="lock" style={lockIconStyles} /> Secured by <b>Stripe</b>
+        <Type align='center' colorPalette='mid' lineHeight={appTheme.typography.s5} scale='s3'>
+          <FontAwesome name='lock' style={lockIconStyles} /> Secured by <b>Stripe</b>
         </Type>
         {dirty && anyError && <div className={css(styles.error)}>{anyError}</div>}
         <form onSubmit={handleSubmit(addStripeBilling)}>
           <div className={css(styles.cardInputs)}>
             <div className={css(styles.creditCardNumber)}>
               <Field
-                autoComplete="cc-number"
+                autoComplete='cc-number'
                 autoFocus
                 component={CreditCardField}
-                iconName="credit-card"
-                maxLength="20"
-                name="creditCardNumber"
+                iconName='credit-card'
+                maxLength='20'
+                name='creditCardNumber'
                 normalize={normalizeNumeric}
-                placeholder="Card number"
-                shortcutHint="Credit card number"
+                placeholder='Card number'
+                shortcutHint='Credit card number'
                 topField
                 onChange={checkCardType}
               />
@@ -81,26 +92,26 @@ const CreditCardModal = (props) => {
             <div className={css(styles.cardDetails)}>
               <div className={css(styles.expiry)}>
                 <Field
-                  autoComplete="cc-exp"
+                  autoComplete='cc-exp'
                   component={CreditCardField}
-                  iconName="calendar"
-                  maxLength="5"
-                  name="expiry"
-                  placeholder="MM/YY"
-                  shortcutHint="Expiration date"
+                  iconName='calendar'
+                  maxLength='5'
+                  name='expiry'
+                  placeholder='MM/YY'
+                  shortcutHint='Expiration date'
                   normalize={normalizeExpiry}
                 />
               </div>
               <div>
                 <Field
-                  autoComplete="cc-csc"
+                  autoComplete='cc-csc'
                   component={CreditCardField}
-                  iconName="lock"
-                  maxLength="4"
-                  name="cvc"
+                  iconName='lock'
+                  maxLength='4'
+                  name='cvc'
                   normalize={normalizeNumeric}
-                  placeholder="CVC"
-                  shortcutHint="3-digit code on the back of your card"
+                  placeholder='CVC'
+                  shortcutHint='3-digit code on the back of your card'
                 />
               </div>
             </div>
@@ -108,22 +119,22 @@ const CreditCardModal = (props) => {
           <div className={css(styles.buttonGroup)}>
             <div className={css(styles.updateButton)}>
               <Button
-                colorPalette="warm"
+                colorPalette='warm'
                 disabled={submitting}
                 isBlock
                 label={crudAction}
-                buttonSize="medium"
-                type="submit"
+                buttonSize='medium'
+                type='submit'
                 onClick={handleSubmit(addStripeBilling)}
               />
             </div>
             <div className={css(styles.cancelButton)}>
               <Button
-                colorPalette="gray"
+                colorPalette='gray'
                 disabled={submitting}
                 isBlock
-                label="Cancel"
-                buttonSize="medium"
+                label='Cancel'
+                buttonSize='medium'
                 onClick={closePortal}
               />
             </div>
@@ -131,8 +142,8 @@ const CreditCardModal = (props) => {
         </form>
       </div>
     </DashModal>
-  );
-};
+  )
+}
 
 CreditCardModal.propTypes = {
   addStripeBilling: PropTypes.func,
@@ -151,9 +162,9 @@ CreditCardModal.propTypes = {
   styles: PropTypes.object,
   submitting: PropTypes.bool,
   syncFormError: PropTypes.string
-};
+}
 
-const inputInnerBorder = `1px solid ${appTheme.palette.mid30l}`;
+const inputInnerBorder = `1px solid ${appTheme.palette.mid30l}`
 
 const styleThunk = () => ({
   modalBody: {
@@ -213,10 +224,8 @@ const styleThunk = () => ({
     flexGrow: '4',
     paddingLeft: '.625rem'
   }
-});
+})
 
 export default reduxForm({form: 'creditCardInfo', validate, shouldValidate})(
-  withStyles(styleThunk)(
-    CreditCardModal
-  )
-);
+  withStyles(styleThunk)(CreditCardModal)
+)

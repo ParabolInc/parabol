@@ -5,4 +5,4 @@ graphql`
       ...CompleteTeamMemberFrag @relay(mask: false)
     }
   }
-`;
+`

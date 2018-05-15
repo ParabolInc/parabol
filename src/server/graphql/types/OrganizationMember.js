@@ -1,10 +1,10 @@
-import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql';
-import connectionDefinitions from 'server/graphql/connectionDefinitions';
-import {resolveOrganization, resolveUser} from 'server/graphql/resolvers';
-import Organization from 'server/graphql/types/Organization';
-import User from 'server/graphql/types/User';
-import {BILLING_LEADER} from 'universal/utils/constants';
-import toOrgMemberId from 'universal/utils/relay/toOrgMemberId';
+import {GraphQLBoolean, GraphQLID, GraphQLObjectType} from 'graphql'
+import connectionDefinitions from 'server/graphql/connectionDefinitions'
+import {resolveOrganization, resolveUser} from 'server/graphql/resolvers'
+import Organization from 'server/graphql/types/Organization'
+import User from 'server/graphql/types/User'
+import {BILLING_LEADER} from 'universal/utils/constants'
+import toOrgMemberId from 'universal/utils/relay/toOrgMemberId'
 
 const OrganizationMember = new GraphQLObjectType({
   name: 'OrganizationMember',
@@ -24,17 +24,19 @@ const OrganizationMember = new GraphQLObjectType({
     isBillingLeader: {
       type: GraphQLBoolean,
       resolve: async ({orgId, userId}, args, {dataLoader}) => {
-        const user = await dataLoader.get('users').load(userId);
-        return Boolean(user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER));
+        const user = await dataLoader.get('users').load(userId)
+        return Boolean(
+          user.userOrgs.find((userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER)
+        )
       }
     }
   })
-});
+})
 
 const {connectionType, edgeType} = connectionDefinitions({
   nodeType: OrganizationMember
-});
+})
 
-export const OrganizationMemberConnection = connectionType;
-export const OrganizationMemberEdge = edgeType;
-export default OrganizationMember;
+export const OrganizationMemberConnection = connectionType
+export const OrganizationMemberEdge = edgeType
+export default OrganizationMember

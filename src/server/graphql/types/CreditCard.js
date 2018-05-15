@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql';
+import {GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
 
 const CreditCard = new GraphQLObjectType({
   name: 'CreditCard',
@@ -24,6 +24,6 @@ const CreditCard = new GraphQLObjectType({
       description: 'The last 4 digits of a credit card'
     }
   })
-});
+})
 
-export default CreditCard;
+export default CreditCard

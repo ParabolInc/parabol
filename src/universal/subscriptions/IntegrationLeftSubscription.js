@@ -1,4 +1,4 @@
-import {leaveIntegrationUpdater} from 'universal/mutations/LeaveIntegrationMutation';
+import {leaveIntegrationUpdater} from 'universal/mutations/LeaveIntegrationMutation'
 
 const subscription = graphql`
   subscription IntegrationLeftSubscription($service: IntegrationService!, $teamId: ID!) {
@@ -7,21 +7,21 @@ const subscription = graphql`
       userId
     }
   }
-`;
+`
 
 const IntegrationLeftSubscription = (service) => (environment, queryVariables) => {
-  const {viewerId} = environment;
-  const {teamId} = queryVariables;
+  const {viewerId} = environment
+  const {teamId} = queryVariables
   return {
     subscription,
     variables: {service, teamId},
     updater: (store) => {
-      const viewer = store.get(viewerId);
-      const payload = store.getRootField('integrationLeft');
-      if (!payload) return;
-      leaveIntegrationUpdater(store, viewer, teamId, payload);
+      const viewer = store.get(viewerId)
+      const payload = store.getRootField('integrationLeft')
+      if (!payload) return
+      leaveIntegrationUpdater(store, viewer, teamId, payload)
     }
-  };
-};
+  }
+}
 
-export default IntegrationLeftSubscription;
+export default IntegrationLeftSubscription

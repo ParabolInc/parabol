@@ -1,4 +1,4 @@
-import {GraphQLFloat, GraphQLObjectType} from 'graphql';
+import {GraphQLFloat, GraphQLObjectType} from 'graphql'
 
 const DraggerCoords = new GraphQLObjectType({
   name: 'DraggerCoords',
@@ -6,11 +6,13 @@ const DraggerCoords = new GraphQLObjectType({
   fields: () => ({
     height: {
       type: GraphQLFloat,
-      description: 'The width of the client of the person dragging (useful to standardize across screen sizes)'
+      description:
+        'The width of the client of the person dragging (useful to standardize across screen sizes)'
     },
     width: {
       type: GraphQLFloat,
-      description: 'The width of the client of the person dragging (useful to standardize across screen sizes)'
+      description:
+        'The width of the client of the person dragging (useful to standardize across screen sizes)'
     },
     x: {
       type: GraphQLFloat,
@@ -21,6 +23,6 @@ const DraggerCoords = new GraphQLObjectType({
       description: 'The y-offset from the current location'
     }
   })
-});
+})
 
-export default DraggerCoords;
+export default DraggerCoords

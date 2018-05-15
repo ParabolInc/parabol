@@ -1,19 +1,19 @@
-import PropTypes from 'prop-types';
-import React, {Children, cloneElement, Component} from 'react';
-import {MAX_INT} from 'universal/utils/constants';
-import AnimatedFade from 'universal/components/AnimatedFade';
-import Modal from 'universal/components/Modal';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
-import withCoordsV2 from 'universal/decorators/withCoordsV2';
+import PropTypes from 'prop-types'
+import React, {Children, cloneElement, Component} from 'react'
+import {MAX_INT} from 'universal/utils/constants'
+import AnimatedFade from 'universal/components/AnimatedFade'
+import Modal from 'universal/components/Modal'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
+import withCoordsV2 from 'universal/decorators/withCoordsV2'
 
 const ModalBlock = styled('div')(({maxWidth}) => ({
   padding: '.25rem .5rem',
   position: 'absolute',
   zIndex: ui.ziTooltip,
   maxWidth
-}));
+}))
 
 const ModalContents = styled('div')(({maxHeight}) => ({
   color: 'white',
@@ -30,7 +30,7 @@ const ModalContents = styled('div')(({maxHeight}) => ({
   textShadow: '0 .0625rem 0 rgba(0, 0, 0, .25)',
   whiteSpace: 'nowrap',
   width: '100%'
-}));
+}))
 
 /*
  * A surprisingly complex little sucker.
@@ -59,9 +59,9 @@ class Tooltip extends Component {
     setOriginRef: PropTypes.func.isRequired
   }
 
-  constructor(props) {
-    super(props);
-    this.delayOpen = null;
+  constructor (props) {
+    super(props)
+    this.delayOpen = null
   }
 
   state = {
@@ -69,47 +69,47 @@ class Tooltip extends Component {
     inToggle: false,
     isClosing: false,
     canClose: false
-  };
-
-  componentDidMount() {
-    this.props.setOriginRef(this.childRef);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {isOpen, setOriginRef} = nextProps;
+  componentDidMount () {
+    this.props.setOriginRef(this.childRef)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const {isOpen, setOriginRef} = nextProps
     if (this.props.isOpen !== isOpen) {
       if (isOpen) {
-        setOriginRef(this.childRef);
+        setOriginRef(this.childRef)
       } else {
         this.setState({
           isClosing: true
-        });
+        })
       }
     }
   }
 
-  makeSmartChildren() {
-    const {delay, setOriginRef, children, hideOnFocus} = this.props;
-    const child = Children.only(children);
-    if (typeof this.props.isOpen === 'boolean') return child;
+  makeSmartChildren () {
+    const {delay, setOriginRef, children, hideOnFocus} = this.props
+    const child = Children.only(children)
+    if (typeof this.props.isOpen === 'boolean') return child
     return cloneElement(child, {
       onMouseEnter: (e) => {
         const handleMouseEnter = () => {
-          setOriginRef(e.target);
+          setOriginRef(e.target)
           this.setState({
             inToggle: true,
             isClosing: false,
             canClose: false
-          });
-        };
-        const {onMouseEnter} = child.props;
+          })
+        }
+        const {onMouseEnter} = child.props
         if (onMouseEnter) {
-          onMouseEnter(e);
+          onMouseEnter(e)
         }
         if (delay > 0 && delay <= MAX_INT) {
-          this.delayOpen = setTimeout(handleMouseEnter, delay);
+          this.delayOpen = setTimeout(handleMouseEnter, delay)
         } else {
-          handleMouseEnter();
+          handleMouseEnter()
         }
       },
       onMouseLeave: (e) => {
@@ -118,60 +118,60 @@ class Tooltip extends Component {
           this.setState({
             inToggle: false,
             isClosing: this.state.canClose && !this.state.inTip
-          });
-        });
-        const {onMouseLeave} = child.props;
+          })
+        })
+        const {onMouseLeave} = child.props
         if (onMouseLeave) {
-          onMouseLeave(e);
+          onMouseLeave(e)
         }
-        clearTimeout(this.delayOpen);
-        this.delayOpen = undefined;
+        clearTimeout(this.delayOpen)
+        this.delayOpen = undefined
       },
       onFocus: (e) => {
-        const {onFocus} = child.props;
+        const {onFocus} = child.props
         if (onFocus) {
-          onFocus(e);
+          onFocus(e)
         }
-        const {canClose, inToggle, inTip} = this.state;
+        const {canClose, inToggle, inTip} = this.state
         if (hideOnFocus) {
           this.setState({
             inToggle: false,
             inTip: false,
             isClosing: canClose && (inToggle || inTip)
-          });
-          clearTimeout(this.delayOpen);
-          this.delayOpen = undefined;
+          })
+          clearTimeout(this.delayOpen)
+          this.delayOpen = undefined
         }
       }
-    });
+    })
   }
 
   // this is useful if the tooltip is positioned over the toggle due to small screens, etc.
-  makeSmartTip() {
-    const {tip} = this.props;
-    const {isClosing} = this.state;
+  makeSmartTip () {
+    const {tip} = this.props
+    const {isClosing} = this.state
     return cloneElement(tip, {
       onMouseEnter: () => {
         // ignore the event if the movement was too slow (eliminates jitter)
         if (!isClosing) {
           this.setState({
             inTip: true
-          });
+          })
         }
       },
       onMouseLeave: () => {
-        if (this.props.isOpen) return;
+        if (this.props.isOpen) return
         setTimeout(() => {
-          const {canClose, inTip, inToggle} = this.state;
+          const {canClose, inTip, inToggle} = this.state
           if (inTip) {
             this.setState({
               inTip: false,
               isClosing: canClose && !inToggle
-            });
+            })
           }
-        });
+        })
       }
-    });
+    })
   }
 
   terminatePortal = () => {
@@ -180,23 +180,27 @@ class Tooltip extends Component {
       inToggle: false,
       isClosing: false,
       canClose: false
-    });
-  };
+    })
+  }
 
   makeCloseable = () => {
     this.setState({
       canClose: true
-    });
-  };
+    })
+  }
 
-  render() {
-    const {coords, setModalRef} = this.props;
-    const {inTip, inToggle, isClosing} = this.state;
-    const isOpen = inTip || inToggle || isClosing || this.props.isOpen;
+  render () {
+    const {coords, setModalRef} = this.props
+    const {inTip, inToggle, isClosing} = this.state
+    const isOpen = inTip || inToggle || isClosing || this.props.isOpen
 
     return (
       <React.Fragment>
-        <div ref={(c) => { this.childRef = c; }}>
+        <div
+          ref={(c) => {
+            this.childRef = c
+          }}
+        >
           {this.makeSmartChildren()}
         </div>
         <Modal isOpen={isOpen}>
@@ -209,15 +213,13 @@ class Tooltip extends Component {
             onExited={this.terminatePortal}
           >
             <ModalBlock style={coords} innerRef={setModalRef}>
-              <ModalContents>
-                {this.makeSmartTip()}
-              </ModalContents>
+              <ModalContents>{this.makeSmartTip()}</ModalContents>
             </ModalBlock>
           </AnimatedFade>
         </Modal>
       </React.Fragment>
-    );
+    )
   }
 }
 
-export default withCoordsV2(Tooltip);
+export default withCoordsV2(Tooltip)

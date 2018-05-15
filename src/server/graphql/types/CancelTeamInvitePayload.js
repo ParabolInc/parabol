@@ -1,11 +1,15 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveArchivedSoftTasks, resolveInvitation, resolveSoftTeamMember} from 'server/graphql/resolvers';
-import Invitation from 'server/graphql/types/Invitation';
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite';
-import {getUserId} from 'server/utils/authorization';
-import Task from 'server/graphql/types/Task';
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {
+  resolveArchivedSoftTasks,
+  resolveInvitation,
+  resolveSoftTeamMember
+} from 'server/graphql/resolvers'
+import Invitation from 'server/graphql/types/Invitation'
+import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite'
+import {getUserId} from 'server/utils/authorization'
+import Task from 'server/graphql/types/Task'
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const CancelTeamInvitePayload = new GraphQLObjectType({
   name: 'CancelTeamInvitePayload',
@@ -21,10 +25,10 @@ const CancelTeamInvitePayload = new GraphQLObjectType({
     removedTeamInviteNotification: {
       type: NotifyTeamInvite,
       resolve: ({removedTeamInviteNotification}, args, {authToken}) => {
-        if (!removedTeamInviteNotification) return null;
-        const viewerId = getUserId(authToken);
-        const notificationUserId = removedTeamInviteNotification.userIds[0];
-        return notificationUserId === viewerId ? removedTeamInviteNotification : null;
+        if (!removedTeamInviteNotification) return null
+        const viewerId = getUserId(authToken)
+        const notificationUserId = removedTeamInviteNotification.userIds[0]
+        return notificationUserId === viewerId ? removedTeamInviteNotification : null
       }
     },
     removedSoftTeamMember: {
@@ -38,6 +42,6 @@ const CancelTeamInvitePayload = new GraphQLObjectType({
       resolve: resolveArchivedSoftTasks
     }
   })
-});
+})
 
-export default CancelTeamInvitePayload;
+export default CancelTeamInvitePayload

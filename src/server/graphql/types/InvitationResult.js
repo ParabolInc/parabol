@@ -1,5 +1,5 @@
-import {GraphQLEnumType, GraphQLObjectType, GraphQLString} from 'graphql';
-import {ALREADY_ON_TEAM, PENDING_APPROVAL, SUCCESS, REACTIVATED} from 'universal/utils/constants';
+import {GraphQLEnumType, GraphQLObjectType, GraphQLString} from 'graphql'
+import {ALREADY_ON_TEAM, PENDING_APPROVAL, SUCCESS, REACTIVATED} from 'universal/utils/constants'
 
 const InvitationResultEnum = new GraphQLEnumType({
   name: 'InvitationResultEnum',
@@ -10,7 +10,7 @@ const InvitationResultEnum = new GraphQLEnumType({
     [REACTIVATED]: {},
     [SUCCESS]: {}
   }
-});
+})
 
 const InvitationResult = new GraphQLObjectType({
   name: 'InvitationResult',
@@ -23,8 +23,7 @@ const InvitationResult = new GraphQLObjectType({
       type: InvitationResultEnum,
       description: 'The outcome of trying to invite an email address'
     }
-
   })
-});
+})
 
-export default InvitationResult;
+export default InvitationResult

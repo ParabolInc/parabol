@@ -1,73 +1,69 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {Field, reduxForm} from 'redux-form';
-import SubmissionError from 'redux-form/es/SubmissionError';
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg';
-import Button from 'universal/components/Button/Button';
-import Editable from 'universal/components/Editable/Editable';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import inviteUserValidation from './inviteUserValidation';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Field, reduxForm} from 'redux-form'
+import SubmissionError from 'redux-form/es/SubmissionError'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import Button from 'universal/components/Button/Button'
+import Editable from 'universal/components/Editable/Editable'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import inviteUserValidation from './inviteUserValidation'
 
 const makeSchemaProps = (props) => {
-  const {team: {invitations, orgApprovals, teamMembers}} = props;
-  const inviteEmails = invitations.map((i) => i.email);
-  const teamMemberEmails = teamMembers.map((i) => i.email);
-  const orgApprovalEmails = orgApprovals.map((i) => i.email);
-  return {inviteEmails, orgApprovalEmails, teamMemberEmails};
-};
+  const {
+    team: {invitations, orgApprovals, teamMembers}
+  } = props
+  const inviteEmails = invitations.map((i) => i.email)
+  const teamMemberEmails = teamMembers.map((i) => i.email)
+  const orgApprovalEmails = orgApprovals.map((i) => i.email)
+  return {inviteEmails, orgApprovalEmails, teamMemberEmails}
+}
 
 const validate = (values, props) => {
-  const schemaProps = makeSchemaProps(props);
-  const schema = inviteUserValidation(schemaProps);
-  return schema(values).errors;
-};
+  const schemaProps = makeSchemaProps(props)
+  const schema = inviteUserValidation(schemaProps)
+  return schema(values).errors
+}
 
 const fieldStyles = {
   color: ui.colorText,
   fontSize: appTheme.typography.s4,
   lineHeight: '1.625rem',
   placeholderColor: ui.placeholderColor
-};
+}
 
 const InviteUser = (props) => {
-  const {
-    atmosphere,
-    dispatch,
-    handleSubmit,
-    styles,
-    submitting,
-    team,
-    touch,
-    untouch
-  } = props;
-  const {teamId} = team;
+  const {atmosphere, dispatch, handleSubmit, styles, submitting, team, touch, untouch} = props
+  const {teamId} = team
 
   const updateEditable = async (submissionData) => {
-    const schemaProps = makeSchemaProps(props);
-    const schema = inviteUserValidation(schemaProps);
-    const {data: {inviteTeamMember}, errors} = schema(submissionData);
+    const schemaProps = makeSchemaProps(props)
+    const schema = inviteUserValidation(schemaProps)
+    const {
+      data: {inviteTeamMember},
+      errors
+    } = schema(submissionData)
     if (Object.keys(errors).length) {
-      throw new SubmissionError(errors);
+      throw new SubmissionError(errors)
     }
-    const invitees = [{email: inviteTeamMember}];
-    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch);
-  };
+    const invitees = [{email: inviteTeamMember}]
+    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch)
+  }
   return (
     <div className={css(styles.inviteUser)}>
-      <img alt="" src={defaultUserAvatar} />
+      <img alt='' src={defaultUserAvatar} />
       <div className={css(styles.fieldBlock)}>
         <Field
           component={Editable}
           handleSubmit={handleSubmit(updateEditable)}
           hideIconOnValue
-          name="inviteTeamMember"
-          placeholder="name@company.co"
+          name='inviteTeamMember'
+          placeholder='name@company.co'
           touch={touch}
           typeStyles={fieldStyles}
           untouch={untouch}
@@ -75,16 +71,16 @@ const InviteUser = (props) => {
       </div>
       <div className={css(styles.buttonBlock)}>
         <Button
-          colorPalette="mid"
-          label="Send Invite"
-          buttonSize="small"
+          colorPalette='mid'
+          label='Send Invite'
+          buttonSize='small'
           onClick={handleSubmit(updateEditable)}
           waiting={submitting}
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
 InviteUser.propTypes = {
   atmosphere: PropTypes.object.isRequired,
@@ -98,7 +94,7 @@ InviteUser.propTypes = {
   team: PropTypes.object.isRequired,
   touch: PropTypes.func.isRequired,
   untouch: PropTypes.func.isRequired
-};
+}
 
 const styleThunk = () => ({
   inviteUser: {
@@ -118,7 +114,7 @@ const styleThunk = () => ({
   buttonBlock: {
     textAlign: 'right'
   }
-});
+})
 
 /*
  * This form's redux data is automatically cleared after it is
@@ -128,9 +124,7 @@ const styleThunk = () => ({
  */
 export default createFragmentContainer(
   withAtmosphere(
-    reduxForm({form: 'inviteTeamMember', validate})(
-      withStyles(styleThunk)(InviteUser)
-    )
+    reduxForm({form: 'inviteTeamMember', validate})(withStyles(styleThunk)(InviteUser))
   ),
   graphql`
     fragment InviteUser_team on Team {
@@ -145,6 +139,5 @@ export default createFragmentContainer(
         email
       }
     }
-
   `
-);
+)

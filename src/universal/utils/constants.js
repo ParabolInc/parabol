@@ -1,98 +1,98 @@
-import ms from 'ms';
+import ms from 'ms'
 
 /**
  * Big stuff:
  */
-export const APP_CDN_USER_ASSET_SUBDIR = '/store';
-export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024;
-export const APP_NAME = 'Action';
+export const APP_CDN_USER_ASSET_SUBDIR = '/store'
+export const APP_MAX_AVATAR_FILE_SIZE = 1024 * 1024
+export const APP_NAME = 'Action'
 
-export const APP_TOKEN_KEY = `${APP_NAME}:token`;
-export const APP_VERSION_KEY = `${APP_NAME}:version`; // in localStorage
-export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/';
+export const APP_TOKEN_KEY = `${APP_NAME}:token`
+export const APP_VERSION_KEY = `${APP_NAME}:version` // in localStorage
+export const APP_WEBPACK_PUBLIC_PATH_DEFAULT = '/static/'
 
 /* Meeting Misc. */
-export const MEETING_NAME = 'Action Meeting';
-export const MEETING_SUMMARY_LABEL = 'Summary';
-export const AGENDA_ITEM_LABEL = 'Agenda Topic';
-export const RETRO_TOPIC_LABEL = 'Topic';
-export const RETRO_VOTED_LABEL = 'Upvoted';
+export const MEETING_NAME = 'Action Meeting'
+export const MEETING_SUMMARY_LABEL = 'Summary'
+export const AGENDA_ITEM_LABEL = 'Agenda Topic'
+export const RETRO_TOPIC_LABEL = 'Topic'
+export const RETRO_VOTED_LABEL = 'Upvoted'
 
 /* Phases */
-export const LOBBY = 'lobby';
+export const LOBBY = 'lobby'
 // lowercase here to match url
-export const CHECKIN = 'checkin';
-export const UPDATES = 'updates';
-export const FIRST_CALL = 'firstcall';
-export const AGENDA_ITEMS = 'agendaitems';
-export const LAST_CALL = 'lastcall';
-export const SUMMARY = 'summary';
-export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY];
+export const CHECKIN = 'checkin'
+export const UPDATES = 'updates'
+export const FIRST_CALL = 'firstcall'
+export const AGENDA_ITEMS = 'agendaitems'
+export const LAST_CALL = 'lastcall'
+export const SUMMARY = 'summary'
+export const phaseArray = [LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY]
 
 /* Retrospective Phases */
-export const REFLECT = 'reflect';
-export const GROUP = 'group';
-export const VOTE = 'vote';
-export const DISCUSS = 'discuss';
+export const REFLECT = 'reflect'
+export const GROUP = 'group'
+export const VOTE = 'vote'
+export const DISCUSS = 'discuss'
 
-export const RETRO_PHASE_ITEM = 'retroPhaseItem';
+export const RETRO_PHASE_ITEM = 'retroPhaseItem'
 
 /* Columns */
-export const ACTIVE = 'active';
-export const STUCK = 'stuck';
-export const DONE = 'done';
-export const FUTURE = 'future';
-export const columnArray = [FUTURE, STUCK, ACTIVE, DONE];
-export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE];
+export const ACTIVE = 'active'
+export const STUCK = 'stuck'
+export const DONE = 'done'
+export const FUTURE = 'future'
+export const columnArray = [FUTURE, STUCK, ACTIVE, DONE]
+export const meetingColumnArray = [DONE, ACTIVE, STUCK, FUTURE]
 
 /* Drag-n-Drop Items */
-export const TASK = 'task';
-export const AGENDA_ITEM = 'agendaItem';
+export const TASK = 'task'
+export const AGENDA_ITEM = 'agendaItem'
 
 /* Sorting */
-export const SORT_STEP = 1;
-export const DND_THROTTLE = 25;
+export const SORT_STEP = 1
+export const DND_THROTTLE = 25
 
 /* Areas */
-export const MEETING = 'meeting';
-export const TEAM_DASH = 'teamDash';
-export const USER_DASH = 'userDash';
+export const MEETING = 'meeting'
+export const TEAM_DASH = 'teamDash'
+export const USER_DASH = 'userDash'
 
 /* Accounts */
-export const PERSONAL_LABEL = 'Personal';
-export const PRO_LABEL = 'Pro';
+export const PERSONAL_LABEL = 'Personal'
+export const PRO_LABEL = 'Pro'
 
 /* NotificationRow Types */
 // Send to folks that got reactivated on a team
 // annoucements to the rest of the team
 
-export const ADD_TO_TEAM = 'ADD_TO_TEAM';
+export const ADD_TO_TEAM = 'ADD_TO_TEAM'
 // Sent to the orgMember that generated the new user request
-export const DENY_NEW_USER = 'DENY_NEW_USER';
+export const DENY_NEW_USER = 'DENY_NEW_USER'
 // Sent to meeting participants when the facilitator disconnects
-export const FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED';
+export const FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED'
 // Sent when a billing leader approves an invitee to the org
-export const INVITEE_APPROVED = 'INVITEE_APPROVED';
+export const INVITEE_APPROVED = 'INVITEE_APPROVED'
 // sent to the rest of the team when someone has just joined
-export const JOIN_TEAM = 'JOIN_TEAM';
+export const JOIN_TEAM = 'JOIN_TEAM'
 // sent to someone just kicked out of a team
-export const KICKED_OUT = 'KICKED_OUT';
+export const KICKED_OUT = 'KICKED_OUT'
 // Sent to Billing Leaders when a reoccuring payment gets rejected
-export const PAYMENT_REJECTED = 'PAYMENT_REJECTED';
+export const PAYMENT_REJECTED = 'PAYMENT_REJECTED'
 // sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
-export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER';
+export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
 // sent to the rest of the team when someone just rejoined
-export const REJOIN_TEAM = 'REJOIN_TEAM';
+export const REJOIN_TEAM = 'REJOIN_TEAM'
 // Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
-export const REQUEST_NEW_USER = 'REQUEST_NEW_USER';
+export const REQUEST_NEW_USER = 'REQUEST_NEW_USER'
 // Sent along with an email to someone invited to join the team
-export const TEAM_INVITE = 'TEAM_INVITE';
+export const TEAM_INVITE = 'TEAM_INVITE'
 // sent to members of team that was archived
-export const TEAM_ARCHIVED = 'TEAM_ARCHIVED';
+export const TEAM_ARCHIVED = 'TEAM_ARCHIVED'
 // sent to members when a task is assigned to them or mentions them
-export const TASK_INVOLVES = 'TASK_INVOLVES';
+export const TASK_INVOLVES = 'TASK_INVOLVES'
 // sent on socket connection
-export const VERSION_INFO = 'VERSION_INFO';
+export const VERSION_INFO = 'VERSION_INFO'
 
 export const notificationTypes = [
   PAYMENT_REJECTED,
@@ -101,42 +101,39 @@ export const notificationTypes = [
   DENY_NEW_USER,
   TEAM_ARCHIVED,
   TEAM_INVITE
-];
+]
 
-export const billingLeaderTypes = [
-  PAYMENT_REJECTED,
-  REQUEST_NEW_USER
-];
+export const billingLeaderTypes = [PAYMENT_REJECTED, REQUEST_NEW_USER]
 
 /* User Settings */
-export const SETTINGS = 'settings';
-export const ORGANIZATIONS = 'organizations';
-export const NOTIFICATIONS = 'notifications';
-export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS];
+export const SETTINGS = 'settings'
+export const ORGANIZATIONS = 'organizations'
+export const NOTIFICATIONS = 'notifications'
+export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS]
 
 /* Org Settings */
-export const BILLING_PAGE = 'billing';
-export const MEMBERS_PAGE = 'members';
+export const BILLING_PAGE = 'billing'
+export const MEMBERS_PAGE = 'members'
 
 /* User Org Roles */
-export const BILLING_LEADER = 'billingLeader';
+export const BILLING_LEADER = 'billingLeader'
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
-export const MONTHLY_PRICE = 5;
-export const ADDED_USERS = 'ADDED_USERS';
-export const REMOVED_USERS = 'REMOVED_USERS';
-export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS';
-export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS';
+export const MONTHLY_PRICE = 5
+export const ADDED_USERS = 'ADDED_USERS'
+export const REMOVED_USERS = 'REMOVED_USERS'
+export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS'
+export const OTHER_ADJUSTMENTS = 'OTHER_ADJUSTMENTS'
 
 /* Invoice status variables */
-export const UPCOMING = 'UPCOMING';
-export const PENDING = 'PENDING';
-export const PAID = 'PAID';
-export const FAILED = 'FAILED';
+export const UPCOMING = 'UPCOMING'
+export const PENDING = 'PENDING'
+export const PAID = 'PAID'
+export const FAILED = 'FAILED'
 
 /* character limits */
-export const TASK_MAX_CHARS = 51200;
+export const TASK_MAX_CHARS = 51200
 
 /* Action Tags */
 export const tags = [
@@ -148,94 +145,97 @@ export const tags = [
     name: 'archived',
     description: 'Hidden from your main board'
   }
-];
+]
 
-export const textTags = ['#private', '#archived'];
+export const textTags = ['#private', '#archived']
 
-export const NEWLINE_REGEX = /\r\n?|\n/g;
+export const NEWLINE_REGEX = /\r\n?|\n/g
 
 /* Integrations */
-export const DEFAULT_TTL = ms('5m');
-export const cacheConfig = {ttl: DEFAULT_TTL};
-export const GITHUB = 'GitHubIntegration';
-export const SLACK = 'SlackIntegration';
-export const CURRENT_PROVIDERS = [GITHUB, SLACK];
-export const GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook';
-export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:bot';
-export const GITHUB_ENDPOINT = 'https://api.github.com/graphql';
+export const DEFAULT_TTL = ms('5m')
+export const cacheConfig = {ttl: DEFAULT_TTL}
+export const GITHUB = 'GitHubIntegration'
+export const SLACK = 'SlackIntegration'
+export const CURRENT_PROVIDERS = [GITHUB, SLACK]
+export const GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
+export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:bot'
+export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 
 /* JavaScript specifics */
-export const MAX_INT = 2147483647;
-
+export const MAX_INT = 2147483647
 
 // InvitationResultTypes
 // the invitation has been sent
-export const SUCCESS = 'SUCCESS';
+export const SUCCESS = 'SUCCESS'
 // the approval request has been sent to the billing leader
-export const PENDING_APPROVAL = 'PENDING_APPROVAL';
+export const PENDING_APPROVAL = 'PENDING_APPROVAL'
 // that email has already been invited
-export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM';
+export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM'
 // that email used to be on the team, and now they are again
-export const REACTIVATED = 'REACTIVATED';
+export const REACTIVATED = 'REACTIVATED'
 
 /* Relay Subscription Channels */
-export const INVITATION = 'invitation';
-export const NEW_AUTH_TOKEN = 'newAuthToken';
-export const NOTIFICATION = 'notification';
-export const ORGANIZATION = 'organization';
-export const ORG_APPROVAL = 'orgApproval';
+export const INVITATION = 'invitation'
+export const NEW_AUTH_TOKEN = 'newAuthToken'
+export const NOTIFICATION = 'notification'
+export const ORGANIZATION = 'organization'
+export const ORG_APPROVAL = 'orgApproval'
 // export const TASK = 'task'; // TODO refactor so it doesn't conflict with DnD
 // export const MEETING = 'meeting'; // conflicts with area
 // export const AGENDA_ITEM = 'agendaItem'; // conflict
-export const TEAM = 'team';
-export const TEAM_MEMBER = 'teamMember';
+export const TEAM = 'team'
+export const TEAM_MEMBER = 'teamMember'
 
 /*
  * WebSocket Events
  */
 // NOTE: The init doesn't happen at init. that's confusing & wrong, so we do our own thing.
 // export const GQL_CONNECTION_INIT = 'connection_init'; // Client -> Server
-export const GQL_CONNECTION_ACK = 'connection_ack'; // Server -> Client
-export const GQL_CONNECTION_ERROR = 'connection_error'; // Server -> Client
-export const GQL_CONNECTION_KEEP_ALIVE = 'ka'; // Server <-> Client
-export const GQL_CONNECTION_TERMINATE = 'connection_terminate'; // Client -> Server
-export const GQL_START = 'start'; // Client -> Server
-export const GQL_DATA = 'data'; // Server -> Client
-export const GQL_ERROR = 'error'; // Server -> Client
-export const GQL_COMPLETE = 'complete'; // Server -> Client
-export const GQL_STOP = 'stop'; // Client -> Server
+export const GQL_CONNECTION_ACK = 'connection_ack' // Server -> Client
+export const GQL_CONNECTION_ERROR = 'connection_error' // Server -> Client
+export const GQL_CONNECTION_KEEP_ALIVE = 'ka' // Server <-> Client
+export const GQL_CONNECTION_TERMINATE = 'connection_terminate' // Client -> Server
+export const GQL_START = 'start' // Client -> Server
+export const GQL_DATA = 'data' // Server -> Client
+export const GQL_ERROR = 'error' // Server -> Client
+export const GQL_COMPLETE = 'complete' // Server -> Client
+export const GQL_STOP = 'stop' // Client -> Server
 
 /* WebSocket keep alive interval */
-export const WS_KEEP_ALIVE = 10000;
+export const WS_KEEP_ALIVE = 10000
 
 /* Relay Subscription Event Types */
-export const UPDATED = 'updated';
+export const UPDATED = 'updated'
 
 /* Parabol Payment level */
-export const PERSONAL = 'personal';
-export const PRO = 'pro';
-export const ENTERPRISE = 'enterprise';
+export const PERSONAL = 'personal'
+export const PRO = 'pro'
+export const ENTERPRISE = 'enterprise'
 
 /* Task Involvement Types */
-export const ASSIGNEE = 'ASSIGNEE';
-export const MENTIONEE = 'MENTIONEE';
+export const ASSIGNEE = 'ASSIGNEE'
+export const MENTIONEE = 'MENTIONEE'
 
 /* Third-party authentication providers */
 export const THIRD_PARTY_AUTH_PROVIDERS = [
-  {displayName: 'Google', auth0Connection: 'google-oauth2', iconName: 'google'}
-];
+  {
+    displayName: 'Google',
+    auth0Connection: 'google-oauth2',
+    iconName: 'google'
+  }
+]
 
 /* Default auth0 email/password db */
-export const AUTH0_DB_CONNECTION = 'Username-Password-Authentication';
+export const AUTH0_DB_CONNECTION = 'Username-Password-Authentication'
 
 /* Meeting Types */
-export const ACTION = 'action';
-export const RETROSPECTIVE = 'retrospective';
+export const ACTION = 'action'
+export const RETROSPECTIVE = 'retrospective'
 
 /* Retro DnD types */
-export const REFLECTION_CARD = 'REFLECTION_CARD';
-export const REFLECTION_GROUP = 'REFLECTION_GROUP';
+export const REFLECTION_CARD = 'REFLECTION_CARD'
+export const REFLECTION_GROUP = 'REFLECTION_GROUP'
 
 /* Retro constants */
-export const RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5;
-export const RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3;
+export const RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5
+export const RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3

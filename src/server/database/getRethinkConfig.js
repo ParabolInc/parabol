@@ -1,14 +1,14 @@
-import url from 'url';
-import readCert from './readCert';
-import flag from 'node-env-flag';
-import getDotenv from '../../universal/utils/dotenv';
+import url from 'url'
+import readCert from './readCert'
+import flag from 'node-env-flag'
+import getDotenv from '../../universal/utils/dotenv'
 
 // Import .env and expand variables:
-getDotenv();
+getDotenv()
 
-export default function getRethinkConfig() {
-  const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment';
-  const u = url.parse(urlString);
+export default function getRethinkConfig () {
+  const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment'
+  const u = url.parse(urlString)
 
   const config = {
     host: u.hostname,
@@ -17,7 +17,7 @@ export default function getRethinkConfig() {
     db: u.path.split('/')[1],
     min: process.env.NODE_ENV === 'production' ? 50 : 3,
     buffer: process.env.NODE_ENV === 'production' ? 50 : 3
-  };
+  }
 
   if (process.env.NODE_ENV && flag(process.env.RETHINKDB_SSL)) {
     // we may need a cert for production deployment
@@ -27,7 +27,7 @@ export default function getRethinkConfig() {
       ssl: {
         ca: readCert()
       }
-    });
+    })
   }
-  return config;
+  return config
 }

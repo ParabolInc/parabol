@@ -1,6 +1,6 @@
 const dontTellDraft = (e) => {
-  e.preventDefault();
+  e.preventDefault()
   // e.stopPropagation();
-};
+}
 
-export default dontTellDraft;
+export default dontTellDraft

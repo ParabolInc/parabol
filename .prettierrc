@@ -1,0 +1,7 @@
+{
+  "bracketSpacing": false,
+  "singleQuote": true,
+  "arrowParens": "always",
+  "printWidth": 100,
+  "semi": false
+}

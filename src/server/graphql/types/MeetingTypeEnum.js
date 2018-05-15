@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {ACTION, RETROSPECTIVE} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 
 const MeetingTypeEnum = new GraphQLEnumType({
   name: 'MeetingTypeEnum',
@@ -8,6 +8,6 @@ const MeetingTypeEnum = new GraphQLEnumType({
     [ACTION]: {},
     [RETROSPECTIVE]: {}
   }
-});
+})
 
-export default MeetingTypeEnum;
+export default MeetingTypeEnum

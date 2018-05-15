@@ -1,20 +1,17 @@
-import React from 'react';
-import {render} from 'react-dom';
-import makeStore from './makeStore';
-import Root from './Root';
-import './scrollIntoViewIfNeeded';
-import {hydrate} from 'emotion';
+import React from 'react'
+import {render} from 'react-dom'
+import makeStore from './makeStore'
+import Root from './Root'
+import './scrollIntoViewIfNeeded'
+import {hydrate} from 'emotion'
 
-const initialState = {};
-const store = makeStore(initialState);
+const initialState = {}
+const store = makeStore(initialState)
 
 if (__PRODUCTION__) {
-  hydrate(window.__EMOTION__);
+  hydrate(window.__EMOTION__)
 }
-render(
-  <Root store={store} />,
-  document.getElementById('root')
-);
+render(<Root store={store} />, document.getElementById('root'))
 
 /*
  * react-hot-loader currently doesn't support React 16.3, so we'll need to disable it for now

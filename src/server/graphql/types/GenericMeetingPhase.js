@@ -1,6 +1,6 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase';
-import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage';
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase'
+import GenericMeetingStage from 'server/graphql/types/GenericMeetingStage'
 
 const GenericMeetingPhase = new GraphQLObjectType({
   name: 'GenericMeetingPhase',
@@ -12,6 +12,6 @@ const GenericMeetingPhase = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GenericMeetingStage)))
     }
   })
-});
+})
 
-export default GenericMeetingPhase;
+export default GenericMeetingPhase

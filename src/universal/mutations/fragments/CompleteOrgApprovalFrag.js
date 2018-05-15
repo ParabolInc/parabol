@@ -5,5 +5,4 @@ graphql`
     email
     teamId
   }
-`;
-
+`

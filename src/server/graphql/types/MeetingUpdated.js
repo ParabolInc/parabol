@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveTeam} from 'server/graphql/resolvers';
-import Team from 'server/graphql/types/Team';
+import {GraphQLObjectType} from 'graphql'
+import {resolveTeam} from 'server/graphql/resolvers'
+import Team from 'server/graphql/types/Team'
 
 const MeetingUpdated = new GraphQLObjectType({
   name: 'MeetingUpdated',
@@ -10,6 +10,6 @@ const MeetingUpdated = new GraphQLObjectType({
       resolve: resolveTeam
     }
   })
-});
+})
 
-export default MeetingUpdated;
+export default MeetingUpdated

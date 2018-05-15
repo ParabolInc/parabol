@@ -1,20 +1,19 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveTasks,
   resolveTeam,
   resolveTeamMember,
   resolveUser
-} from 'server/graphql/resolvers';
-import Notification from 'server/graphql/types/Notification';
-import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut';
-import Task from 'server/graphql/types/Task';
-import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
-import User from 'server/graphql/types/User';
-import {getUserId} from 'server/utils/authorization';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
-
+} from 'server/graphql/resolvers'
+import Notification from 'server/graphql/types/Notification'
+import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
+import Task from 'server/graphql/types/Task'
+import Team from 'server/graphql/types/Team'
+import TeamMember from 'server/graphql/types/TeamMember'
+import User from 'server/graphql/types/User'
+import {getUserId} from 'server/utils/authorization'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const RemoveTeamMemberPayload = new GraphQLObjectType({
   name: 'RemoveTeamMemberPayload',
@@ -51,13 +50,13 @@ const RemoveTeamMemberPayload = new GraphQLObjectType({
       type: NotifyKickedOut,
       description: 'A notification if you were kicked out by the team leader',
       resolve: async ({notificationId}, args, {authToken, dataLoader}) => {
-        if (!notificationId) return null;
-        const viewerId = getUserId(authToken);
-        const notification = await dataLoader.get('notifications').load(notificationId);
-        return notification.userIds[0] === viewerId ? notification : null;
+        if (!notificationId) return null
+        const viewerId = getUserId(authToken)
+        const notification = await dataLoader.get('notifications').load(notificationId)
+        return notification.userIds[0] === viewerId ? notification : null
       }
     }
   })
-});
+})
 
-export default RemoveTeamMemberPayload;
+export default RemoveTeamMemberPayload

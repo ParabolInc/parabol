@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveAgendaItem} from 'server/graphql/resolvers';
-import AgendaItem from 'server/graphql/types/AgendaItem';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveAgendaItem} from 'server/graphql/resolvers'
+import AgendaItem from 'server/graphql/types/AgendaItem'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const UpdateAgendaItemPayload = new GraphQLObjectType({
   name: 'UpdateAgendaItemPayload',
@@ -14,6 +14,6 @@ const UpdateAgendaItemPayload = new GraphQLObjectType({
       type: StandardMutationError
     }
   })
-});
+})
 
-export default UpdateAgendaItemPayload;
+export default UpdateAgendaItemPayload

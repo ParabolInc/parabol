@@ -1,5 +1,5 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
 
 const GroupPhaseCompletePayload = new GraphQLObjectType({
   name: 'GroupPhaseCompletePayload',
@@ -8,10 +8,10 @@ const GroupPhaseCompletePayload = new GraphQLObjectType({
       type: new GraphQLList(RetroReflectionGroup),
       description: 'a list of updated reflection groups',
       resolve: ({reflectionGroupIds}, args, {dataLoader}) => {
-        return dataLoader.get('retroReflectionGroups').loadMany(reflectionGroupIds);
+        return dataLoader.get('retroReflectionGroups').loadMany(reflectionGroupIds)
       }
     }
   })
-});
+})
 
-export default GroupPhaseCompletePayload;
+export default GroupPhaseCompletePayload

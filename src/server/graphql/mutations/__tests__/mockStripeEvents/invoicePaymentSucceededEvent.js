@@ -42,4 +42,4 @@ export default (invoiceId, customer, subscription) => ({
       webhooks_delivered_at: 1488909040
     }
   }
-});
+})

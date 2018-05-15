@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveTask} from 'server/graphql/resolvers';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveTask} from 'server/graphql/resolvers'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const CreateGitHubIssuePayload = new GraphQLObjectType({
   name: 'CreateGitHubIssuePayload',
@@ -14,6 +14,6 @@ const CreateGitHubIssuePayload = new GraphQLObjectType({
       resolve: resolveTask
     }
   })
-});
+})
 
-export default CreateGitHubIssuePayload;
+export default CreateGitHubIssuePayload

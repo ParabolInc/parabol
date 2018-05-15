@@ -1,10 +1,14 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {resolveArchivedSoftTasks, resolveOrgApproval, resolveSoftTeamMember} from 'server/graphql/resolvers';
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser';
-import OrgApproval from 'server/graphql/types/OrgApproval';
-import SoftTeamMember from 'server/graphql/types/SoftTeamMember';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {
+  resolveArchivedSoftTasks,
+  resolveOrgApproval,
+  resolveSoftTeamMember
+} from 'server/graphql/resolvers'
+import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser'
+import OrgApproval from 'server/graphql/types/OrgApproval'
+import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const CancelApprovalPayload = new GraphQLObjectType({
   name: 'CancelApprovalPayload',
@@ -32,6 +36,6 @@ const CancelApprovalPayload = new GraphQLObjectType({
       resolve: resolveArchivedSoftTasks
     }
   })
-});
+})
 
-export default CancelApprovalPayload;
+export default CancelApprovalPayload

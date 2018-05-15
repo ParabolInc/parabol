@@ -18,4 +18,4 @@ graphql`
     periodEnd
     tier
   }
-`;
+`

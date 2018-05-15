@@ -1,25 +1,24 @@
 // @flow
 
-
 // import type {NewMeetingPhase} from 'universal/types/schema.flow';
 
 const findStageAfterId = (phases: $ReadOnlyArray<Object>, stageId: string) => {
-  if (!phases) return undefined;
-  let stageFound = false;
+  if (!phases) return undefined
+  let stageFound = false
   for (let ii = 0; ii < phases.length; ii++) {
-    const phase = phases[ii];
-    const {stages} = phase;
+    const phase = phases[ii]
+    const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
-      const stage = stages[jj];
+      const stage = stages[jj]
       if (stageFound === true) {
-        return {phase, stage};
+        return {phase, stage}
       }
       if (stage.id === stageId) {
-        stageFound = true;
+        stageFound = true
       }
     }
   }
-  return undefined;
-};
+  return undefined
+}
 
-export default findStageAfterId;
+export default findStageAfterId

@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLObjectType} from 'graphql';
+import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
 
 const UserFeatureFlags = new GraphQLObjectType({
   name: 'UserFeatureFlags',
@@ -9,6 +9,6 @@ const UserFeatureFlags = new GraphQLObjectType({
       description: 'true if the user has access to retro meetings'
     }
   })
-});
+})
 
-export default UserFeatureFlags;
+export default UserFeatureFlags

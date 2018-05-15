@@ -15,7 +15,7 @@ import {
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
   TEAM_INVITE
-} from '../utils/constants';
+} from '../utils/constants'
 
 type Notification = {
   id: string,
@@ -34,14 +34,14 @@ type Notification = {
     | TEAM_ARCHIVED
     | TEAM_INVITE,
   userIds: string[]
-};
+}
 
 const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
   PAYMENT_REJECTED,
   REQUEST_NEW_USER,
   TEAM_INVITE
-]);
+])
 
 // eslint-disable-next-line import/prefer-default-export
-export const requiresAction = (n: Notification): bool =>
-  NOTIFICATION_TYPES_REQUIRING_ACTION.has(n.type);
+export const requiresAction = (n: Notification): boolean =>
+  NOTIFICATION_TYPES_REQUIRING_ACTION.has(n.type)

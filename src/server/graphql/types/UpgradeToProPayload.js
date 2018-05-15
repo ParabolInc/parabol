@@ -1,8 +1,8 @@
-import {GraphQLObjectType, GraphQLList} from 'graphql';
-import {resolveOrganization, resolveTeams} from 'server/graphql/resolvers';
-import Organization from 'server/graphql/types/Organization';
-import Team from 'server/graphql/types/Team';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType, GraphQLList} from 'graphql'
+import {resolveOrganization, resolveTeams} from 'server/graphql/resolvers'
+import Organization from 'server/graphql/types/Organization'
+import Team from 'server/graphql/types/Team'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const UpgradeToProPayload = new GraphQLObjectType({
   name: 'UpgradeToProPayload',
@@ -21,6 +21,6 @@ const UpgradeToProPayload = new GraphQLObjectType({
       resolve: resolveTeams
     }
   })
-});
+})
 
-export default UpgradeToProPayload;
+export default UpgradeToProPayload

@@ -1,12 +1,17 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import {cacheConfig} from 'universal/utils/constants';
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer';
-import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH, HUMAN_ADDICTION_THRESH, MAX_WAIT_TIME} from 'universal/styles/ui';
-import Loadable from 'react-loadable';
-import LoadableLoading from 'universal/components/LoadableLoading';
-import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {cacheConfig} from 'universal/utils/constants'
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import {
+  DEFAULT_MENU_HEIGHT,
+  DEFAULT_MENU_WIDTH,
+  HUMAN_ADDICTION_THRESH,
+  MAX_WAIT_TIME
+} from 'universal/styles/ui'
+import Loadable from 'react-loadable'
+import LoadableLoading from 'universal/components/LoadableLoading'
+import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup'
 
 const query = graphql`
   query SuggestMentionableUsersRootQuery($teamId: ID!) {
@@ -14,21 +19,32 @@ const query = graphql`
       ...SuggestMentionableUsers_viewer
     }
   }
-`;
+`
 
-const loading = (props) => <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />;
+const loading = (props) => (
+  <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
+)
 const LoadableSuggestMentionableUsers = Loadable({
-  loader: () => System.import(
-    /* webpackChunkName: 'SuggestMentionableUsers' */
-    'universal/components/SuggestMentionableUsers'
-  ),
+  loader: () =>
+    System.import(
+      /* webpackChunkName: 'SuggestMentionableUsers' */
+      'universal/components/SuggestMentionableUsers'
+    ),
   loading,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME
-});
+})
 
 const SuggestMentionableUsersRoot = (props) => {
-  const {activeIdx, atmosphere, handleSelect, setSuggestions, suggestions, triggerWord, teamId} = props;
+  const {
+    activeIdx,
+    atmosphere,
+    handleSelect,
+    setSuggestions,
+    suggestions,
+    triggerWord,
+    teamId
+  } = props
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -40,12 +56,18 @@ const SuggestMentionableUsersRoot = (props) => {
           LoadableComponent={LoadableSuggestMentionableUsers}
           loading={loading}
           readyState={readyState}
-          extraProps={{activeIdx, handleSelect, setSuggestions, suggestions, triggerWord}}
+          extraProps={{
+            activeIdx,
+            handleSelect,
+            setSuggestions,
+            suggestions,
+            triggerWord
+          }}
         />
       )}
     />
-  );
-};
+  )
+}
 
 SuggestMentionableUsersRoot.propTypes = {
   activeIdx: PropTypes.number.isRequired,
@@ -55,6 +77,6 @@ SuggestMentionableUsersRoot.propTypes = {
   suggestions: PropTypes.array,
   triggerWord: PropTypes.string.isRequired,
   teamId: PropTypes.string.isRequired
-};
+}
 
-export default withAtmosphere(SuggestMentionableUsersRoot);
+export default withAtmosphere(SuggestMentionableUsersRoot)

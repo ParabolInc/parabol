@@ -1,5 +1,5 @@
-import {GraphQLObjectType} from 'graphql';
-import Notification from 'server/graphql/types/Notification';
+import {GraphQLObjectType} from 'graphql'
+import Notification from 'server/graphql/types/Notification'
 
 const NotificationAdded = new GraphQLObjectType({
   name: 'NotificationAdded',
@@ -8,6 +8,6 @@ const NotificationAdded = new GraphQLObjectType({
       type: Notification
     }
   })
-});
+})
 
-export default NotificationAdded;
+export default NotificationAdded

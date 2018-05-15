@@ -4,12 +4,12 @@
  * given an object and value, it will return the first key that matches the value
  * */
 const findKeyByValue = (obj: Object, val: any) => {
-  const keys = Object.keys(obj);
+  const keys = Object.keys(obj)
   for (let ii = 0; ii < keys.length; ii++) {
-    const key = keys[ii];
-    if (val === obj[key]) return key;
+    const key = keys[ii]
+    if (val === obj[key]) return key
   }
-  return undefined;
-};
+  return undefined
+}
 
-export default findKeyByValue;
+export default findKeyByValue

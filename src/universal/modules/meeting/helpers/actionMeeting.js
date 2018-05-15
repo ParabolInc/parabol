@@ -1,4 +1,13 @@
-import {LOBBY, CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL, SUMMARY, MEETING_SUMMARY_LABEL} from 'universal/utils/constants';
+import {
+  LOBBY,
+  CHECKIN,
+  UPDATES,
+  FIRST_CALL,
+  AGENDA_ITEMS,
+  LAST_CALL,
+  SUMMARY,
+  MEETING_SUMMARY_LABEL
+} from 'universal/utils/constants'
 
 export default {
   [LOBBY]: {
@@ -58,4 +67,4 @@ export default {
     route: 'summary',
     visitOnce: false
   }
-};
+}

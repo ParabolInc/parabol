@@ -1,6 +1,6 @@
-import {commitMutation} from 'react-relay';
-import handleMutationError from 'universal/mutations/handlers/handleMutationError';
-import updateLocalStage from 'universal/utils/relay/updateLocalStage';
+import {commitMutation} from 'react-relay'
+import handleMutationError from 'universal/mutations/handlers/handleMutationError'
+import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 
 graphql`
   fragment StartNewMeetingMutation_team on StartNewMeetingPayload {
@@ -16,7 +16,7 @@ graphql`
       }
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation StartNewMeetingMutation($teamId: ID!, $meetingType: MeetingTypeEnum!) {
@@ -24,14 +24,22 @@ const mutation = graphql`
       ...StartNewMeetingMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 export const startNewMeetingTeamOnNext = (payload, context) => {
-  const {environment} = context;
-  const {error, team: {newMeeting: {id: meetingId, phases: [firstPhase]}}} = payload;
-  updateLocalStage(environment, meetingId, firstPhase.stages[0].id);
-  handleMutationError(error, context);
-};
+  const {environment} = context
+  const {
+    error,
+    team: {
+      newMeeting: {
+        id: meetingId,
+        phases: [firstPhase]
+      }
+    }
+  } = payload
+  updateLocalStage(environment, meetingId, firstPhase.stages[0].id)
+  handleMutationError(error, context)
+}
 
 const StartNewMeetingMutation = (environment, variables, {history}, onError, onCompleted) => {
   return commitMutation(environment, {
@@ -39,12 +47,12 @@ const StartNewMeetingMutation = (environment, variables, {history}, onError, onC
     variables,
     onError,
     onCompleted: (res, errors) => {
-      startNewMeetingTeamOnNext(res.startNewMeeting, {environment, history});
+      startNewMeetingTeamOnNext(res.startNewMeeting, {environment, history})
       if (onCompleted) {
-        onCompleted(res, errors);
+        onCompleted(res, errors)
       }
     }
-  });
-};
+  })
+}
 
-export default StartNewMeetingMutation;
+export default StartNewMeetingMutation

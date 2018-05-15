@@ -1,18 +1,17 @@
-import getRethink from 'server/database/rethinkDriver';
+import getRethink from 'server/database/rethinkDriver'
 
 const flushSocketConnections = async () => {
-  const r = getRethink();
-  return r.table('User')
-    .update({
-      connectedSockets: []
-    });
-};
+  const r = getRethink()
+  return r.table('User').update({
+    connectedSockets: []
+  })
+}
 
 const postDeploy = async () => {
-  const r = getRethink();
-  await flushSocketConnections();
-  await r.getPoolMaster().drain();
-  process.exit();
-};
+  const r = getRethink()
+  await flushSocketConnections()
+  await r.getPoolMaster().drain()
+  process.exit()
+}
 
-export default postDeploy;
+export default postDeploy

@@ -1,6 +1,13 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import {globalIdField} from 'graphql-relay';
-import {SLACK} from 'universal/utils/constants';
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
+import {globalIdField} from 'graphql-relay'
+import {SLACK} from 'universal/utils/constants'
 
 const SlackIntegration = new GraphQLObjectType({
   name: SLACK,
@@ -10,11 +17,13 @@ const SlackIntegration = new GraphQLObjectType({
     id: globalIdField(SLACK, ({id}) => id),
     channelId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'the id of the channel provided by the service, if available. Useful for fetching from their API'
+      description:
+        'the id of the channel provided by the service, if available. Useful for fetching from their API'
     },
     channelName: {
       type: GraphQLString,
-      description: 'The name of the channel. Shared with all, updated when the integration owner looks at it'
+      description:
+        'The name of the channel. Shared with all, updated when the integration owner looks at it'
     },
     isActive: {
       type: GraphQLBoolean,
@@ -29,7 +38,6 @@ const SlackIntegration = new GraphQLObjectType({
       description: '*The team that cares about these annoucements'
     }
   })
-});
+})
 
-export default SlackIntegration;
-
+export default SlackIntegration

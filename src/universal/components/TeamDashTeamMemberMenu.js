@@ -1,22 +1,22 @@
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts';
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts';
-import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck';
-import type {TeamDashTeamMemberMenu_team as Team} from './__generated__/TeamDashTeamMemberMenu_team.graphql';
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck'
+import type {TeamDashTeamMemberMenu_team as Team} from './__generated__/TeamDashTeamMemberMenu_team.graphql'
 
-import type {Dispatch} from 'react-redux';
-import {connect} from 'react-redux';
-import {textOverflow} from 'universal/styles/helpers';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import styled from 'react-emotion';
+import type {Dispatch} from 'react-redux'
+import {connect} from 'react-redux'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import styled from 'react-emotion'
+import textOverflow from 'universal/styles/helpers/textOverflow'
 
 type Props = {
   closePortal: () => void,
   dispatch: Dispatch<*>,
   team: Team,
-  teamMemberFilterId: ?string,
+  teamMemberFilterId: ?string
 }
 
 const Label = styled('div')({
@@ -28,12 +28,13 @@ const Label = styled('div')({
   lineHeight: ui.menuItemHeight,
   marginBottom: ui.menuGutterVertical,
   padding: `0 ${ui.menuGutterHorizontal}`
-});
+})
 
 const TeamDashTeamMemberMenu = (props: Props) => {
-  const {closePortal, dispatch, team, teamMemberFilterId} = props;
-  const {teamMembers} = team;
-  const defaultActiveIdx = teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2;
+  const {closePortal, dispatch, team, teamMemberFilterId} = props
+  const {teamMembers} = team
+  const defaultActiveIdx =
+    teamMembers.findIndex((teamMember) => teamMember.id === teamMemberFilterId) + 2
   return (
     <MenuWithShortcuts
       ariaLabel={'Select the team member to filter by'}
@@ -46,18 +47,16 @@ const TeamDashTeamMemberMenu = (props: Props) => {
         label={'All members'}
         onClick={() => dispatch(filterTeamMember(null))}
       />
-      {
-        teamMembers.map((teamMember) => (
-          <MenuItemWithShortcuts
-            key={`teamMemberFilter${teamMember.id}`}
-            label={teamMember.preferredName}
-            onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
-          />
-        ))
-      }
+      {teamMembers.map((teamMember) => (
+        <MenuItemWithShortcuts
+          key={`teamMemberFilter${teamMember.id}`}
+          label={teamMember.preferredName}
+          onClick={() => dispatch(filterTeamMember(teamMember.id, teamMember.preferredName))}
+        />
+      ))}
     </MenuWithShortcuts>
-  );
-};
+  )
+}
 
 export default createFragmentContainer(
   connect()(TeamDashTeamMemberMenu),
@@ -69,4 +68,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

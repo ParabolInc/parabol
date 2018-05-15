@@ -1,9 +1,9 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql';
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants';
-import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem';
-import CustomPhaseItemTypeEnum from 'server/graphql/types/CustomPhaseItemTypeEnum';
-import Team from 'server/graphql/types/Team';
-import {resolveTeam} from 'server/graphql/resolvers';
+import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
+import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
+import CustomPhaseItemTypeEnum from 'server/graphql/types/CustomPhaseItemTypeEnum'
+import Team from 'server/graphql/types/Team'
+import {resolveTeam} from 'server/graphql/resolvers'
 
 export const customPhaseItemFields = () => ({
   id: {
@@ -27,7 +27,7 @@ export const customPhaseItemFields = () => ({
     description: 'The team that owns this customPhaseItem',
     resolve: resolveTeam
   }
-});
+})
 
 const CustomPhaseItem = new GraphQLInterfaceType({
   name: 'CustomPhaseItem',
@@ -35,9 +35,9 @@ const CustomPhaseItem = new GraphQLInterfaceType({
   resolveType: ({phaseItemType}) => {
     const resolveTypeLookup = {
       [RETRO_PHASE_ITEM]: RetroPhaseItem
-    };
-    return resolveTypeLookup[phaseItemType];
+    }
+    return resolveTypeLookup[phaseItemType]
   }
-});
+})
 
-export default CustomPhaseItem;
+export default CustomPhaseItem

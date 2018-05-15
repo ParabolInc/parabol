@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import ui from 'universal/styles/ui'
 
 // NOTE: Let’s set this up!
 //    1. PATHS    for leaves of the logo
@@ -18,37 +18,42 @@ const PATHS = [
   'M4.623,19.3906 C4.644,19.2446 4.68,19.0926 4.705,18.9456 C4.74,18.7416 4.775,18.5376 4.817,18.3326 C4.876,18.0456 4.944,17.7556 5.016,17.4646 C5.062,17.2706 5.107,17.0776 5.16,16.8826 C5.248,16.5576 5.35,16.2286 5.454,15.8986 C5.506,15.7326 5.553,15.5686 5.608,15.4006 C5.776,14.9026 5.959,14.4006 6.161,13.8936 C6.309,13.5256 6.485,13.1606 6.649,12.7926 C7.096,11.7916 7.581,10.7966 8.139,9.8286 C8.685,8.8836 9.275,7.9706 9.901,7.1056 C9.903,7.1016 9.906,7.0976 9.908,7.0946 C9.834,7.1096 9.763,7.1266 9.688,7.1426 C9.538,7.1716 9.391,7.2066 9.242,7.2386 C8.912,7.3106 8.586,7.3876 8.267,7.4706 C8.104,7.5126 7.944,7.5556 7.785,7.6006 C7.472,7.6896 7.166,7.7846 6.865,7.8826 C6.728,7.9276 6.589,7.9706 6.455,8.0176 C6.031,8.1666 5.619,8.3246 5.228,8.4936 C1.905,9.9326 0,11.9686 0,14.0786 C0,16.0586 1.675,17.9726 4.623,19.3906',
   'M5.9102,7.1553 C6.0952,7.0883 6.2792,7.0213 6.4682,6.9573 C6.7542,6.8613 7.0492,6.7733 7.3452,6.6873 C7.5292,6.6343 7.7112,6.5783 7.8992,6.5273 C8.2342,6.4393 8.5782,6.3613 8.9242,6.2853 C9.0862,6.2493 9.2432,6.2093 9.4082,6.1763 C9.9242,6.0713 10.4512,5.9783 10.9912,5.9003 C11.3892,5.8433 11.7932,5.8063 12.1962,5.7653 C14.3632,5.5393 16.5762,5.5213 18.7442,5.7453 C18.7482,5.7463 18.7522,5.7463 18.7562,5.7463 C18.7082,5.6903 18.6582,5.6403 18.6102,5.5853 C18.5042,5.4643 18.3952,5.3483 18.2882,5.2303 C18.0642,4.9843 17.8402,4.7453 17.6112,4.5133 C17.4922,4.3923 17.3732,4.2733 17.2542,4.1573 C17.0212,3.9313 16.7872,3.7153 16.5532,3.5053 C16.4432,3.4083 16.3362,3.3073 16.2262,3.2153 C15.8862,2.9223 15.5442,2.6433 15.2022,2.3903 C13.2322,0.9273 11.3432,0.1553 9.7352,0.1553 C8.9952,0.1553 8.3272,0.3243 7.7502,0.6563 C6.0362,1.6453 5.2172,4.0523 5.4632,7.3143 C5.6072,7.2583 5.7632,7.2103 5.9102,7.1553',
   'M17.1484,2.6924 C17.3774,2.8944 17.6044,3.1084 17.8304,3.3254 C17.9674,3.4574 18.1054,3.5854 18.2414,3.7214 C18.4834,3.9644 18.7204,4.2204 18.9584,4.4804 C19.0734,4.6064 19.1894,4.7254 19.3034,4.8554 C19.6514,5.2504 19.9944,5.6584 20.3314,6.0874 C20.5764,6.3984 20.8044,6.7344 21.0414,7.0594 C21.6834,7.9444 22.3004,8.8604 22.8604,9.8294 C23.4034,10.7694 23.8994,11.7384 24.3404,12.7214 C24.3404,12.7214 24.3434,12.7284 24.3454,12.7324 C24.3694,12.6644 24.3874,12.5964 24.4114,12.5294 C24.4634,12.3744 24.5104,12.2194 24.5604,12.0644 C24.6614,11.7494 24.7554,11.4334 24.8424,11.1214 C24.8864,10.9604 24.9294,10.7984 24.9704,10.6394 C25.0504,10.3224 25.1224,10.0074 25.1864,9.6974 C25.2154,9.5564 25.2484,9.4164 25.2744,9.2774 C25.3574,8.8364 25.4274,8.4004 25.4754,7.9774 C25.8894,4.3794 25.0794,1.7124 23.2504,0.6564 C21.5364,-0.3286 19.0144,0.1764 16.3394,2.0044 C16.4644,2.1034 16.5864,2.2154 16.7104,2.3194 C16.8564,2.4414 17.0024,2.5644 17.1484,2.6924'
-];
+]
 /* eslint-enable max-len */
-const DURATION = '3s';
-const DELAY = 150;
-const TIMING = 100 / PATHS.length;
+const DURATION = '3s'
+const DELAY = 150
+const TIMING = 100 / PATHS.length
 
 const Spinner = (props) => {
-  const {fillColor, styles} = props;
+  const {fillColor, styles} = props
   return (
     <div className={css(styles.root)}>
       <div className={css(styles.block)}>
-        <svg className={css(styles.leaves)} viewBox="0 0 31 28" version="1.1" xmlns="http://www.w3.org/2000/svg">
-          {PATHS.map((p, i) =>
-            (<path
+        <svg
+          className={css(styles.leaves)}
+          viewBox='0 0 31 28'
+          version='1.1'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          {PATHS.map((p, i) => (
+            <path
               style={{fill: ui.palette[fillColor]}}
               className={css(styles.leaf, styles[`leaf${i + 1}`])}
               key={`path${i + 1}`}
               d={p}
-            />)
-          )}
+            />
+          ))}
         </svg>
       </div>
     </div>
-  );
-};
+  )
+}
 
 Spinner.propTypes = {
   fillColor: PropTypes.oneOf(ui.paletteOptions),
   styles: PropTypes.object,
   width: PropTypes.number
-};
+}
 
 const keyframesRotate = {
   '0%': {
@@ -57,7 +62,7 @@ const keyframesRotate = {
   '100%': {
     transform: 'rotate(360deg)'
   }
-};
+}
 
 const keyframesOpacity = {
   '0%': {
@@ -72,17 +77,17 @@ const keyframesOpacity = {
   '100%': {
     opacity: '.25'
   }
-};
+}
 
 const makeLeafDelayStyles = (delay, length) => {
-  const delayStyles = {};
+  const delayStyles = {}
   for (let i = 0; i < length; i++) {
     delayStyles[`leaf${i + 1}`] = {
       animationDelay: `${delay * i}ms`
-    };
+    }
   }
-  return delayStyles;
-};
+  return delayStyles
+}
 
 const styleThunk = (theme, {width}) => ({
   root: {
@@ -113,6 +118,6 @@ const styleThunk = (theme, {width}) => ({
     opacity: '.25'
   },
   ...makeLeafDelayStyles(DELAY, PATHS.length)
-});
+})
 
-export default withStyles(styleThunk)(Spinner);
+export default withStyles(styleThunk)(Spinner)

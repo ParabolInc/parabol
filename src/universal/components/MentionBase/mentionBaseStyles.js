@@ -1,4 +1,4 @@
-import ui from 'universal/styles/ui';
+import ui from 'universal/styles/ui'
 
 const mentionBaseStyles = {
   row: {
@@ -31,5 +31,5 @@ const mentionBaseStyles = {
     lineHeight: ui.menuItemHeight,
     paddingLeft: ui.menuGutterInner
   }
-};
-export default mentionBaseStyles;
+}
+export default mentionBaseStyles

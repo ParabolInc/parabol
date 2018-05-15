@@ -1,6 +1,6 @@
-export default function voidClick(e, cb) {
-  e.preventDefault();
+export default function voidClick (e, cb) {
+  e.preventDefault()
   if (typeof cb === 'function') {
-    cb();
+    cb()
   }
 }

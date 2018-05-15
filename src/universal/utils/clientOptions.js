@@ -1,9 +1,9 @@
-import {APP_NAME} from './constants';
+import {APP_NAME} from './constants'
 
 export const auth0 = {
   clientId: process.env.AUTH0_CLIENT_ID || 'w3mBrhiXGsE3DsrSMgpAz2bS6VzLhOyJ',
   domain: process.env.AUTH0_DOMAIN || 'parabol.auth0.com'
-};
+}
 
 export const head = {
   titleTemplate: '%s | Parabol, Inc.',
@@ -21,6 +21,6 @@ export const head = {
     {property: 'og:site', content: '@jrhusney'},
     {property: 'og:creator', content: '@jrhusney'}
   ]
-};
+}
 
-export const stripeKey = process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_MNoKbCzQX0lhktuxxI7M14wd';
+export const stripeKey = process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_MNoKbCzQX0lhktuxxI7M14wd'

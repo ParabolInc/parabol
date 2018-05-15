@@ -1,7 +1,7 @@
-import React from 'react';
-import {Route} from 'react-router-dom';
-import PropTypes from 'prop-types';
-import Bundle from '../Bundle/Bundle';
+import React from 'react'
+import {Route} from 'react-router-dom'
+import PropTypes from 'prop-types'
+import Bundle from '../Bundle/Bundle'
 
 /*
 * @param {bool} isAbstract - true if this is not the bottom most route or "leaf" route.
@@ -25,8 +25,8 @@ const AsyncRoute = ({mod, exact, path, isPrivate, extraProps}) => {
         />
       )}
     />
-  );
-};
+  )
+}
 
 AsyncRoute.propTypes = {
   exact: PropTypes.bool,
@@ -34,6 +34,6 @@ AsyncRoute.propTypes = {
   isPrivate: PropTypes.bool,
   mod: PropTypes.func.isRequired,
   path: PropTypes.string
-};
+}
 
-export default AsyncRoute;
+export default AsyncRoute

@@ -1,5 +1,5 @@
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants';
-import shortid from 'shortid';
+import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
+import shortid from 'shortid'
 
 exports.up = async (r) => {
   try {
@@ -8,7 +8,7 @@ exports.up = async (r) => {
       r.tableCreate('NewMeeting'),
       r.tableCreate('RetroThought'),
       r.tableCreate('RetroThoughtGroup')
-    ]);
+    ])
   } catch (e) {
     // noop
   }
@@ -20,13 +20,13 @@ exports.up = async (r) => {
       r.table('RetroThought').indexCreate('thoughtGroupId'),
       r.table('RetroThoughtGroup').indexCreate('meetingId')
       // r.table('RetroThoughtGroup').indexCreate('teamId'),
-    ]);
+    ])
   } catch (e) {
     // noop
   }
   try {
-    const teamIds = await r.table('Team')('id');
-    const inserts = [];
+    const teamIds = await r.table('Team')('id')
+    const inserts = []
     teamIds.forEach((teamId) => {
       inserts.push(
         {
@@ -53,13 +53,13 @@ exports.up = async (r) => {
           title: 'Change',
           question: 'What might we do differently next time?'
         }
-      );
-    });
-    await r.table('CustomPhaseItem').insert(inserts);
+      )
+    })
+    await r.table('CustomPhaseItem').insert(inserts)
   } catch (e) {
     // noop
   }
-};
+}
 
 exports.down = async (r) => {
   try {
@@ -68,8 +68,8 @@ exports.down = async (r) => {
       r.tableDrop('NewMeeting'),
       r.tableDrop('RetroThought'),
       r.tableDrop('RetroThoughtGroup')
-    ]);
+    ])
   } catch (e) {
     // noop
   }
-};
+}

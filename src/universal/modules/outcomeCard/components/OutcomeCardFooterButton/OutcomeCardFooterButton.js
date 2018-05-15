@@ -1,45 +1,37 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import FontAwesome from 'react-fontawesome'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const faStyle = {
   fontSize: ui.iconSize,
   lineHeight: '1.375rem'
-};
+}
 
 const OutcomeCardFooterButton = (props) => {
-  const {
-    icon,
-    onClick,
-    onMouseEnter,
-    styles,
-    innerRef
-  } = props;
+  const {icon, onClick, onMouseEnter, styles, innerRef} = props
 
-  const buttonStyles = css(
-    styles.cardFooterButton
-  );
+  const buttonStyles = css(styles.cardFooterButton)
 
   const handleOnClick = (e) => {
-    if (onClick) onClick(e);
-  };
+    if (onClick) onClick(e)
+  }
 
   return (
     <button
       className={buttonStyles}
       onClick={handleOnClick}
       onMouseEnter={onMouseEnter}
-      type="button"
+      type='button'
       ref={innerRef}
     >
       <FontAwesome name={icon} style={faStyle} />
     </button>
-  );
-};
+  )
+}
 
 OutcomeCardFooterButton.propTypes = {
   icon: PropTypes.string,
@@ -47,7 +39,7 @@ OutcomeCardFooterButton.propTypes = {
   onMouseEnter: PropTypes.func,
   innerRef: PropTypes.func,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   cardFooterButton: {
@@ -77,6 +69,6 @@ const styleThunk = () => ({
       opacity: 1
     }
   }
-});
+})
 
-export default withStyles(styleThunk)(OutcomeCardFooterButton);
+export default withStyles(styleThunk)(OutcomeCardFooterButton)

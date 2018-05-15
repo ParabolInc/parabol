@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {MEETING, TEAM_DASH, USER_DASH} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {MEETING, TEAM_DASH, USER_DASH} from 'universal/utils/constants'
 
 const AreaEnum = new GraphQLEnumType({
   name: 'AreaEnum',
@@ -9,6 +9,6 @@ const AreaEnum = new GraphQLEnumType({
     [TEAM_DASH]: {},
     [USER_DASH]: {}
   }
-});
+})
 
-export default AreaEnum;
+export default AreaEnum

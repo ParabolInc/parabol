@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
   fragment ResendTeamInviteMutation_invitation on ResendTeamInvitePayload {
@@ -6,29 +6,29 @@ graphql`
       updatedAt
     }
   }
-`;
+`
 const mutation = graphql`
   mutation ResendTeamInviteMutation($inviteId: ID!) {
     resendTeamInvite(inviteId: $inviteId) {
       error {
         message
       }
-     ...ResendTeamInviteMutation_invitation @relay(mask: false) 
+      ...ResendTeamInviteMutation_invitation @relay(mask: false)
     }
   }
-`;
+`
 
 const ResendTeamInviteMutation = (environment, inviteId, onError, onCompleted) => {
   return commitMutation(environment, {
     mutation,
     variables: {inviteId},
     optimisticUpdater: (store) => {
-      const now = new Date();
-      store.get(inviteId).setValue(now.toJSON(), 'updatedAt');
+      const now = new Date()
+      store.get(inviteId).setValue(now.toJSON(), 'updatedAt')
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default ResendTeamInviteMutation;
+export default ResendTeamInviteMutation

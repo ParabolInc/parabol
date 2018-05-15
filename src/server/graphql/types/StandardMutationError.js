@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLNonNull, GraphQLString} from 'graphql';
+import {GraphQLObjectType, GraphQLNonNull, GraphQLString} from 'graphql'
 
 const StandardMutationError = new GraphQLObjectType({
   name: 'StandardMutationError',
@@ -12,6 +12,6 @@ const StandardMutationError = new GraphQLObjectType({
       description: 'The full error'
     }
   })
-});
+})
 
-export default StandardMutationError;
+export default StandardMutationError
