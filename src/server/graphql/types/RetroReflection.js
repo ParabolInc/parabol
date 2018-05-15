@@ -15,7 +15,7 @@ import {getUserId} from 'server/utils/authorization'
 import {makeResolve, resolveForSU} from 'server/graphql/resolvers'
 import GoogleAnalyzedEntity from 'server/graphql/types/GoogleAnalyzedEntity'
 import User from 'server/graphql/types/User'
-import DraggerCoords from 'server/graphql/types/DraggerCoords'
+import Coords2D from 'server/graphql/types/Coords2D'
 
 const RetroReflection = new GraphQLObjectType({
   name: 'RetroReflection',
@@ -51,7 +51,7 @@ const RetroReflection = new GraphQLObjectType({
     },
     draggerCoords: {
       description: 'The coordinates necessary to simulate a drag for a subscribing user',
-      type: DraggerCoords
+      type: Coords2D
     },
     editorIds: {
       description: 'an array of all the socketIds that are currently editing the reflection',

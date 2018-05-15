@@ -1,14 +1,15 @@
 // @flow
-import * as React from 'react'
-import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
-import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
-// $FlowFixMe
-import {convertFromRaw, EditorState} from 'draft-js'
-import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import type {ReflectionCardInFlight_reflection as Reflection} from './__generated__/ReflectionCardInFlight_reflection.graphql'
+// $FlowFixMe
+import {EditorState, convertFromRaw} from 'draft-js'
+import * as React from 'react'
+import styled from 'react-emotion'
+import {createFragmentContainer} from 'react-relay'
+import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
+import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
+import ui from 'universal/styles/ui'
 
 type Coords = {
   x: number,
@@ -52,18 +53,18 @@ class ReflectionCardInFlight extends React.Component<Props> {
   setDragState = (e) => {
     const {
       atmosphere,
-      reflection: {reflectionId, dragX, dragY}
+      reflection: {reflectionId, dragCoords}
     } = this.props
     const xDiff = e.x - this.initialCursorOffset.x
     const yDiff = e.y - this.initialCursorOffset.y
     const x = this.initialComponentOffset.x + xDiff
     const y = this.initialComponentOffset.y + yDiff
-    if (x !== dragX || y !== dragY) {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)
-        reflection.setValue(x, 'dragX')
-        reflection.setValue(y, 'dragY')
-      })
+    if (x !== dragCoords.x || y !== dragCoords.y) {
+      const input = {
+        coords: {x, y},
+        sourceId: reflectionId
+      }
+      UpdateDragLocationMutation(atmosphere, {input})
     }
   }
 
@@ -73,10 +74,11 @@ class ReflectionCardInFlight extends React.Component<Props> {
 
   render () {
     const {
-      reflection: {dragX, dragY}
+      reflection: {dragCoords}
     } = this.props
-    if (!dragX || !dragY) return null
-    const transform = `translate3d(${dragX}px, ${dragY}px, 0px)`
+    if (!dragCoords) return null
+    const {x, y} = dragCoords
+    const transform = `translate3d(${x}px, ${y}px, 0px)`
     return (
       <ModalBlock style={{transform}}>
         <ReflectionCardRoot>
@@ -93,8 +95,10 @@ export default createFragmentContainer(
     fragment ReflectionCardInFlight_reflection on RetroReflection {
       reflectionId: id
       content
-      dragX
-      dragY
+      dragCoords {
+        x
+        y
+      }
     }
   `
 )

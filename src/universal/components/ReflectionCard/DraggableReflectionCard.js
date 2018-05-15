@@ -34,6 +34,9 @@ class DraggableReflectionCard extends React.Component<Props> {
     const {connectDragPreview} = this.props
     connectDragPreview(getEmptyImage())
   }
+
+  reflectionRef = React.createRef()
+
   render () {
     const {
       connectDragSource,

@@ -203,7 +203,7 @@ export type TaskEdge = {
 }
 
 /**
-  A long-term task shared across the team, assigned to a single user
+  A long-term task shared across the team, assigned to a single user 
 */
 export type Task = {
   /** shortid */
@@ -1154,6 +1154,8 @@ export type Mutation = {
   updateCheckInQuestion: ?UpdateCheckInQuestionPayload,
   /** Update a Team's Check-in question in a new meeting */
   updateNewCheckInQuestion: ?UpdateNewCheckInQuestionPayload,
+  /** all the info required to provide an accurate display-specific location of where an item is */
+  updateDragLocation: ?UpdateDragLocationPayload,
   /** Update the content of a reflection */
   updateReflectionContent: ?UpdateReflectionContentPayload,
   /** Update the title of a reflection group */
@@ -1560,7 +1562,7 @@ export type RetroReflection = {
   /** The user that is currently dragging the reflection */
   draggerUser: ?User,
   /** The coordinates necessary to simulate a drag for a subscribing user */
-  draggerCoords: ?DraggerCoords,
+  draggerCoords: ?Coords2D,
   /** an array of all the socketIds that are currently editing the reflection */
   editorIds: Array<string>,
   /** True if the reflection was not removed, else false */
@@ -1593,16 +1595,10 @@ export type RetroReflection = {
 }
 
 /**
-  Coordinates used to share a drag
+  Coordinates used relay a location in a 2-D plane
 */
-export type DraggerCoords = {
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  height: ?number,
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  width: ?number,
-  /** The x-offset from the current location */
+export type Coords2D = {
   x: ?number,
-  /** The y-offset from the current location */
   y: ?number
 }
 
@@ -2241,6 +2237,47 @@ export type UpdateCheckInQuestionPayload = {
 export type UpdateNewCheckInQuestionPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting
+}
+
+export type UpdateDragLocationInput = {
+  clientWidth: number,
+  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
+  distance: number,
+  /** The primary key of the item being drug */
+  sourceId: string,
+  /** The assumed destination of the item being drug */
+  targetId: string,
+  /** The type of entity being drug */
+  type: DraggableTypeEnum,
+  /** The teamId to broadcast the message to */
+  teamId: string,
+  coords: Coords2DInput
+}
+
+/**
+  The type of entity that is being dragged
+*/
+export type DraggableTypeEnum = 'REFLECTION_CARD'
+
+/**
+  Coordinates used relay a location in a 2-D plane
+*/
+export type Coords2DInput = {
+  x: ?number,
+  y: ?number
+}
+
+export type UpdateDragLocationPayload = {
+  clientWidth: number,
+  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
+  distance: number,
+  /** The primary key of the item being drug */
+  sourceId: string,
+  /** The assumed destination of the item being drug */
+  targetId: string,
+  /** The type of entity being drug */
+  type: DraggableTypeEnum,
+  coords: Coords2D
 }
 
 export type UpdateReflectionContentPayload = {
