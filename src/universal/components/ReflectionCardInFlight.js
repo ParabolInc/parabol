@@ -4,14 +4,13 @@ import type {ReflectionCardInFlight_reflection as Reflection} from './__generate
 import {EditorState, convertFromRaw} from 'draft-js'
 import * as React from 'react'
 import styled from 'react-emotion'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
 import ui from 'universal/styles/ui'
 import {REFLECTION_CARD} from 'universal/utils/constants'
-import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import UserDraggingHeader from 'universal/components/UserDraggingHeader'
 
 type Coords = {
@@ -26,6 +25,11 @@ type Props = {|
   reflection: Reflection
 |}
 
+type State = {|
+  x: ?number,
+  y: ?number
+|}
+
 const ModalBlock = styled('div')({
   top: 0,
   left: 0,
@@ -35,7 +39,7 @@ const ModalBlock = styled('div')({
   zIndex: ui.ziTooltip
 })
 
-class ReflectionCardInFlight extends React.Component<Props> {
+class ReflectionCardInFlight extends React.Component<Props, State> {
   constructor (props) {
     super(props)
     const {isTeamMemberDragging} = props
@@ -49,6 +53,10 @@ class ReflectionCardInFlight extends React.Component<Props> {
     }
   }
 
+  state = {
+    dragX: undefined,
+    dragY: undefined
+  }
   componentDidMount () {
     const {isTeamMemberDragging} = this.props
     if (!isTeamMemberDragging) {
@@ -68,19 +76,17 @@ class ReflectionCardInFlight extends React.Component<Props> {
       atmosphere,
       reflection: {
         reflectionId,
-        dragCoords,
         team: {teamId}
       }
     } = this.props
     const xDiff = e.x - this.initialCursorOffset.x
     const yDiff = e.y - this.initialCursorOffset.y
-    const x = this.initialComponentOffset.x + xDiff
+    const x = this.initialComponentOffset.x + xDiff + window.scrollX
     const y = this.initialComponentOffset.y + yDiff
-    if (!dragCoords || x !== dragCoords.x || y !== dragCoords.y) {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)
-        const dragCoordsProxy = createProxyRecord(store, 'Coords2D', {x, y})
-        reflection.setLinkedRecord(dragCoordsProxy, 'dragCoords')
+    if (x !== this.state.x || y !== this.state.y) {
+      this.setState({
+        x,
+        y
       })
       const input = {
         clientWidth: this.innerWidth,
@@ -101,16 +107,16 @@ class ReflectionCardInFlight extends React.Component<Props> {
 
   render () {
     const {
-      reflection: {dragCoords, draggerUser},
+      reflection: {dragContext},
       isTeamMemberDragging
     } = this.props
-    if (!dragCoords) return null
-    const {x, y} = dragCoords
+    const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
     const transform = `translate3d(${x}px, ${y}px, 0px)`
+    if (!x) return null
     return (
       <ModalBlock style={{transform}}>
         <ReflectionCardRoot>
-          {isTeamMemberDragging && <UserDraggingHeader user={draggerUser} />}
+          {isTeamMemberDragging && <UserDraggingHeader user={dragContext.draggerUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
         </ReflectionCardRoot>
       </ModalBlock>
@@ -127,12 +133,14 @@ export default createFragmentContainer(
       }
       reflectionId: id
       content
-      dragCoords {
-        x
-        y
-      }
-      draggerUser {
-        ...UserDraggingHeader_user
+      dragContext {
+        dragCoords {
+          x
+          y
+        }
+        draggerUser {
+          ...UserDraggingHeader_user
+        }
       }
     }
   `

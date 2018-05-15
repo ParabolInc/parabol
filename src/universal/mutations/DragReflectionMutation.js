@@ -1,6 +1,7 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
 import {commitMutation} from 'react-relay'
 import getInProxy from 'universal/utils/relay/getInProxy'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 
 type Variables = {
   isDragging: boolean,
@@ -11,10 +12,12 @@ graphql`
   fragment DragReflectionMutation_team on DragReflectionPayload {
     reflection {
       id
-      draggerUserId
-      draggerUser {
-        id
-        preferredName
+      dragContext {
+        draggerUserId
+        draggerUser {
+          id
+          preferredName
+        }
       }
     }
   }
@@ -29,12 +32,12 @@ const mutation = graphql`
 `
 
 export const dragReflectionTeamUpdater = (payload, store) => {
-  const isDragging = Boolean(getInProxy(payload, 'reflection', 'draggerUserId'))
-  if (!isDragging) {
+  const startDragging = Boolean(getInProxy(payload, 'reflection', 'dragContext', 'draggerUserId'))
+  if (!startDragging) {
     const reflectionId = getInProxy(payload, 'reflection', 'id')
     if (!reflectionId) return
     const reflection = store.get(reflectionId)
-    reflection.setValue(null, 'dragCoords')
+    reflection.setValue(null, 'dragContext')
   }
 }
 
@@ -58,14 +61,15 @@ const DragReflectionMutation = (
       const {viewerId} = atmosphere
       const {isDragging, reflectionId} = variables
       const reflection = store.get(reflectionId)
+      // console.log('opt ctx - ', reflection.getLinkedRecord('dragContext'))
       if (isDragging) {
-        const draggerUser = store.get(viewerId)
-        reflection.setValue(viewerId, 'draggerUserId')
-        reflection.setLinkedRecord(draggerUser, 'draggerUser')
+        const dragContext = createProxyRecord(store, 'DragContext', {
+          draggerUserId: viewerId
+        })
+        dragContext.setLinkedRecord(store.get(viewerId), 'draggerUser')
+        reflection.setLinkedRecord(dragContext, 'dragContext')
       } else {
-        reflection.setValue(null, 'draggerUserId')
-        reflection.setValue(null, 'draggerUser')
-        reflection.setValue(null, 'dragCoords')
+        reflection.setValue(null, 'dragContext')
       }
     }
   })

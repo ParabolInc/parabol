@@ -1557,12 +1557,8 @@ export type RetroReflection = {
   createdAt: ?any,
   /** The userId that created the reflection (or unique Id if not a team member) */
   creatorId: ?string,
-  /** The userId of the person currently dragging the reflection */
-  draggerUserId: ?string,
-  /** The user that is currently dragging the reflection */
-  draggerUser: ?User,
-  /** The coordinates necessary to simulate a drag for a subscribing user */
-  draggerCoords: ?Coords2D,
+  /** all the info associated with the drag state, if this reflection is currently being dragged */
+  dragContext: ?DragContext,
   /** an array of all the socketIds that are currently editing the reflection */
   editorIds: Array<string>,
   /** True if the reflection was not removed, else false */
@@ -1592,6 +1588,20 @@ export type RetroReflection = {
   team: ?RetrospectiveMeeting,
   /** The timestamp the meeting was updated. Used to determine how long it took to write a reflection */
   updatedAt: ?any
+}
+
+/**
+  Info associated with a current drag
+*/
+export type DragContext = {
+  /** The socketId that initiated the drag */
+  draggerSocketId: ?string,
+  /** The userId of the person currently dragging the reflection */
+  draggerUserId: ?string,
+  /** The user that is currently dragging the reflection */
+  draggerUser: ?User,
+  /** The coordinates necessary to simulate a drag for a subscribing user */
+  dragCoords: ?Coords2D
 }
 
 /**
