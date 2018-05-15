@@ -1155,7 +1155,7 @@ export type Mutation = {
   /** Update a Team's Check-in question in a new meeting */
   updateNewCheckInQuestion: ?UpdateNewCheckInQuestionPayload,
   /** all the info required to provide an accurate display-specific location of where an item is */
-  updateDragLocation: ?UpdateDragLocationPayload,
+  updateDragLocation: ?boolean,
   /** Update the content of a reflection */
   updateReflectionContent: ?UpdateReflectionContentPayload,
   /** Update the title of a reflection group */
@@ -2248,7 +2248,7 @@ export type UpdateDragLocationInput = {
   /** The assumed destination of the item being drug */
   targetId: string,
   /** The type of entity being drug */
-  type: DraggableTypeEnum,
+  draggableType: DraggableTypeEnum,
   /** The teamId to broadcast the message to */
   teamId: string,
   coords: Coords2DInput
@@ -2265,19 +2265,6 @@ export type DraggableTypeEnum = 'REFLECTION_CARD'
 export type Coords2DInput = {
   x: ?number,
   y: ?number
-}
-
-export type UpdateDragLocationPayload = {
-  clientWidth: number,
-  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
-  distance: number,
-  /** The primary key of the item being drug */
-  sourceId: string,
-  /** The assumed destination of the item being drug */
-  targetId: string,
-  /** The type of entity being drug */
-  type: DraggableTypeEnum,
-  coords: Coords2D
 }
 
 export type UpdateReflectionContentPayload = {
@@ -2516,6 +2503,7 @@ export type TeamSubscriptionPayload =
   | RemoveTeamMemberPayload
   | UpdateCheckInQuestionPayload
   | UpdateCreditCardPayload
+  | UpdateDragLocationPayload
   | UpdateNewCheckInQuestionPayload
   | UpdateReflectionContentPayload
   | UpdateReflectionGroupTitlePayload
@@ -2523,6 +2511,19 @@ export type TeamSubscriptionPayload =
   | UpdateTeamNamePayload
   | UpgradeToProPayload
   | VoteForReflectionGroupPayload
+
+export type UpdateDragLocationPayload = {
+  clientWidth: number,
+  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
+  distance: number,
+  /** The primary key of the item being drug */
+  sourceId: string,
+  /** The assumed destination of the item being drug */
+  targetId: string,
+  /** The type of entity being drug */
+  draggableType: DraggableTypeEnum,
+  coords: Coords2D
+}
 
 export type TeanMemberSubscriptionPayload =
   | AcceptTeamInvitePayload

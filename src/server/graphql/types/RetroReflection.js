@@ -125,7 +125,7 @@ const RetroReflection = new GraphQLObjectType({
       type: RetrospectiveMeeting,
       description: 'The team that is running the meeting that contains this reflection',
       resolve: async ({meetingId}, args, {dataLoader}) => {
-        const meeting = dataLoader.get('newMeetings').load(meetingId)
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
         return dataLoader.get('teams').load(meeting.teamId)
       }
     },

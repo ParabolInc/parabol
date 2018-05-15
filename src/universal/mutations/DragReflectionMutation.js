@@ -1,5 +1,6 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
 import {commitMutation} from 'react-relay'
+import getInProxy from 'universal/utils/relay/getInProxy'
 
 type Variables = {
   isDragging: boolean,
@@ -9,6 +10,7 @@ type Variables = {
 graphql`
   fragment DragReflectionMutation_team on DragReflectionPayload {
     reflection {
+      id
       draggerUserId
       draggerUser {
         id
@@ -26,6 +28,16 @@ const mutation = graphql`
   }
 `
 
+export const dragReflectionTeamUpdater = (payload, store) => {
+  const isDragging = Boolean(getInProxy(payload, 'reflection', 'draggerUserId'))
+  if (!isDragging) {
+    const reflectionId = getInProxy(payload, 'reflection', 'id')
+    if (!reflectionId) return
+    const reflection = store.get(reflectionId)
+    reflection.setValue(null, 'dragCoords')
+  }
+}
+
 const DragReflectionMutation = (
   atmosphere: Object,
   variables: Variables,
@@ -37,6 +49,11 @@ const DragReflectionMutation = (
     variables,
     onCompleted,
     onError,
+    updater: (store) => {
+      const payload = store.getRootField('dragReflection')
+      if (!payload) return
+      dragReflectionTeamUpdater(payload, store)
+    },
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
       const {isDragging, reflectionId} = variables
@@ -48,6 +65,7 @@ const DragReflectionMutation = (
       } else {
         reflection.setValue(null, 'draggerUserId')
         reflection.setValue(null, 'draggerUser')
+        reflection.setValue(null, 'dragCoords')
       }
     }
   })

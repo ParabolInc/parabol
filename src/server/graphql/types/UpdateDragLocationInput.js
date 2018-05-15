@@ -19,7 +19,7 @@ export const updateDragLocationFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'The assumed destination of the item being drug'
   },
-  type: {
+  draggableType: {
     type: new GraphQLNonNull(DraggableTypeEnum),
     description: 'The type of entity being drug'
   }

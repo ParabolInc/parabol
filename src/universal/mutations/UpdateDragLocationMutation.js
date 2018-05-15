@@ -1,10 +1,4 @@
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
-import {commitMutation} from 'react-relay'
-import type {UpdateDragLocationInput} from 'universal/types/schema.flow'
-
-type Variables = {
-  input: UpdateDragLocationInput
-}
+import getInProxy from 'universal/utils/relay/getInProxy'
 
 graphql`
   fragment UpdateDragLocationMutation_team on UpdateDragLocationPayload {
@@ -16,39 +10,26 @@ graphql`
     distance
     sourceId
     targetId
-    type
+    draggableType
   }
 `
-
 const mutation = graphql`
   mutation UpdateDragLocationMutation($input: UpdateDragLocationInput!) {
-    updateDragLocation(input: $input) {
-      ...UpdateDragLocationMutation_team @relay(mask: false)
-    }
+    updateDragLocation(input: $input)
   }
 `
 
-const UpdateDragLocationMutation = (
-  atmosphere: Object,
-  variables: Variables,
-  onError?: ErrorHandler,
-  onCompleted?: CompletedHandler
-) => {
-  commitMutation(atmosphere, {
-    mutation,
-    variables,
-    onCompleted,
-    onError,
-    optimisticUpdater: (store) => {
-      const {
-        input: {coords, sourceId}
-      } = variables
-      const draggable = store.get(sourceId)
-      if (draggable) {
-        draggable.setLinkedRecord(coords, 'dragCoords')
-      }
-    }
-  })
+export const updateDragLocationTeamUpdater = (payload, store) => {
+  const sourceId = getInProxy(payload, 'sourceId')
+  if (!sourceId) return
+  const draggable = store.get(sourceId)
+  const coords = payload.getLinkedRecord('coords')
+  draggable.setLinkedRecord(coords, 'dragCoords')
+}
+
+const UpdateDragLocationMutation = (atmosphere, variables) => {
+  const {_network: network} = atmosphere
+  network.execute(mutation(), variables, {force: true})
 }
 
 export default UpdateDragLocationMutation

@@ -26,6 +26,8 @@ import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/Promot
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
 import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation'
 import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
+import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
+import {dragReflectionTeamUpdater} from 'universal/mutations/DragReflectionMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -55,6 +57,7 @@ const subscription = graphql`
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
+      ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
       ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
       ...UpdateReflectionLocationMutation_team @relay(mask: false)
@@ -102,6 +105,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           createReflectionTeamUpdater(payload, store)
           break
         case 'DragReflectionPayload':
+          dragReflectionTeamUpdater(payload, store)
           break
         case 'RemoveTeamMemberSelfPayload':
           removeTeamMemberTeamUpdater(payload, store, viewerId, options)
@@ -162,6 +166,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'UpdateCreditCardPayload':
           break
         case 'UpdateCheckInQuestionPayload':
+          break
+        case 'UpdateDragLocationPayload':
+          updateDragLocationTeamUpdater(payload, store)
           break
         case 'UpdateReflectionContentPayload':
           break
