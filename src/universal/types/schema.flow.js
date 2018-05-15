@@ -1,27 +1,27 @@
 /* @flow */
 
 export type GraphQLResponseRoot = {
-  data?: Query | Mutation;
-  errors?: Array<GraphQLResponseError>;
+  data?: Query | Mutation,
+  errors?: Array<GraphQLResponseError>
 }
 
 export type GraphQLResponseError = {
-  message: string;            // Required for all errors
-  locations?: Array<GraphQLResponseErrorLocation>;
-  [propName: string]: any;    // 7.2.2 says 'GraphQL servers may provide additional entries to error'
+  message: string, // Required for all errors
+  locations?: Array<GraphQLResponseErrorLocation>,
+  [propName: string]: any // 7.2.2 says 'GraphQL servers may provide additional entries to error'
 }
 
 export type GraphQLResponseErrorLocation = {
-  line: number;
-  column: number;
+  line: number,
+  column: number
 }
 
 export type Query = {
-  suCountTiersForUser: ?UserTiersCount;
-  suUserCount: ?number;
-  suProOrgInfo: ?Array<SuProOrgInfo>;
-  suOrgCount: ?number;
-  viewer: ?User;
+  suCountTiersForUser: ?UserTiersCount,
+  suUserCount: ?number,
+  suProOrgInfo: ?Array<SuProOrgInfo>,
+  suOrgCount: ?number,
+  viewer: ?User
 }
 
 /**
@@ -29,12 +29,12 @@ export type Query = {
 */
 export type UserTiersCount = {
   /** The number of personal orgs the user is active upon */
-  tierPersonalCount: ?number;
+  tierPersonalCount: ?number,
   /** The number of pro orgs the user is active upon */
-  tierProCount: ?number;
+  tierProCount: ?number,
   /** The number of pro orgs the user holds the role of Billing Leader */
-  tierProBillingLeaderCount: ?number;
-  user: ?User;
+  tierProBillingLeaderCount: ?number,
+  user: ?User
 }
 
 /**
@@ -42,85 +42,85 @@ export type UserTiersCount = {
 */
 export type User = {
   /** The userId provided by auth0 */
-  id: ?string;
+  id: ?string,
   /** Array of identifier + ip pairs */
-  blockedFor: ?Array<BlockedUserType>;
+  blockedFor: ?Array<BlockedUserType>,
   /** The timestamp of the user was cached */
-  cachedAt: ?any;
+  cachedAt: ?any,
   /** The timestamp when the cached user expires */
-  cacheExpiresAt: ?any;
+  cacheExpiresAt: ?any,
   /** The socketIds that the user is currently connected with */
-  connectedSockets: ?Array<string>;
+  connectedSockets: ?Array<string>,
   /** The timestamp the user was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** The user email */
-  email: any;
+  email: any,
   /** true if email is verified, false otherwise */
-  emailVerified: ?boolean;
+  emailVerified: ?boolean,
   /** Any super power given to the user via a super user */
-  featureFlags: ?UserFeatureFlags;
+  featureFlags: ?UserFeatureFlags,
   /** An array of objects with information about the user's identities.
-      More than one will exists in case accounts are linked */
-  identities: ?Array<AuthIdentityType>;
+   More than one will exists in case accounts are linked */
+  identities: ?Array<AuthIdentityType>,
   /** true if the user is currently online */
-  isConnected: ?boolean;
+  isConnected: ?boolean,
   /** The number of logins for this user */
-  loginsCount: ?number;
+  loginsCount: ?number,
   /** Name associated with the user */
-  name: ?string;
+  name: ?string,
   /** Nickname associated with the user */
-  nickname: ?string;
+  nickname: ?string,
   /** url of user’s profile picture */
-  picture: ?any;
+  picture: ?any,
   /** The timestamp the user was last updated */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** flag to determine which broadcasts to show */
-  broadcastFlags: ?number;
+  broadcastFlags: ?number,
   /** The last time the user connected via websocket */
-  lastSeenAt: ?any;
+  lastSeenAt: ?any,
   /** true if the user is not currently being billed for service. removed on every websocket handshake */
-  inactive: ?boolean;
+  inactive: ?boolean,
   /** true if the user is a part of the supplied orgId */
-  isBillingLeader: ?boolean;
+  isBillingLeader: ?boolean,
   /** The application-specific name, defaults to nickname */
-  preferredName: ?string;
+  preferredName: ?string,
   /** the orgs and roles for this user on each */
-  userOrgs: ?Array<UserOrg>;
+  userOrgs: ?Array<UserOrg>,
   /** The datetime that we sent them a welcome email */
-  welcomeSentAt: ?any;
-  archivedTasks: ?TaskConnection;
-  archivedTasksCount: ?number;
+  welcomeSentAt: ?any,
+  archivedTasks: ?TaskConnection,
+  archivedTasksCount: ?number,
   /** list of git hub repos available to the viewer */
-  githubRepos: ?Array<GitHubIntegration>;
+  githubRepos: ?Array<GitHubIntegration>,
   /** get an integration provider belonging to the user */
-  integrationProvider: ?Provider;
-  invoices: ?InvoiceConnection;
-  invoiceDetails: ?Invoice;
+  integrationProvider: ?Provider,
+  invoices: ?InvoiceConnection,
+  invoiceDetails: ?Invoice,
   /** A previous meeting that the user was in (present or absent) */
-  meeting: ?Meeting;
+  meeting: ?Meeting,
   /** The meeting member associated with this user, if a meeting is currently in progress */
-  meetingMember: ?MeetingMember;
+  meetingMember: ?MeetingMember,
   /** A previous meeting that the user was in (present or absent) */
-  newMeeting: NewMeeting;
+  newMeeting: NewMeeting,
   /** all the notifications for a single user */
-  notifications: ?NotificationConnection;
+  notifications: ?NotificationConnection,
   /** The list of providers as seen on the integrations page */
-  providerMap: ?ProviderMap;
+  providerMap: ?ProviderMap,
   /** paginated list of slackChannels */
-  slackChannels: ?Array<SlackIntegration>;
+  slackChannels: ?Array<SlackIntegration>,
   /** get a single organization and the count of users by status */
-  organization: ?Organization;
+  organization: ?Organization,
   /** Get the list of all organizations a user belongs to */
-  organizations: ?Array<Organization>;
-  tasks: ?TaskConnection;
+  organizations: ?Array<Organization>,
+  tasks: ?TaskConnection,
   /** A query for a team */
-  team: Team;
+  team: Team,
   /** all the teams the user is on that the viewer can see. */
-  teams: ?Array<Team>;
+  teams: ?Array<Team>,
   /** The team member associated with this user */
-  teamMember: ?TeamMember;
+  teamMember: ?TeamMember,
   /** all the teams the user is a part of that the viewer can see */
-  tms: ?Array<string>;
+  tms: ?Array<string>
 }
 
 /**
@@ -128,9 +128,9 @@ export type User = {
 */
 export type BlockedUserType = {
   /** The identifier (usually email) of blocked user */
-  identifier: ?string;
+  identifier: ?string,
   /** The IP address of the blocked user */
-  id: ?string;
+  id: ?string
 }
 
 /**
@@ -138,20 +138,20 @@ export type BlockedUserType = {
 */
 export type UserFeatureFlags = {
   /** true if the user has access to retro meetings */
-  retro: ?boolean;
+  retro: ?boolean
 }
 
 export type AuthIdentityType = {
   /** The connection name.
       This field is not itself updateable
       but is needed when updating email, email_verified, username or password. */
-  connection: ?string;
+  connection: ?string,
   /** The unique identifier for the user for the identity. */
-  userId: ?string;
+  userId: ?string,
   /** The type of identity provider. */
-  provider: ?string;
+  provider: ?string,
   /** true if the identity provider is a social provider, false otherwise */
-  isSocial: ?boolean;
+  isSocial: ?boolean
 }
 
 /**
@@ -159,24 +159,24 @@ export type AuthIdentityType = {
 */
 export type UserOrg = {
   /** The orgId */
-  id: ?string;
+  id: ?string,
   /** role of the user in the org */
-  role: ?OrgUserRole;
+  role: ?OrgUserRole
 }
 
 /**
   The role of the org user
 */
-export type OrgUserRole = "billingLeader";
+export type OrgUserRole = 'billingLeader'
 
 /**
   A connection to a list of items.
 */
 export type TaskConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
-  pageInfo: ?PageInfoDateCursor;
+  pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<TaskEdge>;
+  edges: ?Array<TaskEdge>
 }
 
 /**
@@ -184,13 +184,13 @@ export type TaskConnection = {
 */
 export type PageInfoDateCursor = {
   /** When paginating forwards, are there more items? */
-  hasNextPage: boolean;
+  hasNextPage: boolean,
   /** When paginating backwards, are there more items? */
-  hasPreviousPage: boolean;
+  hasPreviousPage: boolean,
   /** When paginating backwards, the cursor to continue. */
-  startCursor: ?any;
+  startCursor: ?any,
   /** When paginating forwards, the cursor to continue. */
-  endCursor: ?any;
+  endCursor: ?any
 }
 
 /**
@@ -198,8 +198,8 @@ export type PageInfoDateCursor = {
 */
 export type TaskEdge = {
   /** The item at the end of the edge */
-  node: ?Task;
-  cursor: ?any;
+  node: ?Task,
+  cursor: ?any
 }
 
 /**
@@ -207,288 +207,304 @@ export type TaskEdge = {
 */
 export type Task = {
   /** shortid */
-  id: ?string;
+  id: ?string,
   /** the agenda item that created this task, if any */
-  agendaId: ?string;
+  agendaId: ?string,
   /** The body of the task. If null, it is a new task. */
-  content: ?string;
+  content: ?string,
   /** The timestamp the task was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** The userId that created the task */
-  createdBy: ?string;
+  createdBy: ?string,
   /** a user-defined due date */
-  dueDate: ?any;
+  dueDate: ?any,
   /** a list of users currently editing the task (fed by a subscription, so queries return null) */
-  editors: ?Array<TaskEditorDetails>;
-  integration: ?GitHubTask;
+  editors: ?Array<TaskEditorDetails>,
+  integration: ?GitHubTask,
   /** true if this is assigned to a soft team member */
-  isSoftTask: ?boolean;
+  isSoftTask: ?boolean,
   /** the foreign key for the meeting the task was created in */
-  meetingId: ?string;
+  meetingId: ?string,
   /** the foreign key for the retrospective reflection group this was created in */
-  reflectionGroupId: ?string;
+  reflectionGroupId: ?string,
   /** the shared sort order for tasks on the team dash & user dash */
-  sortOrder: ?number;
+  sortOrder: ?number,
   /** The status of the task */
-  status: ?TaskStatusEnum;
+  status: ?TaskStatusEnum,
   /** The tags associated with the task */
-  tags: ?Array<string>;
+  tags: ?Array<string>,
   /** The id of the team (indexed). Needed for subscribing to archived tasks */
-  teamId: ?string;
+  teamId: ?string,
   /** The team this task belongs to */
-  team: ?Team;
+  team: ?Team,
   /** The team member (or soft team member) that owns this task */
-  assignee: ?Assignee;
+  assignee: ?Assignee,
   /** The id of the team member (or soft team member) assigned to this task */
-  assigneeId: string;
+  assigneeId: string,
   /** The timestamp the task was updated */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** * The userId, index useful for server-side methods getting all tasks under a user */
-  userId: ?string;
+  userId: ?string
 }
 
 export type TaskEditorDetails = {
   /** The userId of the person editing the task */
-  userId: string;
+  userId: string,
   /** The name of the userId editing the task */
-  preferredName: string;
+  preferredName: string
 }
 
 /**
   The details associated with a task integrated with GitHub
 */
 export type GitHubTask = {
-  integrationId: string;
-  service: IntegrationService;
-  nameWithOwner: ?string;
-  issueNumber: ?number;
+  integrationId: string,
+  service: IntegrationService,
+  nameWithOwner: ?string,
+  issueNumber: ?number
 }
 
-export type TaskIntegration = GitHubTask;
+export type TaskIntegration = GitHubTask
 
 /**
   The list of services for integrations
 */
-export type IntegrationService = "GitHubIntegration" | "SlackIntegration";
+export type IntegrationService = 'GitHubIntegration' | 'SlackIntegration'
 
 /**
   The status of the task
 */
-export type TaskStatusEnum = "active" | "stuck" | "done" | "future";
+export type TaskStatusEnum = 'active' | 'stuck' | 'done' | 'future'
 
 /**
   A team
 */
 export type Team = {
   /** A shortid for the team */
-  id: string;
+  id: string,
   /** The datetime the team was created */
-  createdAt: any;
+  createdAt: any,
   /** true if the underlying org has a validUntil date greater than now. if false, subs do not work */
-  isPaid: ?boolean;
+  isPaid: ?boolean,
   /** The current or most recent meeting number (also the number of meetings the team has had */
-  meetingNumber: ?number;
+  meetingNumber: ?number,
   /** The name of the team */
-  name: string;
+  name: string,
   /** The organization to which the team belongs */
-  orgId: string;
+  orgId: string,
   /** Arbitrary tags that the team uses */
-  tags: ?Array<string>;
+  tags: ?Array<string>,
   /** The datetime the team was last updated */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** The checkIn greeting (fun language) */
-  checkInGreeting: ?MeetingGreeting;
+  checkInGreeting: ?MeetingGreeting,
   /** The checkIn question of the week */
-  checkInQuestion: ?string;
-  customPhaseItems: ?Array<CustomPhaseItem>;
+  checkInQuestion: ?string,
+  customPhaseItems: ?Array<CustomPhaseItem>,
   /** The unique Id of the active meeting */
-  meetingId: ?string;
+  meetingId: ?string,
   /** The current facilitator teamMemberId for this meeting */
-  activeFacilitator: ?string;
+  activeFacilitator: ?string,
   /** The phase of the facilitator */
-  facilitatorPhase: ?ActionMeetingPhaseEnum;
+  facilitatorPhase: ?ActionMeetingPhaseEnum,
   /** The current item number for the current phase for the facilitator, 1-indexed */
-  facilitatorPhaseItem: ?number;
+  facilitatorPhaseItem: ?number,
   /** The outstanding invitations to join the team */
-  invitations: ?Array<Invitation>;
+  invitations: ?Array<Invitation>,
   /** The phase of the meeting, usually matches the facilitator phase, be could be further along */
-  meetingPhase: ?ActionMeetingPhaseEnum;
+  meetingPhase: ?ActionMeetingPhaseEnum,
   /** The current item number for the current phase for the meeting, 1-indexed */
-  meetingPhaseItem: ?number;
+  meetingPhaseItem: ?number,
   /** The team-specific settings for running all available types of meetings */
-  meetingSettings: TeamMeetingSettings;
+  meetingSettings: TeamMeetingSettings,
   /** The new meeting in progress, if any */
-  newMeeting: ?NewMeeting;
+  newMeeting: ?NewMeeting,
   /** The level of access to features on the parabol site */
-  tier: ?TierEnum;
+  tier: ?TierEnum,
   /** The outstanding invitations to join the team */
-  orgApprovals: ?Array<OrgApproval>;
-  organization: ?Organization;
+  orgApprovals: ?Array<OrgApproval>,
+  organization: ?Organization,
   /** The agenda items for the upcoming or current meeting */
-  agendaItems: ?Array<AgendaItem>;
+  agendaItems: ?Array<AgendaItem>,
   /** All of the tasks for this team */
-  tasks: ?TaskConnection;
+  tasks: ?TaskConnection,
   /** All the soft team members actively associated with the team */
-  softTeamMembers: ?Array<SoftTeamMember>;
+  softTeamMembers: ?Array<SoftTeamMember>,
   /** All the team members actively associated with the team */
-  teamMembers: Array<TeamMember>;
+  teamMembers: Array<TeamMember>,
   /** true if the team has been archived */
-  isArchived: ?boolean;
+  isArchived: ?boolean
 }
 
 export type MeetingGreeting = {
   /** The foreign-language greeting */
-  content: string;
+  content: string,
   /** The source language for the greeting */
-  language: string;
+  language: string
 }
 
-export type CustomPhaseItem = RetroPhaseItem;
+export type CustomPhaseItem = RetroPhaseItem
 
 /**
   The type of phase item
 */
-export type CustomPhaseItemTypeEnum = "retroPhaseItem";
+export type CustomPhaseItemTypeEnum = 'retroPhaseItem'
 
 /**
   The phases of an action meeting
 */
-export type ActionMeetingPhaseEnum = "lobby" | "checkin" | "updates" | "firstcall" | "agendaitems" | "lastcall" | "summary";
+export type ActionMeetingPhaseEnum =
+  | 'lobby'
+  | 'checkin'
+  | 'updates'
+  | 'firstcall'
+  | 'agendaitems'
+  | 'lastcall'
+  | 'summary'
 
 /**
   An invitation to become a team member
 */
 export type Invitation = {
   /** The unique invitation Id */
-  id: string;
+  id: string,
   /** The datetime the invitation was accepted */
-  acceptedAt: ?any;
+  acceptedAt: ?any,
   /** The datetime the invitation was created */
-  createdAt: any;
+  createdAt: any,
   /** The email of the invitee */
-  email: ?any;
+  email: ?any,
   /** The name of the invitee, derived from the email address */
-  fullName: ?string;
+  fullName: ?string,
   /** The teamMemberId of the person that sent the invitation */
-  invitedBy: ?string;
+  invitedBy: ?string,
   /** How many invites have been sent to this email address? */
-  inviteCount: ?number;
+  inviteCount: ?number,
   /** The team invited to */
-  teamId: string;
+  teamId: string,
   /** The datestamp of when the invitation will expire */
-  tokenExpiration: ?any;
+  tokenExpiration: ?any,
   /** The datetime the invitation was last updated */
-  updatedAt: ?any;
+  updatedAt: ?any
 }
 
-export type PossibleTeamMember = Invitation | OrgApproval | TeamMember | SoftTeamMember;
+export type PossibleTeamMember = Invitation | OrgApproval | TeamMember | SoftTeamMember
 
 /**
   The phases of an action meeting
 */
-export type MeetingTypeEnum = "action" | "retrospective";
+export type MeetingTypeEnum = 'action' | 'retrospective'
 
 /**
   The team settings for a specific type of meeting
 */
-export type TeamMeetingSettings = RetrospectiveMeetingSettings | ActionMeetingSettings;
+export type TeamMeetingSettings = RetrospectiveMeetingSettings | ActionMeetingSettings
 
 /**
   The phase of the meeting
 */
-export type NewMeetingPhaseTypeEnum = "checkin" | "updates" | "firstcall" | "agendaitems" | "lastcall" | "reflect" | "group" | "vote" | "discuss";
+export type NewMeetingPhaseTypeEnum =
+  | 'checkin'
+  | 'updates'
+  | 'firstcall'
+  | 'agendaitems'
+  | 'lastcall'
+  | 'reflect'
+  | 'group'
+  | 'vote'
+  | 'discuss'
 
 /**
   A team meeting history for all previous meetings
 */
-export type NewMeeting = RetrospectiveMeeting;
+export type NewMeeting = RetrospectiveMeeting
 
 /**
   All the user details for a specific meeting
 */
-export type MeetingMember = RetrospectiveMeetingMember;
+export type MeetingMember = RetrospectiveMeetingMember
 
-export type NewMeetingPhase = CheckInPhase | ReflectPhase | DiscussPhase | GenericMeetingPhase;
+export type NewMeetingPhase = CheckInPhase | ReflectPhase | DiscussPhase | GenericMeetingPhase
 
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingStage = CheckInStage | GenericMeetingStage | RetroDiscussStage;
+export type NewMeetingStage = CheckInStage | GenericMeetingStage | RetroDiscussStage
 
 /**
   The pay tier of the team
 */
-export type TierEnum = "personal" | "pro" | "enterprise";
+export type TierEnum = 'personal' | 'pro' | 'enterprise'
 
 /**
   The state of approving an email address to join a team and org
 */
 export type OrgApproval = {
   /** The unique approval ID */
-  id: string;
+  id: string,
   /** The userId of the billing leader that approved the invitee */
-  approvedBy: ?string;
+  approvedBy: ?string,
   /** The datetime the organization was created */
-  createdAt: any;
+  createdAt: any,
   /** The userId of the billing leader that denied the invitee */
-  deniedBy: ?string;
+  deniedBy: ?string,
   /** *The email seeking approval */
-  email: ?any;
+  email: ?any,
   /** true if it applies to a user that was not removed from the org, else false */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** The orgId the email want to join */
-  orgId: string;
+  orgId: string,
   /** *The team seeking approval. Used to populate in the team settings page */
-  teamId: string;
-  status: ?OrgApprovalStatusEnum;
+  teamId: string,
+  status: ?OrgApprovalStatusEnum,
   /** The datetime the approval was last updated */
-  updatedAt: ?any;
+  updatedAt: ?any
 }
 
 /**
   The approval status for a user joining the org
 */
-export type OrgApprovalStatusEnum = "APPROVED" | "PENDING" | "DENIED";
+export type OrgApprovalStatusEnum = 'APPROVED' | 'PENDING' | 'DENIED'
 
 /**
   An organization
 */
 export type Organization = {
   /** The unique organization ID */
-  id: string;
+  id: string,
   /** The datetime the organization was created */
-  createdAt: any;
+  createdAt: any,
   /** The safe credit card details */
-  creditCard: ?CreditCard;
+  creditCard: ?CreditCard,
   /** true if the viewer is the billing leader for the org */
-  isBillingLeader: ?boolean;
+  isBillingLeader: ?boolean,
   /** The billing leader of the organization (or the first, if more than 1) */
-  mainBillingLeader: ?User;
+  mainBillingLeader: ?User,
   /** The name of the organization */
-  name: ?string;
+  name: ?string,
   /** The org avatar */
-  picture: ?any;
+  picture: ?any,
   /** The level of access to features on the parabol site */
-  tier: ?TierEnum;
+  tier: ?TierEnum,
   /** THe datetime the current billing cycle ends */
-  periodEnd: ?any;
+  periodEnd: ?any,
   /** The datetime the current billing cycle starts */
-  periodStart: ?any;
+  periodStart: ?any,
   /** The total number of retroMeetings given to the team */
-  retroMeetingsOffered: ?number;
+  retroMeetingsOffered: ?number,
   /** Number of retro meetings that can be run (if not pro) */
-  retroMeetingsRemaining: ?number;
+  retroMeetingsRemaining: ?number,
   /** The customerId from stripe */
-  stripeId: ?string;
+  stripeId: ?string,
   /** The subscriptionId from stripe */
-  stripeSubscriptionId: ?string;
+  stripeSubscriptionId: ?string,
   /** The datetime the organization was last updated */
-  updatedAt: ?any;
-  orgMembers: ?OrganizationMemberConnection;
+  updatedAt: ?any,
+  orgMembers: ?OrganizationMemberConnection,
   /** The count of active & inactive users */
-  orgUserCount: ?OrgUserCount;
+  orgUserCount: OrgUserCount,
   /** The leaders of the org */
-  billingLeaders: Array<User>;
+  billingLeaders: Array<User>
 }
 
 /**
@@ -496,11 +512,11 @@ export type Organization = {
 */
 export type CreditCard = {
   /** The brand of the credit card, as provided by skype */
-  brand: ?string;
+  brand: ?string,
   /** The MM/YY string of the expiration date */
-  expiry: ?string;
+  expiry: ?string,
   /** The last 4 digits of a credit card */
-  last4: ?number;
+  last4: ?number
 }
 
 /**
@@ -508,9 +524,9 @@ export type CreditCard = {
 */
 export type OrganizationMemberConnection = {
   /** Information to aid in pagination. */
-  pageInfo: PageInfo;
+  pageInfo: PageInfo,
   /** A list of edges. */
-  edges: ?Array<OrganizationMemberEdge>;
+  edges: ?Array<OrganizationMemberEdge>
 }
 
 /**
@@ -518,13 +534,13 @@ export type OrganizationMemberConnection = {
 */
 export type PageInfo = {
   /** When paginating forwards, are there more items? */
-  hasNextPage: boolean;
+  hasNextPage: boolean,
   /** When paginating backwards, are there more items? */
-  hasPreviousPage: boolean;
+  hasPreviousPage: boolean,
   /** When paginating backwards, the cursor to continue. */
-  startCursor: ?string;
+  startCursor: ?string,
   /** When paginating forwards, the cursor to continue. */
-  endCursor: ?string;
+  endCursor: ?string
 }
 
 /**
@@ -532,23 +548,23 @@ export type PageInfo = {
 */
 export type OrganizationMemberEdge = {
   /** The item at the end of the edge */
-  node: ?OrganizationMember;
+  node: ?OrganizationMember,
   /** A cursor for use in pagination */
-  cursor: string;
+  cursor: string
 }
 
 export type OrganizationMember = {
-  id: ?string;
-  organization: ?Organization;
-  user: ?User;
-  isBillingLeader: ?boolean;
+  id: ?string,
+  organization: ?Organization,
+  user: ?User,
+  isBillingLeader: ?boolean
 }
 
 export type OrgUserCount = {
   /** The number of orgUsers who have an inactive flag */
-  inactiveUserCount: ?number;
+  inactiveUserCount: number,
   /** The number of orgUsers who do not have an inactive flag */
-  activeUserCount: ?number;
+  activeUserCount: number
 }
 
 /**
@@ -556,25 +572,25 @@ export type OrgUserCount = {
 */
 export type AgendaItem = {
   /** The unique agenda item id teamId::shortid */
-  id: string;
+  id: string,
   /** The body of the agenda item */
-  content: string;
+  content: string,
   /** The timestamp the agenda item was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** true until the agenda item has been marked isComplete and the meeting has ended */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** true if the agenda item has been addressed in a meeting (will have a strikethrough or similar) */
-  isComplete: ?boolean;
+  isComplete: ?boolean,
   /** The sort order of the agenda item in the list */
-  sortOrder: ?number;
+  sortOrder: ?number,
   /** *The team for this agenda item */
-  teamId: string;
+  teamId: string,
   /** The teamMemberId that created this agenda item */
-  teamMemberId: string;
+  teamMemberId: string,
   /** The timestamp the agenda item was updated */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** The team member that created the agenda item */
-  teamMember: ?TeamMember;
+  teamMember: ?TeamMember
 }
 
 /**
@@ -582,65 +598,65 @@ export type AgendaItem = {
 */
 export type TeamMember = {
   /** An ID for the teamMember. userId::teamId */
-  id: ?string;
+  id: ?string,
   /** true if the user is a part of the team, false if they no longer are */
-  isNotRemoved: ?boolean;
+  isNotRemoved: ?boolean,
   /** Is user a team lead? */
-  isLead: ?boolean;
+  isLead: ?boolean,
   /** Is user a team facilitator? */
-  isFacilitator: ?boolean;
+  isFacilitator: ?boolean,
   /** hide the agenda list on the dashboard */
-  hideAgenda: ?boolean;
+  hideAgenda: ?boolean,
   /** The user email */
-  email: ?any;
+  email: ?any,
   /** url of user’s profile picture */
-  picture: ?any;
+  picture: ?any,
   /** The name, as confirmed by the user */
-  preferredName: ?string;
+  preferredName: ?string,
   /** The place in line for checkIn, regenerated every meeting */
-  checkInOrder: ?number;
+  checkInOrder: ?number,
   /** true if the user is connected */
-  isConnected: ?boolean;
+  isConnected: ?boolean,
   /** true if present, false if absent, null before check-in */
-  isCheckedIn: ?boolean;
+  isCheckedIn: ?boolean,
   /** true if this team member belongs to the user that queried it */
-  isSelf: ?boolean;
+  isSelf: ?boolean,
   /** The meeting specifics for the meeting the team member is currently in */
-  meetingMember: ?MeetingMember;
+  meetingMember: ?MeetingMember,
   /** foreign key to Team table */
-  teamId: ?string;
+  teamId: ?string,
   /** foreign key to User table */
-  userId: ?string;
+  userId: ?string,
   /** The team this team member belongs to */
-  team: ?Team;
+  team: ?Team,
   /** The user for the team member */
-  user: ?User;
+  user: ?User,
   /** Tasks owned by the team member */
-  tasks: ?TaskConnection;
+  tasks: ?TaskConnection
 }
 
-export type Assignee = TeamMember | SoftTeamMember;
+export type Assignee = TeamMember | SoftTeamMember
 
 /**
   A member of a team
 */
 export type SoftTeamMember = {
   /** An ID for the teamMember. userId::teamId */
-  id: ?string;
+  id: ?string,
   /** The datetime the team was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** The user email */
-  email: ?any;
+  email: ?any,
   /** True if this is still a soft team member, false if they were rejected or became a team member */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** The name, as confirmed by the user */
-  preferredName: ?string;
+  preferredName: ?string,
   /** Tasks owned by the team member */
-  tasks: ?TaskConnection;
+  tasks: ?TaskConnection,
   /** foreign key to Team table */
-  teamId: ?string;
+  teamId: ?string,
   /** The team this team member belongs to */
-  team: ?Team;
+  team: ?Team
 }
 
 /**
@@ -648,23 +664,23 @@ export type SoftTeamMember = {
 */
 export type GitHubIntegration = {
   /** The ID of an object */
-  id: string;
+  id: string,
   /** The parabol userId of the admin for this repo (usually the creator) */
-  adminUserId: string;
+  adminUserId: string,
   /** The datetime the integration was created */
-  createdAt: any;
+  createdAt: any,
   /** The name of the repo. Follows format of OWNER/NAME */
-  nameWithOwner: ?string;
+  nameWithOwner: ?string,
   /** defaults to true. true if this is used */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** *The team that is linked to this integration */
-  teamId: string;
+  teamId: string,
   /** The users that can CRUD this integration */
-  teamMembers: ?Array<TeamMember>;
+  teamMembers: ?Array<TeamMember>,
   /** The datetime the integration was updated */
-  updatedAt: any;
+  updatedAt: any,
   /** *The userIds connected to the repo so they can CRUD things under their own name */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
 /**
@@ -672,25 +688,25 @@ export type GitHubIntegration = {
 */
 export type Provider = {
   /** The ID of an object */
-  id: string;
+  id: string,
   /** The access token to the service */
-  accessToken: string;
+  accessToken: string,
   /** The timestamp the provider was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** True if the Provider is active. else false */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin */
-  providerUserId: ?string;
+  providerUserId: ?string,
   /** The username (or email) attached to the provider */
-  providerUserName: ?string;
+  providerUserName: ?string,
   /** The name of the service */
-  service: ?IntegrationService;
+  service: ?IntegrationService,
   /** *The team that the token is linked to */
-  teamId: ?string;
+  teamId: ?string,
   /** The timestamp the task was updated */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** The user that the access token is attached to */
-  userId: ?string;
+  userId: ?string
 }
 
 /**
@@ -698,9 +714,9 @@ export type Provider = {
 */
 export type InvoiceConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
-  pageInfo: ?PageInfoDateCursor;
+  pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<InvoiceEdge>;
+  edges: ?Array<InvoiceEdge>
 }
 
 /**
@@ -708,8 +724,8 @@ export type InvoiceConnection = {
 */
 export type InvoiceEdge = {
   /** The item at the end of the edge */
-  node: ?Invoice;
-  cursor: ?any;
+  node: ?Invoice,
+  cursor: ?any
 }
 
 /**
@@ -717,39 +733,39 @@ export type InvoiceEdge = {
 */
 export type Invoice = {
   /** A shortid for the invoice */
-  id: ?string;
+  id: ?string,
   /** The amount the card will be charged (total + startingBalance with a min value of 0) */
-  amountDue: ?number;
+  amountDue: ?number,
   /** The datetime the invoice was first generated */
-  createdAt: ?any;
+  createdAt: ?any,
   /** The total amount for the invoice (in USD) */
-  total: ?number;
+  total: ?number,
   /** The emails the invoice was sent to */
-  billingLeaderEmails: ?Array<any>;
+  billingLeaderEmails: ?Array<any>,
   /** the card used to pay the invoice */
-  creditCard: ?CreditCard;
+  creditCard: ?CreditCard,
   /** The timestamp for the end of the billing cycle */
-  endAt: ?any;
+  endAt: ?any,
   /** The date the invoice was created */
-  invoiceDate: ?any;
+  invoiceDate: ?any,
   /** An invoice line item for previous month adjustments */
-  lines: ?Array<InvoiceLineItem>;
+  lines: ?Array<InvoiceLineItem>,
   /** The details that comprise the charges for next month */
-  nextMonthCharges: ?InvoiceChargeNextMonth;
+  nextMonthCharges: ?InvoiceChargeNextMonth,
   /** *The organization id to charge */
-  orgId: ?string;
+  orgId: ?string,
   /** The persisted name of the org as it was when invoiced */
-  orgName: ?string;
+  orgName: ?string,
   /** the datetime the invoice was successfully paid */
-  paidAt: ?any;
+  paidAt: ?any,
   /** The picture of the organization */
-  picture: ?any;
+  picture: ?any,
   /** The timestamp for the beginning of the billing cycle */
-  startAt: ?any;
+  startAt: ?any,
   /** The balance on the customer account (in cents) */
-  startingBalance: ?number;
+  startingBalance: ?number,
   /** the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded */
-  status: ?InvoiceStatusEnum;
+  status: ?InvoiceStatusEnum
 }
 
 /**
@@ -757,17 +773,17 @@ export type Invoice = {
 */
 export type InvoiceLineItem = {
   /** The unique line item id */
-  id: string;
+  id: string,
   /** The amount for the line item (in USD) */
-  amount: number;
+  amount: number,
   /** A description of the charge. Only present if we have no idea what the charge is */
-  description: ?string;
+  description: ?string,
   /** Array of user activity line items that roll up to total activity (add/leave/pause/unpause) */
-  details: ?Array<InvoiceLineItemDetails>;
+  details: ?Array<InvoiceLineItemDetails>,
   /** The total number of days that all org users have been inactive during the billing cycle */
-  quantity: ?number;
+  quantity: ?number,
   /** The line item type for a monthly billing invoice */
-  type: ?InvoiceLineItemEnum;
+  type: ?InvoiceLineItemEnum
 }
 
 /**
@@ -775,76 +791,80 @@ export type InvoiceLineItem = {
 */
 export type InvoiceLineItemDetails = {
   /** The unique detailed line item id */
-  id: string;
+  id: string,
   /** The amount for the line item (in USD) */
-  amount: number;
+  amount: number,
   /** The email affected by this line item change */
-  email: ?any;
+  email: ?any,
   /** End of the event. Only present if a pause action gets matched up with an unpause action */
-  endAt: ?any;
+  endAt: ?any,
   /** The parent line item id */
-  parentId: string;
+  parentId: string,
   /** The timestamp for the beginning of the period of no charge */
-  startAt: ?any;
+  startAt: ?any
 }
 
 /**
   A big picture line item
 */
-export type InvoiceLineItemEnum = "ADDED_USERS" | "INACTIVITY_ADJUSTMENTS" | "OTHER_ADJUSTMENTS" | "REMOVED_USERS";
+export type InvoiceLineItemEnum =
+  | 'ADDED_USERS'
+  | 'INACTIVITY_ADJUSTMENTS'
+  | 'OTHER_ADJUSTMENTS'
+  | 'REMOVED_USERS'
 
 /**
   A single line item for the charges for next month
 */
 export type InvoiceChargeNextMonth = {
   /** The amount for the line item (in USD) */
-  amount: number;
+  amount: number,
   /** The datetime the next period will end */
-  nextPeriodEnd: ?any;
+  nextPeriodEnd: ?any,
   /** The total number of days that all org users have been inactive during the billing cycle */
-  quantity: ?number;
+  quantity: ?number,
   /** The per-seat monthly price of the subscription (in dollars) */
-  unitPrice: ?number;
+  unitPrice: ?number
 }
 
 /**
   The payment status of the invoice
 */
-export type InvoiceStatusEnum = "PENDING" | "PAID" | "FAILED" | "UPCOMING";
+export type InvoiceStatusEnum = 'PENDING' | 'PAID' | 'FAILED' | 'UPCOMING'
 
 /**
   A team meeting history for all previous meetings
 */
 export type Meeting = {
   /** The unique meeting id. shortid. */
-  id: string;
+  id: string,
   /** The number of agenda items completed during the meeting */
-  agendaItemsCompleted: ?number;
+  agendaItemsCompleted: ?number,
   /** The timestamp the meeting was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** The timestamp the meeting officially ended */
-  endedAt: ?any;
+  endedAt: ?any,
   /** The teamMemberId of the person who ended the meeting */
-  facilitator: ?string;
-  invitees: ?Array<MeetingInvitee>;
+  facilitator: ?string,
+  invitees: ?Array<MeetingInvitee>,
   /** The auto-incrementing meeting number for the team */
-  meetingNumber: number;
+  meetingNumber: number,
   /** A list of immutable tasks, as they were created in the meeting */
-  tasks: ?Array<MeetingTask>;
+  tasks: ?Array<MeetingTask>,
   /** The start time used to create the diff (all taskDiffs occurred between this time and the endTime */
-  sinceTime: ?any;
+  sinceTime: ?any,
   /** The happy introductory clause to the summary */
-  successExpression: ?string;
+  successExpression: ?string,
   /** The happy body statement for the summary */
-  successStatement: ?string;
+  successStatement: ?string,
   /** The time the meeting summary was emailed to the team */
-  summarySentAt: ?any;
+  summarySentAt: ?any,
   /** The team associated with this meeting */
-  teamId: string;
+  teamId: string,
   /** The name as it was when the meeting occurred */
-  teamName: ?string;
+  teamName: ?string,
   /** All the team members associated who can join this team */
-  teamMembers: ?Array<TeamMember>;
+  teamMembers: ?Array<TeamMember>
 }
 
 /**
@@ -852,17 +872,17 @@ export type Meeting = {
 */
 export type MeetingInvitee = {
   /** The teamMemberId of the user invited to the meeting */
-  id: ?string;
+  id: ?string,
   /** true if the invitee was present in the meeting */
-  present: ?boolean;
+  present: ?boolean,
   /** A list of immutable tasks, as they were created in the meeting */
-  tasks: ?Array<MeetingTask>;
+  tasks: ?Array<MeetingTask>,
   /** url of user’s profile picture */
-  picture: ?any;
+  picture: ?any,
   /** The name, as confirmed by the user */
-  preferredName: ?string;
+  preferredName: ?string,
   /** All of the fields from the team member table */
-  membership: ?TeamMember;
+  membership: ?TeamMember
 }
 
 /**
@@ -870,15 +890,15 @@ export type MeetingInvitee = {
 */
 export type MeetingTask = {
   /** The unique action id, meetingId::taskId */
-  id: string;
+  id: string,
   /** The stringified Draft-js raw description of the action created during the meeting */
-  content: string;
+  content: string,
   /** The description of the action created during the meeting */
-  status: ?TaskStatusEnum;
+  status: ?TaskStatusEnum,
   /** The tags associated with the task */
-  tags: ?Array<string>;
+  tags: ?Array<string>,
   /** The id of the team member the action was assigned to during the meeting */
-  assigneeId: string;
+  assigneeId: string
 }
 
 /**
@@ -886,9 +906,9 @@ export type MeetingTask = {
 */
 export type NotificationConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
-  pageInfo: ?PageInfoDateCursor;
+  pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<NotificationEdge>;
+  edges: ?Array<NotificationEdge>
 }
 
 /**
@@ -896,28 +916,53 @@ export type NotificationConnection = {
 */
 export type NotificationEdge = {
   /** The item at the end of the edge */
-  node: ?Notification;
-  cursor: ?any;
+  node: ?Notification,
+  cursor: ?any
 }
 
-export type Notification = NotifyTeamInvite | NotifyRequestNewUser | NotifyInviteeApproved | NotifyTeamArchived | NotifyTaskInvolves | NotifyAddedToTeam | NotifyDenial | NotifyKickedOut | NotifyPaymentRejected | NotifyPromoteToOrgLeader;
+export type Notification =
+  | NotifyTeamInvite
+  | NotifyRequestNewUser
+  | NotifyInviteeApproved
+  | NotifyTeamArchived
+  | NotifyTaskInvolves
+  | NotifyAddedToTeam
+  | NotifyDenial
+  | NotifyKickedOut
+  | NotifyPaymentRejected
+  | NotifyPromoteToOrgLeader
 
 /**
   The kind of notification
 */
-export type NotificationEnum = "ADD_TO_TEAM" | "DENY_NEW_USER" | "FACILITATOR_DISCONNECTED" | "undefined" | "INVITEE_APPROVED" | "JOIN_TEAM" | "KICKED_OUT" | "PAYMENT_REJECTED" | "TASK_INVOLVES" | "REJOIN_TEAM" | "REQUEST_NEW_USER" | "TEAM_INVITE" | "TEAM_ARCHIVED" | "VERSION_INFO" | "PROMOTE_TO_BILLING_LEADER";
+export type NotificationEnum =
+  | 'ADD_TO_TEAM'
+  | 'DENY_NEW_USER'
+  | 'FACILITATOR_DISCONNECTED'
+  | 'undefined'
+  | 'INVITEE_APPROVED'
+  | 'JOIN_TEAM'
+  | 'KICKED_OUT'
+  | 'PAYMENT_REJECTED'
+  | 'TASK_INVOLVES'
+  | 'REJOIN_TEAM'
+  | 'REQUEST_NEW_USER'
+  | 'TEAM_INVITE'
+  | 'TEAM_ARCHIVED'
+  | 'VERSION_INFO'
+  | 'PROMOTE_TO_BILLING_LEADER'
 
 /**
   A token for a user to be used on 1 or more teams
 */
 export type ProviderMap = {
   /** The ID of an object */
-  id: string;
-  teamId: ?string;
+  id: string,
+  teamId: ?string,
   /** All the big details associated with slack */
-  SlackIntegration: ?ProviderRow;
+  SlackIntegration: ?ProviderRow,
   /** All the big details associated with GitHub */
-  GitHubIntegration: ?ProviderRow;
+  GitHubIntegration: ?ProviderRow
 }
 
 /**
@@ -925,18 +970,18 @@ export type ProviderMap = {
 */
 export type ProviderRow = {
   /** The ID of an object */
-  id: string;
+  id: string,
   /** The access token attached to the userId. null if user does not have a token for the provider */
-  accessToken: ?string;
+  accessToken: ?string,
   /** The count of all the people on the team that have linked their account to the provider */
-  userCount: ?number;
+  userCount: ?number,
   /** The number of integrations under this provider for the team */
-  integrationCount: ?number;
+  integrationCount: ?number,
   /** The username according to the provider */
-  providerUserName: ?string;
+  providerUserName: ?string,
   /** The name of the service */
-  service: ?IntegrationService;
-  teamId: ?string;
+  service: ?IntegrationService,
+  teamId: ?string
 }
 
 /**
@@ -944,219 +989,219 @@ export type ProviderRow = {
 */
 export type SlackIntegration = {
   /** The ID of an object */
-  id: string;
+  id: string,
   /** the id of the channel provided by the service, if available. Useful for fetching from their API */
-  channelId: string;
+  channelId: string,
   /** The name of the channel. Shared with all, updated when the integration owner looks at it */
-  channelName: ?string;
+  channelName: ?string,
   /** defaults to true. true if this is used to send notifications */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** The types of notifications the team wishes to receive */
-  notifications: ?Array<string>;
+  notifications: ?Array<string>,
   /** *The team that cares about these annoucements */
-  teamId: string;
+  teamId: string
 }
 
 /**
   The tier of the Organization
 */
-export type OrgTierEnum = "personal" | "pro" | "enterprise";
+export type OrgTierEnum = 'personal' | 'pro' | 'enterprise'
 
 export type SuProOrgInfo = {
   /** The PRO organization */
-  organization: ?Organization;
+  organization: ?Organization,
   /** The id of the Organization */
-  organizationId: string;
+  organizationId: string
 }
 
 export type Mutation = {
   /** Add a user to a Team given an invitationToken or the notification id of the invitation.
     If the invitationToken is valid, returns the auth token with the new team added to tms.
     Side effect: deletes all other outstanding invitations for user. */
-  acceptTeamInvite: AcceptTeamInvitePayload;
+  acceptTeamInvite: AcceptTeamInvitePayload,
   /** Create a new agenda item */
-  addAgendaItem: ?AddAgendaItemPayload;
+  addAgendaItem: ?AddAgendaItemPayload,
   /** Give someone advanced features in a flag */
-  addFeatureFlag: ?AddFeatureFlagPayload;
-  addGitHubRepo: AddGitHubRepoPayload;
+  addFeatureFlag: ?AddFeatureFlagPayload,
+  addGitHubRepo: AddGitHubRepoPayload,
   /** Create a new team and add the first team member */
-  addOrg: ?AddOrgPayload;
-  addProvider: ?boolean;
-  addSlackChannel: AddSlackChannelPayload;
+  addOrg: ?AddOrgPayload,
+  addProvider: ?boolean,
+  addSlackChannel: AddSlackChannelPayload,
   /** Create a new team and add the first team member */
-  addTeam: ?AddTeamPayload;
+  addTeam: ?AddTeamPayload,
   /** Approve an outsider to join the organization */
-  approveToOrg: ?ApproveToOrgPayload;
-  archiveTeam: ?ArchiveTeamPayload;
+  approveToOrg: ?ApproveToOrgPayload,
+  archiveTeam: ?ArchiveTeamPayload,
   /** Automatically group reflections */
-  autoGroupReflections: ?AutoGroupReflectionsPayload;
+  autoGroupReflections: ?AutoGroupReflectionsPayload,
   /** Cancel a pending request for an invitee to join the org */
-  cancelApproval: ?CancelApprovalPayload;
+  cancelApproval: ?CancelApprovalPayload,
   /** Cancel an invitation */
-  cancelTeamInvite: ?CancelTeamInvitePayload;
+  cancelTeamInvite: ?CancelTeamInvitePayload,
   /** Change the team a task is associated with */
-  changeTaskTeam: ?ChangeTaskTeamPayload;
+  changeTaskTeam: ?ChangeTaskTeamPayload,
   /** Remove a notification by ID */
-  clearNotification: ?ClearNotificationPayload;
+  clearNotification: ?ClearNotificationPayload,
   /** a server-side mutation called when a client connects */
-  connectSocket: ?User;
+  connectSocket: ?User,
   /** for troubleshooting by admins, create a JWT for a given userId */
-  createImposterToken: ?CreateImposterTokenPayload;
+  createImposterToken: ?CreateImposterTokenPayload,
   /** Create a new team and add the first team member. Called from the welcome wizard */
-  createFirstTeam: ?CreateFirstTeamPayload;
-  createGitHubIssue: ?CreateGitHubIssuePayload;
+  createFirstTeam: ?CreateFirstTeamPayload,
+  createGitHubIssue: ?CreateGitHubIssuePayload,
   /** Create a PUT URL on the CDN for an organization’s profile picture */
-  createOrgPicturePutUrl: ?CreatePicturePutUrlPayload;
+  createOrgPicturePutUrl: ?CreatePicturePutUrlPayload,
   /** Create a new reflection */
-  createReflection: ?CreateReflectionPayload;
+  createReflection: ?CreateReflectionPayload,
   /** Create a new reflection group */
-  createReflectionGroup: ?CreateReflectionGroupPayload;
+  createReflectionGroup: ?CreateReflectionGroupPayload,
   /** Create a new task, triggering a CreateCard for other viewers */
-  createTask: ?CreateTaskPayload;
+  createTask: ?CreateTaskPayload,
   /** Create a PUT URL on the CDN for the currently authenticated user’s profile picture */
-  createUserPicturePutUrl: ?CreateUserPicturePutUrlPayload;
+  createUserPicturePutUrl: ?CreateUserPicturePutUrlPayload,
   /** Delete (not archive!) a task */
-  deleteTask: ?DeleteTaskPayload;
+  deleteTask: ?DeleteTaskPayload,
   /** a server-side mutation called when a client disconnects */
-  disconnectSocket: ?DisconnectSocketPayload;
+  disconnectSocket: ?DisconnectSocketPayload,
   /** Changes the drag state of a retrospective reflection */
-  dragReflection: ?DragReflectionPayload;
+  dragReflection: ?DragReflectionPayload,
   /** Changes the editing state of a retrospective reflection */
-  editReflection: ?EditReflectionPayload;
+  editReflection: ?EditReflectionPayload,
   /** Announce to everyone that you are editing a task */
-  editTask: ?EditTaskPayload;
+  editTask: ?EditTaskPayload,
   /** Finish a meeting and go to the summary */
-  endMeeting: ?EndMeetingPayload;
+  endMeeting: ?EndMeetingPayload,
   /** Receive a webhook from github saying an assignee was added */
-  githubAddAssignee: ?boolean;
+  githubAddAssignee: ?boolean,
   /** Receive a webhook from github saying an org member was added */
-  githubAddMember: ?boolean;
+  githubAddMember: ?boolean,
   /** Receive a webhook from github saying an org member was removed */
-  githubRemoveMember: ?boolean;
+  githubRemoveMember: ?boolean,
   /** pauses the subscription for a single user */
-  inactivateUser: ?InactivateUserPayload;
+  inactivateUser: ?InactivateUserPayload,
   /** If in the org,
      Send invitation emails to a list of email addresses, add them to the invitation table.
      Else, send a request to the org leader to get them approval and put them in the OrgApproval table. */
-  inviteTeamMembers: InviteTeamMembersPayload;
+  inviteTeamMembers: InviteTeamMembersPayload,
   /** Add a user to an integration */
-  joinIntegration: JoinIntegrationPayload;
+  joinIntegration: JoinIntegrationPayload,
   /** Finish a meeting abruptly */
-  killMeeting: ?KillMeetingPayload;
+  killMeeting: ?KillMeetingPayload,
   /** Finish a new meeting abruptly */
-  endNewMeeting: ?EndNewMeetingPayload;
+  endNewMeeting: ?EndNewMeetingPayload,
   /** Remove yourself from an integration */
-  leaveIntegration: LeaveIntegrationPayload;
+  leaveIntegration: LeaveIntegrationPayload,
   /** Check a member in as present or absent */
-  meetingCheckIn: ?MeetingCheckInPayload;
+  meetingCheckIn: ?MeetingCheckInPayload,
   /** Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too. */
-  moveMeeting: ?MoveMeetingPayload;
+  moveMeeting: ?MoveMeetingPayload,
   /** Move a team to a different org. Requires billing leader rights on both orgs! */
-  moveTeamToOrg: ?string;
+  moveTeamToOrg: ?string,
   /** update a meeting by marking an item complete and setting the facilitator location */
-  navigateMeeting: ?NavigateMeetingPayload;
+  navigateMeeting: ?NavigateMeetingPayload,
   /** Check a member in as present or absent */
-  newMeetingCheckIn: ?NewMeetingCheckInPayload;
+  newMeetingCheckIn: ?NewMeetingCheckInPayload,
   /** Change a facilitator while the meeting is in progress */
-  promoteFacilitator: ?PromoteFacilitatorPayload;
+  promoteFacilitator: ?PromoteFacilitatorPayload,
   /** Change a facilitator while the meeting is in progress */
-  promoteNewMeetingFacilitator: ?PromoteNewMeetingFacilitatorPayload;
+  promoteNewMeetingFacilitator: ?PromoteNewMeetingFacilitatorPayload,
   /** Promote another team member to be the leader */
-  promoteToTeamLead: ?PromoteToTeamLeadPayload;
+  promoteToTeamLead: ?PromoteToTeamLeadPayload,
   /** Reject an invitee from joining any team under your organization */
-  rejectOrgApproval: ?RejectOrgApprovalPayload;
+  rejectOrgApproval: ?RejectOrgApprovalPayload,
   /** Remove an agenda item */
-  removeAgendaItem: ?RemoveAgendaItemPayload;
+  removeAgendaItem: ?RemoveAgendaItemPayload,
   /** Disconnect a team from a Provider token */
-  removeProvider: RemoveProviderPayload;
+  removeProvider: RemoveProviderPayload,
   /** Remove a slack channel integration from a team */
-  removeSlackChannel: RemoveSlackChannelPayload;
+  removeSlackChannel: RemoveSlackChannelPayload,
   /** Remove a github repo integration from a team */
-  removeGitHubRepo: RemoveGitHubRepoPayload;
+  removeGitHubRepo: RemoveGitHubRepoPayload,
   /** Remove a user from an org */
-  removeOrgUser: ?RemoveOrgUserPayload;
+  removeOrgUser: ?RemoveOrgUserPayload,
   /** Remove a reflection */
-  removeReflection: ?RemoveReflectionPayload;
+  removeReflection: ?RemoveReflectionPayload,
   /** Remove a team member from the team */
-  removeTeamMember: ?RemoveTeamMemberPayload;
+  removeTeamMember: ?RemoveTeamMemberPayload,
   /** Request to become the facilitator in a meeting */
-  requestFacilitator: ?RequestFacilitatorPayload;
+  requestFacilitator: ?RequestFacilitatorPayload,
   /** Resend an invitation */
-  resendTeamInvite: ?ResendTeamInvitePayload;
+  resendTeamInvite: ?ResendTeamInvitePayload,
   /** track an event in segment, like when errors are hit */
-  segmentEventTrack: ?boolean;
+  segmentEventTrack: ?boolean,
   /** Set the role of a user */
-  setOrgUserRole: ?SetOrgUserRolePayload;
+  setOrgUserRole: ?SetOrgUserRolePayload,
   /** Start a meeting from the lobby */
-  startMeeting: ?StartMeetingPayload;
+  startMeeting: ?StartMeetingPayload,
   /** Start a new meeting */
-  startNewMeeting: ?StartNewMeetingPayload;
+  startNewMeeting: ?StartNewMeetingPayload,
   /** When stripe tells us an invoice is ready, create a pretty version */
-  stripeCreateInvoice: ?boolean;
+  stripeCreateInvoice: ?boolean,
   /** When stripe tells us an invoice payment failed, update it in our DB */
-  stripeFailPayment: ?StripeFailPaymentPayload;
+  stripeFailPayment: ?StripeFailPaymentPayload,
   /** When stripe tells us an invoice payment was successful, update it in our DB */
-  stripeSucceedPayment: ?boolean;
+  stripeSucceedPayment: ?boolean,
   /** When stripe tells us a credit card was updated, update the details in our own DB */
-  stripeUpdateCreditCard: ?boolean;
+  stripeUpdateCreditCard: ?boolean,
   /** When a new invoiceitem is sent from stripe, tag it with metadata */
-  stripeUpdateInvoiceItem: ?boolean;
+  stripeUpdateInvoiceItem: ?boolean,
   /** Show/hide the agenda list */
-  toggleAgendaList: ?TeamMember;
+  toggleAgendaList: ?TeamMember,
   /** Update an agenda item */
-  updateAgendaItem: ?UpdateAgendaItemPayload;
+  updateAgendaItem: ?UpdateAgendaItemPayload,
   /** Update an existing credit card on file */
-  updateCreditCard: ?UpdateCreditCardPayload;
+  updateCreditCard: ?UpdateCreditCardPayload,
   /** Update an with a change in name, avatar */
-  updateOrg: UpdateOrgPayload;
+  updateOrg: UpdateOrgPayload,
   /** Update a Team's Check-in question */
-  updateCheckInQuestion: ?UpdateCheckInQuestionPayload;
+  updateCheckInQuestion: ?UpdateCheckInQuestionPayload,
   /** Update a Team's Check-in question in a new meeting */
-  updateNewCheckInQuestion: ?UpdateNewCheckInQuestionPayload;
+  updateNewCheckInQuestion: ?UpdateNewCheckInQuestionPayload,
   /** Update the content of a reflection */
-  updateReflectionContent: ?UpdateReflectionContentPayload;
+  updateReflectionContent: ?UpdateReflectionContentPayload,
   /** Update the title of a reflection group */
-  updateReflectionGroupTitle: ?UpdateReflectionGroupTitlePayload;
+  updateReflectionGroupTitle: ?UpdateReflectionGroupTitlePayload,
   /** Update the sortOrder or phaseItemId of a reflection (usually by dragging it) */
-  updateReflectionLocation: ?UpdateReflectionLocationPayload;
+  updateReflectionLocation: ?UpdateReflectionLocationPayload,
   /** Update a task with a change in content, ownership, or status */
-  updateTask: ?UpdateTaskPayload;
+  updateTask: ?UpdateTaskPayload,
   /** Set or unset the due date of a task */
-  updateTaskDueDate: ?UpdateTaskDueDatePayload;
-  updateTeamName: ?UpdateTeamNamePayload;
-  updateUserProfile: ?UpdateUserProfilePayload;
+  updateTaskDueDate: ?UpdateTaskDueDatePayload,
+  updateTeamName: ?UpdateTeamNamePayload,
+  updateUserProfile: ?UpdateUserProfilePayload,
   /** Cast your vote for a reflection group */
-  voteForReflectionGroup: ?VoteForReflectionGroupPayload;
+  voteForReflectionGroup: ?VoteForReflectionGroupPayload,
   /** Log in, or sign up if it is a new user */
-  login: ?LoginPayload;
+  login: ?LoginPayload,
   /** Upgrade an account to the paid service */
-  upgradeToPro: ?UpgradeToProPayload;
+  upgradeToPro: ?UpgradeToProPayload
 }
 
 export type AcceptTeamInvitePayload = {
   /** The new JWT */
-  authToken: ?string;
-  error: ?StandardMutationError;
+  authToken: ?string,
+  error: ?StandardMutationError,
   /** The team that the invitee will be joining */
-  team: ?Team;
+  team: ?Team,
   /** The new team member on the team */
-  teamMember: ?TeamMember;
+  teamMember: ?TeamMember,
   /** The invite notification removed once accepted */
-  removedNotification: ?NotifyTeamInvite;
+  removedNotification: ?NotifyTeamInvite,
   /** The invitation the viewer just accepted */
-  removedInvitation: ?Invitation;
-  user: ?User;
+  removedInvitation: ?Invitation,
+  user: ?User,
   /** The soft team member that got promoted to a real team member */
-  removedSoftTeamMember: ?SoftTeamMember;
+  removedSoftTeamMember: ?SoftTeamMember,
   /** The tasks that got reassigned from the soft team member to the real team member */
-  hardenedTasks: ?Array<Task>;
+  hardenedTasks: ?Array<Task>
 }
 
 export type StandardMutationError = {
   /** The title of the error */
-  title: string;
+  title: string,
   /** The full error */
-  message: string;
+  message: string
 }
 
 /**
@@ -1164,61 +1209,67 @@ export type StandardMutationError = {
 */
 export type NotifyTeamInvite = {
   /** The user that triggered the invitation */
-  inviter: ?User;
-  team: ?Team;
+  inviter: ?User,
+  team: ?Team,
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
-export type TeamNotification = NotifyTeamInvite | NotifyRequestNewUser | NotifyInviteeApproved | NotifyTaskInvolves | NotifyAddedToTeam | NotifyDenial;
+export type TeamNotification =
+  | NotifyTeamInvite
+  | NotifyRequestNewUser
+  | NotifyInviteeApproved
+  | NotifyTaskInvolves
+  | NotifyAddedToTeam
+  | NotifyDenial
 
 export type CreateAgendaItemInput = {
   /** The content of the agenda item */
-  content: string;
-  teamId: string;
+  content: string,
+  teamId: string,
   /** The team member ID of the person creating the agenda item */
-  teamMemberId: string;
+  teamMemberId: string,
   /** The sort order of the agenda item in the list */
-  sortOrder: ?number;
+  sortOrder: ?number
 }
 
 export type AddAgendaItemPayload = {
-  agendaItem: ?AgendaItem;
-  error: ?StandardMutationError;
+  agendaItem: ?AgendaItem,
+  error: ?StandardMutationError
 }
 
 /**
   A flag to give an individual user super powers
 */
-export type UserFlagEnum = "retro";
+export type UserFlagEnum = 'retro'
 
 export type AddFeatureFlagPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users */
-  user: ?User;
+  user: ?User,
   /** the users given the super power */
-  users: ?Array<User>;
+  users: ?Array<User>,
   /** A human-readable result */
-  result: ?string;
+  result: ?string
 }
 
 export type AddGitHubRepoPayload = {
-  error: ?StandardMutationError;
-  repo: GitHubIntegration;
+  error: ?StandardMutationError,
+  repo: GitHubIntegration
 }
 
 export type NewTeamInput = {
   /** The name of the team */
-  name: ?string;
+  name: ?string,
   /** The unique orginization ID that pays for the team */
-  orgId: ?string;
+  orgId: ?string
 }
 
 /**
@@ -1226,58 +1277,58 @@ export type NewTeamInput = {
 */
 export type Invitee = {
   /** The email address of the invitee */
-  email: any;
+  email: any,
   /** The name derived from an RFC5322 email string */
-  fullName: ?string;
+  fullName: ?string,
   /** The current task the invitee is working on */
-  task: ?string;
+  task: ?string
 }
 
 export type AddOrgPayload = {
-  organization: ?Organization;
-  error: ?StandardMutationError;
-  team: ?Team;
+  organization: ?Organization,
+  error: ?StandardMutationError,
+  team: ?Team,
   /** The teamMember that just created the new team, if this is a creation */
-  teamMember: ?TeamMember;
-  invitations: ?Array<Invitation>;
+  teamMember: ?TeamMember,
+  invitations: ?Array<Invitation>,
   /** The invitation sent when an team was being created */
-  teamInviteNotification: ?NotifyTeamInvite;
+  teamInviteNotification: ?NotifyTeamInvite
 }
 
 export type AddSlackChannelInput = {
   /** The id of the teamMember calling it. */
-  teamMemberId: string;
+  teamMemberId: string,
   /** the slack channel that wants our messages */
-  slackChannelId: string;
+  slackChannelId: string
 }
 
 export type AddSlackChannelPayload = {
-  error: ?StandardMutationError;
-  channel: SlackIntegration;
+  error: ?StandardMutationError,
+  channel: SlackIntegration
 }
 
 export type AddTeamPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team,
   /** The teamMember that just created the new team, if this is a creation */
-  teamMember: ?TeamMember;
-  invitations: ?Array<Invitation>;
+  teamMember: ?TeamMember,
+  invitations: ?Array<Invitation>,
   /** The invitation sent when an team was being created */
-  teamInviteNotification: ?NotifyTeamInvite;
+  teamInviteNotification: ?NotifyTeamInvite
 }
 
 export type ApproveToOrgPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** If the viewer is an org leader, the notifications removed after approving to the organization */
-  removedRequestNotifications: ?Array<NotifyRequestNewUser>;
+  removedRequestNotifications: ?Array<NotifyRequestNewUser>,
   /** If the viegnwer is a team member, the org approvals that were removed in place of team members */
-  removedOrgApprovals: ?Array<OrgApproval>;
+  removedOrgApprovals: ?Array<OrgApproval>,
   /** If the viewer is a team member, the list of team members added as a result of the approval */
-  newInvitations: ?Array<Invitation>;
+  newInvitations: ?Array<Invitation>,
   /** If the viewer invited the invitee, the notifications to say they have been approved */
-  inviteeApprovedNotifications: ?Array<NotifyInviteeApproved>;
+  inviteeApprovedNotifications: ?Array<NotifyInviteeApproved>,
   /** If the viewer is the invitee, the notifications to invite them to teams */
-  teamInviteNotifications: ?Array<NotifyTeamInvite>;
+  teamInviteNotifications: ?Array<NotifyTeamInvite>
 }
 
 /**
@@ -1285,80 +1336,83 @@ export type ApproveToOrgPayload = {
 */
 export type NotifyRequestNewUser = {
   /** The userId of the person that invited the email */
-  inviterUserId: string;
+  inviterUserId: string,
   /** The email of the person being invited */
-  inviteeEmail: string;
+  inviteeEmail: string,
   /** The teamId the inviteeEmail is being invited to */
-  teamId: string;
+  teamId: string,
   /** The team name the inviteeEmail is being invited to */
-  teamName: string;
+  teamName: string,
   /** The user that triggered the invitation */
-  inviter: ?User;
-  team: ?Team;
+  inviter: ?User,
+  team: ?Team,
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
-export type OrganizationNotification = NotifyRequestNewUser | NotifyPaymentRejected | NotifyPromoteToOrgLeader;
+export type OrganizationNotification =
+  | NotifyRequestNewUser
+  | NotifyPaymentRejected
+  | NotifyPromoteToOrgLeader
 
 /**
   A notification sent to a user when the person they invited got approved by the org leader
 */
 export type NotifyInviteeApproved = {
   /** The email of the person being invited */
-  inviteeEmail: string;
+  inviteeEmail: string,
   /** The user that triggered the invitation */
-  inviter: ?User;
-  team: ?Team;
+  inviter: ?User,
+  team: ?Team,
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
 export type ArchiveTeamPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team,
   /** A notification explaining that the team was archived and removed from view */
-  notification: ?NotifyTeamArchived;
-  removedTeamNotifications: ?Array<TeamNotification>;
+  notification: ?NotifyTeamArchived,
+  removedTeamNotifications: ?Array<TeamNotification>
 }
 
 /**
   A notification alerting the user that a team they were on is now archived
 */
 export type NotifyTeamArchived = {
-  team: ?Team;
+  team: ?Team,
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
-export type TeamRemovedNotification = NotifyTeamArchived | NotifyKickedOut;
+export type TeamRemovedNotification = NotifyTeamArchived | NotifyKickedOut
 
 export type AutoGroupReflectionsPayload = {
-  error: ?StandardMutationError;
-  meeting: ?RetrospectiveMeeting;
-  reflections: ?Array<RetroReflection>;
-  reflectionGroups: ?Array<RetroReflectionGroup>;
+  error: ?StandardMutationError,
+  meeting: ?RetrospectiveMeeting,
+  reflections: ?Array<RetroReflection>,
+  reflectionGroups: ?Array<RetroReflectionGroup>
 }
 
 /**
@@ -1366,46 +1420,46 @@ export type AutoGroupReflectionsPayload = {
 */
 export type RetrospectiveMeeting = {
   /** The unique meeting id. shortid. */
-  id: string;
+  id: string,
   /** The timestamp the meeting was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** The timestamp the meeting officially ended */
-  endedAt: ?any;
+  endedAt: ?any,
   /** The location of the facilitator in the meeting */
-  facilitatorStageId: string;
+  facilitatorStageId: string,
   /** The userId (or anonymousId) of the most recent facilitator */
-  facilitatorUserId: string;
+  facilitatorUserId: string,
   /** The facilitator user */
-  facilitator: User;
+  facilitator: User,
   /** The team members that were active during the time of the meeting */
-  meetingMembers: ?Array<MeetingMember>;
+  meetingMembers: ?Array<MeetingMember>,
   /** The auto-incrementing meeting number for the team */
-  meetingNumber: number;
-  meetingType: MeetingTypeEnum;
+  meetingNumber: number,
+  meetingType: MeetingTypeEnum,
   /** The phases the meeting will go through, including all phase-specific state */
-  phases: Array<NewMeetingPhase>;
+  phases: Array<NewMeetingPhase>,
   /** The time the meeting summary was emailed to the team */
-  summarySentAt: ?any;
+  summarySentAt: ?any,
   /** foreign key for team */
-  teamId: string;
+  teamId: string,
   /** The team that ran the meeting */
-  team: Team;
+  team: Team,
   /** The last time a meeting was updated (stage completed, finished, etc) */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** The retrospective meeting member of the viewer */
-  viewerMeetingMember: ?RetrospectiveMeetingMember;
+  viewerMeetingMember: ?RetrospectiveMeetingMember,
   /** the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used. */
-  autoGroupThreshold: ?number;
+  autoGroupThreshold: ?number,
   /** the next smallest distance threshold to guarantee at least 1 more grouping will be achieved */
-  nextAutoGroupThreshold: ?number;
+  nextAutoGroupThreshold: ?number,
   /** The grouped reflections */
-  reflectionGroups: Array<RetroReflectionGroup>;
+  reflectionGroups: Array<RetroReflectionGroup>,
   /** The settings that govern the retrospective meeting */
-  settings: RetrospectiveMeetingSettings;
+  settings: RetrospectiveMeetingSettings,
   /** The tasks created within the meeting */
-  tasks: Array<Task>;
+  tasks: Array<Task>,
   /** The sum total of the votes remaining for the meeting members that are present in the meeting */
-  votesRemaining: number;
+  votesRemaining: number
 }
 
 /**
@@ -1413,64 +1467,64 @@ export type RetrospectiveMeeting = {
 */
 export type RetrospectiveMeetingMember = {
   /** A composite of userId::meetingId */
-  id: string;
+  id: string,
   /** true if present, false if absent, else null */
-  isCheckedIn: ?boolean;
-  meetingId: ?string;
-  meetingType: MeetingTypeEnum;
-  teamId: ?string;
-  user: ?User;
-  userId: ?string;
+  isCheckedIn: ?boolean,
+  meetingId: ?string,
+  meetingType: MeetingTypeEnum,
+  teamId: ?string,
+  user: ?User,
+  userId: ?string,
   /** The last time a meeting was updated (stage completed, finished, etc) */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** The tasks assigned to members during the meeting */
-  tasks: Array<Task>;
-  votesRemaining: number;
+  tasks: Array<Task>,
+  votesRemaining: number
 }
 
 /**
   sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
 */
-export type ReflectionGroupSortEnum = "voteCount";
+export type ReflectionGroupSortEnum = 'voteCount'
 
 /**
   A reflection created during the reflect phase of a retrospective
 */
 export type RetroReflectionGroup = {
   /** shortid */
-  id: string;
+  id: string,
   /** The timestamp the meeting was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** True if the reflection was not removed, else false */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** The foreign key to link a reflection group to its meeting */
-  meetingId: string;
+  meetingId: string,
   /** The retrospective meeting this reflection was created in */
-  meeting: ?RetrospectiveMeeting;
-  phaseItem: ?RetroPhaseItem;
-  reflections: Array<RetroReflection>;
+  meeting: ?RetrospectiveMeeting,
+  phaseItem: ?RetroPhaseItem,
+  reflections: Array<RetroReflection>,
   /** The foreign key to link a reflection group to its phaseItem. Immutable. */
-  retroPhaseItemId: string;
+  retroPhaseItemId: string,
   /** Our auto-suggested title, to be compared to the actual title for analytics */
-  smartTitle: ?string;
+  smartTitle: ?string,
   /** The sort order of the reflection group in the phase item */
-  sortOrder: number;
+  sortOrder: number,
   /** The tasks created for this group in the discussion phase */
-  tasks: Array<Task>;
+  tasks: Array<Task>,
   /** The team that is running the retro */
-  team: ?Team;
+  team: ?Team,
   /** The title of the grouping of the retrospective reflections */
-  title: ?string;
+  title: ?string,
   /** true if a user wrote the title, else false */
-  titleIsUserDefined: ?boolean;
+  titleIsUserDefined: ?boolean,
   /** The timestamp the meeting was updated at */
-  updatedAt: ?any;
+  updatedAt: ?any,
   /** A list of voterIds (userIds). Not available to team to preserve anonymity */
-  voterIds: ?Array<string>;
+  voterIds: ?Array<string>,
   /** The number of votes this group has received */
-  voteCount: ?number;
+  voteCount: ?number,
   /** The number of votes the viewer has given this group */
-  viewerVoteCount: ?number;
+  viewerVoteCount: ?number
 }
 
 /**
@@ -1478,19 +1532,19 @@ export type RetroReflectionGroup = {
 */
 export type RetroPhaseItem = {
   /** shortid */
-  id: string;
+  id: string,
   /** The type of phase item */
-  phaseItemType: ?CustomPhaseItemTypeEnum;
+  phaseItemType: ?CustomPhaseItemTypeEnum,
   /** true if the phase item is currently used by the team, else false */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** foreign key. use the team field */
-  teamId: string;
+  teamId: string,
   /** The team that owns this customPhaseItem */
-  team: ?Team;
+  team: ?Team,
   /** The title of the phase of the retrospective. Often a short version of the question */
-  title: string;
+  title: string,
   /** The question to answer during the phase of the retrospective (eg What went well?) */
-  question: string;
+  question: string
 }
 
 /**
@@ -1498,48 +1552,48 @@ export type RetroPhaseItem = {
 */
 export type RetroReflection = {
   /** shortid */
-  id: string;
+  id: string,
   /** The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count() */
-  autoReflectionGroupId: ?string;
+  autoReflectionGroupId: ?string,
   /** The timestamp the meeting was created */
-  createdAt: ?any;
+  createdAt: ?any,
   /** The userId that created the reflection (or unique Id if not a team member) */
-  creatorId: ?string;
+  creatorId: ?string,
   /** The userId of the person currently dragging the reflection */
-  draggerUserId: ?string;
+  draggerUserId: ?string,
   /** The user that is currently dragging the reflection */
-  draggerUser: ?User;
+  draggerUser: ?User,
   /** The coordinates necessary to simulate a drag for a subscribing user */
-  draggerCoords: ?DraggerCoords;
+  draggerCoords: ?DraggerCoords,
   /** an array of all the socketIds that are currently editing the reflection */
-  editorIds: Array<string>;
+  editorIds: Array<string>,
   /** True if the reflection was not removed, else false */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** true if the reflection is being edited, else false */
-  isEditing: ?boolean;
+  isEditing: ?boolean,
   /** true if the viewer (userId) is the creator of the retro reflection, else false */
-  isViewerCreator: ?boolean;
+  isViewerCreator: ?boolean,
   /** The stringified draft-js content */
-  content: string;
+  content: string,
   /** The entities (i.e. nouns) parsed from the content and their respective salience */
-  entities: Array<GoogleAnalyzedEntity>;
+  entities: Array<GoogleAnalyzedEntity>,
   /** The foreign key to link a reflection to its meeting */
-  meetingId: ?string;
+  meetingId: ?string,
   /** The retrospective meeting this reflection was created in */
-  meeting: ?RetrospectiveMeeting;
-  phaseItem: RetroPhaseItem;
+  meeting: ?RetrospectiveMeeting,
+  phaseItem: RetroPhaseItem,
   /** The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group. */
-  retroPhaseItemId: string;
+  retroPhaseItemId: string,
   /** The foreign key to link a reflection to its group */
-  reflectionGroupId: ?string;
+  reflectionGroupId: ?string,
   /** The group the reflection belongs to, if any */
-  retroReflectionGroup: ?RetroReflectionGroup;
+  retroReflectionGroup: ?RetroReflectionGroup,
   /** The sort order of the reflection in the group (increments starting from 0) */
-  sortOrder: number;
+  sortOrder: number,
   /** The team that is running the meeting that contains this reflection */
-  team: ?RetrospectiveMeeting;
+  team: ?RetrospectiveMeeting,
   /** The timestamp the meeting was updated. Used to determine how long it took to write a reflection */
-  updatedAt: ?any;
+  updatedAt: ?any
 }
 
 /**
@@ -1547,22 +1601,22 @@ export type RetroReflection = {
 */
 export type DraggerCoords = {
   /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  height: ?number;
+  height: ?number,
   /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  width: ?number;
+  width: ?number,
   /** The x-offset from the current location */
-  x: ?number;
+  x: ?number,
   /** The y-offset from the current location */
-  y: ?number;
+  y: ?number
 }
 
 export type GoogleAnalyzedEntity = {
   /** The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural. */
-  lemma: string;
+  lemma: string,
   /** The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun. */
-  name: string;
+  name: string,
   /** The salience of the entity in the provided text. The salience of all entities always sums to 1 */
-  salience: number;
+  salience: number
 }
 
 /**
@@ -1570,48 +1624,48 @@ export type GoogleAnalyzedEntity = {
 */
 export type RetrospectiveMeetingSettings = {
   /** The type of meeting these settings apply to */
-  meetingType: ?MeetingTypeEnum;
+  meetingType: ?MeetingTypeEnum,
   /** The broad phase types that will be addressed during the meeting */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>,
   /** The team these settings belong to */
-  team: ?Team;
+  team: ?Team,
   /** the team-specific questions to ask during a retro */
-  phaseItems: ?Array<CustomPhaseItem>;
+  phaseItems: ?Array<CustomPhaseItem>,
   /** The total number of votes each team member receives for the voting phase */
-  totalVotes: number;
+  totalVotes: number,
   /** The maximum number of votes a team member can vote for a single reflection group */
-  maxVotesPerGroup: number;
+  maxVotesPerGroup: number
 }
 
 export type CancelApprovalPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The inactivated org approval */
-  orgApproval: ?OrgApproval;
+  orgApproval: ?OrgApproval,
   /** The notification requesting org approval to the org leader */
-  removedRequestNotification: ?NotifyRequestNewUser;
+  removedRequestNotification: ?NotifyRequestNewUser,
   /** The soft team members that are no longer tentatively on the team */
-  removedSoftTeamMember: ?SoftTeamMember;
+  removedSoftTeamMember: ?SoftTeamMember,
   /** The tasks that belonged to the soft team member */
-  archivedSoftTasks: ?Array<Task>;
+  archivedSoftTasks: ?Array<Task>
 }
 
 export type CancelTeamInvitePayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The cancelled invitation */
-  invitation: ?Invitation;
-  removedTeamInviteNotification: ?NotifyTeamInvite;
+  invitation: ?Invitation,
+  removedTeamInviteNotification: ?NotifyTeamInvite,
   /** The soft team members that are no longer tentatively on the team */
-  removedSoftTeamMember: ?SoftTeamMember;
+  removedSoftTeamMember: ?SoftTeamMember,
   /** The tasks that belonged to the soft team member */
-  archivedSoftTasks: ?Array<Task>;
+  archivedSoftTasks: ?Array<Task>
 }
 
 export type ChangeTaskTeamPayload = {
-  error: ?StandardMutationError;
-  task: ?Task;
-  removedNotification: ?NotifyTaskInvolves;
+  error: ?StandardMutationError,
+  task: ?Task,
+  removedNotification: ?NotifyTaskInvolves,
   /** the taskId sent to a user who is not on the new team so they can remove it from their client */
-  removedTaskId: ?string;
+  removedTaskId: ?string
 }
 
 /**
@@ -1619,207 +1673,207 @@ export type ChangeTaskTeamPayload = {
 */
 export type NotifyTaskInvolves = {
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>,
   /** How the user is affiliated with the task */
-  involvement: ?TaskInvolvementType;
+  involvement: ?TaskInvolvementType,
   /** The taskId that now involves the userId */
-  taskId: string;
+  taskId: string,
   /** The task that now involves the userId */
-  task: ?Task;
+  task: ?Task,
   /** The teamMemberId of the person that made the change */
-  changeAuthorId: ?string;
+  changeAuthorId: ?string,
   /** The TeamMember of the person that made the change */
-  changeAuthor: ?TeamMember;
-  teamId: string;
+  changeAuthor: ?TeamMember,
+  teamId: string,
   /** The team the task is on */
-  team: ?Team;
+  team: ?Team
 }
 
 /**
   How a user is involved with a task (listed in hierarchical order)
 */
-export type TaskInvolvementType = "ASSIGNEE" | "MENTIONEE";
+export type TaskInvolvementType = 'ASSIGNEE' | 'MENTIONEE'
 
 export type ClearNotificationPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The deleted notifcation */
-  notification: ?Notification;
+  notification: ?Notification
 }
 
 export type CreateImposterTokenPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The new JWT */
-  authToken: ?string;
+  authToken: ?string,
   /** The user you have assumed */
-  user: ?User;
+  user: ?User
 }
 
 export type CreateFirstTeamPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
-  teamLead: ?TeamMember;
+  error: ?StandardMutationError,
+  team: ?Team,
+  teamLead: ?TeamMember,
   /** The new JWT after adding the team */
-  jwt: ?string;
-  user: ?User;
+  jwt: ?string,
+  user: ?User
 }
 
 export type CreateGitHubIssuePayload = {
-  error: ?StandardMutationError;
-  task: ?Task;
+  error: ?StandardMutationError,
+  task: ?Task
 }
 
 export type CreatePicturePutUrlPayload = {
-  error: ?StandardMutationError;
-  url: ?any;
+  error: ?StandardMutationError,
+  url: ?any
 }
 
 export type CreateReflectionInput = {
   /** A stringified draft-js document containing thoughts */
-  content: ?string;
+  content: ?string,
   /** The phase item the reflection belongs to */
-  retroPhaseItemId: string;
-  sortOrder: number;
+  retroPhaseItemId: string,
+  sortOrder: number
 }
 
 export type CreateReflectionPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
-  reflection: ?RetroReflection;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  reflection: ?RetroReflection,
   /** The group automatically created for the reflection */
-  reflectionGroup: ?RetroReflectionGroup;
+  reflectionGroup: ?RetroReflectionGroup,
   /** The stages that were unlocked by navigating */
-  unlockedStages: ?Array<NewMeetingStage>;
+  unlockedStages: ?Array<NewMeetingStage>
 }
 
 export type CreateReflectionGroupPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
-  reflectionGroup: ?RetroReflectionGroup;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  reflectionGroup: ?RetroReflectionGroup
 }
 
 export type CreateTaskInput = {
   /** foreign key for AgendaItem */
-  agendaId: ?string;
-  content: ?string;
+  agendaId: ?string,
+  content: ?string,
   /** foreign key for the meeting this was created in */
-  meetingId: ?string;
+  meetingId: ?string,
   /** foreign key for the reflection group this was created from */
-  reflectionGroupId: ?string;
-  sortOrder: ?number;
-  status: ?TaskStatusEnum;
+  reflectionGroupId: ?string,
+  sortOrder: ?number,
+  status: ?TaskStatusEnum,
   /** teamId, the team the task is on */
-  teamId: ?string;
+  teamId: ?string,
   /** userId, the owner of the task */
-  userId: ?string;
+  userId: ?string
 }
 
 /**
   The part of the site that is calling the mutation
 */
-export type AreaEnum = "meeting" | "teamDash" | "userDash";
+export type AreaEnum = 'meeting' | 'teamDash' | 'userDash'
 
 export type CreateTaskPayload = {
-  error: ?StandardMutationError;
-  task: ?Task;
-  involvementNotification: ?NotifyTaskInvolves;
+  error: ?StandardMutationError,
+  task: ?Task,
+  involvementNotification: ?NotifyTaskInvolves
 }
 
 export type CreateUserPicturePutUrlPayload = {
-  error: ?StandardMutationError;
-  url: ?any;
+  error: ?StandardMutationError,
+  url: ?any
 }
 
 export type DeleteTaskPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The task that was deleted */
-  task: ?Task;
+  task: ?Task,
   /** The notification stating that the viewer was mentioned or assigned */
-  involvementNotification: ?NotifyTaskInvolves;
+  involvementNotification: ?NotifyTaskInvolves
 }
 
 export type DisconnectSocketPayload = {
   /** The user that disconnected */
-  user: ?User;
+  user: ?User
 }
 
 export type DragReflectionPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
-  reflection: ?RetroReflection;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  reflection: ?RetroReflection,
   /** foreign key to get user */
-  userId: ?string;
+  userId: ?string,
   /** The user that is triggering the drag */
-  user: ?User;
+  user: ?User,
   /** true if the reflection is being dragged, else false */
-  isDragging: ?boolean;
+  isDragging: ?boolean
 }
 
 export type EditReflectionPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
-  reflection: ?RetroReflection;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  reflection: ?RetroReflection,
   /** The socketId of the client editing the card (uses socketId to maintain anonymity) */
-  editorId: ?string;
+  editorId: ?string,
   /** true if the reflection is being edited, else false  */
-  isEditing: ?boolean;
+  isEditing: ?boolean
 }
 
 export type EditTaskPayload = {
-  error: ?StandardMutationError;
-  task: ?Task;
-  editor: ?User;
+  error: ?StandardMutationError,
+  task: ?Task,
+  editor: ?User,
   /** true if the editor is editing, false if they stopped editing */
-  isEditing: ?boolean;
+  isEditing: ?boolean
 }
 
 export type EndMeetingPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team,
   /** The list of tasks that were archived during the meeting */
-  archivedTasks: ?Array<Task>;
-  meeting: ?Meeting;
+  archivedTasks: ?Array<Task>,
+  meeting: ?Meeting
 }
 
 export type InactivateUserPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The user that has been inactivated */
-  user: ?User;
+  user: ?User
 }
 
 /**
   A list of all the possible outcomes when trying to invite a team member
 */
 export type InviteTeamMembersPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The team the inviter is inviting the invitee to */
-  team: ?Team;
+  team: ?Team,
   /** The notification sent to the invitee if they were previously on the team */
-  reactivationNotification: ?NotifyAddedToTeam;
+  reactivationNotification: ?NotifyAddedToTeam,
   /** The notification sent to the invitee */
-  teamInviteNotification: ?NotifyTeamInvite;
+  teamInviteNotification: ?NotifyTeamInvite,
   /** A removed request notification if the org leader invited the invitee instead of approving */
-  removedRequestNotification: ?NotifyRequestNewUser;
+  removedRequestNotification: ?NotifyRequestNewUser,
   /** The notification sent to the org billing leader requesting to be approved */
-  requestNotification: ?NotifyRequestNewUser;
+  requestNotification: ?NotifyRequestNewUser,
   /** The list of emails that turned out to be reactivated team members */
-  reactivatedTeamMembers: ?Array<TeamMember>;
+  reactivatedTeamMembers: ?Array<TeamMember>,
   /** The list of invitations successfully sent out */
-  invitationsSent: ?Array<Invitation>;
+  invitationsSent: ?Array<Invitation>,
   /** The list of orgApprovals sent to the org leader */
-  orgApprovalsSent: ?Array<OrgApproval>;
+  orgApprovalsSent: ?Array<OrgApproval>,
   /** The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval */
-  orgApprovalsRemoved: ?Array<OrgApproval>;
+  orgApprovalsRemoved: ?Array<OrgApproval>,
   /** The new invitees who have yet to accept the invite or get approved to receive an invite */
-  newSoftTeamMembers: ?Array<SoftTeamMember>;
+  newSoftTeamMembers: ?Array<SoftTeamMember>,
   /** Any tasks that were recently assigned to a reactivated soft team member */
-  unarchivedSoftTasks: ?Array<Task>;
+  unarchivedSoftTasks: ?Array<Task>
 }
 
 /**
@@ -1827,145 +1881,145 @@ export type InviteTeamMembersPayload = {
 */
 export type NotifyAddedToTeam = {
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>,
   /** The new auth token for the user. */
-  authToken: ?string;
+  authToken: ?string,
   /** The team the invitee is being invited to */
-  team: ?Team;
+  team: ?Team,
   /** The name of the team the user is joining */
-  teamName: string;
+  teamName: string,
   /** The teamId the user is joining */
-  teamId: string;
+  teamId: string
 }
 
 export type JoinIntegrationPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The globalId of the integration with a removed member */
-  globalId: string;
-  teamMember: TeamMember;
+  globalId: string,
+  teamMember: TeamMember
 }
 
 export type KillMeetingPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team
 }
 
 export type EndNewMeetingPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** true if the meeting was killed (ended before reaching last stage) */
-  isKill: ?boolean;
-  team: ?Team;
-  meeting: ?NewMeeting;
+  isKill: ?boolean,
+  team: ?Team,
+  meeting: ?NewMeeting
 }
 
 export type LeaveIntegrationPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The globalId of the integration with a removed member */
-  globalId: string;
+  globalId: string,
   /** The global userId of the viewer that left. if null, remove the entire integration */
-  userId: ?string;
+  userId: ?string,
   /** The list of tasks removed triggered by a removed repo if this was the last viewer on the repo */
-  archivedTaskIds: ?Array<string>;
+  archivedTaskIds: ?Array<string>
 }
 
 export type MeetingCheckInPayload = {
-  error: ?StandardMutationError;
-  teamMember: ?TeamMember;
+  error: ?StandardMutationError,
+  teamMember: ?TeamMember
 }
 
 export type MoveMeetingPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team,
   /** The agendaItem completed, if any */
-  completedAgendaItem: ?AgendaItem;
+  completedAgendaItem: ?AgendaItem
 }
 
 export type NavigateMeetingPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
   /** The stage that the facilitator is now on */
-  facilitatorStage: ?NewMeetingStage;
+  facilitatorStage: ?NewMeetingStage,
   /** The stage that the facilitator left */
-  oldFacilitatorStage: ?NewMeetingStage;
+  oldFacilitatorStage: ?NewMeetingStage,
   /** Additional details triggered by completing certain phases */
-  phaseComplete: ?PhaseCompletePayload;
+  phaseComplete: ?PhaseCompletePayload,
   /** The stages that were unlocked by navigating */
-  unlockedStages: ?Array<NewMeetingStage>;
+  unlockedStages: ?Array<NewMeetingStage>
 }
 
 export type PhaseCompletePayload = {
   /** payload provided if the retro reflect phase was completed */
-  reflect: ?ReflectPhaseCompletePayload;
+  reflect: ?ReflectPhaseCompletePayload,
   /** payload provided if the retro grouping phase was completed */
-  group: ?GroupPhaseCompletePayload;
+  group: ?GroupPhaseCompletePayload,
   /** payload provided if the retro voting phase was completed */
-  vote: ?VotePhaseCompletePayload;
+  vote: ?VotePhaseCompletePayload
 }
 
 export type ReflectPhaseCompletePayload = {
   /** a list of empty reflection groups to remove */
-  emptyReflectionGroupIds: ?Array<string>;
+  emptyReflectionGroupIds: ?Array<string>
 }
 
 export type GroupPhaseCompletePayload = {
   /** a list of updated reflection groups */
-  reflectionGroups: ?Array<RetroReflectionGroup>;
+  reflectionGroups: ?Array<RetroReflectionGroup>
 }
 
 export type VotePhaseCompletePayload = {
   /** the current meeting */
-  meeting: ?RetrospectiveMeeting;
+  meeting: ?RetrospectiveMeeting
 }
 
 export type NewMeetingCheckInPayload = {
-  error: ?StandardMutationError;
-  meetingMember: ?MeetingMember;
-  meeting: ?NewMeeting;
+  error: ?StandardMutationError,
+  meetingMember: ?MeetingMember,
+  meeting: ?NewMeeting
 }
 
 export type PromoteFacilitatorPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** Thea team currently running a meeting */
-  team: ?Team;
+  team: ?Team,
   /** The new meeting facilitator */
-  newFacilitator: ?TeamMember;
+  newFacilitator: ?TeamMember,
   /** The team member that disconnected */
-  disconnectedFacilitator: ?TeamMember;
+  disconnectedFacilitator: ?TeamMember
 }
 
 export type PromoteNewMeetingFacilitatorPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The meeting in progress */
-  meeting: ?NewMeeting;
+  meeting: ?NewMeeting,
   /** The old meeting facilitator */
-  oldFacilitator: ?User;
+  oldFacilitator: ?User
 }
 
 export type PromoteToTeamLeadPayload = {
-  error: ?StandardMutationError;
-  oldTeamLead: ?TeamMember;
-  newTeamLead: ?TeamMember;
+  error: ?StandardMutationError,
+  oldTeamLead: ?TeamMember,
+  newTeamLead: ?TeamMember
 }
 
 export type RejectOrgApprovalPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The list of org approvals to remove. There may be multiple if many inviters requested the same email */
-  removedOrgApprovals: ?Array<OrgApproval>;
+  removedOrgApprovals: ?Array<OrgApproval>,
   /** The notification going to the inviter saying their invitee has been denied */
-  deniedNotifications: ?Array<NotifyDenial>;
+  deniedNotifications: ?Array<NotifyDenial>,
   /** The list of notifications to remove. There may be multiple if many inviters requested the same email */
-  removedRequestNotifications: ?Array<NotifyRequestNewUser>;
+  removedRequestNotifications: ?Array<NotifyRequestNewUser>,
   /** The soft team members that have not yet been invited */
-  removedSoftTeamMembers: ?Array<SoftTeamMember>;
+  removedSoftTeamMembers: ?Array<SoftTeamMember>,
   /** The tasks that belonged to the soft team member */
-  archivedSoftTasks: ?Array<Task>;
+  archivedSoftTasks: ?Array<Task>
 }
 
 /**
@@ -1973,68 +2027,68 @@ export type RejectOrgApprovalPayload = {
 */
 export type NotifyDenial = {
   /** The reason, supplied by the org leader, that the request has been denied */
-  reason: string;
+  reason: string,
   /** The name of the billing leader that denied the request */
-  deniedByName: ?string;
+  deniedByName: ?string,
   /** The email of the person being invited */
-  inviteeEmail: string;
+  inviteeEmail: string,
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
 export type RemoveAgendaItemPayload = {
-  error: ?StandardMutationError;
-  agendaItem: ?AgendaItem;
+  error: ?StandardMutationError,
+  agendaItem: ?AgendaItem
 }
 
 export type RemoveProviderPayload = {
-  error: ?StandardMutationError;
-  providerRow: ProviderRow;
+  error: ?StandardMutationError,
+  providerRow: ProviderRow,
   /** The globalIds of the removed integrations */
-  deletedIntegrationIds: Array<string>;
+  deletedIntegrationIds: Array<string>,
   /** The userId of the person who removed the provider */
-  userId: string;
-  archivedTaskIds: ?Array<string>;
+  userId: string,
+  archivedTaskIds: ?Array<string>
 }
 
 export type RemoveSlackChannelPayload = {
-  error: ?StandardMutationError;
-  deletedId: string;
+  error: ?StandardMutationError,
+  deletedId: string
 }
 
 export type RemoveGitHubRepoPayload = {
-  deletedId: string;
-  error: ?StandardMutationError;
-  archivedTaskIds: ?Array<string>;
+  deletedId: string,
+  error: ?StandardMutationError,
+  archivedTaskIds: ?Array<string>
 }
 
 export type RemoveOrgUserPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The organization the user was removed from */
-  organization: ?Organization;
+  organization: ?Organization,
   /** The teams the user was removed from */
-  teams: ?Array<Team>;
+  teams: ?Array<Team>,
   /** The teamMembers removed */
-  teamMembers: ?Array<TeamMember>;
+  teamMembers: ?Array<TeamMember>,
   /** The tasks that were archived or reassigned */
-  updatedTasks: ?Array<Task>;
+  updatedTasks: ?Array<Task>,
   /** The user removed from the organization */
-  user: ?User;
+  user: ?User,
   /** The notifications relating to a team the user was removed from */
-  removedTeamNotifications: ?Array<Notification>;
+  removedTeamNotifications: ?Array<Notification>,
   /** The notifications that are no longer relevant to the removed org user */
-  removedOrgNotifications: ?Array<Notification>;
+  removedOrgNotifications: ?Array<Notification>,
   /** The notifications for each team the user was kicked out of */
-  kickOutNotifications: ?Array<NotifyKickedOut>;
+  kickOutNotifications: ?Array<NotifyKickedOut>,
   /** The organization member that got removed */
-  removedOrgMember: ?OrganizationMember;
+  removedOrgMember: ?OrganizationMember
 }
 
 /**
@@ -2042,329 +2096,422 @@ export type RemoveOrgUserPayload = {
 */
 export type NotifyKickedOut = {
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>,
   /** true if kicked out, false if leaving by choice */
-  isKickout: ?boolean;
+  isKickout: ?boolean,
   /** The name of the team the user is joining */
-  teamName: string;
+  teamName: string,
   /** The teamId the user was kicked out of */
-  teamId: string;
+  teamId: string,
   /** The team the task is on */
-  team: ?Team;
+  team: ?Team
 }
 
 export type RemoveReflectionPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
-  reflection: ?RetroReflection;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  reflection: ?RetroReflection,
   /** The stages that were unlocked by navigating */
-  unlockedStages: ?Array<NewMeetingStage>;
+  unlockedStages: ?Array<NewMeetingStage>
 }
 
 export type RemoveTeamMemberPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The team member removed */
-  teamMember: ?TeamMember;
+  teamMember: ?TeamMember,
   /** The team the team member was removed from */
-  team: ?Team;
+  team: ?Team,
   /** The tasks that got reassigned */
-  updatedTasks: ?Array<Task>;
+  updatedTasks: ?Array<Task>,
   /** The user removed from the team */
-  user: ?User;
+  user: ?User,
   /** Any notifications pertaining to the team that are no longer relevant */
-  removedNotifications: ?Array<Notification>;
+  removedNotifications: ?Array<Notification>,
   /** A notification if you were kicked out by the team leader */
-  kickOutNotification: ?NotifyKickedOut;
+  kickOutNotification: ?NotifyKickedOut
 }
 
 export type RequestFacilitatorPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The team member that wants to be the facilitator */
-  requestor: ?TeamMember;
+  requestor: ?TeamMember
 }
 
 export type ResendTeamInvitePayload = {
-  error: ?StandardMutationError;
-  invitation: ?Invitation;
+  error: ?StandardMutationError,
+  invitation: ?Invitation
 }
 
 export type SegmentEventTrackOptions = {
-  teamId: ?string;
-  orgId: ?string;
+  teamId: ?string,
+  orgId: ?string,
   /** Used during the welcome wizard step 3 */
-  inviteeCount: ?number;
+  inviteeCount: ?number
 }
 
-export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload;
+export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload
 
 export type StartMeetingPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team
 }
 
 export type StartNewMeetingPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
-  meeting: ?NewMeeting;
+  error: ?StandardMutationError,
+  team: ?Team,
+  meeting: ?NewMeeting
 }
 
 export type StripeFailPaymentPayload = {
-  error: ?StandardMutationError;
-  organization: ?Organization;
+  error: ?StandardMutationError,
+  organization: ?Organization,
   /** The notification to billing leaders stating the payment was rejected */
-  notification: ?NotifyPaymentRejected;
+  notification: ?NotifyPaymentRejected
 }
 
 /**
   A notification sent to a user when their payment has been rejected
 */
 export type NotifyPaymentRejected = {
-  organization: ?Organization;
+  organization: ?Organization,
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
 export type UpdateAgendaItemInput = {
   /** The unique agenda item ID, composed of a teamId::shortid */
-  id: string;
+  id: string,
   /** The content of the agenda item */
-  content: ?string;
+  content: ?string,
   /** true until the agenda item has been marked isComplete and the meeting has ended */
-  isActive: ?boolean;
+  isActive: ?boolean,
   /** true if the agenda item has been addressed in a meeting (will have a strikethrough or similar) */
-  isComplete: ?boolean;
+  isComplete: ?boolean,
   /** The sort order of the agenda item in the list */
-  sortOrder: ?number;
+  sortOrder: ?number
 }
 
 export type UpdateAgendaItemPayload = {
-  agendaItem: ?AgendaItem;
-  error: ?StandardMutationError;
+  agendaItem: ?AgendaItem,
+  error: ?StandardMutationError
 }
 
 export type UpdateCreditCardPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The organization that received the updated credit card */
-  organization: ?Organization;
+  organization: ?Organization,
   /** The teams that are now paid up */
-  teamsUpdated: ?Array<Team>;
+  teamsUpdated: ?Array<Team>
 }
 
 export type UpdateOrgInput = {
   /** The unique action ID */
-  id: ?string;
+  id: ?string,
   /** The name of the org */
-  name: ?string;
+  name: ?string,
   /** The org avatar */
-  picture: ?any;
+  picture: ?any
 }
 
 export type UpdateOrgPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The updated org */
-  organization: ?Organization;
+  organization: ?Organization
 }
 
 export type UpdateCheckInQuestionPayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team
 }
 
 export type UpdateNewCheckInQuestionPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting
 }
 
 export type UpdateReflectionContentPayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
-  reflection: ?RetroReflection;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  reflection: ?RetroReflection
 }
 
 export type UpdateReflectionGroupTitlePayload = {
-  error: ?StandardMutationError;
-  meeting: ?NewMeeting;
-  reflectionGroup: ?RetroReflectionGroup;
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  reflectionGroup: ?RetroReflectionGroup
 }
 
 export type UpdateReflectionLocationPayload = {
-  error: ?StandardMutationError;
-  meeting: ?RetrospectiveMeeting;
-  reflection: ?RetroReflection;
+  error: ?StandardMutationError,
+  meeting: ?RetrospectiveMeeting,
+  reflection: ?RetroReflection,
   /** The group encapsulating the new reflection. A new one was created if one was not provided. */
-  reflectionGroup: ?RetroReflectionGroup;
+  reflectionGroup: ?RetroReflectionGroup,
   /** The old group the reflection was in */
-  oldReflectionGroup: ?RetroReflectionGroup;
+  oldReflectionGroup: ?RetroReflectionGroup
 }
 
 export type UpdateTaskInput = {
   /** The task id */
-  id: ?string;
-  content: ?string;
-  sortOrder: ?number;
-  status: ?TaskStatusEnum;
+  id: ?string,
+  content: ?string,
+  sortOrder: ?number,
+  status: ?TaskStatusEnum,
   /** The teamMemberId or softTeamMemberId */
-  assigneeId: ?string;
+  assigneeId: ?string
 }
 
 export type UpdateTaskPayload = {
-  error: ?StandardMutationError;
-  task: ?Task;
+  error: ?StandardMutationError,
+  task: ?Task,
   /** If a task was just turned private, this its ID, else null */
-  privatizedTaskId: ?string;
-  addedNotification: ?NotifyTaskInvolves;
-  removedNotification: ?NotifyTaskInvolves;
+  privatizedTaskId: ?string,
+  addedNotification: ?NotifyTaskInvolves,
+  removedNotification: ?NotifyTaskInvolves
 }
 
 export type UpdateTaskDueDatePayload = {
-  error: ?StandardMutationError;
-  task: ?Task;
+  error: ?StandardMutationError,
+  task: ?Task
 }
 
 export type UpdatedTeamInput = {
-  id: ?string;
+  id: ?string,
   /** The name of the team */
-  name: ?string;
+  name: ?string,
   /** A link to the team’s profile image. */
-  picture: ?any;
+  picture: ?any
 }
 
 export type UpdateTeamNamePayload = {
-  error: ?StandardMutationError;
-  team: ?Team;
+  error: ?StandardMutationError,
+  team: ?Team
 }
 
 export type UpdateUserProfileInput = {
   /** A link to the user’s profile image. */
-  picture: ?any;
+  picture: ?any,
   /** The name, as confirmed by the user */
-  preferredName: ?string;
+  preferredName: ?string
 }
 
 export type UpdateUserProfilePayload = {
-  error: ?StandardMutationError;
-  user: ?User;
+  error: ?StandardMutationError,
+  user: ?User,
   /** The updated team members */
-  teamMembers: ?Array<TeamMember>;
+  teamMembers: ?Array<TeamMember>
 }
 
 export type VoteForReflectionGroupPayload = {
-  error: ?StandardMutationError;
-  meeting: ?RetrospectiveMeeting;
-  meetingMember: ?RetrospectiveMeetingMember;
-  reflectionGroup: ?RetroReflectionGroup;
+  error: ?StandardMutationError,
+  meeting: ?RetrospectiveMeeting,
+  meetingMember: ?RetrospectiveMeetingMember,
+  reflectionGroup: ?RetroReflectionGroup,
   /** The stages that were locked or unlocked by having at least 1 vote */
-  unlockedStages: ?Array<NewMeetingStage>;
+  unlockedStages: ?Array<NewMeetingStage>
 }
 
 export type LoginPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The user that just logged in */
-  user: ?User;
+  user: ?User,
   /** The new JWT */
-  authToken: ?string;
+  authToken: ?string
 }
 
 export type UpgradeToProPayload = {
-  error: ?StandardMutationError;
+  error: ?StandardMutationError,
   /** The new Pro Org */
-  organization: ?Organization;
+  organization: ?Organization,
   /** The updated teams under the org */
-  teams: ?Array<Team>;
+  teams: ?Array<Team>
 }
 
 export type Subscription = {
-  agendaItemSubscription: AgendaItemSubscriptionPayload;
-  githubMemberRemoved: GitHubMemberRemovedPayload;
-  githubRepoAdded: AddGitHubRepoPayload;
-  githubRepoRemoved: RemoveGitHubRepoPayload;
-  integrationJoined: JoinIntegrationPayload;
-  integrationLeft: LeaveIntegrationPayload;
-  invitationSubscription: InvitationSubscriptionPayload;
-  newAuthToken: ?string;
-  notificationSubscription: NotificationSubscriptionPayload;
-  orgApprovalSubscription: OrgApprovalSubscriptionPayload;
-  organizationSubscription: OrganizationSubscriptionPayload;
-  taskSubscription: TaskSubscriptionPayload;
-  slackChannelAdded: AddSlackChannelPayload;
-  slackChannelRemoved: RemoveSlackChannelPayload;
-  providerAdded: AddProviderPayload;
-  providerRemoved: RemoveProviderPayload;
-  teamSubscription: TeamSubscriptionPayload;
-  teamMemberSubscription: TeanMemberSubscriptionPayload;
+  agendaItemSubscription: AgendaItemSubscriptionPayload,
+  githubMemberRemoved: GitHubMemberRemovedPayload,
+  githubRepoAdded: AddGitHubRepoPayload,
+  githubRepoRemoved: RemoveGitHubRepoPayload,
+  integrationJoined: JoinIntegrationPayload,
+  integrationLeft: LeaveIntegrationPayload,
+  invitationSubscription: InvitationSubscriptionPayload,
+  newAuthToken: ?string,
+  notificationSubscription: NotificationSubscriptionPayload,
+  orgApprovalSubscription: OrgApprovalSubscriptionPayload,
+  organizationSubscription: OrganizationSubscriptionPayload,
+  taskSubscription: TaskSubscriptionPayload,
+  slackChannelAdded: AddSlackChannelPayload,
+  slackChannelRemoved: RemoveSlackChannelPayload,
+  providerAdded: AddProviderPayload,
+  providerRemoved: RemoveProviderPayload,
+  teamSubscription: TeamSubscriptionPayload,
+  teamMemberSubscription: TeanMemberSubscriptionPayload
 }
 
-export type AgendaItemSubscriptionPayload = AddAgendaItemPayload | RemoveAgendaItemPayload | UpdateAgendaItemPayload | MoveMeetingPayload;
+export type AgendaItemSubscriptionPayload =
+  | AddAgendaItemPayload
+  | RemoveAgendaItemPayload
+  | UpdateAgendaItemPayload
+  | MoveMeetingPayload
 
 export type GitHubMemberRemovedPayload = {
-  leaveIntegration: ?Array<LeaveIntegrationPayload>;
+  leaveIntegration: ?Array<LeaveIntegrationPayload>
 }
 
-export type InvitationSubscriptionPayload = AcceptTeamInvitePayload | ApproveToOrgPayload | CancelTeamInvitePayload | InviteTeamMembersPayload | ResendTeamInvitePayload;
+export type InvitationSubscriptionPayload =
+  | AcceptTeamInvitePayload
+  | ApproveToOrgPayload
+  | CancelTeamInvitePayload
+  | InviteTeamMembersPayload
+  | ResendTeamInvitePayload
 
-export type NotificationSubscriptionPayload = AddFeatureFlagPayload | AddOrgPayload | AddTeamPayload | ApproveToOrgPayload | CancelApprovalPayload | CancelTeamInvitePayload | ClearNotificationPayload | CreateTaskPayload | DeleteTaskPayload | DisconnectSocketPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | StripeFailPaymentPayload | User | UpdateUserProfilePayload;
+export type NotificationSubscriptionPayload =
+  | AddFeatureFlagPayload
+  | AddOrgPayload
+  | AddTeamPayload
+  | ApproveToOrgPayload
+  | CancelApprovalPayload
+  | CancelTeamInvitePayload
+  | ClearNotificationPayload
+  | CreateTaskPayload
+  | DeleteTaskPayload
+  | DisconnectSocketPayload
+  | InviteTeamMembersPayload
+  | RejectOrgApprovalPayload
+  | RemoveOrgUserPayload
+  | StripeFailPaymentPayload
+  | User
+  | UpdateUserProfilePayload
 
-export type OrgApprovalSubscriptionPayload = ApproveToOrgPayload | CancelApprovalPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload;
+export type OrgApprovalSubscriptionPayload =
+  | ApproveToOrgPayload
+  | CancelApprovalPayload
+  | InviteTeamMembersPayload
+  | RejectOrgApprovalPayload
 
-export type OrganizationSubscriptionPayload = AddOrgPayload | ApproveToOrgPayload | RemoveOrgUserPayload | SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload | UpdateCreditCardPayload | UpdateOrgPayload | UpgradeToProPayload;
+export type OrganizationSubscriptionPayload =
+  | AddOrgPayload
+  | ApproveToOrgPayload
+  | RemoveOrgUserPayload
+  | SetOrgUserRoleAddedPayload
+  | SetOrgUserRoleRemovedPayload
+  | UpdateCreditCardPayload
+  | UpdateOrgPayload
+  | UpgradeToProPayload
 
 export type SetOrgUserRoleAddedPayload = {
-  error: ?StandardMutationError;
-  organization: ?Organization;
-  updatedOrgMember: ?OrganizationMember;
+  error: ?StandardMutationError,
+  organization: ?Organization,
+  updatedOrgMember: ?OrganizationMember,
   /** If promoted, notify them and give them all other admin notifications */
-  notificationsAdded: ?Array<OrganizationNotification>;
+  notificationsAdded: ?Array<OrganizationNotification>
 }
 
 export type SetOrgUserRoleRemovedPayload = {
-  error: ?StandardMutationError;
-  organization: ?Organization;
-  updatedOrgMember: ?OrganizationMember;
+  error: ?StandardMutationError,
+  organization: ?Organization,
+  updatedOrgMember: ?OrganizationMember,
   /** If demoted, notify them and remove all other admin notifications */
-  notificationsRemoved: ?Array<OrganizationNotification>;
+  notificationsRemoved: ?Array<OrganizationNotification>
 }
 
-export type TaskSubscriptionPayload = AcceptTeamInvitePayload | CancelApprovalPayload | CancelTeamInvitePayload | ChangeTaskTeamPayload | CreateGitHubIssuePayload | CreateTaskPayload | DeleteTaskPayload | EditTaskPayload | EndMeetingPayload | InviteTeamMembersPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | RemoveTeamMemberPayload | UpdateTaskPayload | UpdateTaskDueDatePayload;
+export type TaskSubscriptionPayload =
+  | AcceptTeamInvitePayload
+  | CancelApprovalPayload
+  | CancelTeamInvitePayload
+  | ChangeTaskTeamPayload
+  | CreateGitHubIssuePayload
+  | CreateTaskPayload
+  | DeleteTaskPayload
+  | EditTaskPayload
+  | EndMeetingPayload
+  | InviteTeamMembersPayload
+  | RejectOrgApprovalPayload
+  | RemoveOrgUserPayload
+  | RemoveTeamMemberPayload
+  | UpdateTaskPayload
+  | UpdateTaskDueDatePayload
 
 export type AddProviderPayload = {
-  providerRow: ProviderRow;
-  provider: ?Provider;
+  providerRow: ProviderRow,
+  provider: ?Provider,
   /** All the integrationIds that the provider has successfully joined */
-  joinedIntegrationIds: ?Array<string>;
-  teamMember: ?TeamMember;
+  joinedIntegrationIds: ?Array<string>,
+  teamMember: ?TeamMember
 }
 
-export type TeamSubscriptionPayload = AcceptTeamInvitePayload | AddTeamPayload | ArchiveTeamPayload | AutoGroupReflectionsPayload | CreateReflectionPayload | CreateReflectionGroupPayload | DragReflectionPayload | EditReflectionPayload | EndMeetingPayload | KillMeetingPayload | EndNewMeetingPayload | MoveMeetingPayload | NavigateMeetingPayload | NewMeetingCheckInPayload | PromoteFacilitatorPayload | PromoteNewMeetingFacilitatorPayload | RequestFacilitatorPayload | StartMeetingPayload | StartNewMeetingPayload | RemoveOrgUserPayload | RemoveReflectionPayload | RemoveTeamMemberPayload | UpdateCheckInQuestionPayload | UpdateCreditCardPayload | UpdateNewCheckInQuestionPayload | UpdateReflectionContentPayload | UpdateReflectionGroupTitlePayload | UpdateReflectionLocationPayload | UpdateTeamNamePayload | UpgradeToProPayload | VoteForReflectionGroupPayload;
+export type TeamSubscriptionPayload =
+  | AcceptTeamInvitePayload
+  | AddTeamPayload
+  | ArchiveTeamPayload
+  | AutoGroupReflectionsPayload
+  | CreateReflectionPayload
+  | CreateReflectionGroupPayload
+  | DragReflectionPayload
+  | EditReflectionPayload
+  | EndMeetingPayload
+  | KillMeetingPayload
+  | EndNewMeetingPayload
+  | MoveMeetingPayload
+  | NavigateMeetingPayload
+  | NewMeetingCheckInPayload
+  | PromoteFacilitatorPayload
+  | PromoteNewMeetingFacilitatorPayload
+  | RequestFacilitatorPayload
+  | StartMeetingPayload
+  | StartNewMeetingPayload
+  | RemoveOrgUserPayload
+  | RemoveReflectionPayload
+  | RemoveTeamMemberPayload
+  | UpdateCheckInQuestionPayload
+  | UpdateCreditCardPayload
+  | UpdateNewCheckInQuestionPayload
+  | UpdateReflectionContentPayload
+  | UpdateReflectionGroupTitlePayload
+  | UpdateReflectionLocationPayload
+  | UpdateTeamNamePayload
+  | UpgradeToProPayload
+  | VoteForReflectionGroupPayload
 
-export type TeanMemberSubscriptionPayload = AcceptTeamInvitePayload | CancelApprovalPayload | CancelTeamInvitePayload | RemoveTeamMemberPayload | InviteTeamMembersPayload | MeetingCheckInPayload | PromoteToTeamLeadPayload | RejectOrgApprovalPayload | RemoveOrgUserPayload | UpdateUserProfilePayload;
+export type TeanMemberSubscriptionPayload =
+  | AcceptTeamInvitePayload
+  | CancelApprovalPayload
+  | CancelTeamInvitePayload
+  | RemoveTeamMemberPayload
+  | InviteTeamMembersPayload
+  | MeetingCheckInPayload
+  | PromoteToTeamLeadPayload
+  | RejectOrgApprovalPayload
+  | RemoveOrgUserPayload
+  | UpdateUserProfilePayload
 
 /**
   The meeting phase where all team members check in one-by-one
 */
 export type CheckInPhase = {
   /** shortid */
-  id: string;
+  id: string,
   /** The type of phase */
-  phaseType: ?NewMeetingPhaseTypeEnum;
-  stages: Array<CheckInStage>;
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  stages: Array<CheckInStage>,
   /** The checkIn greeting (fun language) */
-  checkInGreeting: MeetingGreeting;
+  checkInGreeting: MeetingGreeting,
   /** The checkIn question of the week (draft-js format) */
-  checkInQuestion: string;
+  checkInQuestion: string
 }
 
 /**
@@ -2372,53 +2519,53 @@ export type CheckInPhase = {
 */
 export type CheckInStage = {
   /** shortid */
-  id: string;
+  id: string,
   /** The datetime the stage was completed */
-  endAt: ?any;
+  endAt: ?any,
   /** foreign key. try using meeting */
-  meetingId: string;
+  meetingId: string,
   /** The meeting this stage belongs to */
-  meeting: ?NewMeeting;
+  meeting: ?NewMeeting,
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
-  isComplete: ?boolean;
+  isComplete: ?boolean,
   /** true if any meeting participant can navigate to this stage */
-  isNavigable: ?boolean;
+  isNavigable: ?boolean,
   /** true if the facilitator can navigate to this stage */
-  isNavigableByFacilitator: ?boolean;
+  isNavigableByFacilitator: ?boolean,
   /** The phase this stage belongs to */
-  phase: ?NewMeetingPhase;
+  phase: ?NewMeetingPhase,
   /** The type of the phase */
-  phaseType: ?NewMeetingPhaseTypeEnum;
+  phaseType: ?NewMeetingPhaseTypeEnum,
   /** The datetime the stage was started */
-  startAt: ?any;
+  startAt: ?any,
   /** Number of times the facilitator has visited this stage */
-  viewCount: ?number;
+  viewCount: ?number,
   /** foreign key. use teamMember */
-  teamMemberId: string;
+  teamMemberId: string,
   /** The team member that is the focus for this phase item */
-  teamMember: ?TeamMember;
+  teamMember: ?TeamMember,
   /** true if the team member is present for the meeting */
-  present: ?boolean;
+  present: ?boolean
 }
 
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingTeamMemberStage = CheckInStage;
+export type NewMeetingTeamMemberStage = CheckInStage
 
 /**
   The meeting phase where all team members check in one-by-one
 */
 export type ReflectPhase = {
   /** shortid */
-  id: string;
+  id: string,
   /** The type of phase */
-  phaseType: ?NewMeetingPhaseTypeEnum;
-  stages: Array<GenericMeetingStage>;
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  stages: Array<GenericMeetingStage>,
   /** foreign key. use focusedPhaseItem */
-  focusedPhaseItemId: ?string;
+  focusedPhaseItemId: ?string,
   /** the phase item that the facilitator wants the group to focus on */
-  focusedPhaseItem: ?RetroPhaseItem;
+  focusedPhaseItem: ?RetroPhaseItem
 }
 
 /**
@@ -2426,27 +2573,27 @@ export type ReflectPhase = {
 */
 export type GenericMeetingStage = {
   /** shortid */
-  id: string;
+  id: string,
   /** The datetime the stage was completed */
-  endAt: ?any;
+  endAt: ?any,
   /** foreign key. try using meeting */
-  meetingId: string;
+  meetingId: string,
   /** The meeting this stage belongs to */
-  meeting: ?NewMeeting;
+  meeting: ?NewMeeting,
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
-  isComplete: ?boolean;
+  isComplete: ?boolean,
   /** true if any meeting participant can navigate to this stage */
-  isNavigable: ?boolean;
+  isNavigable: ?boolean,
   /** true if the facilitator can navigate to this stage */
-  isNavigableByFacilitator: ?boolean;
+  isNavigableByFacilitator: ?boolean,
   /** The phase this stage belongs to */
-  phase: ?NewMeetingPhase;
+  phase: ?NewMeetingPhase,
   /** The type of the phase */
-  phaseType: ?NewMeetingPhaseTypeEnum;
+  phaseType: ?NewMeetingPhaseTypeEnum,
   /** The datetime the stage was started */
-  startAt: ?any;
+  startAt: ?any,
   /** Number of times the facilitator has visited this stage */
-  viewCount: ?number;
+  viewCount: ?number
 }
 
 /**
@@ -2454,10 +2601,10 @@ export type GenericMeetingStage = {
 */
 export type DiscussPhase = {
   /** shortid */
-  id: string;
+  id: string,
   /** The type of phase */
-  phaseType: ?NewMeetingPhaseTypeEnum;
-  stages: Array<RetroDiscussStage>;
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  stages: Array<RetroDiscussStage>
 }
 
 /**
@@ -2465,31 +2612,31 @@ export type DiscussPhase = {
 */
 export type RetroDiscussStage = {
   /** shortid */
-  id: string;
+  id: string,
   /** The datetime the stage was completed */
-  endAt: ?any;
+  endAt: ?any,
   /** foreign key. try using meeting */
-  meetingId: string;
+  meetingId: string,
   /** The meeting this stage belongs to */
-  meeting: ?NewMeeting;
+  meeting: ?NewMeeting,
   /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
-  isComplete: ?boolean;
+  isComplete: ?boolean,
   /** true if any meeting participant can navigate to this stage */
-  isNavigable: ?boolean;
+  isNavigable: ?boolean,
   /** true if the facilitator can navigate to this stage */
-  isNavigableByFacilitator: ?boolean;
+  isNavigableByFacilitator: ?boolean,
   /** The phase this stage belongs to */
-  phase: ?NewMeetingPhase;
+  phase: ?NewMeetingPhase,
   /** The type of the phase */
-  phaseType: ?NewMeetingPhaseTypeEnum;
+  phaseType: ?NewMeetingPhaseTypeEnum,
   /** The datetime the stage was started */
-  startAt: ?any;
+  startAt: ?any,
   /** Number of times the facilitator has visited this stage */
-  viewCount: ?number;
+  viewCount: ?number,
   /** foreign key. use reflectionGroup */
-  reflectionGroupId: ?string;
+  reflectionGroupId: ?string,
   /** the group that is the focal point of the discussion */
-  reflectionGroup: ?RetroReflectionGroup;
+  reflectionGroup: ?RetroReflectionGroup
 }
 
 /**
@@ -2497,26 +2644,26 @@ export type RetroDiscussStage = {
 */
 export type GenericMeetingPhase = {
   /** shortid */
-  id: string;
+  id: string,
   /** The type of phase */
-  phaseType: ?NewMeetingPhaseTypeEnum;
-  stages: Array<GenericMeetingStage>;
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  stages: Array<GenericMeetingStage>
 }
 
 /**
   A notification alerting the user that they have been promoted (to team or org leader)
 */
 export type NotifyPromoteToOrgLeader = {
-  organization: ?Organization;
+  organization: ?Organization,
   /** A shortid for the notification */
-  id: ?string;
+  id: ?string,
   /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string;
+  orgId: ?string,
   /** The datetime to activate the notification & send it to the client */
-  startAt: ?any;
-  type: ?NotificationEnum;
+  startAt: ?any,
+  type: ?NotificationEnum,
   /** *The userId that should see this notification */
-  userIds: ?Array<string>;
+  userIds: ?Array<string>
 }
 
 /**
@@ -2524,11 +2671,11 @@ export type NotifyPromoteToOrgLeader = {
 */
 export type ActionMeetingSettings = {
   /** The type of meeting these settings apply to */
-  meetingType: ?MeetingTypeEnum;
+  meetingType: ?MeetingTypeEnum,
   /** The broad phase types that will be addressed during the meeting */
-  phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+  phaseTypes: Array<NewMeetingPhaseTypeEnum>,
   /** The team these settings belong to */
-  team: ?Team;
+  team: ?Team
 }
 
 /**
@@ -2536,26 +2683,26 @@ export type ActionMeetingSettings = {
 */
 export type AuthToken = {
   /** A static ID so the location in the relay store is deterministic */
-  id: ?string;
+  id: ?string,
   /** audience. the target API used in auth0. Parabol does not use this. */
-  aud: ?string;
+  aud: ?string,
   /** beta. 1 if enrolled in beta features. else absent */
-  bet: ?number;
+  bet: ?number,
   /** expiration. Time since unix epoch / 1000 */
-  exp: number;
+  exp: number,
   /** issued at. Time since unix epoch / 1000 */
-  iat: number;
+  iat: number,
   /** issuer. the url that gave them the token. useful for detecting environment */
-  iss: ?string;
+  iss: ?string,
   /** subscriber. userId */
-  sub: ?string;
+  sub: ?string,
   /** role. Any privileges associated with the account */
-  rol: ?AuthTokenRole;
+  rol: ?AuthTokenRole,
   /** teams. a list of teamIds where the user is active */
-  tms: ?Array<string>;
+  tms: ?Array<string>
 }
 
 /**
   A role describing super user privileges
 */
-export type AuthTokenRole = "su";
+export type AuthTokenRole = 'su'

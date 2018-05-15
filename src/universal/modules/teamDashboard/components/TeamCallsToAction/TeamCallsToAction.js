@@ -3,19 +3,19 @@
  *
  * @flow
  */
-import type {RouterHistory} from 'react-router-dom';
-import type {TeamID} from 'universal/types/team';
-import React from 'react';
-import styled from 'react-emotion';
-import {Button} from 'universal/components';
-import ui from 'universal/styles/ui';
-import LoadableTeamCallsToActionMenu from 'universal/modules/teamDashboard/components/TeamCallsToAction/LoadableTeamCallsToActionMenu';
-import LoadableMenu from 'universal/components/LoadableMenu';
+import type {RouterHistory} from 'react-router-dom'
+import type {TeamID} from 'universal/types/team'
+import React from 'react'
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
+import LoadableTeamCallsToActionMenu from 'universal/modules/teamDashboard/components/TeamCallsToAction/LoadableTeamCallsToActionMenu'
+import LoadableMenu from 'universal/components/LoadableMenu'
+import Button from 'universal/components/Button/Button'
 
 type Props = {
   teamId: TeamID,
   history: RouterHistory
-};
+}
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -26,31 +26,31 @@ const ButtonGroup = styled('div')({
     minWidth: '13rem',
     paddingLeft: ui.dashGutterLarge
   }
-});
+})
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
+}
 
 const TeamCallToAction = (props: Props) => {
-  const {teamId} = props;
+  const {teamId} = props
   const buttonToggle = (
     <Button
-      buttonSize="small"
-      buttonStyle="primary"
-      colorPalette="warm"
-      icon="chevron-down"
-      iconPlacement="right"
+      buttonSize='small'
+      buttonStyle='primary'
+      colorPalette='warm'
+      icon='chevron-down'
+      iconPlacement='right'
       isBlock
-      label="Start Meeting"
+      label='Start Meeting'
     />
-  );
+  )
 
   return (
     <ButtonGroup>
@@ -64,7 +64,7 @@ const TeamCallToAction = (props: Props) => {
         toggle={buttonToggle}
       />
     </ButtonGroup>
-  );
-};
+  )
+}
 
-export default TeamCallToAction;
+export default TeamCallToAction

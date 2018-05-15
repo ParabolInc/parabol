@@ -1,9 +1,9 @@
-import React from 'react';
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
-import StyledFontAwesome from 'universal/components/StyledFontAwesome';
-import styled, {css, cx} from 'react-emotion';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import * as React from 'react'
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import styled, {css, cx} from 'react-emotion'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const fieldStyles = css({
   ...ui.fieldBaseStyles,
@@ -18,16 +18,16 @@ const fieldStyles = css({
   ':focus, :active': {
     ...makePlaceholderStyles(ui.placeholderColorFocusActive)
   }
-});
+})
 
 const fieldErrorStyles = css({
   // boxShadow: `inset 0 0 .0625rem .0625rem ${ui.fieldErrorBorderColor}`,
   ...makePlaceholderStyles(ui.fieldErrorPlaceholderColor)
-});
+})
 
 const FieldBlock = styled('div')({
   position: 'relative'
-});
+})
 
 const FieldIcon = styled(StyledFontAwesome)(({hasError}) => ({
   color: hasError ? ui.colorError : ui.hintColor,
@@ -40,7 +40,7 @@ const FieldIcon = styled(StyledFontAwesome)(({hasError}) => ({
   textAlign: 'center',
   top: '.5rem',
   width: '1rem'
-}));
+}))
 
 type Props = {|
   autoComplete: string,
@@ -48,7 +48,7 @@ type Props = {|
   hasError: boolean,
   iconName: string,
   maxLength: number,
-  onChange: (Event) => void,
+  onChange: (SyntheticKeyboardEvent<*>) => void,
   placeholder: string,
   error: string,
   value: string
@@ -64,17 +64,17 @@ const UpgradeCreditCardFormField = (props: Props) => {
     onChange,
     placeholder,
     value
-  } = props;
+  } = props
 
   const requireNumeric = (e) => {
     // keep Enter around to let them submit
     if (e.key !== 'Enter' && isNaN(parseInt(e.key, 10))) {
-      e.preventDefault();
+      e.preventDefault()
     }
-  };
+  }
 
   // TODO move to styled layout
-  const fieldClassName = cx(fieldStyles, hasError && fieldErrorStyles);
+  const fieldClassName = cx(fieldStyles, hasError && fieldErrorStyles)
 
   return (
     <FieldBlock>
@@ -87,11 +87,11 @@ const UpgradeCreditCardFormField = (props: Props) => {
         maxLength={maxLength}
         placeholder={placeholder}
         onKeyPress={requireNumeric}
-        type="text"
+        type='text'
         value={value}
       />
     </FieldBlock>
-  );
-};
+  )
+}
 
-export default UpgradeCreditCardFormField;
+export default UpgradeCreditCardFormField

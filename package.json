@@ -263,6 +263,7 @@
       "graphql",
       "$ReadOnlyArray",
       "$Shape",
+      "SyntheticKeyboardEvent",
       "System"
     ],
     "ignore": [

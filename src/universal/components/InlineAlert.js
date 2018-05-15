@@ -1,6 +1,6 @@
-import styled from 'react-emotion';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const InlineAlert = styled('div')({
   backgroundColor: appTheme.palette.yellow50l,
@@ -17,6 +17,6 @@ const InlineAlert = styled('div')({
       textTransform: 'none'
     }
   }
-});
+})
 
-export default InlineAlert;
+export default InlineAlert

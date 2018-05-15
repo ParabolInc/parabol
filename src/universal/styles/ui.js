@@ -2,75 +2,75 @@
 // ui.js
 // -----------------------------------------------------------------------------
 
-import tinycolor from 'tinycolor2';
-import appTheme from 'universal/styles/theme/appTheme';
-import makeGradient from 'universal/styles/helpers/makeGradient';
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
-import zIndexScale from 'universal/styles/helpers/zIndexScale';
+import tinycolor from 'tinycolor2'
+import appTheme from 'universal/styles/theme/appTheme'
+import makeGradient from 'universal/styles/helpers/makeGradient'
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
+import zIndexScale from 'universal/styles/helpers/zIndexScale'
 
 // Reusable constants for UI object
 // -----------------------------------------------------------------------------
 
-const makeShadowColor = (opacity) => `rgba(68, 66, 88, ${opacity})`;
+const makeShadowColor = (opacity) => `rgba(68, 66, 88, ${opacity})`
 
 // Breakpoints
-const BREAKPOINT_WIDE = '@media (min-width: 90rem)';
-const BREAKPOINT_WIDER = '@media (min-width: 100rem)';
-const BREAKPOINT_WIDEST = '@media (min-width: 120rem)';
+const BREAKPOINT_WIDE = '@media (min-width: 90rem)'
+const BREAKPOINT_WIDER = '@media (min-width: 100rem)'
+const BREAKPOINT_WIDEST = '@media (min-width: 120rem)'
 
 // Control sizes (used by buttons and fields)
-const CONTROL_SIZE_SMALL = 'small';
-const CONTROL_SIZE_MEDIUM = 'medium';
-const CONTROL_SIZE_LARGE = 'large';
+const CONTROL_SIZE_SMALL = 'small'
+const CONTROL_SIZE_MEDIUM = 'medium'
+const CONTROL_SIZE_LARGE = 'large'
 
-const CONTROL_SMALL_FONT_SIZE = '.8125rem';
-const CONTROL_SMALL_LINE_HEIGHT = '1.25rem';
-const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem';
-const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem';
-const CONTROL_SMALL_PADDING_VERTICAL = '.3125rem';
-const CONTROL_SMALL_BLOCK_PADDING_VERTICAL = '.375rem';
+const CONTROL_SMALL_FONT_SIZE = '.8125rem'
+const CONTROL_SMALL_LINE_HEIGHT = '1.25rem'
+const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem'
+const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem'
+const CONTROL_SMALL_PADDING_VERTICAL = '.3125rem'
+const CONTROL_SMALL_BLOCK_PADDING_VERTICAL = '.375rem'
 
-const CONTROL_MEDIUM_FONT_SIZE = '.9375rem';
-const CONTROL_MEDIUM_LINE_HEIGHT = '1.5rem';
-const CONTROL_MEDIUM_PADDING_HORIZONTAL = '.6875rem';
-const CONTROL_MEDIUM_BLOCK_PADDING_HORIZONTAL = '.75rem';
-const CONTROL_MEDIUM_PADDING_VERTICAL = '.4375rem';
-const CONTROL_MEDIUM_BLOCK_PADDING_VERTICAL = '.5rem';
+const CONTROL_MEDIUM_FONT_SIZE = '.9375rem'
+const CONTROL_MEDIUM_LINE_HEIGHT = '1.5rem'
+const CONTROL_MEDIUM_PADDING_HORIZONTAL = '.6875rem'
+const CONTROL_MEDIUM_BLOCK_PADDING_HORIZONTAL = '.75rem'
+const CONTROL_MEDIUM_PADDING_VERTICAL = '.4375rem'
+const CONTROL_MEDIUM_BLOCK_PADDING_VERTICAL = '.5rem'
 
-const CONTROL_LARGE_FONT_SIZE = '1rem';
-const CONTROL_LARGE_LINE_HEIGHT = '1.75rem';
-const CONTROL_LARGE_PADDING_HORIZONTAL = '.9375rem';
-const CONTROL_LARGE_BLOCK_PADDING_HORIZONTAL = '1rem';
-const CONTROL_LARGE_PADDING_VERTICAL = '.6875rem';
-const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem';
+const CONTROL_LARGE_FONT_SIZE = '1rem'
+const CONTROL_LARGE_LINE_HEIGHT = '1.75rem'
+const CONTROL_LARGE_PADDING_HORIZONTAL = '.9375rem'
+const CONTROL_LARGE_BLOCK_PADDING_HORIZONTAL = '1rem'
+const CONTROL_LARGE_PADDING_VERTICAL = '.6875rem'
+const CONTROL_LARGE_BLOCK_PADDING_VERTICAL = '.75rem'
 
 // Colors
-const {cool, warm, dark, mid, light} = appTheme.palette;
-const {purple, purpleLightened, midGray} = appTheme.brand.primary;
-const {blue, red, rose, green, yellow} = appTheme.brand.secondary;
-const backgroundColor = appTheme.brand.primary.silver;
+const {cool, warm, dark, mid, light} = appTheme.palette
+const {purple, purpleLightened, midGray} = appTheme.brand.primary
+const {blue, red, rose, green, yellow} = appTheme.brand.secondary
+const backgroundColor = appTheme.brand.primary.silver
 
 // Border radius ratio: powers of 2
 // Small border radius for controls (inputs, buttons, etcs.)
-const borderRadiusSmall = '.125rem'; // 2px
+const borderRadiusSmall = '.125rem' // 2px
 // Medium border radius for grouped components (cards, panels, etc.)
-const borderRadiusMedium = '.25rem'; // 4px
+const borderRadiusMedium = '.25rem' // 4px
 // Large border radius for larger components (modals, pages, etc.)
-const borderRadiusLarge = '.5rem'; // 8px
+const borderRadiusLarge = '.5rem' // 8px
 
 // Buttons
-const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL;
-const BUTTON_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
-const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE;
+const BUTTON_SIZE_SMALL = CONTROL_SIZE_SMALL
+const BUTTON_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM
+const BUTTON_SIZE_LARGE = CONTROL_SIZE_LARGE
 
 // Color (default for text)
-const COLOR_TEXT = appTheme.brand.primary.darkGray;
-const COLOR_TEXT_LIGHT = appTheme.brand.primary.midGray;
-const COLOR_ERROR = red;
+const COLOR_TEXT = appTheme.brand.primary.darkGray
+const COLOR_TEXT_LIGHT = appTheme.brand.primary.midGray
+const COLOR_ERROR = red
 
 // Color palette
-const white = '#fff';
-const gray = appTheme.palette.light;
+const white = '#fff'
+const gray = appTheme.palette.light
 const PALETTE_OPTIONS = [
   'cool',
   'warm',
@@ -84,7 +84,7 @@ const PALETTE_OPTIONS = [
   'red',
   'yellow',
   'blue'
-];
+]
 const PALETTE_VALUES = {
   cool,
   warm,
@@ -98,56 +98,57 @@ const PALETTE_VALUES = {
   red,
   yellow,
   blue
-};
+}
 
 // Fields
-const FIELD_BOX_SHADOW = 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
-const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)';
-const FIELD_PADDING_HORIZONTAL = '.75rem';
-const FIELD_PLACEHOLDER_COLOR = appTheme.palette.dark60a;
-const FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE = appTheme.palette.dark30a;
-const FIELD_SIZE_SMALL = CONTROL_SIZE_SMALL;
-const FIELD_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM;
-const FIELD_SIZE_LARGE = CONTROL_SIZE_LARGE;
+const FIELD_BOX_SHADOW = 'inset 0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
+const FIELD_BOX_SHADOW_FOCUS = '0 .0625rem .0625rem 0 rgba(0, 0, 0, .1)'
+const FIELD_PADDING_HORIZONTAL = '.75rem'
+const FIELD_PLACEHOLDER_COLOR = appTheme.palette.dark60a
+const FIELD_PLACEHOLDER_COLOR_FOCUS_ACTIVE = appTheme.palette.dark30a
+const FIELD_SIZE_SMALL = CONTROL_SIZE_SMALL
+const FIELD_SIZE_MEDIUM = CONTROL_SIZE_MEDIUM
+const FIELD_SIZE_LARGE = CONTROL_SIZE_LARGE
 
 // Default Menu Dimensions
-export const DEFAULT_MENU_HEIGHT = '5rem';
-export const DEFAULT_MENU_WIDTH = '10rem';
+export const DEFAULT_MENU_HEIGHT = '5rem'
+export const DEFAULT_MENU_WIDTH = '10rem'
 
 // Wait time. 25% under Doherty Threshold. Because millennials.
 // The goal is to respond to input, but avoid responding with a spinner because that increases perceived wait time
-export const HUMAN_ADDICTION_THRESH = 300;
-export const MAX_WAIT_TIME = 5000;
+export const HUMAN_ADDICTION_THRESH = 300
+export const MAX_WAIT_TIME = 5000
 // Filter
-const filterBlur = 'blur(1.5px)';
+const filterBlur = 'blur(1.5px)'
 
 // Theme Gradients TODO: theme-able?
-const gradientPurple = makeGradient(purpleLightened, purple);
-const gradientWarm = makeGradient(red, rose);
-const gradientWarmDarkened = makeGradient(
-  tinycolor(red).darken(3),
-  tinycolor(rose).darken(3)
-);
+const gradientPurple = makeGradient(purpleLightened, purple)
+const gradientWarm = makeGradient(red, rose)
+const gradientWarmDarkened = makeGradient(tinycolor(red).darken(3), tinycolor(rose).darken(3))
 const gradientWarmLightened = makeGradient(
-  tinycolor(red).desaturate().lighten(),
-  tinycolor(rose).desaturate().lighten()
-);
+  tinycolor(red)
+    .desaturate()
+    .lighten(),
+  tinycolor(rose)
+    .desaturate()
+    .lighten()
+)
 
 // Icons
-const iconSize = '14px'; // FontAwesome base
-const iconSizeAvatar = '21px'; // FontAwesome 1.5x
-const iconSize2x = '28px'; // FontAwesome 2x
-const iconSize3x = '42px'; // FontAwesome 3x
-const iconExternalLink = 'external-link-square';
+const iconSize = '14px' // FontAwesome base
+const iconSizeAvatar = '21px' // FontAwesome 1.5x
+const iconSize2x = '28px' // FontAwesome 2x
+const iconSize3x = '42px' // FontAwesome 3x
+const iconExternalLink = 'external-link-square'
 
 // Modals
-const MODAL_LAYOUT_MAIN = 'main';
-const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert';
-const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts';
-const MODAL_LAYOUT_VIEWPORT = 'viewport';
+const MODAL_LAYOUT_MAIN = 'main'
+const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert'
+const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts'
+const MODAL_LAYOUT_VIEWPORT = 'viewport'
 
 // Panels
-const panelInnerBorderColor = appTheme.palette.mid10l;
+const panelInnerBorderColor = appTheme.palette.mid10l
 
 // Transitions
 // NOTE: increases on a scale of 2x
@@ -158,16 +159,16 @@ const transition = [
   '800ms ease-in',
   '1600ms ease-in',
   '3200ms ease-in'
-];
+]
 
 // Type
-const TYPE_REGULAR = 400;
-const TYPE_SEMIBOLD = 600;
+const TYPE_REGULAR = 400
+const TYPE_SEMIBOLD = 600
 
 // Shadows
 // NOTE: levels increase on a scale of 2x
 
-const baseShadow = makeShadowColor('.15');
+const baseShadow = makeShadowColor('.15')
 
 const shadow = [
   `0 .0625rem .25rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
@@ -175,7 +176,7 @@ const shadow = [
   `0 .25rem 1rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
   `0 .5rem 2rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
   `0 1rem 4rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`
-];
+]
 
 // -----------------------------------------------------------------------------
 
@@ -278,11 +279,7 @@ const ui = {
       boxShadow: 'none'
     }
   },
-  buttonSizeOptions: [
-    BUTTON_SIZE_SMALL,
-    BUTTON_SIZE_MEDIUM,
-    BUTTON_SIZE_LARGE
-  ],
+  buttonSizeOptions: [BUTTON_SIZE_SMALL, BUTTON_SIZE_MEDIUM, BUTTON_SIZE_LARGE],
   buttonSizeStyles: {
     [BUTTON_SIZE_SMALL]: {
       fontSize: CONTROL_SMALL_FONT_SIZE,
@@ -399,7 +396,8 @@ const ui = {
   // ---------------------------------------------------------------------------
   emailBackgroundColor: backgroundColor,
   emailBodyColor: '#FFFFFF',
-  emailFontFamily: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
+  emailFontFamily:
+    '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif',
   emailRuleColor: appTheme.palette.mid20l, // email rule color
   emailRuleHeight: '1px', // email rule height
   emailRuleStyle: {
@@ -468,11 +466,7 @@ const ui = {
     cursor: 'not-allowed',
     opacity: '.5'
   },
-  fieldSizeOptions: [
-    FIELD_SIZE_SMALL,
-    FIELD_SIZE_MEDIUM,
-    FIELD_SIZE_LARGE
-  ],
+  fieldSizeOptions: [FIELD_SIZE_SMALL, FIELD_SIZE_MEDIUM, FIELD_SIZE_LARGE],
   fieldSizeStyles: {
     [FIELD_SIZE_SMALL]: {
       fontSize: CONTROL_SMALL_FONT_SIZE,
@@ -700,16 +694,7 @@ const ui = {
   tagGutter: '.75rem',
   tagHeight: '1rem',
   tagPadding: '0 .5rem',
-  tagPalette: [
-    'cool',
-    'gray',
-    'midGray',
-    'light',
-    'warm',
-    'yellow',
-    'blue',
-    'white'
-  ],
+  tagPalette: ['cool', 'gray', 'midGray', 'light', 'warm', 'yellow', 'blue', 'white'],
 
   // Tooltips
   // ---------------------------------------------------------------------------
@@ -759,6 +744,6 @@ const ui = {
   retroCardCollapsedHeightRem: '3', // height, in rem, of reflection cards with truncated height
   retroCardMinHeight: '3rem',
   retroCardWidth: '20rem' // width for reflection cards and reflection groups
-};
+}
 
-export default ui;
+export default ui

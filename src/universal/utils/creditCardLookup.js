@@ -3,13 +3,13 @@ export const stripeFieldLookup = {
   exp_month: 'expiry',
   number: 'creditCardNumber',
   cvc: 'cvc'
-};
+}
 
 export const CCValidationErrors = {
   creditCardNumber: 'Double check that credit card number',
   expiry: 'Double check that expiration',
   cvc: 'Double check that CVC'
-};
+}
 
 export const cardTypeLookup = {
   Visa: 'cc-visa',
@@ -19,4 +19,4 @@ export const cardTypeLookup = {
   'Diners Club': 'cc-diners-club',
   JCB: 'cc-jcb',
   Unknown: 'credit-card'
-};
+}

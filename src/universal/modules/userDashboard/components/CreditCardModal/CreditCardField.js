@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles';
-import StyledFontAwesome from 'universal/components/StyledFontAwesome';
-import styled, {css, cx} from 'react-emotion';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import styled, {css, cx} from 'react-emotion'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const fieldStyles = css({
   ...ui.fieldBaseStyles,
@@ -19,16 +19,16 @@ const fieldStyles = css({
   ':focus, :active': {
     ...makePlaceholderStyles(ui.placeholderColorFocusActive)
   }
-});
+})
 
 const fieldErrorStyles = css({
   // boxShadow: `inset 0 0 .0625rem .0625rem ${ui.fieldErrorBorderColor}`,
   ...makePlaceholderStyles(ui.fieldErrorPlaceholderColor)
-});
+})
 
 const FieldBlock = styled('div')({
   position: 'relative'
-});
+})
 
 const FieldIcon = styled(StyledFontAwesome)(({hasError}) => ({
   color: hasError ? ui.colorError : ui.hintColor,
@@ -41,7 +41,7 @@ const FieldIcon = styled(StyledFontAwesome)(({hasError}) => ({
   textAlign: 'center',
   top: '.5rem',
   width: '1rem'
-}));
+}))
 
 const CreditCardField = (props) => {
   const {
@@ -52,17 +52,17 @@ const CreditCardField = (props) => {
     maxLength,
     meta: {touched, error},
     placeholder
-  } = props;
+  } = props
 
   const requireNumeric = (e) => {
     // keep Enter around to let them submit
     if (e.key !== 'Enter' && isNaN(parseInt(e.key, 10))) {
-      e.preventDefault();
+      e.preventDefault()
     }
-  };
+  }
 
-  const hasError = touched && error;
-  const fieldClassName = cx(fieldStyles, hasError && fieldErrorStyles);
+  const hasError = touched && error
+  const fieldClassName = cx(fieldStyles, hasError && fieldErrorStyles)
 
   return (
     <FieldBlock>
@@ -75,11 +75,11 @@ const CreditCardField = (props) => {
         maxLength={maxLength}
         placeholder={placeholder}
         onKeyPress={requireNumeric}
-        type="text"
+        type='text'
       />
     </FieldBlock>
-  );
-};
+  )
+}
 
 CreditCardField.propTypes = {
   autoComplete: PropTypes.string,
@@ -96,6 +96,6 @@ CreditCardField.propTypes = {
   maxLength: PropTypes.string,
   meta: PropTypes.object,
   placeholder: PropTypes.string
-};
+}
 
-export default CreditCardField;
+export default CreditCardField

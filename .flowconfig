@@ -3,6 +3,8 @@
 .*node_modules/.*draft-js/.*
 .*node_modules/grpc/*
 .*node_modules/tayden-clusterfck
+.*node_modules/tayden-clusterfck
+.*history/*
 
 [include]
 
