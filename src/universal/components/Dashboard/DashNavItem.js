@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import ui from 'universal/styles/ui';
-import {NavLink} from 'react-router-dom';
-import DashNavItemBaseStyles from './DashNavItemBaseStyles';
-import FontAwesome from 'react-fontawesome';
-import styled, {css} from 'react-emotion';
+import PropTypes from 'prop-types'
+import React from 'react'
+import ui from 'universal/styles/ui'
+import {NavLink} from 'react-router-dom'
+import DashNavItemBaseStyles from './DashNavItemBaseStyles'
+import FontAwesome from 'react-fontawesome'
+import styled, {css} from 'react-emotion'
 
 const ItemIcon = styled(FontAwesome)({
   display: 'block',
@@ -14,7 +14,7 @@ const ItemIcon = styled(FontAwesome)({
   opacity: '.5',
   textAlign: 'left',
   width: '1.625rem'
-});
+})
 
 const navLinkcss = css({
   ...DashNavItemBaseStyles,
@@ -29,7 +29,7 @@ const navLinkcss = css({
     cursor: 'pointer',
     textDecoration: 'none'
   }
-});
+})
 
 const activeNavLinkcss = css({
   backgroundColor: ui.navMenuDarkBackgroundColorActive,
@@ -46,10 +46,10 @@ const activeNavLinkcss = css({
 
 const Label = styled('div')({
   flex: 1
-});
+})
 
 const DashNavItem = (props) => {
-  const {label, href, icon} = props;
+  const {label, href, icon} = props
 
   return (
     <NavLink
@@ -62,13 +62,13 @@ const DashNavItem = (props) => {
       {icon && <ItemIcon name={icon} />}
       <Label>{label}</Label>
     </NavLink>
-  );
-};
+  )
+}
 
 DashNavItem.propTypes = {
   href: PropTypes.string,
   icon: PropTypes.string,
   label: PropTypes.string
-};
+}
 
-export default DashNavItem;
+export default DashNavItem

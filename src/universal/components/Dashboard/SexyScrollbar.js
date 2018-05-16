@@ -1,8 +1,7 @@
 // @flow
-import * as React from 'react';
-import {css} from 'react-emotion';
-import {Scrollbars} from 'react-custom-scrollbars';
-import styled from 'react-emotion';
+import * as React from 'react'
+import {Scrollbars} from 'react-custom-scrollbars'
+import styled, {css} from 'react-emotion'
 
 type Props = {|
   isNativeChild?: boolean,
@@ -13,7 +12,7 @@ const scrollbarStyles = css({
   // silver
   backgroundColor: 'rgba(241,240,250, .3)',
   borderRadius: '3px'
-});
+})
 
 const StyledScrollbars = styled(Scrollbars)({
   ':hover': {
@@ -25,22 +24,22 @@ const StyledScrollbars = styled(Scrollbars)({
     opacity: 0,
     transition: 'opacity .2s ease-in'
   }
-});
+})
 
 class SexyScrollbar extends React.Component<Props> {
-  scrollRef = React.createRef();
+  scrollRef = React.createRef()
 
-  render() {
-    const {children, isNativeChild} = this.props;
-    const refProp = isNativeChild ? 'ref' : 'innerRef';
+  render () {
+    const {children, isNativeChild} = this.props
+    const refProp = isNativeChild ? 'ref' : 'innerRef'
     return (
       <StyledScrollbars
         renderThumbVertical={(props) => <div {...props} className={scrollbarStyles} />}
       >
         {React.cloneElement(children, {[refProp]: this.scrollRef})}
       </StyledScrollbars>
-    );
+    )
   }
 }
 
-export default SexyScrollbar;
+export default SexyScrollbar

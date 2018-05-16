@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import FontAwesome from 'react-fontawesome';
-import {createFragmentContainer} from 'react-relay';
-import {withRouter} from 'react-router-dom';
-import DashNavItem from 'universal/components/Dashboard/DashNavItem';
-import React from 'react';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import FontAwesome from 'react-fontawesome'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import DashNavItem from 'universal/components/Dashboard/DashNavItem'
+import React from 'react'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const WarningIcon = styled(FontAwesome)({
   color: appTheme.palette.light,
@@ -15,32 +15,27 @@ const WarningIcon = styled(FontAwesome)({
   right: '100%',
   textAlign: 'center',
   width: 24
-});
+})
 
 const IconAndLink = styled('div')({
   alignItems: 'center',
   display: 'flex',
   position: 'relative'
-});
+})
 
 const DashNavTeam = (props) => {
-  const {team} = props;
+  const {team} = props
   return (
     <IconAndLink>
-      {!team.isPaid &&
-      <WarningIcon name="warning" title="Team is disabled for nonpayment" />}
-      <DashNavItem
-        href={`/team/${team.id}`}
-        label={team.name}
-        icon={team.isPaid && 'group'}
-      />
+      {!team.isPaid && <WarningIcon name='warning' title='Team is disabled for nonpayment' />}
+      <DashNavItem href={`/team/${team.id}`} label={team.name} icon={team.isPaid && 'group'} />
     </IconAndLink>
-  );
-};
+  )
+}
 
 DashNavTeam.propTypes = {
   team: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   withRouter(DashNavTeam),
@@ -51,4 +46,4 @@ export default createFragmentContainer(
       name
     }
   `
-);
+)
