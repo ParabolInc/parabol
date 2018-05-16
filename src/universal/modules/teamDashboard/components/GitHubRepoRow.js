@@ -2,7 +2,6 @@ import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import FontAwesome from 'react-fontawesome'
-import {Avatar, Button, Tag} from 'universal/components'
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow'
 import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation'
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation'
@@ -11,6 +10,9 @@ import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import withStyles from 'universal/styles/withStyles'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
+import Button from 'universal/components/Button/Button'
+import Avatar from 'universal/components/Avatar/Avatar'
+import Tag from 'universal/components/Tag/Tag'
 
 const getViewerInIntegration = (props) => {
   const {

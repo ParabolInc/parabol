@@ -2,14 +2,6 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
-import {Button} from 'universal/components'
-import {
-  DashContent,
-  DashHeader,
-  DashHeaderInfo,
-  DashMain,
-  DashSearchControl
-} from 'universal/components/Dashboard'
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars'
 import LoadingView from 'universal/components/LoadingView/LoadingView'
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName'
@@ -20,6 +12,12 @@ import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressM
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {ACTION} from 'universal/utils/constants'
 import styled from 'react-emotion'
+import DashMain from 'universal/components/Dashboard/DashMain'
+import DashHeader from 'universal/components/Dashboard/DashHeader'
+import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo'
+import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
+import Button from 'universal/components/Button/Button'
+import DashContent from 'universal/components/Dashboard/DashContent'
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''}
