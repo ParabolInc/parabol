@@ -1,57 +1,61 @@
 import {
-  GQL_CONNECTION_KEEP_ALIVE, GQL_CONNECTION_TERMINATE, GQL_DATA, GQL_ERROR, GQL_START,
+  GQL_CONNECTION_KEEP_ALIVE,
+  GQL_CONNECTION_TERMINATE,
+  GQL_DATA,
+  GQL_ERROR,
+  GQL_START,
   GQL_STOP
-} from 'universal/utils/constants';
-import handleDisconnect from 'server/socketHandlers/handleDisconnect';
-import sendMessage from 'server/socketHelpers/sendMessage';
-import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler';
-import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler';
-import relayUnsubscribe from 'server/utils/relayUnsubscribe';
+} from 'universal/utils/constants'
+import handleDisconnect from 'server/socketHandlers/handleDisconnect'
+import sendMessage from 'server/socketHelpers/sendMessage'
+import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
+import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler'
+import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 
-const isSubscriptionPayload = (payload) => payload.query.startsWith('subscription');
-const isQueryProvided = (payload) => payload && payload.query;
+const isSubscriptionPayload = (payload) => payload.query.startsWith('subscription')
+const isQueryProvided = (payload) => payload && payload.query
 
 const handleMessage = (connectionContext) => async (message) => {
-  const {socket, subs} = connectionContext;
+  const {socket, subs} = connectionContext
   // catch raw, non-graphql protocol messages here
   if (message === GQL_CONNECTION_KEEP_ALIVE) {
-    connectionContext.isAlive = true;
-    return;
+    connectionContext.isAlive = true
+    return
   }
 
-  let parsedMessage;
+  let parsedMessage
   try {
-    parsedMessage = JSON.parse(message);
+    parsedMessage = JSON.parse(message)
   } catch (e) {
     /*
      * Invalid frame payload data
      * The endpoint is terminating the connection because a message was received that contained inconsistent data
      * (e.g., non-UTF-8 data within a text message).
      */
-    handleDisconnect(connectionContext, {exitCode: 1007})();
-    return;
+    handleDisconnect(connectionContext, {exitCode: 1007})()
+    return
   }
 
-  const {id: opId, type, payload} = parsedMessage;
+  const {id: opId, type, payload} = parsedMessage
 
   if (type === GQL_CONNECTION_TERMINATE) {
-    handleDisconnect(connectionContext)();
+    handleDisconnect(connectionContext)()
     // this GQL_START logic will be simplified when we move to persisted queries
   } else if (type === GQL_START) {
     if (!isQueryProvided(payload)) {
-      sendMessage(socket, GQL_ERROR, {errors: [{message: 'No payload provided'}]}, opId);
-      return;
+      sendMessage(socket, GQL_ERROR, {errors: [{message: 'No payload provided'}]}, opId)
+      return
     }
     if (isSubscriptionPayload(payload)) {
-      wsRelaySubscribeHandler(connectionContext, parsedMessage);
+      wsRelaySubscribeHandler(connectionContext, parsedMessage)
     } else {
-      const result = await wsGraphQLHandler(connectionContext, parsedMessage);
-      const messageType = result.data ? GQL_DATA : GQL_ERROR;
-      sendMessage(socket, messageType, result, opId);
+      const result = await wsGraphQLHandler(connectionContext, parsedMessage)
+      const messageType = result.data ? GQL_DATA : GQL_ERROR
+      sendMessage(socket, messageType, result, opId)
     }
   } else if (type === GQL_STOP) {
-    relayUnsubscribe(subs, opId);
+    relayUnsubscribe(subs, opId)
   }
-};
+}
 
-export default handleMessage;
+export default handleMessage

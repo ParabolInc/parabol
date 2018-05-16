@@ -1,5 +1,5 @@
-import styled from 'react-emotion';
-import ui from 'universal/styles/ui';
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 const MeetingControlBar = styled('div')({
   alignItems: 'center',
@@ -13,6 +13,6 @@ const MeetingControlBar = styled('div')({
   minHeight: '4.0625rem', // 3.125rem
   padding: '0 1.25rem',
   width: '100%'
-});
+})
 
-export default MeetingControlBar;
+export default MeetingControlBar

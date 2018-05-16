@@ -1,20 +1,20 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import Button from 'universal/components/Button/Button';
-import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
-import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
-import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEM_LABEL, LAST_CALL} from 'universal/utils/constants';
-import plural from 'universal/utils/plural';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import Button from 'universal/components/Button/Button'
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
+import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import withStyles from 'universal/styles/withStyles'
+import {AGENDA_ITEM_LABEL, LAST_CALL} from 'universal/utils/constants'
+import plural from 'universal/utils/plural'
 
 const MeetingAgendaLastCall = (props) => {
   const {
@@ -23,24 +23,25 @@ const MeetingAgendaLastCall = (props) => {
     gotoNext,
     facilitatorName,
     styles
-  } = props;
-  const agendaItemCount = agendaItems.filter((item) => item.isComplete).length;
-  const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL);
+  } = props
+  const agendaItemCount = agendaItems.filter((item) => item.isComplete).length
+  const labelAgendaItems = plural(0, AGENDA_ITEM_LABEL)
 
-  const hintName = hideMoveMeetingControls ? facilitatorName : 'you';
+  const hintName = hideMoveMeetingControls ? facilitatorName : 'you'
 
   return (
     <MeetingMain hasHelpFor={LAST_CALL}>
-      <MeetingSection flexToFill paddingBottom="2rem">
-        <MeetingSection paddingBottom="2rem">
+      <MeetingSection flexToFill paddingBottom='2rem'>
+        <MeetingSection paddingBottom='2rem'>
           <div className={css(styles.main)}>
             <MeetingPhaseHeading>
-              {agendaItemCount === 0 ?
-                <span>{`No ${labelAgendaItems}?`}</span> :
+              {agendaItemCount === 0 ? (
+                <span>{`No ${labelAgendaItems}?`}</span>
+              ) : (
                 <span>{'Last Call:'}</span>
-              }
+              )}
             </MeetingPhaseHeading>
-            {agendaItemCount === 0 ?
+            {agendaItemCount === 0 ? (
               <MeetingCopy>
                 <span>
                   {`Looks like you didn’t process any ${labelAgendaItems}.`}
@@ -49,27 +50,28 @@ const MeetingAgendaLastCall = (props) => {
                   <br />
                   {'Simply tap on any items you create to process them.'}
                 </span>
-              </MeetingCopy> :
+              </MeetingCopy>
+            ) : (
               <MeetingCopy>
                 {'We’ve worked on '}
                 <b>{`${agendaItemCount} ${plural(agendaItemCount, AGENDA_ITEM_LABEL)}`}</b>
                 {' so far—need anything else?'}
               </MeetingCopy>
-            }
+            )}
             <AgendaShortcutHint />
             <div className={css(styles.controlBlock)}>
-              {!hideMoveMeetingControls &&
-                <BounceBlock animationDelay="30s">
+              {!hideMoveMeetingControls && (
+                <BounceBlock animationDelay='30s'>
                   <Button
-                    aria-label="End Meeting"
-                    buttonSize="large"
-                    buttonStyle="primary"
-                    colorPalette="warm"
-                    label="End Action Meeting"
+                    aria-label='End Meeting'
+                    buttonSize='large'
+                    buttonStyle='primary'
+                    colorPalette='warm'
+                    label='End Action Meeting'
                     onClick={gotoNext}
                   />
                 </BounceBlock>
-              }
+              )}
             </div>
             <div className={css(styles.hintBlock)}>
               <MeetingFacilitationHint>
@@ -80,8 +82,8 @@ const MeetingAgendaLastCall = (props) => {
         </MeetingSection>
       </MeetingSection>
     </MeetingMain>
-  );
-};
+  )
+}
 
 MeetingAgendaLastCall.propTypes = {
   team: PropTypes.object.isRequired,
@@ -89,7 +91,7 @@ MeetingAgendaLastCall.propTypes = {
   facilitatorName: PropTypes.string,
   hideMoveMeetingControls: PropTypes.bool,
   styles: PropTypes.object
-};
+}
 
 const styleThunk = () => ({
   main: {
@@ -117,7 +119,7 @@ const styleThunk = () => ({
   hintBlock: {
     width: '100%'
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(MeetingAgendaLastCall),
@@ -126,5 +128,6 @@ export default createFragmentContainer(
       agendaItems {
         isComplete
       }
-    }`
-);
+    }
+  `
+)

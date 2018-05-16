@@ -1,5 +1,5 @@
-import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql';
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum';
+import {GraphQLFloat, GraphQLID, GraphQLInputObjectType, GraphQLString} from 'graphql'
+import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 
 const UpdateTaskInput = new GraphQLInputObjectType({
   name: 'UpdateTaskInput',
@@ -16,6 +16,6 @@ const UpdateTaskInput = new GraphQLInputObjectType({
       description: 'The teamMemberId or softTeamMemberId'
     }
   })
-});
+})
 
-export default UpdateTaskInput;
+export default UpdateTaskInput

@@ -1,24 +1,24 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {DropTarget as dropTarget} from 'react-dnd';
-import {createFragmentContainer} from 'react-relay';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import handleAgendaHover from 'universal/dnd/handleAgendaHover';
-import handleDrop from 'universal/dnd/handleDrop';
-import withDragState from 'universal/dnd/withDragState';
-import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem';
-import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutation';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants';
-import ScrollableBlock from 'universal/components/ScrollableBlock';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {DropTarget as dropTarget} from 'react-dnd'
+import {createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import handleAgendaHover from 'universal/dnd/handleAgendaHover'
+import handleDrop from 'universal/dnd/handleDrop'
+import withDragState from 'universal/dnd/withDragState'
+import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem'
+import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
+import ScrollableBlock from 'universal/components/ScrollableBlock'
 
 const columnTarget = {
   drop: handleDrop,
   hover: handleAgendaHover
-};
+}
 
 class AgendaList extends Component {
   static propTypes = {
@@ -43,59 +43,70 @@ class AgendaList extends Component {
 
   state = {
     filteredAgendaItems: []
-  };
-
-  componentWillMount() {
-    this.setFilteredAgendaItems(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {team: {agendaItems, contentFilter}} = nextProps;
-    const {team: {agendaItems: oldAgendaItems, contentFilter: oldContentFilter}} = this.props;
+  componentWillMount () {
+    this.setFilteredAgendaItems(this.props)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const {
+      team: {agendaItems, contentFilter}
+    } = nextProps
+    const {
+      team: {agendaItems: oldAgendaItems, contentFilter: oldContentFilter}
+    } = this.props
     if (agendaItems !== oldAgendaItems || contentFilter !== oldContentFilter) {
-      this.setFilteredAgendaItems(nextProps);
+      this.setFilteredAgendaItems(nextProps)
     }
   }
 
   setFilteredAgendaItems = (props) => {
-    const {team: {agendaItems, contentFilter}} = props;
+    const {
+      team: {agendaItems, contentFilter}
+    } = props
     this.setState({
-      filteredAgendaItems: contentFilter ? agendaItems.filter(({content}) => content.match(contentFilter)) : agendaItems
-    });
-  };
+      filteredAgendaItems: contentFilter
+        ? agendaItems.filter(({content}) => content.match(contentFilter))
+        : agendaItems
+    })
+  }
 
-  makeLoadingState() {
-    const {styles} = this.props;
-    const loadingItem = <div className={css(styles.agendaItemLoading)} />;
+  makeLoadingState () {
+    const {styles} = this.props
+    const loadingItem = <div className={css(styles.agendaItemLoading)} />
     return (
       <div className={css(styles.agendaItemsLoadingBlock)}>
         {loadingItem}
         {loadingItem}
         {loadingItem}
       </div>
-    );
+    )
   }
 
-  makeEmptyState() {
-    const {context, styles} = this.props;
-    const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting';
-    return (<div className={css(styles.emptyBlock)}>
-      <div className={css(styles.emptyEmoji)}>
-        🤓
+  makeEmptyState () {
+    const {context, styles} = this.props
+    const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting'
+    return (
+      <div className={css(styles.emptyBlock)}>
+        <div className={css(styles.emptyEmoji)}>🤓</div>
+        <div className={css(styles.emptyMessage)}>
+          {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}
+          <b>
+            <i>{'upcoming vacation'}</i>
+          </b>
+          {'.”'}
+        </div>
       </div>
-      <div className={css(styles.emptyMessage)}>
-        {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}<b><i>{'upcoming vacation'}</i></b>{'.”'}
-      </div>
-    </div>
-    );
+    )
   }
 
   removeItemFactory = (agendaId) => () => {
-    const {atmosphere} = this.props;
-    RemoveAgendaItemMutation(atmosphere, agendaId);
-  };
+    const {atmosphere} = this.props
+    RemoveAgendaItemMutation(atmosphere, agendaId)
+  }
 
-  render() {
+  render () {
     const {
       agendaPhaseItem,
       canNavigate,
@@ -111,19 +122,19 @@ class AgendaList extends Component {
       visibleAgendaItemId,
       styles,
       team
-    } = this.props;
-    const {filteredAgendaItems} = this.state;
-    const {agendaItems} = team;
-    const canNavigateItems = canNavigate && !disabled;
-    dragState.clear();
+    } = this.props
+    const {filteredAgendaItems} = this.state
+    const {agendaItems} = team
+    const canNavigateItems = canNavigate && !disabled
+    dragState.clear()
     // TODO handle isLoading
-    const isLoading = false;
+    const isLoading = false
     return connectDropTarget(
       <div className={css(styles.root)}>
-        {filteredAgendaItems.length > 0 ?
+        {filteredAgendaItems.length > 0 ? (
           <ScrollableBlock>
-            {filteredAgendaItems.map((item, idx) =>
-              (<AgendaItem
+            {filteredAgendaItems.map((item, idx) => (
+              <AgendaItem
                 key={`agendaItem${item.id}`}
                 agendaItem={item}
                 agendaLength={filteredAgendaItems.length}
@@ -142,18 +153,17 @@ class AgendaList extends Component {
                 localPhaseItem={localPhaseItem}
                 ref={(c) => {
                   if (c) {
-                    dragState.components.push(c);
+                    dragState.components.push(c)
                   }
                 }}
-              />)
-            )}
-          </ScrollableBlock> :
-          <div>
-            {isLoading ? this.makeLoadingState() : this.makeEmptyState()}
-          </div>
-        }
+              />
+            ))}
+          </ScrollableBlock>
+        ) : (
+          <div>{isLoading ? this.makeLoadingState() : this.makeEmptyState()}</div>
+        )}
       </div>
-    );
+    )
   }
 }
 
@@ -217,18 +227,18 @@ const styleThunk = () => ({
       width: '1.5rem'
     }
   }
-});
+})
 
 const dropTargetCb = (connectTarget) => ({
   connectDropTarget: connectTarget.dropTarget()
-});
+})
 
 export default createFragmentContainer(
-  withAtmosphere(withDragState(
-    dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(
-      withStyles(styleThunk)(AgendaList)
+  withAtmosphere(
+    withDragState(
+      dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(withStyles(styleThunk)(AgendaList))
     )
-  )),
+  ),
   graphql`
     fragment AgendaList_team on Team {
       contentFilter
@@ -240,5 +250,6 @@ export default createFragmentContainer(
         sortOrder
         ...AgendaItem_agendaItem
       }
-    }`
-);
+    }
+  `
+)

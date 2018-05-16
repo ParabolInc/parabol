@@ -1,7 +1,7 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveTask} from 'server/graphql/resolvers';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveTask} from 'server/graphql/resolvers'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const UpdateTaskDueDatePayload = new GraphQLObjectType({
   name: 'UpdateTaskDueDatePayload',
@@ -14,6 +14,6 @@ const UpdateTaskDueDatePayload = new GraphQLObjectType({
       resolve: resolveTask
     }
   })
-});
+})
 
-export default UpdateTaskDueDatePayload;
+export default UpdateTaskDueDatePayload

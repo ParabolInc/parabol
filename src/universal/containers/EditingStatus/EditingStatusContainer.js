@@ -1,53 +1,55 @@
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import EditingStatus from 'universal/components/EditingStatus/EditingStatus';
-import getRefreshPeriod from 'universal/utils/getRefreshPeriod';
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import EditingStatus from 'universal/components/EditingStatus/EditingStatus'
+import getRefreshPeriod from 'universal/utils/getRefreshPeriod'
 
 class EditingStatusContainer extends Component {
   static propTypes = {
     cardIsActive: PropTypes.bool,
     isEditing: PropTypes.bool,
     task: PropTypes.object.isRequired
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      timestampType: 'createdAt'
-    };
   }
 
-  componentWillUnmount() {
-    this.resetTimeout();
+  constructor (props) {
+    super(props)
+    this.state = {
+      timestampType: 'createdAt'
+    }
+  }
+
+  componentWillUnmount () {
+    this.resetTimeout()
   }
 
   toggleTimestamp = () => {
-    const timestampType = this.state.timestampType === 'createdAt' ? 'updatedAt' : 'createdAt';
-    this.setState({timestampType});
-  };
-
-  resetTimeout() {
-    clearTimeout(this.refreshTimer);
-    this.refreshTimer = undefined;
+    const timestampType = this.state.timestampType === 'createdAt' ? 'updatedAt' : 'createdAt'
+    this.setState({timestampType})
   }
 
-  queueNextRender() {
-    this.resetTimeout();
-    const {task: {createdAt, updatedAt}} = this.props;
-    const timestamp = this.state.timestampType === 'createdAt' ? createdAt : updatedAt;
-    const timeTilRefresh = getRefreshPeriod(timestamp);
+  resetTimeout () {
+    clearTimeout(this.refreshTimer)
+    this.refreshTimer = undefined
+  }
+
+  queueNextRender () {
+    this.resetTimeout()
+    const {
+      task: {createdAt, updatedAt}
+    } = this.props
+    const timestamp = this.state.timestampType === 'createdAt' ? createdAt : updatedAt
+    const timeTilRefresh = getRefreshPeriod(timestamp)
     this.refreshTimer = setTimeout(() => {
-      this.forceUpdate();
-    }, timeTilRefresh);
+      this.forceUpdate()
+    }, timeTilRefresh)
   }
 
-  render() {
-    const {cardIsActive, isEditing, task} = this.props;
-    const {createdAt, updatedAt} = task;
-    const {timestampType} = this.state;
-    this.queueNextRender();
-    const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt;
+  render () {
+    const {cardIsActive, isEditing, task} = this.props
+    const {createdAt, updatedAt} = task
+    const {timestampType} = this.state
+    this.queueNextRender()
+    const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
     return (
       <EditingStatus
         cardIsActive={cardIsActive}
@@ -57,7 +59,7 @@ class EditingStatusContainer extends Component {
         timestamp={timestamp}
         timestampType={timestampType}
       />
-    );
+    )
   }
 }
 
@@ -68,5 +70,6 @@ export default createFragmentContainer(
       createdAt
       updatedAt
       ...EditingStatus_task
-    }`
-);
+    }
+  `
+)

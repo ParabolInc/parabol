@@ -4,20 +4,20 @@
  * @flow
  */
 // $FlowFixMe
-import {ContentState} from 'draft-js';
+import {ContentState} from 'draft-js'
 
-export type ReflectionGroupID = string;
+export type ReflectionGroupID = string
 
-export type ReflectionID = string;
+export type ReflectionID = string
 
 export type Reflection = {
   id: ReflectionID,
   content: ContentState,
   reflectionPhaseQuestion: ?string
-};
+}
 
 export type ReflectionGroup = {
   id: ReflectionGroupID,
   title: string,
   reflections: Array<Reflection>
-};
+}

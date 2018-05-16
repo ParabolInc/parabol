@@ -1,46 +1,51 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import Layout from '../../components/Layout/Layout';
-import Callout from '../../components/Callout/Callout';
-import ContactUs from '../../components/ContactUs/ContactUs';
-import EmptySpace from '../../components/EmptySpace/EmptySpace';
-import Features from '../../components/Features/Features';
-import GetStarted from '../../components/GetStarted/GetStarted';
-import Body from '../../components/Body/Body';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import Layout from '../../components/Layout/Layout'
+import Callout from '../../components/Callout/Callout'
+import ContactUs from '../../components/ContactUs/ContactUs'
+import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import Features from '../../components/Features/Features'
+import GetStarted from '../../components/GetStarted/GetStarted'
+import Body from '../../components/Body/Body'
+import Header from '../../components/Header/Header'
+import Footer from '../../components/Footer/Footer'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
   width: '80%'
-};
+}
 
 const emailLink = {
   color: appTheme.palette.warm,
   textDecoration: 'none'
-};
+}
 
 const boldStyle = {
   fontWeight: ui.typeSemiBold
-};
+}
 
 const WelcomeEmail = (props) => {
-  const {email} = props;
+  const {email} = props
 
   return (
     <Layout>
-
       <Header />
 
       <Body lineHeight={1.5}>
         <Callout vSpacing={0}>
-          {'Hi '}<a href={`mailto:${email}`} style={emailLink}>{email}</a>,<br />
-          {'We’re '}<i>{'so glad'}</i>{' you’re here!!'}
+          {'Hi '}
+          <a href={`mailto:${email}`} style={emailLink}>
+            {email}
+          </a>,<br />
+          {'We’re '}
+          <i>{'so glad'}</i>
+          {' you’re here!!'}
         </Callout>
         <EmptySpace height={48} />
-        <b style={boldStyle}>{'Parabol'}</b>{' is a place where you can:'}
+        <b style={boldStyle}>{'Parabol'}</b>
+        {' is a place where you can:'}
         <EmptySpace height={32} />
         <Features vSpacing={0} />
         <EmptySpace height={32} />
@@ -52,12 +57,12 @@ const WelcomeEmail = (props) => {
       </Body>
       <Footer color={appTheme.palette.dark} />
     </Layout>
-  );
-};
+  )
+}
 
 WelcomeEmail.propTypes = {
   email: PropTypes.string.isRequired
-};
+}
 
 // TODO: add props, and make me dynamic!!
 export const welcomeEmailText = (props) => `
@@ -72,6 +77,6 @@ Your pal,
 
 --
 The Parabol Crew
-`;
+`
 
-export default WelcomeEmail;
+export default WelcomeEmail

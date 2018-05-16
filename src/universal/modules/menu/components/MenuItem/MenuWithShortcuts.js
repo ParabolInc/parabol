@@ -1,17 +1,17 @@
-import PropTypes from 'prop-types';
-import React, {Children, cloneElement, Component} from 'react';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import React, {Children, cloneElement, Component} from 'react'
+import styled from 'react-emotion'
 
 const isValidMenuItem = (menuItem) => {
   // since uglifier takes away the type name, you must pass in a notMenuItem boolean to a non-menu-item component
-  return menuItem && typeof menuItem.type !== 'string' && !menuItem.props.notMenuItem;
-};
+  return menuItem && typeof menuItem.type !== 'string' && !menuItem.props.notMenuItem
+}
 
 const MenuStyles = styled('div')({
   outline: 0,
   // VERY important! If not present, draft-js gets confused & thinks the menu is the selection rectangle
   userSelect: 'none'
-});
+})
 
 class MenuWithShortcuts extends Component {
   static propTypes = {
@@ -21,108 +21,123 @@ class MenuWithShortcuts extends Component {
     defaultActiveIdx: PropTypes.number,
     keepParentFocus: PropTypes.bool,
     tabReturns: PropTypes.bool
-  };
+  }
 
   state = {
     active: null
   }
 
-  componentWillMount() {
-    const {children, defaultActiveIdx} = this.props;
-    const childArr = Children.toArray(children);
-    this.state.active = defaultActiveIdx || childArr.findIndex((child) => isValidMenuItem(child));
+  componentWillMount () {
+    const {children, defaultActiveIdx} = this.props
+    const childArr = Children.toArray(children)
+    this.state.active = defaultActiveIdx || childArr.findIndex((child) => isValidMenuItem(child))
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (!this.props.keepParentFocus) {
-      this.menuRef.focus();
+      this.menuRef.focus()
     }
   }
 
   setActiveIndex = (idx) => {
-    const {active} = this.state;
-    const children = Children.toArray(this.props.children);
-    let nextIdx;
+    const {active} = this.state
+    const children = Children.toArray(this.props.children)
+    let nextIdx
     if (active < idx) {
       for (let ii = idx; ii < children.length; ii++) {
-        const nextChild = children[ii];
+        const nextChild = children[ii]
         if (isValidMenuItem(nextChild)) {
-          nextIdx = ii;
-          break;
+          nextIdx = ii
+          break
         }
       }
     } else if (active > idx) {
       for (let ii = idx; ii >= 0; ii--) {
-        const nextChild = children[ii];
+        const nextChild = children[ii]
         if (isValidMenuItem(nextChild)) {
-          nextIdx = ii;
-          break;
+          nextIdx = ii
+          break
         } else {
           // if we're at the top & there's a header, put the header into view
-          this.menuRef.scrollIntoView();
+          this.menuRef.scrollIntoView()
         }
       }
     }
-    if (nextIdx === null || nextIdx === undefined || nextIdx === active || nextIdx < 0 || nextIdx >= children.length) return;
+    if (
+      nextIdx === null ||
+      nextIdx === undefined ||
+      nextIdx === active ||
+      nextIdx < 0 ||
+      nextIdx >= children.length
+    ) {
+      return
+    }
     this.setState({
       active: nextIdx
-    });
+    })
   }
 
-  makeSmartChildren(children, active) {
-    const {closePortal} = this.props;
+  makeSmartChildren (children, active) {
+    const {closePortal} = this.props
     return Children.map(children, (child, idx) => {
       if (isValidMenuItem(child)) {
-        const activate = () => this.setActiveIndex(idx);
-        return cloneElement(child, {closePortal, isActive: active === idx, menuRef: this.menuRef, activate});
+        const activate = () => this.setActiveIndex(idx)
+        return cloneElement(child, {
+          closePortal,
+          isActive: active === idx,
+          menuRef: this.menuRef,
+          activate
+        })
       }
-      return child;
-    });
+      return child
+    })
   }
 
   handleKeyDown = (e) => {
-    const {active} = this.state;
-    const {children, tabReturns} = this.props;
-    const {closePortal} = this.props;
-    let handled;
+    const {active} = this.state
+    const {children, tabReturns} = this.props
+    const {closePortal} = this.props
+    let handled
     if (e.key === 'ArrowDown') {
-      handled = true;
-      this.setActiveIndex(active + 1);
+      handled = true
+      this.setActiveIndex(active + 1)
     } else if (e.key === 'ArrowUp') {
-      handled = true;
-      this.setActiveIndex(active - 1);
-    } else if (e.key === 'Enter' || tabReturns && e.key === 'Tab') {
-      const smartChild = Children.toArray(children)[active];
+      handled = true
+      this.setActiveIndex(active - 1)
+    } else if (e.key === 'Enter' || (tabReturns && e.key === 'Tab')) {
+      const smartChild = Children.toArray(children)[active]
       if (smartChild && smartChild.props.onClick) {
-        handled = true;
-        smartChild.props.onClick(e);
-        closePortal(e);
+        handled = true
+        smartChild.props.onClick(e)
+        closePortal(e)
       }
     } else if (e.key === 'Tab') {
-      handled = true;
-      closePortal(e);
+      handled = true
+      closePortal(e)
     }
     if (handled) {
-      e.preventDefault();
+      e.preventDefault()
     }
-    return handled;
-  };
+    return handled
+  }
 
-  render() {
-    const {ariaLabel, children} = this.props;
-    const {active} = this.state;
+  render () {
+    const {ariaLabel, children} = this.props
+    const {active} = this.state
     return (
       <MenuStyles
-        role="menu"
+        role='menu'
         aria-label={ariaLabel}
         tabIndex={-1}
         onKeyDown={this.handleKeyDown}
-        innerRef={(c) => { this.menuRef = c; }}
+        innerRef={(c) => {
+          this.menuRef = c
+        }}
       >
         {this.makeSmartChildren(children, active)}
       </MenuStyles>
-    );
+    )
   }
 }
 
-export default MenuWithShortcuts;
+export default MenuWithShortcuts

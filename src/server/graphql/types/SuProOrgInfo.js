@@ -1,9 +1,5 @@
-import {
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLObjectType
-} from 'graphql';
-import Organization from 'server/graphql/types/Organization';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import Organization from 'server/graphql/types/Organization'
 
 const SuProOrgInfo = new GraphQLObjectType({
   name: 'SuProOrgInfo',
@@ -13,7 +9,7 @@ const SuProOrgInfo = new GraphQLObjectType({
       type: Organization,
       description: 'The PRO organization',
       resolve: ({organizationId}, args, {dataLoader}) => {
-        return dataLoader.get('organizations').load(organizationId);
+        return dataLoader.get('organizations').load(organizationId)
       }
     },
     organizationId: {
@@ -21,6 +17,6 @@ const SuProOrgInfo = new GraphQLObjectType({
       description: 'The id of the Organization'
     }
   })
-});
+})
 
-export default SuProOrgInfo;
+export default SuProOrgInfo

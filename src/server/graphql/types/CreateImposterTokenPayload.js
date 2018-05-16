@@ -1,8 +1,8 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql';
-import {resolveUser} from 'server/graphql/resolvers';
-import User from 'server/graphql/types/User';
-import tmsSignToken from 'server/utils/tmsSignToken';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {resolveUser} from 'server/graphql/resolvers'
+import User from 'server/graphql/types/User'
+import tmsSignToken from 'server/utils/tmsSignToken'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const CreateImposterTokenPayload = new GraphQLObjectType({
   name: 'CreateImposterTokenPayload',
@@ -14,10 +14,10 @@ const CreateImposterTokenPayload = new GraphQLObjectType({
       type: GraphQLID,
       description: 'The new JWT',
       resolve: async (source, args, context) => {
-        const user = await resolveUser(source, args, context);
-        const {userId} = source;
-        const {tms} = user;
-        return tmsSignToken({sub: userId}, tms);
+        const user = await resolveUser(source, args, context)
+        const {userId} = source
+        const {tms} = user
+        return tmsSignToken({sub: userId}, tms)
       }
     },
     user: {
@@ -26,6 +26,6 @@ const CreateImposterTokenPayload = new GraphQLObjectType({
       resolve: resolveUser
     }
   })
-});
+})
 
-export default CreateImposterTokenPayload;
+export default CreateImposterTokenPayload

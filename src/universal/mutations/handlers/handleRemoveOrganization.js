@@ -1,8 +1,8 @@
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray';
+import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 
 const handleRemoveOrganization = (orgId, store, viewerId) => {
-  const viewer = store.get(viewerId);
-  safeRemoveNodeFromArray(orgId, viewer, 'organizations');
-};
+  const viewer = store.get(viewerId)
+  safeRemoveNodeFromArray(orgId, viewer, 'organizations')
+}
 
-export default handleRemoveOrganization;
+export default handleRemoveOrganization

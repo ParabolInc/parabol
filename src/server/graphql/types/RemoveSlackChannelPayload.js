@@ -1,5 +1,5 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const RemoveSlackChannelPayload = new GraphQLObjectType({
   name: 'RemoveSlackChannelPayload',
@@ -11,6 +11,6 @@ const RemoveSlackChannelPayload = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID)
     }
   })
-});
+})
 
-export default RemoveSlackChannelPayload;
+export default RemoveSlackChannelPayload

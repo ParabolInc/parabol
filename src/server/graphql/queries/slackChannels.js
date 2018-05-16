@@ -1,9 +1,9 @@
-import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import SlackIntegration from 'server/graphql/types/SlackIntegration';
-import {isTeamMember} from 'server/utils/authorization';
-import {SLACK} from 'universal/utils/constants';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import SlackIntegration from 'server/graphql/types/SlackIntegration'
+import {isTeamMember} from 'server/utils/authorization'
+import {SLACK} from 'universal/utils/constants'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: new GraphQLList(SlackIntegration),
@@ -15,15 +15,18 @@ export default {
     }
   },
   resolve: async (source, {teamId}, {authToken}) => {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId, []);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId, [])
+    }
 
     // RESOLUTION
-    return r.table(SLACK)
+    return r
+      .table(SLACK)
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
-      .orderBy('channelName');
+      .orderBy('channelName')
   }
-};
+}

@@ -7,8 +7,7 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString
-} from 'graphql';
-
+} from 'graphql'
 
 const AuthTokenRole = new GraphQLEnumType({
   name: 'AuthTokenRole',
@@ -17,7 +16,7 @@ const AuthTokenRole = new GraphQLEnumType({
     // superuser
     su: {}
   }
-});
+})
 
 const AuthToken = new GraphQLObjectType({
   name: 'AuthToken',
@@ -61,6 +60,6 @@ const AuthToken = new GraphQLObjectType({
       description: 'teams. a list of teamIds where the user is active'
     }
   })
-});
+})
 
-export default AuthToken;
+export default AuthToken

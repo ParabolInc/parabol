@@ -6,11 +6,11 @@ const makeGitHubPostOptions = (accessToken, body) => {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`
     }
-  };
-  if (body) {
-    options.body = JSON.stringify(body);
   }
-  return options;
-};
+  if (body) {
+    options.body = JSON.stringify(body)
+  }
+  return options
+}
 
-export default makeGitHubPostOptions;
+export default makeGitHubPostOptions

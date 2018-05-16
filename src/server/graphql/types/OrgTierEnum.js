@@ -1,5 +1,5 @@
-import {GraphQLEnumType} from 'graphql';
-import {PERSONAL, PRO, ENTERPRISE} from 'universal/utils/constants';
+import {GraphQLEnumType} from 'graphql'
+import {PERSONAL, PRO, ENTERPRISE} from 'universal/utils/constants'
 
 const OrgTierEnum = new GraphQLEnumType({
   name: 'OrgTierEnum',
@@ -9,6 +9,6 @@ const OrgTierEnum = new GraphQLEnumType({
     [PRO]: {},
     [ENTERPRISE]: {}
   }
-});
+})
 
-export default OrgTierEnum;
+export default OrgTierEnum

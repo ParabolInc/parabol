@@ -1,60 +1,78 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {createFragmentContainer} from 'react-relay';
-import Button from 'universal/components/Button/Button';
-import BounceBlock from 'universal/components/BounceBlock/BounceBlock';
-import TaskColumns from 'universal/components/TaskColumns/TaskColumns';
-import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import withStyles from 'universal/styles/withStyles';
-import {MEETING, UPDATES} from 'universal/utils/constants';
-import getTaskById from 'universal/utils/getTaskById';
-import isTaskPrivate from 'universal/utils/isTaskPrivate';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import Button from 'universal/components/Button/Button'
+import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
+import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
+import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import withStyles from 'universal/styles/withStyles'
+import {MEETING, UPDATES} from 'universal/utils/constants'
+import getTaskById from 'universal/utils/getTaskById'
+import isTaskPrivate from 'universal/utils/isTaskPrivate'
 
 class MeetingUpdates extends Component {
-  state = {tasks: {}};
+  state = {tasks: {}}
 
-  componentWillMount() {
-    this.filterTasks(this.props);
+  componentWillMount () {
+    this.filterTasks(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {viewer: {tasks: oldTasks}, localPhaseItem: oldLocalPhaseItem} = this.props;
-    const {viewer: {tasks}, localPhaseItem} = nextProps;
+  componentWillReceiveProps (nextProps) {
+    const {
+      viewer: {tasks: oldTasks},
+      localPhaseItem: oldLocalPhaseItem
+    } = this.props
+    const {
+      viewer: {tasks},
+      localPhaseItem
+    } = nextProps
     if (tasks !== oldTasks || localPhaseItem !== oldLocalPhaseItem) {
-      this.filterTasks(nextProps);
+      this.filterTasks(nextProps)
     }
   }
 
-  filterTasks(props) {
-    const {localPhaseItem, setUpdateUserHasTasks, viewer: {tasks, team: {teamMembers}}} = props;
-    const currentTeamMember = teamMembers[localPhaseItem - 1];
-    const edges = tasks.edges.filter(({node}) => node.assignee.id === currentTeamMember.id && !isTaskPrivate(node.tags));
+  filterTasks (props) {
+    const {
+      localPhaseItem,
+      setUpdateUserHasTasks,
+      viewer: {
+        tasks,
+        team: {teamMembers}
+      }
+    } = props
+    const currentTeamMember = teamMembers[localPhaseItem - 1]
+    const edges = tasks.edges.filter(
+      ({node}) => node.assignee.id === currentTeamMember.id && !isTaskPrivate(node.tags)
+    )
     this.setState({
       tasks: {edges}
-    });
-    setUpdateUserHasTasks(Boolean(edges.length));
+    })
+    setUpdateUserHasTasks(Boolean(edges.length))
   }
 
-  render() {
+  render () {
     const {
       gotoNext,
       localPhaseItem,
       showMoveMeetingControls,
       styles,
-      viewer: {team: {teamMembers}, tasks: allTasks}
-    } = this.props;
-    const {tasks} = this.state;
-    const self = teamMembers.find((m) => m.isSelf);
-    const currentTeamMember = teamMembers[localPhaseItem - 1];
-    const nextTeamMember = teamMembers[localPhaseItem];
-    const isLastMember = localPhaseItem === teamMembers.length;
-    const nextPhaseName = actionMeeting.agendaitems.name;
-    const myTeamMemberId = self && self.id;
-    const {isSelf: isMyMeetingSection} = currentTeamMember;
+      viewer: {
+        team: {teamMembers},
+        tasks: allTasks
+      }
+    } = this.props
+    const {tasks} = this.state
+    const self = teamMembers.find((m) => m.isSelf)
+    const currentTeamMember = teamMembers[localPhaseItem - 1]
+    const nextTeamMember = teamMembers[localPhaseItem]
+    const isLastMember = localPhaseItem === teamMembers.length
+    const nextPhaseName = actionMeeting.agendaitems.name
+    const myTeamMemberId = self && self.id
+    const {isSelf: isMyMeetingSection} = currentTeamMember
     return (
       <MeetingMain hasHelpFor={UPDATES} isFacilitating={showMoveMeetingControls}>
         <MeetingSection flexToFill>
@@ -68,26 +86,30 @@ class MeetingUpdates extends Component {
             />
           </div>
         </MeetingSection>
-        {showMoveMeetingControls &&
+        {showMoveMeetingControls && (
           <MeetingControlBar>
-            <BounceBlock animationDelay="120s" key={`update${localPhaseItem}buttonAnimation`}>
+            <BounceBlock animationDelay='120s' key={`update${localPhaseItem}buttonAnimation`}>
               <Button
-                buttonStyle="flat"
-                colorPalette="dark"
-                icon="arrow-circle-right"
+                buttonStyle='flat'
+                colorPalette='dark'
+                icon='arrow-circle-right'
                 iconLarge
-                iconPalette="warm"
-                iconPlacement="right"
+                iconPalette='warm'
+                iconPlacement='right'
                 key={`update${localPhaseItem}`}
-                label={isLastMember ? `Advance to the ${nextPhaseName}` : `Move to ${nextTeamMember.preferredName}`}
+                label={
+                  isLastMember
+                    ? `Advance to the ${nextPhaseName}`
+                    : `Move to ${nextTeamMember.preferredName}`
+                }
                 onClick={gotoNext}
-                buttonSize="medium"
+                buttonSize='medium'
               />
             </BounceBlock>
           </MeetingControlBar>
-        }
+        )}
       </MeetingMain>
-    );
+    )
   }
 }
 
@@ -99,7 +121,7 @@ MeetingUpdates.propTypes = {
   setUpdateUserHasTasks: PropTypes.func.isRequired,
   styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
-};
+}
 
 const styleThunk = () => ({
   layout: {
@@ -115,7 +137,7 @@ const styleThunk = () => ({
     padding: '1rem 1rem 0',
     width: '100%'
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(MeetingUpdates),
@@ -143,5 +165,6 @@ export default createFragmentContainer(
           }
         }
       }
-    }`
-);
+    }
+  `
+)

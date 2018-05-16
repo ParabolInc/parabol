@@ -1,15 +1,23 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 const mutation = graphql`
-  mutation CreateOrgPicturePutUrlMutation($contentType: String!, $contentLength: Int!, $orgId: ID!) {
-    createOrgPicturePutUrl(contentType: $contentType, contentLength: $contentLength, orgId: $orgId) {
+  mutation CreateOrgPicturePutUrlMutation(
+    $contentType: String!
+    $contentLength: Int!
+    $orgId: ID!
+  ) {
+    createOrgPicturePutUrl(
+      contentType: $contentType
+      contentLength: $contentLength
+      orgId: $orgId
+    ) {
       error {
         message
       }
       url
     }
   }
-`;
+`
 
 const CreateOrgPicturePutUrlMutation = (environment, variables, onError, onCompleted) => {
   return commitMutation(environment, {
@@ -17,7 +25,7 @@ const CreateOrgPicturePutUrlMutation = (environment, variables, onError, onCompl
     variables,
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default CreateOrgPicturePutUrlMutation;
+export default CreateOrgPicturePutUrlMutation

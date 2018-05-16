@@ -1,4 +1,3 @@
-
 const printStyles = `
   @media print {
     html,
@@ -9,6 +8,6 @@ const printStyles = `
       display: none !important;
     }
   }
-`;
+`
 
-export default printStyles;
+export default printStyles

@@ -1,13 +1,7 @@
-import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLString,
-  GraphQLEnumType
-} from 'graphql';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants';
-import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum';
+import {GraphQLObjectType, GraphQLNonNull, GraphQLID, GraphQLString, GraphQLEnumType} from 'graphql'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import {USER_DASH, TEAM_DASH, MEETING} from 'universal/utils/constants'
+import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 
 export const ChangeModule = new GraphQLEnumType({
   name: 'ChangeModule',
@@ -17,7 +11,7 @@ export const ChangeModule = new GraphQLEnumType({
     [TEAM_DASH]: {},
     [USER_DASH]: {}
   }
-});
+})
 // const ContentDiff = new GraphQLObjectType({
 //   old: {type: GraphQLString, description: 'The content as it was in the task'},
 //   new: {type: GraphQLString, description: 'The content that was updated during the meeting'}
@@ -35,7 +29,8 @@ export const ChangeModule = new GraphQLEnumType({
 
 const TaskHistory = new GraphQLObjectType({
   name: 'TaskHistory',
-  description: 'An up-to-date history of every change to content, ownership, and status for every task.',
+  description:
+    'An up-to-date history of every change to content, ownership, and status for every task.',
   fields: () => ({
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -54,7 +49,10 @@ const TaskHistory = new GraphQLObjectType({
       type: GraphQLID,
       description: 'Owner of the task'
     },
-    status: {type: new GraphQLNonNull(TaskStatusEnum), description: 'The status of the task'},
+    status: {
+      type: new GraphQLNonNull(TaskStatusEnum),
+      description: 'The status of the task'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The timestamp the task was changed'
@@ -70,6 +68,6 @@ const TaskHistory = new GraphQLObjectType({
       description: 'if changedIn is a meeting, the id of the meeting where it occured'
     }
   })
-});
+})
 
-export default TaskHistory;
+export default TaskHistory

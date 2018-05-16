@@ -1,29 +1,24 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import ui from 'universal/styles/ui'
 
 const DashHeaderInfo = (props) => {
-  const {children, styles, title} = props;
+  const {children, styles, title} = props
   return (
     <div className={css(styles.root)}>
-      {title &&
-        <div className={css(styles.title)}>
-          {title}
-        </div>
-      }
+      {title && <div className={css(styles.title)}>{title}</div>}
       {children}
     </div>
-  );
-};
-
+  )
+}
 
 DashHeaderInfo.propTypes = {
   children: PropTypes.any,
   styles: PropTypes.object,
   title: PropTypes.any
-};
+}
 
 const styleThunk = () => ({
   root: {
@@ -36,6 +31,6 @@ const styleThunk = () => ({
     ...ui.dashHeaderTitleStyles,
     marginRight: '2rem'
   }
-});
+})
 
-export default withStyles(styleThunk)(DashHeaderInfo);
+export default withStyles(styleThunk)(DashHeaderInfo)

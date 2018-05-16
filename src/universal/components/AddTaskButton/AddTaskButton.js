@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import FontAwesome from 'react-fontawesome';
-import ui from 'universal/styles/ui';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import FontAwesome from 'react-fontawesome'
+import ui from 'universal/styles/ui'
 
 const iconStyle = {
   display: 'block',
@@ -12,27 +12,27 @@ const iconStyle = {
   lineHeight: '1.5rem',
   textAlign: 'center',
   width: '1.5rem'
-};
+}
 
 const AddTaskButton = (props) => {
-  const {styles, label, onClick} = props;
+  const {styles, label, onClick} = props
   return (
     <div className={css(styles.addRoot)} onClick={onClick}>
       <FontAwesome
         className={css(styles.addIcon)}
-        name="plus"
+        name='plus'
         style={iconStyle}
         title={`Add a Task set to ${label}`}
       />
     </div>
-  );
-};
+  )
+}
 
 AddTaskButton.propTypes = {
   styles: PropTypes.object,
   label: PropTypes.string.isRequired,
   onClick: PropTypes.func
-};
+}
 
 const styleThunk = () => ({
   addRoot: {
@@ -53,6 +53,6 @@ const styleThunk = () => ({
       opacity: '.5'
     }
   }
-});
+})
 
-export default withStyles(styleThunk)(AddTaskButton);
+export default withStyles(styleThunk)(AddTaskButton)

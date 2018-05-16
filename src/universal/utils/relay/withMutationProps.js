@@ -1,25 +1,25 @@
-import React, {Component} from 'react';
-import getDisplayName from 'universal/utils/getDisplayName';
-import getGraphQLError from 'universal/utils/relay/getGraphQLError';
+import React, {Component} from 'react'
+import getDisplayName from 'universal/utils/getDisplayName'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
 // Serves as a lightweight alternative for redux-form when we just have a button or something
 export default (ComposedComponent) => {
   // eslint-disable-next-line react/prefer-stateless-function
   return class WithMutationProps extends Component {
-    static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`;
+    static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`
 
     state = {
       submitting: false,
       error: undefined,
       dirty: false
-    };
-
-    componentWillMount() {
-      this._mounted = true;
     }
 
-    componentWillUnmount() {
-      this._mounted = false;
+    componentWillMount () {
+      this._mounted = true
+    }
+
+    componentWillUnmount () {
+      this._mounted = false
     }
 
     onCompleted = (res, errors) => {
@@ -27,48 +27,50 @@ export default (ComposedComponent) => {
         this.setState({
           submitting: false,
           error: getGraphQLError(res, errors)
-        });
+        })
       }
-    };
+    }
 
     onError = (error) => {
       if (this._mounted) {
         this.setState({
           submitting: false,
           error
-        });
+        })
       }
-    };
+    }
 
     setDirty = () => {
       if (this._mounted && !this.state.dirty) {
-        this.setState({dirty: true});
+        this.setState({dirty: true})
       }
-    };
+    }
 
     submitMutation = () => {
       if (this._mounted) {
         this.setState({
           submitting: true
-        });
+        })
       }
-    };
-
-    render() {
-      const {dirty, error, submitting} = this.state;
-      return (<ComposedComponent
-        {...this.props}
-        dirty={dirty}
-        error={error}
-        setDirty={this.setDirty}
-        submitting={submitting}
-        submitMutation={this.submitMutation}
-        onCompleted={this.onCompleted}
-        onError={this.onError}
-      />);
     }
-  };
-};
+
+    render () {
+      const {dirty, error, submitting} = this.state
+      return (
+        <ComposedComponent
+          {...this.props}
+          dirty={dirty}
+          error={error}
+          setDirty={this.setDirty}
+          submitting={submitting}
+          submitMutation={this.submitMutation}
+          onCompleted={this.onCompleted}
+          onError={this.onError}
+        />
+      )
+    }
+  }
+}
 
 export type MutationProps = {
   dirty: boolean,
@@ -78,7 +80,7 @@ export type MutationProps = {
   setDirty: () => void,
   submitMutation: () => void,
   submitting: boolean
-};
+}
 // const propTypes = {
 //  setDirty: PropTypes.func.isRequired,
 //  error: PropTypes.any,

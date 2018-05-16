@@ -1,7 +1,7 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql';
-import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage';
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
-import {makeResolve} from 'server/graphql/resolvers';
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
+import {makeResolve} from 'server/graphql/resolvers'
 
 const RetroDiscussStage = new GraphQLObjectType({
   name: 'RetroDiscussStage',
@@ -19,6 +19,6 @@ const RetroDiscussStage = new GraphQLObjectType({
       resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
     }
   })
-});
+})
 
-export default RetroDiscussStage;
+export default RetroDiscussStage

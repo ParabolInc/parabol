@@ -1,21 +1,21 @@
 // Working on new meeting components
 // @flow
 // $FlowFixMe
-import React from 'react';
+import React from 'react'
 // import {action} from '@storybook/addon-actions';
-import {storiesOf} from '@storybook/react';
-import styled from 'react-emotion';
+import {storiesOf} from '@storybook/react'
+import styled from 'react-emotion'
 
-import {LabelHeading} from 'universal/components';
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading';
-import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy';
-import SimpleMeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/SimpleMeetingPrompt';
-import MeetingFacilitatorAvatar from 'universal/modules/meeting/components/MeetingFacilitatorAvatar/MeetingFacilitatorAvatar';
-import picture from 'universal/styles/theme/images/avatars/marimar-suarez-penalva.jpg';
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
+import SimpleMeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/SimpleMeetingPrompt'
+import MeetingFacilitatorAvatar from 'universal/modules/meeting/components/MeetingFacilitatorAvatar/MeetingFacilitatorAvatar'
+import picture from 'universal/styles/theme/images/avatars/marimar-suarez-penalva.jpg'
 
-import RetroBackground from './components/RetroBackground';
-import StoryContainer from './components/StoryContainer';
+import RetroBackground from './components/RetroBackground'
+import StoryContainer from './components/StoryContainer'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 
 const FlexBlock = styled('div')(({direction, margin}) => ({
   alignItems: 'flex-start',
@@ -23,7 +23,7 @@ const FlexBlock = styled('div')(({direction, margin}) => ({
   flexDirection: direction || 'row',
   justifyContent: 'flex-start',
   margin: margin || 0
-}));
+}))
 
 storiesOf('Meeting Components', module)
   .add('Social Check-In Heading', () => (
@@ -33,7 +33,7 @@ storiesOf('Meeting Components', module)
           <div>
             <LabelHeading>{'Social Check-In'}</LabelHeading>
             <MeetingPhaseHeading>{'Terry’s Check-In'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Terry, share your response to today’s prompt.'}</MeetingCopy>
+            <MeetingCopy margin='0'>{'Terry, share your response to today’s prompt.'}</MeetingCopy>
           </div>
         )}
       />
@@ -46,7 +46,7 @@ storiesOf('Meeting Components', module)
           <div>
             <LabelHeading>{'Solo Updates'}</LabelHeading>
             <MeetingPhaseHeading>{'Terry’s Updates'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Terry, what’s changed with your tasks?'}</MeetingCopy>
+            <MeetingCopy margin='0'>{'Terry, what’s changed with your tasks?'}</MeetingCopy>
           </div>
         )}
       />
@@ -59,7 +59,7 @@ storiesOf('Meeting Components', module)
           <div>
             <LabelHeading>{'Team Agenda'}</LabelHeading>
             <MeetingPhaseHeading>{'“metrics”'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Terry, what do you need?'}</MeetingCopy>
+            <MeetingCopy margin='0'>{'Terry, what do you need?'}</MeetingCopy>
           </div>
         )}
       />
@@ -72,7 +72,7 @@ storiesOf('Meeting Components', module)
           <div>
             <LabelHeading>{'Group'}</LabelHeading>
             <MeetingPhaseHeading>{'Group'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Drag cards to group by common topics'}</MeetingCopy>
+            <MeetingCopy margin='0'>{'Drag cards to group by common topics'}</MeetingCopy>
           </div>
         )}
       />
@@ -85,7 +85,7 @@ storiesOf('Meeting Components', module)
           <div>
             <LabelHeading>{'Vote'}</LabelHeading>
             <MeetingPhaseHeading>{'Vote'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Vote on the themes you want to discuss'}</MeetingCopy>
+            <MeetingCopy margin='0'>{'Vote on the themes you want to discuss'}</MeetingCopy>
           </div>
         )}
       />
@@ -98,7 +98,9 @@ storiesOf('Meeting Components', module)
           <div>
             <LabelHeading>{'Discuss'}</LabelHeading>
             <MeetingPhaseHeading>{'What might we do differently next time?'}</MeetingPhaseHeading>
-            <MeetingCopy margin="0">{'Create takeaway task cards to capture next steps'}</MeetingCopy>
+            <MeetingCopy margin='0'>
+              {'Create takeaway task cards to capture next steps'}
+            </MeetingCopy>
           </div>
         )}
       />
@@ -110,7 +112,9 @@ storiesOf('Meeting Components', module)
         render={() => (
           <div style={{display: 'flex', flex: 1, flexDirection: 'column', flexShrink: 0}}>
             <div style={{display: 'flex', flex: 1, flexShrink: 0}}>{'Meeting Content'}</div>
-            <MeetingControlBar>{'Psst. Facilitator, you can control the meeting here!'}</MeetingControlBar>
+            <MeetingControlBar>
+              {'Psst. Facilitator, you can control the meeting here!'}
+            </MeetingControlBar>
           </div>
         )}
       />
@@ -120,17 +124,22 @@ storiesOf('Meeting Components', module)
     <RetroBackground>
       <StoryContainer
         render={() => (
-          <FlexBlock direction="column" margin="auto">
-            <FlexBlock margin="0 0 3rem">
-              <MeetingFacilitatorAvatar size="small" picture={picture} />
-              <MeetingCopy margin="auto auto auto 0">{'Marimar is today’s facilitator.'}</MeetingCopy>
+          <FlexBlock direction='column' margin='auto'>
+            <FlexBlock margin='0 0 3rem'>
+              <MeetingFacilitatorAvatar size='small' picture={picture} />
+              <MeetingCopy margin='auto auto auto 0'>
+                {'Marimar is today’s facilitator.'}
+              </MeetingCopy>
             </FlexBlock>
             <FlexBlock>
-              <MeetingFacilitatorAvatar size="small" picture={picture} />
-              <SimpleMeetingPrompt><b>{'Bojan'}</b>{', what has your attention today?'}</SimpleMeetingPrompt>
+              <MeetingFacilitatorAvatar size='small' picture={picture} />
+              <SimpleMeetingPrompt>
+                <b>{'Bojan'}</b>
+                {', what has your attention today?'}
+              </SimpleMeetingPrompt>
             </FlexBlock>
           </FlexBlock>
         )}
       />
     </RetroBackground>
-  ));
+  ))

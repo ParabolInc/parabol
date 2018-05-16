@@ -1,1 +1,1 @@
-export default (res) => res.default ? res.default : res;
+export default (res) => (res.default ? res.default : res)

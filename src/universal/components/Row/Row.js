@@ -1,5 +1,5 @@
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const Row = styled('div')(({compact}) => ({
   alignItems: 'center',
@@ -8,6 +8,6 @@ const Row = styled('div')(({compact}) => ({
   justifyContent: 'space-between',
   padding: compact ? ui.rowCompactGutter : ui.rowGutter,
   width: '100%'
-}));
+}))
 
-export default Row;
+export default Row

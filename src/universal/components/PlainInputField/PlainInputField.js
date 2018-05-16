@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import ui from 'universal/styles/ui';
-import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette';
-import FieldBlock from 'universal/components/FieldBlock/FieldBlock';
-import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import ui from 'universal/styles/ui'
+import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
+import FieldBlock from 'universal/components/FieldBlock/FieldBlock'
+import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText'
 
 const PlainInputField = (props) => {
   const {
@@ -17,13 +17,13 @@ const PlainInputField = (props) => {
     placeholder,
     styles,
     spellCheck = true
-  } = props;
+  } = props
 
   const inputStyles = css(
     // allow hotkeys to be triggered when inside a field input
     styles.field,
-    disabled && styles.disabled,
-  );
+    disabled && styles.disabled
+  )
 
   return (
     <FieldBlock>
@@ -37,10 +37,11 @@ const PlainInputField = (props) => {
           placeholder={placeholder}
         />
       </div>
-      {touched && error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
+      {touched &&
+        error && <FieldHelpText fieldSize={fieldSize} hasErrorText helpText={error} indent />}
     </FieldBlock>
-  );
-};
+  )
+}
 
 PlainInputField.propTypes = {
   autoFocus: PropTypes.bool,
@@ -58,11 +59,11 @@ PlainInputField.propTypes = {
   spellCheck: PropTypes.bool,
   styles: PropTypes.object,
   meta: PropTypes.object.isRequired
-};
+}
 
 const styleThunk = (theme, {disabled, fieldSize}) => {
-  const size = fieldSize || ui.fieldSizeOptions[1];
-  return ({
+  const size = fieldSize || ui.fieldSizeOptions[1]
+  return {
     field: {
       ...ui.fieldBaseStyles,
       ...ui.fieldSizeStyles[size],
@@ -74,7 +75,7 @@ const styleThunk = (theme, {disabled, fieldSize}) => {
     inputBlock: {
       position: 'relative'
     }
-  });
-};
+  }
+}
 
-export default withStyles(styleThunk)(PlainInputField);
+export default withStyles(styleThunk)(PlainInputField)

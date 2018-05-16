@@ -1,7 +1,7 @@
-import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId';
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 
 const getIsSoftTeamMember = (assigneeId) => {
-  return !fromTeamMemberId(assigneeId).teamId;
-};
+  return !fromTeamMemberId(assigneeId).teamId
+}
 
-export default getIsSoftTeamMember;
+export default getIsSoftTeamMember

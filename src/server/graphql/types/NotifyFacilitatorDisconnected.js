@@ -1,8 +1,8 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import {resolveTeam} from 'server/graphql/resolvers';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import Team from 'server/graphql/types/Team';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {resolveTeam} from 'server/graphql/resolvers'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import Team from 'server/graphql/types/Team'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const NotifyFacilitatorDisconnected = new GraphQLObjectType({
   name: 'NotifyFacilitatorDisconnected',
@@ -13,14 +13,14 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
       type: new GraphQLNonNull(TeamMember),
       description: 'The new meeting facilitator',
       resolve: ({newFacilitatorId}, args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(newFacilitatorId);
+        return dataLoader.get('teamMembers').load(newFacilitatorId)
       }
     },
     oldFacilitator: {
       type: new GraphQLNonNull(TeamMember),
       description: 'The team member that disconnected',
       resolve: ({oldFacilitatorId}, args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(oldFacilitatorId);
+        return dataLoader.get('teamMembers').load(oldFacilitatorId)
       }
     },
     team: {
@@ -30,6 +30,6 @@ const NotifyFacilitatorDisconnected = new GraphQLObjectType({
     },
     ...notificationInterfaceFields
   })
-});
+})
 
-export default NotifyFacilitatorDisconnected;
+export default NotifyFacilitatorDisconnected

@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveTeam} from 'server/graphql/resolvers';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import Team from 'server/graphql/types/Team';
-import TeamRemovedNotification from 'server/graphql/types/TeamRemovedNotification';
+import {GraphQLObjectType} from 'graphql'
+import {resolveTeam} from 'server/graphql/resolvers'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import Team from 'server/graphql/types/Team'
+import TeamRemovedNotification from 'server/graphql/types/TeamRemovedNotification'
 
 const NotifyTeamArchived = new GraphQLObjectType({
   name: 'NotifyTeamArchived',
@@ -15,6 +15,6 @@ const NotifyTeamArchived = new GraphQLObjectType({
     },
     ...notificationInterfaceFields
   })
-});
+})
 
-export default NotifyTeamArchived;
+export default NotifyTeamArchived

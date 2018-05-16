@@ -1,5 +1,5 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import User from 'server/graphql/types/User';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import User from 'server/graphql/types/User'
 
 const TaskEditorPayload = new GraphQLObjectType({
   name: 'TaskEditorPayload',
@@ -16,7 +16,7 @@ const TaskEditorPayload = new GraphQLObjectType({
       type: User,
       description: 'The user editing the task',
       resolve: ({userId}, args, {dataLoader}) => {
-        return dataLoader.get('users').load(userId);
+        return dataLoader.get('users').load(userId)
       }
     },
     userId: {
@@ -24,6 +24,6 @@ const TaskEditorPayload = new GraphQLObjectType({
       description: 'The userId of the person editing the task'
     }
   })
-});
+})
 
-export default TaskEditorPayload;
+export default TaskEditorPayload

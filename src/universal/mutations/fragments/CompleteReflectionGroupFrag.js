@@ -17,4 +17,4 @@ graphql`
     viewerVoteCount
     voteCount
   }
-`;
+`

@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import Helmet from 'universal/components/ParabolHelmet/ParabolHelmet';
-import AgendaToggle from 'universal/modules/teamDashboard/components/AgendaToggle/AgendaToggle';
-import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
-import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer';
-import TeamTasksHeaderContainer from 'universal/modules/teamDashboard/containers/TeamTasksHeader/TeamTasksHeaderContainer';
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import Helmet from 'react-helmet'
+import AgendaToggle from 'universal/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
+import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
+import TeamColumnsContainer from 'universal/modules/teamDashboard/containers/TeamColumns/TeamColumnsContainer'
+import TeamTasksHeaderContainer from 'universal/modules/teamDashboard/containers/TeamTasksHeader/TeamTasksHeaderContainer'
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const RootBlock = styled('div')({
   display: 'flex',
@@ -15,13 +15,13 @@ const RootBlock = styled('div')({
   flexDirection: 'column',
   position: 'relative',
   width: '100%'
-});
+})
 
 const TasksMain = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column'
-});
+})
 
 const TasksHeader = styled('div')(({hideAgenda}) => ({
   display: 'flex',
@@ -34,7 +34,7 @@ const TasksHeader = styled('div')(({hideAgenda}) => ({
     justifyContent: 'center',
     paddingTop: 0
   }
-}));
+}))
 
 const TasksContent = styled('div')(({hideAgenda}) => ({
   display: 'flex',
@@ -46,7 +46,7 @@ const TasksContent = styled('div')(({hideAgenda}) => ({
   [ui.dashTeamBreakpointUp]: {
     margin: '0 auto'
   }
-}));
+}))
 
 const Inner = styled('div')({
   display: 'flex',
@@ -58,7 +58,7 @@ const Inner = styled('div')({
   [ui.dashTeamBreakpointUp]: {
     margin: '0 auto'
   }
-});
+})
 
 const AgendaMain = styled('div')(({hideAgenda}) => ({
   backgroundColor: !hideAgenda && ui.palette.white,
@@ -70,22 +70,25 @@ const AgendaMain = styled('div')(({hideAgenda}) => ({
   right: 0,
   top: 0,
   width: ui.dashAgendaWidth
-}));
+}))
 
 const AgendaContent = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
   width: '100%'
-});
+})
 
 const AgendaAndTasks = (props) => {
-  const {viewer} = props;
-  const {teamMember: {hideAgenda}, team} = viewer;
-  const {teamId, teamName} = team;
+  const {viewer} = props
+  const {
+    teamMember: {hideAgenda},
+    team
+  } = viewer
+  const {teamId, teamName} = team
   return (
     <RootBlock>
-      <Helmet title={`${teamName} | Parabol`} />
+      <Helmet title={`Team Dashboard | ${teamName}`} />
 
       {/* Tasks */}
       <TasksMain>
@@ -93,7 +96,6 @@ const AgendaAndTasks = (props) => {
           <Inner>
             <TeamTasksHeaderContainer team={team} />
           </Inner>
-
         </TasksHeader>
         <TasksContent hideAgenda={hideAgenda}>
           <Inner>
@@ -105,20 +107,25 @@ const AgendaAndTasks = (props) => {
       {/* Agenda */}
       <AgendaMain hideAgenda={hideAgenda}>
         <AgendaToggle hideAgenda={hideAgenda} teamId={teamId} />
-        {!hideAgenda &&
+        {!hideAgenda && (
           <AgendaContent>
-            <AgendaListAndInput canNavigate={false} context="dashboard" disabled={false} team={team} />
+            <AgendaListAndInput
+              canNavigate={false}
+              context='dashboard'
+              disabled={false}
+              team={team}
+            />
           </AgendaContent>
-        }
+        )}
       </AgendaMain>
     </RootBlock>
-  );
-};
+  )
+}
 
 AgendaAndTasks.propTypes = {
   teamId: PropTypes.string,
   viewer: PropTypes.object
-};
+}
 
 export default createFragmentContainer(
   AgendaAndTasks,
@@ -136,4 +143,4 @@ export default createFragmentContainer(
       ...TeamColumnsContainer_viewer
     }
   `
-);
+)

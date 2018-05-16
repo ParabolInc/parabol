@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveTask} from 'server/graphql/resolvers';
-import Task from 'server/graphql/types/Task';
+import {GraphQLObjectType} from 'graphql'
+import {resolveTask} from 'server/graphql/resolvers'
+import Task from 'server/graphql/types/Task'
 
 const TaskUpdated = new GraphQLObjectType({
   name: 'TaskUpdated',
@@ -10,6 +10,6 @@ const TaskUpdated = new GraphQLObjectType({
       resolve: resolveTask
     }
   })
-});
+})
 
-export default TaskUpdated;
+export default TaskUpdated

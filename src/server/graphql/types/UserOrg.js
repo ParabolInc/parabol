@@ -1,6 +1,5 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql';
-import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum';
-
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import OrgUserRole from 'server/graphql/types/OrgUserRoleEnum'
 
 const UserOrg = new GraphQLObjectType({
   name: 'UserOrg',
@@ -15,6 +14,6 @@ const UserOrg = new GraphQLObjectType({
       description: 'role of the user in the org'
     }
   })
-});
+})
 
-export default UserOrg;
+export default UserOrg

@@ -1,29 +1,19 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import withStyles from 'universal/styles/withStyles';
-import {css} from 'aphrodite-local-styles/no-important';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import withStyles from 'universal/styles/withStyles'
+import {css} from 'aphrodite-local-styles/no-important'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const DashAlert = (props) => {
-  const {children, styles} = props;
-  return (
-    <div className={css(styles.bar)}>
-      {children}
-    </div>
-  );
-};
+  const {children, styles} = props
+  return <div className={css(styles.bar)}>{children}</div>
+}
 
 DashAlert.propTypes = {
   children: PropTypes.any,
-  colorPalette: PropTypes.oneOf([
-    'cool',
-    'warm',
-    'dark',
-    'mid',
-    'light'
-  ]),
+  colorPalette: PropTypes.oneOf(['cool', 'warm', 'dark', 'mid', 'light']),
   styles: PropTypes.object
-};
+}
 
 const styleThunk = (customTheme, props) => ({
   bar: {
@@ -35,6 +25,6 @@ const styleThunk = (customTheme, props) => ({
     textAlign: 'center',
     width: '100%'
   }
-});
+})
 
-export default withStyles(styleThunk)(DashAlert);
+export default withStyles(styleThunk)(DashAlert)

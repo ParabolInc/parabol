@@ -1,27 +1,27 @@
 // @flow
-import * as React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import type {Match} from 'react-router-dom';
-import {withRouter} from 'react-router-dom';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import type {MutationProps} from 'universal/utils/relay/withMutationProps';
-import withMutationProps from 'universal/utils/relay/withMutationProps';
-import type {NewMeetingCheckIn_team as Team} from './__generated__/NewMeetingCheckIn_team.graphql';
-import type {MeetingTypeEnum} from 'universal/types/schema.flow';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection';
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint';
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar';
-import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls';
-import ui from 'universal/styles/ui';
-import styled from 'react-emotion';
-import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt';
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId';
-import {CHECKIN} from 'universal/utils/constants';
-import withHotkey from 'react-hotkey-hoc';
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups';
+import * as React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import type {Match} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import type {NewMeetingCheckIn_team as Team} from './__generated__/NewMeetingCheckIn_team.graphql'
+import type {MeetingTypeEnum} from 'universal/types/schema.flow'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls'
+import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
+import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
+import {CHECKIN} from 'universal/utils/constants'
+import withHotkey from 'react-hotkey-hoc'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
-const {Component} = React;
+const {Component} = React
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -40,12 +40,11 @@ const CheckIn = styled('div')({
   [ui.breakpoint.widest]: {
     padding: '4rem 0'
   }
-});
+})
 
 const Hint = styled('div')({
   marginTop: '2.5rem'
-});
-
+})
 
 type Props = {
   atmosphere: Object,
@@ -53,64 +52,74 @@ type Props = {
   meetingType: MeetingTypeEnum,
   team: Team,
   ...MutationProps
-};
+}
 
 class NewMeetingCheckIn extends Component<Props> {
   checkinPressFactory = (isCheckedIn) => () => {
-    const {gotoNext} = this.props;
-    gotoNext({isCheckedIn});
-  };
+    const {gotoNext} = this.props
+    gotoNext({isCheckedIn})
+  }
 
-  render() {
-    const {atmosphere, team} = this.props;
-    const {newMeeting} = team;
-    const {facilitator: {facilitatorName, facilitatorUserId}, localStage: {localStageId, teamMember}, phases} = newMeeting;
-    const {isSelf: isMyMeetingSection} = teamMember;
-    const nextStageRes = findStageAfterId(phases, localStageId);
+  render () {
+    const {atmosphere, team} = this.props
+    const {newMeeting} = team
+    const {
+      facilitator: {facilitatorName, facilitatorUserId},
+      localStage: {localStageId, teamMember},
+      phases
+    } = newMeeting
+    const {isSelf: isMyMeetingSection} = teamMember
+    const nextStageRes = findStageAfterId(phases, localStageId)
     // in case the checkin is the last phase of the meeting
-    if (!nextStageRes) return null;
-    const {stage: nextStage, phase: nextPhase} = nextStageRes;
-    const lastCheckInStage = nextPhase.phaseType !== CHECKIN;
-    const nextMemberName = nextStage && nextStage.teamMember && nextStage.teamMember.preferredName || '';
-    const {viewerId} = atmosphere;
-    const isFacilitating = facilitatorUserId === viewerId;
+    if (!nextStageRes) return null
+    const {stage: nextStage, phase: nextPhase} = nextStageRes
+    const lastCheckInStage = nextPhase.phaseType !== CHECKIN
+    const nextMemberName =
+      (nextStage && nextStage.teamMember && nextStage.teamMember.preferredName) || ''
+    const {viewerId} = atmosphere
+    const isFacilitating = facilitatorUserId === viewerId
     return (
       <React.Fragment>
-        <MeetingSection flexToFill paddingBottom="1rem">
-          <NewMeetingCheckInPrompt
-            team={team}
-            teamMember={teamMember}
-          />
+        <MeetingSection flexToFill paddingBottom='1rem'>
+          <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
-            {!isFacilitating &&
-            <Hint>
-              <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
-                {!lastCheckInStage ?
-                  <span>
-                    {isMyMeetingSection ?
-                      <span>{'Share with your teammates!'}</span> :
-                      <span>{'Waiting for'} <b>{teamMember.preferredName}</b> {'to share with the team'}</span>
-                    }
-                  </span> :
-                  <span>{'Waiting for'} <b>{facilitatorName}</b> {`to advance to ${actionMeeting.updates.name}`}</span>
-                }
-              </MeetingFacilitationHint>
-            </Hint>
-            }
+            {!isFacilitating && (
+              <Hint>
+                <MeetingFacilitationHint showEllipsis={lastCheckInStage || !isMyMeetingSection}>
+                  {!lastCheckInStage ? (
+                    <span>
+                      {isMyMeetingSection ? (
+                        <span>{'Share with your teammates!'}</span>
+                      ) : (
+                        <span>
+                          {'Waiting for'} <b>{teamMember.preferredName}</b>{' '}
+                          {'to share with the team'}
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span>
+                      {'Waiting for'} <b>{facilitatorName}</b>{' '}
+                      {`to advance to ${actionMeeting.updates.name}`}
+                    </span>
+                  )}
+                </MeetingFacilitationHint>
+              </Hint>
+            )}
           </CheckIn>
         </MeetingSection>
-        {isFacilitating &&
-        <MeetingControlBar>
-          <CheckInControls
-            checkInPressFactory={this.checkinPressFactory}
-            currentMemberName={teamMember.preferredName}
-            nextMemberName={nextMemberName}
-            nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
-          />
-        </MeetingControlBar>
-        }
+        {isFacilitating && (
+          <MeetingControlBar>
+            <CheckInControls
+              checkInPressFactory={this.checkinPressFactory}
+              currentMemberName={teamMember.preferredName}
+              nextMemberName={nextMemberName}
+              nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
+            />
+          </MeetingControlBar>
+        )}
       </React.Fragment>
-    );
+    )
   }
 }
 
@@ -162,4 +171,4 @@ export default createFragmentContainer(
       teamId: id
     }
   `
-);
+)

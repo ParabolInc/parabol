@@ -1,4 +1,4 @@
-import {LOBBY} from '../../../universal/utils/constants';
+import {LOBBY} from '../../../universal/utils/constants'
 
 /* eslint-disable max-len */
 exports.up = async (r) => {
@@ -6,28 +6,32 @@ exports.up = async (r) => {
     {
       id: 'auth0|5ad184ad6d59890e8635d9e4',
       email: 'taya@prbl.co',
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Taya+Mueller.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Taya+Mueller.jpg?t=1523658193243',
       preferredName: 'Taya'
     },
     {
       id: 'auth0|5ad119debcb4500e4f4e2808',
       email: 'jordan@prbl.co',
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
       preferredName: 'Jordan'
     },
     {
       id: 'auth0|5ad184fabcb4500e4f4e345e',
       email: 'terry@prbl.co',
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
       preferredName: 'Terry'
     },
     {
       id: 'auth0|5ad1851a6d59890e8635d9eb',
       email: 'matt@prbl.co',
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
       preferredName: 'Matt'
     }
-  ];
+  ]
   const team = {
     id: 'team123',
     name: 'Parabol',
@@ -37,14 +41,15 @@ exports.up = async (r) => {
     facilitatorPhaseItem: null,
     meetingPhaseItem: null,
     activeFacilitator: null
-  };
+  }
   const teamMembers = [
     {
       id: 'auth0|5ad119debcb4500e4f4e2808::team123',
       isActive: true,
       isFacilitator: true,
       isLead: true,
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
       preferredName: 'Jordan',
       teamId: 'team123',
       userId: 'auth0|5ad119debcb4500e4f4e2808'
@@ -54,7 +59,8 @@ exports.up = async (r) => {
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
       preferredName: 'Terry',
       teamId: 'team123',
       userId: 'auth0|5ad184fabcb4500e4f4e345e'
@@ -64,7 +70,8 @@ exports.up = async (r) => {
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Taya+Mueller.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Taya+Mueller.jpg?t=1523658193243',
       preferredName: 'Taya',
       teamId: 'team123',
       userId: 'auth0|5ad184ad6d59890e8635d9e4'
@@ -74,12 +81,13 @@ exports.up = async (r) => {
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
       preferredName: 'Matt',
       teamId: 'team123',
       userId: 'auth0|5ad1851a6d59890e8635d9eb'
     }
-  ];
+  ]
   const engineeringTeam = {
     id: 'team456',
     name: 'Engineering',
@@ -89,14 +97,15 @@ exports.up = async (r) => {
     facilitatorPhaseItem: null,
     meetingPhaseItem: null,
     activeFacilitator: null
-  };
+  }
   const engineeringMembers = [
     {
       id: 'auth0|5ad119debcb4500e4f4e2808::team456',
       isActive: true,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/2016+Jordan+Husney.jpg?t=1523658193243',
       preferredName: 'Jordan',
       teamId: 'team456',
       userId: 'auth0|5ad119debcb4500e4f4e2808'
@@ -106,7 +115,8 @@ exports.up = async (r) => {
       isActive: false,
       isFacilitator: true,
       isLead: false,
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/terry.jpg?t=1523658193243',
       preferredName: 'Terry',
       teamId: 'team456',
       userId: 'auth0|5ad184fabcb4500e4f4e345e'
@@ -116,27 +126,28 @@ exports.up = async (r) => {
       isActive: true,
       isFacilitator: true,
       isLead: true,
-      picture: 'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
+      picture:
+        'https://www.parabol.co/hubfs/website/2018-01/assets/dist/images/team/matt.jpg?t=1523658193243',
       preferredName: 'Matt',
       teamId: 'team456',
       userId: 'auth0|5ad1851a6d59890e8635d9eb'
     }
-  ];
+  ]
   const mockUsers = [
     r.table('User').insert(users),
     r.table('Team').insert(team),
     r.table('Team').insert(engineeringTeam),
     r.table('TeamMember').insert(teamMembers),
     r.table('TeamMember').insert(engineeringMembers)
-  ];
-  await Promise.all(mockUsers);
-};
+  ]
+  await Promise.all(mockUsers)
+}
 
 exports.down = async (r) => {
   const meetingTables = [
     r.table('User').delete(),
     r.table('TeamMember').delete(),
     r.table('Team').delete()
-  ];
-  await Promise.all(meetingTables);
-};
+  ]
+  await Promise.all(meetingTables)
+}

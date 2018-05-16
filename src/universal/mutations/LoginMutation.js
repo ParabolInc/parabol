@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 const mutation = graphql`
   mutation LoginMutation($auth0Token: String!) {
@@ -13,7 +13,7 @@ const mutation = graphql`
       }
     }
   }
-`;
+`
 
 const LoginMutation = (environment, auth0Token, onError, onCompleted) => {
   return commitMutation(environment, {
@@ -21,7 +21,7 @@ const LoginMutation = (environment, auth0Token, onError, onCompleted) => {
     variables: {auth0Token},
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default LoginMutation;
+export default LoginMutation

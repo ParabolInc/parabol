@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {GROUP, REFLECT, VOTE} from 'universal/utils/constants';
-import GroupPhaseCompletePayload from 'server/graphql/types/GroupPhaseCompletePayload';
-import VotePhaseCompletePayload from 'server/graphql/types/VotePhaseCompletePayload';
-import ReflectPhaseCompletePayload from 'server/graphql/types/ReflectPhaseCompletePayload';
+import {GraphQLObjectType} from 'graphql'
+import {GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import GroupPhaseCompletePayload from 'server/graphql/types/GroupPhaseCompletePayload'
+import VotePhaseCompletePayload from 'server/graphql/types/VotePhaseCompletePayload'
+import ReflectPhaseCompletePayload from 'server/graphql/types/ReflectPhaseCompletePayload'
 
 const PhaseCompletePayload = new GraphQLObjectType({
   name: 'PhaseCompletePayload',
@@ -23,6 +23,6 @@ const PhaseCompletePayload = new GraphQLObjectType({
       resolve: (source) => source[VOTE]
     }
   })
-});
+})
 
-export default PhaseCompletePayload;
+export default PhaseCompletePayload

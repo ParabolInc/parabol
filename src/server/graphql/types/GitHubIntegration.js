@@ -1,9 +1,16 @@
-import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql';
-import {globalIdField} from 'graphql-relay';
-import TeamMember from 'server/graphql/types/TeamMember';
-import getRethink from 'server/database/rethinkDriver';
-import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type';
-import {GITHUB} from 'universal/utils/constants';
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString
+} from 'graphql'
+import {globalIdField} from 'graphql-relay'
+import TeamMember from 'server/graphql/types/TeamMember'
+import getRethink from 'server/database/rethinkDriver'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import {GITHUB} from 'universal/utils/constants'
 
 const GitHubIntegration = new GraphQLObjectType({
   name: GITHUB,
@@ -36,15 +43,14 @@ const GitHubIntegration = new GraphQLObjectType({
       description: 'The users that can CRUD this integration',
       resolve: async ({userIds, teamId, teamMembers}) => {
         // very odd that i have to do this... possible regression in GraphQL?
-        if (teamMembers) return teamMembers;
+        if (teamMembers) return teamMembers
 
         // TODO if we wanna build a cache in front of our DB, this is a great place to start
 
         // no auth needed because everything returning a GitHubIntegration has already checked for teamId
-        const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`);
-        const r = getRethink();
-        return r.table('TeamMember')
-          .getAll(r.args(teamMemberIds), {index: 'id'});
+        const teamMemberIds = userIds.map((userId) => `${userId}::${teamId}`)
+        const r = getRethink()
+        return r.table('TeamMember').getAll(r.args(teamMemberIds), {index: 'id'})
       }
     },
     updatedAt: {
@@ -56,7 +62,6 @@ const GitHubIntegration = new GraphQLObjectType({
       description: '*The userIds connected to the repo so they can CRUD things under their own name'
     }
   })
-});
+})
 
-export default GitHubIntegration;
-
+export default GitHubIntegration

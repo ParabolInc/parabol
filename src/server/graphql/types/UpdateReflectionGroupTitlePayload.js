@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
-import NewMeeting from 'server/graphql/types/NewMeeting';
-import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup';
+import {GraphQLObjectType} from 'graphql'
+import {makeResolve, resolveNewMeeting} from 'server/graphql/resolvers'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import NewMeeting from 'server/graphql/types/NewMeeting'
+import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
 
 const UpdateReflectionGroupTitlePayload = new GraphQLObjectType({
   name: 'UpdateReflectionGroupTitlePayload',
@@ -19,6 +19,6 @@ const UpdateReflectionGroupTitlePayload = new GraphQLObjectType({
       resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
     }
   })
-});
+})
 
-export default UpdateReflectionGroupTitlePayload;
+export default UpdateReflectionGroupTitlePayload

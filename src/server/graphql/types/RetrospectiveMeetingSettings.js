@@ -1,7 +1,9 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem';
-import TeamMeetingSettings, {teamMeetingSettingsFields} from 'server/graphql/types/TeamMeetingSettings';
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants';
+import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
+import TeamMeetingSettings, {
+  teamMeetingSettingsFields
+} from 'server/graphql/types/TeamMeetingSettings'
+import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
 
 const RetrospectiveMeetingSettings = new GraphQLObjectType({
   name: 'RetrospectiveMeetingSettings',
@@ -13,8 +15,8 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType({
       type: new GraphQLList(new GraphQLNonNull(CustomPhaseItem)),
       description: 'the team-specific questions to ask during a retro',
       resolve: async ({teamId}, args, {dataLoader}) => {
-        const customPhaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId);
-        return customPhaseItems.filter(({phaseItemType}) => phaseItemType === RETRO_PHASE_ITEM);
+        const customPhaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
+        return customPhaseItems.filter(({phaseItemType}) => phaseItemType === RETRO_PHASE_ITEM)
       }
     },
     totalVotes: {
@@ -23,9 +25,10 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType({
     },
     maxVotesPerGroup: {
       type: new GraphQLNonNull(GraphQLInt),
-      description: 'The maximum number of votes a team member can vote for a single reflection group'
+      description:
+        'The maximum number of votes a team member can vote for a single reflection group'
     }
   })
-});
+})
 
-export default RetrospectiveMeetingSettings;
+export default RetrospectiveMeetingSettings

@@ -1,4 +1,4 @@
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId';
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const createMeetingMember = (meetingId, meetingType) => (teamMember) => ({
   id: toTeamMemberId(meetingId, teamMember.userId),
@@ -8,6 +8,6 @@ const createMeetingMember = (meetingId, meetingType) => (teamMember) => ({
   teamId: teamMember.teamId,
   userId: teamMember.userId,
   updatedAt: new Date()
-});
+})
 
-export default createMeetingMember;
+export default createMeetingMember

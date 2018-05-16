@@ -1,10 +1,10 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload';
-import {isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {TEAM_MEMBER} from 'universal/utils/constants';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import MeetingCheckInPayload from 'server/graphql/types/MeetingCheckInPayload'
+import {isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {TEAM_MEMBER} from 'universal/utils/constants'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: MeetingCheckInPayload,
@@ -19,22 +19,25 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+  async resolve (source, {teamMemberId, isCheckedIn}, {authToken, dataLoader, socketId: mutatorId}) {
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
 
     // teamMemberId is of format 'userId::teamId'
-    const [, teamId] = teamMemberId.split('::');
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    const [, teamId] = teamMemberId.split('::')
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId)
+    }
 
     // RESOLUTION
-    await r.table('TeamMember')
+    await r
+      .table('TeamMember')
       .get(teamMemberId)
-      .update({isCheckedIn});
+      .update({isCheckedIn})
 
-    const data = {teamMemberId};
-    publish(TEAM_MEMBER, teamId, MeetingCheckInPayload, data, subOptions);
-    return data;
+    const data = {teamMemberId}
+    publish(TEAM_MEMBER, teamId, MeetingCheckInPayload, data, subOptions)
+    return data
   }
-};
+}

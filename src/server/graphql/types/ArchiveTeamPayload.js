@@ -1,9 +1,13 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql';
-import {makeResolveNotificationsForViewer, resolveNotificationForViewer, resolveTeam} from 'server/graphql/resolvers';
-import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived';
-import Team from 'server/graphql/types/Team';
-import TeamNotification from 'server/graphql/types/TeamNotification';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {
+  makeResolveNotificationsForViewer,
+  resolveNotificationForViewer,
+  resolveTeam
+} from 'server/graphql/resolvers'
+import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
+import Team from 'server/graphql/types/Team'
+import TeamNotification from 'server/graphql/types/TeamNotification'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const ArchiveTeamPayload = new GraphQLObjectType({
   name: 'ArchiveTeamPayload',
@@ -26,6 +30,6 @@ const ArchiveTeamPayload = new GraphQLObjectType({
       resolve: makeResolveNotificationsForViewer('-', 'removedTeamNotifications')
     }
   })
-});
+})
 
-export default ArchiveTeamPayload;
+export default ArchiveTeamPayload

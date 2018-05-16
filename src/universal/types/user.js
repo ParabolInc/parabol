@@ -4,24 +4,22 @@
  * Defines the js-land type of a User, and functions to operate on them.
  */
 
-import type {OrgID, Role} from './organization';
-import type {TeamID} from './team';
+import type {OrgID, Role} from './organization'
+import type {TeamID} from './team'
 
-export type UserID = string;
+export type UserID = string
 
 export type UserOrg = {
   id: OrgID,
   role: ?Role
-};
+}
 
 export type Identity = {
-  connection:
-    | 'Username-Password-Authentication',
+  connection: 'Username-Password-Authentication',
   isSocial: boolean,
-  provider:
-    | 'auth0',
+  provider: 'auth0',
   user_id: string
-};
+}
 
 export type User = {
   cachedAt?: Date,
@@ -40,4 +38,4 @@ export type User = {
   updatedAt?: Date,
   userOrgs: UserOrg[],
   welcomeSentAt?: Date
-};
+}

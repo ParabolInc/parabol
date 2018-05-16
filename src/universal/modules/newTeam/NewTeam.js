@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import Button from 'universal/components/Button/Button';
-import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm';
-import {PRICING_LINK} from 'universal/utils/externalLinks';
-import styled from 'react-emotion';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import Button from 'universal/components/Button/Button'
+import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm'
+import {PRICING_LINK} from 'universal/utils/externalLinks'
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
@@ -16,7 +16,7 @@ const NewTeamLayout = styled('div')({
   flexDirection: 'column',
   justifyContent: 'center',
   width: '100%'
-});
+})
 
 const NewTeamInner = styled('div')({
   display: 'flex',
@@ -24,11 +24,11 @@ const NewTeamInner = styled('div')({
   minWidth: '60rem',
   paddingBottom: '10vh',
   width: '100%'
-});
+})
 
 const HelpLayout = styled('div')({
   paddingTop: '6.75rem'
-});
+})
 
 const HelpBlock = styled('div')({
   background: appTheme.palette.yellow30l,
@@ -38,29 +38,26 @@ const HelpBlock = styled('div')({
   padding: '.75rem',
   textAlign: 'center',
   width: '15rem'
-});
+})
 
 const HelpHeading = styled('div')({
   fontSize: appTheme.typography.s4,
   fontWeight: 600,
   margin: 0
-});
+})
 
 const HelpCopy = styled('div')({
   fontSize: appTheme.typography.s2,
   lineHeight: appTheme.typography.s4,
   margin: '.5rem 0'
-});
+})
 
 const NewTeam = (props) => {
-  const {
-    defaultOrgId,
-    viewer
-  } = props;
+  const {defaultOrgId, viewer} = props
 
-  const {organizations} = viewer;
-  const firstOrgId = organizations[0] && organizations[0].id;
-  const orgId = organizations.find((org) => org.id === defaultOrgId) ? defaultOrgId : firstOrgId;
+  const {organizations} = viewer
+  const firstOrgId = organizations[0] && organizations[0].id
+  const orgId = organizations.find((org) => org.id === defaultOrgId) ? defaultOrgId : firstOrgId
   return (
     <NewTeamLayout>
       <NewTeamInner>
@@ -71,9 +68,7 @@ const NewTeam = (props) => {
         />
         <HelpLayout>
           <HelpBlock>
-            <HelpHeading>
-              {'What’s an Organization?'}
-            </HelpHeading>
+            <HelpHeading>{'What’s an Organization?'}</HelpHeading>
             <HelpCopy>
               {`It’s the billing entity for a group of teams
               such as a company, non-profit, or
@@ -83,28 +78,29 @@ const NewTeam = (props) => {
             </HelpCopy>
             <HelpCopy>
               {'New Organizations start out on the '}
-              <b>{'Free Personal Plan'}</b>{'.'}
+              <b>{'Free Personal Plan'}</b>
+              {'.'}
             </HelpCopy>
             <Button
-              buttonSize="small"
-              buttonStyle="flat"
-              colorPalette="warm"
-              icon="external-link-square"
-              iconPlacement="right"
-              label="Learn More"
-              onClick={() => (window.open(PRICING_LINK, '_blank'))}
+              buttonSize='small'
+              buttonStyle='flat'
+              colorPalette='warm'
+              icon={ui.iconExternalLink}
+              iconPlacement='right'
+              label='Learn More'
+              onClick={() => window.open(PRICING_LINK, '_blank')}
             />
           </HelpBlock>
         </HelpLayout>
       </NewTeamInner>
     </NewTeamLayout>
-  );
-};
+  )
+}
 
 NewTeam.propTypes = {
   defaultOrgId: PropTypes.string,
   viewer: PropTypes.object.isRequired
-};
+}
 
 export default createFragmentContainer(
   NewTeam,
@@ -117,4 +113,4 @@ export default createFragmentContainer(
       }
     }
   `
-);
+)

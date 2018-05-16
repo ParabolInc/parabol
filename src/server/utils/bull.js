@@ -1,15 +1,15 @@
-import BullQueue from 'bull';
-import Redis from 'ioredis';
-import getDotenv from '../../universal/utils/dotenv';
+import BullQueue from 'bull'
+import Redis from 'ioredis'
+import getDotenv from '../../universal/utils/dotenv'
 
-getDotenv();
+getDotenv()
 
-const urlString = process.env.REDIS_URL || 'redis://localhost:6379';
+const urlString = process.env.REDIS_URL || 'redis://localhost:6379'
 
 export default (name) => {
   // Re-use redis connections:
-  const client = new Redis(urlString);
-  const subscriber = new Redis(urlString);
+  const client = new Redis(urlString)
+  const subscriber = new Redis(urlString)
 
   const opts = {
     redis: {
@@ -17,15 +17,15 @@ export default (name) => {
         createClient: (type) => {
           switch (type) {
             case 'client':
-              return client;
+              return client
             case 'subscriber':
-              return subscriber;
+              return subscriber
             default:
-              return new Redis(urlString);
+              return new Redis(urlString)
           }
         }
       }
     }
-  };
-  return BullQueue(name, opts);
-};
+  }
+  return BullQueue(name, opts)
+}

@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveInvitation} from 'server/graphql/resolvers';
-import Invitation from 'server/graphql/types/Invitation';
+import {GraphQLObjectType} from 'graphql'
+import {resolveInvitation} from 'server/graphql/resolvers'
+import Invitation from 'server/graphql/types/Invitation'
 
 const InvitationUpdated = new GraphQLObjectType({
   name: 'InvitationUpdated',
@@ -10,6 +10,6 @@ const InvitationUpdated = new GraphQLObjectType({
       resolve: resolveInvitation
     }
   })
-});
+})
 
-export default InvitationUpdated;
+export default InvitationUpdated

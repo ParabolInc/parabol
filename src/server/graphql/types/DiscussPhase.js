@@ -1,6 +1,6 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql';
-import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase';
-import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage';
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import NewMeetingPhase, {newMeetingPhaseFields} from 'server/graphql/types/NewMeetingPhase'
+import RetroDiscussStage from 'server/graphql/types/RetroDiscussStage'
 
 const DiscussPhase = new GraphQLObjectType({
   name: 'DiscussPhase',
@@ -12,6 +12,6 @@ const DiscussPhase = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroDiscussStage)))
     }
   })
-});
+})
 
-export default DiscussPhase;
+export default DiscussPhase

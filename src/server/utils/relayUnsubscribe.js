@@ -1,11 +1,11 @@
 const relayUnsubscribe = (subs, opId) => {
-  const subscriptionContext = subs[opId];
-  if (!subscriptionContext) return;
-  const {asyncIterator} = subscriptionContext;
+  const subscriptionContext = subs[opId]
+  if (!subscriptionContext) return
+  const {asyncIterator} = subscriptionContext
   if (asyncIterator) {
-    asyncIterator.return();
+    asyncIterator.return()
   }
-  delete subs[opId];
-};
+  delete subs[opId]
+}
 
-export default relayUnsubscribe;
+export default relayUnsubscribe

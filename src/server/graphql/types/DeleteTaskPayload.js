@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveNotificationForViewer} from 'server/graphql/resolvers';
-import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves';
-import Task from 'server/graphql/types/Task';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveNotificationForViewer} from 'server/graphql/resolvers'
+import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves'
+import Task from 'server/graphql/types/Task'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const DeleteTaskPayload = new GraphQLObjectType({
   name: 'DeleteTaskPayload',
@@ -20,6 +20,6 @@ const DeleteTaskPayload = new GraphQLObjectType({
       resolve: resolveNotificationForViewer
     }
   })
-});
+})
 
-export default DeleteTaskPayload;
+export default DeleteTaskPayload

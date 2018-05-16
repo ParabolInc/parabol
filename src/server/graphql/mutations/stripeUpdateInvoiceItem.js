@@ -1,6 +1,6 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql';
-import stripe from 'server/billing/stripe';
-import getRethink from 'server/database/rethinkDriver';
+import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
+import stripe from 'server/billing/stripe'
+import getRethink from 'server/database/rethinkDriver'
 
 export default {
   name: 'StripeUpdateInvoiceItem',
@@ -13,30 +13,34 @@ export default {
     }
   },
   resolve: async (source, {invoiceItemId}, {serverSecret}) => {
-    const r = getRethink();
+    const r = getRethink()
 
     // AUTH
     if (serverSecret !== process.env.AUTH0_CLIENT_SECRET) {
-      throw new Error('Don’t be rude.');
+      throw new Error('Don’t be rude.')
     }
 
-    const invoiceItem = await stripe.invoiceItems.retrieve(invoiceItemId);
-    const {subscription, period: {start}} = invoiceItem;
-    const hook = await r.table('InvoiceItemHook')
+    const invoiceItem = await stripe.invoiceItems.retrieve(invoiceItemId)
+    const {
+      subscription,
+      period: {start}
+    } = invoiceItem
+    const hook = await r
+      .table('InvoiceItemHook')
       .getAll(start, {index: 'prorationDate'})
       .filter({stripeSubscriptionId: subscription})
       .nth(0)
-      .default(null);
+      .default(null)
 
-    if (!hook) return false;
+    if (!hook) return false
 
-    const {type, userId} = hook;
+    const {type, userId} = hook
     await stripe.invoiceItems.update(invoiceItemId, {
       metadata: {
         type,
         userId
       }
-    });
-    return true;
+    })
+    return true
   }
-};
+}

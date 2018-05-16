@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "1.8.0",
+  "version": "2.0.0-rc.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -38,15 +38,18 @@
     "db:migrate-down-all": "node ./src/server/database/migrate.babel.js down --all",
     "db:migrate-create": "cd ./src/server/database && migrate-rethinkdb create",
     "debug:stripe": "node ./src/server/billing/debug.babel.js",
+    "postcommit": "git update-index --again",
     "postdeploy": "node ./src/server/utils/postDeploy.babel.js",
+    "precommit": "lint-staged",
     "flow": "flow",
+    "prettier": "prettier --write --loglevel warn 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
+    "standard": "standard --fix 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js' | snazzy",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
-    "lint": "yarn flow && eslint 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
-    "lint:fix": "eslint --fix 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
+    "lint": "yarn prettier && yarn standard && yarn flow",
     "profile": "NODE_ENV=development webpack --config ./webpack/dev.babel.js --profile --json > stats.json",
     "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.json --client-schema src/client/clientSchema.graphql --watch",
     "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn flowgen",
@@ -55,7 +58,6 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
-  "pre-commit": [],
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.14",
     "@storybook/addon-links": "^3.3.14",
@@ -91,24 +93,20 @@
     "concurrently": "^3.5.0",
     "css-loader": "^0.28.2",
     "dynamic-serializer": "^0.2.1",
-    "eslint": "^4.4.1",
-    "eslint-config-airbnb": "^15.1.0",
-    "eslint-import-resolver-webpack": "^0.8.3",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jest": "^20.0.3",
-    "eslint-plugin-react": "^7.2.1",
     "file-loader": "^0.11.2",
     "flow-bin": "^0.70.0",
     "glob": "^7.1.2",
+    "husky": "^0.14.3",
     "jest": "^22.0.0",
     "jest-junit-reporter": "^1.0.1",
     "jsdom": "^11.1.0",
     "json-loader": "^0.5.7",
+    "lint-staged": "^7.1.0",
     "memwatch-next": "^0.3.0",
     "mocha": "^4.0.1",
     "mockdate": "^2.0.1",
     "piping": "^1.0.0-rc.4",
-    "pre-commit": "^1.2.2",
+    "prettier": "1.12.1",
     "react-addons-test-utils": "^15.6.0",
     "react-hot-loader": "^3.1.3",
     "react-transform-catch-errors": "1.0.2",
@@ -117,6 +115,8 @@
     "relay-compiler": "^1.5.0",
     "rimraf": "2.6.1",
     "selenium-webdriver": "^3.6.0",
+    "snazzy": "^7.1.1",
+    "standard": "^11.0.1",
     "stats-webpack-plugin": "^0.6.1",
     "style-loader": "^0.18.1",
     "transform-loader": "^0.2.4",
@@ -158,7 +158,6 @@
     "enzyme": "^3.0.0",
     "enzyme-adapter-react-16": "^1.0.0",
     "es6-promisify": "^5.0.0",
-    "eslint-plugin-babel": "^4.1.2",
     "eventemitter3": "^3.0.1",
     "expect": "^21.2.1",
     "express": "^4.15.4",
@@ -199,6 +198,7 @@
     "react-dnd-html5-backend": "^2.4.1",
     "react-dnd-scrollzone": "^4.0.0",
     "react-dom": "^16.3.2",
+    "react-dom-confetti": "^0.0.10",
     "react-emotion": "^9.0.1",
     "react-fontawesome": "^1.5.0",
     "react-helmet": "^5.1.3",
@@ -209,8 +209,8 @@
     "react-portal-hoc": "^0.4.2",
     "react-redux": "^5.0.7",
     "react-relay": "^1.5.0",
-    "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2",
+    "react-router": "4.3.0-rc.3",
+    "react-router-dom": "4.3.0-rc.3",
     "react-test-renderer": "^16.0.0",
     "react-transition-group": "https://github.com/mattkrick/react-transition-group/tarball/d2dac2cb5de9a7757c6e430b2b90f200c34d5369",
     "react-virtualized": "^9.18.5",
@@ -218,7 +218,6 @@
     "redux-form": "^7.3.0",
     "redux-logger": "^3.0.6",
     "redux-raven-middleware": "^1.2.0",
-    "redux-segment": "^1.6.2",
     "redux-thunk": "2.2.0",
     "relay-runtime": "^1.5.0",
     "rethinkdbdash": "^2.3.31",
@@ -241,9 +240,13 @@
     "node": "^8.0.0 || ^9.4.0",
     "yarn": "^1.0.1"
   },
-  "eslintIgnore": [
-    "schema.flow.js"
-  ],
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "standard --fix",
+      "git add"
+    ]
+  },
   "jest": {
     "modulePaths": [
       "<rootDir>/src/"
@@ -251,5 +254,21 @@
     "testRegex": "/__tests__/.*.test\\.jsx?$",
     "testResultsProcessor": "./src/server/__tests__/teardown",
     "setupTestFrameworkScriptFile": "./src/universal/__tests__/enzyme"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "globals": [
+      "__ACTION__",
+      "__CLIENT__",
+      "__PRODUCTION__",
+      "graphql",
+      "$ReadOnlyArray",
+      "$Shape",
+      "SyntheticKeyboardEvent",
+      "System"
+    ],
+    "ignore": [
+      "schema.flow.js"
+    ]
   }
 }

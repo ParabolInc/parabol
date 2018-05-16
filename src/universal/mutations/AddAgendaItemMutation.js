@@ -1,7 +1,7 @@
-import {commitMutation} from 'react-relay';
-import handleAddAgendaItems from 'universal/mutations/handlers/handleAddAgendaItems';
-import clientTempId from 'universal/utils/relay/clientTempId';
-import createProxyRecord from 'universal/utils/relay/createProxyRecord';
+import {commitMutation} from 'react-relay'
+import handleAddAgendaItems from 'universal/mutations/handlers/handleAddAgendaItems'
+import clientTempId from 'universal/utils/relay/clientTempId'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 
 graphql`
   fragment AddAgendaItemMutation_agendaItem on AddAgendaItemPayload {
@@ -18,7 +18,7 @@ graphql`
       }
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation AddAgendaItemMutation($newAgendaItem: CreateAgendaItemInput!) {
@@ -29,22 +29,22 @@ const mutation = graphql`
       ...AddAgendaItemMutation_agendaItem @relay(mask: false)
     }
   }
-`;
+`
 
 export const addAgendaItemUpdater = (payload, store) => {
-  const agendaItem = payload.getLinkedRecord('agendaItem');
-  handleAddAgendaItems(agendaItem, store);
-};
+  const agendaItem = payload.getLinkedRecord('agendaItem')
+  handleAddAgendaItems(agendaItem, store)
+}
 
 const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted) => {
-  const {teamId} = newAgendaItem;
+  const {teamId} = newAgendaItem
   return commitMutation(environment, {
     mutation,
     variables: {newAgendaItem},
     updater: (store) => {
-      const payload = store.getRootField('addAgendaItem');
-      if (!payload) return;
-      addAgendaItemUpdater(payload, store);
+      const payload = store.getRootField('addAgendaItem')
+      if (!payload) return
+      addAgendaItemUpdater(payload, store)
     },
     optimisticUpdater: (store) => {
       const optimisticAgendaItem = {
@@ -52,13 +52,13 @@ const AddAgendaItemMutation = (environment, newAgendaItem, onError, onCompleted)
         id: clientTempId(teamId),
         isActive: true,
         isComplete: false
-      };
-      const agendaItemNode = createProxyRecord(store, 'AgendaItem', optimisticAgendaItem);
-      handleAddAgendaItems(agendaItemNode, store);
+      }
+      const agendaItemNode = createProxyRecord(store, 'AgendaItem', optimisticAgendaItem)
+      handleAddAgendaItems(agendaItemNode, store)
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default AddAgendaItemMutation;
+export default AddAgendaItemMutation

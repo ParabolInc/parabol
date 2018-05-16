@@ -1,8 +1,8 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import makeSubscribeIter from 'server/graphql/makeSubscribeIter';
-import {isTeamMember} from 'server/utils/authorization';
-import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import makeSubscribeIter from 'server/graphql/makeSubscribeIter'
+import {isTeamMember} from 'server/utils/authorization'
+import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: new GraphQLNonNull(RemoveGitHubRepoPayload),
@@ -13,11 +13,13 @@ export default {
   },
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId)
+    }
 
     // RESOLUTION
-    const channelName = `githubRepoRemoved.${teamId}`;
-    const filterFn = (value) => value.mutatorId !== socketId;
-    return makeSubscribeIter(channelName, {filterFn, dataLoader});
+    const channelName = `githubRepoRemoved.${teamId}`
+    const filterFn = (value) => value.mutatorId !== socketId
+    return makeSubscribeIter(channelName, {filterFn, dataLoader})
   }
-};
+}

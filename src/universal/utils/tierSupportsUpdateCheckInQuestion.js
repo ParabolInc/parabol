@@ -1,5 +1,5 @@
-import {ENTERPRISE, PRO} from 'universal/utils/constants';
+import {ENTERPRISE, PRO} from 'universal/utils/constants'
 
-export const qualifyingTiers = [ENTERPRISE, PRO];
+export const qualifyingTiers = [ENTERPRISE, PRO]
 
-export const tierSupportsUpdateCheckInQuestion = (tier) => qualifyingTiers.includes(tier);
+export const tierSupportsUpdateCheckInQuestion = (tier) => qualifyingTiers.includes(tier)

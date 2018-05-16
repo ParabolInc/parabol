@@ -1,13 +1,13 @@
 // @flow
-import * as React from 'react';
-import styled from 'react-emotion';
-import LoadableMenu from 'universal/components/LoadableMenu';
-import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker';
-import {createFragmentContainer} from 'react-relay';
-import {shortMonths} from 'universal/utils/makeDateString';
-import ui from 'universal/styles/ui';
-import StyledFontAwesome from 'universal/components/StyledFontAwesome';
-import ms from 'ms';
+import * as React from 'react'
+import styled from 'react-emotion'
+import LoadableMenu from 'universal/components/LoadableMenu'
+import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker'
+import {createFragmentContainer} from 'react-relay'
+import {shortMonths} from 'universal/utils/makeDateString'
+import ui from 'universal/styles/ui'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import ms from 'ms'
 
 const Toggle = styled('div')(
   {
@@ -38,25 +38,25 @@ const Toggle = styled('div')(
     color: isPastDue && ui.dueDatePastColor,
     backgroundColor: isPastDue && ui.dueDatePastBg
   })
-);
+)
 
 const DueDateIcon = styled(StyledFontAwesome)({
   fontSize: ui.iconSize
-});
+})
 
 const DateString = styled('span')({
   marginLeft: '0.25rem'
-});
+})
 
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
-};
+}
 
 const targetAnchor = {
   vertical: 'top',
   horizontal: 'right'
-};
+}
 
 type Props = {|
   cardIsActive: Boolean,
@@ -64,35 +64,35 @@ type Props = {|
 |}
 
 const formatDueDate = (dueDate) => {
-  const date = new Date(dueDate);
-  const month = date.getMonth();
-  const day = date.getDate();
-  const monthStr = shortMonths[month];
-  return `${monthStr} ${day}`;
-};
+  const date = new Date(dueDate)
+  const month = date.getMonth()
+  const day = date.getDate()
+  const monthStr = shortMonths[month]
+  return `${monthStr} ${day}`
+}
 
-const action = 'tap to change';
+const action = 'tap to change'
 const getDateInfo = (dueDate) => {
-  if (!dueDate) return {title: 'Add a due date'};
-  const date = new Date(dueDate);
-  const now = new Date();
-  const timeDiff = date - now;
-  const diffDays = Math.ceil(timeDiff / ms('1d'));
-  if (diffDays < 0) return {title: `Past due, ${action}`, isPastDue: true};
-  if (diffDays < 3) return {title: `Due soon, ${action}`, isDueSoon: true};
-  const dateString = formatDueDate(dueDate);
-  return {title: `Due ${dateString}, ${action}`};
-};
+  if (!dueDate) return {title: 'Add a due date'}
+  const date = new Date(dueDate)
+  const now = new Date()
+  const timeDiff = date - now
+  const diffDays = Math.ceil(timeDiff / ms('1d'))
+  if (diffDays < 0) return {title: `Past due, ${action}`, isPastDue: true}
+  if (diffDays < 3) return {title: `Due soon, ${action}`, isDueSoon: true}
+  const dateString = formatDueDate(dueDate)
+  return {title: `Due ${dateString}, ${action}`}
+}
 
 const DueDateToggle = (props: Props) => {
-  const {cardIsActive, task} = props;
-  const {dueDate} = task;
+  const {cardIsActive, task} = props
+  const {dueDate} = task
   const toggle = (
     <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} {...getDateInfo(dueDate)}>
-      <DueDateIcon name="clock-o" />
+      <DueDateIcon name='clock-o' />
       {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
     </Toggle>
-  );
+  )
   return (
     <LoadableMenu
       LoadableComponent={LoadableDueDatePicker}
@@ -105,8 +105,8 @@ const DueDateToggle = (props: Props) => {
       targetAnchor={targetAnchor}
       toggle={toggle}
     />
-  );
-};
+  )
+}
 
 export default createFragmentContainer(
   DueDateToggle,
@@ -116,4 +116,4 @@ export default createFragmentContainer(
       ...DueDatePicker_task
     }
   `
-);
+)

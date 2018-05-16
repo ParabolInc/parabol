@@ -11,4 +11,4 @@ graphql`
     teamId
     userId
   }
-`;
+`

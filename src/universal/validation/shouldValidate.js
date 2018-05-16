@@ -1,4 +1,3 @@
-
 /*
  * The default redux-form shouldValidate function always validates on
  * the initial render. In our app, the initial render is probably
@@ -6,7 +5,7 @@
  * are probably empty.
  */
 
-export default function shouldValidate({
+export default function shouldValidate ({
   values,
   nextProps,
   initialRender,
@@ -15,8 +14,10 @@ export default function shouldValidate({
   structure
 }) {
   if (initialRender) {
-    return false;
+    return false
   }
-  return !structure.deepEqual(values, nextProps.values) ||
-    !structure.deepEqual(lastFieldValidatorKeys, fieldValidatorKeys);
+  return (
+    !structure.deepEqual(values, nextProps.values) ||
+    !structure.deepEqual(lastFieldValidatorKeys, fieldValidatorKeys)
+  )
 }

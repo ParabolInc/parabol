@@ -1,94 +1,96 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
-import {Field, reduxForm, SubmissionError} from 'redux-form';
-import {Button, Panel} from 'universal/components';
-import FieldLabel from 'universal/components/FieldLabel/FieldLabel';
-import InputField from 'universal/components/InputField/InputField';
-import Radio from 'universal/components/Radio/Radio';
-import TextAreaField from 'universal/components/TextAreaField/TextAreaField';
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere';
-import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput';
-import AddOrgMutation from 'universal/mutations/AddOrgMutation';
-import AddTeamMutation from 'universal/mutations/AddTeamMutation';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder';
-import parseEmailAddressList from 'universal/utils/parseEmailAddressList';
-import addOrgSchema from 'universal/validation/addOrgSchema';
-import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
+import {Field, reduxForm, SubmissionError} from 'redux-form'
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
+import InputField from 'universal/components/InputField/InputField'
+import Radio from 'universal/components/Radio/Radio'
+import TextAreaField from 'universal/components/TextAreaField/TextAreaField'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import DropdownInput from 'universal/modules/dropdown/components/DropdownInput/DropdownInput'
+import AddOrgMutation from 'universal/mutations/AddOrgMutation'
+import AddTeamMutation from 'universal/mutations/AddTeamMutation'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
+import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
+import addOrgSchema from 'universal/validation/addOrgSchema'
+import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema'
+import Panel from 'universal/components/Panel/Panel'
+import Button from 'universal/components/Button/Button'
 
 const radioStyles = {
   color: ui.palette.dark
-};
+}
 
 const validate = (values, props) => {
-  const {isNewOrganization} = props;
-  const schema = isNewOrganization ? addOrgSchema() : makeAddTeamSchema();
-  return schema(values).errors;
-};
+  const {isNewOrganization} = props
+  const schema = isNewOrganization ? addOrgSchema() : makeAddTeamSchema()
+  return schema(values).errors
+}
 
 const makeInvitees = (invitees) => {
-  return invitees ? invitees.map((email) => ({
-    email: email.address,
-    fullName: email.fullName
-  })) : [];
-};
+  return invitees
+    ? invitees.map((email) => ({
+      email: email.address,
+      fullName: email.fullName
+    }))
+    : []
+}
 
 const mapStateToProps = (state) => {
-  const formState = state.form.newTeam;
+  const formState = state.form.newTeam
   if (formState) {
-    const {isNewOrganization} = formState.values;
-    return {isNewOrganization: isNewOrganization === 'true'};
+    const {isNewOrganization} = formState.values
+    return {isNewOrganization: isNewOrganization === 'true'}
   }
-  return {};
-};
+  return {}
+}
 
 class NewTeamForm extends Component {
   onSubmit = async (submittedData) => {
-    const {atmosphere, dispatch, isNewOrganization, history} = this.props;
+    const {atmosphere, dispatch, isNewOrganization, history} = this.props
     if (isNewOrganization) {
-      const schema = addOrgSchema();
-      const {data: {teamName, inviteesRaw, orgName}, errors} = schema(submittedData);
+      const schema = addOrgSchema()
+      const {
+        data: {teamName, inviteesRaw, orgName},
+        errors
+      } = schema(submittedData)
       if (Object.keys(errors).length) {
-        throw new SubmissionError(errors);
+        throw new SubmissionError(errors)
       }
-      const parsedInvitees = parseEmailAddressList(inviteesRaw);
-      const invitees = makeInvitees(parsedInvitees);
+      const parsedInvitees = parseEmailAddressList(inviteesRaw)
+      const invitees = makeInvitees(parsedInvitees)
       const newTeam = {
         name: teamName
-      };
+      }
       const handleError = (err) => {
-        throw new SubmissionError(err);
-      };
-      const variables = {newTeam, invitees, orgName};
-      AddOrgMutation(atmosphere, variables, {dispatch, history}, handleError);
+        throw new SubmissionError(err)
+      }
+      const variables = {newTeam, invitees, orgName}
+      AddOrgMutation(atmosphere, variables, {dispatch, history}, handleError)
     } else {
-      const schema = makeAddTeamSchema();
-      const {data: {teamName, inviteesRaw, orgId}} = schema(submittedData);
-      const parsedInvitees = parseEmailAddressList(inviteesRaw);
-      const invitees = makeInvitees(parsedInvitees);
+      const schema = makeAddTeamSchema()
+      const {
+        data: {teamName, inviteesRaw, orgId}
+      } = schema(submittedData)
+      const parsedInvitees = parseEmailAddressList(inviteesRaw)
+      const invitees = makeInvitees(parsedInvitees)
       const newTeam = {
         name: teamName,
         orgId
-      };
+      }
 
-      AddTeamMutation(atmosphere, {newTeam, invitees}, {dispatch, history});
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {dispatch, history})
     }
-  };
+  }
 
-  render() {
-    const {
-      handleSubmit,
-      isNewOrganization,
-      styles,
-      submitting,
-      organizations
-    } = this.props;
+  render () {
+    const {handleSubmit, isNewOrganization, styles, submitting, organizations} = this.props
 
-    const controlSize = 'medium';
+    const controlSize = 'medium'
 
     return (
       <form className={css(styles.form)} onSubmit={handleSubmit(this.onSubmit)}>
@@ -96,52 +98,48 @@ class NewTeamForm extends Component {
           <div className={css(styles.formInner)}>
             <div className={css(styles.formHeading)}>{'Create a New Team'}</div>
             <div className={css(styles.formBlock)}>
-              <FieldLabel
-                fieldSize={controlSize}
-                indent
-                label="Add Team to…"
-              />
+              <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
             </div>
             <div className={css(styles.formBlock)}>
               <Field
-                name="isNewOrganization"
+                name='isNewOrganization'
                 component={Radio}
-                value="false"
+                value='false'
                 customStyles={radioStyles}
                 fieldSize={controlSize}
                 indent
                 inline
-                label="an existing organization:"
-                type="radio"
+                label='an existing organization:'
+                type='radio'
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
                   component={DropdownInput}
                   disabled={isNewOrganization}
                   fieldSize={controlSize}
-                  name="orgId"
+                  name='orgId'
                   organizations={organizations}
                 />
               </div>
             </div>
             <div className={css(styles.formBlock)}>
               <Field
-                name="isNewOrganization"
+                name='isNewOrganization'
                 component={Radio}
-                value="true"
+                value='true'
                 customStyles={radioStyles}
                 fieldSize={controlSize}
                 indent
                 inline
-                label="a new organization:"
-                type="radio"
+                label='a new organization:'
+                type='radio'
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
                   component={InputField}
                   disabled={!isNewOrganization}
                   fieldSize={controlSize}
-                  name="orgName"
+                  name='orgName'
                   placeholder={randomPlaceholderTheme.orgName}
                 />
               </div>
@@ -149,16 +147,16 @@ class NewTeamForm extends Component {
             <div className={css(styles.formBlock, styles.formBlockInline)}>
               <FieldLabel
                 fieldSize={controlSize}
-                htmlFor="teamName"
+                htmlFor='teamName'
                 indent
                 inline
-                label="Team Name"
+                label='Team Name'
               />
               <div className={css(styles.fieldBlock)}>
                 <Field
                   component={InputField}
                   fieldSize={controlSize}
-                  name="teamName"
+                  name='teamName'
                   placeholder={randomPlaceholderTheme.teamName}
                 />
               </div>
@@ -167,27 +165,27 @@ class NewTeamForm extends Component {
               <Field
                 component={TextAreaField}
                 fieldSize={controlSize}
-                name="inviteesRaw"
-                label="Invite Team Members (optional)"
+                name='inviteesRaw'
+                label='Invite Team Members (optional)'
                 placeholder={randomPlaceholderTheme.emailMulti}
               />
             </div>
             <div className={css(styles.buttonBlock)}>
               <Button
-                buttonSize="large"
-                buttonStyle="primary"
-                colorPalette="warm"
+                buttonSize='large'
+                buttonStyle='primary'
+                colorPalette='warm'
                 depth={1}
                 isBlock
                 label={isNewOrganization ? 'Create Team & Org' : 'Create Team'}
-                type="submit"
+                type='submit'
                 waiting={submitting}
               />
             </div>
           </div>
         </Panel>
       </form>
-    );
+    )
   }
 }
 
@@ -197,7 +195,7 @@ NewTeamForm.propTypes = {
   styles: PropTypes.object,
   submitting: PropTypes.bool.isRequired,
   organizations: PropTypes.array.isRequired
-};
+}
 
 const styleThunk = () => ({
   form: {
@@ -242,15 +240,10 @@ const styleThunk = () => ({
     margin: '0 auto',
     width: '16rem'
   }
-});
+})
 
 export default withAtmosphere(
   reduxForm({form: 'newTeam', validate})(
-    connect(mapStateToProps)(
-      withRouter(withStyles(styleThunk)(
-        NewTeamForm
-      )
-      )
-    )
+    connect(mapStateToProps)(withRouter(withStyles(styleThunk)(NewTeamForm)))
   )
-);
+)

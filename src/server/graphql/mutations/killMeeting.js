@@ -1,10 +1,10 @@
-import {GraphQLID, GraphQLNonNull} from 'graphql';
-import getRethink from 'server/database/rethinkDriver';
-import KillMeetingPayload from 'server/graphql/types/KillMeetingPayload';
-import {isTeamMember} from 'server/utils/authorization';
-import publish from 'server/utils/publish';
-import {LOBBY, TEAM} from 'universal/utils/constants';
-import {sendTeamAccessError} from 'server/utils/authorizationErrors';
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import getRethink from 'server/database/rethinkDriver'
+import KillMeetingPayload from 'server/graphql/types/KillMeetingPayload'
+import {isTeamMember} from 'server/utils/authorization'
+import publish from 'server/utils/publish'
+import {LOBBY, TEAM} from 'universal/utils/constants'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: KillMeetingPayload,
@@ -15,16 +15,20 @@ export default {
       description: 'The team that will be having the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
-    const r = getRethink();
-    const operationId = dataLoader.share();
-    const subOptions = {mutatorId, operationId};
+  async resolve (source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
+    const r = getRethink()
+    const operationId = dataLoader.share()
+    const subOptions = {mutatorId, operationId}
     // AUTH
-    if (!isTeamMember(authToken, teamId)) return sendTeamAccessError(authToken, teamId);
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId)
+    }
 
     // RESOLUTION
     // reset the meeting
-    await r.table('Team').get(teamId)
+    await r
+      .table('Team')
+      .get(teamId)
       .update({
         facilitatorPhase: LOBBY,
         meetingPhase: LOBBY,
@@ -32,10 +36,10 @@ export default {
         facilitatorPhaseItem: null,
         meetingPhaseItem: null,
         activeFacilitator: null
-      });
+      })
 
-    const data = {teamId};
-    publish(TEAM, teamId, KillMeetingPayload, data, subOptions);
-    return data;
+    const data = {teamId}
+    publish(TEAM, teamId, KillMeetingPayload, data, subOptions)
+    return data
   }
-};
+}

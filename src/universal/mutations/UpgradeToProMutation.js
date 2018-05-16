@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
   fragment UpgradeToProMutation_organization on UpgradeToProPayload {
@@ -14,7 +14,7 @@ graphql`
       updatedAt
     }
   }
-`;
+`
 
 graphql`
   fragment UpgradeToProMutation_team on UpgradeToProPayload {
@@ -23,7 +23,7 @@ graphql`
       tier
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpgradeToProMutation($orgId: ID!, $stripeToken: ID!) {
@@ -31,11 +31,11 @@ const mutation = graphql`
       error {
         message
       }
-      ...UpgradeToProMutation_organization @relay(mask:false)
-      ...UpgradeToProMutation_team @relay(mask:false)
+      ...UpgradeToProMutation_organization @relay(mask: false)
+      ...UpgradeToProMutation_team @relay(mask: false)
     }
   }
-`;
+`
 
 const UpgradeToProMutation = (environment, orgId, stripeToken, onError, onCompleted) => {
   return commitMutation(environment, {
@@ -46,7 +46,7 @@ const UpgradeToProMutation = (environment, orgId, stripeToken, onError, onComple
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default UpgradeToProMutation;
+export default UpgradeToProMutation

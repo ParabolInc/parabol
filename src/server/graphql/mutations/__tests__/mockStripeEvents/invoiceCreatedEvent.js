@@ -42,4 +42,4 @@ export default (id) => ({
       webhooks_delivered_at: 1488909040
     }
   }
-});
+})

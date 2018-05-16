@@ -1,24 +1,24 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import portal from 'react-portal-hoc';
-import FontAwesome from 'react-fontawesome';
-import {DashModal} from 'universal/components/Dashboard';
-import {css} from 'aphrodite-local-styles/no-important';
-import withStyles from 'universal/styles/withStyles';
-import ui from 'universal/styles/ui';
-import appTheme from 'universal/styles/theme/appTheme';
+import PropTypes from 'prop-types'
+import React from 'react'
+import portal from 'react-portal-hoc'
+import FontAwesome from 'react-fontawesome'
+import {css} from 'aphrodite-local-styles/no-important'
+import withStyles from 'universal/styles/withStyles'
+import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
+import DashModal from 'universal/components/Dashboard/DashModal'
 
 const iconStyle = {
   display: 'block',
   lineHeight: ui.iconSize
-};
+}
 const makeIcon = (name, large = false) => {
   const style = {
     ...iconStyle,
     fontSize: large ? ui.iconSize2x : ui.iconSize
-  };
-  return <FontAwesome name={name} style={style} />;
-};
+  }
+  return <FontAwesome name={name} style={style} />
+}
 
 const typeShortcuts = [
   {
@@ -45,7 +45,7 @@ const typeShortcuts = [
     keyboard: 'shift + command + x',
     md: '~text~ or ~~text~~'
   }
-];
+]
 const mentionShortcuts = [
   {
     label: 'Links',
@@ -71,7 +71,7 @@ const mentionShortcuts = [
     keyboard: 'press ‘@’',
     md: ''
   }
-];
+]
 const blockShortcuts = [
   {
     label: 'Inline code',
@@ -83,7 +83,15 @@ const blockShortcuts = [
     label: 'Code block',
     icon: 'window-maximize',
     keyboard: '',
-    md: <span>{'```'}<br />{'code'}<br />{'```'}</span>
+    md: (
+      <span>
+        {'```'}
+        <br />
+        {'code'}
+        <br />
+        {'```'}
+      </span>
+    )
   },
   {
     label: 'Quotes',
@@ -91,67 +99,39 @@ const blockShortcuts = [
     keyboard: '',
     md: '>quote'
   }
-];
-const shortcutLists = [
-  typeShortcuts,
-  mentionShortcuts,
-  blockShortcuts
-];
+]
+const shortcutLists = [typeShortcuts, mentionShortcuts, blockShortcuts]
 const EditorHelpModal = (props) => {
-  const {
-    closeAfter,
-    handleCloseModal,
-    isClosing,
-    styles
-  } = props;
+  const {closeAfter, handleCloseModal, isClosing, styles} = props
   return (
     <DashModal
       closeAfter={closeAfter}
       isClosing={isClosing}
-      modalLayout="viewport"
+      modalLayout='viewport'
       onBackdropClick={handleCloseModal}
-      position="absolute"
-      width="36.875rem"
+      position='absolute'
+      width='36.875rem'
     >
       <div className={css(styles.modalHeader)}>
-        <div className={css(styles.modalHeaderIcon)}>
-          {makeIcon('keyboard-o', true)}
-        </div>
-        <div className={css(styles.modalHeaderTitle)}>
-          {'Task Card Formatting'}
-        </div>
+        <div className={css(styles.modalHeaderIcon)}>{makeIcon('keyboard-o', true)}</div>
+        <div className={css(styles.modalHeaderTitle)}>{'Task Card Formatting'}</div>
         <button className={css(styles.closeButton)} onClick={handleCloseModal}>
           {makeIcon('times-circle', true)}
         </button>
       </div>
       <div className={css(styles.headerLabelBlock)}>
-        <div className={css(styles.headerLabel)}>
-          {'Keyboard'}
-        </div>
-        <div className={css(styles.headerLabel)}>
-          {'Markdown'}
-        </div>
+        <div className={css(styles.headerLabel)}>{'Keyboard'}</div>
+        <div className={css(styles.headerLabel)}>{'Markdown'}</div>
       </div>
       {shortcutLists.map((shortcutList, listIndex) => {
-        const shortcutListStyles = css(
-          styles.helpList,
-          listIndex === 0 && styles.helpListFirst
-        );
+        const shortcutListStyles = css(styles.helpList, listIndex === 0 && styles.helpListFirst)
         return (
-          <div
-            className={shortcutListStyles}
-            key={`shortcutList${listIndex + 1}`}
-          >
+          <div className={shortcutListStyles} key={`shortcutList${listIndex + 1}`}>
             {shortcutList.map((shortcut, shortcutIndex) => {
-              const rowStyles = css(
-                styles.helpRow,
-                (shortcutIndex % 2) && styles.helpRowAlt
-              );
+              const rowStyles = css(styles.helpRow, shortcutIndex % 2 && styles.helpRowAlt)
               return (
                 <div className={rowStyles} key={`${shortcutList}${shortcutIndex + 1}`}>
-                  <div className={css(styles.icon)}>
-                    {makeIcon(shortcut.icon)}
-                  </div>
+                  <div className={css(styles.icon)}>{makeIcon(shortcut.icon)}</div>
                   <div className={css(styles.label)}>
                     <b>{shortcut.label}</b>
                   </div>
@@ -162,14 +142,14 @@ const EditorHelpModal = (props) => {
                     <code>{shortcut.md}</code>
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
-        );
+        )
       })}
     </DashModal>
-  );
-};
+  )
+}
 
 const styleThunk = () => ({
   modalHeader: {
@@ -280,7 +260,7 @@ const styleThunk = () => ({
     textTransform: 'uppercase',
     width: '12rem'
   }
-});
+})
 
 EditorHelpModal.propTypes = {
   closeAfter: PropTypes.number,
@@ -289,6 +269,6 @@ EditorHelpModal.propTypes = {
   isOpen: PropTypes.bool,
   openPortal: PropTypes.func,
   styles: PropTypes.object
-};
+}
 
-export default portal({closeAfter: 100})(withStyles(styleThunk)(EditorHelpModal));
+export default portal({closeAfter: 100})(withStyles(styleThunk)(EditorHelpModal))

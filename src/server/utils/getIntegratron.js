@@ -1,9 +1,9 @@
-import Queue from 'server/utils/bull';
+import Queue from 'server/utils/bull'
 
-let integratron;
+let integratron
 export default () => {
   if (!integratron) {
-    integratron = Queue('integratron');
+    integratron = Queue('integratron')
   }
-  return integratron;
-};
+  return integratron
+}

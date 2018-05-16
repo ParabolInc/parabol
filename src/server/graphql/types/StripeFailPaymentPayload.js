@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveNotification, resolveOrganization} from 'server/graphql/resolvers';
-import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected';
-import Organization from 'server/graphql/types/Organization';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLObjectType} from 'graphql'
+import {resolveNotification, resolveOrganization} from 'server/graphql/resolvers'
+import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected'
+import Organization from 'server/graphql/types/Organization'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const StripeFailPaymentPayload = new GraphQLObjectType({
   name: 'StripeFailPaymentPayload',
@@ -20,6 +20,6 @@ const StripeFailPaymentPayload = new GraphQLObjectType({
       resolve: resolveNotification
     }
   })
-});
+})
 
-export default StripeFailPaymentPayload;
+export default StripeFailPaymentPayload

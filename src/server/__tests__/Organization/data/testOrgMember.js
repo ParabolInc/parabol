@@ -1,12 +1,5 @@
-
-export default function ({
-  id,
-  email,
-  name,
-  nickname,
-  picture = null
-} = {}) {
-  const now = new Date();
+export default function ({id, email, name, nickname, picture = null} = {}) {
+  const now = new Date()
 
   return {
     id,
@@ -20,5 +13,5 @@ export default function ({
       created_at: now,
       updated_at: now
     }
-  };
+  }
 }

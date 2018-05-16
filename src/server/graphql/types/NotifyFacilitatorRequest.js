@@ -1,6 +1,6 @@
-import {GraphQLObjectType} from 'graphql';
-import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {GraphQLObjectType} from 'graphql'
+import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const NotifyFacilitatorRequest = new GraphQLObjectType({
   name: 'NotifyFacilitatorRequest',
@@ -11,11 +11,11 @@ const NotifyFacilitatorRequest = new GraphQLObjectType({
       type: TeamMember,
       description: 'The team member that wants to be the facilitator',
       resolve: ({requestorId}, args, {dataLoader}) => {
-        return dataLoader.get('teamMembers').load(requestorId);
+        return dataLoader.get('teamMembers').load(requestorId)
       }
     },
     ...notificationInterfaceFields
   })
-});
+})
 
-export default NotifyFacilitatorRequest;
+export default NotifyFacilitatorRequest

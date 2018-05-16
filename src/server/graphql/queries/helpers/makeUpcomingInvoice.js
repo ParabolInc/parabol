@@ -1,16 +1,18 @@
-import {UPCOMING} from 'universal/utils/constants';
-import stripe from 'server/billing/stripe';
-import {fromEpochSeconds} from 'server/utils/epochTime';
-import getUpcomingInvoiceId from 'server/utils/getUpcomingInvoiceId';
+import {UPCOMING} from 'universal/utils/constants'
+import stripe from 'server/billing/stripe'
+import {fromEpochSeconds} from 'server/utils/epochTime'
+import getUpcomingInvoiceId from 'server/utils/getUpcomingInvoiceId'
 
-export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId) {
-  if (!stripeId || !stripeSubscriptionId) return undefined;
-  let stripeInvoice;
+export default async function makeUpcomingInvoice (orgId, stripeId, stripeSubscriptionId) {
+  if (!stripeId || !stripeSubscriptionId) return undefined
+  let stripeInvoice
   try {
-    stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId, {subscription: stripeSubscriptionId});
+    stripeInvoice = await stripe.invoices.retrieveUpcoming(stripeId, {
+      subscription: stripeSubscriptionId
+    })
   } catch (e) {
     // useful for debugging prod accounts in dev
-    return undefined;
+    return undefined
   }
   return {
     id: getUpcomingInvoiceId(orgId),
@@ -22,5 +24,5 @@ export default async function makeUpcomingInvoice(orgId, stripeId, stripeSubscri
     startAt: fromEpochSeconds(stripeInvoice.period_start),
     startingBalance: stripeInvoice.startingBalance,
     status: UPCOMING
-  };
+  }
 }

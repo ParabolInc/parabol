@@ -1,5 +1,5 @@
-import getRethink from 'server/database/rethinkDriver';
-import {auth0ManagementClient} from 'server/utils/auth0Helpers';
+import getRethink from 'server/database/rethinkDriver'
+import {auth0ManagementClient} from 'server/utils/auth0Helpers'
 import {
   ACTION,
   AGENDA_ITEMS,
@@ -17,18 +17,18 @@ import {
   REFLECT,
   UPDATES,
   VOTE
-} from 'universal/utils/constants';
-import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember';
-import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg';
-import shortid from 'shortid';
+} from 'universal/utils/constants'
+import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
+import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg'
+import shortid from 'shortid'
 
 // used for addorg, addTeam, createFirstTeam
-export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
-  const r = getRethink();
+export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
+  const r = getRethink()
 
-  const {id: teamId, orgId} = newTeam;
-  const organization = await r.table('Organization').get(orgId);
-  const {tier} = organization;
+  const {id: teamId, orgId} = newTeam
+  const organization = await r.table('Organization').get(orgId)
+  const {tier} = organization
   const verifiedTeam = {
     ...newTeam,
     activeFacilitator: null,
@@ -40,11 +40,11 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
     meetingPhase: LOBBY,
     meetingPhaseItem: null,
     tier
-  };
+  }
   const options = {
     returnChanges: true,
     role: isNewOrg ? BILLING_LEADER : null
-  };
+  }
   const meetingSettings = [
     {
       id: shortid.generate(),
@@ -60,7 +60,7 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
       teamId,
       phaseTypes: [CHECKIN, UPDATES, FIRST_CALL, AGENDA_ITEMS, LAST_CALL]
     }
-  ];
+  ]
 
   const customPhaseItems = [
     {
@@ -79,24 +79,30 @@ export default async function createTeamAndLeader(userId, newTeam, isNewOrg) {
       title: 'Negative',
       question: 'Where did you get stuck?'
     }
-  ];
+  ]
   const res = await r({
     // insert team
-    team: r.table('Team').insert(verifiedTeam, {returnChanges: true})('changes')(0)('new_val').default(null),
+    team: r
+      .table('Team')
+      .insert(verifiedTeam, {returnChanges: true})('changes')(0)('new_val')
+      .default(null),
     // add meeting settings
     teamSettings: r.table('MeetingSettings').insert(meetingSettings),
     // add customizable phase items for meetings
     customPhaseItems: r.table('CustomPhaseItem').insert(customPhaseItems),
     // denormalize common fields to team member
-    teamLead: insertNewTeamMember(userId, teamId, {isLead: true, checkInOrder: 0}),
+    teamLead: insertNewTeamMember(userId, teamId, {
+      isLead: true,
+      checkInOrder: 0
+    }),
     // add teamId to user tms array
     tms: addUserToTMSUserOrg(userId, teamId, orgId, options)('changes')(0)('new_val')('tms')
-  });
+  })
 
-  const {tms} = res;
+  const {tms} = res
 
   // no need to wait for auth0
-  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms});
+  auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
 
-  return res;
+  return res
 }

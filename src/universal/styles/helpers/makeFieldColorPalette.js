@@ -1,7 +1,10 @@
+import ui from 'universal/styles/ui'
 
-import ui from 'universal/styles/ui';
-
-export default function makeFieldColorPalette(colorPalette, hasPseudoClassStyles = true, customStyles) {
+export default function makeFieldColorPalette (
+  colorPalette,
+  hasPseudoClassStyles = true,
+  customStyles
+) {
   const defaultCustomStyles = {
     base: {},
     placeholder: {},
@@ -10,21 +13,14 @@ export default function makeFieldColorPalette(colorPalette, hasPseudoClassStyles
     focus: {},
     active: {},
     ...customStyles
-  };
-  const {
-    base,
-    placeholder,
-    selection,
-    hover,
-    focus,
-    active
-  } = defaultCustomStyles;
-  const palettes = ui.fieldColorPalettes;
+  }
+  const {base, placeholder, selection, hover, focus, active} = defaultCustomStyles
+  const palettes = ui.fieldColorPalettes
   const hoverFocusActive = {
     borderColor: palettes[colorPalette].focusBorderColor,
     boxShadow: ui.fieldFocusBoxShadow,
     outline: 'none'
-  };
+  }
   const pseudoClassStyles = {
     ':hover': {
       ...hoverFocusActive,
@@ -38,8 +34,8 @@ export default function makeFieldColorPalette(colorPalette, hasPseudoClassStyles
       ...hoverFocusActive,
       ...active
     }
-  };
-  const addPsuedoClassStyles = hasPseudoClassStyles && pseudoClassStyles;
+  }
+  const addPsuedoClassStyles = hasPseudoClassStyles && pseudoClassStyles
   return {
     backgroundColor: palettes[colorPalette].backgroundColor,
     borderColor: palettes[colorPalette].borderColor,
@@ -55,5 +51,5 @@ export default function makeFieldColorPalette(colorPalette, hasPseudoClassStyles
     },
 
     ...addPsuedoClassStyles
-  };
+  }
 }

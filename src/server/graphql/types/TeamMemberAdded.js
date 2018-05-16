@@ -1,8 +1,8 @@
-import {GraphQLObjectType} from 'graphql';
-import {resolveInvitation, resolveTeamMember} from 'server/graphql/resolvers';
-import Invitation from 'server/graphql/types/Invitation';
-import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember';
-import TeamMember from 'server/graphql/types/TeamMember';
+import {GraphQLObjectType} from 'graphql'
+import {resolveInvitation, resolveTeamMember} from 'server/graphql/resolvers'
+import Invitation from 'server/graphql/types/Invitation'
+import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember'
+import TeamMember from 'server/graphql/types/TeamMember'
 
 const TeamMemberAdded = new GraphQLObjectType({
   name: 'TeamMemberAdded',
@@ -21,6 +21,6 @@ const TeamMemberAdded = new GraphQLObjectType({
       resolve: resolveInvitation
     }
   })
-});
+})
 
-export default TeamMemberAdded;
+export default TeamMemberAdded

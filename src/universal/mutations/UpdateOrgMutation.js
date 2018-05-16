@@ -1,13 +1,13 @@
-import {commitMutation} from 'react-relay';
+import {commitMutation} from 'react-relay'
 
 graphql`
-  fragment UpdateOrgMutation_organization on UpdateOrgPayload{
+  fragment UpdateOrgMutation_organization on UpdateOrgPayload {
     organization {
       name
       picture
     }
   }
-`;
+`
 
 const mutation = graphql`
   mutation UpdateOrgMutation($updatedOrg: UpdateOrgInput!) {
@@ -18,26 +18,26 @@ const mutation = graphql`
       ...UpdateOrgMutation_organization @relay(mask: false)
     }
   }
-`;
+`
 
 const UpdateOrgMutation = (environment, updatedOrg, onCompleted, onError) => {
   return commitMutation(environment, {
     mutation,
     variables: {updatedOrg},
     optimisticUpdater: (store) => {
-      const {id, picture, name} = updatedOrg;
-      const organization = store.get(id);
-      if (!organization) return;
+      const {id, picture, name} = updatedOrg
+      const organization = store.get(id)
+      if (!organization) return
       if (picture) {
-        organization.setValue(picture, 'picture');
+        organization.setValue(picture, 'picture')
       }
       if (name) {
-        organization.setValue(name, 'name');
+        organization.setValue(name, 'name')
       }
     },
     onCompleted,
     onError
-  });
-};
+  })
+}
 
-export default UpdateOrgMutation;
+export default UpdateOrgMutation

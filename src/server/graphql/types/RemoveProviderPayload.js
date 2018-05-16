@@ -1,6 +1,6 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLList, GraphQLID} from 'graphql';
-import ProviderRow from 'server/graphql/types/ProviderRow';
-import StandardMutationError from 'server/graphql/types/StandardMutationError';
+import {GraphQLNonNull, GraphQLObjectType, GraphQLList, GraphQLID} from 'graphql'
+import ProviderRow from 'server/graphql/types/ProviderRow'
+import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const RemoveProviderPayload = new GraphQLObjectType({
   name: 'RemoveProviderPayload',
@@ -23,6 +23,6 @@ const RemoveProviderPayload = new GraphQLObjectType({
       type: new GraphQLList(GraphQLID)
     }
   })
-});
+})
 
-export default RemoveProviderPayload;
+export default RemoveProviderPayload

@@ -1,18 +1,27 @@
-import {css} from 'aphrodite-local-styles/no-important';
-import PropTypes from 'prop-types';
-import React from 'react';
-import {createFragmentContainer} from 'react-relay';
-import {Link} from 'react-router-dom';
-import {LabelHeading, LogoBlock} from 'universal/components';
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting';
-import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup';
-import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink';
-import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput';
-import appTheme from 'universal/styles/theme/appTheme';
-import ui from 'universal/styles/ui';
-import withStyles from 'universal/styles/withStyles';
-import {AGENDA_ITEMS, CHECKIN, FIRST_CALL, phaseArray, SUMMARY, UPDATES, LAST_CALL} from 'universal/utils/constants';
-import makeHref from 'universal/utils/makeHref';
+import {css} from 'aphrodite-local-styles/no-important'
+import PropTypes from 'prop-types'
+import React from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {Link} from 'react-router-dom'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup'
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
+import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withStyles from 'universal/styles/withStyles'
+import {
+  AGENDA_ITEMS,
+  CHECKIN,
+  FIRST_CALL,
+  phaseArray,
+  SUMMARY,
+  UPDATES,
+  LAST_CALL
+} from 'universal/utils/constants'
+import makeHref from 'universal/utils/makeHref'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import LogoBlock from 'universal/components/LogoBlock/LogoBlock'
 
 const Sidebar = (props) => {
   const {
@@ -25,55 +34,57 @@ const Sidebar = (props) => {
     setAgendaInputRef,
     styles,
     team
-  } = props;
-  const {teamId, teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team;
-  const meetingUrl = makeHref(`/meeting/${teamId}`);
-  const agendaPhaseItem = actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index ?
-    agendaItems.findIndex((a) => a.isComplete === false) + 1 : 0;
+  } = props
+  const {teamId, teamName, agendaItems, facilitatorPhase, facilitatorPhaseItem, meetingPhase} = team
+  const meetingUrl = makeHref(`/meeting/${teamId}`)
+  const agendaPhaseItem =
+    actionMeeting[meetingPhase].index >= actionMeeting[AGENDA_ITEMS].index
+      ? agendaItems.findIndex((a) => a.isComplete === false) + 1
+      : 0
   const canNavigateTo = (phase) => {
-    const adjustForFacilitator = isFacilitating ? 1 : 0;
-    const phaseInfo = actionMeeting[phase];
-    const meetingPhaseInfo = actionMeeting[meetingPhase];
-    return Boolean(meetingPhaseInfo.index >= (phaseInfo.index - adjustForFacilitator));
-  };
+    const adjustForFacilitator = isFacilitating ? 1 : 0
+    const phaseInfo = actionMeeting[phase]
+    const meetingPhaseInfo = actionMeeting[meetingPhase]
+    return Boolean(meetingPhaseInfo.index >= phaseInfo.index - adjustForFacilitator)
+  }
 
   // Nav item bullet states
   const checkInBulletStyles = css(
     styles.navItemBullet,
     facilitatorPhase === CHECKIN && styles.navItemBulletPhase
-  );
+  )
   const updatesBulletStyles = css(
     styles.navItemBullet,
     facilitatorPhase === UPDATES && styles.navItemBulletPhase
-  );
+  )
   const agendaBulletStyles = css(
     styles.navItemBullet,
     inAgendaGroup(facilitatorPhase) && styles.navItemBulletPhase
-  );
+  )
 
   const checkInLinkStyles = css(
     styles.navListItemLink,
     localPhase === CHECKIN && styles.navListItemLinkActive,
     !canNavigateTo(CHECKIN) && styles.navListItemLinkDisabled
-  );
+  )
   const updatesLinkStyles = css(
     styles.navListItemLink,
     localPhase === UPDATES && styles.navListItemLinkActive,
     !canNavigateTo(UPDATES) && styles.navListItemLinkDisabled
-  );
+  )
   const agendaLinkStyles = css(
     styles.navListItemLink,
     localPhase === FIRST_CALL && styles.navListItemLinkActive,
     localPhase === LAST_CALL && styles.navListItemLinkActive,
     !canNavigateTo(FIRST_CALL) && styles.navListItemLinkDisabled
-  );
+  )
 
-  const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS);
-  const agendaListDisabled = meetingPhase === CHECKIN;
+  const agendaListCanNavigate = canNavigateTo(AGENDA_ITEMS)
+  const agendaListDisabled = meetingPhase === CHECKIN
   // Phase labels
-  const checkinLabel = actionMeeting.checkin.name;
-  const updatesLabel = actionMeeting.updates.name;
-  const agendaitemsLabel = actionMeeting.agendaitems.name;
+  const checkinLabel = actionMeeting.checkin.name
+  const updatesLabel = actionMeeting.updates.name
+  const agendaitemsLabel = actionMeeting.agendaitems.name
 
   return (
     <div className={css(styles.sidebar)}>
@@ -85,7 +96,7 @@ const Sidebar = (props) => {
         >
           {teamName}
         </Link>
-        <CopyShortLink label="Copy Meeting Link" url={meetingUrl} />
+        <CopyShortLink label='Copy Meeting Link' url={meetingUrl} />
       </div>
       <div className={css(styles.agendaLabelBlock)}>
         <LabelHeading>{'Action Meeting'}</LabelHeading>
@@ -123,32 +134,32 @@ const Sidebar = (props) => {
             </div>
           </li>
         </ul>
-        {localPhase !== SUMMARY &&
-        <div className={css(styles.agendaListBlock)}>
-          <div className={css(styles.agendaLabelBlock)}>
-            <LabelHeading>{'Agenda Topics'}</LabelHeading>
+        {localPhase !== SUMMARY && (
+          <div className={css(styles.agendaListBlock)}>
+            <div className={css(styles.agendaLabelBlock)}>
+              <LabelHeading>{'Agenda Topics'}</LabelHeading>
+            </div>
+            <AgendaListAndInput
+              agendaPhaseItem={agendaPhaseItem}
+              canNavigate={agendaListCanNavigate}
+              context={'meeting'}
+              disabled={agendaListDisabled}
+              facilitatorPhase={facilitatorPhase}
+              facilitatorPhaseItem={facilitatorPhaseItem}
+              gotoAgendaItem={gotoAgendaItem}
+              inSync={inSync}
+              localPhase={localPhase}
+              localPhaseItem={localPhaseItem}
+              setAgendaInputRef={setAgendaInputRef}
+              team={team}
+            />
           </div>
-          <AgendaListAndInput
-            agendaPhaseItem={agendaPhaseItem}
-            canNavigate={agendaListCanNavigate}
-            context={'meeting'}
-            disabled={agendaListDisabled}
-            facilitatorPhase={facilitatorPhase}
-            facilitatorPhaseItem={facilitatorPhaseItem}
-            gotoAgendaItem={gotoAgendaItem}
-            inSync={inSync}
-            localPhase={localPhase}
-            localPhaseItem={localPhaseItem}
-            setAgendaInputRef={setAgendaInputRef}
-            team={team}
-          />
-        </div>
-        }
+        )}
       </nav>
-      <LogoBlock variant="primary" />
+      <LogoBlock variant='primary' />
     </div>
-  );
-};
+  )
+}
 
 Sidebar.propTypes = {
   agenda: PropTypes.array,
@@ -165,7 +176,7 @@ Sidebar.propTypes = {
   setAgendaInputRef: PropTypes.func.isRequired,
   styles: PropTypes.object,
   team: PropTypes.object.isRequired
-};
+}
 
 const styleThunk = () => ({
   navItemBullet: {
@@ -286,7 +297,7 @@ const styleThunk = () => ({
     fontWeight: 600,
     lineHeight: '1.5'
   }
-});
+})
 
 export default createFragmentContainer(
   withStyles(styleThunk)(Sidebar),
@@ -303,4 +314,4 @@ export default createFragmentContainer(
       ...AgendaListAndInput_team
     }
   `
-);
+)
