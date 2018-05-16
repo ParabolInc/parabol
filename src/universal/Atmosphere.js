@@ -24,12 +24,12 @@ export default class Atmosphere extends Environment {
     const subscriptionClient = await this.ensureSubscriptionClient()
     if (!subscriptionClient) return
     const newQuerySubs = subConfigs.map((config) => {
-      const {subscription, variables = {}} = config;
-      const {name} = subscription();
-      const subKey = JSON.stringify({name, variables});
-      const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey));
+      const {subscription, variables = {}} = config
+      const {name} = subscription()
+      const subKey = JSON.stringify({name, variables})
+      const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
       if (!isRequested) {
-        requestSubscription(this, {onError: defaultErrorHandler, ...config});
+        requestSubscription(this, {onError: defaultErrorHandler, ...config})
       }
       return {
         subKey,

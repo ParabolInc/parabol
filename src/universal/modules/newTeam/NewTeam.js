@@ -85,7 +85,7 @@ const NewTeam = (props) => {
               buttonSize='small'
               buttonStyle='flat'
               colorPalette='warm'
-              icon='external-link-square'
+              icon={ui.iconExternalLink}
               iconPlacement='right'
               label='Learn More'
               onClick={() => window.open(PRICING_LINK, '_blank')}

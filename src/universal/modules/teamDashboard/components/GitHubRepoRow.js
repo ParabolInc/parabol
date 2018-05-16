@@ -2,16 +2,17 @@ import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import FontAwesome from 'react-fontawesome'
-import Avatar from 'universal/components/Avatar/Avatar'
-import Button from 'universal/components/Button/Button'
-import Tag from 'universal/components/Tag/Tag'
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow'
 import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation'
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation'
 import formError from 'universal/styles/helpers/formError'
+import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import withStyles from 'universal/styles/withStyles'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
+import Button from 'universal/components/Button/Button'
+import Avatar from 'universal/components/Avatar/Avatar'
+import Tag from 'universal/components/Tag/Tag'
 
 const getViewerInIntegration = (props) => {
   const {
@@ -70,7 +71,7 @@ class GitHubRepoRow extends Component {
               title={nameWithOwner}
             >
               {nameWithOwner}
-              <FontAwesome name='external-link-square' style={{marginLeft: '.5rem'}} />
+              <FontAwesome name={ui.iconExternalLink} style={{marginLeft: '.5rem'}} />
               {isCreator && <Tag colorPalette='light' label='Creator' />}
             </a>
           </div>

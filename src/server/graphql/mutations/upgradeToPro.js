@@ -34,9 +34,7 @@ export default {
     // AUTH
     const userId = getUserId(authToken)
     const userOrgDoc = await getUserOrgDoc(userId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
-    }
+    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc)
 
     // VALIDATION
     const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r
@@ -78,6 +76,7 @@ export default {
           tier: PRO,
           periodEnd: fromEpochSeconds(currentPeriodEnd),
           periodStart: fromEpochSeconds(currentPeriodStart),
+          retroMeetingsRemaining: 0,
           stripeId: customer.id,
           stripeSubscriptionId: subscription.id,
           updatedAt: now

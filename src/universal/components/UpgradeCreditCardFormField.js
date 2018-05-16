@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import * as React from 'react'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled, {css, cx} from 'react-emotion'
@@ -43,15 +42,28 @@ const FieldIcon = styled(StyledFontAwesome)(({hasError}) => ({
   width: '1rem'
 }))
 
-const CreditCardField = (props) => {
+type Props = {|
+  autoComplete: string,
+  autoFocus: string,
+  hasError: boolean,
+  iconName: string,
+  maxLength: number,
+  onChange: (SyntheticKeyboardEvent<*>) => void,
+  placeholder: string,
+  error: string,
+  value: string
+|}
+
+const UpgradeCreditCardFormField = (props: Props) => {
   const {
     autoComplete,
     autoFocus,
+    hasError,
     iconName,
-    input,
     maxLength,
-    meta: {touched, error},
-    placeholder
+    onChange,
+    placeholder,
+    value
   } = props
 
   const requireNumeric = (e) => {
@@ -61,41 +73,25 @@ const CreditCardField = (props) => {
     }
   }
 
-  const hasError = touched && error
+  // TODO move to styled layout
   const fieldClassName = cx(fieldStyles, hasError && fieldErrorStyles)
 
   return (
     <FieldBlock>
       <FieldIcon hasError={hasError} name={iconName} />
       <input
-        {...input}
         autoComplete={autoComplete}
         autoFocus={autoFocus}
         className={fieldClassName}
+        onChange={onChange}
         maxLength={maxLength}
         placeholder={placeholder}
         onKeyPress={requireNumeric}
         type='text'
+        value={value}
       />
     </FieldBlock>
   )
 }
 
-CreditCardField.propTypes = {
-  autoComplete: PropTypes.string,
-  autoFocus: PropTypes.bool,
-  iconName: PropTypes.string,
-  input: PropTypes.shape({
-    name: PropTypes.string,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    onFocus: PropTypes.func,
-    type: PropTypes.string,
-    value: PropTypes.string
-  }),
-  maxLength: PropTypes.string,
-  meta: PropTypes.object,
-  placeholder: PropTypes.string
-}
-
-export default CreditCardField
+export default UpgradeCreditCardFormField

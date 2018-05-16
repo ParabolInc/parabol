@@ -14,7 +14,10 @@ class Card extends Component {
     super(props)
     const {content} = props
     const contentState = truncateCard(content)
-    this.editorState = EditorState.createWithContent(contentState, editorDecorators(this.getEditorState))
+    this.editorState = EditorState.createWithContent(
+      contentState,
+      editorDecorators(this.getEditorState)
+    )
   }
 
   getEditorState = () => this.editorState

@@ -3,7 +3,6 @@
 // import React from 'react';
 // // import {createFragmentContainer} from 'react-relay';
 // // import {withRouter} from 'react-router-dom';
-// import {Button, IconAvatar, Row} from 'universal/components';
 // import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton';
 // import defaultStyles from 'universal/modules/notifications/helpers/styles';
 // import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation';

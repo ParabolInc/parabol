@@ -13,6 +13,7 @@ const withToggledPortal = (ComposedComponent) => {
     static displayName = `ToggledPortal(${getDisplayName(ComposedComponent)})`
     static propTypes = {
       isToggleNativeElement: PropTypes.bool,
+      onClose: PropTypes.func,
       toggle: PropTypes.any.isRequired,
       LoadableComponent: PropTypes.func.isRequired,
       queryVars: PropTypes.object,
@@ -51,6 +52,10 @@ const withToggledPortal = (ComposedComponent) => {
 
       if (isKeyboardEvent(e) && this.toggleRef) {
         this.toggleRef.focus()
+      }
+      const {onClose} = this.props
+      if (onClose) {
+        onClose()
       }
     }
 
