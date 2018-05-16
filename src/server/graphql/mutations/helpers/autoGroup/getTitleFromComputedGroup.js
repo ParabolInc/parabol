@@ -6,6 +6,7 @@
 const SALIENT_THRESHOLD = 0.6
 const MIN_ENTITIES = 2
 const MAX_CHARS = 30
+const MIN_SALIENCE = 0.1
 
 const getNameFromLemma = (lemma, reflectionEntities) => {
   const names = new Set()
@@ -39,6 +40,7 @@ const getTitleFromComputedGroup = (uniqueLemmaArr, group, reflectionEntities) =>
   const titleArr = []
   for (let ii = 0; ii < arrWithIdx.length; ii++) {
     const [totalSalience, idx] = arrWithIdx[ii]
+    if (totalSalience < MIN_SALIENCE) continue
     const lemma = uniqueLemmaArr[idx]
     const name = getNameFromLemma(lemma, reflectionEntities)
     const capName = name[0].toUpperCase() + name.slice(1)
@@ -51,6 +53,7 @@ const getTitleFromComputedGroup = (uniqueLemmaArr, group, reflectionEntities) =>
     // if they get the jist, abort
     if (cumlSalience > SALIENT_THRESHOLD) break
   }
+  if (titleArr.length === 0) return 'New group'
   return titleArr.join(' ')
 }
 

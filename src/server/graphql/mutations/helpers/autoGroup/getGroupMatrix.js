@@ -56,7 +56,6 @@ const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
   for (let i = 0; i < 5; i++) {
     const res = traverseTree(tree, thresh)
     groups = res.groups
-    ;({groups} = res)
     distancesArr = Array.from(res.distanceSet).sort()
     const reduction = (distanceMatrix.length - groups.length) / distanceMatrix.length
     if (reduction < MIN_REDUCTION_PERCENT) {
