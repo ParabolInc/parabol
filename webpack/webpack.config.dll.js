@@ -32,7 +32,6 @@ module.exports = {
       'redux',
       'redux-form',
       'redux-raven-middleware',
-      'redux-segment',
       'redux-thunk',
       'tinycolor2'
     ]

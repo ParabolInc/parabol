@@ -7,7 +7,7 @@ import {PRO} from 'universal/utils/constants'
 import styled from 'react-emotion'
 import LoadableModal from 'universal/components/LoadableModal'
 import type {NewMeetingLobby_team as Team} from './__generated__/NewMeetingLobby_team.graphql'
-import type {MeetingTypeEnum} from 'universal/types/schema.flow'
+import type {MeetingTypeEnum, TierEnum} from 'universal/types/schema.flow'
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
@@ -22,7 +22,6 @@ import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {withRouter} from 'react-router-dom'
 import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import InlineAlert from 'universal/components/InlineAlert'
-import TierEnum from 'server/graphql/types/TierEnum'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
