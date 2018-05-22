@@ -9,6 +9,7 @@ import publish from 'server/utils/publish'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import sendAuthRaven from 'server/utils/sendAuthRaven'
 import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -68,7 +69,8 @@ export default {
     const updates = {
       content: rawContent === nextRawContent ? undefined : JSON.stringify(nextRawContent),
       updatedAt: now,
-      teamId
+      teamId,
+      assigneeId: toTeamMemberId(teamId, task.userId)
     }
     const {newTask} = await r({
       newTask: r

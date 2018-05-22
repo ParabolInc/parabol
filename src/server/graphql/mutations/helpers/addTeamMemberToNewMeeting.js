@@ -27,7 +27,7 @@ const addTeamMemberToNewMeeting = async (teamMember, teamId, dataLoader) => {
   const newStage = makeCheckInStage(teamMember, meetingId, false)
   stages.push(newStage)
   const meetingMember = createMeetingMember(meetingId, meetingType)(teamMember)
-  const [extendedMeetingMember] = extendMeetingMembersForType([meetingMember], dataLoader)
+  const [extendedMeetingMember] = await extendMeetingMembersForType([meetingMember], dataLoader)
   await r({
     meeting: r
       .table('NewMeeting')
