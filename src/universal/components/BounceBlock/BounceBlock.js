@@ -1,7 +1,8 @@
 import styled, {keyframes} from 'react-emotion'
 
 const BounceKeyframes = keyframes`
-  from, 10%, 26%, 40%, to {
+  from, 10%, 26%, 40%, 50%, to {
+    animation-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
     transform: translate3d(0, 0, 0);
   }
 
@@ -19,7 +20,7 @@ const BounceKeyframes = keyframes`
 `
 
 const BounceBlock = styled('div')(({animationDelay}) => ({
-  animation: `${BounceKeyframes} 2s ease infinite`,
+  animation: `${BounceKeyframes} 2s infinite`,
   animationDelay,
   transformOrigin: 'center bottom'
 }))
