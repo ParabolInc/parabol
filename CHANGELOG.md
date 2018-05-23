@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.1.0 2018-May-23
+
+### Removed
+
+* Removed the custom welcome email (#2110)
+
+### Fixed
+
+* Fixed the pending tooltip for team invites (#2116)
+* Fixed the persistent bouncing button (#2099)
+
+## v2.0.1 2018-May-22
+
+### Fixed
+
+* No meeting member when user joins team after meeting started
+* Moving tasks to other teams does not update assigneeId (#2143)
+
 ## v2.0.0 2018-May-16
 
 ### Added

@@ -4,13 +4,12 @@
  * @flow
  */
 
-import type {Task, TaskID} from 'universal/types/task'
+import type {Task, TaskConnection} from 'universal/types/schema.flow'
 
-type PaginatedTasksArray = {
-  edges: Array<{node: Task}>
+const getTaskById = (taskConnection: TaskConnection) => (taskId: string): ?Task => {
+  if (!taskConnection.edges) return undefined
+  const edge = taskConnection.edges.find((edge) => edge && edge.node && edge.node.id === taskId)
+  return edge && edge.node
 }
-
-const getTaskById = (tasks: PaginatedTasksArray) => (taskId: TaskID): ?Task =>
-  tasks.edges.map(({node}) => node).find(({id}) => taskId === id)
 
 export default getTaskById

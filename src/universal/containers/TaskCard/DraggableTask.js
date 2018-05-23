@@ -1,8 +1,6 @@
 // @flow
 import type {Node} from 'react'
 import React, {Component} from 'react'
-import type {Task, TaskID} from 'universal/types/task'
-import type {UserID} from 'universal/types/user'
 import {findDOMNode} from 'react-dom'
 import {createFragmentContainer, graphql} from 'react-relay'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
@@ -10,7 +8,7 @@ import {TASK} from 'universal/utils/constants'
 import {DragSource as dragSource, DropTarget as dropTarget} from 'react-dnd'
 import {getEmptyImage} from 'react-dnd-html5-backend'
 import TaskDragLayer from './TaskDragLayer'
-
+import type {DraggableTask_task as Task} from './__generated__/DraggableTask_task.graphql'
 const importantTaskProps = ['content', 'status', 'assignee', 'sortOrder', 'integration']
 
 type Props = {
@@ -18,11 +16,11 @@ type Props = {
   connectDragSource: (node: Node) => Node,
   connectDragPreview: (node: Node) => Node,
   connectDropTarget: (node: Node) => Node,
-  getTaskById: (TaskID) => Task,
+  getTaskById: (string) => Task,
   insert: (task: Task, before: boolean) => void,
   isDragging: boolean,
   isPreview: boolean,
-  myUserId: UserID,
+  myUserId: string,
   task: Task
 }
 

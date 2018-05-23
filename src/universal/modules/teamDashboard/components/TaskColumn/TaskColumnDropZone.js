@@ -1,6 +1,5 @@
 // @flow
 import type {Node} from 'react'
-import type {Task, TaskID, Status} from 'universal/types/task'
 
 import React from 'react'
 import {DropTarget} from 'react-dnd'
@@ -9,20 +8,21 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import {TASK} from 'universal/utils/constants'
+import type {Task, TaskStatusEnum} from 'universal/types/schema.flow'
 
 type Props = {
   connectDropTarget: (node: Node) => Node,
   area: string,
   atmosphere: Object, // TODO: atmosphere needs a type definition
-  getTaskById: (TaskID) => Task,
+  getTaskById: (string) => Task,
   lastTask: ?Task, // the last task in a column; may be undefined if the column is empty
-  status: Status
+  status: TaskStatusEnum
 }
 
 type UpdateTaskMutationArgs = {
-  id: TaskID,
+  id: string,
   sortOrder: number,
-  status?: Status
+  status?: TaskStatusEnum
 }
 
 // Represents the trailing space at the end of a column.  Acts as a drop target

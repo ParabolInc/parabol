@@ -59,7 +59,10 @@ export default {
     const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask
     if (assigneeId) {
       const table = getIsSoftTeamMember(assigneeId) ? 'SoftTeamMember' : 'TeamMember'
-      const res = r.table(table).get(assigneeId)
+      const res = await r
+        .table(table)
+        .get(assigneeId)
+        .default(null)
       if (!res) {
         return sendTeamMemberNotFoundError(authToken, teamId, assigneeId)
       }

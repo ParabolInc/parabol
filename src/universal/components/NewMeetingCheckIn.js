@@ -113,6 +113,7 @@ class NewMeetingCheckIn extends Component<Props> {
             <CheckInControls
               checkInPressFactory={this.checkinPressFactory}
               currentMemberName={teamMember.preferredName}
+              localPhaseItem={localStageId}
               nextMemberName={nextMemberName}
               nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
             />

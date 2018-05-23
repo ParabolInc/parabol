@@ -1,7 +1,6 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import {verify} from 'jsonwebtoken'
 import getRethink from 'server/database/rethinkDriver'
-import sendEmail from 'server/email/sendEmail'
 import LoginPayload from 'server/graphql/types/LoginPayload'
 import {
   auth0ManagementClient,
@@ -95,8 +94,7 @@ const login = {
       preferredName,
       identities: userInfo.identities || [],
       createdAt: ensureDate(userInfo.created_at),
-      userOrgs: [],
-      welcomeSentAt: now
+      userOrgs: []
     }
     await r.table('User').insert(newUser)
 
@@ -106,8 +104,6 @@ const login = {
       return sendSegmentIdentifyError(authToken, e)
     }
 
-    // don't await
-    setTimeout(() => sendEmail(newUser.email, 'welcomeEmail', newUser), 0)
     return {
       authToken: auth0Token,
       userId: viewerId
