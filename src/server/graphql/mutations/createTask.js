@@ -60,7 +60,7 @@ export default {
       isSoftTask: false,
       meetingId: validNewTask.meetingId,
       reflectionGroupId: validNewTask.reflectionGroupId,
-      sortOrder: validNewTask.sortOrder,
+      sortOrder: validNewTask.sortOrder || 0,
       status: validNewTask.status,
       tags,
       teamId,

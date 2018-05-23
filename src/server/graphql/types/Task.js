@@ -21,7 +21,7 @@ const Task = new GraphQLObjectType({
   description: 'A long-term task shared across the team, assigned to a single user ',
   fields: () => ({
     id: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
     },
     agendaId: {
@@ -69,7 +69,7 @@ const Task = new GraphQLObjectType({
       description: 'the foreign key for the retrospective reflection group this was created in'
     },
     sortOrder: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
       description: 'the shared sort order for tasks on the team dash & user dash'
     },
     // TODO make this nonnull again

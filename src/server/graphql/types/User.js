@@ -143,10 +143,6 @@ const User = new GraphQLObjectType({
         return userId === source.id ? source.userOrgs : undefined
       }
     },
-    welcomeSentAt: {
-      type: GraphQLISO8601Type,
-      description: 'The datetime that we sent them a welcome email'
-    },
     archivedTasks,
     archivedTasksCount,
     githubRepos,

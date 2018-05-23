@@ -4,7 +4,6 @@
  * @flow
  */
 import type {RouterHistory} from 'react-router-dom'
-import type {TeamID} from 'universal/types/team'
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
@@ -13,7 +12,7 @@ import LoadableMenu from 'universal/components/LoadableMenu'
 import Button from 'universal/components/Button/Button'
 
 type Props = {
-  teamId: TeamID,
+  teamId: string,
   history: RouterHistory
 }
 

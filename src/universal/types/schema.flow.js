@@ -86,8 +86,6 @@ export type User = {
   preferredName: ?string,
   /** the orgs and roles for this user on each */
   userOrgs: ?Array<UserOrg>,
-  /** The datetime that we sent them a welcome email */
-  welcomeSentAt: ?any,
   archivedTasks: ?TaskConnection,
   archivedTasksCount: ?number,
   /** list of git hub repos available to the viewer */
@@ -207,7 +205,7 @@ export type TaskEdge = {
 */
 export type Task = {
   /** shortid */
-  id: ?string,
+  id: string,
   /** the agenda item that created this task, if any */
   agendaId: ?string,
   /** The body of the task. If null, it is a new task. */
@@ -228,7 +226,7 @@ export type Task = {
   /** the foreign key for the retrospective reflection group this was created in */
   reflectionGroupId: ?string,
   /** the shared sort order for tasks on the team dash & user dash */
-  sortOrder: ?number,
+  sortOrder: number,
   /** The status of the task */
   status: ?TaskStatusEnum,
   /** The tags associated with the task */
