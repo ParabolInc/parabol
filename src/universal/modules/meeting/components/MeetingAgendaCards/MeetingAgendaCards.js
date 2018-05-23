@@ -1,6 +1,4 @@
 // @flow
-import type {Task} from 'universal/types/task'
-
 import {css} from 'aphrodite-local-styles/no-important'
 import React, {Component} from 'react'
 import withHotkey from 'react-hotkey-hoc'
@@ -13,6 +11,7 @@ import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
+import type {Task} from 'universal/types/schema.flow'
 
 const makeCards = (tasks = [], myUserId, itemStyle, handleAddTask) => {
   return tasks.map((task) => {
