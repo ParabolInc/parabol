@@ -53,13 +53,13 @@ const {Component} = React
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
   display: 'flex',
-  height: '100vh'
+  height: '100vh',
+  overflowX: 'scroll'
 })
 
 const MeetingArea = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  overflowX: 'scroll',
   width: '100%',
   zIndex: 100
 })
