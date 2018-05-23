@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.1.0 2018-May-23
+
+### Removed
+
+* Removed the custom welcome email (#2110)
+
+### Fixed
+
+* Fixed the pending tooltip for team invites (#2116)
+* Fixed the persistent bouncing button (#2099)
+
 ## v2.0.1 2018-May-22
 
 ### Fixed
