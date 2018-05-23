@@ -53,15 +53,13 @@ const {Component} = React
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
   display: 'flex',
-  height: '100vh',
-  minWidth: ui.meetingMinWidth
+  height: '100vh'
 })
 
 const MeetingArea = styled('div')({
-  display: 'flex !important',
-  flex: 1,
+  display: 'flex',
   flexDirection: 'column',
-  minWidth: '60rem',
+  overflowX: 'scroll',
   width: '100%',
   zIndex: 100
 })
@@ -82,7 +80,7 @@ const MeetingAreaHeader = styled('div')({
 
 const MeetingHelpBlock = styled('div')(({isFacilitating}) => ({
   bottom: isFacilitating ? '5.25rem' : '1.25rem',
-  position: 'absolute',
+  position: 'fixed',
   right: '1.25rem',
   zIndex: 200
 }))
