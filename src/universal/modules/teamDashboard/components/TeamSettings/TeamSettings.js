@@ -149,6 +149,7 @@ class TeamSettings extends Component {
         <ActionLink onClick={cancel}>{'Cancel Pending Approval'}</ActionLink>
         <span>
           <Tooltip
+            delay={200}
             maxHeight={40}
             maxWidth={500}
             originAnchor={originAnchor}
