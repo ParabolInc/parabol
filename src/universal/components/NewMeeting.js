@@ -60,6 +60,9 @@ const MeetingContainer = styled('div')({
 const MeetingArea = styled('div')({
   display: 'flex',
   flexDirection: 'column',
+  // minWidth > let’s keep the main meeting view from collapsing until
+  // we can due diligence in a designed, responsive pass (TA)
+  minWidth: '60rem',
   width: '100%',
   zIndex: 100
 })
