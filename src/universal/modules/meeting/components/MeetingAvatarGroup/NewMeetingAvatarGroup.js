@@ -11,6 +11,7 @@ import type {NewMeetingAvatarGroup_team as Team} from './__generated__/NewMeetin
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',
   display: 'flex',
+  flex: 1,
   flexDirection: 'row',
   justifyContent: 'flex-end',
   padding: '1rem 0'
