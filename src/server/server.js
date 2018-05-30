@@ -51,6 +51,7 @@ if (!PROD) {
   const compiler = webpack(config)
   app.use(
     require('webpack-dev-middleware')(compiler, {
+      logLevel: 'warn',
       noInfo: false,
       publicPath: config.output.publicPath,
       stats: {

@@ -7,12 +7,15 @@ const getWebpackPublicPath = require('../src/server/utils/getWebpackPublicPath')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const S3Plugin = require('webpack-s3-plugin')
 const {getS3BasePath} = require('./utils/getS3BasePath')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const getDotenv = require('../src/universal/utils/dotenv')
 
 const publicPath = getWebpackPublicPath.default()
+getDotenv.default()
 
-const deployPlugins = []
+const extraPlugins = []
 if (process.env.WEBPACK_DEPLOY) {
-  deployPlugins.push(
+  extraPlugins.push(
     new S3Plugin({
       s3Options: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -26,6 +29,10 @@ if (process.env.WEBPACK_DEPLOY) {
       directory: path.join(__dirname, '../build')
     })
   )
+}
+
+if (process.env.WEBPACK_STATS) {
+  extraPlugins.push(new BundleAnalyzerPlugin())
 }
 
 module.exports = {
@@ -51,8 +58,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'src/server/template.html',
-      title: 'Parabol'
+      template: 'src/server/template.html'
     }),
     new CleanWebpackPlugin([path.join(__dirname, '../build/*.*')], {
       root: path.join(__dirname, '..'),
@@ -68,7 +74,7 @@ module.exports = {
       filename: '[name]_[chunkhash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
-    ...deployPlugins
+    ...extraPlugins
   ],
   module: {
     rules: [
@@ -76,8 +82,10 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader?cacheDirectory',
+          loader: 'babel-loader',
           options: {
+            cacheDirectory: true,
+            babelrc: false,
             plugins: [
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
@@ -89,6 +97,7 @@ module.exports = {
               [
                 'env',
                 {
+                  // modules: false,
                   targets: {
                     browsers: ['last 1 chrome version']
                   }

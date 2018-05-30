@@ -36,10 +36,11 @@ module.exports = {
       {
         test: /\.js$/,
         include: [path.join(__dirname, '../src/client'), path.join(__dirname, '../src/universal')],
-        // exclude: /node_modules/,
         use: {
-          loader: 'babel-loader?cacheDirectory=./.cache',
+          loader: 'babel-loader',
           options: {
+            cacheDirectory: true,
+            babelrc: false,
             plugins: [
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
