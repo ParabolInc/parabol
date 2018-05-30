@@ -50,7 +50,7 @@ module.exports = {
     modules: [path.join(__dirname, '../src'), 'node_modules']
   },
   optimization: {
-    minimize: process.env.WEBPACK_DEPLOY,
+    minimize: Boolean(process.env.WEBPACK_DEPLOY),
     splitChunks: {
       chunks: 'all'
     }
