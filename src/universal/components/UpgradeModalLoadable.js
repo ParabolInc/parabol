@@ -10,10 +10,8 @@ import React from 'react'
 
 const UpgradeModalLoadable = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'UpgradeModal' */
-      'universal/components/UpgradeModal'
-    ),
+    import(/* webpackChunkName: 'UpgradeModal' */
+      'universal/components/UpgradeModal'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

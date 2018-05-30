@@ -6,14 +6,13 @@ import userDashReducer from 'universal/modules/userDashboard/ducks/userDashDuck'
 import withReducer from '../../../../decorators/withReducer/withReducer'
 
 const organizations = () =>
-  System.import('universal/modules/userDashboard/containers/Organizations/OrganizationsRoot')
+  import('universal/modules/userDashboard/containers/Organizations/OrganizationsRoot')
 const organization = () =>
-  System.import('universal/modules/userDashboard/containers/Organization/OrganizationRoot')
-const userDashRoot = () => System.import('universal/modules/userDashboard/components/UserDashRoot')
-const userSettings = () =>
-  System.import('universal/modules/userDashboard/components/UserSettingsRoot')
+  import('universal/modules/userDashboard/containers/Organization/OrganizationRoot')
+const userDashRoot = () => import('universal/modules/userDashboard/components/UserDashRoot')
+const userSettings = () => import('universal/modules/userDashboard/components/UserSettingsRoot')
 const notificationsMod = () =>
-  System.import('universal/modules/notifications/containers/Notifications/NotificationsContainer')
+  import('universal/modules/notifications/containers/Notifications/NotificationsContainer')
 
 const UserDashboard = (props) => {
   const {match, notifications} = props

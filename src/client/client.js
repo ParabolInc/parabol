@@ -3,14 +3,10 @@ import {render} from 'react-dom'
 import makeStore from './makeStore'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
-import {hydrate} from 'emotion'
 
 const initialState = {}
 const store = makeStore(initialState)
 
-if (__PRODUCTION__) {
-  hydrate(window.__EMOTION__)
-}
 render(<Root store={store} />, document.getElementById('root'))
 
 /*
@@ -26,15 +22,13 @@ render(<Root store={store} />, document.getElementById('root'))
 // );
 
 // if (module.hot) {
-/* eslint-disable global-require, no-shadow */
 // module.hot.accept('./Root', () => {
-//   const Root = require('./Root').default;
-//   render(
-//     <AppContainer>
-//       <Root store={store} />
-//     </AppContainer>,
-//     document.getElementById('root')
-//   );
-//   /* eslint-enable global-require */
-// });
+// const Root = require('./Root').default
+// render(
+// <AppContainer>
+// <Root store={store} />
+// </AppContainer>,
+// document.getElementById('root')
+// )
+// })
 // }

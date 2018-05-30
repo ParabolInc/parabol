@@ -23,11 +23,11 @@ import TagBlock from 'universal/components/Tag/TagBlock'
 import TagPro from 'universal/components/Tag/TagPro'
 
 const orgSqueeze = () =>
-  System.import('universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
+  import('universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
 const orgBilling = () =>
-  System.import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot')
+  import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot')
 const orgMembers = () =>
-  System.import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot')
+  import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot')
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',

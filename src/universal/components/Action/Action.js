@@ -7,25 +7,23 @@ import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'
 import SignInPage from 'universal/components/SignInPage/SignInPage'
 import AnalyticsIdentifierRoot from 'universal/components/AnalyticsIdentifierRoot'
 
-const invoice = () => System.import('universal/modules/invoice/containers/InvoiceRoot')
-const meetingSummary = () =>
-  System.import('universal/modules/summary/components/MeetingSummaryRoot')
-const newMeetingSummary = () =>
-  System.import('universal/modules/summary/components/NewMeetingSummaryRoot')
-const welcome = () => System.import('universal/modules/welcome/components/WelcomeRoot')
-const graphql = () => System.import('universal/modules/admin/containers/Graphql/GraphqlContainer')
+const invoice = () =>
+  import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
+const meetingSummary = () => import('universal/modules/summary/components/MeetingSummaryRoot')
+const newMeetingSummary = () => import('universal/modules/summary/components/NewMeetingSummaryRoot')
+const welcome = () => import('universal/modules/welcome/components/WelcomeRoot')
+const graphql = () => import('universal/modules/admin/containers/Graphql/GraphqlContainer')
 const impersonate = () =>
-  System.import('universal/modules/admin/containers/Impersonate/ImpersonateContainer')
+  import('universal/modules/admin/containers/Impersonate/ImpersonateContainer')
 const invitation = () =>
-  System.import('universal/modules/invitation/containers/Invitation/InvitationContainer')
-const signout = () => System.import('universal/containers/Signout/SignoutContainer')
-const notFound = () => System.import('universal/components/NotFound/NotFound')
-const dashWrapper = () => System.import('universal/components/DashboardWrapper/DashboardWrapper')
-const meetingRoot = () => System.import('universal/modules/meeting/components/MeetingRoot')
-const resetPasswordPage = () =>
-  System.import('universal/components/ResetPasswordPage/ResetPasswordPage')
-const retroRoot = () => System.import('universal/components/RetroRoot/RetroRoot')
-const signUpPage = () => System.import('universal/components/SignUpPage/SignUpPage')
+  import('universal/modules/invitation/containers/Invitation/InvitationContainer')
+const signout = () => import('universal/containers/Signout/SignoutContainer')
+const notFound = () => import('universal/components/NotFound/NotFound')
+const dashWrapper = () => import('universal/components/DashboardWrapper/DashboardWrapper')
+const meetingRoot = () => import('universal/modules/meeting/components/MeetingRoot')
+const resetPasswordPage = () => import('universal/components/ResetPasswordPage/ResetPasswordPage')
+const retroRoot = () => import('universal/components/RetroRoot/RetroRoot')
+const signUpPage = () => import('universal/components/SignUpPage/SignUpPage')
 
 const ActionStyles = styled('div')({
   margin: 0,
