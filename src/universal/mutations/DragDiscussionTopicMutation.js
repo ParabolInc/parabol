@@ -31,11 +31,13 @@ const mutation = graphql`
   }
 `
 
-type Context = {
-  meetingId: string
+type Context = {}
+
+type UpdaterContext = {
+  store: Object
 }
 
-export const dragDiscussionTopicTeamUpdater = (payload, {store}) => {
+export const dragDiscussionTopicTeamUpdater = (payload: Object, {store}: UpdaterContext) => {
   const meetingId = getInProxy(payload, 'meeting', 'id')
   handleUpdateStageSort(store, meetingId, DISCUSS)
 }
@@ -43,7 +45,7 @@ export const dragDiscussionTopicTeamUpdater = (payload, {store}) => {
 const DragDiscussionTopicMutation = (
   atmosphere: Object,
   variables: Variables,
-  context: Context,
+  context?: Context,
   onError?: ErrorHandler,
   onCompleted?: CompletedHandler
 ) => {

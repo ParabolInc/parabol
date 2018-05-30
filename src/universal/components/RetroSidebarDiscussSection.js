@@ -21,6 +21,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
 
 type Props = {|
+  atmosphere: Object,
   gotoStageId: (stageId: string) => void,
   viewer: Viewer
 |}
@@ -101,7 +102,6 @@ const RetroSidebarDiscussSection = (props: Props) => {
                   const {reflectionGroup, sortOrder} = stage
                   if (!reflectionGroup) return null
                   const {title, voteCount} = reflectionGroup
-                  console.log('title', title)
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
                   const navState = {
