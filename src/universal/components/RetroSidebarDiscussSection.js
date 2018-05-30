@@ -21,6 +21,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
 
 type Props = {|
+  atmosphere: Object,
   gotoStageId: (stageId: string) => void,
   viewer: Viewer
 |}

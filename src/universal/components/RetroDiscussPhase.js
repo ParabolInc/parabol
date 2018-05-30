@@ -16,9 +16,11 @@ import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
+import type {Dispatch} from 'redux'
 
 type Props = {|
   atmosphere: Object,
+  dispatch: Dispatch<*>,
   history: RouterHistory,
   gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
