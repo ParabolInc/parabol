@@ -13,6 +13,8 @@ import NewMeeting from 'universal/components/NewMeeting'
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import findStageById from 'universal/utils/meetings/findStageById'
+import isInterruptingChickenPhase from 'universal/utils/isInterruptingChickenPhase'
+import isViewerTyping from 'universal/utils/isViewerTyping'
 
 /*
  * Creates a 2-way sync between the URL and the local state
@@ -74,6 +76,12 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       if (!newMeeting && teamId) {
         // goto lobby
         history.push(`/${meetingSlug}/${teamId}`)
+        return
+      }
+      const {
+        localPhase: {phaseType}
+      } = oldMeeting
+      if (isInterruptingChickenPhase(phaseType) && isViewerTyping()) {
         return
       }
       const {phases} = newMeeting
