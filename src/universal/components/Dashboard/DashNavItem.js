@@ -45,7 +45,8 @@ const activeNavLinkcss = css({
 })
 
 const Label = styled('div')({
-  flex: 1
+  flex: 1,
+  wordBreak: 'break-word'
 })
 
 const DashNavItem = (props) => {
