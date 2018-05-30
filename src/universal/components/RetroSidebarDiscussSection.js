@@ -101,7 +101,6 @@ const RetroSidebarDiscussSection = (props: Props) => {
                   const {reflectionGroup, sortOrder} = stage
                   if (!reflectionGroup) return null
                   const {title, voteCount} = reflectionGroup
-                  console.log('title', title)
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
                   const navState = {
