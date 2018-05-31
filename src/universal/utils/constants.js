@@ -238,6 +238,7 @@ export const RETROSPECTIVE = 'retrospective'
 /* Retro DnD types */
 export const REFLECTION_CARD = 'REFLECTION_CARD'
 export const REFLECTION_GROUP = 'REFLECTION_GROUP'
+export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 
 /* Retro constants */
 export const RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5

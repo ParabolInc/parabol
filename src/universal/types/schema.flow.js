@@ -427,7 +427,7 @@ export type NewMeetingPhase = CheckInPhase | ReflectPhase | DiscussPhase | Gener
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingStage = CheckInStage | GenericMeetingStage | RetroDiscussStage
+export type NewMeetingStage = RetroDiscussStage | CheckInStage | GenericMeetingStage
 
 /**
   The pay tier of the team
@@ -1062,6 +1062,8 @@ export type Mutation = {
   deleteTask: ?DeleteTaskPayload,
   /** a server-side mutation called when a client disconnects */
   disconnectSocket: ?DisconnectSocketPayload,
+  /** Changes the priority of the discussion topics */
+  dragDiscussionTopic: ?DragDiscussionTopicPayload,
   /** Changes the drag state of a retrospective reflection */
   dragReflection: ?DragReflectionPayload,
   /** Changes the editing state of a retrospective reflection */
@@ -1801,6 +1803,46 @@ export type DisconnectSocketPayload = {
   user: ?User
 }
 
+export type DragDiscussionTopicPayload = {
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  stage: ?RetroDiscussStage
+}
+
+/**
+  The stage where the team discusses a single theme
+*/
+export type RetroDiscussStage = {
+  /** shortid */
+  id: string,
+  /** The datetime the stage was completed */
+  endAt: ?any,
+  /** foreign key. try using meeting */
+  meetingId: string,
+  /** The meeting this stage belongs to */
+  meeting: ?NewMeeting,
+  /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
+  isComplete: ?boolean,
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean,
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean,
+  /** The phase this stage belongs to */
+  phase: ?NewMeetingPhase,
+  /** The type of the phase */
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  /** The datetime the stage was started */
+  startAt: ?any,
+  /** Number of times the facilitator has visited this stage */
+  viewCount: ?number,
+  /** foreign key. use reflectionGroup */
+  reflectionGroupId: ?string,
+  /** the group that is the focal point of the discussion */
+  reflectionGroup: ?RetroReflectionGroup,
+  /** The sort order for reprioritizing discussion topics */
+  sortOrder: number
+}
+
 export type DragReflectionPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
@@ -2459,6 +2501,7 @@ export type TeamSubscriptionPayload =
   | AutoGroupReflectionsPayload
   | CreateReflectionPayload
   | CreateReflectionGroupPayload
+  | DragDiscussionTopicPayload
   | DragReflectionPayload
   | EditReflectionPayload
   | EndMeetingPayload
@@ -2603,38 +2646,6 @@ export type DiscussPhase = {
   /** The type of phase */
   phaseType: ?NewMeetingPhaseTypeEnum,
   stages: Array<RetroDiscussStage>
-}
-
-/**
-  The stage where the team discusses a single theme
-*/
-export type RetroDiscussStage = {
-  /** shortid */
-  id: string,
-  /** The datetime the stage was completed */
-  endAt: ?any,
-  /** foreign key. try using meeting */
-  meetingId: string,
-  /** The meeting this stage belongs to */
-  meeting: ?NewMeeting,
-  /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
-  isComplete: ?boolean,
-  /** true if any meeting participant can navigate to this stage */
-  isNavigable: ?boolean,
-  /** true if the facilitator can navigate to this stage */
-  isNavigableByFacilitator: ?boolean,
-  /** The phase this stage belongs to */
-  phase: ?NewMeetingPhase,
-  /** The type of the phase */
-  phaseType: ?NewMeetingPhaseTypeEnum,
-  /** The datetime the stage was started */
-  startAt: ?any,
-  /** Number of times the facilitator has visited this stage */
-  viewCount: ?number,
-  /** foreign key. use reflectionGroup */
-  reflectionGroupId: ?string,
-  /** the group that is the focal point of the discussion */
-  reflectionGroup: ?RetroReflectionGroup
 }
 
 /**
