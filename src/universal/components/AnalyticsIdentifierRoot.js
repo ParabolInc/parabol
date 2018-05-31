@@ -21,12 +21,15 @@ type Props = {|
 
 const AnalyticsIdentifierRoot = (props: Props) => {
   const {atmosphere, location} = props
+  const {authToken} = atmosphere
+  if (!authToken) return null
   return (
     <QueryRenderer
       environment={atmosphere}
       query={query}
       variables={{}}
       render={({props: renderProps}) => {
+        console.log('anal')
         return (
           <AnalyticsIdentifier
             location={location}
