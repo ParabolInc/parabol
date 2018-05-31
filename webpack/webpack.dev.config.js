@@ -45,7 +45,6 @@ module.exports = {
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
               ['transform-class-properties', {spec: true}],
-              'transform-decorators-legacy',
               'relay'
             ],
             presets: [

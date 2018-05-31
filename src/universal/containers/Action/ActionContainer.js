@@ -5,7 +5,6 @@ import {withRouter} from 'react-router-dom'
 import Action from 'universal/components/Action/Action'
 import globalStyles from 'universal/styles/theme/globalStyles'
 
-@withRouter
 class ActionContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
@@ -25,4 +24,4 @@ class ActionContainer extends Component {
   }
 }
 
-export default ActionContainer
+export default withRouter(ActionContainer)
