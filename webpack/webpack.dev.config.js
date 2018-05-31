@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'eval',
   mode: 'development',
   entry: {
-    app: path.join(__dirname, '../src/client/client.js')
+    app: [path.join(__dirname, '../src/client/client.js')]
   },
   output: {
     path: path.join(__dirname, '../build/'),
@@ -20,7 +20,6 @@ module.exports = {
   },
   plugins: [
     new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
@@ -51,6 +50,7 @@ module.exports = {
               [
                 'env',
                 {
+                  modules: false,
                   targets: {
                     browsers: ['last 1 chrome version']
                   }

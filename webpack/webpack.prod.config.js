@@ -90,14 +90,13 @@ module.exports = {
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
               ['transform-class-properties', {spec: true}],
-              'transform-decorators-legacy',
               'relay'
             ],
             presets: [
               [
                 'env',
                 {
-                  // modules: false,
+                  modules: false,
                   targets: {
                     browsers: ['last 1 chrome version']
                   }

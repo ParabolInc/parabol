@@ -23,7 +23,7 @@ const DashSidebar = (props) => {
         <nav className={css(styles.nav)}>
           <div className={css(styles.navTop)}>
             <div className={css(styles.singleNavItem)}>
-              <DashNavItem location={location} href='/me' icon='table' label='My Dashboard' />
+              <DashNavItem location={location} href='/me' icon='table' label='My Dashboardzx' />
             </div>
             <div className={css(styles.navLabel)}>{'My Teams'}</div>
           </div>

@@ -48,7 +48,9 @@ const sharedDataLoader = new SharedDataLoader({
 // HMR
 if (!PROD) {
   const config = require('../../webpack/webpack.dev.config')
+  const hotClient = require('webpack-hot-client')
   const compiler = webpack(config)
+  hotClient(compiler, {port: 8082})
   app.use(
     require('webpack-dev-middleware')(compiler, {
       logLevel: 'warn',
@@ -64,7 +66,6 @@ if (!PROD) {
       }
     })
   )
-  app.use(require('webpack-hot-middleware')(compiler))
 } else {
   Raven.config(process.env.SENTRY_DSN, {
     release: version,
