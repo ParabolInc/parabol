@@ -27,7 +27,7 @@
     "build:relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.json --client-schema src/client/clientSchema.graphql",
     "build:stats": "export WEBPACK_STATS=true && npm run build",
     "db:migrate": "npm run db:migrate-up-all",
-    "db:migrate-testing": "export NODE_ENV=test npm run db:migrate && node ./src/server/__tests__/setup/softenDurability.babel.js",
+    "db:migrate-testing": "export NODE_ENV=test && npm run db:migrate && node ./src/server/__tests__/setup/softenDurability.babel.js",
     "db:migrate-up": "node ./src/server/database/migrate.babel.js up",
     "db:migrate-up-all": "node ./src/server/database/migrate.babel.js up --all",
     "db:migrate-down": "node ./src/server/database/migrate.babel.js down",
