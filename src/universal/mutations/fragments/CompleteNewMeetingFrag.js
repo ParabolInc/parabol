@@ -45,6 +45,7 @@ graphql`
           reflectionGroup {
             id
           }
+          sortOrder
         }
       }
     }
