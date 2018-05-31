@@ -1,29 +1,41 @@
-import styled from 'react-emotion'
 import React from 'react'
-import {Route, Switch} from 'react-router-dom'
-import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
-import Toast from 'universal/modules/toast/containers/Toast/Toast'
-import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'
-import SignInPage from 'universal/components/SignInPage/SignInPage'
+import styled from 'react-emotion'
+import {Switch} from 'react-router-dom'
 import AnalyticsIdentifierRoot from 'universal/components/AnalyticsIdentifierRoot'
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
+import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'
+import Toast from 'universal/modules/toast/containers/Toast/Toast'
 
 const invoice = () =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
-const meetingSummary = () => import('universal/modules/summary/components/MeetingSummaryRoot')
-const newMeetingSummary = () => import('universal/modules/summary/components/NewMeetingSummaryRoot')
-const welcome = () => import('universal/modules/welcome/components/WelcomeRoot')
-const graphql = () => import('universal/modules/admin/containers/Graphql/GraphqlContainer')
+const meetingSummary = () =>
+  import(/* webpackChunkName: 'MeetingSummary' */ 'universal/modules/summary/components/MeetingSummaryRoot')
+const newMeetingSummary = () =>
+  import(/* webpackChunkName: 'NewMeetingSummaryRoot' */ 'universal/modules/summary/components/NewMeetingSummaryRoot')
+const welcome = () =>
+  import(/* webpackChunkName: 'WelcomeRoot' */ 'universal/modules/welcome/components/WelcomeRoot')
+const graphql = () =>
+  import(/* webpackChunkName: 'GraphqlContainer' */ 'universal/modules/admin/containers/Graphql/GraphqlContainer')
 const impersonate = () =>
-  import('universal/modules/admin/containers/Impersonate/ImpersonateContainer')
+  import(/* webpackChunkName: 'ImpersonateContainer' */ 'universal/modules/admin/containers/Impersonate/ImpersonateContainer')
 const invitation = () =>
-  import('universal/modules/invitation/containers/Invitation/InvitationContainer')
-const signout = () => import('universal/containers/Signout/SignoutContainer')
-const notFound = () => import('universal/components/NotFound/NotFound')
-const dashWrapper = () => import('universal/components/DashboardWrapper/DashboardWrapper')
-const meetingRoot = () => import('universal/modules/meeting/components/MeetingRoot')
-const resetPasswordPage = () => import('universal/components/ResetPasswordPage/ResetPasswordPage')
-const retroRoot = () => import('universal/components/RetroRoot/RetroRoot')
-const signUpPage = () => import('universal/components/SignUpPage/SignUpPage')
+  import(/* webpackChunkName: 'InvitationContainer' */ 'universal/modules/invitation/containers/Invitation/InvitationContainer')
+const signout = () =>
+  import(/* webpackChunkName: 'SignoutContainer' */ 'universal/containers/Signout/SignoutContainer')
+const notFound = () =>
+  import(/* webpackChunkName: 'NotFound' */ 'universal/components/NotFound/NotFound')
+const dashWrapper = () =>
+  import(/* webpackChunkName: 'DashboardWrapper' */ 'universal/components/DashboardWrapper/DashboardWrapper')
+const meetingRoot = () =>
+  import(/* webpackChunkName: 'MeetingRoot' */ 'universal/modules/meeting/components/MeetingRoot')
+const resetPasswordPage = () =>
+  import(/* webpackChunkName: 'ResetPasswordPage' */ 'universal/components/ResetPasswordPage/ResetPasswordPage')
+const retroRoot = () =>
+  import(/* webpackChunkName: 'RetroRoot' */ 'universal/components/RetroRoot/RetroRoot')
+const signUpPage = () =>
+  import(/* webpackChunkName: 'SignUpPage' */ 'universal/components/SignUpPage/SignUpPage')
+const signInPage = () =>
+  import(/* webpackChunkName: 'SignInPage' */ 'universal/components/SignInPage/SignInPage')
 
 const ActionStyles = styled('div')({
   margin: 0,
@@ -39,8 +51,8 @@ const Action = () => {
       <SocketHealthMonitor />
       <AnalyticsIdentifierRoot />
       <Switch>
-        <Route exact path='/' component={SignInPage} />
-        <Route exact path='/signin' component={SignInPage} />
+        <AsyncRoute exact path='/' mod={signInPage} />
+        <AsyncRoute exact path='/signin' mod={signInPage} />
         <AsyncRoute exact path='/signup' mod={signUpPage} />
         <AsyncRoute exact path='/reset-password' mod={resetPasswordPage} />
         <AsyncRoute isPrivate path='(/me|/newteam|/team)' mod={dashWrapper} />

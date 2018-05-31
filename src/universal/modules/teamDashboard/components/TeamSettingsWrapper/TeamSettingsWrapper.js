@@ -5,13 +5,14 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
 import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav'
 import ui from 'universal/styles/ui'
 
-const teamSettings = () => import('universal/modules/teamDashboard/components/TeamSettingsRoot')
+const teamSettings = () =>
+  import(/* webpackChunkName: 'TeamSettingsRoot' */ 'universal/modules/teamDashboard/components/TeamSettingsRoot')
 const providers = () =>
-  import('universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
+  import(/* webpackChunkName: 'TeamIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
 const slackIntegrations = () =>
-  import('universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot')
+  import(/* webpackChunkName: 'SlackIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot')
 const githubIntegrations = () =>
-  import('universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot')
+  import(/* webpackChunkName: 'GitHubIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot')
 
 const TeamSettingsWrapper = (props) => {
   const {

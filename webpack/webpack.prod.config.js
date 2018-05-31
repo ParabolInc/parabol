@@ -42,6 +42,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, '../build/'),
+    publicPath,
     filename: '[name]_[hash].js',
     chunkFilename: '[name]_[chunkhash].js'
   },
@@ -55,7 +56,6 @@ module.exports = {
     }
   },
   plugins: [
-    ...extraPlugins,
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'src/server/template.html'
@@ -73,7 +73,8 @@ module.exports = {
     new webpack.SourceMapDevToolPlugin({
       filename: '[name]_[chunkhash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
-    })
+    }),
+    ...extraPlugins
   ],
   module: {
     rules: [

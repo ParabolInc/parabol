@@ -6,13 +6,15 @@ import userDashReducer from 'universal/modules/userDashboard/ducks/userDashDuck'
 import withReducer from '../../../../decorators/withReducer/withReducer'
 
 const organizations = () =>
-  import('universal/modules/userDashboard/containers/Organizations/OrganizationsRoot')
+  import(/* webpackChunkName: 'OrganizationsRoot' */ 'universal/modules/userDashboard/containers/Organizations/OrganizationsRoot')
 const organization = () =>
-  import('universal/modules/userDashboard/containers/Organization/OrganizationRoot')
-const userDashRoot = () => import('universal/modules/userDashboard/components/UserDashRoot')
-const userSettings = () => import('universal/modules/userDashboard/components/UserSettingsRoot')
+  import(/* webpackChunkName: 'OrganizationRoot' */ 'universal/modules/userDashboard/containers/Organization/OrganizationRoot')
+const userDashRoot = () =>
+  import(/* webpackChunkName: 'UserDashRoot' */ 'universal/modules/userDashboard/components/UserDashRoot')
+const userSettings = () =>
+  import(/* webpackChunkName: 'UserSettingsRoot' */ 'universal/modules/userDashboard/components/UserSettingsRoot')
 const notificationsMod = () =>
-  import('universal/modules/notifications/containers/Notifications/NotificationsContainer')
+  import(/* webpackChunkName: 'NotificationsContainer' */ 'universal/modules/notifications/containers/Notifications/NotificationsContainer')
 
 const UserDashboard = (props) => {
   const {match, notifications} = props

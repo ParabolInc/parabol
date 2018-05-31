@@ -81,7 +81,7 @@ const Step3InviteeList = (props) => {
             label='Looks Good!'
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
-              import('universal/modules/teamDashboard/components/TeamRoot')
+              import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
             }}
             buttonSize='large'
             type='submit'
@@ -95,7 +95,7 @@ const Step3InviteeList = (props) => {
       to={`/team/${teamId}`}
       className={css(styles.noThanks)}
       onMouseEnter={() => {
-        import('universal/modules/teamDashboard/components/TeamRoot')
+        import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
       }}
       onClick={() => {
         SendClientSegmentEventMutation(atmosphere, 'Welcome Step3 Completed', {

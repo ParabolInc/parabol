@@ -23,11 +23,11 @@ import TagBlock from 'universal/components/Tag/TagBlock'
 import TagPro from 'universal/components/Tag/TagPro'
 
 const orgSqueeze = () =>
-  import('universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
+  import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
 const orgBilling = () =>
-  import('universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot')
+  import(/* webpackChunkName: 'OrgBillingRoot' */ 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot')
 const orgMembers = () =>
-  import('universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot')
+  import(/* webpackChunkName: 'OrgMembersRoot' */ 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot')
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
