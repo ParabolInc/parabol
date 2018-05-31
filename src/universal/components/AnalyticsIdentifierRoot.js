@@ -29,7 +29,6 @@ const AnalyticsIdentifierRoot = (props: Props) => {
       query={query}
       variables={{}}
       render={({props: renderProps}) => {
-        console.log('anal')
         return (
           <AnalyticsIdentifier
             location={location}
