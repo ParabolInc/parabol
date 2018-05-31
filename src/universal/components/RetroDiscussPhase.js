@@ -15,9 +15,12 @@ import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
 import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
+import {connect} from 'react-redux'
+import type {Dispatch} from 'redux'
 
 type Props = {|
   atmosphere: Object,
+  dispatch: Dispatch<*>,
   history: RouterHistory,
   gotoNext: () => void,
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
@@ -116,7 +119,7 @@ const SpacedMeetingControlBar = styled(MeetingControlBar)({
 })
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, gotoNext, history, team} = props
+  const {atmosphere, dispatch, gotoNext, history, team} = props
   const {viewerId} = atmosphere
   const {newMeeting, teamId} = team
   const {
@@ -133,7 +136,7 @@ const RetroDiscussPhase = (props: Props) => {
   const checkMarks = [...Array(voteCount).keys()]
   const nextStageRes = findStageAfterId(phases, localStageId)
   const endMeeting = () => {
-    EndNewMeetingMutation(atmosphere, {meetingId}, {history})
+    EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
   }
   return (
     <React.Fragment>
@@ -222,7 +225,7 @@ const RetroDiscussPhase = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  withRouter(withAtmosphere(RetroDiscussPhase)),
+  connect()(withRouter(withAtmosphere(RetroDiscussPhase))),
   graphql`
     fragment RetroDiscussPhase_team on Team {
       teamId: id

@@ -13,6 +13,7 @@ import {
 import findStageById from 'universal/utils/meetings/findStageById'
 import handleCompletedStage from 'server/graphql/mutations/helpers/handleCompletedStage'
 import unlockNextStages from 'server/graphql/mutations/helpers/unlockNextStages'
+import startStage_ from 'server/graphql/mutations/helpers/startStage_'
 
 export default {
   type: NavigateMeetingPayload,
@@ -84,8 +85,9 @@ export default {
       }
 
       // mutative
-      facilitatorStage.startAt = facilitatorStage.startAt || now
-      facilitatorStage.viewCount = facilitatorStage.viewCount ? facilitatorStage.viewCount + 1 : 1
+      // NOTE: it is possible to start a stage then move backwards & complete another phase, which would make it seem like this phase took a long time
+      // the cleanest way to fix this is to store start/stop on each stage visit, since i could visit B, then visit A, then move B before A, then visit B
+      startStage_(facilitatorStage)
 
       // mutative! sets isNavigable and isNavigableByFacilitator
       unlockedStageIds = await unlockNextStages(facilitatorStageId, phases, meetingId)
