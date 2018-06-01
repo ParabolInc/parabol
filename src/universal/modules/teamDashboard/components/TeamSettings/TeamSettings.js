@@ -119,7 +119,11 @@ class TeamSettings extends Component {
               {orgApprovals.map((orgApproval) => {
                 const {orgApprovalId} = orgApproval
                 return (
-                  <PendingApprovalRow key={`approval${orgApprovalId}`} orgApproval={orgApproval} />
+                  <PendingApprovalRow
+                    key={`approval${orgApprovalId}`}
+                    orgApproval={orgApproval}
+                    team={team}
+                  />
                 )
               })}
             </PanelInner>
@@ -144,6 +148,7 @@ export default createFragmentContainer(
       team(teamId: $teamId) {
         ...InviteUser_team
         ...ArchiveTeamContainer_team
+        ...PendingApprovalRow_team
         isViewerLead: isLead
         teamId: id
         teamName: name
