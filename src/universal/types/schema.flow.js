@@ -309,6 +309,8 @@ export type Team = {
   facilitatorPhaseItem: ?number,
   /** The outstanding invitations to join the team */
   invitations: ?Array<Invitation>,
+  /** true if the viewer is the team lead, else false */
+  isLead: ?boolean,
   /** The phase of the meeting, usually matches the facilitator phase, be could be further along */
   meetingPhase: ?ActionMeetingPhaseEnum,
   /** The current item number for the current phase for the meeting, 1-indexed */
@@ -606,11 +608,11 @@ export type TeamMember = {
   /** hide the agenda list on the dashboard */
   hideAgenda: ?boolean,
   /** The user email */
-  email: ?any,
+  email: any,
   /** url of user’s profile picture */
   picture: ?any,
   /** The name, as confirmed by the user */
-  preferredName: ?string,
+  preferredName: string,
   /** The place in line for checkIn, regenerated every meeting */
   checkInOrder: ?number,
   /** true if the user is connected */

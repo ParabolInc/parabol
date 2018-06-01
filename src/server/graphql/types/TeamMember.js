@@ -1,4 +1,11 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
+import {
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull
+} from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import {resolveTeam} from 'server/graphql/resolvers'
@@ -37,7 +44,7 @@ const TeamMember = new GraphQLObjectType({
     },
     /* denormalized from User */
     email: {
-      type: GraphQLEmailType,
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The user email'
     },
     picture: {
@@ -45,7 +52,7 @@ const TeamMember = new GraphQLObjectType({
       description: 'url of user’s profile picture'
     },
     preferredName: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The name, as confirmed by the user'
     },
     /* Ephemeral meeting state */

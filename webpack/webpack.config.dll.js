@@ -42,7 +42,6 @@ module.exports = {
       'react-router-dom',
       'react-transition-group',
       'react-virtualized',
-      'redbox-react',
       'redux',
       'redux-form',
       'redux-raven-middleware',

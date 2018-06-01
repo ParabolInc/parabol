@@ -1,8 +1,9 @@
 import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 
-const Row = styled('div')(({compact}) => ({
+const Row = styled('div')(({backgroundColor, compact}) => ({
   alignItems: 'center',
+  backgroundColor,
   borderTop: `.0625rem solid ${ui.rowBorderColor}`,
   display: 'flex',
   justifyContent: 'space-between',
