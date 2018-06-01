@@ -38,7 +38,7 @@ if (process.env.WEBPACK_STATS) {
 module.exports = {
   mode: 'production',
   entry: {
-    app: path.join(__dirname, '../src/client/client.js')
+    app: [path.join(__dirname, '../src/client/client.js')]
   },
   output: {
     path: path.join(__dirname, '../build/'),
@@ -96,10 +96,12 @@ module.exports = {
               [
                 'env',
                 {
+                  // debug: true,
                   modules: false,
                   targets: {
-                    browsers: ['last 1 chrome version']
-                  }
+                    browsers: ['> 1%', 'not ie 11']
+                  },
+                  useBuiltIns: true
                 }
               ],
               'flow',

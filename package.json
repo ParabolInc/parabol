@@ -112,6 +112,7 @@
     "auth0": "^2.7.0",
     "auth0-js": "^9.2.3",
     "aws-sdk": "^2.99.0",
+    "babel-polyfill": "^6.26.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "1.17.2",
     "camel-case": "^3.0.0",
