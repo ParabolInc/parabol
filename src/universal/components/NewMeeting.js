@@ -54,13 +54,14 @@ const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
   display: 'flex',
   height: '100vh',
-  minWidth: ui.meetingMinWidth
+  overflowX: 'scroll'
 })
 
 const MeetingArea = styled('div')({
-  display: 'flex !important',
-  flex: 1,
+  display: 'flex',
   flexDirection: 'column',
+  // minWidth > let’s keep the main meeting view from collapsing until
+  // we can due diligence in a designed, responsive pass (TA)
   minWidth: '60rem',
   width: '100%',
   zIndex: 100
@@ -82,7 +83,7 @@ const MeetingAreaHeader = styled('div')({
 
 const MeetingHelpBlock = styled('div')(({isFacilitating}) => ({
   bottom: isFacilitating ? '5.25rem' : '1.25rem',
-  position: 'absolute',
+  position: 'fixed',
   right: '1.25rem',
   zIndex: 200
 }))
