@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLObjectType, GraphQLFloat, GraphQLNonNull} from 'graphql'
 import NewMeetingStage, {newMeetingStageFields} from 'server/graphql/types/NewMeetingStage'
 import RetroReflectionGroup from 'server/graphql/types/RetroReflectionGroup'
 import {makeResolve} from 'server/graphql/resolvers'
@@ -17,6 +17,10 @@ const RetroDiscussStage = new GraphQLObjectType({
       type: RetroReflectionGroup,
       description: 'the group that is the focal point of the discussion',
       resolve: makeResolve('reflectionGroupId', 'reflectionGroup', 'retroReflectionGroups')
+    },
+    sortOrder: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'The sort order for reprioritizing discussion topics'
     }
   })
 })

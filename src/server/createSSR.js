@@ -1,78 +1,48 @@
-import React from 'react'
-import {renderToStaticMarkup} from 'react-dom/server'
-import {applyMiddleware, createStore} from 'redux'
-import thunkMiddleware from 'redux-thunk'
 import makeSegmentSnippet from '@segment/snippet'
 import dehydrate from 'server/utils/dehydrate'
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath'
-import makeReducer from 'universal/redux/makeReducer'
-import printStyles from 'universal/styles/theme/printStyles'
-import Html from './Html'
+import fs from 'fs'
+import path from 'path'
 
-const metaAndTitle = `
-  <meta charSet="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta property="description" content="Team transparency, made easy."/>
-  <title>Parabol</title>
-  <style>${printStyles}</style>
-`
+const webpackPublicPath = getWebpackPublicPath()
 
 const clientIds = {
   auth0: process.env.AUTH0_CLIENT_ID,
   auth0Domain: process.env.AUTH0_DOMAIN,
-  cdn: getWebpackPublicPath(),
+  cdn: webpackPublicPath,
   github: process.env.GITHUB_CLIENT_ID,
   sentry: process.env.SENTRY_DSN_PUBLIC,
   slack: process.env.SLACK_CLIENT_ID,
   stripe: process.env.STRIPE_PUBLISHABLE_KEY
 }
 
-let cachedPage
-export default function createSSR (req, res) {
-  const finalCreateStore = applyMiddleware(thunkMiddleware)(createStore)
-  const store = finalCreateStore(makeReducer(), {})
-  if (process.env.NODE_ENV === 'production') {
-    if (!cachedPage) {
-      // eslint-disable-next-line global-require
-      const assets = require('../../build/assets.json')
-      const htmlString = renderToStaticMarkup(
-        <Html store={store} assets={assets} clientIds={clientIds} />
-      )
-      cachedPage = `<!DOCTYPE html>${htmlString}`.replace('<head>', `<head>${metaAndTitle}`)
-    }
-    res.send(cachedPage)
-  } else {
-    /*
-     * When segment.io is configured during development, load the segment
-     * snippet here. For production use, refer to the Html.js component.
-     */
-    const segKey = process.env.SEGMENT_WRITE_KEY
-    const segmentSnippet =
-      segKey &&
-      `
-    <script>
-      ${makeSegmentSnippet.min({
+const segKey = process.env.SEGMENT_WRITE_KEY
+const segmentSnippet =
+  segKey &&
+  makeSegmentSnippet.min({
     host: 'cdn.segment.com',
     apiKey: segKey
-  })}
-    </script>
-    `
+  })
+const prod = process.env.NODE_ENV
+const fontAwesomeUrl = prod
+  ? 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'
+  : '/static/css/font-awesome.css'
 
-    const devHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <link rel="stylesheet" type="text/css" href="/static/css/font-awesome.css"/>
-      <script>${dehydrate('__ACTION__', clientIds)}</script>
-    </head>
-    <body>
-      <div id="root"></div>
-      <script src="/static/vendors.dll.js"></script>
-      <script src="/static/app.js"></script>
-      ${segmentSnippet}
-    </body>
-    </html>
-    `
-    res.send(devHtml.replace('<head>', `<head>${metaAndTitle}`))
-  }
+const htmlFile = prod ? '../../build/index.html' : './template.html'
+const html = fs.readFileSync(path.join(__dirname, htmlFile), 'utf8')
+const extraHead = `
+ <link rel="stylesheet" type="text/css" href=${fontAwesomeUrl} />
+ <script>${dehydrate('__ACTION__', clientIds)}</script>
+ `
+const devBody = prod
+  ? ''
+  : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
+const extraBody = `<script>${segmentSnippet}</script>${devBody}`
+
+const finalHTML = html
+  .replace('</head>', `${extraHead}</head>`)
+  .replace('</body>', `${extraBody}</body>`)
+
+export default function createSSR (req, res) {
+  res.send(finalHTML)
 }

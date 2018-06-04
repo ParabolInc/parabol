@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.2.0 2018-May-30
+
+### Added
+
+* You can now reorder the discussion topics in a Retro meeting #2088
+* Minor Retro meeting style improvements
+
+### Fixed
+
+* Help button now accounts for window.scrollX, remaining in it's proper place
+  a when a user scrolls
+
+
 ## v2.1.0 2018-May-23
 
 ### Removed

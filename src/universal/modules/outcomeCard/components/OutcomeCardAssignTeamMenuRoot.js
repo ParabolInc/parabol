@@ -27,10 +27,8 @@ const loading = (props) => (
 
 const LoadableOutcomeCardAssignTeamMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'OutcomeCardAssignTeamMenu' */
-      'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignTeamMenu'
-    ),
+    import(/* webpackChunkName: 'OutcomeCardAssignTeamMenu' */
+      'universal/modules/outcomeCard/components/OutcomeCardAssignMenu/OutcomeCardAssignTeamMenu'),
   loading,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME

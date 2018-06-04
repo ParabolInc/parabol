@@ -1,18 +1,20 @@
 // @flow
 import React, {Component} from 'react'
+import {createFragmentContainer} from 'react-relay'
+import {withRouter} from 'react-router-dom'
+import NewMeeting from 'universal/components/NewMeeting'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import findKeyByValue from 'universal/utils/findKeyByValue'
+import isInterruptingChickenPhase from 'universal/utils/isInterruptingChickenPhase'
+import isViewerTyping from 'universal/utils/isViewerTyping'
+import findStageById from 'universal/utils/meetings/findStageById'
+import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
+import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
+import updateLocalStage from 'universal/utils/relay/updateLocalStage'
+import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeetingWithLocalState_viewer.graphql'
 
 import type {Match, RouterHistory} from 'react-router-dom'
 import type {MeetingTypeEnum} from 'universal/types/schema.flow'
-import {withRouter} from 'react-router-dom'
-import {createFragmentContainer} from 'react-relay'
-import findKeyByValue from 'universal/utils/findKeyByValue'
-import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeetingWithLocalState_viewer.graphql'
-import NewMeeting from 'universal/components/NewMeeting'
-import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
-import updateLocalStage from 'universal/utils/relay/updateLocalStage'
-import findStageById from 'universal/utils/meetings/findStageById'
 
 /*
  * Creates a 2-way sync between the URL and the local state
@@ -74,6 +76,10 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       if (!newMeeting && teamId) {
         // goto lobby
         history.push(`/${meetingSlug}/${teamId}`)
+        return
+      }
+      const oldPhaseType = oldMeeting && oldMeeting.localPhase && oldMeeting.localPhase.phaseType
+      if (oldPhaseType && isInterruptingChickenPhase(oldPhaseType) && isViewerTyping()) {
         return
       }
       const {phases} = newMeeting

@@ -44,6 +44,7 @@ graphql`
                     id
                   }
                 }
+                sortOrder
               }
             }
           }

@@ -99,6 +99,16 @@ export default `
       background:rgba(0,0,0,0.2);
   }
 
+  @media print {
+    html,
+    body {
+      font-size: 14px !important;
+    }
+    .hide-print {
+      display: none !important;
+    }
+  }
+  
   ${placeholderStyles}
 
   ${fontFaceDefinitions}

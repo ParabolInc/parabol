@@ -2,7 +2,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import Avatar from 'universal/components/Avatar/Avatar'
-import Tag from 'universal/components/Tag/Tag'
 import appTheme from 'universal/styles/theme/appTheme'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
@@ -73,12 +72,14 @@ const AvatarBlock = styled('div')(
   }
 )
 
-const TagBlock = styled('div')({
-  bottom: '-1.75rem',
-  left: '50%',
-  paddingRight: ui.tagGutter,
+const FacilitatorTag = styled('div')({
+  color: appTheme.brand.primary.darkGray,
+  fontSize: '.6875rem',
+  fontWeight: 600,
+  marginTop: '0.75rem',
   position: 'absolute',
-  transform: 'translateX(-50%)'
+  right: '50%',
+  transform: 'translateX(50%)'
 })
 
 type Props = {
@@ -133,11 +134,7 @@ const NewMeetingAvatar = (props: Props) => {
           }
         />
       </AvatarBlock>
-      {avatarIsFacilitating && (
-        <TagBlock>
-          <Tag colorPalette='gray' label='Facilitator' />
-        </TagBlock>
-      )}
+      {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
     </Item>
   )
 }

@@ -1,3 +1,2 @@
-require('babel-register');
-require('babel-polyfill');
-require('./ensureDrivers');
+require('babel-register')
+require('./ensureDrivers')
