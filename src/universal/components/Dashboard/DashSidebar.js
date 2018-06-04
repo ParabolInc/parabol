@@ -13,7 +13,6 @@ import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
 import styled, {css} from 'react-emotion'
 import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString()
 const linkBaseStyles = {
@@ -112,8 +111,8 @@ const DashSidebar = (props) => {
           <DashNavItem location={location} href='/me' icon='table' label='My Dashboard' />
         </MyDashboard>
         <NavLabel>{'My Teams'}</NavLabel>
-        <SexyScrollbar>
-          <ScrollableBlock>
+        <SexyScrollbar color='rgba(241,240,250,.3)' activeColor='rgba(241,240,250,.5)'>
+          <React.Fragment>
             <TeamList>
               <DashNavList location={location} viewer={viewer} />
             </TeamList>
@@ -128,7 +127,7 @@ const DashSidebar = (props) => {
               <AddTeamIcon name='plus-circle' />
               <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
             </NavLink>
-          </ScrollableBlock>
+          </React.Fragment>
         </SexyScrollbar>
       </Nav>
 
