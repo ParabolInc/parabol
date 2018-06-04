@@ -27,10 +27,8 @@ import PlainButton from 'universal/components/PlainButton/PlainButton'
 
 const LoadableAssignMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
-      'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'
-    ),
+    import(/* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
+      'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -40,10 +38,8 @@ const LoadableAssignMenu = Loadable({
 
 const LoadableAssignTeamMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
-      'universal/modules/outcomeCard/components/OutcomeCardAssignTeamMenuRoot'
-    ),
+    import(/* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
+      'universal/modules/outcomeCard/components/OutcomeCardAssignTeamMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -53,10 +49,8 @@ const LoadableAssignTeamMenu = Loadable({
 
 const LoadableStatusMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'OutcomeCardStatusMenu' */
-      'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'
-    ),
+    import(/* webpackChunkName: 'OutcomeCardStatusMenu' */
+      'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -66,10 +60,8 @@ const LoadableStatusMenu = Loadable({
 
 const LoadableGitHubMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'GitHubReposMenuRoot' */
-      'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'
-    ),
+    import(/* webpackChunkName: 'GitHubReposMenuRoot' */
+      'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

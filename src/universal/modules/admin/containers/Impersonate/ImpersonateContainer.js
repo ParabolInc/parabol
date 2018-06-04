@@ -15,9 +15,7 @@ const showDucks = () => {
   )
 }
 
-@requireAuthAndRole({role: 'su', silent: true})
-@withAtmosphere
-export default class Impersonate extends Component {
+class Impersonate extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
@@ -61,3 +59,5 @@ export default class Impersonate extends Component {
     return showDucks()
   }
 }
+
+export default withAtmosphere(requireAuthAndRole({role: 'su', silent: true})(Impersonate))

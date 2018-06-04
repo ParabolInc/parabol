@@ -32,11 +32,15 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
       }
       const standardRetroPhases = [REFLECT, GROUP, VOTE, DISCUSS]
       if (standardRetroPhases.includes(phaseType)) {
-        return {
+        const phase = {
           id: shortid.generate(),
           phaseType,
           stages: [makeRetroStage(phaseType, meetingId, idx)]
         }
+        if (phaseType === DISCUSS) {
+          phase.stages[0].sortOrder = 0
+        }
+        return phase
       }
       throw new Error('Unhandled phaseType', phaseType)
     })

@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import promisify from 'es6-promisify'
 import parseInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/parseInviteToken'
 

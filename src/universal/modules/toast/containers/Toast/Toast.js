@@ -9,8 +9,7 @@ const mapStateToProps = (state) => ({
   toasts: state.toasts
 })
 
-@connect(mapStateToProps)
-export default class Toast extends React.Component {
+class Toast extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func,
     toasts: PropTypes.array
@@ -113,3 +112,5 @@ export default class Toast extends React.Component {
     )
   }
 }
+
+export default connect(mapStateToProps)(Toast)

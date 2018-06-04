@@ -11,10 +11,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableBillingLeaderActionMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'BillingLeaderActionMenu' */
-      'universal/components/BillingLeaderActionMenu'
-    ),
+    import(/* webpackChunkName: 'BillingLeaderActionMenu' */
+      'universal/components/BillingLeaderActionMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

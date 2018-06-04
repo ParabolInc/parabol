@@ -38,15 +38,11 @@ export default {
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
 
     const lastPhase = phases[phases.length - 1]
-    const lastPhaseFirstStage = lastPhase.stages[0]
-    const lastPhaseStarted = Boolean(lastPhaseFirstStage.startAt)
+    const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt)
 
-    if (lastPhaseStarted) {
-      const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt)
-      if (currentStage) {
-        currentStage.isComplete = true
-        currentStage.endAt = now
-      }
+    if (currentStage) {
+      currentStage.isComplete = true
+      currentStage.endAt = now
     }
 
     // RESOLUTION
@@ -76,7 +72,7 @@ export default {
     const presentMemberUserIds = presentMembers.map(({userId}) => userId)
     endSlackMeeting(meetingId, teamId, true)
 
-    if (lastPhaseStarted) {
+    if (currentStage) {
       sendSegmentEvent('Retro Meeting Completed', presentMemberUserIds, {
         teamId,
         meetingNumber
@@ -85,7 +81,7 @@ export default {
       await sendNewMeetingSummary(completedMeeting, dataLoader)
     }
 
-    const data = {meetingId, teamId, isKill: !lastPhaseStarted}
+    const data = {meetingId, teamId, isKill: !currentStage}
     publish(TEAM, teamId, EndNewMeetingPayload, data, subOptions)
     return data
   }

@@ -4,10 +4,7 @@ import React, {Component} from 'react'
 import {withRouter} from 'react-router-dom'
 import Action from 'universal/components/Action/Action'
 import globalStyles from 'universal/styles/theme/globalStyles'
-import * as E from 'emotion-server'
-import A from 'universal/Atmosphere'
 
-@withRouter
 class ActionContainer extends Component {
   static propTypes = {
     dispatch: PropTypes.func,
@@ -27,6 +24,4 @@ class ActionContainer extends Component {
   }
 }
 
-export default ActionContainer
-export const Atmosphere = A
-export const EmotionServer = E
+export default withRouter(ActionContainer)

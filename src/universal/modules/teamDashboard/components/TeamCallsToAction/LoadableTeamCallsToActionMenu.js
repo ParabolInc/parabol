@@ -11,10 +11,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableNewMeetingAvatarMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'TeamCallsToActionMenu' */
-      'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToActionMenu'
-    ),
+    import(/* webpackChunkName: 'TeamCallsToActionMenu' */
+      'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToActionMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
