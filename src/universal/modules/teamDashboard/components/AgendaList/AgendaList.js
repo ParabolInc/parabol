@@ -13,7 +13,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
+import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 
 const columnTarget = {
   drop: handleDrop,
@@ -129,39 +129,45 @@ class AgendaList extends Component {
     dragState.clear()
     // TODO handle isLoading
     const isLoading = false
+    if (filteredAgendaItems.length === 0) {
+      return isLoading ? this.makeLoadingState() : this.makeEmptyState()
+    }
+
     return connectDropTarget(
       <div className={css(styles.root)}>
-        {filteredAgendaItems.length > 0 ? (
-          <ScrollableBlock>
-            {filteredAgendaItems.map((item, idx) => (
-              <AgendaItem
-                key={`agendaItem${item.id}`}
-                agendaItem={item}
-                agendaLength={filteredAgendaItems.length}
-                agendaPhaseItem={agendaPhaseItem}
-                canNavigate={canNavigateItems}
-                disabled={disabled}
-                ensureVisible={visibleAgendaItemId === item.id}
-                facilitatorPhase={facilitatorPhase}
-                gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
-                handleRemove={this.removeItemFactory(item.id)}
-                idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
-                inSync={inSync}
-                isCurrent={idx + 1 === agendaPhaseItem}
-                isFacilitator={idx + 1 === facilitatorPhaseItem}
-                localPhase={localPhase}
-                localPhaseItem={localPhaseItem}
-                ref={(c) => {
-                  if (c) {
-                    dragState.components.push(c)
-                  }
-                }}
-              />
-            ))}
-          </ScrollableBlock>
-        ) : (
-          <div>{isLoading ? this.makeLoadingState() : this.makeEmptyState()}</div>
-        )}
+        <SexyScrollbar color='rgba(0,0,0,0.3)' activeColor='rgba(0,0,0,0.5)'>
+          {(scrollRef) => {
+            return (
+              <div ref={scrollRef}>
+                {filteredAgendaItems.map((item, idx) => (
+                  <AgendaItem
+                    key={`agendaItem${item.id}`}
+                    agendaItem={item}
+                    agendaLength={filteredAgendaItems.length}
+                    agendaPhaseItem={agendaPhaseItem}
+                    canNavigate={canNavigateItems}
+                    disabled={disabled}
+                    ensureVisible={visibleAgendaItemId === item.id}
+                    facilitatorPhase={facilitatorPhase}
+                    gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
+                    handleRemove={this.removeItemFactory(item.id)}
+                    idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                    inSync={inSync}
+                    isCurrent={idx + 1 === agendaPhaseItem}
+                    isFacilitator={idx + 1 === facilitatorPhaseItem}
+                    localPhase={localPhase}
+                    localPhaseItem={localPhaseItem}
+                    ref={(c) => {
+                      if (c) {
+                        dragState.components.push(c)
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            )
+          }}
+        </SexyScrollbar>
       </div>
     )
   }

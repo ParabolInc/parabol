@@ -9,16 +9,25 @@ type Props = {|
   color: string
 |}
 
+type State = {|
+  isHovered: boolean,
+  isScrolling: boolean
+|}
+
 const thumbVerical = css({
   borderRadius: '3px',
   transition: 'opacity .2s ease-in'
 })
 
-class SexyScrollbar extends React.Component<Props> {
+class SexyScrollbar extends React.Component<Props, State> {
   static defaultProps = {
-    color: 'rbga(0,0,0,.5)'
+    color: 'rgba(0,0,0,0.5)'
   }
-  state = {}
+  state = {
+    isHovered: false,
+    isScrolling: false
+  }
+
   onMouseEnter = () => {
     this.setState({isHovered: true})
   }
@@ -34,6 +43,11 @@ class SexyScrollbar extends React.Component<Props> {
     this.setState({isScrolling: false})
   }
 
+  setScrollRef = (c) => {
+    this.scrollRef = c
+    this.forceUpdate()
+  }
+
   render () {
     const {isHovered, isScrolling} = this.state
     const {activeColor, children, color} = this.props
@@ -41,8 +55,12 @@ class SexyScrollbar extends React.Component<Props> {
       opacity: isHovered ? 1 : 0,
       backgroundColor: isScrolling && activeColor ? activeColor : color
     }
+    console.log('height', this.scrollRef && this.scrollRef.scrollHeight)
     return (
       <Scrollbars
+        style={{
+          height: this.scrollRef ? this.scrollRef.scrollHeight : '100px'
+        }}
         renderThumbVertical={(props) => (
           <div {...props} className={thumbVerical} style={{...props.style, ...thumbStyles}} />
         )}
@@ -51,7 +69,7 @@ class SexyScrollbar extends React.Component<Props> {
         onScrollStart={this.onScrollStart}
         onScrollStop={this.onScrollStop}
       >
-        {children}
+        {children(this.setScrollRef)}
       </Scrollbars>
     )
   }

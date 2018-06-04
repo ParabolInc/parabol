@@ -12,7 +12,6 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
 import styled, {css} from 'react-emotion'
-import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString()
 const linkBaseStyles = {
@@ -51,10 +50,6 @@ const NavLabel = styled('div')({
   marginLeft: '2.1875rem',
   padding: '1.25rem 0',
   textTransform: 'uppercase'
-})
-
-const TeamList = styled('div')({
-  flex: 1
 })
 
 const addTeamStyles = css({
@@ -111,24 +106,17 @@ const DashSidebar = (props) => {
           <DashNavItem location={location} href='/me' icon='table' label='My Dashboard' />
         </MyDashboard>
         <NavLabel>{'My Teams'}</NavLabel>
-        <SexyScrollbar color='rgba(241,240,250,.3)' activeColor='rgba(241,240,250,.5)'>
-          <React.Fragment>
-            <TeamList>
-              <DashNavList location={location} viewer={viewer} />
-            </TeamList>
-            {/* Making Add New Team part of this list makes things a lot simpler.
-            Otherwise, the child el has to give its height to the parent on every render */}
-            <NavLink
-              className={addTeamStyles}
-              activeClassName={disabledAddTeamStyles}
-              title='Add New Team'
-              to='/newteam/1'
-            >
-              <AddTeamIcon name='plus-circle' />
-              <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
-            </NavLink>
-          </React.Fragment>
-        </SexyScrollbar>
+        <DashNavList location={location} viewer={viewer} />
+
+        <NavLink
+          className={addTeamStyles}
+          activeClassName={disabledAddTeamStyles}
+          title='Add New Team'
+          to='/newteam/1'
+        >
+          <AddTeamIcon name='plus-circle' />
+          <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
+        </NavLink>
       </Nav>
 
       <LogoBlock variant='white' />
