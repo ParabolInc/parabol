@@ -43,19 +43,19 @@ module.exports = {
             plugins: [
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
-              ['transform-class-properties', {spec: true}],
+              'transform-class-properties',
               'relay'
             ],
             presets: [
-              [
-                'env',
-                {
-                  modules: false,
-                  targets: {
-                    browsers: ['last 1 chrome version']
-                  }
-                }
-              ],
+              // [
+              //   'env',
+              //   {
+              //     modules: false,
+              //     targets: {
+              //       browsers: ['last 1 chrome version']
+              //     }
+              //   }
+              // ],
               'flow',
               'react'
             ]

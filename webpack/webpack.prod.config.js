@@ -50,7 +50,7 @@ module.exports = {
     modules: [path.join(__dirname, '../src'), 'node_modules']
   },
   optimization: {
-    minimize: Boolean(process.env.WEBPACK_DEPLOY),
+    minimize: Boolean(process.env.WEBPACK_DEPLOY || process.env.WEBPACK_STATS),
     splitChunks: {
       chunks: 'all'
     }
@@ -89,14 +89,14 @@ module.exports = {
             plugins: [
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
-              ['transform-class-properties', {spec: true}],
+              'transform-class-properties',
               'relay'
             ],
             presets: [
               [
                 'env',
                 {
-                  // debug: true,
+                  debug: true,
                   modules: false,
                   targets: {
                     browsers: ['> 1%', 'not ie 11']

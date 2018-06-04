@@ -42,7 +42,6 @@ module.exports = {
       'react-router-dom',
       'react-transition-group',
       'react-virtualized',
-      'redbox-react',
       'redux',
       'redux-form',
       'redux-raven-middleware',
@@ -52,8 +51,6 @@ module.exports = {
       'tlds'
     ]
   },
-
-  // devtool: 'eval',
   output: {
     filename: '[name].dll.js',
     path: path.join(__dirname, '../build'),
