@@ -1,43 +1,58 @@
 // @flow
 import * as React from 'react'
 import {Scrollbars} from 'react-custom-scrollbars'
-import styled, {css} from 'react-emotion'
+import {css} from 'react-emotion'
 
 type Props = {|
-  isNativeChild?: boolean,
-  children: React.Element<*>
+  activeColor: string,
+  children: React.Element<*>,
+  color: string
 |}
 
-const scrollbarStyles = css({
-  // silver
-  backgroundColor: 'rgba(241,240,250, .3)',
-  borderRadius: '3px'
-})
-
-const StyledScrollbars = styled(Scrollbars)({
-  ':hover': {
-    [`.${scrollbarStyles}`]: {
-      opacity: 1
-    }
-  },
-  [`.${scrollbarStyles}`]: {
-    opacity: 0,
-    transition: 'opacity .2s ease-in'
-  }
+const thumbVerical = css({
+  borderRadius: '3px',
+  transition: 'opacity .2s ease-in'
 })
 
 class SexyScrollbar extends React.Component<Props> {
-  scrollRef = React.createRef()
+  static defaultProps = {
+    color: 'rbga(0,0,0,.5)'
+  }
+  state = {}
+  onMouseEnter = () => {
+    this.setState({isHovered: true})
+  }
+  onMouseLeave = () => {
+    this.setState({isHovered: false})
+  }
+
+  onScrollStart = () => {
+    this.setState({isScrolling: true})
+  }
+
+  onScrollStop = () => {
+    this.setState({isScrolling: false})
+  }
 
   render () {
-    const {children, isNativeChild} = this.props
-    const refProp = isNativeChild ? 'ref' : 'innerRef'
+    const {isHovered, isScrolling} = this.state
+    const {activeColor, children, color} = this.props
+    const thumbStyles = {
+      opacity: isHovered ? 1 : 0,
+      backgroundColor: isScrolling && activeColor ? activeColor : color
+    }
     return (
-      <StyledScrollbars
-        renderThumbVertical={(props) => <div {...props} className={scrollbarStyles} />}
+      <Scrollbars
+        renderThumbVertical={(props) => (
+          <div {...props} className={thumbVerical} style={{...props.style, ...thumbStyles}} />
+        )}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+        onScrollStart={this.onScrollStart}
+        onScrollStop={this.onScrollStop}
       >
-        {React.cloneElement(children, {[refProp]: this.scrollRef})}
-      </StyledScrollbars>
+        {children}
+      </Scrollbars>
     )
   }
 }
