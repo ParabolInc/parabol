@@ -86,8 +86,6 @@ export type User = {
   preferredName: ?string,
   /** the orgs and roles for this user on each */
   userOrgs: ?Array<UserOrg>,
-  /** The datetime that we sent them a welcome email */
-  welcomeSentAt: ?any,
   archivedTasks: ?TaskConnection,
   archivedTasksCount: ?number,
   /** list of git hub repos available to the viewer */
@@ -207,7 +205,7 @@ export type TaskEdge = {
 */
 export type Task = {
   /** shortid */
-  id: ?string,
+  id: string,
   /** the agenda item that created this task, if any */
   agendaId: ?string,
   /** The body of the task. If null, it is a new task. */
@@ -228,7 +226,7 @@ export type Task = {
   /** the foreign key for the retrospective reflection group this was created in */
   reflectionGroupId: ?string,
   /** the shared sort order for tasks on the team dash & user dash */
-  sortOrder: ?number,
+  sortOrder: number,
   /** The status of the task */
   status: ?TaskStatusEnum,
   /** The tags associated with the task */
@@ -429,7 +427,7 @@ export type NewMeetingPhase = CheckInPhase | ReflectPhase | DiscussPhase | Gener
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingStage = CheckInStage | GenericMeetingStage | RetroDiscussStage
+export type NewMeetingStage = RetroDiscussStage | CheckInStage | GenericMeetingStage
 
 /**
   The pay tier of the team
@@ -490,6 +488,10 @@ export type Organization = {
   periodEnd: ?any,
   /** The datetime the current billing cycle starts */
   periodStart: ?any,
+  /** The total number of retroMeetings given to the team */
+  retroMeetingsOffered: ?number,
+  /** Number of retro meetings that can be run (if not pro) */
+  retroMeetingsRemaining: ?number,
   /** The customerId from stripe */
   stripeId: ?string,
   /** The subscriptionId from stripe */
@@ -498,9 +500,9 @@ export type Organization = {
   updatedAt: ?any,
   orgMembers: ?OrganizationMemberConnection,
   /** The count of active & inactive users */
-  orgUserCount: ?OrgUserCount,
+  orgUserCount: OrgUserCount,
   /** The leaders of the org */
-  billingLeaders: ?Array<User>
+  billingLeaders: Array<User>
 }
 
 /**
@@ -558,9 +560,9 @@ export type OrganizationMember = {
 
 export type OrgUserCount = {
   /** The number of orgUsers who have an inactive flag */
-  inactiveUserCount: ?number,
+  inactiveUserCount: number,
   /** The number of orgUsers who do not have an inactive flag */
-  activeUserCount: ?number
+  activeUserCount: number
 }
 
 /**
@@ -1060,6 +1062,8 @@ export type Mutation = {
   deleteTask: ?DeleteTaskPayload,
   /** a server-side mutation called when a client disconnects */
   disconnectSocket: ?DisconnectSocketPayload,
+  /** Changes the priority of the discussion topics */
+  dragDiscussionTopic: ?DragDiscussionTopicPayload,
   /** Changes the drag state of a retrospective reflection */
   dragReflection: ?DragReflectionPayload,
   /** Changes the editing state of a retrospective reflection */
@@ -1625,10 +1629,6 @@ export type GoogleAnalyzedEntity = {
   The retro-specific meeting settings
 */
 export type RetrospectiveMeetingSettings = {
-  /** The total number of meetings given to the team */
-  meetingsOffered: ?number,
-  /** Number of meetings that can be run (if not pro) */
-  meetingsRemaining: ?number,
   /** The type of meeting these settings apply to */
   meetingType: ?MeetingTypeEnum,
   /** The broad phase types that will be addressed during the meeting */
@@ -1807,6 +1807,46 @@ export type DeleteTaskPayload = {
 export type DisconnectSocketPayload = {
   /** The user that disconnected */
   user: ?User
+}
+
+export type DragDiscussionTopicPayload = {
+  error: ?StandardMutationError,
+  meeting: ?NewMeeting,
+  stage: ?RetroDiscussStage
+}
+
+/**
+  The stage where the team discusses a single theme
+*/
+export type RetroDiscussStage = {
+  /** shortid */
+  id: string,
+  /** The datetime the stage was completed */
+  endAt: ?any,
+  /** foreign key. try using meeting */
+  meetingId: string,
+  /** The meeting this stage belongs to */
+  meeting: ?NewMeeting,
+  /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
+  isComplete: ?boolean,
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean,
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean,
+  /** The phase this stage belongs to */
+  phase: ?NewMeetingPhase,
+  /** The type of the phase */
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  /** The datetime the stage was started */
+  startAt: ?any,
+  /** Number of times the facilitator has visited this stage */
+  viewCount: ?number,
+  /** foreign key. use reflectionGroup */
+  reflectionGroupId: ?string,
+  /** the group that is the focal point of the discussion */
+  reflectionGroup: ?RetroReflectionGroup,
+  /** The sort order for reprioritizing discussion topics */
+  sortOrder: number
 }
 
 export type DragReflectionPayload = {
@@ -2495,6 +2535,7 @@ export type TeamSubscriptionPayload =
   | AutoGroupReflectionsPayload
   | CreateReflectionPayload
   | CreateReflectionGroupPayload
+  | DragDiscussionTopicPayload
   | DragReflectionPayload
   | EditReflectionPayload
   | EndMeetingPayload
@@ -2656,38 +2697,6 @@ export type DiscussPhase = {
 }
 
 /**
-  The stage where the team discusses a single theme
-*/
-export type RetroDiscussStage = {
-  /** shortid */
-  id: string,
-  /** The datetime the stage was completed */
-  endAt: ?any,
-  /** foreign key. try using meeting */
-  meetingId: string,
-  /** The meeting this stage belongs to */
-  meeting: ?NewMeeting,
-  /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
-  isComplete: ?boolean,
-  /** true if any meeting participant can navigate to this stage */
-  isNavigable: ?boolean,
-  /** true if the facilitator can navigate to this stage */
-  isNavigableByFacilitator: ?boolean,
-  /** The phase this stage belongs to */
-  phase: ?NewMeetingPhase,
-  /** The type of the phase */
-  phaseType: ?NewMeetingPhaseTypeEnum,
-  /** The datetime the stage was started */
-  startAt: ?any,
-  /** Number of times the facilitator has visited this stage */
-  viewCount: ?number,
-  /** foreign key. use reflectionGroup */
-  reflectionGroupId: ?string,
-  /** the group that is the focal point of the discussion */
-  reflectionGroup: ?RetroReflectionGroup
-}
-
-/**
   An all-purpose meeting phase with no extra state
 */
 export type GenericMeetingPhase = {
@@ -2718,10 +2727,6 @@ export type NotifyPromoteToOrgLeader = {
   The action-specific meeting settings
 */
 export type ActionMeetingSettings = {
-  /** The total number of meetings given to the team */
-  meetingsOffered: ?number,
-  /** Number of meetings that can be run (if not pro) */
-  meetingsRemaining: ?number,
   /** The type of meeting these settings apply to */
   meetingType: ?MeetingTypeEnum,
   /** The broad phase types that will be addressed during the meeting */

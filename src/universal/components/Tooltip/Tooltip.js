@@ -94,8 +94,9 @@ class Tooltip extends Component {
     if (typeof this.props.isOpen === 'boolean') return child
     return cloneElement(child, {
       onMouseEnter: (e) => {
+        const {target} = e
         const handleMouseEnter = () => {
-          setOriginRef(e.target)
+          setOriginRef(target)
           this.setState({
             inToggle: true,
             isClosing: false,

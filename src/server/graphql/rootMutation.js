@@ -82,6 +82,7 @@ import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn'
 import autoGroupReflections from 'server/graphql/mutations/autoGroupReflections'
 import dragReflection from 'server/graphql/mutations/dragReflection'
 import updateTaskDueDate from 'server/graphql/mutations/updateTaskDueDate'
+import dragDiscussionTopic from 'server/graphql/mutations/dragDiscussionTopic'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -112,6 +113,7 @@ export default new GraphQLObjectType({
     createUserPicturePutUrl,
     deleteTask,
     disconnectSocket,
+    dragDiscussionTopic,
     dragReflection,
     editReflection,
     editTask,

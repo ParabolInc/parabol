@@ -1,6 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLID,
+  GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
@@ -22,10 +23,7 @@ const Organization = new GraphQLObjectType({
   name: 'Organization',
   description: 'An organization',
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The unique organization ID'
-    },
+    id: {type: new GraphQLNonNull(GraphQLID), description: 'The unique organization ID'},
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the organization was created'
@@ -75,7 +73,14 @@ const Organization = new GraphQLObjectType({
       description: 'The datetime the current billing cycle starts',
       resolve: resolveForBillingLeaders('periodStart')
     },
-
+    retroMeetingsOffered: {
+      type: GraphQLInt,
+      description: 'The total number of retroMeetings given to the team'
+    },
+    retroMeetingsRemaining: {
+      type: GraphQLInt,
+      description: 'Number of retro meetings that can be run (if not pro)'
+    },
     stripeId: {
       type: GraphQLID,
       description: 'The customerId from stripe',
@@ -125,7 +130,7 @@ const Organization = new GraphQLObjectType({
       }
     },
     orgUserCount: {
-      type: OrgUserCount,
+      type: new GraphQLNonNull(OrgUserCount),
       description: 'The count of active & inactive users',
       resolve: async (source) => {
         const {orgUsers} = source
@@ -138,7 +143,7 @@ const Organization = new GraphQLObjectType({
       }
     },
     billingLeaders: {
-      type: new GraphQLList(User),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
       resolve: async ({orgUsers}, args, {dataLoader}) => {
         const billingLeaderUserIds = orgUsers

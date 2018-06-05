@@ -1,14 +1,19 @@
-import React, {Component} from 'react'
+import React from 'react'
 import Button from 'universal/components/Button/Button'
-import {MONTHLY_PRICE, PERSONAL, PERSONAL_LABEL, PRO, PRO_LABEL} from 'universal/utils/constants'
+import {
+  PERSONAL,
+  PERSONAL_LABEL,
+  PRO,
+  PRO_LABEL,
+  BILLING_LEADER_LABEL
+} from 'universal/utils/constants'
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
-import plural from 'universal/utils/plural'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
 import makeGradient from 'universal/styles/helpers/makeGradient'
 import {createFragmentContainer} from 'react-relay'
+import InlineEstimatedCost from 'universal/components/InlineEstimatedCost'
 
 const personalGradient = makeGradient(ui.palette.mid, ui.palette.midGray)
 const professionalGradient = makeGradient(ui.palette.yellow, ui.palette.warm)
@@ -69,17 +74,6 @@ const ButtonBlock = styled('div')({
   width: '100%'
 })
 
-const InlineHint = styled('div')({
-  backgroundColor: ui.palette.light,
-  borderRadius: ui.borderRadiusSmall,
-  color: ui.hintColor,
-  fontSize: appTheme.typography.s2,
-  lineHeight: appTheme.typography.s5,
-  margin: '0 1rem',
-  padding: '.625rem 1rem',
-  textAlign: 'center'
-})
-
 const CopyWithStatus = styled('div')({
   margin: '0 auto',
   padding: '0 0 .5rem',
@@ -118,141 +112,113 @@ type Props = {|
   organization: Object
 |}
 
-class OrgPlanSqueeze extends Component<Props> {
-  state = {showCost: false}
-
-  getCost = () => {
-    this.setState({
-      showCost: !this.state.showCost
-    })
-  }
-
-  render () {
-    const {
-      organization: {
-        isBillingLeader,
-        billingLeaders,
-        orgUserCount: {activeUserCount},
-        orgId
-      }
-    } = this.props
-    const estimatedCost = activeUserCount * MONTHLY_PRICE
-    const {showCost} = this.state
-    const primaryButtonProps = {
-      buttonSize: 'medium',
-      buttonStyle: 'primary',
-      depth: 2,
-      isBlock: true
+const OrgPlanSqueeze = (props: Props) => {
+  const {
+    organization: {
+      isBillingLeader,
+      billingLeaders,
+      orgUserCount: {activeUserCount},
+      orgId
     }
-    const toggle = <Button {...primaryButtonProps} label='Upgrade to the Pro Plan' />
-    const openUrl = (url) => () => window.open(url, '_blank')
+  } = props
+  const primaryButtonProps = {
+    buttonSize: 'medium',
+    buttonStyle: 'primary',
+    depth: 2,
+    isBlock: true
+  }
+  const toggle = <Button {...primaryButtonProps} label='Upgrade to the Pro Plan' />
+  const openUrl = (url) => () => window.open(url, '_blank')
+  const hasManyBillingLeaders = billingLeaders.length !== 1
 
-    const billingLeaderSqueeze = (
+  const billingLeaderSqueeze = (
+    <TierPanelBody>
+      <div>
+        {'This could be you.'}
+        <br />
+        {'Ready for the full experience?'}
+      </div>
+      <ButtonBlock>
+        <CreditCardModalContainer orgId={orgId} toggle={toggle} />
+      </ButtonBlock>
+      <InlineEstimatedCost activeUserCount={activeUserCount} />
+    </TierPanelBody>
+  )
+
+  const makeEmail = (email) => (
+    <Email href={`mailto:${email}`} title={`Email ${email}`}>
+      {email}
+    </Email>
+  )
+
+  const nudgeTheBillingLeader = () => {
+    const {email, preferredName} = billingLeaders[0]
+    return (
       <TierPanelBody>
         <div>
-          {'This could be you.'}
+          {`Contact your ${BILLING_LEADER_LABEL},`}
           <br />
-          {'Ready for the full experience?'}
+          <b>{preferredName}</b>
+          {', to upgrade:'}
         </div>
-        <ButtonBlock>
-          <CreditCardModalContainer orgId={orgId} toggle={toggle} />
-        </ButtonBlock>
-        {showCost ? (
-          <InlineHint>
-            {`${activeUserCount} Active ${plural(
-              activeUserCount,
-              'User'
-            )} x $${MONTHLY_PRICE} = $${estimatedCost}/mo`}
-          </InlineHint>
-        ) : (
-          <Button
-            buttonSize='medium'
-            buttonStyle='flat'
-            colorPalette='warm'
-            icon='question-circle'
-            iconPlacement='right'
-            label='How much will it cost?'
-            onClick={this.getCost}
-          />
-        )}
+        {makeEmail(email)}
       </TierPanelBody>
     )
+  }
 
-    const makeEmail = (email) => (
-      <Email href={`mailto:${email}`} title={`Email ${email}`}>
-        {email}
-      </Email>
-    )
-
-    const nudgeTheBillingLeader = () => {
-      const {email, preferredName} = billingLeaders[0]
-      return (
-        <TierPanelBody>
-          <div>
-            {'Contact your billing leader,'}
-            <br />
-            <b>{preferredName}</b>
-            {', to upgrade:'}
-          </div>
-          {makeEmail(email)}
-        </TierPanelBody>
-      )
-    }
-
-    const nudgeAnyBillingLeader = () => {
-      return (
-        <TierPanelBody>
-          <div>{'Contact a billing leader to upgrade:'}</div>
-          <EmailBlock>
-            {billingLeaders.map((billingLeader) => {
-              const {billingLeaderId, email} = billingLeader
-              return <div key={billingLeaderId}>{makeEmail(email)}</div>
-            })}
-          </EmailBlock>
-        </TierPanelBody>
-      )
-    }
-
+  const nudgeAnyBillingLeader = () => {
     return (
-      <OrgPlanSqueezeRoot>
-        <TierPanelLayout>
-          {/* Personal Panel */}
-          <TierPanel tier={PERSONAL}>
-            <TierPanelHeader tier={PERSONAL}>{PERSONAL_LABEL}</TierPanelHeader>
-            <TierPanelBody>
-              <CopyWithStatus>
-                <b>{'Your current plan.'}</b>
-                <br />
-                {'The basics, for free!'}
-              </CopyWithStatus>
-            </TierPanelBody>
-          </TierPanel>
-          {/* Professional Panel */}
-          <TierPanel tier={PRO}>
-            <TierPanelHeader tier={PRO}>
-              {'Upgrade to '}
-              {PRO_LABEL}
-            </TierPanelHeader>
-            {isBillingLeader && billingLeaderSqueeze}
-            {!isBillingLeader && billingLeaders.length === 1 && nudgeTheBillingLeader()}
-            {!isBillingLeader && billingLeaders.length !== 1 && nudgeAnyBillingLeader()}
-          </TierPanel>
-        </TierPanelLayout>
-        {/* Learn More Link */}
-        <ButtonBlock>
-          <Button
-            buttonSize='medium'
-            buttonStyle='link'
-            colorPalette='mid'
-            icon='external-link-square'
-            iconPlacement='right'
-            label='Learn About Plans & Invoicing'
-            onClick={openUrl(PRICING_LINK)}
-          />
-        </ButtonBlock>
-      </OrgPlanSqueezeRoot>
+      <TierPanelBody>
+        <div>{`Contact a ${BILLING_LEADER_LABEL} to upgrade:`}</div>
+        <EmailBlock>
+          {billingLeaders.map((billingLeader) => {
+            const {billingLeaderId, email} = billingLeader
+            return <div key={billingLeaderId}>{makeEmail(email)}</div>
+          })}
+        </EmailBlock>
+      </TierPanelBody>
     )
   }
+
+  return (
+    <OrgPlanSqueezeRoot>
+      <TierPanelLayout>
+        {/* Personal Panel */}
+        <TierPanel tier={PERSONAL}>
+          <TierPanelHeader tier={PERSONAL}>{PERSONAL_LABEL}</TierPanelHeader>
+          <TierPanelBody>
+            <CopyWithStatus>
+              <b>{'Your current plan.'}</b>
+              <br />
+              {'The basics, for free!'}
+            </CopyWithStatus>
+          </TierPanelBody>
+        </TierPanel>
+        {/* Professional Panel */}
+        <TierPanel tier={PRO}>
+          <TierPanelHeader tier={PRO}>
+            {'Upgrade to '}
+            {PRO_LABEL}
+          </TierPanelHeader>
+          {isBillingLeader && billingLeaderSqueeze}
+          {!isBillingLeader && !hasManyBillingLeaders && nudgeTheBillingLeader()}
+          {!isBillingLeader && hasManyBillingLeaders && nudgeAnyBillingLeader()}
+        </TierPanel>
+      </TierPanelLayout>
+      {/* Learn More Link */}
+      <ButtonBlock>
+        <Button
+          buttonSize='medium'
+          buttonStyle='link'
+          colorPalette='mid'
+          icon={ui.iconExternalLink}
+          iconPlacement='right'
+          label='Learn About Plans & Invoicing'
+          onClick={openUrl(PRICING_LINK)}
+        />
+      </ButtonBlock>
+    </OrgPlanSqueezeRoot>
+  )
 }
 
 export default createFragmentContainer(

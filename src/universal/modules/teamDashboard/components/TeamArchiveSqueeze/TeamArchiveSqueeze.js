@@ -66,7 +66,7 @@ class TeamArchiveSqueeze extends Component {
                 {'.'}
                 <br />
                 <a href={PRICING_LINK} target='_blank' title={linkLabel}>
-                  <b>{linkLabel}</b> <FontAwesome name='external-link-square' style={iconStyles} />
+                  <b>{linkLabel}</b> <FontAwesome name={ui.iconExternalLink} style={iconStyles} />
                 </a>
               </p>
             </div>

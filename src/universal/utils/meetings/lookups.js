@@ -45,7 +45,7 @@ export const phaseLabelLookup = {
 export const phaseDescriptionLookup = {
   [REFLECT]: 'Add anonymous reflections for each prompt',
   [GROUP]: 'Drag cards to group by common topics',
-  [VOTE]: 'Vote on the themes you want to discuss',
+  [VOTE]: 'Vote on the topics you want to discuss',
   [DISCUSS]: 'Create takeaway task cards to capture next steps'
 }
 

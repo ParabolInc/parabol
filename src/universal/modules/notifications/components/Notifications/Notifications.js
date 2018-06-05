@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Atmosphere from 'universal/Atmosphere'
 import Helmet from 'react-helmet'
-import {requiresAction} from 'universal/types/notification'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
@@ -14,6 +13,7 @@ import styled from 'react-emotion'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import Button from 'universal/components/Button/Button'
 import Panel from 'universal/components/Panel/Panel'
+import {PAYMENT_REJECTED, REQUEST_NEW_USER, TEAM_INVITE} from 'universal/utils/constants'
 
 const ClearAllButtonBlock = styled('div')({
   alignSelf: 'center',
@@ -38,6 +38,14 @@ const NotificationsEmptyBlock = styled('div')({
   width: '100%'
 })
 
+const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
+  PAYMENT_REJECTED,
+  REQUEST_NEW_USER,
+  TEAM_INVITE
+])
+
+const requiresAction = (type): boolean => NOTIFICATION_TYPES_REQUIRING_ACTION.has(type)
+
 const Notifications = (props) => {
   const {
     atmosphere,
@@ -49,7 +57,7 @@ const Notifications = (props) => {
     submitting
   } = props
 
-  const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node))
+  const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node.type))
   const clearAllNotifications = () => {
     submitMutation()
     clearableNotifs.forEach(({node}) => {

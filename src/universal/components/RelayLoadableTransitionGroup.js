@@ -8,7 +8,7 @@ import {HUMAN_ADDICTION_THRESH} from 'universal/styles/ui'
  * A Component to stick in any Root component (one that uses the QueryRenderer from relay)
  *
  * */
-class RelayTransitionGroup extends Component {
+class RelayLoadableTransitionGroup extends Component {
   static propTypes = {
     readyState: PropTypes.any,
     loading: PropTypes.func.isRequired,
@@ -46,4 +46,4 @@ class RelayTransitionGroup extends Component {
   }
 }
 
-export default RelayTransitionGroup
+export default RelayLoadableTransitionGroup

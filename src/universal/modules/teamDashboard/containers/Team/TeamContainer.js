@@ -45,12 +45,7 @@ const TeamContainer = (props) => {
     })
   )
   return (
-    <Team
-      hasMeetingAlert={viewer && viewer.hasMeetingAlert}
-      isSettings={isSettings}
-      team={team}
-      isRetroEnabled={viewer && viewer.featureFlags && viewer.featureFlags.retro}
-    >
+    <Team hasMeetingAlert={viewer && viewer.hasMeetingAlert} isSettings={isSettings} team={team}>
       <Switch>
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
         <AsyncRoute exact path={match.path} mod={agendaTasks} />
@@ -81,9 +76,6 @@ export default createFragmentContainer(
   graphql`
     fragment TeamContainer_viewer on User {
       hasMeetingAlert
-      featureFlags {
-        retro
-      }
       team(teamId: $teamId) {
         ...Team_team
         ...TeamArchive_team

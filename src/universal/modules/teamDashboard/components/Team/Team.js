@@ -12,12 +12,12 @@ import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressM
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {ACTION} from 'universal/utils/constants'
 import styled from 'react-emotion'
-import Button from 'universal/components/Button/Button'
 import DashMain from 'universal/components/Dashboard/DashMain'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo'
-import DashContent from 'universal/components/Dashboard/DashContent'
 import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
+import Button from 'universal/components/Button/Button'
+import DashContent from 'universal/components/Dashboard/DashContent'
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
 const initialValues = {teamName: ''}
@@ -72,7 +72,7 @@ class Team extends Component {
   }
 
   render () {
-    const {children, hasMeetingAlert, isRetroEnabled, isSettings, team} = this.props
+    const {children, hasMeetingAlert, isSettings, team} = this.props
     if (!team) return <LoadingView />
     const {teamId, teamName, isPaid, meetingId, newMeeting} = team
     const hasActiveMeeting = Boolean(meetingId)
@@ -141,7 +141,7 @@ class Team extends Component {
               />
             )}
             <DashboardAvatars team={team} />
-            {!isSettings && <TeamCallsToAction isRetroEnabled={isRetroEnabled} teamId={teamId} />}
+            {!isSettings && <TeamCallsToAction teamId={teamId} />}
           </TeamViewNavBlock>
         </DashHeader>
         <DashContent hasOverlay={hasOverlay} padding='0'>
@@ -156,7 +156,6 @@ Team.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   children: PropTypes.any,
   hasMeetingAlert: PropTypes.bool,
-  isRetroEnabled: PropTypes.bool,
   isSettings: PropTypes.bool.isRequired,
   history: PropTypes.object,
   team: PropTypes.object

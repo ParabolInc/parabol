@@ -14,6 +14,9 @@ graphql`
       newMeeting {
         ...CompleteNewMeetingFrag @relay(mask: false)
       }
+      organization {
+        retroMeetingsRemaining
+      }
     }
   }
 `

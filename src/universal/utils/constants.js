@@ -20,6 +20,8 @@ export const RETRO_VOTED_LABEL = 'Upvoted'
 
 /* Phases */
 export const LOBBY = 'lobby'
+export const RETRO_LOBBY_FREE = 'retroLobbyFree'
+export const RETRO_LOBBY_PAID = 'retroLobbyPaid'
 // lowercase here to match url
 export const CHECKIN = 'checkin'
 export const UPDATES = 'updates'
@@ -117,6 +119,7 @@ export const MEMBERS_PAGE = 'members'
 
 /* User Org Roles */
 export const BILLING_LEADER = 'billingLeader'
+export const BILLING_LEADER_LABEL = 'Billing Leader'
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
@@ -235,7 +238,9 @@ export const RETROSPECTIVE = 'retrospective'
 /* Retro DnD types */
 export const REFLECTION_CARD = 'REFLECTION_CARD'
 export const REFLECTION_GROUP = 'REFLECTION_GROUP'
+export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 
 /* Retro constants */
 export const RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5
 export const RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3
+export const RETROSPECTIVE_TRIAL_COUNT_DEFAULT = 3

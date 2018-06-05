@@ -14,34 +14,16 @@ class Card extends Component {
     super(props)
     const {content} = props
     const contentState = truncateCard(content)
-    this.state = {
-      editorState: EditorState.createWithContent(
-        contentState,
-        editorDecorators(this.getEditorState)
-      )
-    }
+    this.editorState = EditorState.createWithContent(
+      contentState,
+      editorDecorators(this.getEditorState)
+    )
   }
 
-  componentWillReceiveProps (nextProps) {
-    const {content: oldContent} = this.props
-    const {content} = nextProps
-    if (content !== oldContent) {
-      const contentState = truncateCard(content)
-      this.setState({
-        editorState: EditorState.createWithContent(
-          contentState,
-          editorDecorators(this.getEditorState)
-        )
-      })
-      this.setEditorState(content)
-    }
-  }
-
-  getEditorState = () => this.state.editorState
+  getEditorState = () => this.editorState
 
   render () {
     const {status, tags} = this.props
-    const {editorState} = this.state
     const isPrivate = isTaskPrivate(tags)
     const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF'
 
@@ -83,7 +65,7 @@ class Card extends Component {
                 <EmptySpace height={8} />
                 <div style={statusStyle} />
                 <EmptySpace height={8} />
-                <Editor readOnly editorState={editorState} />
+                <Editor readOnly editorState={this.editorState} />
               </div>
             </td>
           </tr>
