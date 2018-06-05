@@ -5,6 +5,8 @@ import {DISCUSS, VOTE} from 'universal/utils/constants'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import handleRemoveReflectionGroups from 'universal/mutations/handlers/handleRemoveReflectionGroups'
+import isViewerTyping from 'universal/utils/isViewerTyping'
+import isInterruptingChickenPhase from 'universal/utils/isInterruptingChickenPhase'
 
 graphql`
   fragment NavigateMeetingMutation_team on NavigateMeetingPayload {
@@ -88,7 +90,10 @@ export const navigateMeetingTeamOnNext = (payload, context) => {
     const meetingProxy = store.get(meetingId)
     const viewerStageId = getInProxy(meetingProxy, 'localStage', 'id')
     if (viewerStageId === oldFacilitatorStageId) {
-      setLocalStageAndPhase(store, meetingId, facilitatorStageId)
+      const viewerPhaseType = getInProxy(meetingProxy, 'localPhase', 'phaseType')
+      if (!isInterruptingChickenPhase(viewerPhaseType) || !isViewerTyping()) {
+        setLocalStageAndPhase(store, meetingId, facilitatorStageId)
+      }
     }
   })
 }

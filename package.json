@@ -54,7 +54,7 @@
     "relay": "npm run update-schema && relay-compiler --src ./src --schema build/schema.json --client-schema src/client/clientSchema.graphql --watch",
     "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn flowgen",
     "postversion": "git push --follow-tags",
-    "flowgen": "gql2flow -e -o ./src/universal/types/schema.flow.js ./build/schema.json",
+    "flowgen": "gql2flow -e -o ./src/universal/types/schema.flow.js ./build/schema.json && prettier --write 'src/universal/types/schema.flow.js'",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
