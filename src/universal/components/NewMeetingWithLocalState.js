@@ -5,8 +5,6 @@ import {withRouter} from 'react-router-dom'
 import NewMeeting from 'universal/components/NewMeeting'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import findKeyByValue from 'universal/utils/findKeyByValue'
-import isInterruptingChickenPhase from 'universal/utils/isInterruptingChickenPhase'
-import isViewerTyping from 'universal/utils/isViewerTyping'
 import findStageById from 'universal/utils/meetings/findStageById'
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
@@ -76,10 +74,6 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       if (!newMeeting && teamId) {
         // goto lobby
         history.push(`/${meetingSlug}/${teamId}`)
-        return
-      }
-      const oldPhaseType = oldMeeting && oldMeeting.localPhase && oldMeeting.localPhase.phaseType
-      if (oldPhaseType && isInterruptingChickenPhase(oldPhaseType) && isViewerTyping()) {
         return
       }
       const {phases} = newMeeting
