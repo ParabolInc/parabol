@@ -12,6 +12,7 @@ import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMu
 import ui from 'universal/styles/ui'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import UserDraggingHeader from 'universal/components/UserDraggingHeader'
+import ReflectionFooter from 'universal/components/ReflectionFooter'
 
 type Coords = {
   x: number,
@@ -107,7 +108,10 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
 
   render () {
     const {
-      reflection: {dragContext},
+      reflection: {
+        dragContext,
+        phaseItem: {question}
+      },
       isTeamMemberDragging
     } = this.props
     const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
@@ -118,6 +122,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         <ReflectionCardRoot>
           {isTeamMemberDragging && <UserDraggingHeader user={dragContext.draggerUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
+          <ReflectionFooter>{question}</ReflectionFooter>
         </ReflectionCardRoot>
       </ModalBlock>
     )
@@ -141,6 +146,9 @@ export default createFragmentContainer(
         draggerUser {
           ...UserDraggingHeader_user
         }
+      }
+      phaseItem {
+        question
       }
     }
   `

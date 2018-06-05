@@ -1598,8 +1598,6 @@ export type RetroReflection = {
   Info associated with a current drag
 */
 export type DragContext = {
-  /** The socketId that initiated the drag */
-  draggerSocketId: ?string,
   /** The userId of the person currently dragging the reflection */
   draggerUserId: ?string,
   /** The user that is currently dragging the reflection */

@@ -5,30 +5,30 @@
  */
 /* global HTMLElement */
 // $FlowFixMe
-import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
+import {EditorState, convertFromRaw, convertToRaw} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import editorDecorators from 'universal/components/TaskEditor/decorators'
-
-import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import {createFragmentContainer} from 'react-relay'
-import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
-import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
-import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
-import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
+import {createFragmentContainer} from 'react-relay'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
+import ReflectionFooter from 'universal/components/ReflectionFooter'
+import StyledError from 'universal/components/StyledError'
+import editorDecorators from 'universal/components/TaskEditor/decorators'
+import UserDraggingHeader from 'universal/components/UserDraggingHeader'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
+import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
+import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 import {REFLECT} from 'universal/utils/constants'
 import isTempId from 'universal/utils/relay/isTempId'
-import UserDraggingHeader from 'universal/components/UserDraggingHeader'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import textOverflow from 'universal/styles/helpers/textOverflow'
-import StyledError from 'universal/components/StyledError'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
+
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
+import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
 
 export type Props = {|
   // true if the card is in a collapsed group and it is not the top card (default false)
@@ -43,16 +43,6 @@ type State = {
   editorState: ?Object,
   getEditorState: () => ?Object
 }
-
-const OriginFooter = styled('div')({
-  ...textOverflow,
-  alignItems: 'flex-start',
-  background: '#fff',
-  borderRadius: ui.cardBorderRadius,
-  color: ui.hintColor,
-  fontSize: ui.hintFontSize,
-  padding: '.5rem .75rem'
-})
 
 export const ReflectionCardRoot = styled('div')(
   {
@@ -189,7 +179,7 @@ class ReflectionCard extends Component<Props, State> {
           teamId={teamId}
         />
         {error && <StyledError>{error.message}</StyledError>}
-        {showOriginFooter && <OriginFooter>{question}</OriginFooter>}
+        {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
         {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
       </ReflectionCardRoot>
     )

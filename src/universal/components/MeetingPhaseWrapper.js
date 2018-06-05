@@ -1,4 +1,3 @@
-import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 
 const MeetingPhaseWrapper = styled('div')({
@@ -6,7 +5,6 @@ const MeetingPhaseWrapper = styled('div')({
   justifyContent: 'space-around',
   height: '100%',
   margin: '0 auto',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
   width: '100%'
 })
 

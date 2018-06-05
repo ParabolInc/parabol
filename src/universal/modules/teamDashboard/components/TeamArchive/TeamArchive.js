@@ -33,7 +33,6 @@ class TeamArchive extends Component {
   constructor (props) {
     super(props)
     this.columnCount = getColumnCount()
-    this.archiveWidth = this.columnCount * CARD_WIDTH + 16
   }
 
   componentWillUpdate (nextProps) {

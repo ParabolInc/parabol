@@ -25,8 +25,8 @@ type Props = {
 }
 
 const DragStyles = styled('div')(({isDragging}) => ({
-  opacity: isDragging ? 0 : 1,
-  margin: 8
+  opacity: isDragging ? 0 : 1
+  // margin: 8
 }))
 
 class DraggableReflectionCard extends React.Component<Props> {

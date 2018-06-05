@@ -43,7 +43,7 @@ const Reflections = styled('div')(({canDrop}) => ({
 }))
 
 const Group = styled('div')({
-  margin: MARGIN
+  padding: MARGIN
 })
 
 class ReflectionGroup extends Component<Props, State> {
