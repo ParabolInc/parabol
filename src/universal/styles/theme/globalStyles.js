@@ -81,6 +81,16 @@ export default `
     font-weight: 600;
   }
 
+  @media print {
+    html,
+    body {
+      font-size: 14px !important;
+    }
+    .hide-print {
+      display: none !important;
+    }
+  }
+  
   ${placeholderStyles}
 
   ${fontFaceDefinitions}

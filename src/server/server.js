@@ -21,7 +21,7 @@ import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks'
 import SharedDataLoader from 'shared-dataloader'
 import {Server} from 'uws'
 import http from 'http'
-import startMemwatch from 'server/utils/startMemwatch'
+// import startMemwatch from 'server/utils/startMemwatch'
 import packageJSON from '../../package.json'
 import jwtFields from 'universal/utils/jwtFields'
 import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
@@ -47,12 +47,13 @@ const sharedDataLoader = new SharedDataLoader({
 
 // HMR
 if (!PROD) {
-  const config = require('../../webpack/webpack.config.dev').default
+  const config = require('../../webpack/webpack.dev.config')
+  const hotClient = require('webpack-hot-client')
   const compiler = webpack(config)
-  /* eslint-disable global-require */
+  hotClient(compiler, {port: 8082})
   app.use(
     require('webpack-dev-middleware')(compiler, {
-      // eslint-disable-line import/no-extraneous-dependencies
+      logLevel: 'warn',
       noInfo: false,
       publicPath: config.output.publicPath,
       stats: {
@@ -65,8 +66,6 @@ if (!PROD) {
       }
     })
   )
-  app.use(require('webpack-hot-middleware')(compiler)) // eslint-disable-line import/no-extraneous-dependencies
-  /* eslint-enable global-require */
 } else {
   Raven.config(process.env.SENTRY_DSN, {
     release: version,
@@ -132,15 +131,13 @@ app.get('/auth/github', handleIntegration(GITHUB))
 app.get('/auth/slack', handleIntegration(SLACK))
 app.post('/webhooks/github', handleGitHubWebhooks)
 
-// server-side rendering
-app.get('*', createSSR)
+// return web app
 
-// sentry.io global exception error handling middleware:
-// app.use(Raven.errorHandler());
+app.get('*', createSSR)
 
 // handle sockets
 wss.on('connection', connectionHandler(sharedDataLoader))
 
-if (process.env.MEMWATCH) {
-  startMemwatch()
-}
+// if (process.env.MEMWATCH) {
+// startMemwatch()
+// }

@@ -11,10 +11,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableNewMeetingAvatarMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'NewMeetingAvatarMenu' */
-      'universal/modules/meeting/components/NewMeetingAvatarMenu'
-    ),
+    import(/* webpackChunkName: 'NewMeetingAvatarMenu' */
+      'universal/modules/meeting/components/NewMeetingAvatarMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

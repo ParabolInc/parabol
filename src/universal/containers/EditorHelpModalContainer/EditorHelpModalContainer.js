@@ -3,7 +3,6 @@ import React, {Component} from 'react'
 import withHotkey from 'react-hotkey-hoc'
 import EditorHelpModal from 'universal/components/EditorHelpModal/EditorHelpModal'
 
-@withHotkey
 class EditorHelpModalContainer extends Component {
   static propTypes = {
     bindHotkey: PropTypes.func
@@ -35,4 +34,4 @@ class EditorHelpModalContainer extends Component {
   }
 }
 
-export default EditorHelpModalContainer
+export default withHotkey(EditorHelpModalContainer)

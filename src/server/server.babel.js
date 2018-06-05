@@ -1,6 +1,5 @@
 const path = require('path')
 const resolve = require('resolve') // eslint-disable-line import/no-extraneous-dependencies
-require('babel-polyfill')
 
 const ignorePatterns = [
   '\\/\\.',
@@ -27,6 +26,19 @@ require('babel-register')({
   only (filename) {
     return filename.indexOf('build') === -1 && filename.indexOf('node_modules') === -1
   },
+  plugins: ['syntax-object-rest-spread', ['transform-class-properties', {spec: true}]],
+  presets: [
+    [
+      'env',
+      {
+        targets: {
+          node: 'current'
+        }
+      }
+    ],
+    'flow',
+    'react'
+  ],
   extensions: ['.js'],
   resolveModuleSource (source, filename) {
     return resolve.sync(source, {

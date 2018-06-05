@@ -34,10 +34,8 @@ const loading = (props) => (
 )
 const LoadableGitHubRepoListMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'GitHubRepoListMenu' */
-      'universal/modules/outcomeCard/components/GitHubRepoListMenu/GitHubRepoListMenu'
-    ),
+    import(/* webpackChunkName: 'GitHubRepoListMenu' */
+      'universal/modules/outcomeCard/components/GitHubRepoListMenu/GitHubRepoListMenu'),
   loading,
   delay: HUMAN_ADDICTION_THRESH,
   timeout: MAX_WAIT_TIME

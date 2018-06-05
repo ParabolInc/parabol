@@ -10,10 +10,8 @@ import React from 'react'
 
 const UpgradeModalRootLoadable = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'UpgradeModalRoot' */
-      'universal/components/UpgradeModalRoot'
-    ),
+    import(/* webpackChunkName: 'UpgradeModalRoot' */
+      'universal/components/UpgradeModalRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

@@ -10,10 +10,8 @@ import React from 'react'
 
 const GetRetroAccessLoadable = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'GetRetroAccess' */
-      'universal/components/GetRetroAccess'
-    ),
+    import(/* webpackChunkName: 'GetRetroAccess' */
+      'universal/components/GetRetroAccess'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
