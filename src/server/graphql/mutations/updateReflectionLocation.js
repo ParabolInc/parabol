@@ -12,10 +12,6 @@ export default {
       type: GraphQLID,
       description: 'null if the group is being moved'
     },
-    retroPhaseItemId: {
-      type: GraphQLID,
-      description: 'The phase item the reflection group should move to'
-    },
     sortOrder: {
       type: new GraphQLNonNull(GraphQLFloat),
       description:
@@ -26,19 +22,13 @@ export default {
       description: 'The new group the reflection is a part of (or leaving, if null)'
     }
   },
-  async resolve (source, {reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder}, context) {
+  async resolve (source, {reflectionId, reflectionGroupId, sortOrder}, context) {
     const {dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
-    const data = await handleUpdatedLocation(
-      reflectionId,
-      reflectionGroupId,
-      retroPhaseItemId,
-      sortOrder,
-      context
-    )
+    const data = await handleUpdatedLocation(reflectionId, reflectionGroupId, sortOrder, context)
     if (!data.error) {
       publish(TEAM, data.teamId, UpdateReflectionLocationPayload, data, subOptions)
     }

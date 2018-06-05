@@ -17,8 +17,7 @@ import handleAddReflectionToGroup from 'universal/mutations/handlers/handleAddRe
 type Variables = {
   sortOrder: string,
   reflectionId: string,
-  reflectionGroupId?: string,
-  retroPhaseItemId?: string
+  reflectionGroupId?: string
 }
 
 graphql`
@@ -34,7 +33,6 @@ graphql`
       id
       meetingId
       sortOrder
-      retroPhaseItemId
       reflections {
         ...CompleteReflectionFrag @relay(mask: false)
       }
@@ -54,13 +52,11 @@ const mutation = graphql`
   mutation UpdateReflectionLocationMutation(
     $reflectionGroupId: ID
     $reflectionId: ID
-    $retroPhaseItemId: ID
     $sortOrder: Float!
   ) {
     updateReflectionLocation(
       reflectionGroupId: $reflectionGroupId
       reflectionId: $reflectionId
-      retroPhaseItemId: $retroPhaseItemId
       sortOrder: $sortOrder
     ) {
       error {
@@ -132,14 +128,13 @@ const UpdateReflectionLocationMutation = (
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()
-      const {reflectionId, reflectionGroupId, retroPhaseItemId, sortOrder} = variables
+      const {reflectionId, reflectionGroupId, sortOrder} = variables
       const {meetingId} = context
       // move an entire group somewhere else
       if (!reflectionId) {
         const reflectionGroupProxy = store.get(reflectionGroupId)
         updateProxyRecord(reflectionGroupProxy, {
-          sortOrder,
-          retroPhaseItemId
+          sortOrder
         })
         moveGroupLocation(reflectionGroupProxy, store)
         return
@@ -151,14 +146,13 @@ const UpdateReflectionLocationMutation = (
       let reflectionGroupProxy = store.get(reflectionGroupId)
       // move a reflection into its own group
       if (reflectionGroupId === null) {
-        updateProxyRecord(reflectionProxy, {sortOrder: 0, retroPhaseItemId})
+        updateProxyRecord(reflectionProxy, {sortOrder: 0})
         // create the new group
         const reflectionGroup = {
           id: clientTempId(),
           createdAt: nowISO,
           isActive: true,
           meetingId,
-          retroPhaseItemId,
           sortOrder,
           updatedAt: nowISO,
           voterIds: []
@@ -171,14 +165,10 @@ const UpdateReflectionLocationMutation = (
         updateProxyRecord(reflectionProxy, {sortOrder})
       } else {
         // move a card into another group
-        const groupRetroPhaseItemId = reflectionGroupProxy.getValue('retroPhaseItemId')
         updateProxyRecord(reflectionProxy, {
           sortOrder,
-          reflectionGroupId,
-          retroPhaseItemId: groupRetroPhaseItemId
+          reflectionGroupId
         })
-        const phaseItemProxy = store.get(groupRetroPhaseItemId)
-        reflectionProxy.setLinkedRecord(phaseItemProxy, 'phaseItem')
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
       moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store)

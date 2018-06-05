@@ -52,39 +52,43 @@ const addReflectionToGroup = async (
       reflectionGroupId,
       updatedAt: now
     })
-  const {nextReflections, oldReflections} = await r({
-    nextReflections: r
-      .table('RetroReflection')
-      .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
-      .filter({isActive: true})
-      .coerceTo('array'),
-    oldReflections: r
-      .table('RetroReflection')
-      .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
-      .filter({isActive: true})
-      .coerceTo('array')
-  })
 
-  const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
-    meetingId,
-    nextReflections
-  )
-  await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle)
+  if (oldReflectionGroupId !== reflectionGroupId) {
+    // ths is not just a reorder within the same group
+    const {nextReflections, oldReflections} = await r({
+      nextReflections: r
+        .table('RetroReflection')
+        .getAll(reflectionGroupId, {index: 'reflectionGroupId'})
+        .filter({isActive: true})
+        .coerceTo('array'),
+      oldReflections: r
+        .table('RetroReflection')
+        .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
+        .filter({isActive: true})
+        .coerceTo('array')
+    })
 
-  if (oldReflections.length > 0) {
-    const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
+    const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
       meetingId,
-      oldReflections
+      nextReflections
     )
-    await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle)
-  } else {
-    await r
-      .table('RetroReflectionGroup')
-      .get(oldReflectionGroupId)
-      .update({
-        isActive: false,
-        updatedAt: now
-      })
+    await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle)
+
+    if (oldReflections.length > 0) {
+      const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
+        meetingId,
+        oldReflections
+      )
+      await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle)
+    } else {
+      await r
+        .table('RetroReflectionGroup')
+        .get(oldReflectionGroupId)
+        .update({
+          isActive: false,
+          updatedAt: now
+        })
+    }
   }
   return {
     meetingId,
