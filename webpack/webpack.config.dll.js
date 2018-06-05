@@ -51,8 +51,6 @@ module.exports = {
       'tlds'
     ]
   },
-
-  // devtool: 'eval',
   output: {
     filename: '[name].dll.js',
     path: path.join(__dirname, '../build'),
