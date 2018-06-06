@@ -39,8 +39,26 @@ const MARGIN = 8
 
 const Reflections = styled('div')(({canDrop}) => ({
   cursor: 'pointer',
-  opacity: canDrop ? 0.6 : 1
+  opacity: canDrop ? 0.6 : 1,
+  position: 'relative'
+  // '&::after': {
+  //   content: '""',
+
+  // }
 }))
+
+const ReflectionCardInStack = styled('div')({
+  backgroundColor: 'white',
+  borderRadius: 4,
+  boxShadow: ui.shadow[0],
+  opacity: 1,
+  position: 'absolute',
+  left: 6,
+  top: 6,
+  right: -6,
+  bottom: -2,
+  zIndex: -1
+})
 
 const Group = styled('div')({
   padding: MARGIN
@@ -107,68 +125,60 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   renderReflection = (reflection: Object, idx: number) => {
-    const {canDrop, meeting, retroPhaseItemId, reflectionGroup} = this.props
-    const {isExpanded, reflections, retroPhaseItemId: currentRetroPhaseItemId} = reflectionGroup
+    const {meeting, reflectionGroup} = this.props
+    const {reflections, retroPhaseItemId: currentRetroPhaseItemId} = reflectionGroup
     const {
       localPhase: {phaseType}
     } = meeting
-    const isTopCard = idx === reflections.length - 1
-    const isCollapsed = isExpanded ? false : !isTopCard
-    const showOriginFooter = retroPhaseItemId !== reflection.retroPhaseItemId
-    const interval = reflections.length - idx - 1
+    // const isTopCard = idx === reflections.length - 1
+    // const isCollapsed = isExpanded ? false : !isTopCard
+    // const showOriginFooter = retroPhaseItemId !== reflection.retroPhaseItemId
+    // const interval = reflections.length - idx - 1
+    //
+    // const yTranslate = -idx * ui.retroCardCollapsedHeightRem
+    // const style = {
+    //   transform:
+    //     !isExpanded &&
+    //     `translateY(${yTranslate}rem)
+    //    scale(${1 - 0.05 * interval})`,
+    //   transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`,
+    //   transition: !canDrop && 'all 200ms ease'
+    // }
 
-    const yTranslate = -idx * ui.retroCardCollapsedHeightRem
-    const style = {
-      transform:
-        !isExpanded &&
-        `translateY(${yTranslate}rem)
-       scale(${1 - 0.05 * interval})`,
-      transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`,
-      transition: !canDrop && 'all 200ms ease'
+    // const onTransitionEnd = () => {
+    //   // wait for the topCard to find its new home before calculating the height
+    //   if (isExpanded || !this.topCardRef || !this.reflectionListRef || reflections.length <= 1) {
+    //     return
+    //   }
+    //   this.forceUpdate()
+    // }
+    if (idx > 0) {
+      return (
+        <ReflectionCardInStack key={reflection.id}>
+          <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
+        </ReflectionCardInStack>
+      )
     }
-
-    const onTransitionEnd = () => {
-      // wait for the topCard to find its new home before calculating the height
-      if (isExpanded || !this.topCardRef || !this.reflectionListRef || reflections.length <= 1) {
-        return
-      }
-      this.forceUpdate()
-    }
-
     if (phaseType === GROUP) {
       return (
         <div
           key={reflection.id}
-          style={style}
-          ref={isTopCard ? this.setTopCardRef : undefined}
-          onTransitionEnd={onTransitionEnd}
+          // style={style}
+          ref={this.setTopCardRef}
         >
           <DraggableReflectionCard
             currentRetroPhaseItemId={currentRetroPhaseItemId}
             dndIndex={idx}
-            showOriginFooter={showOriginFooter}
             meeting={meeting}
             reflection={reflection}
-            isExpanded={isExpanded}
-            isCollapsed={isCollapsed}
             isSingleCardGroup={reflections.length === 1}
           />
         </div>
       )
     }
     return (
-      <div
-        key={reflection.id}
-        style={style}
-        ref={isTopCard ? this.setTopCardRef : undefined}
-        onTransitionEnd={onTransitionEnd}
-      >
-        <ReflectionCard
-          isCollapsed={isCollapsed}
-          meeting={meeting}
-          reflection={reflection}
-          showOriginFooter={showOriginFooter}
-        />
+      <div key={reflection.id} ref={this.setTopCardRef}>
+        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
       </div>
     )
   }
@@ -190,13 +200,8 @@ class ReflectionGroup extends Component<Props, State> {
         {/* connect the drop target here so dropping on the title triggers an ungroup */}
         {connectDropTarget(
           <div>
-            <Reflections
-              canDrop={canDrop}
-              onClick={this.toggleExpanded}
-              innerRef={this.setReflectionListRef}
-              style={this.makeCustomHeight()}
-            >
-              {reflections.map(this.renderReflection)}
+            <Reflections canDrop={canDrop} innerRef={this.setReflectionListRef}>
+              {reflections.slice(0, 2).map(this.renderReflection)}
             </Reflections>
           </div>
         )}
