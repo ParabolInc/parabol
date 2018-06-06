@@ -17,10 +17,8 @@ import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal'
 
 const LoadableEditorSuggestions = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'EditorSuggestions' */
-      'universal/components/EditorSuggestions/EditorSuggestions'
-    ),
+    import(/* webpackChunkName: 'EditorSuggestions' */
+      'universal/components/EditorSuggestions/EditorSuggestions'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -30,10 +28,8 @@ const LoadableEditorSuggestions = Loadable({
 
 const LoadableMentionableUsersRoot = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'SuggestMentionableUsersRoot' */
-      'universal/components/SuggestMentionableUsersRoot'
-    ),
+    import(/* webpackChunkName: 'SuggestMentionableUsersRoot' */
+      'universal/components/SuggestMentionableUsersRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

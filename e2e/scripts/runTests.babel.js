@@ -1,3 +1,2 @@
-require('babel-register');
-require('babel-polyfill');
-require('./runTests');
+require('babel-register')
+require('./runTests')

@@ -327,4 +327,4 @@ function fetchQueryAndComputeStateFromProps(
 }
 
 polyfill(ReactRelayQueryRenderer)
-module.exports = ReactRelayQueryRenderer
+export default ReactRelayQueryRenderer

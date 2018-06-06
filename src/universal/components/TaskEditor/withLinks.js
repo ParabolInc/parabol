@@ -23,10 +23,8 @@ import LoadableDraftJSModal from 'universal/components/LoadableDraftJSModal'
 
 const LoadableEditorLinkChanger = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'EditorLinkChanger' */
-      'universal/components/EditorLinkChanger/EditorLinkChanger'
-    ),
+    import(/* webpackChunkName: 'EditorLinkChanger' */
+      'universal/components/EditorLinkChanger/EditorLinkChanger'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -36,10 +34,8 @@ const LoadableEditorLinkChanger = Loadable({
 
 const LoadableEditorLinkViewer = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'EditorLinkViewer' */
-      'universal/components/EditorLinkViewer/EditorLinkViewer'
-    ),
+    import(/* webpackChunkName: 'EditorLinkViewer' */
+      'universal/components/EditorLinkViewer/EditorLinkViewer'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

@@ -23,13 +23,11 @@ const mapStateToProps = (state, props) => {
 }
 
 const agendaTasks = () =>
-  System.import('universal/modules/teamDashboard/components/AgendaAndTasksRoot')
+  import(/* webpackChunkName: 'AgendaAndTasksRoot' */ 'universal/modules/teamDashboard/components/AgendaAndTasksRoot')
 const teamSettings = () =>
-  System.import(
-    'universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper'
-  )
+  import(/* webpackChunkName: 'TeamSettingsWrapper' */ 'universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper')
 const archivedTasks = () =>
-  System.import('universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot')
+  import(/* webpackChunkName: 'TeamArchiveRoot' */ 'universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot')
 
 const TeamContainer = (props) => {
   const {

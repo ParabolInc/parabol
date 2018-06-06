@@ -56,8 +56,7 @@ const collect = (monitor) => ({
 })
 const arePropsEqual = () => true
 
-@dragLayer(collect, {arePropsEqual})
-export default class TaskDragLayer extends Component {
+class TaskDragLayer extends Component {
   static propTypes = {
     currentOffset: PropTypes.shape({
       x: PropTypes.number,
@@ -79,3 +78,5 @@ export default class TaskDragLayer extends Component {
     )
   }
 }
+
+export default dragLayer(collect, {arePropsEqual})(TaskDragLayer)

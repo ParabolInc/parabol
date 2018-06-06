@@ -11,10 +11,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableEmojiMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'EmojiMenu' */
-      'universal/components/EmojiMenu'
-    ),
+    import(/* webpackChunkName: 'EmojiMenu' */
+      'universal/components/EmojiMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

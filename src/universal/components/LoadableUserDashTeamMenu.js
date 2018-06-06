@@ -11,10 +11,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableUserDashTeamMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'UserDashTeamMenu' */
-      'universal/components/UserDashTeamMenu'
-    ),
+    import(/* webpackChunkName: 'UserDashTeamMenu' */
+      'universal/components/UserDashTeamMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

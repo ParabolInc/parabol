@@ -6,19 +6,13 @@ import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/Te
 import ui from 'universal/styles/ui'
 
 const teamSettings = () =>
-  System.import('universal/modules/teamDashboard/components/TeamSettingsRoot')
+  import(/* webpackChunkName: 'TeamSettingsRoot' */ 'universal/modules/teamDashboard/components/TeamSettingsRoot')
 const providers = () =>
-  System.import(
-    'universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot'
-  )
+  import(/* webpackChunkName: 'TeamIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/TeamIntegrationsRoot/TeamIntegrationsRoot')
 const slackIntegrations = () =>
-  System.import(
-    'universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot'
-  )
+  import(/* webpackChunkName: 'SlackIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/SlackIntegrationsRoot/SlackIntegrationsRoot')
 const githubIntegrations = () =>
-  System.import(
-    'universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot'
-  )
+  import(/* webpackChunkName: 'GitHubIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot')
 
 const TeamSettingsWrapper = (props) => {
   const {

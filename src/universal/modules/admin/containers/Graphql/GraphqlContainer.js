@@ -1,6 +1,5 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import GraphiQL from 'graphiql'
-import fetch from 'isomorphic-fetch'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import withAsync from 'react-async-hoc'
@@ -18,11 +17,8 @@ const graphiqlStylesheet = __PRODUCTION__
 
 const makeGraphQLFetcher = (authToken) => {
   return async (graphQLParams) => {
-    if (!__CLIENT__) {
-      return undefined
-    }
     const variables = graphQLParams.variables ? graphQLParams.variables : undefined
-    const res = await fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
+    const res = await window.fetch(`${graphQLProtocol}//${graphQLHost}/graphql`, {
       method: 'post',
       headers: {
         'Content-Type': 'application/json',
@@ -46,10 +42,7 @@ const styleThunk = () => ({
 
 const loadStylesCb = () => ({stylesLoaded: true})
 
-@withStyles(styleThunk)
-@requireAuthAndRole({role: 'su'})
-@withAsync(undefined, {[graphiqlStylesheet]: loadStylesCb})
-export default class Graphiql extends Component {
+class Graphiql extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     styles: PropTypes.object,
@@ -82,3 +75,9 @@ export default class Graphiql extends Component {
     )
   }
 }
+
+export default withStyles(styleThunk)(
+  requireAuthAndRole({role: 'su'})(
+    withAsync(undefined, {[graphiqlStylesheet]: loadStylesCb})(Graphiql)
+  )
+)

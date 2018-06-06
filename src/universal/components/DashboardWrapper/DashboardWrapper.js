@@ -38,9 +38,11 @@ const query = graphql`
 `
 
 const userDashboard = () =>
-  System.import('universal/modules/userDashboard/components/UserDashboard/UserDashboard')
-const teamRoot = () => System.import('universal/modules/teamDashboard/components/TeamRoot')
-const newTeam = () => System.import('universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot')
+  import(/* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard')
+const teamRoot = () =>
+  import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
+const newTeam = () =>
+  import(/* webpackChunkName: 'NewTeamRoot' */ 'universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot')
 
 const subscriptions = [
   NewAuthTokenSubscription,

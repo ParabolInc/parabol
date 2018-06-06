@@ -11,10 +11,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableStandardHubUserMenu = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'StandardHubUserMenu' */
-      'universal/components/StandardHubUserMenu'
-    ),
+    import(/* webpackChunkName: 'StandardHubUserMenu' */
+      'universal/components/StandardHubUserMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

@@ -10,10 +10,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 
 const LoadableDueDatePicker = Loadable({
   loader: () =>
-    System.import(
-      /* webpackChunkName: 'DueDatePicker' */
-      'universal/components/DueDatePicker'
-    ),
+    import(/* webpackChunkName: 'DueDatePicker' */
+      'universal/components/DueDatePicker'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

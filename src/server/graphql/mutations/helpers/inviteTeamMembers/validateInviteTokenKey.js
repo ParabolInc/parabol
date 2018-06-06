@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import promisify from 'es6-promisify'
 
 const compare = promisify(bcrypt.compare)

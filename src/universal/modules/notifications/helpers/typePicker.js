@@ -13,24 +13,24 @@ import {
 
 export default {
   [ADD_TO_TEAM]: () =>
-    System.import('universal/modules/notifications/components/AddedToTeam/AddedToTeam'),
+    import(/* webpackChunkName: 'AddedToTeam' */ 'universal/modules/notifications/components/AddedToTeam/AddedToTeam'),
   [DENY_NEW_USER]: () =>
-    System.import('universal/modules/notifications/components/DenyNewUser/DenyNewUser'),
+    import(/* webpackChunkName: 'DenyNewUser' */ 'universal/modules/notifications/components/DenyNewUser/DenyNewUser'),
   [INVITEE_APPROVED]: () =>
-    System.import('universal/modules/notifications/components/InviteeApproved'),
-  [KICKED_OUT]: () => System.import('universal/modules/notifications/components/KickedOut'),
+    import(/* webpackChunkName: 'InviteeApproved' */ 'universal/modules/notifications/components/InviteeApproved'),
+  [KICKED_OUT]: () =>
+    import(/* webpackChunkName: 'KickedOut' */ 'universal/modules/notifications/components/KickedOut'),
   [PAYMENT_REJECTED]: () =>
-    System.import('universal/modules/notifications/components/PaymentRejected/PaymentRejected'),
-  [TASK_INVOLVES]: () => System.import('universal/modules/notifications/components/TaskInvolves'),
+    import(/* webpackChunkName: 'PaymentRejected' */ 'universal/modules/notifications/components/PaymentRejected/PaymentRejected'),
+  [TASK_INVOLVES]: () =>
+    import(/* webpackChunkName: 'TaskInvolves' */ 'universal/modules/notifications/components/TaskInvolves'),
   // eslint-disable-next-line max-len
   [PROMOTE_TO_BILLING_LEADER]: () =>
-    System.import(
-      'universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader'
-    ),
+    import(/* webpackChunkName: 'PromoteToBillingLeader' */ 'universal/modules/notifications/components/PromoteToBillingLeader/PromoteToBillingLeader'),
   [REQUEST_NEW_USER]: () =>
-    System.import('universal/modules/notifications/components/RequestNewUser/RequestNewUser'),
+    import(/* webpackChunkName: 'RequestNewUser' */ 'universal/modules/notifications/components/RequestNewUser/RequestNewUser'),
   [TEAM_ARCHIVED]: () =>
-    System.import('universal/modules/notifications/components/TeamArchived/TeamArchived'),
+    import(/* webpackChunkName: 'TeamArchived' */ 'universal/modules/notifications/components/TeamArchived/TeamArchived'),
   [TEAM_INVITE]: () =>
-    System.import('universal/modules/notifications/components/TeamInvite/TeamInvite')
+    import(/* webpackChunkName: 'TeamInvite' */ 'universal/modules/notifications/components/TeamInvite/TeamInvite')
 }
