@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'

@@ -10,7 +10,7 @@ import ui from 'universal/styles/ui'
 import {clearNotificationLabel} from '../../helpers/constants'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 
 const PromoteToBillingLeader = (props) => {
   const {

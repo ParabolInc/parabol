@@ -14,7 +14,7 @@ import {css} from 'react-emotion'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',

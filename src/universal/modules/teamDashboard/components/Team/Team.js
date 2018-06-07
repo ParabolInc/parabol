@@ -16,7 +16,7 @@ import DashMain from 'universal/components/Dashboard/DashMain'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo'
 import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import DashContent from 'universal/components/Dashboard/DashContent'
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always

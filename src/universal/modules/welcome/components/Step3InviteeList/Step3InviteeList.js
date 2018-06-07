@@ -9,7 +9,7 @@ import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMuta
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
 import withStyles from 'universal/styles/withStyles'
 import makeStep3Schema from 'universal/validation/makeStep3Schema'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 
 const validate = (values) => {
   const schema = makeStep3Schema()

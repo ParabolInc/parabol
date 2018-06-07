@@ -8,7 +8,7 @@ import ScrollableBlock from 'universal/components/ScrollableBlock'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 
 type Props = {|
   atmosphere: Object,

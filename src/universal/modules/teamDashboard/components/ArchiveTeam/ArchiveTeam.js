@@ -1,7 +1,7 @@
 // @flow
 
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import Type from 'universal/components/Type/Type'
 
 import ArchiveTeamForm from './ArchiveTeamForm'

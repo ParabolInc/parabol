@@ -1,6 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import React, {Component} from 'react'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import removeLink from 'universal/utils/draftjs/removeLink'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'

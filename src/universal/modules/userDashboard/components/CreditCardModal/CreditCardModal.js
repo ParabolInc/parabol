@@ -13,7 +13,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import DashModal from 'universal/components/Dashboard/DashModal'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
@@ -191,6 +191,7 @@ const CreditCardModal = (props) => {
                 label={actionLabel}
                 onClick={handleSubmit(addStripeBilling)}
                 type='submit'
+                waiting={submitting}
               />
             </UpdateButton>
             <CancelButton>
@@ -201,6 +202,7 @@ const CreditCardModal = (props) => {
                 isBlock
                 label='Cancel'
                 onClick={closePortal}
+                waiting={submitting}
               />
             </CancelButton>
           </ButtonGroup>

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
 import withHotkey from 'react-hotkey-hoc'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 
 const ButtonBlock = styled('div')({

@@ -19,7 +19,7 @@ import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import addOrgSchema from 'universal/validation/addOrgSchema'
 import makeAddTeamSchema from 'universal/validation/makeAddTeamSchema'
 import Panel from 'universal/components/Panel/Panel'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 
 const radioStyles = {
   color: ui.palette.dark

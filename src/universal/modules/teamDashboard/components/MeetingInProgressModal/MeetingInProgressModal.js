@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import Type from 'universal/components/Type/Type'
 import {withRouter} from 'react-router-dom'
 import portal from 'react-portal-hoc'

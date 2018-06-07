@@ -11,7 +11,7 @@ import ui from 'universal/styles/ui'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import Panel from 'universal/components/Panel/Panel'
 import {PAYMENT_REJECTED, REQUEST_NEW_USER, TEAM_INVITE} from 'universal/utils/constants'
 

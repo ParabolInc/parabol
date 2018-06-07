@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
 import type {RouterHistory} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import {PRO} from 'universal/utils/constants'
 import styled from 'react-emotion'

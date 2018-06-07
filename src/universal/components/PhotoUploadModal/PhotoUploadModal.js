@@ -5,7 +5,7 @@ import withStyles from 'universal/styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 import portal from 'react-portal-hoc'
 import Avatar from 'universal/components/Avatar/Avatar'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import DashModal from 'universal/components/Dashboard/DashModal'
 
 const PhotoUploadModal = (props) => {

@@ -7,7 +7,7 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ui from 'universal/styles/ui'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 
 const PaymentRejected = (props) => {
   const {history, notification} = props

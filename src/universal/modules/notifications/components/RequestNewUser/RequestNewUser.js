@@ -8,7 +8,7 @@ import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation'
 import ui from 'universal/styles/ui'
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants'
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal'
-import Button from 'universal/components/Button/Button'
+import Button from 'universal/components/Button'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 
