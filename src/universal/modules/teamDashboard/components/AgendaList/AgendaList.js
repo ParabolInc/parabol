@@ -135,7 +135,7 @@ class AgendaList extends Component {
 
     return connectDropTarget(
       <div className={css(styles.root)}>
-        <SexyScrollbar color='rgba(0,0,0,0.3)' activeColor='rgba(0,0,0,0.5)'>
+        <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
           {(scrollRef) => {
             return (
               <div ref={scrollRef}>

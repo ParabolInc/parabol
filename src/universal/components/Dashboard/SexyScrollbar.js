@@ -14,14 +14,35 @@ type State = {|
   isScrolling: boolean
 |}
 
-const thumbVerical = css({
+const thumbVertical = css({
   borderRadius: '3px',
   transition: 'opacity .2s ease-in'
 })
 
+const scrollbarsOuter = {
+  '& > div': {
+    // margin: '0 !important',
+    '::-webkit-scrollbar': {
+      // appearance: 'none',
+      // width: 6
+    },
+    '::-webkit-scrollbar-thumb': {
+      // borderRadius: 3,
+      // backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      visibility: 'hidden'
+    },
+    '::-webkit-scrollbar-thumb:hover': {
+      // backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    '::-webkit-scrollbar-thumb:window-inactive': {
+      // backgroundColor: 'rgba(0, 0, 0, 0.2)'
+    }
+  }
+}
+
 class SexyScrollbar extends React.Component<Props, State> {
   static defaultProps = {
-    color: 'rgba(0,0,0,0.5)'
+    color: 'rgba(0, 0, 0, 0.5)'
   }
   state = {
     isHovered: false,
@@ -56,13 +77,22 @@ class SexyScrollbar extends React.Component<Props, State> {
       backgroundColor: isScrolling && activeColor ? activeColor : color
     }
     console.log('height', this.scrollRef && this.scrollRef.scrollHeight)
+    const scrollbarStyles = css(
+      scrollbarsOuter
+      // {
+      //   '& > div': {
+      //     height: this.scrollRef && `${this.scrollRef.scrollHeight}px !important`
+      //   }
+      // }
+    )
     return (
       <Scrollbars
+        className={scrollbarStyles}
         style={{
-          height: this.scrollRef ? this.scrollRef.scrollHeight : '100px'
+          height: this.scrollRef ? this.scrollRef.scrollHeight : '100%'
         }}
         renderThumbVertical={(props) => (
-          <div {...props} className={thumbVerical} style={{...props.style, ...thumbStyles}} />
+          <div {...props} className={thumbVertical} style={{...props.style, ...thumbStyles}} />
         )}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
