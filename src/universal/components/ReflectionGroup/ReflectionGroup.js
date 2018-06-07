@@ -88,11 +88,7 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   setReflectionListRef = (c) => {
-    const {innerRef} = this.props
     this.reflectionListRef = c
-    if (innerRef) {
-      innerRef(c)
-    }
   }
 
   reflectionListRef: ?HTMLElement
@@ -185,6 +181,7 @@ class ReflectionGroup extends Component<Props, State> {
 
   render () {
     const {canDrop, connectDropTarget, meeting, reflectionGroup} = this.props
+    if (!reflectionGroup) return null
     const {reflections} = reflectionGroup
     const {
       localPhase: {phaseType}
@@ -193,7 +190,7 @@ class ReflectionGroup extends Component<Props, State> {
     // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
     const showHeader = reflections.length > 1 || phaseType === VOTE
     return (
-      <Group>
+      <Group innerRef={this.props.innerRef}>
         {showHeader && (
           <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />
         )}

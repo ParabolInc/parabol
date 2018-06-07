@@ -1,13 +1,5 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import {
-  AutoSizer,
-  CellMeasurer,
-  CellMeasurerCache,
-  createMasonryCellPositioner,
-  Masonry
-} from 'react-virtualized'
-import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {DropTarget} from 'react-dnd'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
@@ -15,6 +7,9 @@ import {REFLECTION_CARD} from 'universal/utils/constants'
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
 import dndNoise from 'universal/utils/dndNoise'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
+import FlipMove from 'react-flip-move'
+import {css} from 'react-emotion'
+import ReflectionGroupGridWrapper from 'universal/components/ReflectionGroupGridWrapper'
 
 type Props = {|
   meeting: Meeting
@@ -22,118 +17,101 @@ type Props = {|
 
 export const CARD_PADDING = 8
 const CARD_WIDTH = 304 + CARD_PADDING * 2
-const MIN_CARD_HEIGHT = 48
-const GUTTER = 0
+// const MIN_CARD_HEIGHT = 48
+export const GRID_ROW_HEIGHT = 8
+
+const GridStyle = css({
+  display: 'grid',
+  gridTemplateColumns: `repeat(4,${CARD_WIDTH}px)`,
+  // gridTemplateRows: `repeat(${rows}, ${GRID_ROW_HEIGHT}px)`,
+  gridAutoRows: GRID_ROW_HEIGHT,
+  gridAutoColumns: '1fr',
+  gridAutoFlow: 'column',
+  // justifyContent: 'center',
+  overflow: 'auto',
+  position: 'relative',
+  width: '100%'
+})
 
 class PhaseItemMasonry extends React.Component<Props> {
-  constructor (props) {
-    super(props)
-    this.cellCache = new CellMeasurerCache({
-      defaultHeight: MIN_CARD_HEIGHT,
-      defaultWidth: CARD_WIDTH,
-      fixedWidth: true
-      // keyMapper: this.keyMapper
-    })
-  }
-  componentWillUpdate (nextProps) {
-    this.invalidateOnAddRemove(
-      this.props.meeting.reflectionGroups,
-      nextProps.meeting.reflectionGroups
-    )
+  state = {
+    gridRows: 0
   }
 
-  invalidateOnAddRemove () {
-    setTimeout(() => {
-      this.cellCache.clearAll()
-      this.resetCellPositioner()
-      this.masonryRef.clearCellPositions()
-    })
+  componentDidMount () {
+    this.initializeGrid()
+    window.addEventListener('resize', this.handleResize)
   }
 
-  initCellPositioner = () => {
-    if (typeof this._cellPositioner === 'undefined') {
-      this.cellPositioner = createMasonryCellPositioner({
-        cellMeasurerCache: this.cellCache,
-        columnCount: this.columnCount,
-        columnWidth: CARD_WIDTH,
-        spacer: GUTTER
-      })
-    }
+  componentDidUpdate () {
+    // this.removeExtraGridWidth()
   }
 
-  cellRenderer = ({index, key, parent, style}) => {
+  componentWillUnmount () {
+    window.removeEventListener('resize', this.handleResize)
+  }
+
+  wrapperRefs = {}
+
+  renderReflections = () => {
     const {meeting} = this.props
     const {reflectionGroups} = meeting
-    const reflectionGroup = reflectionGroups[index]
-    if (!reflectionGroup) return null
-    // console.log('style', style)
-    return (
-      <CellMeasurer cache={this.cellCache} index={index} key={key} parent={parent}>
-        <div style={{...style, transition: 'all 0.5s ease-out'}}>
-          <ReflectionGroup meeting={meeting} reflectionGroup={reflectionGroup} />
-        </div>
-      </CellMeasurer>
-    )
+    window.wr = this.wrapperRefs
+    return reflectionGroups.filter((g) => g.reflections.length).map((reflectionGroup, idx) => {
+      if (!reflectionGroup) {
+        console.log('UNDEF PARENT')
+      }
+      return (
+        <ReflectionGroupGridWrapper
+          key={reflectionGroup.reflectionGroupId}
+          meeting={meeting}
+          reflectionCount={reflectionGroup.reflections.length}
+          reflectionGroup={reflectionGroup}
+        />
+      )
+    })
   }
 
-  onResize = ({width}) => {
-    this.width = width
-    this.setColumnCount(width)
-    this.resetCellPositioner()
-    this.masonryRef.recomputeCellPositions()
+  initializeGrid = () => {
+    this.setState({
+      gridRows: 50
+    })
   }
 
-  setColumnCount = () => {
-    this.columnCount = Math.floor(this.width / (CARD_WIDTH + GUTTER))
+  handleResize = () => {
+    this.initializeGrid()
+  }
+  removeExtraGridWidth = () => {
+    const {scrollWidth, clientWidth} = this.gridRef
+    if (scrollWidth > clientWidth) {
+      this.setState({
+        gridRows: this.state.gridRows + 12
+      })
+    }
   }
 
   setGridRef = (c) => {
     this.gridRef = c
   }
 
-  setMasonryRef = (c) => {
-    this.masonryRef = c
-  }
-
-  resetCellPositioner = () => {
-    this.cellPositioner.reset({
-      // cellMeasurerCache: this.cellCache,
-      columnCount: this.columnCount,
-      columnWidth: CARD_WIDTH,
-      spacer: GUTTER
-    })
-  }
-  renderMasonry = ({height, width}) => {
-    const {meeting} = this.props
-    const {reflectionGroups} = meeting
-
-    this.width = width
-    this.setColumnCount()
-    this.initCellPositioner()
-
-    return (
-      <Masonry
-        cellCount={reflectionGroups.length}
-        cellMeasurerCache={this.cellCache}
-        cellPositioner={this.cellPositioner}
-        cellRenderer={this.cellRenderer}
-        height={height}
-        width={width}
-        ref={this.setMasonryRef}
-        style={{outline: 0, padding: 8}}
-      />
-    )
-  }
-
-  renderAutoSizer = () => {
-    return <AutoSizer onResize={this.onResize}>{this.renderMasonry}</AutoSizer>
-  }
   render () {
     const {connectDropTarget} = this.props
-
+    const {gridRows} = this.state
     return connectDropTarget(
-      <div style={{flex: '1 1 auto'}} ref={this.setGridRef}>
-        {this.renderAutoSizer()}
+      <div
+        ref={this.setGridRef}
+        style={{gridTemplateRows: `repeat(${gridRows}, ${GRID_ROW_HEIGHT}px)`}}
+        className={GridStyle}
+      >
+        <FlipMove
+          staggerDurationBy='30'
+          duration={5000}
+          enterAnimation={null}
+          leaveAnimation={null}
+          typeName={null}
+        >
+          {this.renderReflections()}
+        </FlipMove>
       </div>
     )
   }
@@ -141,55 +119,13 @@ class PhaseItemMasonry extends React.Component<Props> {
 
 const reflectionDropSpec = {
   canDrop (props: Props, monitor) {
-    return monitor.isOver({shallow: true})
+    return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
-  // Makes the card-dropped-into available in the dragSpec's endDrag method.
-  drop (props: Props, monitor, component) {
-    const {x, y} = monitor.getClientOffset()
+  drop (props: Props, monitor) {
     const {
       meeting: {reflectionGroups}
     } = props
-    const {gridRef, cellCache, columnCount} = component
-    const gridRect = gridRef.getBoundingClientRect()
-    const {left, top} = gridRect
-    const xPos = x - left
-    const yPos = y - top
-    let columnIdx = Math.round(xPos / CARD_WIDTH)
-    let isAfter = 0
-    if (columnIdx >= columnCount) {
-      columnIdx = columnCount - 1
-      isAfter = 1
-    }
-    const {_cellHeightCache: heightCache} = cellCache
-    const cellIds = Object.keys(heightCache)
-    let cellIdx = cellIds.length
-    const columnHeights = {}
-    for (let ii = 0; ii < columnCount; ii++) {
-      columnHeights[ii] = 0
-    }
-    for (let ii = 0; ii < cellIds.length; ii++) {
-      const cellId = cellIds[ii]
-      const curColumnIdx = +cellId[0] % columnCount
-      columnHeights[curColumnIdx] += heightCache[cellId]
-      if (curColumnIdx === columnIdx) {
-        const rowHeight = columnHeights[curColumnIdx]
-        if (yPos < rowHeight) {
-          cellIdx = ii + isAfter
-          break
-        }
-      }
-    }
-
-    let sortOrder
-    if (cellIdx === 0) {
-      sortOrder = reflectionGroups[0].sortOrder - 1 + dndNoise()
-    } else if (cellIdx === reflectionGroups.length) {
-      sortOrder = reflectionGroups[reflectionGroups.length - 1].sortOrder + 1 + dndNoise()
-    } else {
-      sortOrder =
-        (reflectionGroups[cellIdx - 1].sortOrder + reflectionGroups[cellIdx].sortOrder) / 2 +
-        dndNoise()
-    }
+    const sortOrder = reflectionGroups[reflectionGroups.length - 1].sortOrder + 1 + dndNoise()
 
     const {reflectionId, reflectionGroupId, isSingleCardGroup} = monitor.getItem()
     const {
