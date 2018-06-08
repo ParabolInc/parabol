@@ -7,9 +7,9 @@ import {REFLECTION_CARD} from 'universal/utils/constants'
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
 import dndNoise from 'universal/utils/dndNoise'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
-import FlipMove from 'react-flip-move'
 import styled, {css} from 'react-emotion'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
+import isTempId from 'universal/utils/relay/isTempId'
 
 type Props = {|
   meeting: Meeting
@@ -21,7 +21,7 @@ const CARD_WIDTH = 304 + CARD_PADDING * 2
 export const GRID_ROW_HEIGHT = 8
 
 const GridStyle = css({
-  display: 'grid',
+  // display: 'grid',
   gridTemplateColumns: `repeat(auto-fill,${CARD_WIDTH}px)`,
   // gridTemplateRows: `repeat(${rows}, ${GRID_ROW_HEIGHT}px)`,
   gridAutoRows: GRID_ROW_HEIGHT,
@@ -96,14 +96,31 @@ class PhaseItemMasonry extends React.Component<Props> {
   //   this.initializeGrid()
   //   window.addEventListener('resize', this.handleResize)
   // }
+  componentWillReceiveProps (nextProps) {
+    const {
+      meeting: {reflectionGroups: newReflectionGroups}
+    } = nextProps
+    const {
+      meeting: {reflectionGroups}
+    } = this.props
+
+    if (newReflectionGroups !== reflectionGroups) {
+      this.working = true
+    }
+  }
+
+  working = false
 
   componentDidUpdate (prevProps) {
+    console.log('cDU')
+
     const {
       meeting: {reflectionGroups: oldReflectionGroups}
     } = prevProps
     const {
       meeting: {reflectionGroups}
     } = this.props
+    // this.working = true
     if (oldReflectionGroups !== reflectionGroups) {
       if (oldReflectionGroups.length > reflectionGroups.length) {
         const {oldReflectionGroupId, newReflectionGroupId} = findRemovedGroup(
@@ -144,10 +161,12 @@ class PhaseItemMasonry extends React.Component<Props> {
         return 1
       })
       meeting.setLinkedRecords(reflectionGroups, 'reflectionGroups')
+      this.working = false
     })
   }
 
   shakeUpBottomCells (longColumn) {
+    // currently, does not prevent cards drifting to the left visually, it's not too bad. i think we'd need a placeholder to stop it
     const bottoms = {}
     for (const [key, value] of this.gridCache.entries()) {
       const {column, top, height} = value
@@ -184,8 +203,8 @@ class PhaseItemMasonry extends React.Component<Props> {
     if (newHeight === cachedGroup.height) {
       console.error('height didnt change')
     }
-    const deltaHeight = newHeight - cachedGroup.height
-    cachedGroup.height = newHeight
+    const deltaHeight = isRemoval ? -cachedGroup.height : 28
+    cachedGroup.height += deltaHeight
     const cellCachesBelow = []
     for (const [reflectionGroupId, value] of this.gridCache.entries()) {
       if (value.column === cachedGroup.column && value.top > cachedGroup.top) {
@@ -196,49 +215,54 @@ class PhaseItemMasonry extends React.Component<Props> {
       cache.top += deltaHeight
     })
   }
-
-  // componentWillUnmount () {
-  //   window.removeEventListener('resize', this.handleResize)
-  // }
   gridCache = new Map()
-  // wrapperRefs = {}
 
   setWrapperRefs = (id) => (c) => {
+    if (isTempId(id)) return
     if (!c) {
       return
       // TODO cleanup later
-      // this.gridCache.delete(id)
     }
-    // this.wrapperRefs[id] = c
     const cachedCell = this.gridCache.get(id)
     if (!cachedCell) {
-      const {left, top, height} = c.getBoundingClientRect()
+      // requestAnimationFrame(() => {
+
+      const {left, height} = c.getBoundingClientRect()
+      const arr = Array.from(this.gridCache)
+      const top = arr.reduce((top, [id, cache]) => {
+        return cache.column === left ? top + cache.height : top
+      }, 0)
       this.gridCache.set(id, {
         ref: c,
         column: left,
-        // scroll height?
         height,
         top
+        // rowStart:
       })
+      // })
     }
   }
 
+  cachedReflections = null
   renderReflections = () => {
     const {meeting} = this.props
     const {reflectionGroups} = meeting
-    return reflectionGroups.map((reflectionGroup, idx) => {
+    // if (this.working) return this.cachedReflections
+    this.cachedReflections = reflectionGroups.map((reflectionGroup, idx) => {
       const {reflectionGroupId} = reflectionGroup
       const cachedCell = this.gridCache.get(reflectionGroupId)
       return (
-        <CardWrapper height={cachedCell ? cachedCell.height : 0} key={reflectionGroupId}>
+        <CardWrapper height={cachedCell ? cachedCell.height : 0} idx={idx} key={reflectionGroupId}>
           <ReflectionGroup
             innerRef={this.setWrapperRefs(reflectionGroupId)}
             meeting={meeting}
             reflectionGroup={reflectionGroup}
+            idx={idx}
           />
         </CardWrapper>
       )
     })
+    return this.cachedReflections
   }
 
   setGridRef = (c) => {
@@ -246,22 +270,25 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   render () {
+    console.log('render')
     const {connectDropTarget} = this.props
+    // if (this.working) return null
     return connectDropTarget(
       <div
         ref={this.setGridRef}
         // style={{gridTemplateRows: `repeat(${gridRows}, ${GRID_ROW_HEIGHT}px)`}}
         className={GridStyle}
       >
-        <FlipMove
-          staggerDurationBy='30'
-          duration={5000}
-          enterAnimation={null}
-          leaveAnimation={null}
-          typeName={null}
-        >
-          {this.renderReflections()}
-        </FlipMove>
+        {/* <FlipMove */}
+        {/* appearAnimation */}
+        {/* staggerDurationBy='20' */}
+        {/* duration={1000} */}
+        {/* enterAnimation */}
+        {/* leaveAnimation={false} */}
+        {/* typeName={null} */}
+        {/* > */}
+        {this.renderReflections()}
+        {/* </FlipMove> */}
       </div>
     )
   }
@@ -326,3 +353,25 @@ export default createFragmentContainer(
     }
   `
 )
+
+window.sortGridCache = () => {
+  Array.from(window.gridCache)
+    .sort((a, b) => {
+      const aCache = a[1]
+      const bCache = b[1]
+      if (!aCache || !bCache) return 1
+      const {top: aTop, column: aCol} = aCache
+      const {top: bTop, column: bCol} = bCache
+      if (aTop < bTop) return -1
+      if (aTop > bTop) return 1
+      if (aCol < bCol) return -1
+      return 1
+    })
+    .forEach((cell) => {
+      console.log(
+        `col: ${cell[1].column} | top: ${cell[1].top} | height: ${cell[1].height} | id: ${cell[0]}`
+      )
+      // return
+    })
+  // void
+}

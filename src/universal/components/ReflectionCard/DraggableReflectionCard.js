@@ -46,7 +46,9 @@ class DraggableReflectionCard extends React.Component<Props> {
       isDragging,
       isOver,
       reflection,
-      meeting
+      meeting,
+      idx,
+      reflectionGroupId
     } = this.props
     const {dragContext} = reflection
     const isTeamMemberDragging = !isDragging && Boolean(dragContext && dragContext.dragCoords)
@@ -60,6 +62,8 @@ class DraggableReflectionCard extends React.Component<Props> {
                 meeting={meeting}
                 reflection={reflection}
                 showOriginFooter
+                idx={idx}
+                reflectionGroupId={reflectionGroupId}
               />
             </DragStyles>
           </div>

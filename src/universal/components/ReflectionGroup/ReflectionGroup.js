@@ -117,8 +117,12 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   renderReflection = (reflection: Object, idx: number) => {
-    const {meeting, reflectionGroup} = this.props
-    const {reflections, retroPhaseItemId: currentRetroPhaseItemId} = reflectionGroup
+    const {meeting, reflectionGroup, idx: groupIdx} = this.props
+    const {
+      reflections,
+      retroPhaseItemId: currentRetroPhaseItemId,
+      reflectionGroupId
+    } = reflectionGroup
     const {
       localPhase: {phaseType}
     } = meeting
@@ -160,10 +164,11 @@ class ReflectionGroup extends Component<Props, State> {
         >
           <DraggableReflectionCard
             currentRetroPhaseItemId={currentRetroPhaseItemId}
-            dndIndex={idx}
+            idx={groupIdx}
             meeting={meeting}
             reflection={reflection}
             isSingleCardGroup={reflections.length === 1}
+            reflectionGroupId={reflectionGroupId}
           />
         </div>
       )

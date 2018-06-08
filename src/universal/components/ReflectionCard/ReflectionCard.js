@@ -5,7 +5,7 @@
  */
 /* global HTMLElement */
 // $FlowFixMe
-import {EditorState, convertFromRaw, convertToRaw} from 'draft-js'
+import {EditorState, ContentState, convertToRaw} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
@@ -69,12 +69,12 @@ export const ReflectionCardRoot = styled('div')(
 
 class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
-    const {reflection} = nextProps
+    const {reflection, idx, reflectionGroupId} = nextProps
     const {content} = reflection
     if (content === prevState.content) return null
-    const contentState = convertFromRaw(JSON.parse(content))
-    // const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;
-    // const contentState = ContentState.createFromText(DEBUG_TEXT);
+    // const contentState = convertFromRaw(JSON.parse(content))
+    const DEBUG_TEXT = `idx: ${idx} | GroupId: ${reflectionGroupId}`
+    const contentState = ContentState.createFromText(DEBUG_TEXT)
     return {
       content,
       editorState: EditorState.createWithContent(
