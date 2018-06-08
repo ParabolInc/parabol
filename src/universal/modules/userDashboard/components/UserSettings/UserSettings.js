@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Field} from 'redux-form'
-import OldButton from 'universal/components/Button/Button'
 import Button from 'universal/components/Button'
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
@@ -83,27 +82,12 @@ const UserSettings = (props) => {
                 </div>
                 <div className={css(styles.buttonBlock)}>
                   <Button
-                    icon='check'
-                    iconPlacement='right'
+                    buttonSize={controlSize}
+                    buttonStyle='solid'
+                    colorPalette='mid'
                     isBlock
                     label='Update'
-                    buttonSize={controlSize}
-                    colorPalette='warm'
                     type='submit'
-                    depth={3}
-                    iconLarge
-                  />
-                  <div style={{paddingTop: 32}} />
-                  <OldButton
-                    icon='check'
-                    iconPlacement='right'
-                    isBlock
-                    label='Update'
-                    buttonSize={controlSize}
-                    colorPalette='warm'
-                    type='submit'
-                    depth={3}
-                    iconLarge
                   />
                 </div>
               </div>
@@ -161,7 +145,7 @@ const styleThunk = () => ({
   },
 
   buttonBlock: {
-    minWidth: '12rem' // 7rem
+    minWidth: '7rem'
   },
 
   infoBlock: {

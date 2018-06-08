@@ -214,39 +214,23 @@ const ui = {
     border: '.0625rem solid transparent',
     borderRadius: '5em',
     boxShadow: 'none',
+    color: dark,
     cursor: 'pointer',
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
     fontWeight: 600,
     outline: 0,
     textAlign: 'center',
-    textDecoration: 'none',
-    transition: `transform ${transition[0]}`,
     userSelect: 'none',
     verticalAlign: 'middle',
-    ':hover': {
-      boxShadow: shadow[0],
-      textDecoration: 'none'
-    },
-    ':focus': {
-      boxShadow: shadow[0],
-      textDecoration: 'none'
-    },
-    ':active': {
-      boxShadow: shadow[0],
-      textDecoration: 'none'
+    ':hover,:focus,:active': {
+      boxShadow: shadow[1]
     }
   },
   buttonStylesPrimary: {
     backgroundImage: gradientWarm,
     color: white,
-    ':hover': {
-      backgroundImage: gradientWarmDarkened
-    },
-    ':focus': {
-      backgroundImage: gradientWarmDarkened
-    },
-    ':active': {
+    ':hover,:focus,:active': {
       backgroundImage: gradientWarmDarkened
     },
     ':disabled': {
@@ -263,17 +247,13 @@ const ui = {
   buttonDisabledStyles: {
     cursor: 'not-allowed',
     opacity: '.5',
-    ':hover': {
-      boxShadow: 'none',
-      opacity: '.5'
-    },
-    ':focus': {
+    ':hover,:focus': {
       boxShadow: 'none',
       opacity: '.5'
     },
     ':active': {
-      boxShadow: 'none',
-      animation: 'none'
+      animation: 'none',
+      boxShadow: 'none'
     },
     ':disabled': {
       boxShadow: 'none'
@@ -376,7 +356,7 @@ const ui = {
 
   dashControlFontColor: COLOR_TEXT_LIGHT,
   dashControlFontSize: appTheme.typography.s2,
-  dashControlHeight: '2rem',
+  dashControlHeight: '1.25rem',
 
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',

@@ -23,7 +23,7 @@ const DashSectionHeading = (props) => {
   return (
     <RootBlock margin={margin}>
       {icon && <StyledIcon name={icon} />}
-      <Type lineHeight={ui.dashControlHeight} scale='s4' colorPalette='dark'>
+      <Type lineHeight='2rem' scale='s4' colorPalette='dark'>
         {label}
       </Type>
     </RootBlock>

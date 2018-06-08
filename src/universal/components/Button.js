@@ -6,21 +6,26 @@ import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 
-const makeSolidTheme = (themeColor, color = '#fff', buttonStyle = 'solid') => ({
+const lightThemes = ['white', 'light', 'gray']
+const flatStyles = ['flat', 'outlined']
+
+const makeSolidTheme = (themeColor, color) => ({
   backgroundColor: themeColor,
   borderColor: themeColor,
   color,
   ':hover,:focus': {color}
 })
 
-const makeFlatTheme = (buttonStyle, color) => ({
+const makeFlatTheme = (buttonStyle, color, colorPalette) => ({
   backgroundColor: 'transparent',
   borderColor: buttonStyle === 'flat' ? 'transparent' : 'currentColor',
-  boxShadow: 'none !important',
+  boxShadow: 'none',
   color,
   fontWeight: 400,
   ':hover,:focus': {
-    backgroundColor: appTheme.palette.light,
+    backgroundColor: lightThemes.includes(colorPalette)
+      ? 'rgba(0, 0, 0, .15)'
+      : appTheme.palette.light,
     boxShadow: 'none',
     color
   }
@@ -28,13 +33,13 @@ const makeFlatTheme = (buttonStyle, color) => ({
 
 const makeLinkTheme = (color) => ({
   backgroundColor: 'transparent',
-  boxShadow: 'none !important',
+  border: 0,
+  boxShadow: 'none',
   color,
   fontWeight: 400,
-  paddingLeft: 0,
-  paddingRight: 0,
+  padding: 0,
   ':hover,:focus': {
-    boxShadow: 'none !important',
+    boxShadow: 'none',
     color: tinycolor.mix(color, '#000', 15).toHexString()
   }
 })
@@ -44,55 +49,59 @@ const makePrimaryTheme = () => ({
 })
 
 const makePropColors = (buttonStyle, colorPalette) => {
-  const color = ui.palette[colorPalette]
+  const themeColor = ui.palette[colorPalette]
   const baseTextColor = ui.palette.white
-  const textColor =
-    colorPalette === 'white' || colorPalette === 'light' || colorPalette === 'gray'
-      ? ui.palette.dark
-      : baseTextColor
-  if (buttonStyle === 'flat' || buttonStyle === 'outlined') {
-    return makeFlatTheme(buttonStyle, color)
+  const textColor = lightThemes.includes(colorPalette) ? ui.palette.dark : baseTextColor
+  if (flatStyles.includes(buttonStyle)) {
+    return makeFlatTheme(buttonStyle, themeColor, colorPalette)
   }
   if (buttonStyle === 'primary') {
     return makePrimaryTheme()
   }
   if (buttonStyle === 'link') {
-    return makeLinkTheme(color)
+    return makeLinkTheme(themeColor)
   }
-  return makeSolidTheme(color, textColor, buttonStyle)
+  return makeSolidTheme(themeColor, textColor)
 }
 
 const ButtonRoot = styled('button')(
+  // Sets up base and sizing
   ({size}) => ({
     ...ui.buttonBaseStyles,
     ...size,
     transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
   }),
+  // Handles depth prop
   ({depth, disabled}) =>
     depth && {
       boxShadow: ui.shadow[depth],
       ':hover,:focus,:active': {
-        boxShadow: !disabled && ui.shadow[depth + 1]
+        boxShadow: !disabled && ui.shadow[depth + 2]
       }
     },
+  // Make it a block
   ({isBlock}) => isBlock && ui.buttonBlockStyles,
+  // Add theme
   ({buttonStyle, colorPalette, disabled}) => ({
     ...makePropColors(buttonStyle, colorPalette),
     ':hover,:focus,:active': {
-      backgroundColor: disabled && 'transparent'
+      backgroundColor: flatStyles.includes(buttonStyle) && disabled && 'transparent'
     }
   }),
+  // Disabled
   ({disabled}) => disabled && ui.buttonDisabledStyles,
+  // Pressed down
   ({pressedDown, depth}) =>
     pressedDown && {
       transform: 'translate(0, .125rem)',
       ':hover,:focus,:active': {
-        boxShadow: (depth && ui.shadow[depth]) || 'none'
+        boxShadow: (depth && ui.shadow[depth + 1]) || 'none'
       },
       ':disabled': {
         boxShadow: 'none'
       }
     },
+  // Waiting
   ({waiting}) => waiting && {...ui.buttonDisabledStyles, cursor: 'wait'}
 )
 
@@ -102,10 +111,10 @@ const ButtonInner = styled('div')({
   justifyContent: 'center'
 })
 
-const ButtonLabel = styled('div')(({size}) => ({
-  fontSize: size.fontSize,
-  height: size.lineHeight,
-  lineHeight: size.lineHeight,
+const ButtonLabel = styled('div')(({size: {fontSize, lineHeight}}) => ({
+  fontSize,
+  height: lineHeight,
+  lineHeight,
   maxWidth: '100%',
   whiteSpace: 'nowrap'
 }))
@@ -124,9 +133,11 @@ const ButtonIcon = styled(StyledFontAwesome)(
 class Button extends Component {
   static propTypes = {
     'aria-label': PropTypes.string,
+    buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
+    buttonStyle: PropTypes.oneOf(['flat', 'link', 'outlined', 'primary', 'solid']),
     colorPalette: PropTypes.oneOf(ui.paletteOptions),
-    // depth: up to 3 + 1 (for :hover, :focus) = up to ui.shadow[4]
-    depth: PropTypes.oneOf([0, 1, 2, 3]),
+    // depth: up to 2 + 2 (for :hover, :focus) = up to ui.shadow[4]
+    depth: PropTypes.oneOf([0, 1, 2]),
     disabled: PropTypes.bool,
     icon: PropTypes.string,
     iconLarge: PropTypes.bool,
@@ -138,9 +149,6 @@ class Button extends Component {
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
-    buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
-    buttonStyle: PropTypes.oneOf(['flat', 'link', 'outlined', 'primary', 'solid']),
-    styles: PropTypes.object,
     title: PropTypes.string,
     type: PropTypes.oneOf(['button', 'menu', 'reset', 'submit']),
     // https://github.com/facebook/react/issues/4251
@@ -204,7 +212,6 @@ class Button extends Component {
     const {pressedDown} = this.state
     const iconOnly = !label
     const hasDisabledStyles = Boolean(disabled || visuallyDisabled)
-
     const size = buttonSize || ui.buttonSizeOptions[1]
     const buttonSizeStyles = ui.buttonSizeStyles[size]
 
@@ -220,17 +227,17 @@ class Button extends Component {
         />
       )
       return (
-        <ButtonInner>
+        <React.Fragment>
           {iconOnly ? (
             makeIcon()
           ) : (
-            <ButtonInner>
+            <React.Fragment>
               {thisIconPlacement === 'left' && makeIcon()}
               <ButtonLabel size={buttonSizeStyles}>{label}</ButtonLabel>
               {thisIconPlacement === 'right' && makeIcon()}
-            </ButtonInner>
+            </React.Fragment>
           )}
-        </ButtonInner>
+        </React.Fragment>
       )
     }
 
@@ -240,9 +247,9 @@ class Button extends Component {
         aria-label={ariaLabel}
         disabled={hasDisabledStyles || disabled || waiting}
         onClick={onClick}
-        onMouseEnter={onMouseEnter}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
+        onMouseEnter={onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         pressedDown={!hasDisabledStyles && pressedDown}
         ref={innerRef}
@@ -251,13 +258,9 @@ class Button extends Component {
         type={type || 'button'}
         waiting={waiting}
       >
-        {icon ? (
-          makeIconLabel()
-        ) : (
-          <ButtonInner>
-            <ButtonLabel size={buttonSizeStyles}>{label}</ButtonLabel>
-          </ButtonInner>
-        )}
+        <ButtonInner>
+          {icon ? makeIconLabel() : <ButtonLabel size={buttonSizeStyles}>{label}</ButtonLabel>}
+        </ButtonInner>
       </ButtonRoot>
     )
   }

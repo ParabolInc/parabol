@@ -25,10 +25,12 @@ const ArchiveTeam = ({
     {!showConfirmationField ? (
       <div>
         <Button
-          buttonSize='small'
-          colorPalette='warm'
-          label='Delete Team'
           aria-label='Click to permanently delete this team.'
+          buttonSize='small'
+          buttonStyle='link'
+          colorPalette='red'
+          icon='minus-circle'
+          label='Delete Team'
           onClick={handleClick}
         />
         <Type width='auto' marginTop='.5rem' scale='s2'>
