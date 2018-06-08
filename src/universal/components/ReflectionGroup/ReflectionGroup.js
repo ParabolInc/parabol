@@ -41,10 +41,6 @@ const Reflections = styled('div')(({canDrop}) => ({
   cursor: 'pointer',
   opacity: canDrop ? 0.6 : 1,
   position: 'relative'
-  // '&::after': {
-  //   content: '""',
-
-  // }
 }))
 
 const ReflectionCardInStack = styled('div')({
@@ -65,23 +61,23 @@ const Group = styled('div')({
 })
 
 class ReflectionGroup extends Component<Props, State> {
-  constructor (props) {
-    super(props)
-    const {
-      atmosphere,
-      reflectionGroup: {reflections, reflectionGroupId}
-    } = props
-    const isExpanded = reflections.length === 1
-    // weird things happen without a set timeout, drag from group to column & it freezes?
-    setTimeout(() => {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflectionGroupProxy = store.get(reflectionGroupId)
-        if (reflectionGroupProxy) {
-          reflectionGroupProxy.setValue(isExpanded, 'isExpanded')
-        }
-      })
-    })
-  }
+  // constructor (props) {
+  //   super(props)
+  // const {
+  //   atmosphere,
+  //   reflectionGroup: {reflections, reflectionGroupId}
+  // } = props
+  // const isExpanded = reflections.length === 1
+  // weird things happen without a set timeout, drag from group to column & it freezes?
+  // setTimeout(() => {
+  //   commitLocalUpdate(atmosphere, (store) => {
+  //     const reflectionGroupProxy = store.get(reflectionGroupId)
+  //     if (reflectionGroupProxy) {
+  //       reflectionGroupProxy.setValue(isExpanded, 'isExpanded')
+  //     }
+  //   })
+  // })
+  // }
 
   setTopCardRef = (c) => {
     this.topCardRef = c
