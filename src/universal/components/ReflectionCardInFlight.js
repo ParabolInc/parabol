@@ -63,7 +63,14 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   }
 
   componentWillUnmount () {
-    const {isTeamMemberDragging} = this.props
+    console.log('unmount inflight')
+    const {
+      isTeamMemberDragging,
+      setOptimisticRect,
+      reflection: {reflectionId}
+    } = this.props
+    const {x, y} = this.state
+    setOptimisticRect({top: y, left: x, ...this.cardRect}, reflectionId)
     if (!isTeamMemberDragging) {
       window.removeEventListener('drag', this.setDragState)
     }
@@ -75,8 +82,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       reflection: {
         reflectionId,
         team: {teamId}
-      },
-      setCardRect
+      }
     } = this.props
     const xDiff = e.x - this.initialCursorOffset.x
     const yDiff = e.y - this.initialCursorOffset.y
@@ -97,7 +103,6 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         targetId: 'unknown'
       }
       UpdateDragLocationMutation(atmosphere, {input})
-      setCardRect({top: y, left: x, ...this.cardRect})
     }
   }
 

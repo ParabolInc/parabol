@@ -35,16 +35,6 @@ class DraggableReflectionCard extends React.Component<Props> {
     connectDragPreview(getEmptyImage())
   }
 
-  reflectionRef = React.createRef()
-
-  getCardRect = () => {
-    return this.cardRect
-  }
-
-  setCardRect = (cardRect) => {
-    this.cardRect = cardRect
-  }
-
   render () {
     const {
       connectDragSource,
@@ -56,7 +46,8 @@ class DraggableReflectionCard extends React.Component<Props> {
       reflection,
       meeting,
       idx,
-      reflectionGroupId
+      reflectionGroupId,
+      setOptimisticRect
     } = this.props
     const {dragContext} = reflection
     const isTeamMemberDragging = !isDragging && Boolean(dragContext && dragContext.dragCoords)
@@ -78,11 +69,11 @@ class DraggableReflectionCard extends React.Component<Props> {
         )}
         <Modal isOpen={isDragging || isTeamMemberDragging}>
           <ReflectionCardInFlight
+            setOptimisticRect={setOptimisticRect}
             initialCursorOffset={initialCursorOffset}
             initialComponentOffset={initialComponentOffset}
             isTeamMemberDragging={isTeamMemberDragging}
             reflection={reflection}
-            setCardRect={this.setCardRect}
           />
         </Modal>
       </React.Fragment>

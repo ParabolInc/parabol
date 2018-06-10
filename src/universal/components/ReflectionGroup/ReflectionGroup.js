@@ -117,7 +117,7 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   renderReflection = (reflection: Object, idx: number) => {
-    const {meeting, reflectionGroup, idx: groupIdx} = this.props
+    const {setOptimisticRect, meeting, reflectionGroup, idx: groupIdx} = this.props
     const {
       reflections,
       retroPhaseItemId: currentRetroPhaseItemId,
@@ -163,6 +163,7 @@ class ReflectionGroup extends Component<Props, State> {
           ref={this.setTopCardRef}
         >
           <DraggableReflectionCard
+            setOptimisticRect={setOptimisticRect}
             currentRetroPhaseItemId={currentRetroPhaseItemId}
             idx={groupIdx}
             meeting={meeting}
