@@ -54,10 +54,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  state = {
-    dragX: undefined,
-    dragY: undefined
-  }
+  state = {}
   componentDidMount () {
     const {isTeamMemberDragging} = this.props
     if (!isTeamMemberDragging) {
@@ -78,7 +75,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       reflection: {
         reflectionId,
         team: {teamId}
-      }
+      },
+      setCardRect
     } = this.props
     const xDiff = e.x - this.initialCursorOffset.x
     const yDiff = e.y - this.initialCursorOffset.y
@@ -99,12 +97,20 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         targetId: 'unknown'
       }
       UpdateDragLocationMutation(atmosphere, {input})
+      setCardRect({top: y, left: x, ...this.cardRect})
     }
   }
 
   editorState: Object
   initialComponentOffset: Coords
   initialCursorOffset: Coords
+
+  setRef = (c) => {
+    if (c) {
+      const {height, width} = c.getBoundingClientRect()
+      this.cardRect = {height, width}
+    }
+  }
 
   render () {
     const {
@@ -119,7 +125,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     if (!x) return null
     return (
       <ModalBlock style={{transform}}>
-        <ReflectionCardRoot>
+        <ReflectionCardRoot innerRef={this.setRef}>
           {isTeamMemberDragging && <UserDraggingHeader user={dragContext.draggerUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
           <ReflectionFooter>{question}</ReflectionFooter>

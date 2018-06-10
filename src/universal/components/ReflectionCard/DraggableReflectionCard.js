@@ -37,6 +37,14 @@ class DraggableReflectionCard extends React.Component<Props> {
 
   reflectionRef = React.createRef()
 
+  getCardRect = () => {
+    return this.cardRect
+  }
+
+  setCardRect = (cardRect) => {
+    this.cardRect = cardRect
+  }
+
   render () {
     const {
       connectDragSource,
@@ -74,6 +82,7 @@ class DraggableReflectionCard extends React.Component<Props> {
             initialComponentOffset={initialComponentOffset}
             isTeamMemberDragging={isTeamMemberDragging}
             reflection={reflection}
+            setCardRect={this.setCardRect}
           />
         </Modal>
       </React.Fragment>
@@ -82,7 +91,7 @@ class DraggableReflectionCard extends React.Component<Props> {
 }
 
 const reflectionDragSpec = {
-  beginDrag (props) {
+  beginDrag (props, monitor, component) {
     const {
       atmosphere,
       reflection: {reflectionId, reflectionGroupId},
@@ -94,7 +103,8 @@ const reflectionDragSpec = {
       reflectionId,
       reflectionGroupId,
       currentRetroPhaseItemId,
-      isSingleCardGroup
+      isSingleCardGroup,
+      getCardRect: component.getCardRect
     }
   },
   // isDragging(props, monitor) {

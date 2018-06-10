@@ -236,6 +236,8 @@
       "$ReadOnlyArray",
       "$Shape",
       "SyntheticKeyboardEvent",
+      "ClientRect",
+      "HTMLElement",
       "System"
     ],
     "ignore": [

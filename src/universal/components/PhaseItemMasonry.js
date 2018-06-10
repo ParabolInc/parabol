@@ -1,5 +1,5 @@
 import React from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {DropTarget} from 'react-dnd'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
@@ -9,72 +9,52 @@ import dndNoise from 'universal/utils/dndNoise'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
 import styled, {css} from 'react-emotion'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
-import isTempId from 'universal/utils/relay/isTempId'
 
 type Props = {|
   meeting: Meeting
 |}
 
 export const CARD_PADDING = 8
-const CARD_WIDTH = 304 + CARD_PADDING * 2
+const CARD_WIDTH = 320 + CARD_PADDING * 2
 // const MIN_CARD_HEIGHT = 48
 export const GRID_ROW_HEIGHT = 8
 
 const GridStyle = css({
-  // display: 'grid',
-  gridTemplateColumns: `repeat(auto-fill,${CARD_WIDTH}px)`,
-  // gridTemplateRows: `repeat(${rows}, ${GRID_ROW_HEIGHT}px)`,
-  gridAutoRows: GRID_ROW_HEIGHT,
-  gridAutoColumns: '1fr',
-  // gridAutoFlow: 'column',
-  justifyContent: 'center',
   overflow: 'auto',
   position: 'relative',
   width: '100%'
 })
 
 const CardWrapper = styled('div')(({height}) => ({
-  position: 'relative',
-  listStyleType: 'none',
-  // maxWidth: 304,
+  position: 'absolute',
   display: 'inline-block',
-  gridRowEnd: `span ${Math.ceil(height / GRID_ROW_HEIGHT)}`
+  transition: 'all 200ms'
 }))
 
-// class GridCache {
-//   constructor () {
-//     this.cells = []
-//   }
-//
-//   get (id) {
-//     return this.cells.find((cell) => cell.id === id)
-//   }
-//
-//   add (cachedCell) {
-//     this.cells.push(cachedCell)
-//   }
+type ParentCache = {
+  el?: HTMLElement,
+  boundingBox?: ClientRect,
+  columnLefts?: Array<number>
+}
+
+type ChildCache = {
+  el: ?HTMLElement,
+  boundingBox: ?ClientRect
+}
+type ChildrenCache = {
+  [string]: ChildCache
+}
+
+// type PendingNewGroup = {
+//   newReflectionGroupId: string,
+//   oldReflectionGroupId: string
 // }
 
-const findRemovedGroup = (oldReflectionGroups, reflectionGroups) => {
-  for (let ii = 0; ii < oldReflectionGroups.length; ii++) {
-    const oldReflectionGroup = oldReflectionGroups[ii]
-    const {reflectionGroupId: oldReflectionGroupId} = oldReflectionGroup
-    const inNewGroup = reflectionGroups.find(
-      (reflectionGroup) => reflectionGroup.reflectionGroupId === oldReflectionGroupId
-    )
-    if (inNewGroup) continue
-    const {reflections} = oldReflectionGroup
-    const [reflection] = reflections
-    const {reflectionId} = reflection
-    const newReflectionGroup = reflectionGroups.find((reflectionGroup) =>
-      reflectionGroup.reflections.find((reflection) => reflection.reflectionId === reflectionId)
-    )
-
-    return {
-      oldReflectionGroupId,
-      newReflectionGroupId: newReflectionGroup.reflectionGroupId
-    }
-  }
+type OptimisticRect = {
+  height: number,
+  width: number,
+  left: number,
+  top: number
 }
 
 class PhaseItemMasonry extends React.Component<Props> {
@@ -82,213 +62,417 @@ class PhaseItemMasonry extends React.Component<Props> {
   // }
   constructor (props) {
     super(props)
-    setTimeout(() => {
-      this.forceUpdate()
-    }, 100)
-    window.gridCache = this.gridCache
+    window.childrenCache = this.childrenCache
+    const {
+      atmosphere: {eventEmitter}
+    } = props
+    eventEmitter.on('updateReflectionLocation', this.handleGridUpdate)
   }
 
-  // state = {
-  //   gridCache: new GridCache()
-  // }
+  parentCache: ParentCache = {}
+  childrenCache: ChildrenCache = {}
+  droppedCardRect: OptimisticRect = undefined
 
-  // componentDidMount () {
-  //   this.initializeGrid()
-  //   window.addEventListener('resize', this.handleResize)
-  // }
-  componentWillReceiveProps (nextProps) {
-    const {
-      meeting: {reflectionGroups: newReflectionGroups}
-    } = nextProps
-    const {
-      meeting: {reflectionGroups}
-    } = this.props
-
-    if (newReflectionGroups !== reflectionGroups) {
-      this.working = true
-    }
+  componentDidMount () {
+    this.initializeGrid()
+    this.parentCache.incomingId = undefined
+    window.addEventListener('resize', this.handleResize)
   }
 
-  working = false
-
-  componentDidUpdate (prevProps) {
-    console.log('cDU')
-
+  getSnapshotBeforeUpdate (prevProps) {
     const {
       meeting: {reflectionGroups: oldReflectionGroups}
     } = prevProps
     const {
       meeting: {reflectionGroups}
     } = this.props
-    // this.working = true
-    if (oldReflectionGroups !== reflectionGroups) {
-      if (oldReflectionGroups.length > reflectionGroups.length) {
-        const {oldReflectionGroupId, newReflectionGroupId} = findRemovedGroup(
-          oldReflectionGroups,
-          reflectionGroups
-        )
-        window.requestAnimationFrame(() => {
-          this.adjustGroupHeight(newReflectionGroupId)
-          this.adjustGroupHeight(oldReflectionGroupId, true)
-          this.gridCache.delete(oldReflectionGroupId)
-          const {column} = this.gridCache.get(newReflectionGroupId)
-          this.shakeUpBottomCells(column)
-          this.sortForMasonry()
-        })
+    if (oldReflectionGroups.length === reflectionGroups.length) {
+      const newGroupSet = new Set(reflectionGroups.map((group) => group.reflectionGroupId))
+      const removedReflectionGroup = oldReflectionGroups.find(
+        (group) => !newGroupSet.has(group.reflectionGroupId)
+      )
+      if (removedReflectionGroup) {
+        /*
+         * if we're swapping out 1 card for another (like a temporary one generated via optmistic UI)
+         * it could be swapped out mid-transition
+         * to eliminate jitter, put the new card exactly where the old one is
+         * so it can continue its journey to its final destination
+         */
+        //
+        // it's a swap!
+        const {reflectionGroupId: oldReflectionGroupId} = removedReflectionGroup
+        const oldChildCache = this.childrenCache[oldReflectionGroupId]
+        const {left, top} = oldChildCache.el.getBoundingClientRect()
+        const {
+          boundingBox: {top: parentTop, left: parentLeft}
+        } = this.parentCache
+        return {
+          oldReflectionGroupId,
+          left: left - parentLeft,
+          top: top - parentTop
+        }
       }
+    }
+    return null
+  }
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    const {
+      meeting: {reflectionGroups: oldReflectionGroups}
+    } = prevProps
+    const {
+      meeting: {reflectionGroups}
+    } = this.props
+    if (!this.parentCache.incomingId) return
+    if (snapshot) {
+      this.handleSwappedGroup(snapshot)
+    } else if (oldReflectionGroups.length + 1 === reflectionGroups.length) {
+      // TODO could simplify by reading incomingId
+      this.handleNewGroup()
+    }
+    this.parentCache.incomingId = undefined
+  }
+
+  handleNewGroup = () => {
+    const {incomingId} = this.parentCache
+    // const optimisticGroup = this.optimisticQueue.shift()
+    // const {incomingId} = optimisticGroup
+    const childCache = this.childrenCache[incomingId]
+    let top
+    let left
+    if (this.droppedCardRect) {
+      const {top: initialTop, left: initialLeft, width, height} = this.droppedCardRect
+      const {columnLefts} = this.parentCache
+      const distances = columnLefts.map((col) => Math.abs(col - initialLeft))
+      const nearestColIdx = distances.indexOf(Math.min(...distances))
+      left = columnLefts[nearestColIdx]
+      top = this.getColumnBottom(left, incomingId)
+      // TODO moved to position: fixed or adjust translation inside parent to avoid clipping (drag card is in a modal, is never clipped)
+      childCache.el.style.transform = `translate(${initialLeft}px, ${initialTop}px)`
+      childCache.boundingBox = {top, left, width, height}
+    } else {
+      console.log('from the servah')
+      // TODO next piece
+      // const oldChildCache = this.childrenCache[oldReflectionGroupId]
+      // const {boundingBox: {left: newLeft, top: newTop}} = oldChildCache
+    }
+    this.droppedCardRect = undefined
+
+    if (childCache.el.parentElement) {
+      // TRIGGER LAYOUT
+      childCache.el.offsetTop // eslint-disable-line
+      childCache.el.style.transform = `translate(${left}px, ${top}px)`
+      this.shakeUpBottomCells()
     }
   }
 
-  sortForMasonry () {
+  handleSwappedGroup = (snapshot) => {
+    const {oldReflectionGroupId, left: initialLeft, top: initialTop} = snapshot
+    const {incomingId} = this.parentCache
+    const oldChildCache = this.childrenCache[oldReflectionGroupId]
+    const newChildCache = this.childrenCache[incomingId]
+    newChildCache.boundingBox = oldChildCache.boundingBox
+    newChildCache.el.style.transform = `translate(${initialLeft}px, ${initialTop}px)`
+    delete this.childrenCache[oldReflectionGroupId]
     const {
-      atmosphere,
-      meeting: {meetingId}
-    } = this.props
-    commitLocalUpdate(atmosphere, (store) => {
-      const meeting = store.get(meetingId)
-      const reflectionGroups = meeting.getLinkedRecords('reflectionGroups')
-      reflectionGroups.sort((a, b) => {
-        const aId = a.getValue('id')
-        const bId = b.getValue('id')
-        const aCache = this.gridCache.get(aId)
-        const bCache = this.gridCache.get(bId)
-        if (!aCache || !bCache) return 1
-        const {top: aTop, column: aCol} = aCache
-        const {top: bTop, column: bCol} = bCache
-        if (aTop < bTop) return -1
-        if (aTop > bTop) return 1
-        if (aCol < bCol) return -1
-        return 1
-      })
-      meeting.setLinkedRecords(reflectionGroups, 'reflectionGroups')
-      this.working = false
+      boundingBox: {left, top}
+    } = newChildCache
+    // TRIGGER LAYOUT, definitely necessary
+    newChildCache.el.offsetTop // eslint-disable-line
+    newChildCache.el.style.transform = `translate(${left}px, ${top}px)`
+  }
+
+  getColumnBottom (columnLeft, excludeId) {
+    return Object.keys(this.childrenCache)
+      .filter((childKey) => childKey !== excludeId)
+      .reduce((columnBottom, childKey) => {
+        if (!this.childrenCache[childKey].boundingBox) {
+          // debugger
+        }
+        const {
+          boundingBox: {left, top, height}
+        } = this.childrenCache[childKey]
+        return left === columnLeft && top + height > columnBottom ? top + height : columnBottom
+      }, 0)
+  }
+
+  // handleNewGroup() {
+  //   const pendingNewGroup = this.optimisticQueue.shift()
+  //   const {newReflectionGroupId, oldReflectionGroupId, el} = pendingNewGroup
+  //   const childCache = this.childrenCache[newReflectionGroupId] = this.childrenCache[newReflectionGroupId] || {el}
+  //   console.log('handleNewGroup called', newReflectionGroupId)
+  //   const isOptimistic = isTempId(newReflectionGroupId)
+  //   // if created locally, create the bounding box at the point of the drop
+  //   let targetLeft
+  //   if (isOptimistic) {
+  //     const {top, left, width, height} = this.droppedCardRect
+  //     childCache.boundingBox = {top, left, width, height}
+  //     childCache.el.style.transform = `translate(${left}px, ${top}px)`
+  //     // get new column
+  //     const columns = Array.from(new Set(
+  //       Object.keys(this.childrenCache)
+  //         .filter((childKey) => childKey !== newReflectionGroupId)
+  //         .map((childKey) => this.childrenCache[childKey].boundingBox.left)
+  //     ))
+  //     const distances = columns.map((col) => Math.abs(col - left))
+  //     const nearestColIdx = distances.indexOf(Math.min(...distances))
+  //     targetLeft = columns[nearestColIdx]
+  //   } else {
+  //     const {width: newWidth, height: newHeight} = childCache.el.getBoundingClientRect()
+  //     // if there is no previous drop (ie it was remote) start at its old group
+  //     const oldChildCache = this.childrenCache[oldReflectionGroupId]
+  //     const {boundingBox: {left: newLeft, top: newTop}} = oldChildCache
+  //     childCache.boundingBox = {
+  //       left: newLeft,
+  //       top: newTop,
+  //       width: newWidth,
+  //       height: newHeight
+  //     }
+  //     targetLeft = newLeft
+  //   }
+  //
+  //
+  //   childCache.boundingBox.top = targetColumnHeight
+  //   childCache.boundingBox.left = targetLeft
+  //   window.requestAnimationFrame(() => {
+  //     console.log('handleNewGroup RAF called', newReflectionGroupId)
+  //     childCache.el.style.transform = `translate(${targetLeft}px, ${targetColumnHeight}px)`
+  //     if (childCache.el.parentElement) {
+  //       this.shakeUpBottomCells()
+  //     }
+  //     // this.sortForMasonry()
+  //   })
+  // }
+
+  setOptimisticRect (clientRect) {
+    const {height, width, top, left} = clientRect
+    const {
+      boundingBox: {top: parentTop, left: parentLeft}
+    } = this.parentCache
+    this.droppedCardRect = {
+      height,
+      width,
+      top: top - parentTop,
+      left: left - parentLeft
+    }
+  }
+
+  handleResize = () => {
+    // const gridBox = this.parentCache.el.getBoundingClientRect()
+    // const deltaWidth = gridBox - this.parentCache.boundingBox.width
+    // if (deltaWidth === 0) return
+    // const columnCount = Math.floor(gridBox.width / CARD_WIDTH)
+    // const leftMargin = (gridBox.width - columnCount * CARD_WIDTH) / 2
+    // TODO we may store the top of each card in a matrix, and that'll determine how we proceed here
+  }
+
+  initializeGrid = () => {
+    const gridBox = this.parentCache.el.getBoundingClientRect()
+    const childrenKeys = Object.keys(this.childrenCache)
+    const columnCount = Math.floor(gridBox.width / CARD_WIDTH)
+    const leftMargin = (gridBox.width - columnCount * CARD_WIDTH) / 2
+    const currentColumnHeights = new Array(columnCount).fill(0)
+    this.parentCache.boundingBox = gridBox
+    this.parentCache.columnLefts = currentColumnHeights.map(
+      (_, idx) => CARD_WIDTH * idx + leftMargin
+    )
+
+    childrenKeys.forEach((childKey) => {
+      const childCache = this.childrenCache[childKey]
+      // only thing we really care about here is height?
+      const {height, width} = childCache.el.getBoundingClientRect()
+      const top = Math.min(...currentColumnHeights)
+      const shortestColumnIdx = currentColumnHeights.indexOf(top)
+      const left = this.parentCache.columnLefts[shortestColumnIdx]
+      childCache.boundingBox = {
+        height,
+        width,
+        top,
+        left
+      }
+      childCache.el.style.transform = `translate(${left}px, ${top}px)`
+      currentColumnHeights[shortestColumnIdx] += height
     })
   }
 
-  shakeUpBottomCells (longColumn) {
-    // currently, does not prevent cards drifting to the left visually, it's not too bad. i think we'd need a placeholder to stop it
-    const bottoms = {}
-    for (const [key, value] of this.gridCache.entries()) {
-      const {column, top, height} = value
-      if (!bottoms[column]) bottoms[column] = {maxTop: 0, bottom: 0, id: null}
-      const columnBottom = bottoms[column]
-      if (top > columnBottom.maxTop) {
-        columnBottom.maxTop = top
-        columnBottom.bottom = top + height
-        columnBottom.id = key
-      }
+  handleGridUpdate = (payload) => {
+    const {
+      oldReflectionGroup: {id: oldReflectionGroupId},
+      reflectionGroup: {id: newReflectionGroupId}
+    } = payload
+
+    const newChildCache = this.childrenCache[newReflectionGroupId]
+    // if this doesn't exist, it means the updateReflectionLocation event fired before react was told to add a component (optimistic)
+    // if it exists and the boundingBox is undefined, then the element is created, but we don't know where to put it
+    //
+    if (!newChildCache) {
+      console.log('no new cache yet, setting outgoingId')
+      this.parentCache.outgoingId = oldReflectionGroupId
+    } else if (!newChildCache.boundingBox) {
+      console.log('no bounding box found! did this fire before cDU?')
     }
-    const columnKeys = Object.keys(bottoms)
-    if (columnKeys.length === 1) return
-    const longColumnBottom = bottoms[longColumn]
+
+    // this.childrenCache[oldReflectionGroupId].el.offsetTop // TRIGGER LAYOUT
+    this.adjustGroupHeight(oldReflectionGroupId)
+    if (oldReflectionGroupId !== newReflectionGroupId) {
+      this.adjustGroupHeight(newReflectionGroupId)
+    }
+    this.shakeUpBottomCells()
+  }
+
+  shakeUpBottomCells () {
+    const {columnLefts} = this.parentCache
+    if (columnLefts.length === 1) return
+    const lastCardPerColumn = columnLefts.reduce((obj, left) => {
+      obj[left] = null
+      return obj
+    }, {})
+    const childrenKeys = Object.keys(this.childrenCache)
+    childrenKeys.forEach((childKey) => {
+      const childCache = this.childrenCache[childKey]
+      if (!childCache || !childCache.boundingBox) {
+      }
+      const {
+        boundingBox: {left, top}
+      } = childCache
+      if (lastCardPerColumn[left] === undefined) {
+      }
+      if (!lastCardPerColumn[left] || lastCardPerColumn[left].boundingBox.top < top) {
+        lastCardPerColumn[left] = childCache
+      }
+    })
 
     // increasing this decreases movement, but increases the probability of 1 column being much taller than the others
-    const THRESHOLD = 16
-    for (let ii = 0; ii < columnKeys.length; ii++) {
-      const column = columnKeys[ii]
-      if (column === longColumn) continue
-      const maybeShortColumn = bottoms[column]
-      if (longColumnBottom.maxTop > maybeShortColumn.bottom + THRESHOLD) {
-        const cachedLongBottom = this.gridCache.get(longColumnBottom.id)
-        cachedLongBottom.column = column
-        cachedLongBottom.top = maybeShortColumn.bottom
+    const MIN_SAVINGS = 24 // in pixels, must be > 0
+    // taxing the # of columns it has to move encourages shorter moves
+    const COST_PER_COLUMN = 24
+    for (let safeLoop = 0; safeLoop < 20; safeLoop++) {
+      const totalSavings = []
+      for (let ii = 0; ii < columnLefts.length; ii++) {
+        // source is the suspected tall column, target is a possibly shorter column
+        const sourceLeft = columnLefts[ii]
+        totalSavings[ii] = new Array(columnLefts.length).fill(0)
+        const sourceChildCache = lastCardPerColumn[sourceLeft]
+        // if the column is empty, you can't shake anything from it
+        if (!sourceChildCache) continue
+        const {boundingBox: sourceBox} = sourceChildCache
+        const savings = totalSavings[ii]
+        for (let jj = 0; jj < columnLefts.length; jj++) {
+          if (jj === ii) continue
+          const targetLeft = columnLefts[jj]
+          const targetBottom = lastCardPerColumn[targetLeft]
+            ? lastCardPerColumn[targetLeft].boundingBox.height +
+              lastCardPerColumn[targetLeft].boundingBox.top
+            : 0
+          const targetSavings = sourceBox.top - targetBottom
+          savings[jj] = targetSavings - COST_PER_COLUMN * Math.abs(jj - ii)
+        }
+      }
+      const topSavingsPerSource = totalSavings.map((savings) => Math.max(...savings))
+      const maxSavingsValue = Math.max(...topSavingsPerSource)
+      if (maxSavingsValue < MIN_SAVINGS) return
+      const bestSourceIdx = topSavingsPerSource.indexOf(maxSavingsValue)
+      const bestSourceLeft = columnLefts[bestSourceIdx]
+      const targetSavings = totalSavings[bestSourceIdx]
+      const bestTargetIdx = targetSavings.indexOf(maxSavingsValue)
+      const bestTargetLeft = columnLefts[bestTargetIdx]
+      const sourceChildCache = lastCardPerColumn[bestSourceLeft]
+      const {boundingBox: sourceBox, el: sourceEl} = sourceChildCache
+      const oldBottom = lastCardPerColumn[bestTargetLeft]
+
+      // update the dictionary because we might shake out another move
+      lastCardPerColumn[bestTargetLeft] = sourceChildCache
+
+      // animate! move horizontally first, then vertically
+      // delay each move so it looks more natural
+      const {top: oldTop} = sourceBox
+      sourceBox.left = bestTargetLeft
+      sourceBox.top = oldBottom ? oldBottom.boundingBox.top + oldBottom.boundingBox.height : 0
+      sourceEl.style.transform = `translate(${sourceBox.left}px, ${oldTop}px)`
+      const AXIS_ANIMATION_DURATION = 100
+      sourceEl.style.transitionDuration = `${AXIS_ANIMATION_DURATION}ms`
+      const delay = (safeLoop + 1) * 100
+      sourceEl.style.transitionDelay = `${delay}ms`
+      setTimeout(() => {
+        sourceEl.style.transitionDelay = ''
+        sourceEl.style.transform = `translate(${sourceBox.left}px, ${sourceBox.top}px`
+        setTimeout(() => {
+          sourceEl.style.transitionDuration = ''
+        }, AXIS_ANIMATION_DURATION)
+      }, delay + AXIS_ANIMATION_DURATION)
+    }
+  }
+
+  adjustGroupHeight (reflectionGroupId) {
+    const resizedChildCache = this.childrenCache[reflectionGroupId]
+    if (!resizedChildCache) return
+    const {el: resizedEl, boundingBox: resizedBox} = resizedChildCache
+    const newHeight = resizedEl.getBoundingClientRect().height
+    if (newHeight === 0) {
+      console.log('deleting', reflectionGroupId)
+      delete this.childrenCache[reflectionGroupId]
+      // see if the entire column is gone
+      const childrenKeys = Object.keys(this.childrenCache)
+      const colExists = childrenKeys.some(
+        (key) => this.childrenCache[key].boundingBox.left === resizedBox.left
+      )
+      if (!colExists) {
+        childrenKeys.forEach((childKey) => {
+          const {boundingBox, el} = this.childrenCache[childKey]
+          if (boundingBox.left > resizedBox.left) {
+            boundingBox.left = this.parentCache.columnLefts
+              .slice()
+              .reverse()
+              .find((col) => col < boundingBox.left)
+            el.style.transform = `translate(${boundingBox.left}px, ${boundingBox.top}px)`
+          }
+        })
         return
       }
     }
+    if (newHeight === resizedBox.height) {
+      return
+    }
+
+    const deltaHeight = newHeight - resizedBox.height
+    resizedBox.height += deltaHeight
+
+    const childrenKeys = Object.keys(this.childrenCache)
+    childrenKeys.forEach((childKey) => {
+      const {boundingBox, el} = this.childrenCache[childKey]
+      const {left, top} = boundingBox
+      if (left === resizedBox.left && top > resizedBox.top) {
+        boundingBox.top += deltaHeight
+        el.style.transform = `translate(${boundingBox.left}px, ${boundingBox.top}px)`
+      }
+    })
   }
 
-  adjustGroupHeight (reflectionGroupId, isRemoval) {
-    const cachedGroup = this.gridCache.get(reflectionGroupId)
-    const newHeight = isRemoval ? 0 : cachedGroup.ref.getBoundingClientRect().height
-    if (newHeight === cachedGroup.height) {
-      console.error('height didnt change')
-    }
-    const deltaHeight = isRemoval ? -cachedGroup.height : 28
-    cachedGroup.height += deltaHeight
-    const cellCachesBelow = []
-    for (const [reflectionGroupId, value] of this.gridCache.entries()) {
-      if (value.column === cachedGroup.column && value.top > cachedGroup.top) {
-        cellCachesBelow.push(this.gridCache.get(reflectionGroupId))
+  setChildRef = (id) => (c) => {
+    if (c) {
+      if (!this.childrenCache[id]) {
+        this.childrenCache[id] = {el: c}
+        this.parentCache.incomingId = id
       }
     }
-    cellCachesBelow.forEach((cache) => {
-      cache.top += deltaHeight
-    })
-  }
-  gridCache = new Map()
-
-  setWrapperRefs = (id) => (c) => {
-    if (isTempId(id)) return
-    if (!c) {
-      return
-      // TODO cleanup later
-    }
-    const cachedCell = this.gridCache.get(id)
-    if (!cachedCell) {
-      // requestAnimationFrame(() => {
-
-      const {left, height} = c.getBoundingClientRect()
-      const arr = Array.from(this.gridCache)
-      const top = arr.reduce((top, [id, cache]) => {
-        return cache.column === left ? top + cache.height : top
-      }, 0)
-      this.gridCache.set(id, {
-        ref: c,
-        column: left,
-        height,
-        top
-        // rowStart:
-      })
-      // })
-    }
   }
 
-  cachedReflections = null
-  renderReflections = () => {
-    const {meeting} = this.props
-    const {reflectionGroups} = meeting
-    // if (this.working) return this.cachedReflections
-    this.cachedReflections = reflectionGroups.map((reflectionGroup, idx) => {
-      const {reflectionGroupId} = reflectionGroup
-      const cachedCell = this.gridCache.get(reflectionGroupId)
-      return (
-        <CardWrapper height={cachedCell ? cachedCell.height : 0} idx={idx} key={reflectionGroupId}>
-          <ReflectionGroup
-            innerRef={this.setWrapperRefs(reflectionGroupId)}
-            meeting={meeting}
-            reflectionGroup={reflectionGroup}
-            idx={idx}
-          />
-        </CardWrapper>
-      )
-    })
-    return this.cachedReflections
-  }
-
-  setGridRef = (c) => {
-    this.gridRef = c
+  setParentRef = (c) => {
+    this.parentCache.el = c
   }
 
   render () {
-    console.log('render')
-    const {connectDropTarget} = this.props
-    // if (this.working) return null
+    const {connectDropTarget, meeting} = this.props
+    const {reflectionGroups} = meeting
     return connectDropTarget(
-      <div
-        ref={this.setGridRef}
-        // style={{gridTemplateRows: `repeat(${gridRows}, ${GRID_ROW_HEIGHT}px)`}}
-        className={GridStyle}
-      >
-        {/* <FlipMove */}
-        {/* appearAnimation */}
-        {/* staggerDurationBy='20' */}
-        {/* duration={1000} */}
-        {/* enterAnimation */}
-        {/* leaveAnimation={false} */}
-        {/* typeName={null} */}
-        {/* > */}
-        {this.renderReflections()}
-        {/* </FlipMove> */}
+      <div ref={this.setParentRef} className={GridStyle}>
+        {reflectionGroups.map((reflectionGroup, idx) => {
+          const {reflectionGroupId} = reflectionGroup
+          return (
+            <CardWrapper innerRef={this.setChildRef(reflectionGroupId)} key={reflectionGroupId}>
+              <ReflectionGroup meeting={meeting} reflectionGroup={reflectionGroup} idx={idx} />
+            </CardWrapper>
+          )
+        })}
       </div>
     )
   }
@@ -298,13 +482,14 @@ const reflectionDropSpec = {
   canDrop (props: Props, monitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
-  drop (props: Props, monitor) {
+  drop (props: Props, monitor, component) {
     const {
       meeting: {reflectionGroups}
     } = props
     const sortOrder = reflectionGroups[reflectionGroups.length - 1].sortOrder + 1 + dndNoise()
 
-    const {reflectionId, reflectionGroupId, isSingleCardGroup} = monitor.getItem()
+    const {getCardRect, reflectionId, reflectionGroupId, isSingleCardGroup} = monitor.getItem()
+    component.setOptimisticRect(getCardRect())
     const {
       atmosphere,
       submitMutation,
@@ -353,25 +538,3 @@ export default createFragmentContainer(
     }
   `
 )
-
-window.sortGridCache = () => {
-  Array.from(window.gridCache)
-    .sort((a, b) => {
-      const aCache = a[1]
-      const bCache = b[1]
-      if (!aCache || !bCache) return 1
-      const {top: aTop, column: aCol} = aCache
-      const {top: bTop, column: bCol} = bCache
-      if (aTop < bTop) return -1
-      if (aTop > bTop) return 1
-      if (aCol < bCol) return -1
-      return 1
-    })
-    .forEach((cell) => {
-      console.log(
-        `col: ${cell[1].column} | top: ${cell[1].top} | height: ${cell[1].height} | id: ${cell[0]}`
-      )
-      // return
-    })
-  // void
-}

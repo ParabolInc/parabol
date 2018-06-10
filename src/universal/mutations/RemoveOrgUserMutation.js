@@ -172,14 +172,14 @@ export const removeOrgUserTaskUpdater = (payload, store, viewerId) => {
 }
 
 export const removeOrgUserTeamOnNext = (payload, context) => {
-  const {environment} = context
+  const {atmosphere} = context
   const {teams} = payload
   teams.forEach((team) => {
     const {newMeeting} = team
     if (!newMeeting) return
     const {id: meetingId, facilitatorStageId, phases} = newMeeting
     // a meeting is going on, see if the are on the removed user's phase & if so, redirect them
-    commitLocalUpdate(environment, (store) => {
+    commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       if (!meetingProxy) return
       const viewerStageId = getInProxy(meetingProxy, 'localStage', 'id')

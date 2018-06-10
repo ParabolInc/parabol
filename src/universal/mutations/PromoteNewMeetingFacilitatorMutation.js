@@ -29,8 +29,8 @@ const mutation = graphql`
 `
 
 export const promoteNewMeetingFacilitatorTeamOnNext = (payload, context) => {
-  const {environment, dispatch} = context
-  const {viewerId} = environment
+  const {atmosphere, dispatch} = context
+  const {viewerId} = atmosphere
   const {oldFacilitator, meeting} = payload
   const {isConnected, preferredName: oldFacilitatorName} = oldFacilitator
   const {
@@ -48,13 +48,13 @@ export const promoteNewMeetingFacilitatorTeamOnNext = (payload, context) => {
 }
 
 const PromoteNewMeetingFacilitatorMutation = (
-  environment,
+  atmosphere,
   variables,
   {dispatch},
   onError,
   onCompleted
 ) => {
-  return commitMutation(environment, {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
@@ -67,7 +67,7 @@ const PromoteNewMeetingFacilitatorMutation = (
       }
       promoteNewMeetingFacilitatorTeamOnNext(res.promoteNewMeetingFacilitator, {
         dispatch,
-        environment
+        atmosphere
       })
     },
     onError

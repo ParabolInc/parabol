@@ -81,12 +81,12 @@ const mutation = graphql`
 `
 
 export const navigateMeetingTeamOnNext = (payload, context) => {
-  const {environment} = context
+  const {atmosphere} = context
   const {
     meeting: {id: meetingId, facilitatorStageId},
     oldFacilitatorStage: {id: oldFacilitatorStageId}
   } = payload
-  commitLocalUpdate(environment, (store) => {
+  commitLocalUpdate(atmosphere, (store) => {
     const meetingProxy = store.get(meetingId)
     const viewerStageId = getInProxy(meetingProxy, 'localStage', 'id')
     if (viewerStageId === oldFacilitatorStageId) {
@@ -133,8 +133,8 @@ export const navigateMeetingTeamUpdater = (payload, store) => {
   handleRemoveReflectionGroups(emptyReflectionGroupIds, meetingId, store)
 }
 
-const NavigateMeetingMutation = (environment, variables, onError, onCompleted) => {
-  return commitMutation(environment, {
+const NavigateMeetingMutation = (atmosphere, variables, onError, onCompleted) => {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {

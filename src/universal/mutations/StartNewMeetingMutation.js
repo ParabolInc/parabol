@@ -30,7 +30,7 @@ const mutation = graphql`
 `
 
 export const startNewMeetingTeamOnNext = (payload, context) => {
-  const {environment} = context
+  const {atmosphere} = context
   const {
     error,
     team: {
@@ -40,17 +40,17 @@ export const startNewMeetingTeamOnNext = (payload, context) => {
       }
     }
   } = payload
-  updateLocalStage(environment, meetingId, firstPhase.stages[0].id)
+  updateLocalStage(atmosphere, meetingId, firstPhase.stages[0].id)
   handleMutationError(error, context)
 }
 
-const StartNewMeetingMutation = (environment, variables, {history}, onError, onCompleted) => {
-  return commitMutation(environment, {
+const StartNewMeetingMutation = (atmosphere, variables, {history}, onError, onCompleted) => {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     onError,
     onCompleted: (res, errors) => {
-      startNewMeetingTeamOnNext(res.startNewMeeting, {environment, history})
+      startNewMeetingTeamOnNext(res.startNewMeeting, {atmosphere, history})
       if (onCompleted) {
         onCompleted(res, errors)
       }

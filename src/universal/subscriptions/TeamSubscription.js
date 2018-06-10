@@ -24,7 +24,10 @@ import {
 } from 'universal/mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
-import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation'
+import {
+  updateReflectionLocationTeamOnNext,
+  updateReflectionLocationTeamUpdater
+} from 'universal/mutations/UpdateReflectionLocationMutation'
 import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
 import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
 import {dragReflectionTeamUpdater} from 'universal/mutations/DragReflectionMutation'
@@ -75,7 +78,8 @@ const onNextHandlers = {
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
   NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
-  RemoveOrgUserPayload: removeOrgUserTeamOnNext
+  RemoveOrgUserPayload: removeOrgUserTeamOnNext,
+  UpdateReflectionLocationPayload: updateReflectionLocationTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
@@ -194,7 +198,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const {__typename: type} = teamSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(teamSubscription, {...subParams, environment})
+        handler(teamSubscription, {...subParams, atmosphere: environment})
       }
     }
   }
