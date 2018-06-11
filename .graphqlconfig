@@ -1,0 +1,4 @@
+{
+   "schemaPath": "build/schema_legacy.gql",
+   "includes": ["*.gql"]
+}

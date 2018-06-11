@@ -34,6 +34,9 @@ class DraggableReflectionCard extends React.Component<Props> {
     const {connectDragPreview} = this.props
     connectDragPreview(getEmptyImage())
   }
+
+  reflectionRef = React.createRef()
+
   render () {
     const {
       connectDragSource,
@@ -46,11 +49,13 @@ class DraggableReflectionCard extends React.Component<Props> {
       meeting,
       showOriginFooter
     } = this.props
+    const {dragContext} = reflection
+    const isTeamMemberDragging = !isDragging && Boolean(dragContext && dragContext.dragCoords)
     return (
       <React.Fragment>
         {connectDragSource(
           <div>
-            <DragStyles isDragging={isDragging} isOver={isOver}>
+            <DragStyles isDragging={isDragging || isTeamMemberDragging} isOver={isOver}>
               <ReflectionCard
                 isCollapsed={isCollapsed}
                 meeting={meeting}
@@ -60,10 +65,11 @@ class DraggableReflectionCard extends React.Component<Props> {
             </DragStyles>
           </div>
         )}
-        <Modal isOpen={isDragging}>
+        <Modal isOpen={isDragging || isTeamMemberDragging}>
           <ReflectionCardInFlight
             initialCursorOffset={initialCursorOffset}
             initialComponentOffset={initialComponentOffset}
+            isTeamMemberDragging={isTeamMemberDragging}
             reflection={reflection}
           />
         </Modal>
@@ -118,6 +124,12 @@ export default createFragmentContainer(
       reflectionId: id
       reflectionGroupId
       retroPhaseItemId
+      dragContext {
+        draggerUserId
+        dragCoords {
+          x
+        }
+      }
       ...ReflectionCard_reflection
       ...ReflectionCardInFlight_reflection
     }

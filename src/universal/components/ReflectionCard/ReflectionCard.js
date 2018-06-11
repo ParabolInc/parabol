@@ -165,12 +165,13 @@ class ReflectionCard extends Component<Props, State> {
       teamId
     } = meeting
     const {
-      draggerUser,
+      dragContext,
       isViewerCreator,
       phaseItem: {question},
       reflectionId
     } = reflection
     const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete
+    const draggerUser = dragContext && dragContext.draggerUser
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId
     return (
       <ReflectionCardRoot hasDragLock={hasDragLock} isCollapsed={isCollapsed}>
@@ -219,9 +220,11 @@ export default createFragmentContainer(
     }
 
     fragment ReflectionCard_reflection on RetroReflection {
-      draggerUser {
-        id
-        ...UserDraggingHeader_user
+      dragContext {
+        draggerUser {
+          id
+          ...UserDraggingHeader_user
+        }
       }
       reflectionId: id
       reflectionGroupId

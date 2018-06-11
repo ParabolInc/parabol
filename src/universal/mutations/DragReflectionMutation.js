@@ -1,5 +1,7 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
 import {commitMutation} from 'react-relay'
+import getInProxy from 'universal/utils/relay/getInProxy'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 
 type Variables = {
   isDragging: boolean,
@@ -9,10 +11,13 @@ type Variables = {
 graphql`
   fragment DragReflectionMutation_team on DragReflectionPayload {
     reflection {
-      draggerUserId
-      draggerUser {
-        id
-        preferredName
+      id
+      dragContext {
+        draggerUserId
+        draggerUser {
+          id
+          preferredName
+        }
       }
     }
   }
@@ -26,6 +31,16 @@ const mutation = graphql`
   }
 `
 
+export const dragReflectionTeamUpdater = (payload, store) => {
+  const startDragging = Boolean(getInProxy(payload, 'reflection', 'dragContext', 'draggerUserId'))
+  if (!startDragging) {
+    const reflectionId = getInProxy(payload, 'reflection', 'id')
+    if (!reflectionId) return
+    const reflection = store.get(reflectionId)
+    reflection.setValue(null, 'dragContext')
+  }
+}
+
 const DragReflectionMutation = (
   atmosphere: Object,
   variables: Variables,
@@ -37,17 +52,24 @@ const DragReflectionMutation = (
     variables,
     onCompleted,
     onError,
+    updater: (store) => {
+      const payload = store.getRootField('dragReflection')
+      if (!payload) return
+      dragReflectionTeamUpdater(payload, store)
+    },
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
       const {isDragging, reflectionId} = variables
       const reflection = store.get(reflectionId)
+      // console.log('opt ctx - ', reflection.getLinkedRecord('dragContext'))
       if (isDragging) {
-        const draggerUser = store.get(viewerId)
-        reflection.setValue(viewerId, 'draggerUserId')
-        reflection.setLinkedRecord(draggerUser, 'draggerUser')
+        const dragContext = createProxyRecord(store, 'DragContext', {
+          draggerUserId: viewerId
+        })
+        dragContext.setLinkedRecord(store.get(viewerId), 'draggerUser')
+        reflection.setLinkedRecord(dragContext, 'dragContext')
       } else {
-        reflection.setValue(null, 'draggerUserId')
-        reflection.setValue(null, 'draggerUser')
+        reflection.setValue(null, 'dragContext')
       }
     }
   })

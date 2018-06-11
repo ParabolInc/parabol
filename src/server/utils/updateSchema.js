@@ -12,6 +12,10 @@ const jsonPath = path.join(buildDir, 'schema.json')
     fs.mkdirSync(buildDir)
   }
   fs.writeFileSync(schemaPath, printSchema(schema))
+  fs.writeFileSync(
+    path.join(buildDir, 'schema_legacy.graphql'),
+    printSchema(schema, {commentDescriptions: true})
+  )
   // use json for IDE plugins
   fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2))
   console.log('Schema updated!')

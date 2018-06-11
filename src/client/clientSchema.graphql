@@ -26,6 +26,7 @@ extend type RetroReflectionGroup {
 }
 
 extend type RetroReflection {
-  dragX: Float
-  dragY: Float
+  centroid: Coords2D,
+  dragCoords: Coords2D,
+  dragUpdatedAt: DateTime
 }

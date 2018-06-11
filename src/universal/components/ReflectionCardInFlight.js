@@ -1,14 +1,17 @@
 // @flow
-import * as React from 'react'
-import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
-import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
-// $FlowFixMe
-import {convertFromRaw, EditorState} from 'draft-js'
-import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import type {ReflectionCardInFlight_reflection as Reflection} from './__generated__/ReflectionCardInFlight_reflection.graphql'
+// $FlowFixMe
+import {EditorState, convertFromRaw} from 'draft-js'
+import * as React from 'react'
+import styled from 'react-emotion'
+import {createFragmentContainer} from 'react-relay'
+import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
+import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
+import ui from 'universal/styles/ui'
+import {REFLECTION_CARD} from 'universal/utils/constants'
+import UserDraggingHeader from 'universal/components/UserDraggingHeader'
 
 type Coords = {
   x: number,
@@ -22,6 +25,11 @@ type Props = {|
   reflection: Reflection
 |}
 
+type State = {|
+  x: ?number,
+  y: ?number
+|}
+
 const ModalBlock = styled('div')({
   top: 0,
   left: 0,
@@ -31,39 +39,65 @@ const ModalBlock = styled('div')({
   zIndex: ui.ziTooltip
 })
 
-class ReflectionCardInFlight extends React.Component<Props> {
+class ReflectionCardInFlight extends React.Component<Props, State> {
   constructor (props) {
     super(props)
-    this.initialComponentOffset = props.initialComponentOffset
-    this.initialCursorOffset = props.initialCursorOffset
+    const {isTeamMemberDragging} = props
+    this.innerWidth = window.innerWidth
     this.editorState = EditorState.createWithContent(
       convertFromRaw(JSON.parse(this.props.reflection.content))
     )
+    if (!isTeamMemberDragging) {
+      this.initialComponentOffset = props.initialComponentOffset
+      this.initialCursorOffset = props.initialCursorOffset
+    }
   }
 
+  state = {
+    dragX: undefined,
+    dragY: undefined
+  }
   componentDidMount () {
-    window.addEventListener('drag', this.setDragState)
+    const {isTeamMemberDragging} = this.props
+    if (!isTeamMemberDragging) {
+      window.addEventListener('drag', this.setDragState)
+    }
   }
 
   componentWillUnmount () {
-    window.removeEventListener('drag', this.setDragState)
+    const {isTeamMemberDragging} = this.props
+    if (!isTeamMemberDragging) {
+      window.removeEventListener('drag', this.setDragState)
+    }
   }
 
   setDragState = (e) => {
     const {
       atmosphere,
-      reflection: {reflectionId, dragX, dragY}
+      reflection: {
+        reflectionId,
+        team: {teamId}
+      }
     } = this.props
     const xDiff = e.x - this.initialCursorOffset.x
     const yDiff = e.y - this.initialCursorOffset.y
-    const x = this.initialComponentOffset.x + xDiff
+    const x = this.initialComponentOffset.x + xDiff + window.scrollX
     const y = this.initialComponentOffset.y + yDiff
-    if (x !== dragX || y !== dragY) {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflection = store.get(reflectionId)
-        reflection.setValue(x, 'dragX')
-        reflection.setValue(y, 'dragY')
+    if (x !== this.state.x || y !== this.state.y) {
+      this.setState({
+        x,
+        y
       })
+      const input = {
+        clientWidth: this.innerWidth,
+        coords: {x, y},
+        distance: 0,
+        sourceId: reflectionId,
+        teamId,
+        draggableType: REFLECTION_CARD,
+        targetId: 'unknown'
+      }
+      UpdateDragLocationMutation(atmosphere, {input})
     }
   }
 
@@ -73,13 +107,16 @@ class ReflectionCardInFlight extends React.Component<Props> {
 
   render () {
     const {
-      reflection: {dragX, dragY}
+      reflection: {dragContext},
+      isTeamMemberDragging
     } = this.props
-    if (!dragX || !dragY) return null
-    const transform = `translate3d(${dragX}px, ${dragY}px, 0px)`
+    const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
+    const transform = `translate3d(${x}px, ${y}px, 0px)`
+    if (!x) return null
     return (
       <ModalBlock style={{transform}}>
         <ReflectionCardRoot>
+          {isTeamMemberDragging && <UserDraggingHeader user={dragContext.draggerUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
         </ReflectionCardRoot>
       </ModalBlock>
@@ -91,10 +128,20 @@ export default createFragmentContainer(
   withAtmosphere(ReflectionCardInFlight),
   graphql`
     fragment ReflectionCardInFlight_reflection on RetroReflection {
+      team {
+        teamId: id
+      }
       reflectionId: id
       content
-      dragX
-      dragY
+      dragContext {
+        dragCoords {
+          x
+          y
+        }
+        draggerUser {
+          ...UserDraggingHeader_user
+        }
+      }
     }
   `
 )

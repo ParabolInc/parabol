@@ -63,10 +63,13 @@ export default {
     }
 
     // RESOLUTION
+    const dragContext = {
+      draggerUserId: viewerId
+    }
+
     const nextReflection = {
       ...reflection,
-      draggerUserId: isDragging ? viewerId : null,
-      draggerUser: isDragging ? await dataLoader.get('users').load(viewerId) : null
+      dragContext: isDragging && dragContext
     }
     const data = {
       meetingId,

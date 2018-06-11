@@ -1158,6 +1158,8 @@ export type Mutation = {
   updateCheckInQuestion: ?UpdateCheckInQuestionPayload,
   /** Update a Team's Check-in question in a new meeting */
   updateNewCheckInQuestion: ?UpdateNewCheckInQuestionPayload,
+  /** all the info required to provide an accurate display-specific location of where an item is */
+  updateDragLocation: ?boolean,
   /** Update the content of a reflection */
   updateReflectionContent: ?UpdateReflectionContentPayload,
   /** Update the title of a reflection group */
@@ -1559,12 +1561,8 @@ export type RetroReflection = {
   createdAt: ?any,
   /** The userId that created the reflection (or unique Id if not a team member) */
   creatorId: ?string,
-  /** The userId of the person currently dragging the reflection */
-  draggerUserId: ?string,
-  /** The user that is currently dragging the reflection */
-  draggerUser: ?User,
-  /** The coordinates necessary to simulate a drag for a subscribing user */
-  draggerCoords: ?DraggerCoords,
+  /** all the info associated with the drag state, if this reflection is currently being dragged */
+  dragContext: ?DragContext,
   /** an array of all the socketIds that are currently editing the reflection */
   editorIds: Array<string>,
   /** True if the reflection was not removed, else false */
@@ -1597,16 +1595,24 @@ export type RetroReflection = {
 }
 
 /**
-  Coordinates used to share a drag
+  Info associated with a current drag
 */
-export type DraggerCoords = {
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  height: ?number,
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  width: ?number,
-  /** The x-offset from the current location */
+export type DragContext = {
+  /** The socketId that initiated the drag */
+  draggerSocketId: ?string,
+  /** The userId of the person currently dragging the reflection */
+  draggerUserId: ?string,
+  /** The user that is currently dragging the reflection */
+  draggerUser: ?User,
+  /** The coordinates necessary to simulate a drag for a subscribing user */
+  dragCoords: ?Coords2D
+}
+
+/**
+  Coordinates used relay a location in a 2-D plane
+*/
+export type Coords2D = {
   x: ?number,
-  /** The y-offset from the current location */
   y: ?number
 }
 
@@ -2283,6 +2289,34 @@ export type UpdateNewCheckInQuestionPayload = {
   meeting: ?NewMeeting
 }
 
+export type UpdateDragLocationInput = {
+  clientWidth: number,
+  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
+  distance: number,
+  /** The primary key of the item being drug */
+  sourceId: string,
+  /** The assumed destination of the item being drug */
+  targetId: string,
+  /** The type of entity being drug */
+  draggableType: DraggableTypeEnum,
+  /** The teamId to broadcast the message to */
+  teamId: string,
+  coords: Coords2DInput
+}
+
+/**
+  The type of entity that is being dragged
+*/
+export type DraggableTypeEnum = 'REFLECTION_CARD'
+
+/**
+  Coordinates used relay a location in a 2-D plane
+*/
+export type Coords2DInput = {
+  x: ?number,
+  y: ?number
+}
+
 export type UpdateReflectionContentPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
@@ -2520,6 +2554,7 @@ export type TeamSubscriptionPayload =
   | RemoveTeamMemberPayload
   | UpdateCheckInQuestionPayload
   | UpdateCreditCardPayload
+  | UpdateDragLocationPayload
   | UpdateNewCheckInQuestionPayload
   | UpdateReflectionContentPayload
   | UpdateReflectionGroupTitlePayload
@@ -2527,6 +2562,19 @@ export type TeamSubscriptionPayload =
   | UpdateTeamNamePayload
   | UpgradeToProPayload
   | VoteForReflectionGroupPayload
+
+export type UpdateDragLocationPayload = {
+  clientWidth: number,
+  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
+  distance: number,
+  /** The primary key of the item being drug */
+  sourceId: string,
+  /** The assumed destination of the item being drug */
+  targetId: string,
+  /** The type of entity being drug */
+  draggableType: DraggableTypeEnum,
+  coords: Coords2D
+}
 
 export type TeanMemberSubscriptionPayload =
   | AcceptTeamInvitePayload
