@@ -13,19 +13,19 @@ import ui from 'universal/styles/ui'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
-import styled from 'react-emotion'
+import styled, {css} from 'react-emotion'
 
 const columnTarget = {
   drop: handleDrop,
   hover: handleAgendaHover
 }
 
-const AgendaListRoot = styled('div')({
+const agendaListRoot = {
   display: 'flex',
   flexDirection: 'column',
   maxHeight: 'calc(100% - 3.625rem)',
   width: '100%'
-})
+}
 
 const EmptyBlock = styled('div')({
   alignItems: 'flex-start',
@@ -192,7 +192,7 @@ class AgendaList extends Component {
     }
 
     return connectDropTarget(
-      <AgendaListRoot>
+      <div className={css(agendaListRoot)}>
         <ScrollableBlock>
           {filteredAgendaItems.map((item, idx) => (
             <AgendaItem
@@ -220,7 +220,7 @@ class AgendaList extends Component {
             />
           ))}
         </ScrollableBlock>
-      </AgendaListRoot>
+      </div>
     )
   }
 }
