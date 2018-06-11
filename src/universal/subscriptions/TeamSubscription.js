@@ -30,7 +30,10 @@ import {
 } from 'universal/mutations/UpdateReflectionLocationMutation'
 import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
 import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
-import {dragReflectionTeamUpdater} from 'universal/mutations/DragReflectionMutation'
+import {
+  dragReflectionTeamOnNext,
+  dragReflectionTeamUpdater
+} from 'universal/mutations/DragReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from 'universal/mutations/DragDiscussionTopicMutation'
 
 const subscription = graphql`
@@ -79,7 +82,8 @@ const onNextHandlers = {
   NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
-  UpdateReflectionLocationPayload: updateReflectionLocationTeamOnNext
+  UpdateReflectionLocationPayload: updateReflectionLocationTeamOnNext,
+  DragReflectionPayload: dragReflectionTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
@@ -111,7 +115,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           createReflectionTeamUpdater(payload, store)
           break
         case 'DragReflectionPayload':
-          dragReflectionTeamUpdater(payload, store)
+          dragReflectionTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'DragDiscussionTopicPayload':
           dragDiscussionTopicTeamUpdater(payload, {store})

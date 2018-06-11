@@ -90,7 +90,16 @@ class ReflectionCard extends Component<Props, State> {
     getEditorState: () => this.state.editorState
   }
 
+  componentDidMount () {
+    this._mounted = true
+  }
+  componentWillUnmount () {
+    this._mounted = false
+  }
   setEditorState = (editorState: EditorState) => {
+    if (!this._mounted) {
+      console.log('FOUND IT! WRAP THIS IN A MOUNT')
+    }
     this.setState({editorState})
   }
 

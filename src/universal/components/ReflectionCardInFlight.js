@@ -34,7 +34,6 @@ type State = {|
 const ModalBlock = styled('div')({
   top: 0,
   left: 0,
-  padding: '.25rem .5rem',
   pointerEvents: 'none',
   position: 'absolute',
   zIndex: ui.ziTooltip
@@ -51,10 +50,13 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     if (!isTeamMemberDragging) {
       this.initialComponentOffset = props.initialComponentOffset
       this.initialCursorOffset = props.initialCursorOffset
+      this.state = {
+        x: this.initialComponentOffset.x,
+        y: this.initialComponentOffset.y
+      }
     }
   }
 
-  state = {}
   componentDidMount () {
     const {isTeamMemberDragging} = this.props
     if (!isTeamMemberDragging) {
@@ -120,14 +122,27 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         phaseItem: {question}
       },
       setInFlightCoords,
-      isTeamMemberDragging
+      isTeamMemberDragging,
+      reflectionRef,
+      closingTransform,
+      handleTransitionEnd
     } = this.props
+
     const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
-    if (x === undefined) return null
-    const transform = `translate3d(${x}px, ${y}px, 0px)`
-    setInFlightCoords(x, y, reflectionId)
+    if (isTeamMemberDragging && x === undefined) return null
+    setInFlightCoords(x, y, reflectionId, reflectionRef)
+    const style = {
+      // smooth the jank caused by latency
+      transition: closingTransform
+        ? 'transform .2s cubic-bezier(0, 0, .2, 1)'
+        : isTeamMemberDragging
+          ? 'transform .1s cubic-bezier(0, 0, .2, 1)'
+          : undefined,
+      transform: closingTransform || `translate3d(${x}px, ${y}px, 0px)`
+    }
+    // console.log(`inflight ISDRAGGING: ${isDragging}, TEAM: ${isTeamMemberDragging}, CLOSE: ${closingTransform}, COORDS: ${x},${y}`)
     return (
-      <ModalBlock style={{transform}}>
+      <ModalBlock style={style} onTransitionEnd={handleTransitionEnd}>
         <ReflectionCardRoot>
           {isTeamMemberDragging && <UserDraggingHeader user={dragContext.draggerUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />

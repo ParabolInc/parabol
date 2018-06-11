@@ -211,7 +211,10 @@ class ReflectionGroup extends Component<Props, State> {
 
 const reflectionDropSpec = {
   canDrop (props: Props, monitor) {
-    return monitor.isOver()
+    return (
+      monitor.isOver() &&
+      monitor.getItem().reflectionGroupId !== props.reflectionGroup.reflectionGroupId
+    )
   },
 
   // Makes the card-dropped-into available in the dragSpec's endDrag method.

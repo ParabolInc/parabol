@@ -143,6 +143,13 @@ class PhaseItemMasonry extends React.Component<Props> {
     }
   }
 
+  componentWillUnmount () {
+    const {
+      atmosphere: {eventEmitter}
+    } = this.props
+    eventEmitter.off('updateReflectionLocation', this.handleGridUpdate)
+  }
+
   setInFlightCoords = (x: number, y: number, itemId: ItemId) => {
     // this is called frequently. keep it cheap!
     this.parentCache.cardsInFlight[itemId] = {
@@ -193,7 +200,6 @@ class PhaseItemMasonry extends React.Component<Props> {
       (group) => group.reflectionGroupId === newReflectionGroupId
     )
     if (!reflectionGroup) {
-
     }
     const [reflection] = reflectionGroup.reflections
     console.log('thing to delete', this.parentCache.cardsInFlight[reflection.reflectionId])

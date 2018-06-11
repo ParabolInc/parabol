@@ -1,6 +1,5 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
 import {commitMutation} from 'react-relay'
-import getInProxy from 'universal/utils/relay/getInProxy'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 
 type Variables = {
@@ -20,6 +19,7 @@ graphql`
           preferredName
         }
       }
+      reflectionGroupId
     }
     isDragging
     dropTargetType
@@ -42,16 +42,42 @@ const mutation = graphql`
   }
 `
 
-export const dragReflectionTeamUpdater = (payload, store) => {
-  const startDragging = Boolean(getInProxy(payload, 'reflection', 'dragContext', 'draggerUserId'))
-  if (!startDragging) {
-    const reflectionId = getInProxy(payload, 'reflection', 'id')
-    if (!reflectionId) return
-    const reflection = store.get(reflectionId)
-    reflection.setValue(null, 'dragContext')
-  }
+export const dragReflectionTeamUpdater = (payload, {atmosphere, store}) => {
+  // const startDragging = Boolean(getInProxy(payload, 'reflection', 'dragContext', 'draggerUserId'))
+  // if (!startDragging) {
+  // const reflectionId = getInProxy(payload, 'reflection', 'id')
+  // if (!reflectionId) return
+  // const reflection = store.get(reflectionId)
+  // reflection.setValue(null, 'dragContext')
+  // const dragContext= reflection.getLinkedRecord('dragContext')
+  // dragContext
+  //   .setValue(null, 'draggerUserId')
+  //   .setValue(null, 'draggerUser')
+  //   .setValue(null, 'dragCoords')
+  //   .setValue(true, 'isComplete')
+  // const dropTargetType = payload.getValue('dropTargetType')
+  // const reflectionGroupId = getInProxy(payload, 'reflection', 'reflectionGroupId')
+  // atmosphere.eventEmitter.emit(`dragReflection.${reflectionId}`, {dropTargetType, itemId: reflectionId, childId: reflectionGroupId})
+  // }
 }
 
+export const dragReflectionTeamOnNext = (payload, context) => {
+  const {
+    atmosphere: {eventEmitter}
+  } = context
+  // this is the cleanest pattern i can come up with to communicate in the context of a component
+  // any alternative requires passing a callback from a component up to its parent that requests the subscription
+  console.log('onNext emitting payload', payload)
+  const {
+    reflection: {id: itemId},
+    reflectionGroupId: childId,
+    dropTargetType,
+    isDragging
+  } = payload
+  if (!isDragging) {
+    eventEmitter.emit(`dragReflection.${itemId}`, {dropTargetType, itemId, childId})
+  }
+}
 const DragReflectionMutation = (
   atmosphere: Object,
   variables: Variables,
@@ -66,7 +92,7 @@ const DragReflectionMutation = (
     updater: (store) => {
       const payload = store.getRootField('dragReflection')
       if (!payload) return
-      dragReflectionTeamUpdater(payload, store)
+      dragReflectionTeamUpdater(payload, {atmosphere, store})
     },
     optimisticUpdater: (store) => {
       const {viewerId} = atmosphere
@@ -79,8 +105,14 @@ const DragReflectionMutation = (
         })
         dragContext.setLinkedRecord(store.get(viewerId), 'draggerUser')
         reflection.setLinkedRecord(dragContext, 'dragContext')
-      } else {
-        reflection.setValue(null, 'dragContext')
+        // } else {
+        // reflection.setValue(null, 'dragContext')
+        // const dragContext = reflection.getLinkedRecord('dragContext')
+        // dragContext
+        //   .setValue(null, 'draggerUserId')
+        //   .setValue(null, 'draggerUser')
+        //   .setValue(null, 'dragCoords')
+        //   .setValue(true, 'isComplete')
       }
     }
   })

@@ -6,12 +6,11 @@
 import * as React from 'react'
 import type {Props as ReflectionCardProps} from './ReflectionCard'
 import ReflectionCard from './ReflectionCard'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {DragSource as dragSource} from 'react-dnd'
 import {REFLECTION_CARD} from 'universal/utils/constants'
-import styled from 'react-emotion'
 import DragReflectionMutation from 'universal/mutations/DragReflectionMutation'
 import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
 import Modal from 'universal/components/Modal'
@@ -24,17 +23,61 @@ type Props = {
   ...ReflectionCardProps
 }
 
-const DragStyles = styled('div')(({isDragging}) => ({
-  opacity: isDragging ? 0 : 1
-  // margin: 8
-}))
-
 class DraggableReflectionCard extends React.Component<Props> {
+  constructor (props) {
+    super(props)
+    const {
+      atmosphere: {eventEmitter},
+      reflection: {reflectionId}
+    } = props
+    eventEmitter.on(`dragReflection.${reflectionId}`, this.handleDragEnd)
+  }
+  state = {
+    isTeamMemberDragging: false,
+    closingTransform: undefined
+  }
+
   componentDidMount () {
+    // this._mounted = true
     const {connectDragPreview} = this.props
     connectDragPreview(getEmptyImage())
   }
 
+  // componentWillUnmount() {
+  // this._mounted = false
+  // }
+
+  handleDragEnd = (payload) => {
+    const {dropTargetType} = payload
+    if (dropTargetType === null) {
+      const {left, top} = this.reflectionRef.getBoundingClientRect()
+      this.setState({
+        closingTransform: `translate3d(${left}px, ${top}px, 0px)`
+      })
+    }
+  }
+
+  handleTransitionEnd = () => {
+    const {
+      atmosphere,
+      reflection: {reflectionId}
+    } = this.props
+    commitLocalUpdate(atmosphere, (store) => {
+      const reflection = store.get(reflectionId)
+      const dragContext = reflection.getLinkedRecord('dragContext')
+      dragContext.setValue(null, 'dragCoords')
+      reflection.setValue(null, 'dragContext')
+    })
+    this.setState({
+      closingTransform: undefined
+    })
+  }
+
+  setReflectionRef = (c) => {
+    if (c) {
+      this.reflectionRef = c
+    }
+  }
   render () {
     const {
       connectDragSource,
@@ -42,38 +85,45 @@ class DraggableReflectionCard extends React.Component<Props> {
       initialComponentOffset,
       isCollapsed,
       isDragging,
-      isOver,
       reflection,
       meeting,
       idx,
       reflectionGroupId,
       setInFlightCoords
     } = this.props
-    const {dragContext} = reflection
-    const isTeamMemberDragging = !isDragging && Boolean(dragContext && dragContext.dragCoords)
+    const {closingTransform} = this.state
+    const isTeamMemberDragging = Boolean(
+      reflection.dragContext && reflection.dragContext.dragCoords
+    )
+
+    const style = {
+      opacity: +(closingTransform ? 0 : !isDragging && !isTeamMemberDragging)
+    }
+    console.log('team drag', isTeamMemberDragging, isDragging, reflection.dragContext)
     return (
       <React.Fragment>
         {connectDragSource(
-          <div>
-            <DragStyles isDragging={isDragging || isTeamMemberDragging} isOver={isOver}>
-              <ReflectionCard
-                isCollapsed={isCollapsed}
-                meeting={meeting}
-                reflection={reflection}
-                showOriginFooter
-                idx={idx}
-                reflectionGroupId={reflectionGroupId}
-              />
-            </DragStyles>
+          <div style={style} ref={this.setReflectionRef}>
+            <ReflectionCard
+              isCollapsed={isCollapsed}
+              meeting={meeting}
+              reflection={reflection}
+              showOriginFooter
+              idx={idx}
+              reflectionGroupId={reflectionGroupId}
+            />
           </div>
         )}
-        <Modal isOpen={isDragging || isTeamMemberDragging}>
+        <Modal isOpen={isDragging || isTeamMemberDragging || Boolean(closingTransform)}>
           <ReflectionCardInFlight
             setInFlightCoords={setInFlightCoords}
             initialCursorOffset={initialCursorOffset}
             initialComponentOffset={initialComponentOffset}
+            isDragging={isDragging}
             isTeamMemberDragging={isTeamMemberDragging}
             reflection={reflection}
+            closingTransform={closingTransform}
+            handleTransitionEnd={closingTransform ? this.handleTransitionEnd : undefined}
           />
         </Modal>
       </React.Fragment>
@@ -104,12 +154,18 @@ const reflectionDragSpec = {
   endDrag (props: Props, monitor) {
     const {
       atmosphere,
-      reflection: {reflectionId}
+      reflection: {reflectionId, reflectionGroupId}
     } = props
     console.log('end drag', monitor.didDrop(), monitor.getDropResult())
     const dropResult = monitor.getDropResult()
     const dropTargetType = dropResult ? dropResult.dropTargetType : null
     DragReflectionMutation(atmosphere, {reflectionId, isDragging: false, dropTargetType})
+    const {eventEmitter} = atmosphere
+    eventEmitter.emit(`dragReflection.${reflectionId}`, {
+      dropTargetType,
+      itemId: reflectionId,
+      childId: reflectionGroupId
+    })
   }
 }
 
