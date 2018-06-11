@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {DropTarget as dropTarget} from 'react-dnd'
@@ -11,14 +10,75 @@ import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/Ag
 import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
-import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
+// import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
+import ScrollableBlock from 'universal/components/ScrollableBlock'
+import styled from 'react-emotion'
 
 const columnTarget = {
   drop: handleDrop,
   hover: handleAgendaHover
 }
+
+const AgendaListRoot = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  maxHeight: 'calc(100% - 3.625rem)',
+  width: '100%'
+})
+
+const EmptyBlock = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex',
+  padding: ui.meetingSidebarGutter,
+  paddingTop: 0
+})
+
+const EmptyEmoji = styled('div')({
+  fontSize: appTheme.typography.s4,
+  minWidth: '2rem',
+  paddingLeft: '1.375rem'
+})
+
+const EmptyMessage = styled('div')({
+  color: ui.palette.dark,
+  flex: 1,
+  fontSize: appTheme.typography.s2,
+  lineHeight: '1.5',
+  paddingLeft: '.5rem',
+  paddingTop: '.25rem'
+})
+
+const AgendaItemsLoadingBlock = styled('div')({
+  padding: ui.meetingSidebarGutter,
+  paddingLeft: '1.625rem',
+  paddingTop: 0,
+  width: '100%'
+})
+
+const AgendaItemLoading = styled('div')({
+  display: 'flex',
+  padding: `${ui.meetingSidebarGutter} 0`,
+
+  '::before': {
+    backgroundColor: appTheme.palette.mid20l,
+    borderRadius: ui.borderRadiusSmall,
+    display: 'block',
+    content: '""',
+    flex: 1,
+    height: '1.5rem',
+    marginRight: ui.meetingSidebarGutter
+  },
+
+  '::after': {
+    backgroundColor: appTheme.palette.mid50l,
+    borderRadius: '100%',
+    display: 'block',
+    content: '""',
+    height: '1.5rem',
+    width: '1.5rem'
+  }
+})
 
 class AgendaList extends Component {
   static propTypes = {
@@ -73,31 +133,30 @@ class AgendaList extends Component {
   }
 
   makeLoadingState () {
-    const {styles} = this.props
-    const loadingItem = <div className={css(styles.agendaItemLoading)} />
+    const loadingItem = <AgendaItemLoading />
     return (
-      <div className={css(styles.agendaItemsLoadingBlock)}>
+      <AgendaItemsLoadingBlock>
         {loadingItem}
         {loadingItem}
         {loadingItem}
-      </div>
+      </AgendaItemsLoadingBlock>
     )
   }
 
   makeEmptyState () {
-    const {context, styles} = this.props
+    const {context} = this.props
     const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting'
     return (
-      <div className={css(styles.emptyBlock)}>
-        <div className={css(styles.emptyEmoji)}>🤓</div>
-        <div className={css(styles.emptyMessage)}>
+      <EmptyBlock>
+        <EmptyEmoji>🤓</EmptyEmoji>
+        <EmptyMessage>
           {`Pssst. Add topics for your ${meetingContext}! Use a phrase like “`}
           <b>
             <i>{'upcoming vacation'}</i>
           </b>
           {'.”'}
-        </div>
-      </div>
+        </EmptyMessage>
+      </EmptyBlock>
     )
   }
 
@@ -120,7 +179,6 @@ class AgendaList extends Component {
       localPhase,
       localPhaseItem,
       visibleAgendaItemId,
-      styles,
       team
     } = this.props
     const {filteredAgendaItems} = this.state
@@ -134,117 +192,55 @@ class AgendaList extends Component {
     }
 
     return connectDropTarget(
-      <div className={css(styles.root)}>
-        <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
-          {(scrollRef) => {
-            return (
-              <div ref={scrollRef}>
-                {filteredAgendaItems.map((item, idx) => (
-                  <AgendaItem
-                    key={`agendaItem${item.id}`}
-                    agendaItem={item}
-                    agendaLength={filteredAgendaItems.length}
-                    agendaPhaseItem={agendaPhaseItem}
-                    canNavigate={canNavigateItems}
-                    disabled={disabled}
-                    ensureVisible={visibleAgendaItemId === item.id}
-                    facilitatorPhase={facilitatorPhase}
-                    gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
-                    handleRemove={this.removeItemFactory(item.id)}
-                    idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
-                    inSync={inSync}
-                    isCurrent={idx + 1 === agendaPhaseItem}
-                    isFacilitator={idx + 1 === facilitatorPhaseItem}
-                    localPhase={localPhase}
-                    localPhaseItem={localPhaseItem}
-                    ref={(c) => {
-                      if (c) {
-                        dragState.components.push(c)
-                      }
-                    }}
-                  />
-                ))}
-              </div>
-            )
-          }}
-        </SexyScrollbar>
-      </div>
+      <AgendaListRoot>
+        <ScrollableBlock>
+          {filteredAgendaItems.map((item, idx) => (
+            <AgendaItem
+              key={`agendaItem${item.id}`}
+              agendaItem={item}
+              agendaLength={filteredAgendaItems.length}
+              agendaPhaseItem={agendaPhaseItem}
+              canNavigate={canNavigateItems}
+              disabled={disabled}
+              ensureVisible={visibleAgendaItemId === item.id}
+              facilitatorPhase={facilitatorPhase}
+              gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
+              handleRemove={this.removeItemFactory(item.id)}
+              idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+              inSync={inSync}
+              isCurrent={idx + 1 === agendaPhaseItem}
+              isFacilitator={idx + 1 === facilitatorPhaseItem}
+              localPhase={localPhase}
+              localPhaseItem={localPhaseItem}
+              ref={(c) => {
+                if (c) {
+                  dragState.components.push(c)
+                }
+              }}
+            />
+          ))}
+        </ScrollableBlock>
+      </AgendaListRoot>
     )
   }
 }
 
-const styleThunk = () => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: 'calc(100% - 3.625rem)',
-    width: '100%'
-  },
-
-  emptyBlock: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    padding: ui.meetingSidebarGutter,
-    paddingTop: 0
-  },
-
-  emptyEmoji: {
-    fontSize: appTheme.typography.s4,
-    minWidth: '2rem',
-    paddingLeft: '1.375rem'
-  },
-
-  emptyMessage: {
-    color: ui.palette.dark,
-    flex: 1,
-    fontSize: appTheme.typography.s2,
-    lineHeight: '1.5',
-    paddingLeft: '.5rem',
-    paddingTop: '.25rem'
-  },
-
-  agendaItemsLoadingBlock: {
-    padding: ui.meetingSidebarGutter,
-    paddingLeft: '1.625rem',
-    paddingTop: 0,
-    width: '100%'
-  },
-
-  agendaItemLoading: {
-    display: 'flex',
-    padding: `${ui.meetingSidebarGutter} 0`,
-
-    ':before': {
-      backgroundColor: appTheme.palette.mid20l,
-      borderRadius: ui.borderRadiusSmall,
-      display: 'block',
-      content: '""',
-      flex: 1,
-      height: '1.5rem',
-      marginRight: ui.meetingSidebarGutter
-    },
-
-    ':after': {
-      backgroundColor: appTheme.palette.mid50l,
-      borderRadius: '100%',
-      display: 'block',
-      content: '""',
-      height: '1.5rem',
-      width: '1.5rem'
-    }
-  }
-})
+// <SexyScrollbar color='rgba(0, 0, 0, 0.3)' activeColor='rgba(0, 0, 0, 0.5)'>
+//  {(scrollRef) => {
+//    return (
+//      <div ref={scrollRef}>
+//        {/* wrap filteredAgendaItems here */}
+//      </div>
+//    )
+//  }}
+// </SexyScrollbar>
 
 const dropTargetCb = (connectTarget) => ({
   connectDropTarget: connectTarget.dropTarget()
 })
 
 export default createFragmentContainer(
-  withAtmosphere(
-    withDragState(
-      dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(withStyles(styleThunk)(AgendaList))
-    )
-  ),
+  withAtmosphere(withDragState(dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(AgendaList))),
   graphql`
     fragment AgendaList_team on Team {
       contentFilter

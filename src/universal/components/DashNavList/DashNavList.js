@@ -4,7 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import DashNavTeam from 'universal/components/Dashboard/DashNavTeam'
 import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
-import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
+// import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 
 const DashNavListStyles = styled('div')({
   width: '100%'
@@ -22,17 +22,23 @@ const DashNavList = (props) => {
   const hasTeams = teams && teams.length > 0
   if (!hasTeams) return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
   return (
-    <SexyScrollbar>
-      {(scrollRef) => {
-        return (
-          <DashNavListStyles innerRef={scrollRef}>
-            {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
-          </DashNavListStyles>
-        )
-      }}
-    </SexyScrollbar>
+    <DashNavListStyles>
+      {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
+    </DashNavListStyles>
   )
 }
+
+// return (
+//   <SexyScrollbar>
+//     {(scrollRef) => {
+//       return (
+//         <DashNavListStyles innerRef={scrollRef}>
+//           {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
+//         </DashNavListStyles>
+//       )
+//     }}
+//   </SexyScrollbar>
+// )
 
 DashNavList.propTypes = {
   // required to update highlighting

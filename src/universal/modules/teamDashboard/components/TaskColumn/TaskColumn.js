@@ -23,8 +23,6 @@ import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem'
 import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer'
 import overflowTouch from 'universal/styles/helpers/overflowTouch'
 
-import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
-
 // The `ScrollZone` component manages an overflowed block-level element,
 // scrolling its contents when another element is dragged close to its edges.
 const ScrollZone = withScrolling('div')
@@ -254,30 +252,22 @@ class TaskColumn extends Component {
         </ColumnHeader>
         <ColumnBody>
           <ScrollZone className={css(columnInner)}>
-            <SexyScrollbar>
-              {(scrollRef) => {
-                return (
-                  <div ref={scrollRef}>
-                    {tasks.map((task) => (
-                      <DraggableTask
-                        key={`teamCard${task.id}`}
-                        area={area}
-                        getTaskById={getTaskById}
-                        task={task}
-                        myUserId={atmosphere.userId}
-                        insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
-                      />
-                    ))}
-                    <TaskColumnDropZone
-                      area={area}
-                      getTaskById={getTaskById}
-                      lastTask={tasks[tasks.length - 1]}
-                      status={status}
-                    />
-                  </div>
-                )
-              }}
-            </SexyScrollbar>
+            {tasks.map((task) => (
+              <DraggableTask
+                key={`teamCard${task.id}`}
+                area={area}
+                getTaskById={getTaskById}
+                task={task}
+                myUserId={atmosphere.userId}
+                insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
+              />
+            ))}
+            <TaskColumnDropZone
+              area={area}
+              getTaskById={getTaskById}
+              lastTask={tasks[tasks.length - 1]}
+              status={status}
+            />
           </ScrollZone>
         </ColumnBody>
       </Column>

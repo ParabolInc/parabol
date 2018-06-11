@@ -81,7 +81,7 @@ export default `
     font-weight: 600;
   }
 
-  ::-webkit-scrollbar {
+  /*::-webkit-scrollbar {
     -webkit-appearance: none;
     width:6px;
   }
@@ -97,7 +97,7 @@ export default `
 
   ::-webkit-scrollbar-thumb:window-inactive {
     background:rgba(0, 0, 0, 0.2);
-  }
+  }*/
 
   @media print {
     html,

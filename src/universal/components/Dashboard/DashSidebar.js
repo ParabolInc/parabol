@@ -33,13 +33,25 @@ const MyDashboard = styled('div')({
   marginBottom: '1rem'
 })
 
+const NavBlock = styled('div')({
+  flex: 1,
+  position: 'relative'
+})
+
 const Nav = styled('nav')({
   display: 'flex',
-  flex: 1,
   flexDirection: 'column',
+  left: 0,
   maxHeight: '100%',
   paddingBottom: '1.25rem',
+  position: 'absolute',
+  top: 0,
   width: '100%'
+})
+
+const NavMain = styled('div')({
+  flex: 1,
+  overflowY: 'auto'
 })
 
 const NavLabel = styled('div')({
@@ -101,24 +113,29 @@ const DashSidebar = (props) => {
   return (
     <DashSidebarStyles>
       <StandardHub location={location} viewer={viewer} />
-      <Nav>
-        <MyDashboard>
-          <DashNavItem location={location} href='/me' icon='table' label='My Dashboard' />
-        </MyDashboard>
-        <NavLabel>{'My Teams'}</NavLabel>
-        <DashNavList location={location} viewer={viewer} />
-
-        <NavLink
-          className={addTeamStyles}
-          activeClassName={disabledAddTeamStyles}
-          title='Add New Team'
-          to='/newteam/1'
-        >
-          <AddTeamIcon name='plus-circle' />
-          <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
-        </NavLink>
-      </Nav>
-
+      <NavBlock>
+        <Nav>
+          {/* use div for flex layout */}
+          <div>
+            <MyDashboard>
+              <DashNavItem location={location} href='/me' icon='table' label='My Dashboard' />
+            </MyDashboard>
+            <NavLabel>{'My Teams'}</NavLabel>
+          </div>
+          <NavMain>
+            <DashNavList location={location} viewer={viewer} />
+          </NavMain>
+          <NavLink
+            className={addTeamStyles}
+            activeClassName={disabledAddTeamStyles}
+            title='Add New Team'
+            to='/newteam/1'
+          >
+            <AddTeamIcon name='plus-circle' />
+            <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
+          </NavLink>
+        </Nav>
+      </NavBlock>
       <LogoBlock variant='white' />
     </DashSidebarStyles>
   )
