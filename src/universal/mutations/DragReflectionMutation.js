@@ -5,7 +5,8 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 
 type Variables = {
   isDragging: boolean,
-  reflectionId: string
+  reflectionId: string,
+  dropTargetType: string
 }
 
 graphql`
@@ -20,12 +21,22 @@ graphql`
         }
       }
     }
+    isDragging
+    dropTargetType
   }
 `
 
 const mutation = graphql`
-  mutation DragReflectionMutation($isDragging: Boolean!, $reflectionId: ID!) {
-    dragReflection(isDragging: $isDragging, reflectionId: $reflectionId) {
+  mutation DragReflectionMutation(
+    $isDragging: Boolean!
+    $reflectionId: ID!
+    $dropTargetType: DragReflectionDropTargetTypeEnum
+  ) {
+    dragReflection(
+      isDragging: $isDragging
+      reflectionId: $reflectionId
+      dropTargetType: $dropTargetType
+    ) {
       ...DragReflectionMutation_team @relay(mask: false)
     }
   }

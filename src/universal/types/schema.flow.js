@@ -1847,6 +1847,11 @@ export type RetroDiscussStage = {
   sortOrder: number
 }
 
+/**
+  The possible places a reflection can be dropped
+*/
+export type DragReflectionDropTargetTypeEnum = 'REFLECTION_GROUP' | 'REFLECTION_GRID'
+
 export type DragReflectionPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
@@ -1856,7 +1861,9 @@ export type DragReflectionPayload = {
   /** The user that is triggering the drag */
   user: ?User,
   /** true if the reflection is being dragged, else false */
-  isDragging: ?boolean
+  isDragging: ?boolean,
+  /** the type of item the reflection was dropped on */
+  dropTargetType: ?DragReflectionDropTargetTypeEnum
 }
 
 export type EditReflectionPayload = {

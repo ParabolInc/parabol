@@ -17,6 +17,7 @@ import {
   sendAlreadyEndedMeetingError
 } from 'server/utils/alreadyMutatedErrors'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
+import DragReflectionDropTargetTypeEnum from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
 
 type Args = {
   isDragging: boolean,
@@ -33,11 +34,16 @@ export default {
     isDragging: {
       description: 'true if the viewer is starting a drag, else false',
       type: new GraphQLNonNull(GraphQLBoolean)
+    },
+    dropTargetType: {
+      description:
+        'if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target',
+      type: DragReflectionDropTargetTypeEnum
     }
   },
   async resolve (
     source: Object,
-    {reflectionId, isDragging}: Args,
+    {reflectionId, isDragging, dropTargetType}: Args,
     {authToken, dataLoader, socketId: mutatorId}: Context
   ) {
     const r = getRethink()
@@ -75,7 +81,8 @@ export default {
       meetingId,
       reflection: nextReflection,
       userId: viewerId,
-      isDragging
+      isDragging,
+      dropTargetType
     }
     publish(TEAM, teamId, DragReflectionPayload, data, subOptions)
     return data

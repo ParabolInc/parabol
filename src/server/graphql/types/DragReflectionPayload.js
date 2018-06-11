@@ -4,6 +4,7 @@ import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import RetroReflection from 'server/graphql/types/RetroReflection'
 import User from 'server/graphql/types/User'
+import DragReflectionDropTargetTypeEnum from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
 
 const DragReflectionPayload = new GraphQLObjectType({
   name: 'DragReflectionPayload',
@@ -30,6 +31,10 @@ const DragReflectionPayload = new GraphQLObjectType({
     isDragging: {
       type: GraphQLBoolean,
       description: 'true if the reflection is being dragged, else false'
+    },
+    dropTargetType: {
+      type: DragReflectionDropTargetTypeEnum,
+      description: 'the type of item the reflection was dropped on'
     }
   })
 })

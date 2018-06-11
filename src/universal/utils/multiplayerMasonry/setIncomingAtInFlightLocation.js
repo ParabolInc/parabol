@@ -1,25 +1,28 @@
 import getLastCardForColumn from 'universal/utils/multiplayerMasonry/getLastCardForColumn'
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 
-const setIncomingAtDropLocation = (childrenCache, parentCache) => {
+const setIncomingAtInFlightLocation = (childrenCache, parentCache) => {
   console.log('setting incoming el at drop location')
   const {
+    boundingBox: {left: parentLeft, top: parentTop},
     columnLefts,
-    droppedCards,
+    cardsInFlight,
     incomingChild: {childId, itemId}
   } = parentCache
   const childCache = childrenCache[childId]
-  const droppedCardRect = droppedCards[itemId]
-  const {top: initialTop, left: initialLeft, width, height} = droppedCardRect
+  const inFlightCoords = cardsInFlight[itemId]
+  const {x, y} = inFlightCoords
+  const initialLeft = x - parentLeft
+  const initialTop = y - parentTop
+  childCache.el.style.transform = `translate(${initialLeft}px, ${initialTop}px)`
   const distances = columnLefts.map((col) => Math.abs(col - initialLeft))
   const nearestColIdx = distances.indexOf(Math.min(...distances))
   const left = columnLefts[nearestColIdx]
   const top = getLastCardForColumn(childrenCache, left, childId)
   // TODO moved to position: fixed or adjust translation inside parent to avoid clipping (drag card is in a modal, is never clipped)
-  childCache.el.style.transform = `translate(${initialLeft}px, ${initialTop}px)`
+  const {height, width} = childCache.el.getBoundingClientRect()
   childCache.boundingBox = {top, left, width, height}
-  delete droppedCards[itemId]
-
+  delete cardsInFlight[itemId]
   // TODO test if this conditional & the trigger are necessary
   if (childCache.el.parentElement) {
     // TRIGGER LAYOUT
@@ -29,4 +32,4 @@ const setIncomingAtDropLocation = (childrenCache, parentCache) => {
   }
 }
 
-export default setIncomingAtDropLocation
+export default setIncomingAtInFlightLocation

@@ -237,6 +237,7 @@ export const RETROSPECTIVE = 'retrospective'
 
 /* Retro DnD types */
 export const REFLECTION_CARD = 'REFLECTION_CARD'
+export const REFLECTION_GRID = 'REFLECTION_GRID'
 export const REFLECTION_GROUP = 'REFLECTION_GROUP'
 export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 

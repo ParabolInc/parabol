@@ -3,7 +3,7 @@ import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {DropTarget} from 'react-dnd'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
-import {REFLECTION_CARD} from 'universal/utils/constants'
+import {REFLECTION_CARD, REFLECTION_GRID} from 'universal/utils/constants'
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
 import dndNoise from 'universal/utils/dndNoise'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
@@ -11,9 +11,9 @@ import styled, {css} from 'react-emotion'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
-import handleNewGroup from 'universal/utils/multiplayerMasonry/handleNewGroup'
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 import handleSwappedGroup from 'universal/utils/multiplayerMasonry/handleSwappedGroup'
+import setIncomingAtInFlightLocation from 'universal/utils/multiplayerMasonry/setIncomingAtInFlightLocation'
 
 type Props = {|
   meeting: Meeting
@@ -40,11 +40,9 @@ type ItemId = string
 // reflectionGroupId
 type ChildId = string
 
-type DroppedCardRect = {
-  height: number,
-  width: number,
-  left: number,
-  top: number
+type InFlightCoords = {
+  x: number,
+  y: number
 }
 
 type IncomingChild = {
@@ -56,23 +54,19 @@ type ParentCache = {
   el: ?HTMLElement,
   boundingBox: ?ClientRect,
   columnLefts: Array<number>,
-  droppedCards: {[ItemId]: DroppedCardRect},
+  cardsInFlight: {[ItemId]: InFlightCoords},
   incomingChild: ?IncomingChild
 }
 
 type ChildCache = {
   el: ?HTMLElement,
   // boundingBox coords are relative to the parentCache!
-  boundingBox: ?ClientRect
+  boundingBox: ?ClientRect,
+  inFlightCoords: InFlightCoords
 }
 type ChildrenCache = {
   [ChildId]: ChildCache
 }
-
-// type PendingNewGroup = {
-//   newReflectionGroupId: string,
-//   oldReflectionGroupId: string
-// }
 
 class PhaseItemMasonry extends React.Component<Props> {
   constructor (props) {
@@ -89,7 +83,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     el: null,
     boundingBox: null,
     columnLefts: [],
-    droppedCards: {},
+    cardsInFlight: {},
     incomingChild: null
   }
   childrenCache: ChildrenCache = {}
@@ -139,27 +133,21 @@ class PhaseItemMasonry extends React.Component<Props> {
 
   componentDidUpdate (prevProps, prevState, snapshot) {
     console.log('cDU')
-    if (!this.parentCache.incomingChild) return
+    const {incomingChild} = this.parentCache
     if (snapshot) {
       handleSwappedGroup(this.childrenCache, this.parentCache, snapshot)
       this.parentCache.incomingChild = null
-    } else {
-      handleNewGroup(this.childrenCache, this.parentCache)
+    } else if (incomingChild) {
+      setIncomingAtInFlightLocation(this.childrenCache, this.parentCache)
       this.parentCache.incomingChild = null
     }
   }
 
-  setOptimisticRect = (clientRect: ClientRect, itemId: ItemId) => {
-    const {height, width, top, left} = clientRect
-    const {
-      boundingBox: {top: parentTop, left: parentLeft}
-    } = this.parentCache
-    console.log('setting opt rect')
-    this.parentCache.droppedCards[itemId] = {
-      height,
-      width,
-      top: top - parentTop,
-      left: left - parentLeft
+  setInFlightCoords = (x: number, y: number, itemId: ItemId) => {
+    // this is called frequently. keep it cheap!
+    this.parentCache.cardsInFlight[itemId] = {
+      x,
+      y
     }
   }
 
@@ -196,14 +184,25 @@ class PhaseItemMasonry extends React.Component<Props> {
       updateColumnHeight(this.childrenCache, newReflectionGroupId)
     }
     shakeUpBottomCells(this.childrenCache, this.parentCache.columnLefts)
+
+    // TODO gracefully drop cards on the stack
+    const {
+      meeting: {reflectionGroups}
+    } = this.props
+    const reflectionGroup = reflectionGroups.find(
+      (group) => group.reflectionGroupId === newReflectionGroupId
+    )
+    if (!reflectionGroup) {
+
+    }
+    const [reflection] = reflectionGroup.reflections
+    console.log('thing to delete', this.parentCache.cardsInFlight[reflection.reflectionId])
+    delete this.parentCache.cardsInFlight[reflection.reflectionId]
   }
 
   setChildRef = (childId, itemId) => (c) => {
     if (c) {
       if (!this.childrenCache[childId]) {
-        console.log('setting child cache', childId)
-        if (childId === 'el') {
-        }
         this.childrenCache[childId] = {el: c}
         this.parentCache.incomingChild = {
           childId,
@@ -234,7 +233,7 @@ class PhaseItemMasonry extends React.Component<Props> {
               <ReflectionGroup
                 meeting={meeting}
                 reflectionGroup={reflectionGroup}
-                setOptimisticRect={this.setOptimisticRect}
+                setInFlightCoords={this.setInFlightCoords}
                 idx={idx}
               />
             </CardWrapper>
@@ -271,6 +270,7 @@ const reflectionDropSpec = {
     }
     submitMutation()
     UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
+    return {dropTargetType: REFLECTION_GRID}
   }
 }
 

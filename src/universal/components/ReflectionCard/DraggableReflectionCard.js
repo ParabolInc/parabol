@@ -47,7 +47,7 @@ class DraggableReflectionCard extends React.Component<Props> {
       meeting,
       idx,
       reflectionGroupId,
-      setOptimisticRect
+      setInFlightCoords
     } = this.props
     const {dragContext} = reflection
     const isTeamMemberDragging = !isDragging && Boolean(dragContext && dragContext.dragCoords)
@@ -69,7 +69,7 @@ class DraggableReflectionCard extends React.Component<Props> {
         )}
         <Modal isOpen={isDragging || isTeamMemberDragging}>
           <ReflectionCardInFlight
-            setOptimisticRect={setOptimisticRect}
+            setInFlightCoords={setInFlightCoords}
             initialCursorOffset={initialCursorOffset}
             initialComponentOffset={initialComponentOffset}
             isTeamMemberDragging={isTeamMemberDragging}
@@ -101,12 +101,15 @@ const reflectionDragSpec = {
   // isDragging(props, monitor) {
   //   return props.reflection.reflectionId === monitor.getItem().reflectionId;
   // },
-  endDrag (props: Props) {
+  endDrag (props: Props, monitor) {
     const {
       atmosphere,
       reflection: {reflectionId}
     } = props
-    DragReflectionMutation(atmosphere, {reflectionId, isDragging: false})
+    console.log('end drag', monitor.didDrop(), monitor.getDropResult())
+    const dropResult = monitor.getDropResult()
+    const dropTargetType = dropResult ? dropResult.dropTargetType : null
+    DragReflectionMutation(atmosphere, {reflectionId, isDragging: false, dropTargetType})
   }
 }
 

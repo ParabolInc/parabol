@@ -10,7 +10,7 @@ import type {ReflectionGroup_meeting as Meeting} from './__generated__/Reflectio
 import ui from 'universal/styles/ui'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import {GROUP, REFLECTION_CARD, VOTE} from 'universal/utils/constants'
+import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import {DropTarget as dropTarget} from 'react-dnd'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
@@ -117,7 +117,7 @@ class ReflectionGroup extends Component<Props, State> {
   }
 
   renderReflection = (reflection: Object, idx: number) => {
-    const {setOptimisticRect, meeting, reflectionGroup, idx: groupIdx} = this.props
+    const {setInFlightCoords, meeting, reflectionGroup, idx: groupIdx} = this.props
     const {
       reflections,
       retroPhaseItemId: currentRetroPhaseItemId,
@@ -163,7 +163,7 @@ class ReflectionGroup extends Component<Props, State> {
           ref={this.setTopCardRef}
         >
           <DraggableReflectionCard
-            setOptimisticRect={setOptimisticRect}
+            setInFlightCoords={setInFlightCoords}
             currentRetroPhaseItemId={currentRetroPhaseItemId}
             idx={groupIdx}
             meeting={meeting}
@@ -239,6 +239,7 @@ const reflectionDropSpec = {
       submitMutation()
       UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
     }
+    return {dropTargetType: REFLECTION_GROUP}
   }
 }
 

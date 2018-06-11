@@ -64,13 +64,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
 
   componentWillUnmount () {
     console.log('unmount inflight')
-    const {
-      isTeamMemberDragging,
-      setOptimisticRect,
-      reflection: {reflectionId}
-    } = this.props
-    const {x, y} = this.state
-    setOptimisticRect({top: y, left: x, ...this.cardRect}, reflectionId)
+    const {isTeamMemberDragging} = this.props
     if (!isTeamMemberDragging) {
       window.removeEventListener('drag', this.setDragState)
     }
@@ -86,9 +80,17 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     } = this.props
     const xDiff = e.x - this.initialCursorOffset.x
     const yDiff = e.y - this.initialCursorOffset.y
+    // if i scroll off the screen, leave it where I last saw it
+    if (e.x === 0 && e.y === 0) return
     const x = this.initialComponentOffset.x + xDiff + window.scrollX
     const y = this.initialComponentOffset.y + yDiff
     if (x !== this.state.x || y !== this.state.y) {
+      /*
+       * coords using relay: ~45fps
+       * coords using this.setState: ~60fps
+       * coords using this.coords and direct dom manipulation: ~60fps
+       * setState is nearly identical as direct dom manipulation & pattern is the same for local & remote drags
+       */
       this.setState({
         x,
         y
@@ -110,27 +112,23 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   initialComponentOffset: Coords
   initialCursorOffset: Coords
 
-  setRef = (c) => {
-    if (c) {
-      const {height, width} = c.getBoundingClientRect()
-      this.cardRect = {height, width}
-    }
-  }
-
   render () {
     const {
       reflection: {
+        reflectionId,
         dragContext,
         phaseItem: {question}
       },
+      setInFlightCoords,
       isTeamMemberDragging
     } = this.props
     const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
+    if (x === undefined) return null
     const transform = `translate3d(${x}px, ${y}px, 0px)`
-    if (!x) return null
+    setInFlightCoords(x, y, reflectionId)
     return (
       <ModalBlock style={{transform}}>
-        <ReflectionCardRoot innerRef={this.setRef}>
+        <ReflectionCardRoot>
           {isTeamMemberDragging && <UserDraggingHeader user={dragContext.draggerUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
           <ReflectionFooter>{question}</ReflectionFooter>
