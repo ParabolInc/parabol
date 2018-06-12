@@ -1,7 +1,7 @@
 // @flow
 import type {ReflectionCardInFlight_reflection as Reflection} from './__generated__/ReflectionCardInFlight_reflection.graphql'
 // $FlowFixMe
-import {EditorState, convertFromRaw} from 'draft-js'
+import {convertFromRaw, EditorState} from 'draft-js'
 import * as React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer} from 'react-relay'
@@ -39,8 +39,18 @@ const ModalBlock = styled('div')({
   zIndex: ui.ziTooltip
 })
 
+const makeTransition = (closingTransform, isTeamMemberDragging) => {
+  if (closingTransform) {
+    return 'transform 200ms cubic-bezier(0, 0, .2, 1)'
+  } else if (isTeamMemberDragging) {
+    return 'transform 100ms cubic-bezier(0, 0, .2, 1)'
+  }
+  return undefined
+}
+
 class ReflectionCardInFlight extends React.Component<Props, State> {
   constructor (props) {
+    console.log('mount in flight')
     super(props)
     const {isTeamMemberDragging} = props
     this.innerWidth = window.innerWidth
@@ -121,23 +131,17 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         dragContext,
         phaseItem: {question}
       },
+      handleTransitionEnd,
       setInFlightCoords,
       isTeamMemberDragging,
-      reflectionRef,
-      closingTransform,
-      handleTransitionEnd
+      reflectionRef
     } = this.props
-
+    const {closingTransform} = dragContext
     const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
     if (isTeamMemberDragging && x === undefined) return null
     setInFlightCoords(x, y, reflectionId, reflectionRef)
     const style = {
-      // smooth the jank caused by latency
-      transition: closingTransform
-        ? 'transform .2s cubic-bezier(0, 0, .2, 1)'
-        : isTeamMemberDragging
-          ? 'transform .1s cubic-bezier(0, 0, .2, 1)'
-          : undefined,
+      transition: makeTransition(closingTransform, isTeamMemberDragging),
       transform: closingTransform || `translate3d(${x}px, ${y}px, 0px)`
     }
     // console.log(`inflight ISDRAGGING: ${isDragging}, TEAM: ${isTeamMemberDragging}, CLOSE: ${closingTransform}, COORDS: ${x},${y}`)
@@ -163,6 +167,7 @@ export default createFragmentContainer(
       reflectionId: id
       content
       dragContext {
+        closingTransform
         dragCoords {
           x
           y

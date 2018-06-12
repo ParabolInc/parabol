@@ -1,9 +1,9 @@
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {DropTarget} from 'react-dnd'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
-import {REFLECTION_CARD, REFLECTION_GRID} from 'universal/utils/constants'
+import {REFLECTION_CARD, REFLECTION_GRID, REFLECTION_GROUP} from 'universal/utils/constants'
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
 import dndNoise from 'universal/utils/dndNoise'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
@@ -12,8 +12,6 @@ import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGrou
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
-import handleSwappedGroup from 'universal/utils/multiplayerMasonry/handleSwappedGroup'
-import setIncomingAtInFlightLocation from 'universal/utils/multiplayerMasonry/setIncomingAtInFlightLocation'
 
 type Props = {|
   meeting: Meeting
@@ -68,6 +66,15 @@ type ChildrenCache = {
   [ChildId]: ChildCache
 }
 
+const setClosingTransform = (atmosphere, itemId, left, top) => {
+  commitLocalUpdate(atmosphere, (store) => {
+    const reflection = store.get(itemId)
+    reflection
+      .getLinkedRecord('dragContext')
+      .setValue(`translate(${left}px, ${top}px)`, 'closingTransform')
+  })
+}
+
 class PhaseItemMasonry extends React.Component<Props> {
   constructor (props) {
     super(props)
@@ -77,6 +84,7 @@ class PhaseItemMasonry extends React.Component<Props> {
       atmosphere: {eventEmitter}
     } = props
     eventEmitter.on('updateReflectionLocation', this.handleGridUpdate)
+    eventEmitter.on('dragReflection', this.handleDragEnd)
   }
 
   parentCache: ParentCache = {
@@ -94,60 +102,93 @@ class PhaseItemMasonry extends React.Component<Props> {
     window.addEventListener('resize', this.handleResize)
   }
 
-  getSnapshotBeforeUpdate (prevProps) {
-    const {
-      meeting: {reflectionGroups: oldReflectionGroups}
-    } = prevProps
-    const {
-      meeting: {reflectionGroups}
-    } = this.props
-    if (oldReflectionGroups.length === reflectionGroups.length) {
-      const newGroupSet = new Set(reflectionGroups.map((group) => group.reflectionGroupId))
-      const removedReflectionGroup = oldReflectionGroups.find(
-        (group) => !newGroupSet.has(group.reflectionGroupId)
-      )
-      if (removedReflectionGroup) {
-        /*
-         * if we're swapping out 1 card for another (like a temporary one generated via optmistic UI)
-         * it could be swapped out mid-transition
-         * to eliminate jitter, put the new card exactly where the old one is
-         * so it can continue its journey to its final destination
-         */
-        //
-        // it's a swap!
-        const {reflectionGroupId: oldReflectionGroupId} = removedReflectionGroup
-        const oldChildCache = this.childrenCache[oldReflectionGroupId]
-        const {left, top} = oldChildCache.el.getBoundingClientRect()
-        const {
-          boundingBox: {top: parentTop, left: parentLeft}
-        } = this.parentCache
-        return {
-          oldReflectionGroupId,
-          left: left - parentLeft,
-          top: top - parentTop
-        }
-      }
-    }
-    return null
-  }
-
-  componentDidUpdate (prevProps, prevState, snapshot) {
-    console.log('cDU')
-    const {incomingChild} = this.parentCache
-    if (snapshot) {
-      handleSwappedGroup(this.childrenCache, this.parentCache, snapshot)
-      this.parentCache.incomingChild = null
-    } else if (incomingChild) {
-      setIncomingAtInFlightLocation(this.childrenCache, this.parentCache)
-      this.parentCache.incomingChild = null
-    }
-  }
+  // getSnapshotBeforeUpdate (prevProps) {
+  //   const {
+  //     meeting: {reflectionGroups: oldReflectionGroups}
+  //   } = prevProps
+  //   const {
+  //     meeting: {reflectionGroups}
+  //   } = this.props
+  //   if (oldReflectionGroups.length === reflectionGroups.length) {
+  //     const newGroupSet = new Set(reflectionGroups.map((group) => group.reflectionGroupId))
+  //     const removedReflectionGroup = oldReflectionGroups.find(
+  //       (group) => !newGroupSet.has(group.reflectionGroupId)
+  //     )
+  //     if (removedReflectionGroup) {
+  //       /*
+  //        * if we're swapping out 1 card for another (like a temporary one generated via optmistic UI)
+  //        * it could be swapped out mid-transition
+  //        * to eliminate jitter, put the new card exactly where the old one is
+  //        * so it can continue its journey to its final destination
+  //        */
+  //       //
+  //       // it's a swap!
+  //       const {reflectionGroupId: oldReflectionGroupId} = removedReflectionGroup
+  //       const oldChildCache = this.childrenCache[oldReflectionGroupId]
+  //       const {left, top} = oldChildCache.el.getBoundingClientRect()
+  //       const {
+  //         boundingBox: {top: parentTop, left: parentLeft}
+  //       } = this.parentCache
+  //       return {
+  //         oldReflectionGroupId,
+  //         left: left - parentLeft,
+  //         top: top - parentTop
+  //       }
+  //     }
+  //   }
+  //   return null
+  // }
+  //
+  // componentDidUpdate (prevProps, prevState, snapshot) {
+  //   console.log('cDU')
+  //   const {incomingChild} = this.parentCache
+  //   if (snapshot) {
+  //     handleSwappedGroup(this.childrenCache, this.parentCache, snapshot)
+  //     this.parentCache.incomingChild = null
+  //   } else if (incomingChild) {
+  //     setIncomingAtInFlightLocation(this.childrenCache, this.parentCache)
+  //     this.parentCache.incomingChild = null
+  //   }
+  // }
 
   componentWillUnmount () {
     const {
       atmosphere: {eventEmitter}
     } = this.props
     eventEmitter.off('updateReflectionLocation', this.handleGridUpdate)
+    eventEmitter.off('dragReflection', this.handleDragEnd)
+  }
+
+  handleDragEnd = (payload) => {
+    console.log('handling drag reflection')
+    const {atmosphere} = this.props
+    const {dropTargetType, dropTargetId, childId, itemId} = payload
+    const childCache = this.childrenCache[childId]
+    switch (dropTargetType) {
+      case null:
+        const {left, top} = childCache.itemEl.getBoundingClientRect()
+        setClosingTransform(atmosphere, itemId, left, top)
+        break
+      case REFLECTION_GRID:
+        console.log('DROP ON GRID')
+
+        // get the group it left, check the height, and rerender those below it, if needed
+
+        // const {inFlightCoords} = this.props
+        // const {left, top} = getBestPlaceToDrop(inFlightCoords)
+        break
+      case REFLECTION_GROUP:
+        console.log('MOVING TO GROUP', itemId, dropTargetId)
+        const {itemEl: targetEl} = this.childrenCache[dropTargetId]
+        // sometimes we can catch react in mid-render before the itemEl was updated
+        // if that happens, itemEl will be detached from the DOM & the bbox will be 0s
+        // an async alternative would be to wait a tick & try again
+        const {left: targetLeft, top: targetTop} = targetEl.getBoundingClientRect()
+        setClosingTransform(atmosphere, itemId, targetLeft, targetTop)
+        break
+      default:
+        throw new Error('Unhandled drop', dropTargetType)
+    }
   }
 
   setInFlightCoords = (x: number, y: number, itemId: ItemId) => {
@@ -175,19 +216,17 @@ class PhaseItemMasonry extends React.Component<Props> {
 
     console.log('handle grid update', newReflectionGroupId)
     const newChildCache = this.childrenCache[newReflectionGroupId]
-    // if this doesn't exist, it means the updateReflectionLocation event fired before react was told to add a component (optimistic)
-    // if it exists and the boundingBox is undefined, then the element is created, but we don't know where to put it
-    //
     if (!newChildCache) {
       console.log('no new cache yet, setting outgoingId')
       this.parentCache.outgoingId = oldReflectionGroupId
-    } else if (!newChildCache.boundingBox) {
-      console.log('no bounding box found! did this fire before cDU?')
+      // } else if (!newChildCache.boundingBox) {
+      //   console.log('no bounding box found! did this fire before cDU?')
     }
 
     // this.childrenCache[oldReflectionGroupId].el.offsetTop // TRIGGER LAYOUT
     updateColumnHeight(this.childrenCache, oldReflectionGroupId)
     if (oldReflectionGroupId !== newReflectionGroupId) {
+      // this.childrenCache[newReflectionGroupId].el.offsetTop // TRIGGER LAYOUT
       updateColumnHeight(this.childrenCache, newReflectionGroupId)
     }
     shakeUpBottomCells(this.childrenCache, this.parentCache.columnLefts)
@@ -199,22 +238,36 @@ class PhaseItemMasonry extends React.Component<Props> {
     const reflectionGroup = reflectionGroups.find(
       (group) => group.reflectionGroupId === newReflectionGroupId
     )
-    if (!reflectionGroup) {
-    }
     const [reflection] = reflectionGroup.reflections
-    console.log('thing to delete', this.parentCache.cardsInFlight[reflection.reflectionId])
+    // const droppedCard = this.parentCache.cardsInFlight[reflection.reflectionId]
+    // if (droppedCard) {
+    //   const {boundingBox: {left: parentLeft, top: parentTop}} = this.parentCache
+    //   const left = droppedCard.x - parentLeft
+    //   const top = droppedCard.y - parentTop
+    //   droppedCard.el.style.transform = `translate(${left}px,${top}px)`
+    // }
+    // console.log('thing to delete', )
     delete this.parentCache.cardsInFlight[reflection.reflectionId]
   }
 
-  setChildRef = (childId, itemId) => (c) => {
+  setItemRef = (childId) => (c) => {
     if (c) {
       if (!this.childrenCache[childId]) {
-        this.childrenCache[childId] = {el: c}
-        this.parentCache.incomingChild = {
-          childId,
-          itemId
-        }
+        this.childrenCache[childId] = {itemEl: c}
+      } else {
+        this.childrenCache[childId].itemEl = c
       }
+    }
+  }
+
+  setChildRef = (childId) => (c) => {
+    if (c) {
+      this.childrenCache[childId].el = c
+      // this.parentCache.incomingChild = {
+      //   childId,
+      //   itemId
+      // }
+      // }
     }
   }
 
@@ -231,6 +284,8 @@ class PhaseItemMasonry extends React.Component<Props> {
           const {reflectionGroupId, reflections} = reflectionGroup
           const [firstReflection] = reflections
           const reflectionId = firstReflection ? firstReflection.reflectionId : ''
+          const childCache = this.childrenCache[reflectionGroupId]
+          if (childCache && !childCache.boundingBox) return null
           return (
             <CardWrapper
               innerRef={this.setChildRef(reflectionGroupId, reflectionId)}
@@ -240,6 +295,7 @@ class PhaseItemMasonry extends React.Component<Props> {
                 meeting={meeting}
                 reflectionGroup={reflectionGroup}
                 setInFlightCoords={this.setInFlightCoords}
+                setItemRef={this.setItemRef(reflectionGroupId)}
                 idx={idx}
               />
             </CardWrapper>
@@ -276,7 +332,7 @@ const reflectionDropSpec = {
     }
     submitMutation()
     UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
-    return {dropTargetType: REFLECTION_GRID}
+    return {dropTargetType: REFLECTION_GRID, reflectionId, reflectionGroupId}
   }
 }
 

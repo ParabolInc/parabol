@@ -30,3 +30,7 @@ extend type RetroReflection {
   dragCoords: Coords2D,
   dragUpdatedAt: DateTime
 }
+
+extend type DragContext {
+  closingTransform: String
+}

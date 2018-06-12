@@ -4,7 +4,7 @@
 import * as React from 'react'
 import styled from 'react-emotion'
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+import {createFragmentContainer} from 'react-relay'
 import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from './__generated__/ReflectionGroup_reflectionGroup.graphql'
 import type {ReflectionGroup_meeting as Meeting} from './__generated__/ReflectionGroup_meeting.graphql'
 import ui from 'universal/styles/ui'
@@ -61,63 +61,14 @@ const Group = styled('div')({
 })
 
 class ReflectionGroup extends Component<Props, State> {
-  // constructor (props) {
-  //   super(props)
-  // const {
-  //   atmosphere,
-  //   reflectionGroup: {reflections, reflectionGroupId}
-  // } = props
-  // const isExpanded = reflections.length === 1
-  // weird things happen without a set timeout, drag from group to column & it freezes?
-  // setTimeout(() => {
-  //   commitLocalUpdate(atmosphere, (store) => {
-  //     const reflectionGroupProxy = store.get(reflectionGroupId)
-  //     if (reflectionGroupProxy) {
-  //       reflectionGroupProxy.setValue(isExpanded, 'isExpanded')
-  //     }
-  //   })
-  // })
-  // }
-
-  setTopCardRef = (c) => {
-    this.topCardRef = c
-  }
-
   setReflectionListRef = (c) => {
     this.reflectionListRef = c
   }
 
   reflectionListRef: ?HTMLElement
-  topCardRef: ?HTMLElement
-
-  toggleExpanded = () => {
-    const {
-      atmosphere,
-      reflectionGroup: {reflections, reflectionGroupId}
-    } = this.props
-    if (reflections.length <= 1) return
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflectionGroupProxy = store.get(reflectionGroupId)
-      reflectionGroupProxy.setValue(!reflectionGroupProxy.getValue('isExpanded'), 'isExpanded')
-    })
-  }
-
-  makeCustomHeight = () => {
-    const {
-      reflectionGroup: {reflections, isExpanded}
-    } = this.props
-    if (!this.topCardRef || !this.reflectionListRef || reflections.length <= 1 || isExpanded) {
-      return {}
-    }
-    const groupTop = this.reflectionListRef.getBoundingClientRect().top
-    // $FlowFixMe
-    const {top, height} = this.topCardRef.getBoundingClientRect()
-    const groupBottom = top + height
-    return {height: groupBottom - groupTop}
-  }
 
   renderReflection = (reflection: Object, idx: number) => {
-    const {setInFlightCoords, meeting, reflectionGroup, idx: groupIdx} = this.props
+    const {setItemRef, setInFlightCoords, meeting, reflectionGroup, idx: groupIdx} = this.props
     const {
       reflections,
       retroPhaseItemId: currentRetroPhaseItemId,
@@ -126,28 +77,7 @@ class ReflectionGroup extends Component<Props, State> {
     const {
       localPhase: {phaseType}
     } = meeting
-    // const isTopCard = idx === reflections.length - 1
-    // const isCollapsed = isExpanded ? false : !isTopCard
-    // const showOriginFooter = retroPhaseItemId !== reflection.retroPhaseItemId
-    // const interval = reflections.length - idx - 1
-    //
-    // const yTranslate = -idx * ui.retroCardCollapsedHeightRem
-    // const style = {
-    //   transform:
-    //     !isExpanded &&
-    //     `translateY(${yTranslate}rem)
-    //    scale(${1 - 0.05 * interval})`,
-    //   transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`,
-    //   transition: !canDrop && 'all 200ms ease'
-    // }
 
-    // const onTransitionEnd = () => {
-    //   // wait for the topCard to find its new home before calculating the height
-    //   if (isExpanded || !this.topCardRef || !this.reflectionListRef || reflections.length <= 1) {
-    //     return
-    //   }
-    //   this.forceUpdate()
-    // }
     if (idx > 0) {
       return (
         <ReflectionCardInStack key={reflection.id}>
@@ -157,11 +87,7 @@ class ReflectionGroup extends Component<Props, State> {
     }
     if (phaseType === GROUP) {
       return (
-        <div
-          key={reflection.id}
-          // style={style}
-          ref={this.setTopCardRef}
-        >
+        <div key={reflection.id} ref={setItemRef}>
           <DraggableReflectionCard
             setInFlightCoords={setInFlightCoords}
             currentRetroPhaseItemId={currentRetroPhaseItemId}
@@ -220,7 +146,7 @@ const reflectionDropSpec = {
   // Makes the card-dropped-into available in the dragSpec's endDrag method.
   drop (props: Props, monitor) {
     if (monitor.didDrop()) return
-    const {reflectionId, reflectionGroupId: sourceReflectionGroupId} = monitor.getItem()
+    const {reflectionId} = monitor.getItem()
     const {
       atmosphere,
       meeting: {meetingId},
@@ -229,20 +155,19 @@ const reflectionDropSpec = {
       submitMutation,
       reflectionGroup
     } = props
+    submitMutation()
     const {reflections, reflectionGroupId: targetReflectionGroupId} = reflectionGroup
-    if (sourceReflectionGroupId === targetReflectionGroupId) {
-      // changing the sort order within the group
-    } else {
-      const lastReflection = reflections[reflections.length - 1]
-      const variables = {
-        reflectionId,
-        reflectionGroupId: targetReflectionGroupId,
-        sortOrder: lastReflection.sortOrder + 1 + dndNoise()
-      }
-      submitMutation()
+    const [firstReflection] = reflections
+    const variables = {
+      reflectionId,
+      reflectionGroupId: targetReflectionGroupId,
+      sortOrder: firstReflection.sortOrder - 1 + dndNoise()
+    }
+    const updateLocation = () => {
       UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
     }
-    return {dropTargetType: REFLECTION_GROUP}
+    return {dropTargetType: REFLECTION_GROUP, dropTargetId: targetReflectionGroupId, updateLocation}
+    // TODO support intra-group drops
   }
 }
 

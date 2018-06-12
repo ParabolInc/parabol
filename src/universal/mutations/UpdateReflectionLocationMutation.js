@@ -13,6 +13,7 @@ import handleRemoveEmptyReflectionGroup from 'universal/mutations/handlers/handl
 import clientTempId from 'universal/utils/relay/clientTempId'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import handleAddReflectionToGroup from 'universal/mutations/handlers/handleAddReflectionToGroup'
+import resetDragContext from 'universal/utils/multiplayerMasonry/resetDragContext'
 
 type Variables = {
   sortOrder: string,
@@ -95,6 +96,8 @@ export const updateReflectionLocationTeamUpdater = (payload, {store}) => {
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
+
+  resetDragContext(reflection)
 
   const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id')
   if (reflectionGroupId) {
@@ -190,6 +193,7 @@ const UpdateReflectionLocationMutation = (
           reflectionGroupId
         })
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
+        resetDragContext(reflectionProxy)
       }
       moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store)
     }
