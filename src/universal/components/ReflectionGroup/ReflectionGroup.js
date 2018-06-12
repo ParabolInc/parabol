@@ -17,6 +17,7 @@ import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflecti
 import dndNoise from 'universal/utils/dndNoise'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {CARD_PADDING} from 'universal/components/PhaseItemMasonry'
 
 const {Component} = React
 
@@ -34,8 +35,6 @@ export type Props = {|
 type State = {
   isExpanded: boolean
 }
-
-const MARGIN = 8
 
 const Reflections = styled('div')(({canDrop}) => ({
   cursor: 'pointer',
@@ -57,7 +56,7 @@ const ReflectionCardInStack = styled('div')({
 })
 
 const Group = styled('div')({
-  padding: MARGIN
+  padding: CARD_PADDING
 })
 
 class ReflectionGroup extends Component<Props, State> {

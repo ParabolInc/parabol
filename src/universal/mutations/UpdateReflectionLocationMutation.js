@@ -193,9 +193,9 @@ const UpdateReflectionLocationMutation = (
           reflectionGroupId
         })
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
-        resetDragContext(reflectionProxy)
       }
       moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store)
+      resetDragContext(reflectionProxy)
     }
   })
 }

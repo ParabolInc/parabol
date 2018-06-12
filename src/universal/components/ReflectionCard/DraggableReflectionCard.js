@@ -100,7 +100,7 @@ class DraggableReflectionCard extends React.Component<Props> {
             isDragging={isDragging}
             isTeamMemberDragging={isTeamMemberDragging}
             reflection={reflection}
-            handleTransitionEnd={this.handleTransitionEnd}
+            handleTransitionEnd={closingTransform ? this.handleTransitionEnd : undefined}
           />
         </Modal>
       </React.Fragment>

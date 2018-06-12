@@ -12,6 +12,8 @@ import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGrou
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
+import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
+import isTempId from 'universal/utils/relay/isTempId'
 
 type Props = {|
   meeting: Meeting
@@ -92,12 +94,11 @@ class PhaseItemMasonry extends React.Component<Props> {
     boundingBox: null,
     columnLefts: [],
     cardsInFlight: {},
-    incomingChild: null
+    incomingChildren: {}
   }
   childrenCache: ChildrenCache = {}
 
   componentDidMount () {
-    this.parentCache.incomingChild = null
     initializeGrid(this.childrenCache, this.parentCache, CARD_WIDTH)
     window.addEventListener('resize', this.handleResize)
   }
@@ -171,11 +172,44 @@ class PhaseItemMasonry extends React.Component<Props> {
         break
       case REFLECTION_GRID:
         console.log('DROP ON GRID')
+        const {
+          boundingBox: {top: parentTop, left: parentLeft},
+          cardsInFlight,
+          columnLefts,
+          incomingChildren
+        } = this.parentCache
+        const {x: dropX, y: dropY} = cardsInFlight[itemId]
+        const droppedLeft = dropX - parentLeft
+        const droppedTop = dropY - parentTop
+        const lastCardPerColumn = getLastCardPerColumn(this.childrenCache, columnLefts)
 
-        // get the group it left, check the height, and rerender those below it, if needed
+        const bottomCoords = columnLefts.map((left) => {
+          const bottomCard = lastCardPerColumn[left]
+          const top = bottomCard ? bottomCard.boundingBox.top + bottomCard.boundingBox.height : 0
+          return {left, top}
+        })
 
-        // const {inFlightCoords} = this.props
-        // const {left, top} = getBestPlaceToDrop(inFlightCoords)
+        const distances = bottomCoords.map(
+          ({left, top}) => Math.abs(left - droppedLeft) + Math.abs(top - droppedTop)
+        )
+        const minDistanceIdx = distances.indexOf(Math.min(...distances))
+        const {left: newLeft, top: newTop} = bottomCoords[minDistanceIdx]
+        const {height} = childCache.itemEl.getBoundingClientRect()
+        setClosingTransform(
+          atmosphere,
+          itemId,
+          newLeft + parentLeft + CARD_PADDING,
+          newTop + parentTop + CARD_PADDING
+        )
+        incomingChildren[itemId] = {
+          boundingBox: {
+            left: newLeft,
+            top: newTop,
+            width: CARD_WIDTH,
+            height: height + 2 * CARD_PADDING
+          },
+          childId: null
+        }
         break
       case REFLECTION_GROUP:
         console.log('MOVING TO GROUP', itemId, dropTargetId)
@@ -218,9 +252,6 @@ class PhaseItemMasonry extends React.Component<Props> {
     const newChildCache = this.childrenCache[newReflectionGroupId]
     if (!newChildCache) {
       console.log('no new cache yet, setting outgoingId')
-      this.parentCache.outgoingId = oldReflectionGroupId
-      // } else if (!newChildCache.boundingBox) {
-      //   console.log('no bounding box found! did this fire before cDU?')
     }
 
     // this.childrenCache[oldReflectionGroupId].el.offsetTop // TRIGGER LAYOUT
@@ -260,15 +291,34 @@ class PhaseItemMasonry extends React.Component<Props> {
     }
   }
 
-  setChildRef = (childId) => (c) => {
-    if (c) {
-      this.childrenCache[childId].el = c
-      // this.parentCache.incomingChild = {
-      //   childId,
-      //   itemId
-      // }
-      // }
+  setChildRef = (childId, itemId) => (c) => {
+    if (!c) return
+    const childCache = this.childrenCache[childId]
+    if (!childCache.el && !childCache.boundingBox) {
+      const incomingChild = this.parentCache.incomingChildren[itemId]
+      if (incomingChild) {
+        const {boundingBox} = incomingChild
+        if (incomingChild.childId) {
+          // swap the coords with the previous placeholder
+          childCache.boundingBox = this.childrenCache[incomingChild.childId].boundingBox
+          delete this.childrenCache[incomingChild.childId]
+        } else {
+          // grab the coords from the incoming child
+          childCache.boundingBox = boundingBox
+          incomingChild.boundingBox = undefined
+        }
+        // not a huge mem leak since it can only grow to the size of reflections, but nice to keep clean
+        if (isTempId(childId)) {
+          incomingChild.childId = childId
+        } else {
+          delete this.parentCache.incomingChildren[itemId]
+        }
+        c.style.transform = `translate(${childCache.boundingBox.left}px, ${
+          childCache.boundingBox.top
+        }px)`
+      }
     }
+    childCache.el = c
   }
 
   setParentRef = (c) => {
@@ -331,8 +381,10 @@ const reflectionDropSpec = {
       sortOrder
     }
     submitMutation()
-    UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
-    return {dropTargetType: REFLECTION_GRID, reflectionId, reflectionGroupId}
+    const updateLocation = () => {
+      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
+    }
+    return {dropTargetType: REFLECTION_GRID, updateLocation}
   }
 }
 

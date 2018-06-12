@@ -75,7 +75,8 @@ export const dragReflectionTeamOnNext = (payload, context) => {
     isDragging
   } = payload
   if (!isDragging) {
-    eventEmitter.emit(`dragReflection.${itemId}`, {dropTargetType, itemId, childId})
+    // TODO Fix me for multiplayer
+    eventEmitter.emit('dragReflection', {dropTargetType, dropTargetId: childId, itemId, childId})
   }
 }
 const DragReflectionMutation = (

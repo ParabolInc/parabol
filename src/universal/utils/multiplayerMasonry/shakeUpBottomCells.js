@@ -1,13 +1,13 @@
 import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
 
 const AXIS_ANIMATION_DURATION = 100
+// increasing this decreases movement, but increases the probability of 1 column being much taller than the others
+export const MIN_SAVINGS = 24 // in pixels, must be > 0
+// taxing the # of columns it has to move encourages shorter moves
+export const COST_PER_COLUMN = 24
 
 const shakeUpBottomCells = (childrenCache, columnLefts) => {
   const lastCardPerColumn = getLastCardPerColumn(childrenCache, columnLefts)
-  // increasing this decreases movement, but increases the probability of 1 column being much taller than the others
-  const MIN_SAVINGS = 24 // in pixels, must be > 0
-  // taxing the # of columns it has to move encourages shorter moves
-  const COST_PER_COLUMN = 24
   for (let safeLoop = 0; safeLoop < 20; safeLoop++) {
     const totalSavings = []
     for (let ii = 0; ii < columnLefts.length; ii++) {
