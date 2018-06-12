@@ -1863,7 +1863,9 @@ export type DragReflectionPayload = {
   /** true if the reflection is being dragged, else false */
   isDragging: ?boolean,
   /** the type of item the reflection was dropped on */
-  dropTargetType: ?DragReflectionDropTargetTypeEnum
+  dropTargetType: ?DragReflectionDropTargetTypeEnum,
+  /** The ID that the dragged item was dropped on, if dropTargetType is not specific enough */
+  dropTargetId: ?string
 }
 
 export type EditReflectionPayload = {

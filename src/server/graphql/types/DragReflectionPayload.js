@@ -35,6 +35,11 @@ const DragReflectionPayload = new GraphQLObjectType({
     dropTargetType: {
       type: DragReflectionDropTargetTypeEnum,
       description: 'the type of item the reflection was dropped on'
+    },
+    dropTargetId: {
+      type: GraphQLID,
+      description:
+        'The ID that the dragged item was dropped on, if dropTargetType is not specific enough'
     }
   })
 })

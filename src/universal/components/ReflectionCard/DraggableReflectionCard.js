@@ -136,7 +136,12 @@ const reflectionDragSpec = {
     console.log('end drag', monitor.didDrop(), monitor.getDropResult())
     const dropResult = monitor.getDropResult()
     const {dropTargetType = null, dropTargetId = null, updateLocation} = dropResult || {}
-    DragReflectionMutation(atmosphere, {reflectionId, isDragging: false, dropTargetType})
+    DragReflectionMutation(atmosphere, {
+      reflectionId,
+      isDragging: false,
+      dropTargetType,
+      dropTargetId
+    })
     component.onTransitionEnd = updateLocation
     const {eventEmitter} = atmosphere
     console.log('emitting drag reflection', reflectionId)

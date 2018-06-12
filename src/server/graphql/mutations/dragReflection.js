@@ -21,7 +21,9 @@ import DragReflectionDropTargetTypeEnum from 'server/graphql/mutations/DragRefle
 
 type Args = {
   isDragging: boolean,
-  reflectionId: string
+  reflectionId: string,
+  dropTargetType: string,
+  dropTargetId?: string
 }
 
 export default {
@@ -39,11 +41,16 @@ export default {
       description:
         'if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target',
       type: DragReflectionDropTargetTypeEnum
+    },
+    dropTargetId: {
+      description:
+        'if dropTargetType could refer to more than 1 component, this ID defines which one',
+      type: GraphQLID
     }
   },
   async resolve (
     source: Object,
-    {reflectionId, isDragging, dropTargetType}: Args,
+    {reflectionId, isDragging, dropTargetType, dropTargetId}: Args,
     {authToken, dataLoader, socketId: mutatorId}: Context
   ) {
     const r = getRethink()
@@ -82,7 +89,8 @@ export default {
       reflection: nextReflection,
       userId: viewerId,
       isDragging,
-      dropTargetType
+      dropTargetType,
+      dropTargetId
     }
     publish(TEAM, teamId, DragReflectionPayload, data, subOptions)
     return data

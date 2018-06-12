@@ -5,7 +5,8 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 type Variables = {
   isDragging: boolean,
   reflectionId: string,
-  dropTargetType: string
+  dropTargetType: string,
+  dropTargetId: string
 }
 
 graphql`
@@ -23,6 +24,7 @@ graphql`
     }
     isDragging
     dropTargetType
+    dropTargetId
   }
 `
 
@@ -31,11 +33,13 @@ const mutation = graphql`
     $isDragging: Boolean!
     $reflectionId: ID!
     $dropTargetType: DragReflectionDropTargetTypeEnum
+    $dropTargetId: ID
   ) {
     dragReflection(
       isDragging: $isDragging
       reflectionId: $reflectionId
       dropTargetType: $dropTargetType
+      dropTargetId: $dropTargetId
     ) {
       ...DragReflectionMutation_team @relay(mask: false)
     }
@@ -69,14 +73,14 @@ export const dragReflectionTeamOnNext = (payload, context) => {
   // any alternative requires passing a callback from a component up to its parent that requests the subscription
   console.log('onNext emitting payload', payload)
   const {
-    reflection: {id: itemId},
-    reflectionGroupId: childId,
+    reflection: {id: itemId, reflectionGroupId: childId},
     dropTargetType,
+    dropTargetId,
     isDragging
   } = payload
   if (!isDragging) {
     // TODO Fix me for multiplayer
-    eventEmitter.emit('dragReflection', {dropTargetType, dropTargetId: childId, itemId, childId})
+    eventEmitter.emit('dragReflection', {dropTargetType, dropTargetId, itemId, childId})
   }
 }
 const DragReflectionMutation = (
