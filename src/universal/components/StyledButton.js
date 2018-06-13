@@ -35,7 +35,7 @@ const buttonPaletteOptions = {
     color: ui.palette.white,
     ':hover': {
       backgroundImage: ui.gradientWarmDarkened,
-      boxShadow: ui.shadow[0]
+      boxShadow: ui.shadow[1]
     },
     ':focus': primaryFocusedStyles,
     ':active': primaryFocusedStyles,
@@ -48,7 +48,7 @@ const buttonPaletteOptions = {
     backgroundColor: ui.palette.white,
     color: ui.palette.dark,
     ':hover': {
-      boxShadow: ui.shadow[0]
+      boxShadow: ui.shadow[1]
     },
     ':focus': whiteFocusedStyles,
     ':active': whiteFocusedStyles,
