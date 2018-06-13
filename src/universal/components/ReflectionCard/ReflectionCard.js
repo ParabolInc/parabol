@@ -5,7 +5,7 @@
  */
 /* global HTMLElement */
 // $FlowFixMe
-import {EditorState, ContentState, convertToRaw} from 'draft-js'
+import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
@@ -23,16 +23,13 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {REFLECT} from 'universal/utils/constants'
 import isTempId from 'universal/utils/relay/isTempId'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
 import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
 
 export type Props = {|
-  // true if the card is in a collapsed group and it is not the top card (default false)
-  isCollapsed?: boolean,
   meeting: Meeting,
   reflection: Reflection,
   ...MutationProps
@@ -49,32 +46,30 @@ export const ReflectionCardRoot = styled('div')(
     backgroundColor: ui.palette.white,
     border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
-    boxShadow: ui.cardBoxShadow,
     // useful for drag preview
     display: 'inline-block',
     maxWidth: '100%',
     position: 'relative',
     width: ui.retroCardWidth
   },
+  ({hideShadow}) =>
+    !hideShadow && {
+      boxShadow: ui.cardBoxShadow
+    },
   ({hasDragLock}) =>
     hasDragLock && {
       borderColor: appTheme.palette.warm50a
-    },
-  ({isCollapsed}) =>
-    isCollapsed && {
-      height: `${ui.retroCardCollapsedHeightRem}rem`,
-      overflow: 'hidden'
     }
 )
 
 class ReflectionCard extends Component<Props, State> {
   static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
-    const {reflection, idx, reflectionGroupId} = nextProps
+    const {reflection} = nextProps
     const {content} = reflection
     if (content === prevState.content) return null
-    // const contentState = convertFromRaw(JSON.parse(content))
-    const DEBUG_TEXT = `idx: ${idx} | GroupId: ${reflectionGroupId}`
-    const contentState = ContentState.createFromText(DEBUG_TEXT)
+    const contentState = convertFromRaw(JSON.parse(content))
+    // const DEBUG_TEXT = `idx: ${idx} | GroupId: ${reflectionGroupId}`
+    // const contentState = ContentState.createFromText(DEBUG_TEXT)
     return {
       content,
       editorState: EditorState.createWithContent(
@@ -93,9 +88,11 @@ class ReflectionCard extends Component<Props, State> {
   componentDidMount () {
     this._mounted = true
   }
+
   componentWillUnmount () {
     this._mounted = false
   }
+
   setEditorState = (editorState: EditorState) => {
     if (!this._mounted) {
       console.log('FOUND IT! WRAP THIS IN A MOUNT')
@@ -156,7 +153,7 @@ class ReflectionCard extends Component<Props, State> {
   }
 
   render () {
-    const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props
+    const {atmosphere, error, hideShadow, meeting, reflection, showOriginFooter} = this.props
     const {editorState} = this.state
     const {
       localPhase: {phaseType},
@@ -173,7 +170,7 @@ class ReflectionCard extends Component<Props, State> {
     const draggerUser = dragContext && dragContext.draggerUser
     const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId
     return (
-      <ReflectionCardRoot hasDragLock={hasDragLock} isCollapsed={isCollapsed}>
+      <ReflectionCardRoot hasDragLock={hasDragLock} hideShadow={hideShadow}>
         {hasDragLock && <UserDraggingHeader user={draggerUser} />}
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'

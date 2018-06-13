@@ -12,7 +12,6 @@ const removeChildCache = (childrenCache, childCacheId) => {
   const {
     boundingBox: {left}
   } = childrenCache[childCacheId]
-  console.log('deleting', childCacheId)
   delete childrenCache[childCacheId]
   // see if the entire column is gone
   const childrenKeys = Object.keys(childrenCache)

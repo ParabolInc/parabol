@@ -2,7 +2,7 @@
 /* global HTMLElement, Node */
 
 import * as React from 'react'
-import styled from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
 import {createFragmentContainer} from 'react-relay'
 import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from './__generated__/ReflectionGroup_reflectionGroup.graphql'
@@ -10,7 +10,7 @@ import type {ReflectionGroup_meeting as Meeting} from './__generated__/Reflectio
 import ui from 'universal/styles/ui'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
+import {REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import {DropTarget as dropTarget} from 'react-dnd'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
@@ -25,7 +25,6 @@ export type Props = {|
   atmosphere: Object,
   canDrop: boolean,
   connectDropTarget: () => Node,
-  innerRef?: (HTMLElement) => void,
   meeting: Meeting,
   reflectionGroup: ReflectionGroupType,
   retroPhaseItemId: string,
@@ -36,17 +35,19 @@ type State = {
   isExpanded: boolean
 }
 
-const Reflections = styled('div')(({canDrop}) => ({
-  cursor: 'pointer',
-  opacity: canDrop ? 0.6 : 1,
-  position: 'relative'
-}))
+const reflectionsStyle = (canDrop) =>
+  css({
+    cursor: 'pointer',
+    opacity: canDrop ? 0.6 : 1,
+    position: 'relative'
+  })
 
 const ReflectionCardInStack = styled('div')({
   backgroundColor: 'white',
   borderRadius: 4,
   boxShadow: ui.shadow[0],
   opacity: 1,
+  overflow: 'hidden',
   position: 'absolute',
   left: 6,
   top: 6,
@@ -60,73 +61,45 @@ const Group = styled('div')({
 })
 
 class ReflectionGroup extends Component<Props, State> {
-  setReflectionListRef = (c) => {
-    this.reflectionListRef = c
-  }
-
-  reflectionListRef: ?HTMLElement
-
   renderReflection = (reflection: Object, idx: number) => {
-    const {setItemRef, setInFlightCoords, meeting, reflectionGroup, idx: groupIdx} = this.props
-    const {
-      reflections,
-      retroPhaseItemId: currentRetroPhaseItemId,
-      reflectionGroupId
-    } = reflectionGroup
-    const {
-      localPhase: {phaseType}
-    } = meeting
+    const {setItemRef, setInFlightCoords, meeting, reflectionGroup} = this.props
+    const {reflections} = reflectionGroup
 
     if (idx > 0) {
       return (
         <ReflectionCardInStack key={reflection.id}>
-          <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
+          <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter hideShadow />
         </ReflectionCardInStack>
       )
     }
-    if (phaseType === GROUP) {
-      return (
-        <div key={reflection.id} ref={setItemRef}>
-          <DraggableReflectionCard
-            setInFlightCoords={setInFlightCoords}
-            currentRetroPhaseItemId={currentRetroPhaseItemId}
-            idx={groupIdx}
-            meeting={meeting}
-            reflection={reflection}
-            isSingleCardGroup={reflections.length === 1}
-            reflectionGroupId={reflectionGroupId}
-          />
-        </div>
-      )
-    }
     return (
-      <div key={reflection.id} ref={this.setTopCardRef}>
-        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
+      <div key={reflection.id} ref={setItemRef}>
+        <DraggableReflectionCard
+          setInFlightCoords={setInFlightCoords}
+          meeting={meeting}
+          reflection={reflection}
+          isSingleCardGroup={reflections.length === 1}
+        />
       </div>
     )
   }
 
   render () {
     const {canDrop, connectDropTarget, meeting, reflectionGroup} = this.props
-    if (!reflectionGroup) return null
     const {reflections} = reflectionGroup
     const {
       localPhase: {phaseType}
     } = meeting
-
-    // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
     const showHeader = reflections.length > 1 || phaseType === VOTE
     return (
-      <Group innerRef={this.props.innerRef}>
+      <Group>
         {showHeader && (
           <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />
         )}
         {/* connect the drop target here so dropping on the title triggers an ungroup */}
         {connectDropTarget(
-          <div>
-            <Reflections canDrop={canDrop} innerRef={this.setReflectionListRef}>
-              {reflections.slice(0, 2).map(this.renderReflection)}
-            </Reflections>
+          <div className={reflectionsStyle(canDrop)}>
+            {reflections.slice(0, 2).map(this.renderReflection)}
           </div>
         )}
       </Group>
@@ -142,7 +115,6 @@ const reflectionDropSpec = {
     )
   },
 
-  // Makes the card-dropped-into available in the dragSpec's endDrag method.
   drop (props: Props, monitor) {
     if (monitor.didDrop()) return
     const {reflectionId} = monitor.getItem()
@@ -172,8 +144,6 @@ const reflectionDropSpec = {
 
 const reflectionDropCollect = (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
-  // isOver: monitor.isOver({shallow: true}),
-  // item: monitor.getItem(),
   canDrop: monitor.canDrop()
 })
 
@@ -195,7 +165,6 @@ export default createFragmentContainer(
 
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
       ...ReflectionGroupHeader_reflectionGroup
-      isExpanded
       retroPhaseItemId
       reflectionGroupId: id
       sortOrder

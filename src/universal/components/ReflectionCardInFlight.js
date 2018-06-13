@@ -50,7 +50,6 @@ const makeTransition = (closingTransform, isTeamMemberDragging) => {
 
 class ReflectionCardInFlight extends React.Component<Props, State> {
   constructor (props) {
-    console.log('mount in flight')
     super(props)
     const {isTeamMemberDragging} = props
     this.innerWidth = window.innerWidth
@@ -75,7 +74,6 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   }
 
   componentWillUnmount () {
-    console.log('unmount inflight')
     const {isTeamMemberDragging} = this.props
     if (!isTeamMemberDragging) {
       window.removeEventListener('drag', this.setDragState)
@@ -144,7 +142,6 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       transition: makeTransition(closingTransform, isTeamMemberDragging),
       transform: closingTransform || `translate3d(${x}px, ${y}px, 0px)`
     }
-    // console.log(`inflight ISDRAGGING: ${isDragging}, TEAM: ${isTeamMemberDragging}, CLOSE: ${closingTransform}, COORDS: ${x},${y}`)
     return (
       <ModalBlock style={style} onTransitionEnd={handleTransitionEnd}>
         <ReflectionCardRoot>

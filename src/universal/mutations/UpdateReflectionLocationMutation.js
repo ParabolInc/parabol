@@ -113,8 +113,7 @@ export const updateReflectionLocationTeamOnNext = (payload, context) => {
     atmosphere: {eventEmitter}
   } = context
   // this is the cleanest pattern i can come up with to communicate in the context of a component
-  // any alternative requires passing a callback from a component up to its parent that requests the subscription
-  console.log('onNext emitting payload', payload)
+  // any alternative requires passing a callback from a component up to whatever parent that requests the subscription
   eventEmitter.emit('updateReflectionLocation', payload)
 }
 
@@ -178,11 +177,6 @@ const UpdateReflectionLocationMutation = (
         reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
         reflectionGroupProxy.setLinkedRecords([reflectionProxy], 'reflections')
         reflectionGroupProxy.setLinkedRecord(meeting, 'meeting')
-        // const payload = {oldReflectionGroup: {id: oldReflectionGroupId}, reflectionGroup}
-        // setTimeout(() => {
-        // console.log('calling onNext', reflectionGroup.id)
-        //   updateReflectionLocationTeamOnNext(payload, {atmosphere})
-        // }, 50)
       } else if (reflectionGroupId === oldReflectionGroupId) {
         // move a card within the same group
         updateProxyRecord(reflectionProxy, {sortOrder})
