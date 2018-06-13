@@ -4,8 +4,16 @@ const OFFSET_DELAY = 50
 const DURATION = 400
 
 const initializeGrid = (childrenCache, parentCache, isAnimated) => {
-  const gridBox = parentCache.el.getBoundingClientRect()
   const childrenKeys = Object.keys(childrenCache)
+  // minimize forced layout reflows by doing all the expensive reads up front
+  const heights = childrenKeys.map((childKey) => {
+    const childCache = childrenCache[childKey]
+    const {el} = childCache
+    return childCache.boundingBox
+      ? childCache.boundingBox.height
+      : el.getBoundingClientRect().height
+  })
+  const gridBox = parentCache.el.getBoundingClientRect()
   const columnCount = Math.floor(gridBox.width / REFLECTION_WIDTH)
   const leftMargin = (gridBox.width - columnCount * REFLECTION_WIDTH) / 2
   const currentColumnHeights = new Array(columnCount).fill(0)
@@ -20,14 +28,12 @@ const initializeGrid = (childrenCache, parentCache, isAnimated) => {
   childrenKeys.forEach((childKey, idx) => {
     const childCache = childrenCache[childKey]
     const {el} = childCache
-    // only thing we really care about here is height?
-    const {height, width} = childCache.boundingBox || el.getBoundingClientRect()
     const top = Math.min(...currentColumnHeights)
     const shortestColumnIdx = currentColumnHeights.indexOf(top)
     const left = parentCache.columnLefts[shortestColumnIdx]
+    const height = heights[idx]
     childCache.boundingBox = {
       height,
-      width,
       top,
       left
     }
@@ -50,9 +56,13 @@ const initializeGrid = (childrenCache, parentCache, isAnimated) => {
   window.requestAnimationFrame(() => {
     if (isAnimated) {
       animateInQueue.forEach((cb) => cb())
-      setTimeout(() => {
+      const lastChildKey = childrenKeys[childrenKeys.length - 1]
+      const {el} = childrenCache[lastChildKey]
+      const wrapUp = () => {
         animateOutQueue.forEach((cb) => cb())
-      }, DURATION + OFFSET_DELAY * animateOutQueue.length)
+        el.removeEventListener('transitionend', wrapUp)
+      }
+      el.addEventListener('transitionend', wrapUp)
     } else {
       animateOutQueue.forEach((cb) => cb())
     }

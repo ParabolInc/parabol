@@ -1,8 +1,10 @@
+import {REFLECTION_WIDTH} from 'universal/components/PhaseItemMasonry'
+
 const removeColumn = (childrenCache, columnLeft) => {
   Object.keys(childrenCache).forEach((childKey) => {
     const {boundingBox, el} = childrenCache[childKey]
     if (boundingBox && boundingBox.left > columnLeft) {
-      boundingBox.left -= boundingBox.width
+      boundingBox.left -= REFLECTION_WIDTH
       el.style.transform = `translate(${boundingBox.left}px, ${boundingBox.top}px)`
     }
   })
