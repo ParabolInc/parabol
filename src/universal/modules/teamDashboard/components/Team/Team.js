@@ -17,6 +17,8 @@ import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo'
 import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
 import Button from 'universal/components/Button'
+import IconLabel from 'universal/components/IconLabel'
+import PlainButton from 'universal/components/PlainButton/PlainButton'
 import DashContent from 'universal/components/Dashboard/DashContent'
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
@@ -116,17 +118,18 @@ class Team extends Component {
           </DashHeaderInfo>
           <TeamViewNavBlock>
             {isSettings ? (
-              <Button
-                key='1'
-                buttonStyle='flat'
-                colorPalette='dark'
-                icon='arrow-circle-left'
-                iconPlacement='left'
-                isBlock
-                label='Back to Team Dashboard'
-                onClick={this.goToTeamDashboard}
-                buttonSize='small'
-              />
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '.8125rem',
+                  lineHeight: '1.25rem'
+                }}
+              >
+                <PlainButton onClick={this.goToTeamDashboard}>
+                  <IconLabel icon='arrow-circle-left' label='Back to Team Dashboard' />
+                </PlainButton>
+              </div>
             ) : (
               <Button
                 buttonSize='small'
@@ -151,6 +154,18 @@ class Team extends Component {
     )
   }
 }
+
+// <Button
+//   key='1'
+//   buttonStyle='flat'
+//   colorPalette='dark'
+//   icon='arrow-circle-left'
+//   iconPlacement='left'
+//   isBlock
+//   label='Back to Team Dashboard'
+//   onClick={this.goToTeamDashboard}
+//   buttonSize='small'
+// />
 
 Team.propTypes = {
   atmosphere: PropTypes.object.isRequired,
