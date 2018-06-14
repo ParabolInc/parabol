@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.3.0 2018-Jun-13
+
+## Added
+* Webpack v4 config for smaller, faster bundles
+
+### Fixed
+* Flash of login screen before loading dashboard
+* Interrupting chicken during retro discuss phase
+
+### Removed
+* server-side rendering
+* support for legacy browsers (IE11)
+
 ## v2.2.0 2018-May-30
 
 ### Added
