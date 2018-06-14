@@ -134,7 +134,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       isTeamMemberDragging,
       reflectionRef
     } = this.props
-    const {closingTransform} = dragContext
+    const closingTransform = dragContext && dragContext.closingTransform
     const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
     if (isTeamMemberDragging && x === undefined) return null
     setInFlightCoords(x, y, reflectionId, reflectionRef)

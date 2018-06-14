@@ -1854,18 +1854,23 @@ export type DragReflectionDropTargetTypeEnum = 'REFLECTION_GROUP' | 'REFLECTION_
 
 export type DragReflectionPayload = {
   error: ?StandardMutationError,
-  meeting: ?NewMeeting,
-  reflection: ?RetroReflection,
-  /** foreign key to get user */
-  userId: ?string,
-  /** The user that is triggering the drag */
-  user: ?User,
-  /** true if the reflection is being dragged, else false */
-  isDragging: ?boolean,
+  /** The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore */
+  dragContext: ?DragContext,
   /** the type of item the reflection was dropped on */
   dropTargetType: ?DragReflectionDropTargetTypeEnum,
   /** The ID that the dragged item was dropped on, if dropTargetType is not specific enough */
-  dropTargetId: ?string
+  dropTargetId: ?string,
+  /** true if the reflection is being dragged, else false */
+  isDragging: ?boolean,
+  meeting: ?NewMeeting,
+  meetingId: ?string,
+  reflection: ?RetroReflection,
+  reflectionGroupId: ?string,
+  reflectionId: ?string,
+  /** The user that is triggering the drag */
+  user: ?User,
+  /** foreign key to get user */
+  userId: ?string
 }
 
 export type EditReflectionPayload = {
@@ -2580,7 +2585,8 @@ export type UpdateDragLocationPayload = {
   targetId: string,
   /** The type of entity being drug */
   draggableType: DraggableTypeEnum,
-  coords: Coords2D
+  coords: Coords2D,
+  userId: string
 }
 
 export type TeanMemberSubscriptionPayload =

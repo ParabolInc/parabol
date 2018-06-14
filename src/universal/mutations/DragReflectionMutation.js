@@ -1,6 +1,7 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
 import {commitMutation} from 'react-relay'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import getInProxy from 'universal/utils/relay/getInProxy'
 
 type Variables = {
   isDragging: boolean,
@@ -11,16 +12,14 @@ type Variables = {
 
 graphql`
   fragment DragReflectionMutation_team on DragReflectionPayload {
-    reflection {
-      id
-      dragContext {
-        draggerUserId
-        draggerUser {
-          id
-          preferredName
-        }
+    reflectionId
+    reflectionGroupId
+    dragContext {
+      draggerUserId
+      draggerUser {
+        id
+        preferredName
       }
-      reflectionGroupId
     }
     isDragging
     dropTargetType
@@ -47,22 +46,32 @@ const mutation = graphql`
 `
 
 export const dragReflectionTeamUpdater = (payload, {atmosphere, store}) => {
-  // const startDragging = Boolean(getInProxy(payload, 'reflection', 'dragContext', 'draggerUserId'))
-  // if (!startDragging) {
-  // const reflectionId = getInProxy(payload, 'reflection', 'id')
-  // if (!reflectionId) return
-  // const reflection = store.get(reflectionId)
-  // reflection.setValue(null, 'dragContext')
-  // const dragContext= reflection.getLinkedRecord('dragContext')
-  // dragContext
-  //   .setValue(null, 'draggerUserId')
-  //   .setValue(null, 'draggerUser')
-  //   .setValue(null, 'dragCoords')
-  //   .setValue(true, 'isComplete')
-  // const dropTargetType = payload.getValue('dropTargetType')
-  // const reflectionGroupId = getInProxy(payload, 'reflection', 'reflectionGroupId')
-  // atmosphere.eventEmitter.emit(`dragReflection.${reflectionId}`, {dropTargetType, itemId: reflectionId, childId: reflectionGroupId})
-  // }
+  // if no drag exists, trust it
+  // if this is a drag end & there is no context, ignore!
+  // if end & there is context, see if the user is the drag owner. if not, ignore!
+
+  const reflectionId = payload.getValue('reflectionId')
+  const reflection = store.get(reflectionId)
+  if (!reflection) return
+  const isDragging = payload.getValue('isDragging')
+  const existingDraggerUserId = getInProxy(reflection, 'dragContext', 'draggerUserId')
+  const newDragContext = payload.getLinkedRecord('dragContext')
+  const proposedDraggerUserId = newDragContext.getValue('draggerUserId')
+  if (isDragging) {
+    // this payload could be the first payload we see, so we can't trust any value in the store
+    // seems foolish to include all the meeting members in the payload just to check for eg check-in order, so we'll just use IDs
+    const acceptNewContext = !existingDraggerUserId || proposedDraggerUserId > existingDraggerUserId
+    if (acceptNewContext) {
+      reflection.setLinkedRecord(newDragContext, 'dragContext')
+    }
+    // TODO figure out how to alert the UI that a failure occurred so it can update the coords & pop a toast
+
+    // return true if the new payload won, false if it lost, or undefined if there was no conflict
+    return existingDraggerUserId ? acceptNewContext : undefined
+  } else if (existingDraggerUserId === proposedDraggerUserId) {
+    reflection.setLinkedRecord(newDragContext, 'dragContext')
+  }
+  return undefined
 }
 
 export const dragReflectionTeamOnNext = (payload, context) => {
@@ -73,13 +82,13 @@ export const dragReflectionTeamOnNext = (payload, context) => {
   // any alternative requires passing a callback from a component up to its parent that requests the subscription
   console.log('onNext emitting payload', payload)
   const {
-    reflection: {id: itemId, reflectionGroupId: childId},
+    reflectionGroupId: childId,
+    reflectionId: itemId,
     dropTargetType,
     dropTargetId,
     isDragging
   } = payload
   if (!isDragging) {
-    // TODO Fix me for multiplayer
     eventEmitter.emit('dragReflection', {dropTargetType, dropTargetId, itemId, childId})
   }
 }
@@ -103,7 +112,6 @@ const DragReflectionMutation = (
       const {viewerId} = atmosphere
       const {isDragging, reflectionId} = variables
       const reflection = store.get(reflectionId)
-      // console.log('opt ctx - ', reflection.getLinkedRecord('dragContext'))
       if (isDragging) {
         const dragContext = createProxyRecord(store, 'DragContext', {
           draggerUserId: viewerId

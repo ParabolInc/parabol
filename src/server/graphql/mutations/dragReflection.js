@@ -5,7 +5,6 @@
  */
 import type {Context} from 'server/flowtypes/graphql'
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
 import DragReflectionPayload from 'server/graphql/types/DragReflectionPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
@@ -53,13 +52,12 @@ export default {
     {reflectionId, isDragging, dropTargetType, dropTargetId}: Args,
     {authToken, dataLoader, socketId: mutatorId}: Context
   ) {
-    const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId)
+    const reflection = await dataLoader.get('retroReflections').load(reflectionId)
     if (!reflection) {
       return sendReflectionNotFoundError(authToken, reflectionId)
     }
@@ -80,13 +78,12 @@ export default {
       draggerUserId: viewerId
     }
 
-    const nextReflection = {
-      ...reflection,
-      dragContext: isDragging && dragContext
-    }
     const data = {
       meetingId,
-      reflection: nextReflection,
+      reflection,
+      reflectionId,
+      reflectionGroupId: reflection.reflectionGroupId,
+      dragContext,
       userId: viewerId,
       isDragging,
       dropTargetType,

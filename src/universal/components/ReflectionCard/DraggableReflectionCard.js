@@ -67,6 +67,7 @@ class DraggableReflectionCard extends React.Component<Props> {
     const style = {
       opacity: +(isClosing ? 0 : !isDragging && !isTeamMemberDragging)
     }
+    console.log('isOpen', isDragging, isTeamMemberDragging, isClosing)
     return (
       <React.Fragment>
         {connectDragSource(
