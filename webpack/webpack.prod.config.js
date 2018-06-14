@@ -50,7 +50,7 @@ module.exports = {
     modules: [path.join(__dirname, '../src'), 'node_modules']
   },
   optimization: {
-    minimize: Boolean(process.env.WEBPACK_DEPLOY || process.env.WEBPACK_STATS),
+    minimize: Boolean(process.env.WEBPACK_DEPLOY),
     splitChunks: {
       chunks: 'all'
     }
@@ -96,7 +96,7 @@ module.exports = {
               [
                 'env',
                 {
-                  debug: true,
+                  // debug: true,
                   modules: false,
                   targets: {
                     browsers: ['> 1%', 'not ie 11']
