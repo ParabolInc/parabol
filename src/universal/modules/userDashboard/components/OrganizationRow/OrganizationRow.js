@@ -13,7 +13,7 @@ import RowInfoHeader from 'universal/components/Row/RowInfoHeader'
 import TagPro from 'universal/components/Tag/TagPro'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import RowActions from 'universal/components/Row/RowActions'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import TagBlock from 'universal/components/Tag/TagBlock'
 import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 

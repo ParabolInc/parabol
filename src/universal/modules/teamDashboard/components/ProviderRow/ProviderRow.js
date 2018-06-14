@@ -13,7 +13,7 @@ import RowActions from 'universal/components/Row/RowActions'
 import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import Row from 'universal/components/Row/Row'
 
 const StyledRow = styled(Row)({

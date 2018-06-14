@@ -6,7 +6,7 @@ import ui from 'universal/styles/ui'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 const RootBlock = styled('div')({
   alignItems: 'flex-end',

@@ -6,7 +6,7 @@ import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOr
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import {withRouter} from 'react-router-dom'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import Panel from 'universal/components/Panel/Panel'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 

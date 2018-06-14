@@ -12,7 +12,7 @@ import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
 import {GITHUB} from 'universal/utils/constants'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import Panel from 'universal/components/Panel/Panel'
 
 const {makeUri} = providerLookup[GITHUB]

@@ -1,3 +1,7 @@
+// TODO: this component is currently only used in the Welcome UX,
+//       so the affordances may not be abstract enough for general usage
+//       consider reworking for general usage or yanking when we nuke Welcome UX (TA)
+
 import PropTypes from 'prop-types'
 import React from 'react'
 import FontAwesome from 'react-fontawesome'

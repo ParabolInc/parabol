@@ -17,7 +17,7 @@ import StyledError from 'universal/components/StyledError'
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 type Props = {
   atmosphere: Object,

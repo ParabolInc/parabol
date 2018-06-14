@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 const DashNavControl = (props) => {
   const {icon, iconPlacement, label, onClick} = props

@@ -13,7 +13,7 @@ import {REFLECT, GROUP} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 type Props = {
   atmosphere: Object,

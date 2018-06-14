@@ -10,7 +10,7 @@ import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import withStyles from 'universal/styles/withStyles'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Tag from 'universal/components/Tag/Tag'
 

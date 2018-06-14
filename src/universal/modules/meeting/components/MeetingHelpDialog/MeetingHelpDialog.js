@@ -8,7 +8,7 @@ import React from 'react'
 import styled from 'react-emotion'
 import LoadableMeetingHelpDialogMenu from 'universal/modules/meeting/components/MeetingHelpDialog/LoadableMeetingHelpDialogMenu'
 import LoadableMenu from 'universal/components/LoadableMenu'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 type Props = {
   phase: string

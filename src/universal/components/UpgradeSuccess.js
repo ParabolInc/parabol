@@ -5,7 +5,7 @@ import ui from 'universal/styles/ui'
 import {PRO_LABEL} from 'universal/utils/constants'
 import Confetti from 'react-dom-confetti'
 import appTheme from 'universal/styles/theme/appTheme'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 const flexBase = {
   alignItems: 'center',

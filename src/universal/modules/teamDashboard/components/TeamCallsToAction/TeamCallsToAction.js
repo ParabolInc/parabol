@@ -9,7 +9,7 @@ import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import LoadableTeamCallsToActionMenu from 'universal/modules/teamDashboard/components/TeamCallsToAction/LoadableTeamCallsToActionMenu'
 import LoadableMenu from 'universal/components/LoadableMenu'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 type Props = {
   teamId: string,

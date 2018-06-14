@@ -7,7 +7,7 @@ import React from 'react'
 import {storiesOf} from '@storybook/react'
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import LoadingView from 'universal/components/LoadingView/LoadingView'
 
 storiesOf('Misc. UI Components', module)

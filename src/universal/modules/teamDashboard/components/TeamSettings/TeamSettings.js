@@ -23,7 +23,7 @@ import {PERSONAL, PRO_LABEL} from 'universal/utils/constants'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
 import Panel from 'universal/components/Panel/Panel'
 import Row from 'universal/components/Row/Row'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import UserRow from 'universal/components/UserRow/UserRow'
 
 const originAnchor = {

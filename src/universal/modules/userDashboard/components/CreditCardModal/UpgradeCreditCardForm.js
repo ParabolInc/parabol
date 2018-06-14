@@ -21,7 +21,7 @@ import {
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'

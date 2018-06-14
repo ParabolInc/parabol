@@ -11,7 +11,7 @@ import rejectOrgApprovalValidation from './rejectOrgApprovalValidation'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import {css} from 'react-emotion'
 import FormError from 'universal/components/FormError/FormError'
-import Button from 'universal/components/Button'
+import Button from 'universal/components/Button/Button'
 import DashModal from 'universal/components/Dashboard/DashModal'
 
 const validate = (values) => {
