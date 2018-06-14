@@ -100,7 +100,7 @@ const reflectionDragSpec = {
     return !isTeamMemberDragging && !isClosing
   },
 
-  beginDrag (props, monitor, component) {
+  beginDrag (props) {
     const {
       atmosphere,
       reflection: {reflectionId, reflectionGroupId},
@@ -110,8 +110,7 @@ const reflectionDragSpec = {
     return {
       reflectionId,
       reflectionGroupId,
-      isSingleCardGroup,
-      getCardRect: component.getCardRect
+      isSingleCardGroup
     }
   },
 
