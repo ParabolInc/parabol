@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
+import {DragDropContext as dragDropContext} from '@mattkrick/react-dnd'
+import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
 import withHotkey from 'react-hotkey-hoc'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'

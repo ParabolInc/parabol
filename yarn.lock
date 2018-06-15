@@ -154,6 +154,40 @@
     google-gax "^0.16.0"
     lodash.merge "^4.6.0"
 
+"@mattkrick/dnd-core@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@mattkrick/dnd-core/-/dnd-core-3.0.2.tgz#8707ff5d6295f83e93013a187dfe433615561318"
+  dependencies:
+    "@types/invariant" "^2.2.29"
+    "@types/lodash" "^4.14.107"
+    "@types/node" "^8.10.11"
+    "@types/redux" "^3.6.0"
+    asap "^2.0.6"
+    invariant "^2.0.0"
+    lodash "^4.2.0"
+    redux "^4.0.0"
+
+"@mattkrick/react-dnd-html5-backend@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@mattkrick/react-dnd-html5-backend/-/react-dnd-html5-backend-3.0.5.tgz#c5e5c7526986236b9352bf04572d7b95a3c2b012"
+  dependencies:
+    "@mattkrick/dnd-core" "^3.0.2"
+    autobind-decorator "^2.1.0"
+    lodash "^4.2.0"
+    shallowequal "^1.0.2"
+
+"@mattkrick/react-dnd@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@mattkrick/react-dnd/-/react-dnd-3.0.5.tgz#93f7c135964286943b76f6402708ddf8be7840d7"
+  dependencies:
+    "@mattkrick/dnd-core" "^3.0.2"
+    disposables "^1.0.1"
+    hoist-non-react-statics "^2.5.0"
+    invariant "^2.1.0"
+    lodash "^4.2.0"
+    prop-types "^15.5.10"
+    shallowequal "^1.0.2"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -474,7 +508,11 @@
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.11.7.tgz#da39a2f7c74e793e32e2bb7b3b68da1691532dd5"
 
-"@types/lodash@^4.14.85":
+"@types/invariant@^2.2.29":
+  version "2.2.29"
+  resolved "https://registry.yarnpkg.com/@types/invariant/-/invariant-2.2.29.tgz#aa845204cd0a289f65d47e0de63a6a815e30cc66"
+
+"@types/lodash@^4.14.107", "@types/lodash@^4.14.85":
   version "4.14.109"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.109.tgz#b1c4442239730bf35cabaf493c772b18c045886d"
 
@@ -486,9 +524,19 @@
   version "10.1.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.1.4.tgz#606651d3f8a8bec08b8cb262161aab9209f4a29d"
 
+"@types/node@^8.10.11":
+  version "8.10.20"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.20.tgz#fe674ea52e13950ab10954433a7824438aabbcac"
+
 "@types/node@^8.9.4":
   version "8.10.17"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.10.17.tgz#d48cf10f0dc6dcf59f827f5a3fc7a4a6004318d3"
+
+"@types/redux@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@types/redux/-/redux-3.6.0.tgz#f1ebe1e5411518072e4fdfca5c76e16e74c1399a"
+  dependencies:
+    redux "*"
 
 "@webassemblyjs/ast@1.4.3":
   version "1.4.3"
@@ -1091,6 +1139,10 @@ auth0@^2.7.0:
     request "^2.83.0"
     rest-facade "^1.10.0"
     retry "^0.10.1"
+
+autobind-decorator@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/autobind-decorator/-/autobind-decorator-2.1.0.tgz#4451240dbfeff46361c506575a63ed40f0e5bc68"
 
 autoprefixer@^6.3.1:
   version "6.7.7"
@@ -3865,15 +3917,6 @@ disposables@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/disposables/-/disposables-1.0.2.tgz#36c6a674475f55a2d6913567a601444e487b4b6e"
 
-dnd-core@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/dnd-core/-/dnd-core-2.6.0.tgz#12bad66d58742c6e5f7cf2943fb6859440f809c4"
-  dependencies:
-    asap "^2.0.6"
-    invariant "^2.0.0"
-    lodash "^4.2.0"
-    redux "^3.7.1"
-
 dns-equal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/dns-equal/-/dns-equal-1.0.0.tgz#b39e7f1da6eb0a75ba9c17324b34753c47e0654d"
@@ -5847,7 +5890,7 @@ hoist-non-react-statics@1.x.x, hoist-non-react-statics@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz#aa448cf0986d55cc40773b17174b7dd066cb7cfb"
 
-hoist-non-react-statics@^2.1.0, hoist-non-react-statics@^2.5.0:
+hoist-non-react-statics@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.0.tgz#d2ca2dfc19c5a91c5a6615ce8e564ef0347e2a40"
 
@@ -10005,12 +10048,6 @@ react-display-name@^0.2.0:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/react-display-name/-/react-display-name-0.2.4.tgz#e2a670b81d79a2204335510c01246f4c92ff12cf"
 
-react-dnd-html5-backend@^2.4.1:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-2.6.0.tgz#590cd1cca78441bb274edd571fef4c0b16ddcf8e"
-  dependencies:
-    lodash "^4.2.0"
-
 react-dnd-scrollzone@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-dnd-scrollzone/-/react-dnd-scrollzone-4.0.0.tgz#d707170c0cd3b7ab3d991dd6a8cc0b3712454139"
@@ -10020,17 +10057,6 @@ react-dnd-scrollzone@^4.0.0:
     prop-types "^15.5.9"
     raf "^3.2.0"
     react-display-name "^0.2.0"
-
-react-dnd@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/react-dnd/-/react-dnd-2.6.0.tgz#7fa25676cf827d58a891293e3c1ab59da002545a"
-  dependencies:
-    disposables "^1.0.1"
-    dnd-core "^2.6.0"
-    hoist-non-react-statics "^2.1.0"
-    invariant "^2.1.0"
-    lodash "^4.2.0"
-    prop-types "^15.5.10"
 
 react-docgen@^3.0.0-beta11:
   version "3.0.0-beta9"
@@ -10536,7 +10562,14 @@ redux-thunk@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.3.0.tgz#51c2c19a185ed5187aaa9a2d08b666d0d6467622"
 
-redux@^3.7.1, redux@^3.7.2:
+redux@*, redux@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.0.tgz#aa698a92b729315d22b34a0553d7e6533555cc03"
+  dependencies:
+    loose-envify "^1.1.0"
+    symbol-observable "^1.2.0"
+
+redux@^3.7.2:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/redux/-/redux-3.7.2.tgz#06b73123215901d25d065be342eb026bc1c8537b"
   dependencies:
@@ -10544,13 +10577,6 @@ redux@^3.7.1, redux@^3.7.2:
     lodash-es "^4.2.1"
     loose-envify "^1.1.0"
     symbol-observable "^1.0.3"
-
-redux@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/redux/-/redux-4.0.0.tgz#aa698a92b729315d22b34a0553d7e6533555cc03"
-  dependencies:
-    loose-envify "^1.1.0"
-    symbol-observable "^1.2.0"
 
 regenerate@^1.2.1:
   version "1.4.0"

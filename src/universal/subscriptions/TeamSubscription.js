@@ -31,10 +31,11 @@ import {
 import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
 import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
 import {
-  dragReflectionTeamOnNext,
-  dragReflectionTeamUpdater
-} from 'universal/mutations/DragReflectionMutation'
+  endDraggingReflectionTeamOnNext,
+  endDraggingReflectionTeamUpdater
+} from 'universal/mutations/EndDraggingReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from 'universal/mutations/DragDiscussionTopicMutation'
+import {startDraggingReflectionTeamUpdater} from 'universal/mutations/StartDraggingReflectionMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -46,9 +47,9 @@ const subscription = graphql`
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
-      ...DragReflectionMutation_team @relay(mask: false)
       ...DragDiscussionTopicMutation_team @relay(mask: false)
       ...EditReflectionMutation_team @relay(mask: false)
+      ...EndDraggingReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
@@ -61,6 +62,7 @@ const subscription = graphql`
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RequestFacilitatorMutation_team @relay(mask: false)
+      ...StartDraggingReflectionMutation_team @relay(mask: false)
       ...StartMeetingMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
@@ -83,7 +85,7 @@ const onNextHandlers = {
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   UpdateReflectionLocationPayload: updateReflectionLocationTeamOnNext,
-  DragReflectionPayload: dragReflectionTeamOnNext
+  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
@@ -114,8 +116,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'CreateReflectionPayload':
           createReflectionTeamUpdater(payload, store)
           break
-        case 'DragReflectionPayload':
-          dragReflectionTeamUpdater(payload, {atmosphere: environment, store})
+        case 'EndDraggingReflectionPayload':
+          endDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'DragDiscussionTopicPayload':
           dragDiscussionTopicTeamUpdater(payload, {store})
@@ -171,6 +173,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'RequestFaciltatorPayload':
           requestFacilitatorTeamUpdater(payload, options)
+          break
+        case 'StartDraggingReflectionPayload':
+          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'StartMeetingPayload':
           break

@@ -12,7 +12,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
 import {REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
-import {DropTarget as dropTarget} from 'react-dnd'
+import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
 import dndNoise from 'universal/utils/dndNoise'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
@@ -62,7 +62,7 @@ const Group = styled('div')({
 
 class ReflectionGroup extends Component<Props, State> {
   renderReflection = (reflection: Object, idx: number) => {
-    const {setItemRef, setInFlightCoords, meeting, reflectionGroup} = this.props
+    const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
 
     if (idx > 0) {
@@ -75,7 +75,6 @@ class ReflectionGroup extends Component<Props, State> {
     return (
       <div key={reflection.id} ref={setItemRef}>
         <DraggableReflectionCard
-          setInFlightCoords={setInFlightCoords}
           meeting={meeting}
           reflection={reflection}
           isSingleCardGroup={reflections.length === 1}

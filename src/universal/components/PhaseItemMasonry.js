@@ -1,7 +1,7 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {DropTarget} from 'react-dnd'
+import {DropTarget} from '@mattkrick/react-dnd'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {REFLECTION_CARD, REFLECTION_GRID, REFLECTION_GROUP} from 'universal/utils/constants'
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
@@ -16,6 +16,8 @@ import isTempId from 'universal/utils/relay/isTempId'
 import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTransform'
 import handleDropOnGrid from 'universal/utils/multiplayerMasonry/handleDropOnGrid'
 import appTheme from 'universal/styles/theme/appTheme'
+import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
+import Modal from 'universal/components/Modal'
 
 type Props = {|
   meeting: Meeting
@@ -82,7 +84,7 @@ class PhaseItemMasonry extends React.Component<Props> {
       atmosphere: {eventEmitter}
     } = props
     eventEmitter.on('updateReflectionLocation', this.handleGridUpdate)
-    eventEmitter.on('dragReflection', this.handleDragEnd)
+    eventEmitter.on('endDraggingReflection', this.handleDragEnd)
   }
 
   parentCache: ParentCache = {
@@ -105,7 +107,7 @@ class PhaseItemMasonry extends React.Component<Props> {
       atmosphere: {eventEmitter}
     } = this.props
     eventEmitter.off('updateReflectionLocation', this.handleGridUpdate)
-    eventEmitter.off('dragReflection', this.handleDragEnd)
+    eventEmitter.off('endDraggingReflection', this.handleDragEnd)
     window.removeEventListener('resize', this.handleResize)
   }
 
@@ -120,8 +122,9 @@ class PhaseItemMasonry extends React.Component<Props> {
       const {left: targetLeft, top: targetTop} = targetEl.getBoundingClientRect()
       setClosingTransform(atmosphere, itemId, targetLeft, targetTop)
     } else {
+      console.log('setting close transform')
       const originalLocation = childCache.itemEl.getBoundingClientRect()
-      setClosingTransform(atmosphere, itemId, originalLocation.left, originalLocation.top)
+      setClosingTransform(atmosphere, itemId, {y: originalLocation.top, x: originalLocation.left})
     }
   }
 
@@ -201,7 +204,8 @@ class PhaseItemMasonry extends React.Component<Props> {
 
   render () {
     const {canDrop, connectDropTarget, meeting} = this.props
-    const {reflectionGroups} = meeting
+    const {reflectionGroups, reflectionsInFlight = []} = meeting
+    console.log('inflights', reflectionsInFlight)
     return connectDropTarget(
       <div
         ref={this.setParentRef}
@@ -222,10 +226,19 @@ class PhaseItemMasonry extends React.Component<Props> {
               <ReflectionGroup
                 meeting={meeting}
                 reflectionGroup={reflectionGroup}
-                setInFlightCoords={this.setInFlightCoords}
                 setItemRef={this.setItemRef(reflectionGroupId)}
               />
             </CardWrapper>
+          )
+        })}
+        {reflectionsInFlight.map((reflection) => {
+          return (
+            <Modal key={reflection.id} isOpen>
+              <ReflectionCardInFlight
+                setInFlightCoords={this.setInFlightCoords}
+                reflection={reflection}
+              />
+            </Modal>
           )
         })}
       </div>
@@ -291,6 +304,10 @@ export default createFragmentContainer(
           retroPhaseItemId
           sortOrder
         }
+      }
+      reflectionsInFlight {
+        id
+        ...ReflectionCardInFlight_reflection
       }
     }
   `

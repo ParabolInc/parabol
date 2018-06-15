@@ -80,9 +80,10 @@ import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectio
 import voteForReflectionGroup from 'server/graphql/mutations/voteForReflectionGroup'
 import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn'
 import autoGroupReflections from 'server/graphql/mutations/autoGroupReflections'
-import dragReflection from 'server/graphql/mutations/dragReflection'
+import endDraggingReflection from 'server/graphql/mutations/endDraggingReflection'
 import updateTaskDueDate from 'server/graphql/mutations/updateTaskDueDate'
 import dragDiscussionTopic from 'server/graphql/mutations/dragDiscussionTopic'
+import startDraggingReflection from 'server/graphql/mutations/startDraggingReflection'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -114,7 +115,7 @@ export default new GraphQLObjectType({
     deleteTask,
     disconnectSocket,
     dragDiscussionTopic,
-    dragReflection,
+    endDraggingReflection,
     editReflection,
     editTask,
     endMeeting,
@@ -147,6 +148,7 @@ export default new GraphQLObjectType({
     resendTeamInvite,
     segmentEventTrack,
     setOrgUserRole,
+    startDraggingReflection,
     startMeeting,
     startNewMeeting,
     stripeCreateInvoice,

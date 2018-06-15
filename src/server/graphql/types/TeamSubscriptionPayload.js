@@ -29,9 +29,10 @@ import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflec
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload'
 import NewMeetingCheckInPayload from 'server/graphql/types/NewMeetingCheckInPayload'
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload'
-import DragReflectionPayload from 'server/graphql/types/DragReflectionPayload'
+import EndDraggingReflectionPayload from 'server/graphql/types/EndDraggingReflectionPayload'
 import UpdateDragLocationPayload from 'server/graphql/types/UpdateDragLocationPayload'
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
+import StartDraggingReflectionPayload from 'server/graphql/types/StartDraggingReflectionPayload'
 
 const types = [
   AcceptTeamInvitePayload,
@@ -41,7 +42,7 @@ const types = [
   CreateReflectionPayload,
   CreateReflectionGroupPayload,
   DragDiscussionTopicPayload,
-  DragReflectionPayload,
+  EndDraggingReflectionPayload,
   EditReflectionPayload,
   EndMeetingPayload,
   KillMeetingPayload,
@@ -52,11 +53,12 @@ const types = [
   PromoteFacilitatorPayload,
   PromoteNewMeetingFacilitatorPayload,
   RequestFacilitatorPayload,
-  StartMeetingPayload,
-  StartNewMeetingPayload,
   RemoveOrgUserPayload,
   RemoveReflectionPayload,
   RemoveTeamMemberPayload,
+  StartDraggingReflectionPayload,
+  StartMeetingPayload,
+  StartNewMeetingPayload,
   UpdateCheckInQuestionPayload,
   UpdateCreditCardPayload,
   UpdateDragLocationPayload,

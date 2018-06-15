@@ -1,11 +1,15 @@
 import {commitLocalUpdate} from 'react-relay'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 
-const setClosingTransform = (atmosphere, itemId, left, top) => {
+const setClosingTransform = (atmosphere, itemId, finalCoords) => {
   commitLocalUpdate(atmosphere, (store) => {
     const reflection = store.get(itemId)
-    reflection
-      .getLinkedRecord('dragContext')
-      .setValue(`translate(${left}px, ${top}px)`, 'closingTransform')
+    if (!reflection) return
+    const dragContext = reflection.getLinkedRecord('dragContext')
+    if (!dragContext) return
+    const dragCoords = createProxyRecord(store, 'Coords2D', finalCoords)
+    dragContext.setValue(true, 'isClosing')
+    dragContext.setLinkedRecord(dragCoords, 'dragCoords')
   })
 }
 

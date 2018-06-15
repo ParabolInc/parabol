@@ -1,7 +1,7 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {DropTarget as dropTarget} from 'react-dnd'
+import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import handleAgendaHover from 'universal/dnd/handleAgendaHover'

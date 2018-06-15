@@ -2,7 +2,7 @@
 import type {Node} from 'react'
 
 import React from 'react'
-import {DropTarget} from 'react-dnd'
+import {DropTarget} from '@mattkrick/react-dnd'
 
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'

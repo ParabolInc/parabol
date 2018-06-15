@@ -4,7 +4,7 @@ import type {ReflectionCardInFlight_reflection as Reflection} from './__generate
 import {convertFromRaw, EditorState} from 'draft-js'
 import * as React from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -13,16 +13,10 @@ import ui from 'universal/styles/ui'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import UserDraggingHeader from 'universal/components/UserDraggingHeader'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
-
-type Coords = {
-  x: number,
-  y: number
-}
+import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 
 type Props = {|
   atmosphere: Object,
-  initialComponentOffset: Coords,
-  initialCursorOffset: Coords,
   reflection: Reflection
 |}
 
@@ -39,10 +33,10 @@ const ModalBlock = styled('div')({
   zIndex: ui.ziTooltip
 })
 
-const makeTransition = (closingTransform, isTeamMemberDragging) => {
-  if (closingTransform) {
+const makeTransition = (isClosing, isViewerDragging) => {
+  if (isClosing) {
     return 'transform 200ms cubic-bezier(0, 0, .2, 1)'
-  } else if (isTeamMemberDragging) {
+  } else if (!isViewerDragging) {
     return 'transform 100ms cubic-bezier(0, 0, .2, 1)'
   }
   return undefined
@@ -51,49 +45,76 @@ const makeTransition = (closingTransform, isTeamMemberDragging) => {
 class ReflectionCardInFlight extends React.Component<Props, State> {
   constructor (props) {
     super(props)
-    const {isTeamMemberDragging} = props
+    const {
+      reflection: {content, dragContext}
+    } = props
+    const {
+      isViewerDragging,
+      initialComponentCoords: {x, y}
+    } = dragContext
     this.innerWidth = window.innerWidth
-    this.editorState = EditorState.createWithContent(
-      convertFromRaw(JSON.parse(this.props.reflection.content))
-    )
-    if (!isTeamMemberDragging) {
-      this.initialComponentOffset = props.initialComponentOffset
-      this.initialCursorOffset = props.initialCursorOffset
+    this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
+    if (isViewerDragging) {
       this.state = {
-        x: this.initialComponentOffset.x,
-        y: this.initialComponentOffset.y
+        x,
+        y
       }
     }
   }
 
   componentDidMount () {
-    const {isTeamMemberDragging} = this.props
-    if (!isTeamMemberDragging) {
-      window.addEventListener('drag', this.setDragState)
+    const {
+      reflection: {
+        dragContext: {isViewerDragging}
+      }
+    } = this.props
+    if (isViewerDragging) {
+      window.addEventListener('drag', this.setViewerDragState)
     }
   }
 
   componentWillUnmount () {
-    const {isTeamMemberDragging} = this.props
-    if (!isTeamMemberDragging) {
-      window.removeEventListener('drag', this.setDragState)
+    const {
+      reflection: {
+        dragContext: {isViewerDragging}
+      }
+    } = this.props
+    if (isViewerDragging) {
+      window.removeEventListener('drag', this.setViewerDragState)
     }
   }
 
-  setDragState = (e) => {
+  handleTransitionEnd = () => {
+    console.log('handling tranny end')
+    const {
+      atmosphere,
+      reflection: {meetingId, reflectionId}
+    } = this.props
+    commitLocalUpdate(atmosphere, (store) => {
+      const meeting = store.get(meetingId)
+      if (!meeting) return
+      const reflection = store.get(reflectionId)
+      reflection.setValue(null, 'dragContext')
+      safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
+    })
+  }
+
+  setViewerDragState = (e) => {
     const {
       atmosphere,
       reflection: {
+        dragContext: {initialCursorCoords, initialComponentCoords},
         reflectionId,
         team: {teamId}
       }
     } = this.props
-    const xDiff = e.x - this.initialCursorOffset.x
-    const yDiff = e.y - this.initialCursorOffset.y
     // if i scroll off the screen, leave it where I last saw it
     if (e.x === 0 && e.y === 0) return
-    const x = this.initialComponentOffset.x + xDiff + window.scrollX
-    const y = this.initialComponentOffset.y + yDiff
+    const xDiff = e.x - initialCursorCoords.x
+    const yDiff = e.y - initialCursorCoords.y
+    // TODO remove window.scrollX by caching it or ???
+    const x = initialComponentCoords.x + xDiff + window.scrollX
+    const y = initialComponentCoords.y + yDiff
     if (x !== this.state.x || y !== this.state.y) {
       /*
        * coords using relay: ~45fps
@@ -119,33 +140,28 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   }
 
   editorState: Object
-  initialComponentOffset: Coords
-  initialCursorOffset: Coords
 
   render () {
     const {
       reflection: {
         reflectionId,
-        dragContext,
+        dragContext: {isClosing, isViewerDragging, dragCoords, dragUser},
         phaseItem: {question}
       },
-      handleTransitionEnd,
       setInFlightCoords,
-      isTeamMemberDragging,
       reflectionRef
     } = this.props
-    const closingTransform = dragContext && dragContext.closingTransform
-    const {x, y} = isTeamMemberDragging ? dragContext.dragCoords : this.state
-    if (isTeamMemberDragging && x === undefined) return null
+    const {x, y} = isClosing || !isViewerDragging ? dragCoords : this.state
+    // if (isTeamMemberDragging && x === undefined) return null
     setInFlightCoords(x, y, reflectionId, reflectionRef)
     const style = {
-      transition: makeTransition(closingTransform, isTeamMemberDragging),
-      transform: closingTransform || `translate3d(${x}px, ${y}px, 0px)`
+      transition: makeTransition(isClosing, isViewerDragging),
+      transform: `translate3d(${x}px, ${y}px, 0px)`
     }
     return (
-      <ModalBlock style={style} onTransitionEnd={handleTransitionEnd}>
+      <ModalBlock style={style} onTransitionEnd={isClosing ? this.handleTransitionEnd : undefined}>
         <ReflectionCardRoot>
-          {isTeamMemberDragging && <UserDraggingHeader user={dragContext.draggerUser} />}
+          {!isViewerDragging && <UserDraggingHeader user={dragUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
           <ReflectionFooter>{question}</ReflectionFooter>
         </ReflectionCardRoot>
@@ -158,19 +174,30 @@ export default createFragmentContainer(
   withAtmosphere(ReflectionCardInFlight),
   graphql`
     fragment ReflectionCardInFlight_reflection on RetroReflection {
+      meetingId
       team {
         teamId: id
       }
       reflectionId: id
       content
       dragContext {
-        closingTransform
+        isClosing
+        isViewerDragging
         dragCoords {
           x
           y
         }
-        draggerUser {
+        dragUser {
+          id
           ...UserDraggingHeader_user
+        }
+        initialCursorCoords {
+          x
+          y
+        }
+        initialComponentCoords {
+          x
+          y
         }
       }
       phaseItem {

@@ -1064,8 +1064,8 @@ export type Mutation = {
   disconnectSocket: ?DisconnectSocketPayload,
   /** Changes the priority of the discussion topics */
   dragDiscussionTopic: ?DragDiscussionTopicPayload,
-  /** Changes the drag state of a retrospective reflection */
-  dragReflection: ?DragReflectionPayload,
+  /** Broadcast that the viewer stopped dragging a reflection */
+  endDraggingReflection: ?EndDraggingReflectionPayload,
   /** Changes the editing state of a retrospective reflection */
   editReflection: ?EditReflectionPayload,
   /** Announce to everyone that you are editing a task */
@@ -1132,6 +1132,8 @@ export type Mutation = {
   segmentEventTrack: ?boolean,
   /** Set the role of a user */
   setOrgUserRole: ?SetOrgUserRolePayload,
+  /** Broadcast that the viewer started dragging a reflection */
+  startDraggingReflection: ?StartDraggingReflectionPayload,
   /** Start a meeting from the lobby */
   startMeeting: ?StartMeetingPayload,
   /** Start a new meeting */
@@ -1599,9 +1601,9 @@ export type RetroReflection = {
 */
 export type DragContext = {
   /** The userId of the person currently dragging the reflection */
-  draggerUserId: ?string,
+  dragUserId: ?string,
   /** The user that is currently dragging the reflection */
-  draggerUser: ?User,
+  dragUser: ?User,
   /** The coordinates necessary to simulate a drag for a subscribing user */
   dragCoords: ?Coords2D
 }
@@ -1852,23 +1854,17 @@ export type RetroDiscussStage = {
 */
 export type DragReflectionDropTargetTypeEnum = 'REFLECTION_GROUP' | 'REFLECTION_GRID'
 
-export type DragReflectionPayload = {
+export type EndDraggingReflectionPayload = {
   error: ?StandardMutationError,
-  /** The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore */
-  dragContext: ?DragContext,
   /** the type of item the reflection was dropped on */
   dropTargetType: ?DragReflectionDropTargetTypeEnum,
   /** The ID that the dragged item was dropped on, if dropTargetType is not specific enough */
   dropTargetId: ?string,
-  /** true if the reflection is being dragged, else false */
-  isDragging: ?boolean,
   meeting: ?NewMeeting,
   meetingId: ?string,
   reflection: ?RetroReflection,
   reflectionGroupId: ?string,
   reflectionId: ?string,
-  /** The user that is triggering the drag */
-  user: ?User,
   /** foreign key to get user */
   userId: ?string
 }
@@ -2216,6 +2212,24 @@ export type SegmentEventTrackOptions = {
 
 export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload
 
+/**
+  Coordinates used relay a location in a 2-D plane
+*/
+export type Coords2DInput = {
+  x: number,
+  y: number
+}
+
+export type StartDraggingReflectionPayload = {
+  error: ?StandardMutationError,
+  /** The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore */
+  dragContext: ?DragContext,
+  meeting: ?NewMeeting,
+  meetingId: ?string,
+  reflection: ?RetroReflection,
+  reflectionId: ?string
+}
+
 export type StartMeetingPayload = {
   error: ?StandardMutationError,
   team: ?Team
@@ -2320,14 +2334,6 @@ export type UpdateDragLocationInput = {
   The type of entity that is being dragged
 */
 export type DraggableTypeEnum = 'REFLECTION_CARD'
-
-/**
-  Coordinates used relay a location in a 2-D plane
-*/
-export type Coords2DInput = {
-  x: ?number,
-  y: ?number
-}
 
 export type UpdateReflectionContentPayload = {
   error: ?StandardMutationError,
@@ -2548,7 +2554,7 @@ export type TeamSubscriptionPayload =
   | CreateReflectionPayload
   | CreateReflectionGroupPayload
   | DragDiscussionTopicPayload
-  | DragReflectionPayload
+  | EndDraggingReflectionPayload
   | EditReflectionPayload
   | EndMeetingPayload
   | KillMeetingPayload
@@ -2559,11 +2565,12 @@ export type TeamSubscriptionPayload =
   | PromoteFacilitatorPayload
   | PromoteNewMeetingFacilitatorPayload
   | RequestFacilitatorPayload
-  | StartMeetingPayload
-  | StartNewMeetingPayload
   | RemoveOrgUserPayload
   | RemoveReflectionPayload
   | RemoveTeamMemberPayload
+  | StartDraggingReflectionPayload
+  | StartMeetingPayload
+  | StartNewMeetingPayload
   | UpdateCheckInQuestionPayload
   | UpdateCreditCardPayload
   | UpdateDragLocationPayload

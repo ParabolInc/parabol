@@ -167,11 +167,11 @@ class ReflectionCard extends Component<Props, State> {
       reflectionId
     } = reflection
     const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete
-    const draggerUser = dragContext && dragContext.draggerUser
-    const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId
+    const dragUser = dragContext && dragContext.dragUser
+    const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
     return (
       <ReflectionCardRoot hasDragLock={hasDragLock} hideShadow={hideShadow}>
-        {hasDragLock && <UserDraggingHeader user={draggerUser} />}
+        {hasDragLock && <UserDraggingHeader user={dragUser} />}
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
@@ -217,7 +217,7 @@ export default createFragmentContainer(
 
     fragment ReflectionCard_reflection on RetroReflection {
       dragContext {
-        draggerUser {
+        dragUser {
           id
           ...UserDraggingHeader_user
         }

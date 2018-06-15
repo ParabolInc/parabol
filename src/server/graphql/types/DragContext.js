@@ -7,14 +7,14 @@ const DragContext = new GraphQLObjectType({
   name: 'DragContext',
   description: 'Info associated with a current drag',
   fields: () => ({
-    draggerUserId: {
+    dragUserId: {
       description: 'The userId of the person currently dragging the reflection',
       type: GraphQLID
     },
-    draggerUser: {
+    dragUser: {
       description: 'The user that is currently dragging the reflection',
       type: User,
-      resolve: makeResolve('draggerUserId', 'draggerUser', 'users')
+      resolve: makeResolve('dragUserId', 'dragUser', 'users')
     },
     dragCoords: {
       description: 'The coordinates necessary to simulate a drag for a subscribing user',
