@@ -1,6 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import React, {Component} from 'react'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
 import removeLink from 'universal/utils/draftjs/removeLink'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
@@ -32,20 +32,12 @@ class EditorLinkViewer extends Component {
             {href}
           </a>
         </span>
-        <Button
-          buttonStyle='flat'
-          buttonSize='small'
-          colorPalette='mid'
-          label='Change'
-          onClick={changeLink}
-        />
-        <Button
-          buttonStyle='flat'
-          buttonSize='small'
-          colorPalette='mid'
-          label='Remove'
-          onClick={handleRemove}
-        />
+        <FlatButton onClick={changeLink} palette='mid'>
+          {'Change'}
+        </FlatButton>
+        <FlatButton onClick={handleRemove} palette='mid'>
+          {'Remove'}
+        </FlatButton>
       </div>
     )
   }

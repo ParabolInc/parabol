@@ -9,7 +9,8 @@ const RaisedButton = styled(BaseButton)(({palette = 'gray'}) => {
     backgroundColor,
     borderRadius: ui.buttonBorderRadius,
     color,
-    fontWeight: 600
+    fontWeight: 600,
+    outline: 0
   }
 })
 

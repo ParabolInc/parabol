@@ -10,6 +10,7 @@ const PrimaryButton = styled(BaseButton)((props) => {
     borderRadius: ui.buttonBorderRadius,
     color: ui.palette.white,
     fontWeight: 600,
+    outline: 0,
     ':hover,:focus,:active': {
       backgroundImage: visuallyDisabled ? ui.gradientWarmLightened : ui.gradientWarmDarkened,
       opacity: visuallyDisabled && 1

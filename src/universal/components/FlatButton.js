@@ -12,6 +12,7 @@ const FlatButton = styled(BaseButton)((props) => {
     backgroundColor: 'transparent',
     borderRadius: ui.buttonBorderRadius,
     color: ui.palette[palette],
+    outline: 0,
     ':hover,:focus,:active': {
       backgroundColor: !visuallyDisabled && backgroundColorOnHover,
       boxShadow: 'none'

@@ -15,7 +15,6 @@ const ButtonRoot = styled(PlainButton)(({buttonSize, depth, disabled, pressedDow
     display: 'block',
     border: '.0625rem solid transparent',
     boxShadow: 'none',
-    outline: 0,
     textAlign: 'center',
     transform: pressedDown && 'translate(0, .125rem)',
     transition: `
@@ -24,7 +23,8 @@ const ButtonRoot = styled(PlainButton)(({buttonSize, depth, disabled, pressedDow
       `,
     userSelect: 'none',
     ':hover,:focus,:active': {
-      boxShadow: disabled ? 'none' : stateDepth
+      boxShadow: disabled ? 'none' : stateDepth,
+      outline: pressedDown && 0
     }
   }
 })
