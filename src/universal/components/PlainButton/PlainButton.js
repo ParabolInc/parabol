@@ -1,6 +1,5 @@
 import styled from 'react-emotion'
-
-import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 
 const disabledStyles = {
   cursor: 'not-allowed',
@@ -29,7 +28,7 @@ const PlainButton = styled('button')(
     margin: 0,
     padding: 0,
     ':focus': {
-      boxShadow: `0 0 .0625rem .0625rem ${appTheme.palette.mid}`,
+      boxShadow: `0 0 .0625rem .0625rem ${ui.palette.mid}`,
       outline: 0
     },
     textAlign: 'inherit'

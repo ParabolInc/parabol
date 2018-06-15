@@ -210,15 +210,15 @@ const ui = {
   // Buttons
   // ---------------------------------------------------------------------------
   buttonBaseStyles: {
-    appearance: 'none',
+    // appearance: 'none',
     border: '.0625rem solid transparent',
     borderRadius: '5em',
     boxShadow: 'none',
     color: dark,
-    cursor: 'pointer',
+    // cursor: 'pointer',
     display: 'inline-block',
     fontFamily: appTheme.typography.sansSerif,
-    fontWeight: 600,
+    // fontWeight: 600,
     outline: 0,
     textAlign: 'center',
     userSelect: 'none',
@@ -227,6 +227,7 @@ const ui = {
       boxShadow: shadow[1]
     }
   },
+  buttonLightThemes: ['white', 'light', 'gray'],
   buttonStylesPrimary: {
     backgroundImage: gradientWarm,
     color: white,
@@ -259,6 +260,9 @@ const ui = {
       boxShadow: 'none'
     }
   },
+  buttonPressedDown: {
+    transform: 'translate(0, .125rem)'
+  },
   buttonSizeOptions: [BUTTON_SIZE_SMALL, BUTTON_SIZE_MEDIUM, BUTTON_SIZE_LARGE],
   buttonSizeStyles: {
     [BUTTON_SIZE_SMALL]: {
@@ -277,6 +281,7 @@ const ui = {
       padding: `${CONTROL_LARGE_PADDING_VERTICAL} 1.5em`
     }
   },
+  buttonTransition: transition[0],
 
   // Cards
   // ---------------------------------------------------------------------------

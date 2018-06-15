@@ -16,9 +16,13 @@ import DashMain from 'universal/components/Dashboard/DashMain'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo'
 import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
-import Button from 'universal/components/Button/Button'
+// import Button from 'universal/components/Button/Button'
+// import FlatButton from 'universal/components/FlatButton'
+import LinkButton from 'universal/components/LinkButton'
+// import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
+// import PlainButton from 'universal/components/PlainButton/PlainButton'
+import BaseButton from 'universal/components/BaseButton'
 import DashContent from 'universal/components/Dashboard/DashContent'
 
 // use the same object so the EditTeamName doesn't rerender so gosh darn always
@@ -126,22 +130,19 @@ class Team extends Component {
                   lineHeight: '1.25rem'
                 }}
               >
-                <PlainButton onClick={this.goToTeamDashboard}>
+                <LinkButton
+                  aria-label='Back to Team Dashboard'
+                  buttonSize='small'
+                  isBlock
+                  onClick={this.goToTeamDashboard}
+                >
                   <IconLabel icon='arrow-circle-left' label='Back to Team Dashboard' />
-                </PlainButton>
+                </LinkButton>
               </div>
             ) : (
-              <Button
-                buttonSize='small'
-                buttonStyle='flat'
-                colorPalette='dark'
-                icon='cog'
-                iconPlacement='left'
-                key='2'
-                isBlock
-                label='Team Settings'
-                onClick={this.goToTeamSettings}
-              />
+              <BaseButton onClick={this.goToTeamSettings}>
+                <IconLabel icon='cog' label='Team Settings' />
+              </BaseButton>
             )}
             <DashboardAvatars team={team} />
             {!isSettings && <TeamCallsToAction teamId={teamId} />}
@@ -165,6 +166,19 @@ class Team extends Component {
 //   label='Back to Team Dashboard'
 //   onClick={this.goToTeamDashboard}
 //   buttonSize='small'
+// />
+
+// <Button
+//   buttonSize='small'
+//   buttonStyle='flat'
+//   colorPalette='dark'
+//   disabled
+//   icon='cog'
+//   iconPlacement='left'
+//   key='2'
+//   isBlock
+//   label='Team Settings'
+//   onClick={this.goToTeamSettings}
 // />
 
 Team.propTypes = {
