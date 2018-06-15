@@ -7,7 +7,7 @@ import type {Credentials} from 'universal/types/auth'
 import React from 'react'
 import styled from 'react-emotion'
 import {Field, reduxForm} from 'redux-form'
-import StyledButton from 'universal/components/StyledButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import InputField from 'universal/components/InputField/InputField'
@@ -53,14 +53,9 @@ const SignInEmailPasswordForm = (props: Props) => (
         disabled={props.submitting}
       />
     </Block>
-    <StyledButton
-      buttonPalette='primary'
-      disabled={!props.valid}
-      type='submit'
-      waiting={props.submitting}
-    >
+    <PrimaryButton buttonSize='large' depth={1} disabled={!props.valid} waiting={props.submitting}>
       {'Sign Up'}
-    </StyledButton>
+    </PrimaryButton>
   </Form>
 )
 

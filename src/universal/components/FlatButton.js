@@ -1,41 +1,22 @@
-import React from 'react'
-import BaseButton from 'universal/components/BaseButton'
+import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import BaseButton from 'universal/components/BaseButton'
 
-const defineButtonStyles = (props) => {
-  const {buttonPalette, buttonSize, disabled, isBlock, waiting} = props
-  const palette = buttonPalette || 'dark'
-  const size = buttonSize || 'medium'
-  const backgroundColorOnHover = ui.buttonLightThemes.includes(buttonPalette)
+const FlatButton = styled(BaseButton)((props) => {
+  const {palette = 'dark', disabled, waiting} = props
+  const backgroundColorOnHover = ui.buttonLightThemes.includes(palette)
     ? 'rgba(0, 0, 0, .15)'
     : ui.palette.light
-  const blockStyles = isBlock ? ui.buttonBlockStyles : {}
   const visuallyDisabled = disabled || waiting
   return {
-    ...ui.buttonBaseStyles,
-    ...ui.buttonSizeStyles[size],
-    ...blockStyles,
     backgroundColor: 'transparent',
+    borderRadius: ui.buttonBorderRadius,
     color: ui.palette[palette],
-    transition: `transform ${ui.buttonTransition}`,
     ':hover,:focus,:active': {
       backgroundColor: !visuallyDisabled && backgroundColorOnHover,
       boxShadow: 'none'
     }
   }
-}
-
-const FlatButton = (props) => {
-  const {children} = props
-  return (
-    <BaseButton
-      {...props}
-      buttonStyles={defineButtonStyles(props)}
-      pressedDownStyles={ui.buttonPressedDown}
-    >
-      {children}
-    </BaseButton>
-  )
-}
+})
 
 export default FlatButton

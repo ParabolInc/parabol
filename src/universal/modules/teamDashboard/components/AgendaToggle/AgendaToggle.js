@@ -6,7 +6,6 @@ import ui from 'universal/styles/ui'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants'
-// import Button from 'universal/components/Button/Button'
 import OutlinedButton from 'universal/components/OutlinedButton'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
@@ -31,35 +30,20 @@ const AgendaToggle = (props) => {
     }
   }
   const label = `${hideAgenda ? 'See' : 'Hide'} ${AGENDA_ITEM_LABEL}s`
-  const buttonProps = {
-    buttonSize: 'small',
-    buttonPalette: hideAgenda ? 'warm' : 'mid',
-    isBlock: true,
-    key: `agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`,
-    onClick: toggleHide
-  }
-  const iconLabel = <IconLabel icon='comments' label={label} />
+  const ToggleButton = hideAgenda ? OutlinedButton : FlatButton
   return (
     <RootBlock>
-      {hideAgenda ? (
-        <OutlinedButton {...buttonProps}>{iconLabel}</OutlinedButton>
-      ) : (
-        <FlatButton {...buttonProps}>{iconLabel}</FlatButton>
-      )}
+      <ToggleButton
+        key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`}
+        onClick={toggleHide}
+        palette={hideAgenda ? 'warm' : 'mid'}
+        style={{width: '100%'}}
+      >
+        <IconLabel icon='comments' label={label} />
+      </ToggleButton>
     </RootBlock>
   )
 }
-
-// (<Button
-//   buttonSize='small'
-//   buttonStyle={hideAgenda ? 'outlined' : 'flat'}
-//   colorPalette={hideAgenda ? 'warm' : 'mid'}
-//   icon='comments'
-//   isBlock
-//   key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`}
-//   label={label}
-//   onClick={toggleHide}
-// />)
 
 AgendaToggle.propTypes = {
   atmosphere: PropTypes.object.isRequired,

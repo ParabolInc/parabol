@@ -1,35 +1,41 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Type from 'universal/components/Type/Type'
-import withStyles from 'universal/styles/withStyles'
-import {css} from 'aphrodite-local-styles/no-important'
 import portal from 'react-portal-hoc'
 import Avatar from 'universal/components/Avatar/Avatar'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import styled from 'react-emotion'
+
+const AvatarBlock = styled('div')({
+  margin: '1.5rem auto',
+  width: '6rem'
+})
+
+const ModalFooter = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'flex-end',
+  width: '100%'
+})
 
 const PhotoUploadModal = (props) => {
-  const {children, closeAfter, closePortal, isClosing, picture, styles, unstyled} = props
+  const {children, closeAfter, closePortal, isClosing, picture, unstyled} = props
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align='center' bold scale='s6' colorPalette='mid'>
-        Upload a New Photo
+        {'Upload a New Photo'}
       </Type>
-      <div className={css(styles.avatarBlock)}>
+      <AvatarBlock>
         <Avatar picture={picture} size='fill' sansRadius={unstyled} sansShadow={unstyled} />
-      </div>
+      </AvatarBlock>
       {children}
-      <div className={css(styles.done)}>
-        <Button
-          colorPalette='warm'
-          icon='check-circle'
-          iconPlacement='right'
-          label='Done'
-          onClick={closePortal}
-          buttonSize='medium'
-          buttonStyle='flat'
-        />
-      </div>
+      <ModalFooter>
+        <FlatButton palette='warm' onClick={closePortal} buttonSize='medium'>
+          <IconLabel icon='check-circle' iconAfter label='Done' />
+        </FlatButton>
+      </ModalFooter>
     </DashModal>
   )
 }
@@ -40,21 +46,7 @@ PhotoUploadModal.propTypes = {
   closePortal: PropTypes.func,
   isClosing: PropTypes.bool,
   picture: PropTypes.string,
-  styles: PropTypes.object,
   unstyled: PropTypes.bool
 }
 
-const styleThunk = () => ({
-  done: {
-    textAlign: 'right',
-    width: '100%'
-  },
-
-  avatarBlock: {
-    display: 'block',
-    margin: '1.5rem auto',
-    width: '6rem'
-  }
-})
-
-export default portal({escToClose: true, closeAfter: 100})(withStyles(styleThunk)(PhotoUploadModal))
+export default portal({escToClose: true, closeAfter: 100})(PhotoUploadModal)

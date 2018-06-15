@@ -67,7 +67,7 @@ const makePropColors = (buttonStyle, colorPalette) => {
 const ButtonRoot = styled('button')(
   // Sets up base and sizing
   ({size}) => ({
-    ...ui.buttonBaseStyles,
+    // ...ui.buttonBaseStyles,
     ...size,
     transition: `box-shadow ${ui.transition[0]}, transform ${ui.transition[0]}`
   }),

@@ -209,24 +209,25 @@ const ui = {
 
   // Buttons
   // ---------------------------------------------------------------------------
-  buttonBaseStyles: {
-    // appearance: 'none',
-    border: '.0625rem solid transparent',
-    borderRadius: '5em',
-    boxShadow: 'none',
-    color: dark,
-    // cursor: 'pointer',
-    display: 'inline-block',
-    fontFamily: appTheme.typography.sansSerif,
-    // fontWeight: 600,
-    outline: 0,
-    textAlign: 'center',
-    userSelect: 'none',
-    verticalAlign: 'middle',
-    ':hover,:focus,:active': {
-      boxShadow: shadow[1]
-    }
-  },
+  // buttonBaseStyles: {
+  //   appearance: 'none',
+  //   border: '.0625rem solid transparent',
+  //   borderRadius: '5em',
+  //   boxShadow: 'none',
+  //   color: dark,
+  //   cursor: 'pointer',
+  //   display: 'inline-block',
+  //   fontFamily: appTheme.typography.sansSerif,
+  //   fontWeight: 600,
+  //   outline: 0,
+  //   textAlign: 'center',
+  //   userSelect: 'none',
+  //   verticalAlign: 'middle',
+  //   ':hover,:focus,:active': {
+  //     boxShadow: shadow[1]
+  //   }
+  // },
+  buttonBorderRadius: '5em',
   buttonLightThemes: ['white', 'light', 'gray'],
   buttonStylesPrimary: {
     backgroundImage: gradientWarm,

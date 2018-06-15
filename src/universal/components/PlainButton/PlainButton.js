@@ -1,5 +1,4 @@
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
 
 const disabledStyles = {
   cursor: 'not-allowed',
@@ -26,11 +25,8 @@ const PlainButton = styled('button')(
     fontFamily: 'inherit',
     fontSize: 'inherit',
     margin: 0,
+    outline: 0,
     padding: 0,
-    ':focus': {
-      boxShadow: `0 0 .0625rem .0625rem ${ui.palette.mid}`,
-      outline: 0
-    },
     textAlign: 'inherit'
   },
   ({disabled, waiting}) => (disabled || waiting) && disabledStyles,
