@@ -1,35 +1,19 @@
 import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle'
-import {isTeamMember} from 'server/utils/authorization'
 import getRethink from 'server/database/rethinkDriver'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import {sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import makeReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/makeReflectionGroup'
 import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle'
-import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import {GROUP} from 'universal/utils/constants'
 
-const removeReflectionFromGroup = async (reflectionId, sortOrder, {authToken, dataLoader}) => {
+const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) => {
   const r = getRethink()
   const now = new Date()
-  const reflection = reflectionId && (await r.table('RetroReflection').get(reflectionId))
+  const reflection = await r.table('RetroReflection').get(reflectionId)
   if (!reflection) return sendReflectionNotFoundError(authToken, reflectionId)
   const {reflectionGroupId: oldReflectionGroupId, meetingId, retroPhaseItemId} = reflection
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
-  const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return sendTeamAccessError(authToken, teamId)
-  }
-  if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
-  if (isPhaseComplete(GROUP, phases)) {
-    return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP)
-  }
 
   // RESOLUTION
-  const reflectionGroup = await makeReflectionGroup(meetingId, retroPhaseItemId, sortOrder)
+  const reflectionGroup = await makeReflectionGroup(meetingId, retroPhaseItemId, 0)
   const {id: reflectionGroupId} = reflectionGroup
   await r({
     reflection: r
@@ -72,13 +56,7 @@ const removeReflectionFromGroup = async (reflectionId, sortOrder, {authToken, da
         updatedAt: now
       })
   }
-  return {
-    meetingId,
-    reflectionId,
-    reflectionGroupId,
-    oldReflectionGroupId,
-    teamId
-  }
+  return reflectionGroupId
 }
 
 export default removeReflectionFromGroup

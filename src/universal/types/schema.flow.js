@@ -1860,13 +1860,17 @@ export type EndDraggingReflectionPayload = {
   dropTargetType: ?DragReflectionDropTargetTypeEnum,
   /** The ID that the dragged item was dropped on, if dropTargetType is not specific enough */
   dropTargetId: ?string,
-  meeting: ?NewMeeting,
+  meeting: ?RetrospectiveMeeting,
   meetingId: ?string,
   reflection: ?RetroReflection,
   reflectionGroupId: ?string,
   reflectionId: ?string,
   /** foreign key to get user */
-  userId: ?string
+  userId: ?string,
+  /** The group encapsulating the new reflection. A new one was created if one was not provided. */
+  reflectionGroup: ?RetroReflectionGroup,
+  /** The old group the reflection was in */
+  oldReflectionGroup: ?RetroReflectionGroup
 }
 
 export type EditReflectionPayload = {

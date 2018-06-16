@@ -1,6 +1,13 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
 import {commitMutation} from 'react-relay'
 import getInProxy from 'universal/utils/relay/getInProxy'
+import handleAddReflectionToGroup from 'universal/mutations/handlers/handleAddReflectionToGroup'
+import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import handleRemoveEmptyReflectionGroup from 'universal/mutations/handlers/handleRemoveEmptyReflectionGroup'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
+import dndNoise from 'universal/utils/dndNoise'
+import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 
 type Variables = {
   reflectionId: string,
@@ -8,14 +15,38 @@ type Variables = {
   dropTargetId: string
 }
 
+type Context = {
+  meetingId: string
+}
+
 graphql`
   fragment EndDraggingReflectionMutation_team on EndDraggingReflectionPayload {
-    meetingId
-    reflectionId
-    reflectionGroupId
+    meeting {
+      id
+      nextAutoGroupThreshold
+    }
+    reflection {
+      ...CompleteReflectionFrag @relay(mask: false)
+    }
+
+    reflectionGroup {
+      id
+      meetingId
+      sortOrder
+      reflections {
+        ...CompleteReflectionFrag @relay(mask: false)
+      }
+      title
+      tasks {
+        id
+      }
+    }
+    oldReflectionGroup {
+      id
+      title
+    }
     dropTargetType
     dropTargetId
-    userId
   }
 `
 
@@ -35,38 +66,79 @@ const mutation = graphql`
   }
 `
 
-export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) => {
-  const reflectionId = payload.getValue('reflectionId')
-  const reflection = store.get(reflectionId)
+const handleRemoveReflectionFromGroup = (reflectionId, reflectionGroupId, store) => {
+  const reflectionGroup = store.get(reflectionGroupId)
+  if (!reflectionGroup) return
+  safeRemoveNodeFromArray(reflectionId, reflectionGroup, 'reflections')
+}
+
+// const moveGroupLocation = (reflectionGroupProxy, store) => {
+//   if (!reflectionGroupProxy) return
+//   const reflectionGroupId = reflectionGroupProxy.getValue('id')
+//   const meetingId = reflectionGroupProxy.getValue('meetingId')
+//   handleRemoveReflectionGroups(reflectionGroupId, meetingId, store)
+//   handleAddReflectionGroups(reflectionGroupProxy, store)
+// }
+
+const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
+  if (!reflectionGroup) return
+  const meetingId = reflectionGroup.getValue('meetingId')
+  const meeting = store.get(meetingId)
+  if (!meeting) return
+  addNodeToArray(reflectionGroup, meeting, 'reflectionGroups', 'sortOrder')
+}
+
+const moveReflectionLocation = (reflection, reflectionGroup, oldReflectionGroupId, store) => {
+  // moveGroupLocation(reflectionGroup, store)
   if (!reflection) return
-  const userId = payload.getValue('userId')
-  const existingDragUserId = getInProxy(reflection, 'dragContext', 'dragUserId')
-  if (userId !== existingDragUserId) {
-    // this isn't legit. let the onNext cb know to ignore this one
-    payload.setValue(null, 'userId')
-  }
+  const reflectionId = reflection.getValue('id')
+  handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
+  handleAddReflectionToGroup(reflection, store)
+  handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
+  handleAddReflectionGroupToGroups(store, reflectionGroup)
+}
+
+export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) => {
+  const reflection = payload.getLinkedRecord('reflection')
+  const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
+  const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
+  moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
+
+  // const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id')
+  // if (reflectionGroupId) {
+  //   store.get(reflectionGroupId).setValue(false, 'isExpanded')
+  // }
+  // if (oldReflectionGroupId) {
+  //   store.get(oldReflectionGroupId).setValue(false, 'isExpanded')
+  // }
 }
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
   const {
     atmosphere: {eventEmitter}
   } = context
-  console.log('onNext emitting endDraggingReflection if userId not null', payload)
   const {
-    reflectionGroupId: childId,
-    reflectionId: itemId,
+    reflection: {id: itemId},
+    oldReflectionGroup,
+    reflectionGroup,
+    dropTargetType,
+    dropTargetId
+  } = payload
+  const childId = reflectionGroup && reflectionGroup.id
+  const sourceId = oldReflectionGroup && oldReflectionGroup.id
+  eventEmitter.emit('endDraggingReflection', {
     dropTargetType,
     dropTargetId,
-    userId
-  } = payload
-  if (userId) {
-    eventEmitter.emit('endDraggingReflection', {dropTargetType, dropTargetId, itemId, childId})
-  }
+    itemId,
+    childId,
+    sourceId
+  })
 }
 
 const EndDraggingReflectionMutation = (
   atmosphere: Object,
   variables: Variables,
+  context: Context,
   onError?: ErrorHandler,
   onCompleted?: CompletedHandler
 ) => {
@@ -79,6 +151,60 @@ const EndDraggingReflectionMutation = (
       const payload = store.getRootField('endDraggingReflection')
       if (!payload) return
       endDraggingReflectionTeamUpdater(payload, {atmosphere, store})
+    },
+    optimisticUpdater: (store) => {
+      const nowISO = new Date().toJSON()
+      const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
+      const {meetingId, newReflectionGroupId} = context
+      if (!dropTargetType) return
+      // move an entire group somewhere else
+      // if (!reflectionId) {
+      //   const reflectionGroupProxy = store.get(reflectionGroupId)
+      //   updateProxyRecord(reflectionGroupProxy, {
+      //     sortOrder
+      //   })
+      //   moveGroupLocation(reflectionGroupProxy, store)
+      //   return
+      // }
+
+      const reflectionProxy = store.get(reflectionId)
+      const oldReflectionGroupId = reflectionProxy.getValue('reflectionGroupId')
+      const meeting = store.get(meetingId)
+      let reflectionGroupProxy = store.get(reflectionGroupId)
+      // move a reflection into its own group
+      if (reflectionGroupId === null) {
+        // create the new group
+        const reflectionGroup = {
+          id: newReflectionGroupId,
+          createdAt: nowISO,
+          isActive: true,
+          meetingId,
+          sortOrder: 0,
+          updatedAt: nowISO,
+          voterIds: []
+        }
+        reflectionGroupProxy = createProxyRecord(store, 'RetroReflectionGroup', reflectionGroup)
+        reflectionGroupProxy.setLinkedRecord(meeting, 'meeting')
+        updateProxyRecord(reflectionProxy, {sortOrder: 0, reflectionGroupId: newReflectionGroupId})
+
+        // } else if (reflectionGroupId === oldReflectionGroupId) {
+        // move a card within the same group
+        // updateProxyRecord(reflectionProxy, {sortOrder: 0})
+        console.log('')
+      } else {
+        const reflections = reflectionGroupProxy.getLinkedRecords('reflections')
+        const minSortOrder = Math.min(
+          ...reflections.map((reflection) => reflection.getValue('sortOrder'))
+        )
+        // move a card into another group
+        updateProxyRecord(reflectionProxy, {
+          sortOrder: minSortOrder - 1 + dndNoise(),
+          reflectionGroupId
+        })
+        reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
+      }
+      moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store)
+      // resetDragContext(reflectionProxy)
     }
   })
 }

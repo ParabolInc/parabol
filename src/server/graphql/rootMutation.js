@@ -73,7 +73,6 @@ import endNewMeeting from 'server/graphql/mutations/endNewMeeting'
 import createReflection from 'server/graphql/mutations/createReflection'
 import updateReflectionContent from 'server/graphql/mutations/updateReflectionContent'
 import editReflection from 'server/graphql/mutations/editReflection'
-import updateReflectionLocation from 'server/graphql/mutations/updateReflectionLocation'
 import removeReflection from 'server/graphql/mutations/removeReflection'
 import createReflectionGroup from 'server/graphql/mutations/createReflectionGroup'
 import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectionGroupTitle'
@@ -165,7 +164,6 @@ export default new GraphQLObjectType({
     updateDragLocation,
     updateReflectionContent,
     updateReflectionGroupTitle,
-    updateReflectionLocation,
     updateTask,
     updateTaskDueDate,
     updateTeamName,

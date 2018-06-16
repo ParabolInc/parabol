@@ -24,10 +24,6 @@ import {
 } from 'universal/mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
-import {
-  updateReflectionLocationTeamOnNext,
-  updateReflectionLocationTeamUpdater
-} from 'universal/mutations/UpdateReflectionLocationMutation'
 import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
 import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
 import {
@@ -70,7 +66,6 @@ const subscription = graphql`
       ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
       ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
-      ...UpdateReflectionLocationMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
       ...VoteForReflectionGroupMutation_team @relay(mask: false)
@@ -84,7 +79,6 @@ const onNextHandlers = {
   NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
-  UpdateReflectionLocationPayload: updateReflectionLocationTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext
 }
 
@@ -191,9 +185,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'UpdateReflectionContentPayload':
           break
         case 'UpdateReflectionGroupTitlePayload':
-          break
-        case 'UpdateReflectionLocationPayload':
-          updateReflectionLocationTeamUpdater(payload, options)
           break
         case 'UpgradeToProPayload':
           break

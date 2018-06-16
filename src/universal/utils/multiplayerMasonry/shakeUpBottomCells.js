@@ -7,8 +7,8 @@ export const MIN_SAVINGS = 24 // in pixels, must be > 0
 export const COST_PER_COLUMN = 24
 
 const shakeUpBottomCells = (childrenCache, columnLefts) => {
-  const lastCardPerColumn = getLastCardPerColumn(childrenCache, columnLefts)
   for (let safeLoop = 0; safeLoop < 20; safeLoop++) {
+    const lastCardPerColumn = getLastCardPerColumn(childrenCache, columnLefts)
     const totalSavings = []
     for (let ii = 0; ii < columnLefts.length; ii++) {
       // source is the suspected tall column, target is a possibly shorter column
@@ -42,14 +42,12 @@ const shakeUpBottomCells = (childrenCache, columnLefts) => {
     const {boundingBox: sourceBox, el: sourceEl} = sourceChildCache
     const oldBottom = lastCardPerColumn[bestTargetLeft]
 
-    // update the dictionary because we might shake out another move
-    lastCardPerColumn[bestTargetLeft] = sourceChildCache
-
-    // animate! move horizontally first, then vertically
-    // delay each move so it looks more natural
     const {top: oldTop} = sourceBox
     sourceBox.left = bestTargetLeft
     sourceBox.top = oldBottom ? oldBottom.boundingBox.top + oldBottom.boundingBox.height : 0
+
+    // animate! move horizontally first, then vertically
+    // delay each move so it looks more natural
     sourceEl.style.transform = `translate(${sourceBox.left}px, ${oldTop}px)`
     sourceEl.style.transitionDuration = `${AXIS_ANIMATION_DURATION}ms`
     const delay = (safeLoop + 1) * 100

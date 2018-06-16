@@ -4,13 +4,15 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
 import publish from 'server/utils/publish'
-import {GROUP, TEAM} from 'universal/utils/constants'
+import {GROUP, REFLECTION_GRID, REFLECTION_GROUP, TEAM} from 'universal/utils/constants'
 import {
   sendAlreadyCompletedMeetingPhaseError,
   sendAlreadyEndedMeetingError
 } from 'server/utils/alreadyMutatedErrors'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import DragReflectionDropTargetTypeEnum from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
+import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/addReflectionToGroup'
+import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
 
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',
@@ -30,11 +32,8 @@ export default {
       type: GraphQLID
     }
   },
-  async resolve (
-    source,
-    {reflectionId, dropTargetType, dropTargetId},
-    {authToken, dataLoader, socketId: mutatorId}
-  ) {
+  async resolve (source, {reflectionId, dropTargetType, dropTargetId}, context) {
+    const {authToken, dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
@@ -44,7 +43,7 @@ export default {
     if (!reflection) {
       return sendReflectionNotFoundError(authToken, reflectionId)
     }
-    const {meetingId} = reflection
+    const {meetingId, reflectionGroupId: oldReflectionGroupId} = reflection
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
     const {endedAt, phases, teamId} = meeting
@@ -56,15 +55,30 @@ export default {
       return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP)
     }
 
+    let newReflectionGroupId
+    if (dropTargetType === REFLECTION_GRID) {
+      // ungroup
+      newReflectionGroupId = await removeReflectionFromGroup(reflectionId, context)
+    } else if (dropTargetType === REFLECTION_GROUP && dropTargetId) {
+      // group
+      newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
+    }
+
+    if (typeof newReflectionGroupId === 'object') {
+      publish(TEAM, teamId, EndDraggingReflectionPayload, newReflectionGroupId, subOptions)
+    }
+
     // RESOLUTION
     const data = {
       meetingId,
       reflectionId,
-      reflectionGroupId: reflection.reflectionGroupId,
+      reflectionGroupId: newReflectionGroupId,
+      oldReflectionGroupId: newReflectionGroupId ? oldReflectionGroupId : undefined,
       userId: viewerId,
       dropTargetType,
       dropTargetId
     }
+
     publish(TEAM, teamId, EndDraggingReflectionPayload, data, subOptions)
     return data
   }

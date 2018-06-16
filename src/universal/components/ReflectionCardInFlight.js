@@ -85,9 +85,10 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   }
 
   handleTransitionEnd = () => {
-    console.log('handling tranny end')
     const {
       atmosphere,
+      cardsInFlight,
+      shakeUpBottom,
       reflection: {meetingId, reflectionId}
     } = this.props
     commitLocalUpdate(atmosphere, (store) => {
@@ -97,6 +98,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       reflection.setValue(null, 'dragContext')
       safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
     })
+    delete cardsInFlight[reflectionId]
+    shakeUpBottom()
   }
 
   setViewerDragState = (e) => {
@@ -106,7 +109,9 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         dragContext: {initialCursorCoords, initialComponentCoords},
         reflectionId,
         team: {teamId}
-      }
+      },
+      reflectionRef,
+      setInFlightCoords
     } = this.props
     // if i scroll off the screen, leave it where I last saw it
     if (e.x === 0 && e.y === 0) return
@@ -126,6 +131,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         x,
         y
       })
+      setInFlightCoords(x, y, reflectionId, reflectionRef)
       const input = {
         clientWidth: this.innerWidth,
         coords: {x, y},
@@ -144,16 +150,13 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   render () {
     const {
       reflection: {
-        reflectionId,
         dragContext: {isClosing, isViewerDragging, dragCoords, dragUser},
         phaseItem: {question}
-      },
-      setInFlightCoords,
-      reflectionRef
+      }
     } = this.props
     const {x, y} = isClosing || !isViewerDragging ? dragCoords : this.state
     // if (isTeamMemberDragging && x === undefined) return null
-    setInFlightCoords(x, y, reflectionId, reflectionRef)
+
     const style = {
       transition: makeTransition(isClosing, isViewerDragging),
       transform: `translate3d(${x}px, ${y}px, 0px)`

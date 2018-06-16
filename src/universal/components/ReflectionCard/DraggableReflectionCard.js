@@ -14,6 +14,7 @@ import {REFLECTION_CARD} from 'universal/utils/constants'
 import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
 import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
+import clientTempId from 'universal/utils/relay/clientTempId'
 
 type Props = {
   dndIndex: number,
@@ -79,21 +80,28 @@ const reflectionDragSpec = {
   endDrag (props: Props, monitor) {
     const {
       atmosphere,
-      reflection: {reflectionId, reflectionGroupId}
+      reflection: {meetingId, reflectionId, reflectionGroupId}
     } = props
     const dropResult = monitor.getDropResult()
-    const {dropTargetType = null, dropTargetId = null} = dropResult || {}
-    EndDraggingReflectionMutation(atmosphere, {
-      reflectionId,
-      dropTargetType,
-      dropTargetId
-    })
+    const {dropTargetType = null, dropTargetId = null, sortOrder} = dropResult || {}
+    const newReflectionGroupId = clientTempId()
+    EndDraggingReflectionMutation(
+      atmosphere,
+      {
+        reflectionId,
+        dropTargetType,
+        dropTargetId,
+        sortOrder
+      },
+      {meetingId, newReflectionGroupId}
+    )
     const {eventEmitter} = atmosphere
     eventEmitter.emit('endDraggingReflection', {
       dropTargetType,
       dropTargetId,
       itemId: reflectionId,
-      childId: reflectionGroupId
+      childId: dropTargetType ? newReflectionGroupId : undefined,
+      sourceId: reflectionGroupId
     })
   }
 }
@@ -110,6 +118,7 @@ export default createFragmentContainer(
   graphql`
     fragment DraggableReflectionCard_reflection on RetroReflection {
       content
+      meetingId
       reflectionId: id
       reflectionGroupId
       retroPhaseItemId

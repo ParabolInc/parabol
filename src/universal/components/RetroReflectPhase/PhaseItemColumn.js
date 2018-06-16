@@ -19,11 +19,9 @@ import reactLifecyclesCompat from 'react-lifecycles-compat'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard'
 import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import dndNoise from 'universal/utils/dndNoise'
-import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
-import appTheme from 'universal/styles/theme/appTheme'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import appTheme from 'universal/styles/theme/appTheme'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 
 const ColumnWrapper = styled('div')({
@@ -195,54 +193,7 @@ const reflectionDropSpec = {
   },
 
   // Makes the card-dropped-into available in the dragSpec's endDrag method.
-  drop (props: Props, monitor, component) {
-    // if (monitor.didDrop()) return;
-    const {
-      groupRefs,
-      state: {columnReflectionGroups}
-    } = component
-    const {y} = monitor.getClientOffset()
-    let idx = columnReflectionGroups.length
-
-    for (let ii = 0; ii < columnReflectionGroups.length; ii++) {
-      const group = columnReflectionGroups[ii]
-      const {id} = group
-      const ref = groupRefs[id]
-      if (y < ref.getBoundingClientRect().y) {
-        idx = ii
-        break
-      }
-    }
-    const {reflectionId} = monitor.getItem()
-    const {
-      atmosphere,
-      submitMutation,
-      meeting: {meetingId},
-      onError,
-      onCompleted,
-      retroPhaseItem: {retroPhaseItemId}
-    } = props
-    let sortOrder
-    if (idx === 0) {
-      sortOrder = columnReflectionGroups[0].sortOrder - 1 + dndNoise()
-    } else if (idx === columnReflectionGroups.length) {
-      sortOrder =
-        columnReflectionGroups[columnReflectionGroups.length - 1].sortOrder + 1 + dndNoise()
-    } else {
-      sortOrder =
-        (columnReflectionGroups[idx - 1].sortOrder + columnReflectionGroups[idx].sortOrder) / 2 +
-        dndNoise()
-    }
-    const variables = {
-      reflectionId,
-      reflectionGroupId: null,
-      retroPhaseItemId,
-      sortOrder
-    }
-    submitMutation()
-    UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
-    this.groupRefs = {}
-  }
+  drop () {}
 }
 
 const reflectionDropCollect = (connect, monitor) => ({

@@ -13,8 +13,6 @@ import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
 import {REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
-import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
-import dndNoise from 'universal/utils/dndNoise'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {CARD_PADDING} from 'universal/components/PhaseItemMasonry'
@@ -116,28 +114,9 @@ const reflectionDropSpec = {
 
   drop (props: Props, monitor) {
     if (monitor.didDrop()) return
-    const {reflectionId} = monitor.getItem()
-    const {
-      atmosphere,
-      meeting: {meetingId},
-      onError,
-      onCompleted,
-      submitMutation,
-      reflectionGroup
-    } = props
-    submitMutation()
-    const {reflections, reflectionGroupId: targetReflectionGroupId} = reflectionGroup
-    const [firstReflection] = reflections
-    const variables = {
-      reflectionId,
-      reflectionGroupId: targetReflectionGroupId,
-      sortOrder: firstReflection.sortOrder - 1 + dndNoise()
-    }
-    const updateLocation = () => {
-      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
-    }
-    return {dropTargetType: REFLECTION_GROUP, dropTargetId: targetReflectionGroupId, updateLocation}
-    // TODO support intra-group drops
+    const {reflectionGroup} = props
+    const {reflectionGroupId: targetReflectionGroupId} = reflectionGroup
+    return {dropTargetType: REFLECTION_GROUP, dropTargetId: targetReflectionGroupId}
   }
 }
 

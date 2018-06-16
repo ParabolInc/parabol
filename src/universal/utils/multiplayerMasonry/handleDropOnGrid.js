@@ -1,14 +1,16 @@
 import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTransform'
-import {CARD_PADDING, REFLECTION_WIDTH} from 'universal/components/PhaseItemMasonry'
+import {CARD_PADDING} from 'universal/components/PhaseItemMasonry'
 import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
+import isTempId from 'universal/utils/relay/isTempId'
 
-const handleDropOnGrid = (atmosphere, childrenCache, parentCache, childCache, itemId) => {
+const handleDropOnGrid = (atmosphere, childrenCache, parentCache, childId, itemId) => {
   const {
     boundingBox: {top: parentTop, left: parentLeft},
     cardsInFlight,
     columnLefts,
     incomingChildren
   } = parentCache
+  const childCache = childrenCache[childId]
   const {x: dropX, y: dropY} = cardsInFlight[itemId]
   const droppedLeft = dropX - parentLeft
   const droppedTop = dropY - parentTop
@@ -20,26 +22,26 @@ const handleDropOnGrid = (atmosphere, childrenCache, parentCache, childCache, it
     return {left, top}
   })
 
-  const distances = bottomCoords.map(
-    ({left, top}) => Math.abs(left - droppedLeft) + Math.abs(top - droppedTop)
+  const distances = bottomCoords.map(({left, top}) =>
+    Math.sqrt(Math.abs(left - droppedLeft) ** 2 + Math.abs(top - droppedTop) ** 2)
   )
   const minDistanceIdx = distances.indexOf(Math.min(...distances))
   const {left: newLeft, top: newTop} = bottomCoords[minDistanceIdx]
   const {height} = childCache.itemEl.getBoundingClientRect()
-  setClosingTransform(
-    atmosphere,
-    itemId,
-    newLeft + parentLeft + CARD_PADDING,
-    newTop + parentTop + CARD_PADDING
-  )
-  incomingChildren[itemId] = {
-    boundingBox: {
-      left: newLeft,
-      top: newTop,
-      width: REFLECTION_WIDTH,
-      height: height + 2 * CARD_PADDING
-    },
-    childId: null
+  const x = newLeft + parentLeft + CARD_PADDING
+  const y = newTop + parentTop + CARD_PADDING
+  setClosingTransform(atmosphere, itemId, {x, y})
+  childCache.boundingBox = {
+    left: newLeft,
+    top: newTop,
+    height: height + 2 * CARD_PADDING
+  }
+  childCache.el.style.transform = `translate(${newLeft}px, ${newTop}px)`
+  if (isTempId(childId)) {
+    incomingChildren[itemId] = {
+      boundingBox: childCache.boundingBox,
+      childId
+    }
   }
 }
 

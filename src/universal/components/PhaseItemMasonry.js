@@ -5,8 +5,6 @@ import {DropTarget} from '@mattkrick/react-dnd'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {REFLECTION_CARD, REFLECTION_GRID, REFLECTION_GROUP} from 'universal/utils/constants'
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
-import dndNoise from 'universal/utils/dndNoise'
-import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
 import styled, {css} from 'react-emotion'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
@@ -83,7 +81,6 @@ class PhaseItemMasonry extends React.Component<Props> {
     const {
       atmosphere: {eventEmitter}
     } = props
-    eventEmitter.on('updateReflectionLocation', this.handleGridUpdate)
     eventEmitter.on('endDraggingReflection', this.handleDragEnd)
   }
 
@@ -106,25 +103,26 @@ class PhaseItemMasonry extends React.Component<Props> {
     const {
       atmosphere: {eventEmitter}
     } = this.props
-    eventEmitter.off('updateReflectionLocation', this.handleGridUpdate)
     eventEmitter.off('endDraggingReflection', this.handleDragEnd)
     window.removeEventListener('resize', this.handleResize)
   }
 
   handleDragEnd = (payload) => {
     const {atmosphere} = this.props
-    const {dropTargetType, dropTargetId, childId, itemId} = payload
-    const childCache = this.childrenCache[childId]
+    const {dropTargetType, dropTargetId, childId, itemId, sourceId} = payload
     if (dropTargetType === REFLECTION_GRID) {
-      handleDropOnGrid(atmosphere, this.childrenCache, this.parentCache, childCache, itemId)
+      updateColumnHeight(this.childrenCache, sourceId)
+      handleDropOnGrid(atmosphere, this.childrenCache, this.parentCache, childId, itemId)
     } else if (dropTargetType === REFLECTION_GROUP) {
       const {itemEl: targetEl} = this.childrenCache[dropTargetId]
-      const {left: targetLeft, top: targetTop} = targetEl.getBoundingClientRect()
-      setClosingTransform(atmosphere, itemId, targetLeft, targetTop)
+      const targetAdjustment = this.handleGridUpdate(sourceId, dropTargetId)
+      const {x, y} = targetEl.getBoundingClientRect()
+      setClosingTransform(atmosphere, itemId, {x, y: y + targetAdjustment})
     } else {
       console.log('setting close transform')
-      const originalLocation = childCache.itemEl.getBoundingClientRect()
-      setClosingTransform(atmosphere, itemId, {y: originalLocation.top, x: originalLocation.left})
+      const sourceChildCache = this.childrenCache[sourceId]
+      const {x, y} = sourceChildCache.itemEl.getBoundingClientRect()
+      setClosingTransform(atmosphere, itemId, {x, y})
     }
   }
 
@@ -140,26 +138,12 @@ class PhaseItemMasonry extends React.Component<Props> {
     initializeGrid(this.childrenCache, this.parentCache, false)
   }
 
-  handleGridUpdate = (payload) => {
-    const {
-      oldReflectionGroup: {id: oldReflectionGroupId},
-      reflectionGroup: {id: newReflectionGroupId}
-    } = payload
-
+  handleGridUpdate = (oldReflectionGroupId, newReflectionGroupId) => {
+    const startingHeight = this.childrenCache[newReflectionGroupId].boundingBox.top
     updateColumnHeight(this.childrenCache, oldReflectionGroupId)
-    if (oldReflectionGroupId !== newReflectionGroupId) {
-      updateColumnHeight(this.childrenCache, newReflectionGroupId)
-    }
-    shakeUpBottomCells(this.childrenCache, this.parentCache.columnLefts)
-
-    const {
-      meeting: {reflectionGroups}
-    } = this.props
-    const reflectionGroup = reflectionGroups.find(
-      (group) => group.reflectionGroupId === newReflectionGroupId
-    )
-    const [reflection] = reflectionGroup.reflections
-    delete this.parentCache.cardsInFlight[reflection.reflectionId]
+    updateColumnHeight(this.childrenCache, newReflectionGroupId)
+    const endingHeight = this.childrenCache[newReflectionGroupId].boundingBox.top
+    return endingHeight - startingHeight
   }
 
   setItemRef = (childId) => (c) => {
@@ -171,29 +155,24 @@ class PhaseItemMasonry extends React.Component<Props> {
   setChildRef = (childId, itemId) => (c) => {
     if (!c) return
     const childCache = this.childrenCache[childId]
-    if (!childCache.el && !childCache.boundingBox) {
-      const incomingChild = this.parentCache.incomingChildren[itemId]
-      if (incomingChild) {
-        const {boundingBox} = incomingChild
-        if (incomingChild.childId) {
-          // swap the coords with the previous placeholder
-          childCache.boundingBox = this.childrenCache[incomingChild.childId].boundingBox
-          delete this.childrenCache[incomingChild.childId]
-        } else {
-          // grab the coords from the incoming child
-          childCache.boundingBox = boundingBox
-          incomingChild.boundingBox = undefined
-        }
-        // not a huge mem leak since it can only grow to the size of reflections, but nice to keep clean
-        if (isTempId(childId)) {
-          incomingChild.childId = childId
-        } else {
-          delete this.parentCache.incomingChildren[itemId]
-        }
-        c.style.transform = `translate(${childCache.boundingBox.left}px, ${
-          childCache.boundingBox.top
-        }px)`
+    const incomingChild = this.parentCache.incomingChildren[itemId]
+    if (incomingChild) {
+      const {boundingBox, childId: incomingChildId} = incomingChild
+      // bounding box may change between optimistic updates
+      childCache.boundingBox = incomingChildId
+        ? this.childrenCache[incomingChild.childId].boundingBox
+        : boundingBox
+      // once we get the final card, it is no long incoming
+      if (isTempId(childId)) {
+        incomingChild.childId = childId
+      } else {
+        delete this.parentCache.incomingChildren[itemId]
       }
+      delete this.childrenCache[incomingChildId]
+      const {
+        boundingBox: {left, top}
+      } = childCache
+      c.style.transform = `translate(${left}px, ${top}px)`
     }
     childCache.el = c
   }
@@ -205,7 +184,6 @@ class PhaseItemMasonry extends React.Component<Props> {
   render () {
     const {canDrop, connectDropTarget, meeting} = this.props
     const {reflectionGroups, reflectionsInFlight = []} = meeting
-    console.log('inflights', reflectionsInFlight)
     return connectDropTarget(
       <div
         ref={this.setParentRef}
@@ -216,8 +194,6 @@ class PhaseItemMasonry extends React.Component<Props> {
           const {reflectionGroupId, reflections} = reflectionGroup
           const [firstReflection] = reflections
           const reflectionId = firstReflection ? firstReflection.reflectionId : ''
-          const childCache = this.childrenCache[reflectionGroupId]
-          if (childCache && !childCache.boundingBox) return null
           return (
             <CardWrapper
               innerRef={this.setChildRef(reflectionGroupId, reflectionId)}
@@ -235,8 +211,12 @@ class PhaseItemMasonry extends React.Component<Props> {
           return (
             <Modal key={reflection.id} isOpen>
               <ReflectionCardInFlight
+                cardsInFlight={this.parentCache.cardsInFlight}
                 setInFlightCoords={this.setInFlightCoords}
                 reflection={reflection}
+                shakeUpBottom={() =>
+                  shakeUpBottomCells(this.childrenCache, this.parentCache.columnLefts)
+                }
               />
             </Modal>
           )
@@ -250,31 +230,8 @@ const reflectionDropSpec = {
   canDrop (props: Props, monitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
-  drop (props: Props, monitor) {
-    const {
-      meeting: {reflectionGroups}
-    } = props
-    const sortOrder = reflectionGroups[reflectionGroups.length - 1].sortOrder + 1 + dndNoise()
-
-    const {reflectionId, reflectionGroupId, isSingleCardGroup} = monitor.getItem()
-    const {
-      atmosphere,
-      submitMutation,
-      meeting: {meetingId},
-      onError,
-      onCompleted
-    } = props
-
-    const variables = {
-      reflectionId: isSingleCardGroup ? null : reflectionId,
-      reflectionGroupId: isSingleCardGroup ? reflectionGroupId : null,
-      sortOrder
-    }
-    submitMutation()
-    const updateLocation = () => {
-      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
-    }
-    return {dropTargetType: REFLECTION_GRID, updateLocation}
+  drop () {
+    return {dropTargetType: REFLECTION_GRID}
   }
 }
 

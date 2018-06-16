@@ -22,7 +22,6 @@ import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNew
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload'
 import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload'
 import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload'
-import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload'
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload'
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload'
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload'
@@ -65,7 +64,6 @@ const types = [
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
   UpdateReflectionGroupTitlePayload,
-  UpdateReflectionLocationPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload,
   VoteForReflectionGroupPayload
