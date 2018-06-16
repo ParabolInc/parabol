@@ -48,17 +48,11 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const {
       reflection: {content, dragContext}
     } = props
-    const {
-      isViewerDragging,
-      initialComponentCoords: {x, y}
-    } = dragContext
+    const {isViewerDragging, initialComponentCoords} = dragContext
     this.innerWidth = window.innerWidth
     this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
     if (isViewerDragging) {
-      this.state = {
-        x,
-        y
-      }
+      this.state = {...initialComponentCoords}
     }
   }
 
@@ -109,9 +103,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         dragContext: {initialCursorCoords, initialComponentCoords},
         reflectionId,
         team: {teamId}
-      },
-      reflectionRef,
-      setInFlightCoords
+      }
     } = this.props
     // if i scroll off the screen, leave it where I last saw it
     if (e.x === 0 && e.y === 0) return
@@ -131,7 +123,6 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         x,
         y
       })
-      setInFlightCoords(x, y, reflectionId, reflectionRef)
       const input = {
         clientWidth: this.innerWidth,
         coords: {x, y},
@@ -150,12 +141,15 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   render () {
     const {
       reflection: {
-        dragContext: {isClosing, isViewerDragging, dragCoords, dragUser},
+        reflectionId,
+        dragContext: {isClosing, isViewerDragging, initialCursorCoords, dragCoords, dragUser},
         phaseItem: {question}
-      }
+      },
+      setInFlightCoords
     } = this.props
-    const {x, y} = isClosing || !isViewerDragging ? dragCoords : this.state
-    // if (isTeamMemberDragging && x === undefined) return null
+    // use initialCoords instead of isViewerDragging as a cheap hack to support the same user in 2 tabs
+    const {x, y} = isClosing || !initialCursorCoords ? dragCoords : this.state
+    setInFlightCoords(x, y, reflectionId)
 
     const style = {
       transition: makeTransition(isClosing, isViewerDragging),

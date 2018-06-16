@@ -73,7 +73,7 @@ export default {
       meetingId,
       reflectionId,
       reflectionGroupId: newReflectionGroupId,
-      oldReflectionGroupId: newReflectionGroupId ? oldReflectionGroupId : undefined,
+      oldReflectionGroupId,
       userId: viewerId,
       dropTargetType,
       dropTargetId
