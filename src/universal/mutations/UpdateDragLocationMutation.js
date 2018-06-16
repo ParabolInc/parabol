@@ -7,11 +7,14 @@ graphql`
       x
       y
     }
+    clientHeight
     clientWidth
-    distance
     sourceId
     targetId
-    draggableType
+    targetOffset {
+      x
+      y
+    }
   }
 `
 const mutation = graphql`
@@ -20,18 +23,37 @@ const mutation = graphql`
   }
 `
 
-export const updateDragLocationTeamUpdater = (payload, store) => {
+export const updateDragLocationTeamUpdater = (payload, {atmosphere, store}) => {
   const sourceId = getInProxy(payload, 'sourceId')
   if (!sourceId) return
+  const {
+    childrenCache,
+    parentCache: {
+      boundingBox: {left: parentLeft, top: parentTop}
+    }
+  } = atmosphere.getMasonry()
   const draggable = store.get(sourceId)
   const dragContext = draggable.getLinkedRecord('dragContext')
   const coords = payload.getLinkedRecord('coords')
   const foreignX = coords.getValue('x')
   const foreignY = coords.getValue('y')
   const clientWidth = payload.getValue('clientWidth')
-  const screenAdjustment = window.innerWidth / clientWidth
-  const localX = foreignX * screenAdjustment
-  const localY = foreignY * screenAdjustment
+  const clientHeight = payload.getValue('clientHeight')
+  const targetId = payload.getValue('targetId')
+  const targetChild = childrenCache[targetId]
+  let localX
+  let localY
+  if (targetChild && targetChild.boundingBox) {
+    const targetOffset = payload.getLinkedRecord('targetOffset')
+    const offsetX = targetOffset.getValue('x')
+    const offsetY = targetOffset.getValue('y')
+    const {top, left} = targetChild.boundingBox
+    localX = left - offsetX + parentLeft
+    localY = top - offsetY + parentTop
+  } else {
+    localX = foreignX / clientWidth * window.innerWidth
+    localY = foreignY / clientHeight * window.innerHeight
+  }
   const newCoords = createProxyRecord(store, 'Coords2D', {x: localX, y: localY})
   dragContext.setLinkedRecord(newCoords, 'dragCoords')
 }

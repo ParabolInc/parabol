@@ -1166,8 +1166,6 @@ export type Mutation = {
   updateReflectionContent: ?UpdateReflectionContentPayload,
   /** Update the title of a reflection group */
   updateReflectionGroupTitle: ?UpdateReflectionGroupTitlePayload,
-  /** Update the sortOrder or phaseItemId of a reflection (usually by dragging it) */
-  updateReflectionLocation: ?UpdateReflectionLocationPayload,
   /** Update a task with a change in content, ownership, or status */
   updateTask: ?UpdateTaskPayload,
   /** Set or unset the due date of a task */
@@ -2320,24 +2318,18 @@ export type UpdateNewCheckInQuestionPayload = {
 }
 
 export type UpdateDragLocationInput = {
+  clientHeight: number,
   clientWidth: number,
-  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
-  distance: number,
   /** The primary key of the item being drug */
   sourceId: string,
-  /** The assumed destination of the item being drug */
-  targetId: string,
-  /** The type of entity being drug */
-  draggableType: DraggableTypeEnum,
+  /** The estimated destination of the item being drug */
+  targetId: ?string,
   /** The teamId to broadcast the message to */
   teamId: string,
-  coords: Coords2DInput
+  coords: Coords2DInput,
+  /** The offset from the targetId */
+  targetOffset: ?Coords2DInput
 }
-
-/**
-  The type of entity that is being dragged
-*/
-export type DraggableTypeEnum = 'REFLECTION_CARD'
 
 export type UpdateReflectionContentPayload = {
   error: ?StandardMutationError,
@@ -2349,16 +2341,6 @@ export type UpdateReflectionGroupTitlePayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
   reflectionGroup: ?RetroReflectionGroup
-}
-
-export type UpdateReflectionLocationPayload = {
-  error: ?StandardMutationError,
-  meeting: ?RetrospectiveMeeting,
-  reflection: ?RetroReflection,
-  /** The group encapsulating the new reflection. A new one was created if one was not provided. */
-  reflectionGroup: ?RetroReflectionGroup,
-  /** The old group the reflection was in */
-  oldReflectionGroup: ?RetroReflectionGroup
 }
 
 export type UpdateTaskInput = {
@@ -2581,22 +2563,20 @@ export type TeamSubscriptionPayload =
   | UpdateNewCheckInQuestionPayload
   | UpdateReflectionContentPayload
   | UpdateReflectionGroupTitlePayload
-  | UpdateReflectionLocationPayload
   | UpdateTeamNamePayload
   | UpgradeToProPayload
   | VoteForReflectionGroupPayload
 
 export type UpdateDragLocationPayload = {
+  clientHeight: number,
   clientWidth: number,
-  /** A float from 0 to 1 representing the % of the distance traveled from the source centroid to the target centroid */
-  distance: number,
   /** The primary key of the item being drug */
   sourceId: string,
-  /** The assumed destination of the item being drug */
-  targetId: string,
-  /** The type of entity being drug */
-  draggableType: DraggableTypeEnum,
+  /** The estimated destination of the item being drug */
+  targetId: ?string,
   coords: Coords2D,
+  /** The offset from the targetId */
+  targetOffset: ?Coords2D,
   userId: string
 }
 

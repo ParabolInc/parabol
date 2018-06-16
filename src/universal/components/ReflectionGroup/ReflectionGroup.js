@@ -15,7 +15,7 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
-import {CARD_PADDING} from 'universal/components/PhaseItemMasonry'
+import {CARD_PADDING} from 'universal/utils/multiplayerMasonry/masonryConstants'
 
 const {Component} = React
 

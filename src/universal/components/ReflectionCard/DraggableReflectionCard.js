@@ -58,6 +58,7 @@ const reflectionDragSpec = {
   },
 
   beginDrag (props, monitor) {
+    console.log('beginDrag')
     const {
       atmosphere,
       reflection: {meetingId, reflectionId, reflectionGroupId},

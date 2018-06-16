@@ -180,7 +180,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'UpdateCheckInQuestionPayload':
           break
         case 'UpdateDragLocationPayload':
-          updateDragLocationTeamUpdater(payload, store)
+          updateDragLocationTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'UpdateReflectionContentPayload':
           break

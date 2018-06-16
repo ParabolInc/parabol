@@ -1,4 +1,4 @@
-import {REFLECTION_WIDTH} from 'universal/components/PhaseItemMasonry'
+import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 
 const removeColumn = (childrenCache, columnLeft) => {
   Object.keys(childrenCache).forEach((childKey) => {

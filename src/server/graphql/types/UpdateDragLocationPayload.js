@@ -9,6 +9,10 @@ const UpdateDragLocationPayload = new GraphQLObjectType({
     coords: {
       type: new GraphQLNonNull(Coords2D)
     },
+    targetOffset: {
+      type: Coords2D,
+      description: 'The offset from the targetId'
+    },
     userId: {
       type: new GraphQLNonNull(GraphQLID)
     }

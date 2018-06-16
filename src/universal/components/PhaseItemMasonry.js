@@ -7,7 +7,6 @@ import {REFLECTION_CARD, REFLECTION_GRID, REFLECTION_GROUP} from 'universal/util
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
 import styled, {css} from 'react-emotion'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
-import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 import isTempId from 'universal/utils/relay/isTempId'
@@ -20,9 +19,6 @@ import Modal from 'universal/components/Modal'
 type Props = {|
   meeting: Meeting
 |}
-
-export const CARD_PADDING = 8
-export const REFLECTION_WIDTH = 320 + CARD_PADDING * 2
 
 const gridStyle = css({
   overflow: 'auto',
@@ -78,10 +74,16 @@ type ChildrenCache = {
 class PhaseItemMasonry extends React.Component<Props> {
   constructor (props) {
     super(props)
-    const {
-      atmosphere: {eventEmitter}
-    } = props
+    const {atmosphere} = props
+    const {eventEmitter} = atmosphere
     eventEmitter.on('endDraggingReflection', this.handleDragEnd)
+    //  big ugly hack to provide the children cache to the team subscription updater to handle updateDragLocation
+    // the alternative would be to emit an event in the onNext, handle it here, and make a local commit in the handler
+    // fps > clean coding practices in this case
+    atmosphere.getMasonry = () => ({
+      childrenCache: this.childrenCache,
+      parentCache: this.parentCache
+    })
   }
 
   parentCache: ParentCache = {
@@ -100,10 +102,10 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   componentWillUnmount () {
-    const {
-      atmosphere: {eventEmitter}
-    } = this.props
+    const {atmosphere} = this.props
+    const {eventEmitter} = atmosphere
     eventEmitter.off('endDraggingReflection', this.handleDragEnd)
+    delete atmosphere.getMasonry
     window.removeEventListener('resize', this.handleResize)
   }
 
@@ -119,7 +121,6 @@ class PhaseItemMasonry extends React.Component<Props> {
       const {x, y} = targetEl.getBoundingClientRect()
       setClosingTransform(atmosphere, itemId, {x, y: y + targetAdjustment})
     } else {
-      console.log('setting close transform')
       const sourceChildCache = this.childrenCache[sourceId]
       const {x, y} = sourceChildCache.itemEl.getBoundingClientRect()
       setClosingTransform(atmosphere, itemId, {x, y})
@@ -214,9 +215,8 @@ class PhaseItemMasonry extends React.Component<Props> {
                 cardsInFlight={this.parentCache.cardsInFlight}
                 setInFlightCoords={this.setInFlightCoords}
                 reflection={reflection}
-                shakeUpBottom={() =>
-                  shakeUpBottomCells(this.childrenCache, this.parentCache.columnLefts)
-                }
+                childrenCache={this.childrenCache}
+                parentCache={this.parentCache}
               />
             </Modal>
           )

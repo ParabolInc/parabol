@@ -10,10 +10,11 @@ import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrappe
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
 import ui from 'universal/styles/ui'
-import {REFLECTION_CARD} from 'universal/utils/constants'
 import UserDraggingHeader from 'universal/components/UserDraggingHeader'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import getTargetReference from 'universal/utils/multiplayerMasonry/getTargetReference'
+import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 
 type Props = {|
   atmosphere: Object,
@@ -48,11 +49,17 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const {
       reflection: {content, dragContext}
     } = props
-    const {isViewerDragging, initialComponentCoords} = dragContext
+    const {initialComponentCoords, initialCursorCoords} = dragContext
     this.innerWidth = window.innerWidth
+    this.innerHeight = window.innerHeight
     this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
-    if (isViewerDragging) {
+    // synonymous to isClientDragging
+    if (initialComponentCoords) {
       this.state = {...initialComponentCoords}
+      this.cursorOffset = {
+        x: initialCursorCoords.x - initialComponentCoords.x,
+        y: initialCursorCoords.y - initialComponentCoords.y
+      }
     }
   }
 
@@ -64,6 +71,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     } = this.props
     if (isViewerDragging) {
       window.addEventListener('drag', this.setViewerDragState)
+      this.history = []
     }
   }
 
@@ -82,7 +90,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const {
       atmosphere,
       cardsInFlight,
-      shakeUpBottom,
+      childrenCache,
+      parentCache,
       reflection: {meetingId, reflectionId}
     } = this.props
     commitLocalUpdate(atmosphere, (store) => {
@@ -93,12 +102,14 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
     })
     delete cardsInFlight[reflectionId]
-    shakeUpBottom()
+    shakeUpBottomCells(childrenCache, parentCache.columnLefts)
   }
 
   setViewerDragState = (e) => {
     const {
       atmosphere,
+      childrenCache,
+      parentCache,
       reflection: {
         dragContext: {initialCursorCoords, initialComponentCoords},
         reflectionId,
@@ -110,28 +121,37 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const xDiff = e.x - initialCursorCoords.x
     const yDiff = e.y - initialCursorCoords.y
     // TODO remove window.scrollX by caching it or ???
-    const x = initialComponentCoords.x + xDiff + window.scrollX
-    const y = initialComponentCoords.y + yDiff
-    if (x !== this.state.x || y !== this.state.y) {
+    const nextCoords = {
+      x: initialComponentCoords.x + xDiff + window.scrollX,
+      y: initialComponentCoords.y + yDiff
+    }
+    if (nextCoords.x !== this.state.x || nextCoords.y !== this.state.y) {
       /*
        * coords using relay: ~45fps
        * coords using this.setState: ~60fps
        * coords using this.coords and direct dom manipulation: ~60fps
        * setState is nearly identical as direct dom manipulation & pattern is the same for local & remote drags
        */
-      this.setState({
-        x,
-        y
-      })
+      this.setState(nextCoords)
+      const cursorCoords = {x: e.x, y: e.y}
+      const {targetId, targetOffset} = getTargetReference(
+        childrenCache,
+        parentCache,
+        cursorCoords,
+        this.cursorOffset,
+        this.cachedTargetId
+      )
+      this.cachedTargetId = targetId
       const input = {
+        clientHeight: this.innerHeight,
         clientWidth: this.innerWidth,
-        coords: {x, y},
-        distance: 0,
+        coords: nextCoords,
         sourceId: reflectionId,
         teamId,
-        draggableType: REFLECTION_CARD,
-        targetId: 'unknown'
+        targetId,
+        targetOffset
       }
+      console.log(nextCoords.x, nextCoords.y, Date.now())
       UpdateDragLocationMutation(atmosphere, {input})
     }
   }

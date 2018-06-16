@@ -1,5 +1,4 @@
-import {REFLECTION_WIDTH} from 'universal/components/PhaseItemMasonry'
-
+import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 const OFFSET_DELAY = 50
 const DURATION = 400
 

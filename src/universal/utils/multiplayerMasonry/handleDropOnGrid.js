@@ -1,5 +1,5 @@
 import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTransform'
-import {CARD_PADDING} from 'universal/components/PhaseItemMasonry'
+import {CARD_PADDING} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
 import isTempId from 'universal/utils/relay/isTempId'
 
