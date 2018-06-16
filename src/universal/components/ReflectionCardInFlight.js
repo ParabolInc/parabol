@@ -133,6 +133,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
        * setState is nearly identical as direct dom manipulation & pattern is the same for local & remote drags
        */
       this.setState(nextCoords)
+      if (this.isBroadcasting) return
+      this.isBroadcasting = true
       const cursorCoords = {x: e.x, y: e.y}
       const {targetId, targetOffset} = getTargetReference(
         childrenCache,
@@ -151,8 +153,10 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
         targetId,
         targetOffset
       }
-      console.log(nextCoords.x, nextCoords.y, Date.now())
       UpdateDragLocationMutation(atmosphere, {input})
+      setTimeout(() => {
+        this.isBroadcasting = false
+      }, 10)
     }
   }
 
