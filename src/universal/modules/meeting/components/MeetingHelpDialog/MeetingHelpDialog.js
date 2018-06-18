@@ -17,7 +17,6 @@ type Props = {
 
 const Button = styled(RaisedButton)({
   paddingLeft: 0,
-
   paddingRight: 0,
   width: '2rem'
 })

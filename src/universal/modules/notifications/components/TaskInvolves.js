@@ -10,11 +10,12 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants'
 import {clearNotificationLabel} from '../helpers/constants'
-import {css} from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
+import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -34,6 +35,12 @@ const localStyles = {
     margin: '0 0 .5rem'
   }
 }
+
+const Button = styled(RaisedButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '100%'
+})
 
 class TaskInvolves extends Component {
   constructor (props) {
@@ -151,24 +158,19 @@ class TaskInvolves extends Component {
           <div className={css(defaultStyles.widerButton)}>
             <Button
               aria-label='Go to this board'
-              colorPalette='warm'
-              isBlock
-              label='Go to Board'
+              palette='warm'
               buttonSize={ui.notificationButtonSize}
-              type='submit'
               onClick={this.gotoBoard}
               waiting={submitting}
-            />
+            >
+              {'Go to Board'}
+            </Button>
           </div>
           <div className={css(defaultStyles.iconButton)}>
-            <Button
+            <AcknowledgeButton
               aria-label={clearNotificationLabel}
-              buttonSize='small'
-              colorPalette='gray'
-              icon='check'
-              isBlock
               onClick={this.acknowledge}
-              type='submit'
+              waiting={submitting}
             />
           </div>
         </div>

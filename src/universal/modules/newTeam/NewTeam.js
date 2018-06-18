@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
+import LinkButton from 'universal/components/LinkButton'
+import IconLabel from 'universal/components/IconLabel'
 import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import styled from 'react-emotion'
@@ -52,6 +53,11 @@ const HelpCopy = styled('div')({
   margin: '.5rem 0'
 })
 
+const LearnMoreLink = styled(LinkButton)({
+  height: '2rem',
+  margin: '0 auto'
+})
+
 const NewTeam = (props) => {
   const {defaultOrgId, viewer} = props
 
@@ -81,15 +87,9 @@ const NewTeam = (props) => {
               <b>{'Free Personal Plan'}</b>
               {'.'}
             </HelpCopy>
-            <Button
-              buttonSize='small'
-              buttonStyle='flat'
-              colorPalette='warm'
-              icon={ui.iconExternalLink}
-              iconPlacement='right'
-              label='Learn More'
-              onClick={() => window.open(PRICING_LINK, '_blank')}
-            />
+            <LearnMoreLink palette='warm' onClick={() => window.open(PRICING_LINK, '_blank')}>
+              <IconLabel icon={ui.iconExternalLink} iconAfter label='Learn More' />
+            </LearnMoreLink>
           </HelpBlock>
         </HelpLayout>
       </NewTeamInner>

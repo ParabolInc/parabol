@@ -5,7 +5,7 @@ import ui from 'universal/styles/ui'
 import {PRO_LABEL} from 'universal/utils/constants'
 import Confetti from 'react-dom-confetti'
 import appTheme from 'universal/styles/theme/appTheme'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 
 const flexBase = {
   alignItems: 'center',
@@ -45,7 +45,7 @@ const Emoji = styled('div')({
 
 const ModalCopy = styled('p')({...modalCopyBase})
 
-const ModalButtonBlock = styled('div')({
+const ModalButton = styled(RaisedButton)({
   margin: '2rem 0 0',
   width: '22.5rem'
 })
@@ -112,16 +112,9 @@ class UpgradeSuccess extends React.Component<Props, State> {
           <b>{PRO_LABEL}</b>
           {' tier.'}
         </ModalCopy>
-        <ModalButtonBlock>
-          <Button
-            buttonSize='large'
-            colorPalette='gray'
-            depth={1}
-            isBlock
-            label='Let’s Get Back to Business'
-            onClick={closePortal}
-          />
-        </ModalButtonBlock>
+        <ModalButton buttonSize='large' depth={1} onClick={closePortal}>
+          {'Let’s Get Back to Business'}
+        </ModalButton>
         <Confetti active={active} config={confettiConfig} />
       </CenteredModalBoundary>
     )
