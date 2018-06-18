@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
@@ -150,33 +151,29 @@ class MeetingAgendaItems extends Component {
           <SpacedMeetingControlBar>
             <ControlButtonBlock />
             <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
-              <Button
+              <FlatButton
                 buttonSize='medium'
-                buttonStyle='flat'
-                colorPalette='dark'
-                hasBounce
-                bounceDelay='10s'
-                icon='arrow-circle-right'
-                iconLarge
-                iconPalette='warm'
-                iconPlacement='right'
                 key={`agendaItem${localPhaseItem}`}
-                label='Done! Next…'
                 onClick={gotoNext}
-              />
+              >
+                <IconLabel
+                  icon='arrow-circle-right'
+                  iconAfter
+                  iconColor='warm'
+                  iconLarge
+                  label='Done! Next…'
+                />
+              </FlatButton>
             </BounceBlock>
             <ControlButtonBlock>
-              <Button
-                buttonSize='medium'
-                buttonStyle='flat'
-                colorPalette='dark'
-                icon='flag-checkered'
-                iconLarge
-                iconPalette='midGray'
-                iconPlacement='left'
-                label={'End Meeting'}
-                onClick={endMeeting}
-              />
+              <FlatButton buttonSize='medium' onClick={endMeeting}>
+                <IconLabel
+                  icon='flag-checkered'
+                  iconColor='midGray'
+                  iconLarge
+                  label={'End Meeting'}
+                />
+              </FlatButton>
             </ControlButtonBlock>
           </SpacedMeetingControlBar>
         )}

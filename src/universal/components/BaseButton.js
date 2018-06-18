@@ -23,6 +23,7 @@ const ButtonRoot = styled(PlainButton)(({buttonSize, depth, disabled, pressedDow
         transform ${ui.buttonTransition}
       `,
     userSelect: 'none',
+    whiteSpace: 'nowrap',
     ':hover,:focus,:active': {
       boxShadow: disabled ? 'none' : stateDepth,
       outline: pressedDown && 0

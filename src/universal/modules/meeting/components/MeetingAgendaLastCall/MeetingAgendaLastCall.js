@@ -2,7 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
@@ -62,14 +62,9 @@ const MeetingAgendaLastCall = (props) => {
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls && (
                 <BounceBlock animationDelay='30s'>
-                  <Button
-                    aria-label='End Meeting'
-                    buttonSize='large'
-                    buttonStyle='primary'
-                    colorPalette='warm'
-                    label='End Action Meeting'
-                    onClick={gotoNext}
-                  />
+                  <PrimaryButton aria-label='End Meeting' buttonSize='large' onClick={gotoNext}>
+                    End Action Meeting
+                  </PrimaryButton>
                 </BounceBlock>
               )}
             </div>
