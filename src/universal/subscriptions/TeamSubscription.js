@@ -169,7 +169,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           requestFacilitatorTeamUpdater(payload, options)
           break
         case 'StartDraggingReflectionPayload':
-          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
+          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, dispatch, store})
           break
         case 'StartMeetingPayload':
           break

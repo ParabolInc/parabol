@@ -4,6 +4,7 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import type {Coords2DInput} from 'universal/types/schema.flow'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
 
 type Variables = {
   reflectionId: string,
@@ -41,7 +42,7 @@ const mutation = graphql`
   }
 `
 
-export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) => {
+export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatch, store}) => {
   const {viewerId} = atmosphere
   const reflectionId = payload.getValue('reflectionId')
   const reflection = store.get(reflectionId)
@@ -49,19 +50,46 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store})
   const dragContext = payload.getLinkedRecord('dragContext')
   const dragUserId = dragContext.getValue('dragUserId')
   const isViewerDragging = viewerId === dragUserId
-  const existingDragUserId = getInProxy(reflection, 'dragContext', 'dragUserId')
+  const existingDragContext = reflection.getLinkedRecord('dragContext')
+  const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
 
-  // if thre's no conflict, or the incoming payload won the conflict, set it
-  if (!existingDragUserId || existingDragUserId <= dragUserId) {
+  // when conflicts arise, give the win to the person with the smaller userId
+  const acceptIncoming = !existingDragUserId || existingDragUserId >= dragUserId
+  let isViewerConflictLoser = false
+  if (acceptIncoming) {
+    reflection.setLinkedRecord(dragContext, 'dragContext')
     dragContext.setValue(isViewerDragging, 'isViewerDragging')
     dragContext.setValue(false, 'isClosing')
-    reflection.setLinkedRecord(dragContext, 'dragContext')
+    dragContext.setValue(false, 'isPending')
     const meetingId = payload.getValue('meetingId')
     setInFlight(store, meetingId, reflection)
-    return true
+    if (existingDragUserId === viewerId) {
+      dragContext.setValue(null, 'initialCursorCoords')
+      dragContext.setValue(null, 'initialComponentCoords')
+      isViewerConflictLoser = true
+    }
+  } else if (isViewerDragging) {
+    isViewerConflictLoser = true
   }
-  // if the incoming payload lost the conflict, ignore
-  return false
+
+  if (isViewerConflictLoser) {
+    const name = getInProxy(reflection, 'dragContext', 'dragUser', 'preferredName')
+    dispatch(
+      showInfo({
+        autoDismiss: 5,
+        title: 'Interception!',
+        message: `${name} stole that reflection right from under your nose!`
+      })
+    )
+    const {childrenCache} = atmosphere.getMasonry()
+    const reflectionGroupId = reflection.getValue('reflectionGroupId')
+    const childCache = childrenCache[reflectionGroupId]
+    // setTimeout required because otherwise it will call the endDrag handler before isViewerDragging is set to false
+    setTimeout(() => {
+      childCache.itemEl.dispatchEvent(new window.Event('dragend'))
+    })
+  }
+  return acceptIncoming
 }
 
 const setInitialCoords = (store, dragContext, initialCoords, initialCursorCoords) => {
@@ -90,13 +118,18 @@ const StartDraggingReflectionMutation = (
     onCompleted,
     onError,
     updater: (store) => {
+      const {dispatch, initialCursorCoords} = context
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
-      const success = startDraggingReflectionTeamUpdater(payload, {atmosphere, store})
-      if (!success) return
+      const acceptIncoming = startDraggingReflectionTeamUpdater(payload, {
+        atmosphere,
+        dispatch,
+        store
+      })
+      if (!acceptIncoming) return
       const reflection = store.get(payload.getValue('reflectionId'))
       const dragContext = reflection.getLinkedRecord('dragContext')
-      setInitialCoords(store, dragContext, variables.initialCoords, context.initialCursorCoords)
+      setInitialCoords(store, dragContext, variables.initialCoords, initialCursorCoords)
       dragContext.setValue(null, 'dragCoords')
     },
     optimisticUpdater: (store) => {
@@ -107,7 +140,8 @@ const StartDraggingReflectionMutation = (
       const dragContext = createProxyRecord(store, 'DragContext', {
         dragUserId: viewerId,
         isViewerDragging: true,
-        isClosing: false
+        isClosing: false,
+        isPending: true
       })
       dragContext.setLinkedRecord(store.get(viewerId), 'dragUser')
       setInitialCoords(store, dragContext, initialCoords, initialCursorCoords)

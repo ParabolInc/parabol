@@ -47,6 +47,7 @@ graphql`
     }
     dropTargetType
     dropTargetId
+    userId
   }
 `
 
@@ -99,11 +100,20 @@ const moveReflectionLocation = (reflection, reflectionGroup, oldReflectionGroupI
 }
 
 export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) => {
+  const userId = payload.getValue('userId')
   const reflection = payload.getLinkedRecord('reflection')
+  const reflectionId = reflection.getValue('id')
+  const storedReflection = store.get(reflectionId)
+  const dragUserId = getInProxy(storedReflection, 'dragContext', 'dragUserId')
+  // verify endDrag is sent by the person in charge of the drag
+  if (userId !== dragUserId) {
+    // HACK: set the userId to null to use as a sentinel to communicate with the onNext handler. Tell it to ignore the entire payload
+    payload.setValue(null, 'userId')
+    return
+  }
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
-
   // const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id')
   // if (reflectionGroupId) {
   //   store.get(reflectionGroupId).setValue(false, 'isExpanded')
@@ -122,8 +132,10 @@ export const endDraggingReflectionTeamOnNext = (payload, context) => {
     oldReflectionGroup,
     reflectionGroup,
     dropTargetType,
-    dropTargetId
+    dropTargetId,
+    userId
   } = payload
+  if (!userId) return
   const childId = reflectionGroup && reflectionGroup.id
   const sourceId = oldReflectionGroup && oldReflectionGroup.id
   eventEmitter.emit('endDraggingReflection', {
@@ -204,7 +216,6 @@ const EndDraggingReflectionMutation = (
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
       moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store)
-      // resetDragContext(reflectionProxy)
     }
   })
 }

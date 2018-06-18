@@ -26,14 +26,9 @@ extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
 
-extend type RetroReflection {
-  centroid: Coords2D,
-  dragCoords: Coords2D,
-  dragUpdatedAt: DateTime
-}
-
 extend type DragContext {
-  isClosing: String,
+  isClosing: Boolean,
+  isPending: Boolean,
   isViewerDragging: Boolean,
   initialCursorCoords: Coords2D,
   initialComponentCoords: Coords2D

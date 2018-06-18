@@ -15,6 +15,7 @@ graphql`
       x
       y
     }
+    userId
   }
 `
 const mutation = graphql`
@@ -33,7 +34,13 @@ export const updateDragLocationTeamUpdater = (payload, {atmosphere, store}) => {
     }
   } = atmosphere.getMasonry()
   const draggable = store.get(sourceId)
+  if (!draggable) return
   const dragContext = draggable.getLinkedRecord('dragContext')
+  // ignore a message sent before/after the start/end mutations
+  if (!dragContext) return
+  const dragUserId = dragContext.getValue('dragUserId')
+  // ignore a message sent by the loser of a conflict
+  if (dragUserId !== payload.getValue('userId')) return
   const coords = payload.getLinkedRecord('coords')
   const foreignX = coords.getValue('x')
   const foreignY = coords.getValue('y')

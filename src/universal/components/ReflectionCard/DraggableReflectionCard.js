@@ -15,6 +15,7 @@ import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflec
 import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import clientTempId from 'universal/utils/relay/clientTempId'
+import {connect} from 'react-redux'
 
 type Props = {
   dndIndex: number,
@@ -30,20 +31,14 @@ class DraggableReflectionCard extends React.Component<Props> {
   }
 
   render () {
-    const {connectDragSource, reflection, meeting} = this.props
+    const {connectDragSource, reflection, setItemRef, meeting} = this.props
     const {dragContext} = reflection
 
-    const style = {
-      opacity: dragContext ? 0 : 1
-    }
-    return (
-      <React.Fragment>
-        {connectDragSource(
-          <div style={style}>
-            <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
-          </div>
-        )}
-      </React.Fragment>
+    const style = dragContext ? {opacity: 0, cursor: 'default'} : undefined
+    return connectDragSource(
+      <div style={style} ref={setItemRef}>
+        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
+      </div>
     )
   }
 }
@@ -58,9 +53,9 @@ const reflectionDragSpec = {
   },
 
   beginDrag (props, monitor) {
-    console.log('beginDrag')
     const {
       atmosphere,
+      dispatch,
       reflection: {meetingId, reflectionId, reflectionGroupId},
       isSingleCardGroup
     } = props
@@ -69,7 +64,7 @@ const reflectionDragSpec = {
     StartDraggingReflectionMutation(
       atmosphere,
       {reflectionId, initialCoords},
-      {initialCursorCoords, meetingId}
+      {dispatch, initialCursorCoords, meetingId}
     )
     return {
       reflectionId,
@@ -81,8 +76,15 @@ const reflectionDragSpec = {
   endDrag (props: Props, monitor) {
     const {
       atmosphere,
-      reflection: {meetingId, reflectionId, reflectionGroupId}
+      reflection: {
+        dragContext: {isViewerDragging},
+        meetingId,
+        reflectionId,
+        reflectionGroupId
+      }
     } = props
+    // endDrag is also called when the viewer loses a conflict
+    if (!isViewerDragging) return
     const dropResult = monitor.getDropResult()
     const {dropTargetType = null, dropTargetId = null, sortOrder} = dropResult || {}
     const newReflectionGroupId = clientTempId()
@@ -113,8 +115,12 @@ const reflectionDragCollect = (connectSource) => ({
 })
 
 export default createFragmentContainer(
-  withAtmosphere(
-    dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(DraggableReflectionCard)
+  connect()(
+    withAtmosphere(
+      dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(
+        DraggableReflectionCard
+      )
+    )
   ),
   graphql`
     fragment DraggableReflectionCard_reflection on RetroReflection {
@@ -125,6 +131,7 @@ export default createFragmentContainer(
       retroPhaseItemId
       dragContext {
         dragUserId
+        isViewerDragging
       }
       ...ReflectionCard_reflection
       ...ReflectionCardInFlight_reflection

@@ -65,24 +65,29 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
 
   componentDidMount () {
     const {
+      childrenCache,
       reflection: {
+        reflectionGroupId,
         dragContext: {isViewerDragging}
       }
     } = this.props
     if (isViewerDragging) {
-      window.addEventListener('drag', this.setViewerDragState)
-      this.history = []
+      const childCache = childrenCache[reflectionGroupId]
+      childCache.itemEl.addEventListener('drag', this.setViewerDragState)
     }
   }
 
   componentWillUnmount () {
     const {
+      childrenCache,
       reflection: {
+        reflectionGroupId,
         dragContext: {isViewerDragging}
       }
     } = this.props
     if (isViewerDragging) {
-      window.removeEventListener('drag', this.setViewerDragState)
+      const childCache = childrenCache[reflectionGroupId]
+      childCache.itemEl.removeEventListener('drag', this.setViewerDragState)
     }
   }
 
@@ -111,11 +116,13 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       childrenCache,
       parentCache,
       reflection: {
-        dragContext: {initialCursorCoords, initialComponentCoords},
+        dragContext: {initialCursorCoords, initialComponentCoords, isPending, isViewerDragging},
         reflectionId,
         team: {teamId}
       }
     } = this.props
+    // the drag event keeps firing if dragend was programmatically fired
+    if (!isViewerDragging) return
     // if i scroll off the screen, leave it where I last saw it
     if (e.x === 0 && e.y === 0) return
     const xDiff = e.x - initialCursorCoords.x
@@ -133,7 +140,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
        * setState is nearly identical as direct dom manipulation & pattern is the same for local & remote drags
        */
       this.setState(nextCoords)
-      if (this.isBroadcasting) return
+      // dont send updates too frequently & don't send them until the start message got back, since it'll be ignored by clients
+      if (this.isBroadcasting || isPending) return
       this.isBroadcasting = true
       const cursorCoords = {x: e.x, y: e.y}
       const {targetId, targetOffset} = getTargetReference(
@@ -200,9 +208,11 @@ export default createFragmentContainer(
         teamId: id
       }
       reflectionId: id
+      reflectionGroupId
       content
       dragContext {
         isClosing
+        isPending
         isViewerDragging
         dragCoords {
           x

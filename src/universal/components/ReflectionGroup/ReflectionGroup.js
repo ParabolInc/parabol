@@ -71,10 +71,11 @@ class ReflectionGroup extends Component<Props, State> {
       )
     }
     return (
-      <div key={reflection.id} ref={setItemRef}>
+      <div key={reflection.id}>
         <DraggableReflectionCard
           meeting={meeting}
           reflection={reflection}
+          setItemRef={setItemRef}
           isSingleCardGroup={reflections.length === 1}
         />
       </div>
