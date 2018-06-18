@@ -52,6 +52,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const {initialComponentCoords, initialCursorCoords} = dragContext
     this.innerWidth = window.innerWidth
     this.innerHeight = window.innerHeight
+    this.scrollX = window.scrollX
     this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
     // synonymous to isClientDragging
     if (initialComponentCoords) {
@@ -129,7 +130,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const yDiff = e.y - initialCursorCoords.y
     // TODO remove window.scrollX by caching it or ???
     const nextCoords = {
-      x: initialComponentCoords.x + xDiff + window.scrollX,
+      x: initialComponentCoords.x + xDiff + this.scrollX,
       y: initialComponentCoords.y + yDiff
     }
     if (nextCoords.x !== this.state.x || nextCoords.y !== this.state.y) {
