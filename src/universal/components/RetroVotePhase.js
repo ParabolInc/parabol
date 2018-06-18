@@ -8,7 +8,8 @@ import ScrollableBlock from 'universal/components/ScrollableBlock'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 
 type Props = {|
   atmosphere: Object,
@@ -41,18 +42,19 @@ const RetroVotePhase = (props: Props) => {
       </ScrollableBlock>
       {isFacilitating && (
         <MeetingControlBar>
-          <Button
+          <FlatButton
             buttonSize='medium'
-            buttonStyle='flat'
-            colorPalette='dark'
             disabled={!discussStage.isNavigableByFacilitator}
-            icon='arrow-circle-right'
-            iconLarge
-            iconPalette='warm'
-            iconPlacement='right'
-            label={`Done! Let’s ${nextPhaseLabel}`}
             onClick={gotoNext}
-          />
+          >
+            <IconLabel
+              icon='arrow-circle-right'
+              iconAfter
+              iconColor='warm'
+              iconLarge
+              label={`Done! Let’s ${nextPhaseLabel}`}
+            />
+          </FlatButton>
         </MeetingControlBar>
       )}
     </React.Fragment>

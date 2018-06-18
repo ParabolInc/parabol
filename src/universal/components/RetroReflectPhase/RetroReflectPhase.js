@@ -13,7 +13,8 @@ import {REFLECT, GROUP} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 
 type Props = {
   atmosphere: Object,
@@ -49,18 +50,19 @@ const RetroReflectPhase = (props: Props) => {
       </ScrollableBlock>
       {isFacilitating && (
         <MeetingControlBar>
-          <Button
+          <FlatButton
             buttonSize='medium'
-            buttonStyle='flat'
-            colorPalette='dark'
             disabled={!reflectionGroups || reflectionGroups.length === 0}
-            icon='arrow-circle-right'
-            iconLarge
-            iconPalette='warm'
-            iconPlacement='right'
-            label={`Done! Let’s ${nextPhaseLabel}`}
             onClick={gotoNext}
-          />
+          >
+            <IconLabel
+              icon='arrow-circle-right'
+              iconAfter
+              iconColor='warm'
+              iconLarge
+              label={`Done! Let’s ${nextPhaseLabel}`}
+            />
+          </FlatButton>
         </MeetingControlBar>
       )}
     </React.Fragment>

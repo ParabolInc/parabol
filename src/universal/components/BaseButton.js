@@ -6,6 +6,7 @@ import PlainButton from 'universal/components/PlainButton/PlainButton'
 
 const ButtonRoot = styled(PlainButton)(({buttonSize, depth, disabled, pressedDown}) => {
   const hasDepth = depth || depth === 0
+  const boxShadow = hasDepth ? ui.shadow[depth] : 'none'
   const hoverDepth = hasDepth ? ui.shadow[depth + 2] : ui.shadow[1]
   const pressedDepth = hasDepth ? ui.shadow[depth + 1] : ui.shadow[0]
   const stateDepth = pressedDown ? pressedDepth : hoverDepth
@@ -14,7 +15,7 @@ const ButtonRoot = styled(PlainButton)(({buttonSize, depth, disabled, pressedDow
     ...ui.buttonSizeStyles[buttonSize],
     display: 'block',
     border: '.0625rem solid transparent',
-    boxShadow: 'none',
+    boxShadow,
     textAlign: 'center',
     transform: pressedDown && 'translate(0, .125rem)',
     transition: `

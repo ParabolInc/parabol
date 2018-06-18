@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
 import type {RouterHistory} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import {PRO} from 'universal/utils/constants'
 import styled from 'react-emotion'
@@ -80,6 +80,10 @@ const AlertAction = styled('span')({
   textDecoration: 'underline'
 })
 
+const Button = styled(PrimaryButton)({
+  width: '100%'
+})
+
 class NewMeetingLobby extends React.Component<Props, State> {
   state = {
     initialTier: this.props.team.tier
@@ -121,6 +125,7 @@ class NewMeetingLobby extends React.Component<Props, State> {
     const canStartMeeting = isPro || retroMeetingsRemaining > 0
     const meetingLabel = meetingTypeToLabel[meetingType]
     const meetingSlug = meetingTypeToSlug[meetingType]
+    const buttonLabel = `Start ${meetingLabel} Meeting`
     return (
       <Lobby>
         <LabelHeading>{`${meetingLabel} Meeting Lobby`}</LabelHeading>
@@ -161,15 +166,15 @@ class NewMeetingLobby extends React.Component<Props, State> {
           <ButtonBlock>
             {(initiallyPro || retroMeetingsRemaining > 0) && (
               <Button
-                buttonStyle='primary'
+                aria-label={buttonLabel}
                 depth={1}
                 disabled={!canStartMeeting}
-                isBlock
-                label={`Start ${meetingLabel} Meeting`}
                 onClick={onStartMeetingClick}
                 buttonSize='large'
                 waiting={submitting}
-              />
+              >
+                {buttonLabel}
+              </Button>
             )}
             {!initiallyPro &&
               retroMeetingsRemaining === 0 && (
@@ -180,14 +185,9 @@ class NewMeetingLobby extends React.Component<Props, State> {
                   onClose={this.updateInitialTier}
                   queryVars={{orgId}}
                   toggle={
-                    <Button
-                      aria-label='Get Access Now'
-                      buttonSize='large'
-                      buttonStyle='primary'
-                      depth={1}
-                      isBlock
-                      label='Get Access Now'
-                    />
+                    <Button aria-label='Get Access Now' buttonSize='large' depth={1}>
+                      Get Access Now
+                    </Button>
                   }
                 />
               )}

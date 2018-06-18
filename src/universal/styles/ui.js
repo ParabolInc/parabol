@@ -168,14 +168,20 @@ const TYPE_SEMIBOLD = 600
 // Shadows
 // NOTE: levels increase on a scale of 2x
 
-const baseShadow = makeShadowColor('.15')
+const baseShadowColor = [
+  makeShadowColor('.15'),
+  makeShadowColor('.17'),
+  makeShadowColor('.19'),
+  makeShadowColor('.21'),
+  makeShadowColor('.23')
+]
 
 const shadow = [
-  `0 .0625rem .25rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 .125rem .5rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 .25rem 1rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 .5rem 2rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 1rem 4rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`
+  `0 .0625rem .25rem ${baseShadowColor[0]}, 0 0 .0625rem ${baseShadowColor[0]}`,
+  `0 .125rem .5rem ${baseShadowColor[1]}, 0 0 .0625rem ${baseShadowColor[1]}`,
+  `0 .25rem 1rem ${baseShadowColor[2]}, 0 0 .0625rem ${baseShadowColor[2]}`,
+  `0 .5rem 2rem ${baseShadowColor[3]}, 0 0 .0625rem ${baseShadowColor[3]}`,
+  `0 1rem 4rem ${baseShadowColor[4]}, 0 0 .0625rem ${baseShadowColor[4]}`
 ]
 
 // -----------------------------------------------------------------------------
