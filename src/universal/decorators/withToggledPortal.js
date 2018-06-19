@@ -51,6 +51,9 @@ const withToggledPortal = (ComposedComponent) => {
       })
 
       if (isKeyboardEvent(e) && this.toggleRef) {
+        console.log('this.toggleRef')
+        console.log(this.toggleRef)
+        console.log('this.toggleRef.focus()')
         this.toggleRef.focus()
       }
       const {onClose} = this.props
@@ -100,6 +103,7 @@ const withToggledPortal = (ComposedComponent) => {
         },
         [this.props.isToggleNativeElement ? 'ref' : 'innerRef']: (c) => {
           this.toggleRef = c
+          console.log(c)
         }
       })
     }

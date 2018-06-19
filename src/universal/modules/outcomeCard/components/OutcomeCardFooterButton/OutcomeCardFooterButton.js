@@ -1,74 +1,54 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
-import {css} from 'aphrodite-local-styles/no-important'
-import FontAwesome from 'react-fontawesome'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
+import BaseButton from 'universal/components/BaseButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled, {css} from 'react-emotion'
 
-const faStyle = {
-  fontSize: ui.iconSize,
+const StyledIconLabel = styled(IconLabel)({
   lineHeight: '1.375rem'
+})
+
+const theStyles = {
+  borderRadius: ui.borderRadiusSmall,
+  color: ui.palette.dark,
+  height: ui.cardButtonHeight,
+  lineHeight: ui.cardButtonHeight,
+  opacity: '.5',
+  outline: 0,
+  padding: 0,
+  width: ui.cardButtonHeight,
+  ':hover, :focus': {
+    borderColor: appTheme.palette.mid50l,
+    opacity: 1
+  }
 }
+const buttonStyles = css(theStyles)
+// const StyledButton = styled(BaseButton)(theStyles)
 
 const OutcomeCardFooterButton = (props) => {
-  const {icon, onClick, onMouseEnter, styles, innerRef} = props
-
-  const buttonStyles = css(styles.cardFooterButton)
-
+  const {icon, innerRef, onClick, onMouseEnter} = props
   const handleOnClick = (e) => {
     if (onClick) onClick(e)
   }
-
   return (
-    <button
+    <BaseButton
       className={buttonStyles}
+      innerRef={innerRef}
       onClick={handleOnClick}
       onMouseEnter={onMouseEnter}
-      type='button'
-      ref={innerRef}
     >
-      <FontAwesome name={icon} style={faStyle} />
-    </button>
+      <StyledIconLabel icon={icon} />
+    </BaseButton>
   )
 }
 
 OutcomeCardFooterButton.propTypes = {
   icon: PropTypes.string,
-  onClick: PropTypes.func,
-  onMouseEnter: PropTypes.func,
   innerRef: PropTypes.func,
-  styles: PropTypes.object
+  onClick: PropTypes.func,
+  onMouseEnter: PropTypes.func
 }
 
-const styleThunk = () => ({
-  cardFooterButton: {
-    appearance: 'none',
-    backgroundColor: 'transparent',
-    border: '.0625rem solid transparent',
-    borderRadius: ui.borderRadiusSmall,
-    boxShadow: 'none',
-    color: ui.palette.dark,
-    cursor: 'pointer',
-    height: ui.cardButtonHeight,
-    lineHeight: ui.cardButtonHeight,
-    opacity: '.5',
-    outline: 'none',
-    padding: 0,
-    textAlign: 'center',
-    userSelect: 'none',
-    verticalAlign: 'middle',
-    width: ui.cardButtonHeight,
-
-    ':hover': {
-      opacity: 1
-    },
-
-    ':focus': {
-      borderColor: appTheme.palette.mid50l,
-      opacity: 1
-    }
-  }
-})
-
-export default withStyles(styleThunk)(OutcomeCardFooterButton)
+export default OutcomeCardFooterButton

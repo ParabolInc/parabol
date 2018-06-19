@@ -116,7 +116,7 @@ class BaseButton extends Component {
         onMouseEnter={onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         pressedDown={!hasDisabledStyles && pressedDown}
-        ref={innerRef}
+        innerRef={innerRef}
         style={style}
         waiting={waiting}
       >

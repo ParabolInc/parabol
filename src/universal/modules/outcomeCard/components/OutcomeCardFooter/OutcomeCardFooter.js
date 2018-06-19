@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -13,7 +12,6 @@ import ui, {
   HUMAN_ADDICTION_THRESH,
   MAX_WAIT_TIME
 } from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {USER_DASH} from 'universal/utils/constants'
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity'
 import isTaskArchived from 'universal/utils/isTaskArchived'
@@ -23,7 +21,104 @@ import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
 import Loadable from 'react-loadable'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import LoadableLoading from 'universal/components/LoadableLoading'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
+import BaseButton from 'universal/components/BaseButton'
+import styled, {css} from 'react-emotion'
+
+const height = ui.cardButtonHeight
+
+const label = {
+  ...textOverflow,
+  color: ui.colorText,
+  display: 'block',
+  flex: 1,
+  fontSize: appTheme.typography.s1,
+  fontWeight: 400,
+  lineHeight: height,
+  maxWidth: '100%',
+  textAlign: 'left'
+}
+
+const Footer = styled('div')({
+  display: 'flex',
+  height: '3.375rem',
+  justifyContent: 'space-between',
+  maxWidth: '100%',
+  padding: ui.cardPaddingBase
+})
+
+const teamToggleButtonStyles = css({
+  ...label,
+  color: ui.colorText,
+  fontSize: appTheme.typography.s1,
+  outline: 0,
+  textAlign: 'left'
+})
+
+const avatarButtonStyles = css({
+  border: 0,
+  boxShadow: 'none',
+  display: 'flex',
+  fontSize: 'inherit',
+  height,
+  lineHeight: 'inherit',
+  outline: 0,
+  padding: 0,
+  maxWidth: '100%',
+  ':hover,:focus,:active': {
+    boxShadow: 'none'
+  },
+  ':hover > div,:focus > div': {
+    borderColor: appTheme.palette.dark,
+    color: appTheme.palette.dark10d
+  }
+})
+
+const AvatarBlock = styled('div')({
+  flex: 1,
+  height,
+  minWidth: 0
+})
+
+const Avatar = styled('div')(({cardIsActive}) => ({
+  backgroundColor: 'transparent',
+  border: '.0625rem solid transparent',
+  borderColor: cardIsActive && appTheme.palette.mid50l,
+  borderRadius: '100%',
+  height: '1.75rem',
+  marginLeft: '-.125rem',
+  marginRight: '.25rem',
+  padding: '.0625rem',
+  position: 'relative',
+  top: '-.125rem',
+  width: '1.75rem'
+}))
+
+const AvatarImage = styled('img')({
+  borderRadius: '100%',
+  height,
+  marginRight: '.25rem',
+  width: height
+})
+
+const AvatarLabel = styled('div')({
+  ...label,
+  flex: 1,
+  minWidth: 0
+})
+
+const ButtonGroup = styled('div')(({cardIsActive}) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  opacity: cardIsActive ? 1 : 0
+}))
+
+// ButtonSpacer helps truncated names (…) be consistent
+const ButtonSpacer = styled('div')({
+  display: 'inline-block',
+  height,
+  verticalAlign: 'middle',
+  width: height
+})
 
 const LoadableAssignMenu = Loadable({
   loader: () =>
@@ -89,20 +184,6 @@ const assignTargetAnchor = {
   horizontal: 'left'
 }
 
-const height = ui.cardButtonHeight
-
-const label = {
-  ...textOverflow,
-  color: ui.colorText,
-  display: 'block',
-  flex: 1,
-  fontSize: appTheme.typography.s1,
-  fontWeight: 400,
-  lineHeight: height,
-  maxWidth: '100%',
-  textAlign: 'left'
-}
-
 class OutcomeCardFooter extends Component {
   constructor (props) {
     super(props)
@@ -137,7 +218,6 @@ class OutcomeCardFooter extends Component {
       isAgenda,
       isPrivate,
       task,
-      styles,
       toggleMenuState
     } = this.props
     const showTeam = area === USER_DASH
@@ -145,48 +225,34 @@ class OutcomeCardFooter extends Component {
     const {teamId, teamName} = team
     const {service} = integration || {}
     const isArchived = isTaskArchived(tags)
-    const buttonBlockStyles = css(styles.buttonBlock, cardIsActive && styles.showButtonBlock)
-    const avatarStyles = css(styles.avatar, cardIsActive && styles.activeAvatar)
     const {error} = this.state
-    const teamToggleStyle = {
-      ...label,
-      color: ui.colorText,
-      fontSize: appTheme.typography.s1,
-      textAlign: 'left'
-    }
     const ownerAvatarOrTeamName = showTeam ? (
-      <PlainButton
+      <BaseButton
         aria-label='Assign this task to another team'
+        className={teamToggleButtonStyles}
         onClick={this.selectAllQuestion}
-        style={teamToggleStyle}
       >
         {teamName}
-      </PlainButton>
+      </BaseButton>
     ) : (
-      <button
-        aria-label='Assign this task to a teammate'
-        className={css(styles.avatarButton)}
-        title={`Assigned to ${assignee.preferredName}`}
-        type='button'
-      >
-        <div className={avatarStyles}>
-          <img
+      <BaseButton className={avatarButtonStyles} aria-label='Assign this task to a teammate'>
+        <Avatar cardIsActive={cardIsActive}>
+          <AvatarImage
             alt={assignee.preferredName}
-            className={css(styles.avatarImg)}
             src={assignee.picture || avatarUser}
             // hack because aphrodite loads styles on next tick, which causes the cell height adjuster to bork >:-(
             style={{height, width: height}}
           />
-        </div>
-        <div className={css(styles.avatarLabel)}>{assignee.preferredName}</div>
-      </button>
+        </Avatar>
+        <AvatarLabel>{assignee.preferredName}</AvatarLabel>
+      </BaseButton>
     )
 
     const canAssign = !service && !isArchived
     return (
-      <div className={css(styles.footerAndMessage)}>
-        <div className={css(styles.footer)}>
-          <div className={css(styles.avatarBlock)}>
+      <React.Fragment>
+        <Footer>
+          <AvatarBlock>
             {!canAssign && ownerAvatarOrTeamName}
             {canAssign &&
               showTeam && (
@@ -224,13 +290,13 @@ class OutcomeCardFooter extends Component {
                   onClose={toggleMenuState}
                 />
               )}
-          </div>
-          <div className={buttonBlockStyles}>
+          </AvatarBlock>
+          <ButtonGroup cardIsActive={cardIsActive}>
             {isArchived ? (
               <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon='reply' />
             ) : (
               <React.Fragment>
-                {/* buttonSpacer helps truncated names (…) be consistent */}
+                {/* ButtonSpacer helps truncated names (…) be consistent */}
                 {!service ? (
                   <LoadableMenu
                     LoadableComponent={LoadableGitHubMenu}
@@ -251,7 +317,7 @@ class OutcomeCardFooter extends Component {
                     onClose={toggleMenuState}
                   />
                 ) : (
-                  <div className={css(styles.buttonSpacer)} />
+                  <ButtonSpacer />
                 )}
                 <LoadableMenu
                   LoadableComponent={LoadableStatusMenu}
@@ -273,10 +339,10 @@ class OutcomeCardFooter extends Component {
                 />
               </React.Fragment>
             )}
-          </div>
-        </div>
+          </ButtonGroup>
+        </Footer>
         {error && <OutcomeCardMessage onClose={this.clearError} message={error} />}
-      </div>
+      </React.Fragment>
     )
   }
 }
@@ -292,106 +358,11 @@ OutcomeCardFooter.propTypes = {
   isPrivate: PropTypes.bool,
   task: PropTypes.object,
   showTeam: PropTypes.bool,
-  styles: PropTypes.object,
   toggleMenuState: PropTypes.func.isRequired
 }
 
-const styleThunk = () => ({
-  footer: {
-    // NOTE: height = ui.cardButtonHeight + (ui.cardPaddingBase * 2)
-    display: 'flex',
-    // height: '2.5rem',
-    height: '3.375rem',
-    justifyContent: 'space-between',
-    maxWidth: '100%',
-    padding: ui.cardPaddingBase
-  },
-
-  avatarButton: {
-    appearance: 'none',
-    backgroundColor: 'transparent',
-    border: 0,
-    boxShadow: 'none',
-    cursor: 'pointer',
-    display: 'flex',
-    height,
-    outline: 'none',
-    margin: 0,
-    maxWidth: '100%',
-    padding: 0,
-
-    ':hover > div': {
-      borderColor: appTheme.palette.dark,
-      color: appTheme.palette.dark10d
-    },
-    ':focus > div': {
-      borderColor: appTheme.palette.dark,
-      color: appTheme.palette.dark10d
-    }
-  },
-
-  avatarBlock: {
-    flex: 1,
-    height,
-    minWidth: 0
-  },
-
-  avatar: {
-    // NOTE: height = ui.cardButtonHeight + .25rem (border + padding)
-    backgroundColor: 'transparent',
-    borderRadius: '100%',
-    border: '.0625rem solid transparent',
-    height: '1.75rem',
-    marginLeft: '-.125rem',
-    marginRight: '.25rem',
-    padding: '.0625rem',
-    position: 'relative',
-    top: '-.125rem',
-    width: '1.75rem'
-  },
-
-  activeAvatar: {
-    borderColor: appTheme.palette.mid50l
-  },
-
-  avatarImg: {
-    borderRadius: '100%',
-    height,
-    marginRight: '.25rem',
-    width: height
-  },
-
-  avatarLabel: {
-    ...label,
-    flex: 1,
-    minWidth: 0
-  },
-
-  teamNameLabel: {
-    ...label
-  },
-
-  buttonBlock: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    opacity: 0
-  },
-
-  showButtonBlock: {
-    opacity: 1
-  },
-
-  // buttonSpacer helps truncated names (…) be consistent
-  buttonSpacer: {
-    display: 'inline-block',
-    height,
-    verticalAlign: 'middle',
-    width: height
-  }
-})
-
 export default createFragmentContainer(
-  withAtmosphere(withStyles(styleThunk)(OutcomeCardFooter)),
+  withAtmosphere(OutcomeCardFooter),
   graphql`
     fragment OutcomeCardFooter_task on Task {
       taskId: id

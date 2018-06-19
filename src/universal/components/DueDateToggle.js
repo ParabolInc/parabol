@@ -6,22 +6,28 @@ import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker'
 import {createFragmentContainer} from 'react-relay'
 import {shortMonths} from 'universal/utils/makeDateString'
 import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import BaseButton from 'universal/components/BaseButton'
 import ms from 'ms'
 
-const Toggle = styled('div')(
+const Toggle = styled(BaseButton)(
   {
     alignItems: 'center',
     borderRadius: '.125rem',
     color: ui.colorText,
     cursor: 'pointer',
     display: 'flex',
+    fontSize: 'inherit',
+    lineHeight: 'inherit',
     opacity: 0,
+    outline: 0,
     padding: '.0625rem .1875rem'
   },
   ({cardIsActive}) => ({
     opacity: cardIsActive && 0.5,
     ':hover, :focus': {
+      borderColor: appTheme.palette.mid50l,
       opacity: cardIsActive && 1
     }
   }),
