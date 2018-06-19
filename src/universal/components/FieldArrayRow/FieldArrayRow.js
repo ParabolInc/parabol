@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
-import IconButton from 'universal/components/IconButton/IconButton'
+import IconButton from 'universal/components/IconButton'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import styled, {css} from 'react-emotion'
@@ -74,10 +74,10 @@ const FieldArrayRow = (props) => {
               {hoverRow === index && (
                 <IconButton
                   aria-label={removalAriaLabel}
-                  iconName='times-circle'
-                  iconSize='2x'
+                  icon='times-circle'
+                  iconLarge
                   onClick={() => fields.remove(index)}
-                  title={removalAriaLabel}
+                  palette='warm'
                 />
               )}
             </FieldRemovalBlock>
