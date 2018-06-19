@@ -20,9 +20,9 @@ const Control = styled('div')({
 const FileInput = (props) => {
   const {
     accept,
-    buttonLabel,
-    buttonPalette,
-    buttonSize,
+    buttonLabel = 'Choose File',
+    buttonPalette = 'gray',
+    buttonSize = 'small',
     doSubmit,
     meta: {touched, error}
   } = props
@@ -74,12 +74,6 @@ FileInput.propTypes = {
   doSubmit: PropTypes.func,
   input: PropTypes.object.isRequired,
   meta: PropTypes.object.isRequired
-}
-
-FileInput.defaultProps = {
-  buttonLabel: 'Choose File',
-  buttonPalette: 'gray',
-  buttonSize: 'small'
 }
 
 export default FileInput

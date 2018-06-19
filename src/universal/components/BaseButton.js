@@ -4,15 +4,15 @@ import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 
-const ButtonRoot = styled(PlainButton)(({buttonSize, depth, disabled, pressedDown}) => {
+const ButtonRoot = styled(PlainButton)(({size, depth, disabled, pressedDown}) => {
   const hasDepth = depth || depth === 0
   const boxShadow = hasDepth ? ui.shadow[depth] : 'none'
   const hoverDepth = hasDepth ? ui.shadow[depth + 2] : ui.shadow[1]
   const pressedDepth = hasDepth ? ui.shadow[depth + 1] : ui.shadow[0]
   const stateDepth = pressedDown ? pressedDepth : hoverDepth
   return {
-    // buttonSize is easy to override, it adds: fontSize, lineHeight, padding
-    ...ui.buttonSizeStyles[buttonSize],
+    // size is easy to override, it adds: fontSize, lineHeight, padding
+    ...ui.buttonSizeStyles[size],
     display: 'block',
     border: '.0625rem solid transparent',
     boxShadow,
@@ -34,7 +34,7 @@ const ButtonRoot = styled(PlainButton)(({buttonSize, depth, disabled, pressedDow
 class BaseButton extends Component {
   static propTypes = {
     'aria-label': PropTypes.string,
-    buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
+    size: PropTypes.oneOf(ui.buttonSizeOptions),
     children: PropTypes.any,
     // handling className allows usage of emotion’s styled handler
     className: PropTypes.string,
@@ -86,7 +86,7 @@ class BaseButton extends Component {
   render () {
     const {
       'aria-label': ariaLabel,
-      buttonSize = 'small',
+      size = 'small',
       children,
       className,
       depth,
@@ -106,7 +106,7 @@ class BaseButton extends Component {
       <ButtonRoot
         {...this.props}
         aria-label={ariaLabel}
-        size={buttonSize}
+        size={size}
         className={className}
         depth={depth}
         disabled={hasDisabledStyles}
