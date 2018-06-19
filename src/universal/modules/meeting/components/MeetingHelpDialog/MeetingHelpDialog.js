@@ -15,7 +15,7 @@ type Props = {
   phase: string
 }
 
-const Button = styled(RaisedButton)({
+const StyledButton = styled(RaisedButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '2rem'
@@ -33,9 +33,9 @@ const targetAnchor = {
 
 const MeetingHelpDialog = ({phase}: Props) => {
   const iconButtonToggle = (
-    <Button palette='white' depth={2}>
+    <StyledButton palette='white' depth={2}>
       <IconLabel icon='question' />
-    </Button>
+    </StyledButton>
   )
 
   return (

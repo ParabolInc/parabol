@@ -4,7 +4,7 @@ import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
 import ui from 'universal/styles/ui'
 
-const Button = styled(RaisedButton)({
+const StyledButton = styled(RaisedButton)({
   marginLeft: ui.rowCompactGutter,
   minWidth: '2rem',
   paddingLeft: 0,
@@ -12,9 +12,9 @@ const Button = styled(RaisedButton)({
 })
 
 const AcknowledgeButton = (props) => (
-  <Button {...props}>
+  <StyledButton {...props}>
     <IconLabel icon='check' />
-  </Button>
+  </StyledButton>
 )
 
 export default AcknowledgeButton

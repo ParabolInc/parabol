@@ -28,7 +28,7 @@ const TeamViewNavBlock = styled('div')({
   flexWrap: 'nowrap'
 })
 
-const Button = styled(FlatButton)({
+const StyledButton = styled(FlatButton)({
   paddingLeft: '1rem',
   paddingRight: '1rem'
 })
@@ -122,13 +122,17 @@ class Team extends Component {
           </DashHeaderInfo>
           <TeamViewNavBlock>
             {isSettings ? (
-              <Button aria-label='Back to Team Dashboard' key='1' onClick={this.goToTeamDashboard}>
+              <StyledButton
+                aria-label='Back to Team Dashboard'
+                key='1'
+                onClick={this.goToTeamDashboard}
+              >
                 <IconLabel icon='arrow-circle-left' label='Back to Team Dashboard' />
-              </Button>
+              </StyledButton>
             ) : (
-              <Button aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
+              <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
                 <IconLabel icon='cog' label='Team Settings' />
-              </Button>
+              </StyledButton>
             )}
             <DashboardAvatars team={team} />
             {!isSettings && <TeamCallsToAction teamId={teamId} />}

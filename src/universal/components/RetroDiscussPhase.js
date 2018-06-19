@@ -115,7 +115,7 @@ const ControlButtonBlock = styled('div')({
   width: '12rem'
 })
 
-const Button = styled(FlatButton)({
+const StyledButton = styled(FlatButton)({
   width: '100%'
 })
 
@@ -193,7 +193,7 @@ const RetroDiscussPhase = (props: Props) => {
           <ControlButtonBlock />
           {nextStageRes && (
             <ControlButtonBlock>
-              <Button buttonSize='medium' onClick={gotoNext}>
+              <StyledButton buttonSize='medium' onClick={gotoNext}>
                 <IconLabel
                   icon='arrow-circle-right'
                   iconColor='warm'
@@ -201,18 +201,18 @@ const RetroDiscussPhase = (props: Props) => {
                   iconLarge
                   label={'Done! Next topic'}
                 />
-              </Button>
+              </StyledButton>
             </ControlButtonBlock>
           )}
           <ControlButtonBlock>
-            <Button buttonSize='medium' onClick={endMeeting}>
+            <StyledButton buttonSize='medium' onClick={endMeeting}>
               <IconLabel
                 icon='flag-checkered'
                 iconColor='midGray'
                 iconLarge
                 label={'End Meeting'}
               />
-            </Button>
+            </StyledButton>
           </ControlButtonBlock>
           {/* placeholder for layout */}
           {!nextStageRes && <ControlButtonBlock />}

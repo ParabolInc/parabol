@@ -11,7 +11,7 @@ import ui from 'universal/styles/ui'
 import {withRouter} from 'react-router-dom'
 import RaisedButton from 'universal/components/RaisedButton'
 
-const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
+const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const TeamInvite = (props) => {
   const {
@@ -54,7 +54,7 @@ const TeamInvite = (props) => {
         {'.'}
       </div>
       <div className={css(defaultStyles.button)}>
-        <Button
+        <StyledButton
           aria-label='Accept team invitation'
           buttonSize={ui.notificationButtonSize}
           onClick={accept}
@@ -62,7 +62,7 @@ const TeamInvite = (props) => {
           waiting={submitting}
         >
           {'Accept'}
-        </Button>
+        </StyledButton>
       </div>
     </Row>
   )

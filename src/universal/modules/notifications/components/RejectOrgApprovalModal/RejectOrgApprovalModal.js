@@ -14,7 +14,7 @@ import FormError from 'universal/components/FormError/FormError'
 import RaisedButton from 'universal/components/RaisedButton'
 import DashModal from 'universal/components/Dashboard/DashModal'
 
-const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
+const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const validate = (values) => {
   const schema = rejectOrgApprovalValidation()
@@ -75,7 +75,7 @@ const RejectOrgApprovalModal = (props) => {
         {error && <FormError>{error.message}</FormError>}
         <Field component={TextAreaField} name='reason' placeholder='Comment' />
         <div className={css({marginTop: '1rem'})}>
-          <Button
+          <StyledButton
             aria-label={`Reject ${inviteeEmail} from the organization`}
             onClick={handleSubmit(onSubmit)}
             palette='warm'
@@ -83,7 +83,7 @@ const RejectOrgApprovalModal = (props) => {
             waiting={submitting}
           >
             {`Reject ${inviteeEmail}`}
-          </Button>
+          </StyledButton>
         </div>
       </form>
     </DashModal>

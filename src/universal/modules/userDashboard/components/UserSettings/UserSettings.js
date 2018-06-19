@@ -52,7 +52,7 @@ const ControlBlock = styled('div')({
   width: '100%'
 })
 
-const Button = styled(RaisedButton)({
+const StyledButton = styled(RaisedButton)({
   width: '7rem'
 })
 
@@ -113,9 +113,9 @@ const UserSettings = (props) => {
                     type='text'
                   />
                 </FieldBlock>
-                <Button buttonSize={controlSize} palette='mid'>
-                  Update
-                </Button>
+                <StyledButton buttonSize={controlSize} palette='mid'>
+                  {'Update'}
+                </StyledButton>
               </ControlBlock>
             </InfoBlock>
           </SettingsForm>

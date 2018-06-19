@@ -65,16 +65,16 @@ type Props = {|
   ...MutationProps
 |}
 
-const Button = styled(FlatButton)({
+const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
 })
 
 const MenuButton = (props) => (
-  <Button {...props} disabled={props.disabled}>
+  <StyledButton {...props} disabled={props.disabled}>
     <IconLabel icon='ellipsis-v' />
-  </Button>
+  </StyledButton>
 )
 
 const OrgMemberRow = (props: Props) => {

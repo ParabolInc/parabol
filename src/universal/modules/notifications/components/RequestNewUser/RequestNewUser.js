@@ -12,7 +12,7 @@ import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 
-const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
+const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const RequestNewUser = (props) => {
   const {
@@ -37,7 +37,7 @@ const RequestNewUser = (props) => {
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted)
   }
 
-  const rejectToggle = <Button aria-label='Decline new user'>{'Decline'}</Button>
+  const rejectToggle = <StyledButton aria-label='Decline new user'>{'Decline'}</StyledButton>
 
   const goToTeam = () => history.push(`/team/${teamId}`)
 
@@ -58,7 +58,7 @@ const RequestNewUser = (props) => {
       </div>
       <div className={css(defaultStyles.buttonGroup)}>
         <div className={css(defaultStyles.button)}>
-          <Button
+          <StyledButton
             aria-label='Accept new user'
             buttonSize={ui.notificationButtonSize}
             onClick={acceptInvite}
@@ -66,7 +66,7 @@ const RequestNewUser = (props) => {
             waiting={submitting}
           >
             {'Accept'}
-          </Button>
+          </StyledButton>
         </div>
         <div className={css(defaultStyles.button)}>
           <RejectOrgApprovalModal

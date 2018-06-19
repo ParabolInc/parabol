@@ -62,7 +62,7 @@ const TextAreaBlock = styled('div')({
   margin: '2rem auto'
 })
 
-const Button = styled(PrimaryButton)({
+const StyledButton = styled(PrimaryButton)({
   margin: '0 auto',
   width: '16rem'
 })
@@ -212,9 +212,9 @@ class NewTeamForm extends Component {
                 placeholder={randomPlaceholderTheme.emailMulti}
               />
             </TextAreaBlock>
-            <Button buttonSize='large' depth={1} waiting={submitting}>
+            <StyledButton buttonSize='large' depth={1} waiting={submitting}>
               {isNewOrganization ? 'Create Team & Org' : 'Create Team'}
-            </Button>
+            </StyledButton>
           </FormInner>
         </Panel>
       </StyledForm>

@@ -9,7 +9,7 @@ import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 
-const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
+const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const PaymentRejected = (props) => {
   const {history, notification} = props
@@ -35,14 +35,14 @@ const PaymentRejected = (props) => {
         {'Call your card provider or head to the settings page to try a new card.'}
       </div>
       <div className={css(defaultStyles.widestButton)}>
-        <Button
+        <StyledButton
           aria-label='Go to the billing page to update billing information'
           buttonSize={ui.notificationButtonSize}
           onClick={addBilling}
           palette='warm'
         >
           {'See Billing'}
-        </Button>
+        </StyledButton>
       </div>
     </Row>
   )

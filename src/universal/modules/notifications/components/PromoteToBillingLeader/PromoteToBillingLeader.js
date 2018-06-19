@@ -12,7 +12,7 @@ import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 
-const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
+const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const PromoteToBillingLeader = (props) => {
   const {
@@ -53,7 +53,7 @@ const PromoteToBillingLeader = (props) => {
         {'.'}
       </div>
       <div className={css(defaultStyles.widerButton)}>
-        <Button
+        <StyledButton
           aria-label='Go to the Organization page'
           buttonSize={ui.notificationButtonSize}
           onClick={goToOrg}
@@ -61,7 +61,7 @@ const PromoteToBillingLeader = (props) => {
           waiting={submitting}
         >
           {'See Organization'}
-        </Button>
+        </StyledButton>
       </div>
       <AcknowledgeButton
         aria-label={clearNotificationLabel}

@@ -80,7 +80,7 @@ const AlertAction = styled('span')({
   textDecoration: 'underline'
 })
 
-const Button = styled(PrimaryButton)({
+const StyledButton = styled(PrimaryButton)({
   width: '100%'
 })
 
@@ -165,7 +165,7 @@ class NewMeetingLobby extends React.Component<Props, State> {
         <ButtonGroup>
           <ButtonBlock>
             {(initiallyPro || retroMeetingsRemaining > 0) && (
-              <Button
+              <StyledButton
                 aria-label={buttonLabel}
                 depth={1}
                 disabled={!canStartMeeting}
@@ -174,7 +174,7 @@ class NewMeetingLobby extends React.Component<Props, State> {
                 waiting={submitting}
               >
                 {buttonLabel}
-              </Button>
+              </StyledButton>
             )}
             {!initiallyPro &&
               retroMeetingsRemaining === 0 && (
@@ -185,9 +185,9 @@ class NewMeetingLobby extends React.Component<Props, State> {
                   onClose={this.updateInitialTier}
                   queryVars={{orgId}}
                   toggle={
-                    <Button aria-label='Get Access Now' buttonSize='large' depth={1}>
-                      Get Access Now
-                    </Button>
+                    <StyledButton aria-label='Get Access Now' buttonSize='large' depth={1}>
+                      {'Get Access Now'}
+                    </StyledButton>
                   }
                 />
               )}

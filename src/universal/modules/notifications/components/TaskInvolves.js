@@ -36,7 +36,7 @@ const localStyles = {
   }
 }
 
-const Button = styled(RaisedButton)({
+const StyledButton = styled(RaisedButton)({
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
@@ -154,7 +154,7 @@ class TaskInvolves extends Component {
         </div>
         <div className={css(defaultStyles.buttonGroup)}>
           <div className={css(defaultStyles.widerButton)}>
-            <Button
+            <StyledButton
               aria-label='Go to this board'
               palette='warm'
               buttonSize={ui.notificationButtonSize}
@@ -162,7 +162,7 @@ class TaskInvolves extends Component {
               waiting={submitting}
             >
               {'Go to Board'}
-            </Button>
+            </StyledButton>
           </div>
           <AcknowledgeButton
             aria-label={clearNotificationLabel}
