@@ -40,8 +40,8 @@ const FieldGroupRow = styled('div')({
 const FieldRemovalBlock = styled('div')({
   padding: '0 1rem 0 0',
   position: 'absolute',
-  left: '-2.5rem',
-  top: '.375rem'
+  left: '-1.5rem',
+  top: '.6875rem'
 })
 
 const FieldContent = styled('div')(({highlighted}) => ({
@@ -75,7 +75,6 @@ const FieldArrayRow = (props) => {
                 <IconButton
                   aria-label={removalAriaLabel}
                   icon='times-circle'
-                  iconLarge
                   onClick={() => fields.remove(index)}
                   palette='warm'
                 />

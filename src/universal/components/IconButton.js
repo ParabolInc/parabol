@@ -14,7 +14,6 @@ const StyledIcon = styled(StyledFontAwesome)(({iconLarge}) => ({
 
 const IconButton = (props) => {
   const {icon, iconLarge} = props
-  // must declare type="button" or it gets treated as a submit in the welcome wizard. wtf react
   return (
     <StyledButton {...props} type='button'>
       <StyledIcon name={icon} iconLarge={iconLarge} />

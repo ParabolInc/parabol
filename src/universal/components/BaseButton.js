@@ -86,7 +86,7 @@ class BaseButton extends Component {
   render () {
     const {
       'aria-label': ariaLabel,
-      buttonSize,
+      buttonSize = 'small',
       children,
       className,
       depth,
@@ -100,12 +100,13 @@ class BaseButton extends Component {
 
     const {pressedDown} = this.state
     const hasDisabledStyles = disabled || waiting
-    const size = buttonSize || 'small'
 
+    // spread props to allow for html attributes like type when needed
     return (
       <ButtonRoot
+        {...this.props}
         aria-label={ariaLabel}
-        buttonSize={size}
+        buttonSize={buttonSize}
         className={className}
         depth={depth}
         disabled={hasDisabledStyles}

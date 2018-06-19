@@ -75,7 +75,7 @@ const Step3InviteeList = (props) => {
             labelSource='invitees'
           />
         </div>
-        <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
+        <div className={css(styles.buttonBlock)}>
           <RaisedButton
             buttonSize='large'
             onMouseEnter={() => {
@@ -83,6 +83,7 @@ const Step3InviteeList = (props) => {
               import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
             }}
             palette='warm'
+            style={{width: '15rem'}}
           >
             {'Looks Good!'}
           </RaisedButton>
@@ -126,6 +127,12 @@ const styleThunk = () => ({
     margin: '2rem 0',
     textAlign: 'right',
     textDecoration: 'none',
+    width: '100%'
+  },
+  buttonBlock: {
+    display: 'flex',
+    justifyContent: 'center',
+    margin: '2rem 0 0',
     width: '100%'
   }
 })
