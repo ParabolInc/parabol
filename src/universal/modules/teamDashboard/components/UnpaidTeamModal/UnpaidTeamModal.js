@@ -2,11 +2,17 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
 import Type from 'universal/components/Type/Type'
 import ui from 'universal/styles/ui'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  marginTop: '1.5rem'
+})
 
 const UnpaidTeamModal = (props) => {
   const {atmosphere, isClosing, closeAfter, history, modalLayout, viewer} = props
@@ -30,24 +36,17 @@ const UnpaidTeamModal = (props) => {
       closeAfter={closeAfter}
     >
       <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        Oh dear…
+        {'Oh dear…'}
       </Type>
       <Type align='center' bold marginBottom='1.5rem' scale='s4'>
         {problem}
         <br />
         {solution}
-        <br />
       </Type>
       {isALeader && (
-        <Button
-          buttonStyle='flat'
-          colorPalette='warm'
-          icon='arrow-circle-right'
-          iconPlacement='right'
-          label='Take me there'
-          onClick={handleClick}
-          buttonSize='large'
-        />
+        <StyledButton buttonSize='large' onClick={handleClick} palette='warm'>
+          <IconLabel icon='arrow-circle-right' iconAfter label='Take me there' />
+        </StyledButton>
       )}
     </DashModal>
   )

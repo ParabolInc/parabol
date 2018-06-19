@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button/Button'
 import Type from 'universal/components/Type/Type'
 import {withRouter} from 'react-router-dom'
 import portal from 'react-portal-hoc'
@@ -8,6 +7,13 @@ import ui from 'universal/styles/ui'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  marginTop: '1.5rem'
+})
 
 const MeetingInProgressModal = (props) => {
   const {closeAfter, isClosing, meetingType, modalLayout, teamId, teamName, history} = props
@@ -23,31 +29,27 @@ const MeetingInProgressModal = (props) => {
       closeAfter={closeAfter}
     >
       <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        Oh, hi there!
+        {'Oh, hi there!'}
       </Type>
       {meetingType === ACTION && (
         <Type align='center' marginBottom='1rem' bold scale='s4'>
-          The dashboard for {teamName} is disabled <br />
-          as we are actively meeting to review <br />
-          Tasks and Agenda Items.
+          {`The dashboard for ${teamName} is disabled`}
+          <br />
+          {'as we are actively meeting to review'}
+          <br />
+          {'Tasks and Agenda Items.'}
         </Type>
       )}
       {meetingType === RETROSPECTIVE && (
         <Type align='center' marginBottom='1rem' bold scale='s4'>
-          The dashboard for {teamName} is disabled <br />
-          as we are actively in a retrospective.
+          {`The dashboard for ${teamName} is disabled `}
+          <br />
+          {'as we are actively in a retrospective.'}
         </Type>
       )}
-      <Button
-        buttonSize='large'
-        buttonStyle='flat'
-        colorPalette='warm'
-        icon='arrow-circle-right'
-        iconPlacement='right'
-        label='Join Meeting'
-        margin='1.5rem 0 0'
-        onClick={handleClick}
-      />
+      <StyledButton buttonSize='large' onClick={handleClick} palette='warm'>
+        <IconLabel icon='arrow-circle-right' iconAfter label='Join Meeting' />
+      </StyledButton>
     </DashModal>
   )
 }

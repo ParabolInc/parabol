@@ -114,9 +114,7 @@ class TaskInvolves extends Component {
     const action = involvementWord[involvement]
     return (
       <Row compact>
-        <div className={css(defaultStyles.icon)}>
-          <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size='small' />
-        </div>
+        <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size='small' />
         <div className={css(defaultStyles.message)}>
           <div className={css(defaultStyles.messageText)}>
             <b>{changeAuthorName}</b>
@@ -166,13 +164,11 @@ class TaskInvolves extends Component {
               {'Go to Board'}
             </Button>
           </div>
-          <div className={css(defaultStyles.iconButton)}>
-            <AcknowledgeButton
-              aria-label={clearNotificationLabel}
-              onClick={this.acknowledge}
-              waiting={submitting}
-            />
-          </div>
+          <AcknowledgeButton
+            aria-label={clearNotificationLabel}
+            onClick={this.acknowledge}
+            waiting={submitting}
+          />
         </div>
       </Row>
     )

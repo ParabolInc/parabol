@@ -2,12 +2,18 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import portal from 'react-portal-hoc'
 import {createFragmentContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
 import Type from 'universal/components/Type/Type'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  marginTop: '1.5rem'
+})
 
 const PromoteTeamMemberModal = (props) => {
   const {
@@ -30,25 +36,21 @@ const PromoteTeamMemberModal = (props) => {
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        Are you sure?
+        {'Are you sure?'}
       </Type>
       <Type align='center' bold marginBottom='1.5rem' scale='s4'>
-        You will be removed as the team leader <br />
-        and promote {preferredName}. You will no<br />
-        longer be able to change team membership.<br />
+        {'You will be removed as the team leader'}
         <br />
-        This cannot be undone!<br />
+        {`and promote ${preferredName}. You will no`}
+        <br />
+        {'longer be able to change team membership.'}
+        <br />
+        <br />
+        {'This cannot be undone!'}
       </Type>
-      <Button
-        buttonSize='large'
-        buttonStyle='flat'
-        colorPalette='warm'
-        icon='arrow-circle-right'
-        iconPlacement='right'
-        label={`Yes, promote ${preferredName}`}
-        onClick={handleClick}
-        waiting={submitting}
-      />
+      <StyledButton buttonSize='large' onClick={handleClick} palette='warm' waiting={submitting}>
+        <IconLabel icon='arrow-circle-right' iconAfter label={`Yes, promote ${preferredName}`} />
+      </StyledButton>
     </DashModal>
   )
 }

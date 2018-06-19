@@ -1,4 +1,4 @@
-import {css} from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -8,9 +8,11 @@ import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation'
 import ui from 'universal/styles/ui'
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants'
 import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal'
-import Button from 'universal/components/Button/Button'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
+import RaisedButton from 'universal/components/RaisedButton'
+
+const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const RequestNewUser = (props) => {
   const {
@@ -35,25 +37,13 @@ const RequestNewUser = (props) => {
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted)
   }
 
-  const rejectToggle = (
-    <Button
-      aria-label='Decline new user'
-      buttonSize='small'
-      colorPalette='gray'
-      isBlock
-      label='Decline'
-      title='Decline new user'
-      type='submit'
-    />
-  )
+  const rejectToggle = <Button aria-label='Decline new user'>{'Decline'}</Button>
 
   const goToTeam = () => history.push(`/team/${teamId}`)
 
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='user-circle-o' size='small' />
-      </div>
+      <IconAvatar icon='user-circle-o' size='small' />
       <div className={css(defaultStyles.message)}>
         <b>{inviterName}</b>
         {' requested to add '}
@@ -70,15 +60,13 @@ const RequestNewUser = (props) => {
         <div className={css(defaultStyles.button)}>
           <Button
             aria-label='Accept new user'
-            colorPalette='warm'
-            isBlock
-            label='Accept'
             buttonSize={ui.notificationButtonSize}
-            title='Accept new user'
-            type='submit'
             onClick={acceptInvite}
+            palette='warm'
             waiting={submitting}
-          />
+          >
+            {'Accept'}
+          </Button>
         </div>
         <div className={css(defaultStyles.button)}>
           <RejectOrgApprovalModal

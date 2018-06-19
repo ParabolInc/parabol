@@ -9,10 +9,12 @@ import RejectOrgApprovalMutation from 'universal/mutations/RejectOrgApprovalMuta
 import ui from 'universal/styles/ui'
 import rejectOrgApprovalValidation from './rejectOrgApprovalValidation'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
-import {css} from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import FormError from 'universal/components/FormError/FormError'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 import DashModal from 'universal/components/Dashboard/DashModal'
+
+const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const validate = (values) => {
   const schema = rejectOrgApprovalValidation()
@@ -75,14 +77,13 @@ const RejectOrgApprovalModal = (props) => {
         <div className={css({marginTop: '1rem'})}>
           <Button
             aria-label={`Reject ${inviteeEmail} from the organization`}
-            colorPalette='warm'
-            isBlock
-            label={`Reject ${inviteeEmail}`}
             onClick={handleSubmit(onSubmit)}
+            palette='warm'
             size={ui.modalButtonSize}
-            type='submit'
             waiting={submitting}
-          />
+          >
+            {`Reject ${inviteeEmail}`}
+          </Button>
         </div>
       </form>
     </DashModal>

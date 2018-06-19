@@ -9,7 +9,7 @@ import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMuta
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
 import withStyles from 'universal/styles/withStyles'
 import makeStep3Schema from 'universal/validation/makeStep3Schema'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 
 const validate = (values) => {
   const schema = makeStep3Schema()
@@ -76,16 +76,16 @@ const Step3InviteeList = (props) => {
           />
         </div>
         <div style={{margin: '2rem 0 0', textAlign: 'center'}}>
-          <Button
-            colorPalette='warm'
-            label='Looks Good!'
+          <RaisedButton
+            buttonSize='large'
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
               import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
             }}
-            buttonSize='large'
-            type='submit'
-          />
+            palette='warm'
+          >
+            {'Looks Good!'}
+          </RaisedButton>
         </div>
       </form>
     )

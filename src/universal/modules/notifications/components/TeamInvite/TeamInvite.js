@@ -1,15 +1,17 @@
-import {css} from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Row from 'universal/components/Row/Row'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation'
 import ui from 'universal/styles/ui'
 import {withRouter} from 'react-router-dom'
+import RaisedButton from 'universal/components/RaisedButton'
+
+const Button = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const TeamInvite = (props) => {
   const {
@@ -55,14 +57,12 @@ const TeamInvite = (props) => {
         <Button
           aria-label='Accept team invitation'
           buttonSize={ui.notificationButtonSize}
-          colorPalette='warm'
-          isBlock
-          label='Accept'
           onClick={accept}
-          title='Accept team invitation'
-          type='submit'
+          palette='warm'
           waiting={submitting}
-        />
+        >
+          {'Accept'}
+        </Button>
       </div>
     </Row>
   )

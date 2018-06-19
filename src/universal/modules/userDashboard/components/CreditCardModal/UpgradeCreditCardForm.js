@@ -21,7 +21,7 @@ import {
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
@@ -39,7 +39,7 @@ const ModalBody = styled('div')({
   width: '100%'
 })
 
-const IconAvatarBlock = styled('div')({
+const StyledIconAvatar = styled(IconAvatar)({
   margin: '0 0 .5rem'
 })
 
@@ -82,9 +82,10 @@ const ButtonGroup = styled('div')({
   width: '100%'
 })
 
-const UpdateButton = styled('div')({
-  flexGrow: '4',
-  paddingLeft: '.625rem'
+const UpdateButton = styled(PrimaryButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '100%'
 })
 
 type Errors = {|
@@ -256,9 +257,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
     return (
       <ModalBody>
-        <IconAvatarBlock>
-          <IconAvatar icon={cardTypeIcon} size='large' />
-        </IconAvatarBlock>
+        <StyledIconAvatar icon={cardTypeIcon} size='large' />
         <Type
           align='center'
           colorPalette='dark'
@@ -315,17 +314,13 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButton>
-              <Button
-                buttonSize='medium'
-                buttonStyle='primary'
-                depth={1}
-                waiting={submitting}
-                isBlock
-                label={actionLabel}
-                onClick={this.handleSubmit}
-                type='submit'
-              />
+            <UpdateButton
+              buttonSize='medium'
+              depth={1}
+              onClick={this.handleSubmit}
+              waiting={submitting}
+            >
+              {actionLabel}
             </UpdateButton>
           </ButtonGroup>
         </form>

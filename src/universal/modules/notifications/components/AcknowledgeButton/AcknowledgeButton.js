@@ -1,17 +1,20 @@
 import React from 'react'
+import styled from 'react-emotion'
 import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
+import ui from 'universal/styles/ui'
 
-const buttonStyles = {
+const Button = styled(RaisedButton)({
+  marginLeft: ui.rowCompactGutter,
+  minWidth: '2rem',
   paddingLeft: 0,
-  paddingRight: 0,
-  width: '2rem'
-}
+  paddingRight: 0
+})
 
 const AcknowledgeButton = (props) => (
-  <RaisedButton {...props} style={buttonStyles}>
+  <Button {...props}>
     <IconLabel icon='check' />
-  </RaisedButton>
+  </Button>
 )
 
 export default AcknowledgeButton

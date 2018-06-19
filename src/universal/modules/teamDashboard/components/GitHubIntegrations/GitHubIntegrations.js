@@ -1,7 +1,5 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer} from 'react-relay'
 import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo'
 import GitHubRepoRow from 'universal/modules/teamDashboard/components/GitHubRepoRow'
@@ -9,11 +7,50 @@ import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components
 import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow'
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {GITHUB} from 'universal/utils/constants'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import RaisedButton from 'universal/components/RaisedButton'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import Panel from 'universal/components/Panel/Panel'
+import Row from 'universal/components/Row/Row'
+import RowActions from 'universal/components/Row/RowActions'
+import RowInfo from 'universal/components/Row/RowInfo'
+import styled from 'react-emotion'
+
+const ProviderDetails = styled(Row)({
+  border: 0,
+  justifyContent: 'flex-start',
+  paddingRight: 0
+})
+
+const ProviderAvatar = styled('div')({
+  backgroundColor: ui.providers.github.color,
+  borderRadius: ui.providerIconBorderRadius
+})
+
+const ProviderName = styled('div')({
+  ...ui.providerName
+})
+
+const ProviderIcon = styled(StyledFontAwesome)({
+  alignItems: 'center',
+  color: ui.palette.white,
+  display: 'flex !important',
+  fontSize: `${ui.iconSize2x} !important`,
+  height: ui.providerIconSize,
+  justifyContent: 'center',
+  width: ui.providerIconSize
+})
+
+const SubHeading = styled('div')({
+  ...ui.rowSubheading
+})
+
+const AddGitHubButton = styled(RaisedButton)({
+  margin: '0 auto',
+  marginBottom: ui.rowGutter
+})
 
 const {makeUri} = providerLookup[GITHUB]
 
@@ -21,7 +58,6 @@ const GitHubIntegrations = (props) => {
   const {
     relay: {environment},
     jwt,
-    styles,
     teamId,
     viewer
   } = props
@@ -36,73 +72,58 @@ const GitHubIntegrations = (props) => {
     <SettingsWrapper>
       <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
-      <div className={css(styles.providerDetails)}>
-        <div className={css(styles.providerAvatar)}>
-          <FontAwesome name='github' className={css(styles.providerIcon)} />
-        </div>
-        <div className={css(styles.providerInfo)}>
-          <div className={css(styles.nameAndTags)}>
-            <div className={css(styles.providerName)}>{ui.providers.github.providerName}</div>
-            <div className={css(styles.subHeading)}>{ui.providers.github.description}</div>
-          </div>
-        </div>
+      <ProviderDetails>
+        <ProviderAvatar>
+          <ProviderIcon name='github' />
+        </ProviderAvatar>
+        <RowInfo>
+          <ProviderName>{ui.providers.github.providerName}</ProviderName>
+          <SubHeading>{ui.providers.github.description}</SubHeading>
+        </RowInfo>
         {accessToken && (
-          <div className={css(styles.providerActions)}>
-            <Button
-              buttonSize='small'
-              buttonStyle='flat'
-              colorPalette='warm'
-              label='Remove GitHub'
+          <RowActions>
+            <FlatButton
               onClick={() =>
                 RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId)
               }
-            />
-            <Button
-              buttonSize='small'
-              buttonStyle='flat'
-              colorPalette='warm'
-              label={`Refresh Token for ${providerUserName}`}
-              onClick={openOauth}
-            />
-          </div>
+              palette='mid'
+            >
+              {'Remove GitHub'}
+            </FlatButton>
+            <FlatButton onClick={openOauth} palette='mid'>
+              {`Refresh Token for ${providerUserName}`}
+            </FlatButton>
+          </RowActions>
         )}
-      </div>
+      </ProviderDetails>
       <Panel label='Repositories'>
-        <div className={css(styles.integrations)}>
-          {accessToken ? (
-            <div className={css(styles.addRepo)}>
-              <AddGitHubRepo
+        {accessToken ? (
+          <Row>
+            <AddGitHubRepo
+              accessToken={accessToken}
+              environment={environment}
+              teamId={teamId}
+              subbedRepos={githubRepos}
+            />
+          </Row>
+        ) : (
+          <AddGitHubButton buttonSize='medium' onClick={openOauth} palette='warm'>
+            {'Authorize GitHub to Add a Repo'}
+          </AddGitHubButton>
+        )}
+        {githubRepos && (
+          <RowInfo>
+            {githubRepos.map((repo) => (
+              <GitHubRepoRow
                 accessToken={accessToken}
+                key={repo.id}
+                repo={repo}
                 environment={environment}
                 teamId={teamId}
-                subbedRepos={githubRepos}
               />
-            </div>
-          ) : (
-            <div className={css(styles.addGitHub)}>
-              <Button
-                buttonSize='medium'
-                buttonStyle='solid'
-                colorPalette='warm'
-                label='Authorize GitHub to Add a Repo'
-                onClick={openOauth}
-              />
-            </div>
-          )}
-          {githubRepos && (
-            <div className={css(styles.integrationsList)}>
-              {githubRepos.map((repo) => (
-                <GitHubRepoRow
-                  accessToken={accessToken}
-                  key={repo.id}
-                  repo={repo}
-                  environment={environment}
-                  teamId={teamId}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+            ))}
+          </RowInfo>
+        )}
       </Panel>
     </SettingsWrapper>
   )
@@ -112,75 +133,11 @@ GitHubIntegrations.propTypes = {
   jwt: PropTypes.string.isRequired,
   relay: PropTypes.object.isRequired,
   viewer: PropTypes.object.isRequired,
-  styles: PropTypes.object,
   teamId: PropTypes.string.isRequired
 }
 
-const styleThunk = () => ({
-  providerDetails: {
-    alignItems: 'center',
-    display: 'flex'
-  },
-
-  providerAvatar: {
-    backgroundColor: ui.providers.github.color,
-    borderRadius: ui.providerIconBorderRadius
-  },
-
-  providerName: {
-    ...ui.providerName
-  },
-
-  providerIcon: {
-    alignItems: 'center',
-    color: '#fff',
-    display: 'flex !important',
-    fontSize: `${ui.iconSize2x} !important`,
-    height: ui.providerIconSize,
-    justifyContent: 'center',
-    width: ui.providerIconSize
-  },
-
-  providerInfo: {
-    paddingLeft: ui.rowGutter
-  },
-
-  providerActions: {
-    // display: 'flex',
-    // justifyContent: 'space-around',
-    flex: 1,
-    marginLeft: 'auto',
-    paddingLeft: ui.rowGutter,
-    textAlign: 'right'
-  },
-
-  subHeading: {
-    ...ui.rowSubheading
-  },
-
-  addGitHub: {
-    paddingBottom: ui.rowGutter,
-    textAlign: 'center'
-  },
-
-  addRepo: {
-    borderTop: `1px solid ${ui.rowBorderColor}`,
-    display: 'flex',
-    padding: ui.rowGutter
-  },
-
-  integrationsList: {
-    paddingLeft: ui.rowGutter
-  },
-
-  nameWithOwner: {
-    color: ui.palette.cool,
-    fontWeight: 600
-  }
-})
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(GitHubIntegrations),
+  GitHubIntegrations,
   graphql`
     fragment GitHubIntegrations_viewer on User {
       integrationProvider(teamId: $teamId, service: $service) {

@@ -1,17 +1,46 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import ms from 'ms'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import Button from 'universal/components/Button/Button'
+import Row from 'universal/components/Row/Row'
+import RaisedButton from 'universal/components/RaisedButton'
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput'
 import AddGitHubRepoMutation from 'universal/mutations/AddGitHubRepoMutation'
 import formError from 'universal/styles/helpers/formError'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {GITHUB_ENDPOINT} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks'
 import appTheme from 'universal/styles/theme/theme'
+import styled from 'react-emotion'
+
+const StyledRow = styled(Row)({
+  alignItems: 'flex-start',
+  border: 0,
+  padding: 0
+})
+
+const DropdownAndError = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%'
+})
+
+const Error = styled('div')({
+  ...formError,
+  textAlign: 'right'
+})
+
+const Footer = styled('div')({
+  color: appTheme.palette.mid90l,
+  textAlign: 'right'
+})
+
+const StyledButton = styled(RaisedButton)({
+  marginLeft: ui.rowGutter,
+  minWidth: '11rem',
+  paddingLeft: 0,
+  paddingRight: 0
+})
 
 const getUniqueRepos = (orgs, personalRepos) => {
   const repoSet = new Set()
@@ -71,7 +100,6 @@ class AddGitHubRepo extends Component {
   static propTypes = {
     accessToken: PropTypes.string,
     environment: PropTypes.object,
-    styles: PropTypes.object,
     teamId: PropTypes.string,
     teamMemberId: PropTypes.string
   }
@@ -187,7 +215,6 @@ class AddGitHubRepo extends Component {
   }
 
   render () {
-    const {styles} = this.props
     const {
       error,
       isLoaded,
@@ -197,10 +224,10 @@ class AddGitHubRepo extends Component {
     } = this.state
     const footerMessage =
       error || (showHint && 'Repo 404? Make sure you have admin privileges in GitHub!')
-    const footerStyle = css(error ? styles.error : styles.footer)
+    const FooterBlock = error ? Error : Footer
     return (
-      <div className={css(styles.addRepo)}>
-        <div className={css(styles.dropdownAndError)}>
+      <StyledRow>
+        <DropdownAndError>
           <ServiceDropdownInput
             fetchOptions={this.handleToggleClick}
             dropdownText={nameWithOwner}
@@ -208,40 +235,14 @@ class AddGitHubRepo extends Component {
             options={options}
             isLoaded={isLoaded}
           />
-          <div className={footerStyle}>{footerMessage}</div>
-        </div>
-        <div style={{paddingLeft: ui.rowGutter, minWidth: '11rem'}}>
-          <Button
-            colorPalette='warm'
-            isBlock
-            label='Add Repo'
-            buttonSize='medium'
-            onClick={this.handleAddRepo}
-          />
-        </div>
-      </div>
+          <FooterBlock>{footerMessage}</FooterBlock>
+        </DropdownAndError>
+        <StyledButton buttonSize='medium' palette='warm' onClick={this.handleAddRepo}>
+          {'Add Repo'}
+        </StyledButton>
+      </StyledRow>
     )
   }
 }
 
-const styleThunk = () => ({
-  addRepo: {
-    display: 'flex',
-    width: '100%'
-  },
-  dropdownAndError: {
-    display: 'flex',
-    width: '100%',
-    flexDirection: 'column'
-  },
-  error: {
-    ...formError,
-    textAlign: 'right'
-  },
-  footer: {
-    color: appTheme.palette.mid90l,
-    textAlign: 'right'
-  }
-})
-
-export default withStyles(styleThunk)(AddGitHubRepo)
+export default AddGitHubRepo

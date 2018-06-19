@@ -215,60 +215,13 @@ const ui = {
 
   // Buttons
   // ---------------------------------------------------------------------------
-  // buttonBaseStyles: {
-  //   appearance: 'none',
-  //   border: '.0625rem solid transparent',
-  //   borderRadius: '5em',
-  //   boxShadow: 'none',
-  //   color: dark,
-  //   cursor: 'pointer',
-  //   display: 'inline-block',
-  //   fontFamily: appTheme.typography.sansSerif,
-  //   fontWeight: 600,
-  //   outline: 0,
-  //   textAlign: 'center',
-  //   userSelect: 'none',
-  //   verticalAlign: 'middle',
-  //   ':hover,:focus,:active': {
-  //     boxShadow: shadow[1]
-  //   }
-  // },
   buttonBorderRadius: '5em',
   buttonLightThemes: ['white', 'light', 'gray'],
-  buttonStylesPrimary: {
-    backgroundImage: gradientWarm,
-    color: white,
-    ':hover,:focus,:active': {
-      backgroundImage: gradientWarmDarkened
-    },
-    ':disabled': {
-      backgroundImage: gradientWarmLightened,
-      opacity: 1
-    }
-  },
   buttonBlockStyles: {
     display: 'block',
     paddingLeft: '.5em',
     paddingRight: '.5em',
     width: '100%'
-  },
-  buttonDisabledStyles: {
-    cursor: 'not-allowed',
-    opacity: '.5',
-    ':hover,:focus': {
-      boxShadow: 'none',
-      opacity: '.5'
-    },
-    ':active': {
-      animation: 'none',
-      boxShadow: 'none'
-    },
-    ':disabled': {
-      boxShadow: 'none'
-    }
-  },
-  buttonPressedDown: {
-    transform: 'translate(0, .125rem)'
   },
   buttonSizeOptions: [BUTTON_SIZE_SMALL, BUTTON_SIZE_MEDIUM, BUTTON_SIZE_LARGE],
   buttonSizeStyles: {
