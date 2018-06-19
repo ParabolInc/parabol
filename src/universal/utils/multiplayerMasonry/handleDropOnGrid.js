@@ -3,7 +3,7 @@ import {CARD_PADDING} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
 import isTempId from 'universal/utils/relay/isTempId'
 
-const handleDropOnGrid = (atmosphere, childrenCache, parentCache, childId, itemId) => {
+const handleDropOnGrid = (atmosphere, itemCache, childrenCache, parentCache, childId, itemId) => {
   const {
     boundingBox: {top: parentTop, left: parentLeft},
     cardsInFlight,
@@ -27,7 +27,7 @@ const handleDropOnGrid = (atmosphere, childrenCache, parentCache, childId, itemI
   )
   const minDistanceIdx = distances.indexOf(Math.min(...distances))
   const {left: newLeft, top: newTop} = bottomCoords[minDistanceIdx]
-  const {height} = childCache.itemEl.getBoundingClientRect()
+  const {height} = itemCache[itemId].el.getBoundingClientRect()
   const x = newLeft + parentLeft + CARD_PADDING
   const y = newTop + parentTop + CARD_PADDING
   setClosingTransform(atmosphere, itemId, {x, y})

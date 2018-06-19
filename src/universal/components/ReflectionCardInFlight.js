@@ -66,29 +66,29 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
 
   componentDidMount () {
     const {
-      childrenCache,
+      itemCache,
       reflection: {
-        reflectionGroupId,
+        reflectionId,
         dragContext: {isViewerDragging}
       }
     } = this.props
     if (isViewerDragging) {
-      const childCache = childrenCache[reflectionGroupId]
-      childCache.itemEl.addEventListener('drag', this.setViewerDragState)
+      const {el} = itemCache[reflectionId]
+      el.addEventListener('drag', this.setViewerDragState)
     }
   }
 
   componentWillUnmount () {
     const {
-      childrenCache,
+      itemCache,
       reflection: {
-        reflectionGroupId,
+        reflectionId,
         dragContext: {isViewerDragging}
       }
     } = this.props
     if (isViewerDragging) {
-      const childCache = childrenCache[reflectionGroupId]
-      childCache.itemEl.removeEventListener('drag', this.setViewerDragState)
+      const {el} = itemCache[reflectionId]
+      el.removeEventListener('drag', this.setViewerDragState)
     }
   }
 

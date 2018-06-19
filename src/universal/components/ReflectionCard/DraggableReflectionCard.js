@@ -32,11 +32,11 @@ class DraggableReflectionCard extends React.Component<Props> {
 
   render () {
     const {connectDragSource, reflection, setItemRef, meeting} = this.props
-    const {dragContext} = reflection
+    const {dragContext, reflectionId} = reflection
 
     const style = dragContext ? {opacity: 0, cursor: 'default'} : undefined
     return connectDragSource(
-      <div style={style} ref={setItemRef}>
+      <div style={style} ref={setItemRef(reflectionId)}>
         <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
       </div>
     )

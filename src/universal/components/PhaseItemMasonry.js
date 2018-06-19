@@ -61,9 +61,12 @@ type ParentCache = {
 type ChildCache = {
   // reflection group element
   el: ?HTMLElement,
-  // first reflection element
-  itemEl: ?HTMLElement,
   // boundingBox coords are relative to the parentCache!
+  boundingBox: ?ClientRect
+}
+
+type ItemCache = {
+  el: ?HTMLElement,
   boundingBox: ?ClientRect
 }
 
@@ -81,6 +84,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     // the alternative would be to emit an event in the onNext, handle it here, and make a local commit in the handler
     // fps > clean coding practices in this case
     atmosphere.getMasonry = () => ({
+      itemCache: this.itemCache,
       childrenCache: this.childrenCache,
       parentCache: this.parentCache
     })
@@ -95,6 +99,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   childrenCache: ChildrenCache = {}
+  itemCache: ItemCache = {}
 
   componentDidMount () {
     initializeGrid(this.childrenCache, this.parentCache, true)
@@ -114,15 +119,20 @@ class PhaseItemMasonry extends React.Component<Props> {
     const {dropTargetType, dropTargetId, childId, itemId, sourceId} = payload
     if (dropTargetType === REFLECTION_GRID) {
       updateColumnHeight(this.childrenCache, sourceId)
-      handleDropOnGrid(atmosphere, this.childrenCache, this.parentCache, childId, itemId)
+      handleDropOnGrid(
+        atmosphere,
+        this.itemCache,
+        this.childrenCache,
+        this.parentCache,
+        childId,
+        itemId
+      )
     } else if (dropTargetType === REFLECTION_GROUP) {
-      const {itemEl: targetEl} = this.childrenCache[dropTargetId]
       const targetAdjustment = this.handleGridUpdate(sourceId, dropTargetId)
-      const {x, y} = targetEl.getBoundingClientRect()
-      setClosingTransform(atmosphere, itemId, {x, y: y + targetAdjustment})
+      const {top, left} = this.itemCache[itemId].el.getBoundingClientRect()
+      setClosingTransform(atmosphere, itemId, {x: left, y: top + targetAdjustment})
     } else {
-      const sourceChildCache = this.childrenCache[sourceId]
-      const {x, y} = sourceChildCache.itemEl.getBoundingClientRect()
+      const {x, y} = this.itemCache[itemId].el.getBoundingClientRect()
       setClosingTransform(atmosphere, itemId, {x, y})
     }
   }
@@ -147,21 +157,22 @@ class PhaseItemMasonry extends React.Component<Props> {
     return endingHeight - startingHeight
   }
 
-  setItemRef = (childId) => (c) => {
+  setItemRef = (itemId) => (c) => {
     if (!c) return
-    this.childrenCache[childId] = this.childrenCache[childId] || {}
-    this.childrenCache[childId].itemEl = c
+    this.itemCache[itemId] = this.itemCache[itemId] || {}
+    this.itemCache[itemId].el = c
   }
 
   setChildRef = (childId, itemId) => (c) => {
     if (!c) return
+    this.childrenCache[childId] = this.childrenCache[childId] || {}
     const childCache = this.childrenCache[childId]
     const incomingChild = this.parentCache.incomingChildren[itemId]
     if (incomingChild) {
       const {boundingBox, childId: incomingChildId} = incomingChild
       // bounding box may change between optimistic updates
       childCache.boundingBox = incomingChildId
-        ? this.childrenCache[incomingChild.childId].boundingBox
+        ? this.childrenCache[incomingChildId].boundingBox
         : boundingBox
       // once we get the final card, it is no long incoming
       if (isTempId(childId)) {
@@ -192,18 +203,17 @@ class PhaseItemMasonry extends React.Component<Props> {
         style={{backgroundColor: canDrop && appTheme.palette.light70l}}
       >
         {reflectionGroups.map((reflectionGroup) => {
-          const {reflectionGroupId, reflections} = reflectionGroup
-          const [firstReflection] = reflections
-          const reflectionId = firstReflection ? firstReflection.reflectionId : ''
+          const {reflectionGroupId} = reflectionGroup
           return (
-            <CardWrapper
-              innerRef={this.setChildRef(reflectionGroupId, reflectionId)}
-              key={reflectionGroupId}
-            >
+            <CardWrapper key={reflectionGroupId}>
               <ReflectionGroup
                 meeting={meeting}
                 reflectionGroup={reflectionGroup}
-                setItemRef={this.setItemRef(reflectionGroupId)}
+                setChildRef={this.setChildRef}
+                setItemRef={this.setItemRef}
+                childrenCache={this.childrenCache}
+                parentCache={this.parentCache}
+                itemCache={this.itemCache}
               />
             </CardWrapper>
           )
@@ -215,6 +225,7 @@ class PhaseItemMasonry extends React.Component<Props> {
                 cardsInFlight={this.parentCache.cardsInFlight}
                 setInFlightCoords={this.setInFlightCoords}
                 reflection={reflection}
+                itemCache={this.itemCache}
                 childrenCache={this.childrenCache}
                 parentCache={this.parentCache}
               />

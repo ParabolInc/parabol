@@ -81,12 +81,10 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatc
         message: `${name} stole that reflection right from under your nose!`
       })
     )
-    const {childrenCache} = atmosphere.getMasonry()
-    const reflectionGroupId = reflection.getValue('reflectionGroupId')
-    const childCache = childrenCache[reflectionGroupId]
+    const {itemCache} = atmosphere.getMasonry()
     // setTimeout required because otherwise it will call the endDrag handler before isViewerDragging is set to false
     setTimeout(() => {
-      childCache.itemEl.dispatchEvent(new window.Event('dragend'))
+      itemCache[reflectionId].el.dispatchEvent(new window.Event('dragend'))
     })
   }
   return acceptIncoming
