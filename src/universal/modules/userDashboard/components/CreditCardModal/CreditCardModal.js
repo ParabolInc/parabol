@@ -185,7 +185,7 @@ const CreditCardModal = (props) => {
           </CardInputs>
           <ButtonGroup>
             <UpdateButton
-              buttonSize='medium'
+              size='medium'
               depth={1}
               disabled={submitting}
               onClick={handleSubmit(addStripeBilling)}
@@ -194,7 +194,7 @@ const CreditCardModal = (props) => {
               {actionLabel}
             </UpdateButton>
             <CancelButton
-              buttonSize='medium'
+              size='medium'
               disabled={submitting}
               onClick={closePortal}
               waiting={submitting}

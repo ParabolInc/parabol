@@ -33,7 +33,7 @@ const MeetingAgendaFirstCall = (props) => {
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls ? (
                 <BounceBlock animationDelay='30s'>
-                  <PrimaryButton buttonSize='large' onClick={gotoNext}>
+                  <PrimaryButton size='large' onClick={gotoNext}>
                     <IconLabel
                       icon='arrow-circle-right'
                       iconAfter

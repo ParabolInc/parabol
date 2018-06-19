@@ -129,7 +129,7 @@ const OrgPlanSqueeze = (props: Props) => {
     }
   } = props
   const toggle = (
-    <StyledPrimaryButton buttonSize='medium' depth={2}>
+    <StyledPrimaryButton size='medium' depth={2}>
       {'Upgrade to the Pro Plan'}
     </StyledPrimaryButton>
   )
@@ -212,7 +212,7 @@ const OrgPlanSqueeze = (props: Props) => {
       </TierPanelLayout>
       {/* Learn More Link */}
       <ButtonBlock>
-        <LinkButton buttonSize='medium' onClick={openUrl(PRICING_LINK)} palette='mid'>
+        <LinkButton size='medium' onClick={openUrl(PRICING_LINK)} palette='mid'>
           <IconLabel icon={ui.iconExternalLink} iconRight label={'Learn About Plans & Invoicing'} />
         </LinkButton>
       </ButtonBlock>

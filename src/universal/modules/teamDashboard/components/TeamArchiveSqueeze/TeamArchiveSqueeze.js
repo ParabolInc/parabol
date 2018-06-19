@@ -126,7 +126,7 @@ class TeamArchiveSqueeze extends Component {
             </ArchiveSqueezeContent>
             <ArchiveSqueezeButtonBlock>
               {isBillingLeader ? (
-                <PrimaryButton buttonSize='medium' depth={1} onClick={handleUpgrade}>
+                <PrimaryButton size='medium' depth={1} onClick={handleUpgrade}>
                   {`Upgrade to the ${PRO_LABEL} Plan`}
                 </PrimaryButton>
               ) : (

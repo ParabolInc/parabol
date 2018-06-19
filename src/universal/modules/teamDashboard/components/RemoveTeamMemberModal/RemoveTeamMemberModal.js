@@ -45,7 +45,7 @@ const RemoveTeamMemberModal = (props) => {
         This will remove {preferredName} from <br />
         the team. <br />
       </Type>
-      <StyledButton buttonSize='large' onClick={handleClick} palette='warm'>
+      <StyledButton size='large' onClick={handleClick} palette='warm'>
         <IconLabel icon='arrow-circle-right' iconAfter label={`Remove ${preferredName}`} />
       </StyledButton>
     </DashModal>

@@ -59,7 +59,7 @@ const RetroGroupPhase = (props: Props) => {
       </ScrollableBlock>
       {isFacilitating && (
         <MeetingControlBar>
-          <FlatButton buttonSize='medium' onClick={gotoNext}>
+          <FlatButton size='medium' onClick={gotoNext}>
             <IconLabel
               icon='arrow-circle-right'
               iconAfter
@@ -69,7 +69,7 @@ const RetroGroupPhase = (props: Props) => {
             />
           </FlatButton>
           {canAutoGroup && (
-            <FlatButton buttonSize='medium' onClick={autoGroup}>
+            <FlatButton size='medium' onClick={autoGroup}>
               <IconLabel icon='magic' iconColor='midGray' iconLarge label={'Auto Group'} />
             </FlatButton>
           )}

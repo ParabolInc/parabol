@@ -53,7 +53,7 @@ const MeetingLobby = (props) => {
           {`: begin the ${actionMeeting.checkin.name}!`}
         </MeetingCopy>
         <div className={css(styles.buttonBlock)}>
-          <PrimaryButton onClick={onStartMeetingClick} buttonSize='large' waiting={submitting}>
+          <PrimaryButton onClick={onStartMeetingClick} size='large' waiting={submitting}>
             Start Action Meeting
           </PrimaryButton>
         </div>

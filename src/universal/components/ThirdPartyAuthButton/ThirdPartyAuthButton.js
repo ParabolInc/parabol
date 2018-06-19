@@ -21,7 +21,7 @@ export default ({action, waiting, provider, handleClick}: Props) => {
   const label = `${action} with ${provider.displayName}`
   return (
     <RaisedButton
-      buttonSize='medium'
+      size='medium'
       onClick={handleClick}
       palette='white'
       style={{width: '16rem'}}

@@ -51,7 +51,7 @@ const RetroReflectPhase = (props: Props) => {
       {isFacilitating && (
         <MeetingControlBar>
           <FlatButton
-            buttonSize='medium'
+            size='medium'
             disabled={!reflectionGroups || reflectionGroups.length === 0}
             onClick={gotoNext}
           >

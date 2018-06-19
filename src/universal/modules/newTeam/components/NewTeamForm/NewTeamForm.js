@@ -212,7 +212,7 @@ class NewTeamForm extends Component {
                 placeholder={randomPlaceholderTheme.emailMulti}
               />
             </TextAreaBlock>
-            <StyledButton buttonSize='large' depth={1} waiting={submitting}>
+            <StyledButton size='large' depth={1} waiting={submitting}>
               {isNewOrganization ? 'Create Team & Org' : 'Create Team'}
             </StyledButton>
           </FormInner>

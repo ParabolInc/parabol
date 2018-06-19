@@ -37,7 +37,7 @@ const FileInput = (props) => {
     <div>
       <Control>
         <RaisedButton
-          buttonSize={buttonSize}
+          size={buttonSize}
           onClick={() => {
             el.click()
           }}

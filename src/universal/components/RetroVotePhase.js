@@ -43,7 +43,7 @@ const RetroVotePhase = (props: Props) => {
       {isFacilitating && (
         <MeetingControlBar>
           <FlatButton
-            buttonSize='medium'
+            size='medium'
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={gotoNext}
           >

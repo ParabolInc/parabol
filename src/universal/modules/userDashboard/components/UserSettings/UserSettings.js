@@ -113,7 +113,7 @@ const UserSettings = (props) => {
                     type='text'
                   />
                 </FieldBlock>
-                <StyledButton buttonSize={controlSize} palette='mid'>
+                <StyledButton size={controlSize} palette='mid'>
                   {'Update'}
                 </StyledButton>
               </ControlBlock>

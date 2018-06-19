@@ -49,7 +49,7 @@ const LeaveOrgModal = (props) => {
         <br />
         {'To undo it, you’ll have to ask another Billing Leader to re-add you.'}
       </Type>
-      <StyledButton buttonSize='large' onClick={handleClick} palette='warm' waiting={submitting}>
+      <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
         <IconLabel icon='arrow-circle-right' iconAfter label='Leave the organization' />
       </StyledButton>
     </DashModal>

@@ -151,11 +151,7 @@ class MeetingAgendaItems extends Component {
           <SpacedMeetingControlBar>
             <ControlButtonBlock />
             <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
-              <FlatButton
-                buttonSize='medium'
-                key={`agendaItem${localPhaseItem}`}
-                onClick={gotoNext}
-              >
+              <FlatButton size='medium' key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
                 <IconLabel
                   icon='arrow-circle-right'
                   iconAfter
@@ -166,7 +162,7 @@ class MeetingAgendaItems extends Component {
               </FlatButton>
             </BounceBlock>
             <ControlButtonBlock>
-              <FlatButton buttonSize='medium' onClick={endMeeting}>
+              <FlatButton size='medium' onClick={endMeeting}>
                 <IconLabel
                   icon='flag-checkered'
                   iconColor='midGray'

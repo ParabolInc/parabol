@@ -107,7 +107,7 @@ const GitHubIntegrations = (props) => {
             />
           </Row>
         ) : (
-          <AddGitHubButton buttonSize='medium' onClick={openOauth} palette='warm'>
+          <AddGitHubButton size='medium' onClick={openOauth} palette='warm'>
             {'Authorize GitHub to Add a Repo'}
           </AddGitHubButton>
         )}

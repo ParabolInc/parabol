@@ -32,7 +32,7 @@ const PhotoUploadModal = (props) => {
       </AvatarBlock>
       {children}
       <ModalFooter>
-        <FlatButton palette='warm' onClick={closePortal} buttonSize='medium'>
+        <FlatButton palette='warm' onClick={closePortal} size='medium'>
           <IconLabel icon='check-circle' iconAfter label='Done' />
         </FlatButton>
       </ModalFooter>

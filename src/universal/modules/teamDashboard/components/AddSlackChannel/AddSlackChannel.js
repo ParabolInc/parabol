@@ -132,7 +132,7 @@ class AddSlackChannel extends Component {
           />
           <Error>{error && error.message}</Error>
         </DropdownAndError>
-        <StyledButton buttonSize='medium' palette='warm' onClick={this.handleAddChannel}>
+        <StyledButton size='medium' palette='warm' onClick={this.handleAddChannel}>
           {'Add Channel'}
         </StyledButton>
       </StyledRow>

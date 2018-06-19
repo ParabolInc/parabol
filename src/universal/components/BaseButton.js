@@ -106,7 +106,7 @@ class BaseButton extends Component {
       <ButtonRoot
         {...this.props}
         aria-label={ariaLabel}
-        buttonSize={buttonSize}
+        size={buttonSize}
         className={className}
         depth={depth}
         disabled={hasDisabledStyles}

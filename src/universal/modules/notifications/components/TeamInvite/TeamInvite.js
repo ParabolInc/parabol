@@ -56,7 +56,7 @@ const TeamInvite = (props) => {
       <div className={css(defaultStyles.button)}>
         <StyledButton
           aria-label='Accept team invitation'
-          buttonSize={ui.notificationButtonSize}
+          size={ui.notificationButtonSize}
           onClick={accept}
           palette='warm'
           waiting={submitting}

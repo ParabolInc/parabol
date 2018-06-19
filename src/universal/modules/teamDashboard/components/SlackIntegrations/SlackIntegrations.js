@@ -117,7 +117,7 @@ const SlackIntegrations = (props) => {
             />
           </Row>
         ) : (
-          <AddSlackButton buttonSize='medium' onClick={openOauth} palette='warm'>
+          <AddSlackButton size='medium' onClick={openOauth} palette='warm'>
             {'Authorize Slack to Add a Channel'}
           </AddSlackButton>
         )}

@@ -193,7 +193,7 @@ const RetroDiscussPhase = (props: Props) => {
           <ControlButtonBlock />
           {nextStageRes && (
             <ControlButtonBlock>
-              <StyledButton buttonSize='medium' onClick={gotoNext}>
+              <StyledButton size='medium' onClick={gotoNext}>
                 <IconLabel
                   icon='arrow-circle-right'
                   iconColor='warm'
@@ -205,7 +205,7 @@ const RetroDiscussPhase = (props: Props) => {
             </ControlButtonBlock>
           )}
           <ControlButtonBlock>
-            <StyledButton buttonSize='medium' onClick={endMeeting}>
+            <StyledButton size='medium' onClick={endMeeting}>
               <IconLabel
                 icon='flag-checkered'
                 iconColor='midGray'

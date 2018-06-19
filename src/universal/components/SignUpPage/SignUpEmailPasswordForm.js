@@ -55,7 +55,7 @@ const SignInEmailPasswordForm = (props: Props) => {
           disabled={submitting}
         />
       </Block>
-      <PrimaryButton buttonSize='large' depth={1} disabled={!valid} waiting={submitting}>
+      <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
         {'Sign Up'}
       </PrimaryButton>
     </Form>

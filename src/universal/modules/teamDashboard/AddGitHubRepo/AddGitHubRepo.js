@@ -237,7 +237,7 @@ class AddGitHubRepo extends Component {
           />
           <FooterBlock>{footerMessage}</FooterBlock>
         </DropdownAndError>
-        <StyledButton buttonSize='medium' palette='warm' onClick={this.handleAddRepo}>
+        <StyledButton size='medium' palette='warm' onClick={this.handleAddRepo}>
           {'Add Repo'}
         </StyledButton>
       </StyledRow>

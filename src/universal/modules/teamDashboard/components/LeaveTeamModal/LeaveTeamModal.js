@@ -52,7 +52,7 @@ const LeaveTeamModal = (props) => {
         <br />
         {`All of your tasks will be given to ${teamLeadName}`}
       </Type>
-      <StyledButton buttonSize='large' onClick={handleClick} palette='warm'>
+      <StyledButton size='large' onClick={handleClick} palette='warm'>
         <IconLabel icon='arrow-circle-right' iconAfter label='Leave the team' />
       </StyledButton>
     </DashModal>

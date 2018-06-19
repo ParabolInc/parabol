@@ -90,7 +90,7 @@ class MeetingUpdates extends Component {
         {showMoveMeetingControls && (
           <MeetingControlBar>
             <BounceBlock animationDelay='120s' key={`update${localPhaseItem}buttonAnimation`}>
-              <FlatButton buttonSize='medium' key={`update${localPhaseItem}`} onClick={gotoNext}>
+              <FlatButton size='medium' key={`update${localPhaseItem}`} onClick={gotoNext}>
                 <IconLabel
                   icon='arrow-circle-right'
                   iconAfter

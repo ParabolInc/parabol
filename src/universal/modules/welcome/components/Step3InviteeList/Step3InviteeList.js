@@ -77,7 +77,7 @@ const Step3InviteeList = (props) => {
         </div>
         <div className={css(styles.buttonBlock)}>
           <RaisedButton
-            buttonSize='large'
+            size='large'
             onMouseEnter={() => {
               // optimistically fetch the big ol payload
               import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')

@@ -51,7 +51,7 @@ const CheckInControls = (props) => {
       <BounceBlock animationDelay='30s' key={`checkIn${localPhaseItem}buttonAnimation`}>
         <FlatButton
           aria-label={`Mark ${currentMemberName} as “here” and move on`}
-          buttonSize='medium'
+          size='medium'
           key={`checkIn${localPhaseItem}nextButton`}
           onClick={handleOnClickPresent}
         >
@@ -60,7 +60,7 @@ const CheckInControls = (props) => {
       </BounceBlock>
       <FlatButton
         aria-label={`Mark ${currentMemberName} as “not here” and move on`}
-        buttonSize='medium'
+        size='medium'
         key={`checkIn${localPhaseItem}skipButton`}
         onClick={handleOnClickAbsent}
       >

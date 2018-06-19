@@ -50,7 +50,7 @@ const RemoveFromOrgModal = (props) => {
         to the team leads. Any time remaining on their subscription will be refunded on the next
         invoice.`}
       </Type>
-      <StyledButton buttonSize='large' onClick={handleClick} palette='warm' waiting={submitting}>
+      <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
         <IconLabel icon='arrow-circle-right' iconAfter label={`Remove ${preferredName}`} />
       </StyledButton>
     </DashModal>

@@ -157,7 +157,7 @@ class TaskInvolves extends Component {
             <StyledButton
               aria-label='Go to this board'
               palette='warm'
-              buttonSize={ui.notificationButtonSize}
+              size={ui.notificationButtonSize}
               onClick={this.gotoBoard}
               waiting={submitting}
             >

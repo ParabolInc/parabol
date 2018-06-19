@@ -44,7 +44,7 @@ const UnpaidTeamModal = (props) => {
         {solution}
       </Type>
       {isALeader && (
-        <StyledButton buttonSize='large' onClick={handleClick} palette='warm'>
+        <StyledButton size='large' onClick={handleClick} palette='warm'>
           <IconLabel icon='arrow-circle-right' iconAfter label='Take me there' />
         </StyledButton>
       )}

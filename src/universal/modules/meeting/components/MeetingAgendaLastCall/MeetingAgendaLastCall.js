@@ -62,7 +62,7 @@ const MeetingAgendaLastCall = (props) => {
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls && (
                 <BounceBlock animationDelay='30s'>
-                  <PrimaryButton aria-label='End Meeting' buttonSize='large' onClick={gotoNext}>
+                  <PrimaryButton aria-label='End Meeting' size='large' onClick={gotoNext}>
                     End Action Meeting
                   </PrimaryButton>
                 </BounceBlock>

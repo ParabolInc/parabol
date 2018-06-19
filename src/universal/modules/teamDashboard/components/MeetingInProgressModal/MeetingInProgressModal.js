@@ -47,7 +47,7 @@ const MeetingInProgressModal = (props) => {
           {'as we are actively in a retrospective.'}
         </Type>
       )}
-      <StyledButton buttonSize='large' onClick={handleClick} palette='warm'>
+      <StyledButton size='large' onClick={handleClick} palette='warm'>
         <IconLabel icon='arrow-circle-right' iconAfter label='Join Meeting' />
       </StyledButton>
     </DashModal>

@@ -170,7 +170,7 @@ class NewMeetingLobby extends React.Component<Props, State> {
                 depth={1}
                 disabled={!canStartMeeting}
                 onClick={onStartMeetingClick}
-                buttonSize='large'
+                size='large'
                 waiting={submitting}
               >
                 {buttonLabel}
@@ -185,7 +185,7 @@ class NewMeetingLobby extends React.Component<Props, State> {
                   onClose={this.updateInitialTier}
                   queryVars={{orgId}}
                   toggle={
-                    <StyledButton aria-label='Get Access Now' buttonSize='large' depth={1}>
+                    <StyledButton aria-label='Get Access Now' size='large' depth={1}>
                       {'Get Access Now'}
                     </StyledButton>
                   }
