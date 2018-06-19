@@ -26,38 +26,41 @@ const Form = styled('form')({
 
 const Block = styled('div')(({margin, width}) => ({margin, width}))
 
-const SignInEmailPasswordForm = (props: Props) => (
-  <Form className='signup-form' onSubmit={props.handleSubmit}>
-    <Block margin='1rem 0 2rem' width='16rem'>
-      <Block margin='0 0 1.5rem'>
+const SignInEmailPasswordForm = (props: Props) => {
+  const {handleSubmit, submitting, valid} = props
+  return (
+    <Form className='signup-form' onSubmit={handleSubmit}>
+      <Block margin='1rem 0 2rem' width='16rem'>
+        <Block margin='0 0 1.5rem'>
+          <Field
+            autoFocus
+            component={InputField}
+            fieldSize='large'
+            type='email'
+            placeholder='you@company.co'
+            label='Email:'
+            name='email'
+            underline
+            disabled={submitting}
+          />
+        </Block>
         <Field
-          autoFocus
           component={InputField}
           fieldSize='large'
-          type='email'
-          placeholder='you@company.co'
-          label='Email:'
-          name='email'
+          type='password'
+          placeholder='********'
+          label='Password:'
+          name='password'
           underline
-          disabled={props.submitting}
+          disabled={submitting}
         />
       </Block>
-      <Field
-        component={InputField}
-        fieldSize='large'
-        type='password'
-        placeholder='********'
-        label='Password:'
-        name='password'
-        underline
-        disabled={props.submitting}
-      />
-    </Block>
-    <PrimaryButton buttonSize='large' depth={1} disabled={!props.valid} waiting={props.submitting}>
-      {'Sign Up'}
-    </PrimaryButton>
-  </Form>
-)
+      <PrimaryButton buttonSize='large' depth={1} disabled={!valid} waiting={submitting}>
+        {'Sign Up'}
+      </PrimaryButton>
+    </Form>
+  )
+}
 
 const validate = (values) => {
   const validation = {}

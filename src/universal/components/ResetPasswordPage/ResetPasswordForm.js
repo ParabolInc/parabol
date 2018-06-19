@@ -30,8 +30,9 @@ const Block = styled('div')({
 })
 
 const PasswordResetForm = (props: Props) => {
+  const {handleSubmit, submitting, valid} = props
   return (
-    <Form onSubmit={props.handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Block>
         <Field
           type='email'
@@ -42,15 +43,10 @@ const PasswordResetForm = (props: Props) => {
           label='Email:'
           name='email'
           underline
-          disabled={props.submitting}
+          disabled={submitting}
         />
       </Block>
-      <PrimaryButton
-        buttonSize='large'
-        depth={1}
-        disabled={!props.valid}
-        waiting={props.submitting}
-      >
+      <PrimaryButton buttonSize='large' depth={1} disabled={!valid} waiting={submitting}>
         {'Submit'}
       </PrimaryButton>
     </Form>
