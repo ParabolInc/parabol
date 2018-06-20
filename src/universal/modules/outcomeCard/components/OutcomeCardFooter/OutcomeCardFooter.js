@@ -16,12 +16,13 @@ import {USER_DASH} from 'universal/utils/constants'
 import removeAllRangesForEntity from 'universal/utils/draftjs/removeAllRangesForEntity'
 import isTaskArchived from 'universal/utils/isTaskArchived'
 import {clearError, setError} from 'universal/utils/relay/mutationCallbacks'
-import OutcomeCardFooterButton from '../OutcomeCardFooterButton/OutcomeCardFooterButton'
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
 import Loadable from 'react-loadable'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import LoadableLoading from 'universal/components/LoadableLoading'
 import BaseButton from 'universal/components/BaseButton'
+import CardButton from 'universal/components/CardButton'
+import IconLabel from 'universal/components/IconLabel'
 import styled, {css} from 'react-emotion'
 
 const height = ui.cardButtonHeight
@@ -48,13 +49,22 @@ const Footer = styled('div')({
 
 const teamToggleButtonStyles = css({
   ...label,
-  color: ui.colorText,
+  borderRadius: ui.borderRadiusSmall,
+  color: ui.palette.dark,
   fontSize: appTheme.typography.s1,
+  height: ui.cardButtonHeight,
+  lineHeight: ui.cardButtonHeight,
+  marginLeft: '-.5rem',
   outline: 0,
-  textAlign: 'left'
+  padding: '0 .5rem',
+  textAlign: 'left',
+  ':hover, :focus': {
+    borderColor: appTheme.palette.mid50l,
+    opacity: 1
+  }
 })
 
-const avatarButtonStyles = css({
+const AvatarButton = styled(BaseButton)({
   border: 0,
   boxShadow: 'none',
   display: 'flex',
@@ -227,15 +237,15 @@ class OutcomeCardFooter extends Component {
     const isArchived = isTaskArchived(tags)
     const {error} = this.state
     const ownerAvatarOrTeamName = showTeam ? (
-      <BaseButton
+      <CardButton
         aria-label='Assign this task to another team'
         className={teamToggleButtonStyles}
         onClick={this.selectAllQuestion}
       >
         {teamName}
-      </BaseButton>
+      </CardButton>
     ) : (
-      <BaseButton className={avatarButtonStyles} aria-label='Assign this task to a teammate'>
+      <AvatarButton aria-label='Assign this task to a teammate'>
         <Avatar cardIsActive={cardIsActive}>
           <AvatarImage
             alt={assignee.preferredName}
@@ -245,7 +255,7 @@ class OutcomeCardFooter extends Component {
           />
         </Avatar>
         <AvatarLabel>{assignee.preferredName}</AvatarLabel>
-      </BaseButton>
+      </AvatarButton>
     )
 
     const canAssign = !service && !isArchived
@@ -293,7 +303,9 @@ class OutcomeCardFooter extends Component {
           </AvatarBlock>
           <ButtonGroup cardIsActive={cardIsActive}>
             {isArchived ? (
-              <OutcomeCardFooterButton onClick={this.removeContentTag('archived')} icon='reply' />
+              <CardButton onClick={this.removeContentTag('archived')}>
+                <IconLabel icon='reply' />
+              </CardButton>
             ) : (
               <React.Fragment>
                 {/* ButtonSpacer helps truncated names (…) be consistent */}
@@ -312,7 +324,11 @@ class OutcomeCardFooter extends Component {
                       clearError: this.clearError
                     }}
                     targetAnchor={targetAnchor}
-                    toggle={<OutcomeCardFooterButton icon='github' />}
+                    toggle={
+                      <CardButton>
+                        <IconLabel icon='github' />
+                      </CardButton>
+                    }
                     onOpen={toggleMenuState}
                     onClose={toggleMenuState}
                   />
@@ -333,7 +349,11 @@ class OutcomeCardFooter extends Component {
                     removeContentTag: this.removeContentTag
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<OutcomeCardFooterButton icon='ellipsis-v' />}
+                  toggle={
+                    <CardButton>
+                      <IconLabel icon='ellipsis-v' />
+                    </CardButton>
+                  }
                   onOpen={toggleMenuState}
                   onClose={toggleMenuState}
                 />

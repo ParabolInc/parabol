@@ -17,6 +17,7 @@ const StatusHeader = styled('div')({
   fontWeight: 400,
   justifyContent: 'space-between',
   lineHeight: ui.cardEditingStatusLineHeight,
+  minHeight: ui.cardButtonHeight,
   padding: `0 ${ui.cardPaddingBase}`,
   textAlign: 'left'
 })
@@ -81,7 +82,8 @@ const EditingStatus = (props) => {
     handleClick,
     task,
     timestamp,
-    timestampType
+    timestampType,
+    toggleMenuState
   } = props
   const {editors} = task
   const otherEditors = editors.filter((editor) => editor.userId !== myUserId)
@@ -92,7 +94,7 @@ const EditingStatus = (props) => {
       <EditingText isEditing={isEditing} onClick={handleClick} title={title}>
         {makeEditingStatus(otherEditors, isEditing, timestamp, timestampType)}
       </EditingText>
-      <DueDateToggle cardIsActive={cardIsActive} task={task} />
+      <DueDateToggle cardIsActive={cardIsActive} task={task} toggleMenuState={toggleMenuState} />
     </StatusHeader>
   )
 }
@@ -104,6 +106,7 @@ EditingStatus.propTypes = {
   task: PropTypes.object.isRequired,
   timestamp: PropTypes.string.isRequired,
   timestampType: PropTypes.string,
+  toggleMenuState: PropTypes.func.isRequired,
   styles: PropTypes.object
 }
 

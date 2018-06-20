@@ -6,47 +6,53 @@ import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker'
 import {createFragmentContainer} from 'react-relay'
 import {shortMonths} from 'universal/utils/makeDateString'
 import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import BaseButton from 'universal/components/BaseButton'
+import CardButton from 'universal/components/CardButton'
 import ms from 'ms'
 
-const Toggle = styled(BaseButton)(
+const Toggle = styled(CardButton)(
   {
     alignItems: 'center',
-    borderRadius: '.125rem',
-    color: ui.colorText,
-    cursor: 'pointer',
     display: 'flex',
-    fontSize: 'inherit',
-    height: '1.5rem',
     justifyContent: 'center',
-    lineHeight: 'inherit',
-    opacity: 0,
-    outline: 0,
-    padding: 0,
-    width: '1.5rem'
+    opacity: 0
   },
   ({cardIsActive}) => ({
     opacity: cardIsActive && 0.5,
     ':hover, :focus': {
-      borderColor: appTheme.palette.mid50l,
+      borderColor: ui.cardButtonBorderColor,
       opacity: cardIsActive && 1
     }
   }),
-  ({dueDate}) => ({
-    color: dueDate && ui.dueDateColor,
-    backgroundColor: dueDate && ui.dueDateBg,
-    opacity: dueDate && 1
-  }),
-  ({isDueSoon}) => ({
-    color: isDueSoon && ui.dueDateSoonColor,
-    backgroundColor: isDueSoon && ui.dueDateSoonBg
-  }),
-  ({isPastDue}) => ({
-    color: isPastDue && ui.dueDatePastColor,
-    backgroundColor: isPastDue && ui.dueDatePastBg
-  })
+  ({dueDate}) =>
+    dueDate && {
+      backgroundColor: ui.dueDateBg,
+      color: ui.dueDateColor,
+      fontSize: 'inherit',
+      height: '1.125rem',
+      lineHeight: '1rem',
+      opacity: 1,
+      padding: '0 .1875rem',
+      ':hover,:focus': {
+        borderColor: ui.dueDateColor
+      }
+    },
+  ({isDueSoon}) =>
+    isDueSoon && {
+      backgroundColor: ui.dueDateSoonBg,
+      color: ui.dueDateSoonColor,
+      ':hover,:focus': {
+        borderColor: ui.dueDateSoonColor
+      }
+    },
+  ({isPastDue}) =>
+    isPastDue && {
+      backgroundColor: ui.dueDatePastBg,
+      color: ui.dueDatePastColor,
+      ':hover,:focus': {
+        borderColor: ui.dueDatePastColor
+      }
+    }
 )
 
 const DueDateIcon = styled(StyledFontAwesome)({
@@ -69,7 +75,8 @@ const targetAnchor = {
 
 type Props = {|
   cardIsActive: Boolean,
-  task: Object
+  task: Object,
+  toggleMenuState: () => void
 |}
 
 const formatDueDate = (dueDate) => {
@@ -94,7 +101,7 @@ const getDateInfo = (dueDate) => {
 }
 
 const DueDateToggle = (props: Props) => {
-  const {cardIsActive, task} = props
+  const {cardIsActive, task, toggleMenuState} = props
   const {dueDate} = task
   const toggle = (
     <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} {...getDateInfo(dueDate)}>
@@ -113,6 +120,8 @@ const DueDateToggle = (props: Props) => {
       }}
       targetAnchor={targetAnchor}
       toggle={toggle}
+      onOpen={toggleMenuState}
+      onClose={toggleMenuState}
     />
   )
 }

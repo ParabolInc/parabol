@@ -67,7 +67,12 @@ const OutcomeCard = (props) => {
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
           </div>
-          <EditingStatusContainer cardIsActive={cardIsActive} isEditing={isEditing} task={task} />
+          <EditingStatusContainer
+            cardIsActive={cardIsActive}
+            isEditing={isEditing}
+            task={task}
+            toggleMenuState={toggleMenuState}
+          />
         </div>
         <TaskEditor
           editorRef={editorRef}
