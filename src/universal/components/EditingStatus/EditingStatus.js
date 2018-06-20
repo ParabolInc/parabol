@@ -17,7 +17,7 @@ const StatusHeader = styled('div')({
   fontWeight: 400,
   justifyContent: 'space-between',
   lineHeight: ui.cardEditingStatusLineHeight,
-  padding: `.25rem ${ui.cardPaddingBase}`,
+  padding: `0 ${ui.cardPaddingBase}`,
   textAlign: 'left'
 })
 

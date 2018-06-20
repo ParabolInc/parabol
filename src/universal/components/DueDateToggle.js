@@ -19,10 +19,13 @@ const Toggle = styled(BaseButton)(
     cursor: 'pointer',
     display: 'flex',
     fontSize: 'inherit',
+    height: '1.5rem',
+    justifyContent: 'center',
     lineHeight: 'inherit',
     opacity: 0,
     outline: 0,
-    padding: '.0625rem .1875rem'
+    padding: 0,
+    width: '1.5rem'
   },
   ({cardIsActive}) => ({
     opacity: cardIsActive && 0.5,
