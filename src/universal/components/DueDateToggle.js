@@ -9,6 +9,12 @@ import ui from 'universal/styles/ui'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import CardButton from 'universal/components/CardButton'
 import ms from 'ms'
+import tinycolor from 'tinycolor2'
+
+const lighten = (color, amount) =>
+  tinycolor(color)
+    .lighten(amount)
+    .toString()
 
 const Toggle = styled(CardButton)(
   {
@@ -34,7 +40,7 @@ const Toggle = styled(CardButton)(
       opacity: 1,
       padding: '0 .1875rem',
       ':hover,:focus': {
-        borderColor: ui.dueDateColor
+        borderColor: lighten(ui.dueDateColor, 30)
       }
     },
   ({isDueSoon}) =>
@@ -42,7 +48,7 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDateSoonBg,
       color: ui.dueDateSoonColor,
       ':hover,:focus': {
-        borderColor: ui.dueDateSoonColor
+        borderColor: lighten(ui.dueDateSoonColor, 20)
       }
     },
   ({isPastDue}) =>
@@ -50,7 +56,7 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDatePastBg,
       color: ui.dueDatePastColor,
       ':hover,:focus': {
-        borderColor: ui.dueDatePastColor
+        borderColor: lighten(ui.dueDatePastColor, 20)
       }
     }
 )

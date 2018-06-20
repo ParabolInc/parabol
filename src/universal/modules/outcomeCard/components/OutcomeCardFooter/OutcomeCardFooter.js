@@ -23,7 +23,7 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 import BaseButton from 'universal/components/BaseButton'
 import CardButton from 'universal/components/CardButton'
 import IconLabel from 'universal/components/IconLabel'
-import styled, {css} from 'react-emotion'
+import styled from 'react-emotion'
 
 const height = ui.cardButtonHeight
 
@@ -41,25 +41,26 @@ const label = {
 
 const Footer = styled('div')({
   display: 'flex',
-  height: '3.375rem',
   justifyContent: 'space-between',
   maxWidth: '100%',
-  padding: ui.cardPaddingBase
+  padding: `.75rem ${ui.cardPaddingBase} ${ui.cardPaddingBase}`
 })
 
-const teamToggleButtonStyles = css({
+const TeamToggleButton = styled(CardButton)({
   ...label,
   borderRadius: ui.borderRadiusSmall,
-  color: ui.palette.dark,
+  color: ui.palette.midGray,
   fontSize: appTheme.typography.s1,
   height: ui.cardButtonHeight,
   lineHeight: ui.cardButtonHeight,
   marginLeft: '-.5rem',
   outline: 0,
+  opacity: 1,
   padding: '0 .5rem',
   textAlign: 'left',
   ':hover, :focus': {
     borderColor: appTheme.palette.mid50l,
+    color: ui.palette.dark,
     opacity: 1
   }
 })
@@ -237,13 +238,12 @@ class OutcomeCardFooter extends Component {
     const isArchived = isTaskArchived(tags)
     const {error} = this.state
     const ownerAvatarOrTeamName = showTeam ? (
-      <CardButton
+      <TeamToggleButton
         aria-label='Assign this task to another team'
-        className={teamToggleButtonStyles}
         onClick={this.selectAllQuestion}
       >
         {teamName}
-      </CardButton>
+      </TeamToggleButton>
     ) : (
       <AvatarButton aria-label='Assign this task to a teammate'>
         <Avatar cardIsActive={cardIsActive}>
