@@ -5,15 +5,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v2.3.1 2018-Jun-20
-
-## Added
-* Moved dashboard sidebar components to Emotion
-* Building custom scrollbars quietly in the background (not ready yet)
-
-### Fixed
-* Dashboard nav team name overflow (#1029)
-
 ## v2.3.0 2018-Jun-13
 
 ## Added
