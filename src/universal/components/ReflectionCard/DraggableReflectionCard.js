@@ -16,6 +16,7 @@ import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import {connect} from 'react-redux'
+import {css} from 'react-emotion'
 
 type Props = {
   dndIndex: number,
@@ -24,6 +25,20 @@ type Props = {
   ...ReflectionCardProps
 }
 
+const dragContextStyle = css({
+  opacity: 0,
+  cursor: 'default'
+})
+
+const expandedStyle = (isTop) =>
+  css({
+    // maxHeight: 80,
+    // overflow: 'hidden',
+    position: isTop ? 'relative' : 'absolute',
+    top: !isTop && 0,
+    zIndex: isTop ? 101 : 1
+  })
+
 class DraggableReflectionCard extends React.Component<Props> {
   componentDidMount () {
     const {connectDragPreview} = this.props
@@ -31,12 +46,15 @@ class DraggableReflectionCard extends React.Component<Props> {
   }
 
   render () {
-    const {connectDragSource, reflection, setItemRef, meeting} = this.props
+    const {connectDragSource, reflection, setItemRef, meeting, idx, isExpanded} = this.props
     const {dragContext, reflectionId} = reflection
-
-    const style = dragContext ? {opacity: 0, cursor: 'default'} : undefined
+    const className = dragContext
+      ? dragContextStyle
+      : isExpanded
+        ? expandedStyle(idx === 0)
+        : undefined
     return connectDragSource(
-      <div style={style} ref={setItemRef(reflectionId)}>
+      <div className={className} ref={setItemRef(reflectionId)}>
         <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
       </div>
     )

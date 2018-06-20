@@ -13,37 +13,37 @@ type Props = {
   reflectionGroup: ReflectionGroup
 }
 
-const GroupHeader = styled('div')(({phaseType}) => ({
+const GroupHeader = styled('div')(({isExpanded, phaseType}) => ({
   display: 'flex',
   fontSize: '.875rem',
-  justifyContent: phaseType === VOTE ? 'space-between' : 'center',
-  marginBottom: 8,
+  justifyContent: isExpanded ? 'flex-start' : phaseType === VOTE ? 'space-between' : 'center',
+  paddingBottom: 8,
   width: '100%'
 }))
 
-const TitleAndCount = styled('div')({
+const TitleAndCount = styled('div')(({isExpanded}) => ({
   alignItems: 'flex-start',
   display: 'flex',
   flexShrink: 1,
-  justifyContent: 'center',
-  position: 'relative',
-  width: 'auto'
-})
+  justifyContent: !isExpanded && 'center',
+  position: 'relative'
+}))
 
 const Spacer = styled('div')({width: ui.votingCheckmarksWidth})
 
 const ReflectionGroupHeader = (props: Props) => {
-  const {meeting, reflectionGroup} = props
+  const {innerRef, isExpanded, meeting, reflectionGroup} = props
   const {
     localStage,
     localPhase: {phaseType}
   } = meeting
   const canEdit = phaseType === GROUP && localStage.isComplete === false
   return (
-    <GroupHeader phaseType={phaseType}>
+    <GroupHeader innerRef={innerRef} isExpanded={isExpanded} phaseType={phaseType}>
       {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
         <ReflectionGroupTitleEditor
+          isExpanded={isExpanded}
           reflectionGroup={reflectionGroup}
           meeting={meeting}
           readOnly={!canEdit}

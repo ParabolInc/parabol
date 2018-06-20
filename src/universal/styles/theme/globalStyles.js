@@ -42,6 +42,9 @@ export default `
     line-height: normal;
     margin: 0;
     padding: 0;
+    /* used to prevent scrollbars from out-of-bounds absolutes https://stackoverflow.com/questions/19308257/positionabsolute-causes-horizontal-scrollbar */
+    position: relative;
+    overflow: hidden;
   }
 
   a {

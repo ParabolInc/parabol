@@ -5,7 +5,7 @@ import {DropTarget} from '@mattkrick/react-dnd'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {REFLECTION_CARD, REFLECTION_GRID, REFLECTION_GROUP} from 'universal/utils/constants'
 import type {PhaseItemMasonry_meeting as Meeting} from './__generated__/PhaseItemMasonry_meeting.graphql'
-import styled, {css} from 'react-emotion'
+import {css} from 'react-emotion'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
 import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
@@ -21,15 +21,9 @@ type Props = {|
 |}
 
 const gridStyle = css({
-  overflow: 'auto',
+  overflow: 'hidden',
   position: 'relative',
   width: '100%'
-})
-
-const CardWrapper = styled('div')({
-  position: 'absolute',
-  display: 'inline-block',
-  transition: 'all 200ms'
 })
 
 // a reflectionId grid has many reflectionGroups has many reflections (parent > child > item)
@@ -205,17 +199,16 @@ class PhaseItemMasonry extends React.Component<Props> {
         {reflectionGroups.map((reflectionGroup) => {
           const {reflectionGroupId} = reflectionGroup
           return (
-            <CardWrapper key={reflectionGroupId}>
-              <ReflectionGroup
-                meeting={meeting}
-                reflectionGroup={reflectionGroup}
-                setChildRef={this.setChildRef}
-                setItemRef={this.setItemRef}
-                childrenCache={this.childrenCache}
-                parentCache={this.parentCache}
-                itemCache={this.itemCache}
-              />
-            </CardWrapper>
+            <ReflectionGroup
+              key={reflectionGroupId}
+              meeting={meeting}
+              reflectionGroup={reflectionGroup}
+              setChildRef={this.setChildRef}
+              setItemRef={this.setItemRef}
+              childrenCache={this.childrenCache}
+              parentCache={this.parentCache}
+              itemCache={this.itemCache}
+            />
           )
         })}
         {reflectionsInFlight.map((reflection) => {

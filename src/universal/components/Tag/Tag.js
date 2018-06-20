@@ -58,6 +58,7 @@ const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
   marginLeft: ui.tagGutter,
   padding: ui.tagPadding,
   textAlign: 'center',
+  userSelect: 'none',
   verticalAlign: 'middle'
 }))
 
