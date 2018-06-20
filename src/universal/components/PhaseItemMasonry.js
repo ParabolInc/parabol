@@ -126,7 +126,9 @@ class PhaseItemMasonry extends React.Component<Props> {
       const {top, left} = this.itemCache[itemId].el.getBoundingClientRect()
       setClosingTransform(atmosphere, itemId, {x: left, y: top + targetAdjustment})
     } else {
-      const {x, y} = this.itemCache[itemId].el.getBoundingClientRect()
+      const cachedItem = this.itemCache[itemId]
+      const bestEl = cachedItem.modalEl || cachedItem.el
+      const {x, y} = bestEl.getBoundingClientRect()
       setClosingTransform(atmosphere, itemId, {x, y})
     }
   }
@@ -151,10 +153,11 @@ class PhaseItemMasonry extends React.Component<Props> {
     return endingHeight - startingHeight
   }
 
-  setItemRef = (itemId) => (c) => {
+  setItemRef = (itemId, isModal) => (c) => {
     if (!c) return
     this.itemCache[itemId] = this.itemCache[itemId] || {}
-    this.itemCache[itemId].el = c
+    const elType = isModal ? 'modalEl' : 'el'
+    this.itemCache[itemId][elType] = c
   }
 
   setChildRef = (childId, itemId) => (c) => {

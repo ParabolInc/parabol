@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 /*
  * A lightweight wrapper around React16s createPortal function
- * Listens for an ESC key press or a click outside the modal
+ * Listens for an ESC key press or a mousedown outside the modal
  * Takes an isOpen prop. For delayed DOM removal, (like animations) use complex isOpen logic in the parent
  */
 class Modal extends Component {
@@ -44,7 +44,7 @@ class Modal extends Component {
     })
     const {clickToClose, escToClose} = this.props
     if (clickToClose) {
-      document.addEventListener('click', this.handleDocumentClick)
+      document.addEventListener('mousedown', this.handleDocumentClick)
       document.addEventListener('touchstart', this.handleDocumentClick)
     }
     if (escToClose) {
@@ -56,7 +56,7 @@ class Modal extends Component {
   teardown () {
     if (this.el && document.body.contains(this.el)) {
       document.body.removeChild(this.el)
-      document.removeEventListener('click', this.handleDocumentClick)
+      document.removeEventListener('mousedown', this.handleDocumentClick)
       document.removeEventListener('touchstart', this.handleDocumentClick)
       document.removeEventListener('keydown', this.handleKeydown)
     }

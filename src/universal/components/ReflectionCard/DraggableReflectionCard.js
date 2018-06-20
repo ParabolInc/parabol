@@ -30,11 +30,9 @@ const dragContextStyle = css({
   cursor: 'default'
 })
 
-const expandedStyle = (isTop) =>
+const modalStyle = (isTop) =>
   css({
-    // maxHeight: 80,
-    // overflow: 'hidden',
-    position: isTop ? 'relative' : 'absolute',
+    position: 'absolute',
     top: !isTop && 0,
     zIndex: isTop ? 101 : 1
   })
@@ -46,15 +44,11 @@ class DraggableReflectionCard extends React.Component<Props> {
   }
 
   render () {
-    const {connectDragSource, reflection, setItemRef, meeting, idx, isExpanded} = this.props
+    const {connectDragSource, reflection, setItemRef, meeting, idx, isModal} = this.props
     const {dragContext, reflectionId} = reflection
-    const className = dragContext
-      ? dragContextStyle
-      : isExpanded
-        ? expandedStyle(idx === 0)
-        : undefined
+    const className = dragContext ? dragContextStyle : isModal ? modalStyle(idx === 0) : undefined
     return connectDragSource(
-      <div className={className} ref={setItemRef(reflectionId)}>
+      <div className={className} ref={setItemRef(reflectionId, isModal)}>
         <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
       </div>
     )
@@ -94,6 +88,7 @@ const reflectionDragSpec = {
   endDrag (props: Props, monitor) {
     const {
       atmosphere,
+      closeGroupModal,
       reflection: {
         dragContext: {isViewerDragging},
         meetingId,
@@ -105,6 +100,10 @@ const reflectionDragSpec = {
     if (!isViewerDragging) return
     const dropResult = monitor.getDropResult()
     const {dropTargetType = null, dropTargetId = null, sortOrder} = dropResult || {}
+    // must come before the mutation so we can clear the itemCache
+    if (closeGroupModal && dropTargetType) {
+      closeGroupModal()
+    }
     const newReflectionGroupId = clientTempId()
     EndDraggingReflectionMutation(
       atmosphere,

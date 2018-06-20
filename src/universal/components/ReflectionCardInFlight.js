@@ -73,8 +73,10 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       }
     } = this.props
     if (isViewerDragging) {
-      const {el} = itemCache[reflectionId]
-      el.addEventListener('drag', this.setViewerDragState)
+      const {el, modalEl} = itemCache[reflectionId]
+      // purposefully naive. if it breaks, it means we aren't GCing our refs correctly
+      const bestEl = modalEl || el
+      bestEl.addEventListener('drag', this.setViewerDragState)
     }
   }
 
@@ -87,8 +89,9 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       }
     } = this.props
     if (isViewerDragging) {
-      const {el} = itemCache[reflectionId]
-      el.removeEventListener('drag', this.setViewerDragState)
+      const {el, modalEl} = itemCache[reflectionId]
+      const bestEl = modalEl || el
+      bestEl.removeEventListener('drag', this.setViewerDragState)
     }
   }
 

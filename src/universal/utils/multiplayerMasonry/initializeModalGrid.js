@@ -8,7 +8,14 @@ import {
   REFLECTION_WIDTH
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 
-const initializeModalGrid = (reflections, parentCache, itemCache, childCache, headerRef) => {
+const initializeModalGrid = (
+  reflections,
+  parentCache,
+  itemCache,
+  childCache,
+  headerRef,
+  modalRef
+) => {
   const {
     columnLefts,
     boundingBox: {left: parentLeft, width: parentWidth, height: parentHeight, top: parentTop}
@@ -22,7 +29,7 @@ const initializeModalGrid = (reflections, parentCache, itemCache, childCache, he
   const heights = reversedRefelctions.map((reflection) => {
     const {id} = reflection
     const cachedItem = itemCache[id]
-    return cachedItem.el.getBoundingClientRect().height
+    return cachedItem.modalEl.getBoundingClientRect().height
   })
 
   // set reflection bboxes and get a thunk to create final reflection styles
@@ -43,7 +50,7 @@ const initializeModalGrid = (reflections, parentCache, itemCache, childCache, he
     }
     currentColumnHeights[shortestColumnIdx] += height
     const {
-      el: {style: itemStyle}
+      modalEl: {style: itemStyle}
     } = cachedItem
     return () => {
       itemStyle.transition = `all ${ITEM_DURATION}ms ${MIN_ITEM_DELAY + variableDelay * idx}ms`
@@ -51,36 +58,51 @@ const initializeModalGrid = (reflections, parentCache, itemCache, childCache, he
     }
   })
 
+  const resetQueue = reversedRefelctions.map((reflection) => {
+    const cachedItem = itemCache[reflection.id]
+    const {
+      modalEl: {style: itemStyle}
+    } = cachedItem
+    return () => {
+      itemStyle.transition = ''
+    }
+  })
   const modalHeight = Math.max(...currentColumnHeights) + MODAL_PADDING * 2 + headerHeight
   const childTop = parentTop + (parentHeight - modalHeight) / 2
   const {
-    boundingBox: {top: collapsedTop, left: collapsedLeft},
-    el: {style: childStyle}
+    boundingBox: {top: collapsedTop, left: collapsedLeft}
   } = childCache
   const modalWidth =
     REFLECTION_WIDTH * Math.min(columnCount, reflections.length) +
-    MODAL_PADDING * 2 -
-    CARD_PADDING * 2
+    (MODAL_PADDING - CARD_PADDING) * 2
   const childLeft = parentLeft + (parentWidth - modalWidth) / 2
   const top = collapsedTop + parentTop - MODAL_PADDING + CARD_PADDING
   const left = collapsedLeft + parentLeft - MODAL_PADDING + CARD_PADDING
 
   // set initial group styles
-  childStyle.transition = 'unset'
-  childStyle.top = `${top}px`
-  childStyle.left = `${left}px`
-  childStyle.height = `${modalHeight}px`
-  childStyle.width = `${modalWidth}px`
-  childStyle.transformOrigin = '0 0'
-  childStyle.transform = `translate(${0}px,${0}px)`
+  const {style: modalStyle} = modalRef
+  // childEl.style.opacity= 0
+  modalStyle.transition = 'unset'
+  modalStyle.top = `${top}px`
+  modalStyle.left = `${left}px`
+  modalStyle.height = `${modalHeight}px`
+  modalStyle.width = `${modalWidth}px`
+  modalStyle.transformOrigin = '0 0'
+  modalStyle.transform = `translate(${0}px,${0}px)`
 
   window.requestAnimationFrame(() => {
     // set final group styles
-    childStyle.transition = `all ${ANIMATE_IN_TOTAL_DURATION}ms`
-    childStyle.backgroundColor = 'rgba(68, 66, 88, 0.65)'
-    childStyle.transform = `translate(${childLeft - left}px,${childTop - top}px)scale(1)`
+    modalStyle.transition = `all ${ANIMATE_IN_TOTAL_DURATION}ms`
+    modalStyle.backgroundColor = 'rgba(68, 66, 88, 0.65)'
+    modalStyle.transform = `translate(${childLeft - left}px,${childTop - top}px)scale(1)`
     // set final reflection styles
     animateItemQueue.forEach((cb) => cb())
+    const resetStyles = (e) => {
+      if (e.currentTarget !== e.target) return
+      resetQueue.forEach((cb) => cb())
+      modalRef.removeEventListener('transitionend', resetStyles)
+    }
+    modalRef.addEventListener('transitionend', resetStyles)
   })
 }
 
