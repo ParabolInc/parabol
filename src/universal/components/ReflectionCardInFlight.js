@@ -120,7 +120,12 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       childrenCache,
       parentCache,
       reflection: {
-        dragContext: {initialCursorCoords, initialComponentCoords, isPending, isViewerDragging},
+        dragContext: {
+          initialCursorCoords,
+          initialComponentCoords,
+          isPendingStartDrag,
+          isViewerDragging
+        },
         reflectionId,
         team: {teamId}
       }
@@ -145,7 +150,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
        */
       this.setState(nextCoords)
       // dont send updates too frequently & don't send them until the start message got back, since it'll be ignored by clients
-      if (this.isBroadcasting || isPending) return
+      if (this.isBroadcasting || isPendingStartDrag) return
       this.isBroadcasting = true
       const cursorCoords = {x: e.x, y: e.y}
       const {targetId, targetOffset} = getTargetReference(
@@ -216,7 +221,7 @@ export default createFragmentContainer(
       content
       dragContext {
         isClosing
-        isPending
+        isPendingStartDrag
         isViewerDragging
         dragCoords {
           x

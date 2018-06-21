@@ -142,7 +142,15 @@ class ReflectionCard extends Component<Props, State> {
   }
 
   render () {
-    const {atmosphere, error, hideShadow, meeting, reflection, showOriginFooter} = this.props
+    const {
+      atmosphere,
+      error,
+      hideShadow,
+      isDraggable,
+      meeting,
+      reflection,
+      showOriginFooter
+    } = this.props
     const {editorState} = this.state
     const {
       localPhase: {phaseType},
@@ -166,6 +174,7 @@ class ReflectionCard extends Component<Props, State> {
           editorRef={this.editorRef}
           editorState={editorState}
           innerRef={this.setEditorRef}
+          isDraggable={isDraggable}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder='My reflection thought…'

@@ -57,7 +57,7 @@ class DraggableReflectionCard extends React.Component<Props> {
         : standardStyle
     return connectDragSource(
       <div className={className} ref={setItemRef(reflectionId, isModal)}>
-        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />
+        <ReflectionCard meeting={meeting} reflection={reflection} isDraggable showOriginFooter />
       </div>
     )
   }
@@ -69,7 +69,7 @@ const reflectionDragSpec = {
     const {
       reflection: {dragContext}
     } = props
-    return !dragContext || dragContext.isViewerDragging
+    return !dragContext
   },
 
   beginDrag (props, monitor) {

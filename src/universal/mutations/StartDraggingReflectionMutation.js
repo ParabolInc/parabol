@@ -60,7 +60,7 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatc
     reflection.setLinkedRecord(dragContext, 'dragContext')
     dragContext.setValue(isViewerDragging, 'isViewerDragging')
     dragContext.setValue(false, 'isClosing')
-    dragContext.setValue(false, 'isPending')
+    dragContext.setValue(false, 'isPendingStartDrag')
     const meetingId = payload.getValue('meetingId')
     setInFlight(store, meetingId, reflection)
     if (existingDragUserId === viewerId) {
@@ -139,7 +139,7 @@ const StartDraggingReflectionMutation = (
         dragUserId: viewerId,
         isViewerDragging: true,
         isClosing: false,
-        isPending: true
+        isPendingStartDrag: true
       })
       dragContext.setLinkedRecord(store.get(viewerId), 'dragUser')
       setInitialCoords(store, dragContext, initialCoords, initialCursorCoords)

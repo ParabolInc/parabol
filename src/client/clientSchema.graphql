@@ -28,7 +28,7 @@ extend type RetroReflectionGroup {
 
 extend type DragContext {
   isClosing: Boolean,
-  isPending: Boolean,
+  isPendingStartDrag: Boolean,
   isViewerDragging: Boolean,
   initialCursorCoords: Coords2D,
   initialComponentCoords: Coords2D

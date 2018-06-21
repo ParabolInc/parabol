@@ -47,7 +47,7 @@ const codeBlock = css({
   padding: '0 .5rem'
 })
 
-const EditorStyles = styled('div')(({isBlurred}) => ({
+const EditorStyles = styled('div')(({isBlurred, userSelect}) => ({
   color: isBlurred === false ? ui.hintColor : appTheme.palette.dark,
   filter: isBlurred && 'blur(.25rem)',
   fontSize: ui.cardContentFontSize,
@@ -56,7 +56,7 @@ const EditorStyles = styled('div')(({isBlurred}) => ({
   minHeight: '1rem',
   overflow: 'auto',
   position: 'relative',
-  userSelect: isBlurred && 'none',
+  userSelect,
   width: '100%'
 }))
 
@@ -183,6 +183,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
       ariaLabel,
       editorState,
       isBlurred,
+      isDraggable,
       onBlur,
       onFocus,
       placeholder,
@@ -192,10 +193,11 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     // Folks may want to copy text from reflection cards to quote in task cards,
     // so going to allow unless AnonymousReflectionCard.
     // If isBlurred is true or false it’s probably from the AnonymousReflectionCard.
-    const userSelect = isBlurred === undefined ? 'text' : 'none'
+    // Selecting text when you're trying to drag is lame, removing this from draggables, too
+    const userSelect = isBlurred === undefined && !isDraggable ? 'text' : 'none'
 
     return (
-      <EditorStyles isBlurred={isBlurred}>
+      <EditorStyles isBlurred={isBlurred} userSelect={userSelect}>
         <Editor
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}
