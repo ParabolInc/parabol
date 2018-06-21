@@ -99,28 +99,36 @@ const moveReflectionLocation = (reflection, reflectionGroup, oldReflectionGroupI
   handleAddReflectionGroupToGroups(store, reflectionGroup)
 }
 
+const handleDragMismatch = (store, dragContext, userId) => {
+  // if an endDrag message comes in, we MUST trust it, because it was validated by the server & represents what is in the DB
+  const existingDragUserId = dragContext.getValue('dragUserId')
+  if (existingDragUserId !== userId) {
+    dragContext.setValue(userId, 'dragUserId')
+    const cachedDragUser = store.get(userId)
+    if (cachedDragUser) {
+      dragContext.setLinkedRecord(cachedDragUser, 'dragUser')
+    } else {
+      const nextUser = createProxyRecord(store, 'User', {
+        preferredName: 'Unknown',
+        id: userId
+      })
+      dragContext.setLinkedRecord(nextUser, 'dragUser')
+    }
+  }
+}
+
 export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) => {
   const userId = payload.getValue('userId')
   const reflection = payload.getLinkedRecord('reflection')
   const reflectionId = reflection.getValue('id')
   const storedReflection = store.get(reflectionId)
-  const dragUserId = getInProxy(storedReflection, 'dragContext', 'dragUserId')
-  // verify endDrag is sent by the person in charge of the drag
-  if (userId !== dragUserId) {
-    // HACK: set the userId to null to use as a sentinel to communicate with the onNext handler. Tell it to ignore the entire payload
-    payload.setValue(null, 'userId')
-    return
-  }
+  const dragContext = storedReflection.getLinkedRecord('dragContext')
+  if (!dragContext) return
+  handleDragMismatch(store, dragContext, userId)
+
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
   moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
-  // const reflectionGroupId = getInProxy(payload, 'reflectionGroup', 'id')
-  // if (reflectionGroupId) {
-  //   store.get(reflectionGroupId).setValue(false, 'isExpanded')
-  // }
-  // if (oldReflectionGroupId) {
-  //   store.get(oldReflectionGroupId).setValue(false, 'isExpanded')
-  // }
 }
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
@@ -132,10 +140,8 @@ export const endDraggingReflectionTeamOnNext = (payload, context) => {
     oldReflectionGroup,
     reflectionGroup,
     dropTargetType,
-    dropTargetId,
-    userId
+    dropTargetId
   } = payload
-  if (!userId) return
   const childId = reflectionGroup && reflectionGroup.id
   const sourceId = oldReflectionGroup && oldReflectionGroup.id
   eventEmitter.emit('endDraggingReflection', {

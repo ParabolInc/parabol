@@ -90,15 +90,12 @@ const Group = styled('div')(
 class ReflectionGroup extends Component<Props> {
   componentDidUpdate (prevProps) {
     const {
-      reflectionGroup: {isExpanded: wasExpanded}
+      reflectionGroup: {isExpanded: wasExpanded, reflections: oldReflections}
     } = prevProps
-    const {
-      reflectionGroup: {isExpanded}
-    } = this.props
+    const {childrenCache, itemCache, parentCache, reflectionGroup} = this.props
+    const {isExpanded, reflectionGroupId, reflections} = reflectionGroup
     if (wasExpanded !== isExpanded) {
       if (isExpanded) {
-        const {childrenCache, itemCache, parentCache, reflectionGroup} = this.props
-        const {reflectionGroupId, reflections} = reflectionGroup
         initializeModalGrid(
           reflections,
           parentCache,
@@ -109,6 +106,17 @@ class ReflectionGroup extends Component<Props> {
           this.backgroundRef
         )
       }
+    }
+    if (this.modalRef && reflections.length > oldReflections.length) {
+      initializeModalGrid(
+        reflections,
+        parentCache,
+        itemCache,
+        childrenCache[reflectionGroupId],
+        this.headerRef,
+        this.modalRef,
+        this.backgroundRef
+      )
     }
   }
 
