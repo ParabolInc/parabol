@@ -140,7 +140,7 @@ class ReflectionGroup extends Component<Props> {
       const {
         modalEl: {style: itemStyle}
       } = cachedItem
-      const cardStackOffset = idx === 0 ? 0 : 6
+      const cardStackOffset = idx === reflection.length - 1 ? 0 : 6
       itemStyle.height = `${firstItemHeight}px`
       itemStyle.overflow = 'hidden'
       itemStyle.transition = `transform ${EXIT_DURATION}ms ${MIN_VAR_ITEM_DELAY * idx}ms`
@@ -169,7 +169,9 @@ class ReflectionGroup extends Component<Props> {
       reflections.forEach((reflection) => {
         itemCache[reflection.id].modalEl = undefined
       })
-      this.modalRef.removeEventListener('transitionend', reset)
+      if (this.modalRef) {
+        this.modalRef.removeEventListener('transitionend', reset)
+      }
     }
     this.modalRef.addEventListener('transitionend', reset)
   }
@@ -225,21 +227,15 @@ class ReflectionGroup extends Component<Props> {
   }
 
   setHeaderRef = (c) => {
-    if (c) {
-      this.headerRef = c
-    }
+    this.headerRef = c
   }
 
   setModalRef = (c) => {
-    if (c) {
-      this.modalRef = c
-    }
+    this.modalRef = c
   }
 
   setBackgroundRef = (c) => {
-    if (c) {
-      this.backgroundRef = c
-    }
+    this.backgroundRef = c
   }
 
   render () {

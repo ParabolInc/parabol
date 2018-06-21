@@ -80,6 +80,18 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
+  componentDidUpdate () {
+    // very rarely the onTransitionEnd event won't fire.
+    // maybe because the card was dropped in the perfect spot so it doesn't need to transition?
+    // if that's the case, we should still close out
+    // if this doesn't work, try seeing if isClosing is true after the timeout period
+    const {
+      reflection: {dragContext}
+    } = this.props
+    if (!this.exitTimer && dragContext && dragContext.isClosing) {
+      this.exitTimer = setTimeout(this.removeCardInFlight, 1000)
+    }
+  }
   componentWillUnmount () {
     const {
       itemCache,
@@ -95,7 +107,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  handleTransitionEnd = () => {
+  removeCardInFlight = () => {
     const {
       atmosphere,
       cardsInFlight,
@@ -112,6 +124,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     })
     delete cardsInFlight[reflectionId]
     shakeUpBottomCells(childrenCache, parentCache.columnLefts)
+    clearTimeout(this.exitTimer)
   }
 
   setViewerDragState = (e) => {
@@ -197,7 +210,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       transform: `translate3d(${x}px, ${y}px, 0px)`
     }
     return (
-      <ModalBlock style={style} onTransitionEnd={isClosing ? this.handleTransitionEnd : undefined}>
+      <ModalBlock style={style} onTransitionEnd={isClosing ? this.removeCardInFlight : undefined}>
         <ReflectionCardRoot>
           {!isViewerDragging && <UserDraggingHeader user={dragUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />

@@ -22,7 +22,9 @@ const makeResetHandler = (reflections, itemCache, modalRef) => {
   const resetStyles = (e) => {
     if (e.currentTarget !== e.target) return
     resetQueue.forEach((cb) => cb())
-    modalRef.removeEventListener('transitionend', resetStyles)
+    if (modalRef) {
+      modalRef.removeEventListener('transitionend', resetStyles)
+    }
   }
   return resetStyles
 }
@@ -148,13 +150,18 @@ const initializeModalGrid = (
   const currentColumnHeights = new Array(columnCount).fill(0)
   const modalColumnLefts = currentColumnHeights.map((_, idx) => REFLECTION_WIDTH * idx)
   const {height: headerHeight} = headerRef.getBoundingClientRect()
-  const heights = reflections.map(({id}) => itemCache[id].modalEl.getBoundingClientRect().height)
+
+  const heights = reflections.map(({id}) => {
+    // const cachedItem = itemCache[id]
+    // if (!cachedItem.modalEl) debugger
+    return itemCache[id].modalEl.getBoundingClientRect().height
+  })
 
   // make cards animate in one at a time, but finish when the expansion does (unless there are a TON)
   const shuffleDelay =
     (ANIMATE_IN_TOTAL_DURATION - ITEM_DURATION - MIN_ITEM_DELAY) / (reflections.length - 1)
   const variableDelay = Math.max(MIN_VAR_ITEM_DELAY, shuffleDelay)
-
+  const totalDuration = (reflections.length - 1) * variableDelay + MIN_ITEM_DELAY + ITEM_DURATION
   const animateItemQueue = reflections.map((reflection, idx) => {
     const cachedItem = itemCache[reflection.id]
     const top = Math.min(...currentColumnHeights)
@@ -206,20 +213,21 @@ const initializeModalGrid = (
   // set initial background style
   backgroundStyle.height = `${modalHeight}px`
   backgroundStyle.width = `${modalWidth}px`
-  backgroundStyle.transform = `matrix(${childCache.scaleX}}, 0, 0, ${childCache.scaleY}, 0, 0)` // `scale(${childCache.scaleX},${childCache.scaleY})`
-  backgroundStyle.transformOrigin = `${MODAL_PADDING}px ${headerHeight +
-    firstReflectionBBox.height}px`
+  backgroundStyle.transform = `scale(${childCache.scaleX}, ${childCache.scaleY})`
+  backgroundStyle.transformOrigin = `${MODAL_PADDING}px ${MODAL_PADDING}px`
+  backgroundStyle.backgroundColor = 'rgba(68, 66, 88, .65)'
+
   // backgroundStyle.willChange = 'transform'
 
   const resetStyles = makeResetHandler(reflections, itemCache, modalRef)
   window.requestAnimationFrame(() => {
     // set final group styles
-    modalStyle.transition = `all ${ANIMATE_IN_TOTAL_DURATION}ms`
+    modalStyle.transition = `all ${totalDuration}ms`
     modalStyle.transform = `translate(${childLeft - left}px,${childTop - top}px)scale(1)`
 
     // set final background styles
     backgroundStyle.transition = `all ${ANIMATE_IN_TOTAL_DURATION}ms`
-    backgroundStyle.transform = `matrix(1,0,0,1,0,0)` // `scale(1)`
+    backgroundStyle.transform = 'scale(1)'
     backgroundStyle.backgroundColor = 'rgba(68, 66, 88, .65)'
 
     // set final reflection styles

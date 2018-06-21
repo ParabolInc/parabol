@@ -33,7 +33,8 @@ const dragContextStyle = css({
 const modalStyle = (isTop) =>
   css({
     position: 'absolute',
-    top: !isTop && 0
+    top: !isTop && 0,
+    zIndex: 1
   })
 
 const standardStyle = css({
