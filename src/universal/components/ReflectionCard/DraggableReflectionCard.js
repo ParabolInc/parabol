@@ -33,9 +33,13 @@ const dragContextStyle = css({
 const modalStyle = (isTop) =>
   css({
     position: 'absolute',
-    top: !isTop && 0,
-    zIndex: isTop ? 101 : 1
+    top: !isTop && 0
   })
+
+const standardStyle = css({
+  position: 'relative',
+  zIndex: 1
+})
 
 class DraggableReflectionCard extends React.Component<Props> {
   componentDidMount () {
@@ -46,7 +50,11 @@ class DraggableReflectionCard extends React.Component<Props> {
   render () {
     const {connectDragSource, reflection, setItemRef, meeting, idx, isModal} = this.props
     const {dragContext, reflectionId} = reflection
-    const className = dragContext ? dragContextStyle : isModal ? modalStyle(idx === 0) : undefined
+    const className = dragContext
+      ? dragContextStyle
+      : isModal
+        ? modalStyle(idx === 0)
+        : standardStyle
     return connectDragSource(
       <div className={className} ref={setItemRef(reflectionId, isModal)}>
         <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter />

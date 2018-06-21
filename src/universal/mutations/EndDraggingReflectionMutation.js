@@ -202,15 +202,14 @@ const EndDraggingReflectionMutation = (
         // } else if (reflectionGroupId === oldReflectionGroupId) {
         // move a card within the same group
         // updateProxyRecord(reflectionProxy, {sortOrder: 0})
-        console.log('')
       } else {
         const reflections = reflectionGroupProxy.getLinkedRecords('reflections')
-        const minSortOrder = Math.min(
+        const maxSortOrder = Math.max(
           ...reflections.map((reflection) => reflection.getValue('sortOrder'))
         )
         // move a card into another group
         updateProxyRecord(reflectionProxy, {
-          sortOrder: minSortOrder - 1 + dndNoise(),
+          sortOrder: maxSortOrder + 1 + dndNoise(),
           reflectionGroupId
         })
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')

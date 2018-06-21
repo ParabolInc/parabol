@@ -44,19 +44,26 @@ const reflectionsStyle = (canDrop) =>
     position: 'relative'
   })
 
-const ReflectionCardInStack = styled('div')({
+const ReflectionCardInStack = styled('div')(({secondCard}) => ({
   backgroundColor: 'white',
   borderRadius: 4,
-  boxShadow: ui.shadow[0],
-  opacity: 1,
+  boxShadow: secondCard === 1 ? ui.shadow[0] : undefined,
+  opacity: secondCard ? 1 : 0,
   overflow: 'hidden',
   position: 'absolute',
+  pointerEvents: 'none',
   left: 6,
   top: 6,
   right: -6,
   bottom: -2,
-  width: ui.retroCardWidth,
-  zIndex: -1
+  width: ui.retroCardWidth
+}))
+
+// use a background so we can use scale instead of width/height for 60fps animations
+const Background = styled('div')({
+  position: 'absolute',
+  top: 0,
+  left: 0
 })
 
 const Group = styled('div')(
@@ -67,7 +74,6 @@ const Group = styled('div')(
   },
   ({isModal}) =>
     isModal && {
-      backgroundColor: 'rgba(0,0,0,0)',
       borderRadius: 6,
       overflow: 'hidden',
       padding: MODAL_PADDING,
@@ -99,7 +105,8 @@ class ReflectionGroup extends Component<Props> {
           itemCache,
           childrenCache[reflectionGroupId],
           this.headerRef,
-          this.modalRef
+          this.modalRef,
+          this.backgroundRef
         )
       }
     }
@@ -113,9 +120,13 @@ class ReflectionGroup extends Component<Props> {
       reflectionGroup: {isExpanded, reflectionGroupId, reflections}
     } = this.props
     if (!isExpanded) return
-    const {style: modalStyle} = this.modalRef
 
+    const {style: modalStyle} = this.modalRef
+    const {style: backgroundStyle} = this.backgroundRef
     const firstItemHeight = itemCache[reflections[0].id].boundingBox.height
+    const childDuration = EXIT_DURATION + MIN_VAR_ITEM_DELAY * (reflections.length - 1)
+
+    // set starting item styles
     reflections.forEach((reflection, idx) => {
       const cachedItem = itemCache[reflection.id]
       const {
@@ -129,27 +140,30 @@ class ReflectionGroup extends Component<Props> {
     })
 
     // animate child home
-    const childDuration = EXIT_DURATION + MIN_VAR_ITEM_DELAY * (reflections.length - 1)
     modalStyle.transition = `all ${childDuration}ms ${MIN_ITEM_DELAY}ms`
     modalStyle.transform = `translate(${0}px,${0}px)`
-    modalStyle.backgroundColor = ''
-    const closeOut = (e) => {
+
+    // animate background home
+    const childCache = childrenCache[reflectionGroupId]
+    backgroundStyle.transition = `all ${childDuration}ms`
+    backgroundStyle.transform = `scale(${childCache.scaleX},${childCache.scaleY})`
+    backgroundStyle.backgroundColor = ''
+
+    const reset = (e) => {
       if (e.target !== e.currentTarget) return
+      const childCache = childrenCache[reflectionGroupId]
+      childCache.scaleX = undefined
+      childCache.scaleY = undefined
       childrenCache[reflectionGroupId].el.style.opacity = ''
       commitLocalUpdate(atmosphere, (store) => {
         store.get(reflectionGroupId).setValue(false, 'isExpanded')
       })
       reflections.forEach((reflection) => {
-        delete itemCache[reflection.id].modalEl
+        itemCache[reflection.id].modalEl = undefined
       })
-      this.modalRef.removeEventListener('transitionend', closeOut)
+      this.modalRef.removeEventListener('transitionend', reset)
     }
-    this.modalRef.addEventListener('transitionend', closeOut)
-  }
-
-  promoteModalItemtoGrid = (itemId) => {
-    const {itemCache} = this.props
-    itemCache[itemId].el = itemCache[itemId].modalEl
+    this.modalRef.addEventListener('transitionend', reset)
   }
 
   renderReflection = (isModal, reflection: Object, idx: number) => {
@@ -163,14 +177,14 @@ class ReflectionGroup extends Component<Props> {
           isModal
           key={reflection.id}
           meeting={meeting}
-          promoteModalItemtoGrid={this.promoteModalItemtoGrid}
           reflection={reflection}
           setItemRef={setItemRef}
         />
       )
     }
 
-    if (idx === 0) {
+    const topCard = idx === reflections.length - 1
+    if (topCard) {
       return (
         <DraggableReflectionCard
           key={reflection.id}
@@ -182,13 +196,12 @@ class ReflectionGroup extends Component<Props> {
       )
     }
 
-    if (idx > 0) {
-      return (
-        <ReflectionCardInStack key={reflection.id}>
-          <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter hideShadow />
-        </ReflectionCardInStack>
-      )
-    }
+    const secondCard = idx === reflections.length - 2
+    return (
+      <ReflectionCardInStack key={reflection.id} secondCard={secondCard}>
+        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter hideShadow />
+      </ReflectionCardInStack>
+    )
   }
 
   expandGroup = () => {
@@ -212,6 +225,12 @@ class ReflectionGroup extends Component<Props> {
   setModalRef = (c) => {
     if (c) {
       this.modalRef = c
+    }
+  }
+
+  setBackgroundRef = (c) => {
+    if (c) {
+      this.backgroundRef = c
     }
   }
 
@@ -247,6 +266,7 @@ class ReflectionGroup extends Component<Props> {
         </Group>
         <Modal clickToClose escToClose isOpen={isExpanded} onClose={this.closeGroupModal}>
           <Group innerRef={this.setModalRef} isModal>
+            <Background innerRef={this.setBackgroundRef} />
             <ReflectionGroupHeader
               isExpanded={isExpanded}
               innerRef={this.setHeaderRef}

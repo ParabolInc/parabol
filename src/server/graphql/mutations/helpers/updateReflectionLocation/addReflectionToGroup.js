@@ -21,17 +21,17 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
   if (reflectionMeetingId !== meetingId) {
     sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
   }
-  const minSortOrder = await r
+  const maxSortOrder = await r
     .table('RetroReflection')
     .getAll(reflectionGroupId, {index: 'reflectionGroupId'})('sortOrder')
-    .min()
+    .max()
 
   // RESOLUTION
   await r
     .table('RetroReflection')
     .get(reflectionId)
     .update({
-      sortOrder: minSortOrder - 1 + dndNoise(),
+      sortOrder: maxSortOrder + 1 + dndNoise(),
       reflectionGroupId,
       updatedAt: now
     })
