@@ -11,7 +11,7 @@ import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
 
 type Props = {
-  action: 'Sign in' | 'Sign up',
+  action: 'Sign In' | 'Sign Up',
   waiting?: boolean,
   handleClick: () => void,
   provider: ThirdPartyAuthProvider
