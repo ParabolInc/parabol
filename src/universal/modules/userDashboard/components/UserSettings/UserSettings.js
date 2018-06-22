@@ -113,7 +113,12 @@ const UserSettings = (props) => {
                     type='text'
                   />
                 </FieldBlock>
-                <StyledButton size={controlSize} palette='mid'>
+                <StyledButton
+                  size={controlSize}
+                  onClick={handleSubmit(onSubmit)}
+                  type='submit'
+                  palette='mid'
+                >
                   {'Update'}
                 </StyledButton>
               </ControlBlock>
