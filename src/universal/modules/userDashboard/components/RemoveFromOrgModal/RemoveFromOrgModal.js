@@ -12,7 +12,7 @@ import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 
 const StyledButton = styled(FlatButton)({
-  marginTop: '1.5rem'
+  margin: '1.5rem auto 0'
 })
 
 const RemoveFromOrgModal = (props) => {
