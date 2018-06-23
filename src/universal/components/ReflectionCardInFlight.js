@@ -69,17 +69,13 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
 
   componentDidMount () {
     const {
-      itemCache,
       reflection: {
-        reflectionId,
         dragContext: {isViewerDragging}
       }
     } = this.props
     if (isViewerDragging) {
-      const {el, modalEl} = itemCache[reflectionId]
-      // purposefully naive. if it breaks, it means we aren't GCing our refs correctly
-      const bestEl = modalEl || el
-      bestEl.addEventListener('drag', this.setViewerDragState)
+      // firefox doesn't report coords for the 'drag' event, so instead, we use the dragover on the document
+      document.addEventListener('dragover', this.setViewerDragState)
     }
   }
 
@@ -99,18 +95,12 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
 
   componentWillUnmount () {
     const {
-      itemCache,
       reflection: {
-        reflectionId,
         dragContext: {isViewerDragging}
       }
     } = this.props
     if (isViewerDragging) {
-      const {el, modalEl} = itemCache[reflectionId]
-      const bestEl = modalEl || el
-      if (bestEl) {
-        bestEl.removeEventListener('drag', this.setViewerDragState)
-      }
+      document.removeEventListener('dragover', this.setViewerDragState)
     }
   }
 

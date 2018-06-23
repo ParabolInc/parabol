@@ -98,8 +98,8 @@ const initializeModalGrid = (
 
   // cache for the closing animation
   childCache.modalBoundingBox = {
-    left,
-    top,
+    left: modalLeft,
+    top: modalTop,
     width: modalWidth,
     height: modalHeight
   }
