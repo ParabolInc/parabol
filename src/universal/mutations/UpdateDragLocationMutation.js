@@ -1,5 +1,6 @@
 import getInProxy from 'universal/utils/relay/getInProxy'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 
 graphql`
   fragment UpdateDragLocationMutation_team on UpdateDragLocationPayload {
@@ -54,9 +55,21 @@ export const updateDragLocationTeamUpdater = (payload, {atmosphere, store}) => {
     const targetOffset = payload.getLinkedRecord('targetOffset')
     const offsetX = targetOffset.getValue('x')
     const offsetY = targetOffset.getValue('y')
-    const {top, left} = targetChild.boundingBox
-    localX = left - offsetX + parentLeft
-    localY = top - offsetY + parentTop
+    const {top, left, height} = targetChild.boundingBox
+    // if my group modal is open, show the hover over the modal, not the invisible collapsed group
+    if (targetChild.modalBoundingBox && -offsetY < height && -offsetX < REFLECTION_WIDTH) {
+      const {
+        top: modalTop,
+        left: modalLeft,
+        height: modalHeight,
+        width: modalWidth
+      } = targetChild.modalBoundingBox
+      localX = -offsetX / REFLECTION_WIDTH * modalWidth + modalLeft
+      localY = -offsetY / height * modalHeight + modalTop
+    } else {
+      localX = left - offsetX + parentLeft
+      localY = top - offsetY + parentTop
+    }
   } else {
     localX = foreignX / clientWidth * window.innerWidth
     localY = foreignY / clientHeight * window.innerHeight
