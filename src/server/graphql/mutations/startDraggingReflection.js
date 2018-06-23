@@ -54,6 +54,8 @@ export default {
       meetingId,
       reflectionId,
       dragContext: {
+        // required so relay doesn't assign the same ID every time
+        id: `${reflectionId}-drag`,
         dragUserId: viewerId,
         dragCoords: initialCoords
       }

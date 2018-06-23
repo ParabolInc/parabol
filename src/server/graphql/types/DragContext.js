@@ -7,6 +7,9 @@ const DragContext = new GraphQLObjectType({
   name: 'DragContext',
   description: 'Info associated with a current drag',
   fields: () => ({
+    id: {
+      type: GraphQLID
+    },
     dragUserId: {
       description: 'The userId of the person currently dragging the reflection',
       type: GraphQLID

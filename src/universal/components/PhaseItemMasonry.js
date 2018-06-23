@@ -15,6 +15,7 @@ import handleDropOnGrid from 'universal/utils/multiplayerMasonry/handleDropOnGri
 import appTheme from 'universal/styles/theme/appTheme'
 import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
 import Modal from 'universal/components/Modal'
+import {MODAL_PADDING} from 'universal/utils/multiplayerMasonry/masonryConstants'
 
 type Props = {|
   meeting: Meeting
@@ -122,9 +123,22 @@ class PhaseItemMasonry extends React.Component<Props> {
         itemId
       )
     } else if (dropTargetType === REFLECTION_GROUP) {
-      const targetAdjustment = this.handleGridUpdate(sourceId, dropTargetId)
-      const {top, left} = this.itemCache[itemId].el.getBoundingClientRect()
-      setClosingTransform(atmosphere, itemId, {x: left, y: top + targetAdjustment})
+      this.handleGridUpdate(sourceId, dropTargetId)
+      const {boundingBox, modalEl, el} = this.itemCache[itemId]
+      if (modalEl) {
+        const {
+          modalBoundingBox: {left: modalLeft, top: modalTop},
+          headerHeight
+        } = this.childrenCache[childId]
+        const {left, top} = boundingBox
+        setClosingTransform(atmosphere, itemId, {
+          x: modalLeft + left + MODAL_PADDING,
+          y: modalTop + top + headerHeight + MODAL_PADDING
+        })
+      } else {
+        const {top, left} = el.getBoundingClientRect()
+        setClosingTransform(atmosphere, itemId, {x: left, y: top})
+      }
     } else {
       const cachedItem = this.itemCache[itemId]
       const bestEl = cachedItem.modalEl || cachedItem.el
@@ -146,17 +160,19 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   handleGridUpdate = (oldReflectionGroupId, newReflectionGroupId) => {
-    const startingHeight = this.childrenCache[newReflectionGroupId].boundingBox.top
     updateColumnHeight(this.childrenCache, oldReflectionGroupId)
     updateColumnHeight(this.childrenCache, newReflectionGroupId)
-    const endingHeight = this.childrenCache[newReflectionGroupId].boundingBox.top
-    return endingHeight - startingHeight
   }
 
   setItemRef = (itemId, isModal) => (c) => {
-    if (!c) return
-    this.itemCache[itemId] = this.itemCache[itemId] || {}
+    if (!c) {
+      if (isModal) {
+        this.itemCache[itemId].modalEl = undefined
+      }
+      return
+    }
     const elType = isModal ? 'modalEl' : 'el'
+    this.itemCache[itemId] = this.itemCache[itemId] || {}
     this.itemCache[itemId][elType] = c
   }
 

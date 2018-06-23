@@ -24,6 +24,9 @@ import {
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Modal from 'universal/components/Modal'
 import initializeModalGrid from 'universal/utils/multiplayerMasonry/initializeModalGrid'
+import {STANDARD_CURVE} from 'universal/styles/animation'
+import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateReflectionsInModal'
+import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
 
 const {Component} = React
 
@@ -70,7 +73,9 @@ const Group = styled('div')(
   {
     padding: CARD_PADDING,
     position: 'absolute',
-    display: 'inline-block'
+    display: 'inline-block',
+    // necessary for smooth updating column heights
+    transition: 'transform 200ms'
   },
   ({isModal}) =>
     isModal && {
@@ -78,6 +83,7 @@ const Group = styled('div')(
       overflow: 'hidden',
       padding: MODAL_PADDING,
       position: 'absolute',
+      transition: 'unset',
       zIndex: 100
     },
   ({isHidden}) =>
@@ -107,15 +113,21 @@ class ReflectionGroup extends Component<Props> {
         )
       }
     }
-    if (this.modalRef && reflections.length > oldReflections.length) {
-      initializeModalGrid(
+    if (this.modalRef && reflections.length !== oldReflections.length && !this.isClosing) {
+      const oldReflectionsIds = new Set(oldReflections.map((reflection) => reflection.id))
+      const newReflections = reflections.filter(
+        (reflection) => !oldReflectionsIds.has(reflection.id)
+      )
+      const itemIds = newReflections.map((reflection) => reflection.id)
+      updateReflectionsInModal(
         reflections,
         parentCache,
         itemCache,
         childrenCache[reflectionGroupId],
         this.headerRef,
         this.modalRef,
-        this.backgroundRef
+        this.backgroundRef,
+        itemIds
       )
     }
   }
@@ -124,11 +136,14 @@ class ReflectionGroup extends Component<Props> {
     const {
       atmosphere,
       childrenCache,
+      parentCache,
       itemCache,
       reflectionGroup: {isExpanded, reflectionGroupId, reflections}
     } = this.props
     if (!isExpanded) return
-
+    const {
+      boundingBox: {left: parentLeft, top: parentTop}
+    } = parentCache
     const {style: modalStyle} = this.modalRef
     const {style: backgroundStyle} = this.backgroundRef
     const firstItemHeight = itemCache[reflections[0].id].boundingBox.height
@@ -140,28 +155,43 @@ class ReflectionGroup extends Component<Props> {
       const {
         modalEl: {style: itemStyle}
       } = cachedItem
-      const cardStackOffset = idx === reflection.length - 1 ? 0 : 6
+      const cardStackOffset = idx === reflections.length - 1 ? 0 : 6
+      const delay = MIN_VAR_ITEM_DELAY * (reflections.length - 1 - idx)
       itemStyle.height = `${firstItemHeight}px`
       itemStyle.overflow = 'hidden'
-      itemStyle.transition = `transform ${EXIT_DURATION}ms ${MIN_VAR_ITEM_DELAY * idx}ms`
+      itemStyle.transition = `transform ${EXIT_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
       itemStyle.transform = `translate(${cardStackOffset}px, ${cardStackOffset}px)`
     })
-
+    const {boundingBox} = childrenCache[reflectionGroupId]
+    const {top: collapsedTop, left: collapsedLeft} = boundingBox
+    const top = collapsedTop + parentTop - MODAL_PADDING + CARD_PADDING
+    const left = collapsedLeft + parentLeft - MODAL_PADDING + CARD_PADDING
     // animate child home
-    modalStyle.transition = `all ${childDuration}ms ${MIN_ITEM_DELAY}ms`
-    modalStyle.transform = `translate(${0}px,${0}px)`
+    modalStyle.transition = `all ${childDuration}ms ${MIN_ITEM_DELAY}ms ${STANDARD_CURVE}`
+    modalStyle.transform = `translate(${left}px,${top}px)`
 
     // animate background home
     const childCache = childrenCache[reflectionGroupId]
-    backgroundStyle.transition = `all ${childDuration}ms`
-    backgroundStyle.transform = `scale(${childCache.scaleX},${childCache.scaleY})`
+    const {
+      modalBoundingBox: {height: modalHeight, width: modalWidth},
+      headerHeight
+    } = childCache
+    backgroundStyle.transition = `all ${childDuration}ms ${STANDARD_CURVE}`
+    backgroundStyle.transform = getScaledModalBackground(
+      modalHeight,
+      modalWidth,
+      firstItemHeight,
+      headerHeight
+    )
     backgroundStyle.backgroundColor = ''
 
+    this.isClosing = true
     const reset = (e) => {
+      this.isClosing = false
       if (e.target !== e.currentTarget) return
       const childCache = childrenCache[reflectionGroupId]
-      childCache.scaleX = undefined
-      childCache.scaleY = undefined
+      childCache.headerHeight = undefined
+      childCache.modalBoundingBox = undefined
       childrenCache[reflectionGroupId].el.style.opacity = ''
       commitLocalUpdate(atmosphere, (store) => {
         store.get(reflectionGroupId).setValue(false, 'isExpanded')
@@ -232,6 +262,11 @@ class ReflectionGroup extends Component<Props> {
 
   setModalRef = (c) => {
     this.modalRef = c
+    const {
+      childrenCache,
+      reflectionGroup: {reflectionGroupId}
+    } = this.props
+    childrenCache[reflectionGroupId].modalEl = c
   }
 
   setBackgroundRef = (c) => {

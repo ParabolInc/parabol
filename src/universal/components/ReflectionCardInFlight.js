@@ -15,6 +15,7 @@ import ReflectionFooter from 'universal/components/ReflectionFooter'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 import getTargetReference from 'universal/utils/multiplayerMasonry/getTargetReference'
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
+import {DECELERATE} from 'universal/styles/animation'
 
 type Props = {|
   atmosphere: Object,
@@ -35,10 +36,12 @@ const ModalBlock = styled('div')({
 })
 
 const makeTransition = (isClosing, isViewerDragging) => {
+  if (!isViewerDragging) {
+    // cards that i dont control shouldn't go too fast
+    return `transform 1000ms ${DECELERATE}`
+  }
   if (isClosing) {
-    return 'transform 200ms cubic-bezier(0, 0, .2, 1)'
-  } else if (!isViewerDragging) {
-    return 'transform 100ms cubic-bezier(0, 0, .2, 1)'
+    return `transform 200ms ${DECELERATE}`
   }
   return undefined
 }
@@ -80,18 +83,20 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate () {
-    // very rarely the onTransitionEnd event won't fire.
-    // maybe because the card was dropped in the perfect spot so it doesn't need to transition?
-    // if that's the case, we should still close out
-    // if this doesn't work, try seeing if isClosing is true after the timeout period
-    const {
-      reflection: {dragContext}
-    } = this.props
-    if (!this.exitTimer && dragContext && dragContext.isClosing) {
-      this.exitTimer = setTimeout(this.removeCardInFlight, 1000)
-    }
-  }
+  // i think i fixed it so we don't need this, but just in case, here it is
+  // componentDidUpdate() {
+  //   // very rarely the onTransitionEnd event won't fire.
+  //   // maybe because the card was dropped in the perfect spot so it doesn't need to transition?
+  //   // if that's the case, we should still close out
+  //   // if this doesn't work, try seeing if isClosing is true after the timeout period
+  //   const {
+  //     reflection: {dragContext}
+  //   } = this.props
+  //   if (!this.exitTimer && dragContext && dragContext.isClosing) {
+  //     // this.exitTimer = setTimeout(this.removeCardInFlight, 1500)
+  //   }
+  // }
+
   componentWillUnmount () {
     const {
       itemCache,
@@ -103,7 +108,9 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     if (isViewerDragging) {
       const {el, modalEl} = itemCache[reflectionId]
       const bestEl = modalEl || el
-      bestEl.removeEventListener('drag', this.setViewerDragState)
+      if (bestEl) {
+        bestEl.removeEventListener('drag', this.setViewerDragState)
+      }
     }
   }
 
@@ -115,10 +122,14 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       parentCache,
       reflection: {meetingId, reflectionId}
     } = this.props
+
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
       const reflection = store.get(reflectionId)
+      const dragContext = reflection.getLinkedRecord('dragContext')
+      // critically important! relay will try to reuse this for other reflections
+      store.delete(dragContext.getDataID())
       reflection.setValue(null, 'dragContext')
       safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
     })

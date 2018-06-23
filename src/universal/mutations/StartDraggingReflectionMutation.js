@@ -21,6 +21,7 @@ graphql`
     meetingId
     reflectionId
     dragContext {
+      id
       dragCoords {
         x
         y

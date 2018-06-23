@@ -1,7 +1,7 @@
 import * as React from 'react'
 import FontAwesome from 'react-fontawesome'
 
-const domProps = ['onClick', 'onMouseEnter', 'onMouseLeave']
+const domProps = ['onClick', 'onMouseEnter', 'onMouseLeave', 'title']
 const propSet = new Set([...Object.keys(FontAwesome.propTypes), ...domProps])
 
 // eslint-disable-next-line react/prefer-stateless-function

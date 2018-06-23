@@ -234,6 +234,7 @@ class NewMeeting extends Component<Props> {
           viewer={viewer}
         />
         <MeetingArea>
+          {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
           <MeetingAreaHeader>
             <NewMeetingPhaseHeading meeting={newMeeting} />
             <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
