@@ -1,4 +1,4 @@
-import {css} from 'aphrodite-local-styles/no-important'
+import styled, {css} from 'react-emotion'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import withScrolling from 'react-dnd-scrollzone'
@@ -13,7 +13,6 @@ import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import themeLabels from 'universal/styles/theme/labels'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {TEAM_DASH, USER_DASH} from 'universal/utils/constants'
 import dndNoise from 'universal/utils/dndNoise'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
@@ -48,6 +47,71 @@ const handleAddTaskFactory = (atmosphere, status, teamId, userId, sortOrder) => 
   CreateTaskMutation(atmosphere, newTask)
 }
 
+const Column = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  overflow: 'auto',
+  position: 'relative',
+  width: '25%'
+})
+
+const ColumnHeader = styled('div')({
+  color: appTheme.palette.dark,
+  display: 'flex !important',
+  lineHeight: '1.5rem',
+  padding: `.625rem ${ui.taskColumnPaddingInnerSmall} .5rem`,
+  position: 'relative',
+  [ui.dashBreakpoint]: {
+    paddingLeft: ui.taskColumnPaddingInnerLarge,
+    paddingRight: ui.taskColumnPaddingInnerLarge
+  }
+})
+
+const ColumnBody = styled('div')({
+  flex: 1,
+  position: 'relative'
+})
+
+const columnInner = {
+  ...overflowTouch,
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  padding: `.125rem ${ui.taskColumnPaddingInnerSmall} 0`,
+  position: 'absolute',
+  width: '100%',
+  [ui.dashBreakpoint]: {
+    paddingLeft: ui.taskColumnPaddingInnerLarge,
+    paddingRight: ui.taskColumnPaddingInnerLarge
+  },
+  '&::-webkit-scrollbar-thumb': {
+    // Define
+  }
+}
+
+const statusLabelBlock = {
+  alignItems: 'center',
+  display: 'flex',
+  flex: 1,
+  fontSize: '1.0625rem',
+  marginLeft: '.9375rem'
+}
+
+const statusLabelBlockUserCanAdd = {
+  marginLeft: '.5625rem'
+}
+
+const StatusLabel = styled('div')({
+  fontWeight: 600,
+  textTransform: 'capitalize'
+})
+
+const TasksCount = styled('div')({
+  color: appTheme.palette.dark40a,
+  marginLeft: '.5rem'
+})
+
 class TaskColumn extends Component {
   static propTypes = {
     area: PropTypes.string,
@@ -61,7 +125,6 @@ class TaskColumn extends Component {
     myTeamMemberId: PropTypes.string,
     tasks: PropTypes.array.isRequired,
     status: PropTypes.string,
-    styles: PropTypes.object,
     teamMemberFilterId: PropTypes.string,
     teams: PropTypes.array
   }
@@ -172,32 +235,23 @@ class TaskColumn extends Component {
       isMyMeetingSection,
       lastColumn,
       status,
-      tasks,
-      styles
+      tasks
     } = this.props
     const label = themeLabels.taskStatus[status].slug
-    const columnStyles = css(
-      styles.column,
-      firstColumn && styles.columnFirst,
-      lastColumn && styles.columnLast
-    )
     const userCanAdd = area === 'TEAM_DASH' || area === 'USER_DASH' || isMyMeetingSection
-    const statusLabelBlockStyles = css(
-      styles.statusLabelBlock,
-      userCanAdd && styles.statusLabelBlockUserCanAdd
-    )
+    const statusLabelBlockStyles = css(statusLabelBlock, userCanAdd && statusLabelBlockUserCanAdd)
 
     return (
-      <div className={columnStyles}>
-        <div className={css(styles.columnHeader)}>
+      <Column firstColumn={firstColumn} lastColumn={lastColumn}>
+        <ColumnHeader>
           {this.makeAddTask()}
           <div className={statusLabelBlockStyles}>
-            <span className={css(styles.statusLabel)}>{label}</span>
-            {tasks.length > 0 && <span className={css(styles.tasksCount)}>{tasks.length}</span>}
+            <StatusLabel>{label}</StatusLabel>
+            {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
           </div>
-        </div>
-        <div className={css(styles.columnBody)}>
-          <ScrollZone className={css(styles.columnInner)}>
+        </ColumnHeader>
+        <ColumnBody>
+          <ScrollZone className={css(columnInner)}>
             {tasks.map((task) => (
               <DraggableTask
                 key={`teamCard${task.id}`}
@@ -215,82 +269,10 @@ class TaskColumn extends Component {
               status={status}
             />
           </ScrollZone>
-        </div>
-      </div>
+        </ColumnBody>
+      </Column>
     )
   }
 }
 
-const styleThunk = () => ({
-  column: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    overflow: 'auto',
-    position: 'relative',
-    width: '25%'
-  },
-
-  columnFirst: {
-    // keeping this around, we may need it (TA)
-  },
-
-  columnLast: {
-    // keeping this around, we may need it (TA)
-  },
-
-  columnHeader: {
-    color: appTheme.palette.dark,
-    display: 'flex !important',
-    lineHeight: '1.5rem',
-    padding: `.625rem ${ui.taskColumnPaddingInnerSmall} .5rem`,
-    position: 'relative',
-    [ui.dashBreakpoint]: {
-      paddingLeft: ui.taskColumnPaddingInnerLarge,
-      paddingRight: ui.taskColumnPaddingInnerLarge
-    }
-  },
-
-  columnBody: {
-    flex: 1,
-    position: 'relative'
-  },
-
-  columnInner: {
-    ...overflowTouch,
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    padding: `.125rem ${ui.taskColumnPaddingInnerSmall} 0`,
-    position: 'absolute',
-    width: '100%',
-    [ui.dashBreakpoint]: {
-      paddingLeft: ui.taskColumnPaddingInnerLarge,
-      paddingRight: ui.taskColumnPaddingInnerLarge
-    }
-  },
-
-  statusLabelBlock: {
-    alignItems: 'center',
-    display: 'flex',
-    flex: 1,
-    fontSize: '1.0625rem',
-    marginLeft: '.9375rem'
-  },
-
-  statusLabelBlockUserCanAdd: {
-    marginLeft: '.5625rem'
-  },
-
-  statusLabel: {
-    fontWeight: 600,
-    textTransform: 'capitalize'
-  },
-
-  tasksCount: {
-    color: appTheme.palette.dark40a,
-    marginLeft: '.5rem'
-  }
-})
-
-export default connect()(withAtmosphere(withRouter(withStyles(styleThunk)(TaskColumn))))
+export default connect()(withAtmosphere(withRouter(TaskColumn)))
