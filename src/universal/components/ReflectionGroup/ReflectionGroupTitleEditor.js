@@ -18,7 +18,6 @@ import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated_
 import reactLifecyclesCompat from 'react-lifecycles-compat'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {RETRO_TOPIC_LABEL} from 'universal/utils/constants'
-import Tag from 'universal/components/Tag/Tag'
 
 const {Component} = React
 
@@ -182,7 +181,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       isExpanded,
       error,
       readOnly,
-      reflectionGroup: {reflections, title}
+      reflectionGroup: {title}
     } = this.props
     return (
       <React.Fragment>
@@ -203,10 +202,6 @@ class ReflectionGroupTitleEditor extends Component<Props> {
           {error && <StyledError>{error.message}</StyledError>}
         </RootBlock>
         {!readOnly && <PencilIcon isExpanded={isExpanded} name='pencil' onClick={this.onClick} />}
-        <Tag
-          colorPalette={isExpanded ? 'white' : 'midGray'}
-          label={`${reflections.length} Cards`}
-        />
       </React.Fragment>
     )
   }
@@ -219,9 +214,6 @@ export default createFragmentContainer(
     fragment ReflectionGroupTitleEditor_reflectionGroup on RetroReflectionGroup {
       reflectionGroupId: id
       title
-      reflections {
-        id
-      }
     }
 
     fragment ReflectionGroupTitleEditor_meeting on RetrospectiveMeeting {

@@ -7,6 +7,7 @@ import type {ReflectionGroupHeader_reflectionGroup as ReflectionGroup} from './_
 import {GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting'
 import ui from 'universal/styles/ui'
+import Tag from 'universal/components/Tag/Tag'
 
 type Props = {
   meeting: Meeting,
@@ -37,6 +38,7 @@ const ReflectionGroupHeader = (props: Props) => {
     localStage,
     localPhase: {phaseType}
   } = meeting
+  const {reflections} = reflectionGroup
   const canEdit = phaseType === GROUP && localStage.isComplete === false
   return (
     <GroupHeader innerRef={innerRef} isExpanded={isExpanded} phaseType={phaseType}>
@@ -48,10 +50,20 @@ const ReflectionGroupHeader = (props: Props) => {
           meeting={meeting}
           readOnly={!canEdit}
         />
+        {phaseType === GROUP && (
+          <Tag
+            colorPalette={isExpanded ? 'white' : 'midGray'}
+            label={`${reflections.length} Cards`}
+          />
+        )}
+        {phaseType === VOTE && (
+          <ReflectionGroupVoting
+            isExpanded={isExpanded}
+            reflectionGroup={reflectionGroup}
+            meeting={meeting}
+          />
+        )}
       </TitleAndCount>
-      {phaseType === VOTE && (
-        <ReflectionGroupVoting reflectionGroup={reflectionGroup} meeting={meeting} />
-      )}
     </GroupHeader>
   )
 }

@@ -49,7 +49,15 @@ class DraggableReflectionCard extends React.Component<Props> {
   }
 
   render () {
-    const {connectDragSource, reflection, setItemRef, meeting, idx, isModal} = this.props
+    const {
+      connectDragSource,
+      reflection,
+      setItemRef,
+      meeting,
+      idx,
+      isDraggable,
+      isModal
+    } = this.props
     const {dragContext, reflectionId} = reflection
     const className = dragContext
       ? dragContextStyle
@@ -58,7 +66,12 @@ class DraggableReflectionCard extends React.Component<Props> {
         : standardStyle
     return connectDragSource(
       <div className={className} ref={setItemRef(reflectionId, isModal)}>
-        <ReflectionCard meeting={meeting} reflection={reflection} isDraggable showOriginFooter />
+        <ReflectionCard
+          meeting={meeting}
+          reflection={reflection}
+          isDraggable={isDraggable}
+          showOriginFooter
+        />
       </div>
     )
   }
@@ -68,9 +81,10 @@ const reflectionDragSpec = {
   canDrag (props) {
     // make sure no one is trying to drag invisible cards
     const {
-      reflection: {dragContext}
+      reflection: {dragContext},
+      isDraggable
     } = props
-    return !dragContext
+    return !dragContext && isDraggable
   },
 
   beginDrag (props, monitor) {

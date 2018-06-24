@@ -1,6 +1,5 @@
 // @flow
 import * as React from 'react'
-import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
@@ -9,6 +8,7 @@ import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import Button from 'universal/components/Button/Button'
+import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
 
 type Props = {|
   atmosphere: Object,
@@ -23,9 +23,8 @@ const RetroVotePhase = (props: Props) => {
     gotoNext,
     team
   } = props
-  const {newMeeting, meetingSettings} = team
+  const {newMeeting} = team
   const {facilitatorUserId, phases} = newMeeting || {}
-  const {phaseItems = []} = meetingSettings
   const isFacilitating = facilitatorUserId === viewerId
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
   const discussStage = discussPhase.stages[0]
@@ -34,9 +33,7 @@ const RetroVotePhase = (props: Props) => {
     <React.Fragment>
       <ScrollableBlock>
         <MeetingPhaseWrapper>
-          {phaseItems.map((phaseItem) => (
-            <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
-          ))}
+          <PhaseItemMasonry meeting={newMeeting} />
         </MeetingPhaseWrapper>
       </ScrollableBlock>
       {isFacilitating && (
@@ -68,6 +65,7 @@ export default createFragmentContainer(
         facilitatorUserId
         ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
+          ...PhaseItemMasonry_meeting
           phases {
             phaseType
             ... on DiscussPhase {
@@ -77,16 +75,6 @@ export default createFragmentContainer(
                   isNavigableByFacilitator
                 }
               }
-            }
-          }
-        }
-      }
-      meetingSettings(meetingType: $meetingType) {
-        ... on RetrospectiveMeetingSettings {
-          phaseItems {
-            ... on RetroPhaseItem {
-              id
-              ...PhaseItemColumn_retroPhaseItem
             }
           }
         }

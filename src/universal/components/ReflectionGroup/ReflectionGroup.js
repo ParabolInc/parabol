@@ -10,7 +10,7 @@ import type {ReflectionGroup_meeting as Meeting} from './__generated__/Reflectio
 import ui from 'universal/styles/ui'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import {REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
+import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
@@ -40,9 +40,9 @@ export type Props = {|
   ...MutationProps
 |}
 
-const reflectionsStyle = (canDrop) =>
+const reflectionsStyle = (canDrop, isDraggable, canExpand) =>
   css({
-    cursor: 'pointer',
+    cursor: isDraggable || canExpand ? 'pointer' : 'default',
     opacity: canDrop ? 0.6 : 1,
     position: 'relative'
   })
@@ -206,7 +206,7 @@ class ReflectionGroup extends Component<Props> {
     this.modalRef.addEventListener('transitionend', reset)
   }
 
-  renderReflection = (isModal, reflection: Object, idx: number) => {
+  renderReflection = (reflection: Object, idx: number, {isModal, isDraggable}) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
     if (isModal) {
@@ -214,6 +214,7 @@ class ReflectionGroup extends Component<Props> {
         <DraggableReflectionCard
           closeGroupModal={this.closeGroupModal}
           idx={idx}
+          isDraggable={isDraggable}
           isModal
           key={reflection.id}
           meeting={meeting}
@@ -231,6 +232,7 @@ class ReflectionGroup extends Component<Props> {
           meeting={meeting}
           reflection={reflection}
           setItemRef={setItemRef}
+          isDraggable={isDraggable}
           isSingleCardGroup={reflections.length === 1}
         />
       )
@@ -277,11 +279,13 @@ class ReflectionGroup extends Component<Props> {
     const {canDrop, connectDropTarget, meeting, reflectionGroup, setChildRef} = this.props
     const {isExpanded, reflections, reflectionGroupId} = reflectionGroup
     const {
-      localPhase: {phaseType}
+      localPhase: {phaseType},
+      localStage: {isComplete}
     } = meeting
     const canExpand = !isExpanded && reflections.length > 1
     const showHeader = reflections.length > 1 || phaseType === VOTE
     const [firstReflection] = reflections
+    const isDraggable = phaseType === GROUP && !isComplete
     // always render the in-grid group so we can get a read on the size if the title is removed
     return (
       <React.Fragment>
@@ -296,10 +300,12 @@ class ReflectionGroup extends Component<Props> {
           {/* connect the drop target here so dropping on the title triggers an ungroup */}
           {connectDropTarget(
             <div
-              className={reflectionsStyle(canDrop)}
+              className={reflectionsStyle(canDrop, isDraggable, canExpand)}
               onClick={canExpand ? this.expandGroup : undefined}
             >
-              {reflections.map((reflection, idx) => this.renderReflection(false, reflection, idx))}
+              {reflections.map((reflection, idx) =>
+                this.renderReflection(reflection, idx, {isModal: false, isDraggable})
+              )}
             </div>
           )}
         </Group>
@@ -312,8 +318,10 @@ class ReflectionGroup extends Component<Props> {
               meeting={meeting}
               reflectionGroup={reflectionGroup}
             />
-            <div className={reflectionsStyle(canDrop, isExpanded)}>
-              {reflections.map((reflection, idx) => this.renderReflection(true, reflection, idx))}
+            <div className={reflectionsStyle(canDrop, isDraggable, canExpand)}>
+              {reflections.map((reflection, idx) =>
+                this.renderReflection(reflection, idx, {isModal: true, isDraggable})
+              )}
             </div>
           </Group>
         </Modal>
@@ -356,6 +364,9 @@ export default createFragmentContainer(
       ...ReflectionGroupHeader_meeting
       localPhase {
         phaseType
+      }
+      localStage {
+        isComplete
       }
     }
 
