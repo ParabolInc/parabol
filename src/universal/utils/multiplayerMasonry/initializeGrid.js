@@ -8,7 +8,8 @@ const initializeGrid = (childrenCache, parentCache, isAnimated) => {
   const heights = childrenKeys.map((childKey) => {
     const childCache = childrenCache[childKey]
     const {el} = childCache
-    return childCache.boundingBox
+    // !isAnimated is for the autogrouping
+    return childCache.boundingBox && !isAnimated
       ? childCache.boundingBox.height
       : el.getBoundingClientRect().height
   })
@@ -45,6 +46,7 @@ const initializeGrid = (childrenCache, parentCache, isAnimated) => {
         el.style.opacity = ''
         el.style.transition = `all ${DURATION}ms ${idx * OFFSET_DELAY}ms`
         el.style.transform = `translate(${left}px, ${top}px)scale(1)`
+        return el
       })
     }
     animateOutQueue.push(() => {
@@ -54,14 +56,13 @@ const initializeGrid = (childrenCache, parentCache, isAnimated) => {
   })
   window.requestAnimationFrame(() => {
     if (isAnimated) {
-      animateInQueue.forEach((cb) => cb())
-      const lastChildKey = childrenKeys[childrenKeys.length - 1]
-      const {el} = childrenCache[lastChildKey]
+      const animatedEls = animateInQueue.map((cb) => cb())
+      const lastEl = animatedEls[animatedEls.length - 1]
       const wrapUp = () => {
         animateOutQueue.forEach((cb) => cb())
-        el.removeEventListener('transitionend', wrapUp)
+        lastEl.removeEventListener('transitionend', wrapUp)
       }
-      el.addEventListener('transitionend', wrapUp)
+      lastEl.addEventListener('transitionend', wrapUp)
     } else {
       animateOutQueue.forEach((cb) => cb())
     }

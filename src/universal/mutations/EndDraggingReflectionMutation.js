@@ -89,7 +89,12 @@ const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
   addNodeToArray(reflectionGroup, meeting, 'reflectionGroups', 'sortOrder')
 }
 
-const moveReflectionLocation = (reflection, reflectionGroup, oldReflectionGroupId, store) => {
+export const moveReflectionLocation = (
+  reflection,
+  reflectionGroup,
+  oldReflectionGroupId,
+  store
+) => {
   // moveGroupLocation(reflectionGroup, store)
   if (!reflection) return
   const reflectionId = reflection.getValue('id')

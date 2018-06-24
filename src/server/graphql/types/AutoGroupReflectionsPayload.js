@@ -17,11 +17,20 @@ const AutoGroupReflectionsPayload = new GraphQLObjectType({
     },
     reflections: {
       type: new GraphQLList(RetroReflection),
-      resolve: makeResolve('reflectionIds', 'reflections', 'retroReflections')
+      resolve: makeResolve('reflectionIds', 'reflections', 'retroReflections', true)
     },
     reflectionGroups: {
       type: new GraphQLList(RetroReflectionGroup),
-      resolve: makeResolve('reflectionGroupIds', 'reflectionGroups', 'retroReflectionGroups')
+      resolve: makeResolve('reflectionGroupIds', 'reflectionGroups', 'retroReflectionGroups', true)
+    },
+    removedReflectionGroups: {
+      type: new GraphQLList(RetroReflectionGroup),
+      resolve: makeResolve(
+        'removedReflectionGroupIds',
+        'removedReflectionGroups',
+        'retroReflectionGroups',
+        true
+      )
     }
   })
 })

@@ -1414,7 +1414,8 @@ export type AutoGroupReflectionsPayload = {
   error: ?StandardMutationError,
   meeting: ?RetrospectiveMeeting,
   reflections: ?Array<RetroReflection>,
-  reflectionGroups: ?Array<RetroReflectionGroup>
+  reflectionGroups: ?Array<RetroReflectionGroup>,
+  removedReflectionGroups: ?Array<RetroReflectionGroup>
 }
 
 /**

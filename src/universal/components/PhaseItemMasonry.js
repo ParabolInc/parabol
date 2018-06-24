@@ -16,13 +16,14 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
 import Modal from 'universal/components/Modal'
 import {MODAL_PADDING} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import withScrolling from 'react-dnd-scrollzone'
 
 type Props = {|
   meeting: Meeting
 |}
 
 const gridStyle = css({
-  overflow: 'hidden',
+  overflowX: 'auto',
   position: 'relative',
   width: '100%'
 })
@@ -208,7 +209,7 @@ class PhaseItemMasonry extends React.Component<Props> {
 
   render () {
     const {canDrop, connectDropTarget, meeting} = this.props
-    const {reflectionGroups, reflectionsInFlight = []} = meeting
+    const {reflectionGroups, reflectionsInFlight = [], teamId} = meeting
     return connectDropTarget(
       <div
         ref={this.setParentRef}
@@ -240,6 +241,7 @@ class PhaseItemMasonry extends React.Component<Props> {
                 itemCache={this.itemCache}
                 childrenCache={this.childrenCache}
                 parentCache={this.parentCache}
+                teamId={teamId}
               />
             </Modal>
           )
@@ -264,9 +266,11 @@ const reflectionDropCollect = (connect, monitor) => ({
 })
 
 export default createFragmentContainer(
-  withAtmosphere(
-    withMutationProps(
-      DropTarget(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(PhaseItemMasonry)
+  withScrolling(
+    withAtmosphere(
+      withMutationProps(
+        DropTarget(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(PhaseItemMasonry)
+      )
     )
   ),
   graphql`
@@ -289,6 +293,7 @@ export default createFragmentContainer(
         id
         ...ReflectionCardInFlight_reflection
       }
+      teamId
     }
   `
 )

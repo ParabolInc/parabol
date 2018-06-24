@@ -133,6 +133,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       atmosphere,
       childrenCache,
       parentCache,
+      teamId,
       reflection: {
         dragContext: {
           initialCursorCoords,
@@ -140,8 +141,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
           isPendingStartDrag,
           isViewerDragging
         },
-        reflectionId,
-        team: {teamId}
+        reflectionId
       }
     } = this.props
     // the drag event keeps firing if dragend was programmatically fired
@@ -227,9 +227,6 @@ export default createFragmentContainer(
   graphql`
     fragment ReflectionCardInFlight_reflection on RetroReflection {
       meetingId
-      team {
-        teamId: id
-      }
       reflectionId: id
       reflectionGroupId
       content

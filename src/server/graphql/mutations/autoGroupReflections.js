@@ -62,15 +62,24 @@ export default {
       autoGroupThreshold,
       groupedReflections,
       groups,
-      inactivatedGroupIds,
+      removedReflectionGroupIds,
       nextThresh
     } = await groupReflections(meetingId, groupingThreshold)
     await r({
       inactivatedGroups: r
         .table('RetroReflectionGroup')
-        .getAll(r.args(inactivatedGroupIds), {index: 'id'})
-        .update({inactive: true}),
-      groups: r.table('RetroReflectionGroup').insert(groups),
+        .getAll(r.args(removedReflectionGroupIds), {index: 'id'})
+        .update({isActive: false}),
+      groups: r(groups).forEach((group) =>
+        r
+          .table('RetroReflectionGroup')
+          .get(group('id'))
+          .update({
+            title: group('title'),
+            smartTitle: group('smartTitle'),
+            updatedAt: now
+          })
+      ),
       reflections: r(groupedReflections).forEach((reflection) => {
         return r
           .table('RetroReflection')
@@ -95,7 +104,7 @@ export default {
 
     const reflectionGroupIds = groups.map(({id}) => id)
     const reflectionIds = groupedReflections.map(({id}) => id)
-    const data = {meetingId, reflectionGroupIds, reflectionIds}
+    const data = {meetingId, reflectionGroupIds, reflectionIds, removedReflectionGroupIds}
     publish(TEAM, teamId, AutoGroupReflectionsPayload, data, subOptions)
     return data
   }

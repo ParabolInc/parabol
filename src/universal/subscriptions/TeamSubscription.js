@@ -32,6 +32,10 @@ import {
 } from 'universal/mutations/EndDraggingReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from 'universal/mutations/DragDiscussionTopicMutation'
 import {startDraggingReflectionTeamUpdater} from 'universal/mutations/StartDraggingReflectionMutation'
+import {
+  autoGroupReflectionsTeamOnNext,
+  autoGroupReflectionsTeamUpdater
+} from 'universal/mutations/AutoGroupReflectionsMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -74,6 +78,7 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
   NavigateMeetingPayload: navigateMeetingTeamOnNext,
@@ -104,6 +109,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           addTeamMutationNotificationUpdater(payload, store, viewerId, options)
           break
         case 'AutoGroupReflectionsPayload':
+          autoGroupReflectionsTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'CreateGitHubIssuePayload':
           break
