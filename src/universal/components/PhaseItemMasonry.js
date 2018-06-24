@@ -29,17 +29,17 @@ const gridStyle = css({
 })
 
 // a reflectionId grid has many reflectionGroups has many reflections (parent > child > item)
-type ItemId = string
+export type ItemId = string
 
 // reflectionGroupId
-type ChildId = string
+export type ChildId = string
 
-type InFlightCoords = {
+export type InFlightCoords = {
   x: number,
   y: number
 }
 
-type ParentCache = {
+export type ParentCache = {
   el: ?HTMLElement,
   boundingBox: ?ClientRect,
   columnLefts: Array<number>,
@@ -66,7 +66,7 @@ type ItemCache = {
   boundingBox: ?ClientRect
 }
 
-type ChildrenCache = {
+export type ChildrenCache = {
   [ChildId]: ChildCache
 }
 
@@ -235,7 +235,6 @@ class PhaseItemMasonry extends React.Component<Props> {
           return (
             <Modal key={reflection.id} isOpen>
               <ReflectionCardInFlight
-                cardsInFlight={this.parentCache.cardsInFlight}
                 setInFlightCoords={this.setInFlightCoords}
                 reflection={reflection}
                 itemCache={this.itemCache}

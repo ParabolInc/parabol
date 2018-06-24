@@ -1,5 +1,4 @@
 // @flow
-/* global HTMLElement, Node */
 
 import * as React from 'react'
 import styled, {css} from 'react-emotion'
@@ -132,6 +131,11 @@ class ReflectionGroup extends Component<Props> {
     }
   }
 
+  isClosing = false
+  backgroundRef: ?HTMLElement = null
+  headerRef: ?HTMLElement = null
+  modalRef: ?HTMLElement = null
+
   closeGroupModal = () => {
     const {
       atmosphere,
@@ -140,7 +144,7 @@ class ReflectionGroup extends Component<Props> {
       itemCache,
       reflectionGroup: {isExpanded, reflectionGroupId, reflections}
     } = this.props
-    if (!isExpanded) return
+    if (!isExpanded || !this.modalRef || !this.backgroundRef) return
     const {
       boundingBox: {left: parentLeft, top: parentTop}
     } = parentCache
@@ -203,6 +207,7 @@ class ReflectionGroup extends Component<Props> {
         this.modalRef.removeEventListener('transitionend', reset)
       }
     }
+    // $FlowFixMe
     this.modalRef.addEventListener('transitionend', reset)
   }
 
@@ -264,11 +269,6 @@ class ReflectionGroup extends Component<Props> {
 
   setModalRef = (c) => {
     this.modalRef = c
-    const {
-      childrenCache,
-      reflectionGroup: {reflectionGroupId}
-    } = this.props
-    childrenCache[reflectionGroupId].modalEl = c
   }
 
   setBackgroundRef = (c) => {

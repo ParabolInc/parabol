@@ -16,10 +16,21 @@ import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArr
 import getTargetReference from 'universal/utils/multiplayerMasonry/getTargetReference'
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 import {DECELERATE} from 'universal/styles/animation'
+import type {
+  ChildId,
+  ChildrenCache,
+  InFlightCoords,
+  ItemId,
+  ParentCache
+} from 'universal/components/PhaseItemMasonry'
 
 type Props = {|
   atmosphere: Object,
-  reflection: Reflection
+  childrenCache: ChildrenCache,
+  parentCache: ParentCache,
+  reflection: Reflection,
+  setInFlightCoords: (x: ?number, y: ?number, itemId: ?ItemId) => void,
+  teamId: string
 |}
 
 type State = {|
@@ -69,37 +80,19 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
 
   componentDidMount () {
     const {
-      reflection: {
-        dragContext: {isViewerDragging}
-      }
+      reflection: {dragContext}
     } = this.props
-    if (isViewerDragging) {
+    if (!dragContext || !dragContext.isViewerDragging) {
       // firefox doesn't report coords for the 'drag' event, so instead, we use the dragover on the document
       document.addEventListener('dragover', this.setViewerDragState)
     }
   }
 
-  // i think i fixed it so we don't need this, but just in case, here it is
-  // componentDidUpdate() {
-  //   // very rarely the onTransitionEnd event won't fire.
-  //   // maybe because the card was dropped in the perfect spot so it doesn't need to transition?
-  //   // if that's the case, we should still close out
-  //   // if this doesn't work, try seeing if isClosing is true after the timeout period
-  //   const {
-  //     reflection: {dragContext}
-  //   } = this.props
-  //   if (!this.exitTimer && dragContext && dragContext.isClosing) {
-  //     // this.exitTimer = setTimeout(this.removeCardInFlight, 1500)
-  //   }
-  // }
-
   componentWillUnmount () {
     const {
-      reflection: {
-        dragContext: {isViewerDragging}
-      }
+      reflection: {dragContext}
     } = this.props
-    if (isViewerDragging) {
+    if (!dragContext || !dragContext.isViewerDragging) {
       document.removeEventListener('dragover', this.setViewerDragState)
     }
   }
@@ -107,12 +100,11 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   removeCardInFlight = () => {
     const {
       atmosphere,
-      cardsInFlight,
       childrenCache,
       parentCache,
       reflection: {meetingId, reflectionId}
     } = this.props
-
+    const {cardsInFlight, columnLefts} = parentCache
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -124,35 +116,31 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
     })
     delete cardsInFlight[reflectionId]
-    shakeUpBottomCells(childrenCache, parentCache.columnLefts)
-    clearTimeout(this.exitTimer)
+    shakeUpBottomCells(childrenCache, columnLefts)
   }
 
-  setViewerDragState = (e) => {
+  setViewerDragState = (e: DragEvent) => {
     const {
       atmosphere,
       childrenCache,
       parentCache,
       teamId,
-      reflection: {
-        dragContext: {
-          initialCursorCoords,
-          initialComponentCoords,
-          isPendingStartDrag,
-          isViewerDragging
-        },
-        reflectionId
-      }
+      reflection: {dragContext, reflectionId}
     } = this.props
     // the drag event keeps firing if dragend was programmatically fired
-    if (!isViewerDragging) return
+    if (!dragContext || !dragContext.isViewerDragging) return
+    const {initialCursorCoords, initialComponentCoords, isPendingStartDrag} = dragContext
+    const cursorCoords = {x: e.clientX, y: e.clientY}
     // if i scroll off the screen, leave it where I last saw it
-    if (e.x === 0 && e.y === 0) return
-    const xDiff = e.x - initialCursorCoords.x
-    const yDiff = e.y - initialCursorCoords.y
-    // TODO remove window.scrollX by caching it or ???
+    if (cursorCoords.x === 0 && cursorCoords.y === 0) return
+    // $FlowFixMe
+    const xDiff = cursorCoords.x - initialCursorCoords.x
+    // $FlowFixMe
+    const yDiff = cursorCoords.y - initialCursorCoords.y
     const nextCoords = {
+      // $FlowFixMe
       x: initialComponentCoords.x + xDiff + this.scrollX,
+      // $FlowFixMe
       y: initialComponentCoords.y + yDiff
     }
     if (nextCoords.x !== this.state.x || nextCoords.y !== this.state.y) {
@@ -166,7 +154,6 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       // dont send updates too frequently & don't send them until the start message got back, since it'll be ignored by clients
       if (this.isBroadcasting || isPendingStartDrag) return
       this.isBroadcasting = true
-      const cursorCoords = {x: e.x, y: e.y}
       const {targetId, targetOffset} = getTargetReference(
         childrenCache,
         parentCache,
@@ -192,23 +179,32 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   }
 
   editorState: Object
+  isBroadcasting: boolean = false
+  innerWidth: number = 0
+  innerHeight: number = 0
+  scrollX: number = 0
+  cachedTargetId: ?ChildId
+  cursorOffset: ?InFlightCoords
 
   render () {
     const {
       reflection: {
         reflectionId,
-        dragContext: {isClosing, isViewerDragging, initialCursorCoords, dragCoords, dragUser},
+        dragContext,
         phaseItem: {question}
       },
       setInFlightCoords
     } = this.props
+    if (!dragContext) return null
+    const {isClosing, isViewerDragging, initialCursorCoords, dragCoords, dragUser} = dragContext
     // use initialCoords instead of isViewerDragging as a cheap hack to support the same user in 2 tabs
+    // $FlowFixMe
     const {x, y} = isClosing || !initialCursorCoords ? dragCoords : this.state
     setInFlightCoords(x, y, reflectionId)
 
     const style = {
       transition: makeTransition(isClosing, isViewerDragging),
-      transform: `translate3d(${x}px, ${y}px, 0px)`
+      transform: `translate3d(${x || 0}px, ${y || 0}px, 0px)`
     }
     return (
       <ModalBlock style={style} onTransitionEnd={isClosing ? this.removeCardInFlight : undefined}>
