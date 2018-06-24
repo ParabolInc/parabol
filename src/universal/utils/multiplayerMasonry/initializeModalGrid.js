@@ -125,8 +125,8 @@ const initializeModalGrid = (
 
   const resetStyles = makeResetHandler(reflections, itemCache, modalRef)
 
-  // not sure why this is needed, but the time the modal opens, it will open from 0, 0 if this isn't double wrapped in rAFs
-  // other things that work: setting the modalStyle top, left and a transform to 0,0. a setTimeout here, a forced synch layout like offsetTop
+  // not sure why this is needed, but the first time the modal opens, it will open from 0, 0 if this isn't double wrapped in rAFs
+  // alternatives: setting the modalStyle top, left and a transform to 0,0. a setTimeout here, & a forced sync layout like offsetTop
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
       // set final group styles
