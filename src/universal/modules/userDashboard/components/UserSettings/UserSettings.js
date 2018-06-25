@@ -21,7 +21,7 @@ const SettingsBlock = styled('div')({
   width: '100%'
 })
 
-const SettingsForm = styled('div')({
+const SettingsForm = styled('form')({
   alignItems: 'center',
   borderTop: `.0625rem solid ${ui.rowBorderColor}`,
   display: 'flex',
@@ -113,12 +113,7 @@ const UserSettings = (props) => {
                     type='text'
                   />
                 </FieldBlock>
-                <StyledButton
-                  size={controlSize}
-                  onClick={handleSubmit(onSubmit)}
-                  type='submit'
-                  palette='mid'
-                >
+                <StyledButton size={controlSize} palette='mid'>
                   {'Update'}
                 </StyledButton>
               </ControlBlock>
