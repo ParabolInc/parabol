@@ -71,7 +71,7 @@ const initializeModalGrid = (
       top,
       left
     }
-    currentColumnHeights[shortestColumnIdx] += height
+    currentColumnHeights[shortestColumnIdx] += height + CARD_PADDING * 2
     const {
       modalEl: {style: itemStyle}
     } = cachedItem

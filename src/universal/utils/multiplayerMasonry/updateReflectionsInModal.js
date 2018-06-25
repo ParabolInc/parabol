@@ -50,7 +50,7 @@ const updateReflectionsInModal = (
       // if this is a drop, let the inflight card be the animation
       itemStyle.transition = 'unset'
     }
-    currentColumnHeights[shortestColumnIdx] += cachedItem.boundingBox.height
+    currentColumnHeights[shortestColumnIdx] += cachedItem.boundingBox.height + CARD_PADDING * 2
     itemStyle.transform = `translate(${left}px, ${top}px)`
   })
 
