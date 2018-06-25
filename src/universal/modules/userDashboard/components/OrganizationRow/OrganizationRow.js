@@ -19,7 +19,8 @@ import TagBlock from 'universal/components/Tag/TagBlock'
 import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 
 const OrgAvatar = styled('div')({
-  cursor: 'pointer'
+  cursor: 'pointer',
+  width: '2.75rem'
 })
 
 const Name = styled(RowInfoHeading)({
