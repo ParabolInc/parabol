@@ -42,6 +42,7 @@ const FileInput = (props) => {
             el.click()
           }}
           palette={buttonPalette}
+          type='button'
         >
           {buttonLabel}
         </RaisedButton>
