@@ -82,7 +82,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const {
       reflection: {dragContext}
     } = this.props
-    if (!dragContext || !dragContext.isViewerDragging) {
+    if (dragContext && dragContext.isViewerDragging) {
       // firefox doesn't report coords for the 'drag' event, so instead, we use the dragover on the document
       document.addEventListener('dragover', this.setViewerDragState)
     }
@@ -92,7 +92,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const {
       reflection: {dragContext}
     } = this.props
-    if (!dragContext || !dragContext.isViewerDragging) {
+    if (dragContext && dragContext.isViewerDragging) {
       document.removeEventListener('dragover', this.setViewerDragState)
     }
   }
