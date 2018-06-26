@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import IconLabel from 'universal/components/IconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
@@ -32,16 +33,14 @@ const MeetingAgendaFirstCall = (props) => {
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls ? (
                 <BounceBlock animationDelay='30s'>
-                  <Button
-                    buttonSize='large'
-                    buttonStyle='primary'
-                    colorPalette='warm'
-                    icon='arrow-circle-right'
-                    iconLarge
-                    iconPlacement='right'
-                    label={`Let’s begin: ${phaseName}`}
-                    onClick={gotoNext}
-                  />
+                  <PrimaryButton size='large' onClick={gotoNext}>
+                    <IconLabel
+                      icon='arrow-circle-right'
+                      iconAfter
+                      iconLarge
+                      label={`Let’s begin: ${phaseName}`}
+                    />
+                  </PrimaryButton>
                 </BounceBlock>
               ) : (
                 <MeetingFacilitationHint>

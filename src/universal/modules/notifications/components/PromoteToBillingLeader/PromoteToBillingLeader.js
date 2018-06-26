@@ -1,4 +1,4 @@
-import {css} from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -10,7 +10,9 @@ import ui from 'universal/styles/ui'
 import {clearNotificationLabel} from '../../helpers/constants'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
+
+const StyledButton = styled(RaisedButton)({...ui.buttonBlockStyles})
 
 const PromoteToBillingLeader = (props) => {
   const {
@@ -38,9 +40,7 @@ const PromoteToBillingLeader = (props) => {
 
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='building' size='small' />
-      </div>
+      <IconAvatar icon='building' size='small' />
       <div className={css(defaultStyles.message)}>
         {'You are now a '}
         <b>
@@ -53,24 +53,21 @@ const PromoteToBillingLeader = (props) => {
         {'.'}
       </div>
       <div className={css(defaultStyles.widerButton)}>
-        <Button
+        <StyledButton
           aria-label='Go to the Organization page'
-          colorPalette='warm'
-          isBlock
-          label='See Organization'
-          buttonSize={ui.notificationButtonSize}
-          type='submit'
+          size={ui.notificationButtonSize}
           onClick={goToOrg}
+          palette='warm'
           waiting={submitting}
-        />
+        >
+          {'See Organization'}
+        </StyledButton>
       </div>
-      <div className={css(defaultStyles.iconButton)}>
-        <AcknowledgeButton
-          aria-label={clearNotificationLabel}
-          onClick={acknowledge}
-          waiting={submitting}
-        />
-      </div>
+      <AcknowledgeButton
+        aria-label={clearNotificationLabel}
+        onClick={acknowledge}
+        waiting={submitting}
+      />
     </Row>
   )
 }

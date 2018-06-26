@@ -41,6 +41,7 @@ const AddButton = styled(PlainButton)({
   fontSize: ui.cardContentFontSize,
   fontWeight: 600,
   minHeight: ui.retroCardMinHeight,
+  outline: 0,
   padding: '.75rem',
   textAlign: 'center',
   transition: ui.cardControlTransition,

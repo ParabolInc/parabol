@@ -11,13 +11,16 @@ import ui from 'universal/styles/ui'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 import Panel from 'universal/components/Panel/Panel'
 import {PAYMENT_REJECTED, REQUEST_NEW_USER, TEAM_INVITE} from 'universal/utils/constants'
 
-const ClearAllButtonBlock = styled('div')({
+const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',
-  minWidth: '5.75rem'
+  minWidth: '5.75rem',
+  paddingLeft: '.5em',
+  paddingRight: '.5em'
 })
 
 const NotificationListBlock = styled('div')({
@@ -66,20 +69,9 @@ const Notifications = (props) => {
   }
 
   const clearAllButton = () => (
-    <ClearAllButtonBlock>
-      <Button
-        aria-label='Clear all notifications'
-        buttonSize='small'
-        buttonStyle='flat'
-        colorPalette='dark'
-        icon='check'
-        iconPlacement='right'
-        isBlock
-        label='Clear All'
-        onClick={clearAllNotifications}
-        title='Clear all notifications'
-      />
-    </ClearAllButtonBlock>
+    <ClearAllButton aria-label='Clear all notifications' onClick={clearAllNotifications}>
+      <IconLabel icon='check' iconAfter label='Clear All' />
+    </ClearAllButton>
   )
 
   return (

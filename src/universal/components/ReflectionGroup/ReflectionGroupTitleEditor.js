@@ -28,6 +28,9 @@ type Props = {
   meeting: Meeting
 }
 
+const fontSize = appTheme.typography.s3
+const lineHeight = appTheme.typography.s5
+
 const underlineStyles = {
   backgroundColor: 'transparent',
   borderLeftColor: 'transparent !important',
@@ -40,7 +43,7 @@ const PencilIcon = styled(StyledFontAwesome)({
   color: ui.hintColor,
   height: ui.iconSize,
   left: '100%',
-  lineHeight: ui.cardThemeLabelLineHeight,
+  lineHeight,
   opacity: '.5',
   position: 'absolute',
   textAlign: 'center',
@@ -73,9 +76,9 @@ const NameInput = styled('input')(({readOnly}) => ({
   boxShadow: 'none',
   color: appTheme.palette.dark,
   cursor: readOnly ? 'default' : 'text',
-  fontSize: ui.cardThemeLabelFontSize,
+  fontSize,
   fontWeight: 600,
-  lineHeight: ui.cardThemeLabelLineHeight,
+  lineHeight,
   padding: 0,
   textAlign: 'center'
 }))

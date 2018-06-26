@@ -8,7 +8,8 @@ class EditingStatusContainer extends Component {
   static propTypes = {
     cardIsActive: PropTypes.bool,
     isEditing: PropTypes.bool,
-    task: PropTypes.object.isRequired
+    task: PropTypes.object.isRequired,
+    toggleMenuState: PropTypes.func.isRequired
   }
 
   constructor (props) {
@@ -45,7 +46,7 @@ class EditingStatusContainer extends Component {
   }
 
   render () {
-    const {cardIsActive, isEditing, task} = this.props
+    const {cardIsActive, isEditing, task, toggleMenuState} = this.props
     const {createdAt, updatedAt} = task
     const {timestampType} = this.state
     this.queueNextRender()
@@ -58,6 +59,7 @@ class EditingStatusContainer extends Component {
         task={task}
         timestamp={timestamp}
         timestampType={timestampType}
+        toggleMenuState={toggleMenuState}
       />
     )
   }

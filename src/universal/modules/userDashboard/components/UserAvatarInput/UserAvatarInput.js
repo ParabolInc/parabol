@@ -61,7 +61,7 @@ const UserAvatarInput = (props) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Field
         accept='image/*'
-        component={(cProps) => <FileInput buttonLabel='Choose File' {...cProps} />}
+        component={(cProps) => <FileInput {...cProps} />}
         doSubmit={handleSubmit(onSubmit)}
         name='pictureFile'
       />

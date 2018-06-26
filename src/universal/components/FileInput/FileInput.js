@@ -1,23 +1,30 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import FieldHelpText from 'universal/components/FieldHelpText/FieldHelpText'
-import Button from 'universal/components/Button/Button'
-import withStyles from 'universal/styles/withStyles'
-import {css} from 'aphrodite-local-styles/no-important'
+import RaisedButton from 'universal/components/RaisedButton'
 import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
 const hiddenUglyButton = {
   display: 'none'
 }
+
+const Control = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  overflow: 'hidden',
+  padding: '.5rem',
+  position: 'relative'
+})
+
 const FileInput = (props) => {
   const {
     accept,
+    buttonLabel = 'Choose File',
+    buttonPalette = 'gray',
+    buttonSize = 'small',
     doSubmit,
-    meta: {touched, error},
-    size,
-    styles,
-    buttonLabel,
-    colorPalette
+    meta: {touched, error}
   } = props
   let errorString = error
   if (typeof error === 'object') {
@@ -28,16 +35,17 @@ const FileInput = (props) => {
   let el
   return (
     <div>
-      <div className={css(styles.control)}>
-        <Button
-          label={buttonLabel}
-          buttonSize={size}
-          colorPalette={colorPalette}
-          type='button'
+      <Control>
+        <RaisedButton
+          size={buttonSize}
           onClick={() => {
             el.click()
           }}
-        />
+          palette={buttonPalette}
+          type='button'
+        >
+          {buttonLabel}
+        </RaisedButton>
         <input
           accept={accept}
           onChange={(e) => {
@@ -53,7 +61,7 @@ const FileInput = (props) => {
             el = c
           }}
         />
-      </div>
+      </Control>
       {touched && error && <FieldHelpText hasErrorText helpText={errorString} />}
     </div>
   )
@@ -61,47 +69,12 @@ const FileInput = (props) => {
 
 FileInput.propTypes = {
   accept: PropTypes.any,
-  doSubmit: PropTypes.func,
   buttonLabel: PropTypes.string,
-  colorPalette: PropTypes.oneOf(ui.paletteOptions),
+  buttonSize: PropTypes.oneOf(ui.buttonSizeOptions),
+  buttonPalette: PropTypes.oneOf(ui.paletteOptions),
+  doSubmit: PropTypes.func,
   input: PropTypes.object.isRequired,
-  meta: PropTypes.object.isRequired,
-  size: PropTypes.oneOf(ui.buttonSizeOptions),
-  styles: PropTypes.object
+  meta: PropTypes.object.isRequired
 }
 
-FileInput.defaultProps = {
-  buttonLabel: 'Submit',
-  colorPalette: 'gray',
-  size: 'small'
-}
-
-const styleThunk = () => ({
-  control: {
-    overflow: 'hidden',
-    position: 'relative',
-
-    ':hover': {
-      opacity: '.65'
-    },
-    ':focus': {
-      opacity: '.65'
-    }
-  },
-
-  input: {
-    cursor: 'pointer',
-    display: 'block',
-    fontSize: '999px',
-    filter: 'alpha(opacity=0)',
-    minHeight: '100%',
-    minWidth: '100%',
-    opacity: 0,
-    position: 'absolute',
-    right: 0,
-    textAlign: 'right',
-    top: 0
-  }
-})
-
-export default withStyles(styleThunk)(FileInput)
+export default FileInput

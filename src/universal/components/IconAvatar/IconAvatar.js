@@ -35,7 +35,7 @@ const IconAvatarRoot = styled('div')(({size}) => {
     alignItems: 'center',
     backgroundColor: appTheme.palette.mid70l,
     borderRadius: '100%',
-    color: '#fff',
+    color: ui.palette.white,
     display: 'flex',
     fontSize,
     height,
@@ -50,19 +50,18 @@ const IconStyled = styled(StyledFontAwesome)({
   lineHeight: ui.iconSize
 })
 
-const IconAvatar = (props) => {
-  const {icon, size, title} = props
+const IconAvatar = ({className, icon, size}) => {
   return (
-    <IconAvatarRoot size={size || 'small'} title={title || 'Icon Avatar'}>
+    <IconAvatarRoot className={className} size={size || 'small'}>
       <IconStyled name={icon} />
     </IconAvatarRoot>
   )
 }
 
 IconAvatar.propTypes = {
+  className: PropTypes.string,
   icon: PropTypes.string,
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
-  title: PropTypes.string
+  size: PropTypes.oneOf(['small', 'medium', 'large'])
 }
 
 export default IconAvatar

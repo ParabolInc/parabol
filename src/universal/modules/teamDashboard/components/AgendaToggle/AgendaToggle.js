@@ -6,7 +6,9 @@ import ui from 'universal/styles/ui'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
 import {AGENDA_ITEM_LABEL} from 'universal/utils/constants'
-import Button from 'universal/components/Button/Button'
+import OutlinedButton from 'universal/components/OutlinedButton'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 
 const RootBlock = styled('div')({
   alignItems: 'flex-end',
@@ -28,18 +30,17 @@ const AgendaToggle = (props) => {
     }
   }
   const label = `${hideAgenda ? 'See' : 'Hide'} ${AGENDA_ITEM_LABEL}s`
+  const ToggleButton = hideAgenda ? OutlinedButton : FlatButton
   return (
     <RootBlock>
-      <Button
-        buttonSize='small'
-        buttonStyle={hideAgenda ? 'outlined' : 'flat'}
-        colorPalette={hideAgenda ? 'warm' : 'mid'}
-        icon='comments'
-        isBlock
+      <ToggleButton
         key={`agendaToggleTo${hideAgenda ? 'Show' : 'Hide'}`}
-        label={label}
         onClick={toggleHide}
-      />
+        palette={hideAgenda ? 'warm' : 'mid'}
+        style={{width: '100%'}}
+      >
+        <IconLabel icon='comments' label={label} />
+      </ToggleButton>
     </RootBlock>
   )
 }

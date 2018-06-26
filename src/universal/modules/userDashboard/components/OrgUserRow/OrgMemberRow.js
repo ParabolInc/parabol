@@ -7,7 +7,8 @@ import ui from 'universal/styles/ui'
 import {PERSONAL} from 'universal/utils/constants'
 import Toggle from 'universal/components/Toggle/Toggle'
 import LoadableMenu from 'universal/components/LoadableMenu'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal'
 import {createFragmentContainer} from 'react-relay'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
@@ -46,22 +47,13 @@ const ActionsBlock = styled('div')({
 
 const MenuToggleBlock = styled('div')({
   marginLeft: ui.rowGutter,
-  width: '1.5rem'
+  width: '2rem'
 })
 
 const ToggleBlock = styled('div')({
   marginLeft: ui.rowGutter,
   width: '6.25rem'
 })
-
-const menuButtonProps = {
-  buttonSize: 'small',
-  buttonStyle: 'flat',
-  colorPalette: 'dark',
-  icon: 'ellipsis-v',
-  isBlock: true,
-  size: 'smallest'
-}
 
 type Props = {|
   atmosphere: Object,
@@ -72,6 +64,18 @@ type Props = {|
   organization: Organization,
   ...MutationProps
 |}
+
+const StyledButton = styled(FlatButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '100%'
+})
+
+const MenuButton = (props) => (
+  <StyledButton {...props} disabled={props.disabled}>
+    <IconLabel icon='ellipsis-v' />
+  </StyledButton>
+)
 
 const OrgMemberRow = (props: Props) => {
   const {
@@ -142,14 +146,7 @@ const OrgMemberRow = (props: Props) => {
               <LeaveOrgModal
                 orgId={orgId}
                 userId={userId}
-                toggle={
-                  <Button
-                    buttonSize='small'
-                    buttonStyle='flat'
-                    colorPalette='dark'
-                    label='Leave Organization'
-                  />
-                }
+                toggle={<FlatButton>Leave Organization</FlatButton>}
               />
             )}
           {!isPersonalTier &&
@@ -180,8 +177,7 @@ const OrgMemberRow = (props: Props) => {
                 targetAnchor={{vertical: 'bottom', horizontal: 'right'}}
               >
                 <MenuToggleBlock>
-                  {/* https://github.com/facebook/react/issues/4251 */}
-                  <Button {...menuButtonProps} visuallyDisabled />
+                  <MenuButton disabled />
                 </MenuToggleBlock>
               </Tooltip>
             )}
@@ -199,7 +195,7 @@ const OrgMemberRow = (props: Props) => {
                     organization
                   }}
                   targetAnchor={targetAnchor}
-                  toggle={<Button {...menuButtonProps} />}
+                  toggle={<MenuButton />}
                 />
               </MenuToggleBlock>
             )}

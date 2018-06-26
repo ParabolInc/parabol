@@ -8,7 +8,7 @@ import React from 'react'
 import styled from 'react-emotion'
 import {Link} from 'react-router-dom'
 import {Field, reduxForm} from 'redux-form'
-import StyledButton from 'universal/components/StyledButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -29,7 +29,7 @@ const Form = styled('form')({
 const Block = styled('div')(({margin, width}) => ({margin, width}))
 
 const linkStyles = {
-  color: appTheme.brand.primary.purple,
+  color: appTheme.palette.mid,
   textDecoration: 'underline'
 }
 
@@ -40,44 +40,42 @@ const ForgotPasswordLink = styled(Link)({
   textAlign: 'center'
 })
 
-const SignInEmailPasswordForm = (props: Props) => (
-  <Form className='signin-form' onSubmit={props.handleSubmit}>
-    <Block margin='1rem 0 2rem' width='16rem'>
-      <Block margin='0 0 1.5rem'>
+const SignInEmailPasswordForm = (props: Props) => {
+  const {handleSubmit, submitting, valid} = props
+  return (
+    <Form className='signin-form' onSubmit={handleSubmit}>
+      <Block margin='1rem 0 2rem' width='16rem'>
+        <Block margin='0 0 1.5rem'>
+          <Field
+            type='email'
+            autoFocus
+            component={InputField}
+            fieldSize='large'
+            placeholder='you@company.co'
+            label='Email:'
+            name='email'
+            underline
+            disabled={submitting}
+          />
+        </Block>
         <Field
-          type='email'
-          autoFocus
+          type='password'
           component={InputField}
           fieldSize='large'
-          placeholder='you@company.co'
-          label='Email:'
-          name='email'
+          placeholder='********'
+          label='Password:'
+          name='password'
           underline
-          disabled={props.submitting}
+          disabled={submitting}
         />
       </Block>
-      <Field
-        type='password'
-        component={InputField}
-        fieldSize='large'
-        placeholder='********'
-        label='Password:'
-        name='password'
-        underline
-        disabled={props.submitting}
-      />
-    </Block>
-    <StyledButton
-      buttonPalette='primary'
-      disabled={!props.valid}
-      type='submit'
-      waiting={props.submitting}
-    >
-      {'Sign In'}
-    </StyledButton>
-    <ForgotPasswordLink to='/reset-password'>{'Forgot your password?'}</ForgotPasswordLink>
-  </Form>
-)
+      <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
+        {'Sign In'}
+      </PrimaryButton>
+      <ForgotPasswordLink to='/reset-password'>{'Forgot your password?'}</ForgotPasswordLink>
+    </Form>
+  )
+}
 
 const validate = (values) => {
   const validation = {}
