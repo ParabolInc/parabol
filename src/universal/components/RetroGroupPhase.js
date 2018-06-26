@@ -5,7 +5,6 @@
  */
 import * as React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
 import StyledError from 'universal/components/StyledError'
@@ -16,6 +15,8 @@ import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 
 type Props = {
   atmosphere: Object,
@@ -46,29 +47,19 @@ const RetroGroupPhase = (props: Props) => {
       </MeetingPhaseWrapper>
       {isFacilitating && (
         <MeetingControlBar>
-          <Button
-            buttonSize='medium'
-            buttonStyle='flat'
-            colorPalette='dark'
-            icon='arrow-circle-right'
-            iconLarge
-            iconPalette='warm'
-            iconPlacement='right'
-            label={`Done! Let’s ${nextPhaseLabel}`}
-            onClick={gotoNext}
-          />
-          {canAutoGroup && (
-            <Button
-              buttonSize='medium'
-              buttonStyle='flat'
-              colorPalette='dark'
-              icon='magic'
+          <FlatButton size='medium' onClick={gotoNext}>
+            <IconLabel
+              icon='arrow-circle-right'
+              iconAfter
+              iconColor='warm'
               iconLarge
-              iconPalette='midGray'
-              iconPlacement='left'
-              label={'Auto Group'}
-              onClick={autoGroup}
+              label={`Done! Let’s ${nextPhaseLabel}`}
             />
+          </FlatButton>
+          {canAutoGroup && (
+            <FlatButton size='medium' onClick={autoGroup}>
+              <IconLabel icon='magic' iconColor='midGray' iconLarge label={'Auto Group'} />
+            </FlatButton>
           )}
         </MeetingControlBar>
       )}

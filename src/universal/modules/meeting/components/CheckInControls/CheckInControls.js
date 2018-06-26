@@ -2,7 +2,8 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
 import withHotkey from 'react-hotkey-hoc'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 
 const ButtonBlock = styled('div')({
@@ -48,33 +49,23 @@ const CheckInControls = (props) => {
   return (
     <ButtonBlock>
       <BounceBlock animationDelay='30s' key={`checkIn${localPhaseItem}buttonAnimation`}>
-        <Button
+        <FlatButton
           aria-label={`Mark ${currentMemberName} as “here” and move on`}
-          buttonStyle='flat'
-          colorPalette='dark'
-          icon='check-circle'
-          iconLarge
-          iconPalette='green'
-          iconPlacement='left'
+          size='medium'
           key={`checkIn${localPhaseItem}nextButton`}
-          label={nextLabel}
           onClick={handleOnClickPresent}
-          buttonSize='medium'
-        />
+        >
+          <IconLabel icon='check-circle' iconColor='green' iconLarge label={nextLabel} />
+        </FlatButton>
       </BounceBlock>
-      <Button
+      <FlatButton
         aria-label={`Mark ${currentMemberName} as “not here” and move on`}
-        buttonStyle='flat'
-        colorPalette='dark'
-        icon='minus-circle'
-        iconLarge
-        iconPalette='red'
-        iconPlacement='left'
+        size='medium'
         key={`checkIn${localPhaseItem}skipButton`}
-        label={skipLabel}
         onClick={handleOnClickAbsent}
-        buttonSize='medium'
-      />
+      >
+        <IconLabel icon='minus-circle' iconLarge iconColor='red' label={skipLabel} />
+      </FlatButton>
     </ButtonBlock>
   )
 }

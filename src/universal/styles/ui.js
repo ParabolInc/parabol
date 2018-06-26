@@ -168,14 +168,20 @@ const TYPE_SEMIBOLD = 600
 // Shadows
 // NOTE: levels increase on a scale of 2x
 
-const baseShadow = makeShadowColor('.15')
+const baseShadowColor = [
+  makeShadowColor('.15'),
+  makeShadowColor('.17'),
+  makeShadowColor('.19'),
+  makeShadowColor('.21'),
+  makeShadowColor('.23')
+]
 
 const shadow = [
-  `0 .0625rem .25rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 .125rem .5rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 .25rem 1rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 .5rem 2rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`,
-  `0 1rem 4rem ${baseShadow}, 0 0 .0625rem ${baseShadow}`
+  `0 .0625rem .25rem ${baseShadowColor[0]}, 0 0 .0625rem ${baseShadowColor[0]}`,
+  `0 .125rem .5rem ${baseShadowColor[1]}, 0 0 .0625rem ${baseShadowColor[1]}`,
+  `0 .25rem 1rem ${baseShadowColor[2]}, 0 0 .0625rem ${baseShadowColor[2]}`,
+  `0 .5rem 2rem ${baseShadowColor[3]}, 0 0 .0625rem ${baseShadowColor[3]}`,
+  `0 1rem 4rem ${baseShadowColor[4]}, 0 0 .0625rem ${baseShadowColor[4]}`
 ]
 
 // -----------------------------------------------------------------------------
@@ -209,75 +215,13 @@ const ui = {
 
   // Buttons
   // ---------------------------------------------------------------------------
-  buttonBaseStyles: {
-    appearance: 'none',
-    border: '.0625rem solid transparent',
-    borderRadius: '5em',
-    boxShadow: 'none',
-    cursor: 'pointer',
-    display: 'inline-block',
-    fontFamily: appTheme.typography.sansSerif,
-    fontWeight: 600,
-    outline: 0,
-    textAlign: 'center',
-    textDecoration: 'none',
-    transition: `transform ${transition[0]}`,
-    userSelect: 'none',
-    verticalAlign: 'middle',
-    ':hover': {
-      boxShadow: shadow[0],
-      textDecoration: 'none'
-    },
-    ':focus': {
-      boxShadow: shadow[0],
-      textDecoration: 'none'
-    },
-    ':active': {
-      boxShadow: shadow[0],
-      textDecoration: 'none'
-    }
-  },
-  buttonStylesPrimary: {
-    backgroundImage: gradientWarm,
-    color: white,
-    ':hover': {
-      backgroundImage: gradientWarmDarkened
-    },
-    ':focus': {
-      backgroundImage: gradientWarmDarkened
-    },
-    ':active': {
-      backgroundImage: gradientWarmDarkened
-    },
-    ':disabled': {
-      backgroundImage: gradientWarmLightened,
-      opacity: 1
-    }
-  },
+  buttonBorderRadius: '5em',
+  buttonLightThemes: ['white', 'light', 'gray'],
   buttonBlockStyles: {
     display: 'block',
     paddingLeft: '.5em',
     paddingRight: '.5em',
     width: '100%'
-  },
-  buttonDisabledStyles: {
-    cursor: 'not-allowed',
-    opacity: '.5',
-    ':hover': {
-      boxShadow: 'none',
-      opacity: '.5'
-    },
-    ':focus': {
-      boxShadow: 'none',
-      opacity: '.5'
-    },
-    ':active': {
-      boxShadow: 'none',
-      animation: 'none'
-    },
-    ':disabled': {
-      boxShadow: 'none'
-    }
   },
   buttonSizeOptions: [BUTTON_SIZE_SMALL, BUTTON_SIZE_MEDIUM, BUTTON_SIZE_LARGE],
   buttonSizeStyles: {
@@ -304,20 +248,11 @@ const ui = {
   cardBorderRadius: borderRadiusMedium,
   cardBoxShadow: shadow[0],
   cardButtonHeight: '1.5rem',
+  cardButtonBorderColor: appTheme.palette.mid50l,
   cardContentFontSize: '.9375rem',
   cardContentLineHeight: '1.375rem',
-  cardEditingStatusFontSize: '.6875rem',
-  cardEditingStatusLineHeight: appTheme.typography.sBase,
-  cardMaxWidth: '17.5rem',
   cardMinHeight: '7.9375rem',
   cardPaddingBase: '.9375rem',
-  cardDragStyle: {
-    boxShadow: shadow[3]
-  },
-  cardStatusIndicatorHeight: '.25rem',
-  cardStatusIndicatorWidth: '1.875rem',
-  cardThemeLabelFontSize: appTheme.typography.s3,
-  cardThemeLabelLineHeight: appTheme.typography.s5,
 
   // Card Controls (tapping these makes cards)
   // ---------------------------------------------------------------------------
@@ -376,7 +311,7 @@ const ui = {
 
   dashControlFontColor: COLOR_TEXT_LIGHT,
   dashControlFontSize: appTheme.typography.s2,
-  dashControlHeight: '2rem',
+  dashControlHeight: '1.25rem',
 
   dashSidebarBackgroundColor: appTheme.palette.mid,
   dashSidebarWidth: '15rem',

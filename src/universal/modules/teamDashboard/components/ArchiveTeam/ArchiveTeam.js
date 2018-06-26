@@ -1,7 +1,8 @@
 // @flow
 
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import LinkButton from 'universal/components/LinkButton'
+import IconLabel from 'universal/components/IconLabel'
 import Type from 'universal/components/Type/Type'
 
 import ArchiveTeamForm from './ArchiveTeamForm'
@@ -24,13 +25,13 @@ const ArchiveTeam = ({
   <div>
     {!showConfirmationField ? (
       <div>
-        <Button
-          buttonSize='small'
-          colorPalette='warm'
-          label='Delete Team'
+        <LinkButton
           aria-label='Click to permanently delete this team.'
+          palette='red'
           onClick={handleClick}
-        />
+        >
+          <IconLabel icon='minus-circle' label='Delete Team' />
+        </LinkButton>
         <Type width='auto' marginTop='.5rem' scale='s2'>
           <b>Note</b>: {'This can’t be undone.'}
         </Type>

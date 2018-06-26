@@ -1,13 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import portal from 'react-portal-hoc'
-import Button from 'universal/components/Button/Button'
 import Type from 'universal/components/Type/Type'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {withRouter} from 'react-router-dom'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  margin: '1.5rem auto 0'
+})
 
 const RemoveFromOrgModal = (props) => {
   const {
@@ -37,24 +43,16 @@ const RemoveFromOrgModal = (props) => {
       onBackdropClick={closePortal}
     >
       <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        Are you sure?
+        {'Are you sure?'}
       </Type>
       <Type align='center' bold marginBottom='1.5rem' scale='s4'>
-        This will remove {preferredName} from the organization. Any outstanding tasks will be given
+        {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
         to the team leads. Any time remaining on their subscription will be refunded on the next
-        invoice.
-        <br />
+        invoice.`}
       </Type>
-      <Button
-        buttonStyle='flat'
-        colorPalette='warm'
-        icon='arrow-circle-right'
-        iconPlacement='right'
-        label={`Remove ${preferredName}`}
-        onClick={handleClick}
-        buttonSize='large'
-        waiting={submitting}
-      />
+      <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
+        <IconLabel icon='arrow-circle-right' iconAfter label={`Remove ${preferredName}`} />
+      </StyledButton>
     </DashModal>
   )
 }

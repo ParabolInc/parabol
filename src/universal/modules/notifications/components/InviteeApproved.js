@@ -11,7 +11,15 @@ import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 
 const InviteeApproved = (props) => {
-  const {atmosphere, notification, submitMutation, onError, onCompleted, history} = props
+  const {
+    atmosphere,
+    notification,
+    submitMutation,
+    onError,
+    onCompleted,
+    history,
+    submitting
+  } = props
   const {notificationId, inviteeEmail, team} = notification
   const {teamId, teamName} = team
   const acknowledge = () => {
@@ -21,9 +29,7 @@ const InviteeApproved = (props) => {
   const goToTeam = () => history.push(`/team/${teamId}`)
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='user-circle-o' size='small' />
-      </div>
+      <IconAvatar icon='user-circle-o' size='small' />
       <div className={css(defaultStyles.message)}>
         <b>{inviteeEmail}</b>
         {' has been approved to join '}
@@ -34,9 +40,11 @@ const InviteeApproved = (props) => {
         <br />
         {'We have sent them an invitation.'}
       </div>
-      <div className={css(defaultStyles.iconButton)}>
-        <AcknowledgeButton aria-label={clearNotificationLabel} onClick={acknowledge} />
-      </div>
+      <AcknowledgeButton
+        aria-label={clearNotificationLabel}
+        onClick={acknowledge}
+        waiting={submitting}
+      />
     </Row>
   )
 }

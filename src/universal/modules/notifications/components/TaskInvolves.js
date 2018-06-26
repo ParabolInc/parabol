@@ -10,11 +10,12 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants'
 import {clearNotificationLabel} from '../helpers/constants'
-import {css} from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
+import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
@@ -34,6 +35,12 @@ const localStyles = {
     margin: '0 0 .5rem'
   }
 }
+
+const StyledButton = styled(RaisedButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '100%'
+})
 
 class TaskInvolves extends Component {
   constructor (props) {
@@ -107,9 +114,7 @@ class TaskInvolves extends Component {
     const action = involvementWord[involvement]
     return (
       <Row compact>
-        <div className={css(defaultStyles.icon)}>
-          <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size='small' />
-        </div>
+        <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size='small' />
         <div className={css(defaultStyles.message)}>
           <div className={css(defaultStyles.messageText)}>
             <b>{changeAuthorName}</b>
@@ -149,28 +154,21 @@ class TaskInvolves extends Component {
         </div>
         <div className={css(defaultStyles.buttonGroup)}>
           <div className={css(defaultStyles.widerButton)}>
-            <Button
+            <StyledButton
               aria-label='Go to this board'
-              colorPalette='warm'
-              isBlock
-              label='Go to Board'
-              buttonSize={ui.notificationButtonSize}
-              type='submit'
+              palette='warm'
+              size={ui.notificationButtonSize}
               onClick={this.gotoBoard}
               waiting={submitting}
-            />
+            >
+              {'Go to Board'}
+            </StyledButton>
           </div>
-          <div className={css(defaultStyles.iconButton)}>
-            <Button
-              aria-label={clearNotificationLabel}
-              buttonSize='small'
-              colorPalette='gray'
-              icon='check'
-              isBlock
-              onClick={this.acknowledge}
-              type='submit'
-            />
-          </div>
+          <AcknowledgeButton
+            aria-label={clearNotificationLabel}
+            onClick={this.acknowledge}
+            waiting={submitting}
+          />
         </div>
       </Row>
     )

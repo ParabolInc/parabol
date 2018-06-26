@@ -1,22 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import LinkButton from 'universal/components/LinkButton'
+import IconLabel from 'universal/components/IconLabel'
 
 const DashFilterToggle = (props) => {
   const {label, innerRef, onClick} = props
   return (
-    <Button
+    <LinkButton
       aria-label={`Filter by ${label}`}
-      buttonSize='small'
-      buttonStyle='link'
-      colorPalette='midGray'
-      icon='chevron-down'
-      iconPlacement='right'
-      label={label}
       onClick={onClick}
+      palette='midGray'
       ref={innerRef}
-      title={`Filter by ${label}`}
-    />
+    >
+      <IconLabel icon='chevron-down' iconAfter label={label} />
+    </LinkButton>
   )
 }
 

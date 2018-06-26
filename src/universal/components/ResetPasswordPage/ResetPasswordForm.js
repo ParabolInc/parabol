@@ -7,7 +7,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import {Field, reduxForm} from 'redux-form'
-import StyledButton from 'universal/components/StyledButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import InputField from 'universal/components/InputField/InputField'
@@ -30,8 +30,9 @@ const Block = styled('div')({
 })
 
 const PasswordResetForm = (props: Props) => {
+  const {handleSubmit, submitting, valid} = props
   return (
-    <Form onSubmit={props.handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <Block>
         <Field
           type='email'
@@ -42,17 +43,12 @@ const PasswordResetForm = (props: Props) => {
           label='Email:'
           name='email'
           underline
-          disabled={props.submitting}
+          disabled={submitting}
         />
       </Block>
-      <StyledButton
-        buttonPalette='primary'
-        disabled={!props.valid}
-        type='submit'
-        waiting={props.submitting}
-      >
+      <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
         {'Submit'}
-      </StyledButton>
+      </PrimaryButton>
     </Form>
   )
 }

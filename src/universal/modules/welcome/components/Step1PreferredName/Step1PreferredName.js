@@ -103,7 +103,11 @@ class Step1PreferredName extends Component {
             type='text'
             underline
           />
-          <WelcomeSubmitButton disabled={submitting || !preferredName} />
+          <WelcomeSubmitButton
+            disabled={!preferredName}
+            onClick={handleSubmit(this.onPreferredNameSubmit)}
+            waiting={submitting}
+          />
         </form>
       </div>
     )

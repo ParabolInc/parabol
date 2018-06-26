@@ -28,6 +28,9 @@ type Props = {
   meeting: Meeting
 }
 
+const fontSize = appTheme.typography.s3
+const lineHeight = appTheme.typography.s5
+
 const underlineStyles = {
   backgroundColor: 'transparent',
   borderLeftColor: 'transparent !important',
@@ -39,7 +42,7 @@ const underlineStyles = {
 const PencilIcon = styled(StyledFontAwesome)(({isExpanded}) => ({
   color: isExpanded ? '#fff' : ui.hintColor,
   height: ui.iconSize,
-  lineHeight: ui.cardThemeLabelLineHeight,
+  lineHeight,
   opacity: '.5',
   paddingLeft: '0.25rem',
   textAlign: 'center',
@@ -72,9 +75,9 @@ const NameInput = styled('input')(({isExpanded, readOnly}) => ({
   boxShadow: 'none',
   color: isExpanded ? '#fff' : appTheme.palette.dark,
   cursor: readOnly ? 'default' : 'text',
-  fontSize: ui.cardThemeLabelFontSize,
+  fontSize,
   fontWeight: 600,
-  lineHeight: ui.cardThemeLabelLineHeight,
+  lineHeight,
   padding: 0,
   // need to use a content editable if we wanna animate this since input el forces width
   textAlign: !isExpanded && 'center',

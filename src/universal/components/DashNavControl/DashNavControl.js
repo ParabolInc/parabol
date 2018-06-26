@@ -1,27 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import LinkButton from 'universal/components/LinkButton'
+import IconLabel from 'universal/components/IconLabel'
 
 const DashNavControl = (props) => {
-  const {icon, iconPlacement, label, onClick} = props
+  const {icon, label, onClick} = props
   return (
-    <Button
-      aria-label={label}
-      buttonSize='small'
-      buttonStyle='link'
-      colorPalette='midGray'
-      icon={icon}
-      iconPlacement={iconPlacement}
-      label={label}
-      onClick={onClick}
-      title={label}
-    />
+    <LinkButton aria-label={label} onClick={onClick} palette='midGray'>
+      <IconLabel icon={icon} label={label} />
+    </LinkButton>
   )
 }
 
 DashNavControl.propTypes = {
   icon: PropTypes.string,
-  iconPlacement: PropTypes.oneOf(['left', 'right']),
   label: PropTypes.string,
   onClick: PropTypes.func
 }

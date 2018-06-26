@@ -4,11 +4,17 @@ import portal from 'react-portal-hoc'
 import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
 import Type from 'universal/components/Type/Type'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  margin: '1.5rem auto 0'
+})
 
 const LeaveTeamModal = (props) => {
   const {
@@ -39,21 +45,16 @@ const LeaveTeamModal = (props) => {
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
       <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        Are you sure?
+        {'Are you sure?'}
       </Type>
       <Type align='center' bold marginBottom='1.5rem' scale='s4'>
-        This will remove you from the team. <br />
-        All of your tasks will be given to {teamLeadName} <br />
+        {'This will remove you from the team.'}
+        <br />
+        {`All of your tasks will be given to ${teamLeadName}`}
       </Type>
-      <Button
-        buttonSize='large'
-        buttonStyle='flat'
-        colorPalette='warm'
-        icon='arrow-circle-right'
-        iconPlacement='right'
-        label={'Leave the team'}
-        onClick={handleClick}
-      />
+      <StyledButton size='large' onClick={handleClick} palette='warm'>
+        <IconLabel icon='arrow-circle-right' iconAfter label='Leave the team' />
+      </StyledButton>
     </DashModal>
   )
 }

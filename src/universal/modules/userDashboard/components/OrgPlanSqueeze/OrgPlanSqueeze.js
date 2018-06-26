@@ -1,5 +1,7 @@
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import LinkButton from 'universal/components/LinkButton'
+import IconLabel from 'universal/components/IconLabel'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import {
   PERSONAL,
   PERSONAL_LABEL,
@@ -69,8 +71,9 @@ const TierPanelBody = styled('div')({
 })
 
 const ButtonBlock = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
   padding: '1.5rem 1rem',
-  textAlign: 'center',
   width: '100%'
 })
 
@@ -108,6 +111,10 @@ const Email = styled('a')({
   }
 })
 
+const StyledPrimaryButton = styled(PrimaryButton)({
+  ...ui.buttonBlockStyles
+})
+
 type Props = {|
   organization: Object
 |}
@@ -121,13 +128,11 @@ const OrgPlanSqueeze = (props: Props) => {
       orgId
     }
   } = props
-  const primaryButtonProps = {
-    buttonSize: 'medium',
-    buttonStyle: 'primary',
-    depth: 2,
-    isBlock: true
-  }
-  const toggle = <Button {...primaryButtonProps} label='Upgrade to the Pro Plan' />
+  const toggle = (
+    <StyledPrimaryButton size='medium' depth={2}>
+      {'Upgrade to the Pro Plan'}
+    </StyledPrimaryButton>
+  )
   const openUrl = (url) => () => window.open(url, '_blank')
   const hasManyBillingLeaders = billingLeaders.length !== 1
 
@@ -207,15 +212,9 @@ const OrgPlanSqueeze = (props: Props) => {
       </TierPanelLayout>
       {/* Learn More Link */}
       <ButtonBlock>
-        <Button
-          buttonSize='medium'
-          buttonStyle='link'
-          colorPalette='mid'
-          icon={ui.iconExternalLink}
-          iconPlacement='right'
-          label='Learn About Plans & Invoicing'
-          onClick={openUrl(PRICING_LINK)}
-        />
+        <LinkButton size='medium' onClick={openUrl(PRICING_LINK)} palette='mid'>
+          <IconLabel icon={ui.iconExternalLink} iconRight label={'Learn About Plans & Invoicing'} />
+        </LinkButton>
       </ButtonBlock>
     </OrgPlanSqueezeRoot>
   )

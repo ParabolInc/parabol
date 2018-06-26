@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
+import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 
-const RejoinButton = styled('div')({
+const RejoinButton = styled(RaisedButton)({
   bottom: '1.25rem',
   position: 'fixed',
   right: '4.5rem',
@@ -14,15 +15,8 @@ const RejoinButton = styled('div')({
 const RejoinFacilitatorButton = (props) => {
   const {onClickHandler} = props
   return (
-    <RejoinButton>
-      <Button
-        colorPalette='warm'
-        depth={2}
-        icon='user'
-        label='Rejoin Facilitator'
-        onClick={onClickHandler}
-        buttonSize='small'
-      />
+    <RejoinButton depth={2} onClick={onClickHandler} palette='warm'>
+      <IconLabel icon='user' label='Rejoin Facilitator' />
     </RejoinButton>
   )
 }

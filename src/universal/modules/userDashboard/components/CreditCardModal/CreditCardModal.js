@@ -13,7 +13,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import DashModal from 'universal/components/Dashboard/DashModal'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import RaisedButton from 'universal/components/RaisedButton'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
@@ -31,7 +32,7 @@ const ModalBody = styled('div')({
   width: '100%'
 })
 
-const IconAvatarBlock = styled('div')({
+const StyledIconAvatar = styled(IconAvatar)({
   margin: '0 0 .5rem'
 })
 
@@ -74,14 +75,18 @@ const ButtonGroup = styled('div')({
   width: '100%'
 })
 
-const CancelButton = styled('div')({
+const CancelButton = styled(RaisedButton)({
   flexGrow: '1',
-  paddingRight: '.625rem'
+  marginRight: '.625rem',
+  paddingLeft: 0,
+  paddingRight: 0
 })
 
-const UpdateButton = styled('div')({
+const UpdateButton = styled(PrimaryButton)({
   flexGrow: '4',
-  paddingLeft: '.625rem'
+  marginLeft: '.625rem',
+  paddingLeft: 0,
+  paddingRight: 0
 })
 
 const validate = (values, props) => {
@@ -119,9 +124,7 @@ const CreditCardModal = (props) => {
       closeAfter={closeAfter}
     >
       <ModalBody>
-        <IconAvatarBlock>
-          <IconAvatar icon={cardTypeIcon} size='large' />
-        </IconAvatarBlock>
+        <StyledIconAvatar icon={cardTypeIcon} size='large' />
         <Type
           align='center'
           colorPalette='dark'
@@ -181,27 +184,22 @@ const CreditCardModal = (props) => {
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButton>
-              <Button
-                buttonSize='medium'
-                buttonStyle='primary'
-                depth={1}
-                disabled={submitting}
-                isBlock
-                label={actionLabel}
-                onClick={handleSubmit(addStripeBilling)}
-                type='submit'
-              />
+            <UpdateButton
+              size='medium'
+              depth={1}
+              disabled={submitting}
+              onClick={handleSubmit(addStripeBilling)}
+              waiting={submitting}
+            >
+              {actionLabel}
             </UpdateButton>
-            <CancelButton>
-              <Button
-                buttonSize='medium'
-                colorPalette='gray'
-                disabled={submitting}
-                isBlock
-                label='Cancel'
-                onClick={closePortal}
-              />
+            <CancelButton
+              size='medium'
+              disabled={submitting}
+              onClick={closePortal}
+              waiting={submitting}
+            >
+              {'Cancel'}
             </CancelButton>
           </ButtonGroup>
         </form>

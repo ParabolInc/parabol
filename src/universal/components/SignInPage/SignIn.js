@@ -30,7 +30,7 @@ const SignIn = (props: Props) => {
       <AuthHeader heading='Sign In' secondaryAction={{relativeUrl, displayName: 'Sign Up'}} />
       {props.authProviders.map((provider) => (
         <ThirdPartyAuthButton
-          action='Sign in'
+          action='Sign In'
           waiting={props.isSubmitting}
           key={provider.displayName}
           provider={provider}

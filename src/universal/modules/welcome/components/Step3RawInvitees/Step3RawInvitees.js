@@ -16,7 +16,7 @@ const validate = (values) => {
 }
 
 const Step3RawInvitees = (props) => {
-  const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch, styles} = props
+  const {dispatch, handleSubmit, invitees = [], inviteesRaw, untouch, styles, submitting} = props
 
   const onAddInviteesButtonClick = () => {
     const parsedAddresses = parseEmailAddressList(inviteesRaw)
@@ -66,7 +66,11 @@ const Step3RawInvitees = (props) => {
         type='text'
         underline
       />
-      <WelcomeSubmitButton disabled={!inviteesRaw} />
+      <WelcomeSubmitButton
+        disabled={!inviteesRaw}
+        onClick={handleSubmit(onAddInviteesButtonClick)}
+        waiting={submitting}
+      />
     </form>
   )
 }
@@ -77,7 +81,8 @@ Step3RawInvitees.propTypes = {
   invitees: PropTypes.array,
   inviteesRaw: PropTypes.string,
   untouch: PropTypes.func.isRequired,
-  styles: PropTypes.object
+  styles: PropTypes.object,
+  submitting: PropTypes.bool
 }
 
 const styleThunk = () => ({
