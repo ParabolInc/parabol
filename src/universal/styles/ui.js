@@ -241,7 +241,6 @@ const ui = {
       padding: `${CONTROL_LARGE_PADDING_VERTICAL} 1.5em`
     }
   },
-  buttonTransition: transition[0],
 
   // Cards
   // ---------------------------------------------------------------------------
@@ -252,18 +251,8 @@ const ui = {
   cardButtonBorderColor: appTheme.palette.mid50l,
   cardContentFontSize: '.9375rem',
   cardContentLineHeight: '1.375rem',
-  cardEditingStatusFontSize: '.6875rem',
-  cardEditingStatusLineHeight: '1.375rem',
-  cardMaxWidth: '17.5rem',
   cardMinHeight: '7.9375rem',
   cardPaddingBase: '.9375rem',
-  cardDragStyle: {
-    boxShadow: shadow[3]
-  },
-  cardStatusIndicatorHeight: '.25rem',
-  cardStatusIndicatorWidth: '1.875rem',
-  cardThemeLabelFontSize: appTheme.typography.s3,
-  cardThemeLabelLineHeight: appTheme.typography.s5,
 
   // Card Controls (tapping these makes cards)
   // ---------------------------------------------------------------------------

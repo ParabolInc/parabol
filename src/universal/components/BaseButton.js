@@ -19,8 +19,8 @@ const ButtonRoot = styled(PlainButton)(({size, depth, disabled, pressedDown}) =>
     textAlign: 'center',
     transform: pressedDown && 'translate(0, .125rem)',
     transition: `
-        box-shadow ${ui.buttonTransition},
-        transform ${ui.buttonTransition}
+        box-shadow ${ui.transition[0]},
+        transform ${ui.transition[0]}
       `,
     userSelect: 'none',
     whiteSpace: 'nowrap',

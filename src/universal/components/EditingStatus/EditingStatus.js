@@ -13,10 +13,10 @@ const StatusHeader = styled('div')({
   alignItems: 'center',
   color: appTheme.palette.dark80l,
   display: 'flex',
-  fontSize: ui.cardEditingStatusFontSize,
+  fontSize: '.6875rem',
   fontWeight: 400,
   justifyContent: 'space-between',
-  lineHeight: ui.cardEditingStatusLineHeight,
+  lineHeight: '1.375rem',
   minHeight: ui.cardButtonHeight,
   padding: `0 ${ui.cardPaddingBase}`,
   textAlign: 'left'
