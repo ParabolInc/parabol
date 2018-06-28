@@ -108,12 +108,13 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
+      safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
       const reflection = store.get(reflectionId)
       const dragContext = reflection.getLinkedRecord('dragContext')
+      if (!dragContext) return
       // critically important! relay will try to reuse this for other reflections
       store.delete(dragContext.getDataID())
       reflection.setValue(null, 'dragContext')
-      safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
     })
     delete cardsInFlight[reflectionId]
     shakeUpBottomCells(childrenCache, columnLefts)

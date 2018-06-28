@@ -188,6 +188,22 @@
     prop-types "^15.5.10"
     shallowequal "^1.0.2"
 
+"@mattkrick/react-relay@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/react-relay/-/react-relay-1.6.1.tgz#dfb76db9841ba082d524dd51e3116949543edd60"
+  dependencies:
+    "@mattkrick/relay-runtime" "1.6.1"
+    babel-runtime "^6.23.0"
+    fbjs "^0.8.14"
+    prop-types "^15.5.8"
+
+"@mattkrick/relay-runtime@1.6.1", "@mattkrick/relay-runtime@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/relay-runtime/-/relay-runtime-1.6.1.tgz#f70a3ee24881e5e39696bad03314bbbc25268d7d"
+  dependencies:
+    babel-runtime "^6.23.0"
+    fbjs "^0.8.14"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -10145,10 +10161,6 @@ react-error-overlay@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
 
-react-flip-move@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/react-flip-move/-/react-flip-move-3.0.2.tgz#2f6f16ca6cb0a8490fba15a98b3440a76127e825"
-
 react-fontawesome@^1.5.0:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/react-fontawesome/-/react-fontawesome-1.6.1.tgz#eddce17e7dc731aa09fd4a186688a61793a16c5c"
@@ -10280,7 +10292,7 @@ react-redux@^5.0.7:
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
 
-react-relay@^1.5.0:
+react-relay@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-1.6.0.tgz#7a0eca435c81b9b01d8917d4bca6507eefbcdfe4"
   dependencies:
@@ -10696,7 +10708,7 @@ relateurl@0.2.x:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
 
-relay-compiler@^1.5.0:
+relay-compiler@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/relay-compiler/-/relay-compiler-1.6.0.tgz#0a1bc8d28c1cf31d8985108a761ba6c0db48d4a1"
   dependencies:
@@ -10717,7 +10729,7 @@ relay-compiler@^1.5.0:
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
-relay-runtime@1.6.0, relay-runtime@^1.5.0:
+relay-runtime@1.6.0, relay-runtime@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-1.6.0.tgz#2b70058fb77a4c93a171752ce147f8ee8d8a88b9"
   dependencies:

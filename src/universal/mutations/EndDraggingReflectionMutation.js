@@ -105,6 +105,7 @@ export const moveReflectionLocation = (
 }
 
 const handleDragMismatch = (store, dragContext, userId) => {
+  if (!dragContext) return
   // if an endDrag message comes in, we MUST trust it, because it was validated by the server & represents what is in the DB
   const existingDragUserId = dragContext.getValue('dragUserId')
   if (existingDragUserId !== userId) {
@@ -128,7 +129,6 @@ export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) =
   const reflectionId = reflection.getValue('id')
   const storedReflection = store.get(reflectionId)
   const dragContext = storedReflection.getLinkedRecord('dragContext')
-  if (!dragContext) return
   handleDragMismatch(store, dragContext, userId)
 
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
