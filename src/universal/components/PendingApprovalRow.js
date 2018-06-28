@@ -1,8 +1,8 @@
 // @flow
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
@@ -19,8 +19,9 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import appTheme from 'universal/styles/theme/theme'
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants'
 import fromNow from 'universal/utils/fromNow'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
 import type {PendingApprovalRow_orgApproval as OrgApproval} from './__generated__/PendingApprovalRow_orgApproval.graphql'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import UserRowFlatButton from 'universal/modules/teamDashboard/components/TeamSettings/UserRowFlatButton'
 
 type Props = {|
   atmosphere: Object,
@@ -96,38 +97,24 @@ const PendingApprovalRow = (props: Props) => {
         <UserRowActionsBlock>
           {isBillingLeader ? (
             <React.Fragment>
-              <Button
-                buttonSize='small'
-                buttonStyle='primary'
-                label={'Approve'}
+              <PrimaryButton
                 onClick={() => {
                   if (submitting) return
                   submitMutation()
                   ApproveToOrgMutation(atmosphere, email, orgId, onError, onCompleted)
                 }}
-              />
+              >
+                {'Approve'}
+              </PrimaryButton>
               <RejectOrgApprovalModal
                 notificationId={notification.notificationId}
                 inviteeEmail={email}
                 inviterName={notification.inviter.inviterName}
-                toggle={
-                  <Button
-                    buttonSize='small'
-                    buttonStyle='solid'
-                    colorPalette='light'
-                    label={'Decline'}
-                  />
-                }
+                toggle={<UserRowFlatButton>{'Decline'}</UserRowFlatButton>}
               />
             </React.Fragment>
           ) : (
-            <Button
-              buttonSize='small'
-              buttonStyle='solid'
-              colorPalette='light'
-              label={'Cancel Invitation'}
-              onClick={cancel}
-            />
+            <UserRowFlatButton onClick={cancel}>{'Cancel Invitation'}</UserRowFlatButton>
           )}
         </UserRowActionsBlock>
       </RowActions>
