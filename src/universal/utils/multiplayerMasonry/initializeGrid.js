@@ -54,18 +54,23 @@ const initializeGrid = (childrenCache, parentCache, isAnimated) => {
       el.style.transform = `translate(${left}px, ${top}px)`
     })
   })
+
+  // again, I'm dumbfounded as to why i need 2 rAFs, but without 2, when the route changes
+  // the cards will animate in from the top left instead of the elevator animation
   window.requestAnimationFrame(() => {
-    if (isAnimated) {
-      const animatedEls = animateInQueue.map((cb) => cb())
-      const lastEl = animatedEls[animatedEls.length - 1]
-      const wrapUp = () => {
+    window.requestAnimationFrame(() => {
+      if (isAnimated) {
+        const animatedEls = animateInQueue.map((cb) => cb())
+        const lastEl = animatedEls[animatedEls.length - 1]
+        const wrapUp = () => {
+          animateOutQueue.forEach((cb) => cb())
+          lastEl.removeEventListener('transitionend', wrapUp)
+        }
+        lastEl.addEventListener('transitionend', wrapUp)
+      } else {
         animateOutQueue.forEach((cb) => cb())
-        lastEl.removeEventListener('transitionend', wrapUp)
       }
-      lastEl.addEventListener('transitionend', wrapUp)
-    } else {
-      animateOutQueue.forEach((cb) => cb())
-    }
+    })
   })
 }
 

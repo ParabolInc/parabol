@@ -30,7 +30,7 @@ const UserDraggingHeader = (props: Props) => {
   const name = userId === viewerId ? 'Your ghost 👻' : preferredName
   return (
     <Header>
-      <Tag colorPalette='blue' label={name} />
+      <Tag colorPalette='purple' label={name} />
     </Header>
   )
 }

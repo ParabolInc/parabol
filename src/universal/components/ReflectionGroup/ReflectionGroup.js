@@ -173,6 +173,7 @@ class ReflectionGroup extends Component<Props> {
     // animate child home
     modalStyle.transition = `all ${childDuration}ms ${MIN_ITEM_DELAY}ms ${STANDARD_CURVE}`
     modalStyle.transform = `translate(${left}px,${top}px)`
+    modalStyle.overflow = 'hidden'
 
     // animate background home
     const childCache = childrenCache[reflectionGroupId]
@@ -245,7 +246,11 @@ class ReflectionGroup extends Component<Props> {
 
     const secondCard = idx === reflections.length - 2
     return (
-      <ReflectionCardInStack key={reflection.id} secondCard={secondCard}>
+      <ReflectionCardInStack
+        key={reflection.id}
+        secondCard={secondCard}
+        innerRef={setItemRef(reflection.id)}
+      >
         <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter hideShadow />
       </ReflectionCardInStack>
     )

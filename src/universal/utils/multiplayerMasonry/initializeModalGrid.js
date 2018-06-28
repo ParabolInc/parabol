@@ -25,6 +25,7 @@ const makeResetHandler = (reflections, itemCache, modalRef) => {
     if (e.currentTarget !== e.target) return
     resetQueue.forEach((cb) => cb())
     if (modalRef) {
+      modalRef.style.overflowY = 'scroll'
       modalRef.removeEventListener('transitionend', resetStyles)
     }
   }
@@ -90,8 +91,9 @@ const initializeModalGrid = (
 
   const modalHeight =
     Math.max(...currentColumnHeights) + MODAL_PADDING * 2 + childCache.headerHeight
+  const scrollHeight = Math.min(parentHeight - MODAL_PADDING * 2, modalHeight)
   const modalWidth = REFLECTION_WIDTH * columnCount + (MODAL_PADDING - CARD_PADDING) * 2
-  const modalTop = parentTop + (parentHeight - modalHeight) / 2
+  const modalTop = parentTop + (parentHeight - scrollHeight) / 2
   const modalLeft = parentLeft + (parentWidth - modalWidth) / 2
   const top = collapsedTop + parentTop - MODAL_PADDING + CARD_PADDING
   const left = collapsedLeft + parentLeft - MODAL_PADDING + CARD_PADDING
@@ -106,7 +108,7 @@ const initializeModalGrid = (
 
   // set initial group styles
   modalStyle.top = 0
-  modalStyle.height = `${modalHeight}px`
+  modalStyle.height = `${scrollHeight}px`
   modalStyle.width = `${modalWidth}px`
   modalStyle.transform = `translate(${left}px,${top}px)`
   modalStyle.transformOrigin = '0 0'
