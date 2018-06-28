@@ -1,24 +1,20 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import Button from 'universal/components/Button/Button'
+import styled from 'react-emotion'
+import RaisedButton from 'universal/components/RaisedButton'
+import IconLabel from 'universal/components/IconLabel'
+import ui from 'universal/styles/ui'
+
+const StyledButton = styled(RaisedButton)({
+  marginLeft: ui.rowCompactGutter,
+  minWidth: '2rem',
+  paddingLeft: 0,
+  paddingRight: 0
+})
 
 const AcknowledgeButton = (props) => (
-  <Button
-    aria-label={props['aria-label']}
-    buttonSize='small'
-    colorPalette='gray'
-    icon='check'
-    isBlock
-    type='submit'
-    onClick={props.onClick}
-    waiting={props.waiting}
-  />
+  <StyledButton {...props}>
+    <IconLabel icon='check' />
+  </StyledButton>
 )
-
-AcknowledgeButton.propTypes = {
-  'aria-label': PropTypes.string,
-  onClick: PropTypes.func,
-  waiting: PropTypes.bool
-}
 
 export default AcknowledgeButton

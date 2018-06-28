@@ -3,7 +3,7 @@ import {EditorState} from 'draft-js'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {Field, reduxForm} from 'redux-form'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 import PlainInputField from 'universal/components/PlainInputField/PlainInputField'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
@@ -90,15 +90,9 @@ class EditorLinkChanger extends Component {
             />
           </div>
           <div className={css(styles.buttonBlock)}>
-            <Button
-              buttonSize='small'
-              buttonStyle='solid'
-              colorPalette='mid'
-              disabled={!valid}
-              label={label}
-              type='submit'
-              onClick={handleSubmit(this.onSubmit)}
-            />
+            <RaisedButton disabled={!valid} onClick={handleSubmit(this.onSubmit)} palette='mid'>
+              {label}
+            </RaisedButton>
           </div>
         </form>
       </div>

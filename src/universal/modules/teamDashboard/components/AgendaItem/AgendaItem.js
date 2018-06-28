@@ -1,17 +1,15 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {DragSource as dragSource} from '@mattkrick/react-dnd'
-// import FontAwesome from 'react-fontawesome';
 import {createFragmentContainer} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup'
-import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback'
 import styled, {css} from 'react-emotion'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import IconButton from 'universal/components/IconButton'
 
 const taskSource = {
   beginDrag (props) {
@@ -23,9 +21,7 @@ const taskSource = {
 
 const lineHeight = ui.navTopicLineHeight
 
-const DeleteIconButton = styled('div')(({agendaLength, disabled}) => ({
-  color: appTheme.palette.warm,
-  cursor: 'pointer',
+const DeleteIconButton = styled(IconButton)(({agendaLength, disabled}) => ({
   display: 'block',
   height: '1.5rem',
   // we can make the position of the del (x) more centered when there’s a low number of agenda items
@@ -33,19 +29,11 @@ const DeleteIconButton = styled('div')(({agendaLength, disabled}) => ({
   lineHeight,
   opacity: 0,
   position: 'absolute',
-  textAlign: 'center',
-  top: '.5rem',
+  top: '.5625rem',
   transition: 'opacity .1s ease-in',
   visibility: disabled && 'hidden',
   width: ui.iconSize
 }))
-
-const DeleteIcon = styled(StyledFontAwesome)({
-  display: 'block',
-  height: lineHeight,
-  lineHeight,
-  width: '1.25rem'
-})
 
 const AvatarBlock = styled('div')({
   width: '2rem'
@@ -53,7 +41,8 @@ const AvatarBlock = styled('div')({
 
 const rootStyles = css({
   position: 'relative',
-  '&:hover > div': {
+  // show the DeleteIconButton on hover
+  '&:hover > button': {
     opacity: 1
   }
 })
@@ -156,11 +145,10 @@ class AgendaItem extends Component {
               aria-label={deleteLabel}
               agendaLength={agendaLength}
               disabled={disabled}
+              icon='times-circle'
               onClick={handleRemove}
-              title={deleteLabel}
-            >
-              <DeleteIcon name='times-circle' />
-            </DeleteIconButton>
+              palette='warm'
+            />
           )}
       </div>
     )

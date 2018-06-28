@@ -23,7 +23,7 @@ import {PERSONAL, PRO_LABEL} from 'universal/utils/constants'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
 import Panel from 'universal/components/Panel/Panel'
 import Row from 'universal/components/Row/Row'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import UserRow from 'universal/components/UserRow/UserRow'
 
 const originAnchor = {
@@ -220,17 +220,10 @@ class TeamSettings extends Component {
             <Panel>
               <Row>
                 <div>{'This team is currently on a personal plan.'}</div>
-                <Button
-                  buttonSize='small'
-                  buttonStyle='primary'
-                  label={
-                    <span>
-                      {'Upgrade Team to '}
-                      <b>{PRO_LABEL}</b>
-                    </span>
-                  }
-                  onClick={() => history.push(`/me/organizations/${orgId}`)}
-                />
+                <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
+                  {'Upgrade Team to '}
+                  <b>{PRO_LABEL}</b>
+                </PrimaryButton>
               </Row>
             </Panel>
           )}

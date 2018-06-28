@@ -19,21 +19,17 @@ const KickedOut = (props) => {
   }
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='users' size='small' />
-      </div>
+      <IconAvatar icon='users' size='small' />
       <div className={css(defaultStyles.message)}>
         {'You have been removed from the '}
         <b>{teamName}</b>
         {' team.'}
       </div>
-      <div className={css(defaultStyles.iconButton)}>
-        <AcknowledgeButton
-          aria-label={clearNotificationLabel}
-          waiting={submitting}
-          onClick={acknowledge}
-        />
-      </div>
+      <AcknowledgeButton
+        aria-label={clearNotificationLabel}
+        onClick={acknowledge}
+        waiting={submitting}
+      />
     </Row>
   )
 }

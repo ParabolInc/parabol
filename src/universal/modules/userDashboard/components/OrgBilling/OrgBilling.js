@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createPaginationContainer} from 'react-relay'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 import Panel from 'universal/components/Panel/Panel'
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow'
 import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer'
@@ -50,14 +50,9 @@ const InfoAndUpdate = styled('div')({
   justifyContent: 'space-between'
 })
 
-const LoadMore = styled('div')({
-  color: appTheme.palette.cool,
-  display: 'flex',
-  fontSize: '1.25rem',
-  fontWeight: 600,
-  justifyContent: 'center',
-  textTransform: 'uppercase',
-  paddingBottom: ui.panelGutter
+const LoadMoreButton = styled(RaisedButton)({
+  margin: '0 auto',
+  marginBottom: ui.panelGutter
 })
 
 const PanelRow = styled('div')({
@@ -104,7 +99,7 @@ class OrgBilling extends Component {
     const hasInvoices = invoices.edges.length > 0
     const {creditCard = {}, id: orgId} = organization
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard
-    const update = <Button buttonSize='small' colorPalette='mid' label='Update' />
+    const update = <RaisedButton>{'Update'}</RaisedButton>
     return (
       <div>
         <Panel label='Credit Card Information'>
@@ -132,17 +127,7 @@ class OrgBilling extends Component {
                   hasCard={Boolean(creditCard.last4)}
                 />
               ))}
-            {hasMore() && (
-              <LoadMore>
-                <Button
-                  buttonSize='medium'
-                  buttonStyle='flat'
-                  colorPalette='warm'
-                  label='Load More'
-                  onClick={this.loadMore}
-                />
-              </LoadMore>
-            )}
+            {hasMore() && <LoadMoreButton onClick={this.loadMore}>{'Load More'}</LoadMoreButton>}
           </div>
         </Panel>
         <Panel label='Danger Zone'>

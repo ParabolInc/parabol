@@ -22,21 +22,17 @@ const TeamArchived = (props) => {
 
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='archive' size='small' />
-      </div>
+      <IconAvatar icon='archive' size='small' />
       <div className={css(defaultStyles.message)}>
         {'The team '}
         <b>{teamName}</b>
         {' was archived.'}
       </div>
-      <div className={css(defaultStyles.iconButton)}>
-        <AcknowledgeButton
-          aria-label={clearNotificationLabel}
-          onClick={acknowledge}
-          waiting={submitting}
-        />
-      </div>
+      <AcknowledgeButton
+        aria-label={clearNotificationLabel}
+        onClick={acknowledge}
+        waiting={submitting}
+      />
     </Row>
   )
 }

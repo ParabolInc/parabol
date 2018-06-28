@@ -6,7 +6,7 @@ import ui from 'universal/styles/ui'
 
 const layerStyles = {
   left: 0,
-  maxWidth: ui.cardMaxWidth,
+  maxWidth: '17.5rem',
   minHeight: '15rem',
   pointerEvents: 'none',
   position: 'fixed',
@@ -71,7 +71,7 @@ class TaskDragLayer extends Component {
   render () {
     return (
       <div style={getItemStyles(this.props)}>
-        <div style={ui.cardDragStyle}>
+        <div style={ui.shadow[3]}>
           <NullableTask {...this.props} hasDragStyles isPreview />
         </div>
       </div>

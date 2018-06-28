@@ -3,12 +3,18 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
 import Type from 'universal/components/Type/Type'
 import portal from 'react-portal-hoc'
 import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  margin: '1.5rem auto 0'
+})
 
 const RemoveTeamMemberModal = (props) => {
   const {
@@ -39,15 +45,9 @@ const RemoveTeamMemberModal = (props) => {
         This will remove {preferredName} from <br />
         the team. <br />
       </Type>
-      <Button
-        buttonSize='large'
-        buttonStyle='flat'
-        colorPalette='warm'
-        icon='arrow-circle-right'
-        iconPlacement='right'
-        label={`Remove ${preferredName}`}
-        onClick={handleClick}
-      />
+      <StyledButton size='large' onClick={handleClick} palette='warm'>
+        <IconLabel icon='arrow-circle-right' iconAfter label={`Remove ${preferredName}`} />
+      </StyledButton>
     </DashModal>
   )
 }

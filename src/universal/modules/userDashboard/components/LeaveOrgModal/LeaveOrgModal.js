@@ -1,13 +1,19 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import portal from 'react-portal-hoc'
-import Button from 'universal/components/Button/Button'
 import Type from 'universal/components/Type/Type'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {withRouter} from 'react-router-dom'
 import DashModal from 'universal/components/Dashboard/DashModal'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  margin: '1.5rem auto 0'
+})
 
 const LeaveOrgModal = (props) => {
   const {
@@ -42,18 +48,10 @@ const LeaveOrgModal = (props) => {
         {'This will remove you from the organization and all teams under it! '}
         <br />
         {'To undo it, you’ll have to ask another Billing Leader to re-add you.'}
-        <br />
       </Type>
-      <Button
-        buttonStyle='flat'
-        colorPalette='warm'
-        icon='sign-out'
-        iconPlacement='right'
-        label={'Leave the organization'}
-        onClick={handleClick}
-        buttonSize='medium'
-        waiting={submitting}
-      />
+      <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
+        <IconLabel icon='arrow-circle-right' iconAfter label='Leave the organization' />
+      </StyledButton>
     </DashModal>
   )
 }

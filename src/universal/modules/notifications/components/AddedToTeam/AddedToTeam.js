@@ -33,9 +33,7 @@ const AddedToTeam = (props) => {
   }
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='users' size='small' />
-      </div>
+      <IconAvatar icon='users' size='small' />
       <div className={css(defaultStyles.message)}>
         {'Congratulations! You are now a part of the team '}
         <span className={css(defaultStyles.messageVar, defaultStyles.notifLink)} onClick={goToTeam}>
@@ -43,13 +41,11 @@ const AddedToTeam = (props) => {
         </span>
         {'.'}
       </div>
-      <div className={css(defaultStyles.iconButton)}>
-        <AcknowledgeButton
-          aria-label={clearNotificationLabel}
-          onClick={acknowledge}
-          waiting={submitting}
-        />
-      </div>
+      <AcknowledgeButton
+        aria-label={clearNotificationLabel}
+        onClick={acknowledge}
+        waiting={submitting}
+      />
     </Row>
   )
 }

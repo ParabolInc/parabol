@@ -19,9 +19,7 @@ const DenyNewUser = (props) => {
   const safeReason = reason || 'none given'
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='user-circle-o' size='small' />
-      </div>
+      <IconAvatar icon='user-circle-o' size='small' />
       <div className={css(defaultStyles.message)}>
         <b>{deniedByName}</b>
         {' has denied '}
@@ -35,13 +33,11 @@ const DenyNewUser = (props) => {
         <i>{safeReason}</i>
         {'”'}
       </div>
-      <div className={css(defaultStyles.iconButton)}>
-        <AcknowledgeButton
-          aria-label={clearNotificationLabel}
-          onClick={acknowledge}
-          waiting={submitting}
-        />
-      </div>
+      <AcknowledgeButton
+        aria-label={clearNotificationLabel}
+        onClick={acknowledge}
+        waiting={submitting}
+      />
     </Row>
   )
 }

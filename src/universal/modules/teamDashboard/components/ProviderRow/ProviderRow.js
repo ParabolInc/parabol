@@ -13,8 +13,14 @@ import RowActions from 'universal/components/Row/RowActions'
 import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink'
 import RowInfo from 'universal/components/Row/RowInfo'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 import Row from 'universal/components/Row/Row'
+
+const StyledButton = styled(RaisedButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '100%'
+})
 
 const StyledRow = styled(Row)({
   justifyContent: 'flex-start'
@@ -169,25 +175,13 @@ const ProviderRow = (props) => {
       {!comingSoon && (
         <ProviderActions>
           {accessToken ? (
-            <Button
-              buttonSize='small'
-              buttonStyle='solid'
-              colorPalette='gray'
-              isBlock
-              key='teamSettings'
-              label='Team Settings'
-              onClick={() => history.push(to)}
-            />
+            <StyledButton key='teamSettings' onClick={() => history.push(to)}>
+              {'Team Settings'}
+            </StyledButton>
           ) : (
-            <Button
-              buttonSize='small'
-              buttonStyle='solid'
-              colorPalette='warm'
-              isBlock
-              key='linkAccount'
-              label='Link My Account'
-              onClick={openOauth}
-            />
+            <StyledButton key='linkAccount' onClick={openOauth} palette='warm'>
+              {'Link My Account'}
+            </StyledButton>
           )}
         </ProviderActions>
       )}
