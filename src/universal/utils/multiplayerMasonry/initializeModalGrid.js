@@ -25,7 +25,7 @@ const makeResetHandler = (reflections, itemCache, modalRef) => {
     if (e.currentTarget !== e.target) return
     resetQueue.forEach((cb) => cb())
     if (modalRef) {
-      modalRef.style.overflowY = 'scroll'
+      modalRef.style.overflowY = 'auto'
       modalRef.removeEventListener('transitionend', resetStyles)
     }
   }
