@@ -189,6 +189,7 @@ const CreditCardModal = (props) => {
               depth={1}
               disabled={submitting}
               onClick={handleSubmit(addStripeBilling)}
+              type='submit'
               waiting={submitting}
             >
               {actionLabel}
