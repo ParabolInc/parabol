@@ -50,7 +50,7 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatc
   if (!reflection) return undefined
   const dragContext = payload.getLinkedRecord('dragContext')
   const dragUserId = dragContext.getValue('dragUserId')
-  const isViewerDragging = viewerId === dragUserId
+  const isViewerDragging = dragContext.getValue('isViewerDragging')
   const existingDragContext = reflection.getLinkedRecord('dragContext')
   const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
 
@@ -120,6 +120,7 @@ const StartDraggingReflectionMutation = (
       const {dispatch, initialCursorCoords} = context
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
+      payload.getLinkedRecord('dragContext').setValue(true, 'isViewerDragging')
       const acceptIncoming = startDraggingReflectionTeamUpdater(payload, {
         atmosphere,
         dispatch,

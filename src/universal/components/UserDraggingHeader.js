@@ -3,6 +3,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import {createFragmentContainer} from 'react-relay'
 import styled from 'react-emotion'
 import {UserDraggingHeader_user as User} from './__generated__/UserDraggingHeader_user.graphql'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import Tag from 'universal/components/Tag/Tag'
 
 type Props = {
   user: User
@@ -19,16 +21,25 @@ const Header = styled('div')({
 })
 
 const UserDraggingHeader = (props: Props) => {
-  const {user} = props
+  const {
+    atmosphere: {viewerId},
+    user
+  } = props
   if (!user) return null
-  const {preferredName} = user
-  return <Header>{preferredName}</Header>
+  const {userId, preferredName} = user
+  const name = userId === viewerId ? 'Your ghost 👻' : preferredName
+  return (
+    <Header>
+      <Tag colorPalette='blue' label={name} />
+    </Header>
+  )
 }
 
 export default createFragmentContainer(
-  UserDraggingHeader,
+  withAtmosphere(UserDraggingHeader),
   graphql`
     fragment UserDraggingHeader_user on User {
+      userId: id
       preferredName
     }
   `
