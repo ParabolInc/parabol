@@ -217,6 +217,7 @@ const CreditCardModal = (props) => {
               size='medium'
               disabled={submitting}
               onClick={closePortal}
+              type='button'
               waiting={submitting}
             >
               {'Cancel'}
