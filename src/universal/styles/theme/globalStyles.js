@@ -81,6 +81,24 @@ export default `
     font-weight: 600;
   }
 
+  /*::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width:6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius:3px;
+    background-color:rgba(0, 0, 0, 0.3);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background:rgba(0, 0, 0, 0.5);
+  }
+
+  ::-webkit-scrollbar-thumb:window-inactive {
+    background:rgba(0, 0, 0, 0.2);
+  }*/
+
   @media print {
     html,
     body {
@@ -90,7 +108,7 @@ export default `
       display: none !important;
     }
   }
-  
+
   ${placeholderStyles}
 
   ${fontFaceDefinitions}

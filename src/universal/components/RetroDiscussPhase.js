@@ -4,7 +4,8 @@ import styled from 'react-emotion'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
+import IconLabel from 'universal/components/IconLabel'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
@@ -114,6 +115,10 @@ const ControlButtonBlock = styled('div')({
   width: '12rem'
 })
 
+const StyledButton = styled(FlatButton)({
+  width: '100%'
+})
+
 const SpacedMeetingControlBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
@@ -188,33 +193,26 @@ const RetroDiscussPhase = (props: Props) => {
           <ControlButtonBlock />
           {nextStageRes && (
             <ControlButtonBlock>
-              <Button
-                buttonSize='medium'
-                buttonStyle='flat'
-                colorPalette='dark'
-                icon='arrow-circle-right'
-                iconLarge
-                iconPalette='warm'
-                iconPlacement='right'
-                isBlock
-                label={'Done! Next topic'}
-                onClick={gotoNext}
-              />
+              <StyledButton size='medium' onClick={gotoNext}>
+                <IconLabel
+                  icon='arrow-circle-right'
+                  iconColor='warm'
+                  iconAfter
+                  iconLarge
+                  label={'Done! Next topic'}
+                />
+              </StyledButton>
             </ControlButtonBlock>
           )}
           <ControlButtonBlock>
-            <Button
-              buttonSize='medium'
-              buttonStyle='flat'
-              colorPalette='dark'
-              icon='flag-checkered'
-              iconLarge
-              iconPalette='midGray'
-              iconPlacement='left'
-              isBlock
-              label={'End Meeting'}
-              onClick={endMeeting}
-            />
+            <StyledButton size='medium' onClick={endMeeting}>
+              <IconLabel
+                icon='flag-checkered'
+                iconColor='midGray'
+                iconLarge
+                label={'End Meeting'}
+              />
+            </StyledButton>
           </ControlButtonBlock>
           {/* placeholder for layout */}
           {!nextStageRes && <ControlButtonBlock />}

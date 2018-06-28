@@ -5,7 +5,6 @@ import Helmet from 'react-helmet'
 import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
 import InvitationRow from 'universal/components/InvitationRow'
 import InviteUser from 'universal/components/InviteUser/InviteUser'
 import Panel from 'universal/components/Panel/Panel'
@@ -16,6 +15,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/ArchiveTeamContainer/ArchiveTeamContainer'
 import ui from 'universal/styles/ui'
 import {PERSONAL, PRO_LABEL} from 'universal/utils/constants'
+import PrimaryButton from 'universal/components/PrimaryButton'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -77,17 +77,10 @@ class TeamSettings extends Component {
             <Panel>
               <Row>
                 <div>{'This team is currently on a personal plan.'}</div>
-                <Button
-                  buttonSize='small'
-                  buttonStyle='primary'
-                  label={
-                    <span>
-                      {'Upgrade Team to '}
-                      <b>{PRO_LABEL}</b>
-                    </span>
-                  }
-                  onClick={() => history.push(`/me/organizations/${orgId}`)}
-                />
+                <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
+                  {'Upgrade Team to '}
+                  <b>{PRO_LABEL}</b>
+                </PrimaryButton>
               </Row>
             </Panel>
           )}

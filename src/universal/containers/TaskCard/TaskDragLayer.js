@@ -6,7 +6,7 @@ import ui from 'universal/styles/ui'
 
 const layerStyles = {
   left: 0,
-  maxWidth: ui.cardMaxWidth,
+  maxWidth: '17.5rem',
   minHeight: '15rem',
   pointerEvents: 'none',
   position: 'fixed',
@@ -56,6 +56,10 @@ const collect = (monitor) => ({
 })
 const arePropsEqual = () => true
 
+const cardDragStyle = {
+  boxShadow: ui.shadow[3]
+}
+
 class TaskDragLayer extends Component {
   static propTypes = {
     currentOffset: PropTypes.shape({
@@ -71,7 +75,7 @@ class TaskDragLayer extends Component {
   render () {
     return (
       <div style={getItemStyles(this.props)}>
-        <div style={ui.cardDragStyle}>
+        <div style={cardDragStyle}>
           <NullableTask {...this.props} hasDragStyles isPreview />
         </div>
       </div>

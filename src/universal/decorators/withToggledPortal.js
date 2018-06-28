@@ -1,3 +1,4 @@
+import {findDOMNode} from 'react-dom'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import isKeyboardEvent from 'universal/utils/isKeyboardEvent'
@@ -51,7 +52,8 @@ const withToggledPortal = (ComposedComponent) => {
       })
 
       if (isKeyboardEvent(e) && this.toggleRef) {
-        this.toggleRef.focus()
+        const node = findDOMNode(this.toggleRef)
+        node.focus()
       }
       const {onClose} = this.props
       if (onClose) {

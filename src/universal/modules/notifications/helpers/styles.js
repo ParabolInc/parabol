@@ -27,10 +27,6 @@ export default {
     marginLeft: ui.rowCompactGutter,
     minWidth: '5.125rem'
   },
-  iconButton: {
-    marginLeft: ui.rowCompactGutter,
-    minWidth: '2rem'
-  },
   widerButton: {
     marginLeft: ui.rowCompactGutter,
     minWidth: '8.25rem'

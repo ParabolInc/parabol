@@ -1,58 +1,29 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
-import {css} from 'aphrodite-local-styles/no-important'
-import FontAwesome from 'react-fontawesome'
-import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
+import RaisedButton from 'universal/components/RaisedButton'
+import IconLabel from 'universal/components/IconLabel'
 
-const iconStyle = {
-  display: 'block',
-  fontSize: ui.iconSize,
+const StyledButton = styled(RaisedButton)({
+  border: 0,
   height: '1.5rem',
   lineHeight: '1.5rem',
-  textAlign: 'center',
+  padding: 0,
   width: '1.5rem'
-}
+})
 
 const AddTaskButton = (props) => {
-  const {styles, label, onClick} = props
+  const {label, onClick} = props
   return (
-    <div className={css(styles.addRoot)} onClick={onClick}>
-      <FontAwesome
-        className={css(styles.addIcon)}
-        name='plus'
-        style={iconStyle}
-        title={`Add a Task set to ${label}`}
-      />
-    </div>
+    <StyledButton aria-label={`Add a Task set to ${label}`} onClick={onClick} palette='white'>
+      <IconLabel name='plus' />
+    </StyledButton>
   )
 }
 
 AddTaskButton.propTypes = {
-  styles: PropTypes.object,
   label: PropTypes.string.isRequired,
   onClick: PropTypes.func
 }
 
-const styleThunk = () => ({
-  addRoot: {
-    backgroundColor: ui.palette.white,
-    borderRadius: '100%',
-    height: '1.5rem',
-    lineHeight: '1.5rem',
-    width: '1.5rem'
-  },
-
-  addIcon: {
-    ':hover': {
-      cursor: 'pointer',
-      opacity: '.5'
-    },
-    ':focus': {
-      cursor: 'pointer',
-      opacity: '.5'
-    }
-  }
-})
-
-export default withStyles(styleThunk)(AddTaskButton)
+export default AddTaskButton

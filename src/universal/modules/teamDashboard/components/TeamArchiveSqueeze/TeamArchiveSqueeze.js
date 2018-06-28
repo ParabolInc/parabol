@@ -1,23 +1,77 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createRefetchContainer} from 'react-relay'
 import withRouter from 'react-router-dom/es/withRouter'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import Panel from 'universal/components/Panel/Panel'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
+import styled from 'react-emotion'
+
+const ArchiveSqueezeOuter = styled('div')({
+  margin: '0 auto',
+  maxWidth: '56rem',
+  minWidth: 0
+})
+
+const ArchiveSqueezeInner = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'space-between',
+  padding: ui.rowGutter
+})
+
+const ArchiveSqueezeContent = styled('div')({
+  padding: '0 .5rem 1rem'
+})
+
+const ArchiveSqueezeHeading = styled('h2')({
+  color: ui.palette.mid,
+  fontSize: appTheme.typography.s6,
+  lineHeight: 1.5,
+  margin: '.5rem 0'
+})
+
+const ArchiveSqueezeCopy = styled('p')({
+  color: ui.palette.dark,
+  lineHeight: 1.75,
+  fontSize: appTheme.typography.sBase
+})
+
+const ArchiveSqueezeButtonBlock = styled('div')({
+  padding: '0 1rem'
+})
+
+const ContactCopy = styled('div')({
+  color: ui.palette.dark,
+  fontSize: appTheme.typography.sBase,
+  lineHeight: 1.5,
+  textAlign: 'center'
+})
+
+const ContactLink = styled('a')({
+  display: 'block',
+  fontSize: 0,
+  fontWeight: 600
+})
+
+const ContactLinkLabel = styled('div')({
+  display: 'inline-block',
+  fontSize: appTheme.typography.s6,
+  paddingRight: '.25rem',
+  verticalAlign: 'middle'
+})
 
 const linkLabel = 'Compare Plans'
-const iconStyles = {
+
+const StyledIcon = styled(StyledFontAwesome)({
   fontSize: ui.iconSize,
   marginLeft: '.25rem',
   verticalAlign: 'middle'
-}
+})
 
 class TeamArchiveSqueeze extends Component {
   componentWillReceiveProps (nextProps) {
@@ -31,7 +85,7 @@ class TeamArchiveSqueeze extends Component {
     }
   }
   render () {
-    const {history, orgId, tasksAvailableCount, styles, viewer} = this.props
+    const {history, orgId, tasksAvailableCount, viewer} = this.props
     const {
       archivedTasksCount,
       team: {
@@ -47,14 +101,14 @@ class TeamArchiveSqueeze extends Component {
       history.push(`/me/organizations/${orgId}`)
     }
     return (
-      <div className={css(styles.archiveSqueezeOuter)}>
+      <ArchiveSqueezeOuter>
         <Panel bgTheme='light' depth={0}>
-          <div className={css(styles.archiveSqueezeInner)}>
-            <div className={css(styles.archiveSqueezeContent)}>
-              <h2 className={css(styles.archiveSqueezeHeading)}>
+          <ArchiveSqueezeInner>
+            <ArchiveSqueezeContent>
+              <ArchiveSqueezeHeading>
                 {`${unavailableTasks} Cards Unavailable!`}
-              </h2>
-              <p className={css(styles.archiveSqueezeCopy)}>
+              </ArchiveSqueezeHeading>
+              <ArchiveSqueezeCopy>
                 {'With the '}
                 <b>{`${PERSONAL_LABEL} Plan`}</b>
                 {' you can see cards archived up to '}
@@ -66,40 +120,33 @@ class TeamArchiveSqueeze extends Component {
                 {'.'}
                 <br />
                 <a href={PRICING_LINK} target='_blank' title={linkLabel}>
-                  <b>{linkLabel}</b> <FontAwesome name={ui.iconExternalLink} style={iconStyles} />
+                  <b>{linkLabel}</b> <StyledIcon name={ui.iconExternalLink} />
                 </a>
-              </p>
-            </div>
-            <div className={css(styles.archiveSqueezeButtonBlock)}>
+              </ArchiveSqueezeCopy>
+            </ArchiveSqueezeContent>
+            <ArchiveSqueezeButtonBlock>
               {isBillingLeader ? (
-                <Button
-                  buttonSize='medium'
-                  colorPalette='warm'
-                  depth={1}
-                  label={`Upgrade to the ${PRO_LABEL} Plan`}
-                  onClick={handleUpgrade}
-                />
+                <PrimaryButton size='medium' depth={1} onClick={handleUpgrade}>
+                  {`Upgrade to the ${PRO_LABEL} Plan`}
+                </PrimaryButton>
               ) : (
-                <div className={css(styles.contactCopy)}>
+                <ContactCopy>
                   {'Talk with your '}
                   <b>{'Billing Leader'}</b>
                   {':'}
-                  <a
-                    className={css(styles.contactLink)}
+                  <ContactLink
                     href={`mailto:${mainBillingLeader.email}`}
                     title={`Email: ${mainBillingLeader.email}`}
                   >
-                    <div className={css(styles.contactLinkLabel)}>
-                      {mainBillingLeader.preferredName}
-                    </div>
-                    <FontAwesome name='envelope' style={iconStyles} />
-                  </a>
-                </div>
+                    <ContactLinkLabel>{mainBillingLeader.preferredName}</ContactLinkLabel>
+                    <StyledIcon name='envelope' />
+                  </ContactLink>
+                </ContactCopy>
               )}
-            </div>
-          </div>
+            </ArchiveSqueezeButtonBlock>
+          </ArchiveSqueezeInner>
         </Panel>
-      </div>
+      </ArchiveSqueezeOuter>
     )
   }
 }
@@ -109,68 +156,11 @@ TeamArchiveSqueeze.propTypes = {
   orgId: PropTypes.string.isRequired,
   tasksAvailableCount: PropTypes.number,
   relay: PropTypes.object.isRequired,
-  styles: PropTypes.object,
   viewer: PropTypes.object.isRequired
 }
 
-const styleThunk = () => ({
-  archiveSqueezeOuter: {
-    margin: '0 auto',
-    maxWidth: '56rem',
-    minWidth: 0
-  },
-
-  archiveSqueezeInner: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: ui.rowGutter
-  },
-
-  archiveSqueezeContent: {
-    padding: '0 .5rem 1rem'
-  },
-
-  archiveSqueezeHeading: {
-    color: ui.palette.mid,
-    fontSize: appTheme.typography.s6,
-    lineHeight: 1.5,
-    margin: '.5rem 0'
-  },
-
-  archiveSqueezeCopy: {
-    color: ui.palette.dark,
-    lineHeight: 1.75,
-    fontSize: appTheme.typography.sBase
-  },
-
-  archiveSqueezeButtonBlock: {
-    padding: '0 1rem'
-  },
-
-  contactCopy: {
-    color: ui.palette.dark,
-    fontSize: appTheme.typography.sBase,
-    lineHeight: 1.5,
-    textAlign: 'center'
-  },
-
-  contactLink: {
-    display: 'block',
-    fontSize: 0,
-    fontWeight: 600
-  },
-
-  contactLinkLabel: {
-    display: 'inline-block',
-    fontSize: appTheme.typography.s6,
-    paddingRight: '.25rem',
-    verticalAlign: 'middle'
-  }
-})
-
 export default createRefetchContainer(
-  withRouter(withStyles(styleThunk)(TeamArchiveSqueeze)),
+  withRouter(TeamArchiveSqueeze),
   graphql`
     fragment TeamArchiveSqueeze_viewer on User {
       archivedTasksCount(teamId: $teamId)

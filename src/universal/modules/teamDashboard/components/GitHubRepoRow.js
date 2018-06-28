@@ -1,18 +1,63 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow'
 import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation'
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation'
 import formError from 'universal/styles/helpers/formError'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import withStyles from 'universal/styles/withStyles'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
-import Button from 'universal/components/Button/Button'
+import FlatButton from 'universal/components/FlatButton'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Tag from 'universal/components/Tag/Tag'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import styled from 'react-emotion'
+
+const StyledButton = styled(FlatButton)({
+  marginLeft: ui.rowGutter,
+  minWidth: '7rem'
+})
+
+const AvatarGroup = styled('div')({
+  marginLeft: 'auto',
+  paddingLeft: ui.rowGutter,
+  flex: 1,
+  display: 'flex',
+  justifyContent: 'flex-end'
+})
+
+const AvatarBlock = styled('div')({
+  margin: '0 0 0 .5rem'
+})
+
+const ErrorRow = styled('div')({
+  ...formError,
+  marginTop: '-1rem',
+  padding: '0 1rem',
+  textAlign: 'end'
+})
+
+const RepoInfo = styled('div')({
+  alignItems: 'center',
+  display: 'flex'
+})
+
+const RowContainer = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column'
+})
+
+const NameWithOwner = styled('a')({
+  display: 'block',
+  flex: 1,
+  fontSize: appTheme.typography.s3,
+  fontWeight: 600
+})
+
+const StyledIcon = styled(StyledFontAwesome)({
+  marginLeft: '.5rem'
+})
 
 const getViewerInIntegration = (props) => {
   const {
@@ -55,49 +100,41 @@ class GitHubRepoRow extends Component {
   }
 
   render () {
-    const {accessToken, environment, error, submitting, styles, repo} = this.props
+    const {accessToken, environment, error, submitting, repo} = this.props
     const {id, adminUserId, nameWithOwner, teamMembers} = repo
     const {userId} = environment
     const isCreator = adminUserId === userId
     return (
-      <div className={css(styles.rowAndError)}>
+      <RowContainer>
         <IntegrationRow>
-          <div className={css(styles.repoName)}>
-            <a
-              className={css(styles.nameWithOwner)}
+          <RepoInfo>
+            <NameWithOwner
               href={`https://github.com/${nameWithOwner}`}
               rel='noopener noreferrer'
               target='_blank'
               title={nameWithOwner}
             >
               {nameWithOwner}
-              <FontAwesome name={ui.iconExternalLink} style={{marginLeft: '.5rem'}} />
+              <StyledIcon name={ui.iconExternalLink} />
               {isCreator && <Tag colorPalette='light' label='Creator' />}
-            </a>
-          </div>
-          <div className={css(styles.avatarGroup)}>
+            </NameWithOwner>
+          </RepoInfo>
+          <AvatarGroup>
             {teamMembers.map((user) => (
-              <div key={user.id} className={css(styles.avatar)}>
+              <AvatarBlock key={user.id}>
                 <Avatar {...user} size='smallest' />
-              </div>
+              </AvatarBlock>
             ))}
-          </div>
-          <div className={css(styles.actionButton)}>
-            {accessToken &&
-              !isCreator && (
-                <Button
-                  buttonSize='small'
-                  buttonStyle='flat'
-                  colorPalette='dark'
-                  waiting={submitting}
-                  label={this.viewerInIntegration ? 'Unlink Me' : 'Link Me'}
-                  onClick={this.toggleIntegrationMembership(id)}
-                />
-              )}
-          </div>
+          </AvatarGroup>
+          {accessToken &&
+            !isCreator && (
+              <StyledButton onClick={this.toggleIntegrationMembership(id)} waiting={submitting}>
+                {this.viewerInIntegration ? 'Unlink Me' : 'Link Me'}
+              </StyledButton>
+            )}
         </IntegrationRow>
-        {error && <div className={css(styles.errorRow)}>{error.message}</div>}
-      </div>
+        {error && <ErrorRow>{error.message}</ErrorRow>}
+      </RowContainer>
     )
   }
 }
@@ -110,54 +147,8 @@ GitHubRepoRow.propTypes = {
   onError: PropTypes.func.isRequired,
   accessToken: PropTypes.string,
   environment: PropTypes.object,
-  styles: PropTypes.object,
   teamId: PropTypes.string,
   repo: PropTypes.object
 }
 
-const styleThunk = () => ({
-  actionButton: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    minWidth: '7rem'
-  },
-
-  avatarGroup: {
-    marginLeft: 'auto',
-    padding: '0 .5rem 0 1rem',
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'flex-end'
-  },
-
-  errorRow: {
-    ...formError,
-    marginTop: '-1rem',
-    padding: '0 1rem',
-    textAlign: 'end'
-  },
-
-  repoName: {
-    display: 'flex'
-  },
-
-  rowAndError: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column'
-  },
-
-  nameWithOwner: {
-    display: 'block',
-    flex: 1,
-    fontSize: appTheme.typography.s3,
-    fontWeight: 600
-  },
-
-  avatar: {
-    display: 'inline-block',
-    margin: '0 .5rem 0 0'
-  }
-})
-
-export default withMutationProps(withStyles(styleThunk)(GitHubRepoRow))
+export default withMutationProps(GitHubRepoRow)

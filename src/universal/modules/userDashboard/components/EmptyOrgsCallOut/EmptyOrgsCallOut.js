@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 import CallOutPanel from 'universal/components/CallOutPanel/CallOutPanel'
 import {withRouter} from 'react-router-dom'
 
@@ -12,12 +12,9 @@ const EmptyOrgsCallOut = (props) => {
     history.push('/newteam')
   }
   const button = (
-    <Button
-      colorPalette='warm'
-      label='Start a New Organization'
-      onClick={gotoNewTeam}
-      size={ui.ctaPanelButtonSize}
-    />
+    <RaisedButton onClick={gotoNewTeam} palette='warm' size={ui.ctaPanelButtonSize}>
+      {'Start a New Organization'}
+    </RaisedButton>
   )
 
   return (

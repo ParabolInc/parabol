@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer} from 'react-relay'
@@ -7,44 +6,39 @@ import DashNavItem from 'universal/components/Dashboard/DashNavItem'
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
+import styled from 'react-emotion'
 
-const iconStyles = {
+const WarningIcon = styled(FontAwesome)({
   color: appTheme.palette.light,
   fontSize: `${ui.iconSize} !important`,
   position: 'absolute',
   right: '100%',
   textAlign: 'center',
   width: 24
-}
+})
+
+const IconAndLink = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  position: 'relative'
+})
 
 const DashNavTeam = (props) => {
-  const {styles, team} = props
+  const {team} = props
   return (
-    <div className={css(styles.iconAndLink)}>
-      {!team.isPaid && (
-        <FontAwesome name='warning' styles={iconStyles} title='Team is disabled for nonpayment' />
-      )}
+    <IconAndLink>
+      {!team.isPaid && <WarningIcon name='warning' title='Team is disabled for nonpayment' />}
       <DashNavItem href={`/team/${team.id}`} label={team.name} icon={team.isPaid && 'group'} />
-    </div>
+    </IconAndLink>
   )
 }
 
 DashNavTeam.propTypes = {
-  styles: PropTypes.object,
   team: PropTypes.object.isRequired
 }
 
-const styleThunk = () => ({
-  iconAndLink: {
-    alignItems: 'center',
-    display: 'flex',
-    position: 'relative'
-  }
-})
-
 export default createFragmentContainer(
-  withRouter(withStyles(styleThunk)(DashNavTeam)),
+  withRouter(DashNavTeam),
   graphql`
     fragment DashNavTeam_team on Team {
       id

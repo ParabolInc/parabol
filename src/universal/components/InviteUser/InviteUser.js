@@ -1,17 +1,17 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Field, SubmissionError, reduxForm} from 'redux-form'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
 import Editable from 'universal/components/Editable/Editable'
+import Row from 'universal/components/Row/Row'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import inviteUserValidation from './inviteUserValidation'
+import styled from 'react-emotion'
 
 const makeSchemaProps = (props) => {
   const {
@@ -36,8 +36,15 @@ const fieldStyles = {
   placeholderColor: ui.placeholderColor
 }
 
+const InviteRow = styled(Row)({border: 0})
+
+const FieldBlock = styled('div')({
+  flex: 1,
+  padding: `0 ${ui.rowGutter}`
+})
+
 const InviteUser = (props) => {
-  const {atmosphere, dispatch, handleSubmit, styles, submitting, team, touch, untouch} = props
+  const {atmosphere, dispatch, handleSubmit, submitting, team, touch, untouch} = props
   const {teamId} = team
 
   const updateEditable = async (submissionData) => {
@@ -54,9 +61,9 @@ const InviteUser = (props) => {
     InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch)
   }
   return (
-    <div className={css(styles.inviteUser)}>
+    <InviteRow>
       <img alt='' src={defaultUserAvatar} />
-      <div className={css(styles.fieldBlock)}>
+      <FieldBlock>
         <Field
           component={Editable}
           handleSubmit={handleSubmit(updateEditable)}
@@ -67,17 +74,11 @@ const InviteUser = (props) => {
           typeStyles={fieldStyles}
           untouch={untouch}
         />
-      </div>
-      <div className={css(styles.buttonBlock)}>
-        <Button
-          colorPalette='mid'
-          label='Send Invite'
-          buttonSize='small'
-          onClick={handleSubmit(updateEditable)}
-          waiting={submitting}
-        />
-      </div>
-    </div>
+      </FieldBlock>
+      <RaisedButton onClick={handleSubmit(updateEditable)} palette='mid' waiting={submitting}>
+        {'Send Invite'}
+      </RaisedButton>
+    </InviteRow>
   )
 }
 
@@ -89,31 +90,10 @@ InviteUser.propTypes = {
   onInviteSubmitted: PropTypes.func,
   picture: PropTypes.string,
   submitting: PropTypes.bool.isRequired,
-  styles: PropTypes.object,
   team: PropTypes.object.isRequired,
   touch: PropTypes.func.isRequired,
   untouch: PropTypes.func.isRequired
 }
-
-const styleThunk = () => ({
-  inviteUser: {
-    alignItems: 'center',
-    // borderBottom: `1px solid ${appTheme.palette.mid20l}`,
-    display: 'flex',
-    padding: ui.rowGutter,
-    width: '100%'
-  },
-
-  fieldBlock: {
-    flex: 1,
-    fontSize: 0,
-    padding: '0 1rem'
-  },
-
-  buttonBlock: {
-    textAlign: 'right'
-  }
-})
 
 /*
  * This form's redux data is automatically cleared after it is
@@ -122,9 +102,7 @@ const styleThunk = () => ({
  * See: universal/redux/makeReducer.js
  */
 export default createFragmentContainer(
-  withAtmosphere(
-    reduxForm({form: 'inviteTeamMember', validate})(withStyles(styleThunk)(InviteUser))
-  ),
+  withAtmosphere(reduxForm({form: 'inviteTeamMember', validate})(InviteUser)),
   graphql`
     fragment InviteUser_team on Team {
       teamId: id

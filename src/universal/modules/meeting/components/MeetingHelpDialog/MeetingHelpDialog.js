@@ -8,13 +8,16 @@ import React from 'react'
 import styled from 'react-emotion'
 import LoadableMeetingHelpDialogMenu from 'universal/modules/meeting/components/MeetingHelpDialog/LoadableMeetingHelpDialogMenu'
 import LoadableMenu from 'universal/components/LoadableMenu'
-import Button from 'universal/components/Button/Button'
+import RaisedButton from 'universal/components/RaisedButton'
+import IconLabel from 'universal/components/IconLabel'
 
 type Props = {
   phase: string
 }
 
-const ButtonBlock = styled('div')({
+const StyledButton = styled(RaisedButton)({
+  paddingLeft: 0,
+  paddingRight: 0,
   width: '2rem'
 })
 
@@ -30,16 +33,9 @@ const targetAnchor = {
 
 const MeetingHelpDialog = ({phase}: Props) => {
   const iconButtonToggle = (
-    <ButtonBlock>
-      <Button
-        buttonSize='small'
-        buttonStyle='solid'
-        colorPalette='white'
-        depth={2}
-        icon='question'
-        isBlock
-      />
-    </ButtonBlock>
+    <StyledButton palette='white' depth={2}>
+      <IconLabel icon='question' />
+    </StyledButton>
   )
 
   return (

@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.4.0 2018-Jun-27
+
+### Added
+* Quietly working on custom scrollbars, not used in the app yet (#2113, #1763, #2198)
+
+### Changed
+* Refactored buttons throughout the app: button variants created using Emotion, styled components (#2193, #1928)
+* More components moved from Aphrodite to Emotion
+
+### Fixed
+* Dashboard nav team name overflow (#1029)
+
+## v2.3.0 2018-Jun-13
+
+### Added
+* Webpack v4 config for smaller, faster bundles
+
+### Fixed
+* Flash of login screen before loading dashboard
+* Interrupting chicken during retro discuss phase
+
+### Removed
+* server-side rendering
+* support for legacy browsers (IE11)
+
 ## v2.2.0 2018-May-30
 
 ### Added

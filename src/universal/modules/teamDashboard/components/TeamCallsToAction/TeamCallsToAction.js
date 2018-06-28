@@ -9,14 +9,15 @@ import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import LoadableTeamCallsToActionMenu from 'universal/modules/teamDashboard/components/TeamCallsToAction/LoadableTeamCallsToActionMenu'
 import LoadableMenu from 'universal/components/LoadableMenu'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import IconLabel from 'universal/components/IconLabel'
 
 type Props = {
   teamId: string,
   history: RouterHistory
 }
 
-const ButtonGroup = styled('div')({
+const ButtonBlock = styled('div')({
   display: 'flex',
   minWidth: '14rem',
   paddingLeft: ui.dashGutterSmall,
@@ -39,20 +40,15 @@ const targetAnchor = {
 
 const TeamCallToAction = (props: Props) => {
   const {teamId} = props
+
   const buttonToggle = (
-    <Button
-      buttonSize='small'
-      buttonStyle='primary'
-      colorPalette='warm'
-      icon='chevron-down'
-      iconPlacement='right'
-      isBlock
-      label='Start Meeting'
-    />
+    <PrimaryButton style={{width: '100%'}}>
+      <IconLabel icon='chevron-down' iconAfter label='Start Meeting' />
+    </PrimaryButton>
   )
 
   return (
-    <ButtonGroup>
+    <ButtonBlock>
       <LoadableMenu
         LoadableComponent={LoadableTeamCallsToActionMenu}
         maxWidth={208}
@@ -62,7 +58,7 @@ const TeamCallToAction = (props: Props) => {
         targetAnchor={targetAnchor}
         toggle={buttonToggle}
       />
-    </ButtonGroup>
+    </ButtonBlock>
   )
 }
 

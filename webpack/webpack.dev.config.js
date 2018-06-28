@@ -46,19 +46,7 @@ module.exports = {
               'transform-class-properties',
               'relay'
             ],
-            presets: [
-              // [
-              //   'env',
-              //   {
-              //     modules: false,
-              //     targets: {
-              //       browsers: ['last 1 chrome version']
-              //     }
-              //   }
-              // ],
-              'flow',
-              'react'
-            ]
+            presets: ['flow', 'react']
           }
         }
       },

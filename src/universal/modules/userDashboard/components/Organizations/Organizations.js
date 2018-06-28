@@ -6,7 +6,8 @@ import EmptyOrgsCallOut from 'universal/modules/userDashboard/components/EmptyOr
 import OrganizationRow from 'universal/modules/userDashboard/components/OrganizationRow/OrganizationRow'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import {withRouter} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
+import LinkButton from 'universal/components/LinkButton'
+import IconLabel from 'universal/components/IconLabel'
 import Panel from 'universal/components/Panel/Panel'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 
@@ -17,15 +18,9 @@ const Organizations = (props) => {
     history.push('/newteam')
   }
   const addNewOrg = () => (
-    <Button
-      aria-label='Tap to create a new organzation'
-      buttonSize='small'
-      buttonStyle='link'
-      colorPalette='dark'
-      icon='plus-circle'
-      label='Add New Organization'
-      onClick={gotoNewTeam}
-    />
+    <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam}>
+      <IconLabel icon='plus-circle' label='Add New Organization' />
+    </LinkButton>
   )
 
   return (

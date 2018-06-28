@@ -4,12 +4,19 @@ import {MONTHLY_PRICE} from 'universal/utils/constants'
 import plural from 'universal/utils/plural'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import tinycolor from 'tinycolor2'
+
+const {green, mid} = ui.palette
+const hoverColor = tinycolor.mix(mid, '#000', 15).toHexString()
 
 const InlineEstimatedCostBlock = styled('div')(({showCost}) => ({
-  color: showCost ? ui.palette.green : ui.palette.mid,
+  color: showCost ? green : mid,
   cursor: showCost ? 'default' : 'pointer',
   fontSize: '.9375rem',
-  lineHeight: '2rem'
+  lineHeight: '2rem',
+  ':hover': {
+    color: !showCost && hoverColor
+  }
 }))
 
 const StyledIcon = styled(StyledFontAwesome)(({showCost}) => ({
@@ -18,12 +25,6 @@ const StyledIcon = styled(StyledFontAwesome)(({showCost}) => ({
   marginRight: '.5rem',
   opacity: showCost ? 1 : 0.5,
   width: '1.125rem'
-}))
-
-const Copy = styled('span')(({showCost}) => ({
-  ':hover': {
-    textDecoration: !showCost && 'underline'
-  }
 }))
 
 type Props = {|
@@ -56,7 +57,7 @@ class InlineEstimatedCost extends Component<Props> {
         title={`${question}?`}
       >
         <StyledIcon name='question-circle' showCost={showCost} />
-        <Copy showCost={showCost}>{copy}</Copy>
+        <span>{copy}</span>
         {!showCost && <span>{'?'}</span>}
       </InlineEstimatedCostBlock>
     )

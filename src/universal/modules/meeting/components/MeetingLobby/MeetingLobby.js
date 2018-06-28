@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
-import Button from 'universal/components/Button/Button'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
@@ -53,14 +53,9 @@ const MeetingLobby = (props) => {
           {`: begin the ${actionMeeting.checkin.name}!`}
         </MeetingCopy>
         <div className={css(styles.buttonBlock)}>
-          <Button
-            buttonStyle='primary'
-            colorPalette='warm'
-            label='Start Action Meeting'
-            onClick={onStartMeetingClick}
-            buttonSize='large'
-            waiting={submitting}
-          />
+          <PrimaryButton onClick={onStartMeetingClick} size='large' waiting={submitting}>
+            Start Action Meeting
+          </PrimaryButton>
         </div>
         <div className={css(styles.urlBlock)}>
           <CopyShortLink url={meetingUrl} />
