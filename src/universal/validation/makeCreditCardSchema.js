@@ -1,6 +1,6 @@
 import legitify from './legitify'
 
-export default function makeCreditCardSchema (stripeCard) {
+const makeCreditCardSchema = (stripeCard) => {
   return legitify({
     creditCardNumber: (value) =>
       value
@@ -21,3 +21,5 @@ export default function makeCreditCardSchema (stripeCard) {
         .test((raw) => !stripeCard.validateCVC(raw) && 'Double check that CVC')
   })
 }
+
+export default makeCreditCardSchema

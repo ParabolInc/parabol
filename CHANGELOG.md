@@ -5,9 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.4.1 2018-Jun-28
+
+### Fixed
+* Bug in uglify borking legacy credit card modal
+
+## v2.4.0 2018-Jun-27
+
+### Added
+* Quietly working on custom scrollbars, not used in the app yet (#2113, #1763, #2198)
+
+### Changed
+* Refactored buttons throughout the app: button variants created using Emotion, styled components (#2193, #1928)
+* More components moved from Aphrodite to Emotion
+
+### Fixed
+* Dashboard nav team name overflow (#1029)
+
 ## v2.3.0 2018-Jun-13
 
-## Added
+### Added
 * Webpack v4 config for smaller, faster bundles
 
 ### Fixed
