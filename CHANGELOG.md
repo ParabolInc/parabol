@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.4.1 2018-Jun-28
+
+## Fixed
+* Bug in uglify borking legacy credit card modal
+
 ## v2.4.0 2018-Jun-27
 
 ### Added
