@@ -13,9 +13,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import DashModal from 'universal/components/Dashboard/DashModal'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
-// import PrimaryButton from 'universal/components/PrimaryButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import RaisedButton from 'universal/components/RaisedButton'
-import LegacyButton from 'universal/components/LegacyButton'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
@@ -83,14 +82,7 @@ const CancelButton = styled(RaisedButton)({
   paddingRight: 0
 })
 
-// const UpdateButton = styled(PrimaryButton)({
-//   flexGrow: '4',
-//   marginLeft: '.625rem',
-//   paddingLeft: 0,
-//   paddingRight: 0
-// })
-
-const UpdateButtonBlock = styled('div')({
+const UpdateButton = styled(PrimaryButton)({
   flexGrow: '4',
   marginLeft: '.625rem',
   paddingLeft: 0,
@@ -106,15 +98,6 @@ const validate = (values, props) => {
   }
   return {}
 }
-
-// buttonSize='medium'
-// buttonStyle='primary'
-// depth={1}
-// disabled={submitting}
-// isBlock
-// label={actionLabel}
-// onClick={handleSubmit(addStripeBilling)}
-// type='submit'
 
 const CreditCardModal = (props) => {
   const {
@@ -201,18 +184,16 @@ const CreditCardModal = (props) => {
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButtonBlock>
-              <LegacyButton
-                buttonSize='medium'
-                buttonStyle='primary'
-                depth={1}
-                disabled={submitting}
-                isBlock
-                label={actionLabel}
-                onClick={handleSubmit(addStripeBilling)}
-                type='submit'
-              />
-            </UpdateButtonBlock>
+            <UpdateButton
+              size='medium'
+              depth={1}
+              disabled={submitting}
+              onClick={handleSubmit(addStripeBilling)}
+              type='submit'
+              waiting={submitting}
+            >
+              {actionLabel}
+            </UpdateButton>
             <CancelButton
               size='medium'
               disabled={submitting}
@@ -228,17 +209,6 @@ const CreditCardModal = (props) => {
     </DashModal>
   )
 }
-
-// <UpdateButton
-//   size='medium'
-//   depth={1}
-//   disabled={submitting}
-//   onClick={handleSubmit(addStripeBilling)}
-//   type='submit'
-//   waiting={submitting}
-// >
-//   {actionLabel}
-// </UpdateButton>
 
 CreditCardModal.propTypes = {
   addStripeBilling: PropTypes.func,
