@@ -33,14 +33,14 @@ import {DECELERATE} from 'universal/styles/animation'
 export type Props = {|
   meeting: Meeting,
   reflection: Reflection,
+  shadow?: number,
   ...MutationProps
 |}
 
-type State = {
+type State = {|
   content: string,
-  editorState: ?Object,
-  getEditorState: () => ?Object
-}
+  editorState: ?Object
+|}
 
 export const ReflectionCardRoot = styled('div')(
   {
