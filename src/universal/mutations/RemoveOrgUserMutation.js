@@ -8,7 +8,7 @@ import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks'
 import handleRemoveTeamMembers from 'universal/mutations/handlers/handleRemoveTeamMembers'
 import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import onExTeamRoute from 'universal/utils/onExTeamRoute'
+import onTeamRoute from 'universal/utils/onTeamRoute'
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
 import {setLocalStageAndPhase} from 'universal/utils/relay/updateLocalStage'
 import findStageById from 'universal/utils/meetings/findStageById'
@@ -113,7 +113,7 @@ const popKickedOutToast = (payload, {dispatch, history, location}) => {
   const {pathname} = location
   for (let ii = 0; ii < teamIds.length; ii++) {
     const teamId = teamIds[ii]
-    if (onExTeamRoute(pathname, teamId)) {
+    if (onTeamRoute(pathname, teamId)) {
       history.push('/me')
       return
     }

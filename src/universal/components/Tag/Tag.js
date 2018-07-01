@@ -78,7 +78,7 @@ const Tag = (props) => {
 }
 
 Tag.propTypes = {
-  colorPalette: PropTypes.oneOf(ui.tagPalette),
+  colorPalette: PropTypes.oneOf(Object.keys(tagTheme)),
   hasDepth: PropTypes.bool,
   label: PropTypes.string
 }

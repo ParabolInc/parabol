@@ -98,9 +98,25 @@ const setInitialCoords = (store, dragContext, initialCoords, initialCursorCoords
   dragContext.setLinkedRecord(initialCursorCoordsProxy, 'initialCursorCoords')
 }
 
+// a person can only drag 1 card at a time (2 drags would mean account sharing tsk tsk)
+// so if someone starts a new drag, we can safely remove
+// any other drags that went stale due to bad internet & a missed endDrag message
+const ensureOldInFlightsRemoved = (meeting, reflection) => {
+  const newDragUserId = getInProxy(reflection, 'dragContext', 'dragUserId')
+  const reflectionsInFlight = meeting.getLinkedRecords('reflectionsInFlight') || []
+  // it's OK if it removes the new one, we'll add it back later
+  const validReflectionsInFlight = reflectionsInFlight.filter((inFlight) => {
+    return getInProxy(inFlight, 'dragContext', 'dragUserId') !== newDragUserId
+  })
+  if (validReflectionsInFlight.length < reflectionsInFlight.length) {
+    meeting.setLinkedRecords(validReflectionsInFlight, 'reflectionsInFlight')
+  }
+}
+
 const setInFlight = (store, meetingId, reflection) => {
   const meeting = store.get(meetingId)
   if (!meeting) return
+  ensureOldInFlightsRemoved(meeting, reflection)
   addNodeToArray(reflection, meeting, 'reflectionsInFlight', 'id')
 }
 

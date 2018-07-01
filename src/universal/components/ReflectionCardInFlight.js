@@ -209,7 +209,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
     return (
       <ModalBlock style={style} onTransitionEnd={isClosing ? this.removeCardInFlight : undefined}>
-        <ReflectionCardRoot>
+        <ReflectionCardRoot isClosing={isClosing} shadow={2}>
           {!isViewerDragging && <UserDraggingHeader user={dragUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
           <ReflectionFooter>{question}</ReflectionFooter>

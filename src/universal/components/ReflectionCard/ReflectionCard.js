@@ -28,6 +28,7 @@ import withMutationProps from 'universal/utils/relay/withMutationProps'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
 import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
+import {DECELERATE} from 'universal/styles/animation'
 
 export type Props = {|
   meeting: Meeting,
@@ -50,11 +51,12 @@ export const ReflectionCardRoot = styled('div')(
     display: 'inline-block',
     maxWidth: '100%',
     position: 'relative',
+    transition: `box-shadow 2000ms ${DECELERATE}`,
     width: ui.retroCardWidth
   },
-  ({hideShadow}) =>
-    !hideShadow && {
-      boxShadow: ui.cardBoxShadow
+  ({isClosing, shadow}) =>
+    shadow !== null && {
+      boxShadow: isClosing ? ui.shadow[0] : ui.shadow[shadow]
     },
   ({hasDragLock}) =>
     hasDragLock && {
@@ -70,19 +72,19 @@ class ReflectionCard extends Component<Props, State> {
     const contentState = convertFromRaw(JSON.parse(content))
     // const DEBUG_TEXT = `idx: ${idx} | GroupId: ${reflectionGroupId}`
     // const contentState = ContentState.createFromText(DEBUG_TEXT)
+    const editorState = EditorState.createWithContent(
+      contentState,
+      editorDecorators(() => editorState)
+    )
     return {
       content,
-      editorState: EditorState.createWithContent(
-        contentState,
-        editorDecorators(prevState.getEditorState)
-      )
+      editorState
     }
   }
 
   state = {
     content: '',
-    editorState: null,
-    getEditorState: () => this.state.editorState
+    editorState: null
   }
 
   setEditorState = (editorState: EditorState) => {
@@ -145,7 +147,7 @@ class ReflectionCard extends Component<Props, State> {
     const {
       atmosphere,
       error,
-      hideShadow,
+      shadow = 0,
       isDraggable,
       meeting,
       reflection,
@@ -167,7 +169,7 @@ class ReflectionCard extends Component<Props, State> {
     const dragUser = dragContext && dragContext.dragUser
     const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
     return (
-      <ReflectionCardRoot hasDragLock={hasDragLock} hideShadow={hideShadow}>
+      <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow}>
         {hasDragLock && <UserDraggingHeader user={dragUser} />}
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'

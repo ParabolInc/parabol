@@ -8,6 +8,7 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
 import dndNoise from 'universal/utils/dndNoise'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import onTeamRoute from 'universal/utils/onTeamRoute'
 
 type Variables = {
   reflectionId: string,
@@ -24,6 +25,7 @@ graphql`
     meeting {
       id
       nextAutoGroupThreshold
+      teamId
     }
     reflection {
       ...CompleteReflectionFrag @relay(mask: false)
@@ -138,24 +140,29 @@ export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) =
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
   const {
-    atmosphere: {eventEmitter}
+    atmosphere: {eventEmitter},
+    location
   } = context
   const {
     reflection: {id: itemId},
     oldReflectionGroup,
     reflectionGroup,
     dropTargetType,
-    dropTargetId
+    dropTargetId,
+    meeting: {teamId}
   } = payload
   const childId = reflectionGroup && reflectionGroup.id
   const sourceId = oldReflectionGroup && oldReflectionGroup.id
-  eventEmitter.emit('endDraggingReflection', {
-    dropTargetType,
-    dropTargetId,
-    itemId,
-    childId,
-    sourceId
-  })
+  const {pathname} = location
+  if (onTeamRoute(pathname, teamId)) {
+    eventEmitter.emit('endDraggingReflection', {
+      dropTargetType,
+      dropTargetId,
+      itemId,
+      childId,
+      sourceId
+    })
+  }
 }
 
 const EndDraggingReflectionMutation = (

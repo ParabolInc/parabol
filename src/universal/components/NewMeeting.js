@@ -54,7 +54,7 @@ const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
   display: 'flex',
   height: '100vh',
-  overflowX: 'scroll'
+  overflowX: 'auto'
 })
 
 const MeetingArea = styled('div')({

@@ -2027,6 +2027,8 @@ export type ReflectPhaseCompletePayload = {
 }
 
 export type GroupPhaseCompletePayload = {
+  /** the current meeting */
+  meeting: RetrospectiveMeeting,
   /** a list of updated reflection groups */
   reflectionGroups: ?Array<RetroReflectionGroup>
 }

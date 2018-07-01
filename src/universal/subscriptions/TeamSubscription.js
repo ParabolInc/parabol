@@ -18,10 +18,7 @@ import {
   removeOrgUserTeamUpdater
 } from 'universal/mutations/RemoveOrgUserMutation'
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation'
-import {
-  navigateMeetingTeamOnNext,
-  navigateMeetingTeamUpdater
-} from 'universal/mutations/NavigateMeetingMutation'
+import {navigateMeetingTeamUpdater} from 'universal/mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
 import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
@@ -81,7 +78,6 @@ const onNextHandlers = {
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
-  NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext

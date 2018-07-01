@@ -9,8 +9,9 @@ import {
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
+import hideBodyScroll from 'universal/utils/hideBodyScroll'
 
-const makeResetHandler = (reflections, itemCache, modalRef) => {
+const makeResetHandler = (reflections, itemCache, modalRef, resetBodyStyles) => {
   const resetQueue = reflections.map((reflection) => {
     const cachedItem = itemCache[reflection.id]
     const {
@@ -23,6 +24,7 @@ const makeResetHandler = (reflections, itemCache, modalRef) => {
 
   const resetStyles = (e) => {
     if (e.currentTarget !== e.target) return
+    resetBodyStyles()
     resetQueue.forEach((cb) => cb())
     if (modalRef) {
       modalRef.style.overflowY = 'auto'
@@ -107,6 +109,7 @@ const initializeModalGrid = (
   }
 
   // set initial group styles
+  const resetBodyStyles = hideBodyScroll()
   modalStyle.top = 0
   modalStyle.height = `${scrollHeight}px`
   modalStyle.width = `${modalWidth}px`
@@ -125,7 +128,7 @@ const initializeModalGrid = (
   backgroundStyle.transformOrigin = `${MODAL_PADDING}px ${MODAL_PADDING}px`
   backgroundStyle.backgroundColor = 'rgba(68, 66, 88, .65)'
 
-  const resetStyles = makeResetHandler(reflections, itemCache, modalRef)
+  const resetStyles = makeResetHandler(reflections, itemCache, modalRef, resetBodyStyles)
 
   // not sure why this is needed, but the first time the modal opens, it will open from 0, 0 if this isn't double wrapped in rAFs
   // alternatives: setting the modalStyle top, left and a transform to 0,0. a setTimeout here, & a forced sync layout like offsetTop

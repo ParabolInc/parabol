@@ -49,7 +49,7 @@ const reflectionsStyle = (canDrop, isDraggable, canExpand) =>
 const ReflectionCardInStack = styled('div')(({secondCard}) => ({
   backgroundColor: 'white',
   borderRadius: 4,
-  boxShadow: secondCard === 1 ? ui.shadow[0] : undefined,
+  boxShadow: secondCard ? ui.shadow[0] : undefined,
   opacity: secondCard ? 1 : 0,
   overflow: 'hidden',
   position: 'absolute',
@@ -251,7 +251,7 @@ class ReflectionGroup extends Component<Props> {
         secondCard={secondCard}
         innerRef={setItemRef(reflection.id)}
       >
-        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter hideShadow />
+        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter shadow={null} />
       </ReflectionCardInStack>
     )
   }
