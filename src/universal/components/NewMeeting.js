@@ -143,7 +143,7 @@ class NewMeeting extends Component<Props> {
     const isViewerFacilitator = viewerId === facilitatorUserId
     const {
       stage: {isNavigable, isNavigableByFacilitator}
-    } = findStageById(phases, facilitatorStageId)
+    } = findStageById(phases, stageId)
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) return
     updateLocalStage(atmosphere, meetingId, stageId)
