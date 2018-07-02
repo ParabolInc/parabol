@@ -93,7 +93,10 @@ class PhaseItemColumn extends Component<Props, State> {
     reflectionGroups: [],
     columnReflectionGroups: []
   }
-
+  addReflectionButtonRef: ?HTMLElement = null
+  setAddReflectionButtonRef = (c) => {
+    this.addReflectionButtonRef = c
+  }
   render () {
     const {canDrop, meeting, retroPhaseItem} = this.props
     const {columnReflectionGroups} = this.state
@@ -116,6 +119,7 @@ class PhaseItemColumn extends Component<Props, State> {
                   <ButtonBlock>
                     <AddReflectionButton
                       columnReflectionGroups={columnReflectionGroups}
+                      innerRef={this.setAddReflectionButtonRef}
                       meeting={meeting}
                       retroPhaseItem={retroPhaseItem}
                     />
@@ -128,7 +132,11 @@ class PhaseItemColumn extends Component<Props, State> {
                   return (
                     <ColumnChild key={reflection.id}>
                       {reflection.isViewerCreator ? (
-                        <ReflectionCard meeting={meeting} reflection={reflection} />
+                        <ReflectionCard
+                          addReflectionButtonRef={this.addReflectionButtonRef}
+                          meeting={meeting}
+                          reflection={reflection}
+                        />
                       ) : (
                         <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
                       )}

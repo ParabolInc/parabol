@@ -25,6 +25,7 @@ const {Component} = React
 type Props = {
   atmosphere: Object,
   columnReflectionGroups: Array<RetroReflectionGroup>,
+  innerRef: (component: any) => void,
   retroPhaseItem: RetroPhaseItem,
   meeting: Meeting,
   ...MutationProps
@@ -77,10 +78,10 @@ class AddReflectionButton extends Component<Props> {
   }
 
   render () {
-    const {error, submitting} = this.props
+    const {error, innerRef, submitting} = this.props
     return (
       <React.Fragment>
-        <AddButton onClick={this.handleClick} waiting={submitting}>
+        <AddButton innerRef={innerRef} onClick={this.handleClick} waiting={submitting}>
           <Plus>{'+'}</Plus>
           <span>Add a reflection</span>
         </AddButton>
