@@ -79,7 +79,6 @@ const questions = [
   'What’s got your attention today, and why?',
   'What was your favorite recent book or article, and what did it inspire?',
   'Heard any good tips lately?'
-  
 ]
 
 export const makeCheckinGreeting = (meetingCount, seedId = '') => {
