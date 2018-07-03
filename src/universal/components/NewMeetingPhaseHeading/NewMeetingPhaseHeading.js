@@ -11,15 +11,21 @@ import {createFragmentContainer} from 'react-relay'
 import type {NewMeetingPhaseHeading_meeting as Meeting} from './__generated__/NewMeetingPhaseHeading_meeting.graphql'
 import SidebarToggle from 'universal/components/SidebarToggle'
 
+const sidebarBreakpoint = `@media screen and (min-width: ${ui.meetingSidebarBreakpoint}px)`
+
 const HeadingBlock = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
   padding: '1.25rem 0 1rem'
 })
 
-const Toggle = styled(SidebarToggle)({
-  margin: '0 1rem 0 .5rem'
-})
+const Toggle = styled(SidebarToggle)(({sidebarCollapsed}) => ({
+  margin: '0 1rem 0 .5rem',
+
+  [sidebarBreakpoint]: {
+    display: sidebarCollapsed ? 'block' : 'none'
+  }
+}))
 
 const PhaseTitle = styled('h1')({
   fontSize: '1.25rem',
@@ -35,13 +41,13 @@ const PhaseDescription = styled('h2')({
 })
 
 type Props = {|
-  hasToggle: boolean,
+  sidebarCollapsed: boolean,
   meeting: Meeting,
   toggleSidebar: () => void
 |}
 
 const NewMeetingPhaseHeading = (props: Props) => {
-  const {hasToggle, meeting, toggleSidebar} = props
+  const {sidebarCollapsed, meeting, toggleSidebar} = props
   if (!meeting || !meeting.localPhase) return null
   const {
     localPhase: {phaseType}
@@ -51,7 +57,7 @@ const NewMeetingPhaseHeading = (props: Props) => {
   const hasContent = label || description
   return (
     <HeadingBlock>
-      {hasToggle && <Toggle onClick={toggleSidebar} />}
+      <Toggle onClick={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
       {hasContent && (
         <div>
           <PhaseTitle>{label}</PhaseTitle>

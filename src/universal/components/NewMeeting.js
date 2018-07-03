@@ -16,7 +16,7 @@ import type {MeetingTypeEnum} from 'universal/types/schema.flow'
 import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase'
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
-import ui from 'universal/styles/ui'
+import ui, {makeShadowColor} from 'universal/styles/ui'
 import {
   RETRO_LOBBY_FREE,
   RETRO_LOBBY_PAID,
@@ -47,8 +47,12 @@ import RetroDiscussPhase from 'universal/components/RetroDiscussPhase'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
 import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
+import getWindowSize from 'universal/styles/helpers/getWindowSize'
 
 const {Component} = React
+
+const sidebarBreakpoint = `@media screen and (min-width: ${ui.meetingSidebarBreakpoint}px)`
+const boxShadowNone = makeShadowColor(0)
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -58,6 +62,7 @@ const MeetingContainer = styled('div')({
 })
 
 const MeetingSidebarLayout = styled('div')(({sidebarCollapsed}) => ({
+  boxShadow: sidebarCollapsed ? boxShadowNone : ui.meetingChromeBoxShadow[2],
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
@@ -70,7 +75,11 @@ const MeetingSidebarLayout = styled('div')(({sidebarCollapsed}) => ({
     ? `translate3d(-${ui.meetingSidebarWidth}, 0, 0)`
     : 'translate3d(0, 0, 0)',
   width: ui.meetingSidebarWidth,
-  zIndex: 200
+  zIndex: 400,
+
+  [sidebarBreakpoint]: {
+    boxShadow: sidebarCollapsed ? boxShadowNone : ui.meetingChromeBoxShadow[0]
+  }
 }))
 
 const MeetingArea = styled('div')({
@@ -86,10 +95,32 @@ const MeetingContent = styled('div')({
   width: '100%'
 })
 
+const SidebarBackdrop = styled('div')(({sidebarCollapsed}) => ({
+  backgroundColor: ui.modalBackdropBackgroundColor,
+  bottom: 0,
+  left: 0,
+  opacity: sidebarCollapsed ? 0 : 1,
+  pointerEvents: sidebarCollapsed && 'none',
+  position: 'fixed',
+  right: 0,
+  top: 0,
+  transition: `opacity ${ui.transition[0]}`,
+  zIndex: 300,
+
+  [sidebarBreakpoint]: {
+    display: 'none'
+  }
+}))
+
 const LayoutPusher = styled('div')(({sidebarCollapsed}) => ({
-  flexShrink: 0,
-  transition: `width ${ui.transition[0]}`,
-  width: sidebarCollapsed ? 0 : ui.meetingSidebarWidth
+  display: 'none',
+
+  [sidebarBreakpoint]: {
+    display: 'block',
+    flexShrink: 0,
+    transition: `width ${ui.transition[0]}`,
+    width: sidebarCollapsed ? 0 : ui.meetingSidebarWidth
+  }
 }))
 
 const MeetingAreaHeader = styled('div')({
@@ -139,11 +170,16 @@ class NewMeeting extends Component<Props, State> {
     super(props)
     const {bindHotkey} = props
     this.state = {
-      sidebarCollapsed: false
+      sidebarCollapsed: true
     }
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext))
     bindHotkey('left', handleHotkey(this.gotoPrev))
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
+  }
+
+  componentDidMount () {
+    const size = getWindowSize()
+    if (size.width > ui.meetingSidebarBreakpoint) this.setState({sidebarCollapsed: false})
   }
 
   endMeeting = () => {
@@ -252,6 +288,11 @@ class NewMeeting extends Component<Props, State> {
     })
   }
 
+  handleSidebarClick = () => {
+    const size = getWindowSize()
+    if (size.width < ui.meetingSidebarBreakpoint) this.toggleSidebar()
+  }
+
   render () {
     const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
@@ -268,7 +309,7 @@ class NewMeeting extends Component<Props, State> {
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
-        <MeetingSidebarLayout sidebarCollapsed={sidebarCollapsed}>
+        <MeetingSidebarLayout onClick={this.handleSidebarClick} sidebarCollapsed={sidebarCollapsed}>
           <NewMeetingSidebar
             gotoStageId={this.gotoStageId}
             meetingType={meetingType}
@@ -277,14 +318,15 @@ class NewMeeting extends Component<Props, State> {
             viewer={viewer}
           />
         </MeetingSidebarLayout>
+        <SidebarBackdrop onClick={this.toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
         <MeetingArea>
           <LayoutPusher sidebarCollapsed={sidebarCollapsed} />
           <MeetingContent>
             {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
             <MeetingAreaHeader>
               <NewMeetingPhaseHeading
-                hasToggle={sidebarCollapsed}
                 meeting={newMeeting}
+                sidebarCollapsed={sidebarCollapsed}
                 toggleSidebar={this.toggleSidebar}
               />
               <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />

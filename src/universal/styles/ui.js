@@ -480,10 +480,15 @@ const ui = {
 
   // Meeting
   // ---------------------------------------------------------------------------
-  meetingChromeBoxShadow: `.0625rem 0 .0625rem ${makeShadowColor('.1')}`,
+  meetingChromeBoxShadow: [
+    `.0625rem 0 .25rem ${makeShadowColor('.1')}`,
+    `.125rem 0 .5rem ${makeShadowColor('.1')}`,
+    `.25rem 0 1rem ${makeShadowColor('.1')}`
+  ],
   meetingChromeBoxShadowInset: `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`,
   meetingBorderColor: appTheme.palette.mid10a,
   meetingCopyFontSize: '.9375rem',
+  meetingSidebarBreakpoint: 801,
   meetingSidebarGutter: '.5rem',
   meetingSidebarGutterInner: '3.75rem',
   meetingSidebarWidth: '15rem',
@@ -682,3 +687,4 @@ const ui = {
 }
 
 export default ui
+export {makeShadowColor}

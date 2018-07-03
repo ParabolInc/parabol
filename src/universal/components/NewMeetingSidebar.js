@@ -31,7 +31,6 @@ const ToggleBlock = styled('div')({
 
 const SidebarParent = styled('div')({
   backgroundColor: ui.palette.white,
-  boxShadow: ui.meetingChromeBoxShadow,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
