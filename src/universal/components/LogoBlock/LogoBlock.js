@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
+import {meetingBottomBarHeight} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import logoMarkPrimary from 'universal/styles/theme/images/brand/mark-primary.svg'
 import logoMarkWhite from 'universal/styles/theme/images/brand/mark-white.svg'
@@ -11,7 +11,7 @@ const RootBlock = styled('div')(({variant}) => ({
   borderTop: variant === 'primary' && `.0625rem solid ${appTheme.palette.mid10a}`,
   boxSizing: 'content-box',
   display: 'flex',
-  height: ui.meetingControlBarHeight,
+  height: meetingBottomBarHeight,
   justifyContent: 'center',
   width: '100%'
 }))

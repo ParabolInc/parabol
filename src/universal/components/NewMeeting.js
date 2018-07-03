@@ -48,10 +48,15 @@ import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMuta
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
 import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
 import getWindowSize from 'universal/styles/helpers/getWindowSize'
+import {
+  meetingChromeBoxShadow,
+  meetingSidebarBreakpoint,
+  meetingSidebarWidth
+} from 'universal/styles/meeting'
 
 const {Component} = React
 
-const sidebarBreakpoint = `@media screen and (min-width: ${ui.meetingSidebarBreakpoint}px)`
+const sidebarBreakpoint = `@media screen and (min-width: ${meetingSidebarBreakpoint}px)`
 const boxShadowNone = makeShadowColor(0)
 
 const MeetingContainer = styled('div')({
@@ -62,7 +67,7 @@ const MeetingContainer = styled('div')({
 })
 
 const MeetingSidebarLayout = styled('div')(({sidebarCollapsed}) => ({
-  boxShadow: sidebarCollapsed ? boxShadowNone : ui.meetingChromeBoxShadow[2],
+  boxShadow: sidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
@@ -72,13 +77,13 @@ const MeetingSidebarLayout = styled('div')(({sidebarCollapsed}) => ({
     transform ${ui.transition[0]}
   `,
   transform: sidebarCollapsed
-    ? `translate3d(-${ui.meetingSidebarWidth}, 0, 0)`
+    ? `translate3d(-${meetingSidebarWidth}, 0, 0)`
     : 'translate3d(0, 0, 0)',
-  width: ui.meetingSidebarWidth,
+  width: meetingSidebarWidth,
   zIndex: 400,
 
   [sidebarBreakpoint]: {
-    boxShadow: sidebarCollapsed ? boxShadowNone : ui.meetingChromeBoxShadow[0]
+    boxShadow: sidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[0]
   }
 }))
 
@@ -119,7 +124,7 @@ const LayoutPusher = styled('div')(({sidebarCollapsed}) => ({
     display: 'block',
     flexShrink: 0,
     transition: `width ${ui.transition[0]}`,
-    width: sidebarCollapsed ? 0 : ui.meetingSidebarWidth
+    width: sidebarCollapsed ? 0 : meetingSidebarWidth
   }
 }))
 
@@ -179,7 +184,7 @@ class NewMeeting extends Component<Props, State> {
 
   componentDidMount () {
     const size = getWindowSize()
-    if (size.width > ui.meetingSidebarBreakpoint) this.setState({sidebarCollapsed: false})
+    if (size.width > meetingSidebarBreakpoint) this.setState({sidebarCollapsed: false})
   }
 
   endMeeting = () => {
@@ -290,7 +295,7 @@ class NewMeeting extends Component<Props, State> {
 
   handleSidebarClick = () => {
     const size = getWindowSize()
-    if (size.width < ui.meetingSidebarBreakpoint) this.toggleSidebar()
+    if (size.width < meetingSidebarBreakpoint) this.toggleSidebar()
   }
 
   render () {

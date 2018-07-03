@@ -14,6 +14,7 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
 import StartMeetingMutation from 'universal/mutations/StartMeetingMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {meetingSplashGutter} from 'universal/styles/meeting'
 import withStyles from 'universal/styles/withStyles'
 import makeHref from 'universal/utils/makeHref'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
@@ -82,7 +83,7 @@ MeetingLobby.propTypes = {
 
 const styleThunk = () => ({
   root: {
-    paddingLeft: ui.meetingSplashGutter,
+    paddingLeft: meetingSplashGutter,
     paddingTop: '2rem',
     textAlign: 'left',
 

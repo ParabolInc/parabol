@@ -5,6 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup'
 import ui from 'universal/styles/ui'
+import {meetingSidebarGutter} from 'universal/styles/meeting'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback'
 import styled, {css} from 'react-emotion'
@@ -25,7 +26,7 @@ const DeleteIconButton = styled(IconButton)(({agendaLength, disabled}) => ({
   display: 'block',
   height: '1.5rem',
   // we can make the position of the del (x) more centered when there’s a low number of agenda items
-  left: agendaLength < 10 ? '.8125rem' : ui.meetingSidebarGutter,
+  left: agendaLength < 10 ? '.8125rem' : meetingSidebarGutter,
   lineHeight,
   opacity: 0,
   position: 'absolute',

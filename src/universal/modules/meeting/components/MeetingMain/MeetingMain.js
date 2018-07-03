@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import withStyles from 'universal/styles/withStyles'
-import ui from 'universal/styles/ui'
+import {meetingChromeBoxShadowInset} from 'universal/styles/meeting'
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
 
 const MeetingMain = (props) => {
@@ -44,7 +44,7 @@ const styleThunk = () => ({
   },
 
   hasBoxShadow: {
-    boxShadow: ui.meetingChromeBoxShadowInset
+    boxShadow: meetingChromeBoxShadowInset
   },
 
   innerBlockStyles: {

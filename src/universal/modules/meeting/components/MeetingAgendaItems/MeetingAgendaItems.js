@@ -18,10 +18,11 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {withRouter} from 'react-router'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {meetingTopicPhaseMaxWidth} from 'universal/styles/meeting'
 
 const Layout = styled('div')({
   margin: '0 auto',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  maxWidth: meetingTopicPhaseMaxWidth,
   padding: '0 .5rem 4rem',
   width: '100%',
 

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
+import {meetingSidebarGutterInner} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
 
@@ -56,7 +57,7 @@ const ItemOrderLabel = styled('div')({
   opacity: 0.5,
   paddingRight: '.75rem',
   textAlign: 'right',
-  width: ui.meetingSidebarGutterInner
+  width: meetingSidebarGutterInner
 })
 
 const ItemLabel = styled('div')(({isComplete}) => ({

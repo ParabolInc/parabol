@@ -1,11 +1,12 @@
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {meetingBorderColor, meetingChromeBoxShadowInset} from 'universal/styles/meeting'
 
 const MeetingControlBar = styled('div')({
   alignItems: 'center',
   backgroundColor: ui.palette.white,
-  borderTop: `.0625rem solid ${ui.meetingBorderColor}`,
-  boxShadow: ui.meetingChromeBoxShadowInset,
+  borderTop: `.0625rem solid ${meetingBorderColor}`,
+  boxShadow: meetingChromeBoxShadowInset,
   color: ui.hintColor,
   display: 'flex',
   fontSize: '.8125rem',

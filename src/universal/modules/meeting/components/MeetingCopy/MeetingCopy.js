@@ -3,7 +3,7 @@ import ui from 'universal/styles/ui'
 
 const MeetingCopy = styled('div')(({margin}) => ({
   color: ui.colorText,
-  fontSize: ui.meetingCopyFontSize,
+  fontSize: '.9375rem',
   lineHeight: 1.5,
   margin: margin || '1.5em 0'
 }))

@@ -12,6 +12,7 @@ import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import ui from 'universal/styles/ui'
+import {meetingSplashGutter} from 'universal/styles/meeting'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
 import makeHref from 'universal/utils/makeHref'
@@ -34,7 +35,7 @@ const ButtonBlock = styled('div')({
 })
 
 const Lobby = styled('div')({
-  paddingLeft: ui.meetingSplashGutter,
+  paddingLeft: meetingSplashGutter,
   paddingTop: '2rem',
   textAlign: 'left',
 

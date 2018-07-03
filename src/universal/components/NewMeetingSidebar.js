@@ -4,6 +4,7 @@ import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {meetingSidebarWidth} from 'universal/styles/meeting'
 import styled from 'react-emotion'
 import type {NewMeetingSidebar_viewer as Viewer} from './__generated__/NewMeetingSidebar_viewer.graphql'
 // import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
@@ -34,8 +35,8 @@ const SidebarParent = styled('div')({
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
-  maxWidth: ui.meetingSidebarWidth,
-  minWidth: ui.meetingSidebarWidth,
+  maxWidth: meetingSidebarWidth,
+  minWidth: meetingSidebarWidth,
   padding: '1.25rem 0 0'
 })
 

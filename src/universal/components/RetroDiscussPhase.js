@@ -18,6 +18,7 @@ import type {RouterHistory} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
+import {meetingTopicPhaseMaxWidth} from 'universal/styles/meeting'
 
 type Props = {|
   atmosphere: Object,
@@ -65,7 +66,7 @@ const ReflectionSection = styled('div')({
   height: '100%',
   margin: '0 auto',
   maxHeight: '35%',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  maxWidth: meetingTopicPhaseMaxWidth,
   width: '100%',
 
   [ui.breakpoint.wide]: {
@@ -96,7 +97,7 @@ const ReflectionGridBlock = styled('div')({
 
 const TaskCardBlock = styled('div')({
   margin: '0 auto',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
+  maxWidth: meetingTopicPhaseMaxWidth,
   padding: '1rem 2rem',
   width: '100%',
 
