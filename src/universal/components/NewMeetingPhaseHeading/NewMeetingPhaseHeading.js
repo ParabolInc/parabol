@@ -6,6 +6,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {createFragmentContainer} from 'react-relay'
@@ -34,9 +35,13 @@ const PhaseTitle = styled('h1')({
 
 const PhaseDescription = styled('h2')({
   color: ui.labelHeadingColor,
-  fontSize: '1rem',
+  fontSize: '.8125rem',
   fontWeight: 'normal',
-  margin: 0
+  margin: 0,
+
+  [minWidthMediaQueries[1]]: {
+    fontSize: '1rem'
+  }
 })
 
 type Props = {|

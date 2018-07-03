@@ -31,26 +31,52 @@ const ButtonGroup = styled('div')({
 })
 
 const ButtonBlock = styled('div')({
-  padding: '0 2rem 0 0',
-  width: '18.125rem'
+  width: '16.125rem'
 })
 
+const textAlign = {
+  textAlign: 'center',
+
+  [minWidthMediaQueries[2]]: {
+    textAlign: 'left'
+  }
+}
+
+const StyledLabel = styled(LabelHeading)({...textAlign})
+const StyledHeading = styled(MeetingPhaseHeading)({...textAlign})
+const StyledCopy = styled(MeetingCopy)({...textAlign})
+
 const Lobby = styled('div')({
-  paddingLeft: '2rem',
-  paddingTop: '2rem',
+  alignItems: 'center',
+  display: 'flex',
+  flexBasis: 'auto',
+  flexDirection: 'column',
+  flexGrow: 1,
+  flexShrink: 0,
+  justifyContent: 'center',
+  padding: '2rem 4rem',
   textAlign: 'left',
+  width: '100%',
+
+  [minWidthMediaQueries[1]]: {
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start'
+  },
 
   [minWidthMediaQueries[2]]: {
     paddingLeft: meetingSplashGutter
   },
 
   [minWidthMediaQueries[3]]: {
+    paddingBottom: '3rem',
     paddingTop: '3rem'
   },
   [minWidthMediaQueries[4]]: {
+    paddingBottom: '4rem',
     paddingTop: '4rem'
   },
   [minWidthMediaQueries[5]]: {
+    paddingBottom: '6rem',
     paddingTop: '6rem'
   }
 })
@@ -134,24 +160,26 @@ class NewMeetingLobby extends React.Component<Props, State> {
     const buttonLabel = `Start ${meetingLabel} Meeting`
     return (
       <Lobby>
-        <LabelHeading>{`${meetingLabel} Meeting Lobby`}</LabelHeading>
-        <MeetingPhaseHeading>{`${teamName} ${meetingLabel}`}</MeetingPhaseHeading>
+        <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
+        <StyledHeading>{`${teamName} ${meetingLabel}`}</StyledHeading>
         {isPro ? (
-          <MeetingCopy>
+          <StyledCopy>
             {'The person who presses “Start Meeting” will be today’s Facilitator.'}
             <br />
+            <br />
             {'Everyone’s display automatically follows the Facilitator.'}
-          </MeetingCopy>
+          </StyledCopy>
         ) : (
-          <MeetingCopy>
+          <StyledCopy>
             {
               'Running a retrospective is the most effective way to learn how your team can work smarter.'
             }
             <br />
+            <br />
             {
               'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'
             }
-          </MeetingCopy>
+          </StyledCopy>
         )}
         {!initiallyPro && (
           <StyledInlineAlert>

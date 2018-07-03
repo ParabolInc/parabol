@@ -15,6 +15,13 @@ import ScrollableBlock from 'universal/components/ScrollableBlock'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
+import styled from 'react-emotion'
+
+const StyledWrapper = styled(MeetingPhaseWrapper)({
+  // TODO: base wrapper on min-width of cards, not this styled div (TA)
+  minWidth: '48rem',
+  padding: '0 4rem'
+})
 
 type Props = {
   atmosphere: Object,
@@ -36,11 +43,11 @@ const RetroReflectPhase = (props: Props) => {
   return (
     <React.Fragment>
       <ScrollableBlock>
-        <MeetingPhaseWrapper>
+        <StyledWrapper>
           {phaseItems.map((phaseItem) => (
             <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
           ))}
-        </MeetingPhaseWrapper>
+        </StyledWrapper>
       </ScrollableBlock>
       {isFacilitating && (
         <MeetingControlBar>

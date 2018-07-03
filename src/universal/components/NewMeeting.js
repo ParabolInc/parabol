@@ -132,6 +132,7 @@ const LayoutPusher = styled('div')(({sidebarCollapsed}) => ({
 const MeetingAreaHeader = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
+  flexShrink: 0,
   flexWrap: 'wrap',
   justifyContent: 'space-between',
   margin: 0,
@@ -176,7 +177,7 @@ class NewMeeting extends Component<Props, State> {
     super(props)
     const {bindHotkey} = props
     this.state = {
-      sidebarCollapsed: true
+      sidebarCollapsed: false // TODO: should handle retro group sizing on change and set to true for mobile first
     }
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext))
     bindHotkey('left', handleHotkey(this.gotoPrev))
@@ -185,7 +186,8 @@ class NewMeeting extends Component<Props, State> {
 
   componentDidMount () {
     const size = getWindowSize()
-    if (size.width > meetingSidebarBreakpoint) this.setState({sidebarCollapsed: false})
+    // TODO: should handle retro group sizing on change and set to false at larger breakpoints
+    if (size.width > meetingSidebarBreakpoint) this.setState({sidebarCollapsed: true})
   }
 
   endMeeting = () => {

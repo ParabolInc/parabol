@@ -62,53 +62,65 @@ const PhaseWrapper = styled('div')({
 const ReflectionSection = styled('div')({
   borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
   display: 'flex',
+  flex: 1,
+  flexShrink: 0,
   flexDirection: 'column',
-  height: '100%',
   margin: '0 auto',
-  maxHeight: '35%',
+  // maxHeight: '35%',
   maxWidth: meetingTopicPhaseMaxWidth,
+  minHeight: 200,
   width: '100%',
 
   [ui.breakpoint.wide]: {
-    maxHeight: '40%'
+    // maxHeight: '40%'
   },
 
   [ui.breakpoint.wider]: {
-    maxHeight: '45%'
+    // maxHeight: '45%'
   },
 
   [ui.breakpoint.widest]: {
-    maxHeight: '50%'
+    // maxHeight: '50%'
   }
 })
 
 const ReflectionSectionInner = styled('div')({
-  padding: '0 1.375rem .875rem 2.5rem'
+  // padding: '0 1.375rem .875rem 2.5rem'
+  padding: '0 2.5rem 1.25rem'
 })
 
 const ReflectionGrid = styled('div')({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, calc(100% / 3))'
+  gridGap: '1.25rem',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))'
 })
 
 const ReflectionGridBlock = styled('div')({
-  margin: '0 1.125rem 1.125rem 0'
+  // margin: '0 1.125rem 1.125rem 0'
+})
+
+const ScrollableTaskOuter = styled('div')({
+  display: 'flex',
+  height: '10.25rem',
+  // minHeight: '10.75rem',
+  width: '100%'
 })
 
 const TaskCardBlock = styled('div')({
   margin: '0 auto',
   maxWidth: meetingTopicPhaseMaxWidth,
-  padding: '1rem 2rem',
+  // minHeight: '10.75rem',
+  padding: '1.25rem 2.5rem',
   width: '100%',
 
   [ui.breakpoint.wide]: {
-    paddingLeft: '1.75rem',
-    paddingRight: '1.75rem'
+    // paddingLeft: '1.75rem',
+    // paddingRight: '1.75rem'
   },
 
   [ui.breakpoint.wider]: {
-    paddingLeft: '1.5rem',
-    paddingRight: '1.5rem'
+    // paddingLeft: '1.5rem',
+    // paddingRight: '1.5rem'
   }
 })
 
@@ -177,16 +189,18 @@ const RetroDiscussPhase = (props: Props) => {
             </ReflectionSectionInner>
           </ScrollableBlock>
         </ReflectionSection>
-        <ScrollableBlock>
-          <TaskCardBlock>
-            <MeetingAgendaCards
-              meetingId={meetingId}
-              reflectionGroupId={reflectionGroupId}
-              tasks={tasks}
-              teamId={teamId}
-            />
-          </TaskCardBlock>
-        </ScrollableBlock>
+        <ScrollableTaskOuter>
+          <ScrollableBlock>
+            <TaskCardBlock>
+              <MeetingAgendaCards
+                meetingId={meetingId}
+                reflectionGroupId={reflectionGroupId}
+                tasks={tasks}
+                teamId={teamId}
+              />
+            </TaskCardBlock>
+          </ScrollableBlock>
+        </ScrollableTaskOuter>
       </PhaseWrapper>
       {isFacilitating && (
         <SpacedMeetingControlBar>

@@ -8,7 +8,7 @@ import NullableTask from 'universal/components/NullableTask/NullableTask'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
-import ui from 'universal/styles/ui'
+// import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
 import type {Task} from 'universal/types/schema.flow'
@@ -101,23 +101,24 @@ class MeetingAgendaCards extends Component<Props> {
 
 const styleThunk = () => ({
   root: {
-    display: 'flex !important',
-    flexWrap: 'wrap'
+    // display: 'flex !important',
+    // flexWrap: 'wrap'
+    display: 'grid',
+    gridGap: '1.25rem',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))'
   },
 
   item: {
-    marginBottom: '1rem',
-    marginTop: '1rem',
-    padding: '0 .5rem',
-    width: '25%',
-
-    [ui.breakpoint.wide]: {
-      padding: '0 .75rem'
-    },
-
-    [ui.breakpoint.wider]: {
-      padding: '0 1rem'
-    }
+    // marginBottom: '1rem',
+    // marginTop: '1rem',
+    // padding: '0 .5rem',
+    // width: '25%',
+    // [ui.breakpoint.wide]: {
+    //   padding: '0 .75rem'
+    // },
+    // [ui.breakpoint.wider]: {
+    //   padding: '0 1rem'
+    // }
   }
 })
 
