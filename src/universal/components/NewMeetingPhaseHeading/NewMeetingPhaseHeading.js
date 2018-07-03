@@ -46,23 +46,25 @@ type Props = {|
 |}
 
 const NewMeetingPhaseHeading = (props: Props) => {
-  const {sidebarCollapsed, meeting, toggleSidebar} = props
-  if (!meeting || !meeting.localPhase) return null
-  const {
-    localPhase: {phaseType}
-  } = meeting
-  const label = phaseLabelLookup[phaseType]
-  const description = phaseDescriptionLookup[phaseType]
-  const hasContent = label || description
+  const {meeting, sidebarCollapsed, toggleSidebar} = props
+  const makeContent = () => {
+    if (!meeting || !meeting.localPhase) return null
+    const {
+      localPhase: {phaseType}
+    } = meeting
+    const label = phaseLabelLookup[phaseType]
+    const description = phaseDescriptionLookup[phaseType]
+    return (
+      <div>
+        <PhaseTitle>{label}</PhaseTitle>
+        <PhaseDescription>{description}</PhaseDescription>
+      </div>
+    )
+  }
   return (
     <HeadingBlock>
       <Toggle onClick={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
-      {hasContent && (
-        <div>
-          <PhaseTitle>{label}</PhaseTitle>
-          <PhaseDescription>{description}</PhaseDescription>
-        </div>
-      )}
+      {makeContent()}
     </HeadingBlock>
   )
 }

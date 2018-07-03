@@ -311,7 +311,6 @@ class NewMeeting extends Component<Props, State> {
     const localPhaseType = localPhase && localPhase.phaseType
     const retroLobbyHelpContent = tier === PRO ? RETRO_LOBBY_PAID : RETRO_LOBBY_FREE
     const {sidebarCollapsed} = this.state
-    const hasToggle = localPhase
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
@@ -319,7 +318,6 @@ class NewMeeting extends Component<Props, State> {
           <NewMeetingSidebar
             gotoStageId={this.gotoStageId}
             meetingType={meetingType}
-            hasToggle={hasToggle}
             toggleSidebar={this.toggleSidebar}
             viewer={viewer}
           />

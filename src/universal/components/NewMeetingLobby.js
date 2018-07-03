@@ -12,6 +12,7 @@ import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import ui from 'universal/styles/ui'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSplashGutter} from 'universal/styles/meeting'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
@@ -35,17 +36,21 @@ const ButtonBlock = styled('div')({
 })
 
 const Lobby = styled('div')({
-  paddingLeft: meetingSplashGutter,
+  paddingLeft: '2rem',
   paddingTop: '2rem',
   textAlign: 'left',
 
-  [ui.breakpoint.wide]: {
+  [minWidthMediaQueries[2]]: {
+    paddingLeft: meetingSplashGutter
+  },
+
+  [minWidthMediaQueries[3]]: {
     paddingTop: '3rem'
   },
-  [ui.breakpoint.wider]: {
+  [minWidthMediaQueries[4]]: {
     paddingTop: '4rem'
   },
-  [ui.breakpoint.widest]: {
+  [minWidthMediaQueries[5]]: {
     paddingTop: '6rem'
   }
 })

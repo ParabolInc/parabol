@@ -25,9 +25,8 @@ const SidebarHeader = styled('div')({
   position: 'relative'
 })
 
-const ToggleBlock = styled('div')({
-  margin: '0 .75rem 0 1.5rem',
-  width: '1.5rem'
+const StyledToggle = styled(SidebarToggle)({
+  margin: '0 .75rem 0 1.5rem'
 })
 
 const SidebarParent = styled('div')({
@@ -50,14 +49,13 @@ const TeamDashboardLink = styled(Link)({
 
 type Props = {
   gotoStageId: (stageId: string) => void,
-  hasToggle: boolean,
   meetingType: MeetingTypeEnum,
   toggleSidebar: () => void,
   viewer: Viewer
 }
 
 const NewMeetingSidebar = (props: Props) => {
-  const {gotoStageId, hasToggle, meetingType, toggleSidebar, viewer} = props
+  const {gotoStageId, meetingType, toggleSidebar, viewer} = props
   const {
     team: {teamId, teamName}
   } = viewer
@@ -67,7 +65,7 @@ const NewMeetingSidebar = (props: Props) => {
   return (
     <SidebarParent>
       <SidebarHeader>
-        <ToggleBlock>{hasToggle && <SidebarToggle onClick={toggleSidebar} />}</ToggleBlock>
+        <StyledToggle onClick={toggleSidebar} />
         <TeamDashboardLink to={`/team/${teamId}`} title={`Go to the ${teamName} Team Dashboard`}>
           {teamName}
         </TeamDashboardLink>

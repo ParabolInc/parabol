@@ -32,8 +32,8 @@ const LogoBlock = (props) => {
       <Anchor
         href='http://www.parabol.co/'
         rel='noopener noreferrer'
-        title='Parabol'
         target='_blank'
+        title='Parabol'
       >
         <Image alt='Parabol' src={logoSrc} />
       </Anchor>
