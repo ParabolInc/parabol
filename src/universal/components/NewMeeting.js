@@ -51,12 +51,13 @@ import getWindowSize from 'universal/styles/helpers/getWindowSize'
 import {
   meetingChromeBoxShadow,
   meetingSidebarBreakpoint,
+  meetingSidebarMediaQuery,
   meetingSidebarWidth
 } from 'universal/styles/meeting'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 
 const {Component} = React
 
-const sidebarBreakpoint = `@media screen and (min-width: ${meetingSidebarBreakpoint}px)`
 const boxShadowNone = makeShadowColor(0)
 
 const MeetingContainer = styled('div')({
@@ -82,7 +83,7 @@ const MeetingSidebarLayout = styled('div')(({sidebarCollapsed}) => ({
   width: meetingSidebarWidth,
   zIndex: 400,
 
-  [sidebarBreakpoint]: {
+  [meetingSidebarMediaQuery]: {
     boxShadow: sidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[0]
   }
 }))
@@ -112,7 +113,7 @@ const SidebarBackdrop = styled('div')(({sidebarCollapsed}) => ({
   transition: `opacity ${ui.transition[0]}`,
   zIndex: 300,
 
-  [sidebarBreakpoint]: {
+  [meetingSidebarMediaQuery]: {
     display: 'none'
   }
 }))
@@ -120,7 +121,7 @@ const SidebarBackdrop = styled('div')(({sidebarCollapsed}) => ({
 const LayoutPusher = styled('div')(({sidebarCollapsed}) => ({
   display: 'none',
 
-  [sidebarBreakpoint]: {
+  [meetingSidebarMediaQuery]: {
     display: 'block',
     flexShrink: 0,
     transition: `width ${ui.transition[0]}`,
@@ -137,7 +138,7 @@ const MeetingAreaHeader = styled('div')({
   maxWidth: '100%',
   padding: '0 1rem 1rem',
   width: '100%',
-  [ui.breakpoint.wide]: {
+  [minWidthMediaQueries[3]]: {
     padding: '0 1rem 2rem'
   }
 })

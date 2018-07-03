@@ -33,7 +33,7 @@ const QuestionBlock = styled('div')({
   alignContent: 'center',
   display: 'flex',
   fontSize: '1.5rem',
-  lineHeight: '1.25rem',
+  lineHeight: '1.25',
   padding: `${ui.cardPaddingBase} 0 ${ui.cardPaddingBase} 0`,
   fontWeight: 300
 })

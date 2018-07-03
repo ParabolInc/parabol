@@ -14,6 +14,7 @@ import zIndexScale from 'universal/styles/helpers/zIndexScale'
 const makeShadowColor = (opacity) => `rgba(68, 66, 88, ${opacity})`
 
 // Breakpoints
+// #deprecated use breakpoints.js instead of ui.breakpoint object (TA)
 const BREAKPOINT_WIDE = '@media (min-width: 90rem)'
 const BREAKPOINT_WIDER = '@media (min-width: 100rem)'
 const BREAKPOINT_WIDEST = '@media (min-width: 120rem)'
@@ -207,6 +208,7 @@ const ui = {
 
   // Breakpoints
   // ---------------------------------------------------------------------------
+  // #deprecated use breakpoints.js instead of ui.breakpoint object (TA)
   breakpoint: {
     wide: BREAKPOINT_WIDE,
     wider: BREAKPOINT_WIDER,
@@ -251,7 +253,7 @@ const ui = {
   cardButtonBorderColor: appTheme.palette.mid50l,
   cardContentFontSize: '.9375rem',
   cardContentLineHeight: '1.375rem',
-  cardMinHeight: '7.9375rem',
+  cardMinHeight: '7.75rem',
   cardPaddingBase: '.9375rem',
 
   // Card Controls (tapping these makes cards)

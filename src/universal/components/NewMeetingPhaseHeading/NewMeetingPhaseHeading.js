@@ -6,13 +6,11 @@
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
-import {meetingSidebarBreakpoint} from 'universal/styles/meeting'
+import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {createFragmentContainer} from 'react-relay'
 import type {NewMeetingPhaseHeading_meeting as Meeting} from './__generated__/NewMeetingPhaseHeading_meeting.graphql'
 import SidebarToggle from 'universal/components/SidebarToggle'
-
-const sidebarBreakpoint = `@media screen and (min-width: ${meetingSidebarBreakpoint}px)`
 
 const HeadingBlock = styled('div')({
   alignItems: 'flex-start',
@@ -23,7 +21,7 @@ const HeadingBlock = styled('div')({
 const Toggle = styled(SidebarToggle)(({sidebarCollapsed}) => ({
   margin: '0 1rem 0 .5rem',
 
-  [sidebarBreakpoint]: {
+  [meetingSidebarMediaQuery]: {
     display: sidebarCollapsed ? 'block' : 'none'
   }
 }))

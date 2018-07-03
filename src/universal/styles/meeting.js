@@ -1,5 +1,6 @@
 import appTheme from 'universal/styles/theme/appTheme'
 import {makeShadowColor} from './ui'
+import {breakpoints, minWidthMediaQueries} from './breakpoints'
 
 // shared style constants for components in the meeting context
 
@@ -10,7 +11,8 @@ export const meetingChromeBoxShadow = [
 ]
 export const meetingChromeBoxShadowInset = `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`
 export const meetingBorderColor = appTheme.palette.mid10a
-export const meetingSidebarBreakpoint = 801
+export const meetingSidebarBreakpoint = breakpoints[1]
+export const meetingSidebarMediaQuery = minWidthMediaQueries[1]
 export const meetingSidebarGutter = '.5rem'
 export const meetingSidebarGutterInner = '3.75rem'
 export const meetingSidebarWidth = '15rem'
