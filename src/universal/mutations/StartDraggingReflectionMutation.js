@@ -48,10 +48,10 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatc
   const reflectionId = payload.getValue('reflectionId')
   const reflection = store.get(reflectionId)
   if (!reflection) return undefined
+  const existingDragContext = reflection.getLinkedRecord('dragContext')
   const dragContext = payload.getLinkedRecord('dragContext')
   const dragUserId = dragContext.getValue('dragUserId')
   const isViewerDragging = dragContext.getValue('isViewerDragging')
-  const existingDragContext = reflection.getLinkedRecord('dragContext')
   const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
 
   // when conflicts arise, give the win to the person with the smaller userId
@@ -70,6 +70,7 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatc
       isViewerConflictLoser = true
     }
   } else if (isViewerDragging) {
+    // the return payload is for the viewer, but the rightful dragger came first
     isViewerConflictLoser = true
   }
 

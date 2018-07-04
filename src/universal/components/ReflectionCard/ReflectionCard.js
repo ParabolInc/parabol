@@ -70,7 +70,7 @@ class ReflectionCard extends Component<Props, State> {
     const {content} = reflection
     if (content === prevState.content) return null
     const contentState = convertFromRaw(JSON.parse(content))
-    // const DEBUG_TEXT = `idx: ${idx} | GroupId: ${reflectionGroupId}`
+    // const DEBUG_TEXT = `id: ${reflectionId} | GroupId: ${reflectionGroupId}`
     // const contentState = ContentState.createFromText(DEBUG_TEXT)
     const editorState = EditorState.createWithContent(
       contentState,
