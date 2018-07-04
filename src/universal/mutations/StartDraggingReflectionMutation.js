@@ -48,10 +48,10 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatc
   const reflectionId = payload.getValue('reflectionId')
   const reflection = store.get(reflectionId)
   if (!reflection) return undefined
+  const existingDragContext = reflection.getLinkedRecord('dragContext')
   const dragContext = payload.getLinkedRecord('dragContext')
   const dragUserId = dragContext.getValue('dragUserId')
   const isViewerDragging = dragContext.getValue('isViewerDragging')
-  const existingDragContext = reflection.getLinkedRecord('dragContext')
   const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
 
   // when conflicts arise, give the win to the person with the smaller userId
@@ -70,6 +70,7 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatc
       isViewerConflictLoser = true
     }
   } else if (isViewerDragging) {
+    // the return payload is for the viewer, but the rightful dragger came first
     isViewerConflictLoser = true
   }
 
@@ -98,25 +99,9 @@ const setInitialCoords = (store, dragContext, initialCoords, initialCursorCoords
   dragContext.setLinkedRecord(initialCursorCoordsProxy, 'initialCursorCoords')
 }
 
-// a person can only drag 1 card at a time (2 drags would mean account sharing tsk tsk)
-// so if someone starts a new drag, we can safely remove
-// any other drags that went stale due to bad internet & a missed endDrag message
-const ensureOldInFlightsRemoved = (meeting, reflection) => {
-  const newDragUserId = getInProxy(reflection, 'dragContext', 'dragUserId')
-  const reflectionsInFlight = meeting.getLinkedRecords('reflectionsInFlight') || []
-  // it's OK if it removes the new one, we'll add it back later
-  const validReflectionsInFlight = reflectionsInFlight.filter((inFlight) => {
-    return getInProxy(inFlight, 'dragContext', 'dragUserId') !== newDragUserId
-  })
-  if (validReflectionsInFlight.length < reflectionsInFlight.length) {
-    meeting.setLinkedRecords(validReflectionsInFlight, 'reflectionsInFlight')
-  }
-}
-
 const setInFlight = (store, meetingId, reflection) => {
   const meeting = store.get(meetingId)
   if (!meeting) return
-  ensureOldInFlightsRemoved(meeting, reflection)
   addNodeToArray(reflection, meeting, 'reflectionsInFlight', 'id')
 }
 

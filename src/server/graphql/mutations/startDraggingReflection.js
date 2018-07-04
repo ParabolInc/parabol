@@ -11,6 +11,7 @@ import {
 } from 'server/utils/alreadyMutatedErrors'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import Coords2DInput from 'server/graphql/types/Coords2DInput'
+import * as shortid from 'shortid'
 
 export default {
   description: 'Broadcast that the viewer started dragging a reflection',
@@ -55,7 +56,7 @@ export default {
       reflectionId,
       dragContext: {
         // required so relay doesn't assign the same ID every time
-        id: `${reflectionId}-drag`,
+        id: shortid.generate(),
         dragUserId: viewerId,
         dragCoords: initialCoords
       }

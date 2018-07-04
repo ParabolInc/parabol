@@ -8,7 +8,6 @@ const setClosingTransform = (atmosphere, itemId, finalCoords) => {
     const dragContext = reflection.getLinkedRecord('dragContext')
     if (!dragContext) return
     const dragCoords = createProxyRecord(store, 'Coords2D', finalCoords)
-    dragContext.setValue(true, 'isClosing')
     dragContext.setLinkedRecord(dragCoords, 'dragCoords')
   })
 }
