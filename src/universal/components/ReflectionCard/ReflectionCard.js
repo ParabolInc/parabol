@@ -143,8 +143,9 @@ class ReflectionCard extends Component<Props, State> {
     EditReflectionMutation(atmosphere, {isEditing: false, reflectionId})
   }
 
-  handleEditorSubmit = () => {
+  handleReturn = (e) => {
     const {addReflectionButtonRef} = this.props
+    if (e.shiftKey) return 'not-handled'
     this.handleEditorBlur()
     if (addReflectionButtonRef) {
       addReflectionButtonRef.focus()
@@ -188,7 +189,7 @@ class ReflectionCard extends Component<Props, State> {
           isDraggable={isDraggable}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
-          handleReturn={this.handleEditorSubmit}
+          handleReturn={this.handleReturn}
           placeholder='My reflection thought…'
           readOnly={phaseType !== REFLECT || isComplete || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
