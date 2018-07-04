@@ -25,12 +25,10 @@ const LeaveTeamModal = (props) => {
     isClosing,
     location,
     history,
-    team,
+    teamLead,
     teamMember
   } = props
-  const {teamMembers} = team
   const {teamMemberId} = teamMember
-  const teamLead = teamMembers.find((m) => m.isLead === true)
   const teamLeadName = teamLead ? teamLead.preferredName : 'your leader'
   const handleClick = () => {
     // the KICKED_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
@@ -78,11 +76,8 @@ export default createFragmentContainer(
     connect()(withAtmosphere(withRouter(LeaveTeamModal)))
   ),
   graphql`
-    fragment LeaveTeamModal_team on Team {
-      teamMembers(sortBy: "preferredName") {
-        isLead
-        preferredName
-      }
+    fragment LeaveTeamModal_teamLead on TeamMember {
+      preferredName
     }
 
     fragment LeaveTeamModal_teamMember on TeamMember {

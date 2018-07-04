@@ -101,6 +101,13 @@ export default class RethinkDataLoader {
         return meetingSettings.filter((settings) => settings.teamId === teamId)
       })
     }, this.dataloaderOptions)
+    this.notificationsByUserId = makeCustomLoader(async (userIds) => {
+      const r = getRethink()
+      const viewerId = getUserId(this.authToken)
+      const notifications = await r.table('Notification').getAll(viewerId, {index: 'userIds'})
+      primeStandardLoader(this.notifications, notifications)
+      return userIds.map(() => notifications)
+    }, this.dataloaderOptions)
     this.orgsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink()
       const orgs = await r.table('Organization').getAll(r.args(userIds), {index: 'orgUsers'})
