@@ -39,24 +39,22 @@ const underlineStyles = {
   boxShadow: 'none !important'
 }
 
-const PencilIcon = styled(StyledFontAwesome)({
-  color: ui.hintColor,
+const PencilIcon = styled(StyledFontAwesome)(({isExpanded}) => ({
+  color: isExpanded ? '#fff' : ui.hintColor,
   height: ui.iconSize,
-  left: '100%',
   lineHeight,
   opacity: '.5',
-  position: 'absolute',
+  paddingLeft: '0.25rem',
   textAlign: 'center',
   top: '-.0625rem',
   width: ui.iconSize
-})
+}))
 
 const RootBlock = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flexShrink: 1,
-  maxWidth: '100%',
-  padding: '0 .25rem'
+  maxWidth: '100%'
 })
 
 const FormBlock = styled('form')({
@@ -65,7 +63,8 @@ const FormBlock = styled('form')({
   maxWidth: '100%'
 })
 
-const NameInput = styled('input')(({readOnly}) => ({
+// This is gonna turn into slate, no use in spending time fixing it now
+const NameInput = styled('input')(({isExpanded, readOnly}) => ({
   ...underlineStyles,
   ':hover,:focus,:active': {
     underlineStyles
@@ -74,13 +73,17 @@ const NameInput = styled('input')(({readOnly}) => ({
   ...ui.fieldSizeStyles.small,
   border: 0,
   boxShadow: 'none',
-  color: appTheme.palette.dark,
+  color: isExpanded ? '#fff' : appTheme.palette.dark,
   cursor: readOnly ? 'default' : 'text',
   fontSize,
   fontWeight: 600,
   lineHeight,
   padding: 0,
-  textAlign: 'center'
+  // need to use a content editable if we wanna animate this since input el forces width
+  textAlign: !isExpanded && 'center',
+  // card width is set at REFLECTION_WIDTH, so this can be a PX, too
+  width: 200,
+  transition: 'all 200ms'
 }))
 
 const getValidationError = (title: ?string, reflectionGroups, reflectionGroupId) => {
@@ -102,6 +105,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     super(props)
     this.initialTitle = props.reflectionGroup.title
   }
+
   onChange = (e) => {
     const {
       atmosphere,
@@ -177,6 +181,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
 
   render () {
     const {
+      isExpanded,
       error,
       readOnly,
       reflectionGroup: {title}
@@ -186,6 +191,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
         <RootBlock>
           <FormBlock onSubmit={this.onSubmit}>
             <NameInput
+              isExpanded={isExpanded}
               onBlur={this.onSubmit}
               onChange={this.onChange}
               placeholder={RETRO_TOPIC_LABEL}
@@ -198,7 +204,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
           </FormBlock>
           {error && <StyledError>{error.message}</StyledError>}
         </RootBlock>
-        {!readOnly && <PencilIcon name='pencil' onClick={this.onClick} />}
+        {!readOnly && <PencilIcon isExpanded={isExpanded} name='pencil' onClick={this.onClick} />}
       </React.Fragment>
     )
   }

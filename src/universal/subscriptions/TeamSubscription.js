@@ -18,15 +18,21 @@ import {
   removeOrgUserTeamUpdater
 } from 'universal/mutations/RemoveOrgUserMutation'
 import {startNewMeetingTeamOnNext} from 'universal/mutations/StartNewMeetingMutation'
-import {
-  navigateMeetingTeamOnNext,
-  navigateMeetingTeamUpdater
-} from 'universal/mutations/NavigateMeetingMutation'
+import {navigateMeetingTeamUpdater} from 'universal/mutations/NavigateMeetingMutation'
 import {promoteNewMeetingFacilitatorTeamOnNext} from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
 import {editReflectionTeamUpdater} from 'universal/mutations/EditReflectionMutation'
-import {updateReflectionLocationTeamUpdater} from 'universal/mutations/UpdateReflectionLocationMutation'
 import {endNewMeetingTeamOnNext} from 'universal/mutations/EndNewMeetingMutation'
+import {updateDragLocationTeamUpdater} from 'universal/mutations/UpdateDragLocationMutation'
+import {
+  endDraggingReflectionTeamOnNext,
+  endDraggingReflectionTeamUpdater
+} from 'universal/mutations/EndDraggingReflectionMutation'
 import {dragDiscussionTopicTeamUpdater} from 'universal/mutations/DragDiscussionTopicMutation'
+import {startDraggingReflectionTeamUpdater} from 'universal/mutations/StartDraggingReflectionMutation'
+import {
+  autoGroupReflectionsTeamOnNext,
+  autoGroupReflectionsTeamUpdater
+} from 'universal/mutations/AutoGroupReflectionsMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -38,9 +44,9 @@ const subscription = graphql`
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
-      ...DragReflectionMutation_team @relay(mask: false)
       ...DragDiscussionTopicMutation_team @relay(mask: false)
       ...EditReflectionMutation_team @relay(mask: false)
+      ...EndDraggingReflectionMutation_team @relay(mask: false)
       ...EndMeetingMutation_team @relay(mask: false)
       ...KillMeetingMutation_team @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
@@ -53,13 +59,14 @@ const subscription = graphql`
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RequestFacilitatorMutation_team @relay(mask: false)
+      ...StartDraggingReflectionMutation_team @relay(mask: false)
       ...StartMeetingMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
+      ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
       ...UpdateReflectionGroupTitleMutation_team @relay(mask: false)
-      ...UpdateReflectionLocationMutation_team @relay(mask: false)
       ...UpdateTeamNameMutation_team @relay(mask: false)
       ...UpgradeToProMutation_organization @relay(mask: false)
       ...VoteForReflectionGroupMutation_team @relay(mask: false)
@@ -68,11 +75,12 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
-  NavigateMeetingPayload: navigateMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
-  RemoveOrgUserPayload: removeOrgUserTeamOnNext
+  RemoveOrgUserPayload: removeOrgUserTeamOnNext,
+  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
@@ -97,13 +105,15 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           addTeamMutationNotificationUpdater(payload, store, viewerId, options)
           break
         case 'AutoGroupReflectionsPayload':
+          autoGroupReflectionsTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'CreateGitHubIssuePayload':
           break
         case 'CreateReflectionPayload':
           createReflectionTeamUpdater(payload, store)
           break
-        case 'DragReflectionPayload':
+        case 'EndDraggingReflectionPayload':
+          endDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'DragDiscussionTopicPayload':
           dragDiscussionTopicTeamUpdater(payload, {store})
@@ -160,6 +170,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'RequestFaciltatorPayload':
           requestFacilitatorTeamUpdater(payload, options)
           break
+        case 'StartDraggingReflectionPayload':
+          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, dispatch, store})
+          break
         case 'StartMeetingPayload':
           break
         case 'StartNewMeetingPayload':
@@ -168,12 +181,12 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'UpdateCheckInQuestionPayload':
           break
+        case 'UpdateDragLocationPayload':
+          updateDragLocationTeamUpdater(payload, {atmosphere: environment, store})
+          break
         case 'UpdateReflectionContentPayload':
           break
         case 'UpdateReflectionGroupTitlePayload':
-          break
-        case 'UpdateReflectionLocationPayload':
-          updateReflectionLocationTeamUpdater(payload, options)
           break
         case 'UpgradeToProPayload':
           break
@@ -187,7 +200,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const {__typename: type} = teamSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(teamSubscription, {...subParams, environment})
+        handler(teamSubscription, {...subParams, atmosphere: environment})
       }
     }
   }

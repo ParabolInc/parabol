@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/theme'
 
 const tagTheme = {
   cool: {
@@ -42,6 +43,11 @@ const tagTheme = {
   white: {
     backgroundColor: ui.palette.white,
     color: ui.palette.mid
+  },
+
+  purple: {
+    backgroundColor: appTheme.brand.primary.purpleLightened,
+    color: ui.palette.white
   }
 }
 
@@ -58,6 +64,7 @@ const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
   marginLeft: ui.tagGutter,
   padding: ui.tagPadding,
   textAlign: 'center',
+  userSelect: 'none',
   verticalAlign: 'middle'
 }))
 
@@ -71,7 +78,7 @@ const Tag = (props) => {
 }
 
 Tag.propTypes = {
-  colorPalette: PropTypes.oneOf(ui.tagPalette),
+  colorPalette: PropTypes.oneOf(Object.keys(tagTheme)),
   hasDepth: PropTypes.bool,
   label: PropTypes.string
 }

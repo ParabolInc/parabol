@@ -8,7 +8,7 @@ import handleRemoveTeams from 'universal/mutations/handlers/handleRemoveTeams'
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import handleRemoveTasks from 'universal/mutations/handlers/handleRemoveTasks'
-import onExTeamRoute from 'universal/utils/onExTeamRoute'
+import onTeamRoute from 'universal/utils/onTeamRoute'
 
 graphql`
   fragment RemoveTeamMemberMutation_task on RemoveTeamMemberPayload {
@@ -98,7 +98,7 @@ const popKickedOutNotification = (payload, {dispatch, environment, history}) => 
     })
   )
   const {pathname} = history.location
-  if (onExTeamRoute(pathname, teamId)) {
+  if (onTeamRoute(pathname, teamId)) {
     history.push('/me')
   }
 }

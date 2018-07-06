@@ -1,26 +1,20 @@
 import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
-import moveReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/moveReflectionGroup'
+// import moveReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/moveReflectionGroup'
 
-const handleUpdatedLocation = (
-  reflectionId,
-  reflectionGroupId,
-  retroPhaseItemId,
-  sortOrder,
-  context
-) => {
-  // adding to group requires reflectionId and reflectionGroupId
-  // removing from group (into a column) requires reflectionId, retroPhaseItemId, and a null reflectionGroupId
-  // moving a group requires reflectionGroupId & retroPhaseItemId
+const handleUpdatedLocation = (reflectionId, reflectionGroupId, context) => {
+  // adding/reordering within the same group requires reflectionId and reflectionGroupId
   if (reflectionId && reflectionGroupId) {
-    return addReflectionToGroup(reflectionId, reflectionGroupId, sortOrder, context)
+    return addReflectionToGroup(reflectionId, reflectionGroupId, context)
   }
-  if (reflectionId && !reflectionGroupId && retroPhaseItemId) {
-    return removeReflectionFromGroup(reflectionId, retroPhaseItemId, sortOrder, context)
+  // removing from group (into its own new group) requires reflectionId and a null reflectionGroupId
+  if (reflectionId && !reflectionGroupId) {
+    return removeReflectionFromGroup(reflectionId, context)
   }
-  if (!reflectionId && reflectionGroupId && retroPhaseItemId) {
-    return moveReflectionGroup(reflectionGroupId, retroPhaseItemId, sortOrder, context)
-  }
+  // moving a group requires reflectionGroupId and a null reflectionId
+  // if (!reflectionId && reflectionGroupId) {
+  //   return moveReflectionGroup(reflectionGroupId, sortOrder, context)
+  // }
   return undefined
 }
 

@@ -16,6 +16,10 @@ module.exports = {
     publicPath: '/static/'
   },
   resolve: {
+    alias: {
+      'react-relay': '@mattkrick/react-relay',
+      'relay-runtime': '@mattkrick/relay-runtime'
+    },
     modules: [path.join(__dirname, '../src'), 'node_modules']
   },
   plugins: [

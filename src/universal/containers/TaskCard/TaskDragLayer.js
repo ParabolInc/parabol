@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
-import {DragLayer as dragLayer} from 'react-dnd'
+import {DragLayer as dragLayer} from '@mattkrick/react-dnd'
 import ui from 'universal/styles/ui'
 
 const layerStyles = {

@@ -54,6 +54,7 @@
     "build-storybook": "build-storybook"
   },
   "devDependencies": {
+    "@playlyfe/gql": "^2.6.0",
     "@storybook/addon-actions": "^3.3.14",
     "@storybook/addon-links": "^3.3.14",
     "@storybook/addons": "^3.3.14",
@@ -89,7 +90,7 @@
     "piping": "^1.0.0-rc.4",
     "prettier": "1.12.1",
     "react-addons-test-utils": "^15.6.0",
-    "relay-compiler": "^1.5.0",
+    "relay-compiler": "^1.6.0",
     "selenium-webdriver": "^3.6.0",
     "snazzy": "^7.1.1",
     "standard": "^11.0.1",
@@ -106,6 +107,10 @@
   },
   "dependencies": {
     "@google-cloud/language": "^1.2.0",
+    "@mattkrick/react-dnd": "3.0.5",
+    "@mattkrick/react-dnd-html5-backend": "3.0.5",
+    "@mattkrick/react-relay": "^1.6.3",
+    "@mattkrick/relay-runtime": "^1.6.3",
     "@segment/snippet": "^4.0.1",
     "analytics-node": "^3.0.0",
     "aphrodite-local-styles": "0.6.2",
@@ -149,6 +154,7 @@
     "linkify-it": "^2.0.3",
     "mailcomposer": "^4.0.1",
     "mailgun-js": "^0.13.1",
+    "micro-memoize": "^2.0.3",
     "migrate-rethinkdb": "^1.5.0",
     "mime-types": "^2.1.16",
     "ms": "^2.0.0",
@@ -165,8 +171,6 @@
     "react-copy-to-clipboard": "^5.0.0",
     "react-custom-scrollbars": "^4.2.1",
     "react-day-picker": "^7.1.6",
-    "react-dnd": "^2.6.0",
-    "react-dnd-html5-backend": "^2.4.1",
     "react-dnd-scrollzone": "^4.0.0",
     "react-dom": "^16.4.0",
     "react-dom-confetti": "^0.0.10",
@@ -180,7 +184,7 @@
     "react-notification-system": "^0.2.16",
     "react-portal-hoc": "^0.4.2",
     "react-redux": "^5.0.7",
-    "react-relay": "^1.5.0",
+    "react-relay": "^1.6.0",
     "react-router": "4.3.0-rc.3",
     "react-router-dom": "4.3.0-rc.3",
     "react-test-renderer": "^16.0.0",
@@ -190,7 +194,7 @@
     "redux-form": "^7.3.0",
     "redux-raven-middleware": "^1.2.0",
     "redux-thunk": "2.2.0",
-    "relay-runtime": "^1.5.0",
+    "relay-runtime": "^1.6.0",
     "rethinkdbdash": "^2.3.31",
     "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.3",
@@ -235,7 +239,11 @@
       "$ReadOnlyArray",
       "$Shape",
       "SyntheticKeyboardEvent",
-      "System"
+      "ClientRect",
+      "HTMLElement",
+      "System",
+      "Node",
+      "DragEvent"
     ],
     "ignore": [
       "schema.flow.js"

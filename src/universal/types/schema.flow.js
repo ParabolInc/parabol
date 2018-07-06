@@ -1107,8 +1107,8 @@ export type Mutation = {
   disconnectSocket: ?DisconnectSocketPayload,
   /** Changes the priority of the discussion topics */
   dragDiscussionTopic: ?DragDiscussionTopicPayload,
-  /** Changes the drag state of a retrospective reflection */
-  dragReflection: ?DragReflectionPayload,
+  /** Broadcast that the viewer stopped dragging a reflection */
+  endDraggingReflection: ?EndDraggingReflectionPayload,
   /** Changes the editing state of a retrospective reflection */
   editReflection: ?EditReflectionPayload,
   /** Announce to everyone that you are editing a task */
@@ -1175,6 +1175,8 @@ export type Mutation = {
   segmentEventTrack: ?boolean,
   /** Set the role of a user */
   setOrgUserRole: ?SetOrgUserRolePayload,
+  /** Broadcast that the viewer started dragging a reflection */
+  startDraggingReflection: ?StartDraggingReflectionPayload,
   /** Start a meeting from the lobby */
   startMeeting: ?StartMeetingPayload,
   /** Start a new meeting */
@@ -1201,12 +1203,12 @@ export type Mutation = {
   updateCheckInQuestion: ?UpdateCheckInQuestionPayload,
   /** Update a Team's Check-in question in a new meeting */
   updateNewCheckInQuestion: ?UpdateNewCheckInQuestionPayload,
+  /** all the info required to provide an accurate display-specific location of where an item is */
+  updateDragLocation: ?boolean,
   /** Update the content of a reflection */
   updateReflectionContent: ?UpdateReflectionContentPayload,
   /** Update the title of a reflection group */
   updateReflectionGroupTitle: ?UpdateReflectionGroupTitlePayload,
-  /** Update the sortOrder or phaseItemId of a reflection (usually by dragging it) */
-  updateReflectionLocation: ?UpdateReflectionLocationPayload,
   /** Update a task with a change in content, ownership, or status */
   updateTask: ?UpdateTaskPayload,
   /** Set or unset the due date of a task */
@@ -1416,7 +1418,8 @@ export type AutoGroupReflectionsPayload = {
   error: ?StandardMutationError,
   meeting: ?RetrospectiveMeeting,
   reflections: ?Array<RetroReflection>,
-  reflectionGroups: ?Array<RetroReflectionGroup>
+  reflectionGroups: ?Array<RetroReflectionGroup>,
+  removedReflectionGroups: ?Array<RetroReflectionGroup>
 }
 
 /**
@@ -1563,12 +1566,8 @@ export type RetroReflection = {
   createdAt: ?any,
   /** The userId that created the reflection (or unique Id if not a team member) */
   creatorId: ?string,
-  /** The userId of the person currently dragging the reflection */
-  draggerUserId: ?string,
-  /** The user that is currently dragging the reflection */
-  draggerUser: ?User,
-  /** The coordinates necessary to simulate a drag for a subscribing user */
-  draggerCoords: ?DraggerCoords,
+  /** all the info associated with the drag state, if this reflection is currently being dragged */
+  dragContext: ?DragContext,
   /** an array of all the socketIds that are currently editing the reflection */
   editorIds: Array<string>,
   /** True if the reflection was not removed, else false */
@@ -1601,16 +1600,23 @@ export type RetroReflection = {
 }
 
 /**
-  Coordinates used to share a drag
+  Info associated with a current drag
 */
-export type DraggerCoords = {
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  height: ?number,
-  /** The width of the client of the person dragging (useful to standardize across screen sizes) */
-  width: ?number,
-  /** The x-offset from the current location */
+export type DragContext = {
+  id: ?string,
+  /** The userId of the person currently dragging the reflection */
+  dragUserId: ?string,
+  /** The user that is currently dragging the reflection */
+  dragUser: ?User,
+  /** The coordinates necessary to simulate a drag for a subscribing user */
+  dragCoords: ?Coords2D
+}
+
+/**
+  Coordinates used relay a location in a 2-D plane
+*/
+export type Coords2D = {
   x: ?number,
-  /** The y-offset from the current location */
   y: ?number
 }
 
@@ -1847,16 +1853,28 @@ export type RetroDiscussStage = {
   sortOrder: number
 }
 
-export type DragReflectionPayload = {
+/**
+  The possible places a reflection can be dropped
+*/
+export type DragReflectionDropTargetTypeEnum = 'REFLECTION_GROUP' | 'REFLECTION_GRID'
+
+export type EndDraggingReflectionPayload = {
   error: ?StandardMutationError,
-  meeting: ?NewMeeting,
+  /** the type of item the reflection was dropped on */
+  dropTargetType: ?DragReflectionDropTargetTypeEnum,
+  /** The ID that the dragged item was dropped on, if dropTargetType is not specific enough */
+  dropTargetId: ?string,
+  meeting: ?RetrospectiveMeeting,
+  meetingId: ?string,
   reflection: ?RetroReflection,
+  reflectionGroupId: ?string,
+  reflectionId: ?string,
   /** foreign key to get user */
   userId: ?string,
-  /** The user that is triggering the drag */
-  user: ?User,
-  /** true if the reflection is being dragged, else false */
-  isDragging: ?boolean
+  /** The group encapsulating the new reflection. A new one was created if one was not provided. */
+  reflectionGroup: ?RetroReflectionGroup,
+  /** The old group the reflection was in */
+  oldReflectionGroup: ?RetroReflectionGroup
 }
 
 export type EditReflectionPayload = {
@@ -2013,6 +2031,8 @@ export type ReflectPhaseCompletePayload = {
 }
 
 export type GroupPhaseCompletePayload = {
+  /** the current meeting */
+  meeting: RetrospectiveMeeting,
   /** a list of updated reflection groups */
   reflectionGroups: ?Array<RetroReflectionGroup>
 }
@@ -2202,6 +2222,24 @@ export type SegmentEventTrackOptions = {
 
 export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload
 
+/**
+  Coordinates used relay a location in a 2-D plane
+*/
+export type Coords2DInput = {
+  x: number,
+  y: number
+}
+
+export type StartDraggingReflectionPayload = {
+  error: ?StandardMutationError,
+  /** The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore */
+  dragContext: ?DragContext,
+  meeting: ?NewMeeting,
+  meetingId: ?string,
+  reflection: ?RetroReflection,
+  reflectionId: ?string
+}
+
 export type StartMeetingPayload = {
   error: ?StandardMutationError,
   team: ?Team
@@ -2287,6 +2325,20 @@ export type UpdateNewCheckInQuestionPayload = {
   meeting: ?NewMeeting
 }
 
+export type UpdateDragLocationInput = {
+  clientHeight: number,
+  clientWidth: number,
+  /** The primary key of the item being drug */
+  sourceId: string,
+  /** The estimated destination of the item being drug */
+  targetId: ?string,
+  /** The teamId to broadcast the message to */
+  teamId: string,
+  coords: Coords2DInput,
+  /** The offset from the targetId */
+  targetOffset: ?Coords2DInput
+}
+
 export type UpdateReflectionContentPayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
@@ -2297,16 +2349,6 @@ export type UpdateReflectionGroupTitlePayload = {
   error: ?StandardMutationError,
   meeting: ?NewMeeting,
   reflectionGroup: ?RetroReflectionGroup
-}
-
-export type UpdateReflectionLocationPayload = {
-  error: ?StandardMutationError,
-  meeting: ?RetrospectiveMeeting,
-  reflection: ?RetroReflection,
-  /** The group encapsulating the new reflection. A new one was created if one was not provided. */
-  reflectionGroup: ?RetroReflectionGroup,
-  /** The old group the reflection was in */
-  oldReflectionGroup: ?RetroReflectionGroup
 }
 
 export type UpdateTaskInput = {
@@ -2506,7 +2548,7 @@ export type TeamSubscriptionPayload =
   | CreateReflectionPayload
   | CreateReflectionGroupPayload
   | DragDiscussionTopicPayload
-  | DragReflectionPayload
+  | EndDraggingReflectionPayload
   | EditReflectionPayload
   | EndMeetingPayload
   | KillMeetingPayload
@@ -2517,20 +2559,34 @@ export type TeamSubscriptionPayload =
   | PromoteFacilitatorPayload
   | PromoteNewMeetingFacilitatorPayload
   | RequestFacilitatorPayload
-  | StartMeetingPayload
-  | StartNewMeetingPayload
   | RemoveOrgUserPayload
   | RemoveReflectionPayload
   | RemoveTeamMemberPayload
+  | StartDraggingReflectionPayload
+  | StartMeetingPayload
+  | StartNewMeetingPayload
   | UpdateCheckInQuestionPayload
   | UpdateCreditCardPayload
+  | UpdateDragLocationPayload
   | UpdateNewCheckInQuestionPayload
   | UpdateReflectionContentPayload
   | UpdateReflectionGroupTitlePayload
-  | UpdateReflectionLocationPayload
   | UpdateTeamNamePayload
   | UpgradeToProPayload
   | VoteForReflectionGroupPayload
+
+export type UpdateDragLocationPayload = {
+  clientHeight: number,
+  clientWidth: number,
+  /** The primary key of the item being drug */
+  sourceId: string,
+  /** The estimated destination of the item being drug */
+  targetId: ?string,
+  coords: Coords2D,
+  /** The offset from the targetId */
+  targetOffset: ?Coords2D,
+  userId: string
+}
 
 export type TeanMemberSubscriptionPayload =
   | AcceptTeamInvitePayload

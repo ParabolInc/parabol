@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
+import {DragDropContext as dragDropContext} from '@mattkrick/react-dnd'
+import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
 import withHotkey from 'react-hotkey-hoc'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -54,7 +54,7 @@ const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
   display: 'flex',
   height: '100vh',
-  overflowX: 'scroll'
+  overflowX: 'auto'
 })
 
 const MeetingArea = styled('div')({
@@ -234,6 +234,7 @@ class NewMeeting extends Component<Props> {
           viewer={viewer}
         />
         <MeetingArea>
+          {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
           <MeetingAreaHeader>
             <NewMeetingPhaseHeading meeting={newMeeting} />
             <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />

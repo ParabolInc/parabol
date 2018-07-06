@@ -8,72 +8,59 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import editorDecorators from 'universal/components/TaskEditor/decorators'
-
-import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import {createFragmentContainer} from 'react-relay'
-import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
-import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
-import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
-import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
+import {createFragmentContainer} from 'react-relay'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
+import ReflectionFooter from 'universal/components/ReflectionFooter'
+import StyledError from 'universal/components/StyledError'
+import editorDecorators from 'universal/components/TaskEditor/decorators'
+import UserDraggingHeader from 'universal/components/UserDraggingHeader'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
+import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
+import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 import {REFLECT} from 'universal/utils/constants'
 import isTempId from 'universal/utils/relay/isTempId'
-import UserDraggingHeader from 'universal/components/UserDraggingHeader'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import textOverflow from 'universal/styles/helpers/textOverflow'
-import StyledError from 'universal/components/StyledError'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
+import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
+import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
+import {DECELERATE} from 'universal/styles/animation'
 
 export type Props = {|
-  // true if the card is in a collapsed group and it is not the top card (default false)
-  isCollapsed?: boolean,
   meeting: Meeting,
   reflection: Reflection,
+  shadow?: number,
   ...MutationProps
 |}
 
-type State = {
+type State = {|
   content: string,
-  editorState: ?Object,
-  getEditorState: () => ?Object
-}
-
-const OriginFooter = styled('div')({
-  ...textOverflow,
-  alignItems: 'flex-start',
-  background: '#fff',
-  borderRadius: ui.cardBorderRadius,
-  color: ui.hintColor,
-  fontSize: ui.hintFontSize,
-  padding: '.5rem .75rem'
-})
+  editorState: ?Object
+|}
 
 export const ReflectionCardRoot = styled('div')(
   {
     backgroundColor: ui.palette.white,
     border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
-    boxShadow: ui.cardBoxShadow,
     // useful for drag preview
     display: 'inline-block',
     maxWidth: '100%',
     position: 'relative',
+    transition: `box-shadow 2000ms ${DECELERATE}`,
     width: ui.retroCardWidth
   },
+  ({isClosing, shadow}) =>
+    shadow !== null && {
+      boxShadow: isClosing ? ui.shadow[0] : ui.shadow[shadow]
+    },
   ({hasDragLock}) =>
     hasDragLock && {
       borderColor: appTheme.palette.warm50a
-    },
-  ({isCollapsed}) =>
-    isCollapsed && {
-      height: `${ui.retroCardCollapsedHeightRem}rem`,
-      overflow: 'hidden'
     }
 )
 
@@ -83,21 +70,21 @@ class ReflectionCard extends Component<Props, State> {
     const {content} = reflection
     if (content === prevState.content) return null
     const contentState = convertFromRaw(JSON.parse(content))
-    // const DEBUG_TEXT = `ReflID: ${reflectionId} | GroupId: ${reflectionGroupId} | Sort: ${sortOrder}`;
-    // const contentState = ContentState.createFromText(DEBUG_TEXT);
+    // const DEBUG_TEXT = `id: ${reflectionId} | GroupId: ${reflectionGroupId}`
+    // const contentState = ContentState.createFromText(DEBUG_TEXT)
+    const editorState = EditorState.createWithContent(
+      contentState,
+      editorDecorators(() => editorState)
+    )
     return {
       content,
-      editorState: EditorState.createWithContent(
-        contentState,
-        editorDecorators(prevState.getEditorState)
-      )
+      editorState
     }
   }
 
   state = {
     content: '',
-    editorState: null,
-    getEditorState: () => this.state.editorState
+    editorState: null
   }
 
   setEditorState = (editorState: EditorState) => {
@@ -157,7 +144,15 @@ class ReflectionCard extends Component<Props, State> {
   }
 
   render () {
-    const {atmosphere, error, isCollapsed, meeting, reflection, showOriginFooter} = this.props
+    const {
+      atmosphere,
+      error,
+      shadow = 0,
+      isDraggable,
+      meeting,
+      reflection,
+      showOriginFooter
+    } = this.props
     const {editorState} = this.state
     const {
       localPhase: {phaseType},
@@ -165,21 +160,23 @@ class ReflectionCard extends Component<Props, State> {
       teamId
     } = meeting
     const {
-      draggerUser,
+      dragContext,
       isViewerCreator,
       phaseItem: {question},
       reflectionId
     } = reflection
     const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete
-    const hasDragLock = draggerUser && draggerUser.id !== atmosphere.viewerId
+    const dragUser = dragContext && dragContext.dragUser
+    const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
     return (
-      <ReflectionCardRoot hasDragLock={hasDragLock} isCollapsed={isCollapsed}>
-        {hasDragLock && <UserDraggingHeader user={draggerUser} />}
+      <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow}>
+        {hasDragLock && <UserDraggingHeader user={dragUser} />}
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
           editorState={editorState}
           innerRef={this.setEditorRef}
+          isDraggable={isDraggable}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           placeholder='My reflection thought…'
@@ -188,7 +185,7 @@ class ReflectionCard extends Component<Props, State> {
           teamId={teamId}
         />
         {error && <StyledError>{error.message}</StyledError>}
-        {showOriginFooter && <OriginFooter>{question}</OriginFooter>}
+        {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
         {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
       </ReflectionCardRoot>
     )
@@ -219,9 +216,11 @@ export default createFragmentContainer(
     }
 
     fragment ReflectionCard_reflection on RetroReflection {
-      draggerUser {
-        id
-        ...UserDraggingHeader_user
+      dragContext {
+        dragUser {
+          id
+          ...UserDraggingHeader_user
+        }
       }
       reflectionId: id
       reflectionGroupId

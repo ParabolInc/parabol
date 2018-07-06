@@ -9,13 +9,14 @@ import ReflectionCard from './ReflectionCard'
 import {createFragmentContainer} from 'react-relay'
 import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {DragSource as dragSource} from 'react-dnd'
+import {DragSource as dragSource} from '@mattkrick/react-dnd'
 import {REFLECTION_CARD} from 'universal/utils/constants'
-import styled from 'react-emotion'
-import DragReflectionMutation from 'universal/mutations/DragReflectionMutation'
-import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
-import Modal from 'universal/components/Modal'
-import {getEmptyImage} from 'react-dnd-html5-backend'
+import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
+import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
+import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
+import clientTempId from 'universal/utils/relay/clientTempId'
+import {connect} from 'react-redux'
+import {css} from 'react-emotion'
 
 type Props = {
   dndIndex: number,
@@ -24,100 +25,154 @@ type Props = {
   ...ReflectionCardProps
 }
 
-const DragStyles = styled('div')(({isDragging}) => ({
-  opacity: isDragging ? 0 : 1,
-  margin: 8
-}))
+const dragContextStyle = css({
+  opacity: 0,
+  cursor: 'default'
+})
+
+const modalStyle = (isTop) =>
+  css({
+    position: 'absolute',
+    top: !isTop && 0,
+    zIndex: 1
+  })
+
+const standardStyle = css({
+  position: 'relative',
+  zIndex: 1
+})
 
 class DraggableReflectionCard extends React.Component<Props> {
   componentDidMount () {
     const {connectDragPreview} = this.props
     connectDragPreview(getEmptyImage())
   }
+
   render () {
     const {
       connectDragSource,
-      initialCursorOffset,
-      initialComponentOffset,
-      isCollapsed,
-      isDragging,
-      isOver,
       reflection,
+      setItemRef,
       meeting,
-      showOriginFooter
+      idx,
+      isDraggable,
+      isModal
     } = this.props
-    return (
-      <React.Fragment>
-        {connectDragSource(
-          <div>
-            <DragStyles isDragging={isDragging} isOver={isOver}>
-              <ReflectionCard
-                isCollapsed={isCollapsed}
-                meeting={meeting}
-                reflection={reflection}
-                showOriginFooter={showOriginFooter}
-              />
-            </DragStyles>
-          </div>
-        )}
-        <Modal isOpen={isDragging}>
-          <ReflectionCardInFlight
-            initialCursorOffset={initialCursorOffset}
-            initialComponentOffset={initialComponentOffset}
-            reflection={reflection}
-          />
-        </Modal>
-      </React.Fragment>
+    const {dragContext, reflectionId} = reflection
+    const className = dragContext
+      ? dragContextStyle
+      : isModal
+        ? modalStyle(idx === 0)
+        : standardStyle
+    return connectDragSource(
+      <div className={className} ref={setItemRef(reflectionId, isModal)}>
+        <ReflectionCard
+          meeting={meeting}
+          reflection={reflection}
+          isDraggable={isDraggable}
+          showOriginFooter
+        />
+      </div>
     )
   }
 }
 
 const reflectionDragSpec = {
-  beginDrag (props) {
+  canDrag (props) {
+    // make sure no one is trying to drag invisible cards
+    const {
+      reflection: {dragContext},
+      isDraggable
+    } = props
+    return !dragContext && isDraggable
+  },
+
+  beginDrag (props, monitor) {
     const {
       atmosphere,
-      reflection: {reflectionId, reflectionGroupId},
-      currentRetroPhaseItemId,
+      dispatch,
+      reflection: {meetingId, reflectionId, reflectionGroupId},
       isSingleCardGroup
     } = props
-    DragReflectionMutation(atmosphere, {reflectionId, isDragging: true})
+    const initialCoords = monitor.getInitialSourceClientOffset()
+    const initialCursorCoords = monitor.getInitialClientOffset()
+    StartDraggingReflectionMutation(
+      atmosphere,
+      {reflectionId, initialCoords},
+      {dispatch, initialCursorCoords, meetingId}
+    )
     return {
       reflectionId,
       reflectionGroupId,
-      currentRetroPhaseItemId,
       isSingleCardGroup
     }
   },
-  // isDragging(props, monitor) {
-  //   return props.reflection.reflectionId === monitor.getItem().reflectionId;
-  // },
-  endDrag (props: Props) {
+
+  endDrag (props: Props, monitor) {
     const {
       atmosphere,
-      reflection: {reflectionId}
+      closeGroupModal,
+      reflection: {
+        dragContext: {isViewerDragging},
+        meetingId,
+        reflectionId,
+        reflectionGroupId
+      }
     } = props
-    DragReflectionMutation(atmosphere, {reflectionId, isDragging: false})
+    // endDrag is also called when the viewer loses a conflict
+    if (!isViewerDragging) return
+    const dropResult = monitor.getDropResult()
+    const {dropTargetType = null, dropTargetId = null, sortOrder} = dropResult || {}
+    // must come before the mutation so we can clear the itemCache
+    if (closeGroupModal && dropTargetType) {
+      closeGroupModal()
+    }
+    const newReflectionGroupId = clientTempId()
+    EndDraggingReflectionMutation(
+      atmosphere,
+      {
+        reflectionId,
+        dropTargetType,
+        dropTargetId,
+        sortOrder
+      },
+      {meetingId, newReflectionGroupId}
+    )
+    const {eventEmitter} = atmosphere
+    eventEmitter.emit('endDraggingReflection', {
+      dropTargetType,
+      dropTargetId,
+      itemId: reflectionId,
+      childId: dropTargetType ? newReflectionGroupId : undefined,
+      sourceId: reflectionGroupId
+    })
   }
 }
 
-const reflectionDragCollect = (connectSource, monitor) => ({
+const reflectionDragCollect = (connectSource) => ({
   connectDragSource: connectSource.dragSource(),
-  connectDragPreview: connectSource.dragPreview(),
-  isDragging: monitor.isDragging(),
-  initialCursorOffset: monitor.getInitialClientOffset(),
-  initialComponentOffset: monitor.getInitialSourceClientOffset()
+  connectDragPreview: connectSource.dragPreview()
 })
 
 export default createFragmentContainer(
-  withAtmosphere(
-    dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(DraggableReflectionCard)
+  connect()(
+    withAtmosphere(
+      dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(
+        DraggableReflectionCard
+      )
+    )
   ),
   graphql`
     fragment DraggableReflectionCard_reflection on RetroReflection {
       content
+      meetingId
       reflectionId: id
       reflectionGroupId
       retroPhaseItemId
+      dragContext {
+        dragUserId
+        isViewerDragging
+      }
       ...ReflectionCard_reflection
       ...ReflectionCardInFlight_reflection
     }

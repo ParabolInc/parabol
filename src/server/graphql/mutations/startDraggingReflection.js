@@ -1,12 +1,5 @@
-/**
- * Changes the editing state of a retrospective reflection.
- *
- * @flow
- */
-import type {Context} from 'server/flowtypes/graphql'
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
-import getRethink from 'server/database/rethinkDriver'
-import DragReflectionPayload from 'server/graphql/types/DragReflectionPayload'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
+import StartDraggingReflectionPayload from 'server/graphql/types/StartDraggingReflectionPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
@@ -17,36 +10,31 @@ import {
   sendAlreadyEndedMeetingError
 } from 'server/utils/alreadyMutatedErrors'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-
-type Args = {
-  isDragging: boolean,
-  reflectionId: string
-}
+import Coords2DInput from 'server/graphql/types/Coords2DInput'
+import * as shortid from 'shortid'
 
 export default {
-  description: 'Changes the drag state of a retrospective reflection',
-  type: DragReflectionPayload,
+  description: 'Broadcast that the viewer started dragging a reflection',
+  type: StartDraggingReflectionPayload,
   args: {
     reflectionId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    isDragging: {
-      description: 'true if the viewer is starting a drag, else false',
-      type: new GraphQLNonNull(GraphQLBoolean)
+    initialCoords: {
+      type: new GraphQLNonNull(Coords2DInput)
     }
   },
   async resolve (
-    source: Object,
-    {reflectionId, isDragging}: Args,
-    {authToken, dataLoader, socketId: mutatorId}: Context
+    source,
+    {initialCoords, reflectionId},
+    {authToken, dataLoader, socketId: mutatorId}
   ) {
-    const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const reflection = await r.table('RetroReflection').get(reflectionId)
+    const reflection = await dataLoader.get('retroReflections').load(reflectionId)
     if (!reflection) {
       return sendReflectionNotFoundError(authToken, reflectionId)
     }
@@ -63,18 +51,17 @@ export default {
     }
 
     // RESOLUTION
-    const nextReflection = {
-      ...reflection,
-      draggerUserId: isDragging ? viewerId : null,
-      draggerUser: isDragging ? await dataLoader.get('users').load(viewerId) : null
-    }
     const data = {
       meetingId,
-      reflection: nextReflection,
-      userId: viewerId,
-      isDragging
+      reflectionId,
+      dragContext: {
+        // required so relay doesn't assign the same ID every time
+        id: shortid.generate(),
+        dragUserId: viewerId,
+        dragCoords: initialCoords
+      }
     }
-    publish(TEAM, teamId, DragReflectionPayload, data, subOptions)
+    publish(TEAM, teamId, StartDraggingReflectionPayload, data, subOptions)
     return data
   }
 }

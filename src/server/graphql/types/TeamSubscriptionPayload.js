@@ -22,15 +22,16 @@ import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNew
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload'
 import UpdateReflectionContentPayload from 'server/graphql/types/UpdateReflectionContentPayload'
 import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload'
-import UpdateReflectionLocationPayload from 'server/graphql/types/UpdateReflectionLocationPayload'
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload'
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload'
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload'
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload'
 import NewMeetingCheckInPayload from 'server/graphql/types/NewMeetingCheckInPayload'
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload'
-import DragReflectionPayload from 'server/graphql/types/DragReflectionPayload'
+import EndDraggingReflectionPayload from 'server/graphql/types/EndDraggingReflectionPayload'
+import UpdateDragLocationPayload from 'server/graphql/types/UpdateDragLocationPayload'
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
+import StartDraggingReflectionPayload from 'server/graphql/types/StartDraggingReflectionPayload'
 
 const types = [
   AcceptTeamInvitePayload,
@@ -40,7 +41,7 @@ const types = [
   CreateReflectionPayload,
   CreateReflectionGroupPayload,
   DragDiscussionTopicPayload,
-  DragReflectionPayload,
+  EndDraggingReflectionPayload,
   EditReflectionPayload,
   EndMeetingPayload,
   KillMeetingPayload,
@@ -51,17 +52,18 @@ const types = [
   PromoteFacilitatorPayload,
   PromoteNewMeetingFacilitatorPayload,
   RequestFacilitatorPayload,
-  StartMeetingPayload,
-  StartNewMeetingPayload,
   RemoveOrgUserPayload,
   RemoveReflectionPayload,
   RemoveTeamMemberPayload,
+  StartDraggingReflectionPayload,
+  StartMeetingPayload,
+  StartNewMeetingPayload,
   UpdateCheckInQuestionPayload,
   UpdateCreditCardPayload,
+  UpdateDragLocationPayload,
   UpdateNewCheckInQuestionPayload,
   UpdateReflectionContentPayload,
   UpdateReflectionGroupTitlePayload,
-  UpdateReflectionLocationPayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload,
   VoteForReflectionGroupPayload

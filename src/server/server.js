@@ -51,6 +51,7 @@ if (!PROD) {
   const hotClient = require('webpack-hot-client')
   const compiler = webpack(config)
   hotClient(compiler, {port: 8082})
+  // hotClient(compiler, {port: 8082, host: '192.168.1.103'})
   app.use(
     require('webpack-dev-middleware')(compiler, {
       logLevel: 'warn',

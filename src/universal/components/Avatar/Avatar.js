@@ -1,8 +1,58 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import withStyles from 'universal/styles/withStyles'
-import {css} from 'aphrodite-local-styles/no-important'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
+import styled from 'react-emotion'
+
+const widthLookup = {
+  // NOTE: Size modifies avatarImageBlock
+  fill: '100%',
+  smallest: '1.5rem',
+  smaller: '2rem',
+  small: '2.75rem',
+  medium: '4rem',
+  large: '5rem',
+  larger: '6rem',
+  largest: '7.5rem'
+}
+const AvatarStyle = styled('div')(({size, isClickable}) => ({
+  cursor: isClickable ? 'pointer' : 'default',
+  display: 'inline-block',
+  position: 'relative',
+  verticalAlign: 'middle',
+  width: widthLookup[size]
+}))
+
+const ImageBlock = styled('div')(({sansRadius, sansShadow, picture}) => ({
+  backgroundImage: `url(${picture})`,
+  backgroundPosition: 'center center',
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: 'cover',
+  borderRadius: sansRadius ? 0 : '100%',
+  boxShadow: sansShadow && 'none',
+  display: 'block',
+  height: 0,
+  margin: '0 auto',
+  padding: '100% 0 0',
+  position: 'relative',
+  width: '100%'
+}))
+
+const BadgeBlock = styled('div')({
+  height: '25%',
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  width: '25%'
+})
+
+const BadgeBlockInner = styled('div')({
+  height: '14px',
+  left: '50%',
+  position: 'absolute',
+  top: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '14px'
+})
 
 const Avatar = (props) => {
   const {
@@ -15,35 +65,21 @@ const Avatar = (props) => {
     sansRadius,
     sansShadow,
     innerRef,
-    size,
-    styles
+    size
   } = props
 
-  const rootStyles = css(styles.avatar, styles[size])
-  const rootInlineStyle = isClickable ? {cursor: 'pointer'} : {cursor: 'default'}
-  const imageBlockStyles = css(
-    styles.avatarImageBlock,
-    sansRadius && styles.sansRadius,
-    sansShadow && styles.sansShadow
-  )
-  const imageBlockInlineStyle = {
-    backgroundImage: `url(${picture})`,
-    backgroundPosition: 'center center',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover'
-  }
   return (
-    <div className={rootStyles} onClick={onClick} ref={innerRef} style={rootInlineStyle}>
-      <div className={imageBlockStyles} style={imageBlockInlineStyle}>
+    <AvatarStyle onClick={onClick} innerRef={innerRef} isClickable={isClickable} size={size}>
+      <ImageBlock sansRadius={sansRadius} sansShadow={sansShadow} picture={picture}>
         {hasBadge && (
-          <div className={css(styles.badgeBlock)}>
-            <div className={css(styles.badgeBlockInner)}>
+          <BadgeBlock>
+            <BadgeBlockInner>
               <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected} />
-            </div>
-          </div>
+            </BadgeBlockInner>
+          </BadgeBlock>
         )}
-      </div>
-    </div>
+      </ImageBlock>
+    </AvatarStyle>
   )
 }
 
@@ -66,77 +102,7 @@ Avatar.propTypes = {
     'large',
     'larger',
     'largest'
-  ]),
-  styles: PropTypes.object
+  ])
 }
 
-const styleThunk = () => ({
-  avatar: {
-    display: 'inline-block',
-    position: 'relative',
-    verticalAlign: 'middle'
-  },
-
-  avatarImageBlock: {
-    borderRadius: '100%',
-    display: 'block',
-    height: 0,
-    margin: '0 auto',
-    padding: '100% 0 0',
-    position: 'relative',
-    width: '100%'
-  },
-
-  // NOTE: Size modifies avatarImageBlock
-  fill: {
-    width: '100%'
-  },
-  smallest: {
-    width: '1.5rem'
-  },
-  smaller: {
-    width: '2rem'
-  },
-  small: {
-    width: '2.75rem'
-  },
-  medium: {
-    width: '4rem'
-  },
-  large: {
-    width: '5rem'
-  },
-  larger: {
-    width: '6rem'
-  },
-  largest: {
-    width: '7.5rem'
-  },
-
-  sansShadow: {
-    boxShadow: 'none'
-  },
-
-  sansRadius: {
-    borderRadius: 0
-  },
-
-  badgeBlock: {
-    height: '25%',
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: '25%'
-  },
-
-  badgeBlockInner: {
-    height: '14px',
-    left: '50%',
-    position: 'absolute',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '14px'
-  }
-})
-
-export default withStyles(styleThunk)(Avatar)
+export default Avatar

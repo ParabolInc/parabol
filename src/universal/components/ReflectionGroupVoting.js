@@ -86,7 +86,7 @@ class ReflectionGroupVoting extends Component<Props> {
   }
 
   render () {
-    const {error, meeting, reflectionGroup} = this.props
+    const {error, meeting, reflectionGroup, isExpanded} = this.props
     const {viewerVoteCount = 0} = reflectionGroup
     const {settings, viewerMeetingMember} = meeting
     const {maxVotesPerGroup} = settings
@@ -99,7 +99,13 @@ class ReflectionGroupVoting extends Component<Props> {
           {checkMarks.map((idx) => (
             <CheckIcon key={idx} name='check' color={ui.palette.warm} onClick={this.unvote} />
           ))}
-          {canVote && <CheckIcon name='check' color={ui.palette.midGray} onClick={this.vote} />}
+          {canVote && (
+            <CheckIcon
+              name='check'
+              color={isExpanded ? ui.palette.dark : ui.palette.midGray}
+              onClick={this.vote}
+            />
+          )}
         </CheckMarkRow>
         {error && <StyledError>{error.message}</StyledError>}
       </CheckColumn>

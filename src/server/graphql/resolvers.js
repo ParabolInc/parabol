@@ -177,10 +177,16 @@ export const resolveForSU = (fieldName) => (source, args, {authToken}) => {
   return isSuperUser(authToken) ? source[fieldName] : undefined
 }
 
-export const makeResolve = (idName, docName, dataLoaderName) => (source, args, {dataLoader}) => {
+export const makeResolve = (idName, docName, dataLoaderName, isMany) => (
+  source,
+  args,
+  {dataLoader}
+) => {
   const idValue = source[idName]
-  return idValue ? dataLoader.get(dataLoaderName).load(idValue) : source[docName]
+  const method = isMany ? 'loadMany' : 'load'
+  return idValue ? dataLoader.get(dataLoaderName)[method](idValue) : source[docName]
 }
+
 export const resolveIfViewer = (ifViewerField, defaultValue) => (source, args, {authToken}) => {
   return source.userId === getUserId(authToken) ? source[ifViewerField] : defaultValue
 }

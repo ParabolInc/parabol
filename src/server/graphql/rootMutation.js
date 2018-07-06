@@ -55,6 +55,7 @@ import updateCreditCard from 'server/graphql/mutations/updateCreditCard'
 import updateOrg from 'server/graphql/mutations/updateOrg'
 import updateTask from 'server/graphql/mutations/updateTask'
 import updateCheckInQuestion from 'server/graphql/mutations/updateTeamCheckInQuestion'
+import updateDragLocation from 'server/graphql/mutations/updateDragLocation'
 import updateNewCheckInQuestion from 'server/graphql/mutations/updateNewCheckInQuestion'
 import upgradeToPro from 'server/graphql/mutations/upgradeToPro'
 import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg'
@@ -72,16 +73,16 @@ import endNewMeeting from 'server/graphql/mutations/endNewMeeting'
 import createReflection from 'server/graphql/mutations/createReflection'
 import updateReflectionContent from 'server/graphql/mutations/updateReflectionContent'
 import editReflection from 'server/graphql/mutations/editReflection'
-import updateReflectionLocation from 'server/graphql/mutations/updateReflectionLocation'
 import removeReflection from 'server/graphql/mutations/removeReflection'
 import createReflectionGroup from 'server/graphql/mutations/createReflectionGroup'
 import updateReflectionGroupTitle from 'server/graphql/mutations/updateReflectionGroupTitle'
 import voteForReflectionGroup from 'server/graphql/mutations/voteForReflectionGroup'
 import newMeetingCheckIn from 'server/graphql/mutations/newMeetingCheckIn'
 import autoGroupReflections from 'server/graphql/mutations/autoGroupReflections'
-import dragReflection from 'server/graphql/mutations/dragReflection'
+import endDraggingReflection from 'server/graphql/mutations/endDraggingReflection'
 import updateTaskDueDate from 'server/graphql/mutations/updateTaskDueDate'
 import dragDiscussionTopic from 'server/graphql/mutations/dragDiscussionTopic'
+import startDraggingReflection from 'server/graphql/mutations/startDraggingReflection'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -113,7 +114,7 @@ export default new GraphQLObjectType({
     deleteTask,
     disconnectSocket,
     dragDiscussionTopic,
-    dragReflection,
+    endDraggingReflection,
     editReflection,
     editTask,
     endMeeting,
@@ -146,6 +147,7 @@ export default new GraphQLObjectType({
     resendTeamInvite,
     segmentEventTrack,
     setOrgUserRole,
+    startDraggingReflection,
     startMeeting,
     startNewMeeting,
     stripeCreateInvoice,
@@ -159,9 +161,9 @@ export default new GraphQLObjectType({
     updateOrg,
     updateCheckInQuestion,
     updateNewCheckInQuestion,
+    updateDragLocation,
     updateReflectionContent,
     updateReflectionGroupTitle,
-    updateReflectionLocation,
     updateTask,
     updateTaskDueDate,
     updateTeamName,

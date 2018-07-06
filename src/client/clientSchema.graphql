@@ -6,6 +6,7 @@ extend interface NewMeeting {
 extend type RetrospectiveMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
+  reflectionsInFlight: [RetroReflection]
 }
 
 extend type Team {
@@ -25,7 +26,10 @@ extend type RetroReflectionGroup {
   isExpanded: Boolean
 }
 
-extend type RetroReflection {
-  dragX: Float
-  dragY: Float
+extend type DragContext {
+  isClosing: Boolean,
+  isPendingStartDrag: Boolean,
+  isViewerDragging: Boolean,
+  initialCursorCoords: Coords2D,
+  initialComponentCoords: Coords2D
 }

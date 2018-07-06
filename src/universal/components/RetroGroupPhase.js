@@ -4,19 +4,17 @@
  * @flow
  */
 import * as React from 'react'
-// import type {RetroGroupPhase_team as Team} from './__generated__/RetroGroupPhase_team.graphql';
-import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
 import {createFragmentContainer} from 'react-relay'
+import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
+import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
+import StyledError from 'universal/components/StyledError'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
-import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import StyledError from 'universal/components/StyledError'
+import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation'
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 
@@ -31,9 +29,8 @@ type Props = {
 const RetroGroupPhase = (props: Props) => {
   const {atmosphere, error, gotoNext, onError, onCompleted, submitMutation, team} = props
   const {viewerId} = atmosphere
-  const {newMeeting, meetingSettings} = team
+  const {newMeeting} = team
   const {nextAutoGroupThreshold, facilitatorUserId, meetingId} = newMeeting || {}
-  const phaseItems = meetingSettings.phaseItems || []
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const autoGroup = () => {
@@ -44,19 +41,10 @@ const RetroGroupPhase = (props: Props) => {
   const canAutoGroup = !nextAutoGroupThreshold || nextAutoGroupThreshold < 1
   return (
     <React.Fragment>
-      <ScrollableBlock>
-        {error && <StyledError>{error.message}</StyledError>}
-        <MeetingPhaseWrapper>
-          {phaseItems.map((phaseItem, idx) => (
-            <PhaseItemColumn
-              dndIndex={idx}
-              meeting={newMeeting}
-              key={phaseItem.id}
-              retroPhaseItem={phaseItem}
-            />
-          ))}
-        </MeetingPhaseWrapper>
-      </ScrollableBlock>
+      {error && <StyledError>{error.message}</StyledError>}
+      <MeetingPhaseWrapper>
+        <PhaseItemMasonry meeting={newMeeting} />
+      </MeetingPhaseWrapper>
       {isFacilitating && (
         <MeetingControlBar>
           <FlatButton size='medium' onClick={gotoNext}>
@@ -88,6 +76,7 @@ export default createFragmentContainer(
         facilitatorUserId
         ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
+          ...PhaseItemMasonry_meeting
           nextAutoGroupThreshold
           reflectionGroups {
             id
@@ -98,16 +87,6 @@ export default createFragmentContainer(
               id
               retroPhaseItemId
               sortOrder
-            }
-          }
-        }
-      }
-      meetingSettings(meetingType: $meetingType) {
-        ... on RetrospectiveMeetingSettings {
-          phaseItems {
-            ... on RetroPhaseItem {
-              id
-              ...PhaseItemColumn_retroPhaseItem
             }
           }
         }

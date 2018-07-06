@@ -1,8 +1,7 @@
 // @flow
-/* global HTMLElement, Node */
 
 import * as React from 'react'
-import styled from 'react-emotion'
+import styled, {css} from 'react-emotion'
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from './__generated__/ReflectionGroup_reflectionGroup.graphql'
@@ -10,13 +9,23 @@ import type {ReflectionGroup_meeting as Meeting} from './__generated__/Reflectio
 import ui from 'universal/styles/ui'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import {GROUP, REFLECTION_CARD, VOTE} from 'universal/utils/constants'
+import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
-import {DropTarget as dropTarget} from 'react-dnd'
-import UpdateReflectionLocationMutation from 'universal/mutations/UpdateReflectionLocationMutation'
-import dndNoise from 'universal/utils/dndNoise'
+import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {
+  CARD_PADDING,
+  EXIT_DURATION,
+  MIN_ITEM_DELAY,
+  MIN_VAR_ITEM_DELAY,
+  MODAL_PADDING
+} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import Modal from 'universal/components/Modal'
+import initializeModalGrid from 'universal/utils/multiplayerMasonry/initializeModalGrid'
+import {STANDARD_CURVE} from 'universal/styles/animation'
+import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateReflectionsInModal'
+import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
 
 const {Component} = React
 
@@ -24,224 +33,326 @@ export type Props = {|
   atmosphere: Object,
   canDrop: boolean,
   connectDropTarget: () => Node,
-  innerRef?: (HTMLElement) => void,
   meeting: Meeting,
   reflectionGroup: ReflectionGroupType,
   retroPhaseItemId: string,
   ...MutationProps
 |}
 
-type State = {
-  isExpanded: boolean
-}
+const reflectionsStyle = (canDrop, isDraggable, canExpand) =>
+  css({
+    cursor: isDraggable || canExpand ? 'pointer' : 'default',
+    opacity: canDrop ? 0.6 : 1,
+    position: 'relative'
+  })
 
-const MARGIN = 8
-
-const Reflections = styled('div')(({canDrop}) => ({
-  cursor: 'pointer',
-  opacity: canDrop ? 0.6 : 1
+const ReflectionCardInStack = styled('div')(({secondCard}) => ({
+  backgroundColor: 'white',
+  borderRadius: 4,
+  boxShadow: secondCard ? ui.shadow[0] : undefined,
+  opacity: secondCard ? 1 : 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  pointerEvents: 'none',
+  left: 6,
+  top: 6,
+  right: -6,
+  bottom: -2,
+  width: ui.retroCardWidth
 }))
 
-const Group = styled('div')({
-  margin: MARGIN
+// use a background so we can use scale instead of width/height for 60fps animations
+const Background = styled('div')({
+  position: 'absolute',
+  top: 0,
+  left: 0
 })
 
-class ReflectionGroup extends Component<Props, State> {
-  constructor (props) {
-    super(props)
-    const {
-      atmosphere,
-      reflectionGroup: {reflections, reflectionGroupId}
-    } = props
-    const isExpanded = reflections.length === 1
-    // weird things happen without a set timeout, drag from group to column & it freezes?
-    setTimeout(() => {
-      commitLocalUpdate(atmosphere, (store) => {
-        const reflectionGroupProxy = store.get(reflectionGroupId)
-        if (reflectionGroupProxy) {
-          reflectionGroupProxy.setValue(isExpanded, 'isExpanded')
-        }
-      })
-    })
-  }
-
-  setTopCardRef = (c) => {
-    this.topCardRef = c
-  }
-
-  setReflectionListRef = (c) => {
-    const {innerRef} = this.props
-    this.reflectionListRef = c
-    if (innerRef) {
-      innerRef(c)
+const Group = styled('div')(
+  {
+    padding: CARD_PADDING,
+    position: 'absolute',
+    display: 'inline-block',
+    // necessary for smooth updating column heights
+    transition: 'transform 200ms'
+  },
+  ({isModal}) =>
+    isModal && {
+      borderRadius: 6,
+      overflow: 'hidden',
+      padding: MODAL_PADDING,
+      position: 'absolute',
+      transition: 'unset',
+      zIndex: 100
+    },
+  ({isHidden}) =>
+    isHidden && {
+      opacity: 0,
+      pointerEvents: 'none'
     }
-  }
+)
 
-  reflectionListRef: ?HTMLElement
-  topCardRef: ?HTMLElement
-
-  toggleExpanded = () => {
+class ReflectionGroup extends Component<Props> {
+  componentDidUpdate (prevProps) {
     const {
-      atmosphere,
-      reflectionGroup: {reflections, reflectionGroupId}
-    } = this.props
-    if (reflections.length <= 1) return
-    commitLocalUpdate(atmosphere, (store) => {
-      const reflectionGroupProxy = store.get(reflectionGroupId)
-      reflectionGroupProxy.setValue(!reflectionGroupProxy.getValue('isExpanded'), 'isExpanded')
-    })
-  }
-
-  makeCustomHeight = () => {
-    const {
-      reflectionGroup: {reflections, isExpanded}
-    } = this.props
-    if (!this.topCardRef || !this.reflectionListRef || reflections.length <= 1 || isExpanded) {
-      return {}
-    }
-    const groupTop = this.reflectionListRef.getBoundingClientRect().top
-    // $FlowFixMe
-    const {top, height} = this.topCardRef.getBoundingClientRect()
-    const groupBottom = top + height
-    return {height: groupBottom - groupTop}
-  }
-
-  renderReflection = (reflection: Object, idx: number) => {
-    const {canDrop, meeting, retroPhaseItemId, reflectionGroup} = this.props
-    const {isExpanded, reflections, retroPhaseItemId: currentRetroPhaseItemId} = reflectionGroup
-    const {
-      localPhase: {phaseType}
-    } = meeting
-    const isTopCard = idx === reflections.length - 1
-    const isCollapsed = isExpanded ? false : !isTopCard
-    const showOriginFooter = retroPhaseItemId !== reflection.retroPhaseItemId
-    const interval = reflections.length - idx - 1
-
-    const yTranslate = -idx * ui.retroCardCollapsedHeightRem
-    const style = {
-      transform:
-        !isExpanded &&
-        `translateY(${yTranslate}rem)
-       scale(${1 - 0.05 * interval})`,
-      transitionDelay: isExpanded ? `${20 * interval}ms` : `${10 * idx}ms`,
-      transition: !canDrop && 'all 200ms ease'
-    }
-
-    const onTransitionEnd = () => {
-      // wait for the topCard to find its new home before calculating the height
-      if (isExpanded || !this.topCardRef || !this.reflectionListRef || reflections.length <= 1) {
-        return
+      reflectionGroup: {isExpanded: wasExpanded, reflections: oldReflections}
+    } = prevProps
+    const {childrenCache, itemCache, parentCache, reflectionGroup} = this.props
+    const {isExpanded, reflectionGroupId, reflections} = reflectionGroup
+    if (wasExpanded !== isExpanded) {
+      if (isExpanded) {
+        initializeModalGrid(
+          reflections,
+          parentCache,
+          itemCache,
+          childrenCache[reflectionGroupId],
+          this.headerRef,
+          this.modalRef,
+          this.backgroundRef
+        )
       }
-      this.forceUpdate()
     }
-
-    if (phaseType === GROUP) {
-      return (
-        <div
-          key={reflection.id}
-          style={style}
-          ref={isTopCard ? this.setTopCardRef : undefined}
-          onTransitionEnd={onTransitionEnd}
-        >
-          <DraggableReflectionCard
-            currentRetroPhaseItemId={currentRetroPhaseItemId}
-            dndIndex={idx}
-            showOriginFooter={showOriginFooter}
-            meeting={meeting}
-            reflection={reflection}
-            isExpanded={isExpanded}
-            isCollapsed={isCollapsed}
-            isSingleCardGroup={reflections.length === 1}
-          />
-        </div>
+    if (this.modalRef && reflections.length !== oldReflections.length && !this.isClosing) {
+      const oldReflectionsIds = new Set(oldReflections.map((reflection) => reflection.id))
+      const newReflections = reflections.filter(
+        (reflection) => !oldReflectionsIds.has(reflection.id)
+      )
+      const itemIds = newReflections.map((reflection) => reflection.id)
+      updateReflectionsInModal(
+        reflections,
+        parentCache,
+        itemCache,
+        childrenCache[reflectionGroupId],
+        this.headerRef,
+        this.modalRef,
+        this.backgroundRef,
+        itemIds
       )
     }
-    return (
-      <div
-        key={reflection.id}
-        style={style}
-        ref={isTopCard ? this.setTopCardRef : undefined}
-        onTransitionEnd={onTransitionEnd}
-      >
-        <ReflectionCard
-          isCollapsed={isCollapsed}
+  }
+
+  isClosing = false
+  backgroundRef: ?HTMLElement = null
+  headerRef: ?HTMLElement = null
+  modalRef: ?HTMLElement = null
+
+  closeGroupModal = () => {
+    const {
+      atmosphere,
+      childrenCache,
+      parentCache,
+      itemCache,
+      reflectionGroup: {isExpanded, reflectionGroupId, reflections}
+    } = this.props
+    if (!isExpanded || !this.modalRef || !this.backgroundRef) return
+    const {
+      boundingBox: {left: parentLeft, top: parentTop}
+    } = parentCache
+    const {style: modalStyle} = this.modalRef
+    const {style: backgroundStyle} = this.backgroundRef
+    const firstItemHeight = itemCache[reflections[0].id].boundingBox.height
+    const childDuration = EXIT_DURATION + MIN_VAR_ITEM_DELAY * (reflections.length - 1)
+
+    // set starting item styles
+    reflections.forEach((reflection, idx) => {
+      const cachedItem = itemCache[reflection.id]
+      const {
+        modalEl: {style: itemStyle}
+      } = cachedItem
+      const cardStackOffset = idx === reflections.length - 1 ? 0 : 6
+      const delay = MIN_VAR_ITEM_DELAY * (reflections.length - 1 - idx)
+      itemStyle.height = `${firstItemHeight}px`
+      itemStyle.overflow = 'hidden'
+      itemStyle.transition = `transform ${EXIT_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
+      itemStyle.transform = `translate(${cardStackOffset}px, ${cardStackOffset}px)`
+    })
+    const {boundingBox} = childrenCache[reflectionGroupId]
+    const {top: collapsedTop, left: collapsedLeft} = boundingBox
+    const top = collapsedTop + parentTop - MODAL_PADDING + CARD_PADDING
+    const left = collapsedLeft + parentLeft - MODAL_PADDING + CARD_PADDING
+    // animate child home
+    modalStyle.transition = `all ${childDuration}ms ${MIN_ITEM_DELAY}ms ${STANDARD_CURVE}`
+    modalStyle.transform = `translate(${left}px,${top}px)`
+    modalStyle.overflow = 'hidden'
+
+    // animate background home
+    const childCache = childrenCache[reflectionGroupId]
+    const {
+      modalBoundingBox: {height: modalHeight, width: modalWidth},
+      headerHeight
+    } = childCache
+    backgroundStyle.transition = `all ${childDuration}ms ${STANDARD_CURVE}`
+    backgroundStyle.transform = getScaledModalBackground(
+      modalHeight,
+      modalWidth,
+      firstItemHeight,
+      headerHeight
+    )
+    backgroundStyle.backgroundColor = ''
+
+    this.isClosing = true
+    const reset = (e) => {
+      this.isClosing = false
+      if (e.target !== e.currentTarget) return
+      const childCache = childrenCache[reflectionGroupId]
+      childCache.headerHeight = undefined
+      childCache.modalBoundingBox = undefined
+      childrenCache[reflectionGroupId].el.style.opacity = ''
+      commitLocalUpdate(atmosphere, (store) => {
+        store.get(reflectionGroupId).setValue(false, 'isExpanded')
+      })
+      reflections.forEach((reflection) => {
+        itemCache[reflection.id].modalEl = undefined
+      })
+      if (this.modalRef) {
+        this.modalRef.removeEventListener('transitionend', reset)
+      }
+    }
+    // $FlowFixMe
+    this.modalRef.addEventListener('transitionend', reset)
+  }
+
+  renderReflection = (reflection: Object, idx: number, {isModal, isDraggable}) => {
+    const {setItemRef, meeting, reflectionGroup} = this.props
+    const {reflections} = reflectionGroup
+    if (isModal) {
+      return (
+        <DraggableReflectionCard
+          closeGroupModal={this.closeGroupModal}
+          idx={idx}
+          isDraggable={isDraggable}
+          isModal
+          key={reflection.id}
           meeting={meeting}
           reflection={reflection}
-          showOriginFooter={showOriginFooter}
+          setItemRef={setItemRef}
         />
-      </div>
+      )
+    }
+
+    const topCard = idx === reflections.length - 1
+    if (topCard) {
+      return (
+        <DraggableReflectionCard
+          key={reflection.id}
+          meeting={meeting}
+          reflection={reflection}
+          setItemRef={setItemRef}
+          isDraggable={isDraggable}
+          isSingleCardGroup={reflections.length === 1}
+        />
+      )
+    }
+
+    const secondCard = idx === reflections.length - 2
+    return (
+      <ReflectionCardInStack
+        key={reflection.id}
+        secondCard={secondCard}
+        innerRef={setItemRef(reflection.id)}
+      >
+        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter shadow={null} />
+      </ReflectionCardInStack>
     )
   }
 
-  render () {
-    const {canDrop, connectDropTarget, meeting, reflectionGroup} = this.props
-    const {reflections} = reflectionGroup
+  expandGroup = () => {
     const {
-      localPhase: {phaseType}
-    } = meeting
+      atmosphere,
+      reflectionGroup: {isExpanded, reflectionGroupId}
+    } = this.props
+    if (!isExpanded) {
+      commitLocalUpdate(atmosphere, (store) => {
+        store.get(reflectionGroupId).setValue(true, 'isExpanded')
+      })
+    }
+  }
 
-    // the transform used to collapse cards results in a bad parent element height, which means overlapping groups
+  setHeaderRef = (c) => {
+    this.headerRef = c
+  }
+
+  setModalRef = (c) => {
+    this.modalRef = c
+  }
+
+  setBackgroundRef = (c) => {
+    this.backgroundRef = c
+  }
+
+  render () {
+    const {canDrop, connectDropTarget, meeting, reflectionGroup, setChildRef} = this.props
+    const {isExpanded, reflections, reflectionGroupId} = reflectionGroup
+    const {
+      localPhase: {phaseType},
+      localStage: {isComplete}
+    } = meeting
+    const canExpand = !isExpanded && reflections.length > 1
     const showHeader = reflections.length > 1 || phaseType === VOTE
+    const [firstReflection] = reflections
+    const isDraggable = phaseType === GROUP && !isComplete
+    // always render the in-grid group so we can get a read on the size if the title is removed
     return (
-      <Group>
-        {showHeader && (
-          <ReflectionGroupHeader meeting={meeting} reflectionGroup={reflectionGroup} />
-        )}
-        {/* connect the drop target here so dropping on the title triggers an ungroup */}
-        {connectDropTarget(
-          <div>
-            <Reflections
-              canDrop={canDrop}
-              onClick={this.toggleExpanded}
-              innerRef={this.setReflectionListRef}
-              style={this.makeCustomHeight()}
+      <React.Fragment>
+        <Group innerRef={setChildRef(reflectionGroupId, firstReflection.id)} isHidden={isExpanded}>
+          {showHeader && (
+            <ReflectionGroupHeader
+              innerRef={this.setHeaderRef}
+              meeting={meeting}
+              reflectionGroup={reflectionGroup}
+            />
+          )}
+          {/* connect the drop target here so dropping on the title triggers an ungroup */}
+          {connectDropTarget(
+            <div
+              className={reflectionsStyle(canDrop, isDraggable, canExpand)}
+              onClick={canExpand ? this.expandGroup : undefined}
             >
-              {reflections.map(this.renderReflection)}
-            </Reflections>
-          </div>
-        )}
-      </Group>
+              {reflections.map((reflection, idx) =>
+                this.renderReflection(reflection, idx, {isModal: false, isDraggable})
+              )}
+            </div>
+          )}
+        </Group>
+        <Modal clickToClose escToClose isOpen={isExpanded} onClose={this.closeGroupModal}>
+          <Group innerRef={this.setModalRef} isModal>
+            <Background innerRef={this.setBackgroundRef} />
+            <ReflectionGroupHeader
+              isExpanded={isExpanded}
+              innerRef={this.setHeaderRef}
+              meeting={meeting}
+              reflectionGroup={reflectionGroup}
+            />
+            <div className={reflectionsStyle(canDrop, isDraggable, canExpand)}>
+              {reflections.map((reflection, idx) =>
+                this.renderReflection(reflection, idx, {isModal: true, isDraggable})
+              )}
+            </div>
+          </Group>
+        </Modal>
+      </React.Fragment>
     )
   }
 }
 
 const reflectionDropSpec = {
   canDrop (props: Props, monitor) {
-    return monitor.isOver()
+    return (
+      monitor.isOver() &&
+      monitor.getItem().reflectionGroupId !== props.reflectionGroup.reflectionGroupId
+    )
   },
 
-  // Makes the card-dropped-into available in the dragSpec's endDrag method.
   drop (props: Props, monitor) {
     if (monitor.didDrop()) return
-    const {reflectionId, reflectionGroupId: sourceReflectionGroupId} = monitor.getItem()
-    const {
-      atmosphere,
-      meeting: {meetingId},
-      onError,
-      onCompleted,
-      submitMutation,
-      reflectionGroup
-    } = props
-    const {reflections, reflectionGroupId: targetReflectionGroupId} = reflectionGroup
-    if (sourceReflectionGroupId === targetReflectionGroupId) {
-      // changing the sort order within the group
-    } else {
-      const lastReflection = reflections[reflections.length - 1]
-      const variables = {
-        reflectionId,
-        reflectionGroupId: targetReflectionGroupId,
-        sortOrder: lastReflection.sortOrder + 1 + dndNoise()
-      }
-      submitMutation()
-      UpdateReflectionLocationMutation(atmosphere, variables, {meetingId}, onError, onCompleted)
-    }
+    const {reflectionGroup} = props
+    const {reflectionGroupId: targetReflectionGroupId} = reflectionGroup
+    return {dropTargetType: REFLECTION_GROUP, dropTargetId: targetReflectionGroupId}
   }
 }
 
 const reflectionDropCollect = (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
-  // isOver: monitor.isOver({shallow: true}),
-  // item: monitor.getItem(),
   canDrop: monitor.canDrop()
 })
 
@@ -259,11 +370,13 @@ export default createFragmentContainer(
       localPhase {
         phaseType
       }
+      localStage {
+        isComplete
+      }
     }
 
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
       ...ReflectionGroupHeader_reflectionGroup
-      isExpanded
       retroPhaseItemId
       reflectionGroupId: id
       sortOrder
@@ -274,6 +387,7 @@ export default createFragmentContainer(
         ...DraggableReflectionCard_reflection
         ...ReflectionCard_reflection
       }
+      isExpanded
     }
   `
 )
