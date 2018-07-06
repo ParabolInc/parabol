@@ -67,7 +67,7 @@ const confettiConfig = {
 }
 
 type Props = {|
-  closePortal: () => void
+  handleClose: () => void
 |}
 
 type State = {|
@@ -101,7 +101,7 @@ class UpgradeSuccess extends React.Component<Props, State> {
   }
 
   render () {
-    const {closePortal} = this.props
+    const {handleClose} = this.props
     const {active} = this.state
     return (
       <CenteredModalBoundary>
@@ -112,7 +112,7 @@ class UpgradeSuccess extends React.Component<Props, State> {
           <b>{PRO_LABEL}</b>
           {' tier.'}
         </ModalCopy>
-        <ModalButton size='large' depth={1} onClick={closePortal}>
+        <ModalButton size='large' depth={1} onClick={handleClose}>
           {'Let’s Get Back to Business'}
         </ModalButton>
         <Confetti active={active} config={confettiConfig} />
