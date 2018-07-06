@@ -4,11 +4,12 @@ import {createPaginationContainer} from 'react-relay'
 import RaisedButton from 'universal/components/RaisedButton'
 import Panel from 'universal/components/Panel/Panel'
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow'
-import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
+import LoadableModal from 'universal/components/LoadableModal'
+import UpdateCreditCardLoadable from 'universal/components/UpdateCreditCardLoadable'
 
 const panelCell = {
   borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`,
@@ -97,9 +98,8 @@ class OrgBilling extends Component {
       relay: {hasMore}
     } = this.props
     const hasInvoices = invoices.edges.length > 0
-    const {creditCard = {}, id: orgId} = organization
+    const {creditCard = {}, orgId} = organization
     const {brand = '???', last4 = '••••', expiry = '???'} = creditCard
-    const update = <RaisedButton>{'Update'}</RaisedButton>
     return (
       <div>
         <Panel label='Credit Card Information'>
@@ -114,7 +114,13 @@ class OrgBilling extends Component {
               <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
               <span>{expiry || '??/??'}</span>
             </CreditCardInfo>
-            <CreditCardModalContainer isUpdate orgId={orgId} toggle={update} />
+            <LoadableModal
+              LoadableComponent={UpdateCreditCardLoadable}
+              maxWidth={350}
+              maxHeight={225}
+              queryVars={{orgId}}
+              toggle={<RaisedButton>{'Update'}</RaisedButton>}
+            />
           </InfoAndUpdate>
         </Panel>
         <Panel label='Invoices'>

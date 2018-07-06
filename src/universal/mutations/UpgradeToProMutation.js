@@ -8,7 +8,7 @@ graphql`
         last4
         expiry
       }
-      tier
+      #don't request tier because we set that locally to allow for the animation to play
       periodEnd
       periodStart
       updatedAt

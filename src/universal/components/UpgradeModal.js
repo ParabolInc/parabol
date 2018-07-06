@@ -1,9 +1,11 @@
 // @flow
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import UpgradeSuccess from 'universal/components/UpgradeSuccess'
 import UpgradeSqueeze from 'universal/components/UpgradeSqueeze'
 import type {UpgradeModal_viewer as Viewer} from './__generated__/UpgradeModal_viewer.graphql'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {PRO} from 'universal/utils/constants'
 
 type Props = {
   closePortal: () => void,
@@ -31,11 +33,21 @@ class UpgradeModal extends React.Component<Props, State> {
   render () {
     const {isPaid} = this.state
     const {
+      atmosphere,
       closePortal,
       viewer: {organization}
     } = this.props
+    const handleClose = () => {
+      closePortal()
+      const {orgId} = organization
+      commitLocalUpdate(atmosphere, (store) => {
+        const organization = store.get(orgId)
+        if (!organization) return
+        organization.setValue(PRO, 'tier')
+      })
+    }
     return isPaid ? (
-      <UpgradeSuccess closePortal={closePortal} />
+      <UpgradeSuccess handleClose={handleClose} />
     ) : (
       <UpgradeSqueeze organization={organization} onSuccess={this.onSuccess} />
     )
@@ -43,10 +55,11 @@ class UpgradeModal extends React.Component<Props, State> {
 }
 
 export default createFragmentContainer(
-  UpgradeModal,
+  withAtmosphere(UpgradeModal),
   graphql`
     fragment UpgradeModal_viewer on User {
       organization(orgId: $orgId) {
+        orgId: id
         ...UpgradeSqueeze_organization
       }
     }

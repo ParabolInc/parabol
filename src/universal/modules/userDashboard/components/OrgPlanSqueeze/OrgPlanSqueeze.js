@@ -3,19 +3,20 @@ import LinkButton from 'universal/components/LinkButton'
 import IconLabel from 'universal/components/IconLabel'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import {
+  BILLING_LEADER_LABEL,
   PERSONAL,
   PERSONAL_LABEL,
   PRO,
-  PRO_LABEL,
-  BILLING_LEADER_LABEL
+  PRO_LABEL
 } from 'universal/utils/constants'
-import CreditCardModalContainer from 'universal/modules/userDashboard/containers/CreditCardModal/CreditCardModalContainer'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import makeGradient from 'universal/styles/helpers/makeGradient'
 import {createFragmentContainer} from 'react-relay'
 import InlineEstimatedCost from 'universal/components/InlineEstimatedCost'
+import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
+import LoadableModal from 'universal/components/LoadableModal'
 
 const personalGradient = makeGradient(ui.palette.mid, ui.palette.midGray)
 const professionalGradient = makeGradient(ui.palette.yellow, ui.palette.warm)
@@ -144,7 +145,13 @@ const OrgPlanSqueeze = (props: Props) => {
         {'Ready for the full experience?'}
       </div>
       <ButtonBlock>
-        <CreditCardModalContainer orgId={orgId} toggle={toggle} />
+        <LoadableModal
+          LoadableComponent={UpgradeModalRootLoadable}
+          maxWidth={350}
+          maxHeight={225}
+          queryVars={{orgId}}
+          toggle={toggle}
+        />
       </ButtonBlock>
       <InlineEstimatedCost activeUserCount={activeUserCount} />
     </TierPanelBody>
