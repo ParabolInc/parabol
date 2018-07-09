@@ -16,7 +16,8 @@ const TaskCardGrid = styled('div')({
   gridGap: '1.25rem',
   gridTemplateColumns: 'repeat(auto-fill, minmax(225px, 1fr))',
   maxWidth: '75rem',
-  margin: '0 auto'
+  margin: '0 auto',
+  width: '100%'
 })
 
 const makeCards = (tasks = [], myUserId, handleAddTask) => {

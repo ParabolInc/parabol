@@ -17,26 +17,15 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {withRouter} from 'react-router'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
 import {meetingTopicPhaseMaxWidth} from 'universal/styles/meeting'
 
 const Layout = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
   margin: '0 auto',
   maxWidth: meetingTopicPhaseMaxWidth,
-  padding: '0 1rem 4rem',
-  width: '100%',
-
-  [ui.breakpoint.wide]: {
-    paddingBottom: '0 1.5rem 6rem'
-  },
-
-  [ui.breakpoint.wider]: {
-    paddingBottom: '8rem'
-  },
-
-  [ui.breakpoint.widest]: {
-    paddingBottom: '12rem'
-  }
+  padding: '0 .75rem',
+  width: '100%'
 })
 
 const Prompt = styled('div')({
@@ -48,6 +37,13 @@ const Prompt = styled('div')({
 const Nav = styled('div')({
   paddingTop: '1rem',
   textAlign: 'center',
+  width: '100%'
+})
+
+const TaskCardBlock = styled('div')({
+  flex: 1,
+  overflow: 'auto',
+  padding: '.5rem .5rem 1.25rem',
   width: '100%'
 })
 
@@ -125,7 +121,7 @@ class MeetingAgendaItems extends Component {
     }
     return (
       <MeetingMain hasHelpFor={AGENDA_ITEMS} isFacilitating={showMoveMeetingControls}>
-        <MeetingSection flexToFill paddingBottom='2rem'>
+        <MeetingSection flexToFill>
           <MeetingSection flexToFill>
             <Layout>
               <Prompt>
@@ -143,7 +139,9 @@ class MeetingAgendaItems extends Component {
                   </MeetingFacilitationHint>
                 )}
               </Nav>
-              <MeetingAgendaCards agendaId={agendaItem.id} tasks={agendaTasks} teamId={team.id} />
+              <TaskCardBlock>
+                <MeetingAgendaCards agendaId={agendaItem.id} tasks={agendaTasks} teamId={team.id} />
+              </TaskCardBlock>
               <EditorHelpModalContainer />
             </Layout>
           </MeetingSection>
