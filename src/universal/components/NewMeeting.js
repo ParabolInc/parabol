@@ -184,11 +184,11 @@ class NewMeeting extends Component<Props, State> {
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
   }
 
-  componentDidMount () {
-    const size = getWindowSize()
-    // TODO: should handle retro group sizing on change and set to false at larger breakpoints
-    if (size.width > meetingSidebarBreakpoint) this.setState({sidebarCollapsed: true})
-  }
+  // TODO: should handle retro group sizing on change and set to false at larger breakpoints
+  // componentDidMount () {
+  //   const size = getWindowSize()
+  //   if (size.width > meetingSidebarBreakpoint) this.setState({sidebarCollapsed: true})
+  // }
 
   endMeeting = () => {
     const {

@@ -40,7 +40,7 @@ const PhaseDescription = styled('h2')({
   margin: 0,
 
   [minWidthMediaQueries[1]]: {
-    fontSize: '1rem'
+    fontSize: '.875rem'
   }
 })
 

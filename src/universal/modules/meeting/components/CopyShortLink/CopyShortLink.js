@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
-import React, {Component} from 'react'
+import React from 'react'
 import styled from 'react-emotion'
 import FontAwesome from 'react-fontawesome'
-import CopyToClipboard from 'react-copy-to-clipboard'
-import Tooltip from 'universal/components/Tooltip/Tooltip'
+import CopyLink from 'universal/components/CopyLink'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 
@@ -33,63 +32,26 @@ const CopyBlock = styled('div')({
   }
 })
 
-class CopyShortLink extends Component {
-  static propTypes = {
-    icon: PropTypes.string,
-    label: PropTypes.string,
-    url: PropTypes.string
-  }
+const CopyShortLink = (props) => {
+  const {icon, label, url} = props
+  const theIcon = icon || 'link'
+  const theLabel = label || url
+  const title = 'Copy Meeting Link'
+  const tooltip = 'Copied the meeting link!'
+  return (
+    <CopyLink url={url} title={title} tooltip={tooltip}>
+      <CopyBlock>
+        <CopyIcon name={theIcon} />
+        <CopyLabel>{theLabel}</CopyLabel>
+      </CopyBlock>
+    </CopyLink>
+  )
+}
 
-  constructor (props) {
-    super(props)
-    this.confirmationTimeout = null
-  }
-
-  state = {
-    confirmingCopied: false
-  }
-
-  componentWillUnmount () {
-    this.clearConfirmationTimeout()
-  }
-
-  clearConfirmationTimeout = () => {
-    if (this.confirmationTimeout) {
-      clearTimeout(this.confirmationTimeout)
-    }
-  }
-
-  confirmCopied = () => {
-    this.clearConfirmationTimeout()
-    this.confirmationTimeout = setTimeout(() => {
-      this.setState({confirmingCopied: false})
-    }, 1500)
-    this.setState({confirmingCopied: true})
-  }
-
-  render () {
-    const {icon, label, url} = this.props
-    const {confirmingCopied} = this.state
-    const theIcon = icon || 'link'
-    const theLabel = label || url
-    return (
-      <Tooltip
-        isOpen={confirmingCopied}
-        maxHeight={40}
-        maxWidth={500}
-        originAnchor={{vertical: 'bottom', horizontal: 'center'}}
-        targetAnchor={{vertical: 'top', horizontal: 'center'}}
-        tip={<div>Copied the meeting link!</div>}
-      >
-        <CopyToClipboard text={url} onCopy={this.confirmCopied} title='Copy Meeting Link'>
-          <CopyBlock>
-            <CopyIcon name={theIcon} />
-            <CopyLabel>{theLabel}</CopyLabel>
-          </CopyBlock>
-        </CopyToClipboard>
-      </Tooltip>
-    )
-  }
+CopyShortLink.propTypes = {
+  icon: PropTypes.string,
+  label: PropTypes.string,
+  url: PropTypes.string
 }
 
 export default CopyShortLink

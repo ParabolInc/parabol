@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {Link} from 'react-router-dom'
 import styled from 'react-emotion'
 import {meetingBottomBarHeight} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -16,7 +17,7 @@ const RootBlock = styled('div')(({variant}) => ({
   width: '100%'
 }))
 
-const Anchor = styled('a')({
+const Anchor = styled(Link)({
   display: 'block'
 })
 
@@ -29,12 +30,7 @@ const LogoBlock = (props) => {
   const logoSrc = variant === 'primary' ? logoMarkPrimary : logoMarkWhite
   return (
     <RootBlock variant={variant}>
-      <Anchor
-        href='http://www.parabol.co/'
-        rel='noopener noreferrer'
-        target='_blank'
-        title='Parabol'
-      >
+      <Anchor title='My Dashboard' to='/me/'>
         <Image alt='Parabol' src={logoSrc} />
       </Anchor>
     </RootBlock>
