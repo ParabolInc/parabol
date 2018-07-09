@@ -23,11 +23,11 @@ import {meetingTopicPhaseMaxWidth} from 'universal/styles/meeting'
 const Layout = styled('div')({
   margin: '0 auto',
   maxWidth: meetingTopicPhaseMaxWidth,
-  padding: '0 .5rem 4rem',
+  padding: '0 1rem 4rem',
   width: '100%',
 
   [ui.breakpoint.wide]: {
-    paddingBottom: '0 1rem 6rem'
+    paddingBottom: '0 1.5rem 6rem'
   },
 
   [ui.breakpoint.wider]: {
