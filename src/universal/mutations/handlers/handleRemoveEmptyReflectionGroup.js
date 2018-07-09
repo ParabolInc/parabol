@@ -4,7 +4,7 @@ const handleRemoveEmptyReflectionGroup = (reflectionGroupId, store) => {
   const reflectionGroup = store.get(reflectionGroupId)
   if (!reflectionGroup) return
   const reflections = reflectionGroup.getLinkedRecords('reflections')
-  if (reflections.length > 0) return
+  if (!reflections || reflections.length > 0) return
   const meetingId = reflectionGroup.getValue('meetingId')
   handleRemoveReflectionGroups(reflectionGroupId, meetingId, store)
 }

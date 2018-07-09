@@ -188,18 +188,25 @@
     prop-types "^15.5.10"
     shallowequal "^1.0.2"
 
-"@mattkrick/react-relay@^1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@mattkrick/react-relay/-/react-relay-1.6.2.tgz#310b1295acca00fc87ab716e8a6c08a0f45d0864"
+"@mattkrick/react-relay@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@mattkrick/react-relay/-/react-relay-1.6.3.tgz#7d23fa687bc21f1a5771f9e20ed505884c45d0eb"
   dependencies:
-    "@mattkrick/relay-runtime" "1.6.2"
+    "@mattkrick/relay-runtime" "1.6.0"
     babel-runtime "^6.23.0"
     fbjs "^0.8.14"
     prop-types "^15.5.8"
 
-"@mattkrick/relay-runtime@1.6.2", "@mattkrick/relay-runtime@^1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@mattkrick/relay-runtime/-/relay-runtime-1.6.2.tgz#237e2faaef6e89faad410901b8f58fcd0f046ef7"
+"@mattkrick/relay-runtime@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/relay-runtime/-/relay-runtime-1.6.0.tgz#ec08a8705a13d5edad1f336a1ad51ac08f296c9b"
+  dependencies:
+    babel-runtime "^6.23.0"
+    fbjs "^0.8.14"
+
+"@mattkrick/relay-runtime@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@mattkrick/relay-runtime/-/relay-runtime-1.6.3.tgz#2daa57d634f647523b30cf9641920d582c03dfa8"
   dependencies:
     babel-runtime "^6.23.0"
     fbjs "^0.8.14"

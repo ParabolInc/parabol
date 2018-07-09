@@ -1,7 +1,8 @@
-import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import {resolveTeam} from 'server/graphql/resolvers'
+import Assignee, {assigneeInterfaceFields} from 'server/graphql/types/Assignee'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
@@ -10,7 +11,6 @@ import {TaskConnection} from 'server/graphql/types/Task'
 import Team from 'server/graphql/types/Team'
 import User from 'server/graphql/types/User'
 import {getUserId} from 'server/utils/authorization'
-import Assignee from 'server/graphql/types/Assignee'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const TeamMember = new GraphQLObjectType({
@@ -18,8 +18,9 @@ const TeamMember = new GraphQLObjectType({
   description: 'A member of a team',
   interfaces: () => [PossibleTeamMember, Assignee],
   fields: () => ({
+    ...assigneeInterfaceFields(),
     id: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'An ID for the teamMember. userId::teamId'
     },
     isNotRemoved: {
@@ -37,16 +38,12 @@ const TeamMember = new GraphQLObjectType({
     },
     /* denormalized from User */
     email: {
-      type: GraphQLEmailType,
+      type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The user email'
     },
     picture: {
       type: GraphQLURLType,
       description: 'url of user’s profile picture'
-    },
-    preferredName: {
-      type: GraphQLString,
-      description: 'The name, as confirmed by the user'
     },
     /* Ephemeral meeting state */
     checkInOrder: {
@@ -96,10 +93,6 @@ const TeamMember = new GraphQLObjectType({
       }
     },
     /* Foreign keys */
-    teamId: {
-      type: GraphQLID,
-      description: 'foreign key to Team table'
-    },
     userId: {
       type: GraphQLID,
       description: 'foreign key to User table'

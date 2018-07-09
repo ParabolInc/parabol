@@ -309,6 +309,8 @@ export type Team = {
   facilitatorPhaseItem: ?number,
   /** The outstanding invitations to join the team */
   invitations: ?Array<Invitation>,
+  /** true if the viewer is the team lead, else false */
+  isLead: ?boolean,
   /** The phase of the meeting, usually matches the facilitator phase, be could be further along */
   meetingPhase: ?ActionMeetingPhaseEnum,
   /** The current item number for the current phase for the meeting, 1-indexed */
@@ -450,6 +452,8 @@ export type OrgApproval = {
   email: ?any,
   /** true if it applies to a user that was not removed from the org, else false */
   isActive: ?boolean,
+  /** The notification sent to the viewer / billing leader(s) requesting approval */
+  notification: ?NotifyRequestNewUser,
   /** The orgId the email want to join */
   orgId: string,
   /** *The team seeking approval. Used to populate in the team settings page */
@@ -458,6 +462,77 @@ export type OrgApproval = {
   /** The datetime the approval was last updated */
   updatedAt: ?any
 }
+
+/**
+  A notification sent to a user concerning an invitation (request, joined)
+*/
+export type NotifyRequestNewUser = {
+  /** The userId of the person that invited the email */
+  inviterUserId: string,
+  /** The email of the person being invited */
+  inviteeEmail: string,
+  /** The teamId the inviteeEmail is being invited to */
+  teamId: string,
+  /** The team name the inviteeEmail is being invited to */
+  teamName: string,
+  /** The user that triggered the invitation */
+  inviter: ?User,
+  team: ?Team,
+  /** A shortid for the notification */
+  id: ?string,
+  /** *The unique organization ID for this notification. Can be blank for targeted notifications */
+  orgId: ?string,
+  /** The datetime to activate the notification & send it to the client */
+  startAt: ?any,
+  type: ?NotificationEnum,
+  /** *The userId that should see this notification */
+  userIds: ?Array<string>
+}
+
+export type Notification =
+  | NotifyRequestNewUser
+  | NotifyTeamInvite
+  | NotifyInviteeApproved
+  | NotifyTeamArchived
+  | NotifyTaskInvolves
+  | NotifyAddedToTeam
+  | NotifyDenial
+  | NotifyKickedOut
+  | NotifyPaymentRejected
+  | NotifyPromoteToOrgLeader
+
+/**
+  The kind of notification
+*/
+export type NotificationEnum =
+  | 'ADD_TO_TEAM'
+  | 'DENY_NEW_USER'
+  | 'FACILITATOR_DISCONNECTED'
+  | 'undefined'
+  | 'INVITEE_APPROVED'
+  | 'JOIN_TEAM'
+  | 'KICKED_OUT'
+  | 'PAYMENT_REJECTED'
+  | 'TASK_INVOLVES'
+  | 'REJOIN_TEAM'
+  | 'REQUEST_NEW_USER'
+  | 'TEAM_INVITE'
+  | 'TEAM_ARCHIVED'
+  | 'VERSION_INFO'
+  | 'PROMOTE_TO_BILLING_LEADER'
+
+export type OrganizationNotification =
+  | NotifyRequestNewUser
+  | NotifyPaymentRejected
+  | NotifyPromoteToOrgLeader
+
+export type TeamNotification =
+  | NotifyRequestNewUser
+  | NotifyTeamInvite
+  | NotifyInviteeApproved
+  | NotifyTaskInvolves
+  | NotifyAddedToTeam
+  | NotifyDenial
 
 /**
   The approval status for a user joining the org
@@ -596,7 +671,11 @@ export type AgendaItem = {
 */
 export type TeamMember = {
   /** An ID for the teamMember. userId::teamId */
-  id: ?string,
+  id: string,
+  /** The name of the assignee */
+  preferredName: string,
+  /** foreign key to Team table */
+  teamId: string,
   /** true if the user is a part of the team, false if they no longer are */
   isNotRemoved: ?boolean,
   /** Is user a team lead? */
@@ -606,11 +685,9 @@ export type TeamMember = {
   /** hide the agenda list on the dashboard */
   hideAgenda: ?boolean,
   /** The user email */
-  email: ?any,
+  email: any,
   /** url of user’s profile picture */
   picture: ?any,
-  /** The name, as confirmed by the user */
-  preferredName: ?string,
   /** The place in line for checkIn, regenerated every meeting */
   checkInOrder: ?number,
   /** true if the user is connected */
@@ -621,8 +698,6 @@ export type TeamMember = {
   isSelf: ?boolean,
   /** The meeting specifics for the meeting the team member is currently in */
   meetingMember: ?MeetingMember,
-  /** foreign key to Team table */
-  teamId: ?string,
   /** foreign key to User table */
   userId: ?string,
   /** The team this team member belongs to */
@@ -639,20 +714,20 @@ export type Assignee = TeamMember | SoftTeamMember
   A member of a team
 */
 export type SoftTeamMember = {
-  /** An ID for the teamMember. userId::teamId */
-  id: ?string,
+  /** The teamMemberId or softTeamMemberId */
+  id: string,
+  /** The name of the assignee */
+  preferredName: string,
+  /** foreign key to Team table */
+  teamId: string,
   /** The datetime the team was created */
   createdAt: ?any,
   /** The user email */
   email: ?any,
   /** True if this is still a soft team member, false if they were rejected or became a team member */
   isActive: ?boolean,
-  /** The name, as confirmed by the user */
-  preferredName: ?string,
   /** Tasks owned by the team member */
   tasks: ?TaskConnection,
-  /** foreign key to Team table */
-  teamId: ?string,
   /** The team this team member belongs to */
   team: ?Team
 }
@@ -917,38 +992,6 @@ export type NotificationEdge = {
   node: ?Notification,
   cursor: ?any
 }
-
-export type Notification =
-  | NotifyTeamInvite
-  | NotifyRequestNewUser
-  | NotifyInviteeApproved
-  | NotifyTeamArchived
-  | NotifyTaskInvolves
-  | NotifyAddedToTeam
-  | NotifyDenial
-  | NotifyKickedOut
-  | NotifyPaymentRejected
-  | NotifyPromoteToOrgLeader
-
-/**
-  The kind of notification
-*/
-export type NotificationEnum =
-  | 'ADD_TO_TEAM'
-  | 'DENY_NEW_USER'
-  | 'FACILITATOR_DISCONNECTED'
-  | 'undefined'
-  | 'INVITEE_APPROVED'
-  | 'JOIN_TEAM'
-  | 'KICKED_OUT'
-  | 'PAYMENT_REJECTED'
-  | 'TASK_INVOLVES'
-  | 'REJOIN_TEAM'
-  | 'REQUEST_NEW_USER'
-  | 'TEAM_INVITE'
-  | 'TEAM_ARCHIVED'
-  | 'VERSION_INFO'
-  | 'PROMOTE_TO_BILLING_LEADER'
 
 /**
   A token for a user to be used on 1 or more teams
@@ -1224,14 +1267,6 @@ export type NotifyTeamInvite = {
   userIds: ?Array<string>
 }
 
-export type TeamNotification =
-  | NotifyTeamInvite
-  | NotifyRequestNewUser
-  | NotifyInviteeApproved
-  | NotifyTaskInvolves
-  | NotifyAddedToTeam
-  | NotifyDenial
-
 export type CreateAgendaItemInput = {
   /** The content of the agenda item */
   content: string,
@@ -1332,37 +1367,6 @@ export type ApproveToOrgPayload = {
   /** If the viewer is the invitee, the notifications to invite them to teams */
   teamInviteNotifications: ?Array<NotifyTeamInvite>
 }
-
-/**
-  A notification sent to a user concerning an invitation (request, joined)
-*/
-export type NotifyRequestNewUser = {
-  /** The userId of the person that invited the email */
-  inviterUserId: string,
-  /** The email of the person being invited */
-  inviteeEmail: string,
-  /** The teamId the inviteeEmail is being invited to */
-  teamId: string,
-  /** The team name the inviteeEmail is being invited to */
-  teamName: string,
-  /** The user that triggered the invitation */
-  inviter: ?User,
-  team: ?Team,
-  /** A shortid for the notification */
-  id: ?string,
-  /** *The unique organization ID for this notification. Can be blank for targeted notifications */
-  orgId: ?string,
-  /** The datetime to activate the notification & send it to the client */
-  startAt: ?any,
-  type: ?NotificationEnum,
-  /** *The userId that should see this notification */
-  userIds: ?Array<string>
-}
-
-export type OrganizationNotification =
-  | NotifyRequestNewUser
-  | NotifyPaymentRejected
-  | NotifyPromoteToOrgLeader
 
 /**
   A notification sent to a user when the person they invited got approved by the org leader

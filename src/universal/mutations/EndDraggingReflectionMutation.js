@@ -91,15 +91,25 @@ const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
   addNodeToArray(reflectionGroup, meeting, 'reflectionGroups', 'sortOrder')
 }
 
+const handleDragContext = (reflectionId, userId, store) => {
+  const storedReflection = store.get(reflectionId)
+  const dragContext = storedReflection.getLinkedRecord('dragContext')
+  if (dragContext) {
+    handleDragMismatch(store, dragContext, userId)
+    dragContext.setValue(true, 'isClosing')
+  }
+}
 export const moveReflectionLocation = (
   reflection,
   reflectionGroup,
   oldReflectionGroupId,
+  userId,
   store
 ) => {
   // moveGroupLocation(reflectionGroup, store)
   if (!reflection) return
   const reflectionId = reflection.getValue('id')
+  handleDragContext(reflectionId, userId, store)
   handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
   handleAddReflectionToGroup(reflection, store)
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
@@ -126,16 +136,11 @@ const handleDragMismatch = (store, dragContext, userId) => {
 }
 
 export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) => {
-  const userId = payload.getValue('userId')
   const reflection = payload.getLinkedRecord('reflection')
-  const reflectionId = reflection.getValue('id')
-  const storedReflection = store.get(reflectionId)
-  const dragContext = storedReflection.getLinkedRecord('dragContext')
-  handleDragMismatch(store, dragContext, userId)
-
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
-  moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)
+  const userId = payload.getValue('userId')
+  moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, userId, store)
 }
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
@@ -184,9 +189,18 @@ const EndDraggingReflectionMutation = (
     },
     optimisticUpdater: (store) => {
       const nowISO = new Date().toJSON()
+      const {viewerId} = atmosphere
       const {reflectionId, dropTargetId: reflectionGroupId, dropTargetType} = variables
       const {meetingId, newReflectionGroupId} = context
-      if (!dropTargetType) return
+      const reflectionProxy = store.get(reflectionId)
+
+      if (!dropTargetType) {
+        const dragContext = reflectionProxy.getLinkedRecord('dragContext')
+        if (dragContext) {
+          dragContext.setValue(true, 'isClosing')
+        }
+        return
+      }
       // move an entire group somewhere else
       // if (!reflectionId) {
       //   const reflectionGroupProxy = store.get(reflectionGroupId)
@@ -197,7 +211,6 @@ const EndDraggingReflectionMutation = (
       //   return
       // }
 
-      const reflectionProxy = store.get(reflectionId)
       const oldReflectionGroupId = reflectionProxy.getValue('reflectionGroupId')
       const meeting = store.get(meetingId)
       let reflectionGroupProxy = store.get(reflectionGroupId)
@@ -232,7 +245,13 @@ const EndDraggingReflectionMutation = (
         })
         reflectionProxy.setLinkedRecord(reflectionGroupProxy, 'retroReflectionGroup')
       }
-      moveReflectionLocation(reflectionProxy, reflectionGroupProxy, oldReflectionGroupId, store)
+      moveReflectionLocation(
+        reflectionProxy,
+        reflectionGroupProxy,
+        oldReflectionGroupId,
+        viewerId,
+        store
+      )
     }
   })
 }

@@ -70,7 +70,7 @@ class ReflectionCard extends Component<Props, State> {
     const {content} = reflection
     if (content === prevState.content) return null
     const contentState = convertFromRaw(JSON.parse(content))
-    // const DEBUG_TEXT = `idx: ${idx} | GroupId: ${reflectionGroupId}`
+    // const DEBUG_TEXT = `id: ${reflectionId} | GroupId: ${reflectionGroupId}`
     // const contentState = ContentState.createFromText(DEBUG_TEXT)
     const editorState = EditorState.createWithContent(
       contentState,
@@ -143,6 +143,16 @@ class ReflectionCard extends Component<Props, State> {
     EditReflectionMutation(atmosphere, {isEditing: false, reflectionId})
   }
 
+  handleReturn = (e) => {
+    const {addReflectionButtonRef} = this.props
+    if (e.shiftKey) return 'not-handled'
+    this.handleEditorBlur()
+    if (addReflectionButtonRef) {
+      addReflectionButtonRef.focus()
+    }
+    return 'handled'
+  }
+
   render () {
     const {
       atmosphere,
@@ -179,6 +189,7 @@ class ReflectionCard extends Component<Props, State> {
           isDraggable={isDraggable}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
+          handleReturn={this.handleReturn}
           placeholder='My reflection thought…'
           readOnly={phaseType !== REFLECT || isComplete || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
