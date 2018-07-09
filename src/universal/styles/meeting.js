@@ -1,5 +1,5 @@
 import appTheme from 'universal/styles/theme/appTheme'
-import {makeShadowColor} from './ui'
+import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
 import {breakpoints, minWidthMediaQueries} from './breakpoints'
 
 // shared style constants for components in the meeting context

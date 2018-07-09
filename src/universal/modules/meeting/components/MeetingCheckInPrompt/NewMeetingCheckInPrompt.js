@@ -17,11 +17,7 @@ const PromptBlock = styled('div')({
   flexDirection: 'column',
   justifyContent: 'center',
   maxWidth: '37.5rem',
-  padding: '0 1.25rem',
-
-  [meetingSidebarMediaQuery]: {
-    // flexDirection: 'row'
-  }
+  padding: '0 1.25rem'
 })
 
 const AvatarBlock = styled('div')({

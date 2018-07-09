@@ -30,7 +30,7 @@ const LogoBlock = (props) => {
   const logoSrc = variant === 'primary' ? logoMarkPrimary : logoMarkWhite
   return (
     <RootBlock variant={variant}>
-      <Anchor title='My Dashboard' to='/me/'>
+      <Anchor title='My Dashboard' to='/me'>
         <Image alt='Parabol' src={logoSrc} />
       </Anchor>
     </RootBlock>

@@ -16,7 +16,8 @@ import type {MeetingTypeEnum} from 'universal/types/schema.flow'
 import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase'
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
-import ui, {makeShadowColor} from 'universal/styles/ui'
+import ui from 'universal/styles/ui'
+import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
 import {
   RETRO_LOBBY_FREE,
   RETRO_LOBBY_PAID,
