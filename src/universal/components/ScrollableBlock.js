@@ -7,7 +7,6 @@ const ScrollableRoot = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  // flexShrink: 0,
   overflow: 'hidden',
   width: '100%'
 })
