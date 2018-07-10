@@ -16,11 +16,15 @@ import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 
 const StyledWrapper = styled(MeetingPhaseWrapper)({
-  // TODO: base wrapper on min-width of cards, not this styled div (TA)
-  minWidth: '48rem',
-  padding: '0 4rem'
+  // TODO: base wrapper on min-width of card columns, not this styled div (TA)
+  minWidth: '45rem',
+  padding: '0 .75rem',
+  [minWidthMediaQueries[2]]: {
+    padding: '0 4rem'
+  }
 })
 
 type Props = {

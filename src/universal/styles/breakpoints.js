@@ -9,10 +9,6 @@
 export const breakpoints = [480, 800, 1280, 1440, 1600, 1920]
 
 // keeping it simple for now, mobile first = screen and (min-width)
-const makeMediaQueryArray = (array) => {
-  const queries = []
-  array.map((breakpoint) => queries.push(`@media screen and (min-width: ${breakpoint}px)`))
-  return queries
-}
-
-export const minWidthMediaQueries = makeMediaQueryArray(breakpoints)
+export const minWidthMediaQueries = breakpoints.map(
+  (breakpoint) => `@media screen and (min-width: ${breakpoint}px)`
+)

@@ -188,7 +188,7 @@ class NewMeeting extends Component<Props, State> {
   // TODO: should handle retro group sizing on change and set to false at larger breakpoints
   // componentDidMount () {
   //   const size = getWindowSize()
-  //   if (size.width > meetingSidebarBreakpoint) this.setState({sidebarCollapsed: true})
+  //   if (size.width < meetingSidebarBreakpoint) this.setState({sidebarCollapsed: true})
   // }
 
   endMeeting = () => {
