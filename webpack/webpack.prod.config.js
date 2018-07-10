@@ -126,6 +126,12 @@ module.exports = {
           }
         ]
       },
+      // for graphiql, since graphql uses mjs files to run in the server
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto'
+      },
       {
         test: /\.(eot|ttf|wav|mp3|woff|woff2|otf)$/,
         use: ['file-loader']
