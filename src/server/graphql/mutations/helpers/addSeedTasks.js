@@ -18,8 +18,8 @@ const SEED_TASKS = [
     status: ACTIVE,
     sortOrder: 1,
     content: convertToTaskContent(`
-      Try a test run of a meeting: from your team's dashboard
-      tap on ‘Start Meeting’ from the dashboard header above. #private
+      Try a test run of a meeting: from your team’s dashboard
+      tap on ‘Start Meeting’ from the dashboard header above #private
     `)
   },
   {
