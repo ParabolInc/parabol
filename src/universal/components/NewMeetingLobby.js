@@ -194,7 +194,6 @@ class NewMeetingLobby extends React.Component<Props> {
                   LoadableComponent={UpgradeModalRootLoadable}
                   maxWidth={350}
                   maxHeight={225}
-                  onClose={this.updateInitialTier}
                   queryVars={{orgId}}
                   toggle={
                     <StyledButton aria-label='Get Access Now' size='large' depth={1}>

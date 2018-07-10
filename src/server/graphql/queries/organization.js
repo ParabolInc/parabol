@@ -3,7 +3,7 @@ import Organization from 'server/graphql/types/Organization'
 import {getUserId} from 'server/utils/authorization'
 
 export default {
-  type: Organization,
+  type: new GraphQLNonNull(Organization),
   args: {
     orgId: {
       type: new GraphQLNonNull(GraphQLID),

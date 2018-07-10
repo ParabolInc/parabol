@@ -5,7 +5,8 @@ import ui from 'universal/styles/ui'
 import UpgradeCreditCardForm from 'universal/modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
 
 type Props = {
-  closePortal: () => void
+  closePortal: () => void,
+  orgId: string
 }
 
 const flexBase = {

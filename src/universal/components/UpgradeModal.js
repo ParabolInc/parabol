@@ -8,6 +8,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {PRO} from 'universal/utils/constants'
 
 type Props = {
+  atmosphere: Object,
   closePortal: () => void,
   viewer: Viewer
 }
