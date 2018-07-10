@@ -14,6 +14,7 @@ const RootBlock = styled('div')(({variant}) => ({
   display: 'flex',
   height: meetingBottomBarHeight,
   justifyContent: 'center',
+  userSelect: 'none',
   width: '100%'
 }))
 

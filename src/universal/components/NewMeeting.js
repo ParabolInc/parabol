@@ -3,7 +3,7 @@ import * as React from 'react'
 import {DragDropContext as dragDropContext} from '@mattkrick/react-dnd'
 import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
 import withHotkey from 'react-hotkey-hoc'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import type {Match, RouterHistory} from 'react-router-dom'
@@ -48,10 +48,8 @@ import RetroDiscussPhase from 'universal/components/RetroDiscussPhase'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
 import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
-import getWindowSize from 'universal/styles/helpers/getWindowSize'
 import {
   meetingChromeBoxShadow,
-  meetingSidebarBreakpoint,
   meetingSidebarMediaQuery,
   meetingSidebarWidth
 } from 'universal/styles/meeting'
@@ -163,33 +161,20 @@ type Props = {
   viewer: Viewer
 }
 
-type State = {
-  sidebarCollapsed: boolean
-}
-
 type Variables = {
   meetingId: string,
   facilitatorStageId: ?string,
   completedStageId?: string
 }
 
-class NewMeeting extends Component<Props, State> {
+class NewMeeting extends Component<Props> {
   constructor (props) {
     super(props)
     const {bindHotkey} = props
-    this.state = {
-      sidebarCollapsed: false // TODO: should handle retro group sizing on change and set to true for mobile first
-    }
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext))
     bindHotkey('left', handleHotkey(this.gotoPrev))
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
   }
-
-  // TODO: should handle retro group sizing on change and set to false at larger breakpoints
-  // componentDidMount () {
-  //   const size = getWindowSize()
-  //   if (size.width < meetingSidebarBreakpoint) this.setState({sidebarCollapsed: true})
-  // }
 
   endMeeting = () => {
     const {
@@ -292,32 +277,34 @@ class NewMeeting extends Component<Props, State> {
   }
 
   toggleSidebar = () => {
-    this.setState({
-      sidebarCollapsed: !this.state.sidebarCollapsed
+    const {
+      atmosphere,
+      viewer: {
+        team: {newMeeting}
+      }
+    } = this.props
+    const {meetingId, sidebarCollapsed} = newMeeting
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
     })
-  }
-
-  handleSidebarClick = () => {
-    const size = getWindowSize()
-    if (size.width < meetingSidebarBreakpoint) this.toggleSidebar()
   }
 
   render () {
     const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
     const {newMeeting, teamName, tier} = team
-    const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting || {}
+    const {facilitatorStageId, facilitatorUserId, localPhase, localStage, sidebarCollapsed} =
+      newMeeting || {}
     const {viewerId} = atmosphere
     const isFacilitating = viewerId === facilitatorUserId
     const meetingLabel = meetingTypeToLabel[meetingType]
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true
     const localPhaseType = localPhase && localPhase.phaseType
     const retroLobbyHelpContent = tier === PRO ? RETRO_LOBBY_PAID : RETRO_LOBBY_FREE
-    const {sidebarCollapsed} = this.state
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
-        <MeetingSidebarLayout onClick={this.handleSidebarClick} sidebarCollapsed={sidebarCollapsed}>
+        <MeetingSidebarLayout sidebarCollapsed={sidebarCollapsed}>
           <NewMeetingSidebar
             gotoStageId={this.gotoStageId}
             meetingType={meetingType}
@@ -331,11 +318,7 @@ class NewMeeting extends Component<Props, State> {
           <MeetingContent>
             {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
             <MeetingAreaHeader>
-              <NewMeetingPhaseHeading
-                meeting={newMeeting}
-                sidebarCollapsed={sidebarCollapsed}
-                toggleSidebar={this.toggleSidebar}
-              />
+              <NewMeetingPhaseHeading meeting={newMeeting} toggleSidebar={this.toggleSidebar} />
               <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
             </MeetingAreaHeader>
             <ErrorBoundary>
@@ -427,6 +410,7 @@ export default createFragmentContainer(
               }
             }
           }
+          sidebarCollapsed
           phases {
             id
             phaseType

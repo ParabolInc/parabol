@@ -2,7 +2,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/RetroSidebarDiscussSection_viewer.graphql'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
@@ -19,6 +19,7 @@ import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 import dndNoise from 'universal/utils/dndNoise'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
+import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 
 type Props = {|
   atmosphere: Object,
@@ -86,6 +87,24 @@ const RetroSidebarDiscussSection = (props: Props) => {
     const variables = {meetingId, stageId, sortOrder}
     DragDiscussionTopicMutation(atmosphere, variables)
   }
+
+  const toggleSidebar = () => {
+    const {
+      atmosphere,
+      viewer: {
+        team: {newMeeting}
+      }
+    } = props
+    const {meetingId, sidebarCollapsed} = newMeeting
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
+    })
+  }
+
+  const handleClick = (id) => {
+    gotoStageId(id)
+    if (sidebarCanAutoCollapse()) toggleSidebar()
+  }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <SidebarPhaseItemChild>
@@ -135,7 +154,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                               isDragging={dragSnapshot.isDragging}
                               label={title}
                               metaContent={voteMeta}
-                              onClick={() => gotoStageId(stage.id)}
+                              onClick={() => handleClick(stage.id)}
                               orderLabel={`${idx + 1}.`}
                               sortOrder={sortOrder}
                               {...navState}
@@ -165,6 +184,7 @@ export default createFragmentContainer(
           localStage {
             localStageId: id
           }
+          sidebarCollapsed
           ... on RetrospectiveMeeting {
             facilitatorStageId
             # load up the localPhase

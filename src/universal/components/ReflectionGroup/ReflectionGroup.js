@@ -291,6 +291,8 @@ class ReflectionGroup extends Component<Props> {
     const showHeader = reflections.length > 1 || phaseType === VOTE
     const [firstReflection] = reflections
     const isDraggable = phaseType === GROUP && !isComplete
+    console.log('isExpanded')
+    console.log(isExpanded)
     // always render the in-grid group so we can get a read on the size if the title is removed
     return (
       <React.Fragment>

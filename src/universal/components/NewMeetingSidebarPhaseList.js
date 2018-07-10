@@ -3,12 +3,14 @@ import React from 'react'
 import {LOBBY, DISCUSS, AGENDA_ITEMS} from 'universal/utils/constants'
 import styled from 'react-emotion'
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem'
-import {createFragmentContainer, graphql} from 'react-relay'
+import {createFragmentContainer, graphql, commitLocalUpdate} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {withRouter} from 'react-router-dom'
 import {phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups'
 import type {NewMeetingSidebarPhaseList_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseList_viewer.graphql'
 import findStageById from 'universal/utils/meetings/findStageById'
 import NewMeetingSidebarPhaseListItemChildren from 'universal/components/NewMeetingSidebarPhaseListItemChildren'
+import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 
 const NavList = styled('ul')({
   listStyle: 'none',
@@ -48,6 +50,18 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
   const {phase: facilitatorPhase = {phaseType: LOBBY}} = facilitatorStageRes || {}
   const facilitatorPhaseGroup = phaseTypeToPhaseGroup[facilitatorPhase.phaseType]
   const isViewerFacilitator = facilitatorUserId === viewerId
+  const toggleSidebar = () => {
+    const {
+      atmosphere,
+      viewer: {
+        team: {newMeeting}
+      }
+    } = props
+    const {meetingId, sidebarCollapsed} = newMeeting
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
+    })
+  }
   return (
     <NavList>
       {phaseTypes.map((phaseType, idx) => {
@@ -55,7 +69,10 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
         const {id: itemStageId = '', isNavigable = false, isNavigableByFacilitator = false} =
           itemStage || {}
         const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
-        const handleClick = canNavigate ? () => gotoStageId(itemStageId) : undefined
+        const handleClick = () => {
+          if (canNavigate) gotoStageId(itemStageId)
+          if (sidebarCanAutoCollapse()) toggleSidebar()
+        }
         // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
         const activeHasSubItems = phaseType === DISCUSS || phaseType === AGENDA_ITEMS
         return (
@@ -80,7 +97,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  withRouter(NewMeetingSidebarPhaseList),
+  withAtmosphere(withRouter(NewMeetingSidebarPhaseList)),
   graphql`
     fragment NewMeetingSidebarPhaseList_viewer on User {
       ...NewMeetingSidebarPhaseListItemChildren_viewer
@@ -90,11 +107,13 @@ export default createFragmentContainer(
           phaseTypes
         }
         newMeeting {
+          meetingId: id
           facilitatorUserId
           facilitatorStageId
           localPhase {
             phaseType
           }
+          sidebarCollapsed
           phases {
             phaseType
             stages {

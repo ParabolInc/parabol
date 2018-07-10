@@ -45,13 +45,13 @@ const PhaseDescription = styled('h2')({
 })
 
 type Props = {|
-  sidebarCollapsed: boolean,
   meeting: Meeting,
   toggleSidebar: () => void
 |}
 
 const NewMeetingPhaseHeading = (props: Props) => {
-  const {meeting, sidebarCollapsed, toggleSidebar} = props
+  const {meeting, toggleSidebar} = props
+  const {sidebarCollapsed} = meeting
   const makeContent = () => {
     if (!meeting || !meeting.localPhase) return null
     const {
@@ -81,6 +81,7 @@ export default createFragmentContainer(
       localPhase {
         phaseType
       }
+      sidebarCollapsed
     }
   `
 )
