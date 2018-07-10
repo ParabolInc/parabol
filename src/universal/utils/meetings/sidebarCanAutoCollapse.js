@@ -3,11 +3,7 @@ import {meetingSidebarBreakpoint} from 'universal/styles/meeting'
 
 const sidebarCanAutoCollapse = () => {
   const size = getWindowSize()
-  if (size.width < meetingSidebarBreakpoint) {
-    return true
-  } else {
-    return false
-  }
+  return size.width < meetingSidebarBreakpoint
 }
 
 export default sidebarCanAutoCollapse
