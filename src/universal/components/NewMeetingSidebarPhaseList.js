@@ -54,12 +54,11 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
     const {
       atmosphere,
       viewer: {
-        team: {newMeeting}
+        team: {teamId, sidebarCollapsed}
       }
     } = props
-    const {meetingId, sidebarCollapsed} = newMeeting
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
+      store.get(teamId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
     })
   }
   return (
@@ -70,7 +69,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
           itemStage || {}
         const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
         const handleClick = () => {
-          if (canNavigate) gotoStageId(itemStageId)
+          gotoStageId(itemStageId)
           if (sidebarCanAutoCollapse()) toggleSidebar()
         }
         // when a primary nav item has sub-items, we want to show the sub-items as active, not the parent (TA)
@@ -82,7 +81,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
             listPrefix={String(idx + 1)}
             isActive={!activeHasSubItems && localGroup === phaseType}
             isFacilitatorPhaseGroup={facilitatorPhaseGroup === phaseType}
-            handleClick={handleClick}
+            handleClick={canNavigate ? handleClick : undefined}
           >
             <NewMeetingSidebarPhaseListItemChildren
               gotoStageId={gotoStageId}
@@ -103,6 +102,8 @@ export default createFragmentContainer(
       ...NewMeetingSidebarPhaseListItemChildren_viewer
       viewerId: id
       team(teamId: $teamId) {
+        sidebarCollapsed
+        teamId: id
         meetingSettings(meetingType: $meetingType) {
           phaseTypes
         }
@@ -113,7 +114,6 @@ export default createFragmentContainer(
           localPhase {
             phaseType
           }
-          sidebarCollapsed
           phases {
             phaseType
             stages {

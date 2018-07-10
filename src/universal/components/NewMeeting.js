@@ -280,21 +280,19 @@ class NewMeeting extends Component<Props> {
     const {
       atmosphere,
       viewer: {
-        team: {newMeeting}
+        team: {teamId, sidebarCollapsed}
       }
     } = this.props
-    const {meetingId, sidebarCollapsed} = newMeeting
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(meetingId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
+      store.get(teamId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
     })
   }
 
   render () {
     const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
-    const {newMeeting, teamName, tier} = team
-    const {facilitatorStageId, facilitatorUserId, localPhase, localStage, sidebarCollapsed} =
-      newMeeting || {}
+    const {newMeeting, sidebarCollapsed, teamName, tier} = team
+    const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting || {}
     const {viewerId} = atmosphere
     const isFacilitating = viewerId === facilitatorUserId
     const meetingLabel = meetingTypeToLabel[meetingType]
@@ -318,7 +316,11 @@ class NewMeeting extends Component<Props> {
           <MeetingContent>
             {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
             <MeetingAreaHeader>
-              <NewMeetingPhaseHeading meeting={newMeeting} toggleSidebar={this.toggleSidebar} />
+              <NewMeetingPhaseHeading
+                meeting={newMeeting}
+                sidebarCollapsed={sidebarCollapsed}
+                toggleSidebar={this.toggleSidebar}
+              />
               <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
             </MeetingAreaHeader>
             <ErrorBoundary>
@@ -379,6 +381,7 @@ export default createFragmentContainer(
         teamId: id
         teamName: name
         meetingId
+        sidebarCollapsed
         tier
         teamMembers(sortBy: "checkInOrder") {
           id
@@ -410,7 +413,6 @@ export default createFragmentContainer(
               }
             }
           }
-          sidebarCollapsed
           phases {
             id
             phaseType

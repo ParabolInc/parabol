@@ -1,18 +1,17 @@
 extend interface NewMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
-  sidebarCollapsed: Boolean
 }
 
 extend type RetrospectiveMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
-  sidebarCollapsed: Boolean
   reflectionsInFlight: [RetroReflection]
 }
 
 extend type Team {
   contentFilter: String
+  sidebarCollapsed: Boolean
 }
 
 extend type User {
