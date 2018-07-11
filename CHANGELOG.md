@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v2.5.0-0 2018-Jul-09
+## v2.5.0-1 2018-Jul-09
 
 ### Added
 * Changed Retrspective Reflect phase to submit new reflections on pressing
@@ -20,6 +20,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 * A variety of new check-in questions
 * In-line affordances given to members on pending team invites,
   see #2108
+
+### Fixed
+
+* Clarified wording of cards auto-populated for new users #1067
 
 ## v2.4.1 2018-Jun-28
 
