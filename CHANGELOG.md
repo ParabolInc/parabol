@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v2.5.0-1 2018-Jul-09
+## v2.5.0 2018-Jul-09
 
 ### Added
 * Changed Retrspective Reflect phase to submit new reflections on pressing
