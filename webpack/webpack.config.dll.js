@@ -60,6 +60,13 @@ module.exports = {
     new webpack.DllPlugin({name: '[name]', path: path.join(__dirname, '../dll', '[name].json')}) // eslint-disable-line no-new
   ],
   module: {
-    rules: [{test: /\.flow$/, loader: 'ignore-loader'}]
+    rules: [
+      {test: /\.flow$/, loader: 'ignore-loader'},
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto'
+      }
+    ]
   }
 }
