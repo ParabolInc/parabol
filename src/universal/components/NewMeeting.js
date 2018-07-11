@@ -66,8 +66,8 @@ const MeetingContainer = styled('div')({
   overflowX: 'auto'
 })
 
-const MeetingSidebarLayout = styled('div')(({sidebarCollapsed}) => ({
-  boxShadow: sidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
+const MeetingSidebarLayout = styled('div')(({isMeetingSidebarCollapsed}) => ({
+  boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
@@ -76,14 +76,14 @@ const MeetingSidebarLayout = styled('div')(({sidebarCollapsed}) => ({
     box-shadow ${ui.transition[0]},
     transform ${ui.transition[0]}
   `,
-  transform: sidebarCollapsed
+  transform: isMeetingSidebarCollapsed
     ? `translate3d(-${meetingSidebarWidth}, 0, 0)`
     : 'translate3d(0, 0, 0)',
   width: meetingSidebarWidth,
   zIndex: 400,
 
   [meetingSidebarMediaQuery]: {
-    boxShadow: sidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[0]
+    boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[0]
   }
 }))
 
@@ -100,12 +100,12 @@ const MeetingContent = styled('div')({
   width: '100%'
 })
 
-const SidebarBackdrop = styled('div')(({sidebarCollapsed}) => ({
+const SidebarBackdrop = styled('div')(({isMeetingSidebarCollapsed}) => ({
   backgroundColor: ui.modalBackdropBackgroundColor,
   bottom: 0,
   left: 0,
-  opacity: sidebarCollapsed ? 0 : 1,
-  pointerEvents: sidebarCollapsed && 'none',
+  opacity: isMeetingSidebarCollapsed ? 0 : 1,
+  pointerEvents: isMeetingSidebarCollapsed && 'none',
   position: 'fixed',
   right: 0,
   top: 0,
@@ -117,14 +117,14 @@ const SidebarBackdrop = styled('div')(({sidebarCollapsed}) => ({
   }
 }))
 
-const LayoutPusher = styled('div')(({sidebarCollapsed}) => ({
+const LayoutPusher = styled('div')(({isMeetingSidebarCollapsed}) => ({
   display: 'none',
 
   [meetingSidebarMediaQuery]: {
     display: 'block',
     flexShrink: 0,
     transition: `width ${ui.transition[0]}`,
-    width: sidebarCollapsed ? 0 : meetingSidebarWidth
+    width: isMeetingSidebarCollapsed ? 0 : meetingSidebarWidth
   }
 }))
 
@@ -280,18 +280,18 @@ class NewMeeting extends Component<Props> {
     const {
       atmosphere,
       viewer: {
-        team: {teamId, sidebarCollapsed}
+        team: {teamId, isMeetingSidebarCollapsed}
       }
     } = this.props
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
+      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
   }
 
   render () {
     const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
-    const {newMeeting, sidebarCollapsed, teamName, tier} = team
+    const {newMeeting, isMeetingSidebarCollapsed, teamName, tier} = team
     const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting || {}
     const {viewerId} = atmosphere
     const isFacilitating = viewerId === facilitatorUserId
@@ -302,7 +302,7 @@ class NewMeeting extends Component<Props> {
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
-        <MeetingSidebarLayout sidebarCollapsed={sidebarCollapsed}>
+        <MeetingSidebarLayout isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
           <NewMeetingSidebar
             gotoStageId={this.gotoStageId}
             meetingType={meetingType}
@@ -310,15 +310,18 @@ class NewMeeting extends Component<Props> {
             viewer={viewer}
           />
         </MeetingSidebarLayout>
-        <SidebarBackdrop onClick={this.toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
+        <SidebarBackdrop
+          onClick={this.toggleSidebar}
+          isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
+        />
         <MeetingArea>
-          <LayoutPusher sidebarCollapsed={sidebarCollapsed} />
+          <LayoutPusher isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
           <MeetingContent>
             {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
             <MeetingAreaHeader>
               <NewMeetingPhaseHeading
                 meeting={newMeeting}
-                sidebarCollapsed={sidebarCollapsed}
+                isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
                 toggleSidebar={this.toggleSidebar}
               />
               <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
@@ -381,7 +384,7 @@ export default createFragmentContainer(
         teamId: id
         teamName: name
         meetingId
-        sidebarCollapsed
+        isMeetingSidebarCollapsed
         tier
         teamMembers(sortBy: "checkInOrder") {
           id

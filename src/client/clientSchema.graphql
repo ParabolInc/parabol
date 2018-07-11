@@ -11,7 +11,7 @@ extend type RetrospectiveMeeting {
 
 extend type Team {
   contentFilter: String
-  sidebarCollapsed: Boolean
+  isMeetingSidebarCollapsed: Boolean
 }
 
 extend type User {

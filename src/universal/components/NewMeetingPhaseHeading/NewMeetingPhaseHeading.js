@@ -19,11 +19,11 @@ const HeadingBlock = styled('div')({
   padding: '1.25rem 0 1rem'
 })
 
-const Toggle = styled(SidebarToggle)(({sidebarCollapsed}) => ({
+const Toggle = styled(SidebarToggle)(({isMeetingSidebarCollapsed}) => ({
   margin: '0 1rem 0 .5rem',
 
   [meetingSidebarMediaQuery]: {
-    display: sidebarCollapsed ? 'block' : 'none'
+    display: isMeetingSidebarCollapsed ? 'block' : 'none'
   }
 }))
 
@@ -46,12 +46,12 @@ const PhaseDescription = styled('h2')({
 
 type Props = {|
   meeting: Meeting,
-  sidebarCollapsed: Boolean,
+  isMeetingSidebarCollapsed: Boolean,
   toggleSidebar: () => void
 |}
 
 const NewMeetingPhaseHeading = (props: Props) => {
-  const {meeting, sidebarCollapsed, toggleSidebar} = props
+  const {meeting, isMeetingSidebarCollapsed, toggleSidebar} = props
   const makeContent = () => {
     if (!meeting || !meeting.localPhase) return null
     const {
@@ -68,7 +68,7 @@ const NewMeetingPhaseHeading = (props: Props) => {
   }
   return (
     <HeadingBlock>
-      <Toggle onClick={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
+      <Toggle onClick={toggleSidebar} isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
       {makeContent()}
     </HeadingBlock>
   )

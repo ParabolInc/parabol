@@ -54,11 +54,11 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
     const {
       atmosphere,
       viewer: {
-        team: {teamId, sidebarCollapsed}
+        team: {teamId, isMeetingSidebarCollapsed}
       }
     } = props
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
+      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
   }
   return (
@@ -102,7 +102,7 @@ export default createFragmentContainer(
       ...NewMeetingSidebarPhaseListItemChildren_viewer
       viewerId: id
       team(teamId: $teamId) {
-        sidebarCollapsed
+        isMeetingSidebarCollapsed
         teamId: id
         meetingSettings(meetingType: $meetingType) {
           phaseTypes

@@ -92,11 +92,11 @@ const RetroSidebarDiscussSection = (props: Props) => {
     const {
       atmosphere,
       viewer: {
-        team: {teamId, sidebarCollapsed}
+        team: {teamId, isMeetingSidebarCollapsed}
       }
     } = props
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId).setValue(!sidebarCollapsed, 'sidebarCollapsed')
+      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
   }
 
@@ -178,7 +178,7 @@ export default createFragmentContainer(
   graphql`
     fragment RetroSidebarDiscussSection_viewer on User {
       team(teamId: $teamId) {
-        sidebarCollapsed
+        isMeetingSidebarCollapsed
         teamId: id
         newMeeting {
           meetingId: id
