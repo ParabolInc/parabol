@@ -10,16 +10,16 @@ const SEED_TASKS = [
     status: ACTIVE,
     sortOrder: 0,
     content: convertToTaskContent(`
-      Invite any missing team members to join the team. Tap on ‘Team Settings’
-      in the dashboard header above.
+      Invite missing team members: choose your team from the left navigation
+      and tap on ‘Team Settings’
     `)
   },
   {
     status: ACTIVE,
     sortOrder: 1,
     content: convertToTaskContent(`
-      Try a test run of an Action Meeting. Tap on ‘Meeting Lobby’ in
-      the dashboard header above. #private
+      Try a test run of a meeting: from your team’s dashboard
+      tap on ‘Start Meeting’ from the dashboard header above #private
     `)
   },
   {
@@ -27,7 +27,7 @@ const SEED_TASKS = [
     sortOrder: 0,
     content: convertToTaskContent(`
       Make good teaming a habit! Schedule a weekly Action Meeting with your
-      team. Pro-tip: include a link to the meeting lobby.
+      team. Pro-tip: include a link to the meeting lobby
     `)
   },
   {
