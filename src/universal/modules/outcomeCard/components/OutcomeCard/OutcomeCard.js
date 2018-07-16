@@ -42,7 +42,6 @@ const OutcomeCard = (props) => {
   const {teamId} = team
   const rootStyles = css(
     styles.root,
-    styles.cardBlock,
     // hover before focus, it matters
     cardHasHover && styles.cardHasHover,
     cardHasFocus && styles.cardHasFocus,
@@ -143,10 +142,6 @@ const styleThunk = () => ({
 
   hasDragStyles: {
     boxShadow: 'none'
-  },
-
-  cardBlock: {
-    marginBottom: '.625rem'
   },
 
   cardTopMeta: {

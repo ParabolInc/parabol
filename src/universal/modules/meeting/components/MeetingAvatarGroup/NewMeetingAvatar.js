@@ -25,9 +25,9 @@ const targetAnchor = {
   horizontal: 'right'
 }
 
-const borderActive = appTheme.brand.secondary.yellow
+const borderActive = ui.palette.yellow
 const borderLocal = appTheme.palette.mid30l
-const boxShadowBase = '0 0 0 2px #fff, 0 0 0 4px'
+const boxShadowBase = '0 0 0 .125rem #fff, 0 0 0 .25rem'
 const boxShadowWarm = `${boxShadowBase} ${borderActive}`
 const boxShadowLocal = `${boxShadowBase} ${borderLocal}`
 
@@ -73,10 +73,13 @@ const AvatarBlock = styled('div')(
 )
 
 const FacilitatorTag = styled('div')({
-  color: appTheme.brand.primary.darkGray,
+  backgroundColor: ui.palette.white,
+  borderRadius: '4em',
+  color: ui.palette.dark,
   fontSize: '.6875rem',
   fontWeight: 600,
   marginTop: '0.75rem',
+  padding: '0 .5rem',
   position: 'absolute',
   right: '50%',
   transform: 'translateX(50%)'

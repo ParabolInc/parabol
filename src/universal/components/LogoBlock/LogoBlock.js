@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import {Link} from 'react-router-dom'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
+import {meetingBottomBarHeight} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import logoMarkPrimary from 'universal/styles/theme/images/brand/mark-primary.svg'
 import logoMarkWhite from 'universal/styles/theme/images/brand/mark-white.svg'
@@ -11,12 +12,13 @@ const RootBlock = styled('div')(({variant}) => ({
   borderTop: variant === 'primary' && `.0625rem solid ${appTheme.palette.mid10a}`,
   boxSizing: 'content-box',
   display: 'flex',
-  height: ui.meetingControlBarHeight,
+  height: meetingBottomBarHeight,
   justifyContent: 'center',
+  userSelect: 'none',
   width: '100%'
 }))
 
-const Anchor = styled('a')({
+const Anchor = styled(Link)({
   display: 'block'
 })
 
@@ -29,12 +31,7 @@ const LogoBlock = (props) => {
   const logoSrc = variant === 'primary' ? logoMarkPrimary : logoMarkWhite
   return (
     <RootBlock variant={variant}>
-      <Anchor
-        href='http://www.parabol.co/'
-        rel='noopener noreferrer'
-        title='Parabol'
-        target='_blank'
-      >
+      <Anchor title='My Dashboard' to='/me'>
         <Image alt='Parabol' src={logoSrc} />
       </Anchor>
     </RootBlock>

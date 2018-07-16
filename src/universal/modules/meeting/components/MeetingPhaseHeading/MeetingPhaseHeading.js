@@ -1,23 +1,13 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import Type from 'universal/components/Type/Type'
+import styled from 'react-emotion'
+import ui from 'universal/styles/ui'
+import {fontSize} from 'universal/styles/theme/typography'
 
-const MeetingPhaseHeading = (props) => {
-  const {align, children} = props
-  return (
-    <Type align={align} bold family='serif' scale='s7' colorPalette='dark'>
-      {children}
-    </Type>
-  )
-}
-
-MeetingPhaseHeading.propTypes = {
-  align: PropTypes.oneOf(['left', 'center', 'right']),
-  children: PropTypes.any
-}
-
-MeetingPhaseHeading.defaultProps = {
-  align: 'left'
-}
+const MeetingPhaseHeading = styled('div')({
+  color: ui.palette.dark,
+  fontSize: fontSize[7],
+  fontWeight: 600,
+  lineHeight: 1.25,
+  textAlign: 'left'
+})
 
 export default MeetingPhaseHeading

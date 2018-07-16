@@ -9,6 +9,7 @@ import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/Co
 import AgendaListAndInput from 'universal/modules/teamDashboard/components/AgendaListAndInput/AgendaListAndInput'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {meetingSidebarWidth} from 'universal/styles/meeting'
 import withStyles from 'universal/styles/withStyles'
 import {
   AGENDA_ITEMS,
@@ -281,8 +282,8 @@ const styleThunk = () => ({
     display: 'flex',
     flexDirection: 'column',
     padding: '1.25rem 0 0',
-    maxWidth: ui.meetingSidebarWidth,
-    minWidth: ui.meetingSidebarWidth
+    maxWidth: meetingSidebarWidth,
+    minWidth: meetingSidebarWidth
   },
 
   sidebarHeader: {

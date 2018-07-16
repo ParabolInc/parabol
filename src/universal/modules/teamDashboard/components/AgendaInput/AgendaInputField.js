@@ -10,6 +10,7 @@ import AddAgendaItemMutation from 'universal/mutations/AddAgendaItemMutation'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {meetingSidebarGutter} from 'universal/styles/meeting'
 import withStyles from 'universal/styles/withStyles'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
@@ -182,7 +183,7 @@ const styleThunk = () => ({
     backgroundColor: 'transparent',
     color: appTheme.palette.cool,
     fontSize: appTheme.typography.s3,
-    padding: `0 ${ui.meetingSidebarGutter}`,
+    padding: `0 ${meetingSidebarGutter}`,
     position: 'relative',
     width: '100%',
     zIndex: 100

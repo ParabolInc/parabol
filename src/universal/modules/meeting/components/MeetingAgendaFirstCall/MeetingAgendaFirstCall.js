@@ -10,7 +10,7 @@ import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/Meetin
 import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import AgendaShortcutHint from 'universal/modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
 import withStyles from 'universal/styles/withStyles'
-import ui from 'universal/styles/ui'
+import {meetingSplashGutter} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import {css} from 'aphrodite-local-styles/no-important'
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
@@ -64,7 +64,7 @@ MeetingAgendaFirstCall.propTypes = {
 
 const styleThunk = () => ({
   main: {
-    paddingLeft: ui.meetingSplashGutter,
+    paddingLeft: meetingSplashGutter,
     width: '100%'
   },
 

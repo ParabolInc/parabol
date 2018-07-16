@@ -3,7 +3,7 @@ import * as React from 'react'
 import {DragDropContext as dragDropContext} from '@mattkrick/react-dnd'
 import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
 import withHotkey from 'react-hotkey-hoc'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import type {Match, RouterHistory} from 'react-router-dom'
@@ -17,6 +17,7 @@ import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroRefle
 import type {NewMeeting_viewer as Viewer} from './__generated__/NewMeeting_viewer.graphql'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import ui from 'universal/styles/ui'
+import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
 import {
   RETRO_LOBBY_FREE,
   RETRO_LOBBY_PAID,
@@ -47,8 +48,16 @@ import RetroDiscussPhase from 'universal/components/RetroDiscussPhase'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
 import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
+import {
+  meetingChromeBoxShadow,
+  meetingSidebarMediaQuery,
+  meetingSidebarWidth
+} from 'universal/styles/meeting'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 
 const {Component} = React
+
+const boxShadowNone = makeShadowColor(0)
 
 const MeetingContainer = styled('div')({
   backgroundColor: ui.backgroundColor,
@@ -57,26 +66,79 @@ const MeetingContainer = styled('div')({
   overflowX: 'auto'
 })
 
-const MeetingArea = styled('div')({
+const MeetingSidebarLayout = styled('div')(({isMeetingSidebarCollapsed}) => ({
+  boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
   display: 'flex',
   flexDirection: 'column',
-  // minWidth > let’s keep the main meeting view from collapsing until
-  // we can due diligence in a designed, responsive pass (TA)
-  minWidth: '60rem',
+  height: '100vh',
+  position: 'absolute',
+  transition: `
+    box-shadow ${ui.transition[0]},
+    transform ${ui.transition[0]}
+  `,
+  transform: isMeetingSidebarCollapsed
+    ? `translate3d(-${meetingSidebarWidth}, 0, 0)`
+    : 'translate3d(0, 0, 0)',
+  width: meetingSidebarWidth,
+  zIndex: 400,
+
+  [meetingSidebarMediaQuery]: {
+    boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[0]
+  }
+}))
+
+const MeetingArea = styled('div')({
+  display: 'flex',
   width: '100%',
   zIndex: 100
 })
 
+const MeetingContent = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
+  width: '100%'
+})
+
+const SidebarBackdrop = styled('div')(({isMeetingSidebarCollapsed}) => ({
+  backgroundColor: ui.modalBackdropBackgroundColor,
+  bottom: 0,
+  left: 0,
+  opacity: isMeetingSidebarCollapsed ? 0 : 1,
+  pointerEvents: isMeetingSidebarCollapsed && 'none',
+  position: 'fixed',
+  right: 0,
+  top: 0,
+  transition: `opacity ${ui.transition[0]}`,
+  zIndex: 300,
+
+  [meetingSidebarMediaQuery]: {
+    display: 'none'
+  }
+}))
+
+const LayoutPusher = styled('div')(({isMeetingSidebarCollapsed}) => ({
+  display: 'none',
+
+  [meetingSidebarMediaQuery]: {
+    display: 'block',
+    flexShrink: 0,
+    transition: `width ${ui.transition[0]}`,
+    width: isMeetingSidebarCollapsed ? 0 : meetingSidebarWidth
+  }
+}))
+
 const MeetingAreaHeader = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
+  flexShrink: 0,
   flexWrap: 'wrap',
   justifyContent: 'space-between',
   margin: 0,
   maxWidth: '100%',
   padding: '0 1rem 1rem',
   width: '100%',
-  [ui.breakpoint.wide]: {
+  [minWidthMediaQueries[3]]: {
     padding: '0 1rem 2rem'
   }
 })
@@ -214,10 +276,22 @@ class NewMeeting extends Component<Props> {
     this.gotoStageId(nextStageId)
   }
 
+  toggleSidebar = () => {
+    const {
+      atmosphere,
+      viewer: {
+        team: {teamId, isMeetingSidebarCollapsed}
+      }
+    } = this.props
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
+    })
+  }
+
   render () {
     const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
-    const {newMeeting, teamName, tier} = team
+    const {newMeeting, isMeetingSidebarCollapsed, teamName, tier} = team
     const {facilitatorStageId, facilitatorUserId, localPhase, localStage} = newMeeting || {}
     const {viewerId} = atmosphere
     const isFacilitating = viewerId === facilitatorUserId
@@ -228,33 +302,53 @@ class NewMeeting extends Component<Props> {
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
-        <NewMeetingSidebar
-          gotoStageId={this.gotoStageId}
-          meetingType={meetingType}
-          viewer={viewer}
+        <MeetingSidebarLayout isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
+          <NewMeetingSidebar
+            gotoStageId={this.gotoStageId}
+            meetingType={meetingType}
+            toggleSidebar={this.toggleSidebar}
+            viewer={viewer}
+          />
+        </MeetingSidebarLayout>
+        <SidebarBackdrop
+          onClick={this.toggleSidebar}
+          isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
         />
         <MeetingArea>
-          {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
-          <MeetingAreaHeader>
-            <NewMeetingPhaseHeading meeting={newMeeting} />
-            <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
-          </MeetingAreaHeader>
-          <ErrorBoundary>
-            <React.Fragment>
-              {localPhaseType === CHECKIN && (
-                <NewMeetingCheckIn gotoNext={this.gotoNext} meetingType={meetingType} team={team} />
-              )}
-              {localPhaseType === REFLECT && (
-                <RetroReflectPhase gotoNext={this.gotoNext} team={team} />
-              )}
-              {localPhaseType === GROUP && <RetroGroupPhase gotoNext={this.gotoNext} team={team} />}
-              {localPhaseType === VOTE && <RetroVotePhase gotoNext={this.gotoNext} team={team} />}
-              {localPhaseType === DISCUSS && (
-                <RetroDiscussPhase gotoNext={this.gotoNext} team={team} />
-              )}
-              {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
-            </React.Fragment>
-          </ErrorBoundary>
+          <LayoutPusher isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
+          <MeetingContent>
+            {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
+            <MeetingAreaHeader>
+              <NewMeetingPhaseHeading
+                meeting={newMeeting}
+                isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
+                toggleSidebar={this.toggleSidebar}
+              />
+              <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
+            </MeetingAreaHeader>
+            <ErrorBoundary>
+              <React.Fragment>
+                {localPhaseType === CHECKIN && (
+                  <NewMeetingCheckIn
+                    gotoNext={this.gotoNext}
+                    meetingType={meetingType}
+                    team={team}
+                  />
+                )}
+                {localPhaseType === REFLECT && (
+                  <RetroReflectPhase gotoNext={this.gotoNext} team={team} />
+                )}
+                {localPhaseType === GROUP && (
+                  <RetroGroupPhase gotoNext={this.gotoNext} team={team} />
+                )}
+                {localPhaseType === VOTE && <RetroVotePhase gotoNext={this.gotoNext} team={team} />}
+                {localPhaseType === DISCUSS && (
+                  <RetroDiscussPhase gotoNext={this.gotoNext} team={team} />
+                )}
+                {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
+              </React.Fragment>
+            </ErrorBoundary>
+          </MeetingContent>
         </MeetingArea>
         {!inSync && (
           <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />
@@ -290,6 +384,7 @@ export default createFragmentContainer(
         teamId: id
         teamName: name
         meetingId
+        isMeetingSidebarCollapsed
         tier
         teamMembers(sortBy: "checkInOrder") {
           id

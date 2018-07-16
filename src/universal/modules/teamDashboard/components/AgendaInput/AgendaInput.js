@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import withStyles from 'universal/styles/withStyles'
-import ui from 'universal/styles/ui'
+import {meetingSidebarGutter} from 'universal/styles/meeting'
 import {css} from 'aphrodite-local-styles/no-important'
 import {reduxForm, Field} from 'redux-form'
 import AgendaInputField from './AgendaInputField'
@@ -44,7 +44,7 @@ AgendaInput.propTypes = {
 
 const styleThunk = () => ({
   agendaInputBlock: {
-    padding: `${ui.meetingSidebarGutter} 0`,
+    padding: `${meetingSidebarGutter} 0`,
     position: 'relative'
   }
 })

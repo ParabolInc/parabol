@@ -26,15 +26,15 @@ const ColumnWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  height: '100%'
+  height: '100%',
+  minWidth: ui.retroCardWidth
 })
 
 const ReflectionsArea = styled('div')({
   flexDirection: 'column',
   display: 'flex',
   overflow: 'auto',
-  height: '100%',
-  minWidth: ui.retroCardWidth
+  height: '100%'
 })
 
 const ReflectionsList = styled('div')(({canDrop}) => ({

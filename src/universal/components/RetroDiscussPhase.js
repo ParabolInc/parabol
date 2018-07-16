@@ -18,6 +18,7 @@ import type {RouterHistory} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
+import {meetingTopicPhaseMaxWidth} from 'universal/styles/meeting'
 
 type Props = {|
   atmosphere: Object,
@@ -61,54 +62,37 @@ const PhaseWrapper = styled('div')({
 const ReflectionSection = styled('div')({
   borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
   display: 'flex',
+  flex: 1,
+  flexShrink: 0,
   flexDirection: 'column',
-  height: '100%',
   margin: '0 auto',
-  maxHeight: '35%',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
-  width: '100%',
-
-  [ui.breakpoint.wide]: {
-    maxHeight: '40%'
-  },
-
-  [ui.breakpoint.wider]: {
-    maxHeight: '45%'
-  },
-
-  [ui.breakpoint.widest]: {
-    maxHeight: '50%'
-  }
+  maxWidth: meetingTopicPhaseMaxWidth,
+  minHeight: 200,
+  width: '100%'
 })
 
 const ReflectionSectionInner = styled('div')({
-  padding: '0 1.375rem .875rem 2.5rem'
+  padding: '0 2.5rem 1.25rem'
 })
 
 const ReflectionGrid = styled('div')({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, calc(100% / 3))'
+  gridGap: '1.25rem',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))'
 })
 
-const ReflectionGridBlock = styled('div')({
-  margin: '0 1.125rem 1.125rem 0'
+const TaskSection = styled('div')({
+  display: 'flex',
+  flex: 1,
+  height: '10.25rem',
+  width: '100%'
 })
 
 const TaskCardBlock = styled('div')({
   margin: '0 auto',
-  maxWidth: ui.meetingTopicPhaseMaxWidth,
-  padding: '1rem 2rem',
-  width: '100%',
-
-  [ui.breakpoint.wide]: {
-    paddingLeft: '1.75rem',
-    paddingRight: '1.75rem'
-  },
-
-  [ui.breakpoint.wider]: {
-    paddingLeft: '1.5rem',
-    paddingRight: '1.5rem'
-  }
+  maxWidth: meetingTopicPhaseMaxWidth,
+  padding: '1.25rem 2.5rem',
+  width: '100%'
 })
 
 const ControlButtonBlock = styled('div')({
@@ -163,29 +147,29 @@ const RetroDiscussPhase = (props: Props) => {
               <ReflectionGrid>
                 {reflections.map((reflection) => {
                   return (
-                    <ReflectionGridBlock key={`GridBlock-${reflection.id}`}>
-                      <ReflectionCard
-                        key={reflection.id}
-                        meeting={newMeeting}
-                        reflection={reflection}
-                      />
-                    </ReflectionGridBlock>
+                    <ReflectionCard
+                      key={reflection.id}
+                      meeting={newMeeting}
+                      reflection={reflection}
+                    />
                   )
                 })}
               </ReflectionGrid>
             </ReflectionSectionInner>
           </ScrollableBlock>
         </ReflectionSection>
-        <ScrollableBlock>
-          <TaskCardBlock>
-            <MeetingAgendaCards
-              meetingId={meetingId}
-              reflectionGroupId={reflectionGroupId}
-              tasks={tasks}
-              teamId={teamId}
-            />
-          </TaskCardBlock>
-        </ScrollableBlock>
+        <TaskSection>
+          <ScrollableBlock>
+            <TaskCardBlock>
+              <MeetingAgendaCards
+                meetingId={meetingId}
+                reflectionGroupId={reflectionGroupId}
+                tasks={tasks}
+                teamId={teamId}
+              />
+            </TaskCardBlock>
+          </ScrollableBlock>
+        </TaskSection>
       </PhaseWrapper>
       {isFacilitating && (
         <SpacedMeetingControlBar>
