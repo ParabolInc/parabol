@@ -7,7 +7,7 @@ import {PRO} from 'universal/utils/constants'
 import styled from 'react-emotion'
 import LoadableModal from 'universal/components/LoadableModal'
 import type {NewMeetingLobby_team as Team} from './__generated__/NewMeetingLobby_team.graphql'
-import type {MeetingTypeEnum, TierEnum} from 'universal/types/schema.flow'
+import type {MeetingTypeEnum} from 'universal/types/schema.flow'
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
@@ -95,10 +95,6 @@ type Props = {
   ...MutationProps
 }
 
-type State = {|
-  initialTier: TierEnum
-|}
-
 const StyledInlineAlert = styled(InlineAlert)({
   display: 'inline-block',
   paddingLeft: '1rem',
@@ -116,24 +112,8 @@ const StyledButton = styled(PrimaryButton)({
   width: '100%'
 })
 
-class NewMeetingLobby extends React.Component<Props, State> {
-  state = {
-    initialTier: this.props.team.tier
-  }
-
-  updateInitialTier = () => {
-    const {
-      team: {tier}
-    } = this.props
-    if (this.state.initialTier !== tier) {
-      this.setState({
-        initialTier: tier
-      })
-    }
-  }
-
+class NewMeetingLobby extends React.Component<Props> {
   render () {
-    const {initialTier} = this.state
     const {
       atmosphere,
       history,
@@ -144,14 +124,13 @@ class NewMeetingLobby extends React.Component<Props, State> {
       submitting,
       team
     } = this.props
-    const {orgId, organization, teamId, teamName, tier} = team
-    const {retroMeetingsOffered, retroMeetingsRemaining} = organization
+    const {orgId, organization, teamId, teamName} = team
+    const {retroMeetingsOffered, retroMeetingsRemaining, tier} = organization
     const onStartMeetingClick = () => {
       submitMutation()
       StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted)
     }
     const isPro = tier === PRO
-    const initiallyPro = initialTier === PRO
 
     // const isPro = true;
     const canStartMeeting = isPro || retroMeetingsRemaining > 0
@@ -181,7 +160,7 @@ class NewMeetingLobby extends React.Component<Props, State> {
             }
           </StyledCopy>
         )}
-        {!initiallyPro && (
+        {!isPro && (
           <StyledInlineAlert>
             <span
             >{`${retroMeetingsRemaining} of ${retroMeetingsOffered} Meetings Remaining — `}</span>
@@ -189,7 +168,6 @@ class NewMeetingLobby extends React.Component<Props, State> {
               LoadableComponent={UpgradeModalRootLoadable}
               maxWidth={350}
               maxHeight={225}
-              onClose={this.updateInitialTier}
               queryVars={{orgId}}
               toggle={<AlertAction>Upgrade to Pro</AlertAction>}
             />
@@ -198,7 +176,7 @@ class NewMeetingLobby extends React.Component<Props, State> {
         )}
         <ButtonGroup>
           <ButtonBlock>
-            {(initiallyPro || retroMeetingsRemaining > 0) && (
+            {(isPro || retroMeetingsRemaining > 0) && (
               <StyledButton
                 aria-label={buttonLabel}
                 depth={1}
@@ -210,13 +188,12 @@ class NewMeetingLobby extends React.Component<Props, State> {
                 {buttonLabel}
               </StyledButton>
             )}
-            {!initiallyPro &&
+            {!isPro &&
               retroMeetingsRemaining === 0 && (
                 <LoadableModal
                   LoadableComponent={UpgradeModalRootLoadable}
                   maxWidth={350}
                   maxHeight={225}
-                  onClose={this.updateInitialTier}
                   queryVars={{orgId}}
                   toggle={
                     <StyledButton aria-label='Get Access Now' size='large' depth={1}>
@@ -239,13 +216,13 @@ export default createFragmentContainer(
   withRouter(withAtmosphere(withMutationProps(NewMeetingLobby))),
   graphql`
     fragment NewMeetingLobby_team on Team {
-      tier
       teamId: id
       teamName: name
       orgId
       organization {
         retroMeetingsOffered
         retroMeetingsRemaining
+        tier
       }
     }
   `

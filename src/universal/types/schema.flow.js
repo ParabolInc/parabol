@@ -107,7 +107,7 @@ export type User = {
   /** paginated list of slackChannels */
   slackChannels: ?Array<SlackIntegration>,
   /** get a single organization and the count of users by status */
-  organization: ?Organization,
+  organization: Organization,
   /** Get the list of all organizations a user belongs to */
   organizations: ?Array<Organization>,
   tasks: ?TaskConnection,

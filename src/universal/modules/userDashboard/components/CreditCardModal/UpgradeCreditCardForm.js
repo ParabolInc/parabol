@@ -245,7 +245,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
       }
     }
     if (isUpdate) {
-      UpdateCreditCardMutation(atmosphere, orgId, stripeToken, onError, onCompleted)
+      UpdateCreditCardMutation(atmosphere, orgId, stripeToken, onError, handleCompleted)
     } else {
       UpgradeToProMutation(atmosphere, orgId, stripeToken, onError, handleCompleted)
     }
