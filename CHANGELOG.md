@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.5.1 2018-Jul-17
+
+### Fixed
+
+* Hotfix preventing abuse sending email to particular domains
+
 ## v2.5.0 2018-Jul-09
 
 ### Added
