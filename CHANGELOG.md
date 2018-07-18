@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.6.0 2018-Jul-18
+
+### Added
+
+* More check-in questions #2251
+* Collapsible new meeting sidebar #2243
+* Rate limiting to invitation mutations #2275
+
+### Fixed
+
+* Promoting to billing leader auto-accepts their pending invites #2247
+* All credit card modals use the updated components #2245
+
 ## v2.5.1 2018-Jul-17
 
 ### Fixed
