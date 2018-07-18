@@ -27,6 +27,7 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(Invitee))
     }
   },
+  directives: [{name: 'rateLimit', args: {perMinute: 2}}],
   async resolve (source, args, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

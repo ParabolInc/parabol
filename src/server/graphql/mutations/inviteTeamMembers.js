@@ -29,6 +29,7 @@ export default {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
     }
   },
+  directives: [{name: 'rateLimit', args: {perMinute: 4, perHour: 30}}],
   async resolve (source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share()
     const r = getRethink()
