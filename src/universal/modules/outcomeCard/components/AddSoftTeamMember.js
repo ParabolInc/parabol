@@ -103,7 +103,11 @@ class AddSoftTeamMember extends Component {
     const invitees = [{email: inviteeEmail}]
     submitMutation()
     const handleCompleted = (res, errors) => {
-      onCompleted(res, errors)
+      const error = onCompleted(res, errors)
+      if (error) {
+        // TODO pop toast since we already optimistically closed the portal
+        return
+      }
       const {
         inviteTeamMembers: {newSoftTeamMembers, reactivatedTeamMembers}
       } = res
@@ -159,7 +163,7 @@ class AddSoftTeamMember extends Component {
             />
           </form>
         </div>
-        {error && isActive && <ErrorMessageInMenu error={error} />}
+        {error && isActive && <ErrorMessageInMenu error={error.message || error} />}
       </div>
     )
   }

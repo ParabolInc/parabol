@@ -1,15 +1,15 @@
-import {graphql} from 'graphql'
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 import IntranetSchema from 'server/graphql/intranetSchema/intranetSchema'
 import Schema from './rootSchema'
 import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
 import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors'
+import graphql from 'server/graphql/graphql'
 
-export default (sharedDataLoader) => async (req, res) => {
+export default (sharedDataLoader, rateLimiter) => async (req, res) => {
   const {query, variables} = req.body
   const authToken = req.user || {}
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken))
-  const context = {authToken, dataLoader}
+  const context = {authToken, dataLoader, rateLimiter}
   const result = await graphql(Schema, query, {}, context, variables)
   dataLoader.dispose()
   if (result.errors) {

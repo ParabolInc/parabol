@@ -190,3 +190,12 @@ export const sendReflectionAccessError = (authToken, retroPhaseItemId, returnVal
   }
   return sendAuthRaven(authToken, 'Nacho Reflection', breadcrumb, returnValue)
 }
+
+export const sendRateLimitReachedError = (authToken, field, lastMinute, lastHour) => {
+  const breadcrumb = {
+    message: 'Rate limit reached',
+    category: 'Rate limit',
+    data: {field, lastMinute, lastHour}
+  }
+  return sendAuthRaven(authToken, 'Rate limit reached', breadcrumb)
+}

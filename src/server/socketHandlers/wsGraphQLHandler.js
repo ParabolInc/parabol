@@ -1,20 +1,21 @@
-import {graphql} from 'graphql'
 import Schema from 'server/graphql/rootSchema'
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
 import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors'
+import rateLimitedGraphQL from 'server/graphql/graphql'
 
 export default async function wsGraphQLHandler (connectionContext, parsedMessage) {
   const {payload} = parsedMessage
   const {query, variables} = payload
-  const {id: socketId, authToken, sharedDataLoader} = connectionContext
+  const {id: socketId, authToken, sharedDataLoader, rateLimiter} = connectionContext
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken))
   const context = {
     authToken,
     socketId,
-    dataLoader
+    dataLoader,
+    rateLimiter
   }
-  const result = await graphql(Schema, query, {}, context, variables)
+  const result = await rateLimitedGraphQL(Schema, query, {}, context, variables)
   dataLoader.dispose()
 
   if (result.errors) {

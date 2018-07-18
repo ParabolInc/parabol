@@ -11,19 +11,20 @@ import handleConnect from 'server/socketHandlers/handleConnect'
 import {GRAPHQL_WS} from 'subscriptions-transport-ws'
 
 class ConnectionContext {
-  constructor (socket, authToken, sharedDataLoader) {
+  constructor (socket, authToken, sharedDataLoader, rateLimiter) {
     this.authToken = authToken
     this.availableResubs = []
     this.cancelKeepAlive = null
     this.id = shortid.generate()
     this.isAlive = true
+    this.rateLimiter = rateLimiter
     this.socket = socket
     this.sharedDataLoader = sharedDataLoader
     this.subs = {}
   }
 }
 
-export default function connectionHandler (sharedDataLoader) {
+export default function connectionHandler (sharedDataLoader, rateLimiter) {
   return async function socketConnectionHandler (socket) {
     const req = socket.upgradeReq
     const {headers} = req
@@ -45,7 +46,12 @@ export default function connectionHandler (sharedDataLoader) {
       socket.close()
       return
     }
-    const connectionContext = new ConnectionContext(socket, authToken, sharedDataLoader)
+    const connectionContext = new ConnectionContext(
+      socket,
+      authToken,
+      sharedDataLoader,
+      rateLimiter
+    )
     handleConnect(connectionContext)
     keepAlive(connectionContext, WS_KEEP_ALIVE)
     socket.on('message', handleMessage(connectionContext))

@@ -23,12 +23,14 @@ export default (ComposedComponent) => {
     }
 
     onCompleted = (res, errors) => {
+      const error = getGraphQLError(res, errors)
       if (this._mounted) {
         this.setState({
           submitting: false,
-          error: getGraphQLError(res, errors)
+          error
         })
       }
+      return error
     }
 
     onError = (error) => {
