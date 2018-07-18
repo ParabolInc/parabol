@@ -1,7 +1,6 @@
 // @flow
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import CopyLink from 'universal/components/CopyLink'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {meetingSidebarWidth} from 'universal/styles/meeting'
@@ -13,9 +12,9 @@ import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPh
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import SidebarToggle from 'universal/components/SidebarToggle'
-import makeHref from 'universal/utils/makeHref'
 import type {MeetingTypeEnum} from 'universal/types/schema.flow'
-import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import {Link} from 'react-router-dom'
 
 const SidebarHeader = styled('div')({
   alignItems: 'center',
@@ -37,7 +36,7 @@ const SidebarParent = styled('div')({
   padding: '1.25rem 0 0'
 })
 
-const TeamDashboardLink = styled('div')({
+const TeamDashboardLink = styled(Link)({
   color: ui.copyText,
   fontSize: appTheme.typography.s5,
   fontWeight: 600,
@@ -60,20 +59,12 @@ const NewMeetingSidebar = (props: Props) => {
   const {
     team: {teamId, teamName}
   } = viewer
-  const meetingSlug = meetingTypeToSlug[meetingType]
   const meetingLabel = meetingTypeToLabel[meetingType]
-  const relativeLink = `/${meetingSlug}/${teamId}`
   return (
     <SidebarParent>
       <SidebarHeader>
         <StyledToggle onClick={toggleSidebar} />
-        <CopyLink
-          title='Copy Meeting Link'
-          tooltip='Copied the meeting link!'
-          url={makeHref(relativeLink)}
-        >
-          <TeamDashboardLink>{teamName}</TeamDashboardLink>
-        </CopyLink>
+        <TeamDashboardLink to={`/team/${teamId}`}>{teamName}</TeamDashboardLink>
       </SidebarHeader>
       <MeetingSidebarLabelBlock>
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>
