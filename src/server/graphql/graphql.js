@@ -2,14 +2,12 @@ import {parse} from 'graphql/language/parser'
 import {execute} from 'graphql/execution/execute'
 import {validateSchema} from 'graphql/type/validate'
 import {validate} from 'graphql/validation/validate'
-import rateLimitHandler from 'server/graphql/rateLimitHandler'
-import {getUserId} from 'server/utils/authorization'
 
 // Avoid needless parsing & validating for the 300 hottest operations
 let documentCache = {}
 const MAX_CACHE_SIZE = 300
 
-const rateLimitedGraphQL = async (
+const graphql = async (
   schema,
   source,
   rootValue,
@@ -45,24 +43,6 @@ const rateLimitedGraphQL = async (
     }
   }
 
-  // Rate limit
-  const userId = getUserId(contextValue.authToken)
-  if (userId) {
-    // Login/signup will always have an unknown userId, so we'll let auth0 handle that rate limit
-    try {
-      await rateLimitHandler(document, schema, userId)
-    } catch (rateLimitField) {
-      return {
-        [rateLimitField.message]: {
-          error: {
-            title: 'Rate limit reached',
-            message: 'Slow your roll, pal'
-          }
-        }
-      }
-    }
-  }
-
   // Execute
   return execute(
     schema,
@@ -75,4 +55,4 @@ const rateLimitedGraphQL = async (
   )
 }
 
-export default rateLimitedGraphQL
+export default graphql

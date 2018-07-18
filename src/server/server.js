@@ -25,6 +25,7 @@ import http from 'http'
 import packageJSON from '../../package.json'
 import jwtFields from 'universal/utils/jwtFields'
 import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
+import RateLimiter from 'server/graphql/RateLimiter'
 
 const {version} = packageJSON
 // Import .env and expand variables:
@@ -44,6 +45,7 @@ const sharedDataLoader = new SharedDataLoader({
   onShare: '_share',
   ttl: SHARED_DATA_LOADER_TTL
 })
+const rateLimiter = new RateLimiter()
 
 // HMR
 if (!PROD) {
@@ -97,7 +99,7 @@ if (PROD) {
 }
 
 // HTTP GraphQL endpoint
-const graphQLHandler = httpGraphQLHandler(sharedDataLoader)
+const graphQLHandler = httpGraphQLHandler(sharedDataLoader, rateLimiter)
 app.post(
   '/graphql',
   jwt({
@@ -137,7 +139,7 @@ app.post('/webhooks/github', handleGitHubWebhooks)
 app.get('*', createSSR)
 
 // handle sockets
-wss.on('connection', connectionHandler(sharedDataLoader))
+wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
 
 // if (process.env.MEMWATCH) {
 // startMemwatch()

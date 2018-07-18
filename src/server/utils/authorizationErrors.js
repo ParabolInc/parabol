@@ -1,5 +1,4 @@
 import sendAuthRaven from 'server/utils/sendAuthRaven'
-import sendSentryEvent from 'server/utils/sendSentryEvent'
 
 export const sendBadAuthTokenError = (authToken, returnValue) => {
   const breadcrumb = {
@@ -192,11 +191,11 @@ export const sendReflectionAccessError = (authToken, retroPhaseItemId, returnVal
   return sendAuthRaven(authToken, 'Nacho Reflection', breadcrumb, returnValue)
 }
 
-export const sendRateLimitReachedError = (userId, field, lastMinute, lastHour) => {
+export const sendRateLimitReachedError = (authToken, field, lastMinute, lastHour) => {
   const breadcrumb = {
     message: 'Rate limit reached',
     category: 'Rate limit',
-    data: {field, lastMinute, lastHour, userId}
+    data: {field, lastMinute, lastHour}
   }
-  sendSentryEvent(undefined, breadcrumb)
+  return sendAuthRaven(authToken, 'Rate limit reached', breadcrumb)
 }

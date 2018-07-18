@@ -1,4 +1,4 @@
-import {graphql} from 'graphql'
+import graphql from 'server/graphql/graphql'
 import schema from 'server/graphql/rootSchema'
 import closeClientPage from 'server/utils/closeClientPage'
 

@@ -14,6 +14,7 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import addTeamValidation from './helpers/addTeamValidation'
 import {sendOrgAccessError} from 'server/utils/authorizationErrors'
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import rateLimit from 'server/graphql/rateLimit'
 
 export default {
   type: AddTeamPayload,
@@ -27,59 +28,60 @@ export default {
       type: new GraphQLList(new GraphQLNonNull(Invitee))
     }
   },
-  directives: [{name: 'rateLimit', args: {perMinute: 2}}],
-  async resolve (source, args, {authToken, dataLoader, socketId: mutatorId}) {
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId, operationId}
+  resolve: rateLimit({perMinute: 4, perHour: 20})(
+    async (source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+      const operationId = dataLoader.share()
+      const subOptions = {mutatorId, operationId}
 
-    // AUTH
-    const {orgId} = args.newTeam
-    const viewerId = getUserId(authToken)
-    const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
-    if (!userOrgDoc) return sendOrgAccessError(authToken, orgId)
+      // AUTH
+      const {orgId} = args.newTeam
+      const viewerId = getUserId(authToken)
+      const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
+      if (!userOrgDoc) return sendOrgAccessError(authToken, orgId)
 
-    // VALIDATION
-    const {
-      data: {invitees, newTeam},
-      errors
-    } = addTeamValidation()(args)
-    if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
-    }
-
-    // RESOLUTION
-    const teamId = shortid.generate()
-    await createTeamAndLeader(viewerId, {id: teamId, ...newTeam})
-
-    const tms = authToken.tms.concat(teamId)
-    const inviteeCount = invitees ? invitees.length : 0
-    sendSegmentEvent('New Team', viewerId, {orgId, teamId, inviteeCount})
-    publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
-    auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms})
-
-    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(
-      invitees,
-      teamId,
-      viewerId,
-      dataLoader
-    )
-    const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const data = {
-      orgId,
-      teamId,
-      teamMemberId,
-      invitationIds,
-      teamInviteNotifications
-    }
-
-    teamInviteNotifications.forEach((notification) => {
+      // VALIDATION
       const {
-        userIds: [invitedUserId]
-      } = notification
-      publish(NOTIFICATION, invitedUserId, AddTeamPayload, data, subOptions)
-    })
-    publish(TEAM, viewerId, AddTeamPayload, data, subOptions)
+        data: {invitees, newTeam},
+        errors
+      } = addTeamValidation()(args)
+      if (Object.keys(errors).length) {
+        return sendFailedInputValidation(authToken, errors)
+      }
 
-    return data
-  }
+      // RESOLUTION
+      const teamId = shortid.generate()
+      await createTeamAndLeader(viewerId, {id: teamId, ...newTeam})
+
+      const tms = authToken.tms.concat(teamId)
+      const inviteeCount = invitees ? invitees.length : 0
+      sendSegmentEvent('New Team', viewerId, {orgId, teamId, inviteeCount})
+      publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
+      auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms})
+
+      const {invitationIds, teamInviteNotifications} = await addTeamInvitees(
+        invitees,
+        teamId,
+        viewerId,
+        dataLoader
+      )
+      const teamMemberId = toTeamMemberId(teamId, viewerId)
+      const data = {
+        orgId,
+        teamId,
+        teamMemberId,
+        invitationIds,
+        teamInviteNotifications
+      }
+
+      teamInviteNotifications.forEach((notification) => {
+        const {
+          userIds: [invitedUserId]
+        } = notification
+        publish(NOTIFICATION, invitedUserId, AddTeamPayload, data, subOptions)
+      })
+      publish(TEAM, viewerId, AddTeamPayload, data, subOptions)
+
+      return data
+    }
+  )
 }

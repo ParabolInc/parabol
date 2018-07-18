@@ -14,6 +14,7 @@ import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds'
 import getRethink from 'server/database/rethinkDriver'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import rateLimit from 'server/graphql/rateLimit'
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -29,98 +30,99 @@ export default {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Invitee)))
     }
   },
-  directives: [{name: 'rateLimit', args: {perMinute: 4, perHour: 30}}],
-  async resolve (source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
-    const operationId = dataLoader.share()
-    const r = getRethink()
+  resolve: rateLimit({perMinute: 10, perHour: 100})(
+    async (source, {invitees, teamId}, {authToken, dataLoader, socketId: mutatorId}) => {
+      const operationId = dataLoader.share()
+      const r = getRethink()
 
-    // AUTH
-    const viewerId = getUserId(authToken)
-    if (!isTeamMember(authToken, teamId)) {
-      const orgId = await r
-        .table('Team')
-        .get(teamId)('orgId')
-        .default('')
-      const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
-      if (!isOrgBillingLeader(userOrgDoc)) {
-        return sendTeamAccessError(authToken, teamId)
+      // AUTH
+      const viewerId = getUserId(authToken)
+      if (!isTeamMember(authToken, teamId)) {
+        const orgId = await r
+          .table('Team')
+          .get(teamId)('orgId')
+          .default('')
+        const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
+        if (!isOrgBillingLeader(userOrgDoc)) {
+          return sendTeamAccessError(authToken, teamId)
+        }
       }
-    }
 
-    // RESOLUTION
-    const subOptions = {mutatorId, operationId}
-    const {
-      billingLeaderUserIds,
-      orgApprovalIds,
-      reactivations,
-      removedOrgApprovals,
-      removedRequestNotifications,
-      requestNotifications,
-      newInvitations,
-      newSoftTeamMembers,
-      teamInviteNotifications: inviteNotifications,
-      unarchivedSoftTasks
-    } = await inviteTeamMembers(invitees, teamId, viewerId, dataLoader)
-    const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId)
-    const reactivationNotificationIds = reactivations.map(({notificationId}) => notificationId)
-    const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id)
-    const invitationIds = newInvitations.map(({id}) => id)
-    const unarchivedSoftTaskIds = unarchivedSoftTasks.map(({id}) => id)
-    const softTeamMemberIds = newSoftTeamMembers.map(({id}) => id)
-
-    const data = {
-      orgApprovalIds,
-      removedOrgApprovalIds,
-      reactivatedTeamMemberIds,
-      teamId,
-      reactivationNotificationIds,
-      removedRequestNotifications,
-      requestNotifications,
-      invitationIds,
-      inviteNotifications,
-      softTeamMemberIds,
-      taskIds: unarchivedSoftTaskIds
-    }
-
-    // Tell each invitee
-    reactivations.forEach(({teamMemberId}) => {
-      const {userId} = fromTeamMemberId(teamMemberId)
-      publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions)
-    })
-
-    inviteNotifications.forEach((notification) => {
+      // RESOLUTION
+      const subOptions = {mutatorId, operationId}
       const {
-        userIds: [userId]
-      } = notification
-      publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions)
-    })
+        billingLeaderUserIds,
+        orgApprovalIds,
+        reactivations,
+        removedOrgApprovals,
+        removedRequestNotifications,
+        requestNotifications,
+        newInvitations,
+        newSoftTeamMembers,
+        teamInviteNotifications: inviteNotifications,
+        unarchivedSoftTasks
+      } = await inviteTeamMembers(invitees, teamId, viewerId, dataLoader)
+      const reactivatedTeamMemberIds = reactivations.map(({teamMemberId}) => teamMemberId)
+      const reactivationNotificationIds = reactivations.map(({notificationId}) => notificationId)
+      const removedOrgApprovalIds = removedOrgApprovals.map(({id}) => id)
+      const invitationIds = newInvitations.map(({id}) => id)
+      const unarchivedSoftTaskIds = unarchivedSoftTasks.map(({id}) => id)
+      const softTeamMemberIds = newSoftTeamMembers.map(({id}) => id)
 
-    // tell the billing leaders (added or removed org approval requests)
-    if (requestNotifications.length || removedRequestNotifications.length) {
-      billingLeaderUserIds.forEach((userId) => {
+      const data = {
+        orgApprovalIds,
+        removedOrgApprovalIds,
+        reactivatedTeamMemberIds,
+        teamId,
+        reactivationNotificationIds,
+        removedRequestNotifications,
+        requestNotifications,
+        invitationIds,
+        inviteNotifications,
+        softTeamMemberIds,
+        taskIds: unarchivedSoftTaskIds
+      }
+
+      // Tell each invitee
+      reactivations.forEach(({teamMemberId}) => {
+        const {userId} = fromTeamMemberId(teamMemberId)
         publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions)
       })
-    }
 
-    // tell the rest of the team
-    if (orgApprovalIds.length || removedOrgApprovalIds.length) {
-      publish(ORG_APPROVAL, teamId, InviteTeamMembersPayload, data, subOptions)
-    }
-    if (invitationIds.length) {
-      publish(INVITATION, teamId, InviteTeamMembersPayload, data, subOptions)
-    }
-    if (reactivatedTeamMemberIds.length || newSoftTeamMembers.length) {
-      publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions)
-    }
-
-    if (unarchivedSoftTasks.length > 0) {
-      const teamIds = Array.from(new Set(unarchivedSoftTasks.map((p) => p.teamId)))
-      const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader)
-      teamMembers.forEach(({userId}) => {
-        publish(TASK, userId, InviteTeamMembersPayload, data, subOptions)
+      inviteNotifications.forEach((notification) => {
+        const {
+          userIds: [userId]
+        } = notification
+        publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions)
       })
-    }
 
-    return data
-  }
+      // tell the billing leaders (added or removed org approval requests)
+      if (requestNotifications.length || removedRequestNotifications.length) {
+        billingLeaderUserIds.forEach((userId) => {
+          publish(NOTIFICATION, userId, InviteTeamMembersPayload, data, subOptions)
+        })
+      }
+
+      // tell the rest of the team
+      if (orgApprovalIds.length || removedOrgApprovalIds.length) {
+        publish(ORG_APPROVAL, teamId, InviteTeamMembersPayload, data, subOptions)
+      }
+      if (invitationIds.length) {
+        publish(INVITATION, teamId, InviteTeamMembersPayload, data, subOptions)
+      }
+      if (reactivatedTeamMemberIds.length || newSoftTeamMembers.length) {
+        publish(TEAM_MEMBER, teamId, InviteTeamMembersPayload, data, subOptions)
+      }
+
+      if (unarchivedSoftTasks.length > 0) {
+        const teamIds = Array.from(new Set(unarchivedSoftTasks.map((p) => p.teamId)))
+        const teamMembers = await getActiveTeamMembersByTeamIds(teamIds, dataLoader)
+        teamMembers.forEach(({userId}) => {
+          publish(TASK, userId, InviteTeamMembersPayload, data, subOptions)
+        })
+      }
+
+      return data
+    }
+  )
 }

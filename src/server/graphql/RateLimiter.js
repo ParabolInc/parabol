@@ -12,22 +12,24 @@ class RateLimiter {
     }, HOUR)
   }
 
-  add (userId, mutation, perHour) {
+  log (userId, fieldName, isExtendedLog) {
     const now = Date.now()
     this._lastCall[userId] = now
     if (!this._records[userId]) {
       this._records[userId] = {}
     }
     const userRecord = this._records[userId]
-    if (!userRecord[mutation]) {
-      userRecord[mutation] = [now]
+    if (!userRecord[fieldName]) {
+      userRecord[fieldName] = [now]
       return {lastMinute: 1, lastHour: 1}
     }
-    const calls = userRecord[mutation]
+    const calls = userRecord[fieldName]
     calls.push(now)
     const lastMinuteCalls = calls.filter((timestamp) => timestamp > now - MINUTE)
-    const lastHourCalls = perHour ? calls.filter((timestamp) => timestamp > now - HOUR) : undefined
-    userRecord[mutation] = lastHourCalls || lastMinuteCalls
+    const lastHourCalls = isExtendedLog
+      ? calls.filter((timestamp) => timestamp > now - HOUR)
+      : undefined
+    userRecord[fieldName] = lastHourCalls || lastMinuteCalls
     return {
       lastHour: lastHourCalls ? lastHourCalls.length : undefined,
       lastMinute: lastMinuteCalls.length
@@ -50,5 +52,4 @@ class RateLimiter {
   }
 }
 
-// Exports a singleton!
-export default new RateLimiter()
+export default RateLimiter
