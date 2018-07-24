@@ -1860,6 +1860,7 @@ export type DragReflectionDropTargetTypeEnum = 'REFLECTION_GROUP' | 'REFLECTION_
 
 export type EndDraggingReflectionPayload = {
   error: ?StandardMutationError,
+  dragId: ?string,
   /** the type of item the reflection was dropped on */
   dropTargetType: ?DragReflectionDropTargetTypeEnum,
   /** The ID that the dragged item was dropped on, if dropTargetType is not specific enough */

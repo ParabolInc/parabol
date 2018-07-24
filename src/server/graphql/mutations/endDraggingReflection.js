@@ -30,9 +30,13 @@ export default {
       description:
         'if dropTargetType could refer to more than 1 component, this ID defines which one',
       type: GraphQLID
+    },
+    dragId: {
+      description: 'the ID of the drag to connect to the start drag event',
+      type: GraphQLID
     }
   },
-  async resolve (source, {reflectionId, dropTargetType, dropTargetId}, context) {
+  async resolve (source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -76,7 +80,8 @@ export default {
       oldReflectionGroupId,
       userId: viewerId,
       dropTargetType,
-      dropTargetId
+      dropTargetId,
+      dragId
     }
 
     publish(TEAM, teamId, EndDraggingReflectionPayload, data, subOptions)

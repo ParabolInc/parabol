@@ -13,7 +13,8 @@ import onTeamRoute from 'universal/utils/onTeamRoute'
 type Variables = {
   reflectionId: string,
   dropTargetType: string,
-  dropTargetId: string
+  dropTargetId: string,
+  dragId: string
 }
 
 type Context = {
@@ -22,6 +23,7 @@ type Context = {
 
 graphql`
   fragment EndDraggingReflectionMutation_team on EndDraggingReflectionPayload {
+    dragId
     meeting {
       id
       nextAutoGroupThreshold
@@ -58,11 +60,13 @@ const mutation = graphql`
     $reflectionId: ID!
     $dropTargetType: DragReflectionDropTargetTypeEnum
     $dropTargetId: ID
+    $dragId: ID
   ) {
     endDraggingReflection(
       reflectionId: $reflectionId
       dropTargetType: $dropTargetType
       dropTargetId: $dropTargetId
+      dragId: $dragId
     ) {
       ...EndDraggingReflectionMutation_team @relay(mask: false)
     }
@@ -92,8 +96,9 @@ const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
 }
 
 const handleDragContext = (reflectionId, userId, store) => {
-  const storedReflection = store.get(reflectionId)
-  const dragContext = storedReflection.getLinkedRecord('dragContext')
+  const reflection = store.get(reflectionId)
+  reflection.setValue(undefined, 'isOptimistic')
+  const dragContext = reflection.getLinkedRecord('dragContext')
   if (dragContext) {
     handleDragMismatch(store, dragContext, userId)
     dragContext.setValue(true, 'isClosing')
@@ -149,6 +154,7 @@ export const endDraggingReflectionTeamOnNext = (payload, context) => {
     location
   } = context
   const {
+    dragId,
     reflection: {id: itemId},
     oldReflectionGroup,
     reflectionGroup,
@@ -165,7 +171,8 @@ export const endDraggingReflectionTeamOnNext = (payload, context) => {
       dropTargetId,
       itemId,
       childId,
-      sourceId
+      sourceId,
+      dragId
     })
   }
 }
@@ -252,6 +259,7 @@ const EndDraggingReflectionMutation = (
         viewerId,
         store
       )
+      reflectionProxy.setValue(true, 'isOptimistic')
     }
   })
 }
