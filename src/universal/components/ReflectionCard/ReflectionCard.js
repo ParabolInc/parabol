@@ -93,12 +93,13 @@ class ReflectionCard extends Component<Props, State> {
       atmosphere,
       reflection: {reflectionId, startOffset}
     } = this.props
-    if (startOffset !== undefined) {
+    if (startOffset !== undefined && this.editorRef) {
       this.editorRef.focus()
       const sel = window.getSelection()
       const range = sel.getRangeAt(0)
       const editorEl = findDOMNode(this.editorRef)
-      range.setStart(range.startContainer, Math.min(editorEl.textContent.length, startOffset))
+      const elLength = editorEl ? editorEl.textContent.length : 0
+      range.setStart(range.startContainer, Math.min(elLength, startOffset))
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)
         reflection.setValue(undefined, 'startOffset')
@@ -113,7 +114,7 @@ class ReflectionCard extends Component<Props, State> {
       reflection: {content, reflectionId}
     } = this.props
     const {editorState} = this.state
-    const contentState = editorState.getCurrentContent()
+    const contentState = (editorState: EditorState).getCurrentContent()
     if (contentState.hasText()) {
       const nextContent = JSON.stringify(convertToRaw(contentState))
       if (content === nextContent) return
