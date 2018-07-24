@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).9
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.7.0 2018-Jul-24
+
+### Fixed
+
+* Fixed case no. 1 of retro group race bugs #2279
+* Fixed reflection card overwrites, now caching in-progress reflection state #2280
+
 ## v2.6.0 2018-Jul-18
 
 ### Added
