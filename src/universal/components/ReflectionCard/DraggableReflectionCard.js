@@ -81,10 +81,10 @@ const reflectionDragSpec = {
   canDrag (props) {
     // make sure no one is trying to drag invisible cards
     const {
-      reflection: {dragContext},
+      reflection: {dragContext, isOptimistic},
       isDraggable
     } = props
-    return !dragContext && isDraggable
+    return !dragContext && !isOptimistic && isDraggable
   },
 
   beginDrag (props, monitor) {
@@ -113,7 +113,7 @@ const reflectionDragSpec = {
       atmosphere,
       closeGroupModal,
       reflection: {
-        dragContext: {isViewerDragging},
+        dragContext: {dragId, isViewerDragging},
         meetingId,
         reflectionId,
         reflectionGroupId
@@ -122,7 +122,7 @@ const reflectionDragSpec = {
     // endDrag is also called when the viewer loses a conflict
     if (!isViewerDragging) return
     const dropResult = monitor.getDropResult()
-    const {dropTargetType = null, dropTargetId = null, sortOrder} = dropResult || {}
+    const {dropTargetType = null, dropTargetId = null} = dropResult || {}
     // must come before the mutation so we can clear the itemCache
     if (closeGroupModal && dropTargetType) {
       closeGroupModal()
@@ -134,12 +134,13 @@ const reflectionDragSpec = {
         reflectionId,
         dropTargetType,
         dropTargetId,
-        sortOrder
+        dragId
       },
       {meetingId, newReflectionGroupId}
     )
     const {eventEmitter} = atmosphere
     eventEmitter.emit('endDraggingReflection', {
+      dragId,
       dropTargetType,
       dropTargetId,
       itemId: reflectionId,
@@ -169,7 +170,9 @@ export default createFragmentContainer(
       reflectionId: id
       reflectionGroupId
       retroPhaseItemId
+      isOptimistic
       dragContext {
+        dragId: id
         dragUserId
         isViewerDragging
       }

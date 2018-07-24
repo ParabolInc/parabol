@@ -286,6 +286,9 @@ export default createFragmentContainer(
           reflectionId: id
           retroPhaseItemId
           sortOrder
+          dragContext {
+            dragId: id
+          }
         }
       }
       reflectionsInFlight {

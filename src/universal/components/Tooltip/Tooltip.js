@@ -114,7 +114,12 @@ class Tooltip extends Component {
         }
       },
       onMouseLeave: (e) => {
-        if (this.modalRef && this.modalRef.contains(e.relatedTarget) && this.delayOpen) {
+        if (
+          this.delayOpen &&
+          this.modalRef &&
+          e.relatedTarget instanceof Node &&
+          this.modalRef.contains(e.relatedTarget)
+        ) {
           // if the toggle is small enough,the tip will appear on tp of it & cause a mouse leave
           this.makeCloseable()
           return

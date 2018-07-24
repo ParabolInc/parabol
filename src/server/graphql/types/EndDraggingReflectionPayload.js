@@ -12,6 +12,9 @@ const EndDraggingReflectionPayload = new GraphQLObjectType({
     error: {
       type: StandardMutationError
     },
+    dragId: {
+      type: GraphQLID
+    },
     dropTargetType: {
       type: DragReflectionDropTargetTypeEnum,
       description: 'the type of item the reflection was dropped on'
