@@ -97,7 +97,7 @@ const handleAddReflectionGroupToGroups = (store, reflectionGroup) => {
 
 const handleDragContext = (reflectionId, userId, store) => {
   const reflection = store.get(reflectionId)
-  reflection.setValue(undefined, 'isOptimistic')
+  reflection.setValue(undefined, 'isOptimisticEndDrag')
   const dragContext = reflection.getLinkedRecord('dragContext')
   if (dragContext) {
     handleDragMismatch(store, dragContext, userId)
@@ -259,7 +259,7 @@ const EndDraggingReflectionMutation = (
         viewerId,
         store
       )
-      reflectionProxy.setValue(true, 'isOptimistic')
+      reflectionProxy.setValue(true, 'isOptimisticEndDrag')
     }
   })
 }

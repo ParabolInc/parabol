@@ -146,6 +146,11 @@ class PhaseItemMasonry extends React.Component<Props> {
       const {x, y} = bestEl.getBoundingClientRect()
       setClosingTransform(atmosphere, itemId, {x, y})
     }
+    if (atmosphere.startDragQueue && atmosphere.startDragQueue.length) {
+      // reply the startDrag event that fired before we received the end drag event
+      const queuedStart = atmosphere.startDragQueue.shift()
+      queuedStart()
+    }
   }
 
   setInFlightCoords = (x: number, y: number, itemId: ItemId) => {

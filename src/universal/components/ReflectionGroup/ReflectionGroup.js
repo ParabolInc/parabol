@@ -6,11 +6,9 @@ import DraggableReflectionCard from 'universal/components/ReflectionCard/Draggab
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from './__generated__/ReflectionGroup_reflectionGroup.graphql'
 import type {ReflectionGroup_meeting as Meeting} from './__generated__/ReflectionGroup_meeting.graphql'
-import ui from 'universal/styles/ui'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
 import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
@@ -45,21 +43,6 @@ const reflectionsStyle = (canDrop, isDraggable, canExpand) =>
     opacity: canDrop ? 0.6 : 1,
     position: 'relative'
   })
-
-const ReflectionCardInStack = styled('div')(({secondCard}) => ({
-  backgroundColor: 'white',
-  borderRadius: 4,
-  boxShadow: secondCard ? ui.shadow[0] : undefined,
-  opacity: secondCard ? 1 : 0,
-  overflow: 'hidden',
-  position: 'absolute',
-  pointerEvents: 'none',
-  left: 6,
-  top: 6,
-  right: -6,
-  bottom: -2,
-  width: ui.retroCardWidth
-}))
 
 // use a background so we can use scale instead of width/height for 60fps animations
 const Background = styled('div')({
@@ -229,30 +212,16 @@ class ReflectionGroup extends Component<Props> {
         />
       )
     }
-
-    const topCard = idx === reflections.length - 1
-    if (topCard) {
-      return (
-        <DraggableReflectionCard
-          key={reflection.id}
-          meeting={meeting}
-          reflection={reflection}
-          setItemRef={setItemRef}
-          isDraggable={isDraggable}
-          isSingleCardGroup={reflections.length === 1}
-        />
-      )
-    }
-
-    const secondCard = idx === reflections.length - 2
     return (
-      <ReflectionCardInStack
+      <DraggableReflectionCard
         key={reflection.id}
-        secondCard={secondCard}
-        innerRef={setItemRef(reflection.id)}
-      >
-        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter shadow={null} />
-      </ReflectionCardInStack>
+        meeting={meeting}
+        reflection={reflection}
+        setItemRef={setItemRef}
+        isDraggable={isDraggable}
+        isSingleCardGroup={reflections.length === 1}
+        idx={reflections.length - idx - 1}
+      />
     )
   }
 
