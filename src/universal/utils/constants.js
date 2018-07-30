@@ -228,6 +228,11 @@ export const THIRD_PARTY_AUTH_PROVIDERS = [
   }
 ]
 
+/* Auth Labels */
+export const LOGIN_LABEL = 'Sign In'
+export const LOGOUT_LABEL = 'Sign Out'
+export const SIGNUP_LABEL = 'Create an Account'
+
 /* Default auth0 email/password db */
 export const AUTH0_DB_CONNECTION = 'Username-Password-Authentication'
 

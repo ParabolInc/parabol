@@ -12,6 +12,7 @@ import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
 import ThirdPartyAuthButton from 'universal/components/ThirdPartyAuthButton/ThirdPartyAuthButton'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
+import {LOGIN_LABEL, SIGNUP_LABEL} from 'universal/utils/constants'
 
 type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
@@ -27,10 +28,13 @@ const SignIn = (props: Props) => {
   const relativeUrl = `/signup${location.search}`
   return (
     <Fragment>
-      <AuthHeader heading='Sign In' secondaryAction={{relativeUrl, displayName: 'Sign Up'}} />
+      <AuthHeader
+        heading={LOGIN_LABEL}
+        secondaryAction={{relativeUrl, displayName: SIGNUP_LABEL}}
+      />
       {props.authProviders.map((provider) => (
         <ThirdPartyAuthButton
-          action='Sign In'
+          action={LOGIN_LABEL}
           waiting={props.isSubmitting}
           key={provider.displayName}
           provider={provider}

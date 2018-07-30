@@ -5,13 +5,13 @@
  */
 
 import type {ThirdPartyAuthProvider} from 'universal/types/auth'
-
 import React from 'react'
 import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
+import {LOGIN_LABEL, SIGNUP_LABEL} from 'universal/utils/constants'
 
 type Props = {
-  action: 'Sign In' | 'Sign Up',
+  action: LOGIN_LABEL | SIGNUP_LABEL,
   waiting?: boolean,
   handleClick: () => void,
   provider: ThirdPartyAuthProvider

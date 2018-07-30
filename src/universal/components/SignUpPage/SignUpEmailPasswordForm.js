@@ -11,6 +11,7 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import InputField from 'universal/components/InputField/InputField'
+import {SIGNUP_LABEL} from 'universal/utils/constants'
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
@@ -56,7 +57,7 @@ const SignInEmailPasswordForm = (props: Props) => {
         />
       </Block>
       <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
-        {'Sign Up'}
+        {SIGNUP_LABEL}
       </PrimaryButton>
     </Form>
   )

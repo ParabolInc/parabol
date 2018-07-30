@@ -15,7 +15,7 @@ import {Link, withRouter} from 'react-router-dom'
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import auth0Login from 'universal/utils/auth0Login'
-import {THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants'
+import {THIRD_PARTY_AUTH_PROVIDERS, LOGIN_LABEL} from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
 import promisify from 'es6-promisify'
 import SignIn from './SignIn'
@@ -138,7 +138,7 @@ class SignInPage extends Component<Props, State> {
     } else {
       pageContent = this.renderSignIn()
     }
-    return <AuthPage title='Sign In | Parabol'>{pageContent}</AuthPage>
+    return <AuthPage title={`${LOGIN_LABEL} | Parabol`}>{pageContent}</AuthPage>
   }
 }
 

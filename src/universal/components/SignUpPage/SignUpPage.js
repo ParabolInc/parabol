@@ -9,7 +9,11 @@ import promisify from 'es6-promisify'
 import React, {Component} from 'react'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import auth0Login from 'universal/utils/auth0Login'
-import {AUTH0_DB_CONNECTION, THIRD_PARTY_AUTH_PROVIDERS} from 'universal/utils/constants'
+import {
+  AUTH0_DB_CONNECTION,
+  THIRD_PARTY_AUTH_PROVIDERS,
+  SIGNUP_LABEL
+} from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
 import SignUp from './SignUp'
 import autoLogin from 'universal/decorators/autoLogin'
@@ -64,7 +68,7 @@ class SignUpPage extends Component<Props, State> {
   render () {
     const {error} = this.state
     return (
-      <AuthPage title='Sign Up | Parabol'>
+      <AuthPage title={`${SIGNUP_LABEL} | Parabol`}>
         <SignUp
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
           error={error}

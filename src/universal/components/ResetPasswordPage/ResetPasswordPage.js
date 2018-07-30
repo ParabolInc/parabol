@@ -5,7 +5,7 @@
  */
 import promisify from 'es6-promisify'
 import React, {Component} from 'react'
-import {AUTH0_DB_CONNECTION} from 'universal/utils/constants'
+import {AUTH0_DB_CONNECTION, LOGIN_LABEL} from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
 import PasswordReset from './ResetPassword'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
@@ -54,7 +54,7 @@ export default class PasswordResetPage extends Component<Props, State> {
       <AuthPage title='Reset Password | Parabol'>
         <AuthHeader
           heading='Forgot your password?'
-          secondaryAction={{relativeUrl: '/signin', displayName: 'Sign In'}}
+          secondaryAction={{relativeUrl: '/signin', displayName: LOGIN_LABEL}}
         />
         <HorizontalSeparator />
         <PasswordReset
