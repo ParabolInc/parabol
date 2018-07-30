@@ -143,8 +143,8 @@ const MeetingAreaHeader = styled('div')({
   }
 })
 
-const MeetingHelpBlock = styled('div')(({isFacilitating}) => ({
-  bottom: isFacilitating ? '5.25rem' : '1.25rem',
+const MeetingHelpBlock = styled('div')(({isFacilitating, localPhaseType}) => ({
+  bottom: isFacilitating || localPhaseType === VOTE ? '5.25rem' : '1.25rem',
   position: 'fixed',
   right: '1.25rem',
   zIndex: 200
@@ -353,7 +353,7 @@ class NewMeeting extends Component<Props> {
         {!inSync && (
           <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />
         )}
-        <MeetingHelpBlock isFacilitating={isFacilitating}>
+        <MeetingHelpBlock isFacilitating={isFacilitating} localPhaseType={localPhaseType}>
           <MeetingHelpDialog phase={localPhaseType || retroLobbyHelpContent} />
         </MeetingHelpBlock>
       </MeetingContainer>
