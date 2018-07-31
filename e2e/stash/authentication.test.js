@@ -47,7 +47,7 @@ const actions = {
 
   logout: (driver) => async () => {
     await sleep(100)
-    const signOutButtonSelector = 'a[title="Sign Out"]'
+    const signOutButtonSelector = 'a[title="Log Out"]'
     await driver.wait(until.elementLocated(By.css(signOutButtonSelector)))
     await driver.findElement(By.css(signOutButtonSelector)).click()
   }
@@ -85,7 +85,7 @@ const expectations = {
       'Logging out did not redirect to signin page'
     )
     await driver.wait(
-      until.titleMatches(/Sign In | Parabol/),
+      until.titleMatches(/Log In | Parabol/),
       waitTimes.short,
       'Logging out did not redirect to the Parabol Homepage'
     )
