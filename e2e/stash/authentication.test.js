@@ -10,7 +10,7 @@ import {By, until} from 'selenium-webdriver'
 import shortid from 'shortid'
 import sleep from '../../src/universal/utils/sleep'
 import {newUserSession, waitTimes} from '../lib'
-import {LOGIN_SLUG, SIGNUP_SLUG} from 'universal/utils/constants'
+import {LOGIN_LABEL, LOGIN_SLUG, LOGOUT_LABEL, SIGNUP_SLUG} from 'universal/utils/constants'
 
 const BASE_URL = global.E2E_APP_SERVER_URL
 
@@ -47,7 +47,7 @@ const actions = {
 
   logout: (driver) => async () => {
     await sleep(100)
-    const signOutButtonSelector = 'a[title="Log Out"]'
+    const signOutButtonSelector = `a[title="${LOGOUT_LABEL}"]`
     await driver.wait(until.elementLocated(By.css(signOutButtonSelector)))
     await driver.findElement(By.css(signOutButtonSelector)).click()
   }
@@ -85,7 +85,7 @@ const expectations = {
       'Logging out did not redirect to signin page'
     )
     await driver.wait(
-      until.titleMatches(/Log In | Parabol/),
+      until.titleMatches(`/${LOGIN_LABEL} | Parabol/`),
       waitTimes.short,
       'Logging out did not redirect to the Parabol Homepage'
     )
