@@ -37,7 +37,7 @@ const actions = {
     await driver.wait(until.elementLocated(By.css(signInFormSelector)))
   },
 
-  goToCreateAccounPage: (driver) => async () => {
+  goToCreateAccountPage: (driver) => async () => {
     await driver.get(`${BASE_URL}/${CREATE_ACCOUNT_SLUG}`)
     const createAccountFormSelector = '.create-account-form'
     await driver.wait(until.elementLocated(By.css(createAccountFormSelector)))
@@ -131,7 +131,7 @@ describe('Authentication', () => {
   })
 
   it('can sign up', async () => {
-    await user.goToCreateAccounPage()
+    await user.goToCreateAccountPage()
     const credentials = generateCredentials()
     await user.authenticate(credentials)
     await user.shouldSeeWelcomeWizard()
