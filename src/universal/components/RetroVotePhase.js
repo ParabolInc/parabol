@@ -13,7 +13,6 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
 import {fontFamily, fontSize, lineHeight} from 'universal/styles/theme/typography'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 
@@ -67,7 +66,7 @@ const Label = styled('div')({
 })
 
 const CheckIcon = styled(StyledFontAwesome)(({isDark}) => ({
-  color: appTheme.palette.warm,
+  color: ui.palette.warm,
   display: 'block',
   height: ui.iconSize,
   opacity: isDark ? 1 : 0.2,
