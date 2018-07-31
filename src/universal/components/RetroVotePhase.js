@@ -14,7 +14,7 @@ import IconLabel from 'universal/components/IconLabel'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import {fontFamily, fontSize} from 'universal/styles/theme/typography'
+import {fontFamily, fontSize, lineHeight} from 'universal/styles/theme/typography'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 
 type Props = {|
@@ -56,13 +56,13 @@ const MetaBlock = styled('div')({
 
 const Label = styled('div')({
   color: ui.labelHeadingColor,
-  fontSize: fontSize[0],
+  fontSize: fontSize[1],
   fontWeight: 600,
-  lineHeight: appTheme.typography.s5,
+  lineHeight: lineHeight[6],
   marginRight: '.75rem',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
-    fontSize: fontSize[1]
+    fontSize: fontSize[2]
   }
 })
 
@@ -85,13 +85,13 @@ const CheckMarkRow = styled('div')({
 const VoteCountLabel = styled('div')({
   color: ui.palette.warm,
   fontFamily: fontFamily.monospace,
-  fontSize: fontSize[2],
+  fontSize: fontSize[3],
   fontWeight: 600,
   lineHeight: '1.5',
   margin: 0,
   padding: 0,
   [votePhaseBreakpoint]: {
-    fontSize: fontSize[3]
+    fontSize: fontSize[4]
   }
 })
 
