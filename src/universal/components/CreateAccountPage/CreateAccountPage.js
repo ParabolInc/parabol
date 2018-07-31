@@ -12,7 +12,7 @@ import auth0Login from 'universal/utils/auth0Login'
 import {
   AUTH0_DB_CONNECTION,
   THIRD_PARTY_AUTH_PROVIDERS,
-  SIGNUP_LABEL
+  CREATE_ACCOUNT_LABEL
 } from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
 import CreateAccount from './CreateAccount'
@@ -68,7 +68,7 @@ class CreateAccountPage extends Component<Props, State> {
   render () {
     const {error} = this.state
     return (
-      <AuthPage title={`${SIGNUP_LABEL} | Parabol`}>
+      <AuthPage title={`${CREATE_ACCOUNT_LABEL} | Parabol`}>
         <CreateAccount
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
           error={error}

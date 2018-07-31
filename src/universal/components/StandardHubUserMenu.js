@@ -9,7 +9,7 @@ import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
 import {StandardHubUserMenu_viewer as Viewer} from './__generated__/StandardHubUserMenu_viewer.graphql'
-import {PERSONAL, PRO_LABEL, LOGOUT_LABEL, LOGOUT_SLUG} from 'universal/utils/constants'
+import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from 'universal/utils/constants'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const Label = styled('div')({
@@ -47,7 +47,7 @@ const StandardHubUserMenu = (props: Props) => {
   const goToSettings = () => history.push('/me/settings')
   const goToOrganizations = () => history.push('/me/organizations')
   const goToNotifications = () => history.push('/me/notifications')
-  const signOut = () => history.push(`/${LOGOUT_SLUG}`)
+  const signOut = () => history.push(`/${SIGNOUT_SLUG}`)
 
   const ownedFreeOrgs = organizations.filter((org) => org.tier === PERSONAL)
   const showUpgradeCTA = ownedFreeOrgs.length > 0
@@ -79,7 +79,7 @@ const StandardHubUserMenu = (props: Props) => {
         />
       )}
       <MenuItemHR key='HR1' notMenuItem />
-      <MenuItemWithShortcuts icon='sign-out' label={LOGOUT_LABEL} onClick={signOut} />
+      <MenuItemWithShortcuts icon='sign-out' label={SIGNOUT_LABEL} onClick={signOut} />
     </MenuWithShortcuts>
   )
 }

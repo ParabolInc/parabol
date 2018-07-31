@@ -11,7 +11,7 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import InputField from 'universal/components/InputField/InputField'
-import {SIGNUP_LABEL} from 'universal/utils/constants'
+import {CREATE_ACCOUNT_LABEL} from 'universal/utils/constants'
 import {authButtonWidth} from 'universal/styles/auth'
 
 type Props = {
@@ -58,7 +58,7 @@ const SignInEmailPasswordForm = (props: Props) => {
         />
       </Block>
       <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
-        {SIGNUP_LABEL}
+        {CREATE_ACCOUNT_LABEL}
       </PrimaryButton>
     </Form>
   )

@@ -6,7 +6,7 @@ import withReducer from 'universal/decorators/withReducer/withReducer'
 import userSettingsReducer from 'universal/modules/userDashboard/ducks/settingsDuck'
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation'
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole'
-import {SIGNUP_SLUG} from 'universal/utils/constants'
+import {CREATE_ACCOUNT_SLUG} from 'universal/utils/constants'
 
 class Invitation extends Component {
   static propTypes = {
@@ -39,5 +39,7 @@ class Invitation extends Component {
 }
 
 export default withReducer({userDashboardSettings: userSettingsReducer})(
-  withAtmosphere(requireAuthAndRole({silent: true, unauthRoute: `/${SIGNUP_SLUG}`})(Invitation))
+  withAtmosphere(
+    requireAuthAndRole({silent: true, unauthRoute: `/${CREATE_ACCOUNT_SLUG}`})(Invitation)
+  )
 )

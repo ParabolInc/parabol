@@ -15,7 +15,7 @@ import {Link, withRouter} from 'react-router-dom'
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import auth0Login from 'universal/utils/auth0Login'
-import {THIRD_PARTY_AUTH_PROVIDERS, LOGIN_LABEL, LOGIN_SLUG} from 'universal/utils/constants'
+import {THIRD_PARTY_AUTH_PROVIDERS, SIGNIN_LABEL, SIGNIN_SLUG} from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
 import promisify from 'es6-promisify'
 import SignIn from './SignIn'
@@ -106,7 +106,7 @@ class SignInPage extends Component<Props, State> {
         <p>We had some trouble signing you in!</p>
         <p>
           Try going back to the{' '}
-          <Link to={`/${LOGIN_SLUG}`} onClick={this.resetState}>
+          <Link to={`/${SIGNIN_SLUG}`} onClick={this.resetState}>
             Sign in page
           </Link>{' '}
           in order to sign in again.
@@ -138,7 +138,7 @@ class SignInPage extends Component<Props, State> {
     } else {
       pageContent = this.renderSignIn()
     }
-    return <AuthPage title={`${LOGIN_LABEL} | Parabol`}>{pageContent}</AuthPage>
+    return <AuthPage title={`${SIGNIN_LABEL} | Parabol`}>{pageContent}</AuthPage>
   }
 }
 
