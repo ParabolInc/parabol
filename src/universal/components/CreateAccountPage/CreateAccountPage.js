@@ -42,7 +42,7 @@ class CreateAccountPage extends Component<Props, State> {
     })
   }
 
-  auth0CreateAccount = ({email, password}: Credentials): Promise<void> => {
+  auth0SignUp = ({email, password}: Credentials): Promise<void> => {
     const signup = promisify(this.webAuth.signup, this.webAuth)
     return signup({
       email,
@@ -57,7 +57,7 @@ class CreateAccountPage extends Component<Props, State> {
   handleSubmitCredentials = async (credentials: Credentials): Promise<void> => {
     this.setState({submittingCredentials: true, error: null})
     try {
-      await this.auth0CreateAccount(credentials)
+      await this.auth0SignUp(credentials)
       await auth0Login(this.webAuth, credentials)
     } catch (error) {
       this.setState({error: error.description})
