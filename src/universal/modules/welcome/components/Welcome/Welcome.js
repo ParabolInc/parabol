@@ -12,7 +12,7 @@ import WelcomeContent from 'universal/modules/welcome/components/WelcomeContent/
 import WelcomeHeader from 'universal/modules/welcome/components/WelcomeHeader/WelcomeHeader'
 import WelcomeLayout from 'universal/modules/welcome/components/WelcomeLayout/WelcomeLayout'
 import styled from 'react-emotion'
-import {SIGNOUT_LABEL} from 'universal/utils/constants'
+import {LOGOUT_LABEL, LOGOUT_SLUG} from 'universal/utils/constants'
 
 const Signout = styled(Link)({
   alignSelf: 'flex-end'
@@ -40,7 +40,7 @@ const Welcome = (props) => {
         {page === 2 && <Step2TeamName {...props} completed={completed} />}
         {page === 3 && <Step3InviteTeam {...props} />}
       </WelcomeContent>
-      <Signout title={SIGNOUT_LABEL} to='/signout'>
+      <Signout title={LOGOUT_LABEL} to={`/${LOGOUT_SLUG}`}>
         <FontAwesome name='sign-out' />
       </Signout>
     </WelcomeLayout>

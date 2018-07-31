@@ -10,6 +10,7 @@ import {By, until} from 'selenium-webdriver'
 import shortid from 'shortid'
 import sleep from '../../src/universal/utils/sleep'
 import {newUserSession, waitTimes} from '../lib'
+import {LOGIN_SLUG, SIGNUP_SLUG} from 'universal/utils/constants'
 
 const BASE_URL = global.E2E_APP_SERVER_URL
 
@@ -26,13 +27,13 @@ function generateCredentials () {
 
 const actions = {
   goToSignInPage: (driver) => async () => {
-    await driver.get(`${BASE_URL}/signin`)
+    await driver.get(`${BASE_URL}/${LOGIN_SLUG}`)
     const signInFormSelector = '.signin-form'
     await driver.wait(until.elementLocated(By.css(signInFormSelector)))
   },
 
   goToSignUpPage: (driver) => async () => {
-    await driver.get(`${BASE_URL}/signup`)
+    await driver.get(`${BASE_URL}/${SIGNUP_SLUG}`)
     const signUpFormSelector = '.signup-form'
     await driver.wait(until.elementLocated(By.css(signUpFormSelector)))
   },
