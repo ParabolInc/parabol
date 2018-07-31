@@ -9,6 +9,7 @@ import React from 'react'
 import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
 import {LOGIN_LABEL, SIGNUP_LABEL} from 'universal/utils/constants'
+import {authButtonWidth} from 'universal/styles/auth'
 
 type Props = {
   action: LOGIN_LABEL | SIGNUP_LABEL,
@@ -24,7 +25,7 @@ export default ({action, waiting, provider, handleClick}: Props) => {
       size='medium'
       onClick={handleClick}
       palette='white'
-      style={{width: '16rem'}}
+      style={{width: authButtonWidth}}
       waiting={waiting}
     >
       <IconLabel icon={provider.iconName} label={label} />

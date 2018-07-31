@@ -33,8 +33,8 @@ const resetPasswordPage = () =>
   import(/* webpackChunkName: 'ResetPasswordPage' */ 'universal/components/ResetPasswordPage/ResetPasswordPage')
 const retroRoot = () =>
   import(/* webpackChunkName: 'RetroRoot' */ 'universal/components/RetroRoot/RetroRoot')
-const signUpPage = () =>
-  import(/* webpackChunkName: 'SignUpPage' */ 'universal/components/SignUpPage/SignUpPage')
+const createAccountPage = () =>
+  import(/* webpackChunkName: 'CreateAccountPage' */ 'universal/components/CreateAccountPage/CreateAccountPage')
 const signInPage = () =>
   import(/* webpackChunkName: 'SignInPage' */ 'universal/components/SignInPage/SignInPage')
 
@@ -54,7 +54,7 @@ const Action = () => {
       <Switch>
         <AsyncRoute exact path='/' mod={signInPage} />
         <AsyncRoute exact path={`/${LOGIN_SLUG}`} mod={signInPage} />
-        <AsyncRoute exact path={`/${SIGNUP_SLUG}`} mod={signUpPage} />
+        <AsyncRoute exact path={`/${SIGNUP_SLUG}`} mod={createAccountPage} />
         <AsyncRoute exact path='/reset-password' mod={resetPasswordPage} />
         <AsyncRoute isPrivate path='(/me|/newteam|/team)' mod={dashWrapper} />
         <AsyncRoute

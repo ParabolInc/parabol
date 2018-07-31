@@ -1,5 +1,5 @@
 /**
- * The Sign Up UI.
+ * The Create Account UI.
  *
  * @flow
  */
@@ -8,7 +8,7 @@ import React, {Fragment} from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import SignUpEmailPasswordForm from './SignUpEmailPasswordForm'
+import CreateAccountEmailPasswordForm from './CreateAccountEmailPasswordForm'
 import {withRouter} from 'react-router-dom'
 import type {Location} from 'react-router-dom'
 import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
@@ -21,7 +21,7 @@ type Props = {
   authProviders: Array<ThirdPartyAuthProvider>,
   error: ?string,
   getHandlerForThirdPartyAuth: (auth0Connection: string) => () => void,
-  handleValidSignUpCredentials: (Credentials) => Promise<any>,
+  handleValidCreateAccountCredentials: (Credentials) => Promise<any>,
   location: Location,
   isSubmitting: boolean
 }
@@ -49,7 +49,7 @@ const PrivacyFooter = styled('div')({
   textAlign: 'center'
 })
 
-const SignUp = (props: Props) => {
+const CreateAccount = (props: Props) => {
   const {location} = props
   const relativeUrl = `/${LOGIN_SLUG}${location.search}`
   return (
@@ -69,7 +69,7 @@ const SignUp = (props: Props) => {
       ))}
       <HorizontalSeparator margin='1rem 0 0' text='or' />
       {props.error && <ErrorAlert message={props.error} />}
-      <SignUpEmailPasswordForm onSubmit={props.handleValidSignUpCredentials} />
+      <CreateAccountEmailPasswordForm onSubmit={props.handleValidCreateAccountCredentials} />
       <PrivacyFooter>
         {'By creating an account, you agree to our '}
         <A
@@ -85,4 +85,4 @@ const SignUp = (props: Props) => {
   )
 }
 
-export default withRouter(SignUp)
+export default withRouter(CreateAccount)

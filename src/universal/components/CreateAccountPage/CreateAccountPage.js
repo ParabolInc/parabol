@@ -1,5 +1,5 @@
 /**
- * The sign-up page.  Can sign up via email/password or 3rd party auth.
+ * The Create Account page.  Can create account via email/password or 3rd party auth.
  *
  * @flow
  */
@@ -15,7 +15,7 @@ import {
   SIGNUP_LABEL
 } from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
-import SignUp from './SignUp'
+import CreateAccount from './CreateAccount'
 import autoLogin from 'universal/decorators/autoLogin'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
 
@@ -29,7 +29,7 @@ type State = {
   submittingCredentials: boolean
 }
 
-class SignUpPage extends Component<Props, State> {
+class CreateAccountPage extends Component<Props, State> {
   state = {
     error: null,
     submittingCredentials: false
@@ -42,7 +42,7 @@ class SignUpPage extends Component<Props, State> {
     })
   }
 
-  auth0SignUp = ({email, password}: Credentials): Promise<void> => {
+  auth0CreateAccount = ({email, password}: Credentials): Promise<void> => {
     const signup = promisify(this.webAuth.signup, this.webAuth)
     return signup({
       email,
@@ -57,7 +57,7 @@ class SignUpPage extends Component<Props, State> {
   handleSubmitCredentials = async (credentials: Credentials): Promise<void> => {
     this.setState({submittingCredentials: true, error: null})
     try {
-      await this.auth0SignUp(credentials)
+      await this.auth0CreateAccount(credentials)
       await auth0Login(this.webAuth, credentials)
     } catch (error) {
       this.setState({error: error.description})
@@ -69,11 +69,11 @@ class SignUpPage extends Component<Props, State> {
     const {error} = this.state
     return (
       <AuthPage title={`${SIGNUP_LABEL} | Parabol`}>
-        <SignUp
+        <CreateAccount
           authProviders={THIRD_PARTY_AUTH_PROVIDERS}
           error={error}
           getHandlerForThirdPartyAuth={this.getHandlerForThirdPartyAuth}
-          handleValidSignUpCredentials={this.handleSubmitCredentials}
+          handleValidCreateAccountCredentials={this.handleSubmitCredentials}
           isSubmitting={this.state.submittingCredentials}
         />
       </AuthPage>
@@ -81,4 +81,4 @@ class SignUpPage extends Component<Props, State> {
   }
 }
 
-export default autoLogin(withAtmosphere(SignUpPage))
+export default autoLogin(withAtmosphere(CreateAccountPage))

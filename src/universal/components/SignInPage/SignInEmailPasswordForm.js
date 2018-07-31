@@ -14,6 +14,7 @@ import shouldValidate from 'universal/validation/shouldValidate'
 import appTheme from 'universal/styles/theme/appTheme'
 import InputField from 'universal/components/InputField/InputField'
 import {LOGIN_LABEL} from 'universal/utils/constants'
+import {authButtonWidth} from 'universal/styles/auth'
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
@@ -45,7 +46,7 @@ const SignInEmailPasswordForm = (props: Props) => {
   const {handleSubmit, submitting, valid} = props
   return (
     <Form className='signin-form' onSubmit={handleSubmit}>
-      <Block margin='1rem 0 2rem' width='16rem'>
+      <Block margin='1rem 0 2rem' width={authButtonWidth}>
         <Block margin='0 0 1.5rem'>
           <Field
             type='email'

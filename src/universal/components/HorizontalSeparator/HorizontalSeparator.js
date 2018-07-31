@@ -19,6 +19,7 @@ const SeparatorContainer = styled('div')(({margin}) => ({
   lineHeight: ui.labelHeadingLineHeight,
   letterSpacing: ui.labelHeadingLetterSpacing,
   margin,
+  maxWidth: '100%',
   padding: '1rem 0',
   textTransform: 'uppercase'
 }))

@@ -32,10 +32,10 @@ const actions = {
     await driver.wait(until.elementLocated(By.css(signInFormSelector)))
   },
 
-  goToSignUpPage: (driver) => async () => {
+  goToCreateAccounPage: (driver) => async () => {
     await driver.get(`${BASE_URL}/${SIGNUP_SLUG}`)
-    const signUpFormSelector = '.signup-form'
-    await driver.wait(until.elementLocated(By.css(signUpFormSelector)))
+    const createAccountFormSelector = '.create-account-form'
+    await driver.wait(until.elementLocated(By.css(createAccountFormSelector)))
   },
 
   authenticate: (driver) => async ({email, password}) => {
@@ -126,7 +126,7 @@ describe('Authentication', () => {
   })
 
   it('can sign up', async () => {
-    await user.goToSignUpPage()
+    await user.goToCreateAccounPage()
     const credentials = generateCredentials()
     await user.authenticate(credentials)
     await user.shouldSeeWelcomeWizard()
