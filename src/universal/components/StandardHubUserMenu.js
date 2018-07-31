@@ -20,6 +20,7 @@ const Label = styled('div')({
   fontWeight: 600,
   lineHeight: ui.menuItemHeight,
   marginBottom: ui.menuGutterVertical,
+  minWidth: ui.dashSidebarWidth,
   padding: `0 ${ui.menuGutterHorizontal}`,
   userSelect: 'none'
 })

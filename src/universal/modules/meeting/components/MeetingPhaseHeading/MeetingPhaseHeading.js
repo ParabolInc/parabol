@@ -4,7 +4,7 @@ import {fontSize} from 'universal/styles/theme/typography'
 
 const MeetingPhaseHeading = styled('div')({
   color: ui.palette.dark,
-  fontSize: fontSize[7],
+  fontSize: fontSize[8],
   fontWeight: 600,
   lineHeight: 1.25,
   textAlign: 'left'
