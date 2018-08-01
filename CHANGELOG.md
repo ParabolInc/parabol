@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.8.0-0 2018-Aug-01
+
+### Fixed
+* Moved Facilitator voting controls from sidebar to bottom bar #2185
+* Fixed voting race condition #2206
+* Changed log in/create account labels and language #2246
+* Fixed retrospective autogroup regression #2255
+* Fixed retrospectice grouping race bug #2279
+* Changed check marks to thumbs-up in all aspects of Retro voting phase #2241
+
 ## v2.7.0 2018-Jul-24
 
 ### Fixed
@@ -34,7 +44,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ## v2.5.0 2018-Jul-09
 
 ### Added
-* Changed Retrspective Reflect phase to submit new reflections on pressing
+* Changed Retrospective Reflect phase to submit new reflections on pressing
   the enter key
   * Shift-enter now creates newlines
 * Re-implemented Retrospective grouping:
