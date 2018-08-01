@@ -36,7 +36,7 @@ extend type DragContext {
 }
 
 extend type RetroReflection {
-  isOptimistic: Boolean
+  isOptimisticEndDrag: Boolean
   # can remove when we refresh the reflect phase
   startOffset: Int
 }

@@ -43,7 +43,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
-    if (!reflectionGroup) {
+    if (!reflectionGroup || !reflectionGroup.isActive) {
       return sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
     }
     const {meetingId} = reflectionGroup

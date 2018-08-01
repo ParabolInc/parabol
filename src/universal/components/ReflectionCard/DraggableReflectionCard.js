@@ -16,7 +16,8 @@ import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import {connect} from 'react-redux'
-import {css} from 'react-emotion'
+import styled, {css} from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 type Props = {
   dndIndex: number,
@@ -42,6 +43,21 @@ const standardStyle = css({
   zIndex: 1
 })
 
+const ReflectionCardInStack = styled('div')(({secondCard}) => ({
+  backgroundColor: 'white',
+  borderRadius: 4,
+  boxShadow: secondCard ? ui.shadow[0] : undefined,
+  opacity: secondCard ? 1 : 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  pointerEvents: 'none',
+  left: 6,
+  top: 6,
+  right: -6,
+  bottom: -2,
+  width: ui.retroCardWidth
+}))
+
 class DraggableReflectionCard extends React.Component<Props> {
   componentDidMount () {
     const {connectDragPreview} = this.props
@@ -59,20 +75,36 @@ class DraggableReflectionCard extends React.Component<Props> {
       isModal
     } = this.props
     const {dragContext, reflectionId} = reflection
-    const className = dragContext
-      ? dragContextStyle
-      : isModal
-        ? modalStyle(idx === 0)
-        : standardStyle
-    return connectDragSource(
-      <div className={className} ref={setItemRef(reflectionId, isModal)}>
-        <ReflectionCard
-          meeting={meeting}
-          reflection={reflection}
-          isDraggable={isDraggable}
-          showOriginFooter
-        />
-      </div>
+    if (idx === 0) {
+      const className = dragContext
+        ? dragContextStyle
+        : isModal
+          ? modalStyle(idx === 0)
+          : standardStyle
+      return connectDragSource(
+        <div className={className} ref={setItemRef(reflectionId, isModal)}>
+          <ReflectionCard
+            meeting={meeting}
+            reflection={reflection}
+            isDraggable={isDraggable}
+            showOriginFooter
+          />
+        </div>
+      )
+    }
+    return (
+      <ReflectionCardInStack secondCard={idx === 1}>
+        {connectDragSource(
+          <div ref={setItemRef(reflectionId, isModal)}>
+            <ReflectionCard
+              meeting={meeting}
+              reflection={reflection}
+              isDraggable={isDraggable}
+              showOriginFooter
+            />
+          </div>
+        )}
+      </ReflectionCardInStack>
     )
   }
 }
@@ -81,10 +113,10 @@ const reflectionDragSpec = {
   canDrag (props) {
     // make sure no one is trying to drag invisible cards
     const {
-      reflection: {dragContext, isOptimistic},
+      reflection: {dragContext, isOptimisticEndDrag},
       isDraggable
     } = props
-    return !dragContext && !isOptimistic && isDraggable
+    return !dragContext && !isOptimisticEndDrag && isDraggable
   },
 
   beginDrag (props, monitor) {
@@ -170,7 +202,7 @@ export default createFragmentContainer(
       reflectionId: id
       reflectionGroupId
       retroPhaseItemId
-      isOptimistic
+      isOptimisticEndDrag
       dragContext {
         dragId: id
         dragUserId
