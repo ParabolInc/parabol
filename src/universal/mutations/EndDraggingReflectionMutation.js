@@ -108,13 +108,16 @@ export const moveReflectionLocation = (
   reflection,
   reflectionGroup,
   oldReflectionGroupId,
-  userId,
-  store
+  store,
+  userId
 ) => {
   // moveGroupLocation(reflectionGroup, store)
   if (!reflection) return
   const reflectionId = reflection.getValue('id')
-  handleDragContext(reflectionId, userId, store)
+  if (userId) {
+    // else it is an autogroup
+    handleDragContext(reflectionId, userId, store)
+  }
   handleRemoveReflectionFromGroup(reflectionId, oldReflectionGroupId, store)
   handleAddReflectionToGroup(reflection, store)
   handleRemoveEmptyReflectionGroup(oldReflectionGroupId, store)
@@ -145,7 +148,7 @@ export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) =
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   const oldReflectionGroupId = getInProxy(payload, 'oldReflectionGroup', 'id')
   const userId = payload.getValue('userId')
-  moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, userId, store)
+  moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store, userId)
 }
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
@@ -256,8 +259,8 @@ const EndDraggingReflectionMutation = (
         reflectionProxy,
         reflectionGroupProxy,
         oldReflectionGroupId,
-        viewerId,
-        store
+        store,
+        viewerId
       )
       reflectionProxy.setValue(true, 'isOptimisticEndDrag')
     }
