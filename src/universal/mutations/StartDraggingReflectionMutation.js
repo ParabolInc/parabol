@@ -57,7 +57,13 @@ export const startDraggingReflectionTeamUpdater = (
   const isViewerDragging = dragContext.getValue('isViewerDragging')
   const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
 
-  if (existingDragContext && existingDragUserId === dragUserId && !isLocal) {
+  if (
+    existingDragContext &&
+    existingDragUserId === dragUserId &&
+    // same user in 2 tabs, tab 1 drops on a card, picks it very quickly
+    dragUserId !== viewerId &&
+    !isLocal
+  ) {
     // special case when a team member picks up the card twice before dropping it once
     // we'll want to reply this startDrag when the first endDrag returns
     atmosphere.startDragQueue = atmosphere.startDragQueue || []
@@ -84,7 +90,8 @@ export const startDraggingReflectionTeamUpdater = (
     nextDragContext.setValue(false, 'isPendingStartDrag')
     const meetingId = payload.getValue('meetingId')
     setInFlight(store, meetingId, reflection)
-    if (existingDragUserId === viewerId) {
+    // isViewerDragging is necessary in case 1 viewer has 2 tabs open
+    if (existingDragUserId === viewerId && isViewerDragging) {
       // TODO support multi-client actors, don't relay on viewerId
       nextDragContext.setValue(null, 'initialCursorCoords')
       nextDragContext.setValue(null, 'initialComponentCoords')
