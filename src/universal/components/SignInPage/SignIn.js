@@ -34,7 +34,6 @@ const SignIn = (props: Props) => {
       />
       {props.authProviders.map((provider) => (
         <ThirdPartyAuthButton
-          action={SIGNIN_LABEL}
           waiting={props.isSubmitting}
           key={provider.displayName}
           provider={provider}

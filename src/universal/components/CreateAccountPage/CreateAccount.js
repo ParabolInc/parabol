@@ -60,7 +60,6 @@ const CreateAccount = (props: Props) => {
       />
       {props.authProviders.map((provider) => (
         <ThirdPartyAuthButton
-          action={CREATE_ACCOUNT_LABEL}
           key={provider.displayName}
           provider={provider}
           waiting={props.isSubmitting}

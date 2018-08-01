@@ -1,1 +1,1 @@
-export const authButtonWidth = '17rem'
+export const authButtonWidth = '16rem'

@@ -8,18 +8,16 @@ import type {ThirdPartyAuthProvider} from 'universal/types/auth'
 import React from 'react'
 import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
-import {SIGNIN_LABEL, CREATE_ACCOUNT_LABEL} from 'universal/utils/constants'
 import {authButtonWidth} from 'universal/styles/auth'
 
 type Props = {
-  action: SIGNIN_LABEL | CREATE_ACCOUNT_LABEL,
   waiting?: boolean,
   handleClick: () => void,
   provider: ThirdPartyAuthProvider
 }
 
-export default ({action, waiting, provider, handleClick}: Props) => {
-  const label = `${action} with ${provider.displayName}`
+export default ({waiting, provider, handleClick}: Props) => {
+  const label = `Sign in with ${provider.displayName}`
   return (
     <RaisedButton
       size='medium'
