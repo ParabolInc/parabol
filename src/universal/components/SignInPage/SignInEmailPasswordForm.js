@@ -13,6 +13,8 @@ import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import appTheme from 'universal/styles/theme/appTheme'
 import InputField from 'universal/components/InputField/InputField'
+import {SIGNIN_LABEL} from 'universal/utils/constants'
+import {authButtonWidth} from 'universal/styles/auth'
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
@@ -44,7 +46,7 @@ const SignInEmailPasswordForm = (props: Props) => {
   const {handleSubmit, submitting, valid} = props
   return (
     <Form className='signin-form' onSubmit={handleSubmit}>
-      <Block margin='1rem 0 2rem' width='16rem'>
+      <Block margin='1rem 0 2rem' width={authButtonWidth}>
         <Block margin='0 0 1.5rem'>
           <Field
             type='email'
@@ -70,7 +72,7 @@ const SignInEmailPasswordForm = (props: Props) => {
         />
       </Block>
       <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
-        {'Sign In'}
+        {SIGNIN_LABEL}
       </PrimaryButton>
       <ForgotPasswordLink to='/reset-password'>{'Forgot your password?'}</ForgotPasswordLink>
     </Form>

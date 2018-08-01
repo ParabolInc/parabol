@@ -10,6 +10,12 @@ import {By, until} from 'selenium-webdriver'
 import shortid from 'shortid'
 import sleep from '../../src/universal/utils/sleep'
 import {newUserSession, waitTimes} from '../lib'
+import {
+  SIGNIN_LABEL,
+  SIGNIN_SLUG,
+  SIGNOUT_LABEL,
+  CREATE_ACCOUNT_SLUG
+} from 'universal/utils/constants'
 
 const BASE_URL = global.E2E_APP_SERVER_URL
 
@@ -26,15 +32,15 @@ function generateCredentials () {
 
 const actions = {
   goToSignInPage: (driver) => async () => {
-    await driver.get(`${BASE_URL}/signin`)
+    await driver.get(`${BASE_URL}/${SIGNIN_SLUG}`)
     const signInFormSelector = '.signin-form'
     await driver.wait(until.elementLocated(By.css(signInFormSelector)))
   },
 
-  goToSignUpPage: (driver) => async () => {
-    await driver.get(`${BASE_URL}/signup`)
-    const signUpFormSelector = '.signup-form'
-    await driver.wait(until.elementLocated(By.css(signUpFormSelector)))
+  goToCreateAccountPage: (driver) => async () => {
+    await driver.get(`${BASE_URL}/${CREATE_ACCOUNT_SLUG}`)
+    const createAccountFormSelector = '.create-account-form'
+    await driver.wait(until.elementLocated(By.css(createAccountFormSelector)))
   },
 
   authenticate: (driver) => async ({email, password}) => {
@@ -46,7 +52,7 @@ const actions = {
 
   logout: (driver) => async () => {
     await sleep(100)
-    const signOutButtonSelector = 'a[title="Sign Out"]'
+    const signOutButtonSelector = `a[title="${SIGNOUT_LABEL}"]`
     await driver.wait(until.elementLocated(By.css(signOutButtonSelector)))
     await driver.findElement(By.css(signOutButtonSelector)).click()
   }
@@ -84,7 +90,7 @@ const expectations = {
       'Logging out did not redirect to signin page'
     )
     await driver.wait(
-      until.titleMatches(/Sign In | Parabol/),
+      until.titleMatches(`/${SIGNIN_LABEL} | Parabol/`),
       waitTimes.short,
       'Logging out did not redirect to the Parabol Homepage'
     )
@@ -125,7 +131,7 @@ describe('Authentication', () => {
   })
 
   it('can sign up', async () => {
-    await user.goToSignUpPage()
+    await user.goToCreateAccountPage()
     const credentials = generateCredentials()
     await user.authenticate(credentials)
     await user.shouldSeeWelcomeWizard()

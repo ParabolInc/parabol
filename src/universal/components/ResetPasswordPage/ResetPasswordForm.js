@@ -11,6 +11,7 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import InputField from 'universal/components/InputField/InputField'
+import {authButtonWidth} from 'universal/styles/auth'
 
 type Props = {
   handleSubmit: () => void, // from redux-form
@@ -26,7 +27,7 @@ const Form = styled('form')({
 
 const Block = styled('div')({
   margin: '2rem 0 3rem',
-  width: '16rem'
+  width: authButtonWidth
 })
 
 const PasswordResetForm = (props: Props) => {

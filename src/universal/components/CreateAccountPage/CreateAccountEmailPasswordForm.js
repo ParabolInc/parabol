@@ -11,6 +11,8 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import InputField from 'universal/components/InputField/InputField'
+import {CREATE_ACCOUNT_BUTTON_LABEL} from 'universal/utils/constants'
+import {authButtonWidth} from 'universal/styles/auth'
 
 type Props = {
   handleSubmit: () => void, // Provided by redux-form
@@ -29,8 +31,8 @@ const Block = styled('div')(({margin, width}) => ({margin, width}))
 const SignInEmailPasswordForm = (props: Props) => {
   const {handleSubmit, submitting, valid} = props
   return (
-    <Form className='signup-form' onSubmit={handleSubmit}>
-      <Block margin='1rem 0 2rem' width='16rem'>
+    <Form className='create-account-form' onSubmit={handleSubmit}>
+      <Block margin='1rem 0 2rem' width={authButtonWidth}>
         <Block margin='0 0 1.5rem'>
           <Field
             autoFocus
@@ -56,7 +58,7 @@ const SignInEmailPasswordForm = (props: Props) => {
         />
       </Block>
       <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
-        {'Sign Up'}
+        {CREATE_ACCOUNT_BUTTON_LABEL}
       </PrimaryButton>
     </Form>
   )
@@ -73,4 +75,6 @@ const validate = (values) => {
   return validation
 }
 
-export default reduxForm({form: 'signup', shouldValidate, validate})(SignInEmailPasswordForm)
+export default reduxForm({form: 'create-account', shouldValidate, validate})(
+  SignInEmailPasswordForm
+)
