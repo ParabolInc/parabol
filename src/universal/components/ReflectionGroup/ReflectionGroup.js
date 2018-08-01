@@ -198,6 +198,7 @@ class ReflectionGroup extends Component<Props> {
   renderReflection = (reflection: Object, idx: number, {isModal, isDraggable}) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
+    const {isOptimisticEndDrag} = meeting
     if (isModal) {
       return (
         <DraggableReflectionCard
@@ -209,6 +210,7 @@ class ReflectionGroup extends Component<Props> {
           meeting={meeting}
           reflection={reflection}
           setItemRef={setItemRef}
+          isOptimisticEndDrag={isOptimisticEndDrag}
         />
       )
     }
@@ -221,6 +223,7 @@ class ReflectionGroup extends Component<Props> {
         isDraggable={isDraggable}
         isSingleCardGroup={reflections.length === 1}
         idx={reflections.length - idx - 1}
+        isOptimisticEndDrag={isOptimisticEndDrag}
       />
     )
   }

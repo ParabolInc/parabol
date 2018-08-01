@@ -113,8 +113,9 @@ const reflectionDragSpec = {
   canDrag (props) {
     // make sure no one is trying to drag invisible cards
     const {
-      reflection: {dragContext, isOptimisticEndDrag},
-      isDraggable
+      reflection: {dragContext},
+      isDraggable,
+      isOptimisticEndDrag
     } = props
     return !dragContext && !isOptimisticEndDrag && isDraggable
   },
@@ -202,7 +203,6 @@ export default createFragmentContainer(
       reflectionId: id
       reflectionGroupId
       retroPhaseItemId
-      isOptimisticEndDrag
       dragContext {
         dragId: id
         dragUserId
