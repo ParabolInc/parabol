@@ -31,7 +31,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
     },
     isActive: {
       type: GraphQLBoolean,
-      description: 'True if the reflection was not removed, else false'
+      description: 'True if the group has not been removed, else false'
     },
     meetingId: {
       type: new GraphQLNonNull(GraphQLID),
