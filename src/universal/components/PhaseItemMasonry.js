@@ -98,7 +98,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   itemCache: ItemCache = {}
 
   componentDidMount () {
-    initializeGrid(this.childrenCache, this.parentCache, true)
+    initializeGrid(this.itemCache, this.childrenCache, this.parentCache, true)
     window.addEventListener('resize', this.handleResize)
   }
 

@@ -4,7 +4,7 @@ extend interface NewMeeting {
 }
 
 extend type RetrospectiveMeeting {
-  isOptimisticEndDrag: Boolean
+  isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   reflectionsInFlight: [RetroReflection]

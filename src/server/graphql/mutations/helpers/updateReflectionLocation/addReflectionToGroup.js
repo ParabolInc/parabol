@@ -14,7 +14,7 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
   if (!reflection) return sendReflectionNotFoundError(authToken, reflectionId)
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
   const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
-  if (!reflectionGroup) {
+  if (!reflectionGroup || !reflectionGroup.isActive) {
     return sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
   }
   const {meetingId} = reflectionGroup

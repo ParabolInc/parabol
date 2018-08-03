@@ -39,9 +39,9 @@ export const autoGroupReflectionsTeamUpdater = (payload, {atmosphere, store}) =>
 
 export const autoGroupReflectionsTeamOnNext = (payload, {atmosphere}) => {
   const {removedReflectionGroups} = payload
-  const {childrenCache, parentCache} = atmosphere.getMasonry()
+  const {itemCache, childrenCache, parentCache} = atmosphere.getMasonry()
   removedReflectionGroups.forEach(({id}) => delete childrenCache[id])
-  initializeGrid(childrenCache, parentCache, true)
+  initializeGrid(itemCache, childrenCache, parentCache, true)
 }
 
 const mutation = graphql`

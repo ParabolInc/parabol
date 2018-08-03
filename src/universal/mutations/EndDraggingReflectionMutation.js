@@ -99,7 +99,7 @@ const handleDragContext = (reflectionId, userId, store) => {
   const reflection = store.get(reflectionId)
   const meetingId = reflection.getValue('meetingId')
   const meeting = store.get(meetingId)
-  meeting.setValue(undefined, 'isOptimisticEndDrag')
+  meeting.setValue(undefined, 'isViewerDragInProgress')
   const dragContext = reflection.getLinkedRecord('dragContext')
   if (dragContext) {
     handleDragMismatch(store, dragContext, userId)
@@ -264,7 +264,7 @@ const EndDraggingReflectionMutation = (
         store,
         viewerId
       )
-      meeting.setValue(true, 'isOptimisticEndDrag')
+      meeting.setValue(true, 'isViewerDragInProgress')
     }
   })
 }

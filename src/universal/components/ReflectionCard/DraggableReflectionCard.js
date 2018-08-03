@@ -115,9 +115,9 @@ const reflectionDragSpec = {
     const {
       reflection: {dragContext},
       isDraggable,
-      isOptimisticEndDrag
+      isViewerDragInProgress
     } = props
-    return !dragContext && !isOptimisticEndDrag && isDraggable
+    return !dragContext && !isViewerDragInProgress && isDraggable
   },
 
   beginDrag (props, monitor) {

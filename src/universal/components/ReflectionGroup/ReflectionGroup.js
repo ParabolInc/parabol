@@ -198,7 +198,7 @@ class ReflectionGroup extends Component<Props> {
   renderReflection = (reflection: Object, idx: number, {isModal, isDraggable}) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
-    const {isOptimisticEndDrag} = meeting
+    const {isViewerDragInProgress} = meeting
     if (isModal) {
       return (
         <DraggableReflectionCard
@@ -210,7 +210,7 @@ class ReflectionGroup extends Component<Props> {
           meeting={meeting}
           reflection={reflection}
           setItemRef={setItemRef}
-          isOptimisticEndDrag={isOptimisticEndDrag}
+          isViewerDragInProgress={isViewerDragInProgress}
         />
       )
     }
@@ -223,7 +223,7 @@ class ReflectionGroup extends Component<Props> {
         isDraggable={isDraggable}
         isSingleCardGroup={reflections.length === 1}
         idx={reflections.length - idx - 1}
-        isOptimisticEndDrag={isOptimisticEndDrag}
+        isViewerDragInProgress={isViewerDragInProgress}
       />
     )
   }
@@ -345,6 +345,7 @@ export default createFragmentContainer(
       localStage {
         isComplete
       }
+      isViewerDragInProgress
     }
 
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {
