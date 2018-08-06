@@ -13,7 +13,6 @@ import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import DragReflectionDropTargetTypeEnum from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
 import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
-import sleep from 'universal/utils/sleep'
 
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',
@@ -85,7 +84,6 @@ export default {
       dragId
     }
 
-    await sleep(1000)
     publish(TEAM, teamId, EndDraggingReflectionPayload, data, subOptions)
     return data
   }
