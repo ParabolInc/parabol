@@ -98,8 +98,12 @@ class PhaseItemMasonry extends React.Component<Props> {
   itemCache: ItemCache = {}
 
   componentDidMount () {
+    const {
+      atmosphere: {eventEmitter}
+    } = this.props
     initializeGrid(this.itemCache, this.childrenCache, this.parentCache, true)
     window.addEventListener('resize', this.handleResize)
+    eventEmitter.on('meetingSidebarCollapsed', this.handleResize)
   }
 
   componentWillUnmount () {
@@ -108,6 +112,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     eventEmitter.off('endDraggingReflection', this.handleDragEnd)
     delete atmosphere.getMasonry
     window.removeEventListener('resize', this.handleResize)
+    eventEmitter.off('meetingSidebarCollapsed', this.handleResize)
   }
 
   handleDragEnd = (payload) => {
@@ -162,7 +167,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   handleResize = () => {
-    initializeGrid(this.childrenCache, this.parentCache, false)
+    initializeGrid(this.itemCache, this.childrenCache, this.parentCache, false)
   }
 
   handleGridUpdate = (oldReflectionGroupId, newReflectionGroupId) => {
