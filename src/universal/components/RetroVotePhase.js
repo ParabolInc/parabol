@@ -13,6 +13,7 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import {fontFamily, fontSize, lineHeight} from 'universal/styles/theme/typography'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 
@@ -132,7 +133,7 @@ const RetroVotePhase = (props: Props) => {
               <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
               <CheckMarkRow>
                 {checkMarks.map((idx) => (
-                  <CheckIcon key={idx} name='thumbs-up' isDark={idx < myVotesRemaining} />
+                  <CheckIcon key={idx} name={meetingVoteIcon} isDark={idx < myVotesRemaining} />
                 ))}
               </CheckMarkRow>
             </MetaBlock>
