@@ -16,7 +16,13 @@ import StoryContainer from './components/StoryContainer'
 storiesOf('Add Reflection Button', module).add('adds a reflection', () => (
   <RetroBackground>
     <StoryContainer
-      render={() => <AddReflectionButton handleClick={action('handle-click-add-reflection')} />}
+      render={() => (
+        <AddReflectionButton
+          retroPhaseItem={{retroPhaseItemId: '1'}}
+          meeting={{meetingId: '2'}}
+          handleClick={action('handle-click-add-reflection')}
+        />
+      )}
     />
   </RetroBackground>
 ))
