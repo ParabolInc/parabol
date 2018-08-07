@@ -6,8 +6,13 @@ import PropTypes from 'prop-types'
 // Emulates a Relay-compatible container, passing the data in directly.
 // It's hard to know how well this can work for complicated examples. However,
 // it's worked well enough so far - ./
+type Props = {
+  children?: any,
+  props?: Object,
+  variables?: Object
+}
 
-export default class RelayStub extends React.Component {
+export default class RelayStub extends React.Component<Props> {
   // Provide a stubbed context for child componentes
   getChildContext () {
     return {
