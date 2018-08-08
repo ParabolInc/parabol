@@ -54,9 +54,7 @@ const initializeModalGrid = (
   const modalColumnLefts = currentColumnHeights.map((_, idx) => REFLECTION_WIDTH * idx)
   childCache.headerHeight = headerRef.getBoundingClientRect().height
 
-  const heights = reflections.map(({id}) => {
-    return itemCache[id].modalEl.getBoundingClientRect().height
-  })
+  const heights = reflections.map(({id}) => itemCache[id].boundingBox.height)
 
   // make cards animate in one at a time, but finish when the expansion does (unless there are a TON)
   const shuffleDelay =

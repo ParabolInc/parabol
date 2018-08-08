@@ -1502,7 +1502,7 @@ export type RetroReflectionGroup = {
   id: string,
   /** The timestamp the meeting was created */
   createdAt: ?any,
-  /** True if the reflection was not removed, else false */
+  /** True if the group has not been removed, else false */
   isActive: ?boolean,
   /** The foreign key to link a reflection group to its meeting */
   meetingId: string,

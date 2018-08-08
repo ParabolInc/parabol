@@ -176,6 +176,7 @@ class NewMeeting extends Component<Props> {
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
   }
 
+  sidebarRef = React.createRef()
   endMeeting = () => {
     const {
       atmosphere,
@@ -288,6 +289,18 @@ class NewMeeting extends Component<Props> {
     })
   }
 
+  onSidebarTransitionEnd = (e) => {
+    const {
+      atmosphere: {eventEmitter},
+      viewer: {
+        team: {isMeetingSidebarCollapsed}
+      }
+    } = this.props
+    if (e.target === this.sidebarRef.current && e.propertyName === 'transform') {
+      eventEmitter.emit('meetingSidebarCollapsed', isMeetingSidebarCollapsed)
+    }
+  }
+
   render () {
     const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
@@ -302,7 +315,11 @@ class NewMeeting extends Component<Props> {
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
-        <MeetingSidebarLayout isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
+        <MeetingSidebarLayout
+          innerRef={this.sidebarRef}
+          isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
+          onTransitionEnd={this.onSidebarTransitionEnd}
+        >
           <NewMeetingSidebar
             gotoStageId={this.gotoStageId}
             meetingType={meetingType}
