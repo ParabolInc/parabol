@@ -5,13 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v2.8.0-0 2018-Aug-01
+## v2.8.0-0 2018-Aug-08
+
+### Added
+* Moved Facilitator voting controls from sidebar to bottom bar #2185
 
 ### Fixed
-* Moved Facilitator voting controls from sidebar to bottom bar #2185
-* Fixed voting race condition #2206
+* Fixed voting race conditions #2206 & #2279
 * Changed log in/create account labels and language #2246
 * Changed check marks to thumbs-up in all aspects of Retro voting phase #2241
+* Group grid layout updates on sidebar toggle #2256
+* `yarn storybook` fixed for Webpack 4 and Relay #2260
 
 ## v2.7.0 2018-Jul-24
 
