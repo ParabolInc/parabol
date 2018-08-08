@@ -9,6 +9,7 @@ import IconLabel from 'universal/components/IconLabel'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
@@ -28,6 +29,17 @@ type Props = {|
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object
 |}
+
+const HeaderContainer = styled('div')({
+  margin: '0 auto',
+  maxWidth: meetingTopicPhaseMaxWidth,
+  padding: '0 2.5rem'
+})
+
+const LabelContainer = styled('div')({
+  borderTop: `.0625rem solid ${ui.dashBorderColor}`,
+  padding: '.5rem 0 1.25rem'
+})
 
 const DiscussHeader = styled('div')({
   alignItems: 'center',
@@ -71,14 +83,14 @@ const PhaseWrapper = styled('div')({
 })
 
 const ReflectionSection = styled('div')({
-  borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
+  // borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
   display: 'flex',
-  flex: 1,
+  // flex: 1,
   flexShrink: 0,
   flexDirection: 'column',
   margin: '0 auto',
   maxWidth: meetingTopicPhaseMaxWidth,
-  minHeight: 200,
+  // minHeight: 200,
   width: '100%'
 })
 
@@ -94,15 +106,15 @@ const ReflectionGrid = styled('div')({
 
 const TaskSection = styled('div')({
   display: 'flex',
-  flex: 1,
-  height: '10.25rem',
+  // flex: 1,
+  // height: '10.25rem',
   width: '100%'
 })
 
 const TaskCardBlock = styled('div')({
   margin: '0 auto',
   maxWidth: meetingTopicPhaseMaxWidth,
-  padding: '1.25rem 2.5rem',
+  padding: '0 2.5rem 1.25rem',
   width: '100%'
 })
 
@@ -140,19 +152,37 @@ const RetroDiscussPhase = (props: Props) => {
   return (
     <React.Fragment>
       <PhaseWrapper>
-        <ReflectionSection>
-          <ScrollableBlock>
+        <ScrollableBlock hideOverflownShadow>
+          <HeaderContainer>
+            <DiscussHeader>
+              <TopicHeading>
+                <span>{'“'}</span>
+                {`${title}”`}
+              </TopicHeading>
+              <VoteMeta>
+                <VoteIcon name={meetingVoteIcon} />
+                {voteCount}
+              </VoteMeta>
+            </DiscussHeader>
+            <LabelContainer>
+              <LabelHeading>Takeaway Tasks</LabelHeading>
+            </LabelContainer>
+          </HeaderContainer>
+          <TaskSection>
+            <TaskCardBlock>
+              <MeetingAgendaCards
+                meetingId={meetingId}
+                reflectionGroupId={reflectionGroupId}
+                tasks={tasks}
+                teamId={teamId}
+              />
+            </TaskCardBlock>
+          </TaskSection>
+          <ReflectionSection>
             <ReflectionSectionInner>
-              <DiscussHeader>
-                <TopicHeading>
-                  <span>{'“'}</span>
-                  {`${title}”`}
-                </TopicHeading>
-                <VoteMeta>
-                  <VoteIcon name={meetingVoteIcon} />
-                  {voteCount}
-                </VoteMeta>
-              </DiscussHeader>
+              <LabelContainer>
+                <LabelHeading>{reflections.length} Reflections</LabelHeading>
+              </LabelContainer>
               <ReflectionGrid>
                 {reflections.map((reflection) => {
                   return (
@@ -165,20 +195,8 @@ const RetroDiscussPhase = (props: Props) => {
                 })}
               </ReflectionGrid>
             </ReflectionSectionInner>
-          </ScrollableBlock>
-        </ReflectionSection>
-        <TaskSection>
-          <ScrollableBlock>
-            <TaskCardBlock>
-              <MeetingAgendaCards
-                meetingId={meetingId}
-                reflectionGroupId={reflectionGroupId}
-                tasks={tasks}
-                teamId={teamId}
-              />
-            </TaskCardBlock>
-          </ScrollableBlock>
-        </TaskSection>
+          </ReflectionSection>
+        </ScrollableBlock>
       </PhaseWrapper>
       {isFacilitating && (
         <SpacedMeetingControlBar>

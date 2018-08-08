@@ -37,17 +37,17 @@ const makeCards = (tasks = [], myUserId, handleAddTask) => {
   })
 }
 
-const makePlaceholders = (length) => {
-  const rowLength = 4
-  const emptyCardCount = rowLength - (length % rowLength + 1)
-  /* eslint-disable react/no-array-index-key */
-  return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
-    <div key={`CreateCardPlaceholder${idx}`}>
-      <CreateCard />
-    </div>
-  ))
-  /* eslint-enable */
-}
+// const makePlaceholders = (length) => {
+//   const rowLength = 4
+//   const emptyCardCount = rowLength - (length % rowLength + 1)
+//   /* eslint-disable react/no-array-index-key */
+//   return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
+//     <div key={`CreateCardPlaceholder${idx}`}>
+//       <CreateCard />
+//     </div>
+//   ))
+//   /* eslint-enable */
+// }
 
 type Props = {
   agendaId?: string,
@@ -99,11 +99,11 @@ class MeetingAgendaCards extends Component<Props> {
         <div>
           <CreateCard handleAddTask={this.handleAddTask()} hasControls />
         </div>
-        {/* Placeholder Cards */}
-        {makePlaceholders(tasks.length)}
       </TaskCardGrid>
     )
   }
 }
+// {/* Placeholder Cards */}
+// {makePlaceholders(tasks.length)}
 
 export default withRouter(withAtmosphere(withHotkey(MeetingAgendaCards)))
