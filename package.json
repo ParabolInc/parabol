@@ -50,7 +50,7 @@
     "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn flowgen",
     "postversion": "git push --follow-tags",
     "flowgen": "gql2flow -e -o ./src/universal/types/schema.flow.js ./build/schema.json && prettier --write 'src/universal/types/schema.flow.js'",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook"
   },
   "devDependencies": {
@@ -58,7 +58,8 @@
     "@storybook/addon-actions": "^3.3.14",
     "@storybook/addon-links": "^3.3.14",
     "@storybook/addons": "^3.3.14",
-    "@storybook/react": "^3.3.14",
+    "@storybook/cli": "^3.4.10",
+    "@storybook/react": "^4.0.0-alpha.16",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.3",
     "babel-loader": "^7.1.4",
@@ -67,6 +68,7 @@
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-preset-env": "^1.7.0",
+    "babel-runtime": "^6.26.0",
     "chance": "^1.0.6",
     "clean-webpack-plugin": "^0.1.19",
     "codecov": "^2.3.0",

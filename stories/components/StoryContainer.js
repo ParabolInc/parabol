@@ -5,20 +5,20 @@
  * @flow
  */
 import type {Node} from 'react'
-
 import React, {Component} from 'react'
 // $FlowFixMe
 import {DragDropContextProvider} from '@mattkrick/react-dnd'
 import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
 import styled, {css, injectGlobal} from 'react-emotion'
 import {Provider} from 'react-redux'
-import {createStore, combineReducers} from 'redux'
+import {combineReducers, createStore} from 'redux'
 import {reducer as formReducer} from 'redux-form'
 
 import appTheme from 'universal/styles/theme/appTheme'
 import globalStyles from 'universal/styles/theme/globalStyles'
 
 import '../../static/css/font-awesome.css'
+import RelayStub from './RelayStub'
 
 type Props = {
   description?: string,
@@ -60,12 +60,14 @@ export default class StoryContainer extends Component<Props> {
   render () {
     return (
       <Provider store={store}>
-        <DragDropContextProvider backend={HTML5Backend}>
-          <FullPageWrapper>
-            {this.maybeRenderDescription()}
-            {this.props.render()}
-          </FullPageWrapper>
-        </DragDropContextProvider>
+        <RelayStub>
+          <DragDropContextProvider backend={HTML5Backend}>
+            <FullPageWrapper>
+              {this.maybeRenderDescription()}
+              {this.props.render()}
+            </FullPageWrapper>
+          </DragDropContextProvider>
+        </RelayStub>
       </Provider>
     )
   }

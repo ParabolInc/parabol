@@ -1,29 +1,13 @@
-// you can use this file to add your custom webpack plugins, loaders and anything you like.
-// This is just the basic way to add additional webpack configurations.
-// For more information refer the docs: https://storybook.js.org/configurations/custom-webpack-config
-
-// IMPORTANT
-// When you add this file, we won't add the default configurations which is similar
-// to "React Create App". This only has babel loader to load JavaScript.
-const path = require('path')
-
-const webpack = require('webpack')
-
-module.exports = {
-  plugins: [
-    // your custom plugins
-    new webpack.DefinePlugin({
-      __PRODUCTION__: false
-    })
-  ],
-  module: {
-    rules: [
-      {test: /\.css$/, loader: 'style-loader!css-loader'},
-      {test: /\.(png|jpg|jpeg|gif|svg)(\?\S*)?$/, loader: 'url-loader?limit=1000'},
-      {test: /\.(eot|ttf|wav|mp3|woff|woff2)(\?\S*)?$/, loader: 'file-loader'}
-    ]
-  },
-  resolve: {
-    modules: [path.join(process.cwd(), 'src'), 'node_modules']
-  }
+// Storybook has its own config. We extend it with our own config.
+// Be sure to verify that this works if changing the dev config!
+const devConfig = require('../webpack/webpack.dev.config')
+module.exports = (baseConfig, configType) => {
+  baseConfig.plugins.push(devConfig.plugins[1]) // define plugin
+  baseConfig.module.rules.push(...devConfig.module.rules) // all rules used in dev
+  baseConfig.module.rules[0].use[0].options.plugins.push(
+    ...devConfig.module.rules[0].use.options.plugins
+  ) // JS babel extensions
+  baseConfig.resolve.modules = devConfig.resolve.modules
+  baseConfig.resolve.alias = devConfig.resolve.alias
+  return baseConfig
 }
