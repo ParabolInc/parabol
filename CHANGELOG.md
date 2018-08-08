@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## v2.8.0-0 2018-Aug-08
+## v2.8.0 2018-Aug-08
 
 ### Added
 * Moved Facilitator voting controls from sidebar to bottom bar #2185
