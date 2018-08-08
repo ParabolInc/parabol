@@ -22,29 +22,35 @@ const makeLink = (href, copy) => (
 )
 
 const teamAgendaHelpLink = makeLink(
-  'https://www.parabol.co/getting-started-guide#team-agenda',
+  'https://www.parabol.co/getting-started-guide/action-meetings-101#team-agenda',
   'Learn More'
 )
 
 const actionGettingStartedLink = makeLink(
-  'https://www.parabol.co/getting-started-guide',
+  'https://www.parabol.co/getting-started-guide/action-meetings-101',
   'Getting Started Guide'
 )
-// TODO: Add Learn More links, etc. for Retro Guide when it is created
+
 const retroGettingStartedLink = makeLink(
-  'https://www.parabol.co/getting-started-guide',
+  'https://www.parabol.co/getting-started-guide/retrospective-meetings-101',
   'Getting Started Guide'
 )
 
-// TODO: Refactor to handle Retro type
-const meetingLabel = 'an Action Meeting' || 'a Retro Meeting'
-const meetingHelpLink = actionGettingStartedLink || retroGettingStartedLink
+const retroGettingStartedContent = (
+  <p>
+    {'See our '}
+    {retroGettingStartedLink}
+    {' for running a Retrospective Meeting.'}
+  </p>
+)
+const checkInFacilitatorBarTip =
+  'Facilitator: allow each teammate a moment to answer today’s prompt, then mark them as Here or Not Here.'
 
-const lobbyHelpContent = (
+const actionLobbyHelpContent = (
   <div>
     <p>
-      {`To learn more about how to run ${meetingLabel}, see our `}
-      {meetingHelpLink}
+      {'To learn more about how to run an Action Meeting, see our '}
+      {actionGettingStartedLink}
       {'.'}
     </p>
   </div>
@@ -54,6 +60,7 @@ const retroLobbyHelpContentFree = (
   <div>
     <p>{'The person who presses “Start Meeting” will be today’s Facilitator.'}</p>
     <p>{'Everyone’s display automatically follows the Facilitator.'}</p>
+    {retroGettingStartedContent}
   </div>
 )
 
@@ -67,10 +74,11 @@ const retroLobbyHelpContentPaid = (
         'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'
       }
     </p>
+    {retroGettingStartedContent}
   </div>
 )
 
-const checkInHelpContent = (
+const checkInHelpContent = (link) => (
   <div>
     <p>
       {
@@ -78,8 +86,17 @@ const checkInHelpContent = (
       }
     </p>
     <p>{'Avoid cross-talk so that everybody can have uninterrupted airtime.'}</p>
-    <p>{makeLink('https://www.parabol.co/getting-started-guide#social-check-in', 'Learn More')}</p>
+    <p>{link}</p>
   </div>
+)
+
+const actionCheckInLink = makeLink(
+  'https://www.parabol.co/getting-started-guide/action-meetings-101#social-check-in',
+  'Learn More'
+)
+const retroCheckInLink = makeLink(
+  'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#social-check-in',
+  'Learn More'
 )
 
 const reflectHelpContent = (
@@ -178,42 +195,14 @@ const lastCallHelpContent = (
   </div>
 )
 
-const phaseHelpLookup = {
+export const actionPhaseHelpLookup = {
   [LOBBY]: {
     facilitatorBarTip: null,
-    helpDialog: lobbyHelpContent
-  },
-  [RETRO_LOBBY_FREE]: {
-    facilitatorBarTip: null,
-    helpDialog: retroLobbyHelpContentFree
-  },
-  [RETRO_LOBBY_PAID]: {
-    facilitatorBarTip: null,
-    helpDialog: retroLobbyHelpContentPaid
+    helpDialog: actionLobbyHelpContent
   },
   [CHECKIN]: {
-    facilitatorBarTip:
-      'Facilitator: allow each teammate a moment to answer today’s prompt, then mark them as Here or Not Here.',
-    helpDialog: checkInHelpContent
-  },
-  [REFLECT]: {
-    facilitatorBarTip:
-      'Facilitator: depending on preference, your team can focus on 1 prompt at a time, or both.',
-    helpDialog: reflectHelpContent
-  },
-  [GROUP]: {
-    facilitatorBarTip:
-      'Facilitator: have teammates ask clarifying questions as they group reflections.',
-    helpDialog: groupHelpContent
-  },
-  [VOTE]: {
-    facilitatorBarTip: 'Facilitator: only 1 vote is required to move forward.',
-    helpDialog: voteHelpContent
-  },
-  [DISCUSS]: {
-    facilitatorBarTip: `Facilitator: encourage your team to break tasks down to their smallest components,
-                        perhaps owned by multiple teammates.`,
-    helpDialog: discussHelpContent
+    facilitatorBarTip: checkInFacilitatorBarTip,
+    helpDialog: checkInHelpContent(actionCheckInLink)
   },
   [UPDATES]: {
     facilitatorBarTip:
@@ -236,4 +225,36 @@ const phaseHelpLookup = {
   }
 }
 
-export default phaseHelpLookup
+export const retroPhaseHelpLookup = {
+  [RETRO_LOBBY_FREE]: {
+    facilitatorBarTip: null,
+    helpDialog: retroLobbyHelpContentFree
+  },
+  [RETRO_LOBBY_PAID]: {
+    facilitatorBarTip: null,
+    helpDialog: retroLobbyHelpContentPaid
+  },
+  [CHECKIN]: {
+    facilitatorBarTip: checkInFacilitatorBarTip,
+    helpDialog: checkInHelpContent(retroCheckInLink)
+  },
+  [REFLECT]: {
+    facilitatorBarTip:
+      'Facilitator: depending on preference, your team can focus on 1 prompt at a time, or both.',
+    helpDialog: reflectHelpContent
+  },
+  [GROUP]: {
+    facilitatorBarTip:
+      'Facilitator: have teammates ask clarifying questions as they group reflections.',
+    helpDialog: groupHelpContent
+  },
+  [VOTE]: {
+    facilitatorBarTip: 'Facilitator: only 1 vote is required to move forward.',
+    helpDialog: voteHelpContent
+  },
+  [DISCUSS]: {
+    facilitatorBarTip: `Facilitator: encourage your team to break tasks down to their smallest components,
+                        perhaps owned by multiple teammates.`,
+    helpDialog: discussHelpContent
+  }
+}

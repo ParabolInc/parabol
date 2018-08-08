@@ -5,10 +5,12 @@ import FontAwesome from 'react-fontawesome'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import phaseHelpLookup from 'universal/utils/meetings/helpLookups'
+import {actionPhaseHelpLookup, retroPhaseHelpLookup} from 'universal/utils/meetings/helpLookups'
+import {ACTION} from 'universal/utils/constants'
 
 type Props = {
   closePortal: () => void,
+  meetingType: string,
   phase: string
 }
 
@@ -46,8 +48,9 @@ const DialogClose = styled(FontAwesome)({
 })
 
 const MeetingHelpDialogMenu = (props: Props) => {
-  const {closePortal, phase} = props
+  const {closePortal, meetingType, phase} = props
   const phaseLabel = phaseLabelLookup[phase]
+  const phaseHelpLookup = meetingType === ACTION ? actionPhaseHelpLookup : retroPhaseHelpLookup
 
   return (
     <DialogContent>

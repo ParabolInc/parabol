@@ -371,7 +371,10 @@ class NewMeeting extends Component<Props> {
           <RejoinFacilitatorButton onClickHandler={() => this.gotoStageId(facilitatorStageId)} />
         )}
         <MeetingHelpBlock isFacilitating={isFacilitating} localPhaseType={localPhaseType}>
-          <MeetingHelpDialog phase={localPhaseType || retroLobbyHelpContent} />
+          <MeetingHelpDialog
+            meetingType={meetingType}
+            phase={localPhaseType || retroLobbyHelpContent}
+          />
         </MeetingHelpBlock>
       </MeetingContainer>
     )

@@ -5,6 +5,7 @@ import ErrorBoundary from 'universal/components/ErrorBoundary'
 import withStyles from 'universal/styles/withStyles'
 import {meetingChromeBoxShadowInset} from 'universal/styles/meeting'
 import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
+import {ACTION} from 'universal/utils/constants'
 
 const MeetingMain = (props) => {
   const {children, hasBoxShadow, hasHelpFor, isFacilitating, styles} = props
@@ -16,7 +17,7 @@ const MeetingMain = (props) => {
       <div className={rootStyles}>
         {hasHelpFor && (
           <div className={helpStyles}>
-            <MeetingHelpDialog phase={hasHelpFor} />
+            <MeetingHelpDialog meetingType={ACTION} phase={hasHelpFor} />
           </div>
         )}
         <div className={innerBlockStyles}>{children}</div>
