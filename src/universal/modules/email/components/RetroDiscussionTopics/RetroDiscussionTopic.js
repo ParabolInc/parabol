@@ -26,14 +26,26 @@ const topicThemeHeading = {
 }
 
 const votesBlock = {
+  fontSize: '14px',
+  fontWeight: 600,
+  lineHeight: '14px',
   textAlign: 'center'
 }
 
 const voteIcon = {
   display: 'inline-block',
-  height: '10px',
-  margin: '0 4px',
+  height: '14px',
+  margin: '0 2px 0 0',
+  verticalAlign: 'top',
   width: '14px'
+}
+
+const voteCountLabel = {
+  color: ui.palette.midGray,
+  display: 'inline-block',
+  height: '14px',
+  lineHeight: '14px',
+  verticalAlign: 'top'
 }
 
 const reflectionCard = {
@@ -65,9 +77,8 @@ const RetroDiscussionTopic = (props: Props) => {
   const {imageSource, topic} = props
   const {reflections, title, voteCount} = topic
   const rows = arrayToRows(reflections)
-  const icon = imageSource === 'local' ? 'fa-check.svg' : 'fa-check@3x.png'
+  const icon = imageSource === 'local' ? 'fa-thumbs-up.svg' : 'fa-thumbs-up@3x.png'
   const src = `/static/images/icons/${icon}`
-  const voteRange = [...Array(voteCount).keys()]
   return (
     <table style={tableStyle} width='100%'>
       <tbody>
@@ -79,9 +90,8 @@ const RetroDiscussionTopic = (props: Props) => {
         </tr>
         <tr>
           <td style={votesBlock}>
-            {voteRange.map((idx) => (
-              <img key={idx} height='10' src={src} style={voteIcon} width='14' />
-            ))}
+            <img height='14' src={src} style={voteIcon} width='14' />
+            <div style={voteCountLabel}>{voteCount}</div>
           </td>
         </tr>
         <tr>

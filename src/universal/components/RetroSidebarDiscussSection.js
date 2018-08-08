@@ -5,6 +5,7 @@ import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/
 import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
 import {
@@ -32,14 +33,18 @@ const SidebarPhaseItemChild = styled('div')({
   flexDirection: 'column'
 })
 
-const VoteTally = styled('div')({
+const VoteTally = styled('div')(({isUnsyncedFacilitatorStage}) => ({
+  color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
+  fontSize: ui.iconSize,
+  fontWeight: 600,
   lineHeight: ui.navTopicLineHeight,
   marginRight: '0.5rem'
-})
-
-const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
-  color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.mid
 }))
+
+const VoteIcon = styled(StyledFontAwesome)({
+  color: 'inherit',
+  marginRight: '.125rem'
+})
 
 const DraggableMeetingSubnavItem = styled('div')(({isDragging}) => ({
   boxShadow: isDragging && ui.shadow[2]
@@ -129,12 +134,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
                     isUnsyncedFacilitatorStage
                   }
                   const voteMeta = (
-                    <VoteTally>
-                      <CheckIcon
-                        isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-                        name='check'
-                      />
-                      {' x '}
+                    <VoteTally isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}>
+                      <VoteIcon name={meetingVoteIcon} />
                       {voteCount}
                     </VoteTally>
                   )

@@ -10,6 +10,7 @@ import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectio
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import StyledError from 'universal/components/StyledError'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -98,11 +99,16 @@ class ReflectionGroupVoting extends Component<Props> {
       <CheckColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
-            <UpvoteIcon key={idx} name='thumbs-up' color={ui.palette.warm} onClick={this.unvote} />
+            <UpvoteIcon
+              key={idx}
+              name={meetingVoteIcon}
+              color={ui.palette.warm}
+              onClick={this.unvote}
+            />
           ))}
           {canVote && (
             <UpvoteIcon
-              name='thumbs-up'
+              name={meetingVoteIcon}
               color={isExpanded ? ui.palette.dark : appTheme.brand.primary.midGray}
               onClick={this.vote}
             />

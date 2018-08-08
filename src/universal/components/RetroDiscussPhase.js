@@ -18,7 +18,7 @@ import type {RouterHistory} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
-import {meetingTopicPhaseMaxWidth} from 'universal/styles/meeting'
+import {meetingTopicPhaseMaxWidth, meetingVoteIcon} from 'universal/styles/meeting'
 
 type Props = {|
   atmosphere: Object,
@@ -30,6 +30,8 @@ type Props = {|
 |}
 
 const DiscussHeader = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
   margin: '0 0 1.25rem'
 })
 
@@ -42,15 +44,24 @@ const TopicHeading = styled('div')({
   }
 })
 
-const CheckColumn = styled('div')({
-  display: 'flex'
+const VoteMeta = styled('div')({
+  alignItems: 'center',
+  backgroundColor: ui.palette.midGray,
+  borderRadius: '5em',
+  color: ui.palette.white,
+  display: 'flex',
+  fontSize: ui.iconSize,
+  fontWeight: 600,
+  margin: '.125rem 0 0 1rem',
+  padding: '.125rem .75rem'
 })
 
-const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
-  color,
-  marginRight: '.25rem',
+const VoteIcon = styled(StyledFontAwesome)({
+  color: ui.palette.white,
+  fontSize: ui.iconSize,
+  marginRight: '.125rem',
   width: ui.iconSize
-}))
+})
 
 const PhaseWrapper = styled('div')({
   display: 'flex',
@@ -122,7 +133,6 @@ const RetroDiscussPhase = (props: Props) => {
   if (!reflectionGroup) return null
   const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId
-  const checkMarks = [...Array(voteCount).keys()]
   const nextStageRes = findStageAfterId(phases, localStageId)
   const endMeeting = () => {
     EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
@@ -138,11 +148,10 @@ const RetroDiscussPhase = (props: Props) => {
                   <span>{'“'}</span>
                   {`${title}”`}
                 </TopicHeading>
-                <CheckColumn>
-                  {checkMarks.map((idx) => (
-                    <CheckIcon key={idx} name='check' color={ui.palette.mid} />
-                  ))}
-                </CheckColumn>
+                <VoteMeta>
+                  <VoteIcon name={meetingVoteIcon} />
+                  {voteCount}
+                </VoteMeta>
               </DiscussHeader>
               <ReflectionGrid>
                 {reflections.map((reflection) => {
