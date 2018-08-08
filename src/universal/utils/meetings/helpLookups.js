@@ -15,26 +15,20 @@ import {
   LAST_CALL
 } from 'universal/utils/constants'
 
-const makeLink = (href, copy) => (
-  <a href={href} rel='noopener noreferrer' target='blank' title={copy}>
-    {copy}
-  </a>
-)
+const makeLink = (link, copy) => {
+  const href = `https://www.parabol.co/getting-started-guide/${link}`
+  return (
+    <a href={href} rel='noopener noreferrer' target='blank' title={copy}>
+      {copy}
+    </a>
+  )
+}
 
-const teamAgendaHelpLink = makeLink(
-  'https://www.parabol.co/getting-started-guide/action-meetings-101#team-agenda',
-  'Learn More'
-)
+const teamAgendaHelpLink = makeLink('action-meetings-101#team-agenda', 'Learn More')
 
-const actionGettingStartedLink = makeLink(
-  'https://www.parabol.co/getting-started-guide/action-meetings-101',
-  'Getting Started Guide'
-)
+const actionGettingStartedLink = makeLink('action-meetings-101', 'Getting Started Guide')
 
-const retroGettingStartedLink = makeLink(
-  'https://www.parabol.co/getting-started-guide/retrospective-meetings-101',
-  'Getting Started Guide'
-)
+const retroGettingStartedLink = makeLink('retrospective-meetings-101', 'Getting Started Guide')
 
 const retroGettingStartedContent = (
   <p>
@@ -90,14 +84,8 @@ const checkInHelpContent = (link) => (
   </div>
 )
 
-const actionCheckInLink = makeLink(
-  'https://www.parabol.co/getting-started-guide/action-meetings-101#social-check-in',
-  'Learn More'
-)
-const retroCheckInLink = makeLink(
-  'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#social-check-in',
-  'Learn More'
-)
+const actionCheckInLink = makeLink('action-meetings-101#social-check-in', 'Learn More')
+const retroCheckInLink = makeLink('retrospective-meetings-101#social-check-in', 'Learn More')
 
 const reflectHelpContent = (
   <div>
@@ -108,6 +96,7 @@ const reflectHelpContent = (
         'Reflection cards will remain blurred from other teammates until everyone has completed the phase.'
       }
     </p>
+    <p>{makeLink('retrospective-meetings-101#reflect', 'Learn More')}</p>
   </div>
 )
 
@@ -115,7 +104,7 @@ const groupHelpContent = (
   <div>
     <p>{'The goal of this phase is to identify common themes and group them for discussion.'}</p>
     <p>{'To group, simply drag and drop a card onto another card or group.'}</p>
-    <p>{'Tap or hover a single card to give it a theme.'}</p>
+    <p>{makeLink('retrospective-meetings-101#group', 'Learn More')}</p>
   </div>
 )
 
@@ -128,6 +117,7 @@ const voteHelpContent = (
     </p>
     <p>{'Each teammate has 5 total votes, and can vote on a single theme up to 3 times.'}</p>
     <p>{'To vote, simply tap on the check icon above the card. Toggle votes to remove.'}</p>
+    <p>{makeLink('retrospective-meetings-101#vote', 'Learn More')}</p>
   </div>
 )
 
@@ -143,6 +133,7 @@ const discussHelpContent = (
         'Sometimes the next task is to schedule a time to discuss a topic more in depth at a later time.'
       }
     </p>
+    <p>{makeLink('retrospective-meetings-101#discuss', 'Learn More')}</p>
   </div>
 )
 
@@ -156,7 +147,7 @@ const updatesHelpContent = (
         'Help keep your team stay on schedule by adding Agenda topics to the queue if updates inspire the need for discussion.'
       }
     </p>
-    <p>{makeLink('https://www.parabol.co/getting-started-guide#solo-updates', 'Learn More')}</p>
+    <p>{makeLink('action-meetings-101#solo-updates', 'Learn More')}</p>
   </div>
 )
 
