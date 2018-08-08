@@ -29,6 +29,9 @@ const StartDraggingReflectionPayload = new GraphQLObjectType({
     },
     reflectionId: {
       type: GraphQLID
+    },
+    teamId: {
+      type: GraphQLID
     }
   })
 })

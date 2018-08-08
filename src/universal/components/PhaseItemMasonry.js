@@ -142,7 +142,15 @@ class PhaseItemMasonry extends React.Component<Props> {
           y: modalTop + top + headerHeight + MODAL_PADDING
         })
       } else {
-        const {top, left} = el.getBoundingClientRect()
+        /*
+         * There is a bug in react's vdom where the setRef doesn't get called under certain conditions
+         * To reproduce, have 3 cards. A, B, C. A is to the left of B,C which are in a group.
+         * Drag B onto A and you have B,A then C all alone.
+         * However, the reference to the new B will not be created until after the drop.
+         * To mitigate this, we add attach the reflectionId to the DOM node itself so we can find it
+         */
+        const correctEl = document.contains(el) ? el : document.getElementById(itemId)
+        const {top, left} = correctEl.getBoundingClientRect()
         setClosingTransform(atmosphere, itemId, {x: left, y: top})
       }
     } else {

@@ -2238,7 +2238,8 @@ export type StartDraggingReflectionPayload = {
   meeting: ?NewMeeting,
   meetingId: ?string,
   reflection: ?RetroReflection,
-  reflectionId: ?string
+  reflectionId: ?string,
+  teamId: ?string
 }
 
 export type StartMeetingPayload = {

@@ -199,30 +199,17 @@ class ReflectionGroup extends Component<Props> {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
     const {isViewerDragInProgress} = meeting
-    if (isModal) {
-      return (
-        <DraggableReflectionCard
-          closeGroupModal={this.closeGroupModal}
-          idx={idx}
-          isDraggable={isDraggable}
-          isModal
-          key={reflection.id}
-          meeting={meeting}
-          reflection={reflection}
-          setItemRef={setItemRef}
-          isViewerDragInProgress={isViewerDragInProgress}
-        />
-      )
-    }
     return (
       <DraggableReflectionCard
+        closeGroupodal={isModal ? this.closeGroupModal : undefined}
         key={reflection.id}
+        idx={reflections.length - idx - 1}
+        isDraggable={isDraggable}
+        isModal={isModal}
         meeting={meeting}
         reflection={reflection}
         setItemRef={setItemRef}
-        isDraggable={isDraggable}
         isSingleCardGroup={reflections.length === 1}
-        idx={reflections.length - idx - 1}
         isViewerDragInProgress={isViewerDragInProgress}
       />
     )
