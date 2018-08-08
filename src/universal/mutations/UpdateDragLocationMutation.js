@@ -26,6 +26,8 @@ const mutation = graphql`
 `
 
 export const updateDragLocationTeamUpdater = (payload, {atmosphere, store}) => {
+  // getMasonry is false if they are not in the meeting
+  if (!atmosphere.getMasonry) return
   const sourceId = getInProxy(payload, 'sourceId')
   if (!sourceId) return
   const {

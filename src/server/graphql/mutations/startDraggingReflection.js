@@ -52,6 +52,7 @@ export default {
 
     // RESOLUTION
     const data = {
+      teamId,
       meetingId,
       reflectionId,
       dragContext: {

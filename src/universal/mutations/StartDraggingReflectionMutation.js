@@ -5,6 +5,9 @@ import getInProxy from 'universal/utils/relay/getInProxy'
 import type {Coords2DInput} from 'universal/types/schema.flow'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
+import {matchPath} from 'react-router-dom'
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {RETROSPECTIVE} from 'universal/utils/constants'
 
 type Variables = {
   reflectionId: string,
@@ -32,6 +35,7 @@ graphql`
         preferredName
       }
     }
+    teamId
   }
 `
 
@@ -47,6 +51,17 @@ export const startDraggingReflectionTeamUpdater = (
   payload,
   {atmosphere, dispatch, store, isLocal}
 ) => {
+  const {pathname} = window.location
+  const slug = meetingTypeToSlug[RETROSPECTIVE]
+  const meetingRoute = matchPath(pathname, {path: `/${slug}/:teamId`})
+  /*
+   * Avoid adding reflectionsInFlight on clients that are not in the meeting because
+   * we can't call the endDrag handler to remove them because
+   * that needs the full context of the grid
+   */
+  if (!meetingRoute || meetingRoute.params.teamId !== payload.getValue('teamId')) {
+    return undefined
+  }
   const {viewerId} = atmosphere
   const reflectionId = payload.getValue('reflectionId')
   const reflection = store.get(reflectionId)
