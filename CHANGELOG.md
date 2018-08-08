@@ -9,9 +9,10 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ### Added
 * Moved Facilitator voting controls from sidebar to bottom bar #2185
+* Thumbs up emojis everywhere in Retros #2305
 
 ### Fixed
-* Fixed voting race conditions #2206 & #2279
+* Fixed voting race conditions fixes #2206 (see PR #2307)
 * Changed log in/create account labels and language #2246
 * Changed check marks to thumbs-up in all aspects of Retro voting phase #2241
 * Group grid layout updates on sidebar toggle #2256
