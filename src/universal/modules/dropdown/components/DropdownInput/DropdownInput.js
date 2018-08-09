@@ -7,9 +7,9 @@ import TagPro from 'universal/components/Tag/TagPro'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
 import ui from 'universal/styles/ui'
 import {PRO} from 'universal/utils/constants'
-import LoadableMenu from 'universal/components/LoadableMenu'
 import LoadableNewTeamOrgDropdown from 'universal/components/LoadableNewTeamOrgDropdown'
 import styled from 'react-emotion'
+import LoadableDropdownMenu from 'universal/components/LoadableDropdownMenu'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -63,10 +63,8 @@ const DropdownInput = (props) => {
         <span>{orgName}</span>
         {org.tier === PRO && <TagPro />}
         {!disabled && (
-          <LoadableMenu
+          <LoadableDropdownMenu
             LoadableComponent={LoadableNewTeamOrgDropdown}
-            maxWidth={256}
-            minWidth={256}
             maxHeight={350}
             originAnchor={originAnchor}
             queryVars={{

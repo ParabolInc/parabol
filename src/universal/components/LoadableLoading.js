@@ -1,9 +1,7 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
-import Spinner from 'universal/modules/spinner/components/Spinner/Spinner'
-import withStyles from 'universal/styles/withStyles'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 
 /*
  * A component to handle the loading, long loading, and error states for react-loadable
@@ -14,16 +12,10 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
  */
 
 const LoadableLoading = (props) => {
-  const {error, timedOut, pastDelay, spinnerSize = 40, styles, width, height} = props
+  const {error, timedOut, pastDelay, width, height} = props
   if (!error && !pastDelay && !timedOut) return <div />
-  if (error) {
-    return <ErrorComponent error={error} width={width} height={height} />
-  }
-  return (
-    <div className={css(styles.loadingComponent)} style={{width, height}}>
-      <Spinner fillColor={timedOut ? 'warm' : 'cool'} width={spinnerSize} />
-    </div>
-  )
+  if (error) return <ErrorComponent error={error} width={width} height={height} />
+  return <LoadingComponent height={height} width={width} timedOut={timedOut} />
 }
 
 LoadableLoading.propTypes = {
@@ -32,17 +24,7 @@ LoadableLoading.propTypes = {
   pastDelay: PropTypes.bool,
   spinnerSize: PropTypes.number,
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  styles: PropTypes.object
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 }
 
-const styleThunk = () => ({
-  loadingComponent: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
-
-export default withStyles(styleThunk)(LoadableLoading)
+export default LoadableLoading
