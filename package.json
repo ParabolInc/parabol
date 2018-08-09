@@ -97,6 +97,7 @@
     "snazzy": "^7.1.1",
     "standard": "^11.0.1",
     "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
     "url-loader": "^1.0.1",
     "webpack": "^4.15.1",
     "webpack-bundle-analyzer": "^2.13.1",
