@@ -7,10 +7,7 @@ import type {TeamDashTeamMemberMenu_team as Team} from './__generated__/TeamDash
 
 import type {Dispatch} from 'react-redux'
 import {connect} from 'react-redux'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import styled from 'react-emotion'
-import textOverflow from 'universal/styles/helpers/textOverflow'
+import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 
 type Props = {
   closePortal: () => void,
@@ -18,17 +15,6 @@ type Props = {
   team: Team,
   teamMemberFilterId: ?string
 }
-
-const Label = styled('div')({
-  ...textOverflow,
-  borderBottom: `1px solid ${appTheme.palette.mid30l}`,
-  color: ui.palette.dark,
-  fontSize: ui.menuItemFontSize,
-  fontWeight: 600,
-  lineHeight: ui.menuItemHeight,
-  marginBottom: ui.menuGutterVertical,
-  padding: `0 ${ui.menuGutterHorizontal}`
-})
 
 const TeamDashTeamMemberMenu = (props: Props) => {
   const {closePortal, dispatch, team, teamMemberFilterId} = props
@@ -41,7 +27,7 @@ const TeamDashTeamMemberMenu = (props: Props) => {
       closePortal={closePortal}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <Label notMenuItem>{'Filter by:'}</Label>
+      <DropdownMenuLabel>{'Filter by:'}</DropdownMenuLabel>
       <MenuItemWithShortcuts
         key={'teamMemberFilterNULL'}
         label={'All members'}

@@ -1,11 +1,9 @@
 // @flow
 import React from 'react'
-import ui from 'universal/styles/ui'
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import styled from 'react-emotion'
-import textOverflow from 'universal/styles/helpers/textOverflow'
 import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
 import LoadingComponent from 'universal/components/ErrorComponent/ErrorComponent'
+import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
 
 type Props = {
   closePortal: () => void,
@@ -13,13 +11,6 @@ type Props = {
   isLoaded: boolean,
   options: Array<any>
 }
-
-const MenuItemLabel = styled('span')({
-  ...textOverflow,
-  fontSize: ui.menuItemFontSize,
-  lineHeight: ui.menuItemHeight,
-  padding: `0 ${ui.menuGutterHorizontal}`
-})
 
 const ServiceDropdown = (props: Props) => {
   const {handleItemClick, isLoaded, options, closePortal} = props
@@ -30,7 +21,7 @@ const ServiceDropdown = (props: Props) => {
         return (
           <MenuItemWithShortcuts
             key={option.id}
-            label={<MenuItemLabel>{option.label}</MenuItemLabel>}
+            label={<DropdownMenuItemLabel>{option.label}</DropdownMenuItemLabel>}
             onClick={() => {
               handleItemClick(option)
             }}

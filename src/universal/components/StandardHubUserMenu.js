@@ -1,29 +1,15 @@
 import React from 'react'
 import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
 import MenuItemHR from 'universal/modules/menu/components/MenuItem/MenuItemHR'
 import {createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import {StandardHubUserMenu_viewer as Viewer} from './__generated__/StandardHubUserMenu_viewer.graphql'
 import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from 'universal/utils/constants'
-import textOverflow from 'universal/styles/helpers/textOverflow'
-
-const Label = styled('div')({
-  ...textOverflow,
-  borderBottom: `1px solid ${appTheme.palette.mid30l}`,
-  color: ui.palette.dark,
-  fontSize: ui.menuItemFontSize,
-  fontWeight: 600,
-  lineHeight: ui.menuItemHeight,
-  marginBottom: ui.menuGutterVertical,
-  minWidth: ui.dashSidebarWidth,
-  padding: `0 ${ui.menuGutterHorizontal}`,
-  userSelect: 'none'
-})
+import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 
 const UpgradeCTA = styled('span')({
   color: ui.upgradeColor,
@@ -67,7 +53,7 @@ const StandardHubUserMenu = (props: Props) => {
 
   return (
     <MenuWithShortcuts ariaLabel={'Select your settings'} closePortal={closePortal}>
-      <Label>{email}</Label>
+      <DropdownMenuLabel>{email}</DropdownMenuLabel>
       <MenuItemWithShortcuts icon='address-card' label='Settings' onClick={goToSettings} />
       <MenuItemWithShortcuts icon='building' label='Organizations' onClick={goToOrganizations} />
       <MenuItemWithShortcuts icon='bell' label='Notifications' onClick={goToNotifications} />
