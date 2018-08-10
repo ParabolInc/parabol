@@ -7,7 +7,7 @@ import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
 
 type Props = {
   closePortal: () => void,
-  handleItemClick: () => void,
+  handleItemClick: (option: any) => void,
   isLoaded: boolean,
   options: Array<any>
 }

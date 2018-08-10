@@ -9,7 +9,7 @@ import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
 
 type Props = {
   closePortal: () => void,
-  onChange: () => void,
+  onChange: (orgId: string) => void,
   organizations: Array<any>
 }
 
