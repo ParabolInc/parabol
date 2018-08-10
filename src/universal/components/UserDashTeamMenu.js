@@ -1,6 +1,6 @@
 import React from 'react'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import type {Team} from 'universal/types/schema.flow'
 import type {Dispatch} from 'react-redux'
 import {connect} from 'react-redux'

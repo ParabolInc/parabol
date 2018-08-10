@@ -1,7 +1,7 @@
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck'
 import type {TeamDashTeamMemberMenu_team as Team} from './__generated__/TeamDashTeamMemberMenu_team.graphql'
 

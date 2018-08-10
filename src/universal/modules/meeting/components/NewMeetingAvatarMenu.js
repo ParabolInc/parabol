@@ -1,8 +1,8 @@
 // @flow
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import {connect, Dispatch} from 'react-redux'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {LOBBY} from 'universal/utils/constants'
