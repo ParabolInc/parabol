@@ -55,10 +55,7 @@ const withToggledPortal = (ComposedComponent) => {
         const node = findDOMNode(this.toggleRef)
         node.focus()
       }
-      const {onClose} = this.props
-      if (onClose) {
-        onClose()
-      }
+      // no need to call onClose here, since it's taken care of in the parent
     }
 
     terminatePortal = () => {

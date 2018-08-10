@@ -94,8 +94,10 @@ class OutcomeCardContainer extends Component {
 
   toggleMenuState = () => {
     if (this._mounted) {
+      const method = this.state.cardHasMenuOpen ? 'remove' : 'add'
       this.setState({
-        cardHasMenuOpen: !this.state.cardHasMenuOpen
+        cardHasMenuOpen: !this.state.cardHasMenuOpen,
+        activeEditingComponents: this.state.activeEditingComponents[method]('menu')
       })
     }
   }
