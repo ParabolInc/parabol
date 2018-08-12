@@ -19,8 +19,8 @@ import './polyfills'
 import {GITHUB, SLACK} from '../universal/utils/constants'
 import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks'
 import SharedDataLoader from 'shared-dataloader'
-import {Server} from 'uws'
 import http from 'http'
+import engine from 'engine.io'
 // import startMemwatch from 'server/utils/startMemwatch'
 import packageJSON from '../../package.json'
 import jwtFields from 'universal/utils/jwtFields'
@@ -36,9 +36,12 @@ const {PORT = 3000} = process.env
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || ''
 
 const app = express()
-const server = http.createServer(app)
-const wss = new Server({server})
-server.listen(PORT)
+const server = http.createServer(app).listen(PORT)
+const eioServer = engine.attach(server, {
+  transports: ['polling'],
+  wsEngine: 'uws'
+})
+
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
 const sharedDataLoader = new SharedDataLoader({
   PROD,
@@ -139,7 +142,7 @@ app.post('/webhooks/github', handleGitHubWebhooks)
 app.get('*', createSSR)
 
 // handle sockets
-wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
+eioServer.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
 
 // if (process.env.MEMWATCH) {
 // startMemwatch()
