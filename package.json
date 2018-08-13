@@ -208,7 +208,7 @@
     "string-score": "^1.0.1",
     "string-similarity": "^1.2.0",
     "stripe": "^4.24.0",
-    "subscriptions-transport-ws": "https://github.com/mattkrick/subscriptions-transport-ws/tarball/8eaa45976cbb01b03b3bf004c5595b571482f349",
+    "subscriptions-transport-engineio": "https://github.com/jordanh/subscriptions-transport-engineio/tarball/cfa3866b610d3f0a0726c8695c30c54a43376c04",
     "tayden-clusterfck": "^0.7.0",
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",

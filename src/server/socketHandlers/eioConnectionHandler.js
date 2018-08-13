@@ -25,7 +25,7 @@ class ConnectionContext {
 export default function connectionHandler (sharedDataLoader, rateLimiter) {
   return async function socketConnectionHandler (socket) {
     const req = socket.request
-    // we don't need websockets, we're we're going...
+    // we don't need websockets, not where we're going...
     //
     // const {headers} = req
     // const protocol = headers['sec-websocket-protocol']
