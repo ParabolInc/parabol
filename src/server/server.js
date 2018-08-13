@@ -38,8 +38,8 @@ const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || ''
 const app = express()
 const httpServer = http.createServer(app)
 const eioServer = engine.attach(httpServer, {
-  // transports: ['polling', 'websocket'],
-  transports: ['polling'],
+  transports: ['polling', 'websocket'],
+  // transports: ['polling'],
   wsEngine: 'uws'
 })
 httpServer.listen(PORT)
