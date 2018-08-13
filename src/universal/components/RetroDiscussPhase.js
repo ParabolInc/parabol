@@ -20,6 +20,7 @@ import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
 import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
+import plural from 'universal/utils/plural'
 
 type Props = {|
   atmosphere: Object,
@@ -35,13 +36,12 @@ const maxWidth = '114rem'
 const HeaderContainer = styled('div')({
   margin: '0 auto',
   maxWidth,
-  padding: '0 2.5rem'
+  padding: '0 1.25rem'
 })
 
 const LabelContainer = styled('div')({
-  borderTop: `.0625rem solid ${ui.dashBorderColor}`,
   margin: '0 1.25rem',
-  padding: '.5rem 0 .625rem'
+  padding: '0 0 .625rem'
 })
 
 const DiscussHeader = styled('div')({
@@ -56,7 +56,7 @@ const ColumnsContainer = styled('div')({
   margin: '0 auto',
   maxWidth,
   overflowX: 'auto',
-  padding: '0 1.25rem',
+  padding: 0,
   width: '100%'
 })
 
@@ -106,6 +106,10 @@ const Column = styled('div')({
   flex: 1,
   flexDirection: 'column',
   width: '100%'
+})
+
+const TaskColumn = styled(Column)({
+  borderLeft: '.0625rem solid rgba(0, 0, 0, .05)'
 })
 
 const ColumnInner = styled('div')({
@@ -167,7 +171,9 @@ const RetroDiscussPhase = (props: Props) => {
         <ColumnsContainer>
           <Column>
             <LabelContainer>
-              <LabelHeading>{reflections.length} Reflections</LabelHeading>
+              <LabelHeading>
+                {reflections.length} {plural(reflections.length, 'Reflection')}
+              </LabelHeading>
             </LabelContainer>
             <ScrollableBlock hideOverflownShadow>
               <ColumnInner>
@@ -185,7 +191,7 @@ const RetroDiscussPhase = (props: Props) => {
               </ColumnInner>
             </ScrollableBlock>
           </Column>
-          <Column>
+          <TaskColumn>
             <LabelContainer>
               <LabelHeading>Takeaway Tasks</LabelHeading>
             </LabelContainer>
@@ -201,7 +207,7 @@ const RetroDiscussPhase = (props: Props) => {
                 </TaskCardBlock>
               </ColumnInner>
             </ScrollableBlock>
-          </Column>
+          </TaskColumn>
         </ColumnsContainer>
       </PhaseWrapper>
       {isFacilitating && (
