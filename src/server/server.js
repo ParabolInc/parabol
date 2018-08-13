@@ -9,7 +9,7 @@ import Raven from 'raven'
 import createSSR from './createSSR'
 import emailSSR from './emailSSR'
 import {clientSecret as secretKey} from './utils/auth0Helpers'
-import connectionHandler from './socketHandlers/wssConnectionHandler'
+import connectionHandler from './socketHandlers/eioConnectionHandler'
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import getDotenv from '../universal/utils/dotenv'
@@ -36,11 +36,12 @@ const {PORT = 3000} = process.env
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || ''
 
 const app = express()
-const server = http.createServer(app).listen(PORT)
-const eioServer = engine.attach(server, {
+const httpServer = http.createServer(app)
+const eioServer = engine.attach(httpServer, {
   transports: ['polling'],
   wsEngine: 'uws'
 })
+httpServer.listen(PORT)
 
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
 const sharedDataLoader = new SharedDataLoader({

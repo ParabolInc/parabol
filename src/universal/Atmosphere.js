@@ -59,6 +59,7 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions = []
     this.subscriptions = {}
     this.eventEmitter = new EventEmitter()
+    console.log('new Atmosphere')
   }
 
   socketSubscribe = async (operation, variables, cacheConfig, observer) => {
@@ -95,6 +96,9 @@ export default class Atmosphere extends Environment {
     }
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
+    eioClient.CLOSED = 'closed'
+    eioClient.CONNECTING = 'connecting'
+    eioClient.OPEN = 'open'
     const subscriptionClient = new SubscriptionClient(url, {reconnect: true}, eioClient)
 
     const {text: query, name: operationName} = NewAuthTokenSubscription().subscription()
@@ -113,11 +117,13 @@ export default class Atmosphere extends Environment {
 
   fetchWS = async (operation, variables) => {
     return new Promise((resolve, reject) => {
+      console.log('Atmosphere: fetchWS')
       const opId = this.subscriptionClient.generateOperationId()
       const payload = {
         query: operation.text,
         variables
       }
+      console.log('Atmosphere: fetchWS got optIt')
       this.subscriptionClient.operations[opId] = {
         options: payload,
         handler: (errors, result) => {
@@ -132,11 +138,13 @@ export default class Atmosphere extends Environment {
           }
         }
       }
+      console.log('Atmosphere: fetchWS got about to sendMessage')
       this.subscriptionClient.sendMessage(opId, GQL_START, payload)
     })
   }
 
   setNet = (name) => {
+    console.log(`setNet(${name})`)
     this._network = this.networks[name]
   }
 
