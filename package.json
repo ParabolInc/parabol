@@ -109,6 +109,7 @@
   },
   "dependencies": {
     "@google-cloud/language": "^1.2.0",
+    "@mattkrick/fast-rtc-peer": "^0.0.3",
     "@mattkrick/react-dnd": "3.0.5",
     "@mattkrick/react-dnd-html5-backend": "3.0.5",
     "@mattkrick/react-relay": "^1.6.3",
@@ -210,7 +211,8 @@
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",
     "unicode-substring": "^1.0.0",
-    "uws": "10.148.1"
+    "uws": "10.148.1",
+    "wrtc": "^0.1.6"
   },
   "engines": {
     "node": "^8.0.0 || ^9.4.0 || ^10.0.0",

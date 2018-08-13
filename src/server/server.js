@@ -26,6 +26,8 @@ import packageJSON from '../../package.json'
 import jwtFields from 'universal/utils/jwtFields'
 import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
 import RateLimiter from 'server/graphql/RateLimiter'
+import FastRTCPeer, {DATA, SIGNAL} from '@mattkrick/fast-rtc-peer'
+import wrtc from 'wrtc'
 
 const {version} = packageJSON
 // Import .env and expand variables:
@@ -134,6 +136,24 @@ app.get('/auth/github', handleIntegration(GITHUB))
 app.get('/auth/slack', handleIntegration(SLACK))
 app.post('/webhooks/github', handleGitHubWebhooks)
 
+// web-rtc fallback
+app.post('/rtc', (req, res) => {
+  const {body} = req
+  const peer = new FastRTCPeer({wrtc})
+  peer._candidateBuffer = []
+  peer.on(SIGNAL, (payload) => {
+    peer._candidateBuffer.push(payload)
+  })
+  setTimeout(() => {
+    res.send(JSON.stringify(peer._candidateBuffer))
+  }, 2000)
+  peer.on(DATA, (data, peer) => {
+    console.log(`got message ${data} from ${peer.id}`)
+  })
+  body.forEach((msg) => {
+    peer.dispatch(msg)
+  })
+})
 // return web app
 
 app.get('*', createSSR)

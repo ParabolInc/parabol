@@ -7,6 +7,7 @@ import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscr
 import EventEmitter from 'eventemitter3'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
 import {SubscriptionClient} from 'subscriptions-transport-ws/dist/index'
+import FastRTCPeer, {DATA_OPEN, SIGNAL} from '@mattkrick/fast-rtc-peer'
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err)
@@ -58,6 +59,7 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions = []
     this.subscriptions = {}
     this.eventEmitter = new EventEmitter()
+    this.setRTC()
   }
 
   socketSubscribe = async (operation, variables, cacheConfig, observer) => {
@@ -158,6 +160,34 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions = []
     this.subscriptions = {}
     this.setNet('socket')
+  }
+
+  setRTC = () => {
+    const peer = new FastRTCPeer({isOfferer: true})
+    const fullOffer = []
+    const sendOffer = async () => {
+      const res = await fetch('/rtc', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          Authorization: `Bearer ${this.authToken}`
+        },
+        body: JSON.stringify(fullOffer)
+      })
+      const payload = await res.json()
+      console.log('got payload', payload)
+      payload.forEach((msg) => {
+        peer.dispatch(msg)
+      })
+
+      peer.on(DATA_OPEN, () => {
+        peer.send('Hi from the client')
+      })
+    }
+    peer.on(SIGNAL, (payload) => {
+      fullOffer.push(payload)
+    })
+    setTimeout(sendOffer, 2000)
   }
 
   getAuthToken = (global) => {
