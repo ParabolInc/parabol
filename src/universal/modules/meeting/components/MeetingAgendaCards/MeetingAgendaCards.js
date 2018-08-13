@@ -10,12 +10,12 @@ import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
 import type {Task} from 'universal/types/schema.flow'
 import styled from 'react-emotion'
+import {meetingGridGap, meetingGridMinWidth} from 'universal/styles/meeting'
 
 const TaskCardGrid = styled('div')({
   display: 'grid',
-  gridGap: '1.25rem',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(225px, 1fr))',
-  maxWidth: '75rem',
+  gridGap: meetingGridGap,
+  gridTemplateColumns: `repeat(auto-fill, minmax(${meetingGridMinWidth}, 1fr))`,
   margin: '0 auto',
   width: '100%'
 })
@@ -37,17 +37,17 @@ const makeCards = (tasks = [], myUserId, handleAddTask) => {
   })
 }
 
-// const makePlaceholders = (length) => {
-//   const rowLength = 4
-//   const emptyCardCount = rowLength - (length % rowLength + 1)
-//   /* eslint-disable react/no-array-index-key */
-//   return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
-//     <div key={`CreateCardPlaceholder${idx}`}>
-//       <CreateCard />
-//     </div>
-//   ))
-//   /* eslint-enable */
-// }
+const makePlaceholders = (length) => {
+  const rowLength = 4
+  const emptyCardCount = rowLength - (length % rowLength + 1)
+  /* eslint-disable react/no-array-index-key */
+  return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
+    <div key={`CreateCardPlaceholder${idx}`}>
+      <CreateCard />
+    </div>
+  ))
+  /* eslint-enable */
+}
 
 type Props = {
   agendaId?: string,
@@ -57,6 +57,7 @@ type Props = {
   meetingId: string,
   reflectionGroupId?: string,
   tasks: ?Array<Task>,
+  showPlaceholders: boolean,
   styles: Object,
   teamId: string
 }
@@ -88,7 +89,8 @@ class MeetingAgendaCards extends Component<Props> {
 
   render () {
     const {
-      atmosphere: {userId}
+      atmosphere: {userId},
+      showPlaceholders
     } = this.props
     const tasks = this.props.tasks || []
     return (
@@ -99,11 +101,11 @@ class MeetingAgendaCards extends Component<Props> {
         <div>
           <CreateCard handleAddTask={this.handleAddTask()} hasControls />
         </div>
+        {/* Placeholder Cards */}
+        {showPlaceholders && makePlaceholders(tasks.length)}
       </TaskCardGrid>
     )
   }
 }
-// {/* Placeholder Cards */}
-// {makePlaceholders(tasks.length)}
 
 export default withRouter(withAtmosphere(withHotkey(MeetingAgendaCards)))

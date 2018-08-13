@@ -19,7 +19,7 @@ import type {RouterHistory} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
-import {meetingTopicPhaseMaxWidth, meetingVoteIcon} from 'universal/styles/meeting'
+import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
 
 type Props = {|
   atmosphere: Object,
@@ -30,21 +30,34 @@ type Props = {|
   team: Object
 |}
 
+const maxWidth = '114rem'
+
 const HeaderContainer = styled('div')({
   margin: '0 auto',
-  maxWidth: meetingTopicPhaseMaxWidth,
+  maxWidth,
   padding: '0 2.5rem'
 })
 
 const LabelContainer = styled('div')({
   borderTop: `.0625rem solid ${ui.dashBorderColor}`,
-  padding: '.5rem 0 1.25rem'
+  margin: '0 1.25rem',
+  padding: '.5rem 0 .625rem'
 })
 
 const DiscussHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
   margin: '0 0 1.25rem'
+})
+
+const ColumnsContainer = styled('div')({
+  display: 'flex',
+  flex: 1,
+  margin: '0 auto',
+  maxWidth,
+  overflowX: 'auto',
+  padding: '0 1.25rem',
+  width: '100%'
 })
 
 const TopicHeading = styled('div')({
@@ -82,39 +95,26 @@ const PhaseWrapper = styled('div')({
   overflow: 'hidden'
 })
 
-const ReflectionSection = styled('div')({
-  // borderBottom: `.0625rem solid ${ui.dashBorderColor}`,
+const ReflectionGrid = styled('div')({
+  display: 'grid',
+  gridGap: meetingGridGap,
+  gridTemplateColumns: `repeat(auto-fill, minmax(${meetingGridMinWidth}, 1fr))`
+})
+
+const Column = styled('div')({
   display: 'flex',
-  // flex: 1,
-  flexShrink: 0,
+  flex: 1,
   flexDirection: 'column',
-  margin: '0 auto',
-  maxWidth: meetingTopicPhaseMaxWidth,
-  // minHeight: 200,
   width: '100%'
 })
 
-const ReflectionSectionInner = styled('div')({
-  padding: '0 2.5rem 1.25rem'
-})
-
-const ReflectionGrid = styled('div')({
-  display: 'grid',
-  gridGap: '1.25rem',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))'
-})
-
-const TaskSection = styled('div')({
-  display: 'flex',
-  // flex: 1,
-  // height: '10.25rem',
+const ColumnInner = styled('div')({
+  padding: '.625rem 1.25rem 1.25rem',
   width: '100%'
 })
 
 const TaskCardBlock = styled('div')({
   margin: '0 auto',
-  maxWidth: meetingTopicPhaseMaxWidth,
-  padding: '0 2.5rem 1.25rem',
   width: '100%'
 })
 
@@ -152,51 +152,57 @@ const RetroDiscussPhase = (props: Props) => {
   return (
     <React.Fragment>
       <PhaseWrapper>
-        <ScrollableBlock hideOverflownShadow>
-          <HeaderContainer>
-            <DiscussHeader>
-              <TopicHeading>
-                <span>{'“'}</span>
-                {`${title}”`}
-              </TopicHeading>
-              <VoteMeta>
-                <VoteIcon name={meetingVoteIcon} />
-                {voteCount}
-              </VoteMeta>
-            </DiscussHeader>
+        <HeaderContainer>
+          <DiscussHeader>
+            <TopicHeading>
+              <span>{'“'}</span>
+              {`${title}”`}
+            </TopicHeading>
+            <VoteMeta>
+              <VoteIcon name={meetingVoteIcon} />
+              {voteCount}
+            </VoteMeta>
+          </DiscussHeader>
+        </HeaderContainer>
+        <ColumnsContainer>
+          <Column>
+            <LabelContainer>
+              <LabelHeading>{reflections.length} Reflections</LabelHeading>
+            </LabelContainer>
+            <ScrollableBlock hideOverflownShadow>
+              <ColumnInner>
+                <ReflectionGrid>
+                  {reflections.map((reflection) => {
+                    return (
+                      <ReflectionCard
+                        key={reflection.id}
+                        meeting={newMeeting}
+                        reflection={reflection}
+                      />
+                    )
+                  })}
+                </ReflectionGrid>
+              </ColumnInner>
+            </ScrollableBlock>
+          </Column>
+          <Column>
             <LabelContainer>
               <LabelHeading>Takeaway Tasks</LabelHeading>
             </LabelContainer>
-          </HeaderContainer>
-          <TaskSection>
-            <TaskCardBlock>
-              <MeetingAgendaCards
-                meetingId={meetingId}
-                reflectionGroupId={reflectionGroupId}
-                tasks={tasks}
-                teamId={teamId}
-              />
-            </TaskCardBlock>
-          </TaskSection>
-          <ReflectionSection>
-            <ReflectionSectionInner>
-              <LabelContainer>
-                <LabelHeading>{reflections.length} Reflections</LabelHeading>
-              </LabelContainer>
-              <ReflectionGrid>
-                {reflections.map((reflection) => {
-                  return (
-                    <ReflectionCard
-                      key={reflection.id}
-                      meeting={newMeeting}
-                      reflection={reflection}
-                    />
-                  )
-                })}
-              </ReflectionGrid>
-            </ReflectionSectionInner>
-          </ReflectionSection>
-        </ScrollableBlock>
+            <ScrollableBlock hideOverflownShadow>
+              <ColumnInner>
+                <TaskCardBlock>
+                  <MeetingAgendaCards
+                    meetingId={meetingId}
+                    reflectionGroupId={reflectionGroupId}
+                    tasks={tasks}
+                    teamId={teamId}
+                  />
+                </TaskCardBlock>
+              </ColumnInner>
+            </ScrollableBlock>
+          </Column>
+        </ColumnsContainer>
       </PhaseWrapper>
       {isFacilitating && (
         <SpacedMeetingControlBar>

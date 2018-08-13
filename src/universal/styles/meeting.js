@@ -11,6 +11,9 @@ export const meetingChromeBoxShadow = [
 ]
 export const meetingChromeBoxShadowInset = `inset .0625rem 0 .0625rem ${makeShadowColor('.1')}`
 export const meetingBorderColor = appTheme.palette.mid10a
+export const meetingGridGap = '1.25rem'
+export const meetingGridMaxWidth = '20rem'
+export const meetingGridMinWidth = '13.75rem'
 export const meetingSidebarBreakpoint = breakpoints[1]
 export const meetingSidebarMediaQuery = minWidthMediaQueries[1]
 export const meetingSidebarGutter = '.5rem'
@@ -18,5 +21,5 @@ export const meetingSidebarGutterInner = '3.75rem'
 export const meetingSidebarWidth = '15rem'
 export const meetingSplashGutter = '4.5rem'
 export const meetingBottomBarHeight = '4rem'
-export const meetingTopicPhaseMaxWidth = '80rem'
+// export const meetingTopicPhaseMaxWidth = '80rem'
 export const meetingVoteIcon = 'thumbs-up'

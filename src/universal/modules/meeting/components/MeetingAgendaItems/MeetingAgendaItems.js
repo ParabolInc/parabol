@@ -17,13 +17,12 @@ import EndMeetingMutation from 'universal/mutations/EndMeetingMutation'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {withRouter} from 'react-router'
 import styled from 'react-emotion'
-import {meetingTopicPhaseMaxWidth} from 'universal/styles/meeting'
 
 const Layout = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   margin: '0 auto',
-  maxWidth: meetingTopicPhaseMaxWidth,
+  maxWidth: '76rem',
   padding: '0 .75rem',
   width: '100%'
 })
@@ -140,7 +139,12 @@ class MeetingAgendaItems extends Component {
                 )}
               </Nav>
               <TaskCardBlock>
-                <MeetingAgendaCards agendaId={agendaItem.id} tasks={agendaTasks} teamId={team.id} />
+                <MeetingAgendaCards
+                  agendaId={agendaItem.id}
+                  showPlaceholders
+                  tasks={agendaTasks}
+                  teamId={team.id}
+                />
               </TaskCardBlock>
               <EditorHelpModalContainer />
             </Layout>
