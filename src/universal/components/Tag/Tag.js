@@ -51,10 +51,9 @@ const tagTheme = {
   }
 }
 
-const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
+const TagRoot = styled('div')(({colorPalette}) => ({
   backgroundColor: tagTheme[colorPalette].backgroundColor,
   borderRadius: '4em',
-  boxShadow: hasDepth && ui.shadow[0],
   color: tagTheme[colorPalette].color,
   display: 'inline-block',
   fontSize: ui.tagFontSize,
@@ -69,17 +68,12 @@ const TagRoot = styled('div')(({colorPalette, hasDepth}) => ({
 }))
 
 const Tag = (props) => {
-  const {colorPalette, hasDepth, label} = props
-  return (
-    <TagRoot colorPalette={colorPalette || 'midGray'} hasDepth={hasDepth}>
-      {label}
-    </TagRoot>
-  )
+  const {colorPalette, label} = props
+  return <TagRoot colorPalette={colorPalette || 'midGray'}>{label}</TagRoot>
 }
 
 Tag.propTypes = {
   colorPalette: PropTypes.oneOf(Object.keys(tagTheme)),
-  hasDepth: PropTypes.bool,
   label: PropTypes.string
 }
 
