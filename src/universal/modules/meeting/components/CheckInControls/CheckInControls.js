@@ -5,6 +5,8 @@ import withHotkey from 'react-hotkey-hoc'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
+import getWindowSize from 'universal/styles/helpers/getWindowSize'
+import {meetingSidebarBreakpoint} from 'universal/styles/meeting'
 
 const ButtonBlock = styled('div')({
   display: 'flex'
@@ -26,7 +28,13 @@ const CheckInControls = (props) => {
   bindHotkey('h', handleOnClickPresent)
   bindHotkey('n', handleOnClickAbsent)
 
-  const nextLabel = (
+  // NOTE: this doesn’t listen to browser resize
+  const windowSize = getWindowSize()
+  const isSmallerBreakpoint = windowSize.width < meetingSidebarBreakpoint
+
+  const nextLabel = isSmallerBreakpoint ? (
+    'Here'
+  ) : (
     <span>
       {`${currentMemberName} is `}
       <u>{'h'}</u>
@@ -35,7 +43,9 @@ const CheckInControls = (props) => {
     </span>
   )
 
-  const skipLabel = (
+  const skipLabel = isSmallerBreakpoint ? (
+    'Not Here'
+  ) : (
     <span>
       {`${currentMemberName} is `}
       <u>{'n'}</u>

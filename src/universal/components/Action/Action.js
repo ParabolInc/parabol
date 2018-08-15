@@ -5,6 +5,7 @@ import AnalyticsIdentifierRoot from 'universal/components/AnalyticsIdentifierRoo
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'
 import Toast from 'universal/modules/toast/containers/Toast/Toast'
+import {SIGNIN_SLUG, CREATE_ACCOUNT_SLUG} from 'universal/utils/constants'
 
 const invoice = () =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
@@ -32,8 +33,8 @@ const resetPasswordPage = () =>
   import(/* webpackChunkName: 'ResetPasswordPage' */ 'universal/components/ResetPasswordPage/ResetPasswordPage')
 const retroRoot = () =>
   import(/* webpackChunkName: 'RetroRoot' */ 'universal/components/RetroRoot/RetroRoot')
-const signUpPage = () =>
-  import(/* webpackChunkName: 'SignUpPage' */ 'universal/components/SignUpPage/SignUpPage')
+const createAccountPage = () =>
+  import(/* webpackChunkName: 'CreateAccountPage' */ 'universal/components/CreateAccountPage/CreateAccountPage')
 const signInPage = () =>
   import(/* webpackChunkName: 'SignInPage' */ 'universal/components/SignInPage/SignInPage')
 
@@ -52,8 +53,8 @@ const Action = () => {
       <AnalyticsIdentifierRoot />
       <Switch>
         <AsyncRoute exact path='/' mod={signInPage} />
-        <AsyncRoute exact path='/signin' mod={signInPage} />
-        <AsyncRoute exact path='/signup' mod={signUpPage} />
+        <AsyncRoute exact path={`/${SIGNIN_SLUG}`} mod={signInPage} />
+        <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
         <AsyncRoute exact path='/reset-password' mod={resetPasswordPage} />
         <AsyncRoute isPrivate path='(/me|/newteam|/team)' mod={dashWrapper} />
         <AsyncRoute

@@ -4,7 +4,7 @@ import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import AgendaInput from 'universal/modules/teamDashboard/components/AgendaInput/AgendaInput'
 import AgendaList from 'universal/modules/teamDashboard/components/AgendaList/AgendaList'
-import ui from 'universal/styles/ui'
+import {meetingSidebarGutter} from 'universal/styles/meeting'
 import withStyles from 'universal/styles/withStyles'
 import {AGENDA_ITEMS, phaseArray} from 'universal/utils/constants'
 
@@ -140,7 +140,7 @@ const styleThunk = (theme, {context}) => ({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    paddingTop: context === 'dashboard' ? 0 : ui.meetingSidebarGutter,
+    paddingTop: context === 'dashboard' ? 0 : meetingSidebarGutter,
     position: 'relative',
     width: '100%'
   },

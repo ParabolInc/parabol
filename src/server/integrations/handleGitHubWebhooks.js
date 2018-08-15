@@ -1,4 +1,4 @@
-import {graphql} from 'graphql'
+import graphql from 'server/graphql/graphql'
 import secureCompare from 'secure-compare'
 import schema from 'server/graphql/rootSchema'
 import signPayload from 'server/utils/signPayload'

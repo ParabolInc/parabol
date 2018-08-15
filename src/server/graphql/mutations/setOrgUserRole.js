@@ -8,11 +8,37 @@ import {
   BILLING_LEADER,
   billingLeaderTypes,
   ORGANIZATION,
-  PROMOTE_TO_BILLING_LEADER
+  PROMOTE_TO_BILLING_LEADER,
+  REQUEST_NEW_USER
 } from 'universal/utils/constants'
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
 import sendAuthRaven from 'server/utils/sendAuthRaven'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
+import approveToOrg from 'server/graphql/mutations/approveToOrg'
+
+const approveToOrgForUserId = async (orgId, userId, authToken, dataLoader) => {
+  const r = getRethink()
+  const outstandingNotifications = await r
+    .table('Notification')
+    .getAll(orgId, {index: 'orgId'})
+    .filter({
+      type: REQUEST_NEW_USER,
+      inviterUserId: userId
+    })
+    .default([])
+  return Promise.all(
+    outstandingNotifications.map((notification) => {
+      // a quick & dirty way to accomplish all the approvals.
+      // the person that promoted someone to billing leader is the same person that approves the invitees
+      // the updates are sent via socket, not mutation response
+      return approveToOrg.resolve(
+        {},
+        {email: notification.inviteeEmail, orgId},
+        {authToken, dataLoader}
+      )
+    })
+  )
+}
 
 export default {
   type: SetOrgUserRolePayload,
@@ -121,6 +147,7 @@ export default {
         orgId,
         userIds: [userId]
       }
+      await approveToOrgForUserId(orgId, userId, authToken, dataLoader)
       const {existingNotificationIds} = await r({
         insert: r.table('Notification').insert(promotionNotification),
         existingNotificationIds: r

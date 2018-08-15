@@ -49,6 +49,12 @@ graphql`
   fragment InviteTeamMembersMutation_orgApproval on InviteTeamMembersPayload {
     orgApprovalsSent {
       ...CompleteOrgApprovalFrag @relay(mask: false)
+      notification {
+        id
+        inviter {
+          preferredName
+        }
+      }
     }
     orgApprovalsRemoved {
       id

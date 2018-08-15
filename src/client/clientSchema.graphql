@@ -4,6 +4,7 @@ extend interface NewMeeting {
 }
 
 extend type RetrospectiveMeeting {
+  isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   reflectionsInFlight: [RetroReflection]
@@ -11,6 +12,7 @@ extend type RetrospectiveMeeting {
 
 extend type Team {
   contentFilter: String
+  isMeetingSidebarCollapsed: Boolean
 }
 
 extend type User {
@@ -32,4 +34,9 @@ extend type DragContext {
   isViewerDragging: Boolean,
   initialCursorCoords: Coords2D,
   initialComponentCoords: Coords2D
+}
+
+extend type RetroReflection {
+  # can remove when we refresh the reflect phase
+  startOffset: Int
 }

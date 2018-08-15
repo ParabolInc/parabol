@@ -17,6 +17,7 @@ import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingRe
 import clientTempId from 'universal/utils/relay/clientTempId'
 import {connect} from 'react-redux'
 import {css} from 'react-emotion'
+import ui from 'universal/styles/ui'
 
 type Props = {
   dndIndex: number,
@@ -25,22 +26,83 @@ type Props = {
   ...ReflectionCardProps
 }
 
-const dragContextStyle = css({
+const hiddenWhileDraggingStyle = css({
   opacity: 0,
   cursor: 'default'
 })
 
-const modalStyle = (isTop) =>
-  css({
-    position: 'absolute',
-    top: !isTop && 0,
-    zIndex: 1
-  })
+const hiddenAndInvisibleWhileDraggingStyle = css({
+  opacity: 0,
+  cursor: 'default',
+  position: 'absolute'
+})
 
-const standardStyle = css({
+const modalTopStyle = css({
+  position: 'absolute',
+  zIndex: 1
+})
+
+const modalStyle = css({
+  position: 'absolute',
+  top: 0,
+  zIndex: 1
+})
+
+const topCardStyle = css({
   position: 'relative',
   zIndex: 1
 })
+
+const secondCardStyle = css({
+  backgroundColor: 'white',
+  borderRadius: 4,
+  boxShadow: ui.shadow[0],
+  overflow: 'hidden',
+  position: 'absolute',
+  pointerEvents: 'none',
+  left: 6,
+  top: 6,
+  right: -6,
+  bottom: -2,
+  width: ui.retroCardWidth
+})
+
+const thirdPlusCardStyle = css({
+  overflow: 'hidden',
+  opacity: 0,
+  position: 'absolute',
+  pointerEvents: 'none',
+  left: 6,
+  top: 6,
+  right: -6,
+  bottom: -2,
+  width: ui.retroCardWidth
+})
+
+const getClassName = (idx, dragContext, isModal) => {
+  const isTopCard = idx === 0
+  const isSecondCard = idx === 1
+  const isDragging = Boolean(dragContext)
+  if (isDragging) {
+    /*
+     * To reproduce, drop card C on stack A,B in tab 1 & pick up A before C is dropped in tab 2
+     * This ensures that card C lands on top of the stack instead of below it
+     */
+    return isTopCard ? hiddenWhileDraggingStyle : hiddenAndInvisibleWhileDraggingStyle
+  }
+  if (isModal) {
+    /*
+     * topStyle is necessary to make sure an incoming card makes it to the correct position
+     * to reproduce, have group A,B,C open in tab 1
+     * in tab 2, drop card D onto the group
+     * card D should be in the 2nd row left column
+     */
+    return isTopCard ? modalTopStyle : modalStyle
+  }
+  if (isTopCard) return topCardStyle
+  if (isSecondCard) return secondCardStyle
+  return thirdPlusCardStyle
+}
 
 class DraggableReflectionCard extends React.Component<Props> {
   componentDidMount () {
@@ -59,13 +121,11 @@ class DraggableReflectionCard extends React.Component<Props> {
       isModal
     } = this.props
     const {dragContext, reflectionId} = reflection
-    const className = dragContext
-      ? dragContextStyle
-      : isModal
-        ? modalStyle(idx === 0)
-        : standardStyle
+    const className = getClassName(idx, dragContext, isModal)
+
     return connectDragSource(
-      <div className={className} ref={setItemRef(reflectionId, isModal)}>
+      // the `id` is in the case when the ref callback isn't called in time
+      <div className={className} ref={setItemRef(reflectionId, isModal)} id={reflectionId}>
         <ReflectionCard
           meeting={meeting}
           reflection={reflection}
@@ -82,9 +142,10 @@ const reflectionDragSpec = {
     // make sure no one is trying to drag invisible cards
     const {
       reflection: {dragContext},
-      isDraggable
+      isDraggable,
+      isViewerDragInProgress
     } = props
-    return !dragContext && isDraggable
+    return !dragContext && !isViewerDragInProgress && isDraggable
   },
 
   beginDrag (props, monitor) {
@@ -113,7 +174,7 @@ const reflectionDragSpec = {
       atmosphere,
       closeGroupModal,
       reflection: {
-        dragContext: {isViewerDragging},
+        dragContext: {dragId, isViewerDragging},
         meetingId,
         reflectionId,
         reflectionGroupId
@@ -122,7 +183,7 @@ const reflectionDragSpec = {
     // endDrag is also called when the viewer loses a conflict
     if (!isViewerDragging) return
     const dropResult = monitor.getDropResult()
-    const {dropTargetType = null, dropTargetId = null, sortOrder} = dropResult || {}
+    const {dropTargetType = null, dropTargetId = null} = dropResult || {}
     // must come before the mutation so we can clear the itemCache
     if (closeGroupModal && dropTargetType) {
       closeGroupModal()
@@ -134,12 +195,13 @@ const reflectionDragSpec = {
         reflectionId,
         dropTargetType,
         dropTargetId,
-        sortOrder
+        dragId
       },
       {meetingId, newReflectionGroupId}
     )
     const {eventEmitter} = atmosphere
     eventEmitter.emit('endDraggingReflection', {
+      dragId,
       dropTargetType,
       dropTargetId,
       itemId: reflectionId,
@@ -170,6 +232,7 @@ export default createFragmentContainer(
       reflectionGroupId
       retroPhaseItemId
       dragContext {
+        dragId: id
         dragUserId
         isViewerDragging
       }

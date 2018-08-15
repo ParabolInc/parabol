@@ -1,5 +1,5 @@
 import schema from 'server/graphql/rootSchema'
-import {graphql} from 'graphql'
+import graphql from 'server/graphql/graphql'
 import stripe from 'server/billing/stripe'
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'

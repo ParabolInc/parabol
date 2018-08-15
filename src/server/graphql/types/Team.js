@@ -27,8 +27,9 @@ import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
-import {isTeamMember} from 'server/utils/authorization'
+import {isTeamMember, getUserId} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -115,6 +116,16 @@ const Team = new GraphQLObjectType({
           .filter(r.row('tokenExpiration').ge(now))
           .orderBy('createdAt')
           .run()
+      }
+    },
+    isLead: {
+      type: GraphQLBoolean,
+      description: 'true if the viewer is the team lead, else false',
+      resolve: async ({id: teamId}, args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const teamMemberId = toTeamMemberId(teamId, viewerId)
+        const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+        return teamMember.isLead
       }
     },
     meetingPhase: {

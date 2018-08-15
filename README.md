@@ -8,11 +8,11 @@
 ## Overview
 
 [Parabol](https://www.parabol.co) is a free open-source SaaS application for
-operating a distributed organization.
+running team retrospectives and operating a distributed organization.
 
 **We're [hiring](https://www.parabol.co/join)!**
 
-![Action Screencap Image](./docs/images/20180116_Action_Snapshot.gif)
+![Action Screencap Image](./docs/images/20180718_Action_Snapshot.gif)
 
 Curious to learn where this all came from? Each week we publish a distillation
 of our progress, philosophy, and more in

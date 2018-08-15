@@ -1,5 +1,4 @@
 // @flow
-import {css} from 'aphrodite-local-styles/no-important'
 import React, {Component} from 'react'
 import withHotkey from 'react-hotkey-hoc'
 import {withRouter} from 'react-router'
@@ -8,16 +7,24 @@ import NullableTask from 'universal/components/NullableTask/NullableTask'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
-import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
 import type {Task} from 'universal/types/schema.flow'
+import styled from 'react-emotion'
 
-const makeCards = (tasks = [], myUserId, itemStyle, handleAddTask) => {
+const TaskCardGrid = styled('div')({
+  display: 'grid',
+  gridGap: '1.25rem',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(225px, 1fr))',
+  maxWidth: '75rem',
+  margin: '0 auto',
+  width: '100%'
+})
+
+const makeCards = (tasks = [], myUserId, handleAddTask) => {
   return tasks.map((task) => {
     const {id: taskId} = task
     return (
-      <div className={css(itemStyle)} key={taskId}>
+      <div key={taskId}>
         <NullableTask
           area={MEETING}
           handleAddTask={handleAddTask}
@@ -30,12 +37,12 @@ const makeCards = (tasks = [], myUserId, itemStyle, handleAddTask) => {
   })
 }
 
-const makePlaceholders = (length, itemStyle) => {
+const makePlaceholders = (length) => {
   const rowLength = 4
   const emptyCardCount = rowLength - (length % rowLength + 1)
   /* eslint-disable react/no-array-index-key */
   return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
-    <div className={css(itemStyle)} key={`CreateCardPlaceholder${idx}`}>
+    <div key={`CreateCardPlaceholder${idx}`}>
       <CreateCard />
     </div>
   ))
@@ -81,44 +88,22 @@ class MeetingAgendaCards extends Component<Props> {
 
   render () {
     const {
-      atmosphere: {userId},
-      styles
+      atmosphere: {userId}
     } = this.props
     const tasks = this.props.tasks || []
     return (
-      <div className={css(styles.root)}>
-        {makeCards(tasks, userId, styles.item, this.handleAddTask)}
+      <TaskCardGrid>
+        {makeCards(tasks, userId, this.handleAddTask)}
         {/* Input Card */}
-        <div className={css(styles.item)}>
+        {/* wrapping div to deal with flex behaviors */}
+        <div>
           <CreateCard handleAddTask={this.handleAddTask()} hasControls />
         </div>
         {/* Placeholder Cards */}
-        {makePlaceholders(tasks.length, styles.item)}
-      </div>
+        {makePlaceholders(tasks.length)}
+      </TaskCardGrid>
     )
   }
 }
 
-const styleThunk = () => ({
-  root: {
-    display: 'flex !important',
-    flexWrap: 'wrap'
-  },
-
-  item: {
-    marginBottom: '1rem',
-    marginTop: '1rem',
-    padding: '0 .5rem',
-    width: '25%',
-
-    [ui.breakpoint.wide]: {
-      padding: '0 .75rem'
-    },
-
-    [ui.breakpoint.wider]: {
-      padding: '0 1rem'
-    }
-  }
-})
-
-export default withRouter(withAtmosphere(withHotkey(withStyles(styleThunk)(MeetingAgendaCards))))
+export default withRouter(withAtmosphere(withHotkey(MeetingAgendaCards)))

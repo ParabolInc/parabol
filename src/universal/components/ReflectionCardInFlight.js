@@ -198,10 +198,9 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       setInFlightCoords
     } = this.props
     if (!dragContext) return null
-    const {isClosing, isViewerDragging, initialCursorCoords, dragCoords, dragUser} = dragContext
-    // use initialCoords instead of isViewerDragging as a cheap hack to support the same user in 2 tabs
+    const {isClosing, isViewerDragging, dragCoords, dragUser} = dragContext
     // $FlowFixMe
-    const {x, y} = isClosing || !initialCursorCoords ? dragCoords : this.state
+    const {x, y} = dragCoords && (isClosing || !isViewerDragging) ? dragCoords : this.state
     setInFlightCoords(x, y, reflectionId)
 
     const style = {

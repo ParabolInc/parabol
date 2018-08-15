@@ -6,11 +6,9 @@ import DraggableReflectionCard from 'universal/components/ReflectionCard/Draggab
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from './__generated__/ReflectionGroup_reflectionGroup.graphql'
 import type {ReflectionGroup_meeting as Meeting} from './__generated__/ReflectionGroup_meeting.graphql'
-import ui from 'universal/styles/ui'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
 import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
@@ -45,21 +43,6 @@ const reflectionsStyle = (canDrop, isDraggable, canExpand) =>
     opacity: canDrop ? 0.6 : 1,
     position: 'relative'
   })
-
-const ReflectionCardInStack = styled('div')(({secondCard}) => ({
-  backgroundColor: 'white',
-  borderRadius: 4,
-  boxShadow: secondCard ? ui.shadow[0] : undefined,
-  opacity: secondCard ? 1 : 0,
-  overflow: 'hidden',
-  position: 'absolute',
-  pointerEvents: 'none',
-  left: 6,
-  top: 6,
-  right: -6,
-  bottom: -2,
-  width: ui.retroCardWidth
-}))
 
 // use a background so we can use scale instead of width/height for 60fps animations
 const Background = styled('div')({
@@ -215,44 +198,20 @@ class ReflectionGroup extends Component<Props> {
   renderReflection = (reflection: Object, idx: number, {isModal, isDraggable}) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
-    if (isModal) {
-      return (
-        <DraggableReflectionCard
-          closeGroupModal={this.closeGroupModal}
-          idx={idx}
-          isDraggable={isDraggable}
-          isModal
-          key={reflection.id}
-          meeting={meeting}
-          reflection={reflection}
-          setItemRef={setItemRef}
-        />
-      )
-    }
-
-    const topCard = idx === reflections.length - 1
-    if (topCard) {
-      return (
-        <DraggableReflectionCard
-          key={reflection.id}
-          meeting={meeting}
-          reflection={reflection}
-          setItemRef={setItemRef}
-          isDraggable={isDraggable}
-          isSingleCardGroup={reflections.length === 1}
-        />
-      )
-    }
-
-    const secondCard = idx === reflections.length - 2
+    const {isViewerDragInProgress} = meeting
     return (
-      <ReflectionCardInStack
+      <DraggableReflectionCard
+        closeGroupodal={isModal ? this.closeGroupModal : undefined}
         key={reflection.id}
-        secondCard={secondCard}
-        innerRef={setItemRef(reflection.id)}
-      >
-        <ReflectionCard meeting={meeting} reflection={reflection} showOriginFooter shadow={null} />
-      </ReflectionCardInStack>
+        idx={reflections.length - idx - 1}
+        isDraggable={isDraggable}
+        isModal={isModal}
+        meeting={meeting}
+        reflection={reflection}
+        setItemRef={setItemRef}
+        isSingleCardGroup={reflections.length === 1}
+        isViewerDragInProgress={isViewerDragInProgress}
+      />
     )
   }
 
@@ -373,6 +332,7 @@ export default createFragmentContainer(
       localStage {
         isComplete
       }
+      isViewerDragInProgress
     }
 
     fragment ReflectionGroup_reflectionGroup on RetroReflectionGroup {

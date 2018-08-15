@@ -10,8 +10,10 @@ import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectio
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import StyledError from 'universal/components/StyledError'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const {Component} = React
 
@@ -22,12 +24,12 @@ type Props = {|
   ...MutationProps
 |}
 
-const CheckMarkRow = styled('div')({
+const UpvoteRow = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end'
 })
 
-const CheckIcon = styled(StyledFontAwesome)(({color}) => ({
+const UpvoteIcon = styled(StyledFontAwesome)(({color}) => ({
   color,
   cursor: 'pointer',
   marginRight: '.25rem',
@@ -91,22 +93,27 @@ class ReflectionGroupVoting extends Component<Props> {
     const {settings, viewerMeetingMember} = meeting
     const {maxVotesPerGroup} = settings
     const {votesRemaining} = viewerMeetingMember
-    const checkMarks = [...Array(viewerVoteCount).keys()]
+    const upvotes = [...Array(viewerVoteCount).keys()]
     const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0
     return (
       <CheckColumn>
-        <CheckMarkRow>
-          {checkMarks.map((idx) => (
-            <CheckIcon key={idx} name='check' color={ui.palette.warm} onClick={this.unvote} />
+        <UpvoteRow>
+          {upvotes.map((idx) => (
+            <UpvoteIcon
+              key={idx}
+              name={meetingVoteIcon}
+              color={ui.palette.warm}
+              onClick={this.unvote}
+            />
           ))}
           {canVote && (
-            <CheckIcon
-              name='check'
-              color={isExpanded ? ui.palette.dark : ui.palette.midGray}
+            <UpvoteIcon
+              name={meetingVoteIcon}
+              color={isExpanded ? ui.palette.dark : appTheme.brand.primary.midGray}
               onClick={this.vote}
             />
           )}
-        </CheckMarkRow>
+        </UpvoteRow>
         {error && <StyledError>{error.message}</StyledError>}
       </CheckColumn>
     )

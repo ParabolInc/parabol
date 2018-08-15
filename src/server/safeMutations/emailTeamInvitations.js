@@ -5,6 +5,12 @@ import makeInviteToken from 'server/graphql/mutations/helpers/inviteTeamMembers/
 import resolveSentEmails from 'server/graphql/mutations/helpers/inviteTeamMembers/resolveSentEmails'
 import getPendingInvitations from 'server/safeQueries/getPendingInvitations'
 
+/*
+ * TODO: remove me, see comment above filteredEmaisWithTokens, below
+ */
+import emailAddresses from 'email-addresses'
+const BLACKLISTED_EMAIL_DOMAINS = ['qq.com']
+
 export default async function emailTeamInvitations (invitees, inviter, inviteId) {
   if (invitees.length === 0) {
     return {newInvitations: [], updatedInvitations: []}
@@ -16,7 +22,18 @@ export default async function emailTeamInvitations (invitees, inviter, inviteId)
     ...invitee,
     inviteToken: makeInviteToken(inviteId)
   }))
-  const sendEmailPromises = createEmailPromises(inviter, inviteesWithTokens)
+
+  /*
+   * Do not send emails to blacklisted domains.
+   *
+   * TODO: remove this when better security measures are added
+   */
+  const filteredEmailsWithTokens = inviteesWithTokens.filter((invitee) => {
+    const emailDomain = emailAddresses.parseOneAddress(invitee.email, {simple: true}).domain
+    return !(BLACKLISTED_EMAIL_DOMAINS.indexOf(emailDomain) >= 0)
+  })
+
+  const sendEmailPromises = createEmailPromises(inviter, filteredEmailsWithTokens)
   const {inviteesToStore} = await resolveSentEmails(sendEmailPromises, inviteesWithTokens)
   const invitationsForDB = await makeInvitationsForDB(inviteesToStore, teamId, inviterUserId)
   const emails = invitees.map(({email}) => email)

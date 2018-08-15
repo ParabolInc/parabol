@@ -1,9 +1,68 @@
 # Change Log
 
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).9
+This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
+
+## v2.8.0 2018-Aug-08
+
+### Added
+* Moved Facilitator voting controls from sidebar to bottom bar #2185
+* Thumbs up emojis everywhere in Retros #2305
+
+### Fixed
+* Fixed voting race conditions fixes #2206 (see PR #2307)
+* Changed log in/create account labels and language #2246
+* Changed check marks to thumbs-up in all aspects of Retro voting phase #2241
+* Group grid layout updates on sidebar toggle #2256
+* `yarn storybook` fixed for Webpack 4 and Relay #2260
+
+## v2.7.0 2018-Jul-24
+
+### Fixed
+
+* Fixed case no. 1 of retro group race bugs #2279
+* Fixed reflection card overwrites, now caching in-progress reflection state #2280
+
+## v2.6.0 2018-Jul-18
+
+### Added
+
+* More check-in questions #2251
+* Collapsible new meeting sidebar #2243
+* Rate limiting to invitation mutations #2275
+
+### Fixed
+
+* Promoting to billing leader auto-accepts their pending invites #2247
+* All credit card modals use the updated components #2245
+
+## v2.5.1 2018-Jul-17
+
+### Fixed
+
+* Hotfix preventing abuse sending email to particular domains
+
+## v2.5.0 2018-Jul-09
+
+### Added
+* Changed Retrospective Reflect phase to submit new reflections on pressing
+  the enter key
+  * Shift-enter now creates newlines
+* Re-implemented Retrospective grouping:
+   * Uses grid-based "masonry" layout
+   * Shows multiplayer drags from other users
+   * Groups now expand to their own modal
+   * Groups now display a count of how many cards are in the group
+* Voting phase now uses thumbs-up icon following user feedback
+* A variety of new check-in questions
+* In-line affordances given to members on pending team invites,
+  see #2108
+
+### Fixed
+
+* Clarified wording of cards auto-populated for new users #1067
 
 ## v2.4.1 2018-Jun-28
 

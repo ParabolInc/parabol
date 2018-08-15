@@ -27,7 +27,7 @@ const handleDropOnGrid = (atmosphere, itemCache, childrenCache, parentCache, chi
   )
   const minDistanceIdx = distances.indexOf(Math.min(...distances))
   const {left: newLeft, top: newTop} = bottomCoords[minDistanceIdx]
-  const {height} = itemCache[itemId].el.getBoundingClientRect()
+  const {height} = itemCache[itemId].boundingBox
   const x = newLeft + parentLeft + CARD_PADDING
   const y = newTop + parentTop + CARD_PADDING
   setClosingTransform(atmosphere, itemId, {x, y})

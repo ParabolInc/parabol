@@ -1,10 +1,13 @@
 import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
-import {commitMutation} from 'react-relay'
+import {commitLocalUpdate, commitMutation} from 'react-relay'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import type {Coords2DInput} from 'universal/types/schema.flow'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
+import {matchPath} from 'react-router-dom'
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {RETROSPECTIVE} from 'universal/utils/constants'
 
 type Variables = {
   reflectionId: string,
@@ -32,6 +35,7 @@ graphql`
         preferredName
       }
     }
+    teamId
   }
 `
 
@@ -43,33 +47,73 @@ const mutation = graphql`
   }
 `
 
-export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, dispatch, store}) => {
+export const startDraggingReflectionTeamUpdater = (
+  payload,
+  {atmosphere, dispatch, store, isLocal}
+) => {
+  const {pathname} = window.location
+  const slug = meetingTypeToSlug[RETROSPECTIVE]
+  const meetingRoute = matchPath(pathname, {path: `/${slug}/:teamId`})
+  /*
+   * Avoid adding reflectionsInFlight on clients that are not in the meeting because
+   * we can't call the endDrag handler to remove them because
+   * that needs the full context of the grid
+   */
+  if (!meetingRoute || meetingRoute.params.teamId !== payload.getValue('teamId')) {
+    return undefined
+  }
   const {viewerId} = atmosphere
   const reflectionId = payload.getValue('reflectionId')
   const reflection = store.get(reflectionId)
   if (!reflection) return undefined
+  const existingDragContext = reflection.getLinkedRecord('dragContext')
   const dragContext = payload.getLinkedRecord('dragContext')
   const dragUserId = dragContext.getValue('dragUserId')
   const isViewerDragging = dragContext.getValue('isViewerDragging')
-  const existingDragContext = reflection.getLinkedRecord('dragContext')
   const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
+
+  if (
+    existingDragContext &&
+    existingDragUserId === dragUserId &&
+    // same user in 2 tabs, tab 1 drops on a card, picks it very quickly
+    dragUserId !== viewerId &&
+    !isLocal
+  ) {
+    // special case when a team member picks up the card twice before dropping it once
+    // we'll want to reply this startDrag when the first endDrag returns
+    atmosphere.startDragQueue = atmosphere.startDragQueue || []
+    atmosphere.startDragQueue.push(() => {
+      commitLocalUpdate(atmosphere, (store) => {
+        startDraggingReflectionTeamUpdater(payload, {
+          atmosphere,
+          dispatch,
+          store,
+          isLocal: true
+        })
+      })
+    })
+  }
 
   // when conflicts arise, give the win to the person with the smaller userId
   const acceptIncoming = !existingDragUserId || existingDragUserId >= dragUserId
   let isViewerConflictLoser = false
   if (acceptIncoming) {
     reflection.setLinkedRecord(dragContext, 'dragContext')
-    dragContext.setValue(isViewerDragging, 'isViewerDragging')
-    dragContext.setValue(false, 'isClosing')
-    dragContext.setValue(false, 'isPendingStartDrag')
+    const nextDragContext = reflection.getLinkedRecord('dragContext')
+    nextDragContext.setValue(isViewerDragging, 'isViewerDragging')
+    nextDragContext.setValue(false, 'isClosing')
+    nextDragContext.setValue(false, 'isPendingStartDrag')
     const meetingId = payload.getValue('meetingId')
     setInFlight(store, meetingId, reflection)
-    if (existingDragUserId === viewerId) {
-      dragContext.setValue(null, 'initialCursorCoords')
-      dragContext.setValue(null, 'initialComponentCoords')
+    // isViewerDragging is necessary in case 1 viewer has 2 tabs open
+    if (existingDragUserId === viewerId && isViewerDragging) {
+      // TODO support multi-client actors, don't relay on viewerId
+      nextDragContext.setValue(null, 'initialCursorCoords')
+      nextDragContext.setValue(null, 'initialComponentCoords')
       isViewerConflictLoser = true
     }
   } else if (isViewerDragging) {
+    // the return payload is for the viewer, but the rightful dragger came first
     isViewerConflictLoser = true
   }
 
@@ -98,25 +142,9 @@ const setInitialCoords = (store, dragContext, initialCoords, initialCursorCoords
   dragContext.setLinkedRecord(initialCursorCoordsProxy, 'initialCursorCoords')
 }
 
-// a person can only drag 1 card at a time (2 drags would mean account sharing tsk tsk)
-// so if someone starts a new drag, we can safely remove
-// any other drags that went stale due to bad internet & a missed endDrag message
-const ensureOldInFlightsRemoved = (meeting, reflection) => {
-  const newDragUserId = getInProxy(reflection, 'dragContext', 'dragUserId')
-  const reflectionsInFlight = meeting.getLinkedRecords('reflectionsInFlight') || []
-  // it's OK if it removes the new one, we'll add it back later
-  const validReflectionsInFlight = reflectionsInFlight.filter((inFlight) => {
-    return getInProxy(inFlight, 'dragContext', 'dragUserId') !== newDragUserId
-  })
-  if (validReflectionsInFlight.length < reflectionsInFlight.length) {
-    meeting.setLinkedRecords(validReflectionsInFlight, 'reflectionsInFlight')
-  }
-}
-
 const setInFlight = (store, meetingId, reflection) => {
   const meeting = store.get(meetingId)
   if (!meeting) return
-  ensureOldInFlightsRemoved(meeting, reflection)
   addNodeToArray(reflection, meeting, 'reflectionsInFlight', 'id')
 }
 

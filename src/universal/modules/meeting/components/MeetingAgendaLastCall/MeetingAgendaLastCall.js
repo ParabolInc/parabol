@@ -10,7 +10,7 @@ import MeetingMain from 'universal/modules/meeting/components/MeetingMain/Meetin
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
-import ui from 'universal/styles/ui'
+import {meetingSplashGutter} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import withStyles from 'universal/styles/withStyles'
 import {AGENDA_ITEM_LABEL, LAST_CALL} from 'universal/utils/constants'
@@ -90,7 +90,7 @@ MeetingAgendaLastCall.propTypes = {
 
 const styleThunk = () => ({
   main: {
-    paddingLeft: ui.meetingSplashGutter,
+    paddingLeft: meetingSplashGutter,
     width: '100%'
   },
 

@@ -10,6 +10,7 @@ import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/Ag
 import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {meetingSidebarGutter} from 'universal/styles/meeting'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
@@ -30,7 +31,7 @@ const agendaListRoot = {
 const EmptyBlock = styled('div')({
   alignItems: 'flex-start',
   display: 'flex',
-  padding: ui.meetingSidebarGutter,
+  padding: meetingSidebarGutter,
   paddingTop: 0
 })
 
@@ -50,7 +51,7 @@ const EmptyMessage = styled('div')({
 })
 
 const AgendaItemsLoadingBlock = styled('div')({
-  padding: ui.meetingSidebarGutter,
+  padding: meetingSidebarGutter,
   paddingLeft: '1.625rem',
   paddingTop: 0,
   width: '100%'
@@ -58,7 +59,7 @@ const AgendaItemsLoadingBlock = styled('div')({
 
 const AgendaItemLoading = styled('div')({
   display: 'flex',
-  padding: `${ui.meetingSidebarGutter} 0`,
+  padding: `${meetingSidebarGutter} 0`,
 
   '::before': {
     backgroundColor: appTheme.palette.mid20l,
@@ -67,7 +68,7 @@ const AgendaItemLoading = styled('div')({
     content: '""',
     flex: 1,
     height: '1.5rem',
-    marginRight: ui.meetingSidebarGutter
+    marginRight: meetingSidebarGutter
   },
 
   '::after': {

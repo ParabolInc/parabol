@@ -8,8 +8,7 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import reactLifecyclesCompat from 'react-lifecycles-compat'
-import {createFragmentContainer} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
 import StyledError from 'universal/components/StyledError'
@@ -30,6 +29,7 @@ import type {ReflectionCard_meeting as Meeting} from './__generated__/Reflection
 import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
 import {DECELERATE} from 'universal/styles/animation'
 import {cardShadow} from 'universal/styles/elevation'
+import {findDOMNode} from 'react-dom'
 
 export type Props = {|
   meeting: Meeting,
@@ -71,7 +71,7 @@ class ReflectionCard extends Component<Props, State> {
     const {content} = reflection
     if (content === prevState.content) return null
     const contentState = convertFromRaw(JSON.parse(content))
-    // const DEBUG_TEXT = `idx: ${idx} | GroupId: ${reflectionGroupId}`
+    // const DEBUG_TEXT = `id: ${reflectionId} | GroupId: ${reflectionGroupId}`
     // const contentState = ContentState.createFromText(DEBUG_TEXT)
     const editorState = EditorState.createWithContent(
       contentState,
@@ -86,6 +86,48 @@ class ReflectionCard extends Component<Props, State> {
   state = {
     content: '',
     editorState: null
+  }
+
+  componentDidUpdate () {
+    // There's a bug in react where cDM has stale props, so we do the check here
+    const {
+      atmosphere,
+      reflection: {reflectionId, startOffset}
+    } = this.props
+    if (startOffset !== undefined && this.editorRef) {
+      this.editorRef.focus()
+      const sel = window.getSelection()
+      const range = sel.getRangeAt(0)
+      const editorEl = findDOMNode(this.editorRef)
+      const elLength = editorEl ? editorEl.textContent.length : 0
+      range.setStart(range.startContainer, Math.min(elLength, startOffset))
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)
+        reflection.setValue(undefined, 'startOffset')
+      })
+    }
+  }
+
+  componentWillUnmount () {
+    // can remove when we move to the new reflect phase
+    const {
+      atmosphere,
+      reflection: {content, reflectionId}
+    } = this.props
+    const {editorState} = this.state
+    const contentState = (editorState: EditorState).getCurrentContent()
+    if (contentState.hasText()) {
+      const nextContent = JSON.stringify(convertToRaw(contentState))
+      if (content === nextContent) return
+      const sel = window.getSelection()
+      const range = sel && sel.getRangeAt(0)
+      const startOffset = (range && range.startOffset) || 0
+      commitLocalUpdate(atmosphere, (store) => {
+        const reflection = store.get(reflectionId)
+        reflection.setValue(nextContent, 'content')
+        reflection.setValue(startOffset, 'startOffset')
+      })
+    }
   }
 
   setEditorState = (editorState: EditorState) => {
@@ -144,8 +186,9 @@ class ReflectionCard extends Component<Props, State> {
     EditReflectionMutation(atmosphere, {isEditing: false, reflectionId})
   }
 
-  handleEditorSubmit = () => {
+  handleReturn = (e) => {
     const {addReflectionButtonRef} = this.props
+    if (e.shiftKey) return 'not-handled'
     this.handleEditorBlur()
     if (addReflectionButtonRef) {
       addReflectionButtonRef.focus()
@@ -189,7 +232,7 @@ class ReflectionCard extends Component<Props, State> {
           isDraggable={isDraggable}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
-          handleReturn={this.handleEditorSubmit}
+          handleReturn={this.handleReturn}
           placeholder='My reflection thought…'
           readOnly={phaseType !== REFLECT || isComplete || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
@@ -202,8 +245,6 @@ class ReflectionCard extends Component<Props, State> {
     )
   }
 }
-
-reactLifecyclesCompat(ReflectionCard)
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(ReflectionCard)),
@@ -235,6 +276,7 @@ export default createFragmentContainer(
       }
       reflectionId: id
       reflectionGroupId
+      startOffset
       content
       isViewerCreator
       phaseItem {

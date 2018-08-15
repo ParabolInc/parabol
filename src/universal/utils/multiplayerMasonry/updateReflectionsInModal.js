@@ -22,9 +22,7 @@ const updateReflectionsInModal = (
   const currentColumnHeights = new Array(columnCount).fill(0)
   const modalColumnLefts = currentColumnHeights.map((_, idx) => REFLECTION_WIDTH * idx)
   const {headerHeight} = childCache
-  const newItemHeights = itemIds.map(
-    (itemId) => itemCache[itemId].modalEl.getBoundingClientRect().height
-  )
+  const newItemHeights = itemIds.map((itemId) => itemCache[itemId].boundingBox.height)
 
   reflections.forEach((reflection) => {
     const cachedItem = itemCache[reflection.id]

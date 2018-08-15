@@ -14,6 +14,7 @@ import shortid from 'shortid'
 import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, UPDATED} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import rateLimit from 'server/graphql/rateLimit'
 
 export default {
   type: AddOrgPayload,
@@ -31,56 +32,58 @@ export default {
       description: 'The name of the new team'
     }
   },
-  async resolve (source, args, {authToken, dataLoader, socketId: mutatorId}) {
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId, operationId}
+  resolve: rateLimit({perMinute: 2, perHour: 8})(
+    async (source, args, {authToken, dataLoader, socketId: mutatorId}) => {
+      const operationId = dataLoader.share()
+      const subOptions = {mutatorId, operationId}
 
-    // AUTH
-    const viewerId = getUserId(authToken)
+      // AUTH
+      const viewerId = getUserId(authToken)
 
-    // VALIDATION
-    const {
-      data: {invitees, newTeam, orgName},
-      errors
-    } = addOrgValidation()(args)
-    if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
-    }
-
-    // RESOLUTION
-    const orgId = shortid.generate()
-    const teamId = shortid.generate()
-    await createNewOrg(orgId, orgName, viewerId)
-    await createTeamAndLeader(viewerId, {id: teamId, orgId, ...newTeam}, true)
-
-    const tms = authToken.tms.concat(teamId)
-    const inviteeCount = invitees ? invitees.length : 0
-    sendSegmentEvent('New Org', viewerId, {orgId, teamId, inviteeCount})
-    publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
-    auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms})
-
-    const {invitationIds, teamInviteNotifications} = await addTeamInvitees(
-      invitees,
-      teamId,
-      viewerId,
-      dataLoader
-    )
-    const teamMemberId = toTeamMemberId(teamId, viewerId)
-    const data = {
-      orgId,
-      teamId,
-      teamMemberId,
-      invitationIds,
-      teamInviteNotifications
-    }
-    teamInviteNotifications.forEach((notification) => {
+      // VALIDATION
       const {
-        userIds: [inviteeUserId]
-      } = notification
-      publish(NOTIFICATION, inviteeUserId, AddOrgPayload, data, subOptions)
-    })
-    publish(ORGANIZATION, viewerId, AddOrgPayload, data, subOptions)
+        data: {invitees, newTeam, orgName},
+        errors
+      } = addOrgValidation()(args)
+      if (Object.keys(errors).length) {
+        return sendFailedInputValidation(authToken, errors)
+      }
 
-    return data
-  }
+      // RESOLUTION
+      const orgId = shortid.generate()
+      const teamId = shortid.generate()
+      await createNewOrg(orgId, orgName, viewerId)
+      await createTeamAndLeader(viewerId, {id: teamId, orgId, ...newTeam}, true)
+
+      const tms = authToken.tms.concat(teamId)
+      const inviteeCount = invitees ? invitees.length : 0
+      sendSegmentEvent('New Org', viewerId, {orgId, teamId, inviteeCount})
+      publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
+      auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms})
+
+      const {invitationIds, teamInviteNotifications} = await addTeamInvitees(
+        invitees,
+        teamId,
+        viewerId,
+        dataLoader
+      )
+      const teamMemberId = toTeamMemberId(teamId, viewerId)
+      const data = {
+        orgId,
+        teamId,
+        teamMemberId,
+        invitationIds,
+        teamInviteNotifications
+      }
+      teamInviteNotifications.forEach((notification) => {
+        const {
+          userIds: [inviteeUserId]
+        } = notification
+        publish(NOTIFICATION, inviteeUserId, AddOrgPayload, data, subOptions)
+      })
+      publish(ORGANIZATION, viewerId, AddOrgPayload, data, subOptions)
+
+      return data
+    }
+  )
 }

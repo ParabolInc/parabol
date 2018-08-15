@@ -8,7 +8,8 @@ import type {NewMeetingCheckInGreeting_teamMember as TeamMember} from './__gener
 import type {NewMeetingCheckInGreeting_checkInGreeting as CheckInGreeting} from './__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql'
 
 const GreetingBlock = styled('div')({
-  fontSize: '1.5rem'
+  fontSize: '1.5rem',
+  textAlign: 'center'
 })
 
 const GreetingSpan = styled('span')({

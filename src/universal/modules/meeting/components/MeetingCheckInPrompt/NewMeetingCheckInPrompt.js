@@ -2,11 +2,36 @@
 import * as React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import NewMeetingCheckInGreeting from 'universal/modules/meeting/components/NewMeetingCheckInGreeting'
-import NewMeetingPrompt from 'universal/modules/meeting/components/MeetingPrompt/NewMeetingPrompt'
 import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewCheckInQuestion'
+import Avatar from 'universal/components/Avatar/Avatar'
+import styled from 'react-emotion'
+import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 
 import type {NewCheckInQuestion_team as Team} from './__generated__/NewMeetingCheckInPrompt_team.graphql'
 import type {NewCheckInQuestion_team as TeamMember} from './__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+
+const PromptBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  maxWidth: '37.5rem',
+  padding: '0 1.25rem'
+})
+
+const AvatarBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  justifyContent: 'center',
+  padding: '.75rem',
+  width: '8rem',
+
+  [meetingSidebarMediaQuery]: {
+    padding: '1rem',
+    width: '10rem'
+  }
+})
 
 type Props = {
   team: Team,
@@ -15,18 +40,23 @@ type Props = {
 
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props
+  const {picture} = teamMember
   const {
     newMeeting: {
       localPhase: {checkInGreeting}
     }
   } = team
-  const heading = (
-    <React.Fragment>
-      <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting} teamMember={teamMember} />
-      <NewCheckInQuestion team={team} />
-    </React.Fragment>
+  return (
+    <PromptBlock>
+      <AvatarBlock>
+        <Avatar picture={picture || defaultUserAvatar} size='fill' />
+      </AvatarBlock>
+      <div>
+        <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting} teamMember={teamMember} />
+        <NewCheckInQuestion team={team} />
+      </div>
+    </PromptBlock>
   )
-  return <NewMeetingPrompt avatarLarge heading={heading} teamMember={teamMember} />
 }
 
 export default createFragmentContainer(
@@ -58,6 +88,7 @@ export default createFragmentContainer(
     fragment NewMeetingCheckInPrompt_teamMember on TeamMember {
       ...NewMeetingCheckInGreeting_teamMember
       ...NewMeetingPrompt_teamMember
+      picture
     }
   `
 )

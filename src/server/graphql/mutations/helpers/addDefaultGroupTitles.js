@@ -33,7 +33,7 @@ const addDefaultGroupTitles = async (meeting) => {
   })
   await promiseAllPartial(singleGroupReflections.map(getTitleFromReflection))
   const reflectionGroupIds = singleGroupReflections.map(({reflectionGroupId}) => reflectionGroupId)
-  return {reflectionGroupIds}
+  return {meetingId, reflectionGroupIds}
 }
 
 export default addDefaultGroupTitles

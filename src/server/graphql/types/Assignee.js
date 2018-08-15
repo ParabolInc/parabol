@@ -1,26 +1,26 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLInterfaceType, GraphQLString, GraphQLNonNull} from 'graphql'
 import TeamMember from 'server/graphql/types/TeamMember'
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
 
-export const assigneeInterfaceFields = {
+export const assigneeInterfaceFields = () => ({
   id: {
-    type: GraphQLID,
-    description: 'THe teamMemberId or softTeamMemberId'
+    type: new GraphQLNonNull(GraphQLID),
+    description: 'The teamMemberId or softTeamMemberId'
   },
   preferredName: {
-    type: GraphQLString,
+    type: new GraphQLNonNull(GraphQLString),
     description: 'The name of the assignee'
   },
   teamId: {
-    type: GraphQLID,
+    type: new GraphQLNonNull(GraphQLID),
     description: 'foreign key to Team table'
   }
-}
+})
 
 const Assignee = new GraphQLInterfaceType({
   name: 'Assignee',
-  fields: () => assigneeInterfaceFields,
+  fields: assigneeInterfaceFields,
   resolveType: (value) => (getIsSoftTeamMember(value.id) ? SoftTeamMember : TeamMember)
 })
 

@@ -114,6 +114,16 @@ class Tooltip extends Component {
         }
       },
       onMouseLeave: (e) => {
+        if (
+          this.delayOpen &&
+          this.modalRef &&
+          e.relatedTarget instanceof Node &&
+          this.modalRef.contains(e.relatedTarget)
+        ) {
+          // if the toggle is small enough,the tip will appear on tp of it & cause a mouse leave
+          this.makeCloseable()
+          return
+        }
         // wait tick to see if the cursor goes in the tip
         setTimeout(() => {
           this.setState({
@@ -156,7 +166,8 @@ class Tooltip extends Component {
         // ignore the event if the movement was too slow (eliminates jitter)
         if (!isClosing) {
           this.setState({
-            inTip: true
+            inTip: true,
+            inToggle: false
           })
         }
       },
@@ -190,20 +201,26 @@ class Tooltip extends Component {
     })
   }
 
+  setModalBlockRef = (c) => {
+    const {setModalRef} = this.props
+    setModalRef(c)
+    this.modalRef = c
+  }
+
   render () {
-    const {coords, setModalRef} = this.props
+    const {coords} = this.props
     const {inTip, inToggle, isClosing} = this.state
     const isOpen = inTip || inToggle || isClosing || this.props.isOpen
 
     return (
       <React.Fragment>
-        <div
+        <span
           ref={(c) => {
             this.childRef = c
           }}
         >
           {this.makeSmartChildren()}
-        </div>
+        </span>
         <Modal isOpen={isOpen}>
           <AnimatedFade
             appear
@@ -213,7 +230,7 @@ class Tooltip extends Component {
             onEntered={this.makeCloseable}
             onExited={this.terminatePortal}
           >
-            <ModalBlock style={coords} innerRef={setModalRef}>
+            <ModalBlock style={coords} innerRef={this.setModalBlockRef}>
               <ModalContents>{this.makeSmartTip()}</ModalContents>
             </ModalBlock>
           </AnimatedFade>

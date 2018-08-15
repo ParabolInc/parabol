@@ -2,7 +2,15 @@ import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConsta
 const OFFSET_DELAY = 50
 const DURATION = 400
 
-const initializeGrid = (childrenCache, parentCache, isAnimated) => {
+const initializeGrid = (itemCache, childrenCache, parentCache, isAnimated) => {
+  const itemKeys = Object.keys(itemCache)
+  itemKeys.forEach((itemKey) => {
+    const item = itemCache[itemKey]
+    if (!item.boundingBox) {
+      const {height, top, left} = item.el.getBoundingClientRect()
+      item.boundingBox = {height, top, left}
+    }
+  })
   const childrenKeys = Object.keys(childrenCache)
   // minimize forced layout reflows by doing all the expensive reads up front
   const heights = childrenKeys.map((childKey) => {

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import Avatar from 'universal/components/Avatar/Avatar'
 import styled from 'react-emotion'
@@ -9,7 +9,7 @@ import {createFragmentContainer} from 'react-relay'
 
 import type {NewMeetingPrompt_teamMember as TeamMember} from './__generated__/NewMeetingPrompt_teamMember.graphql'
 
-const promptBreakpoint = ui.breakpoint.wider
+const promptBreakpoint = minWidthMediaQueries[4]
 const MeetingPromptRoot = styled('div')({
   display: 'flex',
   overflow: 'hidden'

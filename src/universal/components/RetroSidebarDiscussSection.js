@@ -2,9 +2,10 @@
 import React from 'react'
 import styled from 'react-emotion'
 import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/RetroSidebarDiscussSection_viewer.graphql'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
 import {
@@ -19,6 +20,7 @@ import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 import dndNoise from 'universal/utils/dndNoise'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
+import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 
 type Props = {|
   atmosphere: Object,
@@ -31,14 +33,18 @@ const SidebarPhaseItemChild = styled('div')({
   flexDirection: 'column'
 })
 
-const VoteTally = styled('div')({
+const VoteTally = styled('div')(({isUnsyncedFacilitatorStage}) => ({
+  color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
+  fontSize: ui.iconSize,
+  fontWeight: 600,
   lineHeight: ui.navTopicLineHeight,
   marginRight: '0.5rem'
-})
-
-const CheckIcon = styled(StyledFontAwesome)(({isUnsyncedFacilitatorStage}) => ({
-  color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.mid
 }))
+
+const VoteIcon = styled(StyledFontAwesome)({
+  color: 'inherit',
+  marginRight: '.125rem'
+})
 
 const DraggableMeetingSubnavItem = styled('div')(({isDragging}) => ({
   boxShadow: isDragging && ui.shadow[2]
@@ -86,6 +92,23 @@ const RetroSidebarDiscussSection = (props: Props) => {
     const variables = {meetingId, stageId, sortOrder}
     DragDiscussionTopicMutation(atmosphere, variables)
   }
+
+  const toggleSidebar = () => {
+    const {
+      atmosphere,
+      viewer: {
+        team: {teamId, isMeetingSidebarCollapsed}
+      }
+    } = props
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
+    })
+  }
+
+  const handleClick = (id) => {
+    gotoStageId(id)
+    if (sidebarCanAutoCollapse()) toggleSidebar()
+  }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <SidebarPhaseItemChild>
@@ -111,12 +134,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
                     isUnsyncedFacilitatorStage
                   }
                   const voteMeta = (
-                    <VoteTally>
-                      <CheckIcon
-                        isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
-                        name='check'
-                      />
-                      {' x '}
+                    <VoteTally isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}>
+                      <VoteIcon name={meetingVoteIcon} />
                       {voteCount}
                     </VoteTally>
                   )
@@ -135,7 +154,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                               isDragging={dragSnapshot.isDragging}
                               label={title}
                               metaContent={voteMeta}
-                              onClick={() => gotoStageId(stage.id)}
+                              onClick={() => handleClick(stage.id)}
                               orderLabel={`${idx + 1}.`}
                               sortOrder={sortOrder}
                               {...navState}
@@ -160,11 +179,14 @@ export default createFragmentContainer(
   graphql`
     fragment RetroSidebarDiscussSection_viewer on User {
       team(teamId: $teamId) {
+        isMeetingSidebarCollapsed
+        teamId: id
         newMeeting {
           meetingId: id
           localStage {
             localStageId: id
           }
+
           ... on RetrospectiveMeeting {
             facilitatorStageId
             # load up the localPhase

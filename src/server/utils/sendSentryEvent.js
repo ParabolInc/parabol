@@ -59,7 +59,8 @@ const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb, e
     if (breadcrumb) {
       Raven.captureBreadcrumb(breadcrumb)
     }
-    const event = error || (breadcrumb && breadcrumb.message) || new Error('Unknown Error')
+    const event =
+      error || (breadcrumb && new Error(breadcrumb.message)) || new Error('Unknown Error')
     Raven.captureException(event)
   })
 }
