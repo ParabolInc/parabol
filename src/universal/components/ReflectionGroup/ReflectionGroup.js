@@ -24,6 +24,7 @@ import initializeModalGrid from 'universal/utils/multiplayerMasonry/initializeMo
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateReflectionsInModal'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
+// import {modalShadow} from 'universal/styles/elevation'
 
 const {Component} = React
 

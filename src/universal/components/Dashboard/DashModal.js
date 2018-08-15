@@ -2,6 +2,7 @@ import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
+import {modalShadow} from 'universal/styles/elevation'
 import withStyles from 'universal/styles/withStyles'
 
 const DashModal = (props) => {
@@ -143,7 +144,7 @@ const styleThunk = (theme, {closeAfter, width}) => ({
     animationName: animateIn,
     background: '#fff',
     borderRadius: ui.modalBorderRadius,
-    boxShadow: ui.modalBoxShadow,
+    boxShadow: modalShadow,
     overflow: 'hidden',
     padding: '1.25rem',
     width: width || '30rem'

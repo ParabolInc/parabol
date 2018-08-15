@@ -500,7 +500,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   modalBackdropBackgroundColor: makeShadowColor('.3'),
   modalBorderRadius: borderRadiusLarge,
-  modalBoxShadow: `${shadow[4]}, 0 0 .0625rem rgba(0, 0, 0, .35)`,
   modalButtonSize: BUTTON_SIZE_MEDIUM,
   modalLayoutMain: MODAL_LAYOUT_MAIN,
   modalLayoutMainWithDashAlert: MODAL_LAYOUT_MAIN_WITH_DASH_ALERT,
