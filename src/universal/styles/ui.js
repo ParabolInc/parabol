@@ -618,11 +618,6 @@ const ui = {
   tagPadding: '0 .5rem',
   tagPalette: ['cool', 'gray', 'midGray', 'light', 'warm', 'yellow', 'blue', 'white'],
 
-  // Tooltips
-  // ---------------------------------------------------------------------------
-  tooltipBorderRadius: borderRadiusSmall,
-  tooltipBoxShadow: shadow[2],
-
   // Transitions
   // ---------------------------------------------------------------------------
   transition,
