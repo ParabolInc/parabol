@@ -167,6 +167,8 @@ const TYPE_SEMIBOLD = 600
 
 // Shadows
 // NOTE: levels increase on a scale of 2x
+// #deprecated use elevation.js and named constants instead (TA)
+// https://github.com/ParabolInc/action/issues/2324
 
 const baseShadowColor = [
   makeShadowColor('.15'),
@@ -535,7 +537,6 @@ const ui = {
 
   // Panels
   // ---------------------------------------------------------------------------
-  panelBoxShadow: shadow[0], // based on dark palette color
   panelInnerBorderColor,
   panelBorderRadius: borderRadiusMedium,
   panelGutter: '1rem',

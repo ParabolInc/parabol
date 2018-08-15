@@ -12,6 +12,7 @@ import {
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {panelShadow, panelRaisedShadow} from 'universal/styles/elevation'
 import makeGradient from 'universal/styles/helpers/makeGradient'
 import {createFragmentContainer} from 'react-relay'
 import InlineEstimatedCost from 'universal/components/InlineEstimatedCost'
@@ -40,7 +41,7 @@ const TierPanelLayout = styled('div')({
 })
 
 const TierPanel = styled('div')(({tier}) => ({
-  boxShadow: tier === PERSONAL ? ui.shadow[0] : ui.shadow[2],
+  boxShadow: tier === PERSONAL ? panelShadow : panelRaisedShadow,
   borderRadius: ui.borderRadiusLarge,
   width: tier === PERSONAL ? '15rem' : '21.25rem'
 }))
