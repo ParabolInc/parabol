@@ -9,6 +9,7 @@ const S3Plugin = require('webpack-s3-plugin')
 const {getS3BasePath} = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const getDotenv = require('../src/universal/utils/dotenv')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
 getDotenv.default()
@@ -51,6 +52,12 @@ module.exports = {
   },
   optimization: {
     minimize: Boolean(process.env.WEBPACK_DEPLOY),
+    minimizer: [
+      new UglifyJsPlugin({
+        exclude: /codemirror/,
+        parallel: true
+      })
+    ],
     splitChunks: {
       chunks: 'all'
     }
