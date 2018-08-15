@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import {cardFocusShadow} from 'universal/styles/elevation'
+import {cardHoverShadow} from 'universal/styles/elevation'
 import CreateCardRootStyles from './CreateCardRootStyles'
 import styled, {css, cx} from 'react-emotion'
 
@@ -25,7 +25,7 @@ const CardWithControls = css({
   transition: ui.cardControlTransition,
   '&:hover': {
     backgroundColor: ui.palette.white,
-    boxShadow: cardFocusShadow,
+    boxShadow: cardHoverShadow,
     cursor: 'pointer'
   }
 })
