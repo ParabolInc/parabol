@@ -1,8 +1,8 @@
 import React from 'react'
 import ui from 'universal/styles/ui'
+import {menuShadow} from 'universal/styles/elevation'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import styled from 'react-emotion'
-
 import type {WithCoordsProps} from 'universal/decorators/withCoordsV2'
 import withCoordsV2 from 'universal/decorators/withCoordsV2'
 import Modal from 'universal/components/Modal'
@@ -18,7 +18,7 @@ const MenuBlock = styled('div')({
 const MenuContents = styled('div')({
   backgroundColor: ui.menuBackgroundColor,
   borderRadius: ui.menuBorderRadius,
-  boxShadow: ui.menuBoxShadow,
+  boxShadow: menuShadow,
   outline: 0,
   overflowY: 'auto',
   paddingBottom: ui.menuGutterVertical,

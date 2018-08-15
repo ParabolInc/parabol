@@ -4,6 +4,7 @@ import withStyles from 'universal/styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {menuShadow} from 'universal/styles/elevation'
 import portal from 'react-portal-hoc'
 import Spinner from '../../../spinner/components/Spinner/Spinner'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
@@ -79,7 +80,7 @@ const styleThunk = (theme, {maxHeight}) => ({
   menu: {
     backgroundColor: ui.menuBackgroundColor,
     borderRadius: ui.menuBorderRadius,
-    boxShadow: ui.menuBoxShadow,
+    boxShadow: menuShadow,
     maxHeight: maxHeight || '10rem',
     outline: 0,
     overflowY: 'auto',
