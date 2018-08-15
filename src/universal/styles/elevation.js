@@ -35,8 +35,12 @@ const elevation = [
 
 export const buttonShadow = elevation[2]
 export const buttonRaisedShadow = elevation[8]
+
 export const cardShadow = elevation[1]
-export const cardRaisedShadow = elevation[8]
+export const cardHoverShadow = elevation[3]
+export const cardFocusShadow = elevation[5] // aka editing
+export const cardRaisedShadow = elevation[8] // aka dragging
+
 export const fabShadow = elevation[6]
 export const fabRaisedShadow = elevation[12]
 export const menuShadow = elevation[8]

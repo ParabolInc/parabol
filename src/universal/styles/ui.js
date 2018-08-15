@@ -249,7 +249,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
-  cardBoxShadow: shadow[0],
   cardButtonHeight: '1.5rem',
   cardButtonBorderColor: appTheme.palette.mid50l,
   cardContentFontSize: '.9375rem',

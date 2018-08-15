@@ -8,6 +8,7 @@ import * as React from 'react'
 import styled from 'react-emotion'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {cardShadow} from 'universal/styles/elevation'
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import {createFragmentContainer} from 'react-relay'
@@ -51,7 +52,7 @@ const AddButton = styled(PlainButton)({
 
   '&:hover,:focus': {
     backgroundColor: ui.palette.white,
-    boxShadow: ui.cardBoxShadow, // intended to match ReflectionCard
+    boxShadow: cardShadow, // intended to match ReflectionCard
     cursor: 'pointer'
   }
 })
