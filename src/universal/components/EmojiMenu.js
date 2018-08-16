@@ -80,8 +80,6 @@ class EmojiMenu extends Component<Props, State> {
         {suggestedEmojis.map(({value, emoji}) => (
           <MenuItemWithShortcuts
             key={value}
-            onMouseDown={() => console.log('item')}
-            onFocus={() => console.log('item')}
             label={`${emoji} ${value}`}
             onClick={menuItemClickFactory(emoji, focusedEditorState)}
           />

@@ -47,7 +47,6 @@ class MenuWithShortcuts extends Component {
   handleMouseDown = (e) => {
     if (this.props.keepParentFocus) {
       // used for the emoji menu
-      console.log('md')
       e.preventDefault()
     }
   }
