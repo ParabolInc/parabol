@@ -52,7 +52,7 @@ const LoadableMenu = (props: Props) => {
   } = props
   const handleClose = () => {
     closePortal()
-    onClose()
+    onClose && onClose()
   }
   return (
     <Modal clickToClose escToClose onClose={handleClose} isOpen={isOpen} onOpen={onOpen}>

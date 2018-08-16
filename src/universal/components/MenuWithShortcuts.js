@@ -44,6 +44,13 @@ class MenuWithShortcuts extends Component {
     }
   }
 
+  handleMouseDown = (e) => {
+    if (this.props.keepParentFocus) {
+      // used for the emoji menu
+      e.preventDefault()
+    }
+  }
+
   setActiveIndex = (idx) => {
     const {active} = this.state
     const children = Children.toArray(this.props.children)
@@ -134,6 +141,7 @@ class MenuWithShortcuts extends Component {
         role='menu'
         aria-label={ariaLabel}
         tabIndex={-1}
+        onMouseDown={this.handleMouseDown}
         onKeyDown={this.handleKeyDown}
         innerRef={(c) => {
           this.menuRef = c
