@@ -1,14 +1,11 @@
 import React from 'react'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import type {Team} from 'universal/types/schema.flow'
 import type {Dispatch} from 'react-redux'
 import {connect} from 'react-redux'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import styled from 'react-emotion'
 import {filterTeam} from 'universal/modules/userDashboard/ducks/userDashDuck'
-import textOverflow from 'universal/styles/helpers/textOverflow'
+import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 
 type Props = {
   closePortal: () => void,
@@ -16,17 +13,6 @@ type Props = {
   teams: Array<Team>,
   teamFilterId: ?string
 }
-
-const Label = styled('div')({
-  ...textOverflow,
-  borderBottom: `1px solid ${appTheme.palette.mid30l}`,
-  color: ui.palette.dark,
-  fontSize: ui.menuItemFontSize,
-  fontWeight: 600,
-  lineHeight: ui.menuItemHeight,
-  marginBottom: ui.menuGutterVertical,
-  padding: `0 ${ui.menuGutterHorizontal}`
-})
 
 const UserDashTeamMenu = (props: Props) => {
   const {closePortal, dispatch, teams, teamFilterId} = props
@@ -37,7 +23,7 @@ const UserDashTeamMenu = (props: Props) => {
       closePortal={closePortal}
       defaultActiveIdx={defaultActiveIdx}
     >
-      <Label>{'Filter by:'}</Label>
+      <DropdownMenuLabel>{'Filter by:'}</DropdownMenuLabel>
       <MenuItemWithShortcuts
         key={'teamFilterNULL'}
         label={'All teams'}

@@ -40,6 +40,7 @@ const LoadableMenu = (props: Props) => {
     coords,
     isClosing,
     isOpen,
+    minWidth,
     onClose,
     onOpen,
     maxHeight,
@@ -56,7 +57,7 @@ const LoadableMenu = (props: Props) => {
   return (
     <Modal clickToClose escToClose onClose={handleClose} isOpen={isOpen} onOpen={onOpen}>
       <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>
-        <MenuBlock style={{...coords, maxWidth}} innerRef={setModalRef}>
+        <MenuBlock style={{...coords, maxWidth, minWidth}} innerRef={setModalRef}>
           <MenuContents style={{maxHeight}}>
             <LoadableComponent {...queryVars} closePortal={handleClose} />
           </MenuContents>

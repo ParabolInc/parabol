@@ -10,9 +10,9 @@ import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DeleteTaskMutation from 'universal/mutations/DeleteTaskMutation'
 import {createFragmentContainer} from 'react-relay'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
-import MenuItemHR from 'universal/modules/menu/components/MenuItem/MenuItemHR'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import MenuItemHR from 'universal/components/MenuItemHR'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const statusItems = labels.taskStatus.slugs.slice()

@@ -1,30 +1,15 @@
 // @flow
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
-import styled from 'react-emotion'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import {connect, Dispatch} from 'react-redux'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {LOBBY} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import type {NewMeetingAvatarMenu_newMeeting as NewMeeting} from './__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
 import PromoteNewMeetingFacilitatorMutation from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
-import textOverflow from 'universal/styles/helpers/textOverflow'
-
-const Label = styled('div')({
-  ...textOverflow,
-  borderBottom: `1px solid ${appTheme.palette.mid30l}`,
-  color: ui.palette.dark,
-  fontSize: ui.menuItemFontSize,
-  fontWeight: 600,
-  lineHeight: ui.menuItemHeight,
-  marginBottom: ui.menuGutterVertical,
-  padding: `0 ${ui.menuGutterHorizontal}`,
-  userSelect: 'none'
-})
+import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 
 type Props = {
   atmosphere: Object,
@@ -59,7 +44,7 @@ const NewMeetingAvatarMenu = (props: Props) => {
       ariaLabel={'Select what to do with this team member'}
       closePortal={closePortal}
     >
-      <Label>{headerLabel}</Label>
+      <DropdownMenuLabel>{headerLabel}</DropdownMenuLabel>
       {handleNavigate && (
         <MenuItemWithShortcuts
           key='handleNavigate'
