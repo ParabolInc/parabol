@@ -186,7 +186,6 @@ describe('ReactRelayQueryRenderer', () => {
     //  },
     // });
     environment = new Atmosphere()
-    environment.setSocket()
     environment.authToken = 'foo'
     environment.dispatch = () => {}
     environment.history = {}

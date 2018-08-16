@@ -1,38 +1,24 @@
-import shortid from 'shortid'
 import keepAlive from 'server/socketHelpers/keepAlive'
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
 import handleMessage from 'server/socketHandlers/handleMessage'
-import sendMessage from 'server/socketHelpers/sendMessage'
 import url from 'url'
 import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers'
 import {verify} from 'jsonwebtoken'
-import {GQL_CONNECTION_ERROR, WS_KEEP_ALIVE} from 'universal/utils/constants'
+import {CONNECTION_ERROR, WS_KEEP_ALIVE} from 'universal/utils/constants'
 import handleConnect from 'server/socketHandlers/handleConnect'
-import {GRAPHQL_WS} from 'subscriptions-transport-ws'
+import ConnectionContext from 'server/socketHelpers/ConnectionContext'
+import sendRaw from 'server/socketHelpers/sendRaw'
+import packageJSON from '../../../package.json'
 
-class ConnectionContext {
-  constructor (socket, authToken, sharedDataLoader, rateLimiter) {
-    this.authToken = authToken
-    this.availableResubs = []
-    this.cancelKeepAlive = null
-    this.id = shortid.generate()
-    this.isAlive = true
-    this.rateLimiter = rateLimiter
-    this.socket = socket
-    this.sharedDataLoader = sharedDataLoader
-    this.subs = {}
-  }
-}
-
+const TREBUCHET_WS = 'trebuchet-ws'
+const APP_VERSION = packageJSON.version
 export default function connectionHandler (sharedDataLoader, rateLimiter) {
   return async function socketConnectionHandler (socket) {
     const req = socket.upgradeReq
     const {headers} = req
     const protocol = headers['sec-websocket-protocol']
-    if (protocol !== GRAPHQL_WS) {
-      sendMessage(socket, GQL_CONNECTION_ERROR, {
-        errors: [{message: 'Invalid protocol'}]
-      })
+    if (protocol !== TREBUCHET_WS) {
+      sendRaw(socket, JSON.stringify({type: CONNECTION_ERROR, error: 'Invalid protocol'}))
       return
     }
     const {query} = url.parse(req.url, true)
@@ -40,9 +26,7 @@ export default function connectionHandler (sharedDataLoader, rateLimiter) {
     try {
       authToken = verify(query.token, Buffer.from(auth0ClientSecret, 'base64'))
     } catch (e) {
-      sendMessage(socket, GQL_CONNECTION_ERROR, {
-        errors: [{message: 'Invalid auth token'}]
-      })
+      sendRaw(socket, JSON.stringify({type: CONNECTION_ERROR, error: 'Invalid auth token'}))
       socket.close()
       return
     }
@@ -52,6 +36,7 @@ export default function connectionHandler (sharedDataLoader, rateLimiter) {
       sharedDataLoader,
       rateLimiter
     )
+    socket.send(JSON.stringify({version: APP_VERSION}))
     handleConnect(connectionContext)
     keepAlive(connectionContext, WS_KEEP_ALIVE)
     socket.on('message', handleMessage(connectionContext))

@@ -48,7 +48,7 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
   )
   if (!asyncIterator) {
     if (errors) {
-      const {query, variables} = parsedMessage
+      const {query, variables} = parsedMessage.payload
       sendGraphQLErrorResult(
         'WebSocket-Subscription',
         firstErrorMessage(errors),

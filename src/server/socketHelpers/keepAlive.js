@@ -1,5 +1,6 @@
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
 import {GQL_CONNECTION_KEEP_ALIVE} from 'universal/utils/constants'
+import sendRaw from 'server/socketHelpers/sendRaw'
 
 const keepAlive = (connectionContext, timeout) => {
   connectionContext.cancelKeepAlive = setInterval(() => {
@@ -8,7 +9,8 @@ const keepAlive = (connectionContext, timeout) => {
       handleDisconnect(connectionContext)()
     } else {
       connectionContext.isAlive = false
-      socket.send(GQL_CONNECTION_KEEP_ALIVE)
+      // TODO record time sent so when we get a message we can calc latency
+      sendRaw(socket, GQL_CONNECTION_KEEP_ALIVE)
     }
   }, timeout)
 }

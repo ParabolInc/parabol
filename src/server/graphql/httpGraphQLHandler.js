@@ -1,34 +1,48 @@
-import RethinkDataLoader from 'server/utils/RethinkDataLoader'
-import IntranetSchema from 'server/graphql/intranetSchema/intranetSchema'
-import Schema from './rootSchema'
-import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
-import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors'
-import graphql from 'server/graphql/graphql'
+import {GQL_DATA, GQL_ERROR, GQL_START, GQL_STOP} from 'universal/utils/constants'
+import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler'
+import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
+import relayUnsubscribe from 'server/utils/relayUnsubscribe'
+import isQueryProvided from 'server/graphql/isQueryProvided'
+import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
+import sendSentryEvent from 'server/utils/sendSentryEvent'
 
-export default (sharedDataLoader, rateLimiter) => async (req, res) => {
-  const {query, variables} = req.body
+export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) => {
+  const {id: opId, type, payload} = req.body
+  const connectionId = req.headers['x-correlation-id']
   const authToken = req.user || {}
-  const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken))
-  const context = {authToken, dataLoader, rateLimiter}
-  const result = await graphql(Schema, query, {}, context, variables)
-  dataLoader.dispose()
-  if (result.errors) {
-    sendGraphQLErrorResult('HTTP', result.errors[0], query, variables, authToken)
+  const connectionContext = connectionId
+    ? sseClients[connectionId]
+    : {sharedDataLoader, rateLimiter, authToken}
+  if (!connectionContext) {
+    // SSE req provided, but no cached Response
+    res.send('SSE Response not found')
+    return
   }
-  const sanitizedResult = sanitizeGraphQLErrors(result)
-  res.send(sanitizedResult)
-}
+  if (connectionId && connectionContext.authToken.sub !== authToken.sub) {
+    sendSentryEvent(
+      connectionContext.authToken,
+      undefined,
+      new Error('Security: Spoofed SSE connectionId')
+    )
+    // quietly fail for cheaters
+    res.sendStatus(200)
+  }
 
-export const intranetHttpGraphQLHandler = (sharedDataLoader) => async (req, res) => {
-  const {query, variables} = req.body
-  const authToken = req.user || {}
-  const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken))
-  const context = {authToken}
-  const result = await graphql(IntranetSchema, query, {}, context, variables)
-  dataLoader.dispose()
-  if (result.errors) {
-    sendGraphQLErrorResult('HTTP-Intranet', result.errors[0], query, variables, authToken)
+  if (type === GQL_START) {
+    if (!isQueryProvided(payload)) {
+      // no need to be user friendly because users aren't hitting this API with bespoke queries
+      res.send('No payload provided')
+      return
+    }
+    if (isSubscriptionPayload(payload)) {
+      wsRelaySubscribeHandler(connectionContext, req.body)
+      res.sendStatus(200)
+    } else {
+      const result = await wsGraphQLHandler(connectionContext, payload)
+      const messageType = result.data ? GQL_DATA : GQL_ERROR
+      res.send({type: messageType, id: opId, payload: result})
+    }
+  } else if (type === GQL_STOP) {
+    relayUnsubscribe(connectionContext.subs, opId)
   }
-  const sanitizedResult = sanitizeGraphQLErrors(result)
-  res.send(sanitizedResult)
 }

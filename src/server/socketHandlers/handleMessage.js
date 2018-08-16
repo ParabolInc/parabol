@@ -1,6 +1,5 @@
 import {
   GQL_CONNECTION_KEEP_ALIVE,
-  GQL_CONNECTION_TERMINATE,
   GQL_DATA,
   GQL_ERROR,
   GQL_START,
@@ -11,9 +10,8 @@ import sendMessage from 'server/socketHelpers/sendMessage'
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
 import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler'
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
-
-const isSubscriptionPayload = (payload) => payload.query.startsWith('subscription')
-const isQueryProvided = (payload) => payload && payload.query
+import isQueryProvided from 'server/graphql/isQueryProvided'
+import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
 
 const handleMessage = (connectionContext) => async (message) => {
   const {socket, subs} = connectionContext
@@ -37,11 +35,8 @@ const handleMessage = (connectionContext) => async (message) => {
   }
 
   const {id: opId, type, payload} = parsedMessage
-
-  if (type === GQL_CONNECTION_TERMINATE) {
-    handleDisconnect(connectionContext)()
-    // this GQL_START logic will be simplified when we move to persisted queries
-  } else if (type === GQL_START) {
+  // this GQL_START logic will be simplified when we move to persisted queries
+  if (type === GQL_START) {
     if (!isQueryProvided(payload)) {
       sendMessage(socket, GQL_ERROR, {errors: [{message: 'No payload provided'}]}, opId)
       return
@@ -49,7 +44,7 @@ const handleMessage = (connectionContext) => async (message) => {
     if (isSubscriptionPayload(payload)) {
       wsRelaySubscribeHandler(connectionContext, parsedMessage)
     } else {
-      const result = await wsGraphQLHandler(connectionContext, parsedMessage)
+      const result = await wsGraphQLHandler(connectionContext, parsedMessage.payload)
       const messageType = result.data ? GQL_DATA : GQL_ERROR
       sendMessage(socket, messageType, result, opId)
     }
