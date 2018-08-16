@@ -2,8 +2,8 @@
 import React from 'react'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import type {RouterHistory} from 'react-router-dom'
 import {withRouter} from 'react-router-dom'
 

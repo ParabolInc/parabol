@@ -1,9 +1,9 @@
 // @flow
 import * as React from 'react'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import stringScore from 'string-score'
 import emojiArray from 'universal/utils/emojiArray'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import dontTellDraft from 'universal/utils/draftjs/dontTellDraft'
 
 const {Component} = React
@@ -80,6 +80,8 @@ class EmojiMenu extends Component<Props, State> {
         {suggestedEmojis.map(({value, emoji}) => (
           <MenuItemWithShortcuts
             key={value}
+            onMouseDown={() => console.log('item')}
+            onFocus={() => console.log('item')}
             label={`${emoji} ${value}`}
             onClick={menuItemClickFactory(emoji, focusedEditorState)}
           />

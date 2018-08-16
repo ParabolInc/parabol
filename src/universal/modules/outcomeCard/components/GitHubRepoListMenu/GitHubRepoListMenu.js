@@ -5,8 +5,8 @@ import {withRouter} from 'react-router-dom'
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation'
 import {MEETING} from 'universal/utils/constants'
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 
 class GitHubRepoListMenu extends Component {
   static propTypes = {

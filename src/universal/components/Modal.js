@@ -10,6 +10,7 @@ import PropTypes from 'prop-types'
 class Modal extends Component {
   static propTypes = {
     onClose: PropTypes.func,
+    onOpen: PropTypes.func,
     clickToClose: PropTypes.bool,
     escToClose: PropTypes.bool,
     children: PropTypes.element.isRequired,
@@ -42,7 +43,7 @@ class Modal extends Component {
     this.setState({
       isOpen: true
     })
-    const {clickToClose, escToClose} = this.props
+    const {clickToClose, escToClose, onOpen} = this.props
     if (clickToClose) {
       document.addEventListener('mousedown', this.handleDocumentClick)
       document.addEventListener('touchstart', this.handleDocumentClick)
@@ -51,6 +52,7 @@ class Modal extends Component {
       document.addEventListener('keydown', this.handleKeydown)
     }
     document.body.appendChild(this.el)
+    onOpen && onOpen()
   }
 
   teardown () {
