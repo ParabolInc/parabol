@@ -13,11 +13,13 @@ import elevation from 'universal/styles/elevation'
 import ui from 'universal/styles/ui'
 
 const demoCardSize = '8rem'
+const gridGap = '2.5rem'
 
 const Grid = styled('div')({
   display: 'grid',
-  gridGap: '2.5rem',
-  gridTemplateColumns: `repeat(auto-fill, ${demoCardSize})`
+  gridGap,
+  gridTemplateColumns: `repeat(auto-fill, ${demoCardSize})`,
+  margin: `${gridGap} 0`
 })
 
 const Elevation = styled('div')(({depth, index}) => ({
@@ -33,18 +35,47 @@ const Elevation = styled('div')(({depth, index}) => ({
   }
 }))
 
+const Notes = styled('div')({
+  lineHeight: 2,
+  margin: `0 0 ${gridGap}`
+})
+
+const makeLink = (copy, href) => (
+  <a href={href} rel='noopener noreferrer' target='blank' title={copy}>
+    {copy}
+  </a>
+)
+
 const RenderBlock = () => (
-  <Grid>
-    {elevation.map((depth, index) => {
-      return <Elevation depth={depth} index={index} key={`${index}dp`} />
-    })}
-  </Grid>
+  <div>
+    <Grid>
+      {elevation.map((depth, index) => {
+        return <Elevation depth={depth} index={index} key={`${index}dp`} />
+      })}
+    </Grid>
+    <Notes>
+      {makeLink(
+        'See Material Design Elevation for baseline inspiration',
+        'https://material.io/design/environment/elevation.html'
+      )}
+      <br />
+      {makeLink(
+        'See our custom elevation values for common UI components',
+        'https://github.com/ParabolInc/action/blob/master/src/universal/styles/elevation.js'
+      )}
+      <br />
+      {makeLink(
+        'See our Team Library components for elevation in Figma',
+        'https://www.figma.com/file/UAT8GVK86KVKdycX8xtK3tmM/UI-elevation?node-id=0%3A1'
+      )}
+    </Notes>
+  </div>
 )
 
 storiesOf('Elevation', module).add('elevations on parade', () => (
   <RetroBackground>
     <StoryContainer
-      description={`This shows example elevations, a link to Material defaults as a reference, and a working list of how we use elevation in our app`}
+      description={`This demonstrates custom elevation values and includes some resourceful links for using elevation in the UI`}
       render={RenderBlock}
     />
   </RetroBackground>
