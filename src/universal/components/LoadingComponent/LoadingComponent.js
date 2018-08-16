@@ -1,35 +1,31 @@
-import {css} from 'aphrodite-local-styles/no-important'
-import PropTypes from 'prop-types'
 import React from 'react'
 import Spinner from 'universal/modules/spinner/components/Spinner/Spinner'
-import withStyles from 'universal/styles/withStyles'
 import ui from 'universal/styles/ui'
+import styled from 'react-emotion'
 
-const LoadingComponent = (props) => {
-  const {spinnerSize = 40, styles} = props
+const LoadingWrapper = styled('div')(({height = '20rem', width = ui.settingsPanelMaxWidth}) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height,
+  width
+}))
 
+type Props = {
+  height?: number | string,
+  width?: number | string,
+  spinnerSize?: number,
+  timeOut?: boolean
+}
+
+const LoadingComponent = (props: Props) => {
+  const {height, width, spinnerSize = 40, timedOut} = props
   return (
-    <div className={css(styles.loadingComponent)}>
-      <Spinner fillColor='cool' width={spinnerSize} />
-    </div>
+    <LoadingWrapper heigth={height} width={width}>
+      <Spinner fillColor={timedOut ? 'warm' : 'cool'} width={spinnerSize} />
+    </LoadingWrapper>
   )
 }
 
-LoadingComponent.propTypes = {
-  spinnerSize: PropTypes.number,
-  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  styles: PropTypes.object
-}
-
-const styleThunk = (theme, {width = ui.settingsPanelMaxWidth, height = '20rem'}) => ({
-  loadingComponent: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height,
-    width
-  }
-})
-
-export default withStyles(styleThunk)(LoadingComponent)
+export default LoadingComponent

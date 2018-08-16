@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.9.0 2018-Aug-15
+
+### Added
+* Completed transition to keyboard accessible Menu component to entire site
+
+### Fixed
+* Tasks are marked as being edited when a menu is open
+* Fix Storybook & add support for Relay
+* Fix admin route access
+* Fix emoji menu clicks and enter handling
+* Can join a meeting when its currently in the grouping phase
+
+### Removed
+* Legacy Menu component from /newteam, task column and integrations
+
 ## v2.8.0 2018-Aug-08
 
 ### Added

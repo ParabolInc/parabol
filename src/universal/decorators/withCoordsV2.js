@@ -101,15 +101,17 @@ export default (ComposedComponent) => {
         this.originCoords = this.originRef.getBoundingClientRect()
       }
       const originLeftOffset = getOffset(originAnchor.horizontal, this.originCoords.width)
-      const {scrollX, scrollY, innerWidth, innerHeight} = window
+      const {scrollX, scrollY, innerHeight} = window
+      // Do not use window.innerWidth because that does not account for the scrollbar width
+      const pageWidth = document.documentElement.clientWidth
       if (targetAnchor.horizontal !== 'right') {
         const targetLeftOffset = getOffset(targetAnchor.horizontal, modalWidth)
         const left = scrollX + this.originCoords.left + originLeftOffset - targetLeftOffset
-        const maxLeft = innerWidth - modalWidth + scrollX
+        const maxLeft = pageWidth - modalWidth + scrollX
         nextCoords.left = Math.min(left, maxLeft)
       } else {
-        const right = innerWidth - (this.originCoords.left + originLeftOffset) - scrollX
-        const maxRight = innerWidth - modalWidth - scrollX
+        const right = pageWidth - (this.originCoords.left + originLeftOffset) - scrollX
+        const maxRight = pageWidth - modalWidth - scrollX
         nextCoords.right = Math.min(right, maxRight)
       }
 

@@ -9,8 +9,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 
 class OutcomeCardAssignMenu extends Component {
