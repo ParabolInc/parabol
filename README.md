@@ -4,6 +4,7 @@
 [![CircleCI](https://circleci.com/gh/ParabolInc/action.svg?style=svg)](https://circleci.com/gh/ParabolInc/action)
 [![codecov](https://codecov.io/gh/ParabolInc/action/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/action)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/parabol-inc/action)
 
 ## Overview
 
