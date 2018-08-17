@@ -48,8 +48,13 @@ const RetroReflectPhase = (props: Props) => {
     <React.Fragment>
       <ScrollableBlock>
         <StyledWrapper>
-          {phaseItems.map((phaseItem) => (
-            <PhaseItemColumn meeting={newMeeting} key={phaseItem.id} retroPhaseItem={phaseItem} />
+          {phaseItems.map((phaseItem, idx) => (
+            <PhaseItemColumn
+              meeting={newMeeting}
+              key={phaseItem.id}
+              retroPhaseItem={phaseItem}
+              idx={idx}
+            />
           ))}
         </StyledWrapper>
       </ScrollableBlock>

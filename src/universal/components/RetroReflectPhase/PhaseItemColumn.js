@@ -9,11 +9,7 @@ import type {PhaseItemColumn_retroPhaseItem as RetroPhaseItem} from './__generat
 // $FlowFixMe
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import AddReflectionButton from 'universal/components/AddReflectionButton/AddReflectionButton'
 import ui from 'universal/styles/ui'
-import {REFLECT} from 'universal/utils/constants'
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
-import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCard/AnonymousReflectionCard'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -21,14 +17,9 @@ import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-
-const FocusArrow = styled(StyledFontAwesome)(({isFocused}) => ({
-  color: ui.palette.yellow,
-  opacity: isFocused ? 1 : 0,
-  paddingRight: isFocused ? '0.5rem' : 0,
-  transition: 'all 100ms ease-in',
-  transform: `translateX(${isFocused ? 0 : '-100%'})`
-}))
+import {DECELERATE} from 'universal/styles/animation'
+import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
+import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -43,25 +34,16 @@ const ColumnHighlight = styled('div')(({isFocused}) => ({
   background: isFocused && appTheme.palette.mid10a,
   display: 'flex',
   justifyContent: 'center',
+  transition: `background 150ms ${DECELERATE}`,
   maxWidth: '26rem',
   height: '100%',
   width: '100%'
 }))
 
 const ColumnContent = styled('div')({
-  maxWidth: ui.retroCardWidth
+  padding: '0 2rem'
+  // maxWidth: ui.retroCardWidth
 })
-
-const ReflectionsArea = styled('div')({
-  flexDirection: 'column',
-  display: 'flex',
-  overflow: 'auto',
-  height: '100%'
-})
-
-const ReflectionsList = styled('div')(({canDrop}) => ({
-  background: canDrop && appTheme.palette.light60l
-}))
 
 const TypeDescription = styled('div')({
   fontSize: '1.25rem',
@@ -69,16 +51,23 @@ const TypeDescription = styled('div')({
   fontWeight: 600
 })
 
+const FocusArrow = styled(StyledFontAwesome)(({isFocused}) => ({
+  color: ui.palette.yellow,
+  opacity: isFocused ? 1 : 0,
+  paddingRight: isFocused ? '0.5rem' : 0,
+  transition: `all 150ms ${DECELERATE}`,
+  transform: `translateX(${isFocused ? 0 : '-100%'})`
+}))
+
 const TypeHeader = styled('div')({
   padding: '2rem 0 1rem',
   userSelect: 'none',
   width: '100%'
 })
 
-const ButtonBlock = styled('div')({
-  padding: '0 0 1.25rem',
-  width: '100%'
-})
+const EditorAndStatus = styled('div')(({isPhaseComplete}) => ({
+  visibility: isPhaseComplete && 'hidden'
+}))
 
 type Props = {|
   atmosphere: Object,
@@ -89,7 +78,7 @@ type Props = {|
 |}
 
 type State = {
-  columnReflectionGroups: $ReadOnlyArray<Object>,
+  reflectionStack: $ReadOnlyArray<Object>,
   reflectionGroups: $ReadOnlyArray<Object>
 }
 
@@ -103,7 +92,7 @@ class PhaseItemColumn extends Component<Props, State> {
     const reflectionGroups = nextReflectionGroups || []
     return {
       reflectionGroups,
-      columnReflectionGroups: reflectionGroups.filter(
+      reflectionStack: reflectionGroups.filter(
         (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0
       )
     }
@@ -111,12 +100,7 @@ class PhaseItemColumn extends Component<Props, State> {
 
   state = {
     reflectionGroups: [],
-    columnReflectionGroups: []
-  }
-  addReflectionButtonRef: ?HTMLElement = null
-
-  setAddReflectionButtonRef = (c) => {
-    this.addReflectionButtonRef = c
+    reflectionStack: []
   }
 
   setColumnFocus = () => {
@@ -142,10 +126,9 @@ class PhaseItemColumn extends Component<Props, State> {
   }
 
   render () {
-    const {canDrop, meeting, retroPhaseItem} = this.props
-    const {columnReflectionGroups} = this.state
+    const {idx, meeting, retroPhaseItem} = this.props
     const {
-      localPhase: {phaseType, focusedPhaseItemId},
+      localPhase: {focusedPhaseItemId},
       localStage: {isComplete}
     } = meeting
     const {question, retroPhaseItemId} = retroPhaseItem
@@ -160,35 +143,10 @@ class PhaseItemColumn extends Component<Props, State> {
                 {question}
               </TypeDescription>
             </TypeHeader>
-            <ReflectionsArea>
-              {phaseType === REFLECT &&
-                !isComplete && (
-                  <ButtonBlock>
-                    <AddReflectionButton
-                      columnReflectionGroups={columnReflectionGroups}
-                      innerRef={this.setAddReflectionButtonRef}
-                      meeting={meeting}
-                      retroPhaseItem={retroPhaseItem}
-                    />
-                  </ButtonBlock>
-                )}
-              <ReflectionsList canDrop={canDrop}>
-                {columnReflectionGroups.map((group) => {
-                  return group.reflections.map((reflection) => {
-                    if (reflection.isViewerCreator) {
-                      return (
-                        <ReflectionCard
-                          addReflectionButtonRef={this.addReflectionButtonRef}
-                          meeting={meeting}
-                          reflection={reflection}
-                        />
-                      )
-                    }
-                    return <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-                  })
-                })}
-              </ReflectionsList>
-            </ReflectionsArea>
+            <EditorAndStatus isPhaseComplete={isComplete}>
+              <PhaseItemEditor meeting={meeting} retroPhaseItem={retroPhaseItem} />
+            </EditorAndStatus>
+            <ReflectionStack reflectionStack={[]} idx={idx} />
           </ColumnContent>
         </ColumnHighlight>
       </ColumnWrapper>
@@ -200,17 +158,14 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(PhaseItemColumn)),
   graphql`
     fragment PhaseItemColumn_retroPhaseItem on RetroPhaseItem {
-      ...AddReflectionButton_retroPhaseItem
+      ...PhaseItemEditor_retroPhaseItem
       retroPhaseItemId: id
       title
       question
     }
 
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
-      ...AddReflectionButton_meeting
-      ...AnonymousReflectionCard_meeting
-      ...ReflectionCard_meeting
-      ...ReflectionGroup_meeting
+      ...PhaseItemEditor_meeting
       facilitatorUserId
       meetingId: id
       localPhase {
@@ -251,3 +206,44 @@ export default createFragmentContainer(
     }
   `
 )
+
+// const ReflectionsArea = styled('div')({
+//   flexDirection: 'column',
+//   display: 'flex',
+//   overflow: 'auto',
+//   height: '100%'
+// })
+//
+// const ReflectionsList = styled('div')(({canDrop}) => ({
+//   background: canDrop && appTheme.palette.light60l
+// }))
+
+// <ReflectionsArea>
+// {phaseType === REFLECT &&
+// !isComplete && (
+//   <ButtonBlock>
+//     <AddReflectionButton
+//       reflectionStack={reflectionStack}
+//       innerRef={this.setAddReflectionButtonRef}
+//       meeting={meeting}
+//       retroPhaseItem={retroPhaseItem}
+//     />
+//   </ButtonBlock>
+// )}
+// <ReflectionsList canDrop={canDrop}>
+//   {reflectionStack.map((group) => {
+//     return group.reflections.map((reflection) => {
+//       if (reflection.isViewerCreator) {
+//         return (
+//           <ReflectionCard
+//             addReflectionButtonRef={this.addReflectionButtonRef}
+//             meeting={meeting}
+//             reflection={reflection}
+//           />
+//         )
+//       }
+//       return <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
+//     })
+//   })}
+// </ReflectionsList>
+// </ReflectionsArea>

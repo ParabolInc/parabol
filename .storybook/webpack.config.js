@@ -9,5 +9,6 @@ module.exports = (baseConfig, configType) => {
   ) // JS babel extensions
   baseConfig.resolve.modules = devConfig.resolve.modules
   baseConfig.resolve.alias = devConfig.resolve.alias
+  baseConfig.resolve.extensions = devConfig.resolve.extensions
   return baseConfig
 }

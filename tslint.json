@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "tslint-config-standard"
+  ],
+  "rules": {
+    "object-curly-spacing": [
+      true,
+      "never"
+    ]
+  }
+}

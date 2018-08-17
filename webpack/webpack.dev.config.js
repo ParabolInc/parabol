@@ -20,7 +20,8 @@ module.exports = {
       'react-relay': '@mattkrick/react-relay',
       'relay-runtime': '@mattkrick/relay-runtime'
     },
-    modules: [path.join(__dirname, '../src'), 'node_modules']
+    modules: [path.join(__dirname, '../src'), 'node_modules'],
+    extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
   },
   plugins: [
     new webpack.NamedModulesPlugin(),
@@ -60,6 +61,15 @@ module.exports = {
         type: 'javascript/auto'
       },
       {test: /\.flow$/, loader: 'ignore-loader'},
+      {
+        test: /\.tsx?$/,
+        loader: 'awesome-typescript-loader',
+        exclude: /node_modules/
+        // options: {
+        //   useCache: true,
+        //   useBabel: true
+        // }
+      },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
