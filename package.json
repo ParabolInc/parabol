@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -67,6 +67,7 @@
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "babel-runtime": "^6.26.0",
     "chance": "^1.0.6",
@@ -97,6 +98,7 @@
     "snazzy": "^7.1.1",
     "standard": "^11.0.1",
     "style-loader": "^0.21.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
     "url-loader": "^1.0.1",
     "webpack": "^4.15.1",
     "webpack-bundle-analyzer": "^2.13.1",
@@ -170,7 +172,6 @@
     "raven": "^2.4.2",
     "raven-js": "^3.24.0",
     "react": "^16.4.0",
-    "react-addons-css-transition-group": "^15.4.2",
     "react-async-hoc": "^0.4.1",
     "react-beautiful-dnd": "^7.1.3",
     "react-copy-to-clipboard": "^5.0.0",

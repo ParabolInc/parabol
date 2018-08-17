@@ -4,7 +4,12 @@ import styled from 'react-emotion'
 
 const isValidMenuItem = (menuItem) => {
   // since uglifier takes away the type name, you must pass in a notMenuItem boolean to a non-menu-item component
-  return menuItem && typeof menuItem.type !== 'string' && !menuItem.props.notMenuItem
+  return (
+    menuItem &&
+    typeof menuItem.type !== 'string' &&
+    !menuItem.props.notMenuItem &&
+    !menuItem.type.notMenuItem
+  )
 }
 
 const MenuStyles = styled('div')({
@@ -36,6 +41,13 @@ class MenuWithShortcuts extends Component {
   componentDidMount () {
     if (!this.props.keepParentFocus) {
       this.menuRef.focus()
+    }
+  }
+
+  handleMouseDown = (e) => {
+    if (this.props.keepParentFocus) {
+      // used for the emoji menu
+      e.preventDefault()
     }
   }
 
@@ -129,6 +141,7 @@ class MenuWithShortcuts extends Component {
         role='menu'
         aria-label={ariaLabel}
         tabIndex={-1}
+        onMouseDown={this.handleMouseDown}
         onKeyDown={this.handleKeyDown}
         innerRef={(c) => {
           this.menuRef = c

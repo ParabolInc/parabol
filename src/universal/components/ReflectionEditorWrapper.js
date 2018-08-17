@@ -116,8 +116,8 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
   }
 
   handleReturn = (e) => {
-    const {handleReturn} = this.props
-    if (handleReturn) {
+    const {handleReturn, renderModal} = this.props
+    if (handleReturn && !renderModal) {
       return handleReturn(e)
     }
     return 'not-handled'
