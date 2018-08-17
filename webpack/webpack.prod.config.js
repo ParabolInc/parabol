@@ -97,6 +97,7 @@ module.exports = {
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
               'transform-class-properties',
+              'transform-es2015-destructuring',
               'relay'
             ],
             presets: [
