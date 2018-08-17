@@ -24,6 +24,9 @@ import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {withRouter} from 'react-router-dom'
 import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import InlineAlert from 'universal/components/InlineAlert'
+import HelpMenu from 'universal/components/HelpMenu'
+import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
+import makeExternalLink from 'universal/utils/makeExternalLink'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -112,6 +115,55 @@ const StyledButton = styled(PrimaryButton)({
   width: '100%'
 })
 
+const actionGettingStartedLink = makeExternalLink(
+  'Getting Started Guide',
+  'https://www.parabol.co/getting-started-guide/action-meetings-101'
+)
+const retroGettingStartedLink = makeExternalLink(
+  'Getting Started Guide',
+  'https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
+)
+
+const actionLobbyHelpContent = (
+  <div>
+    <p>
+      {'To learn more about how to run an Action Meeting, see our '}
+      {actionGettingStartedLink}
+      {'.'}
+    </p>
+  </div>
+)
+
+const retroGettingStartedLinkContent = (
+  <p>
+    {'See our '}
+    {retroGettingStartedLink}
+    {' for running a Retrospective Meeting.'}
+  </p>
+)
+
+const retroLobbyHelpContentFree = (
+  <div>
+    <p>{'The person who presses “Start Meeting” will be today’s Facilitator.'}</p>
+    <p>{'Everyone’s display automatically follows the Facilitator.'}</p>
+    {retroGettingStartedLinkContent}
+  </div>
+)
+
+const retroLobbyHelpContentPaid = (
+  <div>
+    <p>
+      {'Running a retrospective is the most effective way to learn how your team can work smarter.'}
+    </p>
+    <p>
+      {
+        'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'
+      }
+    </p>
+    {retroGettingStartedLinkContent}
+  </div>
+)
+
 class NewMeetingLobby extends React.Component<Props> {
   render () {
     const {
@@ -137,6 +189,9 @@ class NewMeetingLobby extends React.Component<Props> {
     const meetingLabel = meetingTypeToLabel[meetingType]
     const meetingSlug = meetingTypeToSlug[meetingType]
     const buttonLabel = `Start ${meetingLabel} Meeting`
+    const retroLobbyHelpContent =
+      tier === PRO ? retroLobbyHelpContentPaid : retroLobbyHelpContentFree
+    const helpContent = meetingType === 'action' ? actionLobbyHelpContent : retroLobbyHelpContent
     return (
       <Lobby>
         <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
@@ -207,6 +262,9 @@ class NewMeetingLobby extends React.Component<Props> {
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>
+        <MeetingHelpMenuLayout>
+          <HelpMenu content={helpContent} />
+        </MeetingHelpMenuLayout>
       </Lobby>
     )
   }

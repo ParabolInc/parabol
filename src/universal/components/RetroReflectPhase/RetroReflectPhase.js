@@ -9,7 +9,7 @@ import type {RetroReflectPhase_team as Team} from './__generated__/RetroReflectP
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {GROUP} from 'universal/utils/constants'
+import {REFLECT, GROUP} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
@@ -17,6 +17,10 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
+import HelpMenu from 'universal/components/HelpMenu'
+import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
+import makeExternalLink from 'universal/utils/makeExternalLink'
 
 const StyledWrapper = styled(MeetingPhaseWrapper)({
   // TODO: base wrapper on min-width of card columns, not this styled div (TA)
@@ -26,6 +30,28 @@ const StyledWrapper = styled(MeetingPhaseWrapper)({
     padding: '0 4rem'
   }
 })
+
+const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
+  bottom: isFacilitating && meetingHelpWithBottomBar
+}))
+
+const learnMoreLink = makeExternalLink(
+  'Learn More',
+  'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#reflect'
+)
+
+const helpMenuContent = (
+  <div>
+    <p>{'The goal of this phase is to gather honest input from the team.'}</p>
+    <p>{'As a group, reflect on projects for a specific timeframe.'}</p>
+    <p>
+      {
+        'Reflection cards will remain blurred from other teammates until everyone has completed the phase.'
+      }
+    </p>
+    <p>{learnMoreLink}</p>
+  </div>
+)
 
 type Props = {
   atmosphere: Object,
@@ -70,6 +96,9 @@ const RetroReflectPhase = (props: Props) => {
           </FlatButton>
         </MeetingControlBar>
       )}
+      <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
+        <HelpMenu heading={phaseLabelLookup[REFLECT]} content={helpMenuContent} />
+      </StyledMeetingHelpMenuLayout>
     </React.Fragment>
   )
 }
