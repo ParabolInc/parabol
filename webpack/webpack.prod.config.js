@@ -94,10 +94,9 @@ module.exports = {
             cacheDirectory: true,
             babelrc: false,
             plugins: [
-              'syntax-object-rest-spread',
               'syntax-dynamic-import',
               'transform-class-properties',
-              'transform-es2015-destructuring',
+              'transform-object-rest-spread',
               'relay'
             ],
             presets: [
