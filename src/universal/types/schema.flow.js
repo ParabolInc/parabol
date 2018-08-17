@@ -424,12 +424,12 @@ export type NewMeeting = RetrospectiveMeeting
 */
 export type MeetingMember = RetrospectiveMeetingMember
 
-export type NewMeetingPhase = CheckInPhase | ReflectPhase | DiscussPhase | GenericMeetingPhase
+export type NewMeetingPhase = ReflectPhase | CheckInPhase | DiscussPhase | GenericMeetingPhase
 
 /**
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
-export type NewMeetingStage = RetroDiscussStage | CheckInStage | GenericMeetingStage
+export type NewMeetingStage = RetroDiscussStage | GenericMeetingStage | CheckInStage
 
 /**
   The pay tier of the team
@@ -1175,6 +1175,8 @@ export type Mutation = {
   segmentEventTrack: ?boolean,
   /** Set the role of a user */
   setOrgUserRole: ?SetOrgUserRolePayload,
+  /** Focus (or unfocus) a phase item */
+  setPhaseFocus: ?SetPhaseFocusPayload,
   /** Broadcast that the viewer started dragging a reflection */
   startDraggingReflection: ?StartDraggingReflectionPayload,
   /** Start a meeting from the lobby */
@@ -2223,6 +2225,55 @@ export type SegmentEventTrackOptions = {
 
 export type SetOrgUserRolePayload = SetOrgUserRoleAddedPayload | SetOrgUserRoleRemovedPayload
 
+export type SetPhaseFocusPayload = {
+  error: ?StandardMutationError,
+  meeting: RetrospectiveMeeting,
+  reflectPhase: ReflectPhase
+}
+
+/**
+  The meeting phase where all team members check in one-by-one
+*/
+export type ReflectPhase = {
+  /** shortid */
+  id: string,
+  /** The type of phase */
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  stages: Array<GenericMeetingStage>,
+  /** foreign key. use focusedPhaseItem */
+  focusedPhaseItemId: ?string,
+  /** the phase item that the facilitator wants the group to focus on */
+  focusedPhaseItem: ?RetroPhaseItem
+}
+
+/**
+  A stage of a meeting that has no extra state. Only used for single-stage phases
+*/
+export type GenericMeetingStage = {
+  /** shortid */
+  id: string,
+  /** The datetime the stage was completed */
+  endAt: ?any,
+  /** foreign key. try using meeting */
+  meetingId: string,
+  /** The meeting this stage belongs to */
+  meeting: ?NewMeeting,
+  /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
+  isComplete: ?boolean,
+  /** true if any meeting participant can navigate to this stage */
+  isNavigable: ?boolean,
+  /** true if the facilitator can navigate to this stage */
+  isNavigableByFacilitator: ?boolean,
+  /** The phase this stage belongs to */
+  phase: ?NewMeetingPhase,
+  /** The type of the phase */
+  phaseType: ?NewMeetingPhaseTypeEnum,
+  /** The datetime the stage was started */
+  startAt: ?any,
+  /** Number of times the facilitator has visited this stage */
+  viewCount: ?number
+}
+
 /**
   Coordinates used relay a location in a 2-D plane
 */
@@ -2564,6 +2615,7 @@ export type TeamSubscriptionPayload =
   | RemoveOrgUserPayload
   | RemoveReflectionPayload
   | RemoveTeamMemberPayload
+  | SetPhaseFocusPayload
   | StartDraggingReflectionPayload
   | StartMeetingPayload
   | StartNewMeetingPayload
@@ -2655,49 +2707,6 @@ export type CheckInStage = {
   An instance of a meeting phase item. On the client, this usually represents a single view
 */
 export type NewMeetingTeamMemberStage = CheckInStage
-
-/**
-  The meeting phase where all team members check in one-by-one
-*/
-export type ReflectPhase = {
-  /** shortid */
-  id: string,
-  /** The type of phase */
-  phaseType: ?NewMeetingPhaseTypeEnum,
-  stages: Array<GenericMeetingStage>,
-  /** foreign key. use focusedPhaseItem */
-  focusedPhaseItemId: ?string,
-  /** the phase item that the facilitator wants the group to focus on */
-  focusedPhaseItem: ?RetroPhaseItem
-}
-
-/**
-  A stage of a meeting that has no extra state. Only used for single-stage phases
-*/
-export type GenericMeetingStage = {
-  /** shortid */
-  id: string,
-  /** The datetime the stage was completed */
-  endAt: ?any,
-  /** foreign key. try using meeting */
-  meetingId: string,
-  /** The meeting this stage belongs to */
-  meeting: ?NewMeeting,
-  /** true if the facilitator has completed this stage, else false. Should be boolean(endAt) */
-  isComplete: ?boolean,
-  /** true if any meeting participant can navigate to this stage */
-  isNavigable: ?boolean,
-  /** true if the facilitator can navigate to this stage */
-  isNavigableByFacilitator: ?boolean,
-  /** The phase this stage belongs to */
-  phase: ?NewMeetingPhase,
-  /** The type of the phase */
-  phaseType: ?NewMeetingPhaseTypeEnum,
-  /** The datetime the stage was started */
-  startAt: ?any,
-  /** Number of times the facilitator has visited this stage */
-  viewCount: ?number
-}
 
 /**
   The meeting phase where all team members discuss the topics with the most votes

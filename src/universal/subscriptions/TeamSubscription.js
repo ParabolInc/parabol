@@ -59,6 +59,7 @@ const subscription = graphql`
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RequestFacilitatorMutation_team @relay(mask: false)
+      ...SetPhaseFocusMutation_team @relay(mask: false)
       ...StartDraggingReflectionMutation_team @relay(mask: false)
       ...StartMeetingMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
@@ -169,6 +170,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'RequestFaciltatorPayload':
           requestFacilitatorTeamUpdater(payload, options)
+          break
+        case 'SetPhaseFocus':
           break
         case 'StartDraggingReflectionPayload':
           startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, dispatch, store})

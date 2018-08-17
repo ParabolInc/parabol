@@ -17,9 +17,18 @@ import AnonymousReflectionCard from 'universal/components/AnonymousReflectionCar
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import appTheme from 'universal/styles/theme/appTheme'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+
+const FocusArrow = styled(StyledFontAwesome)(({isFocused}) => ({
+  color: ui.palette.yellow,
+  opacity: isFocused ? 1 : 0,
+  paddingRight: isFocused ? '0.5rem' : 0,
+  transition: 'all 100ms ease-in',
+  transform: `translateX(${isFocused ? 0 : '-100%'})`
+}))
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -27,7 +36,20 @@ const ColumnWrapper = styled('div')({
   flexDirection: 'column',
   flex: 1,
   height: '100%',
-  minWidth: ui.retroCardWidth
+  padding: '1rem'
+})
+
+const ColumnHighlight = styled('div')(({isFocused}) => ({
+  background: isFocused && appTheme.palette.mid10a,
+  display: 'flex',
+  justifyContent: 'center',
+  maxWidth: '26rem',
+  height: '100%',
+  width: '100%'
+}))
+
+const ColumnContent = styled('div')({
+  maxWidth: ui.retroCardWidth
 })
 
 const ReflectionsArea = styled('div')({
@@ -48,11 +70,9 @@ const TypeDescription = styled('div')({
 })
 
 const TypeHeader = styled('div')({
-  marginBottom: '1rem'
-})
-
-const ColumnChild = styled('div')({
-  margin: 16
+  padding: '2rem 0 1rem',
+  userSelect: 'none',
+  width: '100%'
 })
 
 const ButtonBlock = styled('div')({
@@ -94,28 +114,55 @@ class PhaseItemColumn extends Component<Props, State> {
     columnReflectionGroups: []
   }
   addReflectionButtonRef: ?HTMLElement = null
+
   setAddReflectionButtonRef = (c) => {
     this.addReflectionButtonRef = c
   }
+
+  setColumnFocus = () => {
+    const {
+      atmosphere,
+      meeting,
+      retroPhaseItem: {retroPhaseItemId}
+    } = this.props
+    const {
+      meetingId,
+      facilitatorUserId,
+      localPhase: {phaseId, focusedPhaseItemId},
+      localStage: {isComplete}
+    } = meeting
+    const {viewerId} = atmosphere
+    const isFacilitator = viewerId === facilitatorUserId
+    if (!isFacilitator || isComplete) return
+    const variables = {
+      meetingId,
+      focusedPhaseItemId: focusedPhaseItemId === retroPhaseItemId ? null : retroPhaseItemId
+    }
+    SetPhaseFocusMutation(atmosphere, variables, {phaseId})
+  }
+
   render () {
     const {canDrop, meeting, retroPhaseItem} = this.props
     const {columnReflectionGroups} = this.state
     const {
-      localPhase: {phaseType},
+      localPhase: {phaseType, focusedPhaseItemId},
       localStage: {isComplete}
     } = meeting
-    const {title, question} = retroPhaseItem
+    const {question, retroPhaseItemId} = retroPhaseItem
+    const isFocused = focusedPhaseItemId === retroPhaseItemId
     return (
-      <div>
-        <ColumnWrapper>
-          <TypeHeader>
-            <LabelHeading>{title.toUpperCase()}</LabelHeading>
-            <TypeDescription>{question}</TypeDescription>
-          </TypeHeader>
-          <ReflectionsArea>
-            {phaseType === REFLECT &&
-              !isComplete && (
-                <ColumnChild>
+      <ColumnWrapper>
+        <ColumnHighlight isFocused={isFocused}>
+          <ColumnContent>
+            <TypeHeader onClick={this.setColumnFocus}>
+              <TypeDescription>
+                <FocusArrow name='arrow-right' isFocused={isFocused} />
+                {question}
+              </TypeDescription>
+            </TypeHeader>
+            <ReflectionsArea>
+              {phaseType === REFLECT &&
+                !isComplete && (
                   <ButtonBlock>
                     <AddReflectionButton
                       columnReflectionGroups={columnReflectionGroups}
@@ -124,30 +171,27 @@ class PhaseItemColumn extends Component<Props, State> {
                       retroPhaseItem={retroPhaseItem}
                     />
                   </ButtonBlock>
-                </ColumnChild>
-              )}
-            <ReflectionsList canDrop={canDrop}>
-              {columnReflectionGroups.map((group) => {
-                return group.reflections.map((reflection) => {
-                  return (
-                    <ColumnChild key={reflection.id}>
-                      {reflection.isViewerCreator ? (
+                )}
+              <ReflectionsList canDrop={canDrop}>
+                {columnReflectionGroups.map((group) => {
+                  return group.reflections.map((reflection) => {
+                    if (reflection.isViewerCreator) {
+                      return (
                         <ReflectionCard
                           addReflectionButtonRef={this.addReflectionButtonRef}
                           meeting={meeting}
                           reflection={reflection}
                         />
-                      ) : (
-                        <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-                      )}
-                    </ColumnChild>
-                  )
-                })
-              })}
-            </ReflectionsList>
-          </ReflectionsArea>
-        </ColumnWrapper>
-      </div>
+                      )
+                    }
+                    return <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
+                  })
+                })}
+              </ReflectionsList>
+            </ReflectionsArea>
+          </ColumnContent>
+        </ColumnHighlight>
+      </ColumnWrapper>
     )
   }
 }
@@ -167,9 +211,14 @@ export default createFragmentContainer(
       ...AnonymousReflectionCard_meeting
       ...ReflectionCard_meeting
       ...ReflectionGroup_meeting
+      facilitatorUserId
       meetingId: id
       localPhase {
+        phaseId: id
         phaseType
+        ... on ReflectPhase {
+          focusedPhaseItemId
+        }
       }
       localStage {
         isComplete
@@ -179,6 +228,9 @@ export default createFragmentContainer(
         phaseType
         stages {
           isComplete
+        }
+        ... on ReflectPhase {
+          focusedPhaseItemId
         }
       }
       reflectionGroups {
