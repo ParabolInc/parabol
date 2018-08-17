@@ -213,4 +213,9 @@ export default class Atmosphere extends Environment {
       return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey)
     })
   }
+  close () {
+    // race condition when logging out & the autoLogin
+    this.authObj = null
+    this.transport.close && this.transport.close()
+  }
 }

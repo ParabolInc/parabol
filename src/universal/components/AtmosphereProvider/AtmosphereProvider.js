@@ -5,8 +5,7 @@ import Atmosphere from 'universal/Atmosphere'
 let atmosphere = new Atmosphere()
 
 export const resetAtmosphere = () => {
-  // race condition when logging out & the autoLogin
-  atmosphere.authObj = null
+  atmosphere.close()
   atmosphere = new Atmosphere()
 }
 
