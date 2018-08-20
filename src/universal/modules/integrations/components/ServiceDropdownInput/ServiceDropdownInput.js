@@ -1,13 +1,12 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
-import FontAwesome from 'react-fontawesome'
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock'
 import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
-import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer'
-import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem'
+import LoadableServiceDropdown from 'universal/components/LoadableServiceDropdown'
+import styled from 'react-emotion'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import LoadableDropdownMenu from 'universal/components/LoadableDropdownMenu'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -19,37 +18,54 @@ const targetAnchor = {
   horizontal: 'left'
 }
 
+const DownButtonIcon = styled(StyledFontAwesome)({
+  cursor: 'pointer',
+  paddingRight: '1rem',
+  lineHeight: '2.375rem',
+  left: '-1px',
+  right: '-1px',
+  height: '100%',
+  position: 'absolute',
+  textAlign: 'right',
+  top: 0,
+  width: '100%',
+  fontSize: ui.iconSize
+})
+
+const DropdownBlock = styled('div')({
+  width: '100%'
+})
+
+const InputBlock = styled('div')({
+  ...ui.fieldBaseStyles,
+  ...ui.fieldSizeStyles.medium,
+  ...makeFieldColorPalette('white'),
+  position: 'relative',
+  userSelect: 'none'
+})
+
 const ServiceDropdownInput = (props) => {
-  const {isLoaded, fetchOptions, dropdownText, handleItemClick, options, styles} = props
-  const toggle = (
-    <FontAwesome className={css(styles.downButton)} name='chevron-down' onClick={fetchOptions} />
-  )
+  const {isLoaded, fetchOptions, dropdownText, handleItemClick, options} = props
   return (
-    <div className={css(styles.dropdownBlock)}>
+    <DropdownBlock>
       <FieldBlock>
-        <div className={css(styles.inputBlock)} tabIndex='1'>
+        <InputBlock tabIndex='1'>
           <span>{dropdownText}</span>
-          <MenuContainer
-            isLoaded={isLoaded}
-            menuWidth='28.875rem'
+          <LoadableDropdownMenu
+            LoadableComponent={LoadableServiceDropdown}
+            maxHeight={350}
             originAnchor={originAnchor}
+            queryVars={{
+              handleItemClick,
+              isLoaded,
+              options
+            }}
             targetAnchor={targetAnchor}
-            toggle={toggle}
-          >
-            {options.map((option) => {
-              return (
-                <MenuItem
-                  isActive={false}
-                  key={`serviceDropdownMenuItem${option.id}`}
-                  label={option.label}
-                  onClick={handleItemClick(option)}
-                />
-              )
-            })}
-          </MenuContainer>
-        </div>
+            toggle={<DownButtonIcon name='chevron-down' onClick={fetchOptions} />}
+          />
+        </InputBlock>
       </FieldBlock>
-    </div>
+    </DropdownBlock>
   )
 }
 
@@ -62,38 +78,4 @@ ServiceDropdownInput.propTypes = {
   styles: PropTypes.object
 }
 
-const styleThunk = () => ({
-  dropdownBlock: {
-    width: '100%'
-  },
-
-  downButton: {
-    cursor: 'pointer',
-    fontSize: `${ui.iconSize} !important`,
-    height: '100% !important',
-    lineHeight: '2.375rem !important',
-    padding: '0 1rem 0 0',
-    position: 'absolute',
-    left: '-1px',
-    right: '-1px',
-    textAlign: 'right',
-    top: 0
-  },
-
-  inputBlock: {
-    ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles.medium,
-    ...makeFieldColorPalette('white'),
-    position: 'relative',
-    userSelect: 'none'
-  },
-
-  menuButtonBlock: {
-    backgroundColor: '#fff',
-    borderTop: `1px solid ${ui.menuBorderColor}`,
-    padding: '.5rem .5rem 0',
-    width: '100%'
-  }
-})
-
-export default withStyles(styleThunk)(ServiceDropdownInput)
+export default ServiceDropdownInput

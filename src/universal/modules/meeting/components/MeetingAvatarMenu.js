@@ -6,8 +6,8 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
-import MenuWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/modules/menu/components/MenuItem/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 
 const MeetingAvatarMenu = (props) => {
