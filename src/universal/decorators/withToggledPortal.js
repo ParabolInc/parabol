@@ -74,7 +74,7 @@ const withToggledPortal = (ComposedComponent) => {
         'aria-expanded': this.state.isOpen,
         onClick: (e) => {
           const {setOriginRef, LoadableComponent} = this.props
-          if (LoadableComponent) {
+          if (LoadableComponent && LoadableComponent.preload) {
             LoadableComponent.preload()
           }
           if (setOriginRef) {
@@ -93,7 +93,7 @@ const withToggledPortal = (ComposedComponent) => {
         },
         onMouseEnter: () => {
           const {LoadableComponent} = this.props
-          if (LoadableComponent) {
+          if (LoadableComponent && LoadableComponent.preload) {
             LoadableComponent.preload()
           }
         },

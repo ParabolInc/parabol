@@ -6,7 +6,8 @@
 
 import React from 'react'
 import styled from 'react-emotion'
-import LoadableHelpMenu from 'universal/components/LoadableHelpMenu'
+// import LoadableHelpMenu from 'universal/components/LoadableHelpMenu'
+import HelpMenuContent from 'universal/components/HelpMenuContent'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
@@ -41,7 +42,7 @@ const HelpMenu = ({heading, content}: Props) => {
 
   return (
     <LoadableMenu
-      LoadableComponent={LoadableHelpMenu}
+      LoadableComponent={HelpMenuContent}
       maxWidth={280}
       maxHeight={320}
       originAnchor={originAnchor}

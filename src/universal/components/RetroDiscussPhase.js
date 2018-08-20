@@ -18,7 +18,17 @@ import type {RouterHistory} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
-import {meetingTopicPhaseMaxWidth, meetingVoteIcon} from 'universal/styles/meeting'
+import {
+  meetingTopicPhaseMaxWidth,
+  meetingVoteIcon,
+  meetingHelpWithBottomBar
+} from 'universal/styles/meeting'
+
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import {DISCUSS} from 'universal/utils/constants'
+import HelpMenu from 'universal/components/HelpMenu'
+import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
+import makeExternalLink from 'universal/utils/makeExternalLink'
 
 type Props = {|
   atmosphere: Object,
@@ -28,6 +38,10 @@ type Props = {|
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object
 |}
+
+const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
+  bottom: isFacilitating && meetingHelpWithBottomBar
+}))
 
 const DiscussHeader = styled('div')({
   alignItems: 'center',
@@ -117,6 +131,27 @@ const StyledButton = styled(FlatButton)({
 const SpacedMeetingControlBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
+
+const discussHelpContent = (
+  <div>
+    <p>
+      {
+        'The goal of this phase is to identify next steps and capture them as task cards assigned to an owner.'
+      }
+    </p>
+    <p>
+      {
+        'Sometimes the next task is to schedule a time to discuss a topic more in depth at a later time.'
+      }
+    </p>
+    <p>
+      {makeExternalLink(
+        'Learn More',
+        'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss'
+      )}
+    </p>
+  </div>
+)
 
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, dispatch, gotoNext, history, team} = props
@@ -211,6 +246,9 @@ const RetroDiscussPhase = (props: Props) => {
           {!nextStageRes && <ControlButtonBlock />}
         </SpacedMeetingControlBar>
       )}
+      <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
+        <HelpMenu heading={phaseLabelLookup[DISCUSS]} content={discussHelpContent} />
+      </StyledMeetingHelpMenuLayout>
     </React.Fragment>
   )
 }

@@ -21,7 +21,16 @@ import {CHECKIN} from 'universal/utils/constants'
 import withHotkey from 'react-hotkey-hoc'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 
+import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
+import HelpMenu from 'universal/components/HelpMenu'
+import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
+import makeExternalLink from 'universal/utils/makeExternalLink'
+
 const {Component} = React
+
+const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
+  bottom: isFacilitating && meetingHelpWithBottomBar
+}))
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -46,6 +55,28 @@ const Hint = styled('div')({
   marginTop: '2.5rem'
 })
 
+const actionCheckInLink = makeExternalLink(
+  'Learn More',
+  'https://www.parabol.co/getting-started-guide/action-meetings-101#social-check-in'
+)
+
+const retroCheckInLink = makeExternalLink(
+  'Learn More',
+  'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#social-check-in'
+)
+
+const checkInHelpContent = (link) => (
+  <div>
+    <p>
+      {
+        'The Social Check-In is an opportunity to quickly share some personal context with your team.'
+      }
+    </p>
+    <p>{'Avoid cross-talk so that everybody can have uninterrupted airtime.'}</p>
+    <p>{link}</p>
+  </div>
+)
+
 type Props = {
   atmosphere: Object,
   match: Match,
@@ -61,7 +92,7 @@ class NewMeetingCheckIn extends Component<Props> {
   }
 
   render () {
-    const {atmosphere, team} = this.props
+    const {atmosphere, team, meetingType} = this.props
     const {newMeeting} = team
     const {
       facilitator: {facilitatorName, facilitatorUserId},
@@ -78,6 +109,7 @@ class NewMeetingCheckIn extends Component<Props> {
       (nextStage && nextStage.teamMember && nextStage.teamMember.preferredName) || ''
     const {viewerId} = atmosphere
     const isFacilitating = facilitatorUserId === viewerId
+    const helpMenuLink = meetingType === 'action' ? actionCheckInLink : retroCheckInLink
     return (
       <React.Fragment>
         <MeetingSection flexToFill paddingBottom='1rem'>
@@ -119,6 +151,12 @@ class NewMeetingCheckIn extends Component<Props> {
             />
           </MeetingControlBar>
         )}
+        <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
+          <HelpMenu
+            heading={phaseLabelLookup[CHECKIN]}
+            content={checkInHelpContent(helpMenuLink)}
+          />
+        </StyledMeetingHelpMenuLayout>
       </React.Fragment>
     )
   }

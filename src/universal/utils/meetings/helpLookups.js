@@ -2,13 +2,13 @@ import React from 'react'
 
 import {
   LOBBY,
-  RETRO_LOBBY_FREE,
-  RETRO_LOBBY_PAID,
+  // RETRO_LOBBY_FREE,
+  // RETRO_LOBBY_PAID,
   CHECKIN,
-  REFLECT,
-  GROUP,
-  VOTE,
-  DISCUSS,
+  // REFLECT,
+  // GROUP,
+  // VOTE,
+  // DISCUSS,
   UPDATES,
   FIRST_CALL,
   AGENDA_ITEMS,
@@ -28,15 +28,16 @@ const teamAgendaHelpLink = makeLink('action-meetings-101#team-agenda', 'Learn Mo
 
 const actionGettingStartedLink = makeLink('action-meetings-101', 'Getting Started Guide')
 
-const retroGettingStartedLink = makeLink('retrospective-meetings-101', 'Getting Started Guide')
+// const retroGettingStartedLink = makeLink('retrospective-meetings-101', 'Getting Started Guide')
 
-const retroGettingStartedContent = (
-  <p>
-    {'See our '}
-    {retroGettingStartedLink}
-    {' for running a Retrospective Meeting.'}
-  </p>
-)
+// const retroGettingStartedContent = (
+//   <p>
+//     {'See our '}
+//     {retroGettingStartedLink}
+//     {' for running a Retrospective Meeting.'}
+//   </p>
+// )
+
 const checkInFacilitatorBarTip =
   'Facilitator: allow each teammate a moment to answer today’s prompt, then mark them as Here or Not Here.'
 
@@ -50,27 +51,27 @@ const actionLobbyHelpContent = (
   </div>
 )
 
-const retroLobbyHelpContentFree = (
-  <div>
-    <p>{'The person who presses “Start Meeting” will be today’s Facilitator.'}</p>
-    <p>{'Everyone’s display automatically follows the Facilitator.'}</p>
-    {retroGettingStartedContent}
-  </div>
-)
+// const retroLobbyHelpContentFree = (
+//   <div>
+//     <p>{'The person who presses “Start Meeting” will be today’s Facilitator.'}</p>
+//     <p>{'Everyone’s display automatically follows the Facilitator.'}</p>
+//     {retroGettingStartedContent}
+//   </div>
+// )
 
-const retroLobbyHelpContentPaid = (
-  <div>
-    <p>
-      {'Running a retrospective is the most effective way to learn how your team can work smarter.'}
-    </p>
-    <p>
-      {
-        'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'
-      }
-    </p>
-    {retroGettingStartedContent}
-  </div>
-)
+// const retroLobbyHelpContentPaid = (
+//   <div>
+//     <p>
+//       {'Running a retrospective is the most effective way to learn how your team can work smarter.'}
+//     </p>
+//     <p>
+//       {
+//         'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'
+//       }
+//     </p>
+//     {retroGettingStartedContent}
+//   </div>
+// )
 
 const checkInHelpContent = (link) => (
   <div>
@@ -85,57 +86,57 @@ const checkInHelpContent = (link) => (
 )
 
 const actionCheckInLink = makeLink('action-meetings-101#social-check-in', 'Learn More')
-const retroCheckInLink = makeLink('retrospective-meetings-101#social-check-in', 'Learn More')
+// const retroCheckInLink = makeLink('retrospective-meetings-101#social-check-in', 'Learn More')
 
-const reflectHelpContent = (
-  <div>
-    <p>{'The goal of this phase is to gather honest input from the team.'}</p>
-    <p>{'As a group, reflect on projects for a specific timeframe.'}</p>
-    <p>
-      {
-        'Reflection cards will remain blurred from other teammates until everyone has completed the phase.'
-      }
-    </p>
-    <p>{makeLink('retrospective-meetings-101#reflect', 'Learn More')}</p>
-  </div>
-)
+// const reflectHelpContent = (
+//   <div>
+//     <p>{'The goal of this phase is to gather honest input from the team.'}</p>
+//     <p>{'As a group, reflect on projects for a specific timeframe.'}</p>
+//     <p>
+//       {
+//         'Reflection cards will remain blurred from other teammates until everyone has completed the phase.'
+//       }
+//     </p>
+//     <p>{makeLink('retrospective-meetings-101#reflect', 'Learn More')}</p>
+//   </div>
+// )
 
-const groupHelpContent = (
-  <div>
-    <p>{'The goal of this phase is to identify common themes and group them for discussion.'}</p>
-    <p>{'To group, simply drag and drop a card onto another card or group.'}</p>
-    <p>{makeLink('retrospective-meetings-101#group', 'Learn More')}</p>
-  </div>
-)
+// const groupHelpContent = (
+//   <div>
+//     <p>{'The goal of this phase is to identify common themes and group them for discussion.'}</p>
+//     <p>{'To group, simply drag and drop a card onto another card or group.'}</p>
+//     <p>{makeLink('retrospective-meetings-101#group', 'Learn More')}</p>
+//   </div>
+// )
 
-const voteHelpContent = (
-  <div>
-    <p>
-      {
-        'The goal of this phase is to find signal on what topics are the most important to the team.'
-      }
-    </p>
-    <p>{'Each teammate has 5 total votes, and can vote on a single theme up to 3 times.'}</p>
-    <p>{'To vote, simply tap on the check icon above the card. Toggle votes to remove.'}</p>
-    <p>{makeLink('retrospective-meetings-101#vote', 'Learn More')}</p>
-  </div>
-)
+// const voteHelpContent = (
+//   <div>
+//     <p>
+//       {
+//         'The goal of this phase is to find signal on what topics are the most important to the team.'
+//       }
+//     </p>
+//     <p>{'Each teammate has 5 total votes, and can vote on a single theme up to 3 times.'}</p>
+//     <p>{'To vote, simply tap on the check icon above the card. Toggle votes to remove.'}</p>
+//     <p>{makeLink('retrospective-meetings-101#vote', 'Learn More')}</p>
+//   </div>
+// )
 
-const discussHelpContent = (
-  <div>
-    <p>
-      {
-        'The goal of this phase is to identify next steps and capture them as task cards assigned to an owner.'
-      }
-    </p>
-    <p>
-      {
-        'Sometimes the next task is to schedule a time to discuss a topic more in depth at a later time.'
-      }
-    </p>
-    <p>{makeLink('retrospective-meetings-101#discuss', 'Learn More')}</p>
-  </div>
-)
+// const discussHelpContent = (
+//   <div>
+//     <p>
+//       {
+//         'The goal of this phase is to identify next steps and capture them as task cards assigned to an owner.'
+//       }
+//     </p>
+//     <p>
+//       {
+//         'Sometimes the next task is to schedule a time to discuss a topic more in depth at a later time.'
+//       }
+//     </p>
+//     <p>{makeLink('retrospective-meetings-101#discuss', 'Learn More')}</p>
+//   </div>
+// )
 
 const updatesHelpContent = (
   <div>
@@ -216,36 +217,36 @@ export const actionPhaseHelpLookup = {
   }
 }
 
-export const retroPhaseHelpLookup = {
-  [RETRO_LOBBY_FREE]: {
-    facilitatorBarTip: null,
-    helpDialog: retroLobbyHelpContentFree
-  },
-  [RETRO_LOBBY_PAID]: {
-    facilitatorBarTip: null,
-    helpDialog: retroLobbyHelpContentPaid
-  },
-  [CHECKIN]: {
-    facilitatorBarTip: checkInFacilitatorBarTip,
-    helpDialog: checkInHelpContent(retroCheckInLink)
-  },
-  [REFLECT]: {
-    facilitatorBarTip:
-      'Facilitator: depending on preference, your team can focus on 1 prompt at a time, or both.',
-    helpDialog: reflectHelpContent
-  },
-  [GROUP]: {
-    facilitatorBarTip:
-      'Facilitator: have teammates ask clarifying questions as they group reflections.',
-    helpDialog: groupHelpContent
-  },
-  [VOTE]: {
-    facilitatorBarTip: 'Facilitator: only 1 vote is required to move forward.',
-    helpDialog: voteHelpContent
-  },
-  [DISCUSS]: {
-    facilitatorBarTip: `Facilitator: encourage your team to break tasks down to their smallest components,
-                        perhaps owned by multiple teammates.`,
-    helpDialog: discussHelpContent
-  }
-}
+// export const retroPhaseHelpLookup = {
+//   [RETRO_LOBBY_FREE]: {
+//     facilitatorBarTip: null,
+//     helpDialog: retroLobbyHelpContentFree
+//   },
+//   [RETRO_LOBBY_PAID]: {
+//     facilitatorBarTip: null,
+//     helpDialog: retroLobbyHelpContentPaid
+//   },
+//   [CHECKIN]: {
+//     facilitatorBarTip: checkInFacilitatorBarTip,
+//     helpDialog: checkInHelpContent(retroCheckInLink)
+//   },
+//   [REFLECT]: {
+//     facilitatorBarTip:
+//       'Facilitator: depending on preference, your team can focus on 1 prompt at a time, or both.',
+//     helpDialog: reflectHelpContent
+//   },
+//   [GROUP]: {
+//     facilitatorBarTip:
+//       'Facilitator: have teammates ask clarifying questions as they group reflections.',
+//     helpDialog: groupHelpContent
+//   },
+//   [VOTE]: {
+//     facilitatorBarTip: 'Facilitator: only 1 vote is required to move forward.',
+//     helpDialog: voteHelpContent
+//   },
+//   [DISCUSS]: {
+//     facilitatorBarTip: `Facilitator: encourage your team to break tasks down to their smallest components,
+//                         perhaps owned by multiple teammates.`,
+//     helpDialog: discussHelpContent
+//   }
+// }
