@@ -8,8 +8,8 @@ import {WS_KEEP_ALIVE} from 'universal/utils/constants'
 import handleConnect from 'server/socketHandlers/handleConnect'
 import ConnectionContext from 'server/socketHelpers/ConnectionContext'
 import packageJSON from '../../../package.json'
+import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
 
-const TREBUCHET_WS = 'trebuchet-ws'
 const APP_VERSION = packageJSON.version
 export default function connectionHandler (sharedDataLoader, rateLimiter) {
   return async function socketConnectionHandler (socket) {

@@ -5,6 +5,7 @@
 .*node_modules/tayden-clusterfck
 .*history/*
 .*node_modules/bcryptjs
+.*node_modules/config-chain
 
 [include]
 
