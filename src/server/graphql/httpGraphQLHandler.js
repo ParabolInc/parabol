@@ -1,4 +1,4 @@
-import {GQL_DATA, GQL_ERROR, GQL_START, GQL_STOP} from 'universal/utils/constants'
+import {ClientMessageTypes, ServerMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler'
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
@@ -6,6 +6,8 @@ import isQueryProvided from 'server/graphql/isQueryProvided'
 import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
 import sendSentryEvent from 'server/utils/sendSentryEvent'
 
+const {GQL_START, GQL_STOP} = ServerMessageTypes
+const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
 export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) => {
   const {id: opId, type, payload} = req.body
   const connectionId = req.headers['x-correlation-id']

@@ -1,6 +1,6 @@
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
-import {GQL_CONNECTION_KEEP_ALIVE} from 'universal/utils/constants'
 import sendRaw from 'server/socketHelpers/sendRaw'
+import {Events} from '@mattkrick/trebuchet-client'
 
 const keepAlive = (connectionContext, timeout) => {
   connectionContext.cancelKeepAlive = setInterval(() => {
@@ -10,7 +10,7 @@ const keepAlive = (connectionContext, timeout) => {
     } else {
       connectionContext.isAlive = false
       // TODO record time sent so when we get a message we can calc latency
-      sendRaw(socket, GQL_CONNECTION_KEEP_ALIVE)
+      sendRaw(socket, Events.KEEP_ALIVE)
     }
   }, timeout)
 }

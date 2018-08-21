@@ -4,12 +4,13 @@ import Schema from 'server/graphql/rootSchema'
 import maybeSendNewAuthToken from 'server/utils/maybeSendNewAuthToken'
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll'
-import {GQL_COMPLETE, GQL_DATA, GQL_ERROR} from 'universal/utils/constants'
+import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import sendMessage from 'server/socketHelpers/sendMessage'
 import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
 import firstErrorMessage from 'universal/utils/relay/firstErrorMessage'
 
+const {GQL_COMPLETE, GQL_DATA, GQL_ERROR} = ClientMessageTypes
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}))
   const {

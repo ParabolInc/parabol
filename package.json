@@ -65,6 +65,7 @@
     "babel-loader": "^7.1.4",
     "babel-plugin-relay": "^1.6.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
@@ -111,7 +112,7 @@
   "dependencies": {
     "@google-cloud/language": "^1.2.0",
     "@mattkrick/fast-rtc-peer": "^0.0.5",
-    "@mattkrick/graphql-trebuchet-client": "^0.1.0",
+    "@mattkrick/graphql-trebuchet-client": "^0.1.1",
     "@mattkrick/react-dnd": "3.0.5",
     "@mattkrick/react-dnd-html5-backend": "3.0.5",
     "@mattkrick/react-relay": "^1.6.3",

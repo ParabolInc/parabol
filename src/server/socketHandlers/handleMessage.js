@@ -1,10 +1,4 @@
-import {
-  GQL_CONNECTION_KEEP_ALIVE,
-  GQL_DATA,
-  GQL_ERROR,
-  GQL_START,
-  GQL_STOP
-} from 'universal/utils/constants'
+import {ServerMessageTypes, ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
 import sendMessage from 'server/socketHelpers/sendMessage'
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
@@ -12,11 +6,14 @@ import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandl
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import isQueryProvided from 'server/graphql/isQueryProvided'
 import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
+import {Events} from '@mattkrick/trebuchet-client'
 
+const {GQL_START, GQL_STOP} = ServerMessageTypes
+const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
 const handleMessage = (connectionContext) => async (message) => {
   const {socket, subs} = connectionContext
   // catch raw, non-graphql protocol messages here
-  if (message === GQL_CONNECTION_KEEP_ALIVE) {
+  if (message === Events.KEEP_ALIVE) {
     connectionContext.isAlive = true
     return
   }
