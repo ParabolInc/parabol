@@ -1,11 +1,12 @@
+import {PhaseItemEditor_meeting} from '__generated__/PhaseItemEditor_meeting.graphql'
+import {PhaseItemEditor_retroPhaseItem} from '__generated__/PhaseItemEditor_retroPhaseItem.graphql'
 import {ContentState, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps from '../../utils/relay/withMutationProps'
-import {PhaseItemEditor_meeting} from '__generated__/PhaseItemEditor_meeting.graphql'
-import {PhaseItemEditor_retroPhaseItem} from '__generated__/PhaseItemEditor_retroPhaseItem.graphql'
+import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 
 interface Props {
   meeting: PhaseItemEditor_meeting,
@@ -23,6 +24,7 @@ class PhaseItemEditor extends Component<Props, State> {
   }
 
   handleSubmit() {
+    console.log('submit')
   }
 
   handleEditorBlur() {
@@ -44,15 +46,17 @@ class PhaseItemEditor extends Component<Props, State> {
   render() {
     const {editorState} = this.state
     return (
-      <ReflectionEditorWrapper
-        ariaLabel='Edit this reflection'
-        editorState={editorState}
-        onBlur={this.handleEditorBlur}
-        onFocus={this.handleEditorFocus}
-        handleReturn={this.handleReturn}
-        placeholder='My reflection thought…'
-        setEditorState={this.setEditorState}
-      />
+      <ReflectionCardRoot shadow={0}>
+        <ReflectionEditorWrapper
+          ariaLabel='Edit this reflection'
+          editorState={editorState}
+          onBlur={this.handleEditorBlur}
+          onFocus={this.handleEditorFocus}
+          handleReturn={this.handleReturn}
+          placeholder='My reflection thought…'
+          setEditorState={this.setEditorState}
+        />
+      </ReflectionCardRoot>
     )
   }
 }

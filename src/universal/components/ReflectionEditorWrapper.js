@@ -51,7 +51,6 @@ const EditorStyles = styled('div')(({isBlurred, userSelect}) => ({
   color: isBlurred === false ? ui.hintColor : appTheme.palette.dark,
   filter: isBlurred && 'blur(.25rem)',
   fontSize: ui.cardContentFontSize,
-  lineHeight: ui.cardContentLineHeight,
   maxHeight: '10rem',
   minHeight: '1rem',
   overflow: 'auto',

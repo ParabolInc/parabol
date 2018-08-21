@@ -39,5 +39,11 @@
   "include": [
     "src",
     "stories"
-  ]
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "reportFiles": [
+      "src/**/*.{ts,tsx}",
+      "stories/**/*.{ts,tsx}"
+    ]
+  }
 }

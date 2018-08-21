@@ -1,8 +1,9 @@
 import {storiesOf} from '@storybook/react'
 import React from 'react'
-import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
-import StoryProvider from './components/StoryProvider'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
+import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
+import PhaseItemHealthBar from '../src/universal/components/RetroReflectPhase/PhaseItemHealthBar'
+import StoryProvider from './components/StoryProvider'
 
 storiesOf('Reflect Phase', module)
   .add('placeholder', () => (
@@ -12,6 +13,11 @@ storiesOf('Reflect Phase', module)
   ))
   .add('editor', () => (
     <StoryProvider>
-      <PhaseItemEditor/>
+      <PhaseItemEditor />
+    </StoryProvider>
+  ))
+  .add('health bar', () => (
+    <StoryProvider>
+      <PhaseItemHealthBar strength={2} />
     </StoryProvider>
   ))

@@ -85,10 +85,7 @@ module.exports = {
             }
           },
           {
-            loader: 'ts-loader',
-            options: {
-              reportFiles: ['src/**/*.{ts,tsx}', 'stories/**/*.{ts,tsx}']
-            }
+            loader: 'awesome-typescript-loader'
           }
         ]
       },
