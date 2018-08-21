@@ -56,7 +56,7 @@ const MeetingHelpDialogMenu = (props: Props) => {
     <DialogContent>
       <DialogClose name='times-circle' onClick={closePortal} title='Close help menu' />
       {phaseLabel && <h3>{phaseLabel}</h3>}
-      {phaseHelpLookup[phase].helpDialog}
+      {phaseHelpLookup[phase]}
     </DialogContent>
   )
 }
