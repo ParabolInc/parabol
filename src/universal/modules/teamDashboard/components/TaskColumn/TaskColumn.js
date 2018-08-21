@@ -2,8 +2,6 @@ import styled, {css} from 'react-emotion'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import withScrolling from 'react-dnd-scrollzone'
-import {connect} from 'react-redux'
-import {withRouter} from 'react-router'
 import AddTaskButton from 'universal/components/AddTaskButton/AddTaskButton'
 import DraggableTask from 'universal/containers/TaskCard/DraggableTask'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -19,9 +17,9 @@ import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 
 import TaskColumnDropZone from './TaskColumnDropZone'
-import MenuItem from 'universal/modules/menu/components/MenuItem/MenuItem'
-import MenuContainer from 'universal/modules/menu/containers/Menu/MenuContainer'
 import overflowTouch from 'universal/styles/helpers/overflowTouch'
+import LoadableMenu from 'universal/components/LoadableMenu'
+import LoadableSelectTeamDropdown from 'universal/components/LoadableSelectTeamDropdown'
 
 // The `ScrollZone` component manages an overflowed block-level element,
 // scrolling its contents when another element is dragged close to its edges.
@@ -116,10 +114,8 @@ class TaskColumn extends Component {
   static propTypes = {
     area: PropTypes.string,
     atmosphere: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
     firstColumn: PropTypes.bool,
     getTaskById: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
     isMyMeetingSection: PropTypes.bool,
     lastColumn: PropTypes.bool,
     myTeamMemberId: PropTypes.string,
@@ -133,8 +129,6 @@ class TaskColumn extends Component {
     const {
       area,
       atmosphere,
-      dispatch,
-      history,
       isMyMeetingSection,
       status,
       tasks,
@@ -155,23 +149,25 @@ class TaskColumn extends Component {
         const handleAddTask = handleAddTaskFactory(atmosphere, status, teamId, userId, sortOrder)
         return <AddTaskButton onClick={handleAddTask} label={label} />
       }
-      const itemFactory = () => {
-        const menuItems = this.makeTeamMenuItems(atmosphere, dispatch, history, sortOrder)
-        return menuItems.map((item) => (
-          <MenuItem key={`MenuItem${item.label}`} label={item.label} onClick={item.handleClick} />
-        ))
-      }
-
-      const toggle = <AddTaskButton label={label} />
       return (
-        <MenuContainer
-          itemFactory={itemFactory}
+        <LoadableMenu
+          LoadableComponent={LoadableSelectTeamDropdown}
+          maxHeight={217}
+          menuWidth={160}
           originAnchor={originAnchor}
-          maxHeight={ui.dashMenuHeight}
-          menuWidth={ui.dashMenuWidth}
+          queryVars={{
+            teams,
+            teamHandleClick: (teamId) => () => {
+              CreateTaskMutation(atmosphere, {
+                sortOrder,
+                status,
+                teamId,
+                userId: atmosphere.viewerId
+              })
+            }
+          }}
           targetAnchor={targetAnchor}
-          toggle={toggle}
-          label='Select Team:'
+          toggle={<AddTaskButton label={label} />}
         />
       )
     }
@@ -207,23 +203,6 @@ class TaskColumn extends Component {
       updatedTask.status = targetTask.status
     }
     UpdateTaskMutation(atmosphere, updatedTask, area)
-  }
-
-  makeTeamMenuItems = (atmosphere, dispatch, history, sortOrder) => {
-    const {status, teams} = this.props
-    const {userId} = atmosphere
-    return teams.map((team) => ({
-      label: team.name,
-      handleClick: () => {
-        const newTask = {
-          sortOrder,
-          status,
-          teamId: team.id,
-          userId
-        }
-        CreateTaskMutation(atmosphere, newTask)
-      }
-    }))
   }
 
   render () {
@@ -275,4 +254,4 @@ class TaskColumn extends Component {
   }
 }
 
-export default connect()(withAtmosphere(withRouter(TaskColumn)))
+export default withAtmosphere(TaskColumn)
