@@ -35,23 +35,30 @@ class SocketHealthMonitor extends Component {
 
   onReconnected = () => {
     const {dispatch} = this.props
-    dispatch(
-      showSuccess({
-        autoDismiss: 5,
-        title: 'You’re back online!',
-        message: 'You were offline for a bit, but we’ve reconnected you.'
-      })
-    )
+    if (this.disconnectedToastTimer) {
+      clearTimeout(this.disconnectedToastTimer)
+    } else {
+      dispatch(
+        showSuccess({
+          autoDismiss: 5,
+          title: 'You’re back online!',
+          message: 'You were offline for a bit, but we’ve reconnected you.'
+        })
+      )
+    }
   }
   onDisconnected = () => {
     const {dispatch} = this.props
-    dispatch(
-      showWarning({
-        autoDismiss: 10,
-        title: 'You’re offline!',
-        message: 'We’re trying to reconnect you'
-      })
-    )
+    this.disconnectedToastTimer = setTimeout(() => {
+      this.disconnectedToastTimer = undefined
+      dispatch(
+        showWarning({
+          autoDismiss: 5,
+          title: 'You’re offline!',
+          message: 'We’re trying to reconnect you'
+        })
+      )
+    }, 1000)
   }
 
   render () {

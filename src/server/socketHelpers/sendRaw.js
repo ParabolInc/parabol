@@ -5,7 +5,7 @@ const sendRaw = (transport, message) => {
       transport.send(message)
       break
     case 'ServerResponse':
-      transport.write(`data: ${message}\n\n`)
+      if (!transport.finished) transport.write(`data: ${message}\n\n`)
   }
 }
 

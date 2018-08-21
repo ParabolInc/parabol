@@ -28,6 +28,7 @@ import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
 import RateLimiter from 'server/graphql/RateLimiter'
 import SSEConnectionHandler from 'server/sse/SSEConnectionHandler'
 import intranetHttpGraphQLHandler from 'server/graphql/intranetGraphQLHandler'
+import SSEPingHandler from 'server/sse/SSEPingHandler'
 
 const {version} = packageJSON
 // Import .env and expand variables:
@@ -141,6 +142,7 @@ app.post('/webhooks/github', handleGitHubWebhooks)
 // app.post('/rtc-fallback', WRTCFallbackHandler(sharedDataLoader, rateLimiter))
 
 // SSE Fallback
+app.get('/sse-ping', SSEPingHandler(sseClients))
 app.get('/sse', SSEConnectionHandler(sharedDataLoader, rateLimiter, sseClients))
 
 // return web app

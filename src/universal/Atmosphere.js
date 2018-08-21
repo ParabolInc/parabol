@@ -33,6 +33,15 @@ export default class Atmosphere extends Environment {
     this.eventEmitter = new EventEmitter()
   }
 
+  fetchPing = async (connectionId) => {
+    return fetch('/sse-ping', {
+      headers: {
+        Authorization: `Bearer ${this.authToken}`,
+        'x-correlation-id': connectionId || ''
+      }
+    })
+  }
+
   fetchHTTP = async (body, connectionId) => {
     const res = await fetch('/graphql', {
       method: 'POST',
@@ -93,9 +102,7 @@ export default class Atmosphere extends Environment {
 
   trySSE = () => {
     const url = `/sse/?token=${this.authToken}`
-    const fetchPing = (connectionId) => fetch(`/sse/?ping=true&id=${connectionId}`)
-    const fetchData = (data, connectionId) => this.fetchHTTP(data, connectionId)
-    return new SSETrebuchet({url, fetchData, fetchPing})
+    return new SSETrebuchet({url, fetchData: this.fetchHTTP, fetchPing: this.fetchPing})
   }
 
   async promiseToUpgrade () {

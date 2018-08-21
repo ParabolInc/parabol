@@ -5,8 +5,7 @@ const closeTransport = (transport, code) => {
       transport.close(code)
       break
     case 'ServerResponse':
-      transport.writeHead(404)
-      transport.end()
+      if (!transport.finished) transport.end()
   }
 }
 
