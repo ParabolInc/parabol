@@ -6,7 +6,8 @@ import {APP_TOKEN_KEY, GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constant
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import EventEmitter from 'eventemitter3'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
-import {SubscriptionClient} from 'subscriptions-transport-ws/dist/index'
+import {SubscriptionClient} from 'subscriptions-transport-engineio/dist/index'
+import eioClient from 'engine.io-client'
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err)
@@ -94,7 +95,7 @@ export default class Atmosphere extends Environment {
     }
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
-    const subscriptionClient = new SubscriptionClient(url, {reconnect: true})
+    const subscriptionClient = new SubscriptionClient(url, {reconnect: true}, eioClient)
 
     const {text: query, name: operationName} = NewAuthTokenSubscription().subscription()
     subscriptionClient.operations[NEW_AUTH_TOKEN] = {

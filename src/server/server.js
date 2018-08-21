@@ -9,7 +9,7 @@ import Raven from 'raven'
 import createSSR from './createSSR'
 import emailSSR from './emailSSR'
 import {clientSecret as secretKey} from './utils/auth0Helpers'
-import connectionHandler from './socketHandlers/wssConnectionHandler'
+import connectionHandler from './socketHandlers/eioConnectionHandler'
 import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import getDotenv from '../universal/utils/dotenv'
@@ -19,8 +19,8 @@ import './polyfills'
 import {GITHUB, SLACK} from '../universal/utils/constants'
 import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks'
 import SharedDataLoader from 'shared-dataloader'
-import {Server} from 'uws'
 import http from 'http'
+import engine from 'engine.io'
 // import startMemwatch from 'server/utils/startMemwatch'
 import packageJSON from '../../package.json'
 import jwtFields from 'universal/utils/jwtFields'
@@ -36,9 +36,14 @@ const {PORT = 3000} = process.env
 const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || ''
 
 const app = express()
-const server = http.createServer(app)
-const wss = new Server({server})
-server.listen(PORT)
+const httpServer = http.createServer(app)
+const eioServer = engine.attach(httpServer, {
+  transports: ['polling', 'websocket'],
+  // transports: ['polling'],
+  wsEngine: 'uws'
+})
+httpServer.listen(PORT)
+
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
 const sharedDataLoader = new SharedDataLoader({
   PROD,
@@ -139,7 +144,7 @@ app.post('/webhooks/github', handleGitHubWebhooks)
 app.get('*', createSSR)
 
 // handle sockets
-wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
+eioServer.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
 
 // if (process.env.MEMWATCH) {
 // startMemwatch()
