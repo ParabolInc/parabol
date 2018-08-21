@@ -1,3 +1,5 @@
+import {Events} from '@mattkrick/trebuchet-client'
+
 const sendRaw = (transport, message) => {
   const transportType = transport.constructor.name
   switch (transportType) {
@@ -5,7 +7,12 @@ const sendRaw = (transport, message) => {
       transport.send(message)
       break
     case 'ServerResponse':
-      if (!transport.finished) transport.write(`data: ${message}\n\n`)
+      if (!transport.finished) {
+        if (message === Events.KEEP_ALIVE) {
+          transport.write('event: ka\n')
+        }
+        transport.write(`data: ${message}\n\n`)
+      }
   }
 }
 
