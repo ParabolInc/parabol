@@ -67,6 +67,8 @@ const targetAnchor = {
   horizontal: 'right'
 }
 
+// this is not a loadable component,
+// but LoadableMenu can handle it conditionally via withToggledPortal.js
 const HelpMenuContent = (props) => {
   const {closePortal, heading, content} = props
 
