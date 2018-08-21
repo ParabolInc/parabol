@@ -1,42 +1,37 @@
-/**
- * The reflection card presentational component.
- *
- * @flow
- */
-/* global HTMLElement */
-// $FlowFixMe
 import {ContentState, EditorState} from 'draft-js'
 import React, {Component} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import type {PhaseItemEditor_meeting as Meeting} from './__generated__/PhaseItemEditor_meeting.graphql'
+import withMutationProps from '../../utils/relay/withMutationProps'
+import {PhaseItemEditor_meeting} from '__generated__/PhaseItemEditor_meeting.graphql'
+import {PhaseItemEditor_retroPhaseItem} from '__generated__/PhaseItemEditor_retroPhaseItem.graphql'
 
-export type Props = {|
-  meeting: Meeting,
+interface Props {
+  meeting: PhaseItemEditor_meeting,
+  retroPhaseItem: PhaseItemEditor_retroPhaseItem,
   shadow?: number,
-  ...MutationProps
-|}
+}
 
-type State = {|
-  content: string,
-  editorState: ?Object
-|}
+interface State {
+  editorState?: EditorState
+}
 
 class PhaseItemEditor extends Component<Props, State> {
   state = {
     editorState: EditorState.createWithContent(ContentState.createFromText(''))
   }
 
-  handleSubmit () {}
+  handleSubmit() {
+  }
 
-  handleEditorBlur () {}
+  handleEditorBlur() {
+  }
 
-  handleEditorFocus () {}
+  handleEditorFocus() {
+  }
 
-  handleReturn = (e) => {
+  handleReturn = (e: React.KeyboardEvent) => {
     if (e.shiftKey) return 'not-handled'
     this.handleSubmit()
     return 'handled'
@@ -46,7 +41,7 @@ class PhaseItemEditor extends Component<Props, State> {
     this.setState({editorState})
   }
 
-  render () {
+  render() {
     const {editorState} = this.state
     return (
       <ReflectionEditorWrapper

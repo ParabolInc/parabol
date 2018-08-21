@@ -13,14 +13,15 @@ const PlaceholderCard = styled('div')({
   borderRadius: 4,
   display: 'flex',
   justifyContent: 'center',
-  height: 150,
+  height: '9rem',
   width: ui.retroCardWidth
 })
 
 const Tip = styled('div')({
   color: ui.hintColor,
   fontSize: appTheme.typography.s2,
-  padding: '1rem'
+  padding: '1rem',
+  textAlign: 'center'
 })
 
 const placeholders = [

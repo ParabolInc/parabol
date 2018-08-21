@@ -49,7 +49,7 @@ module.exports = {
               'syntax-object-rest-spread',
               'syntax-dynamic-import',
               'transform-class-properties',
-              'relay'
+              ['relay', {artifactDirectory: './src/__generated__'}]
             ],
             presets: ['flow', 'react']
           }
@@ -63,12 +63,34 @@ module.exports = {
       {test: /\.flow$/, loader: 'ignore-loader'},
       {
         test: /\.tsx?$/,
-        loader: 'awesome-typescript-loader',
-        exclude: /node_modules/
-        // options: {
-        //   useCache: true,
-        //   useBabel: true
-        // }
+        include: [
+          path.join(__dirname, '../src/__generated__'),
+          path.join(__dirname, '../src/client'),
+          path.join(__dirname, '../src/universal'),
+          path.join(__dirname, '../stories')
+        ],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              babelrc: false,
+              plugins: [
+                'syntax-object-rest-spread',
+                'syntax-dynamic-import',
+                'transform-class-properties',
+                ['relay', {artifactDirectory: './src/__generated__'}]
+              ],
+              presets: ['flow', 'react']
+            }
+          },
+          {
+            loader: 'ts-loader',
+            options: {
+              reportFiles: ['src/**/*.{ts,tsx}', 'stories/**/*.{ts,tsx}']
+            }
+          }
+        ]
       },
       {
         test: /\.css$/,

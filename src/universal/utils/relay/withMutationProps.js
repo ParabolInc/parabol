@@ -3,7 +3,7 @@ import getDisplayName from 'universal/utils/getDisplayName'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
 // Serves as a lightweight alternative for redux-form when we just have a button or something
-export default (ComposedComponent) => {
+const withMutationProps = (ComposedComponent) => {
   // eslint-disable-next-line react/prefer-stateless-function
   return class WithMutationProps extends Component {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`
@@ -73,6 +73,8 @@ export default (ComposedComponent) => {
     }
   }
 }
+
+export default withMutationProps
 
 export type MutationProps = {
   dirty: boolean,
