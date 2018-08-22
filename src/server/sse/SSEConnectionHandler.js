@@ -23,6 +23,7 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
     Connection: 'keep-alive',
+    // turn off nginx buffering: https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/#x-accel-buffering
     'X-Accel-Buffering': 'no'
   })
   res.socket.setNoDelay() // disable Nagle algorithm
