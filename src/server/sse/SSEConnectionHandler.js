@@ -32,7 +32,7 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
   res.write(`data: ${connectionContext.id}\n\n`)
   res.write(`event: version\n`)
   res.write(`data: ${APP_VERSION}\n\n`)
-
+  res.flush()
   handleConnect(connectionContext)
   keepAlive(connectionContext, WS_KEEP_ALIVE)
   res.on('close', () => {

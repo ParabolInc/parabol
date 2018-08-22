@@ -12,6 +12,7 @@ const sendRaw = (transport, message) => {
           transport.write('event: ka\n')
         }
         transport.write(`data: ${message}\n\n`)
+        transport.flush()
       }
   }
 }
