@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {panelShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
 import Badge from 'universal/components/Badge/Badge'
 
@@ -12,7 +13,7 @@ const bgThemeValues = {
 
 const PanelRoot = styled('div')(({bgTheme}) => ({
   backgroundColor: bgTheme ? bgThemeValues[bgTheme] : bgThemeValues.white,
-  boxShadow: ui.panelBoxShadow,
+  boxShadow: panelShadow,
   borderRadius: ui.cardBorderRadius,
   fontSize: appTheme.typography.s3,
   lineHeight: appTheme.typography.s5,
