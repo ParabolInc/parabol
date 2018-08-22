@@ -65,8 +65,8 @@
     "babel-loader": "^7.1.4",
     "babel-plugin-relay": "^1.6.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
-    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-runtime": "^6.26.0",
     "chance": "^1.0.6",
@@ -110,10 +110,13 @@
   },
   "dependencies": {
     "@google-cloud/language": "^1.2.0",
+    "@mattkrick/fast-rtc-peer": "^0.0.5",
+    "@mattkrick/graphql-trebuchet-client": "^0.1.1",
     "@mattkrick/react-dnd": "3.0.5",
     "@mattkrick/react-dnd-html5-backend": "3.0.5",
     "@mattkrick/react-relay": "^1.6.3",
     "@mattkrick/relay-runtime": "^1.6.3",
+    "@mattkrick/trebuchet-client": "^0.1.2",
     "@segment/snippet": "^4.0.1",
     "analytics-node": "^3.0.0",
     "aphrodite-local-styles": "0.6.2",
@@ -210,7 +213,8 @@
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",
     "unicode-substring": "^1.0.0",
-    "uws": "10.148.1"
+    "uws": "10.148.1",
+    "wrtc": "^0.1.6"
   },
   "engines": {
     "node": "^8.0.0 || ^9.4.0 || ^10.0.0",

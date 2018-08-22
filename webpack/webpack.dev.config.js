@@ -45,7 +45,7 @@ module.exports = {
             cacheDirectory: true,
             babelrc: false,
             plugins: [
-              'syntax-object-rest-spread',
+              'transform-object-rest-spread',
               'syntax-dynamic-import',
               'transform-class-properties',
               'relay'

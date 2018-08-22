@@ -1,24 +1,19 @@
-import {
-  GQL_CONNECTION_KEEP_ALIVE,
-  GQL_CONNECTION_TERMINATE,
-  GQL_DATA,
-  GQL_ERROR,
-  GQL_START,
-  GQL_STOP
-} from 'universal/utils/constants'
+import {ServerMessageTypes, ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
 import sendMessage from 'server/socketHelpers/sendMessage'
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
 import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler'
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
+import isQueryProvided from 'server/graphql/isQueryProvided'
+import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
+import {Events} from '@mattkrick/trebuchet-client'
 
-const isSubscriptionPayload = (payload) => payload.query.startsWith('subscription')
-const isQueryProvided = (payload) => payload && payload.query
-
+const {GQL_START, GQL_STOP} = ServerMessageTypes
+const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
 const handleMessage = (connectionContext) => async (message) => {
   const {socket, subs} = connectionContext
   // catch raw, non-graphql protocol messages here
-  if (message === GQL_CONNECTION_KEEP_ALIVE) {
+  if (message === Events.KEEP_ALIVE) {
     connectionContext.isAlive = true
     return
   }
@@ -37,11 +32,8 @@ const handleMessage = (connectionContext) => async (message) => {
   }
 
   const {id: opId, type, payload} = parsedMessage
-
-  if (type === GQL_CONNECTION_TERMINATE) {
-    handleDisconnect(connectionContext)()
-    // this GQL_START logic will be simplified when we move to persisted queries
-  } else if (type === GQL_START) {
+  // this GQL_START logic will be simplified when we move to persisted queries
+  if (type === GQL_START) {
     if (!isQueryProvided(payload)) {
       sendMessage(socket, GQL_ERROR, {errors: [{message: 'No payload provided'}]}, opId)
       return
@@ -49,7 +41,7 @@ const handleMessage = (connectionContext) => async (message) => {
     if (isSubscriptionPayload(payload)) {
       wsRelaySubscribeHandler(connectionContext, parsedMessage)
     } else {
-      const result = await wsGraphQLHandler(connectionContext, parsedMessage)
+      const result = await wsGraphQLHandler(connectionContext, parsedMessage.payload)
       const messageType = result.data ? GQL_DATA : GQL_ERROR
       sendMessage(socket, messageType, result, opId)
     }
