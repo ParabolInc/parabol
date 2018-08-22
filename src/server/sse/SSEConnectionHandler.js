@@ -30,7 +30,7 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
   const connectionContext = new ConnectionContext(res, authToken, sharedDataLoader, rateLimiter)
   sseClients[connectionContext.id] = connectionContext
   res.write(`event: id\n`)
-  res.write(`retry: 100\n`)
+  res.write(`retry: 1000\n`)
   res.write(`data: ${connectionContext.id}\n\n`)
   res.write(`event: version\n`)
   res.write(`data: ${APP_VERSION}\n\n`)

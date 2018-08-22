@@ -106,7 +106,7 @@ export default class Atmosphere extends Environment {
   }
 
   async promiseToUpgrade () {
-    const trebuchets = [this.trySockets, this.trySSE]
+    const trebuchets = [this.trySSE]
     const trebuchet = await getTrebuchet(trebuchets)
     if (!trebuchet) throw new Error('Cannot connect!')
     this.transport = new GQLTrebuchetClient(trebuchet)

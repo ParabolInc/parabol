@@ -283,9 +283,9 @@
     babel-runtime "^6.23.0"
     fbjs "^0.8.14"
 
-"@mattkrick/trebuchet-client@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-0.1.1.tgz#7d7f54abb8c75f87d768698a3f176a0dfde36c70"
+"@mattkrick/trebuchet-client@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@mattkrick/trebuchet-client/-/trebuchet-client-0.1.2.tgz#68f9d86825ba53ca73f83147c94c03fa1a859439"
   dependencies:
     "@mattkrick/fast-rtc-peer" "^0.0.6"
     backo2 "^1.0.2"
