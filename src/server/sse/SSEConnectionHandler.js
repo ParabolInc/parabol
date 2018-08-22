@@ -22,7 +22,8 @@ const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
-    Connection: 'keep-alive'
+    Connection: 'keep-alive',
+    'X-Accel-Buffering': 'no'
   })
   res.socket.setNoDelay() // disable Nagle algorithm
   const connectionContext = new ConnectionContext(res, authToken, sharedDataLoader, rateLimiter)
