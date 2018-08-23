@@ -1,4 +1,4 @@
-import HelpMenuBody from 'universal/components/MeetingHelp/HelpMenuBody'
+import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import React from 'react'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
@@ -8,35 +8,30 @@ const RetroLobbyHelpMenu = (props) => {
   const {closePortal, isPro} = props
   return (
     <HelpMenuContent closePortal={closePortal}>
-      <HelpMenuBody>
-        {isPro ? (
-          <React.Fragment>
-            <p>{'The person who presses “Start Meeting” will be today’s Facilitator.'}</p>
-            <p>{'Everyone’s display automatically follows the Facilitator.'}</p>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <p>
-              {
-                'Running a retrospective is the most effective way to learn how your team can work smarter.'
-              }
-            </p>
-            <p>
-              {
-                'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'
-              }
-            </p>
-          </React.Fragment>
-        )}
-        <p>
-          {'See our '}
-          <HelpMenuLink
-            copy='Getting Started Guide'
-            href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
-          />
-          {' for running a Retrospective Meeting.'}
-        </p>
-      </HelpMenuBody>
+      {isPro ? (
+        <React.Fragment>
+          <HelpMenuCopy>
+            {
+              'Our software guides your team to surface your teammates’ recent experiences, group them into themes, and develop an action plan, capture learnings, and make improvements.'
+            }
+          </HelpMenuCopy>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <HelpMenuCopy>
+            {'The person who presses “Start Meeting” will be today’s Facilitator.'}
+          </HelpMenuCopy>
+          <HelpMenuCopy>{'Everyone’s display automatically follows the Facilitator.'}</HelpMenuCopy>
+        </React.Fragment>
+      )}
+      <div>
+        {'See our '}
+        <HelpMenuLink
+          copy='Getting Started Guide'
+          href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
+        />
+        {' for running a Retrospective Meeting.'}
+      </div>
     </HelpMenuContent>
   )
 }

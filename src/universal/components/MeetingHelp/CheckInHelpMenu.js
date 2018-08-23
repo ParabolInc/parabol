@@ -3,7 +3,7 @@ import {ACTION, CHECKIN, RETROSPECTIVE} from 'universal/utils/constants'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
-import HelpMenuBody from 'universal/components/MeetingHelp/HelpMenuBody'
+import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
 
@@ -18,15 +18,15 @@ const CheckInHelpMenu = (props) => {
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[CHECKIN]}</HelpMenuHeader>
-      <HelpMenuBody>
-        <p>
-          {
-            'The Social Check-In is an opportunity to quickly share some personal context with your team.'
-          }
-        </p>
-        <p>{'Avoid cross-talk so that everybody can have uninterrupted airtime.'}</p>
-        <HelpMenuLink copy='Learn More' href={linkLookup[meetingType]} />
-      </HelpMenuBody>
+      <HelpMenuCopy>
+        {
+          'The Social Check-In is an opportunity to quickly share some personal context with your team.'
+        }
+      </HelpMenuCopy>
+      <HelpMenuCopy>
+        {'Avoid cross-talk so that everybody can have uninterrupted airtime.'}
+      </HelpMenuCopy>
+      <HelpMenuLink copy='Learn More' href={linkLookup[meetingType]} />
     </HelpMenuContent>
   )
 }
