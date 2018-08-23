@@ -36,7 +36,6 @@ const PhaseTitle = styled('h1')({
 const PhaseDescription = styled('h2')({
   color: ui.labelHeadingColor,
   display: 'none',
-  // fontSize: '.8125rem',
   fontWeight: 'normal',
   margin: 0,
 
