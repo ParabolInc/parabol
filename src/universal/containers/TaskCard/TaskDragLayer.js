@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
 import {DragLayer as dragLayer} from '@mattkrick/react-dnd'
 import ui from 'universal/styles/ui'
+import {cardRaisedShadow} from 'universal/styles/elevation'
 
 const layerStyles = {
   left: 0,
@@ -57,7 +58,7 @@ const collect = (monitor) => ({
 const arePropsEqual = () => true
 
 const cardDragStyle = {
-  boxShadow: ui.shadow[3]
+  boxShadow: cardRaisedShadow
 }
 
 class TaskDragLayer extends Component {

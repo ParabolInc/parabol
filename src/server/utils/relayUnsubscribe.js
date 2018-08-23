@@ -1,5 +1,5 @@
 const relayUnsubscribe = (subs, opId) => {
-  const subscriptionContext = subs[opId]
+  const subscriptionContext = subs && subs[opId]
   if (!subscriptionContext) return
   const {asyncIterator} = subscriptionContext
   if (asyncIterator) {

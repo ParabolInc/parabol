@@ -18,6 +18,7 @@ import clientTempId from 'universal/utils/relay/clientTempId'
 import {connect} from 'react-redux'
 import {css} from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {cardShadow} from 'universal/styles/elevation'
 
 type Props = {
   dndIndex: number,
@@ -56,7 +57,7 @@ const topCardStyle = css({
 const secondCardStyle = css({
   backgroundColor: 'white',
   borderRadius: 4,
-  boxShadow: ui.shadow[0],
+  boxShadow: cardShadow,
   overflow: 'hidden',
   position: 'absolute',
   pointerEvents: 'none',

@@ -20,6 +20,11 @@ const getRetroMeeting = (meetingId) => {
               userId: meetingMember('userId'),
               meetingId
             })
+            .filter((task) =>
+              task('tags')
+                .contains('private')
+                .not()
+            )
             .coerceTo('array')
         }))
         .coerceTo('array'),

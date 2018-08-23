@@ -10,7 +10,7 @@ import createSSR from './createSSR'
 import emailSSR from './emailSSR'
 import {clientSecret as secretKey} from './utils/auth0Helpers'
 import connectionHandler from './socketHandlers/wssConnectionHandler'
-import httpGraphQLHandler, {intranetHttpGraphQLHandler} from './graphql/httpGraphQLHandler'
+import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import getDotenv from '../universal/utils/dotenv'
 import handleIntegration from './integrations/handleIntegration'
@@ -26,6 +26,9 @@ import packageJSON from '../../package.json'
 import jwtFields from 'universal/utils/jwtFields'
 import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
 import RateLimiter from 'server/graphql/RateLimiter'
+import SSEConnectionHandler from 'server/sse/SSEConnectionHandler'
+import intranetHttpGraphQLHandler from 'server/graphql/intranetGraphQLHandler'
+import SSEPingHandler from 'server/sse/SSEPingHandler'
 
 const {version} = packageJSON
 // Import .env and expand variables:
@@ -46,6 +49,8 @@ const sharedDataLoader = new SharedDataLoader({
   ttl: SHARED_DATA_LOADER_TTL
 })
 const rateLimiter = new RateLimiter()
+// keep a hash table of connection contexts
+const sseClients = {}
 
 // HMR
 if (!PROD) {
@@ -99,7 +104,7 @@ if (PROD) {
 }
 
 // HTTP GraphQL endpoint
-const graphQLHandler = httpGraphQLHandler(sharedDataLoader, rateLimiter)
+const graphQLHandler = httpGraphQLHandler(sharedDataLoader, rateLimiter, sseClients)
 app.post(
   '/graphql',
   jwt({
@@ -134,13 +139,14 @@ app.get('/auth/github', handleIntegration(GITHUB))
 app.get('/auth/slack', handleIntegration(SLACK))
 app.post('/webhooks/github', handleGitHubWebhooks)
 
-// return web app
+// app.post('/rtc-fallback', WRTCFallbackHandler(sharedDataLoader, rateLimiter))
 
+// SSE Fallback
+app.get('/sse-ping', SSEPingHandler(sseClients))
+app.get('/sse', SSEConnectionHandler(sharedDataLoader, rateLimiter, sseClients))
+
+// return web app
 app.get('*', createSSR)
 
 // handle sockets
 wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
-
-// if (process.env.MEMWATCH) {
-// startMemwatch()
-// }

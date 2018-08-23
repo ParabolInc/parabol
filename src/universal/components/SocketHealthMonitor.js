@@ -3,8 +3,7 @@ import {Component} from 'react'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {connect} from 'react-redux'
 import popUpgradeAppToast from 'universal/mutations/toasts/popUpgradeAppToast'
-import {showError, showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck'
-import raven from 'raven-js'
+import {showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck'
 import {APP_VERSION_KEY} from 'universal/utils/constants'
 
 class SocketHealthMonitor extends Component {
@@ -16,19 +15,28 @@ class SocketHealthMonitor extends Component {
   componentWillMount () {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
-      const {subscriptionClient} = atmosphere
-      subscriptionClient.eventEmitter.once('socketsDisabled', this.onSocketsDisabled)
-      subscriptionClient.onConnected(this.onConnected)
-      subscriptionClient.onReconnected(this.onReconnected)
-      subscriptionClient.onDisconnected(this.onDisconnected)
+      const {
+        transport: {trebuchet}
+      } = atmosphere
+      trebuchet.on('reconnected', this.onReconnected, this)
+      trebuchet.on('disconnected', this.onDisconnected, this)
+      trebuchet.on('data', this.onData, this)
     })
   }
-  onReconnected = (payload) => {
+
+  onData = (payload) => {
+    if (!payload.version) return
     const {dispatch} = this.props
-    const {version} = payload
     const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY)
-    if (version !== versionInStorage) {
+    if (payload.version !== versionInStorage) {
       popUpgradeAppToast({dispatch})
+    }
+  }
+
+  onReconnected = () => {
+    const {dispatch} = this.props
+    if (this.disconnectedToastTimer) {
+      clearTimeout(this.disconnectedToastTimer)
     } else {
       dispatch(
         showSuccess({
@@ -39,45 +47,18 @@ class SocketHealthMonitor extends Component {
       )
     }
   }
-  onConnected = (payload) => {
-    const {dispatch} = this.props
-    const {version} = payload
-    const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY)
-    if (version !== versionInStorage) {
-      popUpgradeAppToast({dispatch})
-    }
-  }
   onDisconnected = () => {
-    const {
-      atmosphere: {subscriptionClient},
-      dispatch
-    } = this.props
-    if (!subscriptionClient.reconnecting) {
+    const {dispatch} = this.props
+    this.disconnectedToastTimer = setTimeout(() => {
+      this.disconnectedToastTimer = undefined
       dispatch(
         showWarning({
-          autoDismiss: 10,
+          autoDismiss: 5,
           title: 'You’re offline!',
           message: 'We’re trying to reconnect you'
         })
       )
-    }
-  }
-
-  onSocketsDisabled = () => {
-    const {dispatch} = this.props
-    raven.captureBreadcrumb({
-      category: 'network',
-      level: 'error',
-      message: 'WebSockets Disabled'
-    })
-    dispatch(
-      showError({
-        autoDismiss: 0,
-        title: 'WebSockets Disabled',
-        message: `We weren't able to create a live connection to our server. 
-          Ask your network administrator to enable WebSockets.`
-      })
-    )
+    }, 1000)
   }
 
   render () {

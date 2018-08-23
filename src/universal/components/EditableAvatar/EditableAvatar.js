@@ -4,6 +4,7 @@ import styled from 'react-emotion'
 import FontAwesome from 'react-fontawesome'
 import Avatar from 'universal/components/Avatar/Avatar'
 import ui from 'universal/styles/ui'
+import {panelShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
 
 const borderRadius = '50%'
@@ -11,7 +12,7 @@ const borderRadiusPanel = ui.panelBorderRadius
 
 const EditableAvatarRoot = styled('div')(({hasPanel, size}) => ({
   backgroundColor: hasPanel && ui.palette.white,
-  boxShadow: hasPanel && ui.panelBoxShadow,
+  boxShadow: hasPanel && panelShadow,
   borderRadius: hasPanel ? borderRadiusPanel : borderRadius,
   height: size,
   padding: hasPanel && '.5rem',

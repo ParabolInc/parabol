@@ -23,6 +23,7 @@ import type {
   ItemId,
   ParentCache
 } from 'universal/components/PhaseItemMasonry'
+import {cardRaisedShadow} from 'universal/styles/elevation'
 
 type Props = {|
   atmosphere: Object,
@@ -208,7 +209,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
     return (
       <ModalBlock style={style} onTransitionEnd={isClosing ? this.removeCardInFlight : undefined}>
-        <ReflectionCardRoot isClosing={isClosing} shadow={2}>
+        <ReflectionCardRoot isClosing={isClosing} shadow={cardRaisedShadow}>
           {!isViewerDragging && <UserDraggingHeader user={dragUser} />}
           <ReflectionEditorWrapper editorState={this.editorState} readOnly />
           <ReflectionFooter>{question}</ReflectionFooter>
