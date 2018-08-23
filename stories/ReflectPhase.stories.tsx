@@ -18,6 +18,6 @@ storiesOf('Reflect Phase', module)
   ))
   .add('health bar', () => (
     <StoryProvider>
-      <PhaseItemHealthBar strength={2} />
+      <PhaseItemHealthBar editorsCount={0} />
     </StoryProvider>
   ))

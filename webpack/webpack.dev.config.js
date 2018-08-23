@@ -85,7 +85,10 @@ module.exports = {
             }
           },
           {
-            loader: 'awesome-typescript-loader'
+            loader: 'awesome-typescript-loader',
+            options: {
+              errorsAsWarnings: true
+            }
           }
         ]
       },

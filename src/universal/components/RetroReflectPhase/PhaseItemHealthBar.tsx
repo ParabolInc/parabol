@@ -1,25 +1,44 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
+import {DECELERATE} from 'universal/styles/animation'
+import plural from 'universal/utils/plural'
 
 interface Props {
-  strength: number,
+  editorsCount: number,
 }
 
-const Bar = styled('div')((props: Props) => ({
-  backgroundColor: 'red',
-  borderRadius: '15%',
-  height: 4,
-  width: 50 * props.strength
+const BarMask = styled('div')((props: Props) => ({
+  borderRadius: '8px',
+  overflow: 'hidden',
+  transition: `all 300ms ${DECELERATE}`,
+  width: 50 * props.editorsCount + 10
 }))
+
+const HealthBarStyle = styled('div')({
+  display: 'flex',
+  flexDirection: 'column'
+})
+
+const Bar = styled('div')({
+  background: `linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,255,0,1) 40%, rgba(0,255,0,1) 75%)`,
+  height: 4,
+  width: 200
+})
+
+const HealthBarLabel = styled('div')({
+  paddingTop: 8
+})
 
 class PhaseItemHealthBar extends Component<Props> {
   render() {
-    const {strength} = this.props
+    const {editorsCount} = this.props
     return (
-      <div>
-        <Bar strength={strength} />
-        <span>2 people typing...</span>
-      </div>
+      <HealthBarStyle>
+        <BarMask editorsCount={editorsCount}>
+          <Bar />
+        </BarMask>
+        <HealthBarLabel>{`${editorsCount} ${plural(editorsCount, 'person', 'people')} typing...`}</HealthBarLabel>
+      </HealthBarStyle>
     )
   }
 }
