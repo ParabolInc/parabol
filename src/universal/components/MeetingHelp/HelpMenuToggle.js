@@ -4,8 +4,8 @@ import styled from 'react-emotion'
 import RaisedButton from 'universal/components/RaisedButton'
 import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
 
-const StyledButton = styled(RaisedButton)(({isFacilitating}) => ({
-  bottom: isFacilitating ? meetingHelpWithBottomBar : '1.25rem',
+const StyledButton = styled(RaisedButton)(({floatAboveBottomBar}) => ({
+  bottom: floatAboveBottomBar ? meetingHelpWithBottomBar : '1.25rem',
   paddingLeft: 0,
   paddingRight: 0,
   position: 'fixed',

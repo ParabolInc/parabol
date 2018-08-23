@@ -13,7 +13,7 @@ const targetAnchor = {
 }
 
 const withHelpMenu = (ComposedComponent) => (props) => {
-  const {isFacilitating, ...queryVars} = props
+  const {floatAboveBottomBar, ...queryVars} = props
   return (
     <LoadableMenu
       LoadableComponent={ComposedComponent}
@@ -22,7 +22,7 @@ const withHelpMenu = (ComposedComponent) => (props) => {
       originAnchor={originAnchor}
       queryVars={queryVars}
       targetAnchor={targetAnchor}
-      toggle={<HelpMenuToggle isFacilitating={isFacilitating} />}
+      toggle={<HelpMenuToggle floatAboveBottomBar={floatAboveBottomBar} />}
     />
   )
 }
