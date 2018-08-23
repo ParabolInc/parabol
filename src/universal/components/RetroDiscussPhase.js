@@ -16,7 +16,7 @@ import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
 import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
+import Overflow from 'universal/components/Overflow'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
 import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
@@ -175,7 +175,7 @@ const RetroDiscussPhase = (props: Props) => {
                 {reflections.length} {plural(reflections.length, 'Reflection')}
               </LabelHeading>
             </LabelContainer>
-            <ScrollableBlock hideOverflownShadow>
+            <Overflow>
               <ColumnInner>
                 <ReflectionGrid>
                   {reflections.map((reflection) => {
@@ -189,13 +189,13 @@ const RetroDiscussPhase = (props: Props) => {
                   })}
                 </ReflectionGrid>
               </ColumnInner>
-            </ScrollableBlock>
+            </Overflow>
           </Column>
           <TaskColumn>
             <LabelContainer>
               <LabelHeading>Takeaway Tasks</LabelHeading>
             </LabelContainer>
-            <ScrollableBlock hideOverflownShadow>
+            <Overflow>
               <ColumnInner>
                 <TaskCardBlock>
                   <MeetingAgendaCards
@@ -206,7 +206,7 @@ const RetroDiscussPhase = (props: Props) => {
                   />
                 </TaskCardBlock>
               </ColumnInner>
-            </ScrollableBlock>
+            </Overflow>
           </TaskColumn>
         </ColumnsContainer>
       </PhaseWrapper>

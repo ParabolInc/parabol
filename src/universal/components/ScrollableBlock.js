@@ -34,8 +34,7 @@ const ScrollableShadow = styled('div')(
 
 class ScrollableBlock extends Component {
   static propTypes = {
-    children: PropTypes.any,
-    hideOverflownShadow: PropTypes.bool
+    children: PropTypes.any
   }
 
   state = {
@@ -90,15 +89,15 @@ class ScrollableBlock extends Component {
   }
 
   render () {
-    const {children, hideOverflownShadow} = this.props
+    const {children} = this.props
     const {overflownAbove, overflownBelow} = this.state
     return (
       <ScrollableRoot>
-        {!hideOverflownShadow && overflownAbove && <ScrollableShadow overflown='top' />}
+        {overflownAbove && <ScrollableShadow overflown='top' />}
         <div className={ScrollableInner} ref={this.setOverflowContainerElRef}>
           {children}
         </div>
-        {!hideOverflownShadow && overflownBelow && <ScrollableShadow overflown='bottom' />}
+        {overflownBelow && <ScrollableShadow overflown='bottom' />}
       </ScrollableRoot>
     )
   }
