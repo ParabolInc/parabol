@@ -20,16 +20,9 @@ import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import {CHECKIN} from 'universal/utils/constants'
 import withHotkey from 'react-hotkey-hoc'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-
-import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
-import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
 import CheckInHelpMenu from 'universal/components/MeetingHelp/CheckInHelpMenu'
 
 const {Component} = React
-
-const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
-  bottom: isFacilitating && meetingHelpWithBottomBar
-}))
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -127,9 +120,7 @@ class NewMeetingCheckIn extends Component<Props> {
             />
           </MeetingControlBar>
         )}
-        <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
-          <CheckInHelpMenu meetingType={meetingType} />
-        </StyledMeetingHelpMenuLayout>
+        <CheckInHelpMenu isFacilitating={isFacilitating} meetingType={meetingType} />
       </React.Fragment>
     )
   }

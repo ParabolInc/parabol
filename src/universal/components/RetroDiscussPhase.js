@@ -18,12 +18,7 @@ import {withRouter} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
-import {
-  meetingHelpWithBottomBar,
-  meetingTopicPhaseMaxWidth,
-  meetingVoteIcon
-} from 'universal/styles/meeting'
-import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
+import {meetingTopicPhaseMaxWidth, meetingVoteIcon} from 'universal/styles/meeting'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 
 type Props = {|
@@ -34,10 +29,6 @@ type Props = {|
   // flow or relay-compiler is getting really confused here, so I don't use the flow type here
   team: Object
 |}
-
-const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
-  bottom: isFacilitating && meetingHelpWithBottomBar
-}))
 
 const DiscussHeader = styled('div')({
   alignItems: 'center',
@@ -221,9 +212,7 @@ const RetroDiscussPhase = (props: Props) => {
           {!nextStageRes && <ControlButtonBlock />}
         </SpacedMeetingControlBar>
       )}
-      <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
-        <DiscussHelpMenu />
-      </StyledMeetingHelpMenuLayout>
+      <DiscussHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }

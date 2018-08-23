@@ -17,10 +17,6 @@ import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
-
-import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
-import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
-import styled from 'react-emotion'
 import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 
 type Props = {
@@ -30,10 +26,6 @@ type Props = {
   team: Object,
   ...MutationProps
 }
-
-const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
-  bottom: isFacilitating && meetingHelpWithBottomBar
-}))
 
 const RetroGroupPhase = (props: Props) => {
   const {atmosphere, error, gotoNext, onError, onCompleted, submitMutation, team} = props
@@ -72,9 +64,7 @@ const RetroGroupPhase = (props: Props) => {
           )}
         </MeetingControlBar>
       )}
-      <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
-        <GroupHelpMenu />
-      </StyledMeetingHelpMenuLayout>
+      <GroupHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }

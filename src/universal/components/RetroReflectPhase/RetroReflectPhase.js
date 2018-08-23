@@ -17,8 +17,6 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
-import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
-import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
 import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 
 const StyledWrapper = styled(MeetingPhaseWrapper)({
@@ -29,10 +27,6 @@ const StyledWrapper = styled(MeetingPhaseWrapper)({
     padding: '0 4rem'
   }
 })
-
-const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
-  bottom: isFacilitating && meetingHelpWithBottomBar
-}))
 
 type Props = {
   atmosphere: Object,
@@ -77,9 +71,7 @@ const RetroReflectPhase = (props: Props) => {
           </FlatButton>
         </MeetingControlBar>
       )}
-      <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
-        <ReflectHelpMenu />
-      </StyledMeetingHelpMenuLayout>
+      <ReflectHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }

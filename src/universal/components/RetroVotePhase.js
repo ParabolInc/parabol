@@ -13,10 +13,9 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
-import {meetingHelpWithBottomBar, meetingVoteIcon} from 'universal/styles/meeting'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
-import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
 import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 
 type Props = {|
@@ -27,10 +26,6 @@ type Props = {|
 |}
 
 const votePhaseBreakpoint = minWidthMediaQueries[1]
-
-const StyledMeetingHelpMenuLayout = styled(MeetingHelpMenuLayout)(({isFacilitating}) => ({
-  bottom: isFacilitating && meetingHelpWithBottomBar
-}))
 
 const ControlBarInner = styled('div')(({isFacilitating}) => ({
   alignItems: 'center',
@@ -165,9 +160,7 @@ const RetroVotePhase = (props: Props) => {
           )}
         </ControlBarInner>
       </MeetingControlBar>
-      <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
-        <VoteHelpMenu />
-      </StyledMeetingHelpMenuLayout>
+      <VoteHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }

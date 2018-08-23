@@ -12,16 +12,19 @@ const targetAnchor = {
   horizontal: 'right'
 }
 
-const withHelpMenu = (ComposedComponent) => (props) => (
-  <LoadableMenu
-    LoadableComponent={ComposedComponent}
-    maxWidth={280}
-    maxHeight={320}
-    originAnchor={originAnchor}
-    queryVars={props}
-    targetAnchor={targetAnchor}
-    toggle={<HelpMenuToggle />}
-  />
-)
+const withHelpMenu = (ComposedComponent) => (props) => {
+  const {isFacilitating, ...queryVars} = props
+  return (
+    <LoadableMenu
+      LoadableComponent={ComposedComponent}
+      maxWidth={280}
+      maxHeight={320}
+      originAnchor={originAnchor}
+      queryVars={queryVars}
+      targetAnchor={targetAnchor}
+      toggle={<HelpMenuToggle isFacilitating={isFacilitating} />}
+    />
+  )
+}
 
 export default withHelpMenu

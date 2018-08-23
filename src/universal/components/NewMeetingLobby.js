@@ -24,7 +24,6 @@ import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import InlineAlert from 'universal/components/InlineAlert'
-import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
 import RetroLobbyHelpMenu from 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
 
 const ButtonGroup = styled('div')({
@@ -207,9 +206,7 @@ class NewMeetingLobby extends React.Component<Props> {
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>
-        <MeetingHelpMenuLayout>
-          <RetroLobbyHelpMenu isPro={isPro} />
-        </MeetingHelpMenuLayout>
+        <RetroLobbyHelpMenu isPro={isPro} />
       </Lobby>
     )
   }
