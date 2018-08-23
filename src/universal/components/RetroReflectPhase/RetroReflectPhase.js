@@ -71,7 +71,7 @@ const RetroReflectPhase = (props: Props) => {
           </FlatButton>
         </MeetingControlBar>
       )}
-      <ReflectHelpMenu isFacilitating={isFacilitating} />
+      <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
     </React.Fragment>
   )
 }

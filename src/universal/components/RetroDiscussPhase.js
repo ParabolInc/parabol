@@ -242,7 +242,7 @@ const RetroDiscussPhase = (props: Props) => {
           {!nextStageRes && <ControlButtonBlock />}
         </SpacedMeetingControlBar>
       )}
-      <DiscussHelpMenu isFacilitating={isFacilitating} />
+      <DiscussHelpMenu floatAboveBottomBar={isFacilitating} />
     </React.Fragment>
   )
 }

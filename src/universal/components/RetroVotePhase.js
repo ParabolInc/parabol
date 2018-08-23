@@ -160,7 +160,8 @@ const RetroVotePhase = (props: Props) => {
           )}
         </ControlBarInner>
       </MeetingControlBar>
-      <VoteHelpMenu isFacilitating={isFacilitating} />
+      {/* Set floatAboveBottomBar to true because the bottom bar is always present in this view */}
+      <VoteHelpMenu floatAboveBottomBar />
     </React.Fragment>
   )
 }
