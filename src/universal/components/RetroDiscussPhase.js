@@ -13,22 +13,18 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
 import {
+  meetingHelpWithBottomBar,
   meetingTopicPhaseMaxWidth,
-  meetingVoteIcon,
-  meetingHelpWithBottomBar
+  meetingVoteIcon
 } from 'universal/styles/meeting'
-
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import {DISCUSS} from 'universal/utils/constants'
-import HelpMenu from 'universal/components/HelpMenu'
 import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
-import makeExternalLink from 'universal/utils/makeExternalLink'
+import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 
 type Props = {|
   atmosphere: Object,
@@ -132,27 +128,6 @@ const SpacedMeetingControlBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
-const discussHelpContent = (
-  <div>
-    <p>
-      {
-        'The goal of this phase is to identify next steps and capture them as task cards assigned to an owner.'
-      }
-    </p>
-    <p>
-      {
-        'Sometimes the next task is to schedule a time to discuss a topic more in depth at a later time.'
-      }
-    </p>
-    <p>
-      {makeExternalLink(
-        'Learn More',
-        'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss'
-      )}
-    </p>
-  </div>
-)
-
 const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, dispatch, gotoNext, history, team} = props
   const {viewerId} = atmosphere
@@ -247,7 +222,7 @@ const RetroDiscussPhase = (props: Props) => {
         </SpacedMeetingControlBar>
       )}
       <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
-        <HelpMenu heading={phaseLabelLookup[DISCUSS]} content={discussHelpContent} />
+        <DiscussHelpMenu />
       </StyledMeetingHelpMenuLayout>
     </React.Fragment>
   )

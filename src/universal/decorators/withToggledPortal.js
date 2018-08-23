@@ -74,7 +74,7 @@ const withToggledPortal = (ComposedComponent) => {
         'aria-expanded': this.state.isOpen,
         onClick: (e) => {
           const {setOriginRef, LoadableComponent} = this.props
-          // check for preload() method in case we didn’t make a component loadable (eg. HelpMenu.js)
+          // check for preload() method in case we didn’t make a component loadable
           if (LoadableComponent && LoadableComponent.preload) {
             LoadableComponent.preload()
           }
@@ -94,7 +94,7 @@ const withToggledPortal = (ComposedComponent) => {
         },
         onMouseEnter: () => {
           const {LoadableComponent} = this.props
-          // check for preload() method in case we didn’t make a component loadable (eg. HelpMenu.js)
+          // check for preload() method in case we didn’t make a component loadable
           if (LoadableComponent && LoadableComponent.preload) {
             LoadableComponent.preload()
           }

@@ -6,20 +6,18 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
-import {VOTE, DISCUSS} from 'universal/utils/constants'
+import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
-import {meetingVoteIcon, meetingHelpWithBottomBar} from 'universal/styles/meeting'
+import {meetingHelpWithBottomBar, meetingVoteIcon} from 'universal/styles/meeting'
 import {fontFamily, fontSize, lineHeight} from 'universal/styles/theme/typography'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
-
-import HelpMenu from 'universal/components/HelpMenu'
 import MeetingHelpMenuLayout from 'universal/components/MeetingHelpMenuLayout'
-import makeExternalLink from 'universal/utils/makeExternalLink'
+import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 
 type Props = {|
   atmosphere: Object,
@@ -109,24 +107,6 @@ const MyVotesCountLabel = styled(VoteCountLabel)({
   }
 })
 
-const voteHelpContent = (
-  <div>
-    <p>
-      {
-        'The goal of this phase is to find signal on what topics are the most important to the team.'
-      }
-    </p>
-    <p>{'Each teammate has 5 total votes, and can vote on a single theme up to 3 times.'}</p>
-    <p>{'To vote, simply tap on the check icon above the card. Toggle votes to remove.'}</p>
-    <p>
-      {makeExternalLink(
-        'Learn More',
-        'https://www.parabol.co/getting-started-guide/retrospective-meetings-101#vote'
-      )}
-    </p>
-  </div>
-)
-
 const RetroVotePhase = (props: Props) => {
   const {
     atmosphere: {viewerId},
@@ -186,7 +166,7 @@ const RetroVotePhase = (props: Props) => {
         </ControlBarInner>
       </MeetingControlBar>
       <StyledMeetingHelpMenuLayout isFacilitating={isFacilitating}>
-        <HelpMenu heading={phaseLabelLookup[VOTE]} content={voteHelpContent} />
+        <VoteHelpMenu />
       </StyledMeetingHelpMenuLayout>
     </React.Fragment>
   )

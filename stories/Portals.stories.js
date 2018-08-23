@@ -6,9 +6,9 @@
 
 import React from 'react'
 import {storiesOf} from '@storybook/react'
-import HelpMenu from 'universal/components/HelpMenu'
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
+import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 
 storiesOf('Loadable Help Dialog', module).add('toggle the help dialog', () => (
   <RetroBackground>
@@ -20,7 +20,7 @@ storiesOf('Loadable Help Dialog', module).add('toggle the help dialog', () => (
           <div
             style={{display: 'flex', justifyContent: 'flex-end', padding: '0 1.25rem 1.25rem 0'}}
           >
-            <HelpMenu heading='Reflect' content='Add anonymous reflections for each prompt' />
+            <ReflectHelpMenu />
           </div>
         </div>
       )}
