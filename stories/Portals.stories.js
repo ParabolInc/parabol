@@ -6,15 +6,9 @@
 
 import React from 'react'
 import {storiesOf} from '@storybook/react'
-
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import MeetingHelpDialog from 'universal/modules/meeting/components/MeetingHelpDialog/MeetingHelpDialog'
-import phaseHelpLookup from 'universal/utils/meetings/helpLookups'
-
 import RetroBackground from './components/RetroBackground'
 import StoryContainer from './components/StoryContainer'
-
-const EXAMPLE_PHASE = 'firstcall'
+import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 
 storiesOf('Loadable Help Dialog', module).add('toggle the help dialog', () => (
   <RetroBackground>
@@ -26,9 +20,8 @@ storiesOf('Loadable Help Dialog', module).add('toggle the help dialog', () => (
           <div
             style={{display: 'flex', justifyContent: 'flex-end', padding: '0 1.25rem 1.25rem 0'}}
           >
-            <MeetingHelpDialog phase={EXAMPLE_PHASE} />
+            <ReflectHelpMenu />
           </div>
-          <MeetingControlBar>{phaseHelpLookup[EXAMPLE_PHASE].facilitatorBarTip}</MeetingControlBar>
         </div>
       )}
     />

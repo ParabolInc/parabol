@@ -13,12 +13,13 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import {connect} from 'react-redux'
 import type {Dispatch} from 'redux'
 import {meetingTopicPhaseMaxWidth, meetingVoteIcon} from 'universal/styles/meeting'
+import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 
 type Props = {|
   atmosphere: Object,
@@ -211,6 +212,7 @@ const RetroDiscussPhase = (props: Props) => {
           {!nextStageRes && <ControlButtonBlock />}
         </SpacedMeetingControlBar>
       )}
+      <DiscussHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }

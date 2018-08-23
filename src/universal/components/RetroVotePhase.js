@@ -16,6 +16,7 @@ import ui from 'universal/styles/ui'
 import {meetingVoteIcon} from 'universal/styles/meeting'
 import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 
 type Props = {|
   atmosphere: Object,
@@ -159,6 +160,7 @@ const RetroVotePhase = (props: Props) => {
           )}
         </ControlBarInner>
       </MeetingControlBar>
+      <VoteHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }
