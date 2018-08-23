@@ -12,7 +12,6 @@ import RaisedButton from 'universal/components/RaisedButton'
 import IconLabel from 'universal/components/IconLabel'
 
 type Props = {
-  meetingType: string,
   phase: string
 }
 
@@ -32,7 +31,7 @@ const targetAnchor = {
   horizontal: 'right'
 }
 
-const MeetingHelpDialog = ({meetingType, phase}: Props) => {
+const MeetingHelpDialog = ({phase}: Props) => {
   const iconButtonToggle = (
     <StyledButton palette='white' depth={2}>
       <IconLabel icon='question' />
@@ -45,7 +44,7 @@ const MeetingHelpDialog = ({meetingType, phase}: Props) => {
       maxWidth={280}
       maxHeight={320}
       originAnchor={originAnchor}
-      queryVars={{meetingType, phase}}
+      queryVars={{phase}}
       targetAnchor={targetAnchor}
       toggle={iconButtonToggle}
     />
