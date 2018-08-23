@@ -10,6 +10,7 @@ import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeC
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import labels from 'universal/styles/theme/labels'
 import ui from 'universal/styles/ui'
+import {cardHoverShadow, cardFocusShadow} from 'universal/styles/elevation'
 import withStyles from 'universal/styles/withStyles'
 import isTaskArchived from 'universal/utils/isTaskArchived'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
@@ -133,11 +134,11 @@ const styleThunk = () => ({
   // hover before focus, it matters
 
   cardHasHover: {
-    boxShadow: ui.shadow[1]
+    boxShadow: cardHoverShadow
   },
 
   cardHasFocus: {
-    boxShadow: ui.shadow[2]
+    boxShadow: cardFocusShadow
   },
 
   hasDragStyles: {

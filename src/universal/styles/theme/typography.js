@@ -41,7 +41,7 @@ export const fontFamily = {
 // [8] 2.125rem   (34px)
 // [9] 3rem'      (48px)
 
-const scale = [
+export const typeScale = [
   '.6875rem',
   '.75rem',
   '.8125rem',
@@ -53,6 +53,3 @@ const scale = [
   '2.125rem',
   '3rem'
 ]
-
-export const fontSize = scale
-export const lineHeight = scale

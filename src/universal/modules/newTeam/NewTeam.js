@@ -7,6 +7,7 @@ import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTea
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {cardShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
 
 const NewTeamLayout = styled('div')({
@@ -33,7 +34,8 @@ const HelpLayout = styled('div')({
 
 const HelpBlock = styled('div')({
   background: appTheme.palette.yellow30l,
-  boxShadow: ui.shadow[1],
+  borderRadius: ui.borderRadiusSmall,
+  boxShadow: cardShadow,
   color: appTheme.palette.dark,
   margin: '1rem 0',
   padding: '.75rem',

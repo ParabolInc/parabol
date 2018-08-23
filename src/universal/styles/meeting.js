@@ -14,6 +14,7 @@ export const meetingBorderColor = appTheme.palette.mid10a
 export const meetingGridGap = '1.25rem'
 export const meetingGridMaxWidth = '20rem'
 export const meetingGridMinWidth = '13.75rem'
+export const meetingHelpWithBottomBar = '5.25rem'
 export const meetingSidebarBreakpoint = breakpoints[1]
 export const meetingSidebarMediaQuery = minWidthMediaQueries[1]
 export const meetingSidebarGutter = '.5rem'

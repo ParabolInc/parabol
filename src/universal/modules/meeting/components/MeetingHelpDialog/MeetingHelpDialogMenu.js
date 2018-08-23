@@ -5,10 +5,11 @@ import FontAwesome from 'react-fontawesome'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import phaseHelpLookup from 'universal/utils/meetings/helpLookups'
+import {actionPhaseHelpLookup} from 'universal/utils/meetings/helpLookups'
 
 type Props = {
   closePortal: () => void,
+  meetingType: string,
   phase: string
 }
 
@@ -53,7 +54,7 @@ const MeetingHelpDialogMenu = (props: Props) => {
     <DialogContent>
       <DialogClose name='times-circle' onClick={closePortal} title='Close help menu' />
       {phaseLabel && <h3>{phaseLabel}</h3>}
-      {phaseHelpLookup[phase].helpDialog}
+      {actionPhaseHelpLookup[phase]}
     </DialogContent>
   )
 }

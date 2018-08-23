@@ -26,7 +26,7 @@ require('babel-register')({
   only (filename) {
     return filename.indexOf('build') === -1 && filename.indexOf('node_modules') === -1
   },
-  plugins: ['syntax-object-rest-spread', ['transform-class-properties', {spec: true}]],
+  plugins: ['transform-object-rest-spread', ['transform-class-properties', {spec: true}]],
   presets: [
     [
       'env',

@@ -14,8 +14,9 @@ import IconLabel from 'universal/components/IconLabel'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
 import {meetingVoteIcon} from 'universal/styles/meeting'
-import {fontFamily, fontSize, lineHeight} from 'universal/styles/theme/typography'
+import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 
 type Props = {|
   atmosphere: Object,
@@ -56,13 +57,13 @@ const MetaBlock = styled('div')({
 
 const Label = styled('div')({
   color: ui.labelHeadingColor,
-  fontSize: fontSize[1],
+  fontSize: typeScale[1],
   fontWeight: 600,
-  lineHeight: lineHeight[6],
+  lineHeight: typeScale[6],
   marginRight: '.75rem',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
-    fontSize: fontSize[2]
+    fontSize: typeScale[2]
   }
 })
 
@@ -85,13 +86,13 @@ const CheckMarkRow = styled('div')({
 const VoteCountLabel = styled('div')({
   color: ui.palette.warm,
   fontFamily: fontFamily.monospace,
-  fontSize: fontSize[3],
+  fontSize: typeScale[3],
   fontWeight: 600,
   lineHeight: '1.5',
   margin: 0,
   padding: 0,
   [votePhaseBreakpoint]: {
-    fontSize: fontSize[4]
+    fontSize: typeScale[4]
   }
 })
 
@@ -159,6 +160,7 @@ const RetroVotePhase = (props: Props) => {
           )}
         </ControlBarInner>
       </MeetingControlBar>
+      <VoteHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }

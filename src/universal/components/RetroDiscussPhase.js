@@ -14,13 +14,14 @@ import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import {withRouter} from 'react-router-dom'
 import type {RouterHistory} from 'react-router-dom'
 import Overflow from 'universal/components/Overflow'
-import {connect} from 'react-redux'
-import type {Dispatch} from 'redux'
 import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
 import plural from 'universal/utils/plural'
+import {withRouter} from 'react-router-dom'
+import {connect} from 'react-redux'
+import type {Dispatch} from 'redux'
+import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 
 type Props = {|
   atmosphere: Object,
@@ -241,6 +242,7 @@ const RetroDiscussPhase = (props: Props) => {
           {!nextStageRes && <ControlButtonBlock />}
         </SpacedMeetingControlBar>
       )}
+      <DiscussHelpMenu isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }

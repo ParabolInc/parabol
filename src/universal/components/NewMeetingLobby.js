@@ -1,8 +1,10 @@
 // @flow
 import * as React from 'react'
 import type {RouterHistory} from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {PRO} from 'universal/utils/constants'
 import styled from 'react-emotion'
 import LoadableModal from 'universal/components/LoadableModal'
@@ -20,10 +22,9 @@ import makeHref from 'universal/utils/makeHref'
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import {withRouter} from 'react-router-dom'
 import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import InlineAlert from 'universal/components/InlineAlert'
+import RetroLobbyHelpMenu from 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -131,8 +132,6 @@ class NewMeetingLobby extends React.Component<Props> {
       StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted)
     }
     const isPro = tier === PRO
-
-    // const isPro = true;
     const canStartMeeting = isPro || retroMeetingsRemaining > 0
     const meetingLabel = meetingTypeToLabel[meetingType]
     const meetingSlug = meetingTypeToSlug[meetingType]
@@ -207,6 +206,7 @@ class NewMeetingLobby extends React.Component<Props> {
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>
+        <RetroLobbyHelpMenu isPro={isPro} />
       </Lobby>
     )
   }

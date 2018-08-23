@@ -2,11 +2,12 @@
 import jwtDecode from 'jwt-decode'
 import {requestSubscription} from 'react-relay'
 import {Environment, Network, RecordSource, Store} from 'relay-runtime'
-import {APP_TOKEN_KEY, GQL_START, NEW_AUTH_TOKEN} from 'universal/utils/constants'
+import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import EventEmitter from 'eventemitter3'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
-import {SubscriptionClient} from 'subscriptions-transport-ws/dist/index'
+import getTrebuchet, {SSETrebuchet, SocketTrebuchet} from '@mattkrick/trebuchet-client'
+import GQLTrebuchetClient, {GQLHTTPClient} from '@mattkrick/graphql-trebuchet-client'
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err)
@@ -17,12 +18,56 @@ export default class Atmosphere extends Environment {
     return JSON.stringify({name, variables})
   }
 
+  constructor () {
+    // deal with Environment
+    const store = new Store(new RecordSource())
+    super({store, handlerProvider})
+    this._network = Network.create(this.handleFetch, this.handleSubscribe)
+    this.transport = new GQLHTTPClient(this.fetchHTTP)
+    // now atmosphere
+    this.authToken = undefined
+    this.authObj = undefined
+    this.querySubscriptions = []
+    this.querySubscriptions = []
+    this.subscriptions = {}
+    this.eventEmitter = new EventEmitter()
+  }
+
+  fetchPing = async (connectionId) => {
+    return fetch('/sse-ping', {
+      headers: {
+        Authorization: `Bearer ${this.authToken}`,
+        'x-correlation-id': connectionId || ''
+      }
+    })
+  }
+
+  fetchHTTP = async (body, connectionId) => {
+    const res = await fetch('/graphql', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: `Bearer ${this.authToken}`,
+        'x-correlation-id': connectionId || ''
+      },
+      body
+    })
+    if (
+      res.headers
+        .get('content-type')
+        .toLowerCase()
+        .startsWith('application/json')
+    ) {
+      return res.json()
+    }
+    return null
+  }
+
   registerQuery = async (queryKey, subscriptions, subParams, queryVariables, queryFetcher) => {
     const subConfigs = subscriptions.map((subCreator) =>
       subCreator(this, queryVariables, subParams)
     )
-    const subscriptionClient = await this.ensureSubscriptionClient()
-    if (!subscriptionClient) return
+    await this.upgradeTransport()
     const newQuerySubs = subConfigs.map((config) => {
       const {subscription, variables = {}} = config
       const {name} = subscription()
@@ -37,127 +82,63 @@ export default class Atmosphere extends Environment {
         queryFetcher
       }
     })
-
     this.querySubscriptions.push(...newQuerySubs)
   }
 
-  constructor () {
-    // deal with Environment
-    const store = new Store(new RecordSource())
-    super({store, handlerProvider})
-    this._network = Network.create(this.fetchHTTP)
-
-    // now atmosphere
-    this.authToken = undefined
-    this.authObj = undefined
-    this.subscriptionClient = undefined
-    this.networks = {
-      http: this._network,
-      socket: Network.create(this.fetchWS, this.socketSubscribe)
-    }
-    this.querySubscriptions = []
-    this.subscriptions = {}
-    this.eventEmitter = new EventEmitter()
-  }
-
-  socketSubscribe = async (operation, variables, cacheConfig, observer) => {
+  handleSubscribe = async (operation, variables, cacheConfig, observer) => {
     const {name, text} = operation
     const subKey = Atmosphere.getKey(name, variables)
-
-    const onNext = (result) => {
-      observer.onNext(result)
-    }
-
-    const onError = (error) => {
-      observer.onError(error)
-    }
-
-    const onComplete = () => {
-      observer.onCompleted()
-    }
-    const subscriptionClient = await this.ensureSubscriptionClient()
-    if (!subscriptionClient) return undefined
-
-    const client = subscriptionClient
-      .request({query: text, variables})
-      .subscribe(onNext, onError, onComplete)
-
-    this.subscriptions[subKey] = {
-      client
-    }
+    await this.upgradeTransport()
+    const disposable = this.transport.subscribe({query: text, variables}, observer)
+    this.subscriptions[subKey] = disposable
     return this.makeDisposable(subKey)
   }
 
-  makeSubscriptionClient () {
-    if (!this.authToken) {
-      throw new Error('No Auth Token provided!')
-    }
+  trySockets = () => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
     const url = `${wsProtocol}//${window.location.host}/?token=${this.authToken}`
-    const subscriptionClient = new SubscriptionClient(url, {reconnect: true})
+    return new SocketTrebuchet({url})
+  }
 
-    const {text: query, name: operationName} = NewAuthTokenSubscription().subscription()
-    subscriptionClient.operations[NEW_AUTH_TOKEN] = {
-      handler: (errors, payload) => {
-        const {authToken} = payload
-        this.setAuthToken(authToken)
-      },
-      options: {
-        query,
-        operationName
+  trySSE = () => {
+    const url = `/sse/?token=${this.authToken}`
+    return new SSETrebuchet({url, fetchData: this.fetchHTTP, fetchPing: this.fetchPing})
+  }
+
+  async promiseToUpgrade () {
+    const trebuchets = [this.trySockets, this.trySSE]
+    const trebuchet = await getTrebuchet(trebuchets)
+    if (!trebuchet) throw new Error('Cannot connect!')
+    this.transport = new GQLTrebuchetClient(trebuchet)
+    this.addAuthTokenSubscriber()
+    this.eventEmitter.emit('newSubscriptionClient')
+  }
+
+  async upgradeTransport () {
+    // wait until the first and only upgrade has completed
+    if (!this.upgradeTransportPromise) {
+      this.upgradeTransportPromise = this.promiseToUpgrade()
+    }
+    return this.upgradeTransportPromise
+  }
+
+  addAuthTokenSubscriber () {
+    if (!this.authToken) throw new Error('No Auth Token provided!')
+    const {text: query} = NewAuthTokenSubscription().subscription()
+    this.transport.operations[NEW_AUTH_TOKEN] = {
+      payload: {query},
+      observer: {
+        onNext: (payload) => {
+          this.setAuthToken(payload.authToken)
+        },
+        onCompleted: () => {},
+        onError: () => {}
       }
     }
-    return subscriptionClient
   }
 
-  fetchWS = async (operation, variables) => {
-    return new Promise((resolve, reject) => {
-      const opId = this.subscriptionClient.generateOperationId()
-      const payload = {
-        query: operation.text,
-        variables
-      }
-      this.subscriptionClient.operations[opId] = {
-        options: payload,
-        handler: (errors, result) => {
-          // errors only exist if GQL_ERROR is sent
-          delete this.subscriptionClient.operations[opId]
-          if (result) {
-            // setTimeout(() => {
-            resolve(result)
-            // }, 1000)
-          } else {
-            reject(errors && errors[0])
-          }
-        }
-      }
-      this.subscriptionClient.sendMessage(opId, GQL_START, payload)
-    })
-  }
-
-  setNet = (name) => {
-    this._network = this.networks[name]
-  }
-
-  fetchHTTP = async (operation, variables) => {
-    const res = await fetch('/graphql', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        Authorization: `Bearer ${this.authToken}`
-      },
-      body: JSON.stringify({
-        query: operation.text,
-        variables
-      })
-    })
-    return res.json()
-  }
-
-  setSocket = () => {
-    this.querySubscriptions = []
-    this.subscriptions = {}
-    this.setNet('socket')
+  handleFetch = async (operation, variables) => {
+    return this.transport.fetch({query: operation.text, variables})
   }
 
   getAuthToken = (global) => {
@@ -231,7 +212,7 @@ export default class Atmosphere extends Environment {
         (qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey)
       )
       if (!unaffectedQuery) {
-        this.subscriptions[subKey].client.unsubscribe()
+        this.subscriptions[subKey].unsubscribe()
       }
     })
 
@@ -239,29 +220,9 @@ export default class Atmosphere extends Environment {
       return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey)
     })
   }
-
-  async ensureSubscriptionClient () {
-    if (!this.subscriptionClientPromise) {
-      this.subscriptionClientPromise = new Promise((resolve) => {
-        this.subscriptionClient = this.makeSubscriptionClient()
-        this.eventEmitter.emit('newSubscriptionClient')
-        this._onceConnecting = () => {
-          if (this.networks.socket !== this._network) {
-            this.setNet('socket')
-          }
-          this.subscriptionClient.eventEmitter.off('socketsDisabled', this._onceSocketsDisabled)
-          this._onceSocketsDisabled = undefined
-          resolve(this.subscriptionClient)
-        }
-        this._onceSocketsDisabled = () => {
-          this.subscriptionClient.eventEmitter.off('connecting', this._onceConnecting)
-          this._onceConnecting = undefined
-          resolve(null)
-        }
-        this.subscriptionClient.eventEmitter.once('connecting', this._onceConnecting)
-        this.subscriptionClient.eventEmitter.once('socketsDisabled', this._onceSocketsDisabled)
-      })
-    }
-    return this.subscriptionClientPromise
+  close () {
+    // race condition when logging out & the autoLogin
+    this.authObj = null
+    this.transport.close && this.transport.close()
   }
 }
