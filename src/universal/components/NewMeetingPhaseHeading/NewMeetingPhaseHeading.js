@@ -35,11 +35,12 @@ const PhaseTitle = styled('h1')({
 
 const PhaseDescription = styled('h2')({
   color: ui.labelHeadingColor,
-  fontSize: '.8125rem',
+  display: 'none',
   fontWeight: 'normal',
   margin: 0,
 
   [minWidthMediaQueries[1]]: {
+    display: 'block',
     fontSize: '.875rem'
   }
 })
