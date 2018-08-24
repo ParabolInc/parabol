@@ -15,7 +15,10 @@ const RetrospectiveMeetingMember = new GraphQLObjectType({
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const {teamId} = meeting
         const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
-        return teamTasks.filter((task) => task.meetingId === meetingId && task.userId === userId)
+        return teamTasks.filter(
+          (task) =>
+            task.meetingId === meetingId && task.userId === userId && !task.tags.includes('private')
+        )
       }
     },
     votesRemaining: {

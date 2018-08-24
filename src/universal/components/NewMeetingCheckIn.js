@@ -20,6 +20,7 @@ import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import {CHECKIN} from 'universal/utils/constants'
 import withHotkey from 'react-hotkey-hoc'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import CheckInHelpMenu from 'universal/components/MeetingHelp/CheckInHelpMenu'
 
 const {Component} = React
 
@@ -61,7 +62,7 @@ class NewMeetingCheckIn extends Component<Props> {
   }
 
   render () {
-    const {atmosphere, team} = this.props
+    const {atmosphere, team, meetingType} = this.props
     const {newMeeting} = team
     const {
       facilitator: {facilitatorName, facilitatorUserId},
@@ -119,6 +120,7 @@ class NewMeetingCheckIn extends Component<Props> {
             />
           </MeetingControlBar>
         )}
+        <CheckInHelpMenu floatAboveBottomBar={isFacilitating} meetingType={meetingType} />
       </React.Fragment>
     )
   }

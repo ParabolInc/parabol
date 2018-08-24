@@ -21,6 +21,7 @@ import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
 import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
 import {DECELERATE} from 'universal/styles/animation'
+import {cardShadow} from 'universal/styles/elevation'
 
 export type Props = {|
   meeting: Meeting,
@@ -48,7 +49,7 @@ export const ReflectionCardRoot = styled('div')(
   },
   ({isClosing, shadow}) =>
     shadow !== null && {
-      boxShadow: isClosing ? ui.shadow[0] : ui.shadow[shadow]
+      boxShadow: isClosing ? cardShadow : shadow
     },
   ({hasDragLock}) =>
     hasDragLock && {
@@ -145,7 +146,7 @@ class ReflectionCard extends Component<Props, State> {
     const {
       atmosphere,
       error,
-      shadow = 0,
+      shadow = cardShadow,
       isDraggable,
       meeting,
       reflection,

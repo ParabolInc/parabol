@@ -13,10 +13,11 @@ import MeetingControlBar from 'universal/modules/meeting/components/MeetingContr
 import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation'
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
+import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 
 type Props = {
   atmosphere: Object,
@@ -63,6 +64,7 @@ const RetroGroupPhase = (props: Props) => {
           )}
         </MeetingControlBar>
       )}
+      <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
     </React.Fragment>
   )
 }

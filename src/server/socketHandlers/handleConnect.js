@@ -1,14 +1,9 @@
-import {GQL_CONNECTION_ACK} from 'universal/utils/constants'
 import {REFRESH_JWT_AFTER} from 'server/utils/serverConstants'
 import sendNewAuthToken from 'server/socketHelpers/sendNewAuthToken'
 import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
 import {fromEpochSeconds} from 'server/utils/epochTime'
-import sendMessage from 'server/socketHelpers/sendMessage'
-import packageJSON from '../../../package.json'
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
-
-const APP_VERSION = packageJSON.version
 
 const isTmsValid = (tmsFromDB = [], tmsFromToken = []) => {
   if (tmsFromDB.length !== tmsFromToken.length) return false
@@ -32,7 +27,7 @@ const sendFreshTokenIfNeeded = (connectionContext, tmsDB) => {
   }
 }
 
-const handleConnectPublish = async (connectionContext) => {
+const handleConnect = async (connectionContext) => {
   const payload = {
     query: `
     mutation ConnectSocket {
@@ -43,7 +38,7 @@ const handleConnectPublish = async (connectionContext) => {
   `
   }
 
-  const result = await wsGraphQLHandler(connectionContext, {payload})
+  const result = await wsGraphQLHandler(connectionContext, payload)
   const {data} = result
   if (data) {
     const {
@@ -54,15 +49,6 @@ const handleConnectPublish = async (connectionContext) => {
   }
   handleDisconnect(connectionContext, {exitCode: 4401})()
   return false
-}
-
-const handleConnect = async (connectionContext) => {
-  const {socket} = connectionContext
-  const success = await handleConnectPublish(connectionContext)
-  if (success) {
-    sendMessage(socket, GQL_CONNECTION_ACK, {version: APP_VERSION})
-  }
-  return success
 }
 
 export default handleConnect

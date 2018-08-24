@@ -1,9 +1,9 @@
 {
   "plugins": [
-    "syntax-object-rest-spread",
+    "transform-object-rest-spread",
     ["transform-class-properties", { "spec": true }],
     ],
-    "presets": [ 
+    "presets": [
     ["env", {
         "targets": {
         "node": "current"

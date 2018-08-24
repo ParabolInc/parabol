@@ -94,9 +94,9 @@ module.exports = {
             cacheDirectory: true,
             babelrc: false,
             plugins: [
-              'syntax-object-rest-spread',
               'syntax-dynamic-import',
               'transform-class-properties',
+              'transform-object-rest-spread',
               'relay'
             ],
             presets: [

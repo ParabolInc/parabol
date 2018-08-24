@@ -17,6 +17,7 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 
 const StyledWrapper = styled(MeetingPhaseWrapper)({
   // TODO: base wrapper on min-width of card columns, not this styled div (TA)
@@ -75,6 +76,7 @@ const RetroReflectPhase = (props: Props) => {
           </FlatButton>
         </MeetingControlBar>
       )}
+      <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
     </React.Fragment>
   )
 }

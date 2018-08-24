@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.10.0 2018-Aug-23
+
+### Added
+* New layout for the Retro Discuss phase, PR #2320
+* Retro meeting help menus link to our Retrospective Meetings 101 content, PR #2308
+* App now falls back to SSE connections when websockets can’t be used, PR #2318
+* New elevation system for UI inspired by Material Design, PR #2248
+
+### Fixed
+* Hides private cards in meeting summary, PR #2330
+
 ## v2.9.0 2018-Aug-15
 
 ### Added
