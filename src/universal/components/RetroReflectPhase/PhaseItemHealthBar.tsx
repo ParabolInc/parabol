@@ -16,7 +16,9 @@ const BarMask = styled('div')((props: Props) => ({
 
 const HealthBarStyle = styled('div')({
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  marginLeft: 16,
+  marginTop: 8,
 })
 
 const Bar = styled('div')({

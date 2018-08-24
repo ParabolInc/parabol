@@ -20,6 +20,8 @@ import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {DECELERATE} from 'universal/styles/animation'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
+import PhaseItemHealthBar from 'universal/components/RetroReflectPhase/PhaseItemHealthBar'
+import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -41,8 +43,15 @@ const ColumnHighlight = styled('div')(({isFocused}) => ({
 }))
 
 const ColumnContent = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
   padding: '0 2rem'
   // maxWidth: ui.retroCardWidth
+})
+
+const HeaderAndEditor = styled('div')({
+  flex: 0.3
 })
 
 const TypeDescription = styled('div')({
@@ -68,6 +77,10 @@ const TypeHeader = styled('div')({
 const EditorAndStatus = styled('div')(({isPhaseComplete}) => ({
   visibility: isPhaseComplete && 'hidden'
 }))
+
+const ChitSection = styled('div')({
+  flex: 0.3
+})
 
 type Props = {|
   atmosphere: Object,
@@ -137,16 +150,22 @@ class PhaseItemColumn extends Component<Props, State> {
       <ColumnWrapper>
         <ColumnHighlight isFocused={isFocused}>
           <ColumnContent>
-            <TypeHeader onClick={this.setColumnFocus}>
-              <TypeDescription>
-                <FocusArrow name='arrow-right' isFocused={isFocused} />
-                {question}
-              </TypeDescription>
-            </TypeHeader>
-            <EditorAndStatus isPhaseComplete={isComplete}>
-              <PhaseItemEditor meeting={meeting} retroPhaseItem={retroPhaseItem} />
-            </EditorAndStatus>
+            <HeaderAndEditor>
+              <TypeHeader onClick={this.setColumnFocus}>
+                <TypeDescription>
+                  <FocusArrow name='arrow-right' isFocused={isFocused} />
+                  {question}
+                </TypeDescription>
+              </TypeHeader>
+              <EditorAndStatus isPhaseComplete={isComplete}>
+                <PhaseItemEditor meeting={meeting} retroPhaseItem={retroPhaseItem} />
+                <PhaseItemHealthBar editorsCount={2} />
+              </EditorAndStatus>
+            </HeaderAndEditor>
             <ReflectionStack reflectionStack={[]} idx={idx} />
+            <ChitSection>
+              <PhaseItemChits count={5} />
+            </ChitSection>
           </ColumnContent>
         </ColumnHighlight>
       </ColumnWrapper>
@@ -160,7 +179,6 @@ export default createFragmentContainer(
     fragment PhaseItemColumn_retroPhaseItem on RetroPhaseItem {
       ...PhaseItemEditor_retroPhaseItem
       retroPhaseItemId: id
-      title
       question
     }
 

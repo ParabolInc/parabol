@@ -57,6 +57,7 @@
     "@playlyfe/gql": "^2.6.0",
     "@storybook/addon-actions": "4.0.0-alpha.16",
     "@storybook/addon-info": "4.0.0-alpha.16",
+    "@storybook/addon-knobs": "4.0.0-alpha.16",
     "@storybook/addon-links": "4.0.0-alpha.16",
     "@storybook/addons": "4.0.0-alpha.16",
     "@storybook/cli": "4.0.0-alpha.16",

@@ -1,18 +1,16 @@
+import {number, withKnobs} from '@storybook/addon-knobs'
 import {storiesOf} from '@storybook/react'
 import React from 'react'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
 import PhaseItemChits from '../src/universal/components/RetroReflectPhase/PhaseItemChits'
+import PhaseItemColumn from '../src/universal/components/RetroReflectPhase/PhaseItemColumn'
 import PhaseItemHealthBar from '../src/universal/components/RetroReflectPhase/PhaseItemHealthBar'
+import ReflectionStack from '../src/universal/components/RetroReflectPhase/ReflectionStack'
 import StoryProvider from './components/StoryProvider'
-import Incrementor from './helpers/Incrementor'
-
-const state = {
-  health: new Incrementor(0, 5),
-  chits: new Incrementor(0, 25)
-}
 
 storiesOf('Reflect Phase', module)
+  .addDecorator(withKnobs)
   .add('placeholder', () => (
     <StoryProvider>
       <ReflectionStackPlaceholder idx={0} />
@@ -25,13 +23,29 @@ storiesOf('Reflect Phase', module)
   ))
   .add('health bar', () => (
     <StoryProvider>
-      <state.health.Button />
-      <PhaseItemHealthBar editorsCount={state.health.num} />
+      <PhaseItemHealthBar editorsCount={number('editorsCount', 1)} />
     </StoryProvider>
   ))
   .add('chits', () => (
     <StoryProvider>
-      <state.chits.Button />
-      <PhaseItemChits count={state.chits.num} />
+      <PhaseItemChits count={number('chitCount', 3)} />
+    </StoryProvider>
+  ))
+  .add('reflection stack', () => (
+    <StoryProvider>
+      <ReflectionStack idx={1} reflectionStack={[]} />
+    </StoryProvider>
+  ))
+  .add('column', () => (
+    <StoryProvider>
+      <PhaseItemColumn
+        idx={0}
+        retroPhaseItem={{retroPhaseItemId: 123, question: 'What do?'}}
+        meeting={{
+          reflectionGroups: [],
+          localPhase: {focusedPhaseItemId: 123, phaseId: 123},
+          localStage: {isComplete: false}
+        }}
+      />
     </StoryProvider>
   ))

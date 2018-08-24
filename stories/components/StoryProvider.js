@@ -7,6 +7,7 @@ import globalStyles from 'universal/styles/theme/globalStyles'
 import '../../static/css/font-awesome.css'
 import RelayStub from './RelayStub'
 import appTheme from 'universal/styles/theme/appTheme'
+import AtmosphereProvider from 'universal/components/AtmosphereProvider/AtmosphereProvider'
 
 const FullPageWrapper = styled('div')({
   backgroundColor: appTheme.palette.light,
@@ -30,9 +31,11 @@ export default class StoryContainer extends Component<Props> {
   render () {
     return (
       <DragDropContextProvider backend={HTML5Backend}>
-        <RelayStub>
-          <FullPageWrapper>{this.props.children}</FullPageWrapper>
-        </RelayStub>
+        <AtmosphereProvider>
+          <RelayStub>
+            <FullPageWrapper>{this.props.children}</FullPageWrapper>
+          </RelayStub>
+        </AtmosphereProvider>
       </DragDropContextProvider>
     )
   }
