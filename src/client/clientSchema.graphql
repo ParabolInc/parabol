@@ -35,8 +35,3 @@ extend type DragContext {
   initialCursorCoords: Coords2D,
   initialComponentCoords: Coords2D
 }
-
-extend type RetroReflection {
-  # can remove when we refresh the reflect phase
-  startOffset: Int
-}

@@ -1,13 +1,16 @@
 import {number, withKnobs} from '@storybook/addon-knobs'
 import {storiesOf} from '@storybook/react'
+import {convertToRaw, ContentState} from 'draft-js'
 import React from 'react'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
 import PhaseItemChits from '../src/universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemColumn from '../src/universal/components/RetroReflectPhase/PhaseItemColumn'
 import PhaseItemHealthBar from '../src/universal/components/RetroReflectPhase/PhaseItemHealthBar'
 import ReflectionStack from '../src/universal/components/RetroReflectPhase/ReflectionStack'
 import StoryProvider from './components/StoryProvider'
+import {REFLECT} from 'universal/utils/constants'
 
 storiesOf('Reflect Phase', module)
   .addDecorator(withKnobs)
@@ -33,7 +36,34 @@ storiesOf('Reflect Phase', module)
   ))
   .add('reflection stack', () => (
     <StoryProvider>
-      <ReflectionStack idx={1} reflectionStack={[]} />
+      <ReflectionStack
+        idx={1}
+        reflectionStack={[{
+          reflectionId: 'refl1',
+          reflectionGroupId: 'reflG1',
+          content: JSON.stringify(convertToRaw(ContentState.createFromText('hee haw'))),
+          isViewerCreator: true,
+          phaseItem: {
+            question: 'What do'
+          }
+        }]}
+        meeting={{
+          meetingId: 'meet1',
+          teamId: 'team1',
+          localPhase: {
+            phaseType: REFLECT
+          },
+          localStage: {
+            isComplete: false
+          },
+          phases: {
+            phaseType: REFLECT,
+            stages: {
+              isComplete: false
+            }
+          }
+        }}
+      />
     </StoryProvider>
   ))
   .add('column', () => (
