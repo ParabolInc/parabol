@@ -1,8 +1,6 @@
 /**
  * Renders a column for a particular "type" of reflection
  * (e.g. positive or negative) during the Reflect phase of the retro meeting.
- *
- * @flow
  */
 import type {PhaseItemColumn_meeting as Meeting} from './__generated__/PhaseItemColumn_meeting.graphql'
 import type {PhaseItemColumn_retroPhaseItem as RetroPhaseItem} from './__generated__/PhaseItemColumn_retroPhaseItem.graphql'
@@ -106,7 +104,10 @@ class PhaseItemColumn extends Component<Props, State> {
     return {
       reflectionGroups,
       reflectionStack: reflectionGroups.filter(
-        (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0
+        (group) =>
+          group.retroPhaseItemId === retroPhaseItemId &&
+          group.reflections.length > 0 &&
+          group.reflections[0].isViewerCreator
       )
     }
   }
@@ -229,44 +230,3 @@ export default createFragmentContainer(
     }
   `
 )
-
-// const ReflectionsArea = styled('div')({
-//   flexDirection: 'column',
-//   display: 'flex',
-//   overflow: 'auto',
-//   height: '100%'
-// })
-//
-// const ReflectionsList = styled('div')(({canDrop}) => ({
-//   background: canDrop && appTheme.palette.light60l
-// }))
-
-// <ReflectionsArea>
-// {phaseType === REFLECT &&
-// !isComplete && (
-//   <ButtonBlock>
-//     <AddReflectionButton
-//       reflectionStack={reflectionStack}
-//       innerRef={this.setAddReflectionButtonRef}
-//       meeting={meeting}
-//       retroPhaseItem={retroPhaseItem}
-//     />
-//   </ButtonBlock>
-// )}
-// <ReflectionsList canDrop={canDrop}>
-//   {reflectionStack.map((group) => {
-//     return group.reflections.map((reflection) => {
-//       if (reflection.isViewerCreator) {
-//         return (
-//           <ReflectionCard
-//             addReflectionButtonRef={this.addReflectionButtonRef}
-//             meeting={meeting}
-//             reflection={reflection}
-//           />
-//         )
-//       }
-//       return <AnonymousReflectionCard meeting={meeting} reflection={reflection} />
-//     })
-//   })}
-// </ReflectionsList>
-// </ReflectionsArea>

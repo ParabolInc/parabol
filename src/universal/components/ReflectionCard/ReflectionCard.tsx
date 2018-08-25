@@ -2,7 +2,6 @@ import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {MutationProps} from 'universal/utils/relay/MutationProps'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
 import StyledError from 'universal/components/StyledError'
@@ -18,10 +17,10 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import isTempId from 'universal/utils/relay/isTempId'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 
-interface Props extends MutationProps {
+interface Props extends WithMutationProps {
   atmosphere: any,
   isDraggable?: boolean,
   reflection: ReflectionCard_reflection,

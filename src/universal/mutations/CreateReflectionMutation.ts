@@ -2,11 +2,17 @@
  * Creates a reflection for the retrospective meeting.
  *
  */
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
+import {CompletedHandler, ErrorHandler} from 'universal/types/relayMutations'
 import handleAddReflectionGroups from 'universal/mutations/handlers/handleAddReflectionGroups'
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
+import ICreateReflectionOnMutationArguments = GQL.ICreateReflectionOnMutationArguments
+
+interface Context {
+  meetingId: string
+}
 
 graphql`
   fragment CreateReflectionMutation_team on CreateReflectionPayload {
@@ -41,7 +47,7 @@ export const createReflectionTeamUpdater = (payload, store) => {
   handleAddReflectionGroups(reflectionGroup, store)
 }
 
-const CreateReflectionMutation = (atmosphere, variables, context, onError, onCompleted) => {
+const CreateReflectionMutation = (atmosphere, variables: ICreateReflectionOnMutationArguments, context: Context, onError: ErrorHandler, onCompleted: CompletedHandler) => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

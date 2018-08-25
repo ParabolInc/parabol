@@ -3,12 +3,13 @@ import styled from 'react-emotion'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
 import ui from 'universal/styles/ui'
+import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 
 interface Props {
   idx: number
   meetingId: string,
   phaseItemId: string,
-  reflectionStack: ReadonlyArray<any>
+  reflectionStack: Array<ReflectionCard_reflection>
 }
 
 const CardStack = styled('div')({})

@@ -2,11 +2,26 @@ import React, {Component} from 'react'
 import getDisplayName from 'universal/utils/getDisplayName'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
+export interface WithMutationProps {
+  dirty?: boolean,
+  error?: any | undefined,
+  onCompleted: (res: any, errors: any) => void,
+  onError: (error: any) => void,
+  setDirty: () => void,
+  submitMutation: () => void,
+  submitting?: boolean
+}
+
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+type Subtract<T, K> = Omit<T, keyof K>;
+
 // Serves as a lightweight alternative for redux-form when we just have a button or something
-const withMutationProps = (ComposedComponent) => {
+const withMutationProps = <P extends WithMutationProps>(ComposedComponent: React.ComponentType<P>) => {
   // eslint-disable-next-line react/prefer-stateless-function
-  return class WithMutationProps extends Component {
+  return class WithMutationProps extends Component<Subtract<P, WithMutationProps>> {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`
+
+    _mounted: boolean = false
 
     state = {
       submitting: false,
@@ -14,11 +29,11 @@ const withMutationProps = (ComposedComponent) => {
       dirty: false
     }
 
-    componentWillMount () {
+    componentWillMount() {
       this._mounted = true
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
       this._mounted = false
     }
 
@@ -56,7 +71,7 @@ const withMutationProps = (ComposedComponent) => {
       }
     }
 
-    render () {
+    render() {
       const {dirty, error, submitting} = this.state
       return (
         <ComposedComponent
@@ -76,15 +91,15 @@ const withMutationProps = (ComposedComponent) => {
 
 export default withMutationProps
 
-export type MutationProps = {
-  dirty: boolean,
-  error: any,
-  onCompleted: () => void,
-  onError: () => void,
-  setDirty: () => void,
-  submitMutation: () => void,
-  submitting: boolean
-}
+// export type WithMutationProps = {
+//   dirty: boolean,
+//   error: any,
+//   onCompleted: () => void,
+//   onError: () => void,
+//   setDirty: () => void,
+//   submitMutation: () => void,
+//   submitting: boolean
+// }
 // const propTypes = {
 //  setDirty: PropTypes.func.isRequired,
 //  error: PropTypes.any,

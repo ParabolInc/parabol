@@ -1,16 +1,17 @@
 import {number, withKnobs} from '@storybook/addon-knobs'
 import {storiesOf} from '@storybook/react'
-import {convertToRaw, ContentState} from 'draft-js'
+import {PhaseItemEditor_meeting} from '__generated__/PhaseItemEditor_meeting.graphql'
+import {PhaseItemEditor_retroPhaseItem} from '__generated__/PhaseItemEditor_retroPhaseItem.graphql'
+import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
+import {ContentState, convertToRaw} from 'draft-js'
 import React from 'react'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
-import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
 import PhaseItemChits from '../src/universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemColumn from '../src/universal/components/RetroReflectPhase/PhaseItemColumn'
 import PhaseItemHealthBar from '../src/universal/components/RetroReflectPhase/PhaseItemHealthBar'
 import ReflectionStack from '../src/universal/components/RetroReflectPhase/ReflectionStack'
 import StoryProvider from './components/StoryProvider'
-import {REFLECT} from 'universal/utils/constants'
 
 storiesOf('Reflect Phase', module)
   .addDecorator(withKnobs)
@@ -21,7 +22,11 @@ storiesOf('Reflect Phase', module)
   ))
   .add('editor', () => (
     <StoryProvider>
-      <PhaseItemEditor />
+      <PhaseItemEditor
+        meeting={{meetingId: '123'} as PhaseItemEditor_meeting}
+        retroPhaseItem={{retroPhaseItemId: '124'} as PhaseItemEditor_retroPhaseItem}
+        reflectionStack={[]}
+      />
     </StoryProvider>
   ))
   .add('health bar', () => (
@@ -42,27 +47,12 @@ storiesOf('Reflect Phase', module)
           reflectionId: 'refl1',
           reflectionGroupId: 'reflG1',
           content: JSON.stringify(convertToRaw(ContentState.createFromText('hee haw'))),
-          isViewerCreator: true,
           phaseItem: {
             question: 'What do'
           }
-        }]}
-        meeting={{
-          meetingId: 'meet1',
-          teamId: 'team1',
-          localPhase: {
-            phaseType: REFLECT
-          },
-          localStage: {
-            isComplete: false
-          },
-          phases: {
-            phaseType: REFLECT,
-            stages: {
-              isComplete: false
-            }
-          }
-        }}
+        } as ReflectionCard_reflection]}
+        meetingId='meet1'
+        phaseItemId='pi1'
       />
     </StoryProvider>
   ))
