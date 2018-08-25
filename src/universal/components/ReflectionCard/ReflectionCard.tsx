@@ -1,7 +1,8 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {MutationProps} from 'universal/utils/relay/MutationProps'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
 import StyledError from 'universal/components/StyledError'
@@ -11,29 +12,36 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import {REFLECT} from 'universal/utils/constants'
-import isTempId from 'universal/utils/relay/isTempId'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
-import type {ReflectionCard_meeting as Meeting} from './__generated__/ReflectionCard_meeting.graphql'
-import type {ReflectionCard_reflection as Reflection} from './__generated__/ReflectionCard_reflection.graphql'
 import {DECELERATE} from 'universal/styles/animation'
 import {cardShadow} from 'universal/styles/elevation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import isTempId from 'universal/utils/relay/isTempId'
+import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
+import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 
-export type Props = {|
-  meeting: Meeting,
-  reflection: Reflection,
+interface Props extends MutationProps {
+  atmosphere: any,
+  isDraggable?: boolean,
+  reflection: ReflectionCard_reflection,
+  meetingId?: string,
+  phaseItemId?: string,
+  readOnly?: boolean,
   shadow?: number,
-  ...MutationProps
-|}
+  showOriginFooter?: boolean
+}
 
-type State = {|
+interface State {
   content: string,
-  editorState: ?Object
-|}
+  editorState?: EditorState
+}
+
+interface ReflectionCardRootProps {
+  isClosing?: boolean,
+  shadow?: string | null,
+  hasDragLock?: boolean
+}
 
 export const ReflectionCardRoot = styled('div')(
   {
@@ -47,18 +55,18 @@ export const ReflectionCardRoot = styled('div')(
     transition: `box-shadow 2000ms ${DECELERATE}`,
     width: ui.retroCardWidth
   },
-  ({isClosing, shadow}) =>
+  ({isClosing, shadow}: ReflectionCardRootProps) =>
     shadow !== null && {
       boxShadow: isClosing ? cardShadow : shadow
     },
-  ({hasDragLock}) =>
+  ({hasDragLock}: ReflectionCardRootProps) =>
     hasDragLock && {
       borderColor: appTheme.palette.warm50a
     }
 )
 
 class ReflectionCard extends Component<Props, State> {
-  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
     const {reflection} = nextProps
     const {content} = reflection
     if (content === prevState.content) return null
@@ -75,6 +83,8 @@ class ReflectionCard extends Component<Props, State> {
     }
   }
 
+  editorRef: HTMLElement
+
   state = {
     content: '',
     editorState: null
@@ -88,21 +98,20 @@ class ReflectionCard extends Component<Props, State> {
     this.editorRef = c
   }
 
-  editorRef: ?HTMLElement
-
   handleEditorFocus = () => {
     const {
       atmosphere,
-      reflection: {reflectionId}
+      reflection: {reflectionId},
+      phaseItemId
     } = this.props
     if (isTempId(reflectionId)) return
-    EditReflectionMutation(atmosphere, {isEditing: true, reflectionId})
+    EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
   }
 
   handleContentUpdate = () => {
     const {
       atmosphere,
-      meeting: {meetingId},
+      meetingId,
       reflection: {content, reflectionId},
       submitMutation,
       onError,
@@ -129,11 +138,12 @@ class ReflectionCard extends Component<Props, State> {
   handleEditorBlur = () => {
     const {
       atmosphere,
+      phaseItemId,
       reflection: {reflectionId}
     } = this.props
     if (isTempId(reflectionId)) return
     this.handleContentUpdate()
-    EditReflectionMutation(atmosphere, {isEditing: false, reflectionId})
+    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
   }
 
   handleReturn = (e) => {
@@ -148,23 +158,17 @@ class ReflectionCard extends Component<Props, State> {
       error,
       shadow = cardShadow,
       isDraggable,
-      meeting,
+      meetingId,
+      readOnly,
       reflection,
       showOriginFooter
     } = this.props
     const {editorState} = this.state
     const {
-      localPhase: {phaseType},
-      localStage: {isComplete},
-      teamId
-    } = meeting
-    const {
       dragContext,
-      isViewerCreator,
       phaseItem: {question},
       reflectionId
     } = reflection
-    const canDelete = isViewerCreator && phaseType === REFLECT && !isComplete
     const dragUser = dragContext && dragContext.dragUser
     const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
     return (
@@ -180,39 +184,22 @@ class ReflectionCard extends Component<Props, State> {
           onFocus={this.handleEditorFocus}
           handleReturn={this.handleReturn}
           placeholder='My reflection thought…'
-          readOnly={phaseType !== REFLECT || isComplete || isTempId(reflectionId)}
+          readOnly={readOnly || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
-          teamId={teamId}
+          userSelect={isDraggable ? 'none' : 'text'}
         />
         {error && <StyledError>{error.message}</StyledError>}
         {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
-        {canDelete && <ReflectionCardDeleteButton meeting={meeting} reflection={reflection} />}
+        {!readOnly && <ReflectionCardDeleteButton meetingId={meetingId} reflection={reflection} />}
       </ReflectionCardRoot>
     )
   }
 }
 
+// export default withAtmosphere(ReflectionCard)
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(ReflectionCard)),
   graphql`
-    fragment ReflectionCard_meeting on RetrospectiveMeeting {
-      meetingId: id
-      teamId
-      localPhase {
-        phaseType
-      }
-      localStage {
-        isComplete
-      }
-      phases {
-        phaseType
-        stages {
-          isComplete
-        }
-      }
-      ...ReflectionCardDeleteButton_meeting
-    }
-
     fragment ReflectionCard_reflection on RetroReflection {
       dragContext {
         dragUser {
@@ -223,7 +210,6 @@ export default createFragmentContainer(
       reflectionId: id
       reflectionGroupId
       content
-      isViewerCreator
       phaseItem {
         question
       }

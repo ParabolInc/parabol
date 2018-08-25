@@ -1109,7 +1109,7 @@ export type Mutation = {
   dragDiscussionTopic: ?DragDiscussionTopicPayload,
   /** Broadcast that the viewer stopped dragging a reflection */
   endDraggingReflection: ?EndDraggingReflectionPayload,
-  /** Changes the editing state of a retrospective reflection */
+  /** Changes the editing state of a user for a phase item */
   editReflection: ?EditReflectionPayload,
   /** Announce to everyone that you are editing a task */
   editTask: ?EditTaskPayload,
@@ -1882,8 +1882,7 @@ export type EndDraggingReflectionPayload = {
 
 export type EditReflectionPayload = {
   error: ?StandardMutationError,
-  meeting: ?NewMeeting,
-  reflection: ?RetroReflection,
+  phaseItemId: ?string,
   /** The socketId of the client editing the card (uses socketId to maintain anonymity) */
   editorId: ?string,
   /** true if the reflection is being edited, else false  */

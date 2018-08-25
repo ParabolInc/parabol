@@ -325,7 +325,6 @@ export default createFragmentContainer(
   graphql`
     fragment ReflectionGroup_meeting on RetrospectiveMeeting {
       meetingId: id
-      ...ReflectionCard_meeting
       ...ReflectionGroupHeader_meeting
       localPhase {
         phaseType

@@ -4,7 +4,6 @@
  * @flow
  */
 import * as React from 'react'
-import type {Props as ReflectionCardProps} from './ReflectionCard'
 import ReflectionCard from './ReflectionCard'
 import {createFragmentContainer} from 'react-relay'
 import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql'
@@ -23,8 +22,7 @@ import {cardShadow} from 'universal/styles/elevation'
 type Props = {
   dndIndex: number,
   reflection: Reflection,
-  showOriginFooter: boolean,
-  ...ReflectionCardProps
+  showOriginFooter: boolean
 }
 
 const hiddenWhileDraggingStyle = css({

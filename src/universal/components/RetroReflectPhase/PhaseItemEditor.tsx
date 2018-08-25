@@ -3,8 +3,8 @@ import {PhaseItemEditor_retroPhaseItem} from '__generated__/PhaseItemEditor_retr
 import {ContentState, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import withMutationProps from '../../utils/relay/withMutationProps'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 
@@ -46,7 +46,7 @@ class PhaseItemEditor extends Component<Props, State> {
   render() {
     const {editorState} = this.state
     return (
-      <ReflectionCardRoot shadow={0}>
+      <ReflectionCardRoot>
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorState={editorState}

@@ -1,18 +1,17 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer, graphql} from 'react-relay'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
 import ui from 'universal/styles/ui'
 
 interface Props {
   idx: number
-  meeting: any,
-  reflectionStack: Array<any>
+  meetingId: string,
+  phaseItemId: string,
+  reflectionStack: ReadonlyArray<any>
 }
 
 const CardStack = styled('div')({})
-
 
 const ReflectionWrapper = styled('div')(({idx}: {idx: number}) => {
   if (idx === 0) {
@@ -39,7 +38,7 @@ const ReflectionWrapper = styled('div')(({idx}: {idx: number}) => {
 
 class ReflectionStack extends Component<Props> {
   render() {
-    const {idx, reflectionStack, meeting} = this.props
+    const {idx, reflectionStack, phaseItemId, meetingId} = this.props
     if (reflectionStack.length === 0) {
       return <ReflectionStackPlaceholder idx={idx} />
     }
@@ -49,7 +48,7 @@ class ReflectionStack extends Component<Props> {
         {maxStack.map((reflection, idx) => {
           return (
             <ReflectionWrapper key={reflection.reflectionId} idx={idx}>
-              <ReflectionCard meeting={meeting} reflection={reflection} />
+              <ReflectionCard meetingId={meetingId} reflection={reflection} phaseItemId={phaseItemId} />
             </ReflectionWrapper>
           )
         })}
@@ -58,11 +57,4 @@ class ReflectionStack extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  ReflectionStack,
-  graphql`
-    fragment ReflectionStack_meeting on RetrospectiveMeeting {
-      ...ReflectionCard_meeting
-    }
-  `
-)
+export default ReflectionStack

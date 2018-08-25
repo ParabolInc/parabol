@@ -180,13 +180,7 @@ const RetroDiscussPhase = (props: Props) => {
               <ColumnInner>
                 <ReflectionGrid>
                   {reflections.map((reflection) => {
-                    return (
-                      <ReflectionCard
-                        key={reflection.id}
-                        meeting={newMeeting}
-                        reflection={reflection}
-                      />
-                    )
+                    return <ReflectionCard key={reflection.id} reflection={reflection} />
                   })}
                 </ReflectionGrid>
               </ColumnInner>
@@ -253,7 +247,6 @@ export default createFragmentContainer(
     fragment RetroDiscussPhase_team on Team {
       teamId: id
       newMeeting {
-        ...ReflectionCard_meeting
         meetingId: id
         facilitatorUserId
         phases {

@@ -141,6 +141,7 @@ class PhaseItemColumn extends Component<Props, State> {
   render () {
     const {idx, meeting, retroPhaseItem} = this.props
     const {
+      meetingId,
       localPhase: {focusedPhaseItemId},
       localStage: {isComplete}
     } = meeting
@@ -162,7 +163,12 @@ class PhaseItemColumn extends Component<Props, State> {
                 <PhaseItemHealthBar editorsCount={2} />
               </EditorAndStatus>
             </HeaderAndEditor>
-            <ReflectionStack reflectionStack={[]} idx={idx} />
+            <ReflectionStack
+              reflectionStack={[]}
+              idx={idx}
+              phaseItemId={retroPhaseItemId}
+              meetingId={meetingId}
+            />
             <ChitSection>
               <PhaseItemChits count={5} />
             </ChitSection>
@@ -212,7 +218,6 @@ export default createFragmentContainer(
         retroPhaseItemId
         sortOrder
         reflections {
-          ...AnonymousReflectionCard_reflection
           ...ReflectionCard_reflection
           content
           id

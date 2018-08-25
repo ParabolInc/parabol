@@ -35,3 +35,7 @@ extend type DragContext {
   initialCursorCoords: Coords2D,
   initialComponentCoords: Coords2D
 }
+
+extend type RetroPhaseItem {
+  editors: [ID!]
+}
