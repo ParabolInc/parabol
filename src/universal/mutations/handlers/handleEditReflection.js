@@ -1,17 +1,15 @@
-import getInProxy from 'universal/utils/relay/getInProxy'
-
 const handleEditReflection = (payload, store) => {
-  const reflectionId = getInProxy(payload, 'reflection', 'id')
-  const reflection = store.get(reflectionId)
-  if (!reflection) return
-  const editorId = payload.getValue('editorId')
+  const phaseItemId = payload.getValue('phaseItemId')
   const isEditing = payload.getValue('isEditing')
-  const reflectionEditorIds = reflection.getValue('editorIds') || []
+  const editorId = payload.getValue('editorId')
+
+  const phaseItem = store.get(phaseItemId)
+  if (!phaseItem) return
+  const editorIds = phaseItem.getValue('editorIds') || []
   const nextEditorIds = isEditing
-    ? reflectionEditorIds.concat(editorId)
-    : reflectionEditorIds.filter((id) => id !== editorId)
-  reflection.setValue(nextEditorIds, 'editorIds')
-  reflection.setValue(nextEditorIds.length > 0, 'isEditing')
+    ? editorIds.concat(editorId)
+    : editorIds.filter((id) => id !== editorId)
+  phaseItem.setValue(nextEditorIds, 'editorIds')
 }
 
 export default handleEditReflection

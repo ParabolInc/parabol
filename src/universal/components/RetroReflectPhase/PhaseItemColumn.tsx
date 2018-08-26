@@ -1,25 +1,25 @@
+import {PhaseItemColumn_retroPhaseItem} from '__generated__/PhaseItemColumn_retroPhaseItem.graphql'
+import memoize from 'micro-memoize'
 /**
  * Renders a column for a particular "type" of reflection
  * (e.g. positive or negative) during the Reflect phase of the retro meeting.
  */
-import type {PhaseItemColumn_meeting as Meeting} from './__generated__/PhaseItemColumn_meeting.graphql'
-import type {PhaseItemColumn_retroPhaseItem as RetroPhaseItem} from './__generated__/PhaseItemColumn_retroPhaseItem.graphql'
-// $FlowFixMe
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import appTheme from 'universal/styles/theme/appTheme'
-import {createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import {DECELERATE} from 'universal/styles/animation'
-import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
-import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
-import PhaseItemHealthBar from 'universal/components/RetroReflectPhase/PhaseItemHealthBar'
+import {createFragmentContainer, graphql} from 'react-relay'
+import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
+import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
+import PhaseItemHealthBar from 'universal/components/RetroReflectPhase/PhaseItemHealthBar'
+import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
+import {DECELERATE} from 'universal/styles/animation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -30,7 +30,7 @@ const ColumnWrapper = styled('div')({
   padding: '1rem'
 })
 
-const ColumnHighlight = styled('div')(({isFocused}) => ({
+const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
   background: isFocused && appTheme.palette.mid10a,
   display: 'flex',
   justifyContent: 'center',
@@ -58,7 +58,7 @@ const TypeDescription = styled('div')({
   fontWeight: 600
 })
 
-const FocusArrow = styled(StyledFontAwesome)(({isFocused}) => ({
+const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean}) => ({
   color: ui.palette.yellow,
   opacity: isFocused ? 1 : 0,
   paddingRight: isFocused ? '0.5rem' : 0,
@@ -72,50 +72,36 @@ const TypeHeader = styled('div')({
   width: '100%'
 })
 
-const EditorAndStatus = styled('div')(({isPhaseComplete}) => ({
-  visibility: isPhaseComplete && 'hidden'
+interface EditorAndStatusProps {
+  isPhaseComplete: boolean
+}
+
+const EditorAndStatus = styled('div')(({isPhaseComplete}: EditorAndStatusProps) => ({
+  visibility: isPhaseComplete ? 'hidden' : undefined
 }))
 
 const ChitSection = styled('div')({
   flex: 0.3
 })
 
-type Props = {|
-  atmosphere: Object,
-  canDrop: boolean,
-  meeting: Meeting,
-  retroPhaseItem: RetroPhaseItem,
-  ...MutationProps
-|}
-
-type State = {
-  reflectionStack: $ReadOnlyArray<Object>,
-  reflectionGroups: $ReadOnlyArray<Object>
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  idx: number,
+  meeting: PhaseItemColumn_meeting,
+  retroPhaseItem: PhaseItemColumn_retroPhaseItem
 }
 
-class PhaseItemColumn extends Component<Props, State> {
-  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
-    const {
-      meeting: {reflectionGroups: nextReflectionGroups},
-      retroPhaseItem: {retroPhaseItemId}
-    } = nextProps
-    if (nextReflectionGroups === prevState.reflectionGroups) return null
-    const reflectionGroups = nextReflectionGroups || []
-    return {
-      reflectionGroups,
-      reflectionStack: reflectionGroups.filter(
-        (group) =>
-          group.retroPhaseItemId === retroPhaseItemId &&
-          group.reflections.length > 0 &&
-          group.reflections[0].isViewerCreator
-      )
-    }
-  }
-
-  state = {
-    reflectionGroups: [],
-    reflectionStack: []
-  }
+class PhaseItemColumn extends Component<Props> {
+  makeColumnStack = memoize((reflectionGroups: PhaseItemColumn_meeting['reflectionGroups'], retroPhaseItemId: string) => reflectionGroups
+    .filter((group) =>
+      group.retroPhaseItemId === retroPhaseItemId &&
+      group.reflections.length > 0
+    )
+  )
+  makeViewerStack = memoize((columnStack) => columnStack
+    .filter((group) => group.reflections[0].isViewerCreator)
+    .sort((a,b) => a.sortOrder > b.sortOrder ? 1 : -1)
+    .map((group) => group.reflections[0])
+  )
 
   setColumnFocus = () => {
     const {
@@ -139,15 +125,20 @@ class PhaseItemColumn extends Component<Props, State> {
     SetPhaseFocusMutation(atmosphere, variables, {phaseId})
   }
 
-  render () {
+  nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
+
+  render() {
     const {idx, meeting, retroPhaseItem} = this.props
     const {
       meetingId,
       localPhase: {focusedPhaseItemId},
-      localStage: {isComplete}
+      localStage: {isComplete},
+      reflectionGroups
     } = meeting
-    const {question, retroPhaseItemId} = retroPhaseItem
+    const {editorIds = [], question, retroPhaseItemId} = retroPhaseItem
     const isFocused = focusedPhaseItemId === retroPhaseItemId
+    const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
+    const reflectionStack = this.makeViewerStack(columnStack)
     return (
       <ColumnWrapper>
         <ColumnHighlight isFocused={isFocused}>
@@ -160,18 +151,18 @@ class PhaseItemColumn extends Component<Props, State> {
                 </TypeDescription>
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={isComplete}>
-                <PhaseItemEditor meeting={meeting} retroPhaseItem={retroPhaseItem} />
-                <PhaseItemHealthBar editorsCount={2} />
+                <PhaseItemEditor meetingId={meetingId} nextSortOrder={this.nextSortOrder} retroPhaseItemId={retroPhaseItemId} />
+                <PhaseItemHealthBar editorsCount={editorIds ? editorIds.length : 0} />
               </EditorAndStatus>
             </HeaderAndEditor>
             <ReflectionStack
-              reflectionStack={[]}
+              reflectionStack={reflectionStack}
               idx={idx}
               phaseItemId={retroPhaseItemId}
               meetingId={meetingId}
             />
             <ChitSection>
-              <PhaseItemChits count={5} />
+              <PhaseItemChits count={columnStack.length - reflectionStack.length} />
             </ChitSection>
           </ColumnContent>
         </ColumnHighlight>
@@ -184,13 +175,12 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(PhaseItemColumn)),
   graphql`
     fragment PhaseItemColumn_retroPhaseItem on RetroPhaseItem {
-      ...PhaseItemEditor_retroPhaseItem
       retroPhaseItemId: id
       question
+      editorIds
     }
 
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
-      ...PhaseItemEditor_meeting
       facilitatorUserId
       meetingId: id
       localPhase {

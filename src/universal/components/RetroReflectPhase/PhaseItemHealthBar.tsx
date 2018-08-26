@@ -1,17 +1,20 @@
 import React, {Component} from 'react'
-import styled from 'react-emotion'
+import styled, {keyframes} from 'react-emotion'
 import {DECELERATE} from 'universal/styles/animation'
 import plural from 'universal/utils/plural'
-
+import appTheme from 'universal/styles/theme/appTheme'
 interface Props {
   editorsCount: number,
 }
 
+const {brand: {primary: {purpleLightened, orange, teal}}} = appTheme
+
 const BarMask = styled('div')((props: Props) => ({
   borderRadius: '8px',
+  height: 4,
   overflow: 'hidden',
   transition: `all 300ms ${DECELERATE}`,
-  width: 50 * props.editorsCount + 10
+  width: Math.max(10, 50 * props.editorsCount)
 }))
 
 const HealthBarStyle = styled('div')({
@@ -21,14 +24,26 @@ const HealthBarStyle = styled('div')({
   marginTop: 8,
 })
 
+const shiftColor = keyframes`
+  0% {
+    background-position: 0px;
+  }
+	100% {
+	  background-position: 200px;
+	}
+`
+
 const Bar = styled('div')({
-  background: `linear-gradient(90deg, rgba(255,0,0,1) 0%, rgba(255,255,0,1) 40%, rgba(0,255,0,1) 75%)`,
-  height: 4,
+  animation: `${shiftColor} 2000ms linear infinite`,
+  background: `linear-gradient(90deg, ${purpleLightened} 0%, ${orange} 40%, ${teal} 75%, ${purpleLightened} 100%)`,
+  borderRadius: '8px',
+  height: '100%',
   width: 200
 })
 
 const HealthBarLabel = styled('div')({
-  paddingTop: 8
+  paddingTop: 8,
+  userSelect: 'none'
 })
 
 class PhaseItemHealthBar extends Component<Props> {

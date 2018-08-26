@@ -231,6 +231,7 @@
     "tayden-clusterfck": "^0.7.0",
     "tinycolor2": "^1.4.1",
     "tlds": "^1.192.0",
+    "ts-node": "^7.0.1",
     "unicode-substring": "^1.0.0",
     "uws": "10.148.1",
     "wrtc": "^0.1.6"

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import styled, {keyframes} from 'react-emotion'
+import plural from 'universal/utils/plural'
 import ui from 'universal/styles/ui'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import {DECELERATE} from 'universal/styles/animation'
@@ -48,7 +49,7 @@ class PhaseItemChits extends Component<Props> {
     return (
       <div>
         <div>
-          {`${count} anonymous cards`}
+          {`${count} team member ${plural(count, 'reflection')}`}
         </div>
         <ChitArea>
           {chits.map((idx) => <Chit key={idx} />)}

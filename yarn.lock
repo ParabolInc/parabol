@@ -2964,7 +2964,7 @@ buffer-fill@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/buffer-fill/-/buffer-fill-1.0.0.tgz#f8f78b76789888ef39f205cd637f68e702122b2c"
 
-buffer-from@^1.0.0:
+buffer-from@^1.0.0, buffer-from@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.1.tgz#32713bc028f75c02fdb710d7c7bcec1f2c6070ef"
 
@@ -4474,7 +4474,7 @@ diff@3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.3.1.tgz#aa8567a6eed03c531fc89d3f711cd0e5259dec75"
 
-diff@^3.2.0, diff@^3.5.0:
+diff@^3.1.0, diff@^3.2.0, diff@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
 
@@ -8735,7 +8735,7 @@ make-dir@^1.0.0, make-dir@^1.1.0:
   dependencies:
     pify "^3.0.0"
 
-make-error@^1.3.4:
+make-error@^1.1.1, make-error@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.4.tgz#19978ed575f9e9545d2ff8c13e33b5d18a67d535"
 
@@ -12462,7 +12462,7 @@ source-map-support@^0.4.15, source-map-support@^0.4.2:
   dependencies:
     source-map "^0.5.6"
 
-source-map-support@^0.5.0, source-map-support@^0.5.3:
+source-map-support@^0.5.0, source-map-support@^0.5.3, source-map-support@^0.5.6:
   version "0.5.9"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.9.tgz#41bc953b2534267ea2d605bccfa7bfa3111ced5f"
   dependencies:
@@ -13257,6 +13257,19 @@ ts-loader@^4.5.0:
     loader-utils "^1.0.2"
     micromatch "^3.1.4"
     semver "^5.0.1"
+
+ts-node@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-7.0.1.tgz#9562dc2d1e6d248d24bc55f773e3f614337d9baf"
+  dependencies:
+    arrify "^1.0.0"
+    buffer-from "^1.1.0"
+    diff "^3.1.0"
+    make-error "^1.1.1"
+    minimist "^1.2.0"
+    mkdirp "^0.5.1"
+    source-map-support "^0.5.6"
+    yn "^2.0.0"
 
 tslib@1.9.0:
   version "1.9.0"
@@ -14400,3 +14413,7 @@ yeoman-generator@^2.0.5:
     text-table "^0.2.0"
     through2 "^2.0.0"
     yeoman-environment "^2.0.5"
+
+yn@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/yn/-/yn-2.0.0.tgz#e5adabc8acf408f6385fc76495684c88e6af689a"

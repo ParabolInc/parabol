@@ -1,20 +1,16 @@
-import {PhaseItemEditor_meeting} from '__generated__/PhaseItemEditor_meeting.graphql'
-import {PhaseItemEditor_retroPhaseItem} from '__generated__/PhaseItemEditor_retroPhaseItem.graphql'
-import {ContentState, convertToRaw, EditorState} from 'draft-js'
+import {convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
-import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation'
-import getNextSortOrder from 'universal/utils/getNextSortOrder'
+import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
-  meeting: PhaseItemEditor_meeting,
-  retroPhaseItem: PhaseItemEditor_retroPhaseItem,
-  reflectionStack: Array<any>,
+  meetingId: string,
+  nextSortOrder: () => number,
+  retroPhaseItemId: string,
   shadow?: number,
 }
 
@@ -25,25 +21,29 @@ interface State {
 class PhaseItemEditor extends Component<Props, State> {
   editTimerId: number | undefined
   state = {
-    editorState: EditorState.createWithContent(ContentState.createFromText(''))
+    editorState: EditorState.createEmpty()
   }
 
   handleSubmit() {
-    const {atmosphere, onError, onCompleted, meeting: {meetingId}, submitMutation, reflectionStack, retroPhaseItem: {retroPhaseItemId}} = this.props
-    const {editorState} = this.state
+    const {atmosphere, onError, onCompleted, meetingId, nextSortOrder, submitMutation, retroPhaseItemId} = this.props
     const input = {
-      content: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+      content: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent())),
       retroPhaseItemId,
-      sortOrder: getNextSortOrder(reflectionStack)
+      sortOrder: nextSortOrder()
     }
     submitMutation()
     CreateReflectionMutation(atmosphere, {input}, {meetingId}, onError, onCompleted)
+    const empty = EditorState.createEmpty()
+    const editorState = EditorState.moveFocusToEnd(empty)
+    this.setState({
+      editorState
+    })
   }
 
-  handleEditorBlur() {
+  handleEditorBlur = () => {
     const {
       atmosphere,
-      retroPhaseItem: {retroPhaseItemId: phaseItemId}
+      retroPhaseItemId: phaseItemId
     } = this.props
     const {editorState} = this.state
     const isDirty = editorState.getCurrentContent().hasText()
@@ -55,10 +55,10 @@ class PhaseItemEditor extends Component<Props, State> {
     }, delay)
   }
 
-  handleEditorFocus() {
+  handleEditorFocus = () => {
     const {
       atmosphere,
-      retroPhaseItem: {retroPhaseItemId: phaseItemId}
+      retroPhaseItemId: phaseItemId
     } = this.props
     if (this.editTimerId) {
       this.editTimerId = undefined
@@ -95,15 +95,4 @@ class PhaseItemEditor extends Component<Props, State> {
   }
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withMutationProps(PhaseItemEditor)),
-  graphql`
-    fragment PhaseItemEditor_retroPhaseItem on RetroPhaseItem {
-      retroPhaseItemId: id
-    }
-
-    fragment PhaseItemEditor_meeting on RetrospectiveMeeting {
-      meetingId: id
-    }
-  `
-)
+export default withAtmosphere(withMutationProps(PhaseItemEditor))

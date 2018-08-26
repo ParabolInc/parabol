@@ -1,28 +1,20 @@
 /**
  * Renders the delete button for a retro card, which floats in the top-right
  * corner of the card.
- *
- * @flow
  */
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import FontAwesome from 'react-fontawesome'
 
 import PlainButton from 'universal/components/PlainButton/PlainButton'
-import ui from 'universal/styles/ui'
-import {createFragmentContainer} from 'react-relay'
-import type {ReflectionCardDeleteButton_reflection as Reflection} from './__generated__/ReflectionCardDeleteButton_reflection.graphql'
-import type {ReflectionCardDeleteButton_meeting as Meeting} from './__generated__/ReflectionCardDeleteButton_meeting.graphql'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
+import ui from 'universal/styles/ui'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
-type Props = {
-  atmosphere: Object,
-  reflection: Reflection,
-  meeting: Meeting,
-  ...MutationProps
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  meetingId: string,
+  reflectionId: string,
 }
 
 const DeleteButton = styled(PlainButton)({
@@ -64,8 +56,8 @@ class ReflectionCardDeleteButton extends Component<Props> {
       atmosphere,
       onCompleted,
       onError,
-      meeting: {meetingId},
-      reflection: {reflectionId},
+      meetingId,
+      reflectionId,
       submitMutation,
       submitting
     } = this.props
@@ -87,15 +79,4 @@ class ReflectionCardDeleteButton extends Component<Props> {
   }
 }
 
-export default createFragmentContainer(
-  withMutationProps(withAtmosphere(ReflectionCardDeleteButton)),
-  graphql`
-    fragment ReflectionCardDeleteButton_meeting on RetrospectiveMeeting {
-      meetingId: id
-    }
-
-    fragment ReflectionCardDeleteButton_reflection on RetroReflection {
-      reflectionId: id
-    }
-  `
-)
+export default withMutationProps(withAtmosphere(ReflectionCardDeleteButton))

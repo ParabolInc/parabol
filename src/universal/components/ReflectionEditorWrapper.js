@@ -59,19 +59,6 @@ const EditorStyles = styled('div')(({userSelect}) => ({
 }))
 
 class ReflectionEditorWrapper extends PureComponent<Props> {
-  componentDidMount () {
-    const {editorState} = this.props
-    if (!editorState.getCurrentContent().hasText()) {
-      setTimeout(() => {
-        try {
-          this.editorRef.focus()
-        } catch (e) {
-          // DraftEditor was unmounted before this was called
-        }
-      })
-    }
-  }
-
   setEditorRef = (c) => {
     const {innerRef} = this.props
     if (innerRef) {

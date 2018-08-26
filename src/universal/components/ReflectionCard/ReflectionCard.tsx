@@ -29,6 +29,7 @@ interface Props extends WithMutationProps {
   readOnly?: boolean,
   shadow?: number,
   showOriginFooter?: boolean
+  userSelect?: 'text' | 'none'
 }
 
 interface State {
@@ -160,7 +161,8 @@ class ReflectionCard extends Component<Props, State> {
       meetingId,
       readOnly,
       reflection,
-      showOriginFooter
+      showOriginFooter,
+      userSelect
     } = this.props
     const {editorState} = this.state
     const {
@@ -185,11 +187,11 @@ class ReflectionCard extends Component<Props, State> {
           placeholder='My reflection thought…'
           readOnly={readOnly || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
-          userSelect={isDraggable ? 'none' : 'text'}
+          userSelect={userSelect || isDraggable ? 'none' : 'text'}
         />
         {error && <StyledError>{error.message}</StyledError>}
         {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
-        {!readOnly && <ReflectionCardDeleteButton meetingId={meetingId} reflection={reflection} />}
+        {!readOnly &&  <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />}
       </ReflectionCardRoot>
     )
   }
@@ -213,7 +215,6 @@ export default createFragmentContainer(
         question
       }
       sortOrder
-      ...ReflectionCardDeleteButton_reflection
     }
   `
 )
