@@ -87,6 +87,7 @@ const ChitSection = styled('div')({
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number,
   meeting: PhaseItemColumn_meeting,
+  phaseRef: React.RefObject<HTMLDivElement>,
   retroPhaseItem: PhaseItemColumn_retroPhaseItem
 }
 
@@ -128,7 +129,7 @@ class PhaseItemColumn extends Component<Props> {
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
   render() {
-    const {idx, meeting, retroPhaseItem} = this.props
+    const {idx, meeting, phaseRef, retroPhaseItem} = this.props
     const {
       meetingId,
       localPhase: {focusedPhaseItemId},
@@ -159,6 +160,7 @@ class PhaseItemColumn extends Component<Props> {
               reflectionStack={reflectionStack}
               idx={idx}
               phaseItemId={retroPhaseItemId}
+              phaseRef={phaseRef}
               meetingId={meetingId}
             />
             <ChitSection>

@@ -1,29 +1,34 @@
+import {Component, ReactNode} from 'react'
 import {createPortal} from 'react-dom'
-import {Component} from 'react'
-import PropTypes from 'prop-types'
 
 /*
  * A lightweight wrapper around React16s createPortal function
  * Listens for an ESC key press or a mousedown outside the modal
  * Takes an isOpen prop. For delayed DOM removal, (like animations) use complex isOpen logic in the parent
  */
-class Modal extends Component {
-  static propTypes = {
-    onClose: PropTypes.func,
-    onOpen: PropTypes.func,
-    clickToClose: PropTypes.bool,
-    escToClose: PropTypes.bool,
-    children: PropTypes.element.isRequired,
-    isOpen: PropTypes.bool
-  }
 
-  componentWillMount () {
+interface Props {
+  isOpen: boolean,
+
+  onClose?(event: KeyboardEvent | MouseEvent): void,
+
+  onOpen?(): void,
+
+  clickToClose?: boolean,
+  escToClose?: boolean,
+  children: ReactNode
+}
+
+class Modal extends Component<Props> {
+  el?: Element
+
+  componentWillMount() {
     if (this.props.isOpen) {
       this.setup()
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps: Props) {
     const {isOpen} = nextProps
     if (isOpen === this.props.isOpen) return
     if (isOpen) {
@@ -33,11 +38,11 @@ class Modal extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.teardown()
   }
 
-  setup () {
+  setup() {
     this.el = document.createElement('div')
     this.el.id = 'portal'
     this.setState({
@@ -55,7 +60,7 @@ class Modal extends Component {
     onOpen && onOpen()
   }
 
-  teardown () {
+  teardown() {
     if (this.el && document.body.contains(this.el)) {
       document.body.removeChild(this.el)
       document.removeEventListener('mousedown', this.handleDocumentClick)
@@ -64,20 +69,20 @@ class Modal extends Component {
     }
   }
 
-  handleKeydown = (e) => {
+  handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       const {onClose} = this.props
       onClose(e)
     }
   }
-  handleDocumentClick = (e) => {
-    if (!this.el.contains(e.target)) {
+  handleDocumentClick = (e: MouseEvent) => {
+    if (!this.el.contains(e.target as Node)) {
       const {onClose} = this.props
       onClose(e)
     }
   }
 
-  render () {
+  render() {
     const {children, isOpen} = this.props
     return isOpen ? createPortal(children, this.el) : null
   }

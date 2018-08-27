@@ -42,7 +42,7 @@ storiesOf('Reflect Phase', module)
       <ReflectionStack
         idx={1}
         reflectionStack={[{
-          reflectionId: 'refl1',
+          id: 'refl1',
           reflectionGroupId: 'reflG1',
           content: JSON.stringify(convertToRaw(ContentState.createFromText('hee haw'))),
           phaseItem: {
