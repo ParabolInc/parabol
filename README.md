@@ -5,6 +5,8 @@
 [![codecov](https://codecov.io/gh/ParabolInc/action/branch/master/graph/badge.svg)](https://codecov.io/gh/ParabolInc/action)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 [![StackShare](https://img.shields.io/badge/tech-stack-0690fa.svg?style=flat)](https://stackshare.io/parabol-inc/action)
+[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/ParabolInc/action.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ParabolInc/action/context:javascript)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/ParabolInc/action.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/ParabolInc/action/alerts)
 
 ## Overview
 
