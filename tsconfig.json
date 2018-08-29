@@ -43,7 +43,7 @@
   "awesomeTypescriptLoaderOptions": {
     "reportFiles": [
       "src/**/*.{ts,tsx}",
-      "stories/**/*.{ts,tsx}"
+//      "stories/**/*.{ts,tsx}"
     ]
   }
 }
