@@ -106,7 +106,7 @@
     "react-addons-test-utils": "^15.6.0",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "relay-compiler": "1.7.0-rc.1",
-    "relay-compiler-language-typescript": "^1.0.1",
+    "relay-compiler-language-typescript": "^1.1.0",
     "selenium-webdriver": "^3.6.0",
     "snazzy": "^7.1.1",
     "standard": "^11.0.1",

@@ -11088,15 +11088,6 @@ react-error-overlay@5.0.0-next.3e165448:
   version "5.0.0-next.3e165448"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-5.0.0-next.3e165448.tgz#2cbd10780c1fa9c7e35d6e443773e18948b7ee49"
 
-react-flip-toolkit@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/react-flip-toolkit/-/react-flip-toolkit-4.0.2.tgz#66b6b94dabf7fae76e1d21c012dd64f6fdb76309"
-  dependencies:
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    rematrix "^0.2.2"
-    wobble "^1.5.0"
-
 react-fontawesome@^1.5.0:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/react-fontawesome/-/react-fontawesome-1.6.1.tgz#eddce17e7dc731aa09fd4a186688a61793a16c5c"
@@ -11647,9 +11638,9 @@ relateurl@0.2.x:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
 
-relay-compiler-language-typescript@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/relay-compiler-language-typescript/-/relay-compiler-language-typescript-1.0.1.tgz#0d6eea72129d003af60159fa54bf07c713c995b2"
+relay-compiler-language-typescript@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/relay-compiler-language-typescript/-/relay-compiler-language-typescript-1.1.0.tgz#c3c6770eb74035a0fede99761cc539e5f9b5c3af"
   dependencies:
     immutable "^3.7.6"
     invariant "^2.2.2"
@@ -11688,10 +11679,6 @@ relay-runtime@1.7.0-rc.1, relay-runtime@@mattkrick/1.7.0-rc.1:
   dependencies:
     babel-runtime "^6.23.0"
     fbjs "0.8.17"
-
-rematrix@^0.2.2:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/rematrix/-/rematrix-0.2.3.tgz#37ec6b060a3c03c0fde3cf5628c6e109ea51e9d4"
 
 remove-trailing-separator@^1.0.1:
   version "1.1.0"
@@ -14100,10 +14087,6 @@ window-size@^0.1.4:
 with-callback@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/with-callback/-/with-callback-1.0.2.tgz#a09629b9a920028d721404fb435bdcff5c91bc21"
-
-wobble@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/wobble/-/wobble-1.5.0.tgz#5192d6681642ca22e4e133408628b99e9a7d1559"
 
 wordwrap@0.0.2:
   version "0.0.2"
