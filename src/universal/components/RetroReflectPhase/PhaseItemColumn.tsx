@@ -92,6 +92,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 class PhaseItemColumn extends Component<Props> {
+  phaseEditorRef = React.createRef<HTMLDivElement>()
   makeColumnStack = memoize((reflectionGroups: PhaseItemColumn_meeting['reflectionGroups'], retroPhaseItemId: string) => reflectionGroups
     .filter((group) =>
       group.retroPhaseItemId === retroPhaseItemId &&
@@ -152,13 +153,14 @@ class PhaseItemColumn extends Component<Props> {
                 </TypeDescription>
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={isComplete}>
-                <PhaseItemEditor meetingId={meetingId} nextSortOrder={this.nextSortOrder} retroPhaseItemId={retroPhaseItemId} />
+                <PhaseItemEditor phaseEditorRef={this.phaseEditorRef} meetingId={meetingId} nextSortOrder={this.nextSortOrder} retroPhaseItemId={retroPhaseItemId} />
                 <PhaseItemHealthBar editorsCount={editorIds ? editorIds.length : 0} />
               </EditorAndStatus>
             </HeaderAndEditor>
             <ReflectionStack
               reflectionStack={reflectionStack}
               idx={idx}
+              phaseEditorRef={this.phaseEditorRef}
               phaseItemId={retroPhaseItemId}
               phaseRef={phaseRef}
               meetingId={meetingId}

@@ -3,13 +3,18 @@ import React, {Component} from 'react'
 import styled from 'react-emotion'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import ExpandedReflectionStack from 'universal/components/RetroReflectPhase/ExpandedReflectionStack'
+import getBBox from 'universal/components/RetroReflectPhase/getBBox'
+import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
+import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
+import {STANDARD_CURVE} from 'universal/styles/animation'
 import ui from 'universal/styles/ui'
 
 interface Props {
   idx: number
   meetingId: string,
   phaseItemId: string,
+  phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
   reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
 }
@@ -84,6 +89,24 @@ class ReflectionStack extends Component<Props, State> {
   }
   stackRef = React.createRef<HTMLDivElement>()
   firstReflectionRef = React.createRef<HTMLDivElement>()
+
+  componentDidUpdate(prevProps) {
+    const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
+    const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
+    if (oldTop !== newTop) {
+      this.animateFromEditor(this.firstReflectionRef.current, this.props.phaseEditorRef.current)
+    }
+  }
+
+  animateFromEditor(topCardDiv: HTMLDivElement, editorDiv: HTMLDivElement) {
+    const first = getBBox(editorDiv)
+    const last = getBBox(topCardDiv)
+    topCardDiv.style.transform = getTransform(first, last)
+    requestDoubleAnimationFrame(() => {
+      topCardDiv.style.transition = `transform 300ms ${STANDARD_CURVE}`
+      topCardDiv.style.transform = null
+    })
+  }
 
   expand = () => {
     this.setState({isExpanded: true})

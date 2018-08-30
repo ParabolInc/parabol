@@ -10,6 +10,7 @@ import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMu
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string,
   nextSortOrder: () => number,
+  phaseEditorRef: React.RefObject<HTMLDivElement>
   retroPhaseItemId: string,
   shadow?: number,
 }
@@ -26,8 +27,10 @@ class PhaseItemEditor extends Component<Props, State> {
 
   handleSubmit() {
     const {atmosphere, onError, onCompleted, meetingId, nextSortOrder, submitMutation, retroPhaseItemId} = this.props
+    const content = this.state.editorState.getCurrentContent()
+    if (!content.hasText()) return
     const input = {
-      content: JSON.stringify(convertToRaw(this.state.editorState.getCurrentContent())),
+      content: JSON.stringify(convertToRaw(content)),
       retroPhaseItemId,
       sortOrder: nextSortOrder()
     }
@@ -79,8 +82,9 @@ class PhaseItemEditor extends Component<Props, State> {
 
   render() {
     const {editorState} = this.state
+    const {phaseEditorRef} = this.props
     return (
-      <ReflectionCardRoot>
+      <ReflectionCardRoot innerRef={phaseEditorRef}>
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorState={editorState}

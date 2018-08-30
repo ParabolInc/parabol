@@ -1,8 +1,9 @@
-import getTransform from 'universal/components/RetroReflectPhase/getTransform'
-import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
 import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
+import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
+import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
+import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import {
   ITEM_DURATION,
@@ -29,20 +30,23 @@ class ChildrenCache {
   cache: Array<CachedChild> = []
   childPadding: number
   childWidth: number
+  gridPadding: number
   maxWidth: number
+  maxHeight: number
 
   private get(key) {
     return this.cache.find((cachedChild) => cachedChild.key === key)
   }
 
   private getGridTuples() {
-    const maxCols = Math.floor(this.maxWidth / this.childWidth)
+    const fullColumnWidth = this.childWidth + this.childPadding
+    const maxCols = Math.floor(this.maxWidth / fullColumnWidth)
     let bestPerimeter = 1e6
     let result = {height: 0, width: 0, children: []}
     for (let ii = 1; ii < maxCols; ii++) {
       const proposedChildren = []
-      const currentColumnHeights = new Array(ii).fill(0)
-      const modalColumnLefts = currentColumnHeights.map((_, idx) => (this.childWidth + this.childPadding) * idx)
+      const currentColumnHeights = new Array(ii).fill(this.gridPadding)
+      const modalColumnLefts = currentColumnHeights.map((_, idx) => (fullColumnWidth) * idx + this.gridPadding)
       this.cache.forEach((cachedChild) => {
         const {bbox: {height}} = cachedChild
         const shortestColumnTop = Math.min(...currentColumnHeights)
@@ -51,12 +55,16 @@ class ChildrenCache {
         proposedChildren.push({left, top: shortestColumnTop})
         currentColumnHeights[shortestColumnIdx] = shortestColumnTop + height + this.childPadding
       })
-      const gridHeight = Math.max(...currentColumnHeights) - this.childPadding
-      const gridWidth = ii * this.childWidth
+      const gridHeight = Math.max(...currentColumnHeights) - this.childPadding + 2 * this.gridPadding
+      const gridWidth = ii * fullColumnWidth - this.childPadding + 2 * this.gridPadding
       const perimeter = 2 * gridHeight + 2 * gridWidth
-      if (perimeter < bestPerimeter) {
+
+      if (perimeter < bestPerimeter ||
+        // 1 more column makes it fit better
+        (gridHeight >= this.maxHeight && gridWidth + fullColumnWidth <= this.maxWidth)
+      ) {
         bestPerimeter = perimeter
-        result = {height: gridHeight, width: gridWidth, children: proposedChildren}
+        result = {height: Math.min(gridHeight, this.maxHeight), width: gridWidth, children: proposedChildren}
       } else {
         break
       }
@@ -89,15 +97,17 @@ class ChildrenCache {
   setEl(key: string, el: HTMLElement) {
     const cachedChild = this.get(key)
     if (!cachedChild) {
-      const {height, width} = el.getBoundingClientRect()
+      const {height, width} = getBBox(el)
       this.cache.push({el, key, bbox: {height, width}})
     }
   }
 
-  setGrid(maxWidth: number, childPadding: number, childWidth: number) {
+  setGrid(maxWidth: number, maxHeight: number, childPadding: number, childWidth: number, gridPadding: number) {
     this.childPadding = childPadding
     this.childWidth = childWidth
     this.maxWidth = maxWidth
+    this.maxHeight = maxHeight
+    this.gridPadding = gridPadding
     const {children, height, width} = this.getGridTuples()
     children.forEach(({left, top}, idx) => {
       const {bbox} = this.cache[idx]
@@ -157,7 +167,7 @@ class ChildrenCache {
     const cachedChild = this.get(key)
     if (!cachedChild) return undefined
     const {bbox, el} = cachedChild
-    const {height} = el.getBoundingClientRect()
+    const {height} = getBBox(el)
     if (bbox.height === height) return undefined
     bbox.height = height
     return this.updateChildren()

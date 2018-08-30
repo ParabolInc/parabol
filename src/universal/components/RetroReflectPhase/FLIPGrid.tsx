@@ -38,7 +38,7 @@ class FLIPGrid extends Component<Props, State> {
     const el = findDOMNode(this) as HTMLElement
     this.parentCache.el = el
     const maxBBox = this.props.getParentBBox()
-    const dims = this.childrenCache.setGrid(maxBBox.width, CARD_PADDING, REFLECTION_CARD_WIDTH)
+    const dims = this.childrenCache.setGrid(maxBBox.width, maxBBox.height, CARD_PADDING, REFLECTION_CARD_WIDTH, 16)
     this.parentCache.setCoords(el, dims, maxBBox)
     this.props.setBBox(this.parentCache.bbox)
     this.childrenCache.animateIn(this.first, this.parentCache.bbox)
