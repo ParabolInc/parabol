@@ -93,14 +93,21 @@ class ReflectionStack extends Component<Props, State> {
   componentDidUpdate(prevProps) {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
+    if (
+      (!oldTop && !newTop) ||
+      !this.firstReflectionRef.current ||
+      !this.props.phaseEditorRef.current
+    )
+      return
     if (!oldTop || !newTop || oldTop.id !== newTop.id) {
-      this.animateFromEditor(this.firstReflectionRef.current!, this.props.phaseEditorRef.current!)
+      this.animateFromEditor(this.firstReflectionRef.current, this.props.phaseEditorRef.current)
     }
   }
 
   animateFromEditor(topCardDiv: HTMLDivElement, editorDiv: HTMLDivElement) {
     const first = getBBox(editorDiv)
     const last = getBBox(topCardDiv)
+    if (!first || !last) return
     topCardDiv.style.transform = getTransform(first, last)
     requestDoubleAnimationFrame(() => {
       topCardDiv.style.transition = `transform 300ms ${STANDARD_CURVE}`
@@ -141,11 +148,13 @@ class ReflectionStack extends Component<Props, State> {
         <CardStack onClick={this.expand} isVisible={!isExpanded} innerRef={this.stackRef}>
           <CenteredCardStack>
             {maxStack.length === 1 && (
-              <ReflectionCard
-                meetingId={meetingId}
-                reflection={maxStack[0]}
-                phaseItemId={phaseItemId}
-              />
+              <div ref={this.firstReflectionRef}>
+                <ReflectionCard
+                  meetingId={meetingId}
+                  reflection={maxStack[0]}
+                  phaseItemId={phaseItemId}
+                />
+              </div>
             )}
             {maxStack.length > 1 &&
               maxStack.map((reflection, idx) => {

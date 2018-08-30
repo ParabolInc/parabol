@@ -21,9 +21,9 @@ export interface BBox {
 interface Props {
   childrenLen: number
 
-  getFirst(): BBox
+  getFirst(): BBox | null
 
-  getParentBBox(): BBox
+  getParentBBox(): BBox | null
 
   children(setBBox: (bbox: BBox) => void): ReactChild
   isClosing: boolean
@@ -57,20 +57,21 @@ class FLIPModal extends Component<Props> {
   }
 
   move() {
-    if (!this.childBBox) return
     const {getParentBBox} = this.props
-    const backgroundDiv = this.backgroundRef.current!
+    const backgroundDiv = this.backgroundRef.current
+    const contentDiv = this.contentRef.current
+    if (!backgroundDiv || !contentDiv || !this.childBBox) return
     const first = getBBox(backgroundDiv)
+    const maxBBox = getParentBBox()
+    const contentBBox = getBBox(contentDiv)
+    if (!contentBBox || !maxBBox || !first) return
     const height = this.childBBox.height
     const width = this.childBBox.width
-    const maxBBox = getParentBBox()
     const top = (maxBBox.height - this.childBBox.height) / 2 + maxBBox.top
     const left = (maxBBox.width - this.childBBox.width) / 2 + maxBBox.left
     const last = {top, left, width, height}
     const {style: bgStyle} = backgroundDiv
 
-    const contentDiv = this.contentRef.current!
-    const contentBBox = getBBox(contentDiv)
     setElementBBox(contentDiv, last)
     contentDiv.style.transform = getTransform(contentBBox, last)
     contentDiv.style.transition = null
@@ -95,13 +96,15 @@ class FLIPModal extends Component<Props> {
   }
 
   animateIn() {
-    if (!this.childBBox) return
     const {childrenLen, getFirst, getParentBBox} = this.props
-    const backgroundDiv = this.backgroundRef.current!
+    const backgroundDiv = this.backgroundRef.current
+    const contentDiv = this.contentRef.current
+    if (!this.childBBox || !backgroundDiv || !contentDiv) return
     const height = this.childBBox.height
     const width = this.childBBox.width
     const maxBBox = getParentBBox()
     const first = getFirst()
+    if (!first || !maxBBox) return
     const top = (maxBBox.height - this.childBBox.height) / 2 + maxBBox.top
     const left = (maxBBox.width - this.childBBox.width) / 2 + maxBBox.left
     const last = {top, left, height, width}
@@ -110,16 +113,12 @@ class FLIPModal extends Component<Props> {
     const totalDuration = MIN_ITEM_DELAY + ITEM_DURATION + staggerDelay * childrenLen
     const {style: bgStyle} = backgroundDiv
 
-    // const contentLast = {top: top + PADDING, left: left + PADDING}
-    const contentDiv = this.contentRef.current!
     setElementBBox(contentDiv, last)
-
     setElementBBox(backgroundDiv, last)
     bgStyle.transform = getTransform(first, last, {scale: true})
     bgStyle.opacity = '0'
     const resetBodyStyles = hideBodyScroll()
     requestDoubleAnimationFrame(() => {
-      console.log('setting overflow auto')
       bgStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
       bgStyle.transform = null
       bgStyle.opacity = null
@@ -136,12 +135,13 @@ class FLIPModal extends Component<Props> {
   animateOut() {
     const {childrenLen, close, getFirst} = this.props
     const first = getFirst()
-    const backgroundDiv = this.backgroundRef.current!
+    const backgroundDiv = this.backgroundRef.current
+    const contentDiv = this.contentRef.current
     const last = getBBox(backgroundDiv)
+    if (!first || !last || !backgroundDiv || !contentDiv) return
     const {style: bgStyle} = backgroundDiv
     const staggerDelay = getStaggerDelay(childrenLen)
     const totalDuration = MIN_ITEM_DELAY + ITEM_DURATION + staggerDelay * childrenLen
-    const contentDiv = this.contentRef.current!
     contentDiv.style.overflow = ''
     const resetBodyStyles = hideBodyScroll()
     bgStyle.transition = `all ${totalDuration}ms ${DECELERATE}`

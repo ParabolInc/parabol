@@ -97,7 +97,7 @@ const getStatus = (count: number, editorCount: number) => {
     }
     return status
   } else if (editorCount) {
-    return `${editorCount} team ${plural(count, 'member')} writing reflections...`
+    return `${editorCount} team ${plural(editorCount, 'member')} writing reflections...`
   }
   return ''
 }

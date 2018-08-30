@@ -35,12 +35,13 @@ class ExpandedReflectionStack extends Component<Props, State> {
     isClosing: false
   }
   gridRef = React.createRef<FLIPGrid>()
-  getModalFirst = () => getBBox(this.props.stackRef.current!)
-  getParentBBox = () => getBBox(this.props.phaseRef.current!)
-  getChildrenFirst = () => getBBox(this.props.firstReflectionRef.current!)
+  getModalFirst = () => getBBox(this.props.stackRef.current)
+  getParentBBox = () => getBBox(this.props.phaseRef.current)
+  getChildrenFirst = () => getBBox(this.props.firstReflectionRef.current)
 
   checkForResize = (key) => () => {
-    this.gridRef.current!.checkForResize(key)
+    if (!this.gridRef.current) return
+    this.gridRef.current.checkForResize(key)
   }
 
   handleClose = () => {

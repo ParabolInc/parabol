@@ -2,10 +2,11 @@
 
 import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
 
-const cache = new Map()
+const cache = new Map<HTMLElement, BBox>()
 let timer
 
-const getBBox = (el: HTMLElement): BBox => {
+const getBBox = (el: HTMLElement | null) => {
+  if (!el) return null
   if (!cache.has(el)) {
     const {height, width, top, left} = el.getBoundingClientRect()
     cache.set(el, {height, width, top, left})
@@ -16,7 +17,7 @@ const getBBox = (el: HTMLElement): BBox => {
       })
     }
   }
-  return cache.get(el)
+  return cache.get(el) || null
 }
 
 export default getBBox

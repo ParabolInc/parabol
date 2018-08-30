@@ -9,9 +9,9 @@ import {
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 
 interface Props {
-  getFirst(): BBox
+  getFirst(): BBox | null
 
-  getParentBBox(): BBox
+  getParentBBox(): BBox | null
 
   isClosing: boolean
 
@@ -40,6 +40,7 @@ class FLIPGrid extends Component<Props, State> {
     const el = findDOMNode(this) as HTMLElement
     this.parentCache.el = el
     const maxBBox = this.props.getParentBBox()
+    if (!maxBBox) return
     const dims = this.childrenCache.setGrid(
       maxBBox.width,
       maxBBox.height,
@@ -75,8 +76,8 @@ class FLIPGrid extends Component<Props, State> {
   }
 
   handleGridChange(dims?: {height: number; width: number}) {
-    if (!dims) return
     const maxBBox = this.props.getParentBBox()
+    if (!dims || !maxBBox) return
     this.parentCache.setCoords(this.parentCache.el, dims, maxBBox)
     this.props.setBBox(this.parentCache.bbox)
     this.updateChildren()

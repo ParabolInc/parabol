@@ -111,8 +111,11 @@ class ChildrenCache {
   setEl(key: string, el: HTMLElement) {
     const cachedChild = this.get(key)
     if (!cachedChild) {
-      const {height, width} = getBBox(el)
-      this.cache.push({el, key, bbox: {height, width}})
+      const childBBox = getBBox(el)
+      if (childBBox) {
+        const {height, width} = childBBox
+        this.cache.push({el, key, bbox: {height, width}})
+      }
     }
   }
 
@@ -200,9 +203,9 @@ class ChildrenCache {
     const cachedChild = this.get(key)
     if (!cachedChild) return undefined
     const {bbox, el} = cachedChild
-    const {height} = getBBox(el)
-    if (bbox.height === height) return undefined
-    bbox.height = height
+    const elBBox = getBBox(el)
+    if (!elBBox || bbox.height === elBBox.height) return undefined
+    bbox.height = elBBox.height
     return this.updateChildren()
   }
 

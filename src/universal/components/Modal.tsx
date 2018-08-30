@@ -76,7 +76,8 @@ class Modal extends Component<Props> {
     }
   }
   handleDocumentClick = (e: MouseEvent | TouchEvent) => {
-    if (!this.el!.contains(e.target as Node)) {
+    if (!this.el) return
+    if (!this.el.contains(e.target as Node)) {
       const {onClose} = this.props
       onClose && onClose(e)
     }
