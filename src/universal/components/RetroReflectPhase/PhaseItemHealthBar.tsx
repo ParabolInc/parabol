@@ -4,10 +4,14 @@ import {DECELERATE} from 'universal/styles/animation'
 import plural from 'universal/utils/plural'
 import appTheme from 'universal/styles/theme/appTheme'
 interface Props {
-  editorCount: number,
+  editorCount: number
 }
 
-const {brand: {primary: {purpleLightened, orange, teal}}} = appTheme
+const {
+  brand: {
+    primary: {purpleLightened, orange, teal}
+  }
+} = appTheme
 
 const BarMask = styled('div')((props: Props) => ({
   borderRadius: '8px',
@@ -21,7 +25,7 @@ const HealthBarStyle = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   marginLeft: 16,
-  marginTop: 8,
+  marginTop: 8
 })
 
 const shiftColor = keyframes`
@@ -54,7 +58,11 @@ class PhaseItemHealthBar extends Component<Props> {
         <BarMask editorCount={editorCount}>
           <Bar />
         </BarMask>
-        <HealthBarLabel>{`${editorCount} ${plural(editorCount, 'person', 'people')} typing...`}</HealthBarLabel>
+        <HealthBarLabel>{`${editorCount} ${plural(
+          editorCount,
+          'person',
+          'people'
+        )} typing...`}</HealthBarLabel>
       </HealthBarStyle>
     )
   }

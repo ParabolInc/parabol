@@ -2,17 +2,19 @@ import {convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import CreateReflectionMutation from 'universal/mutations/CreateReflectionMutation'
 import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
-  meetingId: string,
-  nextSortOrder: () => number,
+  meetingId: string
+  nextSortOrder: () => number
   phaseEditorRef: React.RefObject<HTMLDivElement>
-  retroPhaseItemId: string,
-  shadow?: number,
+  retroPhaseItemId: string
+  shadow?: number
 }
 
 interface State {
@@ -26,7 +28,15 @@ class PhaseItemEditor extends Component<Props, State> {
   }
 
   handleSubmit() {
-    const {atmosphere, onError, onCompleted, meetingId, nextSortOrder, submitMutation, retroPhaseItemId} = this.props
+    const {
+      atmosphere,
+      onError,
+      onCompleted,
+      meetingId,
+      nextSortOrder,
+      submitMutation,
+      retroPhaseItemId
+    } = this.props
     const content = this.state.editorState.getCurrentContent()
     if (!content.hasText()) return
     const input = {
@@ -44,10 +54,7 @@ class PhaseItemEditor extends Component<Props, State> {
   }
 
   handleEditorBlur = () => {
-    const {
-      atmosphere,
-      retroPhaseItemId: phaseItemId
-    } = this.props
+    const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
     const {editorState} = this.state
     const isDirty = editorState.getCurrentContent().hasText()
     // if they have text there, they'll probably come back to it in 10 seconds
@@ -59,10 +66,7 @@ class PhaseItemEditor extends Component<Props, State> {
   }
 
   handleEditorFocus = () => {
-    const {
-      atmosphere,
-      retroPhaseItemId: phaseItemId
-    } = this.props
+    const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
     if (this.editTimerId) {
       this.editTimerId = undefined
       clearTimeout(this.editTimerId)
@@ -86,12 +90,12 @@ class PhaseItemEditor extends Component<Props, State> {
     return (
       <ReflectionCardRoot innerRef={phaseEditorRef}>
         <ReflectionEditorWrapper
-          ariaLabel='Edit this reflection'
+          ariaLabel="Edit this reflection"
           editorState={editorState}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleReturn={this.handleReturn}
-          placeholder='My reflection thought…'
+          placeholder="My reflection thought…"
           setEditorState={this.setEditorState}
         />
       </ReflectionCardRoot>

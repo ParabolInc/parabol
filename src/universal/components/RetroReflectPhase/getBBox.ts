@@ -3,7 +3,7 @@
 import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
 
 const cache = new Map()
-let timer = undefined
+let timer
 
 const getBBox = (el: HTMLElement): BBox => {
   if (!cache.has(el)) {

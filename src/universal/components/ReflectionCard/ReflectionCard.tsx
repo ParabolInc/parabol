@@ -1,3 +1,4 @@
+import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
@@ -7,7 +8,9 @@ import ReflectionFooter from 'universal/components/ReflectionFooter'
 import StyledError from 'universal/components/StyledError'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
 import UserDraggingHeader from 'universal/components/UserDraggingHeader'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
@@ -16,31 +19,30 @@ import {cardShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import isTempId from 'universal/utils/relay/isTempId'
-import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
+import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
-  handleChange?: () => void,
-  isDraggable?: boolean,
-  reflection: ReflectionCard_reflection,
-  meetingId?: string,
-  phaseItemId?: string,
-  readOnly?: boolean,
-  shadow?: number,
+  handleChange?: () => void
+  isDraggable?: boolean
+  reflection: ReflectionCard_reflection
+  meetingId: string
+  phaseItemId?: string
+  readOnly?: boolean
+  shadow?: number
   showOriginFooter?: boolean
   userSelect?: 'text' | 'none'
 }
 
 interface State {
-  content: string,
-  editorState?: EditorState
+  content: string
+  editorState: EditorState | null
 }
 
 interface ReflectionCardRootProps {
-  isClosing?: boolean,
-  shadow?: string | null,
-  hasDragLock?: boolean
+  isClosing?: boolean
+  shadow?: string | null
+  hasDragLock?: boolean | null
 }
 
 export const ReflectionCardRoot = styled('div')(
@@ -66,7 +68,7 @@ export const ReflectionCardRoot = styled('div')(
 )
 
 class ReflectionCard extends Component<Props, State> {
-  static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): Partial<State> | null {
     const {reflection} = nextProps
     const {content} = reflection
     if (content === prevState.content) return null
@@ -83,7 +85,7 @@ class ReflectionCard extends Component<Props, State> {
     }
   }
 
-  editorRef: HTMLElement
+  editorRef!: HTMLElement
 
   state = {
     content: '',
@@ -104,7 +106,7 @@ class ReflectionCard extends Component<Props, State> {
       reflection: {reflectionId},
       phaseItemId
     } = this.props
-    if (isTempId(reflectionId)) return
+    if (isTempId(reflectionId) || !phaseItemId) return
     EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
   }
 
@@ -117,7 +119,7 @@ class ReflectionCard extends Component<Props, State> {
       onError,
       onCompleted
     } = this.props
-    const {editorState} = this.state
+    const {editorState} = this.state as State
     if (!editorState) return
     const contentState = editorState.getCurrentContent()
     if (contentState.hasText()) {
@@ -141,7 +143,7 @@ class ReflectionCard extends Component<Props, State> {
       phaseItemId,
       reflection: {reflectionId}
     } = this.props
-    if (isTempId(reflectionId)) return
+    if (isTempId(reflectionId) || !phaseItemId) return
     this.handleContentUpdate()
     EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
   }
@@ -152,7 +154,7 @@ class ReflectionCard extends Component<Props, State> {
     return 'handled'
   }
 
-  render () {
+  render() {
     const {
       atmosphere,
       handleChange,
@@ -177,7 +179,7 @@ class ReflectionCard extends Component<Props, State> {
       <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow}>
         {hasDragLock && <UserDraggingHeader user={dragUser} />}
         <ReflectionEditorWrapper
-          ariaLabel='Edit this reflection'
+          ariaLabel="Edit this reflection"
           editorRef={this.editorRef}
           editorState={editorState}
           innerRef={this.setEditorRef}
@@ -186,14 +188,16 @@ class ReflectionCard extends Component<Props, State> {
           onFocus={this.handleEditorFocus}
           handleChange={handleChange}
           handleReturn={this.handleReturn}
-          placeholder='My reflection thought…'
+          placeholder="My reflection thought…"
           readOnly={readOnly || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
           userSelect={userSelect || isDraggable ? 'none' : 'text'}
         />
         {error && <StyledError>{error.message}</StyledError>}
         {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
-        {!readOnly &&  <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />}
+        {!readOnly && (
+          <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
+        )}
       </ReflectionCardRoot>
     )
   }

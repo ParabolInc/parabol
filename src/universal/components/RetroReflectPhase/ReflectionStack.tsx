@@ -12,8 +12,8 @@ import ui from 'universal/styles/ui'
 
 interface Props {
   idx: number
-  meetingId: string,
-  phaseItemId: string,
+  meetingId: string
+  phaseItemId: string
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
   reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
@@ -36,7 +36,7 @@ const CenteredCardStack = styled('div')({
   position: 'relative'
 })
 
-const ReflectionWrapper = styled('div')(({count, idx}: {count: number, idx: number}) => {
+const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}) => {
   switch (count - idx) {
     case 1:
       return {
@@ -94,7 +94,7 @@ class ReflectionStack extends Component<Props, State> {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
     if (!oldTop || !newTop || oldTop.id !== newTop.id) {
-      this.animateFromEditor(this.firstReflectionRef.current, this.props.phaseEditorRef.current)
+      this.animateFromEditor(this.firstReflectionRef.current!, this.props.phaseEditorRef.current!)
     }
   }
 
@@ -128,23 +128,44 @@ class ReflectionStack extends Component<Props, State> {
     const maxStack = reflectionStack.slice(Math.max(0, reflectionStack.length - 3))
     return (
       <React.Fragment>
-        <ExpandedReflectionStack collapse={this.collapse} isExpanded={isExpanded} phaseRef={phaseRef}
-                                 stackRef={this.stackRef} reflectionStack={reflectionStack} meetingId={meetingId}
-                                 phaseItemId={phaseItemId} firstReflectionRef={this.firstReflectionRef} />
+        <ExpandedReflectionStack
+          collapse={this.collapse}
+          isExpanded={isExpanded}
+          phaseRef={phaseRef}
+          stackRef={this.stackRef}
+          reflectionStack={reflectionStack}
+          meetingId={meetingId}
+          phaseItemId={phaseItemId}
+          firstReflectionRef={this.firstReflectionRef}
+        />
         <CardStack onClick={this.expand} isVisible={!isExpanded} innerRef={this.stackRef}>
           <CenteredCardStack>
-            {maxStack.length === 1 &&
-            <ReflectionCard meetingId={meetingId} reflection={maxStack[0]} phaseItemId={phaseItemId}/>
-            }
-            {maxStack.length > 1 && maxStack.map((reflection, idx) => {
-              return (
-                <ReflectionWrapper key={reflection.id} idx={idx} count={maxStack.length}
-                                   innerRef={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}>
-                  <ReflectionCard meetingId={meetingId} reflection={reflection} phaseItemId={phaseItemId} readOnly
-                                  userSelect='none' />
-                </ReflectionWrapper>
-              )
-            })}
+            {maxStack.length === 1 && (
+              <ReflectionCard
+                meetingId={meetingId}
+                reflection={maxStack[0]}
+                phaseItemId={phaseItemId}
+              />
+            )}
+            {maxStack.length > 1 &&
+              maxStack.map((reflection, idx) => {
+                return (
+                  <ReflectionWrapper
+                    key={reflection.id}
+                    idx={idx}
+                    count={maxStack.length}
+                    innerRef={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}
+                  >
+                    <ReflectionCard
+                      meetingId={meetingId}
+                      reflection={reflection}
+                      phaseItemId={phaseItemId}
+                      readOnly
+                      userSelect="none"
+                    />
+                  </ReflectionWrapper>
+                )
+              })}
           </CenteredCardStack>
         </CardStack>
       </React.Fragment>

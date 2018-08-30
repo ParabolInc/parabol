@@ -12,20 +12,20 @@ import {ITEM_DURATION, MIN_ITEM_DELAY} from 'universal/utils/multiplayerMasonry/
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
 
 export interface BBox {
-  height: number,
-  width: number,
-  top: number,
+  height: number
+  width: number
+  top: number
   left: number
 }
 
 interface Props {
-  childrenLen: number,
+  childrenLen: number
 
-  getFirst(): BBox | null,
+  getFirst(): BBox
 
-  getParentBBox(): BBox | null,
+  getParentBBox(): BBox
 
-  children(setBBox: (bbox: BBox) => void): ReactChild,
+  children(setBBox: (bbox: BBox) => void): ReactChild
   isClosing: boolean
   close(): void
 }
@@ -44,7 +44,7 @@ const ModalContent = styled('div')({
 })
 
 class FLIPModal extends Component<Props> {
-  childBBox: BBox
+  childBBox: BBox | null = null
   backgroundRef = React.createRef<HTMLDivElement>()
   contentRef = React.createRef<HTMLDivElement>()
 
@@ -57,8 +57,9 @@ class FLIPModal extends Component<Props> {
   }
 
   move() {
+    if (!this.childBBox) return
     const {getParentBBox} = this.props
-    const backgroundDiv = this.backgroundRef.current
+    const backgroundDiv = this.backgroundRef.current!
     const first = getBBox(backgroundDiv)
     const height = this.childBBox.height
     const width = this.childBBox.width
@@ -68,7 +69,7 @@ class FLIPModal extends Component<Props> {
     const last = {top, left, width, height}
     const {style: bgStyle} = backgroundDiv
 
-    const contentDiv = this.contentRef.current
+    const contentDiv = this.contentRef.current!
     const contentBBox = getBBox(contentDiv)
     setElementBBox(contentDiv, last)
     contentDiv.style.transform = getTransform(contentBBox, last)
@@ -93,10 +94,10 @@ class FLIPModal extends Component<Props> {
     backgroundDiv.addEventListener('transitionend', cleanup)
   }
 
-
   animateIn() {
+    if (!this.childBBox) return
     const {childrenLen, getFirst, getParentBBox} = this.props
-    const backgroundDiv = this.backgroundRef.current
+    const backgroundDiv = this.backgroundRef.current!
     const height = this.childBBox.height
     const width = this.childBBox.width
     const maxBBox = getParentBBox()
@@ -110,7 +111,7 @@ class FLIPModal extends Component<Props> {
     const {style: bgStyle} = backgroundDiv
 
     // const contentLast = {top: top + PADDING, left: left + PADDING}
-    const contentDiv = this.contentRef.current
+    const contentDiv = this.contentRef.current!
     setElementBBox(contentDiv, last)
 
     setElementBBox(backgroundDiv, last)
@@ -135,12 +136,12 @@ class FLIPModal extends Component<Props> {
   animateOut() {
     const {childrenLen, close, getFirst} = this.props
     const first = getFirst()
-    const backgroundDiv = this.backgroundRef.current
+    const backgroundDiv = this.backgroundRef.current!
     const last = getBBox(backgroundDiv)
     const {style: bgStyle} = backgroundDiv
     const staggerDelay = getStaggerDelay(childrenLen)
     const totalDuration = MIN_ITEM_DELAY + ITEM_DURATION + staggerDelay * childrenLen
-    const contentDiv = this.contentRef.current
+    const contentDiv = this.contentRef.current!
     contentDiv.style.overflow = ''
     const resetBodyStyles = hideBodyScroll()
     bgStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
@@ -172,9 +173,7 @@ class FLIPModal extends Component<Props> {
     return (
       <React.Fragment>
         <ModalBackground innerRef={this.backgroundRef} />
-        <ModalContent innerRef={this.contentRef}>
-          {this.props.children(this.setBBox)}
-        </ModalContent>
+        <ModalContent innerRef={this.contentRef}>{this.props.children(this.setBBox)}</ModalContent>
       </React.Fragment>
     )
   }

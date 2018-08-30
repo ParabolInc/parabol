@@ -8,14 +8,14 @@ import {createPortal} from 'react-dom'
  */
 
 interface Props {
-  isOpen: boolean,
+  isOpen: boolean
 
-  onClose?(event: KeyboardEvent | MouseEvent): void,
+  onClose?(event: KeyboardEvent | MouseEvent | TouchEvent): void
 
-  onOpen?(): void,
+  onOpen?(): void
 
-  clickToClose?: boolean,
-  escToClose?: boolean,
+  clickToClose?: boolean
+  escToClose?: boolean
   children: ReactNode
 }
 
@@ -72,19 +72,19 @@ class Modal extends Component<Props> {
   handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       const {onClose} = this.props
-      onClose(e)
+      onClose && onClose(e)
     }
   }
-  handleDocumentClick = (e: MouseEvent) => {
-    if (!this.el.contains(e.target as Node)) {
+  handleDocumentClick = (e: MouseEvent | TouchEvent) => {
+    if (!this.el!.contains(e.target as Node)) {
       const {onClose} = this.props
-      onClose(e)
+      onClose && onClose(e)
     }
   }
 
   render() {
     const {children, isOpen} = this.props
-    return isOpen ? createPortal(children, this.el) : null
+    return isOpen ? createPortal(children, this.el!) : null
   }
 }
 

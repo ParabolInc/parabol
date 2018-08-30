@@ -1,6 +1,5 @@
 import {number, withKnobs} from '@storybook/addon-knobs'
 import {storiesOf} from '@storybook/react'
-import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 import {ContentState, convertToRaw} from 'draft-js'
 import React from 'react'
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
@@ -11,6 +10,23 @@ import PhaseItemHealthBar from '../src/universal/components/RetroReflectPhase/Ph
 import ReflectionStack from '../src/universal/components/RetroReflectPhase/ReflectionStack'
 import StoryProvider from './components/StoryProvider'
 
+const meeting = {
+  reflectionGroups: [],
+  localPhase: {focusedPhaseItemId: '123', phaseId: '123'},
+  localStage: {isComplete: false}
+}
+
+const reflectionStack = [
+  {
+    id: 'refl1',
+    reflectionGroupId: 'reflG1',
+    content: JSON.stringify(convertToRaw(ContentState.createFromText('hee haw'))),
+    phaseItem: {
+      question: 'What do'
+    }
+  }
+]
+
 storiesOf('Reflect Phase', module)
   .addDecorator(withKnobs)
   .add('placeholder', () => (
@@ -20,11 +36,7 @@ storiesOf('Reflect Phase', module)
   ))
   .add('editor', () => (
     <StoryProvider>
-      <PhaseItemEditor
-        meetingId='123'
-        retroPhaseItemId='124'
-        reflectionStack={[]}
-      />
+      <PhaseItemEditor meetingId="123" retroPhaseItemId="124" reflectionStack={[]} />
     </StoryProvider>
   ))
   .add('health bar', () => (
@@ -41,16 +53,9 @@ storiesOf('Reflect Phase', module)
     <StoryProvider>
       <ReflectionStack
         idx={1}
-        reflectionStack={[{
-          id: 'refl1',
-          reflectionGroupId: 'reflG1',
-          content: JSON.stringify(convertToRaw(ContentState.createFromText('hee haw'))),
-          phaseItem: {
-            question: 'What do'
-          }
-        } as ReflectionCard_reflection]}
-        meetingId='meet1'
-        phaseItemId='pi1'
+        reflectionStack={reflectionStack as any}
+        meetingId="meet1"
+        phaseItemId="pi1"
       />
     </StoryProvider>
   ))
@@ -58,12 +63,8 @@ storiesOf('Reflect Phase', module)
     <StoryProvider>
       <PhaseItemColumn
         idx={0}
-        retroPhaseItem={{retroPhaseItemId: '123', question: 'What do?'}}
-        meeting={{
-          reflectionGroups: [],
-          localPhase: {focusedPhaseItemId: '123', phaseId: '123'},
-          localStage: {isComplete: false}
-        }}
+        retroPhaseItem={{retroPhaseItemId: '123', question: 'What do?'} as any}
+        meeting={meeting as any}
       />
     </StoryProvider>
   ))

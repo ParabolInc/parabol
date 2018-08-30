@@ -12,7 +12,11 @@ class Incrementor {
   Button: SFC
 
   constructor(public min: number, public max: number) {
-    this.Button = () => <button style={style} onClick={this.increment}>+1</button>
+    this.Button = () => (
+      <button style={style} onClick={this.increment}>
+        +1
+      </button>
+    )
   }
 
   increment = () => {

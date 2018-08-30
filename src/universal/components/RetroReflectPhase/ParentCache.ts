@@ -1,8 +1,8 @@
 import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
 
 class ParentCache {
-  el: HTMLElement
-  bbox: BBox
+  el!: HTMLElement
+  bbox!: BBox
   // columnLefts: Array<number>
   setCoords(el: HTMLElement, {height, width}, maxBBox: BBox) {
     this.el = el

@@ -47,7 +47,13 @@ export const createReflectionTeamUpdater = (payload, store) => {
   handleAddReflectionGroups(reflectionGroup, store)
 }
 
-const CreateReflectionMutation = (atmosphere, variables: ICreateReflectionOnMutationArguments, context: Context, onError: ErrorHandler, onCompleted: CompletedHandler) => {
+const CreateReflectionMutation = (
+  atmosphere,
+  variables: ICreateReflectionOnMutationArguments,
+  context: Context,
+  onError: ErrorHandler,
+  onCompleted: CompletedHandler
+) => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

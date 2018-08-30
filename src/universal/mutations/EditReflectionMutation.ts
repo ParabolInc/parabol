@@ -43,6 +43,7 @@ const EditReflectionMutation = (
     optimisticUpdater: (store) => {
       const {phaseItemId, isEditing} = variables
       const phaseItem = store.get(phaseItemId)
+      if (!phaseItem) return
       const editorIds = phaseItem.getValue('editorIds') || []
       const nextEditorIds = isEditing
         ? editorIds.concat('tmpUser')
