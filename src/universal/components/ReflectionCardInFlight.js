@@ -1,5 +1,5 @@
 // @flow
-import type {ReflectionCardInFlight_reflection as Reflection} from './__generated__/ReflectionCardInFlight_reflection.graphql'
+import type {ReflectionCardInFlight_reflection as Reflection} from '__generated__/ReflectionCardInFlight_reflection.graphql'
 // $FlowFixMe
 import {convertFromRaw, EditorState} from 'draft-js'
 import * as React from 'react'

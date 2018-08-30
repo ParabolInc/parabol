@@ -12,8 +12,8 @@ import styled from 'react-emotion'
 import LoadableNewMeetingAvatarMenu from 'universal/modules/meeting/components/LoadableNewMeetingAvatarMenu'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
 
-import type {NewMeetingAvatar_teamMember as TeamMember} from './__generated__/NewMeetingAvatar_teamMember.graphql'
-import type {NewMeetingAvatar_newMeeting as NewMeeting} from './__generated__/NewMeetingAvatar_newMeeting.graphql'
+import type {NewMeetingAvatar_teamMember as TeamMember} from '__generated__/NewMeetingAvatar_teamMember.graphql'
+import type {NewMeetingAvatar_newMeeting as NewMeeting} from '__generated__/NewMeetingAvatar_newMeeting.graphql'
 
 const originAnchor = {
   vertical: 'bottom',

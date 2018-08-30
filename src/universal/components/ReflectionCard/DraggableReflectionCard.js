@@ -6,7 +6,7 @@
 import * as React from 'react'
 import ReflectionCard from './ReflectionCard'
 import {createFragmentContainer} from 'react-relay'
-import type {DraggableReflectionCard_reflection as Reflection} from './__generated__/DraggableReflectionCard_reflection.graphql'
+import type {DraggableReflectionCard_reflection as Reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {DragSource as dragSource} from '@mattkrick/react-dnd'
 import {REFLECTION_CARD} from 'universal/utils/constants'

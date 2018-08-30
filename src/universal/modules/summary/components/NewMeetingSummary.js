@@ -7,7 +7,7 @@ import ui from 'universal/styles/ui'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
-import type {NewMeetingSummary_viewer as Viewer} from './__generated__/NewMeetingSummary_viewer.graphql'
+import type {NewMeetingSummary_viewer as Viewer} from '__generated__/NewMeetingSummary_viewer.graphql'
 import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 
 type Props = {|

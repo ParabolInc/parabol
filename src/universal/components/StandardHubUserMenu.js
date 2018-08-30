@@ -7,7 +7,7 @@ import MenuItemHR from 'universal/components/MenuItemHR'
 import {createFragmentContainer} from 'react-relay'
 import type {RouterHistory} from 'react-router-dom'
 import {withRouter} from 'react-router-dom'
-import {StandardHubUserMenu_viewer as Viewer} from './__generated__/StandardHubUserMenu_viewer.graphql'
+import {StandardHubUserMenu_viewer as Viewer} from '__generated__/StandardHubUserMenu_viewer.graphql'
 import {PERSONAL, PRO_LABEL, SIGNOUT_LABEL, SIGNOUT_SLUG} from 'universal/utils/constants'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 

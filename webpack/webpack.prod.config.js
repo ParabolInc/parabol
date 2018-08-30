@@ -35,6 +35,34 @@ if (process.env.WEBPACK_DEPLOY) {
 if (process.env.WEBPACK_STATS) {
   extraPlugins.push(new BundleAnalyzerPlugin())
 }
+const babelConfig = {
+  loader: 'babel-loader',
+  options: {
+    cacheDirectory: true,
+    babelrc: false,
+    plugins: [
+      'syntax-object-rest-spread',
+      'syntax-dynamic-import',
+      'transform-class-properties',
+      ['relay', {artifactDirectory: './src/__generated__'}]
+    ],
+    presets: [
+      [
+        'env',
+        {
+          // debug: true,
+          modules: false,
+          targets: {
+            browsers: ['> 1%', 'not ie 11']
+          },
+          useBuiltIns: true
+        }
+      ],
+      'flow',
+      'react'
+    ]
+  }
+}
 
 module.exports = {
   mode: 'production',
@@ -93,34 +121,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            babelrc: false,
-            plugins: [
-              'syntax-dynamic-import',
-              'transform-class-properties',
-              'transform-object-rest-spread',
-              'relay'
-            ],
-            presets: [
-              [
-                'env',
-                {
-                  // debug: true,
-                  modules: false,
-                  targets: {
-                    browsers: ['> 1%', 'not ie 11']
-                  },
-                  useBuiltIns: true
-                }
-              ],
-              'flow',
-              'react'
-            ]
-          }
-        }
+        use: babelConfig
       },
       {test: /\.flow$/, loader: 'ignore-loader'},
       {
@@ -132,20 +133,7 @@ module.exports = {
           path.join(__dirname, '../stories')
         ],
         use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: true,
-              babelrc: false,
-              plugins: [
-                'syntax-object-rest-spread',
-                'syntax-dynamic-import',
-                'transform-class-properties',
-                ['relay', {artifactDirectory: './src/__generated__'}]
-              ],
-              presets: ['flow', 'react']
-            }
-          },
+          babelConfig,
           {
             loader: 'awesome-typescript-loader',
             options: {

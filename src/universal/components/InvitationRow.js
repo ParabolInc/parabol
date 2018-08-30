@@ -17,7 +17,7 @@ import ResendTeamInviteMutation from 'universal/mutations/ResendTeamInviteMutati
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import fromNow from 'universal/utils/fromNow'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
-import type {InvitationRow_invitation as Invitation} from './__generated__/InvitationRow_invitation.graphql'
+import type {InvitationRow_invitation as Invitation} from '__generated__/InvitationRow_invitation.graphql'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 
 type Props = {|

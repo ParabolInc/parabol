@@ -4,7 +4,7 @@ import {DISCUSS} from 'universal/utils/constants'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import type {NewMeetingSidebarPhaseListItemChildren_viewer as Viewer} from './__generated__/NewMeetingSidebarPhaseListItemChildren_viewer.graphql' // eslint-disable-line
+import type {NewMeetingSidebarPhaseListItemChildren_viewer as Viewer} from '__generated__/NewMeetingSidebarPhaseListItemChildren_viewer.graphql' // eslint-disable-line
 import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow'
 import RetroSidebarDiscussSection from 'universal/components/RetroSidebarDiscussSection'
 

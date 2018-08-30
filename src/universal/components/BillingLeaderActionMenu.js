@@ -9,8 +9,8 @@ import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
-import {BillingLeaderActionMenu_organization as Organization} from './__generated__/BillingLeaderActionMenu_organization.graphql'
-import {BillingLeaderActionMenu_orgMember as OrgMember} from './__generated__/BillingLeaderActionMenu_orgMember.graphql'
+import {BillingLeaderActionMenu_organization as Organization} from '__generated__/BillingLeaderActionMenu_organization.graphql'
+import {BillingLeaderActionMenu_orgMember as OrgMember} from '__generated__/BillingLeaderActionMenu_orgMember.graphql'
 
 type Props = {|
   atmosphere: Object,

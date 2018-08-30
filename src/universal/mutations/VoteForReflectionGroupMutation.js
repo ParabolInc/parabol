@@ -1,4 +1,4 @@
-import {commitMutation} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 graphql`

@@ -4,7 +4,7 @@ import {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import raven from 'raven-js'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
-import type {AnalyticsIdentifier_viewer as Viewer} from './__generated__/AnalyticsIdentifier_viewer.graphql'
+import type {AnalyticsIdentifier_viewer as Viewer} from '__generated__/AnalyticsIdentifier_viewer.graphql'
 import makeHref from 'universal/utils/makeHref'
 import type {Location} from 'react-router-dom'
 

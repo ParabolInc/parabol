@@ -7,7 +7,7 @@ import {connect, Dispatch} from 'react-redux'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {LOBBY} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import type {NewMeetingAvatarMenu_newMeeting as NewMeeting} from './__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
+import type {NewMeetingAvatarMenu_newMeeting as NewMeeting} from '__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
 import PromoteNewMeetingFacilitatorMutation from 'universal/mutations/PromoteNewMeetingFacilitatorMutation'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 

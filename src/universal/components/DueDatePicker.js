@@ -7,7 +7,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {createFragmentContainer} from 'react-relay'
 import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import type {DueDatePicker_task as Task} from './__generated__/DueDatePicker_task.graphql'
+import type {DueDatePicker_task as Task} from '__generated__/DueDatePicker_task.graphql'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 

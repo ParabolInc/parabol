@@ -8,8 +8,8 @@ import styled from 'react-emotion'
 import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 
-import type {NewCheckInQuestion_team as Team} from './__generated__/NewMeetingCheckInPrompt_team.graphql'
-import type {NewCheckInQuestion_team as TeamMember} from './__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import type {NewCheckInQuestion_team as Team} from '__generated__/NewMeetingCheckInPrompt_team.graphql'
+import type {NewCheckInQuestion_team as TeamMember} from '__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
 
 const PromptBlock = styled('div')({
   alignItems: 'center',

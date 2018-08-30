@@ -13,8 +13,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflectionGroupTitleMutation'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from './__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql' // eslint-disable-line
-import type {ReflectionGroupTitleEditor_meeting as Meeting} from './__generated__/ReflectionGroupTitleEditor_meeting.graphql'
+import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from '__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql' // eslint-disable-line
+import type {ReflectionGroupTitleEditor_meeting as Meeting} from '__generated__/ReflectionGroupTitleEditor_meeting.graphql'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {RETRO_TOPIC_LABEL} from 'universal/utils/constants'

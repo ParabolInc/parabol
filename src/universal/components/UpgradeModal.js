@@ -3,7 +3,7 @@ import React from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import UpgradeSuccess from 'universal/components/UpgradeSuccess'
 import UpgradeSqueeze from 'universal/components/UpgradeSqueeze'
-import type {UpgradeModal_viewer as Viewer} from './__generated__/UpgradeModal_viewer.graphql'
+import type {UpgradeModal_viewer as Viewer} from '__generated__/UpgradeModal_viewer.graphql'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {PRO} from 'universal/utils/constants'
 

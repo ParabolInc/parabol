@@ -10,7 +10,7 @@ import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {createFragmentContainer} from 'react-relay'
-import type {NewMeetingPhaseHeading_meeting as Meeting} from './__generated__/NewMeetingPhaseHeading_meeting.graphql'
+import type {NewMeetingPhaseHeading_meeting as Meeting} from '__generated__/NewMeetingPhaseHeading_meeting.graphql'
 import SidebarToggle from 'universal/components/SidebarToggle'
 
 const HeadingBlock = styled('div')({

@@ -14,8 +14,8 @@ import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/P
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
 import UserRowFlatButton from 'universal/modules/teamDashboard/components/TeamSettings/UserRowFlatButton'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import type {TeamMemberRow_teamMember as TeamMember} from './__generated__/TeamMemberRow_teamMember.graphql'
-import type {TeamMemberRow_teamLead as TeamLead} from './__generated__/TeamMemberRow_teamLead.graphql'
+import type {TeamMemberRow_teamMember as TeamMember} from '__generated__/TeamMemberRow_teamMember.graphql'
+import type {TeamMemberRow_teamLead as TeamLead} from '__generated__/TeamMemberRow_teamLead.graphql'
 import UserRowActionsBlock from 'universal/components/UserRowActionsBlock'
 
 type Props = {|

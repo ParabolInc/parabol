@@ -8,7 +8,7 @@ import {PRO_LABEL, BILLING_LEADER_LABEL} from 'universal/utils/constants'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import UpgradeBenefits from 'universal/components/UpgradeBenefits'
 import {createFragmentContainer} from 'react-relay'
-import type {UpgradeSqueeze_organization as Organization} from './__generated__/UpgradeSqueeze_organization.graphql'
+import type {UpgradeSqueeze_organization as Organization} from '__generated__/UpgradeSqueeze_organization.graphql'
 import UpgradeCreditCardForm from 'universal/modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
 
 type Props = {

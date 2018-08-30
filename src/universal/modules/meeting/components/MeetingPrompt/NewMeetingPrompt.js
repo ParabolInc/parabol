@@ -7,7 +7,7 @@ import Avatar from 'universal/components/Avatar/Avatar'
 import styled from 'react-emotion'
 import {createFragmentContainer} from 'react-relay'
 
-import type {NewMeetingPrompt_teamMember as TeamMember} from './__generated__/NewMeetingPrompt_teamMember.graphql'
+import type {NewMeetingPrompt_teamMember as TeamMember} from '__generated__/NewMeetingPrompt_teamMember.graphql'
 
 const promptBreakpoint = minWidthMediaQueries[4]
 const MeetingPromptRoot = styled('div')({

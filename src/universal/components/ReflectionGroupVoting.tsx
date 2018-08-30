@@ -1,35 +1,30 @@
-// @flow
-import * as React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React, {Component} from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
 import styled from 'react-emotion'
-import type {ReflectionGroupVoting_meeting as Meeting} from './__generated__/ReflectionGroupVoting_meeting.graphql'
-import type {ReflectionGroupVoting_reflectionGroup as ReflectionGroup} from './__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
+import {ReflectionGroupVoting_meeting} from '__generated__/ReflectionGroupVoting_meeting.graphql'
+import {ReflectionGroupVoting_reflectionGroup} from '__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
 import {meetingVoteIcon} from 'universal/styles/meeting'
 import StyledError from 'universal/components/StyledError'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 
-const {Component} = React
-
-type Props = {|
-  atmosphere: Object,
-  meeting: Meeting,
-  reflectionGroup: ReflectionGroup,
-  ...MutationProps
-|}
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  isExpanded: boolean,
+  meeting: ReflectionGroupVoting_meeting,
+  reflectionGroup: ReflectionGroupVoting_reflectionGroup,
+}
 
 const UpvoteRow = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end'
 })
 
-const UpvoteIcon = styled(StyledFontAwesome)(({color}) => ({
+const UpvoteIcon = styled(StyledFontAwesome)(({color}: {color: string}) => ({
   color,
   cursor: 'pointer',
   marginRight: '.25rem',

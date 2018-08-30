@@ -19,7 +19,7 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import appTheme from 'universal/styles/theme/theme'
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants'
 import fromNow from 'universal/utils/fromNow'
-import type {PendingApprovalRow_orgApproval as OrgApproval} from './__generated__/PendingApprovalRow_orgApproval.graphql'
+import type {PendingApprovalRow_orgApproval as OrgApproval} from '__generated__/PendingApprovalRow_orgApproval.graphql'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import UserRowFlatButton from 'universal/modules/teamDashboard/components/TeamSettings/UserRowFlatButton'
 

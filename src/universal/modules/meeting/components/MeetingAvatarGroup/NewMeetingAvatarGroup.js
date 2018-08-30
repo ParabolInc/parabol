@@ -6,7 +6,7 @@ import {createFragmentContainer} from 'react-relay'
 import styled from 'react-emotion'
 import findStageById from 'universal/utils/meetings/findStageById'
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
-import type {NewMeetingAvatarGroup_team as Team} from './__generated__/NewMeetingAvatarGroup_team.graphql'
+import type {NewMeetingAvatarGroup_team as Team} from '__generated__/NewMeetingAvatarGroup_team.graphql'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',

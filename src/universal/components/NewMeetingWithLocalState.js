@@ -9,7 +9,7 @@ import findStageById from 'universal/utils/meetings/findStageById'
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
-import {withLocationMeetingState_viewer as Viewer} from './__generated__/NewMeetingWithLocalState_viewer.graphql'
+import {withLocationMeetingState_viewer as Viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
 
 import type {Match, RouterHistory} from 'react-router-dom'
 import type {MeetingTypeEnum} from 'universal/types/schema.flow'

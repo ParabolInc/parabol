@@ -1,7 +1,7 @@
 // @flow
 import React from 'react'
 import styled from 'react-emotion'
-import type {RetroSidebarDiscussSection_viewer as Viewer} from './__generated__/RetroSidebarDiscussSection_viewer.graphql'
+import type {RetroSidebarDiscussSection_viewer as Viewer} from '__generated__/RetroSidebarDiscussSection_viewer.graphql'
 import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
