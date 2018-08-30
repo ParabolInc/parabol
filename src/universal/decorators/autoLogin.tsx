@@ -1,20 +1,13 @@
-// @flow
-import * as React from 'react'
-import type {Location, RouterHistory} from 'react-router-dom'
-import {withRouter} from 'react-router-dom'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import React, {Component} from 'react'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 
-const {Component} = React
-
-type Props = {
-  atmosphere: Object,
-  history: RouterHistory,
-  location: Location
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 }
 
 const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
   class AutoLogin extends Component<Props> {
-    constructor (props) {
+    constructor (props: Props) {
       super(props)
       const {
         atmosphere: {authObj},
@@ -45,7 +38,7 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
     }
   }
 
-  return withAtmosphere(withRouter(AutoLogin))
+  return withRouter(withAtmosphere(AutoLogin))
 }
 
 export default autoLogin

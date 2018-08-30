@@ -5,7 +5,7 @@ import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 export interface WithMutationProps {
   dirty?: boolean,
   error?: any | undefined,
-  onCompleted: (res: any, errors: any) => void,
+  onCompleted: (res?: any, errors?: any) => void,
   onError: (error: any) => void,
   setDirty: () => void,
   submitMutation: () => void,

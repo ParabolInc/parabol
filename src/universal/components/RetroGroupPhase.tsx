@@ -1,37 +1,33 @@
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
- * @flow
  */
-import * as React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import React from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
 import StyledError from 'universal/components/StyledError'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectionsMutation'
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
+import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 
-type Props = {
-  atmosphere: Object,
+interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void,
-  // flow or relay-compiler is getting really confused here, so I don't use the flow type here
-  team: Object,
-  ...MutationProps
+  team: RetroGroupPhase_team,
 }
 
 const RetroGroupPhase = (props: Props) => {
   const {atmosphere, error, gotoNext, onError, onCompleted, submitMutation, team} = props
   const {viewerId} = atmosphere
   const {newMeeting} = team
-  const {nextAutoGroupThreshold, facilitatorUserId, meetingId} = newMeeting || {}
+  const {nextAutoGroupThreshold, facilitatorUserId, meetingId} = newMeeting
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const autoGroup = () => {

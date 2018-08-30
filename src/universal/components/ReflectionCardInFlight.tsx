@@ -1,43 +1,67 @@
-// @flow
-import type {ReflectionCardInFlight_reflection as Reflection} from '__generated__/ReflectionCardInFlight_reflection.graphql'
-// $FlowFixMe
+import {ReflectionCardInFlight_reflection} from '__generated__/ReflectionCardInFlight_reflection.graphql'
 import {convertFromRaw, EditorState} from 'draft-js'
-import * as React from 'react'
+import React from 'react'
 import styled from 'react-emotion'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
+// @ts-ignore
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
-import ui from 'universal/styles/ui'
-import UserDraggingHeader from 'universal/components/UserDraggingHeader'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
-import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
+import UserDraggingHeader from 'universal/components/UserDraggingHeader'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
+import {DECELERATE} from 'universal/styles/animation'
+import {cardRaisedShadow} from 'universal/styles/elevation'
+import ui from 'universal/styles/ui'
 import getTargetReference from 'universal/utils/multiplayerMasonry/getTargetReference'
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
-import {DECELERATE} from 'universal/styles/animation'
-import type {
-  ChildId,
-  ChildrenCache,
-  InFlightCoords,
-  ItemId,
-  ParentCache
-} from 'universal/components/PhaseItemMasonry'
-import {cardRaisedShadow} from 'universal/styles/elevation'
+import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 
-type Props = {|
-  atmosphere: Object,
-  childrenCache: ChildrenCache,
-  parentCache: ParentCache,
-  reflection: Reflection,
-  setInFlightCoords: (x: ?number, y: ?number, itemId: ?ItemId) => void,
+interface ChildCache {
+  // reflection group element
+  el: HTMLElement | null,
+  // boundingBox coords are relative to the parentCache!
+  boundingBox: ClientRect | null
+  modalBoundingBox?: ClientRect
+  headerHeight?: number
+}
+
+export interface MasonryChildrenCache {
+  [childId: string]: ChildCache
+}
+
+interface InFlightCoords {
+  x: number,
+  y: number
+}
+
+export interface MasonryParentCache {
+  el: HTMLElement | null,
+  boundingBox: ClientRect | null,
+  columnLefts: Array<number>,
+  cardsInFlight: {[itemId: string]: InFlightCoords},
+  // the location for a group that has not been created yet (caused by an ungrouping)
+  incomingChildren: {
+    [itemId: string]: {
+      boundingBox: ClientRect | null,
+      // the optimistic child that currently represents the group
+      childId: string
+    }
+  }
+}
+
+interface Props extends WithAtmosphereProps {
+  childrenCache: MasonryChildrenCache,
+  parentCache: MasonryParentCache,
+  reflection: ReflectionCardInFlight_reflection,
+  setInFlightCoords: (x: number | null, y: number | null, itemId: string | null) => void,
   teamId: string
-|}
+}
 
-type State = {|
-  x: ?number,
-  y: ?number
-|}
+interface State {
+  x?: number,
+  y?: number
+}
 
 const ModalBlock = styled('div')({
   top: 0,
@@ -59,7 +83,7 @@ const makeTransition = (isClosing, isViewerDragging) => {
 }
 
 class ReflectionCardInFlight extends React.Component<Props, State> {
-  constructor (props) {
+  constructor(props) {
     super(props)
     const {
       reflection: {content, dragContext}
@@ -79,7 +103,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const {
       reflection: {dragContext}
     } = this.props
@@ -89,7 +113,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const {
       reflection: {dragContext}
     } = this.props
@@ -106,6 +130,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       reflection: {meetingId, reflectionId}
     } = this.props
     const {cardsInFlight, columnLefts} = parentCache
+    // @ts-ignore
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
@@ -180,15 +205,15 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  editorState: Object
+  editorState: EditorState
   isBroadcasting: boolean = false
   innerWidth: number = 0
   innerHeight: number = 0
   scrollX: number = 0
-  cachedTargetId: ?ChildId
-  cursorOffset: ?InFlightCoords
+  cachedTargetId: string | null
+  cursorOffset: InFlightCoords | null
 
-  render () {
+  render() {
     const {
       reflection: {
         reflectionId,

@@ -1,36 +1,32 @@
-// @flow
-import * as React from 'react'
+import {RetroDiscussPhase_team} from '__generated__/RetroDiscussPhase_team.graphql'
+import React from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import {connect} from 'react-redux'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import {Dispatch} from 'redux'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
-import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import type {RouterHistory} from 'react-router-dom'
-import Overflow from 'universal/components/Overflow'
-import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
-import plural from 'universal/utils/plural'
-import {withRouter} from 'react-router-dom'
-import {connect} from 'react-redux'
-import type {Dispatch} from 'redux'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
+import Overflow from 'universal/components/Overflow'
+import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
+import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
+import plural from 'universal/utils/plural'
 
-type Props = {|
-  atmosphere: Object,
-  dispatch: Dispatch<*>,
-  history: RouterHistory,
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+  dispatch: Dispatch<{}>,
   gotoNext: () => void,
-  // flow or relay-compiler is getting really confused here, so I don't use the flow type here
-  team: Object
-|}
+  team: RetroDiscussPhase_team
+}
 
 const maxWidth = '114rem'
 
@@ -145,7 +141,7 @@ const RetroDiscussPhase = (props: Props) => {
     meetingId,
     phases
   } =
-    newMeeting || {}
+    newMeeting
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
@@ -242,7 +238,7 @@ const RetroDiscussPhase = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  connect()(withRouter(withAtmosphere(RetroDiscussPhase))),
+  (connect as any)()(withRouter(withAtmosphere(RetroDiscussPhase))),
   graphql`
     fragment RetroDiscussPhase_team on Team {
       teamId: id

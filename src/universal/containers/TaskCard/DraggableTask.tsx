@@ -1,6 +1,4 @@
-// @flow
-import type {Node} from 'react'
-import React, {Component} from 'react'
+import React, {Component, ReactElement} from 'react'
 import {findDOMNode} from 'react-dom'
 import {createFragmentContainer, graphql} from 'react-relay'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
@@ -8,20 +6,21 @@ import {TASK} from 'universal/utils/constants'
 import {DragSource as dragSource, DropTarget as dropTarget} from '@mattkrick/react-dnd'
 import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
 import TaskDragLayer from './TaskDragLayer'
-import type {DraggableTask_task as Task} from '__generated__/DraggableTask_task.graphql'
+import {DraggableTask_task} from '__generated__/DraggableTask_task.graphql'
+
 const importantTaskProps = ['content', 'status', 'assignee', 'sortOrder', 'integration']
 
-type Props = {
+interface Props {
   area: string,
-  connectDragSource: (node: Node) => Node,
-  connectDragPreview: (node: Node) => Node,
-  connectDropTarget: (node: Node) => Node,
-  getTaskById: (string) => Task,
-  insert: (task: Task, before: boolean) => void,
+  connectDragSource: (reactEl: ReactElement<{}>) => ReactElement<{}>,
+  connectDragPreview: (reactEl: HTMLImageElement) => void,
+  connectDropTarget: (reactEl: ReactElement<{}>) => ReactElement<{}>,
+  getTaskById: (taskId: string) => DraggableTask_task,
+  insert: (task: DraggableTask_task, before: boolean) => void,
   isDragging: boolean,
   isPreview: boolean,
   myUserId: string,
-  task: Task
+  task: DraggableTask_task
 }
 
 class DraggableTask extends Component<Props> {
@@ -89,12 +88,12 @@ const handleTaskHover = (props: Props, monitor, component) => {
 
   // Compute whether I am dropping "before" or "after" the card.
   const {y: mouseY} = monitor.getClientOffset()
-  const dropTargetDOMNode = findDOMNode(component) // eslint-disable-line react/no-find-dom-node
-  if (!dropTargetDOMNode || dropTargetDOMNode instanceof window.Text) {
+  const dropTargetDOMNode = findDOMNode(component)
+  if (!dropTargetDOMNode || dropTargetDOMNode instanceof (window as any).Text) {
     return
   }
   // $FlowFixMe
-  const {top: dropTargetTop, height: dropTargetHeight} = dropTargetDOMNode.getBoundingClientRect()
+  const {top: dropTargetTop, height: dropTargetHeight} = (dropTargetDOMNode as HTMLElement).getBoundingClientRect()
   const dropTargetMidpoint = dropTargetTop + dropTargetHeight / 2
   const before = mouseY < dropTargetMidpoint
 

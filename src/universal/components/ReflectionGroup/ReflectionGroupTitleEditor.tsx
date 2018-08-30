@@ -1,31 +1,28 @@
+import {ReflectionGroupTitleEditor_meeting} from '__generated__/ReflectionGroupTitleEditor_meeting.graphql'
+import {ReflectionGroupTitleEditor_reflectionGroup} from '__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
 /**
  * Edits the name of a reflection group.
  *
- * @flow
  */
-import * as React from 'react'
+import React, {Component} from 'react'
 import styled from 'react-emotion'
-import StyledError from 'universal/components/StyledError'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflectionGroupTitleMutation'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import type {ReflectionGroupTitleEditor_reflectionGroup as ReflectionGroup} from '__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql' // eslint-disable-line
-import type {ReflectionGroupTitleEditor_meeting as Meeting} from '__generated__/ReflectionGroupTitleEditor_meeting.graphql'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
+// @ts-ignore
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import StyledError from 'universal/components/StyledError'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflectionGroupTitleMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 import {RETRO_TOPIC_LABEL} from 'universal/utils/constants'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
-const {Component} = React
-
-type Props = {
-  ...MutationProps,
-  reflectionGroup: ReflectionGroup,
-  readOnly: boolean,
-  meeting: Meeting
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  isExpanded: boolean
+  reflectionGroup: ReflectionGroupTitleEditor_reflectionGroup
+  readOnly: boolean
+  meeting: ReflectionGroupTitleEditor_meeting
 }
 
 const fontSize = appTheme.typography.s3
@@ -39,11 +36,11 @@ const underlineStyles = {
   boxShadow: 'none !important'
 }
 
-const PencilIcon = styled(StyledFontAwesome)(({isExpanded}) => ({
+const PencilIcon = styled(StyledFontAwesome)(({isExpanded}: {isExpanded?: boolean}) => ({
   color: isExpanded ? '#fff' : ui.hintColor,
   height: ui.iconSize,
   lineHeight,
-  opacity: '.5',
+  opacity: 0.5,
   paddingLeft: '0.25rem',
   textAlign: 'center',
   top: '-.0625rem',
@@ -64,7 +61,7 @@ const FormBlock = styled('form')({
 })
 
 // This is gonna turn into slate, no use in spending time fixing it now
-const NameInput = styled('input')(({isExpanded, readOnly}) => ({
+const NameInput = styled('input')(({isExpanded, readOnly}: {isExpanded: boolean, readOnly: boolean}) => ({
   ...underlineStyles,
   ':hover,:focus,:active': {
     underlineStyles
@@ -86,7 +83,7 @@ const NameInput = styled('input')(({isExpanded, readOnly}) => ({
   transition: 'all 200ms'
 }))
 
-const getValidationError = (title: ?string, reflectionGroups, reflectionGroupId) => {
+const getValidationError = (title: string | null, reflectionGroups, reflectionGroupId) => {
   if (!title || title.length < 1) {
     return 'Enter a title'
   }
@@ -101,7 +98,10 @@ const getValidationError = (title: ?string, reflectionGroups, reflectionGroupId)
 }
 
 class ReflectionGroupTitleEditor extends Component<Props> {
-  constructor (props) {
+  initialTitle: string
+  inputRef = React.createRef<HTMLInputElement>()
+
+  constructor(props: Props) {
     super(props)
     this.initialTitle = props.reflectionGroup.title
   }
@@ -117,6 +117,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       reflectionGroup: {reflectionGroupId}
     } = this.props
     const title = e.target.value
+    // @ts-ignore
     commitLocalUpdate(atmosphere, (store) => {
       const reflectionGroup = store.get(reflectionGroupId)
       reflectionGroup.setValue(title, 'title')
@@ -176,10 +177,8 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     )
   }
 
-  initialTitle: string
-  inputRef = React.createRef()
 
-  render () {
+  render() {
     const {
       isExpanded,
       error,

@@ -1,28 +1,42 @@
+import {DragSource as dragSource} from '@mattkrick/react-dnd'
+import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
+import {DraggableReflectionCard_reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
 /**
  * A drag-and-drop enabled reflection card.
  *
- * @flow
  */
-import * as React from 'react'
-import ReflectionCard from './ReflectionCard'
-import {createFragmentContainer} from 'react-relay'
-import type {DraggableReflectionCard_reflection as Reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {DragSource as dragSource} from '@mattkrick/react-dnd'
-import {REFLECTION_CARD} from 'universal/utils/constants'
-import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
-import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
-import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
-import clientTempId from 'universal/utils/relay/clientTempId'
-import {connect} from 'react-redux'
+import React, {Component, ReactElement} from 'react'
 import {css} from 'react-emotion'
-import ui from 'universal/styles/ui'
+import {connect} from 'react-redux'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {Dispatch} from 'redux'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
+import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import {cardShadow} from 'universal/styles/elevation'
+import ui from 'universal/styles/ui'
+import {REFLECTION_CARD} from 'universal/utils/constants'
+import clientTempId from 'universal/utils/relay/clientTempId'
+import ReflectionCard from './ReflectionCard'
 
-type Props = {
-  dndIndex: number,
-  reflection: Reflection,
-  showOriginFooter: boolean
+interface Props extends WithAtmosphereProps {
+  closeGroupModal?(): void
+
+  connectDragPreview(reactEl: HTMLImageElement): void
+
+  connectDragSource(reactEl: ReactElement<{}>): ReactElement<{}>
+
+  dispatch: Dispatch<{}>
+  reflection: DraggableReflectionCard_reflection,
+
+  setItemRef(reflectionId: string, isModal: boolean): (c: HTMLDivElement) => void
+
+  meeting: any,
+  idx: number,
+  isDraggable: boolean,
+  isModal: boolean,
+  isViewerDragInProgress: boolean
+  isSingleCardGroup: boolean
 }
 
 const hiddenWhileDraggingStyle = css({
@@ -103,18 +117,17 @@ const getClassName = (idx, dragContext, isModal) => {
   return thirdPlusCardStyle
 }
 
-class DraggableReflectionCard extends React.Component<Props> {
-  componentDidMount () {
+class DraggableReflectionCard extends Component<Props> {
+  componentDidMount() {
     const {connectDragPreview} = this.props
     connectDragPreview(getEmptyImage())
   }
 
-  render () {
+  render() {
     const {
       connectDragSource,
       reflection,
       setItemRef,
-      meeting,
       idx,
       isDraggable,
       isModal
@@ -126,7 +139,6 @@ class DraggableReflectionCard extends React.Component<Props> {
       // the `id` is in the case when the ref callback isn't called in time
       <div className={className} ref={setItemRef(reflectionId, isModal)} id={reflectionId}>
         <ReflectionCard
-          meeting={meeting}
           reflection={reflection}
           isDraggable={isDraggable}
           showOriginFooter
@@ -137,7 +149,7 @@ class DraggableReflectionCard extends React.Component<Props> {
 }
 
 const reflectionDragSpec = {
-  canDrag (props) {
+  canDrag(props: Props) {
     // make sure no one is trying to drag invisible cards
     const {
       reflection: {dragContext},
@@ -147,7 +159,7 @@ const reflectionDragSpec = {
     return !dragContext && !isViewerDragInProgress && isDraggable
   },
 
-  beginDrag (props, monitor) {
+  beginDrag(props: Props, monitor) {
     const {
       atmosphere,
       dispatch,
@@ -168,7 +180,7 @@ const reflectionDragSpec = {
     }
   },
 
-  endDrag (props: Props, monitor) {
+  endDrag(props: Props, monitor) {
     const {
       atmosphere,
       closeGroupModal,
@@ -216,10 +228,10 @@ const reflectionDragCollect = (connectSource) => ({
 })
 
 export default createFragmentContainer(
-  connect()(
+  (connect as any)()(
     withAtmosphere(
       dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(
-        DraggableReflectionCard
+        (DraggableReflectionCard)
       )
     )
   ),

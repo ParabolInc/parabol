@@ -1,17 +1,19 @@
-// @flow
-
-import * as React from 'react'
-import styled, {css} from 'react-emotion'
-import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import type {ReflectionGroup_reflectionGroup as ReflectionGroupType} from '__generated__/ReflectionGroup_reflectionGroup.graphql'
-import type {ReflectionGroup_meeting as Meeting} from '__generated__/ReflectionGroup_meeting.graphql'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import {DropTarget as dropTarget} from '@mattkrick/react-dnd'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import {ReflectionGroup_meeting} from '__generated__/ReflectionGroup_meeting.graphql'
+import {ReflectionGroup_reflectionGroup} from '__generated__/ReflectionGroup_reflectionGroup.graphql'
+import React, {Component, ReactElement} from 'react'
+import styled, {css} from 'react-emotion'
+// @ts-ignore
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
+import Modal from 'universal/components/Modal'
+import {MasonryChildrenCache, MasonryParentCache} from 'universal/components/ReflectionCardInFlight'
+import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {STANDARD_CURVE} from 'universal/styles/animation'
+import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
+import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
+import initializeModalGrid from 'universal/utils/multiplayerMasonry/initializeModalGrid'
 import {
   CARD_PADDING,
   EXIT_DURATION,
@@ -19,24 +21,23 @@ import {
   MIN_VAR_ITEM_DELAY,
   MODAL_PADDING
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
-import Modal from 'universal/components/Modal'
-import initializeModalGrid from 'universal/utils/multiplayerMasonry/initializeModalGrid'
-import {STANDARD_CURVE} from 'universal/styles/animation'
 import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateReflectionsInModal'
-import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
-// import {modalShadow} from 'universal/styles/elevation'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
-const {Component} = React
-
-export type Props = {|
-  atmosphere: Object,
+interface Props extends WithAtmosphereProps, WithMutationProps {
   canDrop: boolean,
-  connectDropTarget: () => Node,
-  meeting: Meeting,
-  reflectionGroup: ReflectionGroupType,
+  itemCache: any,
+  childrenCache: MasonryChildrenCache,
+  parentCache: MasonryParentCache,
+  connectDropTarget: (reactEl: ReactElement<{}>) => ReactElement<{}>,
+  meeting: ReflectionGroup_meeting,
+  reflectionGroup: ReflectionGroup_reflectionGroup,
   retroPhaseItemId: string,
-  ...MutationProps
-|}
+
+  setItemRef(c: HTMLElement): void
+
+  setChildRef: (groupId: string, reflectionId: string) => (c: HTMLElement) => void
+}
 
 const reflectionsStyle = (canDrop, isDraggable, canExpand) =>
   css({
@@ -52,6 +53,10 @@ const Background = styled('div')({
   left: 0
 })
 
+interface GroupProps {
+  isModal?: boolean
+  isHidden?: boolean
+}
 const Group = styled('div')(
   {
     padding: CARD_PADDING,
@@ -60,7 +65,7 @@ const Group = styled('div')(
     // necessary for smooth updating column heights
     transition: 'transform 200ms'
   },
-  ({isModal}) =>
+  ({isModal}: GroupProps) =>
     isModal && {
       borderRadius: 6,
       overflow: 'hidden',
@@ -69,7 +74,7 @@ const Group = styled('div')(
       transition: 'unset',
       zIndex: 100
     },
-  ({isHidden}) =>
+  ({isHidden}: GroupProps) =>
     isHidden && {
       opacity: 0,
       pointerEvents: 'none'
@@ -77,7 +82,7 @@ const Group = styled('div')(
 )
 
 class ReflectionGroup extends Component<Props> {
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const {
       reflectionGroup: {isExpanded: wasExpanded, reflections: oldReflections}
     } = prevProps
@@ -116,9 +121,9 @@ class ReflectionGroup extends Component<Props> {
   }
 
   isClosing = false
-  backgroundRef: ?HTMLElement = null
-  headerRef: ?HTMLElement = null
-  modalRef: ?HTMLElement = null
+  backgroundRef: HTMLDivElement = null
+  headerRef: HTMLDivElement = null
+  modalRef: HTMLDivElement = null
 
   closeGroupModal = () => {
     const {
@@ -182,6 +187,7 @@ class ReflectionGroup extends Component<Props> {
       childCache.headerHeight = undefined
       childCache.modalBoundingBox = undefined
       childrenCache[reflectionGroupId].el.style.opacity = ''
+      // @ts-ignore
       commitLocalUpdate(atmosphere, (store) => {
         store.get(reflectionGroupId).setValue(false, 'isExpanded')
       })
@@ -196,13 +202,14 @@ class ReflectionGroup extends Component<Props> {
     this.modalRef.addEventListener('transitionend', reset)
   }
 
-  renderReflection = (reflection: Object, idx: number, {isModal, isDraggable}) => {
+  renderReflection = (reflection: ReflectionGroup_reflectionGroup['reflections'][0], idx: number, {isModal, isDraggable}) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
     const {isViewerDragInProgress} = meeting
     return (
       <DraggableReflectionCard
-        closeGroupodal={isModal ? this.closeGroupModal : undefined}
+        // @ts-ignore
+        closeGroupModal={isModal ? this.closeGroupModal : undefined}
         key={reflection.id}
         idx={reflections.length - idx - 1}
         isDraggable={isDraggable}
@@ -222,6 +229,7 @@ class ReflectionGroup extends Component<Props> {
       reflectionGroup: {isExpanded, reflectionGroupId}
     } = this.props
     if (!isExpanded) {
+      // @ts-ignore
       commitLocalUpdate(atmosphere, (store) => {
         store.get(reflectionGroupId).setValue(true, 'isExpanded')
       })
@@ -240,7 +248,7 @@ class ReflectionGroup extends Component<Props> {
     this.backgroundRef = c
   }
 
-  render () {
+  render() {
     const {canDrop, connectDropTarget, meeting, reflectionGroup, setChildRef} = this.props
     const {isExpanded, reflections, reflectionGroupId} = reflectionGroup
     const {
@@ -296,15 +304,15 @@ class ReflectionGroup extends Component<Props> {
 }
 
 const reflectionDropSpec = {
-  canDrop (props: Props, monitor) {
+  canDrop(props: Props, monitor) {
     return (
       monitor.isOver() &&
       monitor.getItem().reflectionGroupId !== props.reflectionGroup.reflectionGroupId
     )
   },
 
-  drop (props: Props, monitor) {
-    if (monitor.didDrop()) return
+  drop(props: Props, monitor) {
+    if (monitor.didDrop()) return undefined
     const {reflectionGroup} = props
     const {reflectionGroupId: targetReflectionGroupId} = reflectionGroup
     return {dropTargetType: REFLECTION_GROUP, dropTargetId: targetReflectionGroupId}
