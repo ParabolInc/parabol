@@ -1,11 +1,11 @@
-import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
+import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import Modal from 'universal/components/Modal'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import FLIPGrid from 'universal/components/RetroReflectPhase/FLIPGrid'
 import FLIPModal from 'universal/components/RetroReflectPhase/FLIPModal'
+import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import {cardShadow} from 'universal/styles/elevation'
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
   phaseRef: React.RefObject<HTMLDivElement>,
   stackRef: React.RefObject<HTMLDivElement>,
   firstReflectionRef: React.RefObject<HTMLDivElement>,
-  reflectionStack: ReadonlyArray<ReflectionCard_reflection>
+  reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
   meetingId: string,
   phaseItemId: string
 }
@@ -34,10 +34,14 @@ class ExpandedReflectionStack extends Component<Props, State> {
   state = {
     isClosing: false
   }
-
+  gridRef = React.createRef<FLIPGrid>()
   getModalFirst = () => getBBox(this.props.stackRef.current)
   getParentBBox = () => getBBox(this.props.phaseRef.current)
   getChildrenFirst = () => getBBox(this.props.firstReflectionRef.current)
+
+  checkForResize = (key) => () => {
+    this.gridRef.current.checkForResize(key)
+  }
 
   handleClose = () => {
     this.setState({
@@ -60,14 +64,16 @@ class ExpandedReflectionStack extends Component<Props, State> {
         <FLIPModal getFirst={this.getModalFirst} getParentBBox={this.getParentBBox}
                    childrenLen={reflectionStack.length} isClosing={isClosing} close={this.finishClose}>
           {(setBBox) => (
-            <FLIPGrid getFirst={this.getChildrenFirst} getParentBBox={this.getParentBBox} setBBox={setBBox}
+            <FLIPGrid ref={this.gridRef} getFirst={this.getChildrenFirst} getParentBBox={this.getParentBBox} setBBox={setBBox}
                       isClosing={isClosing}>
               {reflectionStack.map((reflection, idx) => {
                 return (
-                  <ModalReflectionWrapper key={(reflection as any).id} style={{zIndex: idx + 1}}>
+                  <ModalReflectionWrapper key={reflection.id} style={{zIndex: idx + 1}}>
                     <ReflectionCard meetingId={meetingId}
-                                    reflection={(reflection as any)}
-                                    phaseItemId={phaseItemId} />
+                                    reflection={reflection}
+                                    phaseItemId={phaseItemId}
+                                    handleChange={this.checkForResize(reflection.id)}
+                    />
                   </ModalReflectionWrapper>
 
                 )

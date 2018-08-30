@@ -1,4 +1,4 @@
-import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
+import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
@@ -11,7 +11,7 @@ interface Props {
   meetingId: string,
   phaseItemId: string,
   phaseRef: React.RefObject<HTMLDivElement>
-  reflectionStack: ReadonlyArray<ReflectionCard_reflection>
+  reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
 }
 
 interface State {
@@ -111,9 +111,9 @@ class ReflectionStack extends Component<Props, State> {
           <CenteredCardStack>
             {maxStack.map((reflection, idx) => {
               return (
-                <ReflectionWrapper key={(reflection as any).id} idx={idx} count={maxStack.length}
+                <ReflectionWrapper key={reflection.id} idx={idx} count={maxStack.length}
                                    innerRef={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}>
-                  <ReflectionCard meetingId={meetingId} reflection={(reflection as any)} phaseItemId={phaseItemId} readOnly
+                  <ReflectionCard meetingId={meetingId} reflection={reflection} phaseItemId={phaseItemId} readOnly
                                   userSelect='none' />
                 </ReflectionWrapper>
               )

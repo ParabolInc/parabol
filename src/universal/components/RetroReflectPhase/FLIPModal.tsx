@@ -1,5 +1,7 @@
 import React, {Component, ReactChild} from 'react'
 import styled from 'react-emotion'
+import getTransform from 'universal/components/RetroReflectPhase/getTransform'
+import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
 import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
 import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
@@ -39,6 +41,8 @@ const ModalContent = styled('div')({
   zIndex: ZINDEX_MODAL
 })
 
+const PADDING = 16
+
 class FLIPModal extends Component<Props> {
   childBBox: BBox
   backgroundRef = React.createRef<HTMLDivElement>()
@@ -52,8 +56,38 @@ class FLIPModal extends Component<Props> {
     this.animateIn()
   }
 
+  move() {
+    const {getParentBBox} = this.props
+    const backgroundDiv = this.backgroundRef.current
+    const first = backgroundDiv.getBoundingClientRect()
+    const height = this.childBBox.height + PADDING * 2
+    const width = this.childBBox.width + PADDING * 2
+    const maxBBox = getParentBBox()
+    const top = (maxBBox.height - this.childBBox.height) / 2 + maxBBox.top - PADDING
+    const left = (maxBBox.width - this.childBBox.width) / 2 + maxBBox.left - PADDING
+    const last = {top, left, width, height}
+    const {style: bgStyle} = backgroundDiv
+
+    const contentDiv = this.contentRef.current
+    const contentBBox = contentDiv.getBoundingClientRect()
+    const contentLast = {left: left + PADDING, top: top + PADDING}
+    setElementBBox(contentDiv, contentLast)
+    contentDiv.style.transform = getTransform(contentBBox, contentLast)
+    contentDiv.style.transition = null
+
+    setElementBBox(backgroundDiv, last)
+    bgStyle.transform = getTransform(first, last, {scale: true})
+    bgStyle.transition = null
+    requestDoubleAnimationFrame(() => {
+      contentDiv.style.transition = `all 300ms ${DECELERATE}`
+      contentDiv.style.transform = null
+      bgStyle.transition = `all 300ms ${DECELERATE}`
+      bgStyle.transform = null
+    })
+  }
+
+
   animateIn() {
-    const PADDING = 16
     const {childrenLen, getFirst, getParentBBox} = this.props
     const backgroundDiv = this.backgroundRef.current
     const height = this.childBBox.height + PADDING * 2
@@ -62,30 +96,24 @@ class FLIPModal extends Component<Props> {
     const first = getFirst()
     const top = (maxBBox.height - this.childBBox.height) / 2 + maxBBox.top - PADDING
     const left = (maxBBox.width - this.childBBox.width) / 2 + maxBBox.left - PADDING
-    const contentDiv = this.contentRef.current
+    const last = {top, left, height, width}
+
     const staggerDelay = getStaggerDelay(childrenLen)
     const totalDuration = MIN_ITEM_DELAY + ITEM_DURATION + staggerDelay * childrenLen
-    const dX = first.left - left
-    const dY = first.top - top
-    const scaleY = first.height / height
-    const scaleX = first.width / width
-    const {style: elStyle} = backgroundDiv
+    const {style: bgStyle} = backgroundDiv
 
+    const contentLast = {top: top + PADDING, left: left + PADDING}
+    const contentDiv = this.contentRef.current
+    setElementBBox(contentDiv, contentLast)
 
-    contentDiv.style.top = `${top + PADDING}px`
-    contentDiv.style.left = `${left + PADDING}px`
-
-    elStyle.width = `${width}px`
-    elStyle.height = `${height}px`
-    elStyle.top = `${top}px`
-    elStyle.left = `${left}px`
-    elStyle.transform = `translate(${dX}px,${dY}px) scale(${scaleX},${scaleY})`
-    elStyle.opacity = '0'
+    setElementBBox(backgroundDiv, last)
+    bgStyle.transform = getTransform(first, last, {scale: true})
+    bgStyle.opacity = '0'
 
     requestDoubleAnimationFrame(() => {
-      elStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
-      elStyle.transform = null
-      elStyle.opacity = null
+      bgStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
+      bgStyle.transform = null
+      bgStyle.opacity = null
     })
   }
 
@@ -93,17 +121,13 @@ class FLIPModal extends Component<Props> {
     const {childrenLen, close, getFirst} = this.props
     const first = getFirst()
     const backgroundDiv = this.backgroundRef.current
-    const bbox = backgroundDiv.getBoundingClientRect()
-    const {style: elStyle} = backgroundDiv
-    const dX = first.left - bbox.left
-    const dY = first.top - bbox.top
-    const scaleY = first.height / bbox.height
-    const scaleX = first.width / bbox.width
+    const last = backgroundDiv.getBoundingClientRect()
+    const {style: bgStyle} = backgroundDiv
     const staggerDelay = getStaggerDelay(childrenLen)
     const totalDuration = MIN_ITEM_DELAY + ITEM_DURATION + staggerDelay * childrenLen
-    elStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
-    elStyle.transform = `translate(${dX}px,${dY}px) scale(${scaleX},${scaleY})`
-    elStyle.opacity = '0'
+    bgStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
+    bgStyle.transform = getTransform(first, last, {scale: true})
+    bgStyle.opacity = '0'
     backgroundDiv.addEventListener('transitionend', close)
   }
 
@@ -114,7 +138,11 @@ class FLIPModal extends Component<Props> {
   }
 
   setBBox = (childBBox) => {
+    const isInit = !this.childBBox
     this.childBBox = childBBox
+    if (!isInit) {
+      this.move()
+    }
   }
 
   render() {

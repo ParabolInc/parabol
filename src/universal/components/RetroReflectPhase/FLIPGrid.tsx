@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {cloneElement, Component, ComponentElement, ReactChild} from 'react'
+import {cloneElement, Component, ComponentElement} from 'react'
 import {findDOMNode} from 'react-dom'
 import ChildrenCache from 'universal/components/RetroReflectPhase/ChildrenCache'
 import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
@@ -17,7 +17,7 @@ interface Props {
 }
 
 interface State {
-  children: Array<ReactChild>
+  children: Array<ComponentElement<any, any>>
 }
 
 class FLIPGrid extends Component<Props, State> {
@@ -48,22 +48,39 @@ class FLIPGrid extends Component<Props, State> {
     if (this.props.isClosing && !prevProps.isClosing) {
       this.childrenCache.animateOut(this.first, this.parentCache.bbox)
     }
+    const childArray = this.props.children as Array<ComponentElement<any, any>>
+    const keysRemoved = this.state.children
+      .map((child) => child.key)
+      .filter((key) => !childArray.find((child) => child.key === key))
+      .map(String)
 
+    if (keysRemoved.length) {
+      const dims = this.childrenCache.removeKeys(keysRemoved)
+      this.handleGridChange(dims)
+    }
   }
 
-  // getSnapshotBeforeUpdate(prevProps: Props, prevState: State) {
-  //   if (prevProps.flipKey !== this.props.flipKey) {
-  //     // measure old children
-  //     const {children} = prevState
-  //     children.forEach((child) => {
-  //
-  //     })
-  //     return null
-  //   }
-  // }
+  updateChildren = () => {
+    this.setState({
+      children: this.makeReffedChildren(this.props.children as Array<ComponentElement<any, any>>)
+    })
+  }
 
-  makeReffedChildren(children) {
-    return React.Children.map(children, (child: ComponentElement<any, any>) => {
+  handleGridChange(dims?: {height: number, width: number}) {
+    if (!dims) return
+    const maxBBox = this.props.getParentBBox()
+    this.parentCache.setCoords(this.parentCache.el, dims, maxBBox)
+    this.props.setBBox(this.parentCache.bbox)
+    this.updateChildren()
+  }
+
+  checkForResize(key: string) {
+    const dims = this.childrenCache.maybeResize(key)
+    this.handleGridChange(dims)
+  }
+
+  makeReffedChildren(children: Array<ComponentElement<any, any>>) {
+    return children.map((child) => {
       return cloneElement(child, {
         ref: (c) => {
           if (!c) return

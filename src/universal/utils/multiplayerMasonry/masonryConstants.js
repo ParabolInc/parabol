@@ -6,5 +6,7 @@ export const MODAL_PADDING = 32
 export const ANIMATE_IN_TOTAL_DURATION = 500
 export const ITEM_DURATION = 300
 export const EXIT_DURATION = 200
+export const MOVE_DURATION = 200
+export const MOVE_DELAY = 50
 export const MIN_ITEM_DELAY = 100 // head start for the background
 export const MIN_VAR_ITEM_DELAY = 30 // stagger

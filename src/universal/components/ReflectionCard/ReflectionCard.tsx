@@ -7,7 +7,7 @@ import ReflectionFooter from 'universal/components/ReflectionFooter'
 import StyledError from 'universal/components/StyledError'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
 import UserDraggingHeader from 'universal/components/UserDraggingHeader'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EditReflectionMutation from 'universal/mutations/EditReflectionMutation'
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
@@ -20,8 +20,8 @@ import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 
-interface Props extends WithMutationProps {
-  atmosphere: any,
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  handleChange?: () => void,
   isDraggable?: boolean,
   reflection: ReflectionCard_reflection,
   meetingId?: string,
@@ -155,6 +155,7 @@ class ReflectionCard extends Component<Props, State> {
   render () {
     const {
       atmosphere,
+      handleChange,
       error,
       shadow = cardShadow,
       isDraggable,
@@ -183,6 +184,7 @@ class ReflectionCard extends Component<Props, State> {
           isDraggable={isDraggable}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
+          handleChange={handleChange}
           handleReturn={this.handleReturn}
           placeholder='My reflection thought…'
           readOnly={readOnly || isTempId(reflectionId)}
