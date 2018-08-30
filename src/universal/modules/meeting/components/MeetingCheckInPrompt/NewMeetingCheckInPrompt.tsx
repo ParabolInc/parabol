@@ -1,15 +1,15 @@
-// @flow
-import * as React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import NewMeetingCheckInGreeting from 'universal/modules/meeting/components/NewMeetingCheckInGreeting'
-import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewCheckInQuestion'
-import Avatar from 'universal/components/Avatar/Avatar'
+import {NewMeetingCheckInPrompt_team} from '__generated__/NewMeetingCheckInPrompt_team.graphql'
+import {NewMeetingCheckInPrompt_teamMember} from '__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import React from 'react'
 import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
+import Avatar from 'universal/components/Avatar/Avatar'
+import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewCheckInQuestion'
+import NewMeetingCheckInGreeting from 'universal/modules/meeting/components/NewMeetingCheckInGreeting'
 import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-
-import type {NewCheckInQuestion_team as Team} from '__generated__/NewMeetingCheckInPrompt_team.graphql'
-import type {NewCheckInQuestion_team as TeamMember} from '__generated__/NewMeetingCheckInPrompt_teamMember.graphql'
+import {ClientNewMeeting} from 'universal/types/clientSchema'
+import ICheckInPhase = GQL.ICheckInPhase
 
 const PromptBlock = styled('div')({
   alignItems: 'center',
@@ -33,23 +33,20 @@ const AvatarBlock = styled('div')({
   }
 })
 
-type Props = {
-  team: Team,
-  teamMember: TeamMember
+interface Props {
+  team: NewMeetingCheckInPrompt_team
+  teamMember: NewMeetingCheckInPrompt_teamMember
 }
 
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props
   const {picture} = teamMember
-  const {
-    newMeeting: {
-      localPhase: {checkInGreeting}
-    }
-  } = team
+  const newMeeting = team.newMeeting as ClientNewMeeting
+  const {checkInGreeting} = newMeeting.localPhase as ICheckInPhase
   return (
     <PromptBlock>
       <AvatarBlock>
-        <Avatar picture={picture || defaultUserAvatar} size='fill' />
+        <Avatar picture={picture || defaultUserAvatar} size="fill" />
       </AvatarBlock>
       <div>
         <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting} teamMember={teamMember} />

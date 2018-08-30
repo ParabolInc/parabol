@@ -1,23 +1,22 @@
 import React, {Component} from 'react'
+import {Subtract} from 'types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
 export interface WithMutationProps {
-  dirty?: boolean,
-  error?: any | undefined,
-  onCompleted: (res?: any, errors?: any) => void,
-  onError: (error: any) => void,
-  setDirty: () => void,
-  submitMutation: () => void,
+  dirty?: boolean
+  error?: any | undefined
+  onCompleted: (res?: any, errors?: any) => void
+  onError: (error: any) => void
+  setDirty: () => void
+  submitMutation: () => void
   submitting?: boolean
 }
 
-type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
-type Subtract<T, K> = Omit<T, keyof K>;
-
 // Serves as a lightweight alternative for redux-form when we just have a button or something
-const withMutationProps = <P extends WithMutationProps>(ComposedComponent: React.ComponentType<P>) => {
-  // eslint-disable-next-line react/prefer-stateless-function
+const withMutationProps = <P extends WithMutationProps>(
+  ComposedComponent: React.ComponentType<P>
+) => {
   return class WithMutationProps extends Component<Subtract<P, WithMutationProps>> {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`
 
@@ -90,21 +89,3 @@ const withMutationProps = <P extends WithMutationProps>(ComposedComponent: React
 }
 
 export default withMutationProps
-
-// export type WithMutationProps = {
-//   dirty: boolean,
-//   error: any,
-//   onCompleted: () => void,
-//   onError: () => void,
-//   setDirty: () => void,
-//   submitMutation: () => void,
-//   submitting: boolean
-// }
-// const propTypes = {
-//  setDirty: PropTypes.func.isRequired,
-//  error: PropTypes.any,
-//  submitting: PropTypes.bool,
-//  submitMutation: PropTypes.func.isRequired,
-//  onCompleted: PropTypes.func.isRequired,
-//  onError: PropTypes.func.isRequired
-// }

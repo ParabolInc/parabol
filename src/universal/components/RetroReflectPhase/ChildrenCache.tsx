@@ -26,13 +26,18 @@ interface CachedChild {
   bbox: ChildBBox
 }
 
+interface ProposedChild {
+  top: number
+  left: number
+}
+
 class ChildrenCache {
   cache: Array<CachedChild> = []
-  childPadding: number
-  childWidth: number
-  gridPadding: number
-  maxWidth: number
-  maxHeight: number
+  childPadding: number = 0
+  childWidth: number = 0
+  gridPadding: number = 0
+  maxWidth: number = 0
+  maxHeight: number = 0
 
   private get(key) {
     return this.cache.find((cachedChild) => cachedChild.key === key)
@@ -42,13 +47,17 @@ class ChildrenCache {
     const fullColumnWidth = this.childWidth + this.childPadding
     const maxCols = Math.floor(this.maxWidth / fullColumnWidth)
     let bestPerimeter = 1e6
-    let result = {height: 0, width: 0, children: []}
+    let result = {height: 0, width: 0, children: [] as Array<ProposedChild>}
     for (let ii = 1; ii < maxCols; ii++) {
-      const proposedChildren = []
+      const proposedChildren = [] as Array<ProposedChild>
       const currentColumnHeights = new Array(ii).fill(this.gridPadding)
-      const modalColumnLefts = currentColumnHeights.map((_, idx) => (fullColumnWidth) * idx + this.gridPadding)
+      const modalColumnLefts = currentColumnHeights.map(
+        (_, idx) => fullColumnWidth * idx + this.gridPadding
+      )
       this.cache.forEach((cachedChild) => {
-        const {bbox: {height}} = cachedChild
+        const {
+          bbox: {height}
+        } = cachedChild
         const shortestColumnTop = Math.min(...currentColumnHeights)
         const shortestColumnIdx = currentColumnHeights.indexOf(shortestColumnTop)
         const left = modalColumnLefts[shortestColumnIdx]
@@ -59,12 +68,17 @@ class ChildrenCache {
       const gridWidth = ii * fullColumnWidth - this.childPadding + 2 * this.gridPadding
       const perimeter = 2 * gridHeight + 2 * gridWidth
 
-      if (perimeter < bestPerimeter ||
+      if (
+        perimeter < bestPerimeter ||
         // 1 more column makes it fit better
         (gridHeight >= this.maxHeight && gridWidth + fullColumnWidth <= this.maxWidth)
       ) {
         bestPerimeter = perimeter
-        result = {height: Math.min(gridHeight, this.maxHeight), width: gridWidth, children: proposedChildren}
+        result = {
+          height: Math.min(gridHeight, this.maxHeight),
+          width: gridWidth,
+          children: proposedChildren
+        }
       } else {
         break
       }
@@ -81,7 +95,7 @@ class ChildrenCache {
       childrenToAnimate++
       const {style: elStyle} = el
       setElementBBox(el, last)
-      elStyle.transform = getTransform(bbox, last)
+      elStyle.transform = getTransform(bbox as BBox, last)
       elStyle.transition = null
       const delay = MOVE_DELAY + MIN_VAR_ITEM_DELAY * childrenToAnimate
       requestDoubleAnimationFrame(() => {
@@ -97,12 +111,21 @@ class ChildrenCache {
   setEl(key: string, el: HTMLElement) {
     const cachedChild = this.get(key)
     if (!cachedChild) {
-      const {height, width} = getBBox(el)
-      this.cache.push({el, key, bbox: {height, width}})
+      const childBBox = getBBox(el)
+      if (childBBox) {
+        const {height, width} = childBBox
+        this.cache.push({el, key, bbox: {height, width}})
+      }
     }
   }
 
-  setGrid(maxWidth: number, maxHeight: number, childPadding: number, childWidth: number, gridPadding: number) {
+  setGrid(
+    maxWidth: number,
+    maxHeight: number,
+    childPadding: number,
+    childWidth: number,
+    gridPadding: number
+  ) {
     this.childPadding = childPadding
     this.childWidth = childWidth
     this.maxWidth = maxWidth
@@ -119,7 +142,12 @@ class ChildrenCache {
 
   animateIn(first: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
-      const {bbox, el: {style}} = cachedChild
+      const {
+        bbox,
+        el: {style}
+      } = cachedChild
+      if (!bbox.left || !bbox.top) return
+
       const dX = first.left - bbox.left - parent.left
       const dY = first.top - bbox.top - parent.top
       style.position = 'absolute'
@@ -132,7 +160,9 @@ class ChildrenCache {
     requestAnimationFrame(() => {
       const staggerDelay = getStaggerDelay(this.cache.length)
       this.cache.forEach((cachedChild, idx) => {
-        const {el: {style}} = cachedChild
+        const {
+          el: {style}
+        } = cachedChild
         const delay = MIN_ITEM_DELAY + staggerDelay * (this.cache.length - idx - 1)
         style.transition = `transform ${ITEM_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
         style.transform = null
@@ -142,7 +172,11 @@ class ChildrenCache {
 
   animateOut(last: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
-      const {bbox, el: {style}} = cachedChild
+      const {
+        bbox,
+        el: {style}
+      } = cachedChild
+      if (!bbox.left || !bbox.top) return
       const dX = last.left - bbox.left - parent.left
       const dY = last.top - bbox.top - parent.top
       style.position = 'absolute'
@@ -155,7 +189,9 @@ class ChildrenCache {
     requestAnimationFrame(() => {
       const staggerDelay = getStaggerDelay(this.cache.length)
       this.cache.forEach((cachedChild, idx) => {
-        const {el: {style}} = cachedChild
+        const {
+          el: {style}
+        } = cachedChild
         const delay = MIN_ITEM_DELAY + staggerDelay * idx
         style.transition = `transform ${ITEM_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
         style.transform = null
@@ -167,15 +203,16 @@ class ChildrenCache {
     const cachedChild = this.get(key)
     if (!cachedChild) return undefined
     const {bbox, el} = cachedChild
-    const {height} = getBBox(el)
-    if (bbox.height === height) return undefined
-    bbox.height = height
+    const elBBox = getBBox(el)
+    if (!elBBox || bbox.height === elBBox.height) return undefined
+    bbox.height = elBBox.height
     return this.updateChildren()
   }
 
   removeKeys(keys: Array<string>) {
     keys.forEach((key) => {
       const cachedChild = this.get(key)
+      if (!cachedChild) return
       const {el} = cachedChild
       const {style: childStyle} = el
       childStyle.transition = `all 300ms`

@@ -11,7 +11,9 @@ import IconLabel from 'universal/components/IconLabel'
 import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {GROUP} from 'universal/utils/constants'
@@ -27,7 +29,7 @@ const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemC
 }))
 
 interface Props extends WithAtmosphereProps {
-  gotoNext: () => void,
+  gotoNext: () => void
   team: RetroReflectPhase_team
 }
 
@@ -41,7 +43,8 @@ class RetroReflectPhase extends Component<Props> {
       gotoNext
     } = this.props
     const {newMeeting, meetingSettings} = team
-    const {facilitatorUserId = '', reflectionGroups = []} = newMeeting || {}
+    if (!newMeeting) return
+    const {facilitatorUserId, reflectionGroups} = newMeeting
     const phaseItems = meetingSettings.phaseItems || []
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
@@ -61,14 +64,14 @@ class RetroReflectPhase extends Component<Props> {
         {isFacilitating && (
           <MeetingControlBar>
             <FlatButton
-              size='medium'
+              size="medium"
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
             >
               <IconLabel
-                icon='arrow-circle-right'
+                icon="arrow-circle-right"
                 iconAfter
-                iconColor='warm'
+                iconColor="warm"
                 iconLarge
                 label={`Done! Let’s ${nextPhaseLabel}`}
               />

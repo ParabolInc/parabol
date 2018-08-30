@@ -1,10 +1,12 @@
-import * as React from 'react'
-import {cloneElement, Component, ComponentElement} from 'react'
+import React, {cloneElement, Component, ComponentElement} from 'react'
 import {findDOMNode} from 'react-dom'
 import ChildrenCache from 'universal/components/RetroReflectPhase/ChildrenCache'
 import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
 import ParentCache from 'universal/components/RetroReflectPhase/ParentCache'
-import {CARD_PADDING, REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import {
+  CARD_PADDING,
+  REFLECTION_CARD_WIDTH
+} from 'universal/utils/multiplayerMasonry/masonryConstants'
 
 interface Props {
   getFirst(): BBox | null
@@ -38,7 +40,14 @@ class FLIPGrid extends Component<Props, State> {
     const el = findDOMNode(this) as HTMLElement
     this.parentCache.el = el
     const maxBBox = this.props.getParentBBox()
-    const dims = this.childrenCache.setGrid(maxBBox.width, maxBBox.height, CARD_PADDING, REFLECTION_CARD_WIDTH, 16)
+    if (!maxBBox) return
+    const dims = this.childrenCache.setGrid(
+      maxBBox.width,
+      maxBBox.height,
+      CARD_PADDING,
+      REFLECTION_CARD_WIDTH,
+      16
+    )
     this.parentCache.setCoords(el, dims, maxBBox)
     this.props.setBBox(this.parentCache.bbox)
     this.childrenCache.animateIn(this.first, this.parentCache.bbox)
@@ -66,9 +75,9 @@ class FLIPGrid extends Component<Props, State> {
     })
   }
 
-  handleGridChange(dims?: {height: number, width: number}) {
-    if (!dims) return
+  handleGridChange(dims?: {height: number; width: number}) {
     const maxBBox = this.props.getParentBBox()
+    if (!dims || !maxBBox) return
     this.parentCache.setCoords(this.parentCache.el, dims, maxBBox)
     this.props.setBBox(this.parentCache.bbox)
     this.updateChildren()
@@ -92,14 +101,8 @@ class FLIPGrid extends Component<Props, State> {
   }
 
   render() {
-    return (
-      <div>
-        {this.state.children}
-      </div>
-    )
+    return <div>{this.state.children}</div>
   }
 }
 
 export default FLIPGrid
-
-

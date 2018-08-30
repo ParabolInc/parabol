@@ -28,13 +28,13 @@
     },
     "removeComments": true,
     "target": "es2017",
-    // "strict": true,
+     "strict": true,
     "sourceMap": true,
     "typeRoots": [
       "node_modules/@types",
       "src/types"
     ],
-    "traceResolution": true
+    "traceResolution": false
   },
   "include": [
     "src",

@@ -4,11 +4,16 @@ interface Options {
   scale?: boolean
 }
 
-const getTransform = (first: Partial<BBox>, last: Partial<BBox>, {scale}: Options = {}) => {
+export interface Point {
+  left: number
+  top: number
+}
+
+const getTransform = (first: Point | BBox, last: Point | BBox, {scale}: Options = {}) => {
   const dX = first.left - last.left
   const dY = first.top - last.top
   let scaleStr = ''
-  if (scale) {
+  if (scale && 'width' in first && 'width' in last && 'height' in first && 'height' in last) {
     const dW = first.width / last.width
     const dH = first.height / last.height
     scaleStr = `scale(${dW},${dH}`

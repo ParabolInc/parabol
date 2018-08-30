@@ -38,14 +38,15 @@
     "postdeploy": "node ./src/server/utils/postDeploy.babel.js",
     "precommit": "lint-staged",
     "flow": "flow",
-    "prettier": "prettier --write --loglevel warn 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js'",
+    "prettier": "prettier --write --loglevel warn 'src/**/*.{js,ts,tsx}' 'webpack/*.{js,ts,tsx}' '.storybook/*.{js,ts,tsx}' 'stories/**/*.{js,ts,tsx}'",
     "standard": "standard --fix 'src/**/*.js' 'webpack/*.js' '.storybook/*.js' 'stories/**/*.js' | snazzy",
+    "tslint": "tslint -c tslint.json --project tsconfig.json --fix './src/**/*.{ts,tsx}' './webpack/*.{ts,tsx}' './.storybook/*.{ts,tsx}' './stories/**/*.{ts,tsx}'",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
-    "lint": "yarn standard && yarn flow",
+    "lint": "yarn standard",
     "relay": "yarn build:relay --watch",
     "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn flowgen && yarn tsgen",
     "postversion": "git push --follow-tags",
@@ -109,7 +110,7 @@
     "react-addons-test-utils": "^15.6.0",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "relay-compiler": "1.7.0-rc.1",
-    "relay-compiler-language-typescript": "^1.1.0",
+    "relay-compiler-language-typescript": "file:./relay-compiler-language-typescript-v1.1.0.tgz",
     "selenium-webdriver": "^3.6.0",
     "snazzy": "^7.1.1",
     "standard": "^11.0.1",
@@ -247,6 +248,10 @@
     "*.js": [
       "prettier --write",
       "standard --fix",
+      "git add"
+    ],
+    "*.{ts,tsx}": [
+      "prettier --write && tslint -c tslint.json --project tsconfig.json",
       "git add"
     ]
   },

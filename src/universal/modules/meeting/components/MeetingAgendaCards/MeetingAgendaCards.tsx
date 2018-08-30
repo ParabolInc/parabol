@@ -1,16 +1,17 @@
-// @flow
 import React, {Component} from 'react'
 import withHotkey from 'react-hotkey-hoc'
-import {withRouter} from 'react-router'
+import {RouteComponentProps, withRouter} from 'react-router'
 import CreateCard from 'universal/components/CreateCard/CreateCard'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
-import type {Task} from 'universal/types/schema.flow'
 import styled from 'react-emotion'
 import {meetingGridGap, meetingGridMinWidth} from 'universal/styles/meeting'
+import {MeetingAgendaItems_viewer} from '__generated__/MeetingAgendaItems_viewer.graphql'
 
 const TaskCardGrid = styled('div')({
   display: 'grid',
@@ -20,7 +21,8 @@ const TaskCardGrid = styled('div')({
   width: '100%'
 })
 
-const makeCards = (tasks = [], myUserId, handleAddTask) => {
+const makeCards = (tasks: Props['tasks'], myUserId, handleAddTask) => {
+  if (!tasks) return null
   return tasks.map((task) => {
     const {id: taskId} = task
     return (
@@ -41,7 +43,7 @@ const makePlaceholders = (length) => {
   const rowLength = 4
   const emptyCardCount = rowLength - (length % rowLength + 1)
   /* eslint-disable react/no-array-index-key */
-  return new Array(emptyCardCount).fill(undefined).map((item, idx) => (
+  return new Array(emptyCardCount).fill(undefined).map((_, idx) => (
     <div key={`CreateCardPlaceholder${idx}`}>
       <CreateCard />
     </div>
@@ -49,26 +51,23 @@ const makePlaceholders = (length) => {
   /* eslint-enable */
 }
 
-type Props = {
-  agendaId?: string,
-  atmosphere: Object, // TODO: atmosphere type
-  bindHotkey: (key: string, cb: () => void) => void,
-  history: Object,
-  meetingId: string,
-  reflectionGroupId?: string,
-  tasks: ?Array<Task>,
-  showPlaceholders: boolean,
-  styles: Object,
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+  agendaId?: string
+  bindHotkey: (key: string, cb: () => void) => void
+  meetingId: string
+  reflectionGroupId?: string
+  tasks: Array<MeetingAgendaItems_viewer['tasks']['edges'][0]['node']> | null
+  showPlaceholders: boolean
   teamId: string
 }
 
 class MeetingAgendaCards extends Component<Props> {
-  componentWillMount () {
+  componentWillMount() {
     const {bindHotkey} = this.props
     bindHotkey('t', this.handleAddTask())
   }
 
-  handleAddTask = (content) => () => {
+  handleAddTask = (content?: string) => () => {
     const {agendaId, atmosphere, meetingId, reflectionGroupId, teamId} = this.props
     const tasks = this.props.tasks || []
     const {userId} = atmosphere
@@ -87,7 +86,7 @@ class MeetingAgendaCards extends Component<Props> {
     CreateTaskMutation(atmosphere, newTask, MEETING)
   }
 
-  render () {
+  render() {
     const {
       atmosphere: {userId},
       showPlaceholders
@@ -108,4 +107,4 @@ class MeetingAgendaCards extends Component<Props> {
   }
 }
 
-export default withRouter(withAtmosphere(withHotkey(MeetingAgendaCards)))
+export default withHotkey(withRouter(withAtmosphere(MeetingAgendaCards)))

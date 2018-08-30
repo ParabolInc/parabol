@@ -13,7 +13,9 @@ import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEdi
 import PhaseItemHealthBar from 'universal/components/RetroReflectPhase/PhaseItemHealthBar'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -85,24 +87,25 @@ const ChitSection = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  idx: number,
-  meeting: PhaseItemColumn_meeting,
-  phaseRef: React.RefObject<HTMLDivElement>,
+  idx: number
+  meeting: PhaseItemColumn_meeting
+  phaseRef: React.RefObject<HTMLDivElement>
   retroPhaseItem: PhaseItemColumn_retroPhaseItem
 }
 
 class PhaseItemColumn extends Component<Props> {
   phaseEditorRef = React.createRef<HTMLDivElement>()
-  makeColumnStack = memoize((reflectionGroups: PhaseItemColumn_meeting['reflectionGroups'], retroPhaseItemId: string) => reflectionGroups
-    .filter((group) =>
-      group.retroPhaseItemId === retroPhaseItemId &&
-      group.reflections.length > 0
-    )
+  makeColumnStack = memoize(
+    (reflectionGroups: PhaseItemColumn_meeting['reflectionGroups'], retroPhaseItemId: string) =>
+      reflectionGroups.filter(
+        (group) => group.retroPhaseItemId === retroPhaseItemId && group.reflections.length > 0
+      )
   )
-  makeViewerStack = memoize((columnStack) => columnStack
-    .filter((group) => group.reflections[0].isViewerCreator)
-    .sort((a,b) => a.sortOrder > b.sortOrder ? 1 : -1)
-    .map((group) => group.reflections[0])
+  makeViewerStack = memoize((columnStack) =>
+    columnStack
+      .filter((group) => group.reflections[0].isViewerCreator)
+      .sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1))
+      .map((group) => group.reflections[0])
   )
 
   setColumnFocus = () => {
@@ -148,12 +151,17 @@ class PhaseItemColumn extends Component<Props> {
             <HeaderAndEditor>
               <TypeHeader onClick={this.setColumnFocus}>
                 <TypeDescription>
-                  <FocusArrow name='arrow-right' isFocused={isFocused} />
+                  <FocusArrow name="arrow-right" isFocused={isFocused} />
                   {question}
                 </TypeDescription>
               </TypeHeader>
-              <EditorAndStatus isPhaseComplete={isComplete}>
-                <PhaseItemEditor phaseEditorRef={this.phaseEditorRef} meetingId={meetingId} nextSortOrder={this.nextSortOrder} retroPhaseItemId={retroPhaseItemId} />
+              <EditorAndStatus isPhaseComplete={!!isComplete}>
+                <PhaseItemEditor
+                  phaseEditorRef={this.phaseEditorRef}
+                  meetingId={meetingId}
+                  nextSortOrder={this.nextSortOrder}
+                  retroPhaseItemId={retroPhaseItemId}
+                />
                 <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
               </EditorAndStatus>
             </HeaderAndEditor>
@@ -166,7 +174,10 @@ class PhaseItemColumn extends Component<Props> {
               meetingId={meetingId}
             />
             <ChitSection>
-              <PhaseItemChits count={columnStack.length - reflectionStack.length} editorCount={editorIds ? editorIds.length : 0} />
+              <PhaseItemChits
+                count={columnStack.length - reflectionStack.length}
+                editorCount={editorIds ? editorIds.length : 0}
+              />
             </ChitSection>
           </ColumnContent>
         </ColumnHighlight>

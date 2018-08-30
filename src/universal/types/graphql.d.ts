@@ -3,37 +3,37 @@
 
 declare namespace GQL {
   interface IGraphQLResponseRoot {
-    data?: IQuery | IMutation | ISubscription;
-    errors?: Array<IGraphQLResponseError>;
+    data?: IQuery | IMutation | ISubscription
+    errors?: Array<IGraphQLResponseError>
   }
 
   interface IGraphQLResponseError {
     /** Required for all errors */
-    message: string;
-    locations?: Array<IGraphQLResponseErrorLocation>;
+    message: string
+    locations?: Array<IGraphQLResponseErrorLocation>
     /** 7.2.2 says 'GraphQL servers may provide additional entries to error' */
-    [propName: string]: any;
+    [propName: string]: any
   }
 
   interface IGraphQLResponseErrorLocation {
-    line: number;
-    column: number;
+    line: number
+    column: number
   }
 
   interface IQuery {
-    __typename: 'Query';
-    suCountTiersForUser: IUserTiersCount | null;
-    suUserCount: number | null;
-    suProOrgInfo: Array<ISuProOrgInfo> | null;
-    suOrgCount: number | null;
-    viewer: IUser | null;
+    __typename: 'Query'
+    suCountTiersForUser: IUserTiersCount | null
+    suUserCount: number | null
+    suProOrgInfo: Array<ISuProOrgInfo> | null
+    suOrgCount: number | null
+    viewer: IUser | null
   }
 
   interface ISuCountTiersForUserOnQueryArguments {
     /**
      * the user for which you want the count of tier membership
      */
-    userId: string;
+    userId: string
   }
 
   interface ISuUserCountOnQueryArguments {
@@ -41,18 +41,18 @@ declare namespace GQL {
      * filter out users who's email matches this regular expression
      * @default ""
      */
-    ignoreEmailRegex?: string | null;
+    ignoreEmailRegex?: string | null
 
     /**
      * should organizations without active users be included?
      * @default false
      */
-    includeInactive?: boolean | null;
+    includeInactive?: boolean | null
 
     /**
      * @default "pro"
      */
-    tier?: OrgTierEnum | null;
+    tier?: OrgTierEnum | null
   }
 
   interface ISuProOrgInfoOnQueryArguments {
@@ -60,7 +60,7 @@ declare namespace GQL {
      * should organizations without active users be included?
      * @default false
      */
-    includeInactive?: boolean | null;
+    includeInactive?: boolean | null
   }
 
   interface ISuOrgCountOnQueryArguments {
@@ -68,457 +68,457 @@ declare namespace GQL {
      * filter out users who's email matches this regular expression
      * @default ""
      */
-    ignoreEmailRegex?: string | null;
+    ignoreEmailRegex?: string | null
 
     /**
      * should organizations without active users be included?
      * @default false
      */
-    includeInactive?: boolean | null;
+    includeInactive?: boolean | null
 
     /**
      * the minimum number of users within the org to count it
      * @default 2
      */
-    minOrgSize?: number | null;
+    minOrgSize?: number | null
 
     /**
      * @default "pro"
      */
-    tier?: OrgTierEnum | null;
+    tier?: OrgTierEnum | null
   }
 
   /**
    * A count of the number of account tiers a user belongs to.
    */
   interface IUserTiersCount {
-    __typename: 'UserTiersCount';
+    __typename: 'UserTiersCount'
 
     /**
      * The number of personal orgs the user is active upon
      */
-    tierPersonalCount: number | null;
+    tierPersonalCount: number | null
 
     /**
      * The number of pro orgs the user is active upon
      */
-    tierProCount: number | null;
+    tierProCount: number | null
 
     /**
      * The number of pro orgs the user holds the role of Billing Leader
      */
-    tierProBillingLeaderCount: number | null;
-    user: IUser | null;
+    tierProBillingLeaderCount: number | null
+    user: IUser | null
   }
 
   /**
    * The user account profile
    */
   interface IUser {
-    __typename: 'User';
+    __typename: 'User'
 
     /**
      * The userId provided by auth0
      */
-    id: string | null;
+    id: string | null
 
     /**
      * Array of identifier + ip pairs
      */
-    blockedFor: Array<IBlockedUserType> | null;
+    blockedFor: Array<IBlockedUserType> | null
 
     /**
      * The timestamp of the user was cached
      */
-    cachedAt: any | null;
+    cachedAt: any | null
 
     /**
      * The timestamp when the cached user expires
      */
-    cacheExpiresAt: any | null;
+    cacheExpiresAt: any | null
 
     /**
      * The socketIds that the user is currently connected with
      */
-    connectedSockets: Array<string> | null;
+    connectedSockets: Array<string> | null
 
     /**
      * The timestamp the user was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The user email
      */
-    email: any;
+    email: any
 
     /**
      * true if email is verified, false otherwise
      */
-    emailVerified: boolean | null;
+    emailVerified: boolean | null
 
     /**
      * Any super power given to the user via a super user
      */
-    featureFlags: IUserFeatureFlags | null;
+    featureFlags: IUserFeatureFlags | null
 
     /**
      * An array of objects with information about the user's identities.
      *       More than one will exists in case accounts are linked
      */
-    identities: Array<IAuthIdentityType> | null;
+    identities: Array<IAuthIdentityType> | null
 
     /**
      * true if the user is currently online
      */
-    isConnected: boolean | null;
+    isConnected: boolean | null
 
     /**
      * The number of logins for this user
      */
-    loginsCount: number | null;
+    loginsCount: number | null
 
     /**
      * Name associated with the user
      */
-    name: string | null;
+    name: string | null
 
     /**
      * Nickname associated with the user
      */
-    nickname: string | null;
+    nickname: string | null
 
     /**
      * url of user’s profile picture
      */
-    picture: any | null;
+    picture: any | null
 
     /**
      * The timestamp the user was last updated
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * flag to determine which broadcasts to show
      */
-    broadcastFlags: number | null;
+    broadcastFlags: number | null
 
     /**
      * The last time the user connected via websocket
      */
-    lastSeenAt: any | null;
+    lastSeenAt: any | null
 
     /**
      * true if the user is not currently being billed for service. removed on every websocket handshake
      */
-    inactive: boolean | null;
+    inactive: boolean | null
 
     /**
      * true if the user is a part of the supplied orgId
      */
-    isBillingLeader: boolean | null;
+    isBillingLeader: boolean | null
 
     /**
      * The application-specific name, defaults to nickname
      */
-    preferredName: string | null;
+    preferredName: string | null
 
     /**
      * the orgs and roles for this user on each
      */
-    userOrgs: Array<IUserOrg> | null;
-    archivedTasks: ITaskConnection | null;
-    archivedTasksCount: number | null;
+    userOrgs: Array<IUserOrg> | null
+    archivedTasks: IUndefinedConnection | null
+    archivedTasksCount: number | null
 
     /**
      * list of git hub repos available to the viewer
      */
-    githubRepos: Array<IGitHubIntegration> | null;
+    githubRepos: Array<IGitHubIntegration> | null
 
     /**
      * get an integration provider belonging to the user
      */
-    integrationProvider: IProvider | null;
-    invoices: IInvoiceConnection | null;
-    invoiceDetails: IInvoice | null;
+    integrationProvider: IProvider | null
+    invoices: IInvoiceConnection | null
+    invoiceDetails: IInvoice | null
 
     /**
      * A previous meeting that the user was in (present or absent)
      */
-    meeting: IMeeting | null;
+    meeting: IMeeting | null
 
     /**
      * The meeting member associated with this user, if a meeting is currently in progress
      */
-    meetingMember: MeetingMember | null;
+    meetingMember: MeetingMember | null
 
     /**
      * A previous meeting that the user was in (present or absent)
      */
-    newMeeting: NewMeeting;
+    newMeeting: NewMeeting
 
     /**
      * all the notifications for a single user
      */
-    notifications: INotificationConnection | null;
+    notifications: INotificationConnection | null
 
     /**
      * The list of providers as seen on the integrations page
      */
-    providerMap: IProviderMap | null;
+    providerMap: IProviderMap | null
 
     /**
      * paginated list of slackChannels
      */
-    slackChannels: Array<ISlackIntegration> | null;
+    slackChannels: Array<ISlackIntegration> | null
 
     /**
      * get a single organization and the count of users by status
      */
-    organization: IOrganization;
+    organization: IOrganization
 
     /**
      * Get the list of all organizations a user belongs to
      */
-    organizations: Array<IOrganization> | null;
-    tasks: ITaskConnection | null;
+    organizations: Array<IOrganization> | null
+    tasks: IUndefinedConnection
 
     /**
      * A query for a team
      */
-    team: ITeam;
+    team: ITeam
 
     /**
      * all the teams the user is on that the viewer can see.
      */
-    teams: Array<ITeam> | null;
+    teams: Array<ITeam> | null
 
     /**
      * The team member associated with this user
      */
-    teamMember: ITeamMember | null;
+    teamMember: ITeamMember | null
 
     /**
      * all the teams the user is a part of that the viewer can see
      */
-    tms: Array<string> | null;
+    tms: Array<string> | null
   }
 
   interface IIsBillingLeaderOnUserArguments {
     /**
      * the org for which you want the users
      */
-    orgId: string;
+    orgId: string
   }
 
   interface IArchivedTasksOnUserArguments {
     /**
      * the datetime cursor
      */
-    after?: any | null;
-    first?: number | null;
+    after?: any | null
+    first?: number | null
 
     /**
      * The unique team ID
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IArchivedTasksCountOnUserArguments {
     /**
      * The unique team ID
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IGithubReposOnUserArguments {
     /**
      * The unique team Id
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IIntegrationProviderOnUserArguments {
     /**
      * The unique team member Id
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The name of the service
      */
-    service: IntegrationService;
+    service: IntegrationService
   }
 
   interface IInvoicesOnUserArguments {
     /**
      * the datetime cursor
      */
-    after?: any | null;
-    first?: number | null;
+    after?: any | null
+    first?: number | null
 
     /**
      * The id of the organization
      */
-    orgId: string;
+    orgId: string
   }
 
   interface IInvoiceDetailsOnUserArguments {
     /**
      * The id of the invoice
      */
-    invoiceId: string;
+    invoiceId: string
   }
 
   interface IMeetingOnUserArguments {
     /**
      * The meeting ID
      */
-    meetingId: string;
+    meetingId: string
   }
 
   interface IMeetingMemberOnUserArguments {
     /**
      * The specific meeting ID
      */
-    meetingId?: string | null;
+    meetingId?: string | null
 
     /**
      * The teamId of the meeting currently in progress
      */
-    teamId?: string | null;
+    teamId?: string | null
   }
 
   interface INewMeetingOnUserArguments {
     /**
      * The meeting ID
      */
-    meetingId: string;
+    meetingId: string
   }
 
   interface INotificationsOnUserArguments {
-    after?: string | null;
-    first?: number | null;
+    after?: string | null
+    first?: number | null
   }
 
   interface IProviderMapOnUserArguments {
     /**
      * The unique team member Id
      */
-    teamId: string;
+    teamId: string
   }
 
   interface ISlackChannelsOnUserArguments {
     /**
      * The unique team Id
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IOrganizationOnUserArguments {
     /**
      * the orgId
      */
-    orgId: string;
+    orgId: string
   }
 
   interface ITasksOnUserArguments {
     /**
      * the datetime cursor
      */
-    after?: any | null;
-    first?: number | null;
+    after?: any | null
+    first?: number | null
 
     /**
      * The unique team ID
      */
-    teamId?: string | null;
+    teamId?: string | null
   }
 
   interface ITeamOnUserArguments {
     /**
      * The team ID for the desired team
      */
-    teamId: string;
+    teamId: string
   }
 
   interface ITeamMemberOnUserArguments {
     /**
      * The team the user is on
      */
-    teamId: string;
+    teamId: string
   }
 
   /**
    * Identifier and IP address blocked
    */
   interface IBlockedUserType {
-    __typename: 'BlockedUserType';
+    __typename: 'BlockedUserType'
 
     /**
      * The identifier (usually email) of blocked user
      */
-    identifier: string | null;
+    identifier: string | null
 
     /**
      * The IP address of the blocked user
      */
-    id: string | null;
+    id: string | null
   }
 
   /**
    * The user account profile
    */
   interface IUserFeatureFlags {
-    __typename: 'UserFeatureFlags';
+    __typename: 'UserFeatureFlags'
 
     /**
      * true if the user has access to retro meetings
      */
-    retro: boolean | null;
+    retro: boolean | null
   }
 
   interface IAuthIdentityType {
-    __typename: 'AuthIdentityType';
+    __typename: 'AuthIdentityType'
 
     /**
      * The connection name.
      *       This field is not itself updateable
      *       but is needed when updating email, email_verified, username or password.
      */
-    connection: string | null;
+    connection: string | null
 
     /**
      * The unique identifier for the user for the identity.
      */
-    userId: string | null;
+    userId: string | null
 
     /**
      * The type of identity provider.
      */
-    provider: string | null;
+    provider: string | null
 
     /**
      * true if the identity provider is a social provider, false otherwise
      */
-    isSocial: boolean | null;
+    isSocial: boolean | null
   }
 
   /**
    * The user/org M:F join, denormalized on the user/org tables
    */
   interface IUserOrg {
-    __typename: 'UserOrg';
+    __typename: 'UserOrg'
 
     /**
      * The orgId
      */
-    id: string | null;
+    id: string | null
 
     /**
      * role of the user in the org
      */
-    role: OrgUserRole | null;
+    role: OrgUserRole | null
   }
 
   /**
@@ -531,193 +531,193 @@ declare namespace GQL {
   /**
    * A connection to a list of items.
    */
-  interface ITaskConnection {
-    __typename: 'TaskConnection';
+  interface IUndefinedConnection {
+    __typename: 'undefinedConnection'
 
     /**
      * Page info with cursors coerced to ISO8601 dates
      */
-    pageInfo: IPageInfoDateCursor | null;
+    pageInfo: IPageInfoDateCursor | null
 
     /**
      * A list of edges.
      */
-    edges: Array<ITaskEdge> | null;
+    edges: Array<IUndefinedEdge>
   }
 
   /**
    * Information about pagination in a connection.
    */
   interface IPageInfoDateCursor {
-    __typename: 'PageInfoDateCursor';
+    __typename: 'PageInfoDateCursor'
 
     /**
      * When paginating forwards, are there more items?
      */
-    hasNextPage: boolean;
+    hasNextPage: boolean
 
     /**
      * When paginating backwards, are there more items?
      */
-    hasPreviousPage: boolean;
+    hasPreviousPage: boolean
 
     /**
      * When paginating backwards, the cursor to continue.
      */
-    startCursor: any | null;
+    startCursor: any | null
 
     /**
      * When paginating forwards, the cursor to continue.
      */
-    endCursor: any | null;
+    endCursor: any | null
   }
 
   /**
    * An edge in a connection.
    */
-  interface ITaskEdge {
-    __typename: 'TaskEdge';
+  interface IUndefinedEdge {
+    __typename: 'undefinedEdge'
 
     /**
      * The item at the end of the edge
      */
-    node: ITask | null;
-    cursor: any | null;
+    node: ITask
+    cursor: any | null
   }
 
   /**
    * A long-term task shared across the team, assigned to a single user
    */
   interface ITask {
-    __typename: 'Task';
+    __typename: 'Task'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * the agenda item that created this task, if any
      */
-    agendaId: string | null;
+    agendaId: string | null
 
     /**
      * The body of the task. If null, it is a new task.
      */
-    content: string | null;
+    content: string | null
 
     /**
      * The timestamp the task was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The userId that created the task
      */
-    createdBy: string | null;
+    createdBy: string | null
 
     /**
      * a user-defined due date
      */
-    dueDate: any | null;
+    dueDate: any | null
 
     /**
      * a list of users currently editing the task (fed by a subscription, so queries return null)
      */
-    editors: Array<ITaskEditorDetails> | null;
-    integration: IGitHubTask | null;
+    editors: Array<ITaskEditorDetails> | null
+    integration: IGitHubTask | null
 
     /**
      * true if this is assigned to a soft team member
      */
-    isSoftTask: boolean | null;
+    isSoftTask: boolean | null
 
     /**
      * the foreign key for the meeting the task was created in
      */
-    meetingId: string | null;
+    meetingId: string | null
 
     /**
      * the foreign key for the retrospective reflection group this was created in
      */
-    reflectionGroupId: string | null;
+    reflectionGroupId: string | null
 
     /**
      * the shared sort order for tasks on the team dash & user dash
      */
-    sortOrder: number;
+    sortOrder: number
 
     /**
      * The status of the task
      */
-    status: TaskStatusEnum | null;
+    status: TaskStatusEnum | null
 
     /**
      * The tags associated with the task
      */
-    tags: Array<string> | null;
+    tags: Array<string> | null
 
     /**
      * The id of the team (indexed). Needed for subscribing to archived tasks
      */
-    teamId: string | null;
+    teamId: string | null
 
     /**
      * The team this task belongs to
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The team member (or soft team member) that owns this task
      */
-    assignee: Assignee | null;
+    assignee: Assignee | null
 
     /**
      * The id of the team member (or soft team member) assigned to this task
      */
-    assigneeId: string;
+    assigneeId: string
 
     /**
      * The timestamp the task was updated
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * * The userId, index useful for server-side methods getting all tasks under a user
      */
-    userId: string | null;
+    userId: string | null
   }
 
   interface ITaskEditorDetails {
-    __typename: 'TaskEditorDetails';
+    __typename: 'TaskEditorDetails'
 
     /**
      * The userId of the person editing the task
      */
-    userId: string;
+    userId: string
 
     /**
      * The name of the userId editing the task
      */
-    preferredName: string;
+    preferredName: string
   }
 
   /**
    * The details associated with a task integrated with GitHub
    */
   interface IGitHubTask {
-    __typename: 'GitHubTask';
-    integrationId: string;
-    service: IntegrationService;
-    nameWithOwner: string | null;
-    issueNumber: number | null;
+    __typename: 'GitHubTask'
+    integrationId: string
+    service: IntegrationService
+    nameWithOwner: string | null
+    issueNumber: number | null
   }
 
-  type TaskIntegration = IGitHubTask;
+  type TaskIntegration = IGitHubTask
 
   interface ITaskIntegration {
-    __typename: 'TaskIntegration';
-    service: IntegrationService | null;
+    __typename: 'TaskIntegration'
+    service: IntegrationService | null
   }
 
   /**
@@ -742,211 +742,211 @@ declare namespace GQL {
    * A team
    */
   interface ITeam {
-    __typename: 'Team';
+    __typename: 'Team'
 
     /**
      * A shortid for the team
      */
-    id: string;
+    id: string
 
     /**
      * The datetime the team was created
      */
-    createdAt: any;
+    createdAt: any
 
     /**
      * true if the underlying org has a validUntil date greater than now. if false, subs do not work
      */
-    isPaid: boolean | null;
+    isPaid: boolean | null
 
     /**
      * The current or most recent meeting number (also the number of meetings the team has had
      */
-    meetingNumber: number | null;
+    meetingNumber: number | null
 
     /**
      * The name of the team
      */
-    name: string;
+    name: string
 
     /**
      * The organization to which the team belongs
      */
-    orgId: string;
+    orgId: string
 
     /**
      * Arbitrary tags that the team uses
      */
-    tags: Array<string> | null;
+    tags: Array<string> | null
 
     /**
      * The datetime the team was last updated
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * The checkIn greeting (fun language)
      */
-    checkInGreeting: IMeetingGreeting | null;
+    checkInGreeting: IMeetingGreeting | null
 
     /**
      * The checkIn question of the week
      */
-    checkInQuestion: string | null;
-    customPhaseItems: Array<CustomPhaseItem> | null;
+    checkInQuestion: string | null
+    customPhaseItems: Array<CustomPhaseItem> | null
 
     /**
      * The unique Id of the active meeting
      */
-    meetingId: string | null;
+    meetingId: string | null
 
     /**
      * The current facilitator teamMemberId for this meeting
      */
-    activeFacilitator: string | null;
+    activeFacilitator: string | null
 
     /**
      * The phase of the facilitator
      */
-    facilitatorPhase: ActionMeetingPhaseEnum | null;
+    facilitatorPhase: ActionMeetingPhaseEnum | null
 
     /**
      * The current item number for the current phase for the facilitator, 1-indexed
      */
-    facilitatorPhaseItem: number | null;
+    facilitatorPhaseItem: number | null
 
     /**
      * The outstanding invitations to join the team
      */
-    invitations: Array<IInvitation> | null;
+    invitations: Array<IInvitation> | null
 
     /**
      * true if the viewer is the team lead, else false
      */
-    isLead: boolean | null;
+    isLead: boolean | null
 
     /**
      * The phase of the meeting, usually matches the facilitator phase, be could be further along
      */
-    meetingPhase: ActionMeetingPhaseEnum | null;
+    meetingPhase: ActionMeetingPhaseEnum | null
 
     /**
      * The current item number for the current phase for the meeting, 1-indexed
      */
-    meetingPhaseItem: number | null;
+    meetingPhaseItem: number | null
 
     /**
      * The team-specific settings for running all available types of meetings
      */
-    meetingSettings: TeamMeetingSettings;
+    meetingSettings: TeamMeetingSettings
 
     /**
      * The new meeting in progress, if any
      */
-    newMeeting: NewMeeting | null;
+    newMeeting: NewMeeting | null
 
     /**
      * The level of access to features on the parabol site
      */
-    tier: TierEnum | null;
+    tier: TierEnum | null
 
     /**
      * The outstanding invitations to join the team
      */
-    orgApprovals: Array<IOrgApproval> | null;
-    organization: IOrganization | null;
+    orgApprovals: Array<IOrgApproval> | null
+    organization: IOrganization | null
 
     /**
      * The agenda items for the upcoming or current meeting
      */
-    agendaItems: Array<IAgendaItem> | null;
+    agendaItems: Array<IAgendaItem> | null
 
     /**
      * All of the tasks for this team
      */
-    tasks: ITaskConnection | null;
+    tasks: IUndefinedConnection | null
 
     /**
      * All the soft team members actively associated with the team
      */
-    softTeamMembers: Array<ISoftTeamMember> | null;
+    softTeamMembers: Array<ISoftTeamMember> | null
 
     /**
      * All the team members actively associated with the team
      */
-    teamMembers: Array<ITeamMember>;
+    teamMembers: Array<ITeamMember>
 
     /**
      * true if the team has been archived
      */
-    isArchived: boolean | null;
+    isArchived: boolean | null
   }
 
   interface IMeetingSettingsOnTeamArguments {
     /**
      * the type of meeting for the settings
      */
-    meetingType: MeetingTypeEnum;
+    meetingType: MeetingTypeEnum
   }
 
   interface ITasksOnTeamArguments {
     /**
      * the datetime cursor
      */
-    after?: any | null;
-    first?: number | null;
+    after?: any | null
+    first?: number | null
   }
 
   interface ITeamMembersOnTeamArguments {
     /**
      * the field to sort the teamMembers by
      */
-    sortBy?: string | null;
+    sortBy?: string | null
   }
 
   interface IMeetingGreeting {
-    __typename: 'MeetingGreeting';
+    __typename: 'MeetingGreeting'
 
     /**
      * The foreign-language greeting
      */
-    content: string;
+    content: string
 
     /**
      * The source language for the greeting
      */
-    language: string;
+    language: string
   }
 
-  type CustomPhaseItem = IRetroPhaseItem;
+  type CustomPhaseItem = IRetroPhaseItem
 
   interface ICustomPhaseItem {
-    __typename: 'CustomPhaseItem';
+    __typename: 'CustomPhaseItem'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The type of phase item
      */
-    phaseItemType: CustomPhaseItemTypeEnum | null;
+    phaseItemType: CustomPhaseItemTypeEnum | null
 
     /**
      * true if the phase item is currently used by the team, else false
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * foreign key. use the team field
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The team that owns this customPhaseItem
      */
-    team: ITeam | null;
+    team: ITeam | null
   }
 
   /**
@@ -973,77 +973,73 @@ declare namespace GQL {
    * An invitation to become a team member
    */
   interface IInvitation {
-    __typename: 'Invitation';
+    __typename: 'Invitation'
 
     /**
      * The unique invitation Id
      */
-    id: string;
+    id: string
 
     /**
      * The datetime the invitation was accepted
      */
-    acceptedAt: any | null;
+    acceptedAt: any | null
 
     /**
      * The datetime the invitation was created
      */
-    createdAt: any;
+    createdAt: any
 
     /**
      * The email of the invitee
      */
-    email: any | null;
+    email: any | null
 
     /**
      * The name of the invitee, derived from the email address
      */
-    fullName: string | null;
+    fullName: string | null
 
     /**
      * The teamMemberId of the person that sent the invitation
      */
-    invitedBy: string | null;
+    invitedBy: string | null
 
     /**
      * How many invites have been sent to this email address?
      */
-    inviteCount: number | null;
+    inviteCount: number | null
 
     /**
      * The team invited to
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The datestamp of when the invitation will expire
      */
-    tokenExpiration: any | null;
+    tokenExpiration: any | null
 
     /**
      * The datetime the invitation was last updated
      */
-    updatedAt: any | null;
+    updatedAt: any | null
   }
 
-  type PossibleTeamMember =
-    | IInvitation
-    | IOrgApproval
-    | ITeamMember
-    | ISoftTeamMember;
+  type PossibleTeamMember = IInvitation | IOrgApproval | ITeamMember | ISoftTeamMember
 
   interface IPossibleTeamMember {
-    __typename: 'PossibleTeamMember';
+    __typename: 'PossibleTeamMember'
 
     /**
      * A shortid for the possible team member
      */
-    id: string | null;
+    id: string | null
 
     /**
      * The email invited (if Invitee or OrgApproval) or used
      */
-    email: any | null;
+    email: any | null
   }
 
   /**
@@ -1057,30 +1053,28 @@ declare namespace GQL {
   /**
    * The team settings for a specific type of meeting
    */
-  type TeamMeetingSettings =
-    | IRetrospectiveMeetingSettings
-    | IActionMeetingSettings;
+  type TeamMeetingSettings = IRetrospectiveMeetingSettings | IActionMeetingSettings
 
   /**
    * The team settings for a specific type of meeting
    */
   interface ITeamMeetingSettings {
-    __typename: 'TeamMeetingSettings';
+    __typename: 'TeamMeetingSettings'
 
     /**
      * The type of meeting these settings apply to
      */
-    meetingType: MeetingTypeEnum | null;
+    meetingType: MeetingTypeEnum | null
 
     /**
      * The broad phase types that will be addressed during the meeting
      */
-    phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+    phaseTypes: Array<NewMeetingPhaseTypeEnum>
 
     /**
      * The team these settings belong to
      */
-    team: ITeam | null;
+    team: ITeam | null
   }
 
   /**
@@ -1101,207 +1095,200 @@ declare namespace GQL {
   /**
    * A team meeting history for all previous meetings
    */
-  type NewMeeting = IRetrospectiveMeeting;
+  type NewMeeting = IRetrospectiveMeeting
 
   /**
    * A team meeting history for all previous meetings
    */
   interface INewMeeting {
-    __typename: 'NewMeeting';
+    __typename: 'NewMeeting'
 
     /**
      * The unique meeting id. shortid.
      */
-    id: string;
+    id: string
 
     /**
      * The timestamp the meeting was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The timestamp the meeting officially ended
      */
-    endedAt: any | null;
+    endedAt: any | null
 
     /**
      * The location of the facilitator in the meeting
      */
-    facilitatorStageId: string;
+    facilitatorStageId: string
 
     /**
      * The userId (or anonymousId) of the most recent facilitator
      */
-    facilitatorUserId: string;
+    facilitatorUserId: string
 
     /**
      * The facilitator user
      */
-    facilitator: IUser;
+    facilitator: IUser
 
     /**
      * The team members that were active during the time of the meeting
      */
-    meetingMembers: Array<MeetingMember> | null;
+    meetingMembers: Array<MeetingMember> | null
 
     /**
      * The auto-incrementing meeting number for the team
      */
-    meetingNumber: number;
-    meetingType: MeetingTypeEnum;
+    meetingNumber: number
+    meetingType: MeetingTypeEnum
 
     /**
      * The phases the meeting will go through, including all phase-specific state
      */
-    phases: Array<NewMeetingPhase>;
+    phases: Array<NewMeetingPhase>
 
     /**
      * The time the meeting summary was emailed to the team
      */
-    summarySentAt: any | null;
+    summarySentAt: any | null
 
     /**
      * foreign key for team
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The team that ran the meeting
      */
-    team: ITeam;
+    team: ITeam
 
     /**
      * The last time a meeting was updated (stage completed, finished, etc)
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * The meeting member of the viewer
      */
-    viewerMeetingMember: MeetingMember | null;
+    viewerMeetingMember: MeetingMember | null
   }
 
   /**
    * All the user details for a specific meeting
    */
-  type MeetingMember = IRetrospectiveMeetingMember;
+  type MeetingMember = IRetrospectiveMeetingMember
 
   /**
    * All the user details for a specific meeting
    */
   interface IMeetingMember {
-    __typename: 'MeetingMember';
+    __typename: 'MeetingMember'
 
     /**
      * A composite of userId::meetingId
      */
-    id: string;
+    id: string
 
     /**
      * true if present, false if absent, else null
      */
-    isCheckedIn: boolean | null;
-    meetingId: string | null;
-    meetingType: MeetingTypeEnum;
-    teamId: string | null;
-    user: IUser | null;
-    userId: string | null;
+    isCheckedIn: boolean | null
+    meetingId: string | null
+    meetingType: MeetingTypeEnum
+    teamId: string | null
+    user: IUser | null
+    userId: string | null
 
     /**
      * The last time a meeting was updated (stage completed, finished, etc)
      */
-    updatedAt: any | null;
+    updatedAt: any | null
   }
 
-  type NewMeetingPhase =
-    | IReflectPhase
-    | ICheckInPhase
-    | IDiscussPhase
-    | IGenericMeetingPhase;
+  type NewMeetingPhase = IReflectPhase | ICheckInPhase | IDiscussPhase | IGenericMeetingPhase
 
   interface INewMeetingPhase {
-    __typename: 'NewMeetingPhase';
+    __typename: 'NewMeetingPhase'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The type of phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
-    stages: Array<NewMeetingStage>;
+    phaseType: NewMeetingPhaseTypeEnum | null
+    stages: Array<NewMeetingStage>
   }
 
   /**
    * An instance of a meeting phase item. On the client, this usually represents a single view
    */
-  type NewMeetingStage =
-    | IRetroDiscussStage
-    | IGenericMeetingStage
-    | ICheckInStage;
+  type NewMeetingStage = IRetroDiscussStage | IGenericMeetingStage | ICheckInStage
 
   /**
    * An instance of a meeting phase item. On the client, this usually represents a single view
    */
   interface INewMeetingStage {
-    __typename: 'NewMeetingStage';
+    __typename: 'NewMeetingStage'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The datetime the stage was completed
      */
-    endAt: any | null;
+    endAt: any | null
 
     /**
      * foreign key. try using meeting
      */
-    meetingId: string;
+    meetingId: string
 
     /**
      * The meeting this stage belongs to
      */
-    meeting: NewMeeting | null;
+    meeting: NewMeeting | null
 
     /**
      * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
      */
-    isComplete: boolean | null;
+    isComplete: boolean | null
 
     /**
      * true if any meeting participant can navigate to this stage
      */
-    isNavigable: boolean | null;
+    isNavigable: boolean | null
 
     /**
      * true if the facilitator can navigate to this stage
      */
-    isNavigableByFacilitator: boolean | null;
+    isNavigableByFacilitator: boolean | null
 
     /**
      * The phase this stage belongs to
      */
-    phase: NewMeetingPhase | null;
+    phase: NewMeetingPhase | null
 
     /**
      * The type of the phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
+    phaseType: NewMeetingPhaseTypeEnum | null
 
     /**
      * The datetime the stage was started
      */
-    startAt: any | null;
+    startAt: any | null
 
     /**
      * Number of times the facilitator has visited this stage
      */
-    viewCount: number | null;
+    viewCount: number | null
   }
 
   /**
@@ -1317,112 +1304,112 @@ declare namespace GQL {
    * The state of approving an email address to join a team and org
    */
   interface IOrgApproval {
-    __typename: 'OrgApproval';
+    __typename: 'OrgApproval'
 
     /**
      * The unique approval ID
      */
-    id: string;
+    id: string
 
     /**
      * The userId of the billing leader that approved the invitee
      */
-    approvedBy: string | null;
+    approvedBy: string | null
 
     /**
      * The datetime the organization was created
      */
-    createdAt: any;
+    createdAt: any
 
     /**
      * The userId of the billing leader that denied the invitee
      */
-    deniedBy: string | null;
+    deniedBy: string | null
 
     /**
      * *The email seeking approval
      */
-    email: any | null;
+    email: any | null
 
     /**
      * true if it applies to a user that was not removed from the org, else false
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * The notification sent to the viewer / billing leader(s) requesting approval
      */
-    notification: INotifyRequestNewUser | null;
+    notification: INotifyRequestNewUser | null
 
     /**
      * The orgId the email want to join
      */
-    orgId: string;
+    orgId: string
 
     /**
      * *The team seeking approval. Used to populate in the team settings page
      */
-    teamId: string;
-    status: OrgApprovalStatusEnum | null;
+    teamId: string
+    status: OrgApprovalStatusEnum | null
 
     /**
      * The datetime the approval was last updated
      */
-    updatedAt: any | null;
+    updatedAt: any | null
   }
 
   /**
    * A notification sent to a user concerning an invitation (request, joined)
    */
   interface INotifyRequestNewUser {
-    __typename: 'NotifyRequestNewUser';
+    __typename: 'NotifyRequestNewUser'
 
     /**
      * The userId of the person that invited the email
      */
-    inviterUserId: string;
+    inviterUserId: string
 
     /**
      * The email of the person being invited
      */
-    inviteeEmail: string;
+    inviteeEmail: string
 
     /**
      * The teamId the inviteeEmail is being invited to
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The team name the inviteeEmail is being invited to
      */
-    teamName: string;
+    teamName: string
 
     /**
      * The user that triggered the invitation
      */
-    inviter: IUser | null;
-    team: ITeam | null;
+    inviter: IUser | null
+    team: ITeam | null
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   type Notification =
@@ -1435,31 +1422,31 @@ declare namespace GQL {
     | INotifyDenial
     | INotifyKickedOut
     | INotifyPaymentRejected
-    | INotifyPromoteToOrgLeader;
+    | INotifyPromoteToOrgLeader
 
   interface INotification {
-    __typename: 'Notification';
+    __typename: 'Notification'
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   /**
@@ -1486,12 +1473,12 @@ declare namespace GQL {
   type OrganizationNotification =
     | INotifyRequestNewUser
     | INotifyPaymentRejected
-    | INotifyPromoteToOrgLeader;
+    | INotifyPromoteToOrgLeader
 
   interface IOrganizationNotification {
-    __typename: 'OrganizationNotification';
-    id: string | null;
-    type: NotificationEnum | null;
+    __typename: 'OrganizationNotification'
+    id: string | null
+    type: NotificationEnum | null
   }
 
   type TeamNotification =
@@ -1500,12 +1487,12 @@ declare namespace GQL {
     | INotifyInviteeApproved
     | INotifyTaskInvolves
     | INotifyAddedToTeam
-    | INotifyDenial;
+    | INotifyDenial
 
   interface ITeamNotification {
-    __typename: 'TeamNotification';
-    id: string | null;
-    type: NotificationEnum | null;
+    __typename: 'TeamNotification'
+    id: string | null
+    type: NotificationEnum | null
   }
 
   /**
@@ -1521,750 +1508,750 @@ declare namespace GQL {
    * An organization
    */
   interface IOrganization {
-    __typename: 'Organization';
+    __typename: 'Organization'
 
     /**
      * The unique organization ID
      */
-    id: string;
+    id: string
 
     /**
      * The datetime the organization was created
      */
-    createdAt: any;
+    createdAt: any
 
     /**
      * The safe credit card details
      */
-    creditCard: ICreditCard | null;
+    creditCard: ICreditCard | null
 
     /**
      * true if the viewer is the billing leader for the org
      */
-    isBillingLeader: boolean | null;
+    isBillingLeader: boolean | null
 
     /**
      * The billing leader of the organization (or the first, if more than 1)
      */
-    mainBillingLeader: IUser | null;
+    mainBillingLeader: IUser | null
 
     /**
      * The name of the organization
      */
-    name: string | null;
+    name: string | null
 
     /**
      * The org avatar
      */
-    picture: any | null;
+    picture: any | null
 
     /**
      * The level of access to features on the parabol site
      */
-    tier: TierEnum | null;
+    tier: TierEnum | null
 
     /**
      * THe datetime the current billing cycle ends
      */
-    periodEnd: any | null;
+    periodEnd: any | null
 
     /**
      * The datetime the current billing cycle starts
      */
-    periodStart: any | null;
+    periodStart: any | null
 
     /**
      * The total number of retroMeetings given to the team
      */
-    retroMeetingsOffered: number | null;
+    retroMeetingsOffered: number | null
 
     /**
      * Number of retro meetings that can be run (if not pro)
      */
-    retroMeetingsRemaining: number | null;
+    retroMeetingsRemaining: number | null
 
     /**
      * The customerId from stripe
      */
-    stripeId: string | null;
+    stripeId: string | null
 
     /**
      * The subscriptionId from stripe
      */
-    stripeSubscriptionId: string | null;
+    stripeSubscriptionId: string | null
 
     /**
      * The datetime the organization was last updated
      */
-    updatedAt: any | null;
-    orgMembers: IOrganizationMemberConnection | null;
+    updatedAt: any | null
+    orgMembers: IOrganizationMemberConnection | null
 
     /**
      * The count of active & inactive users
      */
-    orgUserCount: IOrgUserCount;
+    orgUserCount: IOrgUserCount
 
     /**
      * The leaders of the org
      */
-    billingLeaders: Array<IUser>;
+    billingLeaders: Array<IUser>
   }
 
   interface IOrgMembersOnOrganizationArguments {
-    after?: string | null;
-    first?: number | null;
+    after?: string | null
+    first?: number | null
   }
 
   /**
    * A credit card
    */
   interface ICreditCard {
-    __typename: 'CreditCard';
+    __typename: 'CreditCard'
 
     /**
      * The brand of the credit card, as provided by skype
      */
-    brand: string | null;
+    brand: string | null
 
     /**
      * The MM/YY string of the expiration date
      */
-    expiry: string | null;
+    expiry: string | null
 
     /**
      * The last 4 digits of a credit card
      */
-    last4: number | null;
+    last4: number | null
   }
 
   /**
    * A connection to a list of items.
    */
   interface IOrganizationMemberConnection {
-    __typename: 'OrganizationMemberConnection';
+    __typename: 'OrganizationMemberConnection'
 
     /**
      * Information to aid in pagination.
      */
-    pageInfo: IPageInfo;
+    pageInfo: IPageInfo
 
     /**
      * A list of edges.
      */
-    edges: Array<IOrganizationMemberEdge> | null;
+    edges: Array<IOrganizationMemberEdge>
   }
 
   /**
    * Information about pagination in a connection.
    */
   interface IPageInfo {
-    __typename: 'PageInfo';
+    __typename: 'PageInfo'
 
     /**
      * When paginating forwards, are there more items?
      */
-    hasNextPage: boolean;
+    hasNextPage: boolean
 
     /**
      * When paginating backwards, are there more items?
      */
-    hasPreviousPage: boolean;
+    hasPreviousPage: boolean
 
     /**
      * When paginating backwards, the cursor to continue.
      */
-    startCursor: string | null;
+    startCursor: string | null
 
     /**
      * When paginating forwards, the cursor to continue.
      */
-    endCursor: string | null;
+    endCursor: string | null
   }
 
   /**
    * An edge in a connection.
    */
   interface IOrganizationMemberEdge {
-    __typename: 'OrganizationMemberEdge';
+    __typename: 'OrganizationMemberEdge'
 
     /**
      * The item at the end of the edge
      */
-    node: IOrganizationMember | null;
+    node: IOrganizationMember | null
 
     /**
      * A cursor for use in pagination
      */
-    cursor: string;
+    cursor: string
   }
 
   interface IOrganizationMember {
-    __typename: 'OrganizationMember';
-    id: string | null;
-    organization: IOrganization | null;
-    user: IUser | null;
-    isBillingLeader: boolean | null;
+    __typename: 'OrganizationMember'
+    id: string | null
+    organization: IOrganization | null
+    user: IUser | null
+    isBillingLeader: boolean | null
   }
 
   interface IOrgUserCount {
-    __typename: 'OrgUserCount';
+    __typename: 'OrgUserCount'
 
     /**
      * The number of orgUsers who have an inactive flag
      */
-    inactiveUserCount: number;
+    inactiveUserCount: number
 
     /**
      * The number of orgUsers who do not have an inactive flag
      */
-    activeUserCount: number;
+    activeUserCount: number
   }
 
   /**
    * A request placeholder that will likely turn into 1 or more tasks
    */
   interface IAgendaItem {
-    __typename: 'AgendaItem';
+    __typename: 'AgendaItem'
 
     /**
      * The unique agenda item id teamId::shortid
      */
-    id: string;
+    id: string
 
     /**
      * The body of the agenda item
      */
-    content: string;
+    content: string
 
     /**
      * The timestamp the agenda item was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * true until the agenda item has been marked isComplete and the meeting has ended
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)
      */
-    isComplete: boolean | null;
+    isComplete: boolean | null
 
     /**
      * The sort order of the agenda item in the list
      */
-    sortOrder: number | null;
+    sortOrder: number | null
 
     /**
      * *The team for this agenda item
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The teamMemberId that created this agenda item
      */
-    teamMemberId: string;
+    teamMemberId: string
 
     /**
      * The timestamp the agenda item was updated
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * The team member that created the agenda item
      */
-    teamMember: ITeamMember | null;
+    teamMember: ITeamMember | null
   }
 
   /**
    * A member of a team
    */
   interface ITeamMember {
-    __typename: 'TeamMember';
+    __typename: 'TeamMember'
 
     /**
      * An ID for the teamMember. userId::teamId
      */
-    id: string;
+    id: string
 
     /**
      * The name of the assignee
      */
-    preferredName: string;
+    preferredName: string
 
     /**
      * foreign key to Team table
      */
-    teamId: string;
+    teamId: string
 
     /**
      * true if the user is a part of the team, false if they no longer are
      */
-    isNotRemoved: boolean | null;
+    isNotRemoved: boolean | null
 
     /**
      * Is user a team lead?
      */
-    isLead: boolean | null;
+    isLead: boolean | null
 
     /**
      * Is user a team facilitator?
      */
-    isFacilitator: boolean | null;
+    isFacilitator: boolean | null
 
     /**
      * hide the agenda list on the dashboard
      */
-    hideAgenda: boolean | null;
+    hideAgenda: boolean | null
 
     /**
      * The user email
      */
-    email: any;
+    email: any
 
     /**
      * url of user’s profile picture
      */
-    picture: any | null;
+    picture: any | null
 
     /**
      * The place in line for checkIn, regenerated every meeting
      */
-    checkInOrder: number | null;
+    checkInOrder: number | null
 
     /**
      * true if the user is connected
      */
-    isConnected: boolean | null;
+    isConnected: boolean | null
 
     /**
      * true if present, false if absent, null before check-in
      */
-    isCheckedIn: boolean | null;
+    isCheckedIn: boolean | null
 
     /**
      * true if this team member belongs to the user that queried it
      */
-    isSelf: boolean | null;
+    isSelf: boolean | null
 
     /**
      * The meeting specifics for the meeting the team member is currently in
      */
-    meetingMember: MeetingMember | null;
+    meetingMember: MeetingMember | null
 
     /**
      * foreign key to User table
      */
-    userId: string | null;
+    userId: string | null
 
     /**
      * The team this team member belongs to
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The user for the team member
      */
-    user: IUser | null;
+    user: IUser | null
 
     /**
      * Tasks owned by the team member
      */
-    tasks: ITaskConnection | null;
+    tasks: IUndefinedConnection | null
   }
 
   interface IMeetingMemberOnTeamMemberArguments {
-    meetingId?: string | null;
+    meetingId?: string | null
   }
 
   interface ITasksOnTeamMemberArguments {
     /**
      * the datetime cursor
      */
-    after?: any | null;
-    first?: number | null;
+    after?: any | null
+    first?: number | null
   }
 
-  type Assignee = ITeamMember | ISoftTeamMember;
+  type Assignee = ITeamMember | ISoftTeamMember
 
   interface IAssignee {
-    __typename: 'Assignee';
+    __typename: 'Assignee'
 
     /**
      * The teamMemberId or softTeamMemberId
      */
-    id: string;
+    id: string
 
     /**
      * The name of the assignee
      */
-    preferredName: string;
+    preferredName: string
 
     /**
      * foreign key to Team table
      */
-    teamId: string;
+    teamId: string
   }
 
   /**
    * A member of a team
    */
   interface ISoftTeamMember {
-    __typename: 'SoftTeamMember';
+    __typename: 'SoftTeamMember'
 
     /**
      * The teamMemberId or softTeamMemberId
      */
-    id: string;
+    id: string
 
     /**
      * The name of the assignee
      */
-    preferredName: string;
+    preferredName: string
 
     /**
      * foreign key to Team table
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The datetime the team was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The user email
      */
-    email: any | null;
+    email: any | null
 
     /**
      * True if this is still a soft team member, false if they were rejected or became a team member
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * Tasks owned by the team member
      */
-    tasks: ITaskConnection | null;
+    tasks: IUndefinedConnection | null
 
     /**
      * The team this team member belongs to
      */
-    team: ITeam | null;
+    team: ITeam | null
   }
 
   interface ITasksOnSoftTeamMemberArguments {
     /**
      * the datetime cursor
      */
-    after?: any | null;
-    first?: number | null;
+    after?: any | null
+    first?: number | null
   }
 
   /**
    * An integration that connects github issues & PRs to Parabol tasks
    */
   interface IGitHubIntegration {
-    __typename: 'GitHubIntegration';
+    __typename: 'GitHubIntegration'
 
     /**
      * The ID of an object
      */
-    id: string;
+    id: string
 
     /**
      * The parabol userId of the admin for this repo (usually the creator)
      */
-    adminUserId: string;
+    adminUserId: string
 
     /**
      * The datetime the integration was created
      */
-    createdAt: any;
+    createdAt: any
 
     /**
      * The name of the repo. Follows format of OWNER/NAME
      */
-    nameWithOwner: string | null;
+    nameWithOwner: string | null
 
     /**
      * defaults to true. true if this is used
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * *The team that is linked to this integration
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The users that can CRUD this integration
      */
-    teamMembers: Array<ITeamMember> | null;
+    teamMembers: Array<ITeamMember> | null
 
     /**
      * The datetime the integration was updated
      */
-    updatedAt: any;
+    updatedAt: any
 
     /**
      * *The userIds connected to the repo so they can CRUD things under their own name
      */
-    userIds: Array<string> | null;
+    userIds: Array<string> | null
   }
 
   /**
    * A token for a user to be used on 1 or more teams
    */
   interface IProvider {
-    __typename: 'Provider';
+    __typename: 'Provider'
 
     /**
      * The ID of an object
      */
-    id: string;
+    id: string
 
     /**
      * The access token to the service
      */
-    accessToken: string;
+    accessToken: string
 
     /**
      * The timestamp the provider was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * True if the Provider is active. else false
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin
      */
-    providerUserId: string | null;
+    providerUserId: string | null
 
     /**
      * The username (or email) attached to the provider
      */
-    providerUserName: string | null;
+    providerUserName: string | null
 
     /**
      * The name of the service
      */
-    service: IntegrationService | null;
+    service: IntegrationService | null
 
     /**
      * *The team that the token is linked to
      */
-    teamId: string | null;
+    teamId: string | null
 
     /**
      * The timestamp the task was updated
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * The user that the access token is attached to
      */
-    userId: string | null;
+    userId: string | null
   }
 
   /**
    * A connection to a list of items.
    */
   interface IInvoiceConnection {
-    __typename: 'InvoiceConnection';
+    __typename: 'InvoiceConnection'
 
     /**
      * Page info with cursors coerced to ISO8601 dates
      */
-    pageInfo: IPageInfoDateCursor | null;
+    pageInfo: IPageInfoDateCursor | null
 
     /**
      * A list of edges.
      */
-    edges: Array<IInvoiceEdge> | null;
+    edges: Array<IInvoiceEdge>
   }
 
   /**
    * An edge in a connection.
    */
   interface IInvoiceEdge {
-    __typename: 'InvoiceEdge';
+    __typename: 'InvoiceEdge'
 
     /**
      * The item at the end of the edge
      */
-    node: IInvoice | null;
-    cursor: any | null;
+    node: IInvoice | null
+    cursor: any | null
   }
 
   /**
    * A monthly billing invoice for an organization
    */
   interface IInvoice {
-    __typename: 'Invoice';
+    __typename: 'Invoice'
 
     /**
      * A shortid for the invoice
      */
-    id: string | null;
+    id: string | null
 
     /**
      * The amount the card will be charged (total + startingBalance with a min value of 0)
      */
-    amountDue: number | null;
+    amountDue: number | null
 
     /**
      * The datetime the invoice was first generated
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The total amount for the invoice (in USD)
      */
-    total: number | null;
+    total: number | null
 
     /**
      * The emails the invoice was sent to
      */
-    billingLeaderEmails: Array<any> | null;
+    billingLeaderEmails: Array<any> | null
 
     /**
      * the card used to pay the invoice
      */
-    creditCard: ICreditCard | null;
+    creditCard: ICreditCard | null
 
     /**
      * The timestamp for the end of the billing cycle
      */
-    endAt: any | null;
+    endAt: any | null
 
     /**
      * The date the invoice was created
      */
-    invoiceDate: any | null;
+    invoiceDate: any | null
 
     /**
      * An invoice line item for previous month adjustments
      */
-    lines: Array<IInvoiceLineItem>;
+    lines: Array<IInvoiceLineItem>
 
     /**
      * The details that comprise the charges for next month
      */
-    nextMonthCharges: IInvoiceChargeNextMonth | null;
+    nextMonthCharges: IInvoiceChargeNextMonth | null
 
     /**
      * *The organization id to charge
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The persisted name of the org as it was when invoiced
      */
-    orgName: string | null;
+    orgName: string | null
 
     /**
      * the datetime the invoice was successfully paid
      */
-    paidAt: any | null;
+    paidAt: any | null
 
     /**
      * The picture of the organization
      */
-    picture: any | null;
+    picture: any | null
 
     /**
      * The timestamp for the beginning of the billing cycle
      */
-    startAt: any | null;
+    startAt: any | null
 
     /**
      * The balance on the customer account (in cents)
      */
-    startingBalance: number | null;
+    startingBalance: number | null
 
     /**
      * the status of the invoice. starts as pending, moves to paid or unpaid depending on if the payment succeeded
      */
-    status: InvoiceStatusEnum | null;
+    status: InvoiceStatusEnum | null
   }
 
   /**
    * A single line item charge on the invoice
    */
   interface IInvoiceLineItem {
-    __typename: 'InvoiceLineItem';
+    __typename: 'InvoiceLineItem'
 
     /**
      * The unique line item id
      */
-    id: string;
+    id: string
 
     /**
      * The amount for the line item (in USD)
      */
-    amount: number;
+    amount: number
 
     /**
      * A description of the charge. Only present if we have no idea what the charge is
      */
-    description: string | null;
+    description: string | null
 
     /**
      * Array of user activity line items that roll up to total activity (add/leave/pause/unpause)
      */
-    details: Array<IInvoiceLineItemDetails>;
+    details: Array<IInvoiceLineItemDetails>
 
     /**
      * The total number of days that all org users have been inactive during the billing cycle
      */
-    quantity: number | null;
+    quantity: number | null
 
     /**
      * The line item type for a monthly billing invoice
      */
-    type: InvoiceLineItemEnum | null;
+    type: InvoiceLineItemEnum | null
   }
 
   /**
    * The per-user-action line item details,
    */
   interface IInvoiceLineItemDetails {
-    __typename: 'InvoiceLineItemDetails';
+    __typename: 'InvoiceLineItemDetails'
 
     /**
      * The unique detailed line item id
      */
-    id: string;
+    id: string
 
     /**
      * The amount for the line item (in USD)
      */
-    amount: number;
+    amount: number
 
     /**
      * The email affected by this line item change
      */
-    email: any | null;
+    email: any | null
 
     /**
      * End of the event. Only present if a pause action gets matched up with an unpause action
      */
-    endAt: any | null;
+    endAt: any | null
 
     /**
      * The parent line item id
      */
-    parentId: string;
+    parentId: string
 
     /**
      * The timestamp for the beginning of the period of no charge
      */
-    startAt: any | null;
+    startAt: any | null
   }
 
   /**
@@ -2281,27 +2268,27 @@ declare namespace GQL {
    * A single line item for the charges for next month
    */
   interface IInvoiceChargeNextMonth {
-    __typename: 'InvoiceChargeNextMonth';
+    __typename: 'InvoiceChargeNextMonth'
 
     /**
      * The amount for the line item (in USD)
      */
-    amount: number;
+    amount: number
 
     /**
      * The datetime the next period will end
      */
-    nextPeriodEnd: any | null;
+    nextPeriodEnd: any | null
 
     /**
      * The total number of days that all org users have been inactive during the billing cycle
      */
-    quantity: number | null;
+    quantity: number | null
 
     /**
      * The per-seat monthly price of the subscription (in dollars)
      */
-    unitPrice: number | null;
+    unitPrice: number | null
   }
 
   /**
@@ -2318,275 +2305,275 @@ declare namespace GQL {
    * A team meeting history for all previous meetings
    */
   interface IMeeting {
-    __typename: 'Meeting';
+    __typename: 'Meeting'
 
     /**
      * The unique meeting id. shortid.
      */
-    id: string;
+    id: string
 
     /**
      * The number of agenda items completed during the meeting
      */
-    agendaItemsCompleted: number | null;
+    agendaItemsCompleted: number | null
 
     /**
      * The timestamp the meeting was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The timestamp the meeting officially ended
      */
-    endedAt: any | null;
+    endedAt: any | null
 
     /**
      * The teamMemberId of the person who ended the meeting
      */
-    facilitator: string | null;
-    invitees: Array<IMeetingInvitee> | null;
+    facilitator: string | null
+    invitees: Array<IMeetingInvitee> | null
 
     /**
      * The auto-incrementing meeting number for the team
      */
-    meetingNumber: number;
+    meetingNumber: number
 
     /**
      * A list of immutable tasks, as they were created in the meeting
      */
-    tasks: Array<IMeetingTask> | null;
+    tasks: Array<IMeetingTask> | null
 
     /**
      * The start time used to create the diff (all taskDiffs occurred between this time and the endTime
      */
-    sinceTime: any | null;
+    sinceTime: any | null
 
     /**
      * The happy introductory clause to the summary
      */
-    successExpression: string | null;
+    successExpression: string | null
 
     /**
      * The happy body statement for the summary
      */
-    successStatement: string | null;
+    successStatement: string | null
 
     /**
      * The time the meeting summary was emailed to the team
      */
-    summarySentAt: any | null;
+    summarySentAt: any | null
 
     /**
      * The team associated with this meeting
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The name as it was when the meeting occurred
      */
-    teamName: string | null;
+    teamName: string | null
 
     /**
      * All the team members associated who can join this team
      */
-    teamMembers: Array<ITeamMember> | null;
+    teamMembers: Array<ITeamMember> | null
   }
 
   /**
    * The user invited to the meeting
    */
   interface IMeetingInvitee {
-    __typename: 'MeetingInvitee';
+    __typename: 'MeetingInvitee'
 
     /**
      * The teamMemberId of the user invited to the meeting
      */
-    id: string | null;
+    id: string | null
 
     /**
      * true if the invitee was present in the meeting
      */
-    present: boolean | null;
+    present: boolean | null
 
     /**
      * A list of immutable tasks, as they were created in the meeting
      */
-    tasks: Array<IMeetingTask> | null;
+    tasks: Array<IMeetingTask> | null
 
     /**
      * url of user’s profile picture
      */
-    picture: any | null;
+    picture: any | null
 
     /**
      * The name, as confirmed by the user
      */
-    preferredName: string | null;
+    preferredName: string | null
 
     /**
      * All of the fields from the team member table
      */
-    membership: ITeamMember | null;
+    membership: ITeamMember | null
   }
 
   /**
    * The task that was created in a meeting
    */
   interface IMeetingTask {
-    __typename: 'MeetingTask';
+    __typename: 'MeetingTask'
 
     /**
      * The unique action id, meetingId::taskId
      */
-    id: string;
+    id: string
 
     /**
      * The stringified Draft-js raw description of the action created during the meeting
      */
-    content: string;
+    content: string
 
     /**
      * The description of the action created during the meeting
      */
-    status: TaskStatusEnum | null;
+    status: TaskStatusEnum | null
 
     /**
      * The tags associated with the task
      */
-    tags: Array<string> | null;
+    tags: Array<string> | null
 
     /**
      * The id of the team member the action was assigned to during the meeting
      */
-    assigneeId: string;
+    assigneeId: string
   }
 
   /**
    * A connection to a list of items.
    */
   interface INotificationConnection {
-    __typename: 'NotificationConnection';
+    __typename: 'NotificationConnection'
 
     /**
      * Page info with cursors coerced to ISO8601 dates
      */
-    pageInfo: IPageInfoDateCursor | null;
+    pageInfo: IPageInfoDateCursor | null
 
     /**
      * A list of edges.
      */
-    edges: Array<INotificationEdge> | null;
+    edges: Array<INotificationEdge>
   }
 
   /**
    * An edge in a connection.
    */
   interface INotificationEdge {
-    __typename: 'NotificationEdge';
+    __typename: 'NotificationEdge'
 
     /**
      * The item at the end of the edge
      */
-    node: Notification | null;
-    cursor: any | null;
+    node: Notification | null
+    cursor: any | null
   }
 
   /**
    * A token for a user to be used on 1 or more teams
    */
   interface IProviderMap {
-    __typename: 'ProviderMap';
+    __typename: 'ProviderMap'
 
     /**
      * The ID of an object
      */
-    id: string;
-    teamId: string | null;
+    id: string
+    teamId: string | null
 
     /**
      * All the big details associated with slack
      */
-    SlackIntegration: IProviderRow | null;
+    SlackIntegration: IProviderRow | null
 
     /**
      * All the big details associated with GitHub
      */
-    GitHubIntegration: IProviderRow | null;
+    GitHubIntegration: IProviderRow | null
   }
 
   /**
    * All the details about a particular provider
    */
   interface IProviderRow {
-    __typename: 'ProviderRow';
+    __typename: 'ProviderRow'
 
     /**
      * The ID of an object
      */
-    id: string;
+    id: string
 
     /**
      * The access token attached to the userId. null if user does not have a token for the provider
      */
-    accessToken: string | null;
+    accessToken: string | null
 
     /**
      * The count of all the people on the team that have linked their account to the provider
      */
-    userCount: number | null;
+    userCount: number | null
 
     /**
      * The number of integrations under this provider for the team
      */
-    integrationCount: number | null;
+    integrationCount: number | null
 
     /**
      * The username according to the provider
      */
-    providerUserName: string | null;
+    providerUserName: string | null
 
     /**
      * The name of the service
      */
-    service: IntegrationService | null;
-    teamId: string | null;
+    service: IntegrationService | null
+    teamId: string | null
   }
 
   /**
    * An integration that sends start/end meeting messages to a specified slack channel
    */
   interface ISlackIntegration {
-    __typename: 'SlackIntegration';
+    __typename: 'SlackIntegration'
 
     /**
      * The ID of an object
      */
-    id: string;
+    id: string
 
     /**
      * the id of the channel provided by the service, if available. Useful for fetching from their API
      */
-    channelId: string;
+    channelId: string
 
     /**
      * The name of the channel. Shared with all, updated when the integration owner looks at it
      */
-    channelName: string | null;
+    channelName: string | null
 
     /**
      * defaults to true. true if this is used to send notifications
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * The types of notifications the team wishes to receive
      */
-    notifications: Array<string> | null;
+    notifications: Array<string> | null
 
     /**
      * *The team that cares about these annoucements
      */
-    teamId: string;
+    teamId: string
   }
 
   /**
@@ -2599,441 +2586,441 @@ declare namespace GQL {
   }
 
   interface ISuProOrgInfo {
-    __typename: 'SuProOrgInfo';
+    __typename: 'SuProOrgInfo'
 
     /**
      * The PRO organization
      */
-    organization: IOrganization | null;
+    organization: IOrganization | null
 
     /**
      * The id of the Organization
      */
-    organizationId: string;
+    organizationId: string
   }
 
   interface IMutation {
-    __typename: 'Mutation';
+    __typename: 'Mutation'
 
     /**
      * Add a user to a Team given an invitationToken or the notification id of the invitation.
      *     If the invitationToken is valid, returns the auth token with the new team added to tms.
      *     Side effect: deletes all other outstanding invitations for user.
      */
-    acceptTeamInvite: IAcceptTeamInvitePayload;
+    acceptTeamInvite: IAcceptTeamInvitePayload
 
     /**
      * Create a new agenda item
      */
-    addAgendaItem: IAddAgendaItemPayload | null;
+    addAgendaItem: IAddAgendaItemPayload | null
 
     /**
      * Give someone advanced features in a flag
      */
-    addFeatureFlag: IAddFeatureFlagPayload | null;
-    addGitHubRepo: IAddGitHubRepoPayload;
+    addFeatureFlag: IAddFeatureFlagPayload | null
+    addGitHubRepo: IAddGitHubRepoPayload
 
     /**
      * Create a new team and add the first team member
      */
-    addOrg: IAddOrgPayload | null;
-    addProvider: boolean | null;
-    addSlackChannel: IAddSlackChannelPayload;
+    addOrg: IAddOrgPayload | null
+    addProvider: boolean | null
+    addSlackChannel: IAddSlackChannelPayload
 
     /**
      * Create a new team and add the first team member
      */
-    addTeam: IAddTeamPayload | null;
+    addTeam: IAddTeamPayload | null
 
     /**
      * Approve an outsider to join the organization
      */
-    approveToOrg: IApproveToOrgPayload | null;
-    archiveTeam: IArchiveTeamPayload | null;
+    approveToOrg: IApproveToOrgPayload | null
+    archiveTeam: IArchiveTeamPayload | null
 
     /**
      * Automatically group reflections
      */
-    autoGroupReflections: IAutoGroupReflectionsPayload | null;
+    autoGroupReflections: IAutoGroupReflectionsPayload | null
 
     /**
      * Cancel a pending request for an invitee to join the org
      */
-    cancelApproval: ICancelApprovalPayload | null;
+    cancelApproval: ICancelApprovalPayload | null
 
     /**
      * Cancel an invitation
      */
-    cancelTeamInvite: ICancelTeamInvitePayload | null;
+    cancelTeamInvite: ICancelTeamInvitePayload | null
 
     /**
      * Change the team a task is associated with
      */
-    changeTaskTeam: IChangeTaskTeamPayload | null;
+    changeTaskTeam: IChangeTaskTeamPayload | null
 
     /**
      * Remove a notification by ID
      */
-    clearNotification: IClearNotificationPayload | null;
+    clearNotification: IClearNotificationPayload | null
 
     /**
      * a server-side mutation called when a client connects
      */
-    connectSocket: IUser | null;
+    connectSocket: IUser | null
 
     /**
      * for troubleshooting by admins, create a JWT for a given userId
      */
-    createImposterToken: ICreateImposterTokenPayload | null;
+    createImposterToken: ICreateImposterTokenPayload | null
 
     /**
      * Create a new team and add the first team member. Called from the welcome wizard
      */
-    createFirstTeam: ICreateFirstTeamPayload | null;
-    createGitHubIssue: ICreateGitHubIssuePayload | null;
+    createFirstTeam: ICreateFirstTeamPayload | null
+    createGitHubIssue: ICreateGitHubIssuePayload | null
 
     /**
      * Create a PUT URL on the CDN for an organization’s profile picture
      */
-    createOrgPicturePutUrl: ICreatePicturePutUrlPayload | null;
+    createOrgPicturePutUrl: ICreatePicturePutUrlPayload | null
 
     /**
      * Create a new reflection
      */
-    createReflection: ICreateReflectionPayload | null;
+    createReflection: ICreateReflectionPayload | null
 
     /**
      * Create a new reflection group
      */
-    createReflectionGroup: ICreateReflectionGroupPayload | null;
+    createReflectionGroup: ICreateReflectionGroupPayload | null
 
     /**
      * Create a new task, triggering a CreateCard for other viewers
      */
-    createTask: ICreateTaskPayload | null;
+    createTask: ICreateTaskPayload | null
 
     /**
      * Create a PUT URL on the CDN for the currently authenticated user’s profile picture
      */
-    createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null;
+    createUserPicturePutUrl: ICreateUserPicturePutUrlPayload | null
 
     /**
      * Delete (not archive!) a task
      */
-    deleteTask: IDeleteTaskPayload | null;
+    deleteTask: IDeleteTaskPayload | null
 
     /**
      * a server-side mutation called when a client disconnects
      */
-    disconnectSocket: IDisconnectSocketPayload | null;
+    disconnectSocket: IDisconnectSocketPayload | null
 
     /**
      * Changes the priority of the discussion topics
      */
-    dragDiscussionTopic: IDragDiscussionTopicPayload | null;
+    dragDiscussionTopic: IDragDiscussionTopicPayload | null
 
     /**
      * Broadcast that the viewer stopped dragging a reflection
      */
-    endDraggingReflection: IEndDraggingReflectionPayload | null;
+    endDraggingReflection: IEndDraggingReflectionPayload | null
 
     /**
      * Changes the editing state of a user for a phase item
      */
-    editReflection: IEditReflectionPayload | null;
+    editReflection: IEditReflectionPayload | null
 
     /**
      * Announce to everyone that you are editing a task
      */
-    editTask: IEditTaskPayload | null;
+    editTask: IEditTaskPayload | null
 
     /**
      * Finish a meeting and go to the summary
      */
-    endMeeting: IEndMeetingPayload | null;
+    endMeeting: IEndMeetingPayload | null
 
     /**
      * Receive a webhook from github saying an assignee was added
      */
-    githubAddAssignee: boolean | null;
+    githubAddAssignee: boolean | null
 
     /**
      * Receive a webhook from github saying an org member was added
      */
-    githubAddMember: boolean | null;
+    githubAddMember: boolean | null
 
     /**
      * Receive a webhook from github saying an org member was removed
      */
-    githubRemoveMember: boolean | null;
+    githubRemoveMember: boolean | null
 
     /**
      * pauses the subscription for a single user
      */
-    inactivateUser: IInactivateUserPayload | null;
+    inactivateUser: IInactivateUserPayload | null
 
     /**
      * If in the org,
      *      Send invitation emails to a list of email addresses, add them to the invitation table.
      *      Else, send a request to the org leader to get them approval and put them in the OrgApproval table.
      */
-    inviteTeamMembers: IInviteTeamMembersPayload;
+    inviteTeamMembers: IInviteTeamMembersPayload
 
     /**
      * Add a user to an integration
      */
-    joinIntegration: IJoinIntegrationPayload;
+    joinIntegration: IJoinIntegrationPayload
 
     /**
      * Finish a meeting abruptly
      */
-    killMeeting: IKillMeetingPayload | null;
+    killMeeting: IKillMeetingPayload | null
 
     /**
      * Finish a new meeting abruptly
      */
-    endNewMeeting: IEndNewMeetingPayload | null;
+    endNewMeeting: IEndNewMeetingPayload | null
 
     /**
      * Remove yourself from an integration
      */
-    leaveIntegration: ILeaveIntegrationPayload;
+    leaveIntegration: ILeaveIntegrationPayload
 
     /**
      * Check a member in as present or absent
      */
-    meetingCheckIn: IMeetingCheckInPayload | null;
+    meetingCheckIn: IMeetingCheckInPayload | null
 
     /**
      * Update the facilitator. If this is new territory for the meetingPhaseItem, advance that, too.
      */
-    moveMeeting: IMoveMeetingPayload | null;
+    moveMeeting: IMoveMeetingPayload | null
 
     /**
      * Move a team to a different org. Requires billing leader rights on both orgs!
      */
-    moveTeamToOrg: string | null;
+    moveTeamToOrg: string | null
 
     /**
      * update a meeting by marking an item complete and setting the facilitator location
      */
-    navigateMeeting: INavigateMeetingPayload | null;
+    navigateMeeting: INavigateMeetingPayload | null
 
     /**
      * Check a member in as present or absent
      */
-    newMeetingCheckIn: INewMeetingCheckInPayload | null;
+    newMeetingCheckIn: INewMeetingCheckInPayload | null
 
     /**
      * Change a facilitator while the meeting is in progress
      */
-    promoteFacilitator: IPromoteFacilitatorPayload | null;
+    promoteFacilitator: IPromoteFacilitatorPayload | null
 
     /**
      * Change a facilitator while the meeting is in progress
      */
-    promoteNewMeetingFacilitator: IPromoteNewMeetingFacilitatorPayload | null;
+    promoteNewMeetingFacilitator: IPromoteNewMeetingFacilitatorPayload | null
 
     /**
      * Promote another team member to be the leader
      */
-    promoteToTeamLead: IPromoteToTeamLeadPayload | null;
+    promoteToTeamLead: IPromoteToTeamLeadPayload | null
 
     /**
      * Reject an invitee from joining any team under your organization
      */
-    rejectOrgApproval: IRejectOrgApprovalPayload | null;
+    rejectOrgApproval: IRejectOrgApprovalPayload | null
 
     /**
      * Remove an agenda item
      */
-    removeAgendaItem: IRemoveAgendaItemPayload | null;
+    removeAgendaItem: IRemoveAgendaItemPayload | null
 
     /**
      * Disconnect a team from a Provider token
      */
-    removeProvider: IRemoveProviderPayload;
+    removeProvider: IRemoveProviderPayload
 
     /**
      * Remove a slack channel integration from a team
      */
-    removeSlackChannel: IRemoveSlackChannelPayload;
+    removeSlackChannel: IRemoveSlackChannelPayload
 
     /**
      * Remove a github repo integration from a team
      */
-    removeGitHubRepo: IRemoveGitHubRepoPayload;
+    removeGitHubRepo: IRemoveGitHubRepoPayload
 
     /**
      * Remove a user from an org
      */
-    removeOrgUser: IRemoveOrgUserPayload | null;
+    removeOrgUser: IRemoveOrgUserPayload | null
 
     /**
      * Remove a reflection
      */
-    removeReflection: IRemoveReflectionPayload | null;
+    removeReflection: IRemoveReflectionPayload | null
 
     /**
      * Remove a team member from the team
      */
-    removeTeamMember: IRemoveTeamMemberPayload | null;
+    removeTeamMember: IRemoveTeamMemberPayload | null
 
     /**
      * Request to become the facilitator in a meeting
      */
-    requestFacilitator: IRequestFacilitatorPayload | null;
+    requestFacilitator: IRequestFacilitatorPayload | null
 
     /**
      * Resend an invitation
      */
-    resendTeamInvite: IResendTeamInvitePayload | null;
+    resendTeamInvite: IResendTeamInvitePayload | null
 
     /**
      * track an event in segment, like when errors are hit
      */
-    segmentEventTrack: boolean | null;
+    segmentEventTrack: boolean | null
 
     /**
      * Set the role of a user
      */
-    setOrgUserRole: SetOrgUserRolePayload | null;
+    setOrgUserRole: SetOrgUserRolePayload | null
 
     /**
      * Focus (or unfocus) a phase item
      */
-    setPhaseFocus: ISetPhaseFocusPayload | null;
+    setPhaseFocus: ISetPhaseFocusPayload | null
 
     /**
      * Broadcast that the viewer started dragging a reflection
      */
-    startDraggingReflection: IStartDraggingReflectionPayload | null;
+    startDraggingReflection: IStartDraggingReflectionPayload | null
 
     /**
      * Start a meeting from the lobby
      */
-    startMeeting: IStartMeetingPayload | null;
+    startMeeting: IStartMeetingPayload | null
 
     /**
      * Start a new meeting
      */
-    startNewMeeting: IStartNewMeetingPayload | null;
+    startNewMeeting: IStartNewMeetingPayload | null
 
     /**
      * When stripe tells us an invoice is ready, create a pretty version
      */
-    stripeCreateInvoice: boolean | null;
+    stripeCreateInvoice: boolean | null
 
     /**
      * When stripe tells us an invoice payment failed, update it in our DB
      */
-    stripeFailPayment: IStripeFailPaymentPayload | null;
+    stripeFailPayment: IStripeFailPaymentPayload | null
 
     /**
      * When stripe tells us an invoice payment was successful, update it in our DB
      */
-    stripeSucceedPayment: boolean | null;
+    stripeSucceedPayment: boolean | null
 
     /**
      * When stripe tells us a credit card was updated, update the details in our own DB
      */
-    stripeUpdateCreditCard: boolean | null;
+    stripeUpdateCreditCard: boolean | null
 
     /**
      * When a new invoiceitem is sent from stripe, tag it with metadata
      */
-    stripeUpdateInvoiceItem: boolean | null;
+    stripeUpdateInvoiceItem: boolean | null
 
     /**
      * Show/hide the agenda list
      */
-    toggleAgendaList: ITeamMember | null;
+    toggleAgendaList: ITeamMember | null
 
     /**
      * Update an agenda item
      */
-    updateAgendaItem: IUpdateAgendaItemPayload | null;
+    updateAgendaItem: IUpdateAgendaItemPayload | null
 
     /**
      * Update an existing credit card on file
      */
-    updateCreditCard: IUpdateCreditCardPayload | null;
+    updateCreditCard: IUpdateCreditCardPayload | null
 
     /**
      * Update an with a change in name, avatar
      */
-    updateOrg: IUpdateOrgPayload;
+    updateOrg: IUpdateOrgPayload
 
     /**
      * Update a Team's Check-in question
      */
-    updateCheckInQuestion: IUpdateCheckInQuestionPayload | null;
+    updateCheckInQuestion: IUpdateCheckInQuestionPayload | null
 
     /**
      * Update a Team's Check-in question in a new meeting
      */
-    updateNewCheckInQuestion: IUpdateNewCheckInQuestionPayload | null;
+    updateNewCheckInQuestion: IUpdateNewCheckInQuestionPayload | null
 
     /**
      * all the info required to provide an accurate display-specific location of where an item is
      */
-    updateDragLocation: boolean | null;
+    updateDragLocation: boolean | null
 
     /**
      * Update the content of a reflection
      */
-    updateReflectionContent: IUpdateReflectionContentPayload | null;
+    updateReflectionContent: IUpdateReflectionContentPayload | null
 
     /**
      * Update the title of a reflection group
      */
-    updateReflectionGroupTitle: IUpdateReflectionGroupTitlePayload | null;
+    updateReflectionGroupTitle: IUpdateReflectionGroupTitlePayload | null
 
     /**
      * Update a task with a change in content, ownership, or status
      */
-    updateTask: IUpdateTaskPayload | null;
+    updateTask: IUpdateTaskPayload | null
 
     /**
      * Set or unset the due date of a task
      */
-    updateTaskDueDate: IUpdateTaskDueDatePayload | null;
-    updateTeamName: IUpdateTeamNamePayload | null;
-    updateUserProfile: IUpdateUserProfilePayload | null;
+    updateTaskDueDate: IUpdateTaskDueDatePayload | null
+    updateTeamName: IUpdateTeamNamePayload | null
+    updateUserProfile: IUpdateUserProfilePayload | null
 
     /**
      * Cast your vote for a reflection group
      */
-    voteForReflectionGroup: IVoteForReflectionGroupPayload | null;
+    voteForReflectionGroup: IVoteForReflectionGroupPayload | null
 
     /**
      * Log in, or sign up if it is a new user
      */
-    login: ILoginPayload | null;
+    login: ILoginPayload | null
 
     /**
      * Upgrade an account to the paid service
      */
-    upgradeToPro: IUpgradeToProPayload | null;
+    upgradeToPro: IUpgradeToProPayload | null
   }
 
   interface IAcceptTeamInviteOnMutationArguments {
     /**
      * The invitation token (first 6 bytes are the id, next 8 are the pre-hash)
      */
-    inviteToken?: string | null;
+    inviteToken?: string | null
 
     /**
      * The notification id of the team invite
      */
-    notificationId?: string | null;
+    notificationId?: string | null
   }
 
   interface IAddAgendaItemOnMutationArguments {
     /**
      * The new task including an id, teamMemberId, and content
      */
-    newAgendaItem: ICreateAgendaItemInput;
+    newAgendaItem: ICreateAgendaItemInput
   }
 
   interface IAddFeatureFlagOnMutationArguments {
@@ -3041,849 +3028,849 @@ declare namespace GQL {
      * the complete or partial email of the person to whom you are giving advanced features.
      *       Matches via a regex to support entire domains
      */
-    email: string;
+    email: string
 
     /**
      * the flag that you want to give to the user
      */
-    flag: UserFlagEnum;
+    flag: UserFlagEnum
   }
 
   interface IAddGitHubRepoOnMutationArguments {
-    teamId: string;
-    nameWithOwner: string;
+    teamId: string
+    nameWithOwner: string
   }
 
   interface IAddOrgOnMutationArguments {
     /**
      * The new team object with exactly 1 team member
      */
-    newTeam: INewTeamInput;
-    invitees: Array<IInvitee>;
+    newTeam: INewTeamInput
+    invitees: Array<IInvitee>
 
     /**
      * The name of the new team
      */
-    orgName?: string | null;
+    orgName?: string | null
   }
 
   interface IAddProviderOnMutationArguments {
-    code: string;
-    state: string;
-    service: IntegrationService;
+    code: string
+    state: string
+    service: IntegrationService
   }
 
   interface IAddSlackChannelOnMutationArguments {
-    input: IAddSlackChannelInput;
+    input: IAddSlackChannelInput
   }
 
   interface IAddTeamOnMutationArguments {
     /**
      * The new team object
      */
-    newTeam: INewTeamInput;
-    invitees: Array<IInvitee>;
+    newTeam: INewTeamInput
+    invitees: Array<IInvitee>
   }
 
   interface IApproveToOrgOnMutationArguments {
-    email: string;
-    orgId: string;
+    email: string
+    orgId: string
   }
 
   interface IArchiveTeamOnMutationArguments {
     /**
      * The teamId to archive (or delete, if team is unused)
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IAutoGroupReflectionsOnMutationArguments {
-    meetingId: string;
+    meetingId: string
 
     /**
      * A number from 0 to 1 to determine how tightly to pack the groups. Higher means fewer groups
      */
-    groupingThreshold: number;
+    groupingThreshold: number
   }
 
   interface ICancelApprovalOnMutationArguments {
     /**
      * org approval id to cancel
      */
-    orgApprovalId: string;
+    orgApprovalId: string
   }
 
   interface ICancelTeamInviteOnMutationArguments {
     /**
      * The id of the invitation
      */
-    invitationId: string;
+    invitationId: string
   }
 
   interface IChangeTaskTeamOnMutationArguments {
     /**
      * The task to change
      */
-    taskId: string;
+    taskId: string
 
     /**
      * The new team to assign the task to
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IClearNotificationOnMutationArguments {
     /**
      * The id of the notification to remove
      */
-    notificationId: string;
+    notificationId: string
   }
 
   interface ICreateImposterTokenOnMutationArguments {
     /**
      * The target userId to impersonate
      */
-    userId: string;
+    userId: string
   }
 
   interface ICreateFirstTeamOnMutationArguments {
     /**
      * The new team object with exactly 1 team member
      */
-    newTeam: INewTeamInput;
+    newTeam: INewTeamInput
   }
 
   interface ICreateGitHubIssueOnMutationArguments {
     /**
      * The id of the task to convert to a GH issue
      */
-    taskId: string;
+    taskId: string
 
     /**
      * The owner/repo string
      */
-    nameWithOwner: string;
+    nameWithOwner: string
   }
 
   interface ICreateOrgPicturePutUrlOnMutationArguments {
     /**
      * user-supplied MIME content type
      */
-    contentType: string;
+    contentType: string
 
     /**
      * user-supplied file size
      */
-    contentLength: number;
+    contentLength: number
 
     /**
      * The organization id to update
      */
-    orgId: string;
+    orgId: string
   }
 
   interface ICreateReflectionOnMutationArguments {
-    input: ICreateReflectionInput;
+    input: ICreateReflectionInput
   }
 
   interface ICreateReflectionGroupOnMutationArguments {
-    meetingId: string;
+    meetingId: string
 
     /**
      * An array of 1 or 2 reflections that make up the group. The first card in the array will be used to determine sort order
      */
-    reflectionIds: Array<string>;
+    reflectionIds: Array<string>
   }
 
   interface ICreateTaskOnMutationArguments {
     /**
      * The new task including an id, status, and type, and teamMemberId
      */
-    newTask: ICreateTaskInput;
+    newTask: ICreateTaskInput
 
     /**
      * The part of the site where the creation occurred
      */
-    area?: AreaEnum | null;
+    area?: AreaEnum | null
   }
 
   interface ICreateUserPicturePutUrlOnMutationArguments {
     /**
      * user-supplied MIME content type
      */
-    contentType?: string | null;
+    contentType?: string | null
 
     /**
      * user-supplied file size
      */
-    contentLength: number;
+    contentLength: number
   }
 
   interface IDeleteTaskOnMutationArguments {
     /**
      * The taskId to delete
      */
-    taskId: string;
+    taskId: string
   }
 
   interface IDragDiscussionTopicOnMutationArguments {
-    meetingId: string;
-    stageId: string;
-    sortOrder: number;
+    meetingId: string
+    stageId: string
+    sortOrder: number
   }
 
   interface IEndDraggingReflectionOnMutationArguments {
-    reflectionId: string;
+    reflectionId: string
 
     /**
      * if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
      */
-    dropTargetType?: DragReflectionDropTargetTypeEnum | null;
+    dropTargetType?: DragReflectionDropTargetTypeEnum | null
 
     /**
      * if dropTargetType could refer to more than 1 component, this ID defines which one
      */
-    dropTargetId?: string | null;
+    dropTargetId?: string | null
 
     /**
      * the ID of the drag to connect to the start drag event
      */
-    dragId?: string | null;
+    dragId?: string | null
   }
 
   interface IEditReflectionOnMutationArguments {
-    phaseItemId: string;
+    phaseItemId: string
 
     /**
      * Whether a phaseItem is being edited or not
      */
-    isEditing: boolean;
+    isEditing: boolean
   }
 
   interface IEditTaskOnMutationArguments {
     /**
      * The task id that is being edited
      */
-    taskId: string;
+    taskId: string
 
     /**
      * true if the editing is starting, false if it is stopping
      */
-    isEditing: boolean;
+    isEditing: boolean
   }
 
   interface IEndMeetingOnMutationArguments {
     /**
      * The team that will be having the meeting
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IGithubAddAssigneeOnMutationArguments {
     /**
      * The github issue id
      */
-    integrationId: string;
+    integrationId: string
 
     /**
      * The github login for the new assignee
      */
-    assigneeLogin: string;
+    assigneeLogin: string
 
     /**
      * The repo name and owner
      */
-    nameWithOwner: string;
+    nameWithOwner: string
   }
 
   interface IGithubAddMemberOnMutationArguments {
     /**
      * The github login
      */
-    userName: string;
+    userName: string
 
     /**
      * The github org login
      */
-    orgName: string;
+    orgName: string
   }
 
   interface IGithubRemoveMemberOnMutationArguments {
     /**
      * The github login
      */
-    userName: string;
+    userName: string
 
     /**
      * The github org login
      */
-    orgName: string;
+    orgName: string
   }
 
   interface IInactivateUserOnMutationArguments {
     /**
      * the user to pause
      */
-    userId: string;
+    userId: string
   }
 
   interface IInviteTeamMembersOnMutationArguments {
     /**
      * The id of the inviting team
      */
-    teamId: string;
-    invitees: Array<IInvitee>;
+    teamId: string
+    invitees: Array<IInvitee>
   }
 
   interface IJoinIntegrationOnMutationArguments {
     /**
      * The global id of the integration to join
      */
-    globalId: string;
+    globalId: string
   }
 
   interface IKillMeetingOnMutationArguments {
     /**
      * The team that will be having the meeting
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IEndNewMeetingOnMutationArguments {
     /**
      * The meeting to end
      */
-    meetingId: string;
+    meetingId: string
   }
 
   interface ILeaveIntegrationOnMutationArguments {
     /**
      * the id of the integration to remove
      */
-    globalId: string;
+    globalId: string
   }
 
   interface IMeetingCheckInOnMutationArguments {
     /**
      * The global teamMemberId of the person who is being checked in
      */
-    teamMemberId: string;
+    teamMemberId: string
 
     /**
      * true if the member is present, false if absent, null if undecided
      */
-    isCheckedIn?: boolean | null;
+    isCheckedIn?: boolean | null
   }
 
   interface IMoveMeetingOnMutationArguments {
     /**
      * The teamId to make sure the socket calling has permission
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The desired phase for the meeting
      */
-    nextPhase?: ActionMeetingPhaseEnum | null;
+    nextPhase?: ActionMeetingPhaseEnum | null
 
     /**
      * The item within the phase to set the meeting to
      */
-    nextPhaseItem?: number | null;
+    nextPhaseItem?: number | null
 
     /**
      * If true, execute the mutation without regard for meeting flow
      */
-    force?: boolean | null;
+    force?: boolean | null
   }
 
   interface IMoveTeamToOrgOnMutationArguments {
     /**
      * The teamId that you want to move
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The ID of the organization you want to move the team to
      */
-    orgId: string;
+    orgId: string
   }
 
   interface INavigateMeetingOnMutationArguments {
     /**
      * The stage that the facilitator would like to mark as complete
      */
-    completedStageId?: string | null;
+    completedStageId?: string | null
 
     /**
      * The stage where the facilitator is
      */
-    facilitatorStageId?: string | null;
+    facilitatorStageId?: string | null
 
     /**
      * The meeting ID
      */
-    meetingId: string;
+    meetingId: string
   }
 
   interface INewMeetingCheckInOnMutationArguments {
     /**
      * The id of the user being marked present or absent
      */
-    userId: string;
+    userId: string
 
     /**
      * the meeting currently in progress
      */
-    meetingId: string;
+    meetingId: string
 
     /**
      * true if the member is present, false if absent, null if undecided
      */
-    isCheckedIn?: boolean | null;
+    isCheckedIn?: boolean | null
   }
 
   interface IPromoteFacilitatorOnMutationArguments {
     /**
      * teamMemberId of the old facilitator, if they disconnected
      */
-    disconnectedFacilitatorId?: string | null;
+    disconnectedFacilitatorId?: string | null
 
     /**
      * teamMemberId of the new facilitator for this meeting
      */
-    facilitatorId: string;
+    facilitatorId: string
   }
 
   interface IPromoteNewMeetingFacilitatorOnMutationArguments {
     /**
      * userId of the new facilitator for this meeting
      */
-    facilitatorUserId: string;
-    meetingId: string;
+    facilitatorUserId: string
+    meetingId: string
   }
 
   interface IPromoteToTeamLeadOnMutationArguments {
     /**
      * the new team member that will be the leader
      */
-    teamMemberId: string;
+    teamMemberId: string
   }
 
   interface IRejectOrgApprovalOnMutationArguments {
     /**
      * The notification to which the Billing Leader is responding
      */
-    notificationId: string;
-    reason?: string | null;
+    notificationId: string
+    reason?: string | null
   }
 
   interface IRemoveAgendaItemOnMutationArguments {
     /**
      * The agenda item unique id
      */
-    agendaItemId: string;
+    agendaItemId: string
   }
 
   interface IRemoveProviderOnMutationArguments {
     /**
      * The relay id of the service to remove
      */
-    providerId: string;
+    providerId: string
 
     /**
      * the teamId to disconnect from the token
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IRemoveSlackChannelOnMutationArguments {
-    slackGlobalId: string;
+    slackGlobalId: string
   }
 
   interface IRemoveGitHubRepoOnMutationArguments {
-    githubGlobalId: string;
+    githubGlobalId: string
   }
 
   interface IRemoveOrgUserOnMutationArguments {
     /**
      * the user to remove
      */
-    userId: string;
+    userId: string
 
     /**
      * the org that does not want them anymore
      */
-    orgId: string;
+    orgId: string
   }
 
   interface IRemoveReflectionOnMutationArguments {
-    reflectionId: string;
+    reflectionId: string
   }
 
   interface IRemoveTeamMemberOnMutationArguments {
     /**
      * The teamMemberId of the person who is being removed
      */
-    teamMemberId: string;
+    teamMemberId: string
   }
 
   interface IRequestFacilitatorOnMutationArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IResendTeamInviteOnMutationArguments {
     /**
      * The id of the invitation
      */
-    inviteId: string;
+    inviteId: string
   }
 
   interface ISegmentEventTrackOnMutationArguments {
-    event: string;
-    options?: ISegmentEventTrackOptions | null;
+    event: string
+    options?: ISegmentEventTrackOptions | null
   }
 
   interface ISetOrgUserRoleOnMutationArguments {
     /**
      * The org to affect
      */
-    orgId: string;
+    orgId: string
 
     /**
      * the user who is receiving a role change
      */
-    userId: string;
+    userId: string
 
     /**
      * the user’s new role
      */
-    role?: string | null;
+    role?: string | null
   }
 
   interface ISetPhaseFocusOnMutationArguments {
-    meetingId: string;
+    meetingId: string
 
     /**
      * The currently focused phase item
      */
-    focusedPhaseItemId?: string | null;
+    focusedPhaseItemId?: string | null
   }
 
   interface IStartDraggingReflectionOnMutationArguments {
-    reflectionId: string;
-    initialCoords: ICoords2DInput;
+    reflectionId: string
+    initialCoords: ICoords2DInput
   }
 
   interface IStartMeetingOnMutationArguments {
     /**
      * The team starting the meeting
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IStartNewMeetingOnMutationArguments {
     /**
      * The team starting the meeting
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The base type of the meeting (action, retro, etc)
      */
-    meetingType: MeetingTypeEnum;
+    meetingType: MeetingTypeEnum
   }
 
   interface IStripeCreateInvoiceOnMutationArguments {
     /**
      * The stripe invoice ID
      */
-    invoiceId: string;
+    invoiceId: string
   }
 
   interface IStripeFailPaymentOnMutationArguments {
     /**
      * The stripe invoice ID
      */
-    invoiceId: string;
+    invoiceId: string
   }
 
   interface IStripeSucceedPaymentOnMutationArguments {
     /**
      * The stripe invoice ID
      */
-    invoiceId: string;
+    invoiceId: string
   }
 
   interface IStripeUpdateCreditCardOnMutationArguments {
     /**
      * The stripe customer ID, or stripeId
      */
-    customerId: string;
+    customerId: string
   }
 
   interface IStripeUpdateInvoiceItemOnMutationArguments {
     /**
      * The stripe invoice ID
      */
-    invoiceItemId: string;
+    invoiceItemId: string
   }
 
   interface IToggleAgendaListOnMutationArguments {
     /**
      * the team to hide the agenda for
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IUpdateAgendaItemOnMutationArguments {
     /**
      * The updated item including an id, content, status, sortOrder
      */
-    updatedAgendaItem: IUpdateAgendaItemInput;
+    updatedAgendaItem: IUpdateAgendaItemInput
   }
 
   interface IUpdateCreditCardOnMutationArguments {
     /**
      * the org requesting the changed billing
      */
-    orgId: string;
+    orgId: string
 
     /**
      * The token that came back from stripe
      */
-    stripeToken: string;
+    stripeToken: string
   }
 
   interface IUpdateOrgOnMutationArguments {
     /**
      * the updated org including the id, and at least one other field
      */
-    updatedOrg: IUpdateOrgInput;
+    updatedOrg: IUpdateOrgInput
   }
 
   interface IUpdateCheckInQuestionOnMutationArguments {
     /**
      * ID of the Team which will have its Check-in question updated
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The Team's new Check-in question
      */
-    checkInQuestion: string;
+    checkInQuestion: string
   }
 
   interface IUpdateNewCheckInQuestionOnMutationArguments {
     /**
      * ID of the Team which will have its Check-in question updated
      */
-    meetingId: string;
+    meetingId: string
 
     /**
      * The Team's new Check-in question
      */
-    checkInQuestion: string;
+    checkInQuestion: string
   }
 
   interface IUpdateDragLocationOnMutationArguments {
-    input: IUpdateDragLocationInput;
+    input: IUpdateDragLocationInput
   }
 
   interface IUpdateReflectionContentOnMutationArguments {
-    reflectionId: string;
+    reflectionId: string
 
     /**
      * A stringified draft-js document containing thoughts
      */
-    content: string;
+    content: string
   }
 
   interface IUpdateReflectionGroupTitleOnMutationArguments {
-    reflectionGroupId: string;
+    reflectionGroupId: string
 
     /**
      * The new title for the group
      */
-    title: string;
+    title: string
   }
 
   interface IUpdateTaskOnMutationArguments {
     /**
      * The part of the site where the creation occurred
      */
-    area?: AreaEnum | null;
+    area?: AreaEnum | null
 
     /**
      * the updated task including the id, and at least one other field
      */
-    updatedTask: IUpdateTaskInput;
+    updatedTask: IUpdateTaskInput
   }
 
   interface IUpdateTaskDueDateOnMutationArguments {
     /**
      * The task id
      */
-    taskId: string;
+    taskId: string
 
     /**
      * the new due date. if not a valid date, it will unset the due date
      */
-    dueDate?: any | null;
+    dueDate?: any | null
   }
 
   interface IUpdateTeamNameOnMutationArguments {
     /**
      * The input object containing the teamId and any modified fields
      */
-    updatedTeam: IUpdatedTeamInput;
+    updatedTeam: IUpdatedTeamInput
   }
 
   interface IUpdateUserProfileOnMutationArguments {
     /**
      * The input object containing the user profile fields that can be changed
      */
-    updatedUser: IUpdateUserProfileInput;
+    updatedUser: IUpdateUserProfileInput
   }
 
   interface IVoteForReflectionGroupOnMutationArguments {
     /**
      * true if the user wants to remove one of their votes
      */
-    isUnvote?: boolean | null;
-    reflectionGroupId: string;
+    isUnvote?: boolean | null
+    reflectionGroupId: string
   }
 
   interface ILoginOnMutationArguments {
     /**
      * The ID Token from auth0, a base64 JWT
      */
-    auth0Token: string;
+    auth0Token: string
   }
 
   interface IUpgradeToProOnMutationArguments {
     /**
      * the org requesting the upgrade
      */
-    orgId: string;
+    orgId: string
 
     /**
      * The token that came back from stripe
      */
-    stripeToken: string;
+    stripeToken: string
   }
 
   interface IAcceptTeamInvitePayload {
-    __typename: 'AcceptTeamInvitePayload';
+    __typename: 'AcceptTeamInvitePayload'
 
     /**
      * The new JWT
      */
-    authToken: string | null;
-    error: IStandardMutationError | null;
+    authToken: string | null
+    error: IStandardMutationError | null
 
     /**
      * The team that the invitee will be joining
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The new team member on the team
      */
-    teamMember: ITeamMember | null;
+    teamMember: ITeamMember | null
 
     /**
      * The invite notification removed once accepted
      */
-    removedNotification: INotifyTeamInvite | null;
+    removedNotification: INotifyTeamInvite | null
 
     /**
      * The invitation the viewer just accepted
      */
-    removedInvitation: IInvitation | null;
-    user: IUser | null;
+    removedInvitation: IInvitation | null
+    user: IUser | null
 
     /**
      * The soft team member that got promoted to a real team member
      */
-    removedSoftTeamMember: ISoftTeamMember | null;
+    removedSoftTeamMember: ISoftTeamMember | null
 
     /**
      * The tasks that got reassigned from the soft team member to the real team member
      */
-    hardenedTasks: Array<ITask> | null;
+    hardenedTasks: Array<ITask> | null
   }
 
   interface IStandardMutationError {
-    __typename: 'StandardMutationError';
+    __typename: 'StandardMutationError'
 
     /**
      * The title of the error
      */
-    title: string;
+    title: string
 
     /**
      * The full error
      */
-    message: string;
+    message: string
   }
 
   /**
    * A notification sent to a user that was invited to a new team
    */
   interface INotifyTeamInvite {
-    __typename: 'NotifyTeamInvite';
+    __typename: 'NotifyTeamInvite'
 
     /**
      * The user that triggered the invitation
      */
-    inviter: IUser | null;
-    team: ITeam | null;
+    inviter: IUser | null
+    team: ITeam | null
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   interface ICreateAgendaItemInput {
     /**
      * The content of the agenda item
      */
-    content: string;
-    teamId: string;
+    content: string
+    teamId: string
 
     /**
      * The team member ID of the person creating the agenda item
      */
-    teamMemberId: string;
+    teamMemberId: string
 
     /**
      * The sort order of the agenda item in the list
      */
-    sortOrder?: number | null;
+    sortOrder?: number | null
   }
 
   interface IAddAgendaItemPayload {
-    __typename: 'AddAgendaItemPayload';
-    agendaItem: IAgendaItem | null;
-    error: IStandardMutationError | null;
+    __typename: 'AddAgendaItemPayload'
+    agendaItem: IAgendaItem | null
+    error: IStandardMutationError | null
   }
 
   /**
@@ -3894,41 +3881,41 @@ declare namespace GQL {
   }
 
   interface IAddFeatureFlagPayload {
-    __typename: 'AddFeatureFlagPayload';
-    error: IStandardMutationError | null;
+    __typename: 'AddFeatureFlagPayload'
+    error: IStandardMutationError | null
 
     /**
      * the user that was given the super power. Use users instead in GraphiQL since it may affect multiple users
      */
-    user: IUser | null;
+    user: IUser | null
 
     /**
      * the users given the super power
      */
-    users: Array<IUser> | null;
+    users: Array<IUser> | null
 
     /**
      * A human-readable result
      */
-    result: string | null;
+    result: string | null
   }
 
   interface IAddGitHubRepoPayload {
-    __typename: 'AddGitHubRepoPayload';
-    error: IStandardMutationError | null;
-    repo: IGitHubIntegration;
+    __typename: 'AddGitHubRepoPayload'
+    error: IStandardMutationError | null
+    repo: IGitHubIntegration
   }
 
   interface INewTeamInput {
     /**
      * The name of the team
      */
-    name?: string | null;
+    name?: string | null
 
     /**
      * The unique orginization ID that pays for the team
      */
-    orgId?: string | null;
+    orgId?: string | null
   }
 
   /**
@@ -3938,361 +3925,361 @@ declare namespace GQL {
     /**
      * The email address of the invitee
      */
-    email: any;
+    email: any
 
     /**
      * The name derived from an RFC5322 email string
      */
-    fullName?: string | null;
+    fullName?: string | null
 
     /**
      * The current task the invitee is working on
      */
-    task?: string | null;
+    task?: string | null
   }
 
   interface IAddOrgPayload {
-    __typename: 'AddOrgPayload';
-    organization: IOrganization | null;
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'AddOrgPayload'
+    organization: IOrganization | null
+    error: IStandardMutationError | null
+    team: ITeam | null
 
     /**
      * The teamMember that just created the new team, if this is a creation
      */
-    teamMember: ITeamMember | null;
-    invitations: Array<IInvitation> | null;
+    teamMember: ITeamMember | null
+    invitations: Array<IInvitation> | null
 
     /**
      * The invitation sent when an team was being created
      */
-    teamInviteNotification: INotifyTeamInvite | null;
+    teamInviteNotification: INotifyTeamInvite | null
   }
 
   interface IAddSlackChannelInput {
     /**
      * The id of the teamMember calling it.
      */
-    teamMemberId: string;
+    teamMemberId: string
 
     /**
      * the slack channel that wants our messages
      */
-    slackChannelId: string;
+    slackChannelId: string
   }
 
   interface IAddSlackChannelPayload {
-    __typename: 'AddSlackChannelPayload';
-    error: IStandardMutationError | null;
-    channel: ISlackIntegration;
+    __typename: 'AddSlackChannelPayload'
+    error: IStandardMutationError | null
+    channel: ISlackIntegration
   }
 
   interface IAddTeamPayload {
-    __typename: 'AddTeamPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'AddTeamPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
 
     /**
      * The teamMember that just created the new team, if this is a creation
      */
-    teamMember: ITeamMember | null;
-    invitations: Array<IInvitation> | null;
+    teamMember: ITeamMember | null
+    invitations: Array<IInvitation> | null
 
     /**
      * The invitation sent when an team was being created
      */
-    teamInviteNotification: INotifyTeamInvite | null;
+    teamInviteNotification: INotifyTeamInvite | null
   }
 
   interface IApproveToOrgPayload {
-    __typename: 'ApproveToOrgPayload';
-    error: IStandardMutationError | null;
+    __typename: 'ApproveToOrgPayload'
+    error: IStandardMutationError | null
 
     /**
      * If the viewer is an org leader, the notifications removed after approving to the organization
      */
-    removedRequestNotifications: Array<INotifyRequestNewUser> | null;
+    removedRequestNotifications: Array<INotifyRequestNewUser> | null
 
     /**
      * If the viegnwer is a team member, the org approvals that were removed in place of team members
      */
-    removedOrgApprovals: Array<IOrgApproval> | null;
+    removedOrgApprovals: Array<IOrgApproval> | null
 
     /**
      * If the viewer is a team member, the list of team members added as a result of the approval
      */
-    newInvitations: Array<IInvitation> | null;
+    newInvitations: Array<IInvitation> | null
 
     /**
      * If the viewer invited the invitee, the notifications to say they have been approved
      */
-    inviteeApprovedNotifications: Array<INotifyInviteeApproved> | null;
+    inviteeApprovedNotifications: Array<INotifyInviteeApproved> | null
 
     /**
      * If the viewer is the invitee, the notifications to invite them to teams
      */
-    teamInviteNotifications: Array<INotifyTeamInvite> | null;
+    teamInviteNotifications: Array<INotifyTeamInvite> | null
   }
 
   /**
    * A notification sent to a user when the person they invited got approved by the org leader
    */
   interface INotifyInviteeApproved {
-    __typename: 'NotifyInviteeApproved';
+    __typename: 'NotifyInviteeApproved'
 
     /**
      * The email of the person being invited
      */
-    inviteeEmail: string;
+    inviteeEmail: string
 
     /**
      * The user that triggered the invitation
      */
-    inviter: IUser | null;
-    team: ITeam | null;
+    inviter: IUser | null
+    team: ITeam | null
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   interface IArchiveTeamPayload {
-    __typename: 'ArchiveTeamPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'ArchiveTeamPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
 
     /**
      * A notification explaining that the team was archived and removed from view
      */
-    notification: INotifyTeamArchived | null;
-    removedTeamNotifications: Array<TeamNotification> | null;
+    notification: INotifyTeamArchived | null
+    removedTeamNotifications: Array<TeamNotification> | null
   }
 
   /**
    * A notification alerting the user that a team they were on is now archived
    */
   interface INotifyTeamArchived {
-    __typename: 'NotifyTeamArchived';
-    team: ITeam | null;
+    __typename: 'NotifyTeamArchived'
+    team: ITeam | null
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
-  type TeamRemovedNotification = INotifyTeamArchived | INotifyKickedOut;
+  type TeamRemovedNotification = INotifyTeamArchived | INotifyKickedOut
 
   interface ITeamRemovedNotification {
-    __typename: 'TeamRemovedNotification';
+    __typename: 'TeamRemovedNotification'
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   interface IAutoGroupReflectionsPayload {
-    __typename: 'AutoGroupReflectionsPayload';
-    error: IStandardMutationError | null;
-    meeting: IRetrospectiveMeeting | null;
-    reflections: Array<IRetroReflection> | null;
-    reflectionGroups: Array<IRetroReflectionGroup> | null;
-    removedReflectionGroups: Array<IRetroReflectionGroup> | null;
+    __typename: 'AutoGroupReflectionsPayload'
+    error: IStandardMutationError | null
+    meeting: IRetrospectiveMeeting | null
+    reflections: Array<IRetroReflection> | null
+    reflectionGroups: Array<IRetroReflectionGroup> | null
+    removedReflectionGroups: Array<IRetroReflectionGroup> | null
   }
 
   /**
    * A retrospective meeting
    */
   interface IRetrospectiveMeeting {
-    __typename: 'RetrospectiveMeeting';
+    __typename: 'RetrospectiveMeeting'
 
     /**
      * The unique meeting id. shortid.
      */
-    id: string;
+    id: string
 
     /**
      * The timestamp the meeting was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The timestamp the meeting officially ended
      */
-    endedAt: any | null;
+    endedAt: any | null
 
     /**
      * The location of the facilitator in the meeting
      */
-    facilitatorStageId: string;
+    facilitatorStageId: string
 
     /**
      * The userId (or anonymousId) of the most recent facilitator
      */
-    facilitatorUserId: string;
+    facilitatorUserId: string
 
     /**
      * The facilitator user
      */
-    facilitator: IUser;
+    facilitator: IUser
 
     /**
      * The team members that were active during the time of the meeting
      */
-    meetingMembers: Array<MeetingMember> | null;
+    meetingMembers: Array<MeetingMember> | null
 
     /**
      * The auto-incrementing meeting number for the team
      */
-    meetingNumber: number;
-    meetingType: MeetingTypeEnum;
+    meetingNumber: number
+    meetingType: MeetingTypeEnum
 
     /**
      * The phases the meeting will go through, including all phase-specific state
      */
-    phases: Array<NewMeetingPhase>;
+    phases: Array<NewMeetingPhase>
 
     /**
      * The time the meeting summary was emailed to the team
      */
-    summarySentAt: any | null;
+    summarySentAt: any | null
 
     /**
      * foreign key for team
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The team that ran the meeting
      */
-    team: ITeam;
+    team: ITeam
 
     /**
      * The last time a meeting was updated (stage completed, finished, etc)
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * The retrospective meeting member of the viewer
      */
-    viewerMeetingMember: IRetrospectiveMeetingMember | null;
+    viewerMeetingMember: IRetrospectiveMeetingMember | null
 
     /**
      * the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
      */
-    autoGroupThreshold: number | null;
+    autoGroupThreshold: number | null
 
     /**
      * the next smallest distance threshold to guarantee at least 1 more grouping will be achieved
      */
-    nextAutoGroupThreshold: number | null;
+    nextAutoGroupThreshold: number | null
 
     /**
      * The grouped reflections
      */
-    reflectionGroups: Array<IRetroReflectionGroup>;
+    reflectionGroups: Array<IRetroReflectionGroup>
 
     /**
      * The settings that govern the retrospective meeting
      */
-    settings: IRetrospectiveMeetingSettings;
+    settings: IRetrospectiveMeetingSettings
 
     /**
      * The tasks created within the meeting
      */
-    tasks: Array<ITask>;
+    tasks: Array<ITask>
 
     /**
      * The sum total of the votes remaining for the meeting members that are present in the meeting
      */
-    votesRemaining: number;
+    votesRemaining: number
   }
 
   interface IReflectionGroupsOnRetrospectiveMeetingArguments {
-    sortBy?: ReflectionGroupSortEnum | null;
+    sortBy?: ReflectionGroupSortEnum | null
   }
 
   /**
    * All the meeting specifics for a user in a retro meeting
    */
   interface IRetrospectiveMeetingMember {
-    __typename: 'RetrospectiveMeetingMember';
+    __typename: 'RetrospectiveMeetingMember'
 
     /**
      * A composite of userId::meetingId
      */
-    id: string;
+    id: string
 
     /**
      * true if present, false if absent, else null
      */
-    isCheckedIn: boolean | null;
-    meetingId: string | null;
-    meetingType: MeetingTypeEnum;
-    teamId: string | null;
-    user: IUser | null;
-    userId: string | null;
+    isCheckedIn: boolean | null
+    meetingId: string | null
+    meetingType: MeetingTypeEnum
+    teamId: string | null
+    user: IUser | null
+    userId: string | null
 
     /**
      * The last time a meeting was updated (stage completed, finished, etc)
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * The tasks assigned to members during the meeting
      */
-    tasks: Array<ITask>;
-    votesRemaining: number;
+    tasks: Array<ITask>
+    votesRemaining: number
   }
 
   /**
@@ -4306,439 +4293,439 @@ declare namespace GQL {
    * A reflection created during the reflect phase of a retrospective
    */
   interface IRetroReflectionGroup {
-    __typename: 'RetroReflectionGroup';
+    __typename: 'RetroReflectionGroup'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The timestamp the meeting was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * True if the group has not been removed, else false
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * The foreign key to link a reflection group to its meeting
      */
-    meetingId: string;
+    meetingId: string
 
     /**
      * The retrospective meeting this reflection was created in
      */
-    meeting: IRetrospectiveMeeting | null;
-    phaseItem: IRetroPhaseItem | null;
-    reflections: Array<IRetroReflection>;
+    meeting: IRetrospectiveMeeting | null
+    phaseItem: IRetroPhaseItem | null
+    reflections: Array<IRetroReflection>
 
     /**
      * The foreign key to link a reflection group to its phaseItem. Immutable.
      */
-    retroPhaseItemId: string;
+    retroPhaseItemId: string
 
     /**
      * Our auto-suggested title, to be compared to the actual title for analytics
      */
-    smartTitle: string | null;
+    smartTitle: string | null
 
     /**
      * The sort order of the reflection group in the phase item
      */
-    sortOrder: number;
+    sortOrder: number
 
     /**
      * The tasks created for this group in the discussion phase
      */
-    tasks: Array<ITask>;
+    tasks: Array<ITask>
 
     /**
      * The team that is running the retro
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The title of the grouping of the retrospective reflections
      */
-    title: string | null;
+    title: string | null
 
     /**
      * true if a user wrote the title, else false
      */
-    titleIsUserDefined: boolean | null;
+    titleIsUserDefined: boolean | null
 
     /**
      * The timestamp the meeting was updated at
      */
-    updatedAt: any | null;
+    updatedAt: any | null
 
     /**
      * A list of voterIds (userIds). Not available to team to preserve anonymity
      */
-    voterIds: Array<string> | null;
+    voterIds: Array<string> | null
 
     /**
      * The number of votes this group has received
      */
-    voteCount: number | null;
+    voteCount: number | null
 
     /**
      * The number of votes the viewer has given this group
      */
-    viewerVoteCount: number | null;
+    viewerVoteCount: number | null
   }
 
   /**
    * A team-specific retro phase. Usually 3 or 4 exist per team, eg Good/Bad/Change, 4Ls, etc.
    */
   interface IRetroPhaseItem {
-    __typename: 'RetroPhaseItem';
+    __typename: 'RetroPhaseItem'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The type of phase item
      */
-    phaseItemType: CustomPhaseItemTypeEnum | null;
+    phaseItemType: CustomPhaseItemTypeEnum | null
 
     /**
      * true if the phase item is currently used by the team, else false
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * foreign key. use the team field
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The team that owns this customPhaseItem
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The title of the phase of the retrospective. Often a short version of the question
      */
-    title: string;
+    title: string
 
     /**
      * The question to answer during the phase of the retrospective (eg What went well?)
      */
-    question: string;
+    question: string
   }
 
   /**
    * A reflection created during the reflect phase of a retrospective
    */
   interface IRetroReflection {
-    __typename: 'RetroReflection';
+    __typename: 'RetroReflection'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
      */
-    autoReflectionGroupId: string | null;
+    autoReflectionGroupId: string | null
 
     /**
      * The timestamp the meeting was created
      */
-    createdAt: any | null;
+    createdAt: any | null
 
     /**
      * The userId that created the reflection (or unique Id if not a team member)
      */
-    creatorId: string | null;
+    creatorId: string | null
 
     /**
      * all the info associated with the drag state, if this reflection is currently being dragged
      */
-    dragContext: IDragContext | null;
+    dragContext: IDragContext | null
 
     /**
      * an array of all the socketIds that are currently editing the reflection
      */
-    editorIds: Array<string>;
+    editorIds: Array<string>
 
     /**
      * True if the reflection was not removed, else false
      */
-    isActive: boolean | null;
+    isActive: boolean | null
 
     /**
      * true if the reflection is being edited, else false
      */
-    isEditing: boolean | null;
+    isEditing: boolean | null
 
     /**
      * true if the viewer (userId) is the creator of the retro reflection, else false
      */
-    isViewerCreator: boolean | null;
+    isViewerCreator: boolean | null
 
     /**
      * The stringified draft-js content
      */
-    content: string;
+    content: string
 
     /**
      * The entities (i.e. nouns) parsed from the content and their respective salience
      */
-    entities: Array<IGoogleAnalyzedEntity>;
+    entities: Array<IGoogleAnalyzedEntity>
 
     /**
      * The foreign key to link a reflection to its meeting
      */
-    meetingId: string | null;
+    meetingId: string | null
 
     /**
      * The retrospective meeting this reflection was created in
      */
-    meeting: IRetrospectiveMeeting | null;
-    phaseItem: IRetroPhaseItem;
+    meeting: IRetrospectiveMeeting | null
+    phaseItem: IRetroPhaseItem
 
     /**
      * The foreign key to link a reflection to its phaseItem. Immutable. For sorting, use phase item on the group.
      */
-    retroPhaseItemId: string;
+    retroPhaseItemId: string
 
     /**
      * The foreign key to link a reflection to its group
      */
-    reflectionGroupId: string | null;
+    reflectionGroupId: string | null
 
     /**
      * The group the reflection belongs to, if any
      */
-    retroReflectionGroup: IRetroReflectionGroup | null;
+    retroReflectionGroup: IRetroReflectionGroup | null
 
     /**
      * The sort order of the reflection in the group (increments starting from 0)
      */
-    sortOrder: number;
+    sortOrder: number
 
     /**
      * The team that is running the meeting that contains this reflection
      */
-    team: IRetrospectiveMeeting | null;
+    team: IRetrospectiveMeeting | null
 
     /**
      * The timestamp the meeting was updated. Used to determine how long it took to write a reflection
      */
-    updatedAt: any | null;
+    updatedAt: any | null
   }
 
   /**
    * Info associated with a current drag
    */
   interface IDragContext {
-    __typename: 'DragContext';
-    id: string | null;
+    __typename: 'DragContext'
+    id: string | null
 
     /**
      * The userId of the person currently dragging the reflection
      */
-    dragUserId: string | null;
+    dragUserId: string | null
 
     /**
      * The user that is currently dragging the reflection
      */
-    dragUser: IUser | null;
+    dragUser: IUser | null
 
     /**
      * The coordinates necessary to simulate a drag for a subscribing user
      */
-    dragCoords: ICoords2D | null;
+    dragCoords: ICoords2D | null
   }
 
   /**
    * Coordinates used relay a location in a 2-D plane
    */
   interface ICoords2D {
-    __typename: 'Coords2D';
-    x: number | null;
-    y: number | null;
+    __typename: 'Coords2D'
+    x: number | null
+    y: number | null
   }
 
   interface IGoogleAnalyzedEntity {
-    __typename: 'GoogleAnalyzedEntity';
+    __typename: 'GoogleAnalyzedEntity'
 
     /**
      * The lemma (dictionary entry) of the entity name. Fancy way of saying the singular form of the name, if plural.
      */
-    lemma: string;
+    lemma: string
 
     /**
      * The name of the entity. Usually 1 or 2 words. Always a noun, sometimes a proper noun.
      */
-    name: string;
+    name: string
 
     /**
      * The salience of the entity in the provided text. The salience of all entities always sums to 1
      */
-    salience: number;
+    salience: number
   }
 
   /**
    * The retro-specific meeting settings
    */
   interface IRetrospectiveMeetingSettings {
-    __typename: 'RetrospectiveMeetingSettings';
+    __typename: 'RetrospectiveMeetingSettings'
 
     /**
      * The type of meeting these settings apply to
      */
-    meetingType: MeetingTypeEnum | null;
+    meetingType: MeetingTypeEnum | null
 
     /**
      * The broad phase types that will be addressed during the meeting
      */
-    phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+    phaseTypes: Array<NewMeetingPhaseTypeEnum>
 
     /**
      * The team these settings belong to
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * the team-specific questions to ask during a retro
      */
-    phaseItems: Array<CustomPhaseItem>;
+    phaseItems: Array<CustomPhaseItem>
 
     /**
      * The total number of votes each team member receives for the voting phase
      */
-    totalVotes: number;
+    totalVotes: number
 
     /**
      * The maximum number of votes a team member can vote for a single reflection group
      */
-    maxVotesPerGroup: number;
+    maxVotesPerGroup: number
   }
 
   interface ICancelApprovalPayload {
-    __typename: 'CancelApprovalPayload';
-    error: IStandardMutationError | null;
+    __typename: 'CancelApprovalPayload'
+    error: IStandardMutationError | null
 
     /**
      * The inactivated org approval
      */
-    orgApproval: IOrgApproval | null;
+    orgApproval: IOrgApproval | null
 
     /**
      * The notification requesting org approval to the org leader
      */
-    removedRequestNotification: INotifyRequestNewUser | null;
+    removedRequestNotification: INotifyRequestNewUser | null
 
     /**
      * The soft team members that are no longer tentatively on the team
      */
-    removedSoftTeamMember: ISoftTeamMember | null;
+    removedSoftTeamMember: ISoftTeamMember | null
 
     /**
      * The tasks that belonged to the soft team member
      */
-    archivedSoftTasks: Array<ITask> | null;
+    archivedSoftTasks: Array<ITask> | null
   }
 
   interface ICancelTeamInvitePayload {
-    __typename: 'CancelTeamInvitePayload';
-    error: IStandardMutationError | null;
+    __typename: 'CancelTeamInvitePayload'
+    error: IStandardMutationError | null
 
     /**
      * The cancelled invitation
      */
-    invitation: IInvitation | null;
-    removedTeamInviteNotification: INotifyTeamInvite | null;
+    invitation: IInvitation | null
+    removedTeamInviteNotification: INotifyTeamInvite | null
 
     /**
      * The soft team members that are no longer tentatively on the team
      */
-    removedSoftTeamMember: ISoftTeamMember | null;
+    removedSoftTeamMember: ISoftTeamMember | null
 
     /**
      * The tasks that belonged to the soft team member
      */
-    archivedSoftTasks: Array<ITask> | null;
+    archivedSoftTasks: Array<ITask> | null
   }
 
   interface IChangeTaskTeamPayload {
-    __typename: 'ChangeTaskTeamPayload';
-    error: IStandardMutationError | null;
-    task: ITask | null;
-    removedNotification: INotifyTaskInvolves | null;
+    __typename: 'ChangeTaskTeamPayload'
+    error: IStandardMutationError | null
+    task: ITask | null
+    removedNotification: INotifyTaskInvolves | null
 
     /**
      * the taskId sent to a user who is not on the new team so they can remove it from their client
      */
-    removedTaskId: string | null;
+    removedTaskId: string | null
   }
 
   /**
    * A notification sent to someone who was just added to a team
    */
   interface INotifyTaskInvolves {
-    __typename: 'NotifyTaskInvolves';
+    __typename: 'NotifyTaskInvolves'
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
 
     /**
      * How the user is affiliated with the task
      */
-    involvement: TaskInvolvementType | null;
+    involvement: TaskInvolvementType | null
 
     /**
      * The taskId that now involves the userId
      */
-    taskId: string;
+    taskId: string
 
     /**
      * The task that now involves the userId
      */
-    task: ITask | null;
+    task: ITask | null
 
     /**
      * The teamMemberId of the person that made the change
      */
-    changeAuthorId: string | null;
+    changeAuthorId: string | null
 
     /**
      * The TeamMember of the person that made the change
      */
-    changeAuthor: ITeamMember | null;
-    teamId: string;
+    changeAuthor: ITeamMember | null
+    teamId: string
 
     /**
      * The team the task is on
      */
-    team: ITeam | null;
+    team: ITeam | null
   }
 
   /**
@@ -4750,120 +4737,120 @@ declare namespace GQL {
   }
 
   interface IClearNotificationPayload {
-    __typename: 'ClearNotificationPayload';
-    error: IStandardMutationError | null;
+    __typename: 'ClearNotificationPayload'
+    error: IStandardMutationError | null
 
     /**
      * The deleted notifcation
      */
-    notification: Notification | null;
+    notification: Notification | null
   }
 
   interface ICreateImposterTokenPayload {
-    __typename: 'CreateImposterTokenPayload';
-    error: IStandardMutationError | null;
+    __typename: 'CreateImposterTokenPayload'
+    error: IStandardMutationError | null
 
     /**
      * The new JWT
      */
-    authToken: string | null;
+    authToken: string | null
 
     /**
      * The user you have assumed
      */
-    user: IUser | null;
+    user: IUser | null
   }
 
   interface ICreateFirstTeamPayload {
-    __typename: 'CreateFirstTeamPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
-    teamLead: ITeamMember | null;
+    __typename: 'CreateFirstTeamPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
+    teamLead: ITeamMember | null
 
     /**
      * The new JWT after adding the team
      */
-    jwt: string | null;
-    user: IUser | null;
+    jwt: string | null
+    user: IUser | null
   }
 
   interface ICreateGitHubIssuePayload {
-    __typename: 'CreateGitHubIssuePayload';
-    error: IStandardMutationError | null;
-    task: ITask | null;
+    __typename: 'CreateGitHubIssuePayload'
+    error: IStandardMutationError | null
+    task: ITask | null
   }
 
   interface ICreatePicturePutUrlPayload {
-    __typename: 'CreatePicturePutUrlPayload';
-    error: IStandardMutationError | null;
-    url: any | null;
+    __typename: 'CreatePicturePutUrlPayload'
+    error: IStandardMutationError | null
+    url: any | null
   }
 
   interface ICreateReflectionInput {
     /**
      * A stringified draft-js document containing thoughts
      */
-    content?: string | null;
+    content?: string | null
 
     /**
      * The phase item the reflection belongs to
      */
-    retroPhaseItemId: string;
-    sortOrder: number;
+    retroPhaseItemId: string
+    sortOrder: number
   }
 
   interface ICreateReflectionPayload {
-    __typename: 'CreateReflectionPayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
-    reflection: IRetroReflection | null;
+    __typename: 'CreateReflectionPayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
+    reflection: IRetroReflection | null
 
     /**
      * The group automatically created for the reflection
      */
-    reflectionGroup: IRetroReflectionGroup | null;
+    reflectionGroup: IRetroReflectionGroup | null
 
     /**
      * The stages that were unlocked by navigating
      */
-    unlockedStages: Array<NewMeetingStage>;
+    unlockedStages: Array<NewMeetingStage>
   }
 
   interface ICreateReflectionGroupPayload {
-    __typename: 'CreateReflectionGroupPayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
-    reflectionGroup: IRetroReflectionGroup | null;
+    __typename: 'CreateReflectionGroupPayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
+    reflectionGroup: IRetroReflectionGroup | null
   }
 
   interface ICreateTaskInput {
     /**
      * foreign key for AgendaItem
      */
-    agendaId?: string | null;
-    content?: string | null;
+    agendaId?: string | null
+    content?: string | null
 
     /**
      * foreign key for the meeting this was created in
      */
-    meetingId?: string | null;
+    meetingId?: string | null
 
     /**
      * foreign key for the reflection group this was created from
      */
-    reflectionGroupId?: string | null;
-    sortOrder?: number | null;
-    status?: TaskStatusEnum | null;
+    reflectionGroupId?: string | null
+    sortOrder?: number | null
+    status?: TaskStatusEnum | null
 
     /**
      * teamId, the team the task is on
      */
-    teamId?: string | null;
+    teamId?: string | null
 
     /**
      * userId, the owner of the task
      */
-    userId?: string | null;
+    userId?: string | null
   }
 
   /**
@@ -4876,124 +4863,124 @@ declare namespace GQL {
   }
 
   interface ICreateTaskPayload {
-    __typename: 'CreateTaskPayload';
-    error: IStandardMutationError | null;
-    task: ITask | null;
-    involvementNotification: INotifyTaskInvolves | null;
+    __typename: 'CreateTaskPayload'
+    error: IStandardMutationError | null
+    task: ITask | null
+    involvementNotification: INotifyTaskInvolves | null
   }
 
   interface ICreateUserPicturePutUrlPayload {
-    __typename: 'CreateUserPicturePutUrlPayload';
-    error: IStandardMutationError | null;
-    url: any | null;
+    __typename: 'CreateUserPicturePutUrlPayload'
+    error: IStandardMutationError | null
+    url: any | null
   }
 
   interface IDeleteTaskPayload {
-    __typename: 'DeleteTaskPayload';
-    error: IStandardMutationError | null;
+    __typename: 'DeleteTaskPayload'
+    error: IStandardMutationError | null
 
     /**
      * The task that was deleted
      */
-    task: ITask | null;
+    task: ITask | null
 
     /**
      * The notification stating that the viewer was mentioned or assigned
      */
-    involvementNotification: INotifyTaskInvolves | null;
+    involvementNotification: INotifyTaskInvolves | null
   }
 
   interface IDisconnectSocketPayload {
-    __typename: 'DisconnectSocketPayload';
+    __typename: 'DisconnectSocketPayload'
 
     /**
      * The user that disconnected
      */
-    user: IUser | null;
+    user: IUser | null
   }
 
   interface IDragDiscussionTopicPayload {
-    __typename: 'DragDiscussionTopicPayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
-    stage: IRetroDiscussStage | null;
+    __typename: 'DragDiscussionTopicPayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
+    stage: IRetroDiscussStage | null
   }
 
   /**
    * The stage where the team discusses a single theme
    */
   interface IRetroDiscussStage {
-    __typename: 'RetroDiscussStage';
+    __typename: 'RetroDiscussStage'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The datetime the stage was completed
      */
-    endAt: any | null;
+    endAt: any | null
 
     /**
      * foreign key. try using meeting
      */
-    meetingId: string;
+    meetingId: string
 
     /**
      * The meeting this stage belongs to
      */
-    meeting: NewMeeting | null;
+    meeting: NewMeeting | null
 
     /**
      * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
      */
-    isComplete: boolean | null;
+    isComplete: boolean | null
 
     /**
      * true if any meeting participant can navigate to this stage
      */
-    isNavigable: boolean | null;
+    isNavigable: boolean | null
 
     /**
      * true if the facilitator can navigate to this stage
      */
-    isNavigableByFacilitator: boolean | null;
+    isNavigableByFacilitator: boolean | null
 
     /**
      * The phase this stage belongs to
      */
-    phase: NewMeetingPhase | null;
+    phase: NewMeetingPhase | null
 
     /**
      * The type of the phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
+    phaseType: NewMeetingPhaseTypeEnum | null
 
     /**
      * The datetime the stage was started
      */
-    startAt: any | null;
+    startAt: any | null
 
     /**
      * Number of times the facilitator has visited this stage
      */
-    viewCount: number | null;
+    viewCount: number | null
 
     /**
      * foreign key. use reflectionGroup
      */
-    reflectionGroupId: string | null;
+    reflectionGroupId: string | null
 
     /**
      * the group that is the focal point of the discussion
      */
-    reflectionGroup: IRetroReflectionGroup | null;
+    reflectionGroup: IRetroReflectionGroup | null
 
     /**
      * The sort order for reprioritizing discussion topics
      */
-    sortOrder: number;
+    sortOrder: number
   }
 
   /**
@@ -5005,1186 +4992,1184 @@ declare namespace GQL {
   }
 
   interface IEndDraggingReflectionPayload {
-    __typename: 'EndDraggingReflectionPayload';
-    error: IStandardMutationError | null;
-    dragId: string | null;
+    __typename: 'EndDraggingReflectionPayload'
+    error: IStandardMutationError | null
+    dragId: string | null
 
     /**
      * the type of item the reflection was dropped on
      */
-    dropTargetType: DragReflectionDropTargetTypeEnum | null;
+    dropTargetType: DragReflectionDropTargetTypeEnum | null
 
     /**
      * The ID that the dragged item was dropped on, if dropTargetType is not specific enough
      */
-    dropTargetId: string | null;
-    meeting: IRetrospectiveMeeting | null;
-    meetingId: string | null;
-    reflection: IRetroReflection | null;
-    reflectionGroupId: string | null;
-    reflectionId: string | null;
+    dropTargetId: string | null
+    meeting: IRetrospectiveMeeting | null
+    meetingId: string | null
+    reflection: IRetroReflection | null
+    reflectionGroupId: string | null
+    reflectionId: string | null
 
     /**
      * foreign key to get user
      */
-    userId: string | null;
+    userId: string | null
 
     /**
      * The group encapsulating the new reflection. A new one was created if one was not provided.
      */
-    reflectionGroup: IRetroReflectionGroup | null;
+    reflectionGroup: IRetroReflectionGroup | null
 
     /**
      * The old group the reflection was in
      */
-    oldReflectionGroup: IRetroReflectionGroup | null;
+    oldReflectionGroup: IRetroReflectionGroup | null
   }
 
   interface IEditReflectionPayload {
-    __typename: 'EditReflectionPayload';
-    error: IStandardMutationError | null;
-    phaseItemId: string | null;
+    __typename: 'EditReflectionPayload'
+    error: IStandardMutationError | null
+    phaseItemId: string | null
 
     /**
      * The socketId of the client editing the card (uses socketId to maintain anonymity)
      */
-    editorId: string | null;
+    editorId: string | null
 
     /**
      * true if the reflection is being edited, else false
      */
-    isEditing: boolean | null;
+    isEditing: boolean | null
   }
 
   interface IEditTaskPayload {
-    __typename: 'EditTaskPayload';
-    error: IStandardMutationError | null;
-    task: ITask | null;
-    editor: IUser | null;
+    __typename: 'EditTaskPayload'
+    error: IStandardMutationError | null
+    task: ITask | null
+    editor: IUser | null
 
     /**
      * true if the editor is editing, false if they stopped editing
      */
-    isEditing: boolean | null;
+    isEditing: boolean | null
   }
 
   interface IEndMeetingPayload {
-    __typename: 'EndMeetingPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'EndMeetingPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
 
     /**
      * The list of tasks that were archived during the meeting
      */
-    archivedTasks: Array<ITask> | null;
-    meeting: IMeeting | null;
+    archivedTasks: Array<ITask> | null
+    meeting: IMeeting | null
   }
 
   interface IInactivateUserPayload {
-    __typename: 'InactivateUserPayload';
-    error: IStandardMutationError | null;
+    __typename: 'InactivateUserPayload'
+    error: IStandardMutationError | null
 
     /**
      * The user that has been inactivated
      */
-    user: IUser | null;
+    user: IUser | null
   }
 
   /**
    * A list of all the possible outcomes when trying to invite a team member
    */
   interface IInviteTeamMembersPayload {
-    __typename: 'InviteTeamMembersPayload';
-    error: IStandardMutationError | null;
+    __typename: 'InviteTeamMembersPayload'
+    error: IStandardMutationError | null
 
     /**
      * The team the inviter is inviting the invitee to
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The notification sent to the invitee if they were previously on the team
      */
-    reactivationNotification: INotifyAddedToTeam | null;
+    reactivationNotification: INotifyAddedToTeam | null
 
     /**
      * The notification sent to the invitee
      */
-    teamInviteNotification: INotifyTeamInvite | null;
+    teamInviteNotification: INotifyTeamInvite | null
 
     /**
      * A removed request notification if the org leader invited the invitee instead of approving
      */
-    removedRequestNotification: INotifyRequestNewUser | null;
+    removedRequestNotification: INotifyRequestNewUser | null
 
     /**
      * The notification sent to the org billing leader requesting to be approved
      */
-    requestNotification: INotifyRequestNewUser | null;
+    requestNotification: INotifyRequestNewUser | null
 
     /**
      * The list of emails that turned out to be reactivated team members
      */
-    reactivatedTeamMembers: Array<ITeamMember> | null;
+    reactivatedTeamMembers: Array<ITeamMember> | null
 
     /**
      * The list of invitations successfully sent out
      */
-    invitationsSent: Array<IInvitation> | null;
+    invitationsSent: Array<IInvitation> | null
 
     /**
      * The list of orgApprovals sent to the org leader
      */
-    orgApprovalsSent: Array<IOrgApproval> | null;
+    orgApprovalsSent: Array<IOrgApproval> | null
 
     /**
      * The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval
      */
-    orgApprovalsRemoved: Array<IOrgApproval> | null;
+    orgApprovalsRemoved: Array<IOrgApproval> | null
 
     /**
      * The new invitees who have yet to accept the invite or get approved to receive an invite
      */
-    newSoftTeamMembers: Array<ISoftTeamMember> | null;
+    newSoftTeamMembers: Array<ISoftTeamMember> | null
 
     /**
      * Any tasks that were recently assigned to a reactivated soft team member
      */
-    unarchivedSoftTasks: Array<ITask> | null;
+    unarchivedSoftTasks: Array<ITask> | null
   }
 
   /**
    * A notification sent to someone who was just added to a team
    */
   interface INotifyAddedToTeam {
-    __typename: 'NotifyAddedToTeam';
+    __typename: 'NotifyAddedToTeam'
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
 
     /**
      * The new auth token for the user.
      */
-    authToken: string | null;
+    authToken: string | null
 
     /**
      * The team the invitee is being invited to
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The name of the team the user is joining
      */
-    teamName: string;
+    teamName: string
 
     /**
      * The teamId the user is joining
      */
-    teamId: string;
+    teamId: string
   }
 
   interface IJoinIntegrationPayload {
-    __typename: 'JoinIntegrationPayload';
-    error: IStandardMutationError | null;
+    __typename: 'JoinIntegrationPayload'
+    error: IStandardMutationError | null
 
     /**
      * The globalId of the integration with a removed member
      */
-    globalId: string;
-    teamMember: ITeamMember;
+    globalId: string
+    teamMember: ITeamMember
   }
 
   interface IKillMeetingPayload {
-    __typename: 'KillMeetingPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'KillMeetingPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
   }
 
   interface IEndNewMeetingPayload {
-    __typename: 'EndNewMeetingPayload';
-    error: IStandardMutationError | null;
+    __typename: 'EndNewMeetingPayload'
+    error: IStandardMutationError | null
 
     /**
      * true if the meeting was killed (ended before reaching last stage)
      */
-    isKill: boolean | null;
-    team: ITeam | null;
-    meeting: NewMeeting | null;
+    isKill: boolean | null
+    team: ITeam | null
+    meeting: NewMeeting | null
   }
 
   interface ILeaveIntegrationPayload {
-    __typename: 'LeaveIntegrationPayload';
-    error: IStandardMutationError | null;
+    __typename: 'LeaveIntegrationPayload'
+    error: IStandardMutationError | null
 
     /**
      * The globalId of the integration with a removed member
      */
-    globalId: string;
+    globalId: string
 
     /**
      * The global userId of the viewer that left. if null, remove the entire integration
      */
-    userId: string | null;
+    userId: string | null
 
     /**
      * The list of tasks removed triggered by a removed repo if this was the last viewer on the repo
      */
-    archivedTaskIds: Array<string> | null;
+    archivedTaskIds: Array<string> | null
   }
 
   interface IMeetingCheckInPayload {
-    __typename: 'MeetingCheckInPayload';
-    error: IStandardMutationError | null;
-    teamMember: ITeamMember | null;
+    __typename: 'MeetingCheckInPayload'
+    error: IStandardMutationError | null
+    teamMember: ITeamMember | null
   }
 
   interface IMoveMeetingPayload {
-    __typename: 'MoveMeetingPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'MoveMeetingPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
 
     /**
      * The agendaItem completed, if any
      */
-    completedAgendaItem: IAgendaItem | null;
+    completedAgendaItem: IAgendaItem | null
   }
 
   interface INavigateMeetingPayload {
-    __typename: 'NavigateMeetingPayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
+    __typename: 'NavigateMeetingPayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
 
     /**
      * The stage that the facilitator is now on
      */
-    facilitatorStage: NewMeetingStage | null;
+    facilitatorStage: NewMeetingStage | null
 
     /**
      * The stage that the facilitator left
      */
-    oldFacilitatorStage: NewMeetingStage | null;
+    oldFacilitatorStage: NewMeetingStage | null
 
     /**
      * Additional details triggered by completing certain phases
      */
-    phaseComplete: IPhaseCompletePayload | null;
+    phaseComplete: IPhaseCompletePayload | null
 
     /**
      * The stages that were unlocked by navigating
      */
-    unlockedStages: Array<NewMeetingStage>;
+    unlockedStages: Array<NewMeetingStage>
   }
 
   interface IPhaseCompletePayload {
-    __typename: 'PhaseCompletePayload';
+    __typename: 'PhaseCompletePayload'
 
     /**
      * payload provided if the retro reflect phase was completed
      */
-    reflect: IReflectPhaseCompletePayload | null;
+    reflect: IReflectPhaseCompletePayload | null
 
     /**
      * payload provided if the retro grouping phase was completed
      */
-    group: IGroupPhaseCompletePayload | null;
+    group: IGroupPhaseCompletePayload | null
 
     /**
      * payload provided if the retro voting phase was completed
      */
-    vote: IVotePhaseCompletePayload | null;
+    vote: IVotePhaseCompletePayload | null
   }
 
   interface IReflectPhaseCompletePayload {
-    __typename: 'ReflectPhaseCompletePayload';
+    __typename: 'ReflectPhaseCompletePayload'
 
     /**
      * a list of empty reflection groups to remove
      */
-    emptyReflectionGroupIds: Array<string> | null;
+    emptyReflectionGroupIds: Array<string> | null
   }
 
   interface IGroupPhaseCompletePayload {
-    __typename: 'GroupPhaseCompletePayload';
+    __typename: 'GroupPhaseCompletePayload'
 
     /**
      * the current meeting
      */
-    meeting: IRetrospectiveMeeting;
+    meeting: IRetrospectiveMeeting
 
     /**
      * a list of updated reflection groups
      */
-    reflectionGroups: Array<IRetroReflectionGroup> | null;
+    reflectionGroups: Array<IRetroReflectionGroup> | null
   }
 
   interface IVotePhaseCompletePayload {
-    __typename: 'VotePhaseCompletePayload';
+    __typename: 'VotePhaseCompletePayload'
 
     /**
      * the current meeting
      */
-    meeting: IRetrospectiveMeeting | null;
+    meeting: IRetrospectiveMeeting | null
   }
 
   interface INewMeetingCheckInPayload {
-    __typename: 'NewMeetingCheckInPayload';
-    error: IStandardMutationError | null;
-    meetingMember: MeetingMember | null;
-    meeting: NewMeeting | null;
+    __typename: 'NewMeetingCheckInPayload'
+    error: IStandardMutationError | null
+    meetingMember: MeetingMember | null
+    meeting: NewMeeting | null
   }
 
   interface IPromoteFacilitatorPayload {
-    __typename: 'PromoteFacilitatorPayload';
-    error: IStandardMutationError | null;
+    __typename: 'PromoteFacilitatorPayload'
+    error: IStandardMutationError | null
 
     /**
      * Thea team currently running a meeting
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The new meeting facilitator
      */
-    newFacilitator: ITeamMember | null;
+    newFacilitator: ITeamMember | null
 
     /**
      * The team member that disconnected
      */
-    disconnectedFacilitator: ITeamMember | null;
+    disconnectedFacilitator: ITeamMember | null
   }
 
   interface IPromoteNewMeetingFacilitatorPayload {
-    __typename: 'PromoteNewMeetingFacilitatorPayload';
-    error: IStandardMutationError | null;
+    __typename: 'PromoteNewMeetingFacilitatorPayload'
+    error: IStandardMutationError | null
 
     /**
      * The meeting in progress
      */
-    meeting: NewMeeting | null;
+    meeting: NewMeeting | null
 
     /**
      * The old meeting facilitator
      */
-    oldFacilitator: IUser | null;
+    oldFacilitator: IUser | null
   }
 
   interface IPromoteToTeamLeadPayload {
-    __typename: 'PromoteToTeamLeadPayload';
-    error: IStandardMutationError | null;
-    oldTeamLead: ITeamMember | null;
-    newTeamLead: ITeamMember | null;
+    __typename: 'PromoteToTeamLeadPayload'
+    error: IStandardMutationError | null
+    oldTeamLead: ITeamMember | null
+    newTeamLead: ITeamMember | null
   }
 
   interface IRejectOrgApprovalPayload {
-    __typename: 'RejectOrgApprovalPayload';
-    error: IStandardMutationError | null;
+    __typename: 'RejectOrgApprovalPayload'
+    error: IStandardMutationError | null
 
     /**
      * The list of org approvals to remove. There may be multiple if many inviters requested the same email
      */
-    removedOrgApprovals: Array<IOrgApproval> | null;
+    removedOrgApprovals: Array<IOrgApproval> | null
 
     /**
      * The notification going to the inviter saying their invitee has been denied
      */
-    deniedNotifications: Array<INotifyDenial> | null;
+    deniedNotifications: Array<INotifyDenial> | null
 
     /**
      * The list of notifications to remove. There may be multiple if many inviters requested the same email
      */
-    removedRequestNotifications: Array<INotifyRequestNewUser> | null;
+    removedRequestNotifications: Array<INotifyRequestNewUser> | null
 
     /**
      * The soft team members that have not yet been invited
      */
-    removedSoftTeamMembers: Array<ISoftTeamMember> | null;
+    removedSoftTeamMembers: Array<ISoftTeamMember> | null
 
     /**
      * The tasks that belonged to the soft team member
      */
-    archivedSoftTasks: Array<ITask> | null;
+    archivedSoftTasks: Array<ITask> | null
   }
 
   /**
    * A notification alerting the user that their request was denied by the org billing leader
    */
   interface INotifyDenial {
-    __typename: 'NotifyDenial';
+    __typename: 'NotifyDenial'
 
     /**
      * The reason, supplied by the org leader, that the request has been denied
      */
-    reason: string;
+    reason: string
 
     /**
      * The name of the billing leader that denied the request
      */
-    deniedByName: string | null;
+    deniedByName: string | null
 
     /**
      * The email of the person being invited
      */
-    inviteeEmail: string;
+    inviteeEmail: string
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   interface IRemoveAgendaItemPayload {
-    __typename: 'RemoveAgendaItemPayload';
-    error: IStandardMutationError | null;
-    agendaItem: IAgendaItem | null;
+    __typename: 'RemoveAgendaItemPayload'
+    error: IStandardMutationError | null
+    agendaItem: IAgendaItem | null
   }
 
   interface IRemoveProviderPayload {
-    __typename: 'RemoveProviderPayload';
-    error: IStandardMutationError | null;
-    providerRow: IProviderRow;
+    __typename: 'RemoveProviderPayload'
+    error: IStandardMutationError | null
+    providerRow: IProviderRow
 
     /**
      * The globalIds of the removed integrations
      */
-    deletedIntegrationIds: Array<string>;
+    deletedIntegrationIds: Array<string>
 
     /**
      * The userId of the person who removed the provider
      */
-    userId: string;
-    archivedTaskIds: Array<string> | null;
+    userId: string
+    archivedTaskIds: Array<string> | null
   }
 
   interface IRemoveSlackChannelPayload {
-    __typename: 'RemoveSlackChannelPayload';
-    error: IStandardMutationError | null;
-    deletedId: string;
+    __typename: 'RemoveSlackChannelPayload'
+    error: IStandardMutationError | null
+    deletedId: string
   }
 
   interface IRemoveGitHubRepoPayload {
-    __typename: 'RemoveGitHubRepoPayload';
-    deletedId: string;
-    error: IStandardMutationError | null;
-    archivedTaskIds: Array<string> | null;
+    __typename: 'RemoveGitHubRepoPayload'
+    deletedId: string
+    error: IStandardMutationError | null
+    archivedTaskIds: Array<string> | null
   }
 
   interface IRemoveOrgUserPayload {
-    __typename: 'RemoveOrgUserPayload';
-    error: IStandardMutationError | null;
+    __typename: 'RemoveOrgUserPayload'
+    error: IStandardMutationError | null
 
     /**
      * The organization the user was removed from
      */
-    organization: IOrganization | null;
+    organization: IOrganization | null
 
     /**
      * The teams the user was removed from
      */
-    teams: Array<ITeam> | null;
+    teams: Array<ITeam> | null
 
     /**
      * The teamMembers removed
      */
-    teamMembers: Array<ITeamMember> | null;
+    teamMembers: Array<ITeamMember> | null
 
     /**
      * The tasks that were archived or reassigned
      */
-    updatedTasks: Array<ITask> | null;
+    updatedTasks: Array<ITask> | null
 
     /**
      * The user removed from the organization
      */
-    user: IUser | null;
+    user: IUser | null
 
     /**
      * The notifications relating to a team the user was removed from
      */
-    removedTeamNotifications: Array<Notification> | null;
+    removedTeamNotifications: Array<Notification> | null
 
     /**
      * The notifications that are no longer relevant to the removed org user
      */
-    removedOrgNotifications: Array<Notification> | null;
+    removedOrgNotifications: Array<Notification> | null
 
     /**
      * The notifications for each team the user was kicked out of
      */
-    kickOutNotifications: Array<INotifyKickedOut> | null;
+    kickOutNotifications: Array<INotifyKickedOut> | null
 
     /**
      * The organization member that got removed
      */
-    removedOrgMember: IOrganizationMember | null;
+    removedOrgMember: IOrganizationMember | null
   }
 
   /**
    * A notification sent to someone who was just kicked off a team
    */
   interface INotifyKickedOut {
-    __typename: 'NotifyKickedOut';
+    __typename: 'NotifyKickedOut'
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
 
     /**
      * true if kicked out, false if leaving by choice
      */
-    isKickout: boolean | null;
+    isKickout: boolean | null
 
     /**
      * The name of the team the user is joining
      */
-    teamName: string;
+    teamName: string
 
     /**
      * The teamId the user was kicked out of
      */
-    teamId: string;
+    teamId: string
 
     /**
      * The team the task is on
      */
-    team: ITeam | null;
+    team: ITeam | null
   }
 
   interface IRemoveReflectionPayload {
-    __typename: 'RemoveReflectionPayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
-    reflection: IRetroReflection | null;
+    __typename: 'RemoveReflectionPayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
+    reflection: IRetroReflection | null
 
     /**
      * The stages that were unlocked by navigating
      */
-    unlockedStages: Array<NewMeetingStage>;
+    unlockedStages: Array<NewMeetingStage>
   }
 
   interface IRemoveTeamMemberPayload {
-    __typename: 'RemoveTeamMemberPayload';
-    error: IStandardMutationError | null;
+    __typename: 'RemoveTeamMemberPayload'
+    error: IStandardMutationError | null
 
     /**
      * The team member removed
      */
-    teamMember: ITeamMember | null;
+    teamMember: ITeamMember | null
 
     /**
      * The team the team member was removed from
      */
-    team: ITeam | null;
+    team: ITeam | null
 
     /**
      * The tasks that got reassigned
      */
-    updatedTasks: Array<ITask> | null;
+    updatedTasks: Array<ITask> | null
 
     /**
      * The user removed from the team
      */
-    user: IUser | null;
+    user: IUser | null
 
     /**
      * Any notifications pertaining to the team that are no longer relevant
      */
-    removedNotifications: Array<Notification> | null;
+    removedNotifications: Array<Notification> | null
 
     /**
      * A notification if you were kicked out by the team leader
      */
-    kickOutNotification: INotifyKickedOut | null;
+    kickOutNotification: INotifyKickedOut | null
   }
 
   interface IRequestFacilitatorPayload {
-    __typename: 'RequestFacilitatorPayload';
-    error: IStandardMutationError | null;
+    __typename: 'RequestFacilitatorPayload'
+    error: IStandardMutationError | null
 
     /**
      * The team member that wants to be the facilitator
      */
-    requestor: ITeamMember | null;
+    requestor: ITeamMember | null
   }
 
   interface IResendTeamInvitePayload {
-    __typename: 'ResendTeamInvitePayload';
-    error: IStandardMutationError | null;
-    invitation: IInvitation | null;
+    __typename: 'ResendTeamInvitePayload'
+    error: IStandardMutationError | null
+    invitation: IInvitation | null
   }
 
   interface ISegmentEventTrackOptions {
-    teamId?: string | null;
-    orgId?: string | null;
+    teamId?: string | null
+    orgId?: string | null
 
     /**
      * Used during the welcome wizard step 3
      */
-    inviteeCount?: number | null;
+    inviteeCount?: number | null
   }
 
-  type SetOrgUserRolePayload =
-    | ISetOrgUserRoleAddedPayload
-    | ISetOrgUserRoleRemovedPayload;
+  type SetOrgUserRolePayload = ISetOrgUserRoleAddedPayload | ISetOrgUserRoleRemovedPayload
 
   interface ISetOrgUserRolePayload {
-    __typename: 'SetOrgUserRolePayload';
-    error: IStandardMutationError | null;
-    organization: IOrganization | null;
-    updatedOrgMember: IOrganizationMember | null;
+    __typename: 'SetOrgUserRolePayload'
+    error: IStandardMutationError | null
+    organization: IOrganization | null
+    updatedOrgMember: IOrganizationMember | null
   }
 
   interface ISetPhaseFocusPayload {
-    __typename: 'SetPhaseFocusPayload';
-    error: IStandardMutationError | null;
-    meeting: IRetrospectiveMeeting;
-    reflectPhase: IReflectPhase;
+    __typename: 'SetPhaseFocusPayload'
+    error: IStandardMutationError | null
+    meeting: IRetrospectiveMeeting
+    reflectPhase: IReflectPhase
   }
 
   /**
    * The meeting phase where all team members check in one-by-one
    */
   interface IReflectPhase {
-    __typename: 'ReflectPhase';
+    __typename: 'ReflectPhase'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The type of phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
-    stages: Array<IGenericMeetingStage>;
+    phaseType: NewMeetingPhaseTypeEnum | null
+    stages: Array<IGenericMeetingStage>
 
     /**
      * foreign key. use focusedPhaseItem
      */
-    focusedPhaseItemId: string | null;
+    focusedPhaseItemId: string | null
 
     /**
      * the phase item that the facilitator wants the group to focus on
      */
-    focusedPhaseItem: IRetroPhaseItem | null;
+    focusedPhaseItem: IRetroPhaseItem | null
   }
 
   /**
    * A stage of a meeting that has no extra state. Only used for single-stage phases
    */
   interface IGenericMeetingStage {
-    __typename: 'GenericMeetingStage';
+    __typename: 'GenericMeetingStage'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The datetime the stage was completed
      */
-    endAt: any | null;
+    endAt: any | null
 
     /**
      * foreign key. try using meeting
      */
-    meetingId: string;
+    meetingId: string
 
     /**
      * The meeting this stage belongs to
      */
-    meeting: NewMeeting | null;
+    meeting: NewMeeting | null
 
     /**
      * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
      */
-    isComplete: boolean | null;
+    isComplete: boolean | null
 
     /**
      * true if any meeting participant can navigate to this stage
      */
-    isNavigable: boolean | null;
+    isNavigable: boolean | null
 
     /**
      * true if the facilitator can navigate to this stage
      */
-    isNavigableByFacilitator: boolean | null;
+    isNavigableByFacilitator: boolean | null
 
     /**
      * The phase this stage belongs to
      */
-    phase: NewMeetingPhase | null;
+    phase: NewMeetingPhase | null
 
     /**
      * The type of the phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
+    phaseType: NewMeetingPhaseTypeEnum | null
 
     /**
      * The datetime the stage was started
      */
-    startAt: any | null;
+    startAt: any | null
 
     /**
      * Number of times the facilitator has visited this stage
      */
-    viewCount: number | null;
+    viewCount: number | null
   }
 
   /**
    * Coordinates used relay a location in a 2-D plane
    */
   interface ICoords2DInput {
-    x: number;
-    y: number;
+    x: number
+    y: number
   }
 
   interface IStartDraggingReflectionPayload {
-    __typename: 'StartDraggingReflectionPayload';
-    error: IStandardMutationError | null;
+    __typename: 'StartDraggingReflectionPayload'
+    error: IStandardMutationError | null
 
     /**
      * The proposed start/end of a drag. Subject to race conditions, it is up to the client to decide to accept or ignore
      */
-    dragContext: IDragContext | null;
-    meeting: NewMeeting | null;
-    meetingId: string | null;
-    reflection: IRetroReflection | null;
-    reflectionId: string | null;
-    teamId: string | null;
+    dragContext: IDragContext | null
+    meeting: NewMeeting | null
+    meetingId: string | null
+    reflection: IRetroReflection | null
+    reflectionId: string | null
+    teamId: string | null
   }
 
   interface IStartMeetingPayload {
-    __typename: 'StartMeetingPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'StartMeetingPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
   }
 
   interface IStartNewMeetingPayload {
-    __typename: 'StartNewMeetingPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
-    meeting: NewMeeting | null;
+    __typename: 'StartNewMeetingPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
+    meeting: NewMeeting | null
   }
 
   interface IStripeFailPaymentPayload {
-    __typename: 'StripeFailPaymentPayload';
-    error: IStandardMutationError | null;
-    organization: IOrganization | null;
+    __typename: 'StripeFailPaymentPayload'
+    error: IStandardMutationError | null
+    organization: IOrganization | null
 
     /**
      * The notification to billing leaders stating the payment was rejected
      */
-    notification: INotifyPaymentRejected | null;
+    notification: INotifyPaymentRejected | null
   }
 
   /**
    * A notification sent to a user when their payment has been rejected
    */
   interface INotifyPaymentRejected {
-    __typename: 'NotifyPaymentRejected';
-    organization: IOrganization | null;
+    __typename: 'NotifyPaymentRejected'
+    organization: IOrganization | null
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   interface IUpdateAgendaItemInput {
     /**
      * The unique agenda item ID, composed of a teamId::shortid
      */
-    id: string;
+    id: string
 
     /**
      * The content of the agenda item
      */
-    content?: string | null;
+    content?: string | null
 
     /**
      * true until the agenda item has been marked isComplete and the meeting has ended
      */
-    isActive?: boolean | null;
+    isActive?: boolean | null
 
     /**
      * true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)
      */
-    isComplete?: boolean | null;
+    isComplete?: boolean | null
 
     /**
      * The sort order of the agenda item in the list
      */
-    sortOrder?: number | null;
+    sortOrder?: number | null
   }
 
   interface IUpdateAgendaItemPayload {
-    __typename: 'UpdateAgendaItemPayload';
-    agendaItem: IAgendaItem | null;
-    error: IStandardMutationError | null;
+    __typename: 'UpdateAgendaItemPayload'
+    agendaItem: IAgendaItem | null
+    error: IStandardMutationError | null
   }
 
   interface IUpdateCreditCardPayload {
-    __typename: 'UpdateCreditCardPayload';
-    error: IStandardMutationError | null;
+    __typename: 'UpdateCreditCardPayload'
+    error: IStandardMutationError | null
 
     /**
      * The organization that received the updated credit card
      */
-    organization: IOrganization | null;
+    organization: IOrganization | null
 
     /**
      * The teams that are now paid up
      */
-    teamsUpdated: Array<ITeam> | null;
+    teamsUpdated: Array<ITeam> | null
   }
 
   interface IUpdateOrgInput {
     /**
      * The unique action ID
      */
-    id?: string | null;
+    id?: string | null
 
     /**
      * The name of the org
      */
-    name?: string | null;
+    name?: string | null
 
     /**
      * The org avatar
      */
-    picture?: any | null;
+    picture?: any | null
   }
 
   interface IUpdateOrgPayload {
-    __typename: 'UpdateOrgPayload';
-    error: IStandardMutationError | null;
+    __typename: 'UpdateOrgPayload'
+    error: IStandardMutationError | null
 
     /**
      * The updated org
      */
-    organization: IOrganization | null;
+    organization: IOrganization | null
   }
 
   interface IUpdateCheckInQuestionPayload {
-    __typename: 'UpdateCheckInQuestionPayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'UpdateCheckInQuestionPayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
   }
 
   interface IUpdateNewCheckInQuestionPayload {
-    __typename: 'UpdateNewCheckInQuestionPayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
+    __typename: 'UpdateNewCheckInQuestionPayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
   }
 
   interface IUpdateDragLocationInput {
-    clientHeight: number;
-    clientWidth: number;
+    clientHeight: number
+    clientWidth: number
 
     /**
      * The primary key of the item being drug
      */
-    sourceId: string;
+    sourceId: string
 
     /**
      * The estimated destination of the item being drug
      */
-    targetId?: string | null;
+    targetId?: string | null
 
     /**
      * The teamId to broadcast the message to
      */
-    teamId: string;
-    coords: ICoords2DInput;
+    teamId: string
+    coords: ICoords2DInput
 
     /**
      * The offset from the targetId
      */
-    targetOffset?: ICoords2DInput | null;
+    targetOffset?: ICoords2DInput | null
   }
 
   interface IUpdateReflectionContentPayload {
-    __typename: 'UpdateReflectionContentPayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
-    reflection: IRetroReflection | null;
+    __typename: 'UpdateReflectionContentPayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
+    reflection: IRetroReflection | null
   }
 
   interface IUpdateReflectionGroupTitlePayload {
-    __typename: 'UpdateReflectionGroupTitlePayload';
-    error: IStandardMutationError | null;
-    meeting: NewMeeting | null;
-    reflectionGroup: IRetroReflectionGroup | null;
+    __typename: 'UpdateReflectionGroupTitlePayload'
+    error: IStandardMutationError | null
+    meeting: NewMeeting | null
+    reflectionGroup: IRetroReflectionGroup | null
   }
 
   interface IUpdateTaskInput {
     /**
      * The task id
      */
-    id?: string | null;
-    content?: string | null;
-    sortOrder?: number | null;
-    status?: TaskStatusEnum | null;
+    id?: string | null
+    content?: string | null
+    sortOrder?: number | null
+    status?: TaskStatusEnum | null
 
     /**
      * The teamMemberId or softTeamMemberId
      */
-    assigneeId?: string | null;
+    assigneeId?: string | null
   }
 
   interface IUpdateTaskPayload {
-    __typename: 'UpdateTaskPayload';
-    error: IStandardMutationError | null;
-    task: ITask | null;
+    __typename: 'UpdateTaskPayload'
+    error: IStandardMutationError | null
+    task: ITask | null
 
     /**
      * If a task was just turned private, this its ID, else null
      */
-    privatizedTaskId: string | null;
-    addedNotification: INotifyTaskInvolves | null;
-    removedNotification: INotifyTaskInvolves | null;
+    privatizedTaskId: string | null
+    addedNotification: INotifyTaskInvolves | null
+    removedNotification: INotifyTaskInvolves | null
   }
 
   interface IUpdateTaskDueDatePayload {
-    __typename: 'UpdateTaskDueDatePayload';
-    error: IStandardMutationError | null;
-    task: ITask | null;
+    __typename: 'UpdateTaskDueDatePayload'
+    error: IStandardMutationError | null
+    task: ITask | null
   }
 
   interface IUpdatedTeamInput {
-    id?: string | null;
+    id?: string | null
 
     /**
      * The name of the team
      */
-    name?: string | null;
+    name?: string | null
 
     /**
      * A link to the team’s profile image.
      */
-    picture?: any | null;
+    picture?: any | null
   }
 
   interface IUpdateTeamNamePayload {
-    __typename: 'UpdateTeamNamePayload';
-    error: IStandardMutationError | null;
-    team: ITeam | null;
+    __typename: 'UpdateTeamNamePayload'
+    error: IStandardMutationError | null
+    team: ITeam | null
   }
 
   interface IUpdateUserProfileInput {
     /**
      * A link to the user’s profile image.
      */
-    picture?: any | null;
+    picture?: any | null
 
     /**
      * The name, as confirmed by the user
      */
-    preferredName?: string | null;
+    preferredName?: string | null
   }
 
   interface IUpdateUserProfilePayload {
-    __typename: 'UpdateUserProfilePayload';
-    error: IStandardMutationError | null;
-    user: IUser | null;
+    __typename: 'UpdateUserProfilePayload'
+    error: IStandardMutationError | null
+    user: IUser | null
 
     /**
      * The updated team members
      */
-    teamMembers: Array<ITeamMember> | null;
+    teamMembers: Array<ITeamMember> | null
   }
 
   interface IVoteForReflectionGroupPayload {
-    __typename: 'VoteForReflectionGroupPayload';
-    error: IStandardMutationError | null;
-    meeting: IRetrospectiveMeeting | null;
-    meetingMember: IRetrospectiveMeetingMember | null;
-    reflectionGroup: IRetroReflectionGroup | null;
+    __typename: 'VoteForReflectionGroupPayload'
+    error: IStandardMutationError | null
+    meeting: IRetrospectiveMeeting | null
+    meetingMember: IRetrospectiveMeetingMember | null
+    reflectionGroup: IRetroReflectionGroup | null
 
     /**
      * The stages that were locked or unlocked by having at least 1 vote
      */
-    unlockedStages: Array<NewMeetingStage>;
+    unlockedStages: Array<NewMeetingStage>
   }
 
   interface ILoginPayload {
-    __typename: 'LoginPayload';
-    error: IStandardMutationError | null;
+    __typename: 'LoginPayload'
+    error: IStandardMutationError | null
 
     /**
      * The user that just logged in
      */
-    user: IUser | null;
+    user: IUser | null
 
     /**
      * The new JWT
      */
-    authToken: string | null;
+    authToken: string | null
   }
 
   interface IUpgradeToProPayload {
-    __typename: 'UpgradeToProPayload';
-    error: IStandardMutationError | null;
+    __typename: 'UpgradeToProPayload'
+    error: IStandardMutationError | null
 
     /**
      * The new Pro Org
      */
-    organization: IOrganization | null;
+    organization: IOrganization | null
 
     /**
      * The updated teams under the org
      */
-    teams: Array<ITeam> | null;
+    teams: Array<ITeam> | null
   }
 
   interface ISubscription {
-    __typename: 'Subscription';
-    agendaItemSubscription: AgendaItemSubscriptionPayload;
-    githubMemberRemoved: IGitHubMemberRemovedPayload;
-    githubRepoAdded: IAddGitHubRepoPayload;
-    githubRepoRemoved: IRemoveGitHubRepoPayload;
-    integrationJoined: IJoinIntegrationPayload;
-    integrationLeft: ILeaveIntegrationPayload;
-    invitationSubscription: InvitationSubscriptionPayload;
-    newAuthToken: string | null;
-    notificationSubscription: NotificationSubscriptionPayload;
-    orgApprovalSubscription: OrgApprovalSubscriptionPayload;
-    organizationSubscription: OrganizationSubscriptionPayload;
-    taskSubscription: TaskSubscriptionPayload;
-    slackChannelAdded: IAddSlackChannelPayload;
-    slackChannelRemoved: IRemoveSlackChannelPayload;
-    providerAdded: IAddProviderPayload;
-    providerRemoved: IRemoveProviderPayload;
-    teamSubscription: TeamSubscriptionPayload;
-    teamMemberSubscription: TeanMemberSubscriptionPayload;
+    __typename: 'Subscription'
+    agendaItemSubscription: AgendaItemSubscriptionPayload
+    githubMemberRemoved: IGitHubMemberRemovedPayload
+    githubRepoAdded: IAddGitHubRepoPayload
+    githubRepoRemoved: IRemoveGitHubRepoPayload
+    integrationJoined: IJoinIntegrationPayload
+    integrationLeft: ILeaveIntegrationPayload
+    invitationSubscription: InvitationSubscriptionPayload
+    newAuthToken: string | null
+    notificationSubscription: NotificationSubscriptionPayload
+    orgApprovalSubscription: OrgApprovalSubscriptionPayload
+    organizationSubscription: OrganizationSubscriptionPayload
+    taskSubscription: TaskSubscriptionPayload
+    slackChannelAdded: IAddSlackChannelPayload
+    slackChannelRemoved: IRemoveSlackChannelPayload
+    providerAdded: IAddProviderPayload
+    providerRemoved: IRemoveProviderPayload
+    teamSubscription: TeamSubscriptionPayload
+    teamMemberSubscription: TeanMemberSubscriptionPayload
   }
 
   interface IAgendaItemSubscriptionOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IGithubMemberRemovedOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IGithubRepoAddedOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IGithubRepoRemovedOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IIntegrationJoinedOnSubscriptionArguments {
-    service: IntegrationService;
-    teamId: string;
+    service: IntegrationService
+    teamId: string
   }
 
   interface IIntegrationLeftOnSubscriptionArguments {
-    service: IntegrationService;
-    teamId: string;
+    service: IntegrationService
+    teamId: string
   }
 
   interface IInvitationSubscriptionOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IOrgApprovalSubscriptionOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface ISlackChannelAddedOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface ISlackChannelRemovedOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IProviderAddedOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   interface IProviderRemovedOnSubscriptionArguments {
-    teamId: string;
+    teamId: string
   }
 
   type AgendaItemSubscriptionPayload =
     | IAddAgendaItemPayload
     | IRemoveAgendaItemPayload
     | IUpdateAgendaItemPayload
-    | IMoveMeetingPayload;
+    | IMoveMeetingPayload
 
   interface IGitHubMemberRemovedPayload {
-    __typename: 'GitHubMemberRemovedPayload';
-    leaveIntegration: Array<ILeaveIntegrationPayload> | null;
+    __typename: 'GitHubMemberRemovedPayload'
+    leaveIntegration: Array<ILeaveIntegrationPayload> | null
   }
 
   type InvitationSubscriptionPayload =
@@ -6192,7 +6177,7 @@ declare namespace GQL {
     | IApproveToOrgPayload
     | ICancelTeamInvitePayload
     | IInviteTeamMembersPayload
-    | IResendTeamInvitePayload;
+    | IResendTeamInvitePayload
 
   type NotificationSubscriptionPayload =
     | IAddFeatureFlagPayload
@@ -6210,13 +6195,13 @@ declare namespace GQL {
     | IRemoveOrgUserPayload
     | IStripeFailPaymentPayload
     | IUser
-    | IUpdateUserProfilePayload;
+    | IUpdateUserProfilePayload
 
   type OrgApprovalSubscriptionPayload =
     | IApproveToOrgPayload
     | ICancelApprovalPayload
     | IInviteTeamMembersPayload
-    | IRejectOrgApprovalPayload;
+    | IRejectOrgApprovalPayload
 
   type OrganizationSubscriptionPayload =
     | IAddOrgPayload
@@ -6226,30 +6211,30 @@ declare namespace GQL {
     | ISetOrgUserRoleRemovedPayload
     | IUpdateCreditCardPayload
     | IUpdateOrgPayload
-    | IUpgradeToProPayload;
+    | IUpgradeToProPayload
 
   interface ISetOrgUserRoleAddedPayload {
-    __typename: 'SetOrgUserRoleAddedPayload';
-    error: IStandardMutationError | null;
-    organization: IOrganization | null;
-    updatedOrgMember: IOrganizationMember | null;
+    __typename: 'SetOrgUserRoleAddedPayload'
+    error: IStandardMutationError | null
+    organization: IOrganization | null
+    updatedOrgMember: IOrganizationMember | null
 
     /**
      * If promoted, notify them and give them all other admin notifications
      */
-    notificationsAdded: Array<OrganizationNotification> | null;
+    notificationsAdded: Array<OrganizationNotification> | null
   }
 
   interface ISetOrgUserRoleRemovedPayload {
-    __typename: 'SetOrgUserRoleRemovedPayload';
-    error: IStandardMutationError | null;
-    organization: IOrganization | null;
-    updatedOrgMember: IOrganizationMember | null;
+    __typename: 'SetOrgUserRoleRemovedPayload'
+    error: IStandardMutationError | null
+    organization: IOrganization | null
+    updatedOrgMember: IOrganizationMember | null
 
     /**
      * If demoted, notify them and remove all other admin notifications
      */
-    notificationsRemoved: Array<OrganizationNotification> | null;
+    notificationsRemoved: Array<OrganizationNotification> | null
   }
 
   type TaskSubscriptionPayload =
@@ -6267,18 +6252,18 @@ declare namespace GQL {
     | IRemoveOrgUserPayload
     | IRemoveTeamMemberPayload
     | IUpdateTaskPayload
-    | IUpdateTaskDueDatePayload;
+    | IUpdateTaskDueDatePayload
 
   interface IAddProviderPayload {
-    __typename: 'AddProviderPayload';
-    providerRow: IProviderRow;
-    provider: IProvider | null;
+    __typename: 'AddProviderPayload'
+    providerRow: IProviderRow
+    provider: IProvider | null
 
     /**
      * All the integrationIds that the provider has successfully joined
      */
-    joinedIntegrationIds: Array<string> | null;
-    teamMember: ITeamMember | null;
+    joinedIntegrationIds: Array<string> | null
+    teamMember: ITeamMember | null
   }
 
   type TeamSubscriptionPayload =
@@ -6315,29 +6300,29 @@ declare namespace GQL {
     | IUpdateReflectionGroupTitlePayload
     | IUpdateTeamNamePayload
     | IUpgradeToProPayload
-    | IVoteForReflectionGroupPayload;
+    | IVoteForReflectionGroupPayload
 
   interface IUpdateDragLocationPayload {
-    __typename: 'UpdateDragLocationPayload';
-    clientHeight: number;
-    clientWidth: number;
+    __typename: 'UpdateDragLocationPayload'
+    clientHeight: number
+    clientWidth: number
 
     /**
      * The primary key of the item being drug
      */
-    sourceId: string;
+    sourceId: string
 
     /**
      * The estimated destination of the item being drug
      */
-    targetId: string | null;
-    coords: ICoords2D;
+    targetId: string | null
+    coords: ICoords2D
 
     /**
      * The offset from the targetId
      */
-    targetOffset: ICoords2D | null;
-    userId: string;
+    targetOffset: ICoords2D | null
+    userId: string
   }
 
   type TeanMemberSubscriptionPayload =
@@ -6350,272 +6335,272 @@ declare namespace GQL {
     | IPromoteToTeamLeadPayload
     | IRejectOrgApprovalPayload
     | IRemoveOrgUserPayload
-    | IUpdateUserProfilePayload;
+    | IUpdateUserProfilePayload
 
   /**
    * The meeting phase where all team members check in one-by-one
    */
   interface ICheckInPhase {
-    __typename: 'CheckInPhase';
+    __typename: 'CheckInPhase'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The type of phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
-    stages: Array<ICheckInStage>;
+    phaseType: NewMeetingPhaseTypeEnum | null
+    stages: Array<ICheckInStage>
 
     /**
      * The checkIn greeting (fun language)
      */
-    checkInGreeting: IMeetingGreeting;
+    checkInGreeting: IMeetingGreeting
 
     /**
      * The checkIn question of the week (draft-js format)
      */
-    checkInQuestion: string;
+    checkInQuestion: string
   }
 
   /**
    * A stage that focuses on a single team member
    */
   interface ICheckInStage {
-    __typename: 'CheckInStage';
+    __typename: 'CheckInStage'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The datetime the stage was completed
      */
-    endAt: any | null;
+    endAt: any | null
 
     /**
      * foreign key. try using meeting
      */
-    meetingId: string;
+    meetingId: string
 
     /**
      * The meeting this stage belongs to
      */
-    meeting: NewMeeting | null;
+    meeting: NewMeeting | null
 
     /**
      * true if the facilitator has completed this stage, else false. Should be boolean(endAt)
      */
-    isComplete: boolean | null;
+    isComplete: boolean | null
 
     /**
      * true if any meeting participant can navigate to this stage
      */
-    isNavigable: boolean | null;
+    isNavigable: boolean | null
 
     /**
      * true if the facilitator can navigate to this stage
      */
-    isNavigableByFacilitator: boolean | null;
+    isNavigableByFacilitator: boolean | null
 
     /**
      * The phase this stage belongs to
      */
-    phase: NewMeetingPhase | null;
+    phase: NewMeetingPhase | null
 
     /**
      * The type of the phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
+    phaseType: NewMeetingPhaseTypeEnum | null
 
     /**
      * The datetime the stage was started
      */
-    startAt: any | null;
+    startAt: any | null
 
     /**
      * Number of times the facilitator has visited this stage
      */
-    viewCount: number | null;
+    viewCount: number | null
 
     /**
      * foreign key. use teamMember
      */
-    teamMemberId: string;
+    teamMemberId: string
 
     /**
      * The team member that is the focus for this phase item
      */
-    teamMember: ITeamMember | null;
+    teamMember: ITeamMember | null
 
     /**
      * true if the team member is present for the meeting
      */
-    present: boolean | null;
+    present: boolean | null
   }
 
   /**
    * An instance of a meeting phase item. On the client, this usually represents a single view
    */
-  type NewMeetingTeamMemberStage = ICheckInStage;
+  type NewMeetingTeamMemberStage = ICheckInStage
 
   /**
    * An instance of a meeting phase item. On the client, this usually represents a single view
    */
   interface INewMeetingTeamMemberStage {
-    __typename: 'NewMeetingTeamMemberStage';
+    __typename: 'NewMeetingTeamMemberStage'
 
     /**
      * foreign key. use teamMember
      */
-    teamMemberId: string;
+    teamMemberId: string
 
     /**
      * The team member that is the focus for this phase item
      */
-    teamMember: ITeamMember | null;
+    teamMember: ITeamMember | null
   }
 
   /**
    * The meeting phase where all team members discuss the topics with the most votes
    */
   interface IDiscussPhase {
-    __typename: 'DiscussPhase';
+    __typename: 'DiscussPhase'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The type of phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
-    stages: Array<IRetroDiscussStage>;
+    phaseType: NewMeetingPhaseTypeEnum | null
+    stages: Array<IRetroDiscussStage>
   }
 
   /**
    * An all-purpose meeting phase with no extra state
    */
   interface IGenericMeetingPhase {
-    __typename: 'GenericMeetingPhase';
+    __typename: 'GenericMeetingPhase'
 
     /**
      * shortid
      */
-    id: string;
+    id: string
 
     /**
      * The type of phase
      */
-    phaseType: NewMeetingPhaseTypeEnum | null;
-    stages: Array<IGenericMeetingStage>;
+    phaseType: NewMeetingPhaseTypeEnum | null
+    stages: Array<IGenericMeetingStage>
   }
 
   /**
    * A notification alerting the user that they have been promoted (to team or org leader)
    */
   interface INotifyPromoteToOrgLeader {
-    __typename: 'NotifyPromoteToOrgLeader';
-    organization: IOrganization | null;
+    __typename: 'NotifyPromoteToOrgLeader'
+    organization: IOrganization | null
 
     /**
      * A shortid for the notification
      */
-    id: string | null;
+    id: string | null
 
     /**
      * *The unique organization ID for this notification. Can be blank for targeted notifications
      */
-    orgId: string | null;
+    orgId: string | null
 
     /**
      * The datetime to activate the notification & send it to the client
      */
-    startAt: any | null;
-    type: NotificationEnum | null;
+    startAt: any | null
+    type: NotificationEnum | null
 
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>;
+    userIds: Array<string>
   }
 
   /**
    * The action-specific meeting settings
    */
   interface IActionMeetingSettings {
-    __typename: 'ActionMeetingSettings';
+    __typename: 'ActionMeetingSettings'
 
     /**
      * The type of meeting these settings apply to
      */
-    meetingType: MeetingTypeEnum | null;
+    meetingType: MeetingTypeEnum | null
 
     /**
      * The broad phase types that will be addressed during the meeting
      */
-    phaseTypes: Array<NewMeetingPhaseTypeEnum>;
+    phaseTypes: Array<NewMeetingPhaseTypeEnum>
 
     /**
      * The team these settings belong to
      */
-    team: ITeam | null;
+    team: ITeam | null
   }
 
   /**
    * An auth token provided by Parabol to the client
    */
   interface IAuthToken {
-    __typename: 'AuthToken';
+    __typename: 'AuthToken'
 
     /**
      * A static ID so the location in the relay store is deterministic
      */
-    id: string | null;
+    id: string | null
 
     /**
      * audience. the target API used in auth0. Parabol does not use this.
      */
-    aud: string | null;
+    aud: string | null
 
     /**
      * beta. 1 if enrolled in beta features. else absent
      */
-    bet: number | null;
+    bet: number | null
 
     /**
      * expiration. Time since unix epoch / 1000
      */
-    exp: number;
+    exp: number
 
     /**
      * issued at. Time since unix epoch / 1000
      */
-    iat: number;
+    iat: number
 
     /**
      * issuer. the url that gave them the token. useful for detecting environment
      */
-    iss: string | null;
+    iss: string | null
 
     /**
      * subscriber. userId
      */
-    sub: string | null;
+    sub: string | null
 
     /**
      * role. Any privileges associated with the account
      */
-    rol: AuthTokenRole | null;
+    rol: AuthTokenRole | null
 
     /**
      * teams. a list of teamIds where the user is active
      */
-    tms: Array<string> | null;
+    tms: Array<string> | null
   }
 
   /**

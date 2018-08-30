@@ -1,12 +1,14 @@
-// @flow
+import {NewMeetingAvatarGroup_team} from '__generated__/NewMeetingAvatarGroup_team.graphql'
 import React from 'react'
-import {connect} from 'react-redux'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {createFragmentContainer} from 'react-relay'
 import styled from 'react-emotion'
-import findStageById from 'universal/utils/meetings/findStageById'
+import {connect} from 'react-redux'
+import {createFragmentContainer, graphql} from 'react-relay'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
-import type {NewMeetingAvatarGroup_team as Team} from '__generated__/NewMeetingAvatarGroup_team.graphql'
+import findStageById from 'universal/utils/meetings/findStageById'
+import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',
@@ -23,17 +25,18 @@ const MeetingAvatarGroupInner = styled('div')({
   textAlign: 'center'
 })
 
-type Props = {
-  gotoStageId: (stageId: string) => void,
-  team: Team
+interface Props extends WithAtmosphereProps {
+  gotoStageId: (stageId: string) => void
+  team: NewMeetingAvatarGroup_team
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {
   const {
     gotoStageId,
-    team: {newMeeting = {}, teamMembers}
+    team: {newMeeting, teamMembers}
   } = props
-  const {facilitatorStageId, phases, localPhase} = newMeeting || {}
+  const meeting = newMeeting || UNSTARTED_MEETING
+  const {facilitatorStageId, phases, localPhase} = meeting
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const facilitatorStageTeamMemberId = facilitatorStageRes && facilitatorStageRes.stage.teamMemberId
   return (
@@ -51,7 +54,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
                 gotoStageId(teamMemberStageId)
               }}
               isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
-              newMeeting={newMeeting}
+              newMeeting={meeting}
               teamMember={teamMember}
             />
           )
