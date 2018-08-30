@@ -5,7 +5,6 @@ import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {ACTION} from 'universal/utils/constants'
 import {createFragmentContainer} from 'react-relay'
 import styled from 'react-emotion'
-import {DashLayout_viewer as Viewer} from './__generated__/DashLayout_viewer.graphql'
 
 const StyledDashLayout = styled('div')({
   backgroundColor: '#fff',
@@ -41,7 +40,7 @@ const getActiveMeetings = (viewer) => {
 
 type Props = {|
   children: React.Node,
-  viewer: Viewer
+  viewer: any
 |}
 
 const DashLayout = (props: Props) => {
