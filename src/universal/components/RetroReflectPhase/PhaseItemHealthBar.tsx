@@ -4,7 +4,7 @@ import {DECELERATE} from 'universal/styles/animation'
 import plural from 'universal/utils/plural'
 import appTheme from 'universal/styles/theme/appTheme'
 interface Props {
-  editorsCount: number,
+  editorCount: number,
 }
 
 const {brand: {primary: {purpleLightened, orange, teal}}} = appTheme
@@ -14,7 +14,7 @@ const BarMask = styled('div')((props: Props) => ({
   height: 4,
   overflow: 'hidden',
   transition: `all 300ms ${DECELERATE}`,
-  width: Math.max(10, 50 * props.editorsCount)
+  width: Math.max(10, 50 * props.editorCount)
 }))
 
 const HealthBarStyle = styled('div')({
@@ -48,13 +48,13 @@ const HealthBarLabel = styled('div')({
 
 class PhaseItemHealthBar extends Component<Props> {
   render() {
-    const {editorsCount} = this.props
+    const {editorCount} = this.props
     return (
       <HealthBarStyle>
-        <BarMask editorsCount={editorsCount}>
+        <BarMask editorCount={editorCount}>
           <Bar />
         </BarMask>
-        <HealthBarLabel>{`${editorsCount} ${plural(editorsCount, 'person', 'people')} typing...`}</HealthBarLabel>
+        <HealthBarLabel>{`${editorCount} ${plural(editorCount, 'person', 'people')} typing...`}</HealthBarLabel>
       </HealthBarStyle>
     )
   }

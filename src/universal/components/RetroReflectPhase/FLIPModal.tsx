@@ -73,16 +73,24 @@ class FLIPModal extends Component<Props> {
     setElementBBox(contentDiv, last)
     contentDiv.style.transform = getTransform(contentBBox, last)
     contentDiv.style.transition = null
+    contentDiv.style.overflow = ''
 
     setElementBBox(backgroundDiv, last)
     bgStyle.transform = getTransform(first, last, {scale: true})
     bgStyle.transition = null
+
     requestDoubleAnimationFrame(() => {
       contentDiv.style.transition = `all 300ms ${DECELERATE}`
       contentDiv.style.transform = null
       bgStyle.transition = `all 300ms ${DECELERATE}`
       bgStyle.transform = null
     })
+    const cleanup = () => {
+      backgroundDiv.removeEventListener('transitionend', cleanup)
+      contentDiv.style.overflowX = 'hidden'
+      contentDiv.style.overflowY = 'auto'
+    }
+    backgroundDiv.addEventListener('transitionend', cleanup)
   }
 
 

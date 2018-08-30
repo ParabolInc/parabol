@@ -93,7 +93,7 @@ class ReflectionStack extends Component<Props, State> {
   componentDidUpdate(prevProps) {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
-    if (oldTop !== newTop) {
+    if (!oldTop || !newTop || oldTop.id !== newTop.id) {
       this.animateFromEditor(this.firstReflectionRef.current, this.props.phaseEditorRef.current)
     }
   }
@@ -109,6 +109,7 @@ class ReflectionStack extends Component<Props, State> {
   }
 
   expand = () => {
+    if (this.props.reflectionStack.length <= 1) return
     this.setState({isExpanded: true})
   }
 
@@ -132,7 +133,10 @@ class ReflectionStack extends Component<Props, State> {
                                  phaseItemId={phaseItemId} firstReflectionRef={this.firstReflectionRef} />
         <CardStack onClick={this.expand} isVisible={!isExpanded} innerRef={this.stackRef}>
           <CenteredCardStack>
-            {maxStack.map((reflection, idx) => {
+            {maxStack.length === 1 &&
+            <ReflectionCard meetingId={meetingId} reflection={maxStack[0]} phaseItemId={phaseItemId}/>
+            }
+            {maxStack.length > 1 && maxStack.map((reflection, idx) => {
               return (
                 <ReflectionWrapper key={reflection.id} idx={idx} count={maxStack.length}
                                    innerRef={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}>

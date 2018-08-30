@@ -154,7 +154,7 @@ class PhaseItemColumn extends Component<Props> {
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={isComplete}>
                 <PhaseItemEditor phaseEditorRef={this.phaseEditorRef} meetingId={meetingId} nextSortOrder={this.nextSortOrder} retroPhaseItemId={retroPhaseItemId} />
-                <PhaseItemHealthBar editorsCount={editorIds ? editorIds.length : 0} />
+                <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
               </EditorAndStatus>
             </HeaderAndEditor>
             <ReflectionStack
@@ -166,7 +166,7 @@ class PhaseItemColumn extends Component<Props> {
               meetingId={meetingId}
             />
             <ChitSection>
-              <PhaseItemChits count={columnStack.length - reflectionStack.length} />
+              <PhaseItemChits count={columnStack.length - reflectionStack.length} editorCount={editorIds ? editorIds.length : 0} />
             </ChitSection>
           </ColumnContent>
         </ColumnHighlight>

@@ -55,7 +55,7 @@ class ChildrenCache {
         proposedChildren.push({left, top: shortestColumnTop})
         currentColumnHeights[shortestColumnIdx] = shortestColumnTop + height + this.childPadding
       })
-      const gridHeight = Math.max(...currentColumnHeights) - this.childPadding + 2 * this.gridPadding
+      const gridHeight = Math.max(...currentColumnHeights) - this.childPadding + this.gridPadding
       const gridWidth = ii * fullColumnWidth - this.childPadding + 2 * this.gridPadding
       const perimeter = 2 * gridHeight + 2 * gridWidth
 

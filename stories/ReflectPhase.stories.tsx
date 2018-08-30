@@ -29,12 +29,12 @@ storiesOf('Reflect Phase', module)
   ))
   .add('health bar', () => (
     <StoryProvider>
-      <PhaseItemHealthBar editorsCount={number('editorsCount', 1)} />
+      <PhaseItemHealthBar editorCount={number('editorCount', 1)} />
     </StoryProvider>
   ))
   .add('chits', () => (
     <StoryProvider>
-      <PhaseItemChits count={number('chitCount', 3)} />
+      <PhaseItemChits editorCount={number('editorCount', 2)} count={number('chitCount', 3)} />
     </StoryProvider>
   ))
   .add('reflection stack', () => (
