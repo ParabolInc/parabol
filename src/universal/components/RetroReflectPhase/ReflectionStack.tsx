@@ -9,6 +9,7 @@ import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/R
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import ui from 'universal/styles/ui'
+import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
 interface Props {
   idx: number
@@ -84,6 +85,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
 })
 
 const ANIMATION_DURATION = 300
+const EASING = STANDARD_CURVE
 
 class ReflectionStack extends Component<Props, State> {
   state = {
@@ -105,28 +107,34 @@ class ReflectionStack extends Component<Props, State> {
       return null
     }
     const duration = ANIMATION_DURATION - (Date.now() - this.animationStart)
-    if (duration <= 0) return {duration: ANIMATION_DURATION}
+    if (duration <= 0) return {duration: ANIMATION_DURATION, easing: EASING}
     // an animation is already in progress!
     return {
       startCoords: this.firstReflectionRef.current.getBoundingClientRect(),
-      duration: duration - 16
+      duration,
+      easing: getDeCasteljau(1 - duration / ANIMATION_DURATION, EASING)
     }
   }
 
   componentDidUpdate(_prevProps, _prevState, snapshot) {
     if (this.firstReflectionRef.current && snapshot) {
       const first = snapshot.startCoords || getBBox(this.props.phaseEditorRef.current)
-      this.animateFromEditor(this.firstReflectionRef.current, first, snapshot.duration)
+      this.animateFromEditor(
+        this.firstReflectionRef.current,
+        first,
+        snapshot.duration,
+        snapshot.easing
+      )
     }
   }
 
-  animateFromEditor(firstReflectionDiv: HTMLDivElement, first, duration) {
+  animateFromEditor(firstReflectionDiv: HTMLDivElement, first, duration, easing) {
     const last = getBBox(firstReflectionDiv)
     if (!first || !last) return
     firstReflectionDiv.style.transform = getTransform(first, last)
     requestDoubleAnimationFrame(() => {
       this.animationStart = Date.now()
-      firstReflectionDiv.style.transition = `transform ${duration}ms ${STANDARD_CURVE}`
+      firstReflectionDiv.style.transition = `transform ${duration}ms ${easing}`
       firstReflectionDiv.style.transform = null
     })
   }

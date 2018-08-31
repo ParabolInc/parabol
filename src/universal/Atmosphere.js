@@ -138,6 +138,7 @@ export default class Atmosphere extends Environment {
   }
 
   handleFetch = async (operation, variables) => {
+    // await sleep(100)
     return this.transport.fetch({query: operation.text, variables})
   }
 
