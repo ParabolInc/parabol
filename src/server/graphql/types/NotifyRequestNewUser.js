@@ -28,7 +28,7 @@ const NotifyRequestNewUser = new GraphQLObjectType({
       description: 'The team name the inviteeEmail is being invited to'
     },
     inviter: {
-      type: new GraphQLNonNull(User),
+      type: User,
       description: 'The user that triggered the invitation',
       resolve: ({inviterUserId}, args, {dataLoader}) => {
         return dataLoader.get('users').load(inviterUserId)

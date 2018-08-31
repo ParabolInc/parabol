@@ -119,10 +119,9 @@ const RetroVotePhase = (props: Props) => {
   if (!newMeeting) return null
   const {facilitatorUserId, phases, viewerMeetingMember} = newMeeting
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
-  // https://github.com/relay-tools/relay-compiler-language-typescript/issues/66
-  const myVotesRemaining = viewerMeetingMember!.myVotesRemaining || 0
+  const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
-  const discussPhase = phases!.find((phase) => phase.phaseType === DISCUSS) as IDiscussPhase
+  const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS) as IDiscussPhase
   const discussStage = discussPhase.stages[0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
@@ -186,23 +185,25 @@ export default createFragmentContainer(
         meetingId: id
         facilitatorUserId
         ...PhaseItemColumn_meeting
-        ... on RetrospectiveMeeting {
-          teamVotesRemaining: votesRemaining
-          viewerMeetingMember {
-            myVotesRemaining: votesRemaining
-          }
-          ...PhaseItemMasonry_meeting
-          phases {
-            phaseType
-            ... on DiscussPhase {
-              stages {
-                ... on RetroDiscussStage {
-                  id
-                  isNavigableByFacilitator
-                }
+        phases {
+          phaseType
+          ... on DiscussPhase {
+            stages {
+              ... on RetroDiscussStage {
+                id
+                isNavigableByFacilitator
               }
             }
           }
+        }
+        viewerMeetingMember {
+          ... on RetrospectiveMeetingMember {
+            myVotesRemaining: votesRemaining
+          }
+        }
+        ... on RetrospectiveMeeting {
+          teamVotesRemaining: votesRemaining
+          ...PhaseItemMasonry_meeting
         }
       }
     }

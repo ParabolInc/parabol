@@ -110,7 +110,7 @@ const PendingApprovalRow = (props: Props) => {
               <RejectOrgApprovalModal
                 notificationId={notification.notificationId}
                 inviteeEmail={email}
-                inviterName={notification.inviter.inviterName}
+                inviterName={notification.inviter && notification.inviter.inviterName}
                 toggle={<UserRowFlatButton>{'Decline'}</UserRowFlatButton>}
               />
             </React.Fragment>

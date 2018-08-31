@@ -1387,7 +1387,7 @@ declare namespace GQL {
     /**
      * The user that triggered the invitation
      */
-    inviter: IUser
+    inviter: IUser | null
     team: ITeam | null
 
     /**
