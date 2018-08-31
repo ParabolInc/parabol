@@ -149,7 +149,7 @@ const UpgradeSqueeze = (props: Props) => {
           <InlineEstimatedCost activeUserCount={activeUserCount} />
           <ModalLink
             href={PRICING_LINK}
-            rel="noopener no2referrer"
+            rel="noopener noreferrer"
             target="_blank"
             title={pricingLinkCopy}
           >

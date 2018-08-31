@@ -11,27 +11,27 @@ import {DraggableTask_task} from '__generated__/DraggableTask_task.graphql'
 const importantTaskProps = ['content', 'status', 'assignee', 'sortOrder', 'integration']
 
 interface Props {
-  area: string,
-  connectDragSource: (reactEl: ReactElement<{}>) => ReactElement<{}>,
-  connectDragPreview: (reactEl: HTMLImageElement) => void,
-  connectDropTarget: (reactEl: ReactElement<{}>) => ReactElement<{}>,
-  getTaskById: (taskId: string) => DraggableTask_task,
-  insert: (task: DraggableTask_task, before: boolean) => void,
-  isDragging: boolean,
-  isPreview: boolean,
-  myUserId: string,
+  area: string
+  connectDragSource: (reactEl: ReactElement<{}>) => ReactElement<{}>
+  connectDragPreview: (reactEl: HTMLImageElement) => void
+  connectDropTarget: (reactEl: ReactElement<{}>) => ReactElement<{}>
+  getTaskById: (taskId: string) => DraggableTask_task
+  insert: (task: DraggableTask_task, before: boolean) => void
+  isDragging: boolean
+  isPreview: boolean
+  myUserId: string
   task: DraggableTask_task
 }
 
 class DraggableTask extends Component<Props> {
-  componentDidMount () {
+  componentDidMount() {
     const {connectDragPreview, isPreview} = this.props
     if (!isPreview) {
       connectDragPreview(getEmptyImage())
     }
   }
 
-  shouldComponentUpdate (nextProps) {
+  shouldComponentUpdate(nextProps) {
     const {isDragging} = nextProps
     for (let i = 0; i < importantTaskProps.length; i++) {
       const key = importantTaskProps[i]
@@ -42,7 +42,7 @@ class DraggableTask extends Component<Props> {
     return isDragging !== this.props.isDragging
   }
 
-  render () {
+  render() {
     const {area, connectDragSource, connectDropTarget, isDragging, myUserId, task} = this.props
     return connectDropTarget(
       connectDragSource(
@@ -58,10 +58,10 @@ class DraggableTask extends Component<Props> {
 }
 
 const taskDragSpec = {
-  beginDrag (props) {
+  beginDrag(props) {
     return {taskId: props.task.id}
   },
-  isDragging (props, monitor) {
+  isDragging(props, monitor) {
     return props.task.id === monitor.getItem().taskId
   }
 }
@@ -93,7 +93,10 @@ const handleTaskHover = (props: Props, monitor, component) => {
     return
   }
   // $FlowFixMe
-  const {top: dropTargetTop, height: dropTargetHeight} = (dropTargetDOMNode as HTMLElement).getBoundingClientRect()
+  const {
+    top: dropTargetTop,
+    height: dropTargetHeight
+  } = (dropTargetDOMNode as HTMLElement).getBoundingClientRect()
   const dropTargetMidpoint = dropTargetTop + dropTargetHeight / 2
   const before = mouseY < dropTargetMidpoint
 

@@ -97,8 +97,9 @@ class ReflectionStack extends Component<Props, State> {
       (!oldTop && !newTop) ||
       !this.firstReflectionRef.current ||
       !this.props.phaseEditorRef.current
-    )
+    ) {
       return
+    }
     if (!oldTop || !newTop || oldTop.id !== newTop.id) {
       this.animateFromEditor(this.firstReflectionRef.current, this.props.phaseEditorRef.current)
     }

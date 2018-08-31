@@ -5,12 +5,14 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup'
 import UpgradeModalLoadable from 'universal/components/UpgradeModalLoadable'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {DEFAULT_MENU_HEIGHT, DEFAULT_MENU_WIDTH} from 'universal/styles/ui'
 import {cacheConfig} from 'universal/utils/constants'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  closePortal: () => void,
+  closePortal: () => void
   orgId: string
 }
 

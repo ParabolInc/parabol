@@ -168,8 +168,9 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       !initialCursorCoords ||
       !initialComponentCoords ||
       (cursorCoords.x === 0 && cursorCoords.y === 0)
-    )
+    ) {
       return
+    }
     const xDiff = cursorCoords.x - initialCursorCoords.x
     const yDiff = cursorCoords.y - initialCursorCoords.y
     const nextCoords = {
