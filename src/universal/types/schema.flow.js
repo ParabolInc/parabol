@@ -86,7 +86,7 @@ export type User = {
   preferredName: ?string,
   /** the orgs and roles for this user on each */
   userOrgs: ?Array<UserOrg>,
-  archivedTasks: ?undefinedConnection,
+  archivedTasks: ?TaskConnection,
   archivedTasksCount: ?number,
   /** list of git hub repos available to the viewer */
   githubRepos: ?Array<GitHubIntegration>,
@@ -110,7 +110,7 @@ export type User = {
   organization: Organization,
   /** Get the list of all organizations a user belongs to */
   organizations: ?Array<Organization>,
-  tasks: undefinedConnection,
+  tasks: TaskConnection,
   /** A query for a team */
   team: Team,
   /** all the teams the user is on that the viewer can see. */
@@ -170,11 +170,11 @@ export type OrgUserRole = 'billingLeader'
 /**
   A connection to a list of items.
 */
-export type undefinedConnection = {
+export type TaskConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: Array<undefinedEdge>
+  edges: Array<TaskEdge>
 }
 
 /**
@@ -194,7 +194,7 @@ export type PageInfoDateCursor = {
 /**
   An edge in a connection.
 */
-export type undefinedEdge = {
+export type TaskEdge = {
   /** The item at the end of the edge */
   node: Task,
   cursor: ?any
@@ -327,7 +327,7 @@ export type Team = {
   /** The agenda items for the upcoming or current meeting */
   agendaItems: ?Array<AgendaItem>,
   /** All of the tasks for this team */
-  tasks: ?undefinedConnection,
+  tasks: ?TaskConnection,
   /** All the soft team members actively associated with the team */
   softTeamMembers: ?Array<SoftTeamMember>,
   /** All the team members actively associated with the team */
@@ -705,7 +705,7 @@ export type TeamMember = {
   /** The user for the team member */
   user: ?User,
   /** Tasks owned by the team member */
-  tasks: ?undefinedConnection
+  tasks: ?TaskConnection
 }
 
 export type Assignee = TeamMember | SoftTeamMember
@@ -727,7 +727,7 @@ export type SoftTeamMember = {
   /** True if this is still a soft team member, false if they were rejected or became a team member */
   isActive: ?boolean,
   /** Tasks owned by the team member */
-  tasks: ?undefinedConnection,
+  tasks: ?TaskConnection,
   /** The team this team member belongs to */
   team: ?Team
 }

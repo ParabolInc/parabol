@@ -1,4 +1,3 @@
-// @flow
 import React from 'react'
 import formError from 'universal/styles/helpers/formError'
 import {normalizeExpiry, normalizeNumeric} from './normalizers'
@@ -6,9 +5,10 @@ import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withAsync from 'react-async-hoc'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import raven from 'raven-js'
 import UpgradeToProMutation from 'universal/mutations/UpgradeToProMutation'
 import UpdateCreditCardMutation from 'universal/mutations/UpdateCreditCardMutation'
@@ -18,7 +18,7 @@ import {
   CCValidationErrors,
   stripeFieldLookup
 } from 'universal/utils/creditCardLookup'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
 import PrimaryButton from 'universal/components/PrimaryButton'
@@ -88,29 +88,47 @@ const UpdateButton = styled(PrimaryButton)({
   width: '100%'
 })
 
-type Errors = {|
-  number?: string,
-  expiry?: string,
+interface Errors {
+  creditCardNumber?: string
+  expiry?: string
   cvc?: string
-|}
+}
 
-type Props = {|
-  atmosphere: Object,
-  createToken: (Object) => Object,
-  isUpdate: boolean,
-  orgId: string,
-  onSuccess?: () => void,
-  stripeCard: Object,
-  ...MutationProps,
-  error: ?Errors
-|}
+interface CreateTokenInput {
+  number: number | string
+  exp_month: number | string
+  exp_year: number | string
+  cvc: number | string
+}
+interface CreateTokenRes {
+  error: {param: keyof CreateTokenInput}
+  id: string
+}
 
-type State = {|
-  cardTypeIcon: string,
-  creditCardNumber: ?string,
-  cvc: ?string,
-  expiry: ?string
-|}
+type CreateToken = (input: CreateTokenInput) => Promise<CreateTokenRes>
+
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  createToken: CreateToken
+  isUpdate: boolean
+  orgId: string
+  onSuccess?: () => void
+  stripeCard: any
+  error?: Errors
+}
+
+interface State {
+  cardTypeIcon: string
+  creditCardNumber?: string
+  cvc?: string
+  expiry?: string
+}
+
+declare global {
+  interface Window {
+    Stripe: any
+    __ACTION__: any
+  }
+}
 
 class UpgradeCreditCardForm extends React.Component<Props, State> {
   state = {
@@ -230,7 +248,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     if (error) {
       const fieldName = stripeFieldLookup[error.param]
       this.setError(fieldName)
-      raven.captureException(error)
+      raven.captureException(error.param)
     } else {
       this.sendStripeToken(stripeToken)
     }
@@ -251,24 +269,24 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     }
   }
 
-  render () {
+  render() {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
     return (
       <ModalBody>
-        <StyledIconAvatar icon={cardTypeIcon} size='large' />
+        <StyledIconAvatar icon={cardTypeIcon} size="large" />
         <Type
-          align='center'
-          colorPalette='dark'
-          lineHeight='1.875rem'
-          marginBottom='.25rem'
-          scale='s6'
+          align="center"
+          colorPalette="dark"
+          lineHeight="1.875rem"
+          marginBottom=".25rem"
+          scale="s6"
         >
           {actionLabel}
         </Type>
-        <Type align='center' colorPalette='dark' lineHeight={appTheme.typography.s5} scale='s3'>
-          <LockIcon name='lock' />
+        <Type align="center" colorPalette="dark" lineHeight={appTheme.typography.s5} scale="s3">
+          <LockIcon name="lock" />
           {' Secured by '}
           <b>{'Stripe'}</b>
         </Type>
@@ -277,44 +295,44 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
           <CardInputs>
             <CreditCardNumber>
               <UpgradeCreditCardFormField
-                autoComplete='cc-number'
+                autoComplete="cc-number"
                 autoFocus
                 hasError={Boolean(error && error.creditCardNumber)}
-                iconName='credit-card'
-                maxLength='20'
+                iconName="credit-card"
+                maxLength="20"
                 onChange={this.handleNumberChange}
-                placeholder='Card number'
+                placeholder="Card number"
                 value={creditCardNumber}
               />
             </CreditCardNumber>
             <CardDetails>
               <CardExpiry>
                 <UpgradeCreditCardFormField
-                  autoComplete='cc-exp'
+                  autoComplete="cc-exp"
                   hasError={Boolean(error && error.expiry)}
-                  iconName='calendar'
-                  maxLength='5'
+                  iconName="calendar"
+                  maxLength="5"
                   onChange={this.handleExpiryChange}
-                  placeholder='MM/YY'
+                  placeholder="MM/YY"
                   value={expiry}
                 />
               </CardExpiry>
               <CardCvc>
                 <UpgradeCreditCardFormField
-                  autoComplete='cc-csc'
+                  autoComplete="cc-csc"
                   hasError={Boolean(error && error.cvc)}
-                  iconName='lock'
-                  maxLength='4'
-                  name='cvc'
+                  iconName="lock"
+                  maxLength="4"
+                  name="cvc"
                   onChange={this.handleCVCChange}
-                  placeholder='CVC'
+                  placeholder="CVC"
                   value={cvc}
                 />
               </CardCvc>
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButton size='medium' depth={1} onClick={this.handleSubmit} waiting={submitting}>
+            <UpdateButton size="medium" depth={1} onClick={this.handleSubmit} waiting={submitting}>
               {actionLabel}
             </UpdateButton>
           </ButtonGroup>
@@ -330,7 +348,7 @@ const stripeCb = () => {
   return {
     createToken: (fields) =>
       new Promise((resolve) => {
-        stripe.card.createToken(fields, (status, response) => {
+        stripe.card.createToken(fields, (_status, response) => {
           resolve(response)
         })
       }),
@@ -338,6 +356,6 @@ const stripeCb = () => {
   }
 }
 
-export default withAtmosphere(
-  withAsync({'https://js.stripe.com/v2/': stripeCb})(withMutationProps(UpgradeCreditCardForm))
+export default withAsync({'https://js.stripe.com/v2/': stripeCb})(
+  withAtmosphere(withMutationProps(UpgradeCreditCardForm))
 )

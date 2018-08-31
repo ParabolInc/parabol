@@ -1,6 +1,5 @@
-// @flow
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
@@ -14,16 +13,16 @@ import PromoteTeamMemberModal from 'universal/modules/teamDashboard/components/P
 import RemoveTeamMemberModal from 'universal/modules/teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
 import UserRowFlatButton from 'universal/modules/teamDashboard/components/TeamSettings/UserRowFlatButton'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import type {TeamMemberRow_teamMember as TeamMember} from '__generated__/TeamMemberRow_teamMember.graphql'
-import type {TeamMemberRow_teamLead as TeamLead} from '__generated__/TeamMemberRow_teamLead.graphql'
+import {TeamMemberRow_teamMember} from '__generated__/TeamMemberRow_teamMember.graphql'
+import {TeamMemberRow_teamLead} from '__generated__/TeamMemberRow_teamLead.graphql'
 import UserRowActionsBlock from 'universal/components/UserRowActionsBlock'
 
-type Props = {|
-  isSelf: boolean,
-  isViewerLead: boolean,
-  teamLead: TeamLead,
-  teamMember: TeamMember
-|}
+interface Props {
+  isSelf: boolean
+  isViewerLead: boolean
+  teamLead: TeamMemberRow_teamLead
+  teamMember: TeamMemberRow_teamMember
+}
 
 const TeamMemberRow = (props: Props) => {
   const {teamLead, teamMember, isSelf, isViewerLead} = props
@@ -32,17 +31,17 @@ const TeamMemberRow = (props: Props) => {
     <Row>
       <div>
         {picture ? (
-          <Avatar hasBadge={false} picture={picture} size='small' />
+          <Avatar hasBadge={false} picture={picture} size="small" />
         ) : (
-          <img alt='' src={defaultUserAvatar} />
+          <img alt="" src={defaultUserAvatar} />
         )}
       </div>
       <RowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
-          {isLead && <Tag colorPalette='blue' label='Team Lead' />}
+          {isLead && <Tag colorPalette="blue" label="Team Lead" />}
         </RowInfoHeader>
-        <RowInfoLink href={`mailto:${email}`} title='Send an email'>
+        <RowInfoLink href={`mailto:${email}`} title="Send an email">
           {email}
         </RowInfoLink>
       </RowInfo>

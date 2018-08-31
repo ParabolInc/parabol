@@ -118,6 +118,7 @@ const Task = new GraphQLObjectType({
 })
 
 const {connectionType, edgeType} = connectionDefinitions({
+  name: Task.name,
   nodeType: new GraphQLNonNull(Task),
   edgeFields: () => ({
     cursor: {

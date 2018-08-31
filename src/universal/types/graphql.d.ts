@@ -227,7 +227,7 @@ declare namespace GQL {
      * the orgs and roles for this user on each
      */
     userOrgs: Array<IUserOrg> | null
-    archivedTasks: IUndefinedConnection | null
+    archivedTasks: ITaskConnection | null
     archivedTasksCount: number | null
 
     /**
@@ -281,7 +281,7 @@ declare namespace GQL {
      * Get the list of all organizations a user belongs to
      */
     organizations: Array<IOrganization> | null
-    tasks: IUndefinedConnection
+    tasks: ITaskConnection
 
     /**
      * A query for a team
@@ -531,8 +531,8 @@ declare namespace GQL {
   /**
    * A connection to a list of items.
    */
-  interface IUndefinedConnection {
-    __typename: 'undefinedConnection'
+  interface ITaskConnection {
+    __typename: 'TaskConnection'
 
     /**
      * Page info with cursors coerced to ISO8601 dates
@@ -542,7 +542,7 @@ declare namespace GQL {
     /**
      * A list of edges.
      */
-    edges: Array<IUndefinedEdge>
+    edges: Array<ITaskEdge>
   }
 
   /**
@@ -575,8 +575,8 @@ declare namespace GQL {
   /**
    * An edge in a connection.
    */
-  interface IUndefinedEdge {
-    __typename: 'undefinedEdge'
+  interface ITaskEdge {
+    __typename: 'TaskEdge'
 
     /**
      * The item at the end of the edge
@@ -864,7 +864,7 @@ declare namespace GQL {
     /**
      * All of the tasks for this team
      */
-    tasks: IUndefinedConnection | null
+    tasks: ITaskConnection | null
 
     /**
      * All the soft team members actively associated with the team
@@ -1858,7 +1858,7 @@ declare namespace GQL {
     /**
      * Tasks owned by the team member
      */
-    tasks: IUndefinedConnection | null
+    tasks: ITaskConnection | null
   }
 
   interface IMeetingMemberOnTeamMemberArguments {
@@ -1933,7 +1933,7 @@ declare namespace GQL {
     /**
      * Tasks owned by the team member
      */
-    tasks: IUndefinedConnection | null
+    tasks: ITaskConnection | null
 
     /**
      * The team this team member belongs to

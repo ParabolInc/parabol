@@ -1,28 +1,21 @@
-// @flow
-import type {Node} from 'react'
-
-import React from 'react'
 import {DropTarget} from '@mattkrick/react-dnd'
+import React, {ReactElement} from 'react'
 
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import {TASK} from 'universal/utils/constants'
-import type {Task, TaskStatusEnum} from 'universal/types/schema.flow'
+import ITask = GQL.ITask
+import IUpdateTaskInput = GQL.IUpdateTaskInput
+import TaskStatusEnum = GQL.TaskStatusEnum
 
-type Props = {
-  connectDropTarget: (node: Node) => Node,
-  area: string,
-  atmosphere: Object, // TODO: atmosphere needs a type definition
-  getTaskById: (string) => Task,
-  lastTask: ?Task, // the last task in a column; may be undefined if the column is empty
+interface Props {
+  connectDropTarget: (reactEl: ReactElement<HTMLDivElement>) => ReactElement<HTMLDivElement>
+  area: string
+  atmosphere: Object // TODO: atmosphere needs a type definition
+  getTaskById: (taskId: string) => ITask
+  lastTask?: ITask // the last task in a column; may be undefined if the column is empty
   status: TaskStatusEnum
-}
-
-type UpdateTaskMutationArgs = {
-  id: string,
-  sortOrder: number,
-  status?: TaskStatusEnum
 }
 
 // Represents the trailing space at the end of a column.  Acts as a drop target
@@ -45,10 +38,10 @@ const spec = {
 
     const sortOrder = sortOrderBetween(lastTask, null, draggedTask, false)
 
-    const updatedTask: UpdateTaskMutationArgs = {
+    const updatedTask = {
       id: draggedTask.id,
       sortOrder
-    }
+    } as IUpdateTaskInput
     if (draggedTask.status !== status) {
       updatedTask.status = status
     }
@@ -60,4 +53,5 @@ const collect = (connect) => ({
   connectDropTarget: connect.dropTarget()
 })
 
-export default withAtmosphere(DropTarget(TASK, spec, collect)(TaskColumnDropZone))
+const DND = DropTarget(TASK, spec, collect) as any
+export default withAtmosphere(DND(TaskColumnDropZone))

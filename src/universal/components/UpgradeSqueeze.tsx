@@ -4,14 +4,14 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import InlineEstimatedCost from 'universal/components/InlineEstimatedCost'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import UpgradeBenefits from 'universal/components/UpgradeBenefits'
-import UpgradeCreditCardForm from 'universal/modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
 import ui from 'universal/styles/ui'
 import {BILLING_LEADER_LABEL, PRO_LABEL} from 'universal/utils/constants'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import {UpgradeSqueeze_organization} from '__generated__/UpgradeSqueeze_organization.graphql'
+import UpgradeCreditCardForm from 'universal/modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
 
 interface Props {
-  onSuccess: () => void,
+  onSuccess: () => void
   organization: UpgradeSqueeze_organization
 }
 
@@ -149,8 +149,8 @@ const UpgradeSqueeze = (props: Props) => {
           <InlineEstimatedCost activeUserCount={activeUserCount} />
           <ModalLink
             href={PRICING_LINK}
-            rel='noopener no2referrer'
-            target='_blank'
+            rel="noopener no2referrer"
+            target="_blank"
             title={pricingLinkCopy}
           >
             <StyledIcon name={ui.iconExternalLink} />

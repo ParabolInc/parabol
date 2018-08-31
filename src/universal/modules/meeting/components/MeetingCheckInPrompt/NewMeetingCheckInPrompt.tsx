@@ -8,8 +8,6 @@ import NewCheckInQuestion from 'universal/modules/meeting/components/MeetingChec
 import NewMeetingCheckInGreeting from 'universal/modules/meeting/components/NewMeetingCheckInGreeting'
 import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import {ClientNewMeeting} from 'universal/types/clientSchema'
-import ICheckInPhase = GQL.ICheckInPhase
 
 const PromptBlock = styled('div')({
   alignItems: 'center',
@@ -40,9 +38,10 @@ interface Props {
 
 const NewMeetingCheckinPrompt = (props: Props) => {
   const {team, teamMember} = props
+  const {newMeeting} = team
+  if (!newMeeting) return null
   const {picture} = teamMember
-  const newMeeting = team.newMeeting as ClientNewMeeting
-  const {checkInGreeting} = newMeeting.localPhase as ICheckInPhase
+  const checkInGreeting = newMeeting.localPhase.checkInGreeting!
   return (
     <PromptBlock>
       <AvatarBlock>

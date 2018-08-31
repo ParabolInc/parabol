@@ -1,13 +1,11 @@
-// @flow
-import React from 'react'
-import appTheme from 'universal/styles/theme/appTheme'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import Avatar from 'universal/components/Avatar/Avatar'
+import {NewMeetingPrompt_teamMember} from '__generated__/NewMeetingPrompt_teamMember.graphql'
+import React, {ReactElement} from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer} from 'react-relay'
-
-import type {NewMeetingPrompt_teamMember as TeamMember} from '__generated__/NewMeetingPrompt_teamMember.graphql'
+import {createFragmentContainer, graphql} from 'react-relay'
+import Avatar from 'universal/components/Avatar/Avatar'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import appTheme from 'universal/styles/theme/appTheme'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 
 const promptBreakpoint = minWidthMediaQueries[4]
 const MeetingPromptRoot = styled('div')({
@@ -69,12 +67,12 @@ const HelpText = styled('div')({
   }
 })
 
-type Props = {
-  avatarLarge: boolean,
-  heading: any,
-  helpText: any,
-  subHeading: any,
-  teamMember: TeamMember
+interface Props {
+  avatarLarge: boolean
+  heading: ReactElement<any>
+  helpText: ReactElement<any>
+  subHeading: ReactElement<any>
+  teamMember: NewMeetingPrompt_teamMember
 }
 
 const NewMeetingPrompt = (props: Props) => {
@@ -102,7 +100,7 @@ const NewMeetingPrompt = (props: Props) => {
   return (
     <MeetingPromptRoot>
       <AvatarBlock>
-        <Avatar picture={picture || defaultUserAvatar} size='fill' />
+        <Avatar picture={picture || defaultUserAvatar} size="fill" />
       </AvatarBlock>
       <Body>
         <Heading>{heading}</Heading>

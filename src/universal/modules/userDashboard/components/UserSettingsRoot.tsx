@@ -1,16 +1,17 @@
-// @flow
 import React from 'react'
-import type {Location, Match, RouterHistory} from 'react-router-dom'
-import {withRouter} from 'react-router-dom'
+import {graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import {Dispatch} from 'redux'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import LoadingView from 'universal/components/LoadingView/LoadingView'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UserSettingsContainer from 'universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer'
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import {cacheConfig} from 'universal/utils/constants'
-import type {Dispatch} from 'react-redux'
 import {connect} from 'react-redux'
 
 const query = graphql`
@@ -23,12 +24,9 @@ const query = graphql`
 
 const subscriptions = [NotificationSubscription]
 
-type Props = {
-  atmosphere: Object,
-  dispatch: Dispatch<*>,
-  history: RouterHistory,
-  location: Location,
-  match: Match
+interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string}> {
+  atmosphere: Object
+  dispatch: Dispatch<any>
 }
 
 const UserSettingsRoot = (props: Props) => {
@@ -53,7 +51,7 @@ const UserSettingsRoot = (props: Props) => {
         <RelayTransitionGroup
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
-          loading={<LoadingView minHeight='50vh' />}
+          loading={<LoadingView minHeight="50vh" />}
           ready={<UserSettingsContainer />}
         />
       )}
@@ -61,4 +59,4 @@ const UserSettingsRoot = (props: Props) => {
   )
 }
 
-export default connect()(withRouter(withAtmosphere(UserSettingsRoot)))
+export default (connect() as any)(withRouter(withAtmosphere(UserSettingsRoot)))

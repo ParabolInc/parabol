@@ -1,18 +1,16 @@
-// @flow
-import PropTypes from 'prop-types'
+import {NewMeetingSummary_viewer} from '__generated__/NewMeetingSummary_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
 import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
+import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
 import ui from 'universal/styles/ui'
+import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
-import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
-import type {NewMeetingSummary_viewer as Viewer} from '__generated__/NewMeetingSummary_viewer.graphql'
-import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 
-type Props = {|
-  viewer: Viewer
-|}
+interface Props {
+  viewer: NewMeetingSummary_viewer
+}
 
 const NewMeetingSummary = (props: Props) => {
   const {
@@ -32,16 +30,12 @@ const NewMeetingSummary = (props: Props) => {
       <Helmet title={title} />
       <NewMeetingSummaryEmail
         meeting={newMeeting}
-        referrer='meeting'
+        referrer="meeting"
         meetingUrl={meetingUrl}
         teamDashUrl={teamDashUrl}
       />
     </div>
   )
-}
-
-NewMeetingSummary.propTypes = {
-  viewer: PropTypes.object.isRequired
 }
 
 // Grab everything we need here since SummaryEmail is shared by the server
