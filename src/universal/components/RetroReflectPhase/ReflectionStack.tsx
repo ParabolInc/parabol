@@ -83,35 +83,51 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
   }
 })
 
+const ANIMATION_DURATION = 300
+
 class ReflectionStack extends Component<Props, State> {
   state = {
     isExpanded: false
   }
+
+  animationStart: number = 0
   stackRef = React.createRef<HTMLDivElement>()
   firstReflectionRef = React.createRef<HTMLDivElement>()
 
-  componentDidUpdate(prevProps) {
+  getSnapshotBeforeUpdate(prevProps: Props) {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
     if (
-      (!oldTop && !newTop) ||
       !this.firstReflectionRef.current ||
-      !this.props.phaseEditorRef.current
-    )
-      return
-    if (!oldTop || !newTop || oldTop.id !== newTop.id) {
-      this.animateFromEditor(this.firstReflectionRef.current, this.props.phaseEditorRef.current)
+      !this.props.phaseEditorRef.current ||
+      (oldTop && oldTop.id) === (newTop && newTop.id)
+    ) {
+      return null
+    }
+    const duration = ANIMATION_DURATION - (Date.now() - this.animationStart)
+    if (duration <= 0) return {duration: ANIMATION_DURATION}
+    // an animation is already in progress!
+    return {
+      startCoords: this.firstReflectionRef.current.getBoundingClientRect(),
+      duration: duration - 16
     }
   }
 
-  animateFromEditor(topCardDiv: HTMLDivElement, editorDiv: HTMLDivElement) {
-    const first = getBBox(editorDiv)
-    const last = getBBox(topCardDiv)
+  componentDidUpdate(_prevProps, _prevState, snapshot) {
+    if (this.firstReflectionRef.current && snapshot) {
+      const first = snapshot.startCoords || getBBox(this.props.phaseEditorRef.current)
+      this.animateFromEditor(this.firstReflectionRef.current, first, snapshot.duration)
+    }
+  }
+
+  animateFromEditor(firstReflectionDiv: HTMLDivElement, first, duration) {
+    const last = getBBox(firstReflectionDiv)
     if (!first || !last) return
-    topCardDiv.style.transform = getTransform(first, last)
+    firstReflectionDiv.style.transform = getTransform(first, last)
     requestDoubleAnimationFrame(() => {
-      topCardDiv.style.transition = `transform 300ms ${STANDARD_CURVE}`
-      topCardDiv.style.transform = null
+      this.animationStart = Date.now()
+      firstReflectionDiv.style.transition = `transform ${duration}ms ${STANDARD_CURVE}`
+      firstReflectionDiv.style.transform = null
     })
   }
 

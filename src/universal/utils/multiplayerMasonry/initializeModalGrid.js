@@ -28,7 +28,6 @@ const makeResetHandler = (reflections, itemCache, modalRef, resetBodyStyles) => 
     resetQueue.forEach((cb) => cb())
     if (modalRef) {
       modalRef.style.overflowY = 'auto'
-      modalRef.removeEventListener('transitionend', resetStyles)
     }
   }
   return resetStyles
@@ -145,7 +144,7 @@ const initializeModalGrid = (
       animateItemQueue.forEach((cb) => cb())
 
       // reset
-      modalRef.addEventListener('transitionend', resetStyles)
+      modalRef.addEventListener('transitionend', resetStyles, {passive: true, once: true})
     })
   })
 }
