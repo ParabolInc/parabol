@@ -2,7 +2,6 @@ import {ReflectionCardInFlight_reflection} from '__generated__/ReflectionCardInF
 import {convertFromRaw, EditorState} from 'draft-js'
 import React from 'react'
 import styled from 'react-emotion'
-// @ts-ignore
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
@@ -136,12 +135,12 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       reflection: {meetingId, reflectionId}
     } = this.props
     const {cardsInFlight, columnLefts} = parentCache
-    // @ts-ignore
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
       safeRemoveNodeFromArray(reflectionId, meeting, 'reflectionsInFlight')
       const reflection = store.get(reflectionId)
+      if (!reflection) return
       const dragContext = reflection.getLinkedRecord('dragContext')
       if (!dragContext) return
       // critically important! relay will try to reuse this for other reflections

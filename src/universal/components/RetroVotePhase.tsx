@@ -1,42 +1,46 @@
-// @flow
-import * as React from 'react'
+import {RetroVotePhase_team} from '__generated__/RetroVotePhase_team.graphql'
+import React from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
-import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
-import {DISCUSS} from 'universal/utils/constants'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
+import {createFragmentContainer, graphql} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
+import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
+import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
+import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
+import ScrollableBlock from 'universal/components/ScrollableBlock'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import ui from 'universal/styles/ui'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingVoteIcon} from 'universal/styles/meeting'
 import {fontFamily, typeScale} from 'universal/styles/theme/typography'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
-import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
+import ui from 'universal/styles/ui'
+import {DISCUSS} from 'universal/utils/constants'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import IDiscussPhase = GQL.IDiscussPhase
 
-type Props = {|
-  atmosphere: Object,
-  gotoNext: () => void,
-  // flow or relay-compiler is getting really confused here, so I don't use the flow type here
-  team: Object
-|}
+interface Props extends WithAtmosphereProps {
+  gotoNext: () => void
+  team: RetroVotePhase_team
+}
 
 const votePhaseBreakpoint = minWidthMediaQueries[1]
 
-const ControlBarInner = styled('div')(({isFacilitating}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flexWrap: 0,
-  justifyContent: isFacilitating ? 'space-between' : 'center',
-  width: '100%',
-  [votePhaseBreakpoint]: {
-    justifyContent: 'center'
-  }
-}))
+const ControlBarInner = styled('div')(
+  ({isFacilitating}: {isFacilitating: boolean | null | undefined}) => ({
+    alignItems: 'center',
+    display: 'flex',
+    // ts tells me 0 isn't valid
+    // flexWrap: 0,
+    justifyContent: isFacilitating ? 'space-between' : 'center',
+    width: '100%',
+    [votePhaseBreakpoint]: {
+      justifyContent: 'center'
+    }
+  })
+)
 
 const VoteMeta = styled('div')({
   [votePhaseBreakpoint]: {
@@ -67,7 +71,7 @@ const Label = styled('div')({
   }
 })
 
-const CheckIcon = styled(StyledFontAwesome)(({isDark}) => ({
+const CheckIcon = styled(StyledFontAwesome)(({isDark}: {isDark: boolean | undefined | null}) => ({
   color: ui.palette.warm,
   display: 'block',
   height: ui.iconSize,
@@ -112,10 +116,13 @@ const RetroVotePhase = (props: Props) => {
     meetingSettings: {totalVotes = 0},
     newMeeting
   } = team
-  const {facilitatorUserId, phases, teamVotesRemaining = 0, viewerMeetingMember} = newMeeting || {}
-  const {myVotesRemaining = 0} = viewerMeetingMember || {}
+  if (!newMeeting) return null
+  const {facilitatorUserId, phases, viewerMeetingMember} = newMeeting
+  const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
+  // https://github.com/relay-tools/relay-compiler-language-typescript/issues/66
+  const myVotesRemaining = viewerMeetingMember!.myVotesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
-  const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
+  const discussPhase = phases!.find((phase) => phase.phaseType === DISCUSS) as IDiscussPhase
   const discussStage = discussPhase.stages[0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
@@ -145,14 +152,14 @@ const RetroVotePhase = (props: Props) => {
           </VoteMeta>
           {isFacilitating && (
             <FlatButton
-              size='medium'
+              size="medium"
               disabled={!discussStage.isNavigableByFacilitator}
               onClick={gotoNext}
             >
               <IconLabel
-                icon='arrow-circle-right'
+                icon="arrow-circle-right"
                 iconAfter
-                iconColor='warm'
+                iconColor="warm"
                 iconLarge
                 label={`Done! Let’s ${nextPhaseLabel}`}
               />

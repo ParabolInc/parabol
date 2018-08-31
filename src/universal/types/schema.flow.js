@@ -322,8 +322,8 @@ export type Team = {
   /** The level of access to features on the parabol site */
   tier: ?TierEnum,
   /** The outstanding invitations to join the team */
-  orgApprovals: ?Array<OrgApproval>,
-  organization: ?Organization,
+  orgApprovals: Array<OrgApproval>,
+  organization: Organization,
   /** The agenda items for the upcoming or current meeting */
   agendaItems: ?Array<AgendaItem>,
   /** All of the tasks for this team */
@@ -476,7 +476,7 @@ export type NotifyRequestNewUser = {
   /** The team name the inviteeEmail is being invited to */
   teamName: string,
   /** The user that triggered the invitation */
-  inviter: ?User,
+  inviter: User,
   team: ?Team,
   /** A shortid for the notification */
   id: ?string,
@@ -1583,7 +1583,7 @@ export type RetroReflection = {
   /** The entities (i.e. nouns) parsed from the content and their respective salience */
   entities: Array<GoogleAnalyzedEntity>,
   /** The foreign key to link a reflection to its meeting */
-  meetingId: ?string,
+  meetingId: string,
   /** The retrospective meeting this reflection was created in */
   meeting: ?RetrospectiveMeeting,
   phaseItem: RetroPhaseItem,

@@ -1,8 +1,6 @@
-// @flow
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
@@ -11,7 +9,9 @@ import RowInfoHeader from 'universal/components/Row/RowInfoHeader'
 import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
 import UserRowActionsBlock from 'universal/components/UserRowActionsBlock'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RejectOrgApprovalModal from 'universal/modules/notifications/components/RejectOrgApprovalModal/RejectOrgApprovalModal'
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation'
 import CancelApprovalMutation from 'universal/mutations/CancelApprovalMutation'
@@ -19,15 +19,15 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import appTheme from 'universal/styles/theme/theme'
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants'
 import fromNow from 'universal/utils/fromNow'
-import type {PendingApprovalRow_orgApproval as OrgApproval} from '__generated__/PendingApprovalRow_orgApproval.graphql'
+import {PendingApprovalRow_orgApproval} from '__generated__/PendingApprovalRow_orgApproval.graphql'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import UserRowFlatButton from 'universal/modules/teamDashboard/components/TeamSettings/UserRowFlatButton'
+import {PendingApprovalRow_team} from '__generated__/PendingApprovalRow_team.graphql'
 
-type Props = {|
-  atmosphere: Object,
-  orgApproval: OrgApproval,
-  ...MutationProps
-|}
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  orgApproval: PendingApprovalRow_orgApproval
+  team: PendingApprovalRow_team
+}
 
 const originAnchor = {
   vertical: 'top',
@@ -42,6 +42,7 @@ const targetAnchor = {
 const PendingApprovalRow = (props: Props) => {
   const {atmosphere, onError, onCompleted, submitMutation, orgApproval, submitting, team} = props
   const {orgApprovalId, email, createdAt, notification} = orgApproval
+  if (!notification) return null
   const {
     organization: {orgId, orgName, isBillingLeader, billingLeaders, tier}
   } = team
@@ -60,7 +61,7 @@ const PendingApprovalRow = (props: Props) => {
   return (
     <Row backgroundColor={appTheme.palette.yellow30l}>
       <div>
-        <img alt='' src={defaultUserAvatar} />
+        <img alt="" src={defaultUserAvatar} />
       </div>
       <RowInfo>
         <RowInfoHeader>

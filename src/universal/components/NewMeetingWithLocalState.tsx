@@ -1,18 +1,17 @@
-// @flow
 import React, {Component} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import NewMeeting from 'universal/components/NewMeeting'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import findKeyByValue from 'universal/utils/findKeyByValue'
 import findStageById from 'universal/utils/meetings/findStageById'
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
-import {withLocationMeetingState_viewer as Viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
-
-import type {Match, RouterHistory} from 'react-router-dom'
-import type {MeetingTypeEnum} from 'universal/types/schema.flow'
+import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
+import MeetingTypeEnum = GQL.MeetingTypeEnum
 
 /*
  * Creates a 2-way sync between the URL and the local state
@@ -27,12 +26,11 @@ import type {MeetingTypeEnum} from 'universal/types/schema.flow'
  * tl;dr it gives the client a pretty URL for free and the dev doesn't have to muck around with history.push
  */
 
-type Props = {
-  atmosphere: Object,
-  history: RouterHistory,
-  match: Match,
-  meetingType: MeetingTypeEnum,
-  viewer: Viewer
+interface Props
+  extends WithAtmosphereProps,
+    RouteComponentProps<{teamId: string; localPhaseSlug: string; stageIdxSlug?: number}> {
+  meetingType: MeetingTypeEnum
+  viewer: NewMeetingWithLocalState_viewer
 }
 
 type State = {
@@ -41,7 +39,7 @@ type State = {
 }
 
 class NewMeetingWithLocalState extends Component<Props, State> {
-  constructor (props) {
+  constructor(props) {
     super(props)
     const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
@@ -49,7 +47,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       viewer: {
         team: {newMeeting}
@@ -85,7 +83,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  updateRelayFromURL (params) {
+  updateRelayFromURL(params) {
     /*
      * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
      * the additional logic here has 2 benefits:
@@ -119,7 +117,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
 
     // i'm trying to go to the middle of a meeting that hasn't started
-    if (!newMeeting && teamId) {
+    if (!newMeeting) {
       history.push(`/${meetingSlug}/${teamId}`)
       return false
     }
@@ -167,7 +165,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     return true
   }
 
-  render () {
+  render() {
     return this.state.safeRoute ? <NewMeeting {...this.props} /> : null
   }
 }

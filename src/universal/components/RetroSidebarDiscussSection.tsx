@@ -1,53 +1,55 @@
-// @flow
+import {RetroSidebarDiscussSection_viewer} from '__generated__/RetroSidebarDiscussSection_viewer.graphql'
 import React from 'react'
+import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
 import styled from 'react-emotion'
-import type {RetroSidebarDiscussSection_viewer as Viewer} from '__generated__/RetroSidebarDiscussSection_viewer.graphql'
-import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import ui from 'universal/styles/ui'
-import {navItemRaised} from 'universal/styles/elevation'
-import {meetingVoteIcon} from 'universal/styles/meeting'
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
+import {navItemRaised} from 'universal/styles/elevation'
+import {meetingVoteIcon} from 'universal/styles/meeting'
+import ui from 'universal/styles/ui'
 import {
+  DISCUSSION_TOPIC,
   RETRO_TOPIC_LABEL,
   RETRO_VOTED_LABEL,
-  DISCUSSION_TOPIC,
   SORT_STEP
 } from 'universal/utils/constants'
-import plural from 'universal/utils/plural'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 import dndNoise from 'universal/utils/dndNoise'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import DragDiscussionTopicMutation from 'universal/mutations/DragDiscussionTopicMutation'
 import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
+import plural from 'universal/utils/plural'
 
-type Props = {|
-  atmosphere: Object,
-  gotoStageId: (stageId: string) => void,
-  viewer: Viewer
-|}
+interface Props extends WithAtmosphereProps {
+  gotoStageId: (stageId: string) => void
+  viewer: RetroSidebarDiscussSection_viewer
+}
 
 const SidebarPhaseItemChild = styled('div')({
   display: 'flex',
   flexDirection: 'column'
 })
 
-const VoteTally = styled('div')(({isUnsyncedFacilitatorStage}) => ({
-  color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
-  fontSize: ui.iconSize,
-  fontWeight: 600,
-  lineHeight: ui.navTopicLineHeight,
-  marginRight: '0.5rem'
-}))
+const VoteTally = styled('div')(
+  ({isUnsyncedFacilitatorStage}: {isUnsyncedFacilitatorStage: boolean | null}) => ({
+    color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
+    fontSize: ui.iconSize,
+    fontWeight: 600,
+    lineHeight: ui.navTopicLineHeight,
+    marginRight: '0.5rem'
+  })
+)
 
 const VoteIcon = styled(StyledFontAwesome)({
   color: 'inherit',
   marginRight: '.125rem'
 })
 
-const DraggableMeetingSubnavItem = styled('div')(({isDragging}) => ({
+const DraggableMeetingSubnavItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
   boxShadow: isDragging && navItemRaised
 }))
 
@@ -59,7 +61,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
       team: {newMeeting}
     }
   } = props
-  const {localPhase, localStage, facilitatorStageId, meetingId} = newMeeting || {}
+  if (!newMeeting) return null
+  const {localPhase, localStage, facilitatorStageId, meetingId} = newMeeting
   if (!localPhase || !localPhase.stages || !localStage) return null
   const {stages} = localPhase
   const {localStageId} = localStage
@@ -102,7 +105,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
       }
     } = props
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
+      const team = store.get(teamId)
+      if (!team) return
+      team.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
   }
 
@@ -119,7 +124,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
           </LabelHeading>
         </MeetingSidebarLabelBlock>
         <Droppable droppableId={DISCUSSION_TOPIC}>
-          {(provided, snapshot) => {
+          {(provided) => {
             return (
               <div ref={provided.innerRef}>
                 {stages.map((stage, idx) => {

@@ -3,7 +3,6 @@ import {ReflectionGroup_meeting} from '__generated__/ReflectionGroup_meeting.gra
 import {ReflectionGroup_reflectionGroup} from '__generated__/ReflectionGroup_reflectionGroup.graphql'
 import React, {Component, ReactElement} from 'react'
 import styled, {css} from 'react-emotion'
-// @ts-ignore
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
 import Modal from 'universal/components/Modal'
@@ -191,9 +190,10 @@ class ReflectionGroup extends Component<Props> {
       childCache.modalBoundingBox = undefined
       if (!childCache.el) return
       childCache.el.style.opacity = ''
-      // @ts-ignore
       commitLocalUpdate(atmosphere, (store) => {
-        store.get(reflectionGroupId).setValue(false, 'isExpanded')
+        const reflection = store.get(reflectionGroupId)
+        if (!reflection) return
+        reflection.setValue(false, 'isExpanded')
       })
       reflections.forEach((reflection) => {
         itemCache[reflection.id].modalEl = undefined
@@ -236,9 +236,10 @@ class ReflectionGroup extends Component<Props> {
       reflectionGroup: {isExpanded, reflectionGroupId}
     } = this.props
     if (!isExpanded) {
-      // @ts-ignore
       commitLocalUpdate(atmosphere, (store) => {
-        store.get(reflectionGroupId).setValue(true, 'isExpanded')
+        const reflectionGroup = store.get(reflectionGroupId)
+        if (!reflectionGroup) return
+        reflectionGroup.setValue(true, 'isExpanded')
       })
     }
   }

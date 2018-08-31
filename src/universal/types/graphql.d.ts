@@ -853,8 +853,8 @@ declare namespace GQL {
     /**
      * The outstanding invitations to join the team
      */
-    orgApprovals: Array<IOrgApproval> | null
-    organization: IOrganization | null
+    orgApprovals: Array<IOrgApproval>
+    organization: IOrganization
 
     /**
      * The agenda items for the upcoming or current meeting
@@ -1387,7 +1387,7 @@ declare namespace GQL {
     /**
      * The user that triggered the invitation
      */
-    inviter: IUser | null
+    inviter: IUser
     team: ITeam | null
 
     /**
@@ -4484,7 +4484,7 @@ declare namespace GQL {
     /**
      * The foreign key to link a reflection to its meeting
      */
-    meetingId: string | null
+    meetingId: string
 
     /**
      * The retrospective meeting this reflection was created in

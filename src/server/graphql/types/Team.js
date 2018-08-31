@@ -161,7 +161,7 @@ const Team = new GraphQLObjectType({
       description: 'The level of access to features on the parabol site'
     },
     orgApprovals: {
-      type: new GraphQLList(OrgApproval),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrgApproval))),
       description: 'The outstanding invitations to join the team',
       resolve: ({id: teamId}) => {
         const r = getRethink()
@@ -174,7 +174,7 @@ const Team = new GraphQLObjectType({
       }
     },
     organization: {
-      type: Organization,
+      type: new GraphQLNonNull(Organization),
       resolve: resolveOrganization
     },
     agendaItems: {

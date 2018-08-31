@@ -2,18 +2,16 @@
  * The sign-in page.  Hosts 3rd party signin, email/password signin, and also
  * functions as the callback handler for the Auth0 OIDC response.
  *
- * @flow
  */
 
-import type {Node} from 'react'
-import type {RouterHistory, Location} from 'react-router-dom'
-import type {Dispatch} from 'redux'
-import type {AuthResponse, Credentials} from 'universal/types/auth'
-import React, {Component, Fragment} from 'react'
+import React, {Component, Fragment, ReactElement} from 'react'
 import {connect} from 'react-redux'
-import {Link, withRouter} from 'react-router-dom'
+import {Link, RouteComponentProps, withRouter} from 'react-router-dom'
+import {Dispatch} from 'redux'
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import auth0Login from 'universal/utils/auth0Login'
 import {THIRD_PARTY_AUTH_PROVIDERS, SIGNIN_LABEL, SIGNIN_SLUG} from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
@@ -23,18 +21,25 @@ import autoLogin from 'universal/decorators/autoLogin'
 import LoadingView from 'universal/components/LoadingView/LoadingView'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
 
-type Props = {
-  atmosphere: Object,
-  dispatch: Dispatch<*>,
-  history: RouterHistory,
-  location: Location,
-  webAuth: Object
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+  dispatch: Dispatch<any>
+  webAuth: any
 }
 
-type State = {
-  loggingIn: boolean,
-  error: ?string,
+interface State {
+  loggingIn: boolean
+  error: string | null
   submittingCredentials: boolean
+}
+
+interface AuthResponse {
+  idToken: string
+  idTokenPayload: any
+}
+
+interface Credentials {
+  email: string
+  password: string
 }
 
 class SignInPage extends Component<Props, State> {
@@ -44,7 +49,7 @@ class SignInPage extends Component<Props, State> {
     submittingCredentials: false
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.maybeCaptureAuthResponse()
   }
 
@@ -128,9 +133,9 @@ class SignInPage extends Component<Props, State> {
     )
   }
 
-  render () {
+  render() {
     const {loggingIn, error} = this.state
-    let pageContent: Node
+    let pageContent: ReactElement<any>
     if (loggingIn && !error) {
       pageContent = this.renderLoading()
     } else if (loggingIn && error) {
@@ -142,4 +147,4 @@ class SignInPage extends Component<Props, State> {
   }
 }
 
-export default withAtmosphere(autoLogin(withRouter(connect()(SignInPage))))
+export default (connect() as any)((autoLogin as any)(withAtmosphere(withRouter(SignInPage))))

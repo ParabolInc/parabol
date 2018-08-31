@@ -1,10 +1,13 @@
-// @flow
 import React from 'react'
+import {graphql} from 'react-relay'
+import {Dispatch} from 'redux'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import LoadingView from 'universal/components/LoadingView/LoadingView'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {cacheConfig, RETROSPECTIVE} from 'universal/utils/constants'
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
@@ -12,9 +15,7 @@ import TaskSubscription from 'universal/subscriptions/TaskSubscription'
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription'
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import TeamSubscription from 'universal/subscriptions/TeamSubscription'
-import type {Dispatch} from 'redux'
-import type {Location, Match, RouterHistory} from 'react-router-dom'
-import {withRouter} from 'react-router-dom'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
 import NewMeetingWithLocalState from 'universal/components/NewMeetingWithLocalState'
 
@@ -35,12 +36,10 @@ const subscriptions = [
   TeamSubscription
 ]
 
-type Props = {
-  atmosphere: Object,
-  dispatch: Dispatch<*>,
-  location: Location,
-  match: Match,
-  history: RouterHistory
+interface Props
+  extends WithAtmosphereProps,
+    RouteComponentProps<{localPhase: string; teamId: string}> {
+  dispatch: Dispatch<any>
 }
 
 const meetingType = RETROSPECTIVE
@@ -60,8 +59,9 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
         <RelayTransitionGroup
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
-          loading={<LoadingView minHeight='50vh' />}
+          loading={<LoadingView minHeight="50vh" />}
           ready={
+            // @ts-ignore
             <NewMeetingWithLocalState
               localPhase={localPhase}
               match={match}
@@ -74,4 +74,4 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
   )
 }
 
-export default withAtmosphere(connect()(withRouter(RetroRoot)))
+export default (connect() as any)(withAtmosphere(withRouter(RetroRoot)))

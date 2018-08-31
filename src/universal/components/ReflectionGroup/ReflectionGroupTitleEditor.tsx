@@ -7,7 +7,6 @@ import {ReflectionGroupTitleEditor_reflectionGroup} from '__generated__/Reflecti
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
-// @ts-ignore
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import StyledError from 'universal/components/StyledError'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
@@ -121,9 +120,9 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       reflectionGroup: {reflectionGroupId}
     } = this.props
     const title = e.target.value
-    // @ts-ignore
     commitLocalUpdate(atmosphere, (store) => {
       const reflectionGroup = store.get(reflectionGroupId)
+      if (!reflectionGroup) return
       reflectionGroup.setValue(title, 'title')
     })
     if (dirty) {
