@@ -5,6 +5,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import plural from 'universal/utils/plural'
+import TinyLabel from 'universal/components/TinyLabel'
 
 interface Props {
   count: number
@@ -89,6 +90,10 @@ const ChitArea = styled('div')({
   width: REFLECTION_WIDTH
 })
 
+const ChitAreaLabel = styled(TinyLabel)({
+  margin: '0 0 1em'
+})
+
 const getStatus = (count: number, editorCount: number) => {
   if (count) {
     const status = `${count} team member ${plural(count, 'reflection')}`
@@ -110,7 +115,7 @@ class PhaseItemChits extends Component<Props> {
     const activeChits = [...Array(editorCount).keys()]
     return (
       <div>
-        <div>{getStatus(count, editorCount)}</div>
+        <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
         <ChitArea>
           {chits.map((idx) => <Chit key={idx} />)}
 

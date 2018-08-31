@@ -162,7 +162,6 @@ class PhaseItemColumn extends Component<Props> {
                   nextSortOrder={this.nextSortOrder}
                   retroPhaseItemId={retroPhaseItemId}
                 />
-                <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
               </EditorAndStatus>
             </HeaderAndEditor>
             <ReflectionStack
@@ -185,6 +184,8 @@ class PhaseItemColumn extends Component<Props> {
     )
   }
 }
+
+// <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(PhaseItemColumn)),
