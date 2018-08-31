@@ -13,6 +13,12 @@ export interface WithMutationProps {
   submitting?: boolean
 }
 
+// interface State {
+//   submitting: boolean,
+//   error: any,
+//   dirty: boolean
+// }
+
 // Serves as a lightweight alternative for redux-form when we just have a button or something
 const withMutationProps = <P extends WithMutationProps>(
   ComposedComponent: React.ComponentType<P>

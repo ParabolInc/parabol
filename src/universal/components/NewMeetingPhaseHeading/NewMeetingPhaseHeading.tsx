@@ -1,17 +1,17 @@
+import {NewMeetingPhaseHeading_meeting} from '__generated__/NewMeetingPhaseHeading_meeting.graphql'
 /**
  * Renders the heading describing the current meeting phase.
  *
- * @flow
  */
 import React from 'react'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
+import {createFragmentContainer, graphql} from 'react-relay'
+import SidebarToggle from 'universal/components/SidebarToggle'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
+import ui from 'universal/styles/ui'
 import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import {createFragmentContainer} from 'react-relay'
-import type {NewMeetingPhaseHeading_meeting as Meeting} from '__generated__/NewMeetingPhaseHeading_meeting.graphql'
-import SidebarToggle from 'universal/components/SidebarToggle'
+import {UnstartedMeeting} from '../../utils/meetings/unstartedMeeting'
 
 const HeadingBlock = styled('div')({
   alignItems: 'flex-start',
@@ -19,13 +19,15 @@ const HeadingBlock = styled('div')({
   padding: '1.25rem 0 1rem'
 })
 
-const Toggle = styled(SidebarToggle)(({isMeetingSidebarCollapsed}) => ({
-  margin: '0 1rem 0 .5rem',
+const Toggle = styled(SidebarToggle)(
+  ({isMeetingSidebarCollapsed}: {isMeetingSidebarCollapsed: boolean}) => ({
+    margin: '0 1rem 0 .5rem',
 
-  [meetingSidebarMediaQuery]: {
-    display: isMeetingSidebarCollapsed ? 'block' : 'none'
-  }
-}))
+    [meetingSidebarMediaQuery]: {
+      display: isMeetingSidebarCollapsed ? 'block' : 'none'
+    }
+  })
+)
 
 const PhaseTitle = styled('h1')({
   fontSize: '1.25rem',
@@ -45,16 +47,16 @@ const PhaseDescription = styled('h2')({
   }
 })
 
-type Props = {|
-  meeting: Meeting,
-  isMeetingSidebarCollapsed: Boolean,
+interface Props {
+  meeting: NewMeetingPhaseHeading_meeting | UnstartedMeeting
+  isMeetingSidebarCollapsed: boolean
   toggleSidebar: () => void
-|}
+}
 
 const NewMeetingPhaseHeading = (props: Props) => {
   const {meeting, isMeetingSidebarCollapsed, toggleSidebar} = props
   const makeContent = () => {
-    if (!meeting || !meeting.localPhase) return null
+    if (!meeting.localPhase) return null
     const {
       localPhase: {phaseType}
     } = meeting

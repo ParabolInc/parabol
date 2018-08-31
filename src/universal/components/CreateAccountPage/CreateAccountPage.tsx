@@ -1,13 +1,13 @@
 /**
  * The Create Account page.  Can create account via email/password or 3rd party auth.
  *
- * @flow
  */
-import type {Credentials} from 'universal/types/auth'
-import type {Dispatch} from 'redux'
 import promisify from 'es6-promisify'
 import React, {Component} from 'react'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {Dispatch} from 'redux'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import auth0Login from 'universal/utils/auth0Login'
 import {
   AUTH0_DB_CONNECTION,
@@ -19,14 +19,18 @@ import CreateAccount from './CreateAccount'
 import autoLogin from 'universal/decorators/autoLogin'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
 
-type Props = {
-  atmosphere: Object,
-  dispatch: Dispatch<*>
+interface Props extends WithAtmosphereProps {
+  dispatch: Dispatch<any>
 }
 
-type State = {
-  error: ?string,
+interface State {
+  error: string | null
   submittingCredentials: boolean
+}
+
+interface Credentials {
+  email: string
+  password: string
 }
 
 class CreateAccountPage extends Component<Props, State> {
@@ -65,7 +69,7 @@ class CreateAccountPage extends Component<Props, State> {
     this.setState({submittingCredentials: false})
   }
 
-  render () {
+  render() {
     const {error} = this.state
     return (
       <AuthPage title={`${CREATE_ACCOUNT_LABEL} | Parabol`}>

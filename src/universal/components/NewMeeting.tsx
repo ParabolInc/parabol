@@ -1,20 +1,20 @@
-// @flow
-import * as React from 'react'
+import React from 'react'
 import {DragDropContext as dragDropContext} from '@mattkrick/react-dnd'
 import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
 import withHotkey from 'react-hotkey-hoc'
-import {createFragmentContainer, commitLocalUpdate} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import type {Match, RouterHistory} from 'react-router-dom'
-import {withRouter} from 'react-router-dom'
+import {createFragmentContainer, commitLocalUpdate, graphql} from 'react-relay'
+import {Dispatch} from 'redux'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import styled from 'react-emotion'
 import {Helmet} from 'react-helmet'
 import NewMeetingSidebar from 'universal/components/NewMeetingSidebar'
 import NewMeetingLobby from 'universal/components/NewMeetingLobby'
-import type {MeetingTypeEnum} from 'universal/types/schema.flow'
 import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase'
-import type {NewMeeting_viewer as Viewer} from '__generated__/NewMeeting_viewer.graphql'
+import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import ui from 'universal/styles/ui'
 import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
@@ -29,7 +29,6 @@ import handleHotkey from 'universal/utils/meetings/handleHotkey'
 import {connect} from 'react-redux'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
-import type {Dispatch} from 'redux'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading'
@@ -44,6 +43,9 @@ import {
   meetingSidebarWidth
 } from 'universal/styles/meeting'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
+import MeetingTypeEnum = GQL.MeetingTypeEnum
+import INavigateMeetingOnMutationArguments = GQL.INavigateMeetingOnMutationArguments
 
 const {Component} = React
 
@@ -56,7 +58,10 @@ const MeetingContainer = styled('div')({
   overflowX: 'auto'
 })
 
-const MeetingSidebarLayout = styled('div')(({isMeetingSidebarCollapsed}) => ({
+interface SidebarStyleProps {
+  isMeetingSidebarCollapsed?: boolean | null
+}
+const MeetingSidebarLayout = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyleProps) => ({
   boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
   display: 'flex',
   flexDirection: 'column',
@@ -91,12 +96,12 @@ const MeetingContent = styled('div')({
   width: '100%'
 })
 
-const SidebarBackdrop = styled('div')(({isMeetingSidebarCollapsed}) => ({
+const SidebarBackdrop = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyleProps) => ({
   backgroundColor: ui.modalBackdropBackgroundColor,
   bottom: 0,
   left: 0,
   opacity: isMeetingSidebarCollapsed ? 0 : 1,
-  pointerEvents: isMeetingSidebarCollapsed && 'none',
+  pointerEvents: isMeetingSidebarCollapsed ? 'none' : undefined,
   position: 'fixed',
   right: 0,
   top: 0,
@@ -108,7 +113,7 @@ const SidebarBackdrop = styled('div')(({isMeetingSidebarCollapsed}) => ({
   }
 }))
 
-const LayoutPusher = styled('div')(({isMeetingSidebarCollapsed}) => ({
+const LayoutPusher = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyleProps) => ({
   display: 'none',
 
   [meetingSidebarMediaQuery]: {
@@ -134,25 +139,15 @@ const MeetingAreaHeader = styled('div')({
   }
 })
 
-type Props = {
-  atmosphere: Object,
-  bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void,
-  dispatch: Dispatch<*>,
-  history: RouterHistory,
-  match: Match,
-  meetingType: MeetingTypeEnum,
-  submitting: boolean,
-  viewer: Viewer
-}
-
-type Variables = {
-  meetingId: string,
-  facilitatorStageId: ?string,
-  completedStageId?: string
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutationProps {
+  bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void
+  dispatch: Dispatch<any>
+  meetingType: MeetingTypeEnum
+  viewer: NewMeeting_viewer
 }
 
 class NewMeeting extends Component<Props> {
-  constructor (props) {
+  constructor(props) {
     super(props)
     const {bindHotkey} = props
     bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext))
@@ -175,7 +170,12 @@ class NewMeeting extends Component<Props> {
     EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
   }
 
-  gotoStageId = (stageId, submitMutation, onError, onCompleted) => {
+  gotoStageId = (
+    stageId: string,
+    _submitMutation?: WithMutationProps['submitMutation'],
+    onError?: WithMutationProps['onError'],
+    onCompleted?: WithMutationProps['onCompleted']
+  ) => {
     const {
       atmosphere,
       submitting,
@@ -198,7 +198,10 @@ class NewMeeting extends Component<Props> {
       const {
         stage: {isComplete}
       } = findStageById(phases, facilitatorStageId)
-      const variables: Variables = {meetingId, facilitatorStageId: stageId}
+      const variables = {
+        meetingId,
+        facilitatorStageId: stageId
+      } as INavigateMeetingOnMutationArguments
       if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
         variables.completedStageId = facilitatorStageId
       }
@@ -207,7 +210,7 @@ class NewMeeting extends Component<Props> {
     }
   }
 
-  gotoNext = (options) => {
+  gotoNext = (options?: {isCheckedIn: boolean}) => {
     const {
       atmosphere,
       submitting,
@@ -269,7 +272,7 @@ class NewMeeting extends Component<Props> {
       }
     } = this.props
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
+      store.get(teamId)!.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
   }
 
@@ -285,11 +288,13 @@ class NewMeeting extends Component<Props> {
     }
   }
 
-  render () {
+  render() {
     const {meetingType, viewer} = this.props
     const {team} = viewer
-    const {newMeeting, isMeetingSidebarCollapsed, teamName} = team
-    const {facilitatorStageId, localPhase, localStage} = newMeeting || {}
+    const {newMeeting, teamName} = team
+    const isMeetingSidebarCollapsed = team.isMeetingSidebarCollapsed || false
+    const meeting = newMeeting || UNSTARTED_MEETING
+    const {facilitatorStageId, localPhase, localStage} = meeting
     const meetingLabel = meetingTypeToLabel[meetingType]
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true
     const localPhaseType = localPhase && localPhase.phaseType
@@ -318,7 +323,7 @@ class NewMeeting extends Component<Props> {
             {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
             <MeetingAreaHeader>
               <NewMeetingPhaseHeading
-                meeting={newMeeting}
+                meeting={meeting}
                 isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
                 toggleSidebar={this.toggleSidebar}
               />
@@ -328,6 +333,7 @@ class NewMeeting extends Component<Props> {
               <React.Fragment>
                 {localPhaseType === CHECKIN && (
                   <NewMeetingCheckIn
+                    // @ts-ignore
                     gotoNext={this.gotoNext}
                     meetingType={meetingType}
                     team={team}
@@ -341,6 +347,7 @@ class NewMeeting extends Component<Props> {
                 )}
                 {localPhaseType === VOTE && <RetroVotePhase gotoNext={this.gotoNext} team={team} />}
                 {localPhaseType === DISCUSS && (
+                  // @ts-ignore
                   <RetroDiscussPhase gotoNext={this.gotoNext} team={team} />
                 )}
                 {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
@@ -358,7 +365,7 @@ class NewMeeting extends Component<Props> {
 
 export default createFragmentContainer(
   dragDropContext(HTML5Backend)(
-    withHotkey(withAtmosphere(withMutationProps(withRouter(connect()(NewMeeting)))))
+    (connect() as any)(withHotkey(withAtmosphere(withMutationProps(withRouter(NewMeeting)))))
   ),
   graphql`
     fragment NewMeeting_viewer on User {

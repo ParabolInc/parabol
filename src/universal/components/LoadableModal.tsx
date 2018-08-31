@@ -1,11 +1,9 @@
-// @flow
-import React from 'react'
+import React, {ComponentType} from 'react'
 import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import Modal from 'universal/components/Modal'
-import withToggledPortal from 'universal/decorators/withToggledPortal'
-import type {ToggledPortalProps} from 'universal/decorators/withToggledPortal'
+import withToggledPortal, {WithToggledPortalProps} from 'universal/decorators/withToggledPortal'
 
 const ModalBlock = styled('div')({
   top: 0,
@@ -36,10 +34,9 @@ const Backdrop = styled('div')({
   position: 'fixed'
 })
 
-type Props = {
-  LoadableComponent: typeof React.Component,
-  queryVars?: Object,
-  ...ToggledPortalProps
+interface Props extends WithToggledPortalProps {
+  LoadableComponent: ComponentType<any>
+  queryVars?: any
 }
 
 const LoadableModal = (props: Props) => {

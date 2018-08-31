@@ -1,10 +1,11 @@
-// @flow
 import React from 'react'
+import {graphql} from 'react-relay'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import AnalyticsIdentifier from 'universal/components/AnalyticsIdentifier'
-import {withRouter} from 'react-router-dom'
-import type {Location} from 'react-router-dom'
 
 const query = graphql`
   query AnalyticsIdentifierRootQuery {
@@ -14,10 +15,7 @@ const query = graphql`
   }
 `
 
-type Props = {|
-  atmosphere: Object,
-  location: Location
-|}
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
 const AnalyticsIdentifierRoot = (props: Props) => {
   const {atmosphere, location} = props
@@ -30,6 +28,7 @@ const AnalyticsIdentifierRoot = (props: Props) => {
       variables={{}}
       render={({props: renderProps}) => {
         return (
+          // @ts-ignore
           <AnalyticsIdentifier
             location={location}
             viewer={renderProps ? renderProps.viewer : null}

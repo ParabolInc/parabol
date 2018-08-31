@@ -1563,12 +1563,12 @@ declare namespace GQL {
     /**
      * The total number of retroMeetings given to the team
      */
-    retroMeetingsOffered: number | null
+    retroMeetingsOffered: number
 
     /**
      * Number of retro meetings that can be run (if not pro)
      */
-    retroMeetingsRemaining: number | null
+    retroMeetingsRemaining: number
 
     /**
      * The customerId from stripe
@@ -1833,7 +1833,7 @@ declare namespace GQL {
     /**
      * true if this team member belongs to the user that queried it
      */
-    isSelf: boolean | null
+    isSelf: boolean
 
     /**
      * The meeting specifics for the meeting the team member is currently in

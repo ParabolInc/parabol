@@ -1,21 +1,21 @@
-// @flow
-import * as React from 'react'
+import React from 'react'
 import DayPicker from 'react-day-picker'
 import 'universal/styles/daypicker.css'
+import {DayModifiers} from 'react-day-picker/types/common'
 import UpdateTaskDueDateMutation from 'universal/mutations/UpdateTaskDueDateMutation'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import {createFragmentContainer} from 'react-relay'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import type {DueDatePicker_task as Task} from '__generated__/DueDatePicker_task.graphql'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {DueDatePicker_task} from '__generated__/DueDatePicker_task.graphql'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 
-type Props = {|
-  Atmosphere: Object,
-  task: Task,
-  ...MutationProps
-|}
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  closePortal(): void
+  task: DueDatePicker_task
+}
 
 const PickerTitle = styled('div')({
   fontSize: '.875rem',
@@ -31,7 +31,7 @@ const Hint = styled('div')({
 })
 
 class DueDatePicker extends React.Component<Props> {
-  handleDayClick = (day, {disabled, selected}) => {
+  handleDayClick = (day: Date, {disabled, selected}: DayModifiers) => {
     if (disabled) return
     const {
       atmosphere,
@@ -47,7 +47,7 @@ class DueDatePicker extends React.Component<Props> {
     closePortal()
   }
 
-  render () {
+  render() {
     const {
       task: {dueDate}
     } = this.props

@@ -1,18 +1,19 @@
-// @flow
+import {NewMeetingSidebarPhaseListItemChildren_viewer} from '__generated__/NewMeetingSidebarPhaseListItemChildren_viewer.graphql'
 import React from 'react'
-import {DISCUSS} from 'universal/utils/constants'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {withRouter} from 'react-router-dom'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import type {NewMeetingSidebarPhaseListItemChildren_viewer as Viewer} from '__generated__/NewMeetingSidebarPhaseListItemChildren_viewer.graphql' // eslint-disable-line
-import type {NewMeetingPhaseTypeEnum} from 'universal/types/schema.flow'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import RetroSidebarDiscussSection from 'universal/components/RetroSidebarDiscussSection'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {DISCUSS} from 'universal/utils/constants'
+import NewMeetingPhaseTypeEnum = GQL.NewMeetingPhaseTypeEnum
 
-type Props = {|
-  gotoStageId: (stageId: string) => void,
-  phaseType: NewMeetingPhaseTypeEnum,
-  viewer: Viewer
-|}
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+  gotoStageId: (stageId: string) => void
+  phaseType: keyof typeof NewMeetingPhaseTypeEnum | string
+  viewer: NewMeetingSidebarPhaseListItemChildren_viewer
+}
 
 const NewMeetingSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, phaseType, viewer} = props

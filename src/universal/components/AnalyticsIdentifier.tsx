@@ -1,28 +1,27 @@
-// @flow
-import PropTypes from 'prop-types'
-import {Component} from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {AnalyticsIdentifier_viewer} from '__generated__/AnalyticsIdentifier_viewer.graphql'
 import raven from 'raven-js'
+import {Component} from 'react'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
-import type {AnalyticsIdentifier_viewer as Viewer} from '__generated__/AnalyticsIdentifier_viewer.graphql'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps} from 'react-router'
 import makeHref from 'universal/utils/makeHref'
-import type {Location} from 'react-router-dom'
 
-type Props = {
-  location: Location,
-  viewer: Viewer
+interface Props extends RouteComponentProps<{}> {
+  viewer: AnalyticsIdentifier_viewer
 }
 
-type State = {
-  viewer: ?Viewer
+interface State {
+  viewer: AnalyticsIdentifier_viewer | null
+}
+
+declare global {
+  interface Window {
+    analytics: any
+  }
 }
 
 class AnalyticsIdentifier extends Component<Props, State> {
-  static propTypes = {
-    viewer: PropTypes.object
-  }
-
-  static identify (viewer) {
+  static identify(viewer) {
     if (!viewer) return
     const {created, email, viewerId, avatar, name} = viewer
     raven.setUserContext({
@@ -40,7 +39,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     })
   }
 
-  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): Partial<State> | null {
     const {viewer} = nextProps
     if (viewer && viewer !== prevState.viewer) {
       // a little side-effecty, but if we didn't do this, we'd need to track isIdentified in the state
@@ -52,7 +51,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     return null
   }
 
-  static page (prevPath) {
+  static page(prevPath) {
     if (typeof document === 'undefined' || typeof window.analytics === 'undefined') {
       return
     }
@@ -72,7 +71,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     viewer: null
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     const {
       location: {pathname: nextPath}
     } = this.props
@@ -85,7 +84,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     }
   }
 
-  render () {
+  render() {
     return null
   }
 }

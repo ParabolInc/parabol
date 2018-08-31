@@ -1,20 +1,19 @@
-// @flow
+import {NewMeetingSidebar_viewer} from '__generated__/NewMeetingSidebar_viewer.graphql'
+import {MeetingTypeEnum} from '__generated__/RemoveOrgUserMutation_team.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import {meetingSidebarWidth} from 'universal/styles/meeting'
 import styled from 'react-emotion'
-import type {NewMeetingSidebar_viewer as Viewer} from '__generated__/NewMeetingSidebar_viewer.graphql'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {Link} from 'react-router-dom'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import LogoBlock from 'universal/components/LogoBlock/LogoBlock'
-import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
+import NewMeetingSidebarPhaseList from 'universal/components/NewMeetingSidebarPhaseList'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import SidebarToggle from 'universal/components/SidebarToggle'
-import type {MeetingTypeEnum} from 'universal/types/schema.flow'
+import {meetingSidebarWidth} from 'universal/styles/meeting'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
-import {Link} from 'react-router-dom'
 
 const SidebarHeader = styled('div')({
   alignItems: 'center',
@@ -47,11 +46,11 @@ const TeamDashboardLink = styled(Link)({
   }
 })
 
-type Props = {
-  gotoStageId: (stageId: string) => void,
-  meetingType: MeetingTypeEnum,
-  toggleSidebar: () => void,
-  viewer: Viewer
+interface Props {
+  gotoStageId: (stageId: string) => void
+  meetingType: MeetingTypeEnum
+  toggleSidebar: () => void
+  viewer: NewMeetingSidebar_viewer
 }
 
 const NewMeetingSidebar = (props: Props) => {
@@ -72,7 +71,7 @@ const NewMeetingSidebar = (props: Props) => {
       <ScrollableBlock>
         <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />
       </ScrollableBlock>
-      <LogoBlock variant='primary' />
+      <LogoBlock variant="primary" />
     </SidebarParent>
   )
 }

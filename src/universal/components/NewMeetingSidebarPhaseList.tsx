@@ -1,16 +1,17 @@
-// @flow
+import {NewMeetingSidebarPhaseList_viewer} from '__generated__/NewMeetingSidebarPhaseList_viewer.graphql'
 import React from 'react'
-import {LOBBY, DISCUSS, AGENDA_ITEMS} from 'universal/utils/constants'
 import styled from 'react-emotion'
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import NewMeetingSidebarPhaseListItem from 'universal/components/NewMeetingSidebarPhaseListItem'
-import {createFragmentContainer, graphql, commitLocalUpdate} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {withRouter} from 'react-router-dom'
-import {phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups'
-import type {NewMeetingSidebarPhaseList_viewer as Viewer} from '__generated__/NewMeetingSidebarPhaseList_viewer.graphql'
-import findStageById from 'universal/utils/meetings/findStageById'
 import NewMeetingSidebarPhaseListItemChildren from 'universal/components/NewMeetingSidebarPhaseListItemChildren'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {AGENDA_ITEMS, DISCUSS, LOBBY} from 'universal/utils/constants'
+import findStageById from 'universal/utils/meetings/findStageById'
+import {phaseTypeToPhaseGroup} from 'universal/utils/meetings/lookups'
 import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
+import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 const NavList = styled('ul')({
   listStyle: 'none',
@@ -18,13 +19,14 @@ const NavList = styled('ul')({
   padding: 0
 })
 
-type Props = {
-  atmosphere: Object,
-  gotoStageId: (stageId: string) => void,
-  viewer: Viewer
+interface Props extends WithAtmosphereProps {
+  gotoStageId: (stageId: string) => void
+  viewer: NewMeetingSidebarPhaseList_viewer
 }
 
-const getItemStage = (name: string, phases: $ReadOnlyArray<Object>, facilitatorStageId: string) => {
+type NewMeeting = NonNullable<Props['viewer']['team']['newMeeting']>
+
+const getItemStage = (name: string, phases: NewMeeting['phases'], facilitatorStageId: string) => {
   const stageRes = findStageById(phases, facilitatorStageId)
   if (!stageRes) return undefined
   const {stage, phase} = stageRes
@@ -44,8 +46,9 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
       newMeeting
     }
   } = viewer
-  const {facilitatorUserId, facilitatorStageId, localPhase = {}, phases = []} = newMeeting || {}
-  const localGroup = phaseTypeToPhaseGroup[localPhase.phaseType]
+  const meeting = newMeeting || UNSTARTED_MEETING
+  const {facilitatorUserId, facilitatorStageId, localPhase, phases} = meeting
+  const localGroup = phaseTypeToPhaseGroup[localPhase && localPhase.phaseType]
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
   const {phase: facilitatorPhase = {phaseType: LOBBY}} = facilitatorStageRes || {}
   const facilitatorPhaseGroup = phaseTypeToPhaseGroup[facilitatorPhase.phaseType]
@@ -58,7 +61,9 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
       }
     } = props
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(teamId).setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
+      const team = store.get(teamId)
+      if (!team) return
+      team.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
   }
   return (
@@ -96,7 +101,7 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  withAtmosphere(withRouter(NewMeetingSidebarPhaseList)),
+  withAtmosphere(NewMeetingSidebarPhaseList),
   graphql`
     fragment NewMeetingSidebarPhaseList_viewer on User {
       ...NewMeetingSidebarPhaseListItemChildren_viewer

@@ -1,9 +1,7 @@
 /**
  * Stories for groups of reflection cards.
  *
- * @flow
  */
-// $FlowFixMe
 import {ContentState} from 'draft-js'
 import React from 'react'
 import shortid from 'shortid'

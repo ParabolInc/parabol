@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import NewMeeting from 'universal/components/NewMeeting'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -12,6 +11,7 @@ import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/looku
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
 import MeetingTypeEnum = GQL.MeetingTypeEnum
+import NewMeeting from 'universal/components/NewMeeting'
 
 /*
  * Creates a 2-way sync between the URL and the local state

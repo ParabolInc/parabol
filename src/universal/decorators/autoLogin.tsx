@@ -4,11 +4,11 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
+export interface AutoLoginPropsProps extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
 const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
-  class AutoLogin extends Component<Props> {
-    constructor(props: Props) {
+  class AutoLogin extends Component<AutoLoginPropsProps> {
+    constructor(props: AutoLoginPropsProps) {
       super(props)
       const {
         atmosphere: {authObj},

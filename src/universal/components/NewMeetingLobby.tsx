@@ -1,15 +1,10 @@
-// @flow
-import * as React from 'react'
-import type {RouterHistory} from 'react-router-dom'
-import {withRouter} from 'react-router-dom'
+import React from 'react'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {PRO} from 'universal/utils/constants'
 import styled from 'react-emotion'
-import LoadableModal from 'universal/components/LoadableModal'
-import type {NewMeetingLobby_team as Team} from '__generated__/NewMeetingLobby_team.graphql'
-import type {MeetingTypeEnum} from 'universal/types/schema.flow'
+import {NewMeetingLobby_team} from '__generated__/NewMeetingLobby_team.graphql'
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
@@ -20,11 +15,15 @@ import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lo
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
 import makeHref from 'universal/utils/makeHref'
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
-import {createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {createFragmentContainer, graphql} from 'react-relay'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import InlineAlert from 'universal/components/InlineAlert'
 import RetroLobbyHelpMenu from 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
+import MeetingTypeEnum = GQL.MeetingTypeEnum
+import LoadableModal from 'universal/components/LoadableModal'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -43,8 +42,11 @@ const textAlign = {
   }
 }
 
+// @ts-ignore
 const StyledLabel = styled(LabelHeading)({...textAlign})
+// @ts-ignore
 const StyledHeading = styled(MeetingPhaseHeading)({...textAlign})
+// @ts-ignore
 const StyledCopy = styled(MeetingCopy)({...textAlign})
 
 const Lobby = styled('div')({
@@ -88,12 +90,10 @@ const UrlBlock = styled('div')({
   verticalAlign: 'middle'
 })
 
-type Props = {
-  atmosphere: Object,
-  history: RouterHistory,
-  meetingType: MeetingTypeEnum,
-  team: Team,
-  ...MutationProps
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+  atmosphere: Object
+  meetingType: MeetingTypeEnum
+  team: NewMeetingLobby_team
 }
 
 const StyledInlineAlert = styled(InlineAlert)({
@@ -114,7 +114,7 @@ const StyledButton = styled(PrimaryButton)({
 })
 
 class NewMeetingLobby extends React.Component<Props> {
-  render () {
+  render() {
     const {
       atmosphere,
       history,
@@ -165,8 +165,6 @@ class NewMeetingLobby extends React.Component<Props> {
             >{`${retroMeetingsRemaining} of ${retroMeetingsOffered} Meetings Remaining — `}</span>
             <LoadableModal
               LoadableComponent={UpgradeModalRootLoadable}
-              maxWidth={350}
-              maxHeight={225}
               queryVars={{orgId}}
               toggle={<AlertAction>Upgrade to Pro</AlertAction>}
             />
@@ -181,7 +179,7 @@ class NewMeetingLobby extends React.Component<Props> {
                 depth={1}
                 disabled={!canStartMeeting}
                 onClick={onStartMeetingClick}
-                size='large'
+                size="large"
                 waiting={submitting}
               >
                 {buttonLabel}
@@ -191,11 +189,9 @@ class NewMeetingLobby extends React.Component<Props> {
               retroMeetingsRemaining === 0 && (
                 <LoadableModal
                   LoadableComponent={UpgradeModalRootLoadable}
-                  maxWidth={350}
-                  maxHeight={225}
                   queryVars={{orgId}}
                   toggle={
-                    <StyledButton aria-label='Get Access Now' size='large' depth={1}>
+                    <StyledButton aria-label="Get Access Now" size="large" depth={1}>
                       {'Get Access Now'}
                     </StyledButton>
                   }

@@ -1,28 +1,25 @@
-// @flow
-import * as React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import type {Match} from 'react-router-dom'
-import {withRouter} from 'react-router-dom'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import type {NewMeetingCheckIn_team as Team} from '__generated__/NewMeetingCheckIn_team.graphql'
-import type {MeetingTypeEnum} from 'universal/types/schema.flow'
-import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
-import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
-import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
-import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls'
-import ui from 'universal/styles/ui'
+import {NewMeetingCheckIn_team} from '__generated__/NewMeetingCheckIn_team.graphql'
+import React, {Component} from 'react'
 import styled from 'react-emotion'
-import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import {CHECKIN} from 'universal/utils/constants'
 import withHotkey from 'react-hotkey-hoc'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import CheckInHelpMenu from 'universal/components/MeetingHelp/CheckInHelpMenu'
-
-const {Component} = React
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import CheckInControls from 'universal/modules/meeting/components/CheckInControls/CheckInControls'
+import NewMeetingCheckInPrompt from 'universal/modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
+import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
+import MeetingFacilitationHint from 'universal/modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
+import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import ui from 'universal/styles/ui'
+import {CHECKIN} from 'universal/utils/constants'
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import MeetingTypeEnum = GQL.MeetingTypeEnum
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -47,12 +44,10 @@ const Hint = styled('div')({
   marginTop: '2.5rem'
 })
 
-type Props = {
-  atmosphere: Object,
-  match: Match,
-  meetingType: MeetingTypeEnum,
-  team: Team,
-  ...MutationProps
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+  gotoNext(options: {isCheckedIn: boolean}): void
+  meetingType: MeetingTypeEnum
+  team: NewMeetingCheckIn_team
 }
 
 class NewMeetingCheckIn extends Component<Props> {
@@ -61,14 +56,16 @@ class NewMeetingCheckIn extends Component<Props> {
     gotoNext({isCheckedIn})
   }
 
-  render () {
+  render() {
     const {atmosphere, team, meetingType} = this.props
     const {newMeeting} = team
+    if (!newMeeting) return
     const {
       facilitator: {facilitatorName, facilitatorUserId},
-      localStage: {localStageId, teamMember},
+      localStage: {localStageId},
       phases
     } = newMeeting
+    const teamMember = newMeeting.localStage.teamMember!
     const {isSelf: isMyMeetingSection} = teamMember
     const nextStageRes = findStageAfterId(phases, localStageId)
     // in case the checkin is the last phase of the meeting
@@ -81,7 +78,7 @@ class NewMeetingCheckIn extends Component<Props> {
     const isFacilitating = facilitatorUserId === viewerId
     return (
       <React.Fragment>
-        <MeetingSection flexToFill paddingBottom='1rem'>
+        <MeetingSection flexToFill paddingBottom="1rem">
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
             {!isFacilitating && (

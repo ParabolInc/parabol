@@ -1,38 +1,58 @@
+import React, {Component, ReactElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import React, {Component} from 'react'
-import PropTypes from 'prop-types'
-import isKeyboardEvent from 'universal/utils/isKeyboardEvent'
+import {Subtract} from 'types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
+import isKeyboardEvent from 'universal/utils/isKeyboardEvent'
 
 /*
  * Takes the child component and puts it in a modal.
  * Provides an isClosing prop to children for animations
  * */
+export interface WithToggledPortalProps {
+  isClosing: boolean
+  isOpen: boolean
 
-const withToggledPortal = (ComposedComponent) => {
-  class ToggledPortal extends Component {
+  closePortal(): void
+
+  terminatePortal(): void
+}
+
+export interface WithTogglePortalState {
+  isOpen: boolean
+  isClosing: boolean
+}
+
+export interface InternalProps {
+  isToggleNativeElement?: boolean
+  onClose?(): void
+  toggle: ReactElement<any>
+  LoadableComponent: any
+  setOriginRef?(c: HTMLElement): void
+}
+
+const withToggledPortal = <P extends WithToggledPortalProps>(
+  ComposedComponent: React.ComponentType<P>
+) => {
+  return class ToggledPortal extends Component<
+    InternalProps & Subtract<P, WithToggledPortalProps>,
+    WithTogglePortalState
+  > {
     static displayName = `ToggledPortal(${getDisplayName(ComposedComponent)})`
-    static propTypes = {
-      isToggleNativeElement: PropTypes.bool,
-      onClose: PropTypes.func,
-      toggle: PropTypes.any.isRequired,
-      LoadableComponent: PropTypes.func.isRequired,
-      queryVars: PropTypes.object,
-      maxWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-      maxHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-      setOriginRef: PropTypes.func
-    }
     state = {
       isOpen: false,
       isClosing: false
     }
 
-    componentWillMount () {
-      const {toggle} = this.props
+    smartToggle: ReactElement<any>
+    toggleRef?: HTMLElement
+
+    constructor(props) {
+      super(props)
+      const {toggle} = props
       this.smartToggle = this.makeSmartToggle(toggle)
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps(nextProps) {
       const {toggle} = nextProps
       if (this.props.toggle !== toggle) {
         this.smartToggle = this.makeSmartToggle(toggle)
@@ -46,16 +66,15 @@ const withToggledPortal = (ComposedComponent) => {
       })
     }
 
-    closePortal = (e) => {
+    closePortal = (e?: Event) => {
       this.setState({
         isClosing: true
       })
 
       if (isKeyboardEvent(e) && this.toggleRef) {
-        const node = findDOMNode(this.toggleRef)
-        node.focus()
+        const node = findDOMNode(this.toggleRef) as HTMLElement
+        node && node.focus()
       }
-      // no need to call onClose here, since it's taken care of in the parent
     }
 
     terminatePortal = () => {
@@ -67,7 +86,7 @@ const withToggledPortal = (ComposedComponent) => {
       }
     }
 
-    makeSmartToggle (toggle) {
+    makeSmartToggle(toggle: ReactElement<any>) {
       // strings are plain DOM nodes
       return React.cloneElement(toggle, {
         'aria-haspopup': 'true',
@@ -105,7 +124,7 @@ const withToggledPortal = (ComposedComponent) => {
       })
     }
 
-    render () {
+    render() {
       const {isClosing, isOpen} = this.state
       return (
         <React.Fragment>
@@ -121,15 +140,6 @@ const withToggledPortal = (ComposedComponent) => {
       )
     }
   }
-
-  return ToggledPortal
-}
-
-export type ToggledPortalProps = {
-  isClosing: boolean,
-  isOpen: boolean,
-  closePortal: () => void,
-  terminatePortal: () => void
 }
 
 export default withToggledPortal
