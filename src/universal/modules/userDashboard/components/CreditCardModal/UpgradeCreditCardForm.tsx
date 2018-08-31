@@ -231,7 +231,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
       return
     }
     submitMutation()
-    this.secureSubmitCC()
+    this.secureSubmitCC().catch()
   }
 
   secureSubmitCC = async () => {

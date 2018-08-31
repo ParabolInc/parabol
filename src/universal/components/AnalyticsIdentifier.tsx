@@ -16,7 +16,7 @@ interface State {
 
 declare global {
   interface Window {
-    analytics: any
+    analytics?: {identify: any; page: any}
   }
 }
 
@@ -28,7 +28,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
       id: viewerId,
       email
     })
-    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') {
+    if (typeof window.analytics === 'undefined') {
       return
     }
     window.analytics.identify(viewerId, {
@@ -52,11 +52,11 @@ class AnalyticsIdentifier extends Component<Props, State> {
   }
 
   static page(prevPath) {
-    if (typeof document === 'undefined' || typeof window.analytics === 'undefined') {
-      return
-    }
     // helmet sets titles async, so we have to wait awhile until it updates
     setTimeout(() => {
+      if (typeof window.analytics === 'undefined') {
+        return
+      }
       const title = document.title || ''
       // This is the magic. Ignore everything after hitting the pipe
       const [pageName] = title.split(' | ')

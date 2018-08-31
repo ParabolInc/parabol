@@ -50,7 +50,7 @@ class SignInPage extends Component<Props, State> {
   }
 
   componentDidMount() {
-    this.maybeCaptureAuthResponse()
+    this.maybeCaptureAuthResponse().catch()
   }
 
   getHandlerForThirdPartyAuth = (auth0Connection: string) => () => {
