@@ -86,7 +86,7 @@ export type User = {
   preferredName: ?string,
   /** the orgs and roles for this user on each */
   userOrgs: ?Array<UserOrg>,
-  archivedTasks: ?TaskConnection,
+  archivedTasks: ?undefinedConnection,
   archivedTasksCount: ?number,
   /** list of git hub repos available to the viewer */
   githubRepos: ?Array<GitHubIntegration>,
@@ -110,7 +110,7 @@ export type User = {
   organization: Organization,
   /** Get the list of all organizations a user belongs to */
   organizations: ?Array<Organization>,
-  tasks: ?TaskConnection,
+  tasks: undefinedConnection,
   /** A query for a team */
   team: Team,
   /** all the teams the user is on that the viewer can see. */
@@ -170,11 +170,11 @@ export type OrgUserRole = 'billingLeader'
 /**
   A connection to a list of items.
 */
-export type TaskConnection = {
+export type undefinedConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<TaskEdge>
+  edges: Array<undefinedEdge>
 }
 
 /**
@@ -194,9 +194,9 @@ export type PageInfoDateCursor = {
 /**
   An edge in a connection.
 */
-export type TaskEdge = {
+export type undefinedEdge = {
   /** The item at the end of the edge */
-  node: ?Task,
+  node: Task,
   cursor: ?any
 }
 
@@ -327,7 +327,7 @@ export type Team = {
   /** The agenda items for the upcoming or current meeting */
   agendaItems: ?Array<AgendaItem>,
   /** All of the tasks for this team */
-  tasks: ?TaskConnection,
+  tasks: ?undefinedConnection,
   /** All the soft team members actively associated with the team */
   softTeamMembers: ?Array<SoftTeamMember>,
   /** All the team members actively associated with the team */
@@ -599,7 +599,7 @@ export type OrganizationMemberConnection = {
   /** Information to aid in pagination. */
   pageInfo: PageInfo,
   /** A list of edges. */
-  edges: ?Array<OrganizationMemberEdge>
+  edges: Array<OrganizationMemberEdge>
 }
 
 /**
@@ -705,7 +705,7 @@ export type TeamMember = {
   /** The user for the team member */
   user: ?User,
   /** Tasks owned by the team member */
-  tasks: ?TaskConnection
+  tasks: ?undefinedConnection
 }
 
 export type Assignee = TeamMember | SoftTeamMember
@@ -727,7 +727,7 @@ export type SoftTeamMember = {
   /** True if this is still a soft team member, false if they were rejected or became a team member */
   isActive: ?boolean,
   /** Tasks owned by the team member */
-  tasks: ?TaskConnection,
+  tasks: ?undefinedConnection,
   /** The team this team member belongs to */
   team: ?Team
 }
@@ -789,7 +789,7 @@ export type InvoiceConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<InvoiceEdge>
+  edges: Array<InvoiceEdge>
 }
 
 /**
@@ -981,7 +981,7 @@ export type NotificationConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<NotificationEdge>
+  edges: Array<NotificationEdge>
 }
 
 /**
@@ -1456,7 +1456,7 @@ export type RetrospectiveMeeting = {
   /** The last time a meeting was updated (stage completed, finished, etc) */
   updatedAt: ?any,
   /** The retrospective meeting member of the viewer */
-  viewerMeetingMember: ?RetrospectiveMeetingMember,
+  viewerMeetingMember: RetrospectiveMeetingMember,
   /** the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used. */
   autoGroupThreshold: ?number,
   /** the next smallest distance threshold to guarantee at least 1 more grouping will be achieved */
@@ -1618,8 +1618,8 @@ export type DragContext = {
   Coordinates used relay a location in a 2-D plane
 */
 export type Coords2D = {
-  x: ?number,
-  y: ?number
+  x: number,
+  y: number
 }
 
 export type GoogleAnalyzedEntity = {

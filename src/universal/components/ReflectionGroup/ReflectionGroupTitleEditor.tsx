@@ -11,7 +11,9 @@ import reactLifecyclesCompat from 'react-lifecycles-compat'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import StyledError from 'universal/components/StyledError'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpdateReflectionGroupTitleMutation from 'universal/mutations/UpdateReflectionGroupTitleMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
@@ -61,27 +63,29 @@ const FormBlock = styled('form')({
 })
 
 // This is gonna turn into slate, no use in spending time fixing it now
-const NameInput = styled('input')(({isExpanded, readOnly}: {isExpanded: boolean, readOnly: boolean}) => ({
-  ...underlineStyles,
-  ':hover,:focus,:active': {
-    underlineStyles
-  },
-  ...ui.fieldBaseStyles,
-  ...ui.fieldSizeStyles.small,
-  border: 0,
-  boxShadow: 'none',
-  color: isExpanded ? '#fff' : appTheme.palette.dark,
-  cursor: readOnly ? 'default' : 'text',
-  fontSize,
-  fontWeight: 600,
-  lineHeight,
-  padding: 0,
-  // need to use a content editable if we wanna animate this since input el forces width
-  textAlign: !isExpanded && 'center',
-  // card width is set at REFLECTION_WIDTH, so this can be a PX, too
-  width: 200,
-  transition: 'all 200ms'
-}))
+const NameInput = styled('input')(
+  ({isExpanded, readOnly}: {isExpanded: boolean; readOnly: boolean}) => ({
+    ...underlineStyles,
+    ':hover,:focus,:active': {
+      underlineStyles
+    },
+    ...ui.fieldBaseStyles,
+    ...ui.fieldSizeStyles.small,
+    border: 0,
+    boxShadow: 'none',
+    color: isExpanded ? '#fff' : appTheme.palette.dark,
+    cursor: readOnly ? 'default' : 'text',
+    fontSize,
+    fontWeight: 600,
+    lineHeight,
+    padding: 0,
+    // need to use a content editable if we wanna animate this since input el forces width
+    textAlign: !isExpanded && 'center',
+    // card width is set at REFLECTION_WIDTH, so this can be a PX, too
+    width: 200,
+    transition: 'all 200ms'
+  })
+)
 
 const getValidationError = (title: string | null, reflectionGroups, reflectionGroupId) => {
   if (!title || title.length < 1) {
@@ -103,7 +107,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
 
   constructor(props: Props) {
     super(props)
-    this.initialTitle = props.reflectionGroup.title
+    this.initialTitle = props.reflectionGroup.title || ''
   }
 
   onChange = (e) => {
@@ -157,7 +161,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       meeting: {reflectionGroups},
       reflectionGroup: {reflectionGroupId, title}
     } = this.props
-    if (submitting || title === this.initialTitle) return
+    if (submitting || title === this.initialTitle || !title) return
     this.initialTitle = title
     // validate
     setDirty()
@@ -176,7 +180,6 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       onCompleted
     )
   }
-
 
   render() {
     const {
@@ -197,13 +200,13 @@ class ReflectionGroupTitleEditor extends Component<Props> {
               readOnly={readOnly}
               innerRef={this.inputRef}
               size={20}
-              type='text'
+              type="text"
               value={title || ''}
             />
           </FormBlock>
           {error && <StyledError>{error.message}</StyledError>}
         </RootBlock>
-        {!readOnly && <PencilIcon isExpanded={isExpanded} name='pencil' onClick={this.onClick} />}
+        {!readOnly && <PencilIcon isExpanded={isExpanded} name="pencil" onClick={this.onClick} />}
       </React.Fragment>
     )
   }

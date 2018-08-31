@@ -4,14 +4,18 @@ import React from 'react'
 import styled from 'react-emotion'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
+import UNSTARTED_MEETING, {UnstartedMeeting} from 'universal/utils/meetings/unstartedMeeting'
 import Avatar from 'universal/components/Avatar/Avatar'
 import LoadableMenu from 'universal/components/LoadableMenu'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import LoadableNewMeetingAvatarMenu from 'universal/modules/meeting/components/LoadableNewMeetingAvatarMenu'
 import appTheme from 'universal/styles/theme/appTheme'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
+import NewMeetingTeamMemberStage = GQL.NewMeetingTeamMemberStage
 
 const originAnchor = {
   vertical: 'bottom',
@@ -36,8 +40,8 @@ const Item = styled('div')({
 })
 
 interface AvatarBlockProps {
-  isLocalStage: boolean,
-  isFacilitatorStage: boolean,
+  isLocalStage: boolean
+  isFacilitatorStage: boolean
   isReadOnly: boolean
 }
 
@@ -57,7 +61,7 @@ const AvatarBlock = styled('div')(
     },
 
     ':hover': {
-      opacity: .5
+      opacity: 0.5
     }
   },
   ({isLocalStage, isFacilitatorStage, isReadOnly}: AvatarBlockProps) => {
@@ -91,15 +95,16 @@ const FacilitatorTag = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps {
-  gotoStage: () => void,
-  isFacilitatorStage: boolean,
-  newMeeting: NewMeetingAvatar_newMeeting,
+  gotoStage: () => void
+  isFacilitatorStage: boolean
+  newMeeting: NewMeetingAvatar_newMeeting | UnstartedMeeting
   teamMember: NewMeetingAvatar_teamMember
 }
 
 const NewMeetingAvatar = (props: Props) => {
   const {gotoStage, isFacilitatorStage, newMeeting, teamMember} = props
-  const {facilitatorUserId = '', localPhase = undefined, localStage = undefined} = newMeeting || {}
+  const meeting = newMeeting || UNSTARTED_MEETING
+  const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES
   const {
@@ -117,7 +122,11 @@ const NewMeetingAvatar = (props: Props) => {
     <Item>
       <AvatarBlock
         isReadOnly={!canNavigate}
-        isLocalStage={localStage && localStage.teamMemberId === teamMemberId}
+        isLocalStage={
+          localStage
+            ? (localStage as NewMeetingTeamMemberStage).teamMemberId === teamMemberId
+            : false
+        }
         isFacilitatorStage={!!isFacilitatorStage}
       >
         <LoadableMenu
@@ -138,7 +147,7 @@ const NewMeetingAvatar = (props: Props) => {
               picture={picture}
               isConnected={isConnected || isSelf}
               isCheckedIn={isCheckedIn}
-              size='fill'
+              size="fill"
             />
           }
         />

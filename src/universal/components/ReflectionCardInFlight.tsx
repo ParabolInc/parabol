@@ -8,7 +8,9 @@ import {ReflectionCardRoot} from 'universal/components/ReflectionCard/Reflection
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
 import UserDraggingHeader from 'universal/components/UserDraggingHeader'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpdateDragLocationMutation from 'universal/mutations/UpdateDragLocationMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import {cardRaisedShadow} from 'universal/styles/elevation'
@@ -19,7 +21,7 @@ import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArr
 
 interface ChildCache {
   // reflection group element
-  el: HTMLElement | null,
+  el: HTMLElement | null
   // boundingBox coords are relative to the parentCache!
   boundingBox: ClientRect | null
   modalBoundingBox?: ClientRect
@@ -31,19 +33,19 @@ export interface MasonryChildrenCache {
 }
 
 interface InFlightCoords {
-  x: number,
+  x: number
   y: number
 }
 
 export interface MasonryParentCache {
-  el: HTMLElement | null,
-  boundingBox: ClientRect | null,
-  columnLefts: Array<number>,
-  cardsInFlight: {[itemId: string]: InFlightCoords},
+  el: HTMLElement | null
+  boundingBox: ClientRect
+  columnLefts: Array<number>
+  cardsInFlight: {[itemId: string]: InFlightCoords}
   // the location for a group that has not been created yet (caused by an ungrouping)
   incomingChildren: {
     [itemId: string]: {
-      boundingBox: ClientRect | null,
+      boundingBox: ClientRect | null
       // the optimistic child that currently represents the group
       childId: string
     }
@@ -51,15 +53,19 @@ export interface MasonryParentCache {
 }
 
 interface Props extends WithAtmosphereProps {
-  childrenCache: MasonryChildrenCache,
-  parentCache: MasonryParentCache,
-  reflection: ReflectionCardInFlight_reflection,
-  setInFlightCoords: (x: number | null, y: number | null, itemId: string | null) => void,
+  childrenCache: MasonryChildrenCache
+  parentCache: MasonryParentCache
+  reflection: ReflectionCardInFlight_reflection
+  setInFlightCoords: (
+    x: number | undefined,
+    y: number | undefined,
+    itemId: string | undefined
+  ) => void
   teamId: string
 }
 
 interface State {
-  x?: number,
+  x?: number
   y?: number
 }
 
@@ -159,15 +165,16 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     const {initialCursorCoords, initialComponentCoords, isPendingStartDrag} = dragContext
     const cursorCoords = {x: e.clientX, y: e.clientY}
     // if i scroll off the screen, leave it where I last saw it
-    if (cursorCoords.x === 0 && cursorCoords.y === 0) return
-    // $FlowFixMe
+    if (
+      !initialCursorCoords ||
+      !initialComponentCoords ||
+      (cursorCoords.x === 0 && cursorCoords.y === 0)
+    )
+      return
     const xDiff = cursorCoords.x - initialCursorCoords.x
-    // $FlowFixMe
     const yDiff = cursorCoords.y - initialCursorCoords.y
     const nextCoords = {
-      // $FlowFixMe
       x: initialComponentCoords.x + xDiff + this.scrollX,
-      // $FlowFixMe
       y: initialComponentCoords.y + yDiff
     }
     if (nextCoords.x !== this.state.x || nextCoords.y !== this.state.y) {
@@ -210,8 +217,8 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   innerWidth: number = 0
   innerHeight: number = 0
   scrollX: number = 0
-  cachedTargetId: string | null
-  cursorOffset: InFlightCoords | null
+  cachedTargetId: string | undefined
+  cursorOffset: InFlightCoords | undefined
 
   render() {
     const {
@@ -224,7 +231,6 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     } = this.props
     if (!dragContext) return null
     const {isClosing, isViewerDragging, dragCoords, dragUser} = dragContext
-    // $FlowFixMe
     const {x, y} = dragCoords && (isClosing || !isViewerDragging) ? dragCoords : this.state
     setInFlightCoords(x, y, reflectionId)
 

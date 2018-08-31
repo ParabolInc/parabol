@@ -9,7 +9,9 @@ import DraggableReflectionCard from 'universal/components/ReflectionCard/Draggab
 import Modal from 'universal/components/Modal'
 import {MasonryChildrenCache, MasonryParentCache} from 'universal/components/ReflectionCardInFlight'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import {GROUP, REFLECTION_CARD, REFLECTION_GROUP, VOTE} from 'universal/utils/constants'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
@@ -25,14 +27,14 @@ import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateR
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  canDrop: boolean,
-  itemCache: any,
-  childrenCache: MasonryChildrenCache,
-  parentCache: MasonryParentCache,
-  connectDropTarget: (reactEl: ReactElement<{}>) => ReactElement<{}>,
-  meeting: ReflectionGroup_meeting,
-  reflectionGroup: ReflectionGroup_reflectionGroup,
-  retroPhaseItemId: string,
+  canDrop: boolean
+  itemCache: any
+  childrenCache: MasonryChildrenCache
+  parentCache: MasonryParentCache
+  connectDropTarget: (reactEl: ReactElement<{}>) => ReactElement<{}>
+  meeting: ReflectionGroup_meeting
+  reflectionGroup: ReflectionGroup_reflectionGroup
+  retroPhaseItemId: string
 
   setItemRef(c: HTMLElement): void
 
@@ -54,10 +56,11 @@ const Background = styled('div')({
 })
 
 interface GroupProps {
-  isModal?: boolean
-  isHidden?: boolean
+  isModal?: boolean | null
+  isHidden?: boolean | null
 }
-const Group = styled('div')(
+
+const GroupStyle = styled('div')(
   {
     padding: CARD_PADDING,
     position: 'absolute',
@@ -82,6 +85,11 @@ const Group = styled('div')(
 )
 
 class ReflectionGroup extends Component<Props> {
+  isClosing = false
+  backgroundRef?: HTMLDivElement | null
+  headerRef?: HTMLDivElement | null
+  modalRef?: HTMLDivElement | null
+
   componentDidUpdate(prevProps) {
     const {
       reflectionGroup: {isExpanded: wasExpanded, reflections: oldReflections}
@@ -120,11 +128,6 @@ class ReflectionGroup extends Component<Props> {
     }
   }
 
-  isClosing = false
-  backgroundRef: HTMLDivElement = null
-  headerRef: HTMLDivElement = null
-  modalRef: HTMLDivElement = null
-
   closeGroupModal = () => {
     const {
       atmosphere,
@@ -156,6 +159,7 @@ class ReflectionGroup extends Component<Props> {
       itemStyle.transform = `translate(${cardStackOffset}px, ${cardStackOffset}px)`
     })
     const {boundingBox} = childrenCache[reflectionGroupId]
+    if (!boundingBox) return
     const {top: collapsedTop, left: collapsedLeft} = boundingBox
     const top = collapsedTop + parentTop - MODAL_PADDING + CARD_PADDING
     const left = collapsedLeft + parentLeft - MODAL_PADDING + CARD_PADDING
@@ -166,10 +170,9 @@ class ReflectionGroup extends Component<Props> {
 
     // animate background home
     const childCache = childrenCache[reflectionGroupId]
-    const {
-      modalBoundingBox: {height: modalHeight, width: modalWidth},
-      headerHeight
-    } = childCache
+    const {modalBoundingBox, headerHeight} = childCache
+    if (!modalBoundingBox) return
+    const {height: modalHeight, width: modalWidth} = modalBoundingBox
     backgroundStyle.transition = `all ${childDuration}ms ${STANDARD_CURVE}`
     backgroundStyle.transform = getScaledModalBackground(
       modalHeight,
@@ -186,7 +189,8 @@ class ReflectionGroup extends Component<Props> {
       const childCache = childrenCache[reflectionGroupId]
       childCache.headerHeight = undefined
       childCache.modalBoundingBox = undefined
-      childrenCache[reflectionGroupId].el.style.opacity = ''
+      if (!childCache.el) return
+      childCache.el.style.opacity = ''
       // @ts-ignore
       commitLocalUpdate(atmosphere, (store) => {
         store.get(reflectionGroupId).setValue(false, 'isExpanded')
@@ -198,11 +202,14 @@ class ReflectionGroup extends Component<Props> {
         this.modalRef.removeEventListener('transitionend', reset)
       }
     }
-    // $FlowFixMe
     this.modalRef.addEventListener('transitionend', reset)
   }
 
-  renderReflection = (reflection: ReflectionGroup_reflectionGroup['reflections'][0], idx: number, {isModal, isDraggable}) => {
+  renderReflection = (
+    reflection: ReflectionGroup_reflectionGroup['reflections'][0],
+    idx: number,
+    {isModal, isDraggable}
+  ) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
     const {isViewerDragInProgress} = meeting
@@ -262,7 +269,10 @@ class ReflectionGroup extends Component<Props> {
     // always render the in-grid group so we can get a read on the size if the title is removed
     return (
       <React.Fragment>
-        <Group innerRef={setChildRef(reflectionGroupId, firstReflection.id)} isHidden={isExpanded}>
+        <GroupStyle
+          innerRef={setChildRef(reflectionGroupId, firstReflection.id)}
+          isHidden={isExpanded}
+        >
           {showHeader && (
             <ReflectionGroupHeader
               innerRef={this.setHeaderRef}
@@ -281,9 +291,9 @@ class ReflectionGroup extends Component<Props> {
               )}
             </div>
           )}
-        </Group>
+        </GroupStyle>
         <Modal clickToClose escToClose isOpen={isExpanded} onClose={this.closeGroupModal}>
-          <Group innerRef={this.setModalRef} isModal>
+          <GroupStyle innerRef={this.setModalRef} isModal>
             <Background innerRef={this.setBackgroundRef} />
             <ReflectionGroupHeader
               isExpanded={isExpanded}
@@ -296,7 +306,7 @@ class ReflectionGroup extends Component<Props> {
                 this.renderReflection(reflection, idx, {isModal: true, isDraggable})
               )}
             </div>
-          </Group>
+          </GroupStyle>
         </Modal>
       </React.Fragment>
     )

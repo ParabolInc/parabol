@@ -4,7 +4,9 @@ import styled from 'react-emotion'
 import {ReflectionGroupVoting_meeting} from '__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
@@ -14,9 +16,9 @@ import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMuta
 import appTheme from 'universal/styles/theme/appTheme'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
-  isExpanded: boolean,
-  meeting: ReflectionGroupVoting_meeting,
-  reflectionGroup: ReflectionGroupVoting_reflectionGroup,
+  isExpanded: boolean
+  meeting: ReflectionGroupVoting_meeting
+  reflectionGroup: ReflectionGroupVoting_reflectionGroup
 }
 
 const UpvoteRow = styled('div')({
@@ -41,6 +43,7 @@ const CheckColumn = styled('div')({
 class ReflectionGroupVoting extends Component<Props> {
   vote = () => {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props
+
     const {
       meetingId,
       viewerMeetingMember: {isCheckedIn}
@@ -82,9 +85,9 @@ class ReflectionGroupVoting extends Component<Props> {
     )
   }
 
-  render () {
+  render() {
     const {error, meeting, reflectionGroup, isExpanded} = this.props
-    const {viewerVoteCount = 0} = reflectionGroup
+    const viewerVoteCount = reflectionGroup.viewerVoteCount || 0
     const {settings, viewerMeetingMember} = meeting
     const {maxVotesPerGroup} = settings
     const {votesRemaining} = viewerMeetingMember

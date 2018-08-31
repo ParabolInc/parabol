@@ -26,7 +26,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   handleChange?: () => void
   isDraggable?: boolean
   reflection: ReflectionCard_reflection
-  meetingId: string
+  meetingId?: string
   phaseItemId?: string
   readOnly?: boolean
   shadow?: number
@@ -40,7 +40,7 @@ interface State {
 }
 
 interface ReflectionCardRootProps {
-  isClosing?: boolean
+  isClosing?: boolean | null
   shadow?: string | null
   hasDragLock?: boolean | null
 }
@@ -195,9 +195,10 @@ class ReflectionCard extends Component<Props, State> {
         />
         {error && <StyledError>{error.message}</StyledError>}
         {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
-        {!readOnly && (
-          <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
-        )}
+        {!readOnly &&
+          meetingId && (
+            <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
+          )}
       </ReflectionCardRoot>
     )
   }

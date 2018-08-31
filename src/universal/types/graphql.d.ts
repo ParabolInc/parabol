@@ -1172,7 +1172,7 @@ declare namespace GQL {
     /**
      * The meeting member of the viewer
      */
-    viewerMeetingMember: MeetingMember | null
+    viewerMeetingMember: MeetingMember
   }
 
   /**
@@ -4212,7 +4212,7 @@ declare namespace GQL {
     /**
      * The retrospective meeting member of the viewer
      */
-    viewerMeetingMember: IRetrospectiveMeetingMember | null
+    viewerMeetingMember: IRetrospectiveMeetingMember
 
     /**
      * the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
@@ -4551,8 +4551,8 @@ declare namespace GQL {
    */
   interface ICoords2D {
     __typename: 'Coords2D'
-    x: number | null
-    y: number | null
+    x: number
+    y: number
   }
 
   interface IGoogleAnalyzedEntity {

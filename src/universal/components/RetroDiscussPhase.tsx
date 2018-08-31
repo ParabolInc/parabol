@@ -12,8 +12,9 @@ import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 import Overflow from 'universal/components/Overflow'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
 import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
@@ -21,10 +22,11 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
+import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  dispatch: Dispatch<{}>,
-  gotoNext: () => void,
+  dispatch: Dispatch<{}>
+  gotoNext: () => void
   team: RetroDiscussPhase_team
 }
 
@@ -135,13 +137,13 @@ const RetroDiscussPhase = (props: Props) => {
   const {atmosphere, dispatch, gotoNext, history, team} = props
   const {viewerId} = atmosphere
   const {newMeeting, teamId} = team
+  if (!newMeeting) return null
   const {
     facilitatorUserId,
     localStage: {localStageId, reflectionGroup},
     meetingId,
     phases
-  } =
-    newMeeting
+  } = newMeeting
   // reflection group will be null until the server overwrites the placeholder.
   if (!reflectionGroup) return null
   const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
@@ -207,10 +209,10 @@ const RetroDiscussPhase = (props: Props) => {
           <ControlButtonBlock />
           {nextStageRes && (
             <ControlButtonBlock>
-              <StyledButton size='medium' onClick={gotoNext}>
+              <StyledButton size="medium" onClick={gotoNext}>
                 <IconLabel
-                  icon='arrow-circle-right'
-                  iconColor='warm'
+                  icon="arrow-circle-right"
+                  iconColor="warm"
                   iconAfter
                   iconLarge
                   label={'Done! Next topic'}
@@ -219,10 +221,10 @@ const RetroDiscussPhase = (props: Props) => {
             </ControlButtonBlock>
           )}
           <ControlButtonBlock>
-            <StyledButton size='medium' onClick={endMeeting}>
+            <StyledButton size="medium" onClick={endMeeting}>
               <IconLabel
-                icon='flag-checkered'
-                iconColor='midGray'
+                icon="flag-checkered"
+                iconColor="midGray"
                 iconLarge
                 label={'End Meeting'}
               />

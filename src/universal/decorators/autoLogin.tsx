@@ -1,13 +1,14 @@
 import React, {Component} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-}
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
 const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
   class AutoLogin extends Component<Props> {
-    constructor (props: Props) {
+    constructor(props: Props) {
       super(props)
       const {
         atmosphere: {authObj},
@@ -30,9 +31,9 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
       }
     }
 
-    redir: boolean
+    redir: boolean = false
 
-    render () {
+    render() {
       if (this.redir) return null
       return <ComposedComponent {...this.props} />
     }

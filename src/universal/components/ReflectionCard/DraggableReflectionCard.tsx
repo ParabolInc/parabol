@@ -10,7 +10,9 @@ import {css} from 'react-emotion'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {Dispatch} from 'redux'
-import withAtmosphere, {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import {cardShadow} from 'universal/styles/elevation'
@@ -27,14 +29,14 @@ interface Props extends WithAtmosphereProps {
   connectDragSource(reactEl: ReactElement<{}>): ReactElement<{}>
 
   dispatch: Dispatch<{}>
-  reflection: DraggableReflectionCard_reflection,
+  reflection: DraggableReflectionCard_reflection
 
   setItemRef(reflectionId: string, isModal: boolean): (c: HTMLDivElement) => void
 
-  meeting: any,
-  idx: number,
-  isDraggable: boolean,
-  isModal: boolean,
+  meeting: any
+  idx: number
+  isDraggable: boolean
+  isModal: boolean
   isViewerDragInProgress: boolean
   isSingleCardGroup: boolean
 }
@@ -124,25 +126,14 @@ class DraggableReflectionCard extends Component<Props> {
   }
 
   render() {
-    const {
-      connectDragSource,
-      reflection,
-      setItemRef,
-      idx,
-      isDraggable,
-      isModal
-    } = this.props
+    const {connectDragSource, reflection, setItemRef, idx, isDraggable, isModal} = this.props
     const {dragContext, reflectionId} = reflection
     const className = getClassName(idx, dragContext, isModal)
 
     return connectDragSource(
       // the `id` is in the case when the ref callback isn't called in time
       <div className={className} ref={setItemRef(reflectionId, isModal)} id={reflectionId}>
-        <ReflectionCard
-          reflection={reflection}
-          isDraggable={isDraggable}
-          showOriginFooter
-        />
+        <ReflectionCard reflection={reflection} isDraggable={isDraggable} showOriginFooter />
       </div>
     )
   }
@@ -184,15 +175,11 @@ const reflectionDragSpec = {
     const {
       atmosphere,
       closeGroupModal,
-      reflection: {
-        dragContext: {dragId, isViewerDragging},
-        meetingId,
-        reflectionId,
-        reflectionGroupId
-      }
+      reflection: {dragContext, meetingId, reflectionId, reflectionGroupId}
     } = props
     // endDrag is also called when the viewer loses a conflict
-    if (!isViewerDragging) return
+    if (!dragContext || !dragContext.isViewerDragging) return
+    const {dragId} = dragContext
     const dropResult = monitor.getDropResult()
     const {dropTargetType = null, dropTargetId = null} = dropResult || {}
     // must come before the mutation so we can clear the itemCache
@@ -231,7 +218,7 @@ export default createFragmentContainer(
   (connect as any)()(
     withAtmosphere(
       dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(
-        (DraggableReflectionCard)
+        DraggableReflectionCard
       )
     )
   ),

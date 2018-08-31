@@ -1,14 +1,14 @@
-import {GraphQLFloat, GraphQLObjectType} from 'graphql'
+import {GraphQLNonNull, GraphQLFloat, GraphQLObjectType} from 'graphql'
 
 const Coords2D = new GraphQLObjectType({
   name: 'Coords2D',
   description: 'Coordinates used relay a location in a 2-D plane',
   fields: () => ({
     x: {
-      type: GraphQLFloat
+      type: new GraphQLNonNull(GraphQLFloat)
     },
     y: {
-      type: GraphQLFloat
+      type: new GraphQLNonNull(GraphQLFloat)
     }
   })
 })

@@ -894,7 +894,7 @@
     "@types/react" "*"
     "@types/react-router" "*"
 
-"@types/react-router@*", "@types/react-router@^4.0.30":
+"@types/react-router@*":
   version "4.0.30"
   resolved "https://registry.yarnpkg.com/@types/react-router/-/react-router-4.0.30.tgz#64bcd886befd1f932779b74d17954adbefb7a3a7"
   dependencies:
@@ -11709,9 +11709,9 @@ relateurl@0.2.x:
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
 
-relay-compiler-language-typescript@^1.1.0:
+"relay-compiler-language-typescript@file:./relay-compiler-language-typescript-v1.1.0.tgz":
   version "1.1.0"
-  resolved "https://registry.yarnpkg.com/relay-compiler-language-typescript/-/relay-compiler-language-typescript-1.1.0.tgz#c3c6770eb74035a0fede99761cc539e5f9b5c3af"
+  resolved "file:./relay-compiler-language-typescript-v1.1.0.tgz#f653fafe42e6c4298fc2330e164a1bc2e59fcb9a"
   dependencies:
     immutable "^3.7.6"
     invariant "^2.2.2"
