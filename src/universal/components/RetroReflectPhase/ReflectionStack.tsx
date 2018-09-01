@@ -9,6 +9,7 @@ import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/R
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import ui from 'universal/styles/ui'
+import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
 interface Props {
   idx: number
@@ -83,36 +84,58 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
   }
 })
 
+const ANIMATION_DURATION = 300
+const EASING = STANDARD_CURVE
+
 class ReflectionStack extends Component<Props, State> {
   state = {
     isExpanded: false
   }
+
+  animationStart: number = 0
   stackRef = React.createRef<HTMLDivElement>()
   firstReflectionRef = React.createRef<HTMLDivElement>()
 
-  componentDidUpdate(prevProps) {
+  getSnapshotBeforeUpdate(prevProps: Props) {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
     if (
-      (!oldTop && !newTop) ||
       !this.firstReflectionRef.current ||
-      !this.props.phaseEditorRef.current
+      !this.props.phaseEditorRef.current ||
+      (oldTop && oldTop.id) === (newTop && newTop.id)
     ) {
-      return
+      return null
     }
-    if (!oldTop || !newTop || oldTop.id !== newTop.id) {
-      this.animateFromEditor(this.firstReflectionRef.current, this.props.phaseEditorRef.current)
+    const duration = ANIMATION_DURATION - (Date.now() - this.animationStart)
+    if (duration <= 0) return {duration: ANIMATION_DURATION, easing: EASING}
+    // an animation is already in progress!
+    return {
+      startCoords: this.firstReflectionRef.current.getBoundingClientRect(),
+      duration,
+      easing: getDeCasteljau(1 - duration / ANIMATION_DURATION, EASING)
     }
   }
 
-  animateFromEditor(topCardDiv: HTMLDivElement, editorDiv: HTMLDivElement) {
-    const first = getBBox(editorDiv)
-    const last = getBBox(topCardDiv)
+  componentDidUpdate(_prevProps, _prevState, snapshot) {
+    if (this.firstReflectionRef.current && snapshot) {
+      const first = snapshot.startCoords || getBBox(this.props.phaseEditorRef.current)
+      this.animateFromEditor(
+        this.firstReflectionRef.current,
+        first,
+        snapshot.duration,
+        snapshot.easing
+      )
+    }
+  }
+
+  animateFromEditor(firstReflectionDiv: HTMLDivElement, first, duration, easing) {
+    const last = getBBox(firstReflectionDiv)
     if (!first || !last) return
-    topCardDiv.style.transform = getTransform(first, last)
+    firstReflectionDiv.style.transform = getTransform(first, last)
     requestDoubleAnimationFrame(() => {
-      topCardDiv.style.transition = `transform 300ms ${STANDARD_CURVE}`
-      topCardDiv.style.transform = null
+      this.animationStart = Date.now()
+      firstReflectionDiv.style.transition = `transform ${duration}ms ${easing}`
+      firstReflectionDiv.style.transform = null
     })
   }
 

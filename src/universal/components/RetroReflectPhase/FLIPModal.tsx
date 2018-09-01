@@ -88,11 +88,10 @@ class FLIPModal extends Component<Props> {
       bgStyle.transform = null
     })
     const cleanup = () => {
-      backgroundDiv.removeEventListener('transitionend', cleanup)
       contentDiv.style.overflowX = 'hidden'
       contentDiv.style.overflowY = 'auto'
     }
-    backgroundDiv.addEventListener('transitionend', cleanup)
+    backgroundDiv.addEventListener('transitionend', cleanup, {passive: true, once: true})
   }
 
   animateIn() {
@@ -124,12 +123,11 @@ class FLIPModal extends Component<Props> {
       bgStyle.opacity = null
     })
     const cleanup = () => {
-      backgroundDiv.removeEventListener('transitionend', cleanup)
       contentDiv.style.overflowX = 'hidden'
       contentDiv.style.overflowY = 'auto'
       resetBodyStyles()
     }
-    backgroundDiv.addEventListener('transitionend', cleanup)
+    backgroundDiv.addEventListener('transitionend', cleanup, {passive: true, once: true})
   }
 
   animateOut() {
@@ -148,11 +146,10 @@ class FLIPModal extends Component<Props> {
     bgStyle.transform = getTransform(first, last, {scale: true})
     bgStyle.opacity = '0'
     const cleanup = () => {
-      backgroundDiv.removeEventListener('transitionend', cleanup)
       close()
       resetBodyStyles()
     }
-    backgroundDiv.addEventListener('transitionend', cleanup)
+    backgroundDiv.addEventListener('transitionend', cleanup, {passive: true, once: true})
   }
 
   componentDidUpdate(prevProps) {

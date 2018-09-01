@@ -6,7 +6,7 @@ import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import EventEmitter from 'eventemitter3'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
-import getTrebuchet, {SSETrebuchet, SocketTrebuchet} from '@mattkrick/trebuchet-client'
+import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import GQLTrebuchetClient, {GQLHTTPClient} from '@mattkrick/graphql-trebuchet-client'
 
 const defaultErrorHandler = (err) => {
@@ -138,6 +138,7 @@ export default class Atmosphere extends Environment {
   }
 
   handleFetch = async (operation, variables) => {
+    // await sleep(100)
     return this.transport.fetch({query: operation.text, variables})
   }
 
@@ -220,6 +221,7 @@ export default class Atmosphere extends Environment {
       return !peerSubKeys.includes(qs.subKey) || !queryKeys.includes(qs.queryKey)
     })
   }
+
   close () {
     // race condition when logging out & the autoLogin
     this.authObj = null

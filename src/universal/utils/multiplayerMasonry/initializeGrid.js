@@ -72,9 +72,8 @@ const initializeGrid = (itemCache, childrenCache, parentCache, isAnimated) => {
         const lastEl = animatedEls[animatedEls.length - 1]
         const wrapUp = () => {
           animateOutQueue.forEach((cb) => cb())
-          lastEl.removeEventListener('transitionend', wrapUp)
         }
-        lastEl.addEventListener('transitionend', wrapUp)
+        lastEl.addEventListener('transitionend', wrapUp, {passive: true, once: true})
       } else {
         animateOutQueue.forEach((cb) => cb())
       }
