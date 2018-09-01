@@ -189,7 +189,7 @@ class ReflectionCard extends Component<Props, State> {
           handleChange={handleChange}
           handleReturn={this.handleReturn}
           placeholder="My reflection thought…"
-          readOnly={readOnly || isTempId(reflectionId)}
+          readOnly={readOnly || isTempId(reflectionId) || isDraggable}
           setEditorState={this.setEditorState}
           userSelect={userSelect || isDraggable ? 'none' : 'text'}
         />

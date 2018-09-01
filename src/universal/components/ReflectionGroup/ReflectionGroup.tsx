@@ -40,7 +40,11 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   setChildRef: (groupId: string, reflectionId: string) => (c: HTMLElement) => void
 }
 
-const reflectionsStyle = (canDrop, isDraggable, canExpand) =>
+const reflectionsStyle = (
+  canDrop: boolean | undefined,
+  isDraggable: boolean | undefined,
+  canExpand: boolean | undefined
+) =>
   css({
     cursor: isDraggable || canExpand ? 'pointer' : 'default',
     opacity: canDrop ? 0.6 : 1,
@@ -89,7 +93,7 @@ class ReflectionGroup extends Component<Props> {
   headerRef?: HTMLDivElement | null
   modalRef?: HTMLDivElement | null
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     const {
       reflectionGroup: {isExpanded: wasExpanded, reflections: oldReflections}
     } = prevProps
@@ -127,7 +131,10 @@ class ReflectionGroup extends Component<Props> {
     }
   }
 
-  closeGroupModal = () => {
+  componentWillUnmount() {
+    this.closeGroupModal(true)
+  }
+  closeGroupModal = (isForce?: boolean) => {
     const {
       atmosphere,
       childrenCache,
@@ -182,9 +189,9 @@ class ReflectionGroup extends Component<Props> {
     backgroundStyle.backgroundColor = ''
 
     this.isClosing = true
-    const reset = (e) => {
+    const reset = (e?: TransitionEvent) => {
       this.isClosing = false
-      if (e.target !== e.currentTarget) return
+      if (e && e.target !== e.currentTarget) return
       const childCache = childrenCache[reflectionGroupId]
       childCache.headerHeight = undefined
       childCache.modalBoundingBox = undefined
@@ -198,8 +205,15 @@ class ReflectionGroup extends Component<Props> {
       reflections.forEach((reflection) => {
         itemCache[reflection.id].modalEl = undefined
       })
+      if (this.modalRef) {
+        this.modalRef.removeEventListener('transitionend', reset)
+      }
     }
-    this.modalRef.addEventListener('transitionend', reset, {passive: true, once: true})
+    if (!isForce) {
+      this.modalRef.addEventListener('transitionend', reset, {passive: true})
+    } else {
+      reset()
+    }
   }
 
   renderReflection = (
@@ -290,7 +304,7 @@ class ReflectionGroup extends Component<Props> {
             </div>
           )}
         </GroupStyle>
-        <Modal clickToClose escToClose isOpen={isExpanded} onClose={this.closeGroupModal}>
+        <Modal clickToClose escToClose isOpen={isExpanded} onClose={() => this.closeGroupModal()}>
           <GroupStyle innerRef={this.setModalRef} isModal>
             <Background innerRef={this.setBackgroundRef} />
             <ReflectionGroupHeader
