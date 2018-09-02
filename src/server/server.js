@@ -62,11 +62,23 @@ if (!PROD) {
   app.use(
     require('webpack-dev-middleware')(compiler, {
       logLevel: 'warn',
-      noInfo: false,
+      noInfo: true,
+      quiet: true,
       publicPath: config.output.publicPath,
       stats: {
+        assets: false,
+        builtAt: false,
+        cached: false,
+        cachedAssets: false,
         chunks: false,
-        colors: true
+        chunkGroups: false,
+        chunkModules: false,
+        chunkOrigins: false,
+        colors: true,
+        entrypoints: false,
+        hash: false,
+        modules: false,
+        version: false
       },
       watchOptions: {
         poll: true,

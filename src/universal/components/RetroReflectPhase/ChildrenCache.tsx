@@ -1,4 +1,4 @@
-import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
+import {BBox, Point} from 'types/animations'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
@@ -26,11 +26,6 @@ interface CachedChild {
   bbox: ChildBBox
 }
 
-interface ProposedChild {
-  top: number
-  left: number
-}
-
 class ChildrenCache {
   cache: Array<CachedChild> = []
   childPadding: number = 0
@@ -47,9 +42,9 @@ class ChildrenCache {
     const fullColumnWidth = this.childWidth + this.childPadding
     const maxCols = Math.floor(this.maxWidth / fullColumnWidth)
     let bestPerimeter = 1e6
-    let result = {height: 0, width: 0, children: [] as Array<ProposedChild>}
+    let result = {height: 0, width: 0, children: [] as Array<Point>}
     for (let ii = 1; ii < maxCols; ii++) {
-      const proposedChildren = [] as Array<ProposedChild>
+      const proposedChildren = [] as Array<Point>
       const currentColumnHeights = new Array(ii).fill(this.gridPadding)
       const modalColumnLefts = currentColumnHeights.map(
         (_, idx) => fullColumnWidth * idx + this.gridPadding

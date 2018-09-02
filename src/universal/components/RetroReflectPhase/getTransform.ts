@@ -1,12 +1,7 @@
-import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
+import {BBox, Point} from 'types/animations'
 
 interface Options {
   scale?: boolean
-}
-
-export interface Point {
-  left: number
-  top: number
 }
 
 const getTransform = (first: Point | BBox, last: Point | BBox, {scale}: Options = {}) => {

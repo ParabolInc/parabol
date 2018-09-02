@@ -3,20 +3,13 @@ import styled from 'react-emotion'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
-import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
+import {BBox} from 'types/animations'
 import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {DECELERATE} from 'universal/styles/animation'
 import {ZINDEX_MODAL} from 'universal/styles/elevation'
 import {ITEM_DURATION, MIN_ITEM_DELAY} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
-
-export interface BBox {
-  height: number
-  width: number
-  top: number
-  left: number
-}
 
 interface Props {
   childrenLen: number

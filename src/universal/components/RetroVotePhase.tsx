@@ -6,7 +6,6 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
-import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
@@ -19,6 +18,7 @@ import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import PhaseItemMasonry from './PhaseItemMasonry'
 import IDiscussPhase = GQL.IDiscussPhase
 
 interface Props extends WithAtmosphereProps {
