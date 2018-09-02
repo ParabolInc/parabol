@@ -50,9 +50,9 @@ const LoadableMenu = (props: Props) => {
     queryVars,
     terminatePortal
   } = props
-  const handleClose = () => {
-    closePortal()
-    onClose && onClose()
+  const handleClose = (e) => {
+    closePortal(e)
+    onClose && onClose(e)
   }
   return (
     <Modal clickToClose escToClose onClose={handleClose} isOpen={isOpen} onOpen={onOpen}>
