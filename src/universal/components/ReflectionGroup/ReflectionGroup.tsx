@@ -17,7 +17,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {STANDARD_CURVE} from 'universal/styles/animation'
-import {GROUP, REFLECTION_CARD, VOTE} from 'universal/utils/constants'
+import {GROUP, REFLECTION_CARD} from 'universal/utils/constants'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
 import initializeModalGrid from 'universal/utils/multiplayerMasonry/initializeModalGrid'
 import {
@@ -295,6 +295,7 @@ class ReflectionGroup extends Component<Props> {
     const canExpand = !isExpanded && reflections.length > 1
     const [firstReflection] = reflections
     const isDraggable = phaseType === GROUP && !isComplete
+    const showHeader = reflections.length > 1 || phaseType !== GROUP
     // always render the in-grid group so we can get a read on the size if the title is removed
     return (
       <React.Fragment>
@@ -302,12 +303,13 @@ class ReflectionGroup extends Component<Props> {
           innerRef={setChildRef(reflectionGroupId, firstReflection.id)}
           isHidden={isExpanded}
         >
-          <ReflectionGroupHeader
-            innerRef={this.setHeaderRef}
-            meeting={meeting}
-            reflectionGroup={reflectionGroup}
-            isVisible={reflections.length > 1 || phaseType === VOTE}
-          />
+          {showHeader && (
+            <ReflectionGroupHeader
+              innerRef={this.setHeaderRef}
+              meeting={meeting}
+              reflectionGroup={reflectionGroup}
+            />
+          )}
           {connectDropTarget(
             <div
               className={reflectionsStyle(canDrop, isDraggable, canExpand)}
