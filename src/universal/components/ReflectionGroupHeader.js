@@ -33,7 +33,8 @@ const TitleAndCount = styled('div')(({isExpanded}) => ({
 const Spacer = styled('div')({width: ui.votingCheckmarksWidth})
 
 const ReflectionGroupHeader = (props: Props) => {
-  const {innerRef, isExpanded, meeting, reflectionGroup} = props
+  const {innerRef, isExpanded, meeting, reflectionGroup, isVisible} = props
+  if (!isVisible) return null
   const {
     localStage,
     localPhase: {phaseType}

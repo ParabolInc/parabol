@@ -1,12 +1,21 @@
-import {ConnectDropTarget} from '@mattkrick/react-dnd'
 import {ReflectionGroup_meeting} from '__generated__/ReflectionGroup_meeting.graphql'
 import {ReflectionGroup_reflectionGroup} from '__generated__/ReflectionGroup_reflectionGroup.graphql'
 import React, {Component} from 'react'
+import {
+  ConnectDropTarget,
+  DropTarget,
+  DropTargetConnector,
+  DropTargetMonitor,
+  DropTargetSpec
+} from 'react-dnd'
 import styled, {css} from 'react-emotion'
-import {commitLocalUpdate} from 'react-relay'
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import Modal from 'universal/components/Modal'
 import DraggableReflectionCard from 'universal/components/ReflectionCard/DraggableReflectionCard'
 import ReflectionGroupHeader from 'universal/components/ReflectionGroupHeader'
-import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import {GROUP, REFLECTION_CARD, VOTE} from 'universal/utils/constants'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
@@ -19,7 +28,7 @@ import {
   MODAL_PADDING
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 import updateReflectionsInModal from 'universal/utils/multiplayerMasonry/updateReflectionsInModal'
-import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {
   MasonryChildrenCache,
   MasonryItemCache,
@@ -27,6 +36,7 @@ import {
   SetChildRef,
   SetItemRef
 } from '../PhaseItemMasonry'
+import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -283,7 +293,6 @@ class ReflectionGroup extends Component<Props> {
       localStage: {isComplete}
     } = meeting
     const canExpand = !isExpanded && reflections.length > 1
-    const showHeader = reflections.length > 1 || phaseType === VOTE
     const [firstReflection] = reflections
     const isDraggable = phaseType === GROUP && !isComplete
     // always render the in-grid group so we can get a read on the size if the title is removed
@@ -293,14 +302,12 @@ class ReflectionGroup extends Component<Props> {
           innerRef={setChildRef(reflectionGroupId, firstReflection.id)}
           isHidden={isExpanded}
         >
-          {showHeader && (
-            <ReflectionGroupHeader
-              innerRef={this.setHeaderRef}
-              meeting={meeting}
-              reflectionGroup={reflectionGroup}
-            />
-          )}
-          {/* connect the drop target here so dropping on the title triggers an ungroup */}
+          <ReflectionGroupHeader
+            innerRef={this.setHeaderRef}
+            meeting={meeting}
+            reflectionGroup={reflectionGroup}
+            isVisible={reflections.length > 1 || phaseType === VOTE}
+          />
           {connectDropTarget(
             <div
               className={reflectionsStyle(canDrop, isDraggable, canExpand)}
@@ -358,7 +365,7 @@ const reflectionDropCollect = (connect: DropTargetConnector, monitor: DropTarget
 })
 
 export default createFragmentContainer<PassedProps>(
-  (dropTarget as any)(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(
+  (DropTarget as any)(REFLECTION_CARD, reflectionDropSpec, reflectionDropCollect)(
     withAtmosphere(withMutationProps(ReflectionGroup))
   ),
   graphql`

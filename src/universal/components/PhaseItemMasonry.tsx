@@ -1,18 +1,19 @@
-import {ConnectDropTarget, DropTarget} from '@mattkrick/react-dnd'
+import {PhaseItemMasonry_meeting} from '__generated__/PhaseItemMasonry_meeting.graphql'
+import React from 'react'
 import {
+  ConnectDropTarget,
+  DropTarget,
   DropTargetConnector,
   DropTargetMonitor,
   DropTargetSpec
-} from '@mattkrick/react-dnd/lib/interfaces'
-import {PhaseItemMasonry_meeting} from '__generated__/PhaseItemMasonry_meeting.graphql'
-import React from 'react'
+} from 'react-dnd'
 import withScrolling from 'react-dnd-scrollzone'
 import {css} from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import {BBox, Coords} from 'types/animations'
 import Modal from 'universal/components/Modal'
 import ReflectionCardInFlight from 'universal/components/ReflectionCardInFlight'
 import ReflectionGroup from 'universal/components/ReflectionGroup/ReflectionGroup'
-import {BBox} from 'types/animations'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -26,7 +27,6 @@ import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTr
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {Coords} from '../../types/animations'
 import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
 
 interface CollectedProps {

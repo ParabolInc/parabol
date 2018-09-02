@@ -1,4 +1,4 @@
-import {BBox, Point} from 'types/animations'
+import {BBox, Dims, Point} from 'types/animations'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
@@ -13,17 +13,11 @@ import {
   MOVE_DURATION
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 
-interface ChildBBox {
-  height: number
-  top?: number
-  left?: number
-  width?: number
-}
-
 interface CachedChild {
   key: string
   el: HTMLElement
-  bbox: ChildBBox
+  dims: Dims
+  point?: Point
 }
 
 class ChildrenCache {
@@ -51,7 +45,7 @@ class ChildrenCache {
       )
       this.cache.forEach((cachedChild) => {
         const {
-          bbox: {height}
+          dims: {height}
         } = cachedChild
         const shortestColumnTop = Math.min(...currentColumnHeights)
         const shortestColumnIdx = currentColumnHeights.indexOf(shortestColumnTop)
@@ -85,20 +79,20 @@ class ChildrenCache {
     let childrenToAnimate = 0
     const {children, height, width} = this.getGridTuples()
     children.forEach((last, idx) => {
-      const {bbox, el} = this.cache[idx]
-      if (bbox.left === last.left && bbox.top === last.top) return
+      const {point, el} = this.cache[idx]
+      if (!point || (point.left === last.left && point.top === last.top)) return
       childrenToAnimate++
       const {style: elStyle} = el
       setElementBBox(el, last)
-      elStyle.transform = getTransform(bbox as BBox, last)
+      elStyle.transform = getTransform(point, last)
       elStyle.transition = null
       const delay = MOVE_DELAY + MIN_VAR_ITEM_DELAY * childrenToAnimate
       requestDoubleAnimationFrame(() => {
         elStyle.transition = `transform ${MOVE_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
         elStyle.transform = null
       })
-      bbox.left = last.left
-      bbox.top = last.top
+      point.left = last.left
+      point.top = last.top
     })
     return {height, width}
   }
@@ -106,10 +100,10 @@ class ChildrenCache {
   setEl(key: string, el: HTMLElement) {
     const cachedChild = this.get(key)
     if (!cachedChild) {
-      const childBBox = getBBox(el)
-      if (childBBox) {
-        const {height, width} = childBBox
-        this.cache.push({el, key, bbox: {height, width}})
+      const cachedDims = getBBox(el)
+      if (cachedDims) {
+        const {height, width} = cachedDims
+        this.cache.push({el, key, dims: {height, width}})
       }
     }
   }
@@ -128,9 +122,7 @@ class ChildrenCache {
     this.gridPadding = gridPadding
     const {children, height, width} = this.getGridTuples()
     children.forEach(({left, top}, idx) => {
-      const {bbox} = this.cache[idx]
-      bbox.left = left
-      bbox.top = top
+      this.cache[idx].point = {left, top}
     })
     return {height, width}
   }
@@ -138,16 +130,16 @@ class ChildrenCache {
   animateIn(first: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
       const {
-        bbox,
+        point,
         el: {style}
       } = cachedChild
-      if (!bbox.left || !bbox.top) return
+      if (!point) return
 
-      const dX = first.left - bbox.left - parent.left
-      const dY = first.top - bbox.top - parent.top
+      const dX = first.left - point.left - parent.left
+      const dY = first.top - point.top - parent.top
       style.position = 'absolute'
-      style.top = `${bbox.top}px`
-      style.left = `${bbox.left}px`
+      style.top = `${point.top}px`
+      style.left = `${point.left}px`
       style.transform = `translate(${dX}px,${dY}px)`
       style.transition = 'transform 0ms'
     })
@@ -168,12 +160,12 @@ class ChildrenCache {
   animateOut(last: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
       const {
-        bbox,
+        point,
         el: {style}
       } = cachedChild
-      if (!bbox.left || !bbox.top) return
-      const dX = last.left - bbox.left - parent.left
-      const dY = last.top - bbox.top - parent.top
+      if (!point) return
+      const dX = last.left - point.left - parent.left
+      const dY = last.top - point.top - parent.top
       style.position = 'absolute'
       style.top = `${last.top - parent.top}px`
       style.left = `${last.left - parent.left}px`
@@ -197,10 +189,10 @@ class ChildrenCache {
   maybeResize = (key: string) => {
     const cachedChild = this.get(key)
     if (!cachedChild) return undefined
-    const {bbox, el} = cachedChild
+    const {dims, el} = cachedChild
     const elBBox = getBBox(el)
-    if (!elBBox || bbox.height === elBBox.height) return undefined
-    bbox.height = elBBox.height
+    if (!elBBox || dims.height === elBBox.height) return undefined
+    dims.height = elBBox.height
     return this.updateChildren()
   }
 

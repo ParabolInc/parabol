@@ -1,5 +1,5 @@
-import {DragSource as dragSource} from '@mattkrick/react-dnd'
-import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
+import {DragSource as dragSource} from 'react-dnd'
+import {getEmptyImage} from 'react-dnd-html5-backend'
 import {DraggableReflectionCard_reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
 /**
  * A drag-and-drop enabled reflection card.
