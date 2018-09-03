@@ -46,7 +46,7 @@ const EditReflectionMutation = (
       if (!phaseItem) return
       const editorIds = phaseItem.getValue('editorIds') || []
       const nextEditorIds = isEditing
-        ? editorIds.concat('tmpUser')
+        ? Array.from(new Set(editorIds.concat('tmpUser')))
         : editorIds.filter((id) => id !== 'tmpUser')
       phaseItem.setValue(nextEditorIds, 'editorIds')
     }

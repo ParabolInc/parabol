@@ -58,7 +58,8 @@ class PhaseItemEditor extends Component<Props, State> {
     const {editorState} = this.state
     const isDirty = editorState.getCurrentContent().hasText()
     // if they have text there, they'll probably come back to it in 10 seconds
-    const delay = isDirty ? 10000 : 0
+    const delay = isDirty ? 5000 : 0
+    clearTimeout(this.editTimerId)
     this.editTimerId = window.setTimeout(() => {
       this.editTimerId = undefined
       EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
@@ -68,10 +69,11 @@ class PhaseItemEditor extends Component<Props, State> {
   handleEditorFocus = () => {
     const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
     if (this.editTimerId) {
-      this.editTimerId = undefined
       clearTimeout(this.editTimerId)
+      this.editTimerId = undefined
+    } else {
+      EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
     }
-    EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
   }
 
   handleReturn = (e: React.KeyboardEvent) => {

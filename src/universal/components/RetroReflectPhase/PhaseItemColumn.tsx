@@ -10,7 +10,6 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
-import PhaseItemHealthBar from 'universal/components/RetroReflectPhase/PhaseItemHealthBar'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
@@ -162,7 +161,6 @@ class PhaseItemColumn extends Component<Props> {
                   nextSortOrder={this.nextSortOrder}
                   retroPhaseItemId={retroPhaseItemId}
                 />
-                <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
               </EditorAndStatus>
             </HeaderAndEditor>
             <ReflectionStack
