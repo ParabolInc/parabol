@@ -150,12 +150,13 @@ class NewMeeting extends Component<Props> {
   constructor(props) {
     super(props)
     const {bindHotkey} = props
-    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext))
+    bindHotkey('right', handleHotkey(this.maybeGotoNext))
     bindHotkey('left', handleHotkey(this.gotoPrev))
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
   }
 
   sidebarRef = React.createRef()
+  gotoNextRef = React.createRef<HTMLDivElement>()
   endMeeting = () => {
     const {
       atmosphere,
@@ -210,7 +211,9 @@ class NewMeeting extends Component<Props> {
     }
   }
 
-  gotoNext = (options?: {isCheckedIn: boolean}) => {
+  maybeGotoNext = () => this.gotoNext({isHotkey: true})
+
+  gotoNext = (options: {isCheckedIn?: boolean; isHotkey?: boolean} = {}) => {
     const {
       atmosphere,
       submitting,
@@ -232,17 +235,23 @@ class NewMeeting extends Component<Props> {
       const {meetingMember, userId} = teamMember
       if (!meetingMember) return
       const {isCheckedIn} = meetingMember
-      const nextCheckedInValue = options ? options.isCheckedIn : true
+      const nextCheckedInValue = 'isCheckedIn' in options ? options.isCheckedIn : true
       if (isCheckedIn !== nextCheckedInValue) {
         NewMeetingCheckInMutation(atmosphere, {meetingId, userId, isCheckedIn: nextCheckedInValue})
       }
     }
+    const currentStageRes = findStageById(phases, localStageId)
     const nextStageRes = findStageAfterId(phases, localStageId)
     if (!nextStageRes) return
     const {
       stage: {id: nextStageId}
     } = nextStageRes
-    this.gotoStageId(nextStageId)
+    const gotoNextDiv = this.gotoNextRef.current
+    if (!options.isHotkey || currentStageRes.stage.isComplete) {
+      this.gotoStageId(nextStageId)
+    } else if (options.isHotkey) {
+      gotoNextDiv && gotoNextDiv.focus()
+    }
   }
 
   gotoPrev = () => {
@@ -335,20 +344,39 @@ class NewMeeting extends Component<Props> {
                   <NewMeetingCheckIn
                     // @ts-ignore
                     gotoNext={this.gotoNext}
+                    gotoNextRef={this.gotoNextRef}
                     meetingType={meetingType}
                     team={team}
                   />
                 )}
                 {localPhaseType === REFLECT && (
-                  <RetroReflectPhase gotoNext={this.gotoNext} team={team} />
+                  <RetroReflectPhase
+                    gotoNext={this.gotoNext}
+                    gotoNextRef={this.gotoNextRef}
+                    team={team}
+                  />
                 )}
                 {localPhaseType === GROUP && (
-                  <RetroGroupPhase gotoNext={this.gotoNext} team={team} />
+                  <RetroGroupPhase
+                    gotoNext={this.gotoNext}
+                    gotoNextRef={this.gotoNextRef}
+                    team={team}
+                  />
                 )}
-                {localPhaseType === VOTE && <RetroVotePhase gotoNext={this.gotoNext} team={team} />}
+                {localPhaseType === VOTE && (
+                  <RetroVotePhase
+                    gotoNext={this.gotoNext}
+                    gotoNextRef={this.gotoNextRef}
+                    team={team}
+                  />
+                )}
                 {localPhaseType === DISCUSS && (
                   // @ts-ignore
-                  <RetroDiscussPhase gotoNext={this.gotoNext} team={team} />
+                  <RetroDiscussPhase
+                    gotoNext={this.gotoNext}
+                    gotoNextRef={this.gotoNextRef}
+                    team={team}
+                  />
                 )}
                 {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
               </React.Fragment>

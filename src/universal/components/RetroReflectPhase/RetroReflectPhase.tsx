@@ -19,6 +19,7 @@ import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {GROUP} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import handleRightArrow from '../handleRightArrow'
 
 const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemCount: number}) => ({
   minWidth: phaseItemCount * REFLECTION_WIDTH,
@@ -30,6 +31,7 @@ const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemC
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
+  gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroReflectPhase_team
 }
 
@@ -40,7 +42,8 @@ class RetroReflectPhase extends Component<Props> {
     const {
       atmosphere: {viewerId},
       team,
-      gotoNext
+      gotoNext,
+      gotoNextRef
     } = this.props
     const {newMeeting, meetingSettings} = team
     if (!newMeeting) return
@@ -67,6 +70,8 @@ class RetroReflectPhase extends Component<Props> {
               size="medium"
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
+              onKeyDown={handleRightArrow(gotoNext)}
+              innerRef={gotoNextRef}
             >
               <IconLabel
                 icon="arrow-circle-right"

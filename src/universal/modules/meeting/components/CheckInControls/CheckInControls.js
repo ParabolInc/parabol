@@ -7,6 +7,7 @@ import IconLabel from 'universal/components/IconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import getWindowSize from 'universal/styles/helpers/getWindowSize'
 import {meetingSidebarBreakpoint} from 'universal/styles/meeting'
+import handleRightArrow from 'universal/components/handleRightArrow'
 
 const ButtonBlock = styled('div')({
   display: 'flex'
@@ -19,7 +20,8 @@ const CheckInControls = (props) => {
     currentMemberName,
     localPhaseItem,
     nextMemberName,
-    nextPhaseName
+    nextPhaseName,
+    gotoNextRef
   } = props
 
   const handleOnClickPresent = checkInPressFactory(true)
@@ -55,7 +57,6 @@ const CheckInControls = (props) => {
   )
 
   // TODO: theme-able? (button colors)
-
   return (
     <ButtonBlock>
       <BounceBlock animationDelay='30s' key={`checkIn${localPhaseItem}buttonAnimation`}>
@@ -64,6 +65,8 @@ const CheckInControls = (props) => {
           size='medium'
           key={`checkIn${localPhaseItem}nextButton`}
           onClick={handleOnClickPresent}
+          onKeyDown={handleRightArrow(handleOnClickPresent)}
+          innerRef={gotoNextRef}
         >
           <IconLabel icon='check-circle' iconColor='green' iconLarge label={nextLabel} />
         </FlatButton>

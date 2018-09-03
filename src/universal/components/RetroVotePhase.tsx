@@ -18,11 +18,13 @@ import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import handleRightArrow from './handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
 import IDiscussPhase = GQL.IDiscussPhase
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
+  gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroVotePhase_team
 }
 
@@ -110,6 +112,7 @@ const RetroVotePhase = (props: Props) => {
   const {
     atmosphere: {viewerId},
     gotoNext,
+    gotoNextRef,
     team
   } = props
   const {
@@ -154,6 +157,8 @@ const RetroVotePhase = (props: Props) => {
               size="medium"
               disabled={!discussStage.isNavigableByFacilitator}
               onClick={gotoNext}
+              onKeyDown={handleRightArrow(gotoNext)}
+              innerRef={gotoNextRef}
             >
               <IconLabel
                 icon="arrow-circle-right"

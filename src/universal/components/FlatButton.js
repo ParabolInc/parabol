@@ -1,6 +1,7 @@
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import BaseButton from 'universal/components/BaseButton'
+import withInnerRef from 'universal/decorators/withInnerRef'
 
 const FlatButton = styled(BaseButton)((props) => {
   const {palette = 'dark', disabled, waiting} = props
@@ -20,4 +21,4 @@ const FlatButton = styled(BaseButton)((props) => {
   }
 })
 
-export default FlatButton
+export default withInnerRef(FlatButton)

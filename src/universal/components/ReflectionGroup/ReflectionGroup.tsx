@@ -37,7 +37,6 @@ import {
   SetItemRef
 } from '../PhaseItemMasonry'
 import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
-import {modalShadow} from 'universal/styles/elevation'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting

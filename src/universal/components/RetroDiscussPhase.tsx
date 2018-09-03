@@ -23,10 +23,12 @@ import ui from 'universal/styles/ui'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
+import handleRightArrow from './handleRightArrow'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
   dispatch: Dispatch<{}>
   gotoNext: () => void
+  gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroDiscussPhase_team
 }
 
@@ -134,7 +136,7 @@ const SpacedMeetingControlBar = styled(MeetingControlBar)({
 })
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, dispatch, gotoNext, history, team} = props
+  const {atmosphere, dispatch, gotoNext, gotoNextRef, history, team} = props
   const {viewerId} = atmosphere
   const {newMeeting, teamId} = team
   if (!newMeeting) return null
@@ -209,7 +211,12 @@ const RetroDiscussPhase = (props: Props) => {
           <ControlButtonBlock />
           {nextStageRes && (
             <ControlButtonBlock>
-              <StyledButton size="medium" onClick={gotoNext}>
+              <StyledButton
+                size="medium"
+                onClick={gotoNext}
+                innerRef={gotoNextRef}
+                onKeyDown={handleRightArrow(gotoNext)}
+              >
                 <IconLabel
                   icon="arrow-circle-right"
                   iconColor="warm"

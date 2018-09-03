@@ -1,4 +1,5 @@
 import styled from 'react-emotion'
+import withInnerRef from 'universal/decorators/withInnerRef'
 
 const disabledStyles = {
   cursor: 'not-allowed',
@@ -32,4 +33,4 @@ const PlainButton = styled('button')(
   ({waiting}) => ({cursor: waiting && 'wait'})
 )
 
-export default PlainButton
+export default withInnerRef(PlainButton)
