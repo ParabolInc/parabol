@@ -37,6 +37,7 @@ import {
   SetItemRef
 } from '../PhaseItemMasonry'
 import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
+import {modalShadow} from 'universal/styles/elevation'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -68,6 +69,8 @@ const reflectionsStyle = (
 
 // use a background so we can use scale instead of width/height for 60fps animations
 const Background = styled('div')({
+  backgroundColor: 'rgba(68, 66, 88, .65)',
+  opacity: 0,
   position: 'absolute',
   top: 0,
   left: 0
@@ -89,7 +92,6 @@ const GroupStyle = styled('div')(
   ({isModal}: GroupProps) =>
     isModal && {
       borderRadius: 6,
-      overflow: 'hidden',
       padding: MODAL_PADDING,
       position: 'absolute',
       transition: 'unset',
@@ -188,24 +190,26 @@ class ReflectionGroup extends Component<Props> {
     const top = collapsedTop + parentTop - MODAL_PADDING + CARD_PADDING
     const left = collapsedLeft + parentLeft - MODAL_PADDING + CARD_PADDING
     // animate child home
-    modalStyle.transition = `all ${childDuration}ms ${MIN_ITEM_DELAY}ms ${STANDARD_CURVE}`
+    modalStyle.transition = `transform ${childDuration}ms ${MIN_ITEM_DELAY}ms ${STANDARD_CURVE}`
     modalStyle.transform = `translate(${left}px,${top}px)`
     modalStyle.overflow = 'hidden'
+    modalStyle.boxShadow = ''
 
     // animate background home
     const childCache = childrenCache[reflectionGroupId]
     const {modalBoundingBox, headerHeight} = childCache
     if (!modalBoundingBox) return
     const {height: modalHeight, width: modalWidth} = modalBoundingBox
-    backgroundStyle.transition = `all ${childDuration}ms ${STANDARD_CURVE}`
+    backgroundStyle.opacity = '0'
+    backgroundStyle.transition = ['transform', 'opacity']
+      .map((prop) => `${prop} ${childDuration}ms ${STANDARD_CURVE}`)
+      .join()
     backgroundStyle.transform = getScaledModalBackground(
       modalHeight,
       modalWidth,
       firstItemHeight,
       headerHeight
     )
-    backgroundStyle.backgroundColor = ''
-
     this.isClosing = true
     const reset = (e?: TransitionEvent) => {
       this.isClosing = false

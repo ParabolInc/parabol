@@ -10,6 +10,7 @@ import {
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
+import {cardShadow, modalShadow} from 'universal/styles/elevation'
 
 const makeResetHandler = (reflections, itemCache, modalRef, resetBodyStyles) => {
   const resetQueue = reflections.map((reflection) => {
@@ -27,7 +28,11 @@ const makeResetHandler = (reflections, itemCache, modalRef, resetBodyStyles) => 
     resetBodyStyles()
     resetQueue.forEach((cb) => cb())
     if (modalRef) {
+      modalRef.style.transition = ''
       modalRef.style.overflowY = 'auto'
+      // put a box shadow on the background so it grows during the animation, then when that gets clipped, put the box shadow on the parent
+      modalRef.style.boxShadow = modalShadow
+      modalRef.removeEventListener('transitionend', resetStyles)
     }
   }
   return resetStyles
@@ -123,7 +128,7 @@ const initializeModalGrid = (
     childCache.headerHeight
   )
   backgroundStyle.transformOrigin = `${MODAL_PADDING}px ${MODAL_PADDING}px`
-  backgroundStyle.backgroundColor = 'rgba(68, 66, 88, .65)'
+  backgroundStyle.boxShadow = cardShadow
 
   const resetStyles = makeResetHandler(reflections, itemCache, modalRef, resetBodyStyles)
 
@@ -138,13 +143,14 @@ const initializeModalGrid = (
       // set final background styles
       backgroundStyle.transition = `all ${ANIMATE_IN_TOTAL_DURATION}ms ${STANDARD_CURVE}`
       backgroundStyle.transform = 'scale(1)'
-      backgroundStyle.backgroundColor = 'rgba(68, 66, 88, .65)'
+      backgroundStyle.opacity = 1
+      backgroundStyle.boxShadow = modalShadow
 
       // set final reflection styles
       animateItemQueue.forEach((cb) => cb())
 
       // reset
-      modalRef.addEventListener('transitionend', resetStyles, {passive: true, once: true})
+      modalRef.addEventListener('transitionend', resetStyles, {passive: true})
     })
   })
 }
