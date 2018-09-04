@@ -1,6 +1,6 @@
 const path = require('path')
 
-const webpackResolve = {
+module.exports = {
   alias: {
     'react-dnd': '@mattkrick/react-dnd',
     'react-dnd-html5-backend': '@mattkrick/react-dnd-html5-backend',
@@ -10,5 +10,3 @@ const webpackResolve = {
   modules: [path.join(__dirname, '../src'), 'node_modules'],
   extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
 }
-
-export default webpackResolve
