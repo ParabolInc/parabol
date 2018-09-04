@@ -9,6 +9,7 @@ import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/R
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import ui from 'universal/styles/ui'
+import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
 interface Props {
@@ -48,7 +49,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
       return {
         backgroundColor: 'white',
         borderRadius: 4,
-        boxShadow: ui.shadow[0],
+        boxShadow: cardShadow,
         overflow: 'hidden',
         position: 'absolute',
         pointerEvents: 'none',
@@ -66,7 +67,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
       return {
         backgroundColor: 'white',
         borderRadius: 4,
-        boxShadow: ui.shadow[0],
+        boxShadow: cardShadow,
         overflow: 'hidden',
         position: 'absolute',
         pointerEvents: 'none',

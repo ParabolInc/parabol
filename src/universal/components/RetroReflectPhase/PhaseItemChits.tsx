@@ -3,7 +3,11 @@ import styled, {keyframes} from 'react-emotion'
 import {DECELERATE} from 'universal/styles/animation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import elevation from 'universal/styles/elevation'
+import {
+  REFLECTION_CARD_WIDTH,
+  REFLECTION_WIDTH
+} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import plural from 'universal/utils/plural'
 import TinyLabel from 'universal/components/TinyLabel'
 
@@ -19,10 +23,11 @@ const {
 } = appTheme
 
 const CHIT_MARGIN = 4
+const CHIT_GUTTER = 8
 const CHITS_PER_ROW = 8
 const MAX_ROWS = 5
-const CHIT_WIDTH = (REFLECTION_WIDTH - CHIT_MARGIN * 2 * CHITS_PER_ROW) / CHITS_PER_ROW
-const CHIT_HEIGHT = 16
+const CHIT_WIDTH = (REFLECTION_CARD_WIDTH - CHIT_GUTTER * (CHITS_PER_ROW - 1)) / CHITS_PER_ROW
+const CHIT_HEIGHT = 17
 const OFFSET = CHIT_MARGIN * 2 + CHIT_WIDTH
 const PROGRESS_WIDTH = REFLECTION_WIDTH
 const PROGRESS_MARGIN = 2
@@ -61,9 +66,8 @@ const Chit = styled('div')({
   animation: `${fadeIn} 300ms ${DECELERATE}`,
   backgroundColor: '#fff',
   borderRadius: '2px',
-  boxShadow: ui.shadow[0],
+  boxShadow: elevation[1],
   height: CHIT_HEIGHT,
-  margin: CHIT_MARGIN,
   width: CHIT_WIDTH
 })
 
@@ -83,11 +87,10 @@ const ActiveChit = styled('div')(({idx}: {idx: number}) => ({
 }))
 
 const ChitArea = styled('div')({
-  display: 'flex',
-  flexWrap: 'wrap',
-  marginLeft: -4,
-  marginRight: -4,
-  width: REFLECTION_WIDTH
+  display: 'grid',
+  gridGap: CHIT_GUTTER,
+  gridTemplateColumns: `repeat(${CHITS_PER_ROW}, ${CHIT_WIDTH}px)`,
+  width: REFLECTION_CARD_WIDTH
 })
 
 const ChitAreaLabel = styled(TinyLabel)({
