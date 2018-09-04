@@ -1,4 +1,4 @@
-import resolve from './webpackResolve'
+const resolve = require('./webpackResolve')
 const path = require('path')
 const webpack = require('webpack')
 const npmPackage = require('../package.json')

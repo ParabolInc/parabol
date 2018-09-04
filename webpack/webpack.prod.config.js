@@ -1,5 +1,5 @@
-import resolve from './webpackResolve'
 require('babel-register')
+const resolve = require('./webpackResolve')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
