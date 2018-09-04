@@ -184,6 +184,8 @@ class PhaseItemColumn extends Component<Props> {
   }
 }
 
+// <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
+
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(PhaseItemColumn)),
   graphql`
