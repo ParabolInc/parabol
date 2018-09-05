@@ -26,7 +26,7 @@ require('babel-register')({
   only (filename) {
     return filename.indexOf('build') === -1 && filename.indexOf('node_modules') === -1
   },
-  plugins: ['transform-object-rest-spread', ['transform-class-properties', {spec: true}]],
+  plugins: ['transform-object-rest-spread', 'syntax-dynamic-import', 'transform-class-properties'],
   presets: [
     [
       'env',
@@ -39,11 +39,11 @@ require('babel-register')({
     'flow',
     'react'
   ],
-  extensions: ['.js'],
+  extensions: ['.js', '.ts'],
   resolveModuleSource (source, filename) {
     return resolve.sync(source, {
       basedir: path.resolve(filename, '..'),
-      extensions: ['.js'],
+      extensions: ['.js', '.ts'],
       moduleDirectory: ['src', 'node_modules']
     })
   }

@@ -14,11 +14,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./src/server/server.babel.js",
+    "start": "cross-env NODE_ENV=production ts-node ./src/server/server.babel.js",
     "start:tunnel": "export $(grep ^ULTRAHOOK_API_KEY .env | tr -d '\"') && ultrahook -k $ULTRAHOOK_API_KEY dev 3000",
     "start:memwatch": "NODE_ENV=production MEMWATCH=true node --expose-gc --inspect --trace-warnings ./src/server/server.babel.js",
     "quickstart": "npm run db:migrate && npm run bs",
-    "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; node ./src/server/server.babel.js",
+    "dev": "if [ ! -f \"dll/vendors.json\" ] ; then npm run build:dll ; fi ; ts-node ./src/server/server.babel.js",
     "bs": "npm run build && npm start",
     "build": "npm run build:relay && npm run build:client",
     "build:client": "webpack --config ./webpack/webpack.prod.config.js",

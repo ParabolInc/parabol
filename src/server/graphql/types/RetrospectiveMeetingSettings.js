@@ -4,6 +4,7 @@ import TeamMeetingSettings, {
   teamMeetingSettingsFields
 } from 'server/graphql/types/TeamMeetingSettings'
 import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
+import ReflectTemplate from 'server/graphql/types/ReflectTemplate'
 
 const RetrospectiveMeetingSettings = new GraphQLObjectType({
   name: 'RetrospectiveMeetingSettings',
@@ -27,6 +28,13 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       description:
         'The maximum number of votes a team member can vote for a single reflection group'
+    },
+    reflectTemplates: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),
+      description: 'The list of templates used to start a retrospective',
+      resolve: ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectTemplatesByTeamId').load(teamId)
+      }
     }
   })
 })

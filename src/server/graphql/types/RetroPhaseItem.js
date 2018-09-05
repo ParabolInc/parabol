@@ -1,5 +1,6 @@
-import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import CustomPhaseItem, {customPhaseItemFields} from 'server/graphql/types/CustomPhaseItem'
+import ReflectTemplate from 'server/graphql/types/ReflectTemplate'
 
 const RetroPhaseItem = new GraphQLObjectType({
   name: 'RetroPhaseItem',
@@ -8,6 +9,17 @@ const RetroPhaseItem = new GraphQLObjectType({
   interfaces: () => [CustomPhaseItem],
   fields: () => ({
     ...customPhaseItemFields(),
+    templateId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'FK for template'
+    },
+    template: {
+      type: new GraphQLNonNull(ReflectTemplate),
+      description: 'The template that this prompt belongs to',
+      resolve: ({templateId}, _args, {dataLoader}) => {
+        return dataLoader.get('reflectTemplates').load(templateId)
+      }
+    },
     title: {
       type: new GraphQLNonNull(GraphQLString),
       description:

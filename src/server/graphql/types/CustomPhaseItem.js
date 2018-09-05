@@ -4,11 +4,15 @@ import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
 import CustomPhaseItemTypeEnum from 'server/graphql/types/CustomPhaseItemTypeEnum'
 import Team from 'server/graphql/types/Team'
 import {resolveTeam} from 'server/graphql/resolvers'
+import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 
 export const customPhaseItemFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
+  },
+  createdAt: {
+    type: new GraphQLNonNull(GraphQLISO8601Type)
   },
   phaseItemType: {
     type: CustomPhaseItemTypeEnum,
@@ -26,6 +30,9 @@ export const customPhaseItemFields = () => ({
     type: Team,
     description: 'The team that owns this customPhaseItem',
     resolve: resolveTeam
+  },
+  updatedAt: {
+    type: new GraphQLNonNull(GraphQLISO8601Type)
   }
 })
 

@@ -30,7 +30,15 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
           stages: await makeCheckinStages(teamId, meetingId, dataLoader, idx)
         }
       }
-      const standardRetroPhases = [REFLECT, GROUP, VOTE, DISCUSS]
+      if (phaseType === REFLECT) {
+        return {
+          id: shortid.generate(),
+          phaseType,
+          stages: [makeRetroStage(phaseType, meetingId, idx)],
+          teamId
+        }
+      }
+      const standardRetroPhases = [GROUP, VOTE, DISCUSS]
       if (standardRetroPhases.includes(phaseType)) {
         const phase = {
           id: shortid.generate(),

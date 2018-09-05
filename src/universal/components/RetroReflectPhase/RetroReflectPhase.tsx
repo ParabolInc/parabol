@@ -105,10 +105,8 @@ export default createFragmentContainer(
       meetingSettings(meetingType: $meetingType) {
         ... on RetrospectiveMeetingSettings {
           phaseItems {
-            ... on RetroPhaseItem {
-              id
-              ...PhaseItemColumn_retroPhaseItem
-            }
+            id
+            ...PhaseItemColumn_retroPhaseItem
           }
         }
       }
