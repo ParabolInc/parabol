@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import styled, {keyframes} from 'react-emotion'
 import {DECELERATE} from 'universal/styles/animation'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import elevation from 'universal/styles/elevation'
 import {
   REFLECTION_CARD_WIDTH,
