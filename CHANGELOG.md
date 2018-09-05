@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.11.0 2018-Sep-05
+
+### Added
+* New reflect phase with personal stack & chits
+* Typescript
+
+## Fixed
+* Meeting progress now requires 2 presses of the right arrow & disallows Enter #2356
+* Closing a menu returns focus to the toggle #2333
+* The grouping phase modal has a box shadow #2331
+
+### Removed
+* Removed all flow files that referenced typescript HOCs #2352
+
 ## v2.10.0 2018-Aug-23
 
 ### Added
