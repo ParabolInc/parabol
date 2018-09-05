@@ -25,11 +25,14 @@ import plural from 'universal/utils/plural'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import handleRightArrow from './handleRightArrow'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  dispatch: Dispatch<{}>
+interface PassedProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroDiscussPhase_team
+}
+
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, PassedProps {
+  dispatch: Dispatch<{}>
 }
 
 const maxWidth = '114rem'
@@ -246,7 +249,7 @@ const RetroDiscussPhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
+export default createFragmentContainer<PassedProps>(
   (connect as any)()(withRouter(withAtmosphere(RetroDiscussPhase))),
   graphql`
     fragment RetroDiscussPhase_team on Team {

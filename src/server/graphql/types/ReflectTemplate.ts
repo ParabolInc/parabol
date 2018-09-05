@@ -24,6 +24,10 @@ const ReflectTemplate = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'True if template can be used, else false'
     },
+    lastUsedAt: {
+      type: GraphQLISO8601Type,
+      description: 'The time of the meeting the template was last used'
+    },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the template'

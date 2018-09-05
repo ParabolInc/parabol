@@ -48,7 +48,7 @@
     "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "lint": "yarn standard",
     "relay": "yarn build:relay --watch",
-    "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn tsgen",
+    "update-schema": "ts-node ./src/server/utils/updateSchema.babel.js && yarn tsgen",
     "postversion": "git push --follow-tags",
     "tsgen": "gql2ts ./build/schema.json -o ./src/universal/types/graphql.d.ts && prettier --write 'src/universal/types/graphql.d.ts'",
     "storybook": "start-storybook -p 6006 -c .storybook",

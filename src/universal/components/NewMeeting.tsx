@@ -371,7 +371,6 @@ class NewMeeting extends Component<Props> {
                   />
                 )}
                 {localPhaseType === DISCUSS && (
-                  // @ts-ignore
                   <RetroDiscussPhase
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}

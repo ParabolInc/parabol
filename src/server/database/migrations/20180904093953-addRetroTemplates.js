@@ -35,11 +35,12 @@ exports.up = async (r) => {
   const startStopContPrompts = ['Start', 'Stop', 'Continue']
   const sailboatPrompts = ['Wind in the sails', 'Anchors', 'Risks']
 
-  const makePrompt = (teamId, templateId, question) => ({
+  const makePrompt = (teamId, templateId, question, sortOrder) => ({
     id: shortid.generate(),
     createdAt: now,
     phaseItemType: RETRO_PHASE_ITEM,
     isActive: true,
+    sortOrder,
     teamId,
     updatedAt: now,
     templateId,
@@ -55,22 +56,33 @@ exports.up = async (r) => {
     const templatesByTeamId = {}
     const templateInserts = []
     teamIds.forEach((teamId) => {
-      templateInserts.push(...templatesByTeamId[teamId])
       templatesByTeamId[teamId] = templateNames.map((name) => makeTemplate(name, teamId))
+      templateInserts.push(...templatesByTeamId[teamId])
     })
     await r.table('ReflectTemplate').insert(templateInserts)
 
     // put existing prompts into a template
     const retrosCreatedAtDate = new Date('02/12/2018')
+
     const updatedPhaseItemPromises = teamIds.map((teamId) => {
-      return r
-        .table('CustomPhaseItem')
-        .getAll(teamId)
-        .update({
-          templateId: templatesByTeamId[teamId][0].id,
-          createdAt: retrosCreatedAtDate,
-          updatedAt: retrosCreatedAtDate
-        })
+      const templateId = templatesByTeamId[teamId][0].id
+      return r({
+        phaseItemUpdates: r
+          .table('CustomPhaseItem')
+          .getAll(teamId, {index: 'teamId'})
+          .update((row) => ({
+            templateId,
+            createdAt: retrosCreatedAtDate,
+            updatedAt: retrosCreatedAtDate,
+            sortOrder: r.branch(row('question').eq('What’s working?'), 0, 1)
+          })),
+        settingsUpdates: r
+          .table('MeetingSettings')
+          .getAll(teamId, {index: 'teamId'})
+          .update({
+            selectedTemplateId: templateId
+          })
+      })
     })
     await Promise.all(updatedPhaseItemPromises)
 
@@ -79,12 +91,18 @@ exports.up = async (r) => {
     teamIds.forEach((teamId) => {
       // skip the existing working/stuck template
       const [, gladSadMad, fourL, startStopCont, sail] = templatesByTeamId[teamId]
-      const glads = gladSadMadPrompts.map((question) => makePrompt(teamId, gladSadMad.id, question))
-      const fourLs = fourLsPrompts.map((question) => makePrompt(teamId, fourL.id, question))
-      const starts = startStopContPrompts.map((question) =>
-        makePrompt(teamId, startStopCont.id, question)
+      const glads = gladSadMadPrompts.map((question, idx) =>
+        makePrompt(teamId, gladSadMad.id, question, idx)
       )
-      const sailboats = sailboatPrompts.map((question) => makePrompt(teamId, sail.id, question))
+      const fourLs = fourLsPrompts.map((question, idx) =>
+        makePrompt(teamId, fourL.id, question, idx)
+      )
+      const starts = startStopContPrompts.map((question, idx) =>
+        makePrompt(teamId, startStopCont.id, question, idx)
+      )
+      const sailboats = sailboatPrompts.map((question, idx) =>
+        makePrompt(teamId, sail.id, question, idx)
+      )
       phaseItemInserts.push(...glads, ...fourLs, ...starts, ...sailboats)
     })
     await r.table('CustomPhaseItem').insert(phaseItemInserts)

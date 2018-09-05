@@ -1,4 +1,4 @@
-import {GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
 import TeamMeetingSettings, {
   teamMeetingSettingsFields
@@ -28,6 +28,10 @@ const RetrospectiveMeetingSettings = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLInt),
       description:
         'The maximum number of votes a team member can vote for a single reflection group'
+    },
+    selectedTemplateId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'FK. The template that will be used to start the retrospective'
     },
     reflectTemplates: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ReflectTemplate))),

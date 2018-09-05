@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import CustomPhaseItem, {customPhaseItemFields} from 'server/graphql/types/CustomPhaseItem'
 import ReflectTemplate from 'server/graphql/types/ReflectTemplate'
 
@@ -9,6 +9,10 @@ const RetroPhaseItem = new GraphQLObjectType({
   interfaces: () => [CustomPhaseItem],
   fields: () => ({
     ...customPhaseItemFields(),
+    sortOrder: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: 'the order of the items in the template'
+    },
     templateId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'FK for template'

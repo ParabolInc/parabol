@@ -45,20 +45,21 @@ class RetroReflectPhase extends Component<Props> {
       gotoNext,
       gotoNextRef
     } = this.props
-    const {newMeeting, meetingSettings} = team
+    const {newMeeting} = team
     if (!newMeeting) return
-    const {facilitatorUserId, reflectionGroups} = newMeeting
-    const phaseItems = meetingSettings.phaseItems || []
+    const {facilitatorUserId, localPhase, reflectionGroups} = newMeeting
+    const reflectPrompts = localPhase!.reflectPrompts
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
     return (
       <React.Fragment>
-        <StyledWrapper phaseItemCount={phaseItems.length} innerRef={this.phaseRef}>
-          {phaseItems.map((phaseItem, idx) => (
+        <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
+          {reflectPrompts.map((prompt, idx) => (
             <PhaseItemColumn
               meeting={newMeeting}
-              key={phaseItem.id}
-              retroPhaseItem={phaseItem}
+              key={prompt.retroPhaseItemId}
+              retroPhaseItemId={prompt.retroPhaseItemId}
+              question={prompt.question}
               idx={idx}
               phaseRef={this.phaseRef}
             />
@@ -100,13 +101,21 @@ export default createFragmentContainer(
           reflectionGroups {
             id
           }
-        }
-      }
-      meetingSettings(meetingType: $meetingType) {
-        ... on RetrospectiveMeetingSettings {
-          phaseItems {
-            id
-            ...PhaseItemColumn_retroPhaseItem
+          localPhase {
+            ... on ReflectPhase {
+              reflectPrompts {
+                retroPhaseItemId: id
+                question
+              }
+            }
+          }
+          phases {
+            ... on ReflectPhase {
+              reflectPrompts {
+                retroPhaseItemId: id
+                question
+              }
+            }
           }
         }
       }

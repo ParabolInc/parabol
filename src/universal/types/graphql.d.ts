@@ -927,6 +927,7 @@ declare namespace GQL {
      * shortid
      */
     id: string
+    createdAt: any
 
     /**
      * The type of phase item
@@ -947,6 +948,7 @@ declare namespace GQL {
      * The team that owns this customPhaseItem
      */
     team: ITeam | null
+    updatedAt: any
   }
 
   /**
@@ -4388,6 +4390,7 @@ declare namespace GQL {
      * shortid
      */
     id: string
+    createdAt: any
 
     /**
      * The type of phase item
@@ -4408,6 +4411,22 @@ declare namespace GQL {
      * The team that owns this customPhaseItem
      */
     team: ITeam | null
+    updatedAt: any
+
+    /**
+     * the order of the items in the template
+     */
+    sortOrder: number
+
+    /**
+     * FK for template
+     */
+    templateId: string
+
+    /**
+     * The template that this prompt belongs to
+     */
+    template: IReflectTemplate
 
     /**
      * The title of the phase of the retrospective. Often a short version of the question
@@ -4418,6 +4437,41 @@ declare namespace GQL {
      * The question to answer during the phase of the retrospective (eg What went well?)
      */
     question: string
+  }
+
+  /**
+   * The team-specific templates for the reflection prompts
+   */
+  interface IReflectTemplate {
+    __typename: 'ReflectTemplate'
+    id: string
+    createdAt: any
+
+    /**
+     * True if template can be used, else false
+     */
+    isActive: boolean
+
+    /**
+     * The time of the meeting the template was last used
+     */
+    lastUsedAt: any | null
+
+    /**
+     * The name of the template
+     */
+    name: string
+
+    /**
+     * The prompts that are part of this template
+     */
+    prompts: Array<IRetroPhaseItem>
+
+    /**
+     * *Foreign key. The team this template belongs to
+     */
+    teamId: string
+    updatedAt: any
   }
 
   /**
@@ -4609,6 +4663,16 @@ declare namespace GQL {
      * The maximum number of votes a team member can vote for a single reflection group
      */
     maxVotesPerGroup: number
+
+    /**
+     * FK. The template that will be used to start the retrospective
+     */
+    selectedTemplateId: string
+
+    /**
+     * The list of templates used to start a retrospective
+     */
+    reflectTemplates: Array<IReflectTemplate>
   }
 
   interface ICancelApprovalPayload {
@@ -5702,6 +5766,17 @@ declare namespace GQL {
      * the phase item that the facilitator wants the group to focus on
      */
     focusedPhaseItem: IRetroPhaseItem | null
+
+    /**
+     * FK. The ID of the template used during the reflect phase
+     */
+    promptTemplateId: string
+
+    /**
+     * The prompts used during the reflect phase
+     */
+    reflectPrompts: Array<IRetroPhaseItem>
+    teamId: string
   }
 
   /**

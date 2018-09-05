@@ -8,6 +8,7 @@ import shortid from 'shortid'
 
 const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingType, dataLoader) => {
   const r = getRethink()
+  const now = new Date()
   const meetingSettings = await r
     .table('MeetingSettings')
     .getAll(teamId, {index: 'teamId'})
@@ -17,8 +18,13 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
   if (!meetingSettings) {
     throw new Error('No meeting setting found for team!')
   }
-  const {phaseTypes} = meetingSettings
-
+  const {phaseTypes, selectedTemplateId} = meetingSettings
+  await r
+    .table('ReflectTemplate')
+    .get(selectedTemplateId)
+    .update({
+      lastUsedAt: now
+    })
   return Promise.all(
     phaseTypes.map(async (phaseType, idx) => {
       if (phaseType === CHECKIN) {
@@ -34,6 +40,7 @@ const createNewMeetingPhases = async (teamId, meetingId, meetingCount, meetingTy
         return {
           id: shortid.generate(),
           phaseType,
+          promptTemplateId: selectedTemplateId,
           stages: [makeRetroStage(phaseType, meetingId, idx)],
           teamId
         }

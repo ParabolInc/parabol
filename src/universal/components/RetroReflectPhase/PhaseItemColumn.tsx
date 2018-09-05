@@ -90,7 +90,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
   meeting: PhaseItemColumn_meeting
   phaseRef: React.RefObject<HTMLDivElement>
-  retroPhaseItem: PhaseItemColumn_retroPhaseItem
+  retroPhaseItemId: string
+  question: string
 }
 
 class PhaseItemColumn extends Component<Props> {
@@ -109,11 +110,7 @@ class PhaseItemColumn extends Component<Props> {
   )
 
   setColumnFocus = () => {
-    const {
-      atmosphere,
-      meeting,
-      retroPhaseItem: {retroPhaseItemId}
-    } = this.props
+    const {atmosphere, meeting, retroPhaseItemId} = this.props
     const {
       meetingId,
       facilitatorUserId,
@@ -133,14 +130,13 @@ class PhaseItemColumn extends Component<Props> {
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
   render() {
-    const {idx, meeting, phaseRef, retroPhaseItem} = this.props
+    const {idx, meeting, phaseRef, question, retroPhaseItemId} = this.props
     const {
       meetingId,
-      localPhase: {focusedPhaseItemId},
+      localPhase: {editorIds = [], focusedPhaseItemId},
       localStage: {isComplete},
       reflectionGroups
     } = meeting
-    const {editorIds = [], question, retroPhaseItemId} = retroPhaseItem
     const isFocused = focusedPhaseItemId === retroPhaseItemId
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
@@ -189,12 +185,6 @@ class PhaseItemColumn extends Component<Props> {
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(PhaseItemColumn)),
   graphql`
-    fragment PhaseItemColumn_retroPhaseItem on RetroPhaseItem {
-      retroPhaseItemId: id
-      question
-      editorIds
-    }
-
     fragment PhaseItemColumn_meeting on RetrospectiveMeeting {
       facilitatorUserId
       meetingId: id
@@ -202,6 +192,7 @@ export default createFragmentContainer(
         phaseId: id
         phaseType
         ... on ReflectPhase {
+          editorIds
           focusedPhaseItemId
         }
       }
@@ -215,6 +206,7 @@ export default createFragmentContainer(
           isComplete
         }
         ... on ReflectPhase {
+          editorIds
           focusedPhaseItemId
         }
       }

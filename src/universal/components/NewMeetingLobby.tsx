@@ -1,29 +1,31 @@
-import React from 'react'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PRO} from 'universal/utils/constants'
-import styled from 'react-emotion'
 import {NewMeetingLobby_team} from '__generated__/NewMeetingLobby_team.graphql'
-import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
-import ui from 'universal/styles/ui'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
-import {meetingSplashGutter} from 'universal/styles/meeting'
-import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
-import makeHref from 'universal/utils/makeHref'
-import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
+import React from 'react'
+import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import InlineAlert from 'universal/components/InlineAlert'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import LoadableModal from 'universal/components/LoadableModal'
+import RetroLobbyHelpMenu from 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
-import InlineAlert from 'universal/components/InlineAlert'
-import RetroLobbyHelpMenu from 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
+import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
+import LoadableRetroTemplateListMenu from 'universal/modules/meeting/components/LoadableRetroTemplateListMenu'
+import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
+import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import {meetingSplashGutter} from 'universal/styles/meeting'
+import ui from 'universal/styles/ui'
+import {PRO} from 'universal/utils/constants'
+import makeHref from 'universal/utils/makeHref'
+import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import LoadableDropdownMenuToggle from './LoadableDropdownMenuToggle'
 import MeetingTypeEnum = GQL.MeetingTypeEnum
-import LoadableModal from 'universal/components/LoadableModal'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -125,7 +127,13 @@ class NewMeetingLobby extends React.Component<Props> {
       submitting,
       team
     } = this.props
-    const {orgId, organization, teamId, teamName} = team
+    const {
+      meetingSettings: {reflectTemplates},
+      orgId,
+      organization,
+      teamId,
+      teamName
+    } = team
     const {retroMeetingsOffered, retroMeetingsRemaining, tier} = organization
     const onStartMeetingClick = () => {
       submitMutation()
@@ -199,6 +207,13 @@ class NewMeetingLobby extends React.Component<Props> {
               )}
           </ButtonBlock>
         </ButtonGroup>
+        <LoadableDropdownMenuToggle
+          defaultText={reflectTemplates[0].name}
+          LoadableComponent={LoadableRetroTemplateListMenu}
+          queryVars={{
+            reflectTemplates
+          }}
+        />
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>
@@ -219,6 +234,13 @@ export default createFragmentContainer(
         retroMeetingsOffered
         retroMeetingsRemaining
         tier
+      }
+      meetingSettings(meetingType: $meetingType) {
+        ... on RetrospectiveMeetingSettings {
+          reflectTemplates {
+            name
+          }
+        }
       }
     }
   `
