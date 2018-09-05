@@ -34,22 +34,22 @@ const EditReflectionMutation = (
     mutation,
     variables,
     onCompleted,
-    onError,
-    updater: (store) => {
-      const payload = store.getRootField('editReflection')
-      if (!payload) return
-      editReflectionTeamUpdater(payload, store)
-    },
-    optimisticUpdater: (store) => {
-      const {phaseItemId, isEditing} = variables
-      const phaseItem = store.get(phaseItemId)
-      if (!phaseItem) return
-      const editorIds = phaseItem.getValue('editorIds') || []
-      const nextEditorIds = isEditing
-        ? Array.from(new Set(editorIds.concat('tmpUser')))
-        : editorIds.filter((id) => id !== 'tmpUser')
-      phaseItem.setValue(nextEditorIds, 'editorIds')
-    }
+    onError
+    // updater: (store) => {
+    //   const payload = store.getRootField('editReflection')
+    //   if (!payload) return
+    //   editReflectionTeamUpdater(payload, store)
+    // },
+    // optimisticUpdater: (store) => {
+    //   const {phaseItemId, isEditing} = variables
+    //   const phaseItem = store.get(phaseItemId)
+    //   if (!phaseItem) return
+    //   const editorIds = phaseItem.getValue('editorIds') || []
+    //   const nextEditorIds = isEditing
+    //     ? Array.from(new Set(editorIds.concat('tmpUser')))
+    //     : editorIds.filter((id) => id !== 'tmpUser')
+    //   phaseItem.setValue(nextEditorIds, 'editorIds')
+    // }
   })
 }
 
