@@ -9,6 +9,7 @@ import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/R
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import ui from 'universal/styles/ui'
+import {reflectionCardMaxHeight} from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
@@ -30,7 +31,7 @@ const CardStack = styled('div')(({isVisible}: {isVisible: boolean}) => ({
   display: 'flex',
   justifyContent: 'center',
   margin: '2rem 0',
-  minHeight: '10rem',
+  minHeight: reflectionCardMaxHeight,
   visibility: !isVisible ? 'hidden' : undefined
 }))
 
