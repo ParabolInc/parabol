@@ -188,12 +188,9 @@ class ReflectionGroup extends Component<Props> {
       reflections.forEach((reflection) => {
         itemCache[reflection.id].modalEl = undefined
       })
-      if (this.modalRef) {
-        this.modalRef.removeEventListener('transitionend', reset)
-      }
     }
     // $FlowFixMe
-    this.modalRef.addEventListener('transitionend', reset)
+    this.modalRef.addEventListener('transitionend', reset, {passive: true, once: true})
   }
 
   renderReflection = (reflection: Object, idx: number, {isModal, isDraggable}) => {
@@ -325,7 +322,6 @@ export default createFragmentContainer(
   graphql`
     fragment ReflectionGroup_meeting on RetrospectiveMeeting {
       meetingId: id
-      ...ReflectionCard_meeting
       ...ReflectionGroupHeader_meeting
       localPhase {
         phaseType

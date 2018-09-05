@@ -83,6 +83,7 @@ import endDraggingReflection from 'server/graphql/mutations/endDraggingReflectio
 import updateTaskDueDate from 'server/graphql/mutations/updateTaskDueDate'
 import dragDiscussionTopic from 'server/graphql/mutations/dragDiscussionTopic'
 import startDraggingReflection from 'server/graphql/mutations/startDraggingReflection'
+import setPhaseFocus from 'server/graphql/mutations/setPhaseFocus'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -147,6 +148,7 @@ export default new GraphQLObjectType({
     resendTeamInvite,
     segmentEventTrack,
     setOrgUserRole,
+    setPhaseFocus,
     startDraggingReflection,
     startMeeting,
     startNewMeeting,

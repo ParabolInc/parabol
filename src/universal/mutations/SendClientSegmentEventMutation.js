@@ -1,3 +1,5 @@
+import {getRequest} from 'relay-runtime'
+
 const mutation = graphql`
   mutation SendClientSegmentEventMutation($event: String!, $options: SegmentEventTrackOptions) {
     segmentEventTrack(event: $event, options: $options)
@@ -6,7 +8,7 @@ const mutation = graphql`
 
 const SendClientSegmentEventMutation = (atmosphere, event, options) => {
   const {_network: network} = atmosphere
-  network.execute(mutation(), {event, options}, {force: true})
+  network.execute(getRequest(mutation), {event, options}, {force: true})
 }
 
 export default SendClientSegmentEventMutation

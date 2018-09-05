@@ -20,7 +20,8 @@ module.exports = {
       'react-relay': '@mattkrick/react-relay',
       'relay-runtime': '@mattkrick/relay-runtime'
     },
-    modules: [path.join(__dirname, '../src'), 'node_modules']
+    modules: [path.join(__dirname, '../src'), 'node_modules'],
+    extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
   },
   plugins: [
     new webpack.NamedModulesPlugin(),
@@ -48,7 +49,7 @@ module.exports = {
               'transform-object-rest-spread',
               'syntax-dynamic-import',
               'transform-class-properties',
-              'relay'
+              ['relay', {artifactDirectory: './src/__generated__'}]
             ],
             presets: ['flow', 'react']
           }
@@ -60,6 +61,37 @@ module.exports = {
         type: 'javascript/auto'
       },
       {test: /\.flow$/, loader: 'ignore-loader'},
+      {
+        test: /\.tsx?$/,
+        include: [
+          path.join(__dirname, '../src/__generated__'),
+          path.join(__dirname, '../src/client'),
+          path.join(__dirname, '../src/universal'),
+          path.join(__dirname, '../stories')
+        ],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              babelrc: false,
+              plugins: [
+                'syntax-object-rest-spread',
+                'syntax-dynamic-import',
+                'transform-class-properties',
+                ['relay', {artifactDirectory: './src/__generated__'}]
+              ],
+              presets: ['flow', 'react']
+            }
+          },
+          {
+            loader: 'awesome-typescript-loader',
+            options: {
+              errorsAsWarnings: true
+            }
+          }
+        ]
+      },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']

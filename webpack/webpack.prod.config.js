@@ -35,6 +35,34 @@ if (process.env.WEBPACK_DEPLOY) {
 if (process.env.WEBPACK_STATS) {
   extraPlugins.push(new BundleAnalyzerPlugin())
 }
+const babelConfig = {
+  loader: 'babel-loader',
+  options: {
+    cacheDirectory: true,
+    babelrc: false,
+    plugins: [
+      'syntax-object-rest-spread',
+      'syntax-dynamic-import',
+      'transform-class-properties',
+      ['relay', {artifactDirectory: './src/__generated__'}]
+    ],
+    presets: [
+      [
+        'env',
+        {
+          // debug: true,
+          modules: false,
+          targets: {
+            browsers: ['> 1%', 'not ie 11']
+          },
+          useBuiltIns: true
+        }
+      ],
+      'flow',
+      'react'
+    ]
+  }
+}
 
 module.exports = {
   mode: 'production',
@@ -48,7 +76,12 @@ module.exports = {
     chunkFilename: '[name]_[chunkhash].js'
   },
   resolve: {
-    modules: [path.join(__dirname, '../src'), 'node_modules']
+    alias: {
+      'react-relay': '@mattkrick/react-relay',
+      'relay-runtime': '@mattkrick/relay-runtime'
+    },
+    modules: [path.join(__dirname, '../src'), 'node_modules'],
+    extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
   },
   optimization: {
     minimize: Boolean(process.env.WEBPACK_DEPLOY),
@@ -88,36 +121,27 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            babelrc: false,
-            plugins: [
-              'syntax-dynamic-import',
-              'transform-class-properties',
-              'transform-object-rest-spread',
-              'relay'
-            ],
-            presets: [
-              [
-                'env',
-                {
-                  // debug: true,
-                  modules: false,
-                  targets: {
-                    browsers: ['> 1%', 'not ie 11']
-                  },
-                  useBuiltIns: true
-                }
-              ],
-              'flow',
-              'react'
-            ]
-          }
-        }
+        use: babelConfig
       },
       {test: /\.flow$/, loader: 'ignore-loader'},
+      {
+        test: /\.tsx?$/,
+        include: [
+          path.join(__dirname, '../src/__generated__'),
+          path.join(__dirname, '../src/client'),
+          path.join(__dirname, '../src/universal'),
+          path.join(__dirname, '../stories')
+        ],
+        use: [
+          babelConfig,
+          {
+            loader: 'awesome-typescript-loader',
+            options: {
+              errorsAsWarnings: true
+            }
+          }
+        ]
+      },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']

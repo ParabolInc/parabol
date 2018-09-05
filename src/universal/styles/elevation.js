@@ -45,6 +45,7 @@ export const fabShadow = elevation[6]
 export const fabRaisedShadow = elevation[12]
 export const menuShadow = elevation[8]
 export const modalShadow = elevation[24]
+export const ZINDEX_MODAL = 24
 export const navBarShadow = elevation[8]
 export const navItemRaised = elevation[8]
 export const navDrawerShadow = elevation[16]

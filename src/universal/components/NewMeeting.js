@@ -79,8 +79,9 @@ const MeetingSidebarLayout = styled('div')(({isMeetingSidebarCollapsed}) => ({
 
 const MeetingArea = styled('div')({
   display: 'flex',
-  width: '100%',
-  zIndex: 100
+  width: '100%'
+  // This just seemed wrong & blocked modals
+  // zIndex: 100
 })
 
 const MeetingContent = styled('div')({

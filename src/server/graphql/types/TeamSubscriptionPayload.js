@@ -31,6 +31,7 @@ import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectio
 import EndDraggingReflectionPayload from 'server/graphql/types/EndDraggingReflectionPayload'
 import UpdateDragLocationPayload from 'server/graphql/types/UpdateDragLocationPayload'
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
+import SetPhaseFocusPayload from 'server/graphql/types/SetPhaseFocusPayload'
 import StartDraggingReflectionPayload from 'server/graphql/types/StartDraggingReflectionPayload'
 
 const types = [
@@ -55,6 +56,7 @@ const types = [
   RemoveOrgUserPayload,
   RemoveReflectionPayload,
   RemoveTeamMemberPayload,
+  SetPhaseFocusPayload,
   StartDraggingReflectionPayload,
   StartMeetingPayload,
   StartNewMeetingPayload,

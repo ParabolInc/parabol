@@ -1,12 +1,26 @@
 import React, {Component} from 'react'
+import {Subtract} from 'types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
+export interface WithMutationProps {
+  dirty?: boolean
+  error?: any | undefined
+  onCompleted: (res: any, errors: any) => void
+  onError: (error: any) => void
+  setDirty: () => void
+  submitMutation: () => void
+  submitting?: boolean
+}
+
 // Serves as a lightweight alternative for redux-form when we just have a button or something
-export default (ComposedComponent) => {
-  // eslint-disable-next-line react/prefer-stateless-function
-  return class WithMutationProps extends Component {
+const withMutationProps = <P extends WithMutationProps>(
+  ComposedComponent: React.ComponentType<P>
+) => {
+  return class WithMutationProps extends Component<Subtract<P, WithMutationProps>> {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`
+
+    _mounted: boolean = false
 
     state = {
       submitting: false,
@@ -14,11 +28,11 @@ export default (ComposedComponent) => {
       dirty: false
     }
 
-    componentWillMount () {
+    componentWillMount() {
       this._mounted = true
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
       this._mounted = false
     }
 
@@ -56,7 +70,7 @@ export default (ComposedComponent) => {
       }
     }
 
-    render () {
+    render() {
       const {dirty, error, submitting} = this.state
       return (
         <ComposedComponent
@@ -74,20 +88,4 @@ export default (ComposedComponent) => {
   }
 }
 
-export type MutationProps = {
-  dirty: boolean,
-  error: any,
-  onCompleted: () => void,
-  onError: () => void,
-  setDirty: () => void,
-  submitMutation: () => void,
-  submitting: boolean
-}
-// const propTypes = {
-//  setDirty: PropTypes.func.isRequired,
-//  error: PropTypes.any,
-//  submitting: PropTypes.bool,
-//  submitMutation: PropTypes.func.isRequired,
-//  onCompleted: PropTypes.func.isRequired,
-//  onError: PropTypes.func.isRequired
-// }
+export default withMutationProps

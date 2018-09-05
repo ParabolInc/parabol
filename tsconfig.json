@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "dist/types",
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "jsx": "react",
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "module": "es2015",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "dist/lib",
+    "paths": {
+      "*": [
+        "src/*",
+        "stories/*"
+      ]
+    },
+    "removeComments": true,
+    "target": "es2017",
+     "strict": true,
+    "sourceMap": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types"
+    ],
+    "traceResolution": false
+  },
+  "include": [
+    "src",
+    "stories"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "reportFiles": [
+      "src/**/*.{ts,tsx}",
+//      "stories/**/*.{ts,tsx}"
+    ]
+  }
+}

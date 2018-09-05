@@ -36,7 +36,6 @@ extend type DragContext {
   initialComponentCoords: Coords2D
 }
 
-extend type RetroReflection {
-  # can remove when we refresh the reflect phase
-  startOffset: Int
+extend type RetroPhaseItem {
+  editorIds: [ID!]
 }
