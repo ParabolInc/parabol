@@ -13,8 +13,8 @@ const PlaceholderCard = styled('div')({
   borderRadius: 4,
   display: 'flex',
   justifyContent: 'center',
-  maxHeight: '9rem',
-  minHeight: '9rem',
+  margin: '2rem 0',
+  minHeight: '10rem',
   width: ui.retroCardWidth
 })
 
