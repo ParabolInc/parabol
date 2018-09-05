@@ -59,7 +59,7 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
         <RelayTransitionGroup
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
-          loading={<LoadingView minHeight="50vh" />}
+          loading={<LoadingView minHeight='50vh' />}
           ready={
             // @ts-ignore
             <NewMeetingWithLocalState

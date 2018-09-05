@@ -15,18 +15,16 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {GROUP} from 'universal/utils/constants'
+import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import handleRightArrow from '../handleRightArrow'
+import Overflow from 'universal/components/Overflow'
+
+const minWidth = REFLECTION_WIDTH + 32
 
 const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemCount: number}) => ({
-  minWidth: phaseItemCount * REFLECTION_WIDTH,
-  padding: '0 .75rem',
-  [minWidthMediaQueries[2]]: {
-    padding: '0 4rem'
-  }
+  minWidth: phaseItemCount * minWidth
 }))
 
 interface Props extends WithAtmosphereProps {
@@ -38,7 +36,7 @@ interface Props extends WithAtmosphereProps {
 class RetroReflectPhase extends Component<Props> {
   phaseRef = React.createRef<HTMLDivElement>()
 
-  render() {
+  render () {
     const {
       atmosphere: {viewerId},
       team,
@@ -53,31 +51,33 @@ class RetroReflectPhase extends Component<Props> {
     const nextPhaseLabel = phaseLabelLookup[GROUP]
     return (
       <React.Fragment>
-        <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
-          {reflectPrompts.map((prompt, idx) => (
-            <PhaseItemColumn
-              meeting={newMeeting}
-              key={prompt.retroPhaseItemId}
-              retroPhaseItemId={prompt.retroPhaseItemId}
-              question={prompt.question}
-              idx={idx}
-              phaseRef={this.phaseRef}
-            />
-          ))}
-        </StyledWrapper>
+        <Overflow>
+          <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
+            {reflectPrompts.map((prompt, idx) => (
+              <PhaseItemColumn
+                meeting={newMeeting}
+                key={prompt.retroPhaseItemId}
+                retroPhaseItemId={prompt.retroPhaseItemId}
+                question={prompt.question}
+                idx={idx}
+                phaseRef={this.phaseRef}
+              />
+            ))}
+          </StyledWrapper>
+        </Overflow>
         {isFacilitating && (
           <MeetingControlBar>
             <FlatButton
-              size="medium"
+              size='medium'
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
             >
               <IconLabel
-                icon="arrow-circle-right"
+                icon='arrow-circle-right'
                 iconAfter
-                iconColor="warm"
+                iconColor='warm'
                 iconLarge
                 label={`Done! Let’s ${nextPhaseLabel}`}
               />

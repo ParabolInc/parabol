@@ -9,13 +9,13 @@ import {
 } from 'universal/utils/multiplayerMasonry/masonryConstants'
 
 interface Props {
-  getFirst(): BBox | null
+  getFirst (): BBox | null
 
-  getParentBBox(): BBox | null
+  getParentBBox (): BBox | null
 
   isClosing: boolean
 
-  setBBox(bbox: BBox): void
+  setBBox (bbox: BBox): void
 }
 
 interface State {
@@ -27,7 +27,7 @@ class FLIPGrid extends Component<Props, State> {
   parentCache = new ParentCache()
   first: BBox
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.first = props.getFirst()
     const children = this.makeReffedChildren(props.children)
@@ -36,7 +36,7 @@ class FLIPGrid extends Component<Props, State> {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const el = findDOMNode(this) as HTMLElement
     this.parentCache.el = el
     const maxBBox = this.props.getParentBBox()
@@ -53,7 +53,7 @@ class FLIPGrid extends Component<Props, State> {
     this.childrenCache.animateIn(this.first, this.parentCache.bbox)
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     if (this.props.isClosing && !prevProps.isClosing) {
       this.childrenCache.animateOut(this.first, this.parentCache.bbox)
     }
@@ -75,7 +75,7 @@ class FLIPGrid extends Component<Props, State> {
     })
   }
 
-  handleGridChange(dims?: {height: number; width: number}) {
+  handleGridChange (dims?: {height: number; width: number}) {
     const maxBBox = this.props.getParentBBox()
     if (!dims || !maxBBox) return
     this.parentCache.setCoords(this.parentCache.el, dims, maxBBox)
@@ -83,12 +83,12 @@ class FLIPGrid extends Component<Props, State> {
     this.updateChildren()
   }
 
-  checkForResize(key: string) {
+  checkForResize (key: string) {
     const dims = this.childrenCache.maybeResize(key)
     this.handleGridChange(dims)
   }
 
-  makeReffedChildren(children: Array<ComponentElement<any, any>>) {
+  makeReffedChildren (children: Array<ComponentElement<any, any>>) {
     return children.map((child) => {
       return cloneElement(child, {
         ref: (c) => {
@@ -100,7 +100,7 @@ class FLIPGrid extends Component<Props, State> {
     })
   }
 
-  render() {
+  render () {
     return <div>{this.state.children}</div>
   }
 }

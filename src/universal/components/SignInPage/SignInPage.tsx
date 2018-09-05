@@ -49,7 +49,7 @@ class SignInPage extends Component<Props, State> {
     submittingCredentials: false
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.maybeCaptureAuthResponse().catch()
   }
 
@@ -133,7 +133,7 @@ class SignInPage extends Component<Props, State> {
     )
   }
 
-  render() {
+  render () {
     const {loggingIn, error} = this.state
     let pageContent: ReactElement<any>
     if (loggingIn && !error) {

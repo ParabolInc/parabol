@@ -13,7 +13,7 @@ import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  closePortal(): void
+  closePortal (): void
   task: DueDatePicker_task
 }
 
@@ -47,7 +47,7 @@ class DueDatePicker extends React.Component<Props> {
     closePortal()
   }
 
-  render() {
+  render () {
     const {
       task: {dueDate}
     } = this.props

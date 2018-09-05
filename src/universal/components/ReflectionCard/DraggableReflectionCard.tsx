@@ -23,11 +23,11 @@ import {SetItemRef} from '../PhaseItemMasonry'
 import ReflectionCard from './ReflectionCard'
 
 interface Props extends WithAtmosphereProps {
-  closeGroupModal?(): void
+  closeGroupModal? (): void
 
-  connectDragPreview(reactEl: HTMLImageElement): void
+  connectDragPreview (reactEl: HTMLImageElement): void
 
-  connectDragSource(reactEl: ReactElement<{}>): ReactElement<{}>
+  connectDragSource (reactEl: ReactElement<{}>): ReactElement<{}>
 
   dispatch: Dispatch<{}>
   reflection: DraggableReflectionCard_reflection
@@ -121,12 +121,12 @@ const getClassName = (idx, dragContext, isModal) => {
 }
 
 class DraggableReflectionCard extends Component<Props> {
-  componentDidMount() {
+  componentDidMount () {
     const {connectDragPreview} = this.props
     connectDragPreview(getEmptyImage())
   }
 
-  render() {
+  render () {
     const {connectDragSource, reflection, setItemRef, idx, isDraggable, isModal} = this.props
     const {dragContext, reflectionId} = reflection
     const className = getClassName(idx, dragContext, isModal)
@@ -141,7 +141,7 @@ class DraggableReflectionCard extends Component<Props> {
 }
 
 const reflectionDragSpec = {
-  canDrag(props: Props) {
+  canDrag (props: Props) {
     // make sure no one is trying to drag invisible cards
     const {
       reflection: {dragContext},
@@ -151,7 +151,7 @@ const reflectionDragSpec = {
     return !dragContext && !isViewerDragInProgress && isDraggable
   },
 
-  beginDrag(props: Props, monitor) {
+  beginDrag (props: Props, monitor) {
     const {
       atmosphere,
       dispatch,
@@ -172,7 +172,7 @@ const reflectionDragSpec = {
     }
   },
 
-  endDrag(props: Props, monitor) {
+  endDrag (props: Props, monitor) {
     const {
       atmosphere,
       closeGroupModal,

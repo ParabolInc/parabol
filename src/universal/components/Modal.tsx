@@ -10,9 +10,9 @@ import {createPortal} from 'react-dom'
 interface Props {
   isOpen?: boolean | null
 
-  onClose?(event: KeyboardEvent | MouseEvent | TouchEvent): void
+  onClose? (event: KeyboardEvent | MouseEvent | TouchEvent): void
 
-  onOpen?(): void
+  onOpen? (): void
 
   clickToClose?: boolean
   escToClose?: boolean
@@ -22,13 +22,13 @@ interface Props {
 class Modal extends Component<Props> {
   el?: Element
 
-  componentWillMount() {
+  componentWillMount () {
     if (this.props.isOpen) {
       this.setup()
     }
   }
 
-  componentWillReceiveProps(nextProps: Props) {
+  componentWillReceiveProps (nextProps: Props) {
     const {isOpen} = nextProps
     if (isOpen === this.props.isOpen) return
     if (isOpen) {
@@ -38,11 +38,11 @@ class Modal extends Component<Props> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.teardown()
   }
 
-  setup() {
+  setup () {
     this.el = document.createElement('div')
     this.el.id = 'portal'
     this.setState({
@@ -60,7 +60,7 @@ class Modal extends Component<Props> {
     onOpen && onOpen()
   }
 
-  teardown() {
+  teardown () {
     if (this.el && document.body.contains(this.el)) {
       document.body.removeChild(this.el)
       document.removeEventListener('mousedown', this.handleDocumentClick)
@@ -83,7 +83,7 @@ class Modal extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     const {children, isOpen} = this.props
     return isOpen ? createPortal(children, this.el!) : null
   }

@@ -59,7 +59,7 @@ const makeTransition = (isClosing, isViewerDragging) => {
 }
 
 class ReflectionCardInFlight extends React.Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const {
       reflection: {content, dragContext}
@@ -79,7 +79,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       reflection: {dragContext}
     } = this.props
@@ -89,7 +89,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const {
       reflection: {dragContext}
     } = this.props
@@ -191,7 +191,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   cachedTargetId: string | undefined
   cursorOffset: Coords | undefined
 
-  render() {
+  render () {
     const {
       reflection: {
         reflectionId,

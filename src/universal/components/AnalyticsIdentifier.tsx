@@ -21,7 +21,7 @@ declare global {
 }
 
 class AnalyticsIdentifier extends Component<Props, State> {
-  static identify(viewer) {
+  static identify (viewer) {
     if (!viewer) return
     const {created, email, viewerId, avatar, name} = viewer
     raven.setUserContext({
@@ -39,7 +39,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     })
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): Partial<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
     const {viewer} = nextProps
     if (viewer && viewer !== prevState.viewer) {
       // a little side-effecty, but if we didn't do this, we'd need to track isIdentified in the state
@@ -51,7 +51,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     return null
   }
 
-  static page(prevPath) {
+  static page (prevPath) {
     // helmet sets titles async, so we have to wait awhile until it updates
     setTimeout(() => {
       if (typeof window.analytics === 'undefined') {
@@ -71,7 +71,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     viewer: null
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     const {
       location: {pathname: nextPath}
     } = this.props
@@ -84,7 +84,7 @@ class AnalyticsIdentifier extends Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     return null
   }
 }

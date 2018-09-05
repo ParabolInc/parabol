@@ -32,7 +32,7 @@ const OrganizationsRoot = (props: Props) => {
         <RelayTransitionGroup
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
-          loading={<LoadingView minHeight="50vh" />}
+          loading={<LoadingView minHeight='50vh' />}
           ready={<Organizations />}
         />
       )}

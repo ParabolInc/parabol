@@ -1,4 +1,4 @@
-import {NewMeetingPhaseHeading_meeting} from '__generated__/NewMeetingPhaseHeading_meeting.graphql'
+import {NewMeetingPhaseHeading_newMeeting} from '__generated__/NewMeetingPhaseHeading_newMeeting.graphql'
 /**
  * Renders the heading describing the current meeting phase.
  *
@@ -11,7 +11,7 @@ import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSidebarMediaQuery} from 'universal/styles/meeting'
 import ui from 'universal/styles/ui'
 import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import {UnstartedMeeting} from '../../utils/meetings/unstartedMeeting'
+import UNSTARTED_MEETING from '../../utils/meetings/unstartedMeeting'
 
 const HeadingBlock = styled('div')({
   alignItems: 'flex-start',
@@ -48,31 +48,23 @@ const PhaseDescription = styled('h2')({
 })
 
 interface Props {
-  meeting: NewMeetingPhaseHeading_meeting | UnstartedMeeting
+  newMeeting: NewMeetingPhaseHeading_newMeeting | null
   isMeetingSidebarCollapsed: boolean
   toggleSidebar: () => void
 }
 
 const NewMeetingPhaseHeading = (props: Props) => {
-  const {meeting, isMeetingSidebarCollapsed, toggleSidebar} = props
-  const makeContent = () => {
-    if (!meeting.localPhase) return null
-    const {
-      localPhase: {phaseType}
-    } = meeting
-    const label = phaseLabelLookup[phaseType]
-    const description = phaseDescriptionLookup[phaseType]
-    return (
-      <div>
-        <PhaseTitle>{label}</PhaseTitle>
-        <PhaseDescription>{description}</PhaseDescription>
-      </div>
-    )
-  }
+  const {newMeeting, isMeetingSidebarCollapsed, toggleSidebar} = props
+  const meeting = newMeeting || UNSTARTED_MEETING
+  if (!meeting.localPhase) return null
+  const {phaseType} = meeting.localPhase
   return (
     <HeadingBlock>
       <Toggle onClick={toggleSidebar} isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
-      {makeContent()}
+      <div>
+        <PhaseTitle>{phaseLabelLookup[phaseType]}</PhaseTitle>
+        <PhaseDescription>{phaseDescriptionLookup[phaseType]}</PhaseDescription>
+      </div>
     </HeadingBlock>
   )
 }
@@ -80,7 +72,7 @@ const NewMeetingPhaseHeading = (props: Props) => {
 export default createFragmentContainer(
   NewMeetingPhaseHeading,
   graphql`
-    fragment NewMeetingPhaseHeading_meeting on NewMeeting {
+    fragment NewMeetingPhaseHeading_newMeeting on NewMeeting {
       localPhase {
         phaseType
       }

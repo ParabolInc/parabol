@@ -31,17 +31,17 @@ const TeamMemberRow = (props: Props) => {
     <Row>
       <div>
         {picture ? (
-          <Avatar hasBadge={false} picture={picture} size="small" />
+          <Avatar hasBadge={false} picture={picture} size='small' />
         ) : (
-          <img alt="" src={defaultUserAvatar} />
+          <img alt='' src={defaultUserAvatar} />
         )}
       </div>
       <RowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
-          {isLead && <Tag colorPalette="blue" label="Team Lead" />}
+          {isLead && <Tag colorPalette='blue' label='Team Lead' />}
         </RowInfoHeader>
-        <RowInfoLink href={`mailto:${email}`} title="Send an email">
+        <RowInfoLink href={`mailto:${email}`} title='Send an email'>
           {email}
         </RowInfoLink>
       </RowInfo>

@@ -51,14 +51,14 @@ const NewMeetingAvatarMenu = (props: Props) => {
       <DropdownMenuLabel>{headerLabel}</DropdownMenuLabel>
       {handleNavigate && (
         <MenuItemWithShortcuts
-          key="handleNavigate"
+          key='handleNavigate'
           label={`See ${owner} ${phaseLabel}`}
           onClick={handleNavigate}
         />
       )}
       {!avatarIsFacilitating && (
         <MenuItemWithShortcuts
-          key="promoteToFacilitator"
+          key='promoteToFacilitator'
           label={`Promote ${isSelf ? 'yourself' : preferredName} to Facilitator`}
           onClick={handlePromote}
         />

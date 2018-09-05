@@ -147,7 +147,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
 }
 
 class NewMeeting extends Component<Props> {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const {bindHotkey} = props
     bindHotkey('right', handleHotkey(this.maybeGotoNext))
@@ -297,7 +297,7 @@ class NewMeeting extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     const {meetingType, viewer} = this.props
     const {team} = viewer
     const {newMeeting, teamName} = team
@@ -332,7 +332,7 @@ class NewMeeting extends Component<Props> {
             {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
             <MeetingAreaHeader>
               <NewMeetingPhaseHeading
-                meeting={meeting}
+                newMeeting={newMeeting}
                 isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
                 toggleSidebar={this.toggleSidebar}
               />
@@ -427,7 +427,7 @@ export default createFragmentContainer(
           userId
         }
         newMeeting {
-          ...NewMeetingPhaseHeading_meeting
+          ...NewMeetingPhaseHeading_newMeeting
           meetingId: id
           facilitatorStageId
           facilitatorUserId

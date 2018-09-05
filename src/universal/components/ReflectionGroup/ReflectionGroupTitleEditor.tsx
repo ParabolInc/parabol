@@ -104,7 +104,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   initialTitle: string
   inputRef = React.createRef<HTMLInputElement>()
 
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props)
     this.initialTitle = props.reflectionGroup.title || ''
   }
@@ -180,7 +180,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     )
   }
 
-  render() {
+  render () {
     const {
       isExpanded,
       error,
@@ -199,13 +199,13 @@ class ReflectionGroupTitleEditor extends Component<Props> {
               readOnly={readOnly}
               innerRef={this.inputRef}
               size={20}
-              type="text"
+              type='text'
               value={title || ''}
             />
           </FormBlock>
           {error && <StyledError>{error.message}</StyledError>}
         </RootBlock>
-        {!readOnly && <PencilIcon isExpanded={isExpanded} name="pencil" onClick={this.onClick} />}
+        {!readOnly && <PencilIcon isExpanded={isExpanded} name='pencil' onClick={this.onClick} />}
       </React.Fragment>
     )
   }

@@ -68,13 +68,13 @@ class ReflectionCardDeleteButton extends Component<Props> {
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId}, onError, onCompleted)
   }
 
-  render() {
+  render () {
     const {submitting} = this.props
     const userLabel = 'Delete this reflection card'
     if (submitting) return null
     return (
       <DeleteButton aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
-        <Icon name="times-circle" />
+        <Icon name='times-circle' />
         <Background />
       </DeleteButton>
     )

@@ -247,7 +247,8 @@
       "git add"
     ],
     "*.{ts,tsx}": [
-      "prettier --write && tslint --fix -c tslint.json --project tsconfig.json",
+      "prettier --write",
+      "tslint --fix -c tslint.json --project tsconfig.json",
       "git add"
     ]
   },

@@ -62,7 +62,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 }
 
 class MeetingAgendaCards extends Component<Props> {
-  componentWillMount() {
+  componentWillMount () {
     const {bindHotkey} = this.props
     bindHotkey('t', this.handleAddTask())
   }
@@ -86,7 +86,7 @@ class MeetingAgendaCards extends Component<Props> {
     CreateTaskMutation(atmosphere, newTask, MEETING)
   }
 
-  render() {
+  render () {
     const {
       atmosphere: {userId},
       showPlaceholders

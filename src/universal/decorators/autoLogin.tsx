@@ -8,7 +8,7 @@ export interface AutoLoginPropsProps extends WithAtmosphereProps, RouteComponent
 
 const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
   class AutoLogin extends Component<AutoLoginPropsProps> {
-    constructor(props: AutoLoginPropsProps) {
+    constructor (props: AutoLoginPropsProps) {
       super(props)
       const {
         atmosphere: {authObj},
@@ -33,7 +33,7 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
 
     redir: boolean = false
 
-    render() {
+    render () {
       if (this.redir) return null
       return <ComposedComponent {...this.props} />
     }

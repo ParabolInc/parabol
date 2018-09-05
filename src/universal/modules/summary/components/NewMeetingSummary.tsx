@@ -30,7 +30,7 @@ const NewMeetingSummary = (props: Props) => {
       <Helmet title={title} />
       <NewMeetingSummaryEmail
         meeting={newMeeting}
-        referrer="meeting"
+        referrer='meeting'
         meetingUrl={meetingUrl}
         teamDashUrl={teamDashUrl}
       />

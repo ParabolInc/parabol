@@ -69,7 +69,7 @@ class CreateAccountPage extends Component<Props, State> {
     this.setState({submittingCredentials: false})
   }
 
-  render() {
+  render () {
     const {error} = this.state
     return (
       <AuthPage title={`${CREATE_ACCOUNT_LABEL} | Parabol`}>

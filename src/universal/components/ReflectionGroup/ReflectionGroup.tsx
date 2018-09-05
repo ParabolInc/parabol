@@ -109,7 +109,7 @@ class ReflectionGroup extends Component<Props> {
   headerRef?: HTMLDivElement | null
   modalRef?: HTMLDivElement | null
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate (prevProps: Props) {
     const {
       reflectionGroup: {isExpanded: wasExpanded, reflections: oldReflections}
     } = prevProps
@@ -147,7 +147,7 @@ class ReflectionGroup extends Component<Props> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.closeGroupModal(true)
   }
 
@@ -288,7 +288,7 @@ class ReflectionGroup extends Component<Props> {
     this.backgroundRef = c
   }
 
-  render() {
+  render () {
     const {canDrop, connectDropTarget, meeting, reflectionGroup, setChildRef} = this.props
     const {isExpanded, reflections, reflectionGroupId} = reflectionGroup
     const {
@@ -346,14 +346,14 @@ class ReflectionGroup extends Component<Props> {
 }
 
 const reflectionDropSpec: DropTargetSpec<Props, {}, ReflectionGroup> = {
-  canDrop(props, monitor) {
+  canDrop (props, monitor) {
     return (
       monitor.isOver() &&
       monitor.getItem().reflectionGroupId !== props.reflectionGroup.reflectionGroupId
     )
   },
 
-  drop(props, monitor) {
+  drop (props, monitor) {
     if (monitor.didDrop()) return undefined
     const {reflectionGroup} = props
     const {reflectionGroupId: targetReflectionGroupId} = reflectionGroup

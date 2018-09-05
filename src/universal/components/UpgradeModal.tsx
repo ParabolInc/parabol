@@ -31,7 +31,7 @@ class UpgradeModal extends React.Component<Props, State> {
     })
   }
 
-  render() {
+  render () {
     const {isPaid} = this.state
     const {
       atmosphere,

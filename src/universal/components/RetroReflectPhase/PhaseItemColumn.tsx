@@ -1,4 +1,3 @@
-import {PhaseItemColumn_retroPhaseItem} from '__generated__/PhaseItemColumn_retroPhaseItem.graphql'
 import memoize from 'micro-memoize'
 /**
  * Renders a column for a particular "type" of reflection
@@ -10,7 +9,6 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
-import PhaseItemHealthBar from 'universal/components/RetroReflectPhase/PhaseItemHealthBar'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
@@ -28,8 +26,8 @@ const ColumnWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  height: '100%',
-  padding: '1rem'
+  maxHeight: '36rem',
+  padding: '0 1rem 1rem'
 })
 
 const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
@@ -45,9 +43,7 @@ const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
 const ColumnContent = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-between',
-  padding: '0 2rem'
-  // maxWidth: ui.retroCardWidth
+  justifyContent: 'space-between'
 })
 
 const HeaderAndEditor = styled('div')({
@@ -69,7 +65,7 @@ const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean})
 }))
 
 const TypeHeader = styled('div')({
-  padding: '2rem 0 1rem',
+  padding: '0 0 1rem',
   userSelect: 'none',
   width: '100%'
 })
@@ -129,7 +125,7 @@ class PhaseItemColumn extends Component<Props> {
 
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
-  render() {
+  render () {
     const {idx, meeting, phaseRef, question, retroPhaseItemId} = this.props
     const {
       meetingId,
@@ -147,7 +143,7 @@ class PhaseItemColumn extends Component<Props> {
             <HeaderAndEditor>
               <TypeHeader onClick={this.setColumnFocus}>
                 <TypeDescription>
-                  <FocusArrow name="arrow-right" isFocused={isFocused} />
+                  <FocusArrow name='arrow-right' isFocused={isFocused} />
                   {question}
                 </TypeDescription>
               </TypeHeader>
@@ -158,7 +154,6 @@ class PhaseItemColumn extends Component<Props> {
                   nextSortOrder={this.nextSortOrder}
                   retroPhaseItemId={retroPhaseItemId}
                 />
-                <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
               </EditorAndStatus>
             </HeaderAndEditor>
             <ReflectionStack
@@ -181,6 +176,8 @@ class PhaseItemColumn extends Component<Props> {
     )
   }
 }
+
+// <PhaseItemHealthBar editorCount={editorIds ? editorIds.length : 0} />
 
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(PhaseItemColumn)),

@@ -269,24 +269,24 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
     return (
       <ModalBody>
-        <StyledIconAvatar icon={cardTypeIcon} size="large" />
+        <StyledIconAvatar icon={cardTypeIcon} size='large' />
         <Type
-          align="center"
-          colorPalette="dark"
-          lineHeight="1.875rem"
-          marginBottom=".25rem"
-          scale="s6"
+          align='center'
+          colorPalette='dark'
+          lineHeight='1.875rem'
+          marginBottom='.25rem'
+          scale='s6'
         >
           {actionLabel}
         </Type>
-        <Type align="center" colorPalette="dark" lineHeight={appTheme.typography.s5} scale="s3">
-          <LockIcon name="lock" />
+        <Type align='center' colorPalette='dark' lineHeight={appTheme.typography.s5} scale='s3'>
+          <LockIcon name='lock' />
           {' Secured by '}
           <b>{'Stripe'}</b>
         </Type>
@@ -295,44 +295,44 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
           <CardInputs>
             <CreditCardNumber>
               <UpgradeCreditCardFormField
-                autoComplete="cc-number"
+                autoComplete='cc-number'
                 autoFocus
                 hasError={Boolean(error && error.creditCardNumber)}
-                iconName="credit-card"
-                maxLength="20"
+                iconName='credit-card'
+                maxLength='20'
                 onChange={this.handleNumberChange}
-                placeholder="Card number"
+                placeholder='Card number'
                 value={creditCardNumber}
               />
             </CreditCardNumber>
             <CardDetails>
               <CardExpiry>
                 <UpgradeCreditCardFormField
-                  autoComplete="cc-exp"
+                  autoComplete='cc-exp'
                   hasError={Boolean(error && error.expiry)}
-                  iconName="calendar"
-                  maxLength="5"
+                  iconName='calendar'
+                  maxLength='5'
                   onChange={this.handleExpiryChange}
-                  placeholder="MM/YY"
+                  placeholder='MM/YY'
                   value={expiry}
                 />
               </CardExpiry>
               <CardCvc>
                 <UpgradeCreditCardFormField
-                  autoComplete="cc-csc"
+                  autoComplete='cc-csc'
                   hasError={Boolean(error && error.cvc)}
-                  iconName="lock"
-                  maxLength="4"
-                  name="cvc"
+                  iconName='lock'
+                  maxLength='4'
+                  name='cvc'
                   onChange={this.handleCVCChange}
-                  placeholder="CVC"
+                  placeholder='CVC'
                   value={cvc}
                 />
               </CardCvc>
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButton size="medium" depth={1} onClick={this.handleSubmit} waiting={submitting}>
+            <UpdateButton size='medium' depth={1} onClick={this.handleSubmit} waiting={submitting}>
               {actionLabel}
             </UpdateButton>
           </ButtonGroup>

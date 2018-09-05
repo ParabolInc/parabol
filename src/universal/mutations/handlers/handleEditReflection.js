@@ -7,7 +7,7 @@ const handleEditReflection = (payload, store) => {
   if (!phaseItem) return
   const editorIds = phaseItem.getValue('editorIds') || []
   const nextEditorIds = isEditing
-    ? editorIds.concat(editorId)
+    ? Array.from(new Set(editorIds.concat(editorId)))
     : editorIds.filter((id) => id !== editorId)
   phaseItem.setValue(nextEditorIds, 'editorIds')
 }

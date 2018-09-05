@@ -9,6 +9,7 @@ import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/R
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import ui from 'universal/styles/ui'
+import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
 interface Props {
@@ -25,11 +26,11 @@ interface State {
 }
 
 const CardStack = styled('div')(({isVisible}: {isVisible: boolean}) => ({
+  alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
-  maxHeight: '9rem',
-  minHeight: '9rem',
+  margin: '2rem 0',
+  minHeight: '10rem',
   visibility: !isVisible ? 'hidden' : undefined
 }))
 
@@ -48,7 +49,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
       return {
         backgroundColor: 'white',
         borderRadius: 4,
-        boxShadow: ui.shadow[0],
+        boxShadow: cardShadow,
         overflow: 'hidden',
         position: 'absolute',
         pointerEvents: 'none',
@@ -66,7 +67,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
       return {
         backgroundColor: 'white',
         borderRadius: 4,
-        boxShadow: ui.shadow[0],
+        boxShadow: cardShadow,
         overflow: 'hidden',
         position: 'absolute',
         pointerEvents: 'none',
@@ -96,7 +97,7 @@ class ReflectionStack extends Component<Props, State> {
   stackRef = React.createRef<HTMLDivElement>()
   firstReflectionRef = React.createRef<HTMLDivElement>()
 
-  getSnapshotBeforeUpdate(prevProps: Props) {
+  getSnapshotBeforeUpdate (prevProps: Props) {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
     if (
@@ -116,7 +117,7 @@ class ReflectionStack extends Component<Props, State> {
     }
   }
 
-  componentDidUpdate(_prevProps, _prevState, snapshot) {
+  componentDidUpdate (_prevProps, _prevState, snapshot) {
     if (this.firstReflectionRef.current && snapshot) {
       const first = snapshot.startCoords || getBBox(this.props.phaseEditorRef.current)
       this.animateFromEditor(
@@ -128,7 +129,7 @@ class ReflectionStack extends Component<Props, State> {
     }
   }
 
-  animateFromEditor(firstReflectionDiv: HTMLDivElement, first, duration, easing) {
+  animateFromEditor (firstReflectionDiv: HTMLDivElement, first, duration, easing) {
     const last = getBBox(firstReflectionDiv)
     if (!first || !last) return
     firstReflectionDiv.style.transform = getTransform(first, last)
@@ -150,7 +151,7 @@ class ReflectionStack extends Component<Props, State> {
     })
   }
 
-  render() {
+  render () {
     const {idx, reflectionStack, phaseItemId, phaseRef, meetingId} = this.props
     const {isExpanded} = this.state
     if (reflectionStack.length === 0) {
@@ -194,7 +195,7 @@ class ReflectionStack extends Component<Props, State> {
                       reflection={reflection}
                       phaseItemId={phaseItemId}
                       readOnly
-                      userSelect="none"
+                      userSelect='none'
                     />
                   </ReflectionWrapper>
                 )

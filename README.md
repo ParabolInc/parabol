@@ -35,16 +35,16 @@ Action is a Node.js application based upon the
 
 | Concern            | Solution                                                |
 |--------------------|---------------------------------------------------------|
-| Server             | [Node 8.5](https://nodejs.org/)                         |
+| Server             | [Node](https://nodejs.org/)                         |
 | Server Framework   | [Express](http://expressjs.com/)                        |
 | Database           | [RethinkDB](https://www.rethinkdb.com/)                 |
 | Data Transport     | [GraphQL](https://github.com/graphql/graphql-js)        |
-| Sockets            | [socketcluster](http://socketcluster.io/)               |
-| Client State       | [Redux](http://redux.js.org/)                           |
-| Client Data Cache  | [Relay](https://facebook.github.io/relay/)              |
+| BidirectionalTransport            | [trebuchet](https://github.com/mattkrick/trebuchet-client)               |
+| Client Cache  | [Relay](https://facebook.github.io/relay/)              |
 | Front-end Views    | [React](https://facebook.github.io/react/)              |
-| Styling            | [aphrodite](https://github.com/khan/aphrodite)          |
+| Styling            | [Emotion](https://emotion.sh/)          |
 | Unit Testing       | [jest](https://facebook.github.io/jest)                 |
+| Static typing | [Typescript](https://www.typescriptlang.org/) |
 
 Action is coded using ECMAscript ES6/7 (including async/await).
 Transpilation is provided by [babel](https://github.com/babel/babel).

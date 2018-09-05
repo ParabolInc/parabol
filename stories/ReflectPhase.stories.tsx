@@ -36,7 +36,7 @@ storiesOf('Reflect Phase', module)
   ))
   .add('editor', () => (
     <StoryProvider>
-      <PhaseItemEditor meetingId="123" retroPhaseItemId="124" reflectionStack={[]} />
+      <PhaseItemEditor meetingId='123' retroPhaseItemId='124' reflectionStack={[]} />
     </StoryProvider>
   ))
   .add('health bar', () => (
@@ -54,8 +54,8 @@ storiesOf('Reflect Phase', module)
       <ReflectionStack
         idx={1}
         reflectionStack={reflectionStack as any}
-        meetingId="meet1"
-        phaseItemId="pi1"
+        meetingId='meet1'
+        phaseItemId='pi1'
       />
     </StoryProvider>
   ))
