@@ -111,7 +111,7 @@ interface CancelDropPayload {
 export type MasonryDragEndPayload = DropOnGridPayload | DropOnGroupPayload | CancelDropPayload
 
 class PhaseItemMasonry extends React.Component<Props> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props)
     const {atmosphere} = props
     const {eventEmitter} = atmosphere
@@ -137,7 +137,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   childrenCache: MasonryChildrenCache = {}
   itemCache: MasonryItemCache = {}
 
-  componentDidMount() {
+  componentDidMount () {
     const {
       atmosphere: {eventEmitter}
     } = this.props
@@ -146,7 +146,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     eventEmitter.on('meetingSidebarCollapsed', this.handleResize)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const {atmosphere} = this.props
     const {eventEmitter} = atmosphere
     eventEmitter.off('endDraggingReflection', this.handleDragEnd)
@@ -234,7 +234,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   setItemRef: SetItemRef = (itemId, isModal) => (c) => {
     if (!c) {
       if (isModal) {
-        this.itemCache[itemId]!.modalEl = undefined
+        this.itemCache[itemId].modalEl = undefined
       }
       return
     }
@@ -272,7 +272,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     this.parentCache.el = c
   }
 
-  render() {
+  render () {
     const {canDrop, connectDropTarget, meeting} = this.props
     const {reflectionGroups, teamId} = meeting
     const reflectionsInFlight = meeting.reflectionsInFlight || []
@@ -317,10 +317,10 @@ class PhaseItemMasonry extends React.Component<Props> {
 }
 
 const reflectionDropSpec = {
-  canDrop(_props: Props, monitor: DropTargetMonitor) {
+  canDrop (_props: Props, monitor: DropTargetMonitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
-  drop() {
+  drop () {
     return {dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GRID}
   }
 } as DropTargetSpec<Props, {}, PhaseItemMasonry>

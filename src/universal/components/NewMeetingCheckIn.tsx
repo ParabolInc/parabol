@@ -45,7 +45,8 @@ const Hint = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
-  gotoNext(options: {isCheckedIn: boolean}): void
+  gotoNext (options: {isCheckedIn: boolean}): void
+  gotoNextRef: React.RefObject<HTMLDivElement>
   meetingType: MeetingTypeEnum
   team: NewMeetingCheckIn_team
 }
@@ -56,8 +57,8 @@ class NewMeetingCheckIn extends Component<Props> {
     gotoNext({isCheckedIn})
   }
 
-  render() {
-    const {atmosphere, team, meetingType} = this.props
+  render () {
+    const {atmosphere, gotoNextRef, team, meetingType} = this.props
     const {newMeeting} = team
     if (!newMeeting) return
     const {
@@ -78,7 +79,7 @@ class NewMeetingCheckIn extends Component<Props> {
     const isFacilitating = facilitatorUserId === viewerId
     return (
       <React.Fragment>
-        <MeetingSection flexToFill paddingBottom="1rem">
+        <MeetingSection flexToFill paddingBottom='1rem'>
           <NewMeetingCheckInPrompt team={team} teamMember={teamMember} />
           <CheckIn>
             {!isFacilitating && (
@@ -114,6 +115,7 @@ class NewMeetingCheckIn extends Component<Props> {
               localPhaseItem={localStageId}
               nextMemberName={nextMemberName}
               nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
+              gotoNextRef={gotoNextRef}
             />
           </MeetingControlBar>
         )}

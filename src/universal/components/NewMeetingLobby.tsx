@@ -114,7 +114,7 @@ const StyledButton = styled(PrimaryButton)({
 })
 
 class NewMeetingLobby extends React.Component<Props> {
-  render() {
+  render () {
     const {
       atmosphere,
       history,
@@ -179,7 +179,7 @@ class NewMeetingLobby extends React.Component<Props> {
                 depth={1}
                 disabled={!canStartMeeting}
                 onClick={onStartMeetingClick}
-                size="large"
+                size='large'
                 waiting={submitting}
               >
                 {buttonLabel}
@@ -191,7 +191,7 @@ class NewMeetingLobby extends React.Component<Props> {
                   LoadableComponent={UpgradeModalRootLoadable}
                   queryVars={{orgId}}
                   toggle={
-                    <StyledButton aria-label="Get Access Now" size="large" depth={1}>
+                    <StyledButton aria-label='Get Access Now' size='large' depth={1}>
                       {'Get Access Now'}
                     </StyledButton>
                   }

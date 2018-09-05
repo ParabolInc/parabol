@@ -39,7 +39,7 @@ type State = {
 }
 
 class NewMeetingWithLocalState extends Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
@@ -47,7 +47,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       viewer: {
         team: {newMeeting}
@@ -83,7 +83,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  updateRelayFromURL(params) {
+  updateRelayFromURL (params) {
     /*
      * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
      * the additional logic here has 2 benefits:
@@ -165,7 +165,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     return true
   }
 
-  render() {
+  render () {
     return this.state.safeRoute ? <NewMeeting {...this.props} /> : null
   }
 }

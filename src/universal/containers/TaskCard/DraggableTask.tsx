@@ -24,14 +24,14 @@ interface Props {
 }
 
 class DraggableTask extends Component<Props> {
-  componentDidMount() {
+  componentDidMount () {
     const {connectDragPreview, isPreview} = this.props
     if (!isPreview) {
       connectDragPreview(getEmptyImage())
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate (nextProps) {
     const {isDragging} = nextProps
     for (let i = 0; i < importantTaskProps.length; i++) {
       const key = importantTaskProps[i]
@@ -42,7 +42,7 @@ class DraggableTask extends Component<Props> {
     return isDragging !== this.props.isDragging
   }
 
-  render() {
+  render () {
     const {area, connectDragSource, connectDropTarget, isDragging, myUserId, task} = this.props
     return connectDropTarget(
       connectDragSource(
@@ -58,10 +58,10 @@ class DraggableTask extends Component<Props> {
 }
 
 const taskDragSpec = {
-  beginDrag(props) {
+  beginDrag (props) {
     return {taskId: props.task.id}
   },
-  isDragging(props, monitor) {
+  isDragging (props, monitor) {
     return props.task.id === monitor.getItem().taskId
   }
 }

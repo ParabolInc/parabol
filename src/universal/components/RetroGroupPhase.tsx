@@ -18,15 +18,26 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
+import handleRightArrow from '../utils/handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void
+  gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroGroupPhase_team
 }
 
 const RetroGroupPhase = (props: Props) => {
-  const {atmosphere, error, gotoNext, onError, onCompleted, submitMutation, team} = props
+  const {
+    atmosphere,
+    error,
+    gotoNext,
+    gotoNextRef,
+    onError,
+    onCompleted,
+    submitMutation,
+    team
+  } = props
   const {viewerId} = atmosphere
   const {newMeeting} = team
   if (!newMeeting) return null
@@ -47,18 +58,23 @@ const RetroGroupPhase = (props: Props) => {
       </MeetingPhaseWrapper>
       {isFacilitating && (
         <MeetingControlBar>
-          <FlatButton size="medium" onClick={gotoNext}>
+          <FlatButton
+            size='medium'
+            onClick={gotoNext}
+            onKeyDown={handleRightArrow(gotoNext)}
+            innerRef={gotoNextRef}
+          >
             <IconLabel
-              icon="arrow-circle-right"
+              icon='arrow-circle-right'
               iconAfter
-              iconColor="warm"
+              iconColor='warm'
               iconLarge
               label={`Done! Let’s ${nextPhaseLabel}`}
             />
           </FlatButton>
           {canAutoGroup && (
-            <FlatButton size="medium" onClick={autoGroup}>
-              <IconLabel icon="magic" iconColor="midGray" iconLarge label={'Auto Group'} />
+            <FlatButton size='medium' onClick={autoGroup}>
+              <IconLabel icon='magic' iconColor='midGray' iconLarge label={'Auto Group'} />
             </FlatButton>
           )}
         </MeetingControlBar>

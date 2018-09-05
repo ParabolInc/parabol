@@ -83,7 +83,7 @@ class MeetingContainer extends Component {
   componentWillMount () {
     const {atmosphere, bindHotkey, history, teamId, submitting} = this.props
     this.unsafeRoute = !handleRedirects({}, this.props)
-    bindHotkey(['enter', 'right'], handleHotkey(this.gotoNext, submitting))
+    bindHotkey('right', handleHotkey(this.gotoNext, submitting))
     bindHotkey('left', handleHotkey(this.gotoPrev, submitting))
     bindHotkey('i c a n t h a c k i t', () => {
       const onCompleted = () => {

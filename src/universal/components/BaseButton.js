@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
+import withInnerRef from 'universal/decorators/withInnerRef'
 
 const ButtonRoot = styled(PlainButton)(({size, depth, disabled, pressedDown}) => {
   const hasDepth = depth || depth === 0
@@ -41,7 +42,7 @@ class BaseButton extends Component {
     // depth: up to 2 + 2 (for :hover, :focus) = up to ui.shadow[4]
     depth: PropTypes.oneOf([0, 1, 2]),
     disabled: PropTypes.bool,
-    innerRef: PropTypes.func,
+    innerRef: PropTypes.any,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
@@ -126,4 +127,4 @@ class BaseButton extends Component {
   }
 }
 
-export default BaseButton
+export default withInnerRef(BaseButton)

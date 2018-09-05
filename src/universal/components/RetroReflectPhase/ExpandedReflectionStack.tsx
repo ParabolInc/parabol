@@ -9,7 +9,7 @@ import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import {cardShadow} from 'universal/styles/elevation'
 
 interface Props {
-  collapse(): void
+  collapse (): void
 
   isExpanded: boolean
   phaseRef: React.RefObject<HTMLDivElement>
@@ -57,7 +57,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
     this.props.collapse()
   }
 
-  render() {
+  render () {
     const {isExpanded, reflectionStack, meetingId, phaseItemId} = this.props
     const {isClosing} = this.state
     return (

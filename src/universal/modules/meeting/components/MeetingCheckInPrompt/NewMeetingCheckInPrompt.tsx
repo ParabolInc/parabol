@@ -45,7 +45,7 @@ const NewMeetingCheckinPrompt = (props: Props) => {
   return (
     <PromptBlock>
       <AvatarBlock>
-        <Avatar picture={picture || defaultUserAvatar} size="fill" />
+        <Avatar picture={picture || defaultUserAvatar} size='fill' />
       </AvatarBlock>
       <div>
         <NewMeetingCheckInGreeting checkInGreeting={checkInGreeting} teamMember={teamMember} />

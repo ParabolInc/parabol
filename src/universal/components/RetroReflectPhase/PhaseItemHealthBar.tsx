@@ -51,7 +51,7 @@ const HealthBarLabel = styled('div')({
 })
 
 class PhaseItemHealthBar extends Component<Props> {
-  render() {
+  render () {
     const {editorCount} = this.props
     return (
       <HealthBarStyle>

@@ -61,7 +61,7 @@ const PendingApprovalRow = (props: Props) => {
   return (
     <Row backgroundColor={appTheme.palette.yellow30l}>
       <div>
-        <img alt="" src={defaultUserAvatar} />
+        <img alt='' src={defaultUserAvatar} />
       </div>
       <RowInfo>
         <RowInfoHeader>

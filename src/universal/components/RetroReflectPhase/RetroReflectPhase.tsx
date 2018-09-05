@@ -17,6 +17,7 @@ import withAtmosphere, {
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {GROUP} from 'universal/utils/constants'
+import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
@@ -29,17 +30,19 @@ const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemC
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
+  gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroReflectPhase_team
 }
 
 class RetroReflectPhase extends Component<Props> {
   phaseRef = React.createRef<HTMLDivElement>()
 
-  render() {
+  render () {
     const {
       atmosphere: {viewerId},
       team,
-      gotoNext
+      gotoNext,
+      gotoNextRef
     } = this.props
     const {newMeeting, meetingSettings} = team
     if (!newMeeting) return
@@ -65,14 +68,16 @@ class RetroReflectPhase extends Component<Props> {
         {isFacilitating && (
           <MeetingControlBar>
             <FlatButton
-              size="medium"
+              size='medium'
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
+              onKeyDown={handleRightArrow(gotoNext)}
+              innerRef={gotoNextRef}
             >
               <IconLabel
-                icon="arrow-circle-right"
+                icon='arrow-circle-right'
                 iconAfter
-                iconColor="warm"
+                iconColor='warm'
                 iconLarge
                 label={`Done! Let’s ${nextPhaseLabel}`}
               />

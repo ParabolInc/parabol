@@ -1,6 +1,6 @@
 import {SORT_STEP} from 'universal/utils/constants'
 
-export default function getNextSortOrder(
+export default function getNextSortOrder (
   arr: ReadonlyArray<{sortOrder: number}>,
   noise: number = 0
 ) {

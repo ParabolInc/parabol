@@ -62,7 +62,7 @@ const InvitationRow = (props: Props) => {
   return (
     <Row>
       <div>
-        <img alt="" src={defaultUserAvatar} />
+        <img alt='' src={defaultUserAvatar} />
       </div>
       <RowInfo>
         <RowInfoHeader>

@@ -71,7 +71,7 @@ const NewMeetingSidebar = (props: Props) => {
       <ScrollableBlock>
         <NewMeetingSidebarPhaseList gotoStageId={gotoStageId} viewer={viewer} />
       </ScrollableBlock>
-      <LogoBlock variant="primary" />
+      <LogoBlock variant='primary' />
     </SidebarParent>
   )
 }

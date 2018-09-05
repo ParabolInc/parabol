@@ -23,11 +23,16 @@ import ui from 'universal/styles/ui'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
+import handleRightArrow from '../utils/handleRightArrow'
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  dispatch: Dispatch<{}>
+interface PassedProps {
   gotoNext: () => void
+  gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroDiscussPhase_team
+}
+
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, PassedProps {
+  dispatch: Dispatch<{}>
 }
 
 const maxWidth = '114rem'
@@ -134,7 +139,7 @@ const SpacedMeetingControlBar = styled(MeetingControlBar)({
 })
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, dispatch, gotoNext, history, team} = props
+  const {atmosphere, dispatch, gotoNext, gotoNextRef, history, team} = props
   const {viewerId} = atmosphere
   const {newMeeting, teamId} = team
   if (!newMeeting) return null
@@ -209,10 +214,15 @@ const RetroDiscussPhase = (props: Props) => {
           <ControlButtonBlock />
           {nextStageRes && (
             <ControlButtonBlock>
-              <StyledButton size="medium" onClick={gotoNext}>
+              <StyledButton
+                size='medium'
+                onClick={gotoNext}
+                innerRef={gotoNextRef}
+                onKeyDown={handleRightArrow(gotoNext)}
+              >
                 <IconLabel
-                  icon="arrow-circle-right"
-                  iconColor="warm"
+                  icon='arrow-circle-right'
+                  iconColor='warm'
                   iconAfter
                   iconLarge
                   label={'Done! Next topic'}
@@ -221,10 +231,10 @@ const RetroDiscussPhase = (props: Props) => {
             </ControlButtonBlock>
           )}
           <ControlButtonBlock>
-            <StyledButton size="medium" onClick={endMeeting}>
+            <StyledButton size='medium' onClick={endMeeting}>
               <IconLabel
-                icon="flag-checkered"
-                iconColor="midGray"
+                icon='flag-checkered'
+                iconColor='midGray'
                 iconLarge
                 label={'End Meeting'}
               />
@@ -239,7 +249,7 @@ const RetroDiscussPhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer(
+export default createFragmentContainer<PassedProps>(
   (connect as any)()(withRouter(withAtmosphere(RetroDiscussPhase))),
   graphql`
     fragment RetroDiscussPhase_team on Team {
