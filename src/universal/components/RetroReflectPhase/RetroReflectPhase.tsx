@@ -17,9 +17,9 @@ import withAtmosphere, {
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {GROUP} from 'universal/utils/constants'
+import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import handleRightArrow from '../handleRightArrow'
 
 const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemCount: number}) => ({
   minWidth: phaseItemCount * REFLECTION_WIDTH,

@@ -18,7 +18,7 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
-import handleRightArrow from './handleRightArrow'
+import handleRightArrow from '../utils/handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {

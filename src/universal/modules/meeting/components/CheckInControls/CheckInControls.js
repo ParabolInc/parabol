@@ -7,7 +7,7 @@ import IconLabel from 'universal/components/IconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import getWindowSize from 'universal/styles/helpers/getWindowSize'
 import {meetingSidebarBreakpoint} from 'universal/styles/meeting'
-import handleRightArrow from 'universal/components/handleRightArrow'
+import handleRightArrow from 'universal/utils/handleRightArrow'
 
 const ButtonBlock = styled('div')({
   display: 'flex'

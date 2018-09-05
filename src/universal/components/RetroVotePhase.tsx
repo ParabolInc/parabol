@@ -18,7 +18,7 @@ import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
-import handleRightArrow from './handleRightArrow'
+import handleRightArrow from '../utils/handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
 import IDiscussPhase = GQL.IDiscussPhase
 

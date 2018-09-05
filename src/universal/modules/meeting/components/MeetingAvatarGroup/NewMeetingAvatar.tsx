@@ -4,7 +4,6 @@ import React from 'react'
 import styled from 'react-emotion'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import UNSTARTED_MEETING, {UnstartedMeeting} from 'universal/utils/meetings/unstartedMeeting'
 import Avatar from 'universal/components/Avatar/Avatar'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import withAtmosphere, {
@@ -15,6 +14,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
+import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import NewMeetingTeamMemberStage = GQL.NewMeetingTeamMemberStage
 
 const originAnchor = {
@@ -97,7 +97,7 @@ const FacilitatorTag = styled('div')({
 interface Props extends WithAtmosphereProps {
   gotoStage: () => void
   isFacilitatorStage: boolean
-  newMeeting: NewMeetingAvatar_newMeeting | UnstartedMeeting
+  newMeeting: NewMeetingAvatar_newMeeting | null
   teamMember: NewMeetingAvatar_teamMember
 }
 

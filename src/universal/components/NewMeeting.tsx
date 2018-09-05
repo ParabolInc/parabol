@@ -332,7 +332,7 @@ class NewMeeting extends Component<Props> {
             {/* For performance, the correct height of this component should load synchronously, otherwise the grouping grid will be off */}
             <MeetingAreaHeader>
               <NewMeetingPhaseHeading
-                meeting={meeting}
+                newMeeting={newMeeting}
                 isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
                 toggleSidebar={this.toggleSidebar}
               />
@@ -371,7 +371,6 @@ class NewMeeting extends Component<Props> {
                   />
                 )}
                 {localPhaseType === DISCUSS && (
-                  // @ts-ignore
                   <RetroDiscussPhase
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
@@ -428,7 +427,7 @@ export default createFragmentContainer(
           userId
         }
         newMeeting {
-          ...NewMeetingPhaseHeading_meeting
+          ...NewMeetingPhaseHeading_newMeeting
           meetingId: id
           facilitatorStageId
           facilitatorUserId

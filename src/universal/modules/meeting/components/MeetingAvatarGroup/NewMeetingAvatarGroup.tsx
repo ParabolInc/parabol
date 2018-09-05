@@ -54,7 +54,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
                 gotoStageId(teamMemberStageId)
               }}
               isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
-              newMeeting={meeting}
+              newMeeting={newMeeting}
               teamMember={teamMember}
             />
           )
