@@ -147,7 +147,7 @@ const NewMeetingAvatar = (props: Props) => {
               picture={picture}
               isConnected={isConnected || isSelf}
               isCheckedIn={isCheckedIn}
-              size="fill"
+              size='fill'
             />
           }
         />
