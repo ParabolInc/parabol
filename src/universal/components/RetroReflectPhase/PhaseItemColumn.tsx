@@ -132,7 +132,7 @@ class PhaseItemColumn extends Component<Props> {
 
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
-  render() {
+  render () {
     const {idx, meeting, phaseRef, retroPhaseItem} = this.props
     const {
       meetingId,
@@ -151,7 +151,7 @@ class PhaseItemColumn extends Component<Props> {
             <HeaderAndEditor>
               <TypeHeader onClick={this.setColumnFocus}>
                 <TypeDescription>
-                  <FocusArrow name="arrow-right" isFocused={isFocused} />
+                  <FocusArrow name='arrow-right' isFocused={isFocused} />
                   {question}
                 </TypeDescription>
               </TypeHeader>

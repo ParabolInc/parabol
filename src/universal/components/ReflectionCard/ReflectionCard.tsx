@@ -68,7 +68,7 @@ export const ReflectionCardRoot = styled('div')(
 )
 
 class ReflectionCard extends Component<Props, State> {
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): Partial<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
     const {reflection} = nextProps
     const {content} = reflection
     if (content === prevState.content) return null
@@ -154,7 +154,7 @@ class ReflectionCard extends Component<Props, State> {
     return 'handled'
   }
 
-  render() {
+  render () {
     const {
       atmosphere,
       handleChange,
@@ -179,7 +179,7 @@ class ReflectionCard extends Component<Props, State> {
       <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow}>
         {hasDragLock && <UserDraggingHeader user={dragUser} />}
         <ReflectionEditorWrapper
-          ariaLabel="Edit this reflection"
+          ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
           editorState={editorState}
           innerRef={this.setEditorRef}
@@ -188,7 +188,7 @@ class ReflectionCard extends Component<Props, State> {
           onFocus={this.handleEditorFocus}
           handleChange={handleChange}
           handleReturn={this.handleReturn}
-          placeholder="My reflection thought…"
+          placeholder='My reflection thought…'
           readOnly={readOnly || isTempId(reflectionId) || isDraggable}
           setEditorState={this.setEditorState}
           userSelect={userSelect || isDraggable ? 'none' : 'text'}

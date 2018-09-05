@@ -100,7 +100,7 @@ const NewMeetingPrompt = (props: Props) => {
   return (
     <MeetingPromptRoot>
       <AvatarBlock>
-        <Avatar picture={picture || defaultUserAvatar} size="fill" />
+        <Avatar picture={picture || defaultUserAvatar} size='fill' />
       </AvatarBlock>
       <Body>
         <Heading>{heading}</Heading>

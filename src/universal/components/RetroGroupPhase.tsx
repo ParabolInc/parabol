@@ -59,22 +59,22 @@ const RetroGroupPhase = (props: Props) => {
       {isFacilitating && (
         <MeetingControlBar>
           <FlatButton
-            size="medium"
+            size='medium'
             onClick={gotoNext}
             onKeyDown={handleRightArrow(gotoNext)}
             innerRef={gotoNextRef}
           >
             <IconLabel
-              icon="arrow-circle-right"
+              icon='arrow-circle-right'
               iconAfter
-              iconColor="warm"
+              iconColor='warm'
               iconLarge
               label={`Done! Let’s ${nextPhaseLabel}`}
             />
           </FlatButton>
           {canAutoGroup && (
-            <FlatButton size="medium" onClick={autoGroup}>
-              <IconLabel icon="magic" iconColor="midGray" iconLarge label={'Auto Group'} />
+            <FlatButton size='medium' onClick={autoGroup}>
+              <IconLabel icon='magic' iconColor='midGray' iconLarge label={'Auto Group'} />
             </FlatButton>
           )}
         </MeetingControlBar>

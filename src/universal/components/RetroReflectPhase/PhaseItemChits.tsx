@@ -103,7 +103,7 @@ const getStatus = (count: number, editorCount: number) => {
 }
 
 class PhaseItemChits extends Component<Props> {
-  render() {
+  render () {
     const {count, editorCount} = this.props
     const chitCount = Math.min(count, MAX_ROWS * CHITS_PER_ROW)
     const chits = [...Array(chitCount).keys()]

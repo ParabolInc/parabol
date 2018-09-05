@@ -14,7 +14,7 @@ export default <P extends WithAtmosphereProps>(ComposedComponent: React.Componen
     }
     static displayName = `WithAtmosphere(${getDisplayName(ComposedComponent)})`
 
-    render() {
+    render () {
       const {atmosphere} = this.context
       return <ComposedComponent {...this.props} atmosphere={atmosphere} />
     }

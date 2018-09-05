@@ -27,7 +27,7 @@ class PhaseItemEditor extends Component<Props, State> {
     editorState: EditorState.createEmpty()
   }
 
-  handleSubmit() {
+  handleSubmit () {
     const {
       atmosphere,
       onError,
@@ -84,18 +84,18 @@ class PhaseItemEditor extends Component<Props, State> {
     this.setState({editorState})
   }
 
-  render() {
+  render () {
     const {editorState} = this.state
     const {phaseEditorRef} = this.props
     return (
       <ReflectionCardRoot innerRef={phaseEditorRef}>
         <ReflectionEditorWrapper
-          ariaLabel="Edit this reflection"
+          ariaLabel='Edit this reflection'
           editorState={editorState}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleReturn={this.handleReturn}
-          placeholder="My reflection thought…"
+          placeholder='My reflection thought…'
           setEditorState={this.setEditorState}
         />
       </ReflectionCardRoot>

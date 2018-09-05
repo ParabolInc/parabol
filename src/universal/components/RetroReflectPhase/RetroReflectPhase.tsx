@@ -38,7 +38,7 @@ interface Props extends WithAtmosphereProps {
 class RetroReflectPhase extends Component<Props> {
   phaseRef = React.createRef<HTMLDivElement>()
 
-  render() {
+  render () {
     const {
       atmosphere: {viewerId},
       team,
@@ -67,16 +67,16 @@ class RetroReflectPhase extends Component<Props> {
         {isFacilitating && (
           <MeetingControlBar>
             <FlatButton
-              size="medium"
+              size='medium'
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
             >
               <IconLabel
-                icon="arrow-circle-right"
+                icon='arrow-circle-right'
                 iconAfter
-                iconColor="warm"
+                iconColor='warm'
                 iconLarge
                 label={`Done! Let’s ${nextPhaseLabel}`}
               />

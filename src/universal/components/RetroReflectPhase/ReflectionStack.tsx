@@ -96,7 +96,7 @@ class ReflectionStack extends Component<Props, State> {
   stackRef = React.createRef<HTMLDivElement>()
   firstReflectionRef = React.createRef<HTMLDivElement>()
 
-  getSnapshotBeforeUpdate(prevProps: Props) {
+  getSnapshotBeforeUpdate (prevProps: Props) {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
     if (
@@ -116,7 +116,7 @@ class ReflectionStack extends Component<Props, State> {
     }
   }
 
-  componentDidUpdate(_prevProps, _prevState, snapshot) {
+  componentDidUpdate (_prevProps, _prevState, snapshot) {
     if (this.firstReflectionRef.current && snapshot) {
       const first = snapshot.startCoords || getBBox(this.props.phaseEditorRef.current)
       this.animateFromEditor(
@@ -128,7 +128,7 @@ class ReflectionStack extends Component<Props, State> {
     }
   }
 
-  animateFromEditor(firstReflectionDiv: HTMLDivElement, first, duration, easing) {
+  animateFromEditor (firstReflectionDiv: HTMLDivElement, first, duration, easing) {
     const last = getBBox(firstReflectionDiv)
     if (!first || !last) return
     firstReflectionDiv.style.transform = getTransform(first, last)
@@ -150,7 +150,7 @@ class ReflectionStack extends Component<Props, State> {
     })
   }
 
-  render() {
+  render () {
     const {idx, reflectionStack, phaseItemId, phaseRef, meetingId} = this.props
     const {isExpanded} = this.state
     if (reflectionStack.length === 0) {
@@ -194,7 +194,7 @@ class ReflectionStack extends Component<Props, State> {
                       reflection={reflection}
                       phaseItemId={phaseItemId}
                       readOnly
-                      userSelect="none"
+                      userSelect='none'
                     />
                   </ReflectionWrapper>
                 )

@@ -14,13 +14,13 @@ import hideBodyScroll from 'universal/utils/hideBodyScroll'
 interface Props {
   childrenLen: number
 
-  getFirst(): BBox | null
+  getFirst (): BBox | null
 
-  getParentBBox(): BBox | null
+  getParentBBox (): BBox | null
 
-  children(setBBox: (bbox: BBox) => void): ReactChild
+  children (setBBox: (bbox: BBox) => void): ReactChild
   isClosing: boolean
-  close(): void
+  close (): void
 }
 
 const ModalBackground = styled('div')({
@@ -41,15 +41,15 @@ class FLIPModal extends Component<Props> {
   backgroundRef = React.createRef<HTMLDivElement>()
   contentRef = React.createRef<HTMLDivElement>()
 
-  constructor(props) {
+  constructor (props) {
     super(props)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.animateIn()
   }
 
-  move() {
+  move () {
     const {getParentBBox} = this.props
     const backgroundDiv = this.backgroundRef.current
     const contentDiv = this.contentRef.current
@@ -87,7 +87,7 @@ class FLIPModal extends Component<Props> {
     backgroundDiv.addEventListener('transitionend', cleanup, {passive: true, once: true})
   }
 
-  animateIn() {
+  animateIn () {
     const {childrenLen, getFirst, getParentBBox} = this.props
     const backgroundDiv = this.backgroundRef.current
     const contentDiv = this.contentRef.current
@@ -123,7 +123,7 @@ class FLIPModal extends Component<Props> {
     backgroundDiv.addEventListener('transitionend', cleanup, {passive: true, once: true})
   }
 
-  animateOut() {
+  animateOut () {
     const {childrenLen, close, getFirst} = this.props
     const first = getFirst()
     const backgroundDiv = this.backgroundRef.current
@@ -145,7 +145,7 @@ class FLIPModal extends Component<Props> {
     backgroundDiv.addEventListener('transitionend', cleanup, {passive: true, once: true})
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     if (!prevProps.isClosing && this.props.isClosing) {
       this.animateOut()
     }
@@ -159,7 +159,7 @@ class FLIPModal extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     return (
       <React.Fragment>
         <ModalBackground innerRef={this.backgroundRef} />

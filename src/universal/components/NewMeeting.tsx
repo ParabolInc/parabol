@@ -147,7 +147,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
 }
 
 class NewMeeting extends Component<Props> {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const {bindHotkey} = props
     bindHotkey('right', handleHotkey(this.maybeGotoNext))
@@ -297,7 +297,7 @@ class NewMeeting extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     const {meetingType, viewer} = this.props
     const {team} = viewer
     const {newMeeting, teamName} = team

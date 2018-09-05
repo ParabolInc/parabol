@@ -215,14 +215,14 @@ const RetroDiscussPhase = (props: Props) => {
           {nextStageRes && (
             <ControlButtonBlock>
               <StyledButton
-                size="medium"
+                size='medium'
                 onClick={gotoNext}
                 innerRef={gotoNextRef}
                 onKeyDown={handleRightArrow(gotoNext)}
               >
                 <IconLabel
-                  icon="arrow-circle-right"
-                  iconColor="warm"
+                  icon='arrow-circle-right'
+                  iconColor='warm'
                   iconAfter
                   iconLarge
                   label={'Done! Next topic'}
@@ -231,10 +231,10 @@ const RetroDiscussPhase = (props: Props) => {
             </ControlButtonBlock>
           )}
           <ControlButtonBlock>
-            <StyledButton size="medium" onClick={endMeeting}>
+            <StyledButton size='medium' onClick={endMeeting}>
               <IconLabel
-                icon="flag-checkered"
-                iconColor="midGray"
+                icon='flag-checkered'
+                iconColor='midGray'
                 iconLarge
                 label={'End Meeting'}
               />

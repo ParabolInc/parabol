@@ -154,16 +154,16 @@ const RetroVotePhase = (props: Props) => {
           </VoteMeta>
           {isFacilitating && (
             <FlatButton
-              size="medium"
+              size='medium'
               disabled={!discussStage.isNavigableByFacilitator}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
             >
               <IconLabel
-                icon="arrow-circle-right"
+                icon='arrow-circle-right'
                 iconAfter
-                iconColor="warm"
+                iconColor='warm'
                 iconLarge
                 label={`Done! Let’s ${nextPhaseLabel}`}
               />
