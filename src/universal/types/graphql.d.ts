@@ -281,7 +281,7 @@ declare namespace GQL {
      * Get the list of all organizations a user belongs to
      */
     organizations: Array<IOrganization> | null
-    tasks: ITaskConnection | null
+    tasks: ITaskConnection
 
     /**
      * A query for a team
@@ -542,7 +542,7 @@ declare namespace GQL {
     /**
      * A list of edges.
      */
-    edges: Array<ITaskEdge> | null
+    edges: Array<ITaskEdge>
   }
 
   /**
@@ -581,7 +581,7 @@ declare namespace GQL {
     /**
      * The item at the end of the edge
      */
-    node: ITask | null
+    node: ITask
     cursor: any | null
   }
 
@@ -853,8 +853,8 @@ declare namespace GQL {
     /**
      * The outstanding invitations to join the team
      */
-    orgApprovals: Array<IOrgApproval> | null
-    organization: IOrganization | null
+    orgApprovals: Array<IOrgApproval>
+    organization: IOrganization
 
     /**
      * The agenda items for the upcoming or current meeting
@@ -1172,7 +1172,7 @@ declare namespace GQL {
     /**
      * The meeting member of the viewer
      */
-    viewerMeetingMember: MeetingMember | null
+    viewerMeetingMember: MeetingMember
   }
 
   /**
@@ -1563,12 +1563,12 @@ declare namespace GQL {
     /**
      * The total number of retroMeetings given to the team
      */
-    retroMeetingsOffered: number | null
+    retroMeetingsOffered: number
 
     /**
      * Number of retro meetings that can be run (if not pro)
      */
-    retroMeetingsRemaining: number | null
+    retroMeetingsRemaining: number
 
     /**
      * The customerId from stripe
@@ -1638,7 +1638,7 @@ declare namespace GQL {
     /**
      * A list of edges.
      */
-    edges: Array<IOrganizationMemberEdge> | null
+    edges: Array<IOrganizationMemberEdge>
   }
 
   /**
@@ -1833,7 +1833,7 @@ declare namespace GQL {
     /**
      * true if this team member belongs to the user that queried it
      */
-    isSelf: boolean | null
+    isSelf: boolean
 
     /**
      * The meeting specifics for the meeting the team member is currently in
@@ -2072,7 +2072,7 @@ declare namespace GQL {
     /**
      * A list of edges.
      */
-    edges: Array<IInvoiceEdge> | null
+    edges: Array<IInvoiceEdge>
   }
 
   /**
@@ -2462,7 +2462,7 @@ declare namespace GQL {
     /**
      * A list of edges.
      */
-    edges: Array<INotificationEdge> | null
+    edges: Array<INotificationEdge>
   }
 
   /**
@@ -4212,7 +4212,7 @@ declare namespace GQL {
     /**
      * The retrospective meeting member of the viewer
      */
-    viewerMeetingMember: IRetrospectiveMeetingMember | null
+    viewerMeetingMember: IRetrospectiveMeetingMember
 
     /**
      * the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used.
@@ -4484,7 +4484,7 @@ declare namespace GQL {
     /**
      * The foreign key to link a reflection to its meeting
      */
-    meetingId: string | null
+    meetingId: string
 
     /**
      * The retrospective meeting this reflection was created in
@@ -4551,8 +4551,8 @@ declare namespace GQL {
    */
   interface ICoords2D {
     __typename: 'Coords2D'
-    x: number | null
-    y: number | null
+    x: number
+    y: number
   }
 
   interface IGoogleAnalyzedEntity {

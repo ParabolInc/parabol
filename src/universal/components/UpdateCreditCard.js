@@ -1,12 +1,11 @@
-// @flow
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import UpgradeCreditCardForm from 'universal/modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
 
-type Props = {
-  closePortal: () => void,
-  orgId: string
+interface Props {
+  closePortal: () => void;
+  orgId: string;
 }
 
 const flexBase = {

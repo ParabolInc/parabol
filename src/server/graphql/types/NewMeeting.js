@@ -73,7 +73,7 @@ export const newMeetingFields = () => ({
     description: 'The last time a meeting was updated (stage completed, finished, etc)'
   },
   viewerMeetingMember: {
-    type: MeetingMember,
+    type: new GraphQLNonNull(MeetingMember),
     description: 'The meeting member of the viewer',
     resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
       const viewerId = getUserId(authToken)

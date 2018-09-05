@@ -76,7 +76,7 @@ const RetroReflection = new GraphQLObjectType({
       resolve: resolveForSU('entities')
     },
     meetingId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The foreign key to link a reflection to its meeting'
     },
     meeting: {

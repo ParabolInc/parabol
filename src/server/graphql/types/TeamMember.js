@@ -67,7 +67,7 @@ const TeamMember = new GraphQLObjectType({
       description: 'true if present, false if absent, null before check-in'
     },
     isSelf: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if this team member belongs to the user that queried it',
       resolve: (source, args, {authToken}) => {
         const userId = getUserId(authToken)

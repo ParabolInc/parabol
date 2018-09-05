@@ -1,4 +1,4 @@
-import {GraphQLID} from 'graphql'
+import {GraphQLNonNull, GraphQLID} from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import {TaskConnection} from 'server/graphql/types/Task'
@@ -7,7 +7,7 @@ import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTa
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
-  type: TaskConnection,
+  type: new GraphQLNonNull(TaskConnection),
   args: {
     ...forwardConnectionArgs,
     after: {

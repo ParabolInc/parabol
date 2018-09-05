@@ -12,7 +12,7 @@ import styled from 'react-emotion'
 import UpdateNewCheckInQuestionMutation from 'universal/mutations/UpdateNewCheckInQuestionMutation'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 
-import type {NewCheckInQuestion_team as Team} from './__generated__/NewCheckInQuestion_team.graphql'
+import type {NewCheckInQuestion_team as Team} from '__generated__/NewCheckInQuestion_team.graphql'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 
 const CogIcon = styled(StyledFontAwesome)(({canEdit, isEditing}) => ({

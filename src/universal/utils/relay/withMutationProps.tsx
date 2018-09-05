@@ -6,12 +6,18 @@ import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 export interface WithMutationProps {
   dirty?: boolean
   error?: any | undefined
-  onCompleted: (res: any, errors: any) => void
+  onCompleted: (res?: any, errors?: any) => void
   onError: (error: any) => void
   setDirty: () => void
   submitMutation: () => void
   submitting?: boolean
 }
+
+// interface State {
+//   submitting: boolean,
+//   error: any,
+//   dirty: boolean
+// }
 
 // Serves as a lightweight alternative for redux-form when we just have a button or something
 const withMutationProps = <P extends WithMutationProps>(

@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import getDisplayName from 'universal/utils/getDisplayName'
+import {Subtract} from 'types/generics'
 
 export interface WithAtmosphereProps {
   atmosphere: any
 }
-
-type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
-type Subtract<T, K> = Omit<T, keyof K>
 
 export default <P extends WithAtmosphereProps>(ComposedComponent: React.ComponentType<P>) => {
   return class WithAtmosphere extends Component<Subtract<P, WithAtmosphereProps>> {

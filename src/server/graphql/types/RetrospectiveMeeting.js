@@ -96,7 +96,7 @@ const RetrospectiveMeeting = new GraphQLObjectType({
       }
     },
     viewerMeetingMember: {
-      type: RetrospectiveMeetingMember,
+      type: new GraphQLNonNull(RetrospectiveMeetingMember),
       description: 'The retrospective meeting member of the viewer',
       resolve: ({id: meetingId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)

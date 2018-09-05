@@ -8,7 +8,7 @@ import {createPortal} from 'react-dom'
  */
 
 interface Props {
-  isOpen: boolean
+  isOpen?: boolean | null
 
   onClose?(event: KeyboardEvent | MouseEvent | TouchEvent): void
 

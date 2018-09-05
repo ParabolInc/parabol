@@ -110,7 +110,7 @@ export type User = {
   organization: Organization,
   /** Get the list of all organizations a user belongs to */
   organizations: ?Array<Organization>,
-  tasks: ?TaskConnection,
+  tasks: TaskConnection,
   /** A query for a team */
   team: Team,
   /** all the teams the user is on that the viewer can see. */
@@ -174,7 +174,7 @@ export type TaskConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<TaskEdge>
+  edges: Array<TaskEdge>
 }
 
 /**
@@ -196,7 +196,7 @@ export type PageInfoDateCursor = {
 */
 export type TaskEdge = {
   /** The item at the end of the edge */
-  node: ?Task,
+  node: Task,
   cursor: ?any
 }
 
@@ -322,8 +322,8 @@ export type Team = {
   /** The level of access to features on the parabol site */
   tier: ?TierEnum,
   /** The outstanding invitations to join the team */
-  orgApprovals: ?Array<OrgApproval>,
-  organization: ?Organization,
+  orgApprovals: Array<OrgApproval>,
+  organization: Organization,
   /** The agenda items for the upcoming or current meeting */
   agendaItems: ?Array<AgendaItem>,
   /** All of the tasks for this team */
@@ -476,7 +476,7 @@ export type NotifyRequestNewUser = {
   /** The team name the inviteeEmail is being invited to */
   teamName: string,
   /** The user that triggered the invitation */
-  inviter: ?User,
+  inviter: User,
   team: ?Team,
   /** A shortid for the notification */
   id: ?string,
@@ -599,7 +599,7 @@ export type OrganizationMemberConnection = {
   /** Information to aid in pagination. */
   pageInfo: PageInfo,
   /** A list of edges. */
-  edges: ?Array<OrganizationMemberEdge>
+  edges: Array<OrganizationMemberEdge>
 }
 
 /**
@@ -789,7 +789,7 @@ export type InvoiceConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<InvoiceEdge>
+  edges: Array<InvoiceEdge>
 }
 
 /**
@@ -981,7 +981,7 @@ export type NotificationConnection = {
   /** Page info with cursors coerced to ISO8601 dates */
   pageInfo: ?PageInfoDateCursor,
   /** A list of edges. */
-  edges: ?Array<NotificationEdge>
+  edges: Array<NotificationEdge>
 }
 
 /**
@@ -1456,7 +1456,7 @@ export type RetrospectiveMeeting = {
   /** The last time a meeting was updated (stage completed, finished, etc) */
   updatedAt: ?any,
   /** The retrospective meeting member of the viewer */
-  viewerMeetingMember: ?RetrospectiveMeetingMember,
+  viewerMeetingMember: RetrospectiveMeetingMember,
   /** the threshold used to achieve the autogroup. Useful for model tuning. Serves as a flag if autogroup was used. */
   autoGroupThreshold: ?number,
   /** the next smallest distance threshold to guarantee at least 1 more grouping will be achieved */
@@ -1583,7 +1583,7 @@ export type RetroReflection = {
   /** The entities (i.e. nouns) parsed from the content and their respective salience */
   entities: Array<GoogleAnalyzedEntity>,
   /** The foreign key to link a reflection to its meeting */
-  meetingId: ?string,
+  meetingId: string,
   /** The retrospective meeting this reflection was created in */
   meeting: ?RetrospectiveMeeting,
   phaseItem: RetroPhaseItem,
@@ -1618,8 +1618,8 @@ export type DragContext = {
   Coordinates used relay a location in a 2-D plane
 */
 export type Coords2D = {
-  x: ?number,
-  y: ?number
+  x: number,
+  y: number
 }
 
 export type GoogleAnalyzedEntity = {

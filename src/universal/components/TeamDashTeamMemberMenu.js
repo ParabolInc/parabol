@@ -3,7 +3,7 @@ import {createFragmentContainer} from 'react-relay'
 import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import {filterTeamMember} from 'universal/modules/teamDashboard/ducks/teamDashDuck'
-import type {TeamDashTeamMemberMenu_team as Team} from './__generated__/TeamDashTeamMemberMenu_team.graphql'
+import type {TeamDashTeamMemberMenu_team as Team} from '__generated__/TeamDashTeamMemberMenu_team.graphql'
 
 import type {Dispatch} from 'react-redux'
 import {connect} from 'react-redux'
