@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import {reflectionCardMaxHeight} from 'universal/styles/cards'
 import appTheme from 'universal/styles/theme/appTheme'
 
 interface Props {
@@ -14,7 +15,7 @@ const PlaceholderCard = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   margin: '2rem 0',
-  minHeight: '10rem',
+  minHeight: reflectionCardMaxHeight,
   width: ui.retroCardWidth
 })
 

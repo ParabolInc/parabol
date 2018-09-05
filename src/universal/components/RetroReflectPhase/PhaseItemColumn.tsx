@@ -27,24 +27,27 @@ const ColumnWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  maxHeight: '36rem',
-  padding: '0 1rem 1rem'
+  justifyContent: 'flex-start'
 })
 
 const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
   background: isFocused && appTheme.palette.mid10a,
-  display: 'flex',
-  justifyContent: 'center',
-  transition: `background 150ms ${DECELERATE}`,
-  maxWidth: '26rem',
   height: '100%',
+  maxWidth: '26rem',
+  maxHeight: '38rem',
+  padding: '1rem',
+  transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
 
 const ColumnContent = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-between'
+  height: '100%',
+  justifyContent: 'space-between',
+  margin: '0 auto',
+  maxWidth: '320',
+  width: '100%'
 })
 
 const HeaderAndEditor = styled('div')({
