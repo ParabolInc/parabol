@@ -19,13 +19,12 @@ import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {GROUP} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import Overflow from 'universal/components/Overflow'
+
+const minWidth = REFLECTION_WIDTH + 32
 
 const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemCount: number}) => ({
-  minWidth: phaseItemCount * REFLECTION_WIDTH,
-  padding: '0 .75rem',
-  [minWidthMediaQueries[2]]: {
-    padding: '0 4rem'
-  }
+  minWidth: phaseItemCount * minWidth
 }))
 
 interface Props extends WithAtmosphereProps {
@@ -50,17 +49,19 @@ class RetroReflectPhase extends Component<Props> {
     const nextPhaseLabel = phaseLabelLookup[GROUP]
     return (
       <React.Fragment>
-        <StyledWrapper phaseItemCount={phaseItems.length} innerRef={this.phaseRef}>
-          {phaseItems.map((phaseItem, idx) => (
-            <PhaseItemColumn
-              meeting={newMeeting}
-              key={phaseItem.id}
-              retroPhaseItem={phaseItem}
-              idx={idx}
-              phaseRef={this.phaseRef}
-            />
-          ))}
-        </StyledWrapper>
+        <Overflow>
+          <StyledWrapper phaseItemCount={phaseItems.length} innerRef={this.phaseRef}>
+            {phaseItems.map((phaseItem, idx) => (
+              <PhaseItemColumn
+                meeting={newMeeting}
+                key={phaseItem.id}
+                retroPhaseItem={phaseItem}
+                idx={idx}
+                phaseRef={this.phaseRef}
+              />
+            ))}
+          </StyledWrapper>
+        </Overflow>
         {isFacilitating && (
           <MeetingControlBar>
             <FlatButton

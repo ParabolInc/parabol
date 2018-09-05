@@ -27,8 +27,8 @@ const ColumnWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  height: '100%',
-  padding: '1rem'
+  maxHeight: '36rem',
+  padding: '0 1rem 1rem'
 })
 
 const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
@@ -44,9 +44,7 @@ const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
 const ColumnContent = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-between',
-  padding: '0 2rem'
-  // maxWidth: ui.retroCardWidth
+  justifyContent: 'space-between'
 })
 
 const HeaderAndEditor = styled('div')({
@@ -68,7 +66,7 @@ const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean})
 }))
 
 const TypeHeader = styled('div')({
-  padding: '2rem 0 1rem',
+  padding: '0 0 1rem',
   userSelect: 'none',
   width: '100%'
 })

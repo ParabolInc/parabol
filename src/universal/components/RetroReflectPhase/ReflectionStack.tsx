@@ -26,11 +26,11 @@ interface State {
 }
 
 const CardStack = styled('div')(({isVisible}: {isVisible: boolean}) => ({
+  alignItems: 'center',
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
-  maxHeight: '9rem',
-  minHeight: '9rem',
+  margin: '2rem 0',
+  minHeight: '10rem',
   visibility: !isVisible ? 'hidden' : undefined
 }))
 
