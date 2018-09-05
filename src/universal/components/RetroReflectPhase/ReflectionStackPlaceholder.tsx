@@ -22,7 +22,8 @@ const Tip = styled('div')({
   color: ui.hintColor,
   fontSize: appTheme.typography.s2,
   padding: '1rem',
-  textAlign: 'center'
+  textAlign: 'center',
+  userSelect: 'none'
 })
 
 const placeholders = [

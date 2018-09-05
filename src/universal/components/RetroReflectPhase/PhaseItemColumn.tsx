@@ -65,11 +65,12 @@ const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean})
   transform: `translateX(${isFocused ? 0 : '-100%'})`
 }))
 
-const TypeHeader = styled('div')({
+const TypeHeader = styled('div')(({isClickable}: {isClickable: boolean}) => ({
+  cursor: isClickable ? 'pointer' : undefined,
   padding: '0 0 1rem',
   userSelect: 'none',
   width: '100%'
-})
+}))
 
 interface EditorAndStatusProps {
   isPhaseComplete: boolean
@@ -130,8 +131,15 @@ class PhaseItemColumn extends Component<Props> {
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
   render () {
-    const {idx, meeting, phaseRef, retroPhaseItem} = this.props
     const {
+      atmosphere: {viewerId},
+      idx,
+      meeting,
+      phaseRef,
+      retroPhaseItem
+    } = this.props
+    const {
+      facilitatorUserId,
       meetingId,
       localPhase: {focusedPhaseItemId},
       localStage: {isComplete},
@@ -141,12 +149,13 @@ class PhaseItemColumn extends Component<Props> {
     const isFocused = focusedPhaseItemId === retroPhaseItemId
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
+    const isViewerFacilitator = viewerId === facilitatorUserId
     return (
       <ColumnWrapper>
         <ColumnHighlight isFocused={isFocused}>
           <ColumnContent>
             <HeaderAndEditor>
-              <TypeHeader onClick={this.setColumnFocus}>
+              <TypeHeader isClickable={isViewerFacilitator} onClick={this.setColumnFocus}>
                 <TypeDescription>
                   <FocusArrow name='arrow-right' isFocused={isFocused} />
                   {question}

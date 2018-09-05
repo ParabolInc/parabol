@@ -42,6 +42,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
   switch (count - idx) {
     case 1:
       return {
+        cursor: 'pointer',
         position: 'relative',
         zIndex: 2
       }
@@ -50,6 +51,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
         backgroundColor: 'white',
         borderRadius: 4,
         boxShadow: cardShadow,
+        cursor: 'pointer',
         overflow: 'hidden',
         position: 'absolute',
         pointerEvents: 'none',
@@ -68,6 +70,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
         backgroundColor: 'white',
         borderRadius: 4,
         boxShadow: cardShadow,
+        cursor: 'pointer',
         overflow: 'hidden',
         position: 'absolute',
         pointerEvents: 'none',

@@ -213,7 +213,8 @@ export default class Atmosphere extends Environment {
         (qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey)
       )
       if (!unaffectedQuery) {
-        this.subscriptions[subKey].unsubscribe()
+        const disposable = this.subscriptions[subKey]
+        disposable && disposable.unsubscribe()
       }
     })
 

@@ -171,7 +171,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'RequestFaciltatorPayload':
           requestFacilitatorTeamUpdater(payload, options)
           break
-        case 'SetPhaseFocus':
+        case 'SetPhaseFocusPayload':
           break
         case 'StartDraggingReflectionPayload':
           startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, dispatch, store})

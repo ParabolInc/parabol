@@ -15,7 +15,6 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {GROUP} from 'universal/utils/constants'
 import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'

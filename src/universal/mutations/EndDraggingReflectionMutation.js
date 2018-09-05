@@ -155,8 +155,7 @@ export const endDraggingReflectionTeamUpdater = (payload, {atmosphere, store}) =
 
 export const endDraggingReflectionTeamOnNext = (payload, context) => {
   const {
-    atmosphere: {eventEmitter},
-    location
+    atmosphere: {eventEmitter}
   } = context
   const {
     dragId,
@@ -169,7 +168,7 @@ export const endDraggingReflectionTeamOnNext = (payload, context) => {
   } = payload
   const childId = reflectionGroup && reflectionGroup.id
   const sourceId = oldReflectionGroup && oldReflectionGroup.id
-  const {pathname} = location
+  const {pathname} = window.location
   if (onTeamRoute(pathname, teamId)) {
     eventEmitter.emit('endDraggingReflection', {
       dropTargetType,
