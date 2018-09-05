@@ -23,7 +23,6 @@ const NullCard = (props) => {
   return (
     <CardBlock>
       <AddingHint align='center' scale='s3' colorPalette='dark'>
-        {'@'}
         {username}
         {' is adding a Task'}
         <Ellipsis />
