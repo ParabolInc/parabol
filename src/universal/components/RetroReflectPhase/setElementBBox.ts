@@ -1,4 +1,4 @@
-import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
+import {BBox} from 'types/animations'
 
 const setElementBBox = (el: HTMLElement, bbox: Partial<BBox>) => {
   Object.keys(bbox).forEach((key) => {

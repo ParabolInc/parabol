@@ -1,7 +1,7 @@
 import React, {cloneElement, Component, ComponentElement} from 'react'
 import {findDOMNode} from 'react-dom'
 import ChildrenCache from 'universal/components/RetroReflectPhase/ChildrenCache'
-import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
+import {BBox} from 'types/animations'
 import ParentCache from 'universal/components/RetroReflectPhase/ParentCache'
 import {
   CARD_PADDING,

@@ -7,8 +7,8 @@
 import type {Node} from 'react'
 import React, {Component} from 'react'
 // $FlowFixMe
-import {DragDropContextProvider} from '@mattkrick/react-dnd'
-import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
+import {DragDropContextProvider} from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import styled, {css, injectGlobal} from 'react-emotion'
 import {Provider} from 'react-redux'
 import {combineReducers, createStore} from 'redux'

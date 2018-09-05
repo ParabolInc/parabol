@@ -1,4 +1,4 @@
-import {DropTarget} from '@mattkrick/react-dnd'
+import {DropTarget} from 'react-dnd'
 import React, {ReactElement} from 'react'
 
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'

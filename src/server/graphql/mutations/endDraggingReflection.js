@@ -4,13 +4,16 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
 import publish from 'server/utils/publish'
-import {GROUP, REFLECTION_GRID, REFLECTION_GROUP, TEAM} from 'universal/utils/constants'
+import {GROUP, TEAM} from 'universal/utils/constants'
 import {
   sendAlreadyCompletedMeetingPhaseError,
   sendAlreadyEndedMeetingError
 } from 'server/utils/alreadyMutatedErrors'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
-import DragReflectionDropTargetTypeEnum from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
+import DragReflectionDropTargetTypeEnum, {
+  REFLECTION_GRID,
+  REFLECTION_GROUP
+} from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
 import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
 

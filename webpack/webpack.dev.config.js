@@ -1,3 +1,4 @@
+const resolve = require('./webpackResolve')
 const path = require('path')
 const webpack = require('webpack')
 const npmPackage = require('../package.json')
@@ -15,14 +16,7 @@ module.exports = {
     chunkFilename: '[name].chunk.js',
     publicPath: '/static/'
   },
-  resolve: {
-    alias: {
-      'react-relay': '@mattkrick/react-relay',
-      'relay-runtime': '@mattkrick/relay-runtime'
-    },
-    modules: [path.join(__dirname, '../src'), 'node_modules'],
-    extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
-  },
+  resolve,
   plugins: [
     new webpack.NamedModulesPlugin(),
     new webpack.DefinePlugin({

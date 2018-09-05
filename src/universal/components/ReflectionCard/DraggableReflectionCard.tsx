@@ -1,5 +1,5 @@
-import {DragSource as dragSource} from '@mattkrick/react-dnd'
-import {getEmptyImage} from '@mattkrick/react-dnd-html5-backend'
+import {DragSource as dragSource} from 'react-dnd'
+import {getEmptyImage} from 'react-dnd-html5-backend'
 import {DraggableReflectionCard_reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
 /**
  * A drag-and-drop enabled reflection card.
@@ -19,6 +19,7 @@ import {cardShadow} from 'universal/styles/elevation'
 import ui from 'universal/styles/ui'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import clientTempId from 'universal/utils/relay/clientTempId'
+import {SetItemRef} from '../PhaseItemMasonry'
 import ReflectionCard from './ReflectionCard'
 
 interface Props extends WithAtmosphereProps {
@@ -31,7 +32,7 @@ interface Props extends WithAtmosphereProps {
   dispatch: Dispatch<{}>
   reflection: DraggableReflectionCard_reflection
 
-  setItemRef(reflectionId: string, isModal: boolean): (c: HTMLDivElement) => void
+  setItemRef: SetItemRef
 
   meeting: any
   idx: number

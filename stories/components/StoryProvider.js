@@ -1,6 +1,6 @@
 import React, {Component, ReactNode} from 'react'
-import {DragDropContextProvider} from '@mattkrick/react-dnd'
-import HTML5Backend from '@mattkrick/react-dnd-html5-backend'
+import {DragDropContextProvider} from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 import styled, {injectGlobal} from 'react-emotion'
 import globalStyles from 'universal/styles/theme/globalStyles'
 

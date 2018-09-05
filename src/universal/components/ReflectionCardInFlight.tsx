@@ -3,6 +3,13 @@ import {convertFromRaw, EditorState} from 'draft-js'
 import React from 'react'
 import styled from 'react-emotion'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {Coords} from 'types/animations'
+import {
+  MasonryChildrenCache,
+  MasonryItemCache,
+  MasonryParentCache,
+  SetInFlightCoords
+} from 'universal/components/PhaseItemMasonry'
 import {ReflectionCardRoot} from 'universal/components/ReflectionCard/ReflectionCard'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
 import ReflectionFooter from 'universal/components/ReflectionFooter'
@@ -18,48 +25,12 @@ import getTargetReference from 'universal/utils/multiplayerMasonry/getTargetRefe
 import shakeUpBottomCells from 'universal/utils/multiplayerMasonry/shakeUpBottomCells'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 
-interface ChildCache {
-  // reflection group element
-  el: HTMLElement | null
-  // boundingBox coords are relative to the parentCache!
-  boundingBox: ClientRect | null
-  modalBoundingBox?: ClientRect
-  headerHeight?: number
-}
-
-export interface MasonryChildrenCache {
-  [childId: string]: ChildCache
-}
-
-interface InFlightCoords {
-  x: number
-  y: number
-}
-
-export interface MasonryParentCache {
-  el: HTMLElement | null
-  boundingBox: ClientRect
-  columnLefts: Array<number>
-  cardsInFlight: {[itemId: string]: InFlightCoords}
-  // the location for a group that has not been created yet (caused by an ungrouping)
-  incomingChildren: {
-    [itemId: string]: {
-      boundingBox: ClientRect | null
-      // the optimistic child that currently represents the group
-      childId: string
-    }
-  }
-}
-
 interface Props extends WithAtmosphereProps {
+  itemCache: MasonryItemCache
   childrenCache: MasonryChildrenCache
   parentCache: MasonryParentCache
   reflection: ReflectionCardInFlight_reflection
-  setInFlightCoords: (
-    x: number | undefined,
-    y: number | undefined,
-    itemId: string | undefined
-  ) => void
+  setInFlightCoords: SetInFlightCoords
   teamId: string
 }
 
@@ -218,7 +189,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
   innerHeight: number = 0
   scrollX: number = 0
   cachedTargetId: string | undefined
-  cursorOffset: InFlightCoords | undefined
+  cursorOffset: Coords | undefined
 
   render() {
     const {
@@ -232,6 +203,7 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
     if (!dragContext) return null
     const {isClosing, isViewerDragging, dragCoords, dragUser} = dragContext
     const {x, y} = dragCoords && (isClosing || !isViewerDragging) ? dragCoords : this.state
+    if (!x || !y) return null
     setInFlightCoords(x, y, reflectionId)
 
     const style = {

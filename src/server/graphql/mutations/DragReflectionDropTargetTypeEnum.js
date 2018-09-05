@@ -1,5 +1,7 @@
-import {REFLECTION_GRID, REFLECTION_GROUP} from 'universal/utils/constants'
 import {GraphQLEnumType} from 'graphql'
+
+export const REFLECTION_GRID = 'REFLECTION_GRID'
+export const REFLECTION_GROUP = 'REFLECTION_GROUP'
 
 const DragReflectionDropTargetTypeEnum = new GraphQLEnumType({
   name: 'DragReflectionDropTargetTypeEnum',

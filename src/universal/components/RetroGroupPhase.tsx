@@ -5,7 +5,6 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
-import PhaseItemMasonry from 'universal/components/PhaseItemMasonry'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -19,6 +18,7 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
+import PhaseItemMasonry from './PhaseItemMasonry'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void

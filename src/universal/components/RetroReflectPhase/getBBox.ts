@@ -1,6 +1,6 @@
 // dom lookups, cached for just a tick
 
-import {BBox} from 'universal/components/RetroReflectPhase/FLIPModal'
+import {BBox} from 'types/animations'
 
 const cache = new Map<HTMLElement, BBox>()
 let timer

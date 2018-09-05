@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
-import {DragLayer as dragLayer} from '@mattkrick/react-dnd'
+import {DragLayer as dragLayer} from 'react-dnd'
 import ui from 'universal/styles/ui'
 import {cardRaisedShadow} from 'universal/styles/elevation'
 

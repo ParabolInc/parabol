@@ -1,4 +1,5 @@
 require('babel-register')
+const resolve = require('./webpackResolve')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
@@ -75,14 +76,7 @@ module.exports = {
     filename: '[name]_[hash].js',
     chunkFilename: '[name]_[chunkhash].js'
   },
-  resolve: {
-    alias: {
-      'react-relay': '@mattkrick/react-relay',
-      'relay-runtime': '@mattkrick/relay-runtime'
-    },
-    modules: [path.join(__dirname, '../src'), 'node_modules'],
-    extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
-  },
+  resolve,
   optimization: {
     minimize: Boolean(process.env.WEBPACK_DEPLOY),
     minimizer: [

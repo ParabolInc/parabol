@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {DragSource as dragSource} from '@mattkrick/react-dnd'
+import {DragSource as dragSource} from 'react-dnd'
 import {createFragmentContainer} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup'
