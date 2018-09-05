@@ -29,7 +29,7 @@ const Tip = styled('div')({
 const placeholders = [
   'Your anonymous reflections end up here',
   'Have fun with it, press : to add an emoji',
-  'Your team activity is shown in the health bar above',
+  'Your team activity is shown in the mini card grid below',
   'Collapse the sidebar if you need more room to work',
   'A highlighted column means your facilitator wants you to focus on that area',
   'Click the ? in the bottom right for more tips'
