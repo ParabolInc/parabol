@@ -10,7 +10,6 @@ import {
   GROUP,
   LAST_CALL,
   LOBBY,
-  RETRO_PHASE_ITEM,
   RETROSPECTIVE,
   RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
   RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT,
@@ -21,6 +20,7 @@ import {
 import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
 import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg'
 import shortid from 'shortid'
+import makeRetroTemplates from 'server/graphql/mutations/helpers/makeRetroTemplates'
 
 // used for addorg, addTeam, createFirstTeam
 export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
@@ -45,12 +45,15 @@ export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
     returnChanges: true,
     role: isNewOrg ? BILLING_LEADER : null
   }
+  const {phaseItems, templates} = makeRetroTemplates(teamId)
+
   const meetingSettings = [
     {
       id: shortid.generate(),
       meetingType: RETROSPECTIVE,
       teamId,
       phaseTypes: [CHECKIN, REFLECT, GROUP, VOTE, DISCUSS],
+      selectedTemplateId: templates[0].id,
       totalVotes: RETROSPECTIVE_TOTAL_VOTES_DEFAULT,
       maxVotesPerGroup: RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
     },
@@ -62,24 +65,6 @@ export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
     }
   ]
 
-  const customPhaseItems = [
-    {
-      id: shortid.generate(),
-      phaseItemType: RETRO_PHASE_ITEM,
-      isActive: true,
-      teamId,
-      title: 'Positive',
-      question: 'What’s working?'
-    },
-    {
-      id: shortid.generate(),
-      phaseItemType: RETRO_PHASE_ITEM,
-      isActive: true,
-      teamId,
-      title: 'Negative',
-      question: 'Where did you get stuck?'
-    }
-  ]
   const res = await r({
     // insert team
     team: r
@@ -89,7 +74,8 @@ export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
     // add meeting settings
     teamSettings: r.table('MeetingSettings').insert(meetingSettings),
     // add customizable phase items for meetings
-    customPhaseItems: r.table('CustomPhaseItem').insert(customPhaseItems),
+    customPhaseItems: r.table('CustomPhaseItem').insert(phaseItems),
+    templates: r.table('ReflectTemplate').insert(templates),
     // denormalize common fields to team member
     teamLead: insertNewTeamMember(userId, teamId, {
       isLead: true,
