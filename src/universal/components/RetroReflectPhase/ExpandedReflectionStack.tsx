@@ -57,6 +57,10 @@ class ExpandedReflectionStack extends Component<Props, State> {
     this.props.collapse()
   }
 
+  componentWillUnmount () {
+    this.props.collapse()
+  }
+
   render () {
     const {isExpanded, reflectionStack, meetingId, phaseItemId} = this.props
     const {isClosing} = this.state
