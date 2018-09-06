@@ -8,7 +8,8 @@ const LabelHeading = styled('div')({
   letterSpacing: ui.labelHeadingLetterSpacing,
   lineHeight: ui.labelHeadingLineHeight,
   opacity: '.8',
-  textTransform: 'uppercase'
+  textTransform: 'uppercase',
+  userSelect: 'none'
 })
 
 export default LabelHeading

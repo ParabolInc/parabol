@@ -1,7 +1,7 @@
 /* global fetch */
 import jwtDecode from 'jwt-decode'
 import {requestSubscription} from 'react-relay'
-import {Environment, Network, RecordSource, Store} from 'relay-runtime'
+import {Environment, getRequest, Network, RecordSource, Store} from 'relay-runtime'
 import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import EventEmitter from 'eventemitter3'
@@ -124,7 +124,7 @@ export default class Atmosphere extends Environment {
 
   addAuthTokenSubscriber () {
     if (!this.authToken) throw new Error('No Auth Token provided!')
-    const {text: query} = NewAuthTokenSubscription().subscription()
+    const {text: query} = getRequest(NewAuthTokenSubscription().subscription)
     this.transport.operations[NEW_AUTH_TOKEN] = {
       payload: {query},
       observer: {
@@ -213,7 +213,8 @@ export default class Atmosphere extends Environment {
         (qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey)
       )
       if (!unaffectedQuery) {
-        this.subscriptions[subKey].unsubscribe()
+        const disposable = this.subscriptions[subKey]
+        disposable && disposable.unsubscribe()
       }
     })
 

@@ -37,7 +37,7 @@ module.exports = {
       'react-notification-system',
       'react-portal-hoc',
       'react-redux',
-      'react-relay',
+      // 'react-relay',
       'react-router',
       'react-router-dom',
       'react-transition-group',
@@ -46,7 +46,7 @@ module.exports = {
       'redux-form',
       'redux-raven-middleware',
       'redux-thunk',
-      'relay-runtime',
+      // 'relay-runtime',
       'tinycolor2',
       'tlds'
     ]

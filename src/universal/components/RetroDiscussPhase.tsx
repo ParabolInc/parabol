@@ -183,7 +183,14 @@ const RetroDiscussPhase = (props: Props) => {
               <ColumnInner>
                 <ReflectionGrid>
                   {reflections.map((reflection) => {
-                    return <ReflectionCard key={reflection.id} reflection={reflection} />
+                    return (
+                      <ReflectionCard
+                        key={reflection.id}
+                        reflection={reflection}
+                        readOnly
+                        userSelect='text'
+                      />
+                    )
                   })}
                 </ReflectionGrid>
               </ColumnInner>

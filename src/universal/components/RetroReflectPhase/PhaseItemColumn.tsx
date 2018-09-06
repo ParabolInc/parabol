@@ -26,24 +26,27 @@ const ColumnWrapper = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  maxHeight: '36rem',
-  padding: '0 1rem 1rem'
+  justifyContent: 'flex-start'
 })
 
 const ColumnHighlight = styled('div')(({isFocused}: {isFocused: boolean}) => ({
   background: isFocused && appTheme.palette.mid10a,
-  display: 'flex',
-  justifyContent: 'center',
-  transition: `background 150ms ${DECELERATE}`,
-  maxWidth: '26rem',
   height: '100%',
+  maxWidth: '26rem',
+  maxHeight: '38rem',
+  padding: '1rem',
+  transition: `background 150ms ${DECELERATE}`,
   width: '100%'
 }))
 
 const ColumnContent = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-between'
+  height: '100%',
+  justifyContent: 'space-between',
+  margin: '0 auto',
+  maxWidth: '320',
+  width: '100%'
 })
 
 const HeaderAndEditor = styled('div')({
@@ -64,11 +67,12 @@ const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean})
   transform: `translateX(${isFocused ? 0 : '-100%'})`
 }))
 
-const TypeHeader = styled('div')({
+const TypeHeader = styled('div')(({isClickable}: {isClickable: boolean}) => ({
+  cursor: isClickable ? 'pointer' : undefined,
   padding: '0 0 1rem',
   userSelect: 'none',
   width: '100%'
-})
+}))
 
 interface EditorAndStatusProps {
   isPhaseComplete: boolean
@@ -126,8 +130,16 @@ class PhaseItemColumn extends Component<Props> {
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
   render () {
-    const {idx, meeting, phaseRef, question, retroPhaseItemId} = this.props
     const {
+      atmosphere: {viewerId},
+      idx,
+      meeting,
+      phaseRef,
+      question,
+      retroPhaseItemId
+    } = this.props
+    const {
+      facilitatorUserId,
       meetingId,
       localPhase: {editorIds = [], focusedPhaseItemId},
       localStage: {isComplete},
@@ -136,12 +148,13 @@ class PhaseItemColumn extends Component<Props> {
     const isFocused = focusedPhaseItemId === retroPhaseItemId
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
+    const isViewerFacilitator = viewerId === facilitatorUserId
     return (
       <ColumnWrapper>
         <ColumnHighlight isFocused={isFocused}>
           <ColumnContent>
             <HeaderAndEditor>
-              <TypeHeader onClick={this.setColumnFocus}>
+              <TypeHeader isClickable={isViewerFacilitator} onClick={this.setColumnFocus}>
                 <TypeDescription>
                   <FocusArrow name='arrow-right' isFocused={isFocused} />
                   {question}
