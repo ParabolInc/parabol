@@ -33,6 +33,7 @@ import UpdateDragLocationPayload from 'server/graphql/types/UpdateDragLocationPa
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
 import SetPhaseFocusPayload from 'server/graphql/types/SetPhaseFocusPayload'
 import StartDraggingReflectionPayload from 'server/graphql/types/StartDraggingReflectionPayload'
+import SelectRetroTemplatePayload from 'server/graphql/types/SelectRetroTemplatePayload'
 
 const types = [
   AcceptTeamInvitePayload,
@@ -56,6 +57,7 @@ const types = [
   RemoveOrgUserPayload,
   RemoveReflectionPayload,
   RemoveTeamMemberPayload,
+  SelectRetroTemplatePayload,
   SetPhaseFocusPayload,
   StartDraggingReflectionPayload,
   StartMeetingPayload,

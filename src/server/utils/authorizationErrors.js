@@ -199,3 +199,12 @@ export const sendRateLimitReachedError = (authToken, field, lastMinute, lastHour
   }
   return sendAuthRaven(authToken, 'Rate limit reached', breadcrumb)
 }
+
+export const sendTemplateAccessError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'Template not found',
+    category: 'Auth',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Template not found', breadcrumb)
+}

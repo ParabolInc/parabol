@@ -127,14 +127,9 @@ class NewMeetingLobby extends React.Component<Props> {
       submitting,
       team
     } = this.props
-    const {
-      meetingSettings: {reflectTemplates},
-      orgId,
-      organization,
-      teamId,
-      teamName
-    } = team
+    const {meetingSettings, orgId, organization, teamId, teamName} = team
     const {retroMeetingsOffered, retroMeetingsRemaining, tier} = organization
+    const {reflectTemplates, selectedTemplateId} = meetingSettings
     const onStartMeetingClick = () => {
       submitMutation()
       StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted)
@@ -144,6 +139,10 @@ class NewMeetingLobby extends React.Component<Props> {
     const meetingLabel = meetingTypeToLabel[meetingType]
     const meetingSlug = meetingTypeToSlug[meetingType]
     const buttonLabel = `Start ${meetingLabel} Meeting`
+    const selectedTemplateIdx = reflectTemplates.findIndex(
+      (template) => template.id === selectedTemplateId
+    )
+    const selectedTemplate = reflectTemplates[selectedTemplateIdx]
     return (
       <Lobby>
         <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
@@ -208,10 +207,12 @@ class NewMeetingLobby extends React.Component<Props> {
           </ButtonBlock>
         </ButtonGroup>
         <LoadableDropdownMenuToggle
-          defaultText={reflectTemplates[0].name}
+          defaultText={selectedTemplate.name}
           LoadableComponent={LoadableRetroTemplateListMenu}
           queryVars={{
-            reflectTemplates
+            defaultActiveIdx: selectedTemplateIdx,
+            retroMeetingSettings: meetingSettings,
+            teamId
           }}
         />
         <UrlBlock>
@@ -236,10 +237,13 @@ export default createFragmentContainer(
         tier
       }
       meetingSettings(meetingType: $meetingType) {
+        ...RetroTemplateListMenu_retroMeetingSettings
         ... on RetrospectiveMeetingSettings {
           reflectTemplates {
+            id
             name
           }
+          selectedTemplateId
         }
       }
     }

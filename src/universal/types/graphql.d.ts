@@ -1062,6 +1062,7 @@ declare namespace GQL {
    */
   interface ITeamMeetingSettings {
     __typename: 'TeamMeetingSettings'
+    id: string
 
     /**
      * The type of meeting these settings apply to
@@ -2884,6 +2885,11 @@ declare namespace GQL {
     segmentEventTrack: boolean | null
 
     /**
+     * Set the selected template for the upcoming retro meeting
+     */
+    selectRetroTemplate: ISelectRetroTemplatePayload | null
+
+    /**
      * Set the role of a user
      */
     setOrgUserRole: SetOrgUserRolePayload | null
@@ -3531,6 +3537,11 @@ declare namespace GQL {
   interface ISegmentEventTrackOnMutationArguments {
     event: string
     options?: ISegmentEventTrackOptions | null
+  }
+
+  interface ISelectRetroTemplateOnMutationArguments {
+    selectedTemplateId: string
+    teamId: string
   }
 
   interface ISetOrgUserRoleOnMutationArguments {
@@ -4633,6 +4644,7 @@ declare namespace GQL {
    */
   interface IRetrospectiveMeetingSettings {
     __typename: 'RetrospectiveMeetingSettings'
+    id: string
 
     /**
      * The type of meeting these settings apply to
@@ -5724,6 +5736,12 @@ declare namespace GQL {
     inviteeCount?: number | null
   }
 
+  interface ISelectRetroTemplatePayload {
+    __typename: 'SelectRetroTemplatePayload'
+    error: IStandardMutationError | null
+    retroMeetingSettings: IRetrospectiveMeetingSettings
+  }
+
   type SetOrgUserRolePayload = ISetOrgUserRoleAddedPayload | ISetOrgUserRoleRemovedPayload
 
   interface ISetOrgUserRolePayload {
@@ -6363,6 +6381,7 @@ declare namespace GQL {
     | IRemoveOrgUserPayload
     | IRemoveReflectionPayload
     | IRemoveTeamMemberPayload
+    | ISelectRetroTemplatePayload
     | ISetPhaseFocusPayload
     | IStartDraggingReflectionPayload
     | IStartMeetingPayload
@@ -6609,6 +6628,7 @@ declare namespace GQL {
    */
   interface IActionMeetingSettings {
     __typename: 'ActionMeetingSettings'
+    id: string
 
     /**
      * The type of meeting these settings apply to

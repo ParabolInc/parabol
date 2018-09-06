@@ -1,4 +1,4 @@
-import {GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import NewMeetingPhaseTypeEnum from 'server/graphql/types/NewMeetingPhaseTypeEnum'
 import Team from 'server/graphql/types/Team'
 import {resolveTeam} from 'server/graphql/resolvers'
@@ -8,6 +8,9 @@ import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeet
 import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings'
 
 export const teamMeetingSettingsFields = () => ({
+  id: {
+    type: new GraphQLNonNull(GraphQLID)
+  },
   meetingType: {
     description: 'The type of meeting these settings apply to',
     type: MeetingTypeEnum

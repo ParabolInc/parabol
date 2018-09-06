@@ -84,6 +84,7 @@ import updateTaskDueDate from 'server/graphql/mutations/updateTaskDueDate'
 import dragDiscussionTopic from 'server/graphql/mutations/dragDiscussionTopic'
 import startDraggingReflection from 'server/graphql/mutations/startDraggingReflection'
 import setPhaseFocus from 'server/graphql/mutations/setPhaseFocus'
+import selectRetroTemplate from 'server/graphql/mutations/selectRetroTemplate'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -147,6 +148,7 @@ export default new GraphQLObjectType({
     requestFacilitator,
     resendTeamInvite,
     segmentEventTrack,
+    selectRetroTemplate,
     setOrgUserRole,
     setPhaseFocus,
     startDraggingReflection,
