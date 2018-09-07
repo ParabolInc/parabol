@@ -1,3 +1,4 @@
+import {RetroTemplateListMenu_retroMeetingSettings} from '__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import MenuItemHR from 'universal/components/MenuItemHR'
@@ -8,7 +9,8 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import SelectRetroTemplateMutation from 'universal/mutations/SelectRetroTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {RetroTemplateListMenu_retroMeetingSettings} from '__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
+import LoadableModal from 'universal/components/LoadableModal'
+import LoadableReflectTemplateModal from './LoadableReflectTemplateModal'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
@@ -60,7 +62,11 @@ class RetroTemplateListMenu extends Component<Props> {
           )
         })}
         <MenuItemHR notMenuItem />
-        <MenuItemWithShortcuts label='Customize...' onClick={() => console.log('customize')} />
+        <LoadableModal
+          LoadableComponent={LoadableReflectTemplateModal}
+          queryVars={{retroMeetingSettings}}
+          toggle={<MenuItemWithShortcuts label='Customize...' />}
+        />
       </MenuWithShortcuts>
     )
   }
@@ -70,6 +76,7 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(RetroTemplateListMenu)),
   graphql`
     fragment RetroTemplateListMenu_retroMeetingSettings on RetrospectiveMeetingSettings {
+      ...ReflectTemplateModal_retroMeetingSettings
       reflectTemplates {
         templateId: id
         name

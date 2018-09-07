@@ -46,7 +46,7 @@ class RetroReflectPhase extends Component<Props> {
     const {newMeeting} = team
     if (!newMeeting) return
     const {facilitatorUserId, localPhase, reflectionGroups} = newMeeting
-    const reflectPrompts = localPhase!.reflectPrompts
+    const reflectPrompts = localPhase!.reflectPrompts!
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
     return (

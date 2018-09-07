@@ -129,7 +129,8 @@ class NewMeetingLobby extends React.Component<Props> {
     } = this.props
     const {meetingSettings, orgId, organization, teamId, teamName} = team
     const {retroMeetingsOffered, retroMeetingsRemaining, tier} = organization
-    const {reflectTemplates, selectedTemplateId} = meetingSettings
+    const {selectedTemplateId} = meetingSettings
+    const reflectTemplates = meetingSettings.reflectTemplates!
     const onStartMeetingClick = () => {
       submitMutation()
       StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted)
