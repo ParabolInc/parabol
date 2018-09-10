@@ -1075,6 +1075,11 @@ declare namespace GQL {
     phaseTypes: Array<NewMeetingPhaseTypeEnum>
 
     /**
+     * FK
+     */
+    teamId: string
+
+    /**
      * The team these settings belong to
      */
     team: ITeam | null
@@ -3010,6 +3015,41 @@ declare namespace GQL {
      * Upgrade an account to the paid service
      */
     upgradeToPro: IUpgradeToProPayload | null
+
+    /**
+     * Add a new template full of prompts
+     */
+    addReflectTemplate: IAddReflectTemplatePayload | null
+
+    /**
+     * Add a new template full of prompts
+     */
+    addReflectTemplatePrompt: IAddReflectTemplatePromptPayload | null
+
+    /**
+     * Move a reflect template
+     */
+    moveReflectTemplatePrompt: IMoveReflectTemplatePromptPayload | null
+
+    /**
+     * Remove a template full of prompts
+     */
+    removeReflectTemplate: IRemoveReflectTemplatePayload | null
+
+    /**
+     * Remove a prompt from a template
+     */
+    removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null
+
+    /**
+     * Rename a reflect template prompt
+     */
+    renameReflectTemplate: IRenameReflectTemplatePayload | null
+
+    /**
+     * Rename a reflect template
+     */
+    renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null
   }
 
   interface IAcceptTeamInviteOnMutationArguments {
@@ -3771,6 +3811,37 @@ declare namespace GQL {
      * The token that came back from stripe
      */
     stripeToken: string
+  }
+
+  interface IAddReflectTemplateOnMutationArguments {
+    teamId: string
+  }
+
+  interface IAddReflectTemplatePromptOnMutationArguments {
+    templateId: string
+  }
+
+  interface IMoveReflectTemplatePromptOnMutationArguments {
+    promptId: string
+    sortOrder: string
+  }
+
+  interface IRemoveReflectTemplateOnMutationArguments {
+    templateId: string
+  }
+
+  interface IRemoveReflectTemplatePromptOnMutationArguments {
+    promptId: string
+  }
+
+  interface IRenameReflectTemplateOnMutationArguments {
+    templateId: string
+    name: string
+  }
+
+  interface IRenameReflectTemplatePromptOnMutationArguments {
+    promptId: string
+    name: string
   }
 
   interface IAcceptTeamInvitePayload {
@@ -4655,6 +4726,11 @@ declare namespace GQL {
      * The broad phase types that will be addressed during the meeting
      */
     phaseTypes: Array<NewMeetingPhaseTypeEnum>
+
+    /**
+     * FK
+     */
+    teamId: string
 
     /**
      * The team these settings belong to
@@ -6182,6 +6258,50 @@ declare namespace GQL {
     teams: Array<ITeam> | null
   }
 
+  interface IAddReflectTemplatePayload {
+    __typename: 'AddReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+  }
+
+  interface IAddReflectTemplatePromptPayload {
+    __typename: 'AddReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IReflectTemplate
+  }
+
+  interface IMoveReflectTemplatePromptPayload {
+    __typename: 'MoveReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IReflectTemplate
+  }
+
+  interface IRemoveReflectTemplatePayload {
+    __typename: 'RemoveReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+    retroMeetingSettings: IRetrospectiveMeetingSettings
+  }
+
+  interface IRemoveReflectTemplatePromptPayload {
+    __typename: 'RemoveReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+    prompt: IReflectTemplate
+  }
+
+  interface IRenameReflectTemplatePayload {
+    __typename: 'RenameReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+  }
+
+  interface IRenameReflectTemplatePromptPayload {
+    __typename: 'RenameReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IReflectTemplate
+  }
+
   interface ISubscription {
     __typename: 'Subscription'
     agendaItemSubscription: AgendaItemSubscriptionPayload
@@ -6426,49 +6546,6 @@ declare namespace GQL {
     userId: string
   }
 
-  interface IAddReflectTemplatePayload {
-    __typename: 'AddReflectTemplatePayload'
-    error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
-  }
-
-  interface IAddReflectTemplatePromptPayload {
-    __typename: 'AddReflectTemplatePromptPayload'
-    error: IStandardMutationError | null
-    prompt: IReflectTemplate
-  }
-
-  interface IMoveReflectTemplatePromptPayload {
-    __typename: 'MoveReflectTemplatePromptPayload'
-    error: IStandardMutationError | null
-    prompt: IReflectTemplate
-  }
-
-  interface IRemoveReflectTemplatePayload {
-    __typename: 'RemoveReflectTemplatePayload'
-    error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
-  }
-
-  interface IRemoveReflectTemplatePromptPayload {
-    __typename: 'RemoveReflectTemplatePromptPayload'
-    error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
-    prompt: IReflectTemplate
-  }
-
-  interface IRenameReflectTemplatePayload {
-    __typename: 'RenameReflectTemplatePayload'
-    error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
-  }
-
-  interface IRenameReflectTemplatePromptPayload {
-    __typename: 'RenameReflectTemplatePromptPayload'
-    error: IStandardMutationError | null
-    prompt: IReflectTemplate
-  }
-
   type TeanMemberSubscriptionPayload =
     | IAcceptTeamInvitePayload
     | ICancelApprovalPayload
@@ -6689,6 +6766,11 @@ declare namespace GQL {
      * The broad phase types that will be addressed during the meeting
      */
     phaseTypes: Array<NewMeetingPhaseTypeEnum>
+
+    /**
+     * FK
+     */
+    teamId: string
 
     /**
      * The team these settings belong to

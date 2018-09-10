@@ -1,7 +1,7 @@
 import {TemplatePromptItem_prompt} from '__generated__/TemplatePromptItem_prompt.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import FontAwesome from 'react-fontawesome'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {PALETTE} from 'universal/styles/paletteV2'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
@@ -18,7 +18,7 @@ const PromptItem = styled('li')({
   display: 'flex'
 })
 
-const EditTemplateIcon = styled(FontAwesome)(({isHover}: {isHover: boolean}) => ({
+const EditTemplateIcon = styled(StyledFontAwesome)(({isHover}: {isHover: boolean}) => ({
   color: PALETTE.TEXT.MAIN,
   opacity: isHover ? 1 : 0
 }))

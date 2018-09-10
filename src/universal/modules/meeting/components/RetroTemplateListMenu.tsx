@@ -9,14 +9,12 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import SelectRetroTemplateMutation from 'universal/mutations/SelectRetroTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import LoadableModal from 'universal/components/LoadableModal'
-import LoadableReflectTemplateModal from './LoadableReflectTemplateModal'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
+  customize: () => void
   defaultActiveIdx: number
   retroMeetingSettings: RetroTemplateListMenu_retroMeetingSettings
-  teamId: string
 }
 
 class RetroTemplateListMenu extends Component<Props> {
@@ -24,13 +22,12 @@ class RetroTemplateListMenu extends Component<Props> {
     const {
       atmosphere,
       retroMeetingSettings,
-      teamId,
       onCompleted,
       onError,
       submitMutation,
       submitting
     } = this.props
-    const {selectedTemplateId} = retroMeetingSettings
+    const {selectedTemplateId, teamId} = retroMeetingSettings
     if (submitting || templateId === selectedTemplateId) return
     submitMutation()
     SelectRetroTemplateMutation(
@@ -43,7 +40,7 @@ class RetroTemplateListMenu extends Component<Props> {
   }
 
   render () {
-    const {closePortal, defaultActiveIdx, retroMeetingSettings} = this.props
+    const {closePortal, customize, defaultActiveIdx, retroMeetingSettings} = this.props
     const {reflectTemplates} = retroMeetingSettings
     return (
       <MenuWithShortcuts
@@ -62,11 +59,7 @@ class RetroTemplateListMenu extends Component<Props> {
           )
         })}
         <MenuItemHR notMenuItem />
-        <LoadableModal
-          LoadableComponent={LoadableReflectTemplateModal}
-          queryVars={{retroMeetingSettings}}
-          toggle={<MenuItemWithShortcuts label='Customize...' />}
-        />
+        <MenuItemWithShortcuts label='Customize...' onClick={customize} />
       </MenuWithShortcuts>
     )
   }
@@ -76,12 +69,12 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(RetroTemplateListMenu)),
   graphql`
     fragment RetroTemplateListMenu_retroMeetingSettings on RetrospectiveMeetingSettings {
-      ...ReflectTemplateModal_retroMeetingSettings
       reflectTemplates {
         templateId: id
         name
       }
       selectedTemplateId
+      teamId
     }
   `
 )

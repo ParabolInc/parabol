@@ -28,18 +28,25 @@ const removeReflectTemplate = {
 
     // VALIDATION
     const {teamId} = template
-    const allTemplatesCount = await r
-      .table('ReflectTemplate')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isActive: true})
-      .count()
-      .default(0)
+    const {templates, settings} = await r({
+      templates: r
+        .table('ReflectTemplate')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isActive: true})
+        .orderBy('name')
+        .coerceTo('array'),
+      settings: r
+        .table('MeetingSettings')
+        .getAll(teamId, {index: 'teamId'})
+        .nth(0)
+    })
 
-    if (allTemplatesCount.length <= 1) {
+    if (templates.length <= 1) {
       return sendLastTemplateRemovalError(authToken, templateId)
     }
 
     // RESOLUTION
+    const {id: settingsId} = settings
     await r({
       template: r
         .table('ReflectTemplate')
@@ -47,7 +54,7 @@ const removeReflectTemplate = {
         .update({isActive: false, updatedAt: now}),
       phaseItems: r
         .table('CustomPhaseItem')
-        .getAll(teamId, {index: teamId})
+        .getAll(teamId, {index: 'teamId'})
         .filter({
           templateId
         })
@@ -57,7 +64,17 @@ const removeReflectTemplate = {
         })
     })
 
-    const data = {templateId}
+    if (settings.selectedTemplateId === templateId) {
+      const nextTemplate = templates.find((template) => template.id !== templateId)
+      await r
+        .table('MeetingSettings')
+        .get(settingsId)
+        .update({
+          selectedTemplateId: nextTemplate.id
+        })
+    }
+
+    const data = {templateId, settingsId}
     publish(TEAM, teamId, RemoveReflectTemplatePayload, data, subOptions)
     return data
   }

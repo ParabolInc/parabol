@@ -8,7 +8,6 @@ import {
 } from 'graphql'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
-import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
 
 const ReflectTemplate = new GraphQLObjectType({
   name: 'ReflectTemplate',
@@ -35,9 +34,9 @@ const ReflectTemplate = new GraphQLObjectType({
     prompts: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroPhaseItem))),
       description: 'The prompts that are part of this template',
-      resolve: async ({teamId}, _args, {dataLoader}) => {
+      resolve: async ({id: promptTemplateId, teamId}, _args, {dataLoader}) => {
         const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
-        return phaseItems.filter(({phaseItemType}) => phaseItemType === RETRO_PHASE_ITEM)
+        return phaseItems.filter(({templateId}) => templateId === promptTemplateId)
       }
     },
     teamId: {

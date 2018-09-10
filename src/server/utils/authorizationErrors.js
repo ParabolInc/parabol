@@ -218,6 +218,15 @@ export const sendLastTemplateRemovalError = (authToken, templateId) => {
   return sendAuthRaven(authToken, 'Cannot remove the last template', breadcrumb)
 }
 
+export const sendTooManyTemplatesError = (authToken, teamId) => {
+  const breadcrumb = {
+    message: 'Too many templates',
+    category: 'too many',
+    data: {teamId}
+  }
+  return sendAuthRaven(authToken, 'Too many templates', breadcrumb)
+}
+
 export const sendTooManyPromptsError = (authToken, templateId) => {
   const breadcrumb = {
     message: 'Too many prompts!',
@@ -234,4 +243,13 @@ export const sendLastPromptRemovalError = (authToken, promptId) => {
     data: {promptId}
   }
   return sendAuthRaven(authToken, 'Cannot remove the last prompt', breadcrumb)
+}
+
+export const sendAlreadyCreatedTemplateError = (authToken, teamId) => {
+  const breadcrumb = {
+    message: 'You already have a new template. Try renaming that one first',
+    category: 'already created',
+    data: {teamId}
+  }
+  return sendAuthRaven(authToken, 'Already Created', breadcrumb)
 }

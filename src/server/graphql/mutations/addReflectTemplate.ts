@@ -1,7 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {
+  sendTeamAccessError,
+  sendTooManyTemplatesError,
+  sendAlreadyCreatedTemplateError
+} from 'server/utils/authorizationErrors'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
@@ -25,8 +29,21 @@ const addReflectTemplate = {
       return sendTeamAccessError(authToken, teamId)
     }
 
+    // VALIDATION
+    const allTemplates = await r
+      .table('ReflectTemplate')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true})
+
+    if (allTemplates.length >= 20) {
+      return sendTooManyTemplatesError(authToken, teamId)
+    }
+    if (allTemplates.find((template) => template.name === '*New Template')) {
+      return sendAlreadyCreatedTemplateError(authToken, teamId)
+    }
+
     // RESOLUTION
-    const base = {'New Template': [{question: 'New prompt'}]}
+    const base = {'*New Template': [{question: 'New prompt'}]}
     const {phaseItems, templates} = makeRetroTemplates(teamId, base)
 
     await r({

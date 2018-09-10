@@ -13,7 +13,6 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import CopyShortLink from 'universal/modules/meeting/components/CopyShortLink/CopyShortLink'
-import LoadableRetroTemplateListMenu from 'universal/modules/meeting/components/LoadableRetroTemplateListMenu'
 import MeetingCopy from 'universal/modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
@@ -24,7 +23,8 @@ import {PRO} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import LoadableDropdownMenuToggle from './LoadableDropdownMenuToggle'
+import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
+
 import MeetingTypeEnum = GQL.MeetingTypeEnum
 
 const ButtonGroup = styled('div')({
@@ -129,8 +129,6 @@ class NewMeetingLobby extends React.Component<Props> {
     } = this.props
     const {meetingSettings, orgId, organization, teamId, teamName} = team
     const {retroMeetingsOffered, retroMeetingsRemaining, tier} = organization
-    const {selectedTemplateId} = meetingSettings
-    const reflectTemplates = meetingSettings.reflectTemplates!
     const onStartMeetingClick = () => {
       submitMutation()
       StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted)
@@ -140,10 +138,6 @@ class NewMeetingLobby extends React.Component<Props> {
     const meetingLabel = meetingTypeToLabel[meetingType]
     const meetingSlug = meetingTypeToSlug[meetingType]
     const buttonLabel = `Start ${meetingLabel} Meeting`
-    const selectedTemplateIdx = reflectTemplates.findIndex(
-      (template) => template.id === selectedTemplateId
-    )
-    const selectedTemplate = reflectTemplates[selectedTemplateIdx]
     return (
       <Lobby>
         <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
@@ -207,15 +201,7 @@ class NewMeetingLobby extends React.Component<Props> {
               )}
           </ButtonBlock>
         </ButtonGroup>
-        <LoadableDropdownMenuToggle
-          defaultText={selectedTemplate.name}
-          LoadableComponent={LoadableRetroTemplateListMenu}
-          queryVars={{
-            defaultActiveIdx: selectedTemplateIdx,
-            retroMeetingSettings: meetingSettings,
-            teamId
-          }}
-        />
+        <RetroTemplatePicker settings={meetingSettings} />
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>
@@ -238,14 +224,7 @@ export default createFragmentContainer(
         tier
       }
       meetingSettings(meetingType: $meetingType) {
-        ...RetroTemplateListMenu_retroMeetingSettings
-        ... on RetrospectiveMeetingSettings {
-          reflectTemplates {
-            id
-            name
-          }
-          selectedTemplateId
-        }
+        ...RetroTemplatePicker_settings
       }
     }
   `

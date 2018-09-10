@@ -19,6 +19,10 @@ export const teamMeetingSettingsFields = () => ({
     description: 'The broad phase types that will be addressed during the meeting',
     type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(NewMeetingPhaseTypeEnum)))
   },
+  teamId: {
+    description: 'FK',
+    type: new GraphQLNonNull(GraphQLID)
+  },
   team: {
     description: 'The team these settings belong to',
     type: Team,

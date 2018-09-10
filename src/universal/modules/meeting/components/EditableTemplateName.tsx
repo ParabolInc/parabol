@@ -39,7 +39,7 @@ class EditableTemplateName extends Component<Props> {
         initialValue={name}
         maxLength={100}
         validate={this.validate}
-        placeholder={'New Template'}
+        placeholder={'*New Template'}
       />
     )
   }

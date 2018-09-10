@@ -3,10 +3,10 @@ import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
-import RaisedButton from 'universal/components/RaisedButton'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
+import AddNewReflectTemplate from './AddNewReflectTemplate'
 import EditableTemplateName from './EditableTemplateName'
+import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props {
@@ -47,11 +47,6 @@ const TemplateItem = styled('li')({})
 
 const PromptList = styled('ul')({})
 
-const DeleteTemplate = styled(StyledFontAwesome)(({canDelete}: {canDelete: boolean}) => ({
-  visibility: !canDelete ? 'hidden' : undefined,
-  width: '100%'
-}))
-
 const TemplateHeader = styled('div')({
   display: 'flex',
   height: '1rem'
@@ -70,7 +65,9 @@ class ReflectTemplateModal extends Component<Props, State> {
     this.state = {activeTemplate}
   }
 
-  editTemplate = (template) => () => {
+  editTemplate = (
+    template: ReflectTemplateModal_retroMeetingSettings['reflectTemplates'][0]
+  ) => () => {
     if (this.state.activeTemplate !== template) {
       this.setState({
         activeTemplate: template
@@ -78,11 +75,21 @@ class ReflectTemplateModal extends Component<Props, State> {
     }
   }
 
+  inactivateTemplate = (templateId: string) => {
+    if (this.state.activeTemplate.id !== templateId) return
+    const {retroMeetingSettings} = this.props
+    const {reflectTemplates} = retroMeetingSettings
+    const activeTemplate = reflectTemplates.find((template) => template.id !== templateId)!
+    this.setState({
+      activeTemplate
+    })
+  }
+
   render () {
     const {retroMeetingSettings} = this.props
     const {activeTemplate} = this.state
-    const {reflectTemplates} = retroMeetingSettings
-
+    const {reflectTemplates, teamId} = retroMeetingSettings
+    const templateCount = reflectTemplates.length
     return (
       <ModalBoundary>
         <TemplateSidebar>
@@ -97,14 +104,23 @@ class ReflectTemplateModal extends Component<Props, State> {
                 )
               })}
             </TemplateList>
-            <RaisedButton>Add new template</RaisedButton>
+            {/* add a key to clear the error when they change */}
+            <AddNewReflectTemplate
+              key={activeTemplate.id}
+              teamId={teamId}
+              reflectTemplates={reflectTemplates}
+            />
           </ListAndAdd>
         </TemplateSidebar>
         <PromptEditor>
           <Title>Current Template</Title>
           <TemplateHeader>
             <EditableTemplateName key={activeTemplate.id} name={activeTemplate.name} />
-            <DeleteTemplate canDelete={reflectTemplates.length > 1} name='trash' />
+            <RemoveTemplate
+              inactivateTemplate={this.inactivateTemplate}
+              templateCount={templateCount}
+              templateId={activeTemplate.id}
+            />
           </TemplateHeader>
           <PromptList>
             {activeTemplate.prompts.map((prompt) => {
@@ -123,6 +139,7 @@ export default createFragmentContainer(
   graphql`
     fragment ReflectTemplateModal_retroMeetingSettings on RetrospectiveMeetingSettings {
       reflectTemplates {
+        ...AddNewReflectTemplate_reflectTemplates
         id
         name
         prompts {
@@ -132,6 +149,7 @@ export default createFragmentContainer(
         }
       }
       selectedTemplateId
+      teamId
     }
   `
 )

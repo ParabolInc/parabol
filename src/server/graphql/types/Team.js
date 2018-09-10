@@ -85,6 +85,7 @@ const Team = new GraphQLObjectType({
     customPhaseItems: {
       type: new GraphQLList(CustomPhaseItem),
       resolve: ({id: teamId}, args, {dataLoader}) => {
+        // not useful for retros since there is no templateId filter
         return dataLoader.get('customPhaseItemsByTeamId').load(teamId)
       }
     },
