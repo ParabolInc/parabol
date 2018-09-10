@@ -1,4 +1,4 @@
-require('babel-register')
+require('../src/server/babelRegister')
 const resolve = require('./webpackResolve')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -11,6 +11,13 @@ const {getS3BasePath} = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const getDotenv = require('../src/universal/utils/dotenv')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import')
+const presetEnv = require('@babel/preset-env')
+const presetFlow = require('@babel/preset-flow')
+const presetReact = require('@babel/preset-react')
+const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread')
+const pluginClassProps = require('@babel/plugin-proposal-class-properties')
+const pluginRelay = require('babel-plugin-relay')
 
 const publicPath = getWebpackPublicPath.default()
 getDotenv.default()
@@ -42,25 +49,23 @@ const babelConfig = {
     cacheDirectory: true,
     babelrc: false,
     plugins: [
-      'syntax-object-rest-spread',
-      'syntax-dynamic-import',
-      'transform-class-properties',
-      ['relay', {artifactDirectory: './src/__generated__'}]
+      pluginObjectRestSpread,
+      pluginClassProps,
+      pluginDynamicImport,
+      [pluginRelay, {artifactDirectory: './src/__generated__'}]
     ],
     presets: [
       [
-        'env',
+        presetEnv,
         {
-          // debug: true,
-          modules: false,
           targets: {
             browsers: ['> 1%', 'not ie 11']
           },
-          useBuiltIns: true
+          useBuiltIns: 'entry'
         }
       ],
-      'flow',
-      'react'
+      presetFlow,
+      presetReact
     ]
   }
 }
