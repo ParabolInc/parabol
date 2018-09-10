@@ -1,7 +1,7 @@
 import shortid from 'shortid'
 import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
 
-class Prompt {
+export class Prompt {
   id: string
   createdAt: Date
   isActive: boolean
@@ -63,12 +63,21 @@ const templateBase = {
   Sailboat: [{question: 'Wind in the sails'}, {question: 'Anchors'}, {question: 'Risks'}]
 }
 
-const makeRetroTemplates = (teamId) => {
+interface TemplatePrompt {
+  question: string
+  title?: string
+}
+
+interface TemplateObject {
+  [templateName: string]: Array<TemplatePrompt>
+}
+
+const makeRetroTemplates = (teamId: string, templateObj: TemplateObject = templateBase) => {
   const phaseItems: Array<Prompt> = []
   const templates: Array<Template> = []
-  const templateNames = Object.keys(templateBase)
+  const templateNames = Object.keys(templateObj)
   templateNames.forEach((templateName) => {
-    const promptBase = templateBase[templateName]
+    const promptBase = templateObj[templateName]
     const template = new Template(templateName, teamId)
     const prompts = promptBase.map(
       (prompt, idx) => new Prompt(template, idx, prompt.question, prompt.title)

@@ -208,3 +208,30 @@ export const sendTemplateAccessError = (authToken, templateId) => {
   }
   return sendAuthRaven(authToken, 'Template not found', breadcrumb)
 }
+
+export const sendLastTemplateRemovalError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'Cannot remove the last template',
+    category: 'Last template',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Cannot remove the last template', breadcrumb)
+}
+
+export const sendTooManyPromptsError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'Too many prompts!',
+    category: 'too many',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Too many prompts!', breadcrumb)
+}
+
+export const sendLastPromptRemovalError = (authToken, promptId) => {
+  const breadcrumb = {
+    message: 'Cannot remove the last prompt',
+    category: 'Last prompt',
+    data: {promptId}
+  }
+  return sendAuthRaven(authToken, 'Cannot remove the last prompt', breadcrumb)
+}

@@ -2,6 +2,9 @@ const path = require('path')
 const resolve = require('resolve') // eslint-disable-line import/no-extraneous-dependencies
 
 require('babel-register')({
+  only (filename) {
+    return filename.indexOf('build') === -1 && filename.indexOf('node_modules') === -1
+  },
   plugins: ['transform-object-rest-spread', 'syntax-dynamic-import', 'transform-class-properties'],
   presets: [
     [
@@ -20,7 +23,7 @@ require('babel-register')({
   resolveModuleSource (source, filename) {
     return resolve.sync(source, {
       basedir: path.resolve(filename, '..'),
-      extensions: ['.js', 'ts.'],
+      extensions: ['.js'],
       moduleDirectory: ['src', 'node_modules']
     })
   }
