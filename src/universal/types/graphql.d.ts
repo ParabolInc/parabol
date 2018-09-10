@@ -6395,6 +6395,13 @@ declare namespace GQL {
     | IUpdateTeamNamePayload
     | IUpgradeToProPayload
     | IVoteForReflectionGroupPayload
+    | IAddReflectTemplatePayload
+    | IAddReflectTemplatePromptPayload
+    | IMoveReflectTemplatePromptPayload
+    | IRemoveReflectTemplatePayload
+    | IRemoveReflectTemplatePromptPayload
+    | IRenameReflectTemplatePayload
+    | IRenameReflectTemplatePromptPayload
 
   interface IUpdateDragLocationPayload {
     __typename: 'UpdateDragLocationPayload'
@@ -6417,6 +6424,49 @@ declare namespace GQL {
      */
     targetOffset: ICoords2D | null
     userId: string
+  }
+
+  interface IAddReflectTemplatePayload {
+    __typename: 'AddReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+  }
+
+  interface IAddReflectTemplatePromptPayload {
+    __typename: 'AddReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IReflectTemplate
+  }
+
+  interface IMoveReflectTemplatePromptPayload {
+    __typename: 'MoveReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IReflectTemplate
+  }
+
+  interface IRemoveReflectTemplatePayload {
+    __typename: 'RemoveReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+  }
+
+  interface IRemoveReflectTemplatePromptPayload {
+    __typename: 'RemoveReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+    prompt: IReflectTemplate
+  }
+
+  interface IRenameReflectTemplatePayload {
+    __typename: 'RenameReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate
+  }
+
+  interface IRenameReflectTemplatePromptPayload {
+    __typename: 'RenameReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IReflectTemplate
   }
 
   type TeanMemberSubscriptionPayload =

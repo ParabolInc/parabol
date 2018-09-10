@@ -6160,10 +6160,6 @@ flow-runtime@0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/flow-runtime/-/flow-runtime-0.14.0.tgz#bbbcb700b19a0a299ab403e807d69912ef077c16"
 
-flow-to-typescript@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/flow-to-typescript/-/flow-to-typescript-1.0.0.tgz#c12f973a557314f253a8e6a30315ea02acc33d56"
-
 flush-write-stream@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/flush-write-stream/-/flush-write-stream-1.0.3.tgz#c5d586ef38af6097650b49bc41b55fabb19f35bd"

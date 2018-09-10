@@ -1,9 +1,10 @@
+import {TemplatePromptItem_prompt} from '__generated__/TemplatePromptItem_prompt.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer, graphql} from 'react-relay'
-import {PALETTE} from '../../../styles/paletteV2'
-import EditableTemplatePrompt from './EditableTemplatePrompt'
 import FontAwesome from 'react-fontawesome'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {PALETTE} from 'universal/styles/paletteV2'
+import EditableTemplatePrompt from './EditableTemplatePrompt'
 
 interface Props {
   prompt: TemplatePromptItem_prompt
