@@ -2,10 +2,12 @@ import {ReflectTemplateModal_retroMeetingSettings} from '__generated__/ReflectTe
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import FlatButton from 'universal/components/FlatButton'
+import RaisedButton from 'universal/components/RaisedButton'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
-import RaisedButton from 'universal/components/RaisedButton'
-import FlatButton from 'universal/components/FlatButton'
+import EditableTemplateName from './EditableTemplateName'
+import TemplatePromptItem from './TemplatePromptItem'
 
 interface Props {
   onSuccess: () => void
@@ -44,14 +46,11 @@ const TemplateList = styled('ul')({})
 const TemplateItem = styled('li')({})
 
 const PromptList = styled('ul')({})
-const PromptItem = styled('li')({})
 
 const DeleteTemplate = styled(StyledFontAwesome)(({canDelete}: {canDelete: boolean}) => ({
   visibility: !canDelete ? 'hidden' : undefined,
   width: '100%'
 }))
-
-const TemplateEditable = styled('div')({})
 
 const TemplateHeader = styled('div')({
   display: 'flex',
@@ -83,6 +82,7 @@ class ReflectTemplateModal extends Component<Props, State> {
     const {retroMeetingSettings} = this.props
     const {activeTemplate} = this.state
     const {reflectTemplates} = retroMeetingSettings
+
     return (
       <ModalBoundary>
         <TemplateSidebar>
@@ -91,7 +91,9 @@ class ReflectTemplateModal extends Component<Props, State> {
             <TemplateList>
               {reflectTemplates.map((template) => {
                 return (
-                  <TemplateItem onClick={this.editTemplate(template)}>{template.name}</TemplateItem>
+                  <TemplateItem key={template.id} onClick={this.editTemplate(template)}>
+                    {template.name}
+                  </TemplateItem>
                 )
               })}
             </TemplateList>
@@ -101,12 +103,12 @@ class ReflectTemplateModal extends Component<Props, State> {
         <PromptEditor>
           <Title>Current Template</Title>
           <TemplateHeader>
-            <TemplateEditable>{activeTemplate.name}</TemplateEditable>
+            <EditableTemplateName key={activeTemplate.id} name={activeTemplate.name} />
             <DeleteTemplate canDelete={reflectTemplates.length > 1} name='trash' />
           </TemplateHeader>
           <PromptList>
             {activeTemplate.prompts.map((prompt) => {
-              return <PromptItem>{prompt.question}</PromptItem>
+              return <TemplatePromptItem key={prompt.id} prompt={prompt} />
             })}
           </PromptList>
           <AddPromptLink>+ Add another prompt</AddPromptLink>
@@ -124,7 +126,8 @@ export default createFragmentContainer(
         id
         name
         prompts {
-          question
+          ...TemplatePromptItem_prompt
+          id
           sortOrder
         }
       }

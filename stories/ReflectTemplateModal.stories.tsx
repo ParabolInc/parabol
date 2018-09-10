@@ -11,10 +11,12 @@ const retroMeetingSettings = {
       name: 'Standard',
       prompts: [
         {
+          id: '1-0',
           question: 'good',
           sortOrder: 0
         },
         {
+          id: '1-1',
           question: 'bad',
           sortOrder: 1
         }
@@ -25,10 +27,12 @@ const retroMeetingSettings = {
       name: 'Different',
       prompts: [
         {
+          id: '2-0',
           question: 'wonky',
           sortOrder: 0
         },
         {
+          id: '2-1',
           question: 'weird',
           sortOrder: 1
         }
