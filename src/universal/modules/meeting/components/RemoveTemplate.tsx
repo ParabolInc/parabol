@@ -1,16 +1,24 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import FlatButton from 'universal/components/FlatButton'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveReflectTemplateMutation from 'universal/mutations/RemoveReflectTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 
-const DeleteTemplate = styled(StyledFontAwesome)(({canDelete}: {canDelete: boolean}) => ({
-  visibility: !canDelete ? 'hidden' : undefined,
-  width: '100%'
+const Button = styled(FlatButton)(({canDelete}: {canDelete: boolean}) => ({
+  display: !canDelete ? 'none' : 'block',
+  paddingLeft: 0,
+  paddingRight: 0,
+  width: '2rem'
 }))
+
+const DeleteIcon = styled(StyledFontAwesome)({
+  fontSize: ICON_SIZE_FA_1X
+})
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   templateCount: number
@@ -40,7 +48,9 @@ class RemoveTemplate extends Component<Props> {
   render () {
     const {templateCount} = this.props
     return (
-      <DeleteTemplate canDelete={templateCount > 1} name='trash' onClick={this.removeTemplate} />
+      <Button canDelete={templateCount > 1} onClick={this.removeTemplate} size='small'>
+        <DeleteIcon name='trash' />
+      </Button>
     )
   }
 }

@@ -5,11 +5,19 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
+import styled from 'react-emotion'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   name: string
   templateId: string
 }
+
+const InheritedStyles = styled('div')({
+  flex: 1,
+  fontSize: '1.5rem',
+  fontWeight: 600,
+  lineHeight: '2rem'
+})
 
 class EditableTemplateName extends Component<Props> {
   handleSubmit = (rawName) => {
@@ -47,14 +55,16 @@ class EditableTemplateName extends Component<Props> {
   render () {
     const {error, name} = this.props
     return (
-      <EditableText
-        error={error}
-        handleSubmit={this.handleSubmit}
-        initialValue={name}
-        maxLength={100}
-        validate={this.validate}
-        placeholder={'*New Template'}
-      />
+      <InheritedStyles>
+        <EditableText
+          error={error}
+          handleSubmit={this.handleSubmit}
+          initialValue={name}
+          maxLength={100}
+          validate={this.validate}
+          placeholder={'*New Template'}
+        />
+      </InheritedStyles>
     )
   }
 }

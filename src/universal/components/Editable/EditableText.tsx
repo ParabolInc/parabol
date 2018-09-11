@@ -1,27 +1,39 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import FontAwesome from 'react-fontawesome'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {PALETTE} from 'universal/styles/paletteV2'
+import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 
 const StaticBlock = styled('div')({
-  display: 'inline-block',
+  alignItems: 'center',
   cursor: 'pointer',
+  display: 'flex',
+  fontSize: 'inherit',
+  fontWeight: 'inherit',
+  lineHeight: 'inherit',
+  width: '100%',
   ':hover': {
     opacity: 0.5
   }
 })
 
-const Placeholder = styled('span')({
+const Placeholder = styled('div')({
   color: PALETTE.TEXT.LIGHT
 })
 
-const StaticValue = styled('span')({
+const StaticValue = styled('div')({
   color: PALETTE.TEXT.MAIN
 })
 
-const Error = styled('span')({
+const Error = styled('div')({
   color: PALETTE.ERROR.MAIN,
   fontSize: '.85rem'
+})
+
+const Icon = styled(StyledFontAwesome)({
+  fontSize: ICON_SIZE_FA_1X,
+  lineHeight: 'inherit',
+  marginLeft: '.5rem'
 })
 
 interface Props {
@@ -75,14 +87,29 @@ class EditableText extends Component<Props, State> {
   renderEditing = () => {
     const {error, maxLength, placeholder} = this.props
     const {value} = this.state
+    const formStyle = {
+      display: 'flex'
+    }
+    const inputStyle = {
+      backgroundColor: 'transparent',
+      border: 0,
+      display: 'block',
+      fontSize: 'inherit',
+      fontWeight: 'inherit',
+      lineHeight: 'inherit',
+      outline: 'none',
+      padding: 0,
+      width: 'auto'
+    }
     return (
-      <form onSubmit={this.onSubmit}>
+      <form onSubmit={this.onSubmit} style={formStyle}>
         <input
           autoFocus
           maxLength={maxLength}
           onBlur={this.onSubmit}
           onChange={this.onChange}
           placeholder={placeholder}
+          style={inputStyle}
           value={value}
         />
         {error && <Error>{error}</Error>}
@@ -98,7 +125,7 @@ class EditableText extends Component<Props, State> {
       <StaticBlock onClick={this.setEditing}>
         {showPlaceholder && <Placeholder>{placeholder}</Placeholder>}
         {value && <StaticValue>{value}</StaticValue>}
-        {!hideIcon && <FontAwesome name={'pencil'} />}
+        {!hideIcon && <Icon name={'pencil'} />}
       </StaticBlock>
     )
   }

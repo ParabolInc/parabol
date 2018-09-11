@@ -5,7 +5,12 @@ export namespace PALETTE {
     DARK = '#3F2B63'
   }
   export const enum BACKGROUND {
-    MAIN = '#F1F0FA'
+    MAIN = '#F1F0FA',
+    MAIN_DARKENED = '#E0DFEC', // TEXT.LIGHT alpha .15 over BACKGROUND.MAIN
+    MAIN_LIGHTENED = '#F5F4FB' // BACKGROUND.MAIN alpha .15 over #FFF
+  }
+  export const enum BORDER {
+    LIGHT = '#DBD6E3'
   }
   export const enum TEXT {
     MAIN = '#444258',

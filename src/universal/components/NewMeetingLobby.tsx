@@ -115,6 +115,15 @@ const StyledButton = styled(PrimaryButton)({
   width: '100%'
 })
 
+const TemplatePickerLabel = styled(LabelHeading)({
+  margin: '0 0 .75rem'
+})
+
+const TemplatePickerBlock = styled('div')({
+  margin: '3rem 0 0',
+  width: '20rem'
+})
+
 class NewMeetingLobby extends React.Component<Props> {
   render () {
     const {
@@ -201,7 +210,10 @@ class NewMeetingLobby extends React.Component<Props> {
               )}
           </ButtonBlock>
         </ButtonGroup>
-        <RetroTemplatePicker settings={meetingSettings} />
+        <TemplatePickerBlock>
+          <TemplatePickerLabel>Current Template</TemplatePickerLabel>
+          <RetroTemplatePicker settings={meetingSettings} />
+        </TemplatePickerBlock>
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>

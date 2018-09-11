@@ -3,21 +3,23 @@ import styled from 'react-emotion'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import Modal from 'universal/components/Modal'
 import ui from 'universal/styles/ui'
+import {modalShadow} from 'universal/styles/elevation'
 import {WithAnimatedPortalProps} from '../decorators/withAnimatedPortal'
 
 const ModalBlock = styled('div')({
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  display: 'flex',
-  zIndex: 400,
-  position: 'fixed',
   alignItems: 'center',
-  justifyContent: 'center'
+  display: 'flex',
+  height: '100%',
+  justifyContent: 'center',
+  left: 0,
+  position: 'fixed',
+  top: 0,
+  width: '100%',
+  zIndex: 400
 })
 
 const ModalContents = styled('div')({
+  boxShadow: modalShadow,
   display: 'flex',
   flex: '0 1 auto',
   flexDirection: 'column',
@@ -27,9 +29,9 @@ const ModalContents = styled('div')({
 
 const Backdrop = styled('div')({
   background: ui.modalBackdropBackgroundColor,
-  width: '100%',
   height: '100%',
-  position: 'fixed'
+  position: 'fixed',
+  width: '100%'
 })
 
 export interface LoadableModalAbstractProps extends WithAnimatedPortalProps {
