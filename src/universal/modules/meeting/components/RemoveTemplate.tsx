@@ -13,7 +13,6 @@ const DeleteTemplate = styled(StyledFontAwesome)(({canDelete}: {canDelete: boole
 }))
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  inactivateTemplate: (templateId: string) => void
   templateCount: number
   templateId
 }
@@ -21,7 +20,6 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 class RemoveTemplate extends Component<Props> {
   removeTemplate = () => {
     const {
-      inactivateTemplate,
       onError,
       onCompleted,
       submitting,
@@ -37,7 +35,6 @@ class RemoveTemplate extends Component<Props> {
     }
     submitMutation()
     RemoveReflectTemplateMutation(atmosphere, {templateId}, {}, onError, onCompleted)
-    inactivateTemplate(templateId)
   }
 
   render () {

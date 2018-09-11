@@ -253,3 +253,12 @@ export const sendAlreadyCreatedTemplateError = (authToken, teamId) => {
   }
   return sendAuthRaven(authToken, 'Already Created', breadcrumb)
 }
+
+export const sendDuplciateNameTemplateError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'A template with that name already exists',
+    category: 'already created',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Already Created', breadcrumb)
+}

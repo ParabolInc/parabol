@@ -15,13 +15,18 @@ const handleRemoveReflectTemplate = (templateId: string, store: RecordSourceSele
   const settings = store.get(settingsRecord.__id)
   if (!settings) return
   const selectedTemplateId = settings.getValue('selectedTemplateId')
+  const templates = settings.getLinkedRecords('reflectTemplates')
+  if (!templates) return
+  const nextTemplate = templates.find((template) =>
+    Boolean(template && template.getValue('id') !== templateId)
+  )!
+  const nextTemplateId = nextTemplate.getValue('id')
   if (selectedTemplateId === templateId) {
-    const templates = settings.getLinkedRecords('reflectTemplates')
-    if (!templates) return
-    const nextTemplate = templates.find((template) =>
-      Boolean(template && template.getValue('id') !== templateId)
-    )!
-    settings.setValue(nextTemplate.getValue('id'), 'selectedTemplateId')
+    settings.setValue(nextTemplateId, 'selectedTemplateId')
+  }
+  const activeTemplateId = settings.getValue('activeTemplateId')
+  if (activeTemplateId === templateId) {
+    settings.setValue(nextTemplateId, 'activeTemplateId')
   }
   safeRemoveNodeFromArray(templateId, settings, 'reflectTemplates')
 }

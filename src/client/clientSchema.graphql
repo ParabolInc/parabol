@@ -39,3 +39,7 @@ extend type DragContext {
 extend type ReflectPhase {
   editorIds: [ID!]
 }
+
+extend type RetrospectiveMeetingSettings {
+  activeTemplateId: String
+}

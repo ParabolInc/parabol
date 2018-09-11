@@ -1,4 +1,5 @@
 import {RetroTemplatePicker_settings} from '__generated__/RetroTemplatePicker_settings.graphql'
+import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import LoadableDropdownMenuToggle from 'universal/components/LoadableDropdownMenuToggle'
@@ -31,14 +32,23 @@ class RetroTemplatePicker extends Component<Props, State> {
     })
   }
 
+  sortedTemplates = memoize(
+    (reflectTemplates: RetroTemplatePicker_settings['reflectTemplates']) => {
+      const templates = reflectTemplates.slice()
+      templates.sort((a, b) => (a.lastUsedAt < b.lastUsedAt ? -1 : a.name < b.name ? -1 : 1))
+      return templates
+    }
+  )
+
   render () {
     const {isModalOpen} = this.state
     const {settings} = this.props
     const {selectedTemplateId, reflectTemplates} = settings
-    const selectedTemplateIdx = reflectTemplates.findIndex(
+    const templates = this.sortedTemplates(reflectTemplates)
+    const selectedTemplateIdx = templates.findIndex(
       (template) => template.id === selectedTemplateId
     )
-    const selectedTemplate = reflectTemplates[selectedTemplateIdx]
+    const selectedTemplate = templates[selectedTemplateIdx]
     return (
       <React.Fragment>
         <LoadableDropdownMenuToggle
@@ -47,6 +57,7 @@ class RetroTemplatePicker extends Component<Props, State> {
           queryVars={{
             customize: this.customize,
             defaultActiveIdx: selectedTemplateIdx,
+            templates,
             retroMeetingSettings: settings
           }}
         />
@@ -71,6 +82,7 @@ export default createFragmentContainer(
       reflectTemplates {
         id
         name
+        lastUsedAt
       }
     }
   `

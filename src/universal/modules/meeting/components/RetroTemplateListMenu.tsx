@@ -1,4 +1,5 @@
 import {RetroTemplateListMenu_retroMeetingSettings} from '__generated__/RetroTemplateListMenu_retroMeetingSettings.graphql'
+import {RetroTemplatePicker_settings} from '__generated__/RetroTemplatePicker_settings.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import MenuItemHR from 'universal/components/MenuItemHR'
@@ -15,6 +16,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   customize: () => void
   defaultActiveIdx: number
   retroMeetingSettings: RetroTemplateListMenu_retroMeetingSettings
+  templates: RetroTemplatePicker_settings['reflectTemplates']
 }
 
 class RetroTemplateListMenu extends Component<Props> {
@@ -40,22 +42,17 @@ class RetroTemplateListMenu extends Component<Props> {
   }
 
   render () {
-    const {closePortal, customize, defaultActiveIdx, retroMeetingSettings} = this.props
-    const {reflectTemplates} = retroMeetingSettings
+    const {closePortal, customize, defaultActiveIdx, templates} = this.props
     return (
       <MenuWithShortcuts
         ariaLabel={'Select a template or create your own!'}
         closePortal={closePortal}
         defaultActiveIdx={defaultActiveIdx}
       >
-        {reflectTemplates.map((template) => {
-          const {templateId, name} = template
+        {templates.map((template) => {
+          const {id, name} = template
           return (
-            <MenuItemWithShortcuts
-              key={templateId}
-              label={name}
-              onClick={this.handleTemplateClick(templateId)}
-            />
+            <MenuItemWithShortcuts key={id} label={name} onClick={this.handleTemplateClick(id)} />
           )
         })}
         <MenuItemHR notMenuItem />
@@ -69,10 +66,6 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(RetroTemplateListMenu)),
   graphql`
     fragment RetroTemplateListMenu_retroMeetingSettings on RetrospectiveMeetingSettings {
-      reflectTemplates {
-        templateId: id
-        name
-      }
       selectedTemplateId
       teamId
     }

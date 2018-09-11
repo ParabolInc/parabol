@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {sendTeamAccessError, sendDuplciateNameTemplateError} from 'server/utils/authorizationErrors'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import RenameReflectTemplatePayload from '../types/RenameReflectTemplatePayload'
@@ -30,7 +30,16 @@ const renameReflectTemplatePrompt = {
     }
 
     // VALIDATION
-    const normalizedName = name.trim().slice(0, 100)
+    const {teamId} = template
+    const trimmedName = name.trim().slice(0, 100)
+    const normalizedName = trimmedName || 'Unnamed Template'
+    const allTemplates = await r
+      .table('ReflectTemplate')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isActive: true})
+    if (allTemplates.find((template) => template.name === normalizedName)) {
+      return sendDuplciateNameTemplateError(authToken, templateId)
+    }
 
     // RESOLUTION
     await r
@@ -38,7 +47,6 @@ const renameReflectTemplatePrompt = {
       .get(templateId)
       .update({name: normalizedName, updatedAt: now})
 
-    const {teamId} = template
     const data = {templateId}
     publish(TEAM, teamId, RenameReflectTemplatePayload, data, subOptions)
     return data

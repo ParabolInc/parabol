@@ -2,6 +2,7 @@ import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
+import getCachedRecord from '../utils/relay/getCachedRecord'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'
 import IAddReflectTemplateOnMutationArguments = GQL.IAddReflectTemplateOnMutationArguments
 
@@ -29,7 +30,20 @@ const mutation = graphql`
 
 export const addReflectTemplateTeamUpdater: TeamUpdater = (payload, {store}) => {
   const template = payload.getLinkedRecord('reflectTemplate')
+  if (!template) return
+  const templateId = template.getValue('id')
   handleAddReflectTemplate(template, store)
+  const filterFn = (obj) => {
+    return (
+      obj.__typename === 'RetrospectiveMeetingSettings' &&
+      obj.reflectTemplates.__refs.includes(templateId)
+    )
+  }
+  const settingsRecord = getCachedRecord(store, filterFn)
+  if (!settingsRecord || Array.isArray(settingsRecord)) return
+  const settings = store.get(settingsRecord.__id)
+  if (!settings) return
+  settings.setValue(templateId, 'activeTemplateId')
 }
 
 const AddReflectTemplateMutation = (

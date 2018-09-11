@@ -92,7 +92,7 @@ class EditableText extends Component<Props, State> {
 
   renderStatic = () => {
     const {hideIcon, placeholder} = this.props
-    const {value} = this.state
+    const value = this.state.value || this.props.initialValue
     const showPlaceholder = !value && placeholder
     return (
       <StaticBlock onClick={this.setEditing}>
