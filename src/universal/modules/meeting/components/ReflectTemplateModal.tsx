@@ -5,6 +5,7 @@ import styled from 'react-emotion'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {typeScale} from 'universal/styles/theme/typography'
+import Overflow from 'universal/components/Overflow'
 import TextOverflow from 'universal/components/TextOverflow'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -45,7 +46,7 @@ const Label = styled('div')({
   fontSize: typeScale[1],
   fontWeight: 600,
   lineHeight: '1.5',
-  padding: '1rem',
+  padding: '.75rem 1rem',
   textTransform: 'uppercase',
   width: '100%'
 })
@@ -55,12 +56,15 @@ const ContentLabel = styled(Label)({
 })
 
 const ListAndAdd = styled('div')({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'column',
   padding: '.5rem'
 })
 
 const TemplateList = styled('ul')({
   listStyle: 'none',
-  margin: '1rem 0',
+  margin: '0 0 .5rem',
   padding: 0
 })
 
@@ -89,6 +93,7 @@ const TemplateHeader = styled('div')({
 })
 
 const PromptEditor = styled('div')({
+  flex: 1,
   width: '100%'
 })
 
@@ -134,19 +139,21 @@ class ReflectTemplateModal extends Component<Props> {
         <TemplateSidebar>
           <Label>Templates</Label>
           <ListAndAdd>
-            <TemplateList>
-              {sortedTemplates.map((template) => {
-                return (
-                  <TemplateItem
-                    key={template.id}
-                    isActive={template.id === activeTemplate.id}
-                    onClick={this.editTemplate(template.id)}
-                  >
-                    <TextOverflow>{template.name}</TextOverflow>
-                  </TemplateItem>
-                )
-              })}
-            </TemplateList>
+            <Overflow>
+              <TemplateList>
+                {sortedTemplates.map((template) => {
+                  return (
+                    <TemplateItem
+                      key={template.id}
+                      isActive={template.id === activeTemplate.id}
+                      onClick={this.editTemplate(template.id)}
+                    >
+                      <TextOverflow>{template.name}</TextOverflow>
+                    </TemplateItem>
+                  )
+                })}
+              </TemplateList>
+            </Overflow>
             {/* add a key to clear the error when they change */}
             <AddNewReflectTemplate
               key={activeTemplate.id}

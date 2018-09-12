@@ -27,25 +27,34 @@ interface HoverProp {
   isHover: boolean
 }
 
+const lineHeight = '2.75rem'
+
 const PromptItem = styled('li')(({isHover}: HoverProp) => ({
+  alignItems: 'flex-start',
   backgroundColor: isHover ? PALETTE.BACKGROUND.MAIN_LIGHTENED : undefined,
   borderRadius: '.125rem',
   display: 'flex',
   fontSize: typeScale[5],
-  lineHeight: '2.75rem',
+  lineHeight,
   padding: '0 1rem'
 }))
 
-const EditTemplateIcon = styled(StyledFontAwesome)(({isHover}: HoverProp) => ({
-  color: PALETTE.TEXT.MAIN,
+const Icon = styled(StyledFontAwesome)(({isHover}: HoverProp) => ({
+  color: PALETTE.TEXT.LIGHT,
+  display: 'block',
   fontSize: ICON_SIZE_FA_1X,
-  opacity: isHover ? 1 : 0,
-  margin: '15px 0 0 10px'
-}))
-
-const RemovePrompt = styled(StyledFontAwesome)(({isHover}: HoverProp) => ({
+  lineHeight,
   opacity: isHover ? 1 : 0
 }))
+
+const EditTemplateIcon = styled(Icon)({
+  margin: '0 0 0 10px'
+})
+
+const RemovePromptIcon = styled(Icon)({
+  cursor: 'pointer',
+  marginLeft: 'auto'
+})
 
 class TemplatePromptItem extends Component<Props, State> {
   state = {
@@ -94,7 +103,7 @@ class TemplatePromptItem extends Component<Props, State> {
       >
         <EditableTemplatePrompt question={question} promptId={promptId} prompts={prompts} />
         <EditTemplateIcon isHover={isHover} name={'pencil'} />
-        <RemovePrompt isHover={isHover} name={'times-circle'} onClick={this.removePrompt} />
+        <RemovePromptIcon isHover={isHover} name={'times-circle'} onClick={this.removePrompt} />
       </PromptItem>
     )
   }

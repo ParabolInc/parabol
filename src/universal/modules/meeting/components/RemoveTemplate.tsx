@@ -7,10 +7,12 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveReflectTemplateMutation from 'universal/mutations/RemoveReflectTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 
 const Button = styled(FlatButton)(({canDelete}: {canDelete: boolean}) => ({
   display: !canDelete ? 'none' : 'block',
+  color: PALETTE.TEXT.LIGHT,
   paddingLeft: 0,
   paddingRight: 0,
   width: '2rem'
