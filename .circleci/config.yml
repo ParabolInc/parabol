@@ -20,15 +20,15 @@ jobs:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
       - run:
-        name: Slack setup
-        command: |
-          if [ "${CIRCLE_BRANCH}" == "production" ]; then
-            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_PROD_URL
-          elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_STAGING_URL
-          elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-            curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_DEV_URL
-          fi
+          name: Slack setup
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_PROD_URL
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_STAGING_URL
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_DEV_URL
+            fi
 workflows:
   version: 2
   build-and-deploy:
