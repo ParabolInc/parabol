@@ -4,6 +4,8 @@ import styled from 'react-emotion'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {PALETTE} from 'universal/styles/paletteV2'
+import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
+import {typeScale} from 'universal/styles/theme/typography'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 
 interface Props {
@@ -15,13 +17,20 @@ interface State {
   isHover: boolean
 }
 
-const PromptItem = styled('li')({
-  display: 'flex'
-})
+const PromptItem = styled('li')(({isHover}: {isHover: boolean}) => ({
+  backgroundColor: isHover && PALETTE.BACKGROUND.MAIN_LIGHTENED,
+  borderRadius: '.125rem',
+  display: 'flex',
+  fontSize: typeScale[5],
+  lineHeight: '2.75rem',
+  padding: '0 1rem'
+}))
 
 const EditTemplateIcon = styled(StyledFontAwesome)(({isHover}: {isHover: boolean}) => ({
   color: PALETTE.TEXT.MAIN,
-  opacity: isHover ? 1 : 0
+  fontSize: ICON_SIZE_FA_1X,
+  opacity: isHover ? 1 : 0,
+  margin: '15px 0 0 10px'
 }))
 
 class TemplatePromptItem extends Component<Props, State> {
@@ -45,7 +54,11 @@ class TemplatePromptItem extends Component<Props, State> {
     const {id: promptId, question} = prompt
     const {isHover} = this.state
     return (
-      <PromptItem onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+      <PromptItem
+        isHover={isHover}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+      >
         <EditableTemplatePrompt question={question} promptId={promptId} prompts={prompts} />
         <EditTemplateIcon isHover={isHover} name={'pencil'} />
       </PromptItem>

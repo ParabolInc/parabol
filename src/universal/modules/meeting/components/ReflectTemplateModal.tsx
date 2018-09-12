@@ -3,8 +3,11 @@ import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
+import LinkButton from 'universal/components/LinkButton'
 import ui from 'universal/styles/ui'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {typeScale} from 'universal/styles/theme/typography'
+import TextOverflow from 'universal/components/TextOverflow'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -18,6 +21,8 @@ interface Props extends WithAtmosphereProps {
   retroMeetingSettings: ReflectTemplateModal_retroMeetingSettings
 }
 
+const contentPaddingLeft = '3rem'
+
 const ModalBoundary = styled('div')({
   background: ui.palette.white,
   borderRadius: ui.modalBorderRadius,
@@ -29,32 +34,78 @@ const ModalBoundary = styled('div')({
 const TemplateSidebar = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  backgroundColor: 'gray'
+  backgroundColor: PALETTE.BACKGROUND.MAIN,
+  borderRadius: `${ui.modalBorderRadius} 0 0 ${ui.modalBorderRadius}`,
+  width: '12.5rem'
 })
 
-const Title = styled('div')({
-  fontSize: '0.5rem',
+const Label = styled('div')({
+  color: PALETTE.TEXT.LIGHT,
+  borderBottom: `.0625rem solid ${PALETTE.BORDER.LIGHT}`,
+  fontSize: typeScale[1],
   fontWeight: 600,
   lineHeight: '1.5',
-  margin: '0 0 .5rem'
+  padding: '1rem',
+  textTransform: 'uppercase',
+  width: '100%'
 })
 
-const ListAndAdd = styled('div')({})
+const ContentLabel = styled(Label)({
+  paddingLeft: contentPaddingLeft
+})
 
-const TemplateList = styled('ul')({})
+const ListAndAdd = styled('div')({
+  padding: '.5rem'
+})
 
-const TemplateItem = styled('li')({})
+const TemplateList = styled('ul')({
+  listStyle: 'none',
+  margin: '1rem 0',
+  padding: 0
+})
 
-const PromptList = styled('ul')({})
+// const TemplateItem = styled('li')(({isActive}: {isActive: boolean}) => ({
+const TemplateItem = styled('li')(({isActive}) => ({
+  backgroundColor: isActive && PALETTE.BACKGROUND.MAIN_DARKENED,
+  borderRadius: '.125rem',
+  cursor: 'pointer',
+  fontSize: typeScale[3],
+  lineHeight: '1.375rem',
+  padding: '.3125rem .5rem'
+}))
+
+const PromptList = styled('ul')({
+  margin: 0,
+  padding: '0 2rem',
+  width: '100%'
+})
 
 const TemplateHeader = styled('div')({
+  alignItems: 'center',
   display: 'flex',
-  height: '1rem'
+  margin: '.5rem 0 1rem',
+  paddingLeft: contentPaddingLeft,
+  paddingRight: '2rem',
+  width: '100%'
 })
 
-const PromptEditor = styled('div')({})
+const PromptEditor = styled('div')({
+  width: '100%'
+})
 
-const AddPromptLink = styled(FlatButton)({})
+const AddPromptLink = styled(LinkButton)({
+  display: 'flex',
+  fontSize: typeScale[5],
+  margin: '.75rem 0',
+  outline: 'none'
+})
+
+const AddPromptLinkPlus = styled('span')({
+  display: 'block',
+  margin: '0 .5rem 0 1.5rem',
+  textAlign: 'center',
+  width: '1rem'
+})
 
 class ReflectTemplateModal extends Component<Props> {
   constructor (props) {
@@ -96,13 +147,17 @@ class ReflectTemplateModal extends Component<Props> {
     return (
       <ModalBoundary>
         <TemplateSidebar>
-          <Title>Templates</Title>
+          <Label>Templates</Label>
           <ListAndAdd>
             <TemplateList>
               {sortedTemplates.map((template) => {
                 return (
-                  <TemplateItem key={template.id} onClick={this.editTemplate(template.id)}>
-                    {template.name}
+                  <TemplateItem
+                    key={template.id}
+                    isActive={template.id === activeTemplate.id}
+                    onClick={this.editTemplate(template.id)}
+                  >
+                    <TextOverflow>{template.name}</TextOverflow>
                   </TemplateItem>
                 )
               })}
@@ -116,7 +171,7 @@ class ReflectTemplateModal extends Component<Props> {
           </ListAndAdd>
         </TemplateSidebar>
         <PromptEditor>
-          <Title>Current Template</Title>
+          <ContentLabel>Current Template</ContentLabel>
           <TemplateHeader>
             <EditableTemplateName
               key={activeTemplate.id}
@@ -137,7 +192,10 @@ class ReflectTemplateModal extends Component<Props> {
               )
             })}
           </PromptList>
-          <AddPromptLink>+ Add another prompt</AddPromptLink>
+          <AddPromptLink palette='blue'>
+            <AddPromptLinkPlus>+</AddPromptLinkPlus>
+            <div>Add another prompt</div>
+          </AddPromptLink>
         </PromptEditor>
       </ModalBoundary>
     )

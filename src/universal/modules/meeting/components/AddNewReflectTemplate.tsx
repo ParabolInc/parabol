@@ -14,6 +14,11 @@ const Error = styled('span')({
   color: PALETTE.ERROR.MAIN
 })
 
+const Button = styled(RaisedButton)({
+  display: 'block',
+  width: '100%'
+})
+
 interface Props extends WithAtmosphereProps, WithMutationProps {
   reflectTemplates: AddNewReflectTemplate_reflectTemplates
   teamId: string
@@ -48,9 +53,9 @@ class AddNewReflectTemplate extends Component<Props> {
     return (
       <React.Fragment>
         {error && <Error>{error}</Error>}
-        <RaisedButton onClick={this.addNewTemplate} waiting={submitting}>
+        <Button onClick={this.addNewTemplate} palette='blue' waiting={submitting}>
           Add new template
-        </RaisedButton>
+        </Button>
       </React.Fragment>
     )
   }
