@@ -11,11 +11,14 @@ import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 
 const Button = styled(FlatButton)(({canDelete}: {canDelete: boolean}) => ({
-  display: !canDelete ? 'none' : 'block',
+  alignItems: 'center',
+  display: !canDelete ? 'none' : 'flex',
   color: PALETTE.TEXT.LIGHT,
+  height: '2.125rem',
+  justifyContent: 'center',
   paddingLeft: 0,
   paddingRight: 0,
-  width: '2rem'
+  width: '2.125rem'
 }))
 
 const DeleteIcon = styled(StyledFontAwesome)({

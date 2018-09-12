@@ -19,7 +19,7 @@ const InheritedStyles = styled('div')({
   flex: 1,
   fontSize: '1.5rem',
   fontWeight: 600,
-  lineHeight: '2rem'
+  lineHeight: '2.125rem'
 })
 
 class EditableTemplateName extends Component<Props> {

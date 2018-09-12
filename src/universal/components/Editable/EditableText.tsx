@@ -31,6 +31,7 @@ const Error = styled('div')({
 })
 
 const Icon = styled(StyledFontAwesome)({
+  color: PALETTE.TEXT.LIGHT,
   fontSize: ICON_SIZE_FA_1X,
   lineHeight: 'inherit',
   marginLeft: '.5rem'

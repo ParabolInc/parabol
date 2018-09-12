@@ -27,38 +27,32 @@ interface State {
   isHover: boolean
 }
 
-interface HoverProp {
+interface StyledProps {
+  isDragging: boolean
   isHover: boolean
 }
 
 const lineHeight = '2.75rem'
 
-const PromptItem = styled('li')(({isHover}: HoverProp) => ({
+const PromptItem = styled('li')(({isHover, isDragging}: StyledProps) => ({
   alignItems: 'flex-start',
-  backgroundColor: isHover ? PALETTE.BACKGROUND.MAIN_LIGHTENED : undefined,
+  backgroundColor: isHover || isDragging ? PALETTE.BACKGROUND.MAIN_LIGHTENED : undefined,
   borderRadius: '.125rem',
   display: 'flex',
   fontSize: typeScale[5],
   lineHeight,
-  padding: '0 1rem'
+  padding: '0 .6875rem 0 1rem'
 }))
 
-const Icon = styled(StyledFontAwesome)(({isHover}: HoverProp) => ({
+const RemovePromptIcon = styled(StyledFontAwesome)(({isHover}: StyledProps) => ({
   color: PALETTE.TEXT.LIGHT,
+  cursor: 'pointer',
   display: 'block',
   fontSize: ICON_SIZE_FA_1X,
   lineHeight,
+  marginLeft: 'auto',
   opacity: isHover ? 1 : 0
 }))
-
-const EditTemplateIcon = styled(Icon)({
-  margin: '0 0 0 10px'
-})
-
-const RemovePromptIcon = styled(Icon)({
-  cursor: 'pointer',
-  marginLeft: 'auto'
-})
 
 class TemplatePromptItem extends Component<Props, State> {
   state = {
@@ -96,20 +90,27 @@ class TemplatePromptItem extends Component<Props, State> {
   }
 
   render () {
-    const {dragProvided, prompt, prompts} = this.props
+    const {dragProvided, isDragging, prompt, prompts} = this.props
     const {id: promptId, question} = prompt
     const {isHover} = this.state
+
+    console.log(this.props)
     return (
       <PromptItem
         innerRef={dragProvided.innerRef}
         {...dragProvided.dragHandleProps}
         {...dragProvided.draggableProps}
+        isDragging={isDragging}
         isHover={isHover}
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
       >
-        <EditableTemplatePrompt question={question} promptId={promptId} prompts={prompts} />
-        <EditTemplateIcon isHover={isHover} name={'pencil'} />
+        <EditableTemplatePrompt
+          isHover={isHover}
+          question={question}
+          promptId={promptId}
+          prompts={prompts}
+        />
         <RemovePromptIcon isHover={isHover} name={'times-circle'} onClick={this.removePrompt} />
       </PromptItem>
     )

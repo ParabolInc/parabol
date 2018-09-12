@@ -58,7 +58,7 @@ class AddNewReflectTemplate extends Component<Props> {
       <React.Fragment>
         {error && <Error>{error}</Error>}
         <Button onClick={this.addNewTemplate} palette='blue' waiting={submitting}>
-          Add new template
+          + Add new template
         </Button>
       </React.Fragment>
     )

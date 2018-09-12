@@ -10,6 +10,7 @@ import {Legitity} from 'universal/validation/legitify'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
+  isHover: boolean
   question: string
   promptId: string
   prompts: EditableTemplatePrompt_prompts
@@ -60,11 +61,11 @@ class EditableTemplatePrompt extends Component<Props> {
   }
 
   render () {
-    const {error, question} = this.props
+    const {error, isHover, question} = this.props
     return (
       <EditableText
         error={error as string}
-        hideIcon
+        hideIcon={!isHover}
         handleSubmit={this.handleSubmit}
         initialValue={question}
         maxLength={100}
