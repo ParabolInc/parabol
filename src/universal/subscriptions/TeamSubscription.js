@@ -63,6 +63,7 @@ const subscription = graphql`
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RenameReflectTemplateMutation_team @relay(mask: false)
+      ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
       ...RequestFacilitatorMutation_team @relay(mask: false)
       ...SelectRetroTemplateMutation_team @relay(mask: false)
       ...SetPhaseFocusMutation_team @relay(mask: false)
@@ -181,6 +182,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           removeTeamMemberTeamUpdater(payload, store, viewerId, options)
           break
         case 'RenameReflectTemplatePayload':
+          break
+        case 'RenameReflectTemplatePromptPayload':
           break
         case 'RequestFaciltatorPayload':
           requestFacilitatorTeamUpdater(payload, options)

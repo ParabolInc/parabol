@@ -7,7 +7,7 @@ export interface WithMutationProps {
   dirty?: boolean
   error?: any | undefined
   onCompleted: (res?: any, errors?: any) => void
-  onError: (error: any) => void
+  onError: (error?: any) => void
   setDirty: () => void
   submitMutation: () => void
   submitting?: boolean
@@ -71,6 +71,7 @@ const withMutationProps = <P extends WithMutationProps>(
     submitMutation = () => {
       if (this._mounted) {
         this.setState({
+          dirty: false,
           submitting: true
         })
       }

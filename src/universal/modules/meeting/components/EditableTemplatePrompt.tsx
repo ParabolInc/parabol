@@ -4,30 +4,57 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {Legitity} from 'universal/validation/legitify'
+import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   question: string
+  promptId: string
+  prompts: ReadonlyArray<{id: string; question: string}>
 }
 
 class EditableTemplatePrompt extends Component<Props> {
-  handleSubmit (question) {
-    console.log('submit!', question)
-    // const {submitMutation} = this.props
-    // submitMutation()
-    // EditTemplateNameMutation(atmosphere, {templateId, question})
+  handleSubmit = (rawQuestion) => {
+    const {
+      atmosphere,
+      promptId,
+      onError,
+      onCompleted,
+      setDirty,
+      submitMutation,
+      submitting
+    } = this.props
+    if (submitting) return
+    setDirty()
+    const {error, value: question} = this.validate(rawQuestion)
+    if (error) return
+    submitMutation()
+    RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {}, onError, onCompleted)
   }
 
-  validate (value: string) {
-    const {onError} = this.props
-    if (value.length > 100) {
-      onError('That is a little too long')
-      return false
+  legitify (value) {
+    const {promptId, prompts} = this.props
+    return new Legitity(value)
+      .trim()
+      .required('Please enter a prompt question')
+      .max(100, 'That question is probably long enough')
+      .test((mVal) => {
+        const isDupe = prompts.find(
+          (prompt) => prompt.id !== promptId && prompt.question.toLowerCase() === mVal.toLowerCase()
+        )
+        return isDupe ? 'That question was already asked' : undefined
+      })
+  }
+
+  validate = (rawValue: string) => {
+    const {error, onError} = this.props
+    const res = this.legitify(rawValue)
+    if (res.error) {
+      onError(res.error)
+    } else if (error) {
+      onError()
     }
-    if (value.length <= 0) {
-      onError('Please enter a prompt')
-      return false
-    }
-    return true
+    return res
   }
 
   render () {

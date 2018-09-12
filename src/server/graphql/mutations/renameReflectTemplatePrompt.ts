@@ -1,7 +1,10 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {
+  sendTeamAccessError,
+  sendDuplciateQuestionTemplatePromptError
+} from 'server/utils/authorizationErrors'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import RenameReflectTemplatePromptPayload from '../types/RenameReflectTemplatePromptPayload'
@@ -13,11 +16,11 @@ const renameReflectTemplate = {
     promptId: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    name: {
+    question: {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  async resolve (_source, {promptId, name}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (_source, {promptId, question}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -30,18 +33,30 @@ const renameReflectTemplate = {
     }
 
     // VALIDATION
-    const normalizedName = name.trim().slice(0, 100)
+    const {teamId, templateId} = prompt
+    const trimmedQuestion = question.trim().slice(0, 100)
+    const normalizedQuestion = trimmedQuestion || 'Unnamed Prompt'
+
+    const allPrompts = await r
+      .table('CustomPhaseItem')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({
+        isActive: true,
+        templateId
+      })
+    if (allPrompts.find((prompt) => prompt.question === normalizedQuestion)) {
+      return sendDuplciateQuestionTemplatePromptError(authToken, templateId)
+    }
 
     // RESOLUTION
     await r
       .table('CustomPhaseItem')
       .get(promptId)
       .update({
-        name: normalizedName,
+        question: normalizedQuestion,
         updatedAt: now
       })
 
-    const {teamId} = prompt
     const data = {promptId}
     publish(TEAM, teamId, RenameReflectTemplatePromptPayload, data, subOptions)
     return data

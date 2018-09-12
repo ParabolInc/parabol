@@ -54,9 +54,11 @@ class EditableText extends Component<Props, State> {
   onChange = (e) => {
     const {validate} = this.props
     const {value: nextValue} = e.target
-    const isValid = validate(nextValue)
-    if (!isValid) return
+    validate(nextValue)
     this.setState({
+      // make sure this is always true
+      // repro: remove all text, blur input, focus input (with error present), then type a char
+      isEditing: true,
       value: nextValue
     })
   }
@@ -66,9 +68,8 @@ class EditableText extends Component<Props, State> {
     this.setState({
       isEditing: false
     })
-    const {handleSubmit, initialValue} = this.props
+    const {handleSubmit} = this.props
     const {value} = this.state
-    if (value === initialValue) return
     handleSubmit(value)
   }
 
@@ -104,7 +105,10 @@ class EditableText extends Component<Props, State> {
   }
 
   render () {
-    return <div>{this.state.isEditing ? this.renderEditing() : this.renderStatic()}</div>
+    const {error} = this.props
+    const {isEditing} = this.state
+    const showEditing = error || isEditing
+    return <div>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
   }
 }
 

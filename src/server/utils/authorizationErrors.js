@@ -262,3 +262,12 @@ export const sendDuplciateNameTemplateError = (authToken, templateId) => {
   }
   return sendAuthRaven(authToken, 'Already Created', breadcrumb)
 }
+
+export const sendDuplciateQuestionTemplatePromptError = (authToken, promptId) => {
+  const breadcrumb = {
+    message: 'That question was already asked',
+    category: 'already created',
+    data: {promptId}
+  }
+  return sendAuthRaven(authToken, 'Already Created', breadcrumb)
+}

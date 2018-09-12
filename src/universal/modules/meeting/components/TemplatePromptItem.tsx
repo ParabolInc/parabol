@@ -8,6 +8,7 @@ import EditableTemplatePrompt from './EditableTemplatePrompt'
 
 interface Props {
   prompt: TemplatePromptItem_prompt
+  prompts: ReadonlyArray<TemplatePromptItem_prompt>
 }
 
 interface State {
@@ -40,12 +41,12 @@ class TemplatePromptItem extends Component<Props, State> {
   }
 
   render () {
-    const {prompt} = this.props
-    const {question} = prompt
+    const {prompt, prompts} = this.props
+    const {id: promptId, question} = prompt
     const {isHover} = this.state
     return (
       <PromptItem onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-        <EditableTemplatePrompt question={question} />
+        <EditableTemplatePrompt question={question} promptId={promptId} prompts={prompts} />
         <EditTemplateIcon isHover={isHover} name={'pencil'} />
       </PromptItem>
     )

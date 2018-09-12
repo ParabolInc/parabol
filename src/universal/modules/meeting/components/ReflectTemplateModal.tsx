@@ -122,12 +122,19 @@ class ReflectTemplateModal extends Component<Props> {
               key={activeTemplate.id}
               name={activeTemplate.name}
               templateId={activeTemplate.id}
+              templates={sortedTemplates}
             />
             <RemoveTemplate templateCount={templateCount} templateId={activeTemplate.id} />
           </TemplateHeader>
           <PromptList>
             {activeTemplate.prompts.map((prompt) => {
-              return <TemplatePromptItem key={prompt.id} prompt={prompt} />
+              return (
+                <TemplatePromptItem
+                  key={prompt.id}
+                  prompt={prompt}
+                  prompts={activeTemplate.prompts}
+                />
+              )
             })}
           </PromptList>
           <AddPromptLink>+ Add another prompt</AddPromptLink>

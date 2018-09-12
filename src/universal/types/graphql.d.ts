@@ -3841,7 +3841,7 @@ declare namespace GQL {
 
   interface IRenameReflectTemplatePromptOnMutationArguments {
     promptId: string
-    name: string
+    question: string
   }
 
   interface IAcceptTeamInvitePayload {
@@ -6299,7 +6299,7 @@ declare namespace GQL {
   interface IRenameReflectTemplatePromptPayload {
     __typename: 'RenameReflectTemplatePromptPayload'
     error: IStandardMutationError | null
-    prompt: IReflectTemplate
+    prompt: IRetroPhaseItem
   }
 
   interface ISubscription {

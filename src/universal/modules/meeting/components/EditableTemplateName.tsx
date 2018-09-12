@@ -1,3 +1,4 @@
+import {ReflectTemplateModal_retroMeetingSettings} from '__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import React, {Component} from 'react'
 import EditableText from 'universal/components/Editable/EditableText'
 import withAtmosphere, {
@@ -5,10 +6,12 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import RenameReflectTemplateMutation from '../../../mutations/RenameReflectTemplateMutation'
+import {Legitity} from 'universal/validation/legitify'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   name: string
   templateId: string
+  templates: ReflectTemplateModal_retroMeetingSettings['reflectTemplates']
 }
 
 class EditableTemplateName extends Component<Props> {
@@ -16,39 +19,51 @@ class EditableTemplateName extends Component<Props> {
     const {
       atmosphere,
       templateId,
-      name,
       onError,
       onCompleted,
+      setDirty,
       submitMutation,
       submitting
     } = this.props
-    const trimmedName = rawName.trim()
-    const normalizedName = trimmedName || 'Unnamed Template'
-    if (normalizedName === name || submitting) return
+    if (submitting) return
+    setDirty()
+    const {error, value: name} = this.validate(rawName)
+    if (error) return
     submitMutation()
-    RenameReflectTemplateMutation(
-      atmosphere,
-      {templateId, name: normalizedName},
-      {},
-      onError,
-      onCompleted
-    )
+    RenameReflectTemplateMutation(atmosphere, {templateId, name}, {}, onError, onCompleted)
   }
 
-  validate = (value: string) => {
-    const {onError} = this.props
-    if (value.length > 100) {
-      onError('That is a little too long')
-      return false
+  legitify (value) {
+    const {templateId, templates} = this.props
+    return new Legitity(value)
+      .trim()
+      .required('Please enter a template name')
+      .max(100, 'That name is probably long enough')
+      .test((mVal) => {
+        const isDupe = templates.find(
+          (template) =>
+            template.id !== templateId && template.name.toLowerCase() === mVal.toLowerCase()
+        )
+        return isDupe ? 'That name is taken' : undefined
+      })
+  }
+
+  validate = (rawValue: string) => {
+    const {error, onError} = this.props
+    const res = this.legitify(rawValue)
+    if (res.error) {
+      onError(res.error)
+    } else if (error) {
+      onError()
     }
-    return true
+    return res
   }
 
   render () {
-    const {error, name} = this.props
+    const {dirty, error, name} = this.props
     return (
       <EditableText
-        error={error}
+        error={dirty && error}
         handleSubmit={this.handleSubmit}
         initialValue={name}
         maxLength={100}
