@@ -3,9 +3,13 @@ import {Subtract} from 'types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
+export interface ErrorObject {
+  [field: string]: string | undefined
+}
+
 export interface WithMutationProps {
   dirty?: boolean
-  error?: any | undefined
+  error?: ErrorObject | string | undefined
   onCompleted: (res?: any, errors?: any) => void
   onError: (error?: any) => void
   setDirty: () => void
@@ -13,11 +17,26 @@ export interface WithMutationProps {
   submitting?: boolean
 }
 
+interface ServerError {
+  message: string
+  path: Array<string>
+}
+
 // interface State {
 //   submitting: boolean,
 //   error: any,
 //   dirty: boolean
 // }
+
+const formatError = (
+  rawError?: string | ErrorObject | ServerError | Array<ServerError> | undefined
+) => {
+  const firstError = Array.isArray(rawError) ? rawError[0] : rawError
+  if (typeof firstError === 'object' && 'message' in firstError) {
+    return firstError.message
+  }
+  return firstError
+}
 
 // Serves as a lightweight alternative for redux-form when we just have a button or something
 const withMutationProps = <P extends WithMutationProps>(
@@ -47,17 +66,17 @@ const withMutationProps = <P extends WithMutationProps>(
       if (this._mounted) {
         this.setState({
           submitting: false,
-          error
+          error: formatError(error)
         })
       }
       return error
     }
 
-    onError = (error) => {
+    onError = (rawError?: string | ServerError | Array<ServerError>) => {
       if (this._mounted) {
         this.setState({
           submitting: false,
-          error
+          error: formatError(rawError)
         })
       }
     }

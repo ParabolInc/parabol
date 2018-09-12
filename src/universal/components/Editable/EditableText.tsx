@@ -36,6 +36,22 @@ const Icon = styled(StyledFontAwesome)({
   marginLeft: '.5rem'
 })
 
+const Input = styled('input')({
+  backgroundColor: 'transparent',
+  border: 0,
+  display: 'block',
+  fontSize: 'inherit',
+  fontWeight: 'inherit',
+  lineHeight: 'inherit',
+  outline: 'none',
+  padding: 0,
+  width: 'auto'
+})
+
+const Form = styled('form')({
+  display: 'flex'
+})
+
 interface Props {
   error: string | undefined
   validate: (value: string) => boolean
@@ -80,41 +96,28 @@ class EditableText extends Component<Props, State> {
     this.setState({
       isEditing: false
     })
-    const {handleSubmit} = this.props
+    const {handleSubmit, initialValue} = this.props
     const {value} = this.state
+
+    if (value.trim() === initialValue.trim()) return
     handleSubmit(value)
   }
 
   renderEditing = () => {
     const {error, maxLength, placeholder} = this.props
     const {value} = this.state
-    const formStyle = {
-      display: 'flex'
-    }
-    const inputStyle = {
-      backgroundColor: 'transparent',
-      border: 0,
-      display: 'block',
-      fontSize: 'inherit',
-      fontWeight: 'inherit',
-      lineHeight: 'inherit',
-      outline: 'none',
-      padding: 0,
-      width: 'auto'
-    }
     return (
-      <form onSubmit={this.onSubmit} style={formStyle}>
-        <input
+      <Form onSubmit={this.onSubmit}>
+        <Input
           autoFocus
           maxLength={maxLength}
           onBlur={this.onSubmit}
           onChange={this.onChange}
           placeholder={placeholder}
-          style={inputStyle}
           value={value}
         />
         {error && <Error>{error}</Error>}
-      </form>
+      </Form>
     )
   }
 
@@ -138,65 +141,5 @@ class EditableText extends Component<Props, State> {
     return <div>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
   }
 }
-
-// const styleThunk = (custom, {typeStyles}) => ({
-//   editableRoot: {
-//     display: 'block',
-//     lineHeight: typeStyles.lineHeight,
-//     width: '100%'
-//   },
-//
-//   error: {
-//     color: appTheme.palette.warm,
-//     fontSize: '.85rem'
-//   },
-//
-//   staticBlock: {
-//     display: 'inline-block',
-//     fontSize: 0,
-//     lineHeight: typeStyles.lineHeight,
-//     verticalAlign: 'top',
-//
-//     ':hover': {
-//       cursor: 'pointer',
-//       opacity: '.5'
-//     }
-//   },
-//
-//   static: {
-//     color: typeStyles.color,
-//     display: 'inline-block',
-//     fontSize: typeStyles.fontSize,
-//     lineHeight: typeStyles.lineHeight,
-//     verticalAlign: 'middle'
-//   },
-//
-//   placeholder: {
-//     color: typeStyles.placeholderColor
-//   },
-//
-//   icon: {
-//     color: appTheme.palette.dark,
-//     display: 'inline-block !important',
-//     fontSize: `${ui.iconSize} !important`,
-//     marginLeft: '.375rem',
-//     verticalAlign: 'middle !important'
-//   },
-//
-//   input: {
-//     appearance: 'none',
-//     backgroundColor: 'transparent',
-//     border: 0,
-//     borderRadius: 0,
-//     display: 'inline-block',
-//     fontFamily: 'inherit',
-//     outline: 'none',
-//     padding: 0,
-//     verticalAlign: 'top',
-//     width: '100%',
-//
-//     ...makePlaceholderStyles(typeStyles.placeholderColor)
-//   }
-// })
 
 export default EditableText

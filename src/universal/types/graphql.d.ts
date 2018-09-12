@@ -6267,7 +6267,7 @@ declare namespace GQL {
   interface IAddReflectTemplatePromptPayload {
     __typename: 'AddReflectTemplatePromptPayload'
     error: IStandardMutationError | null
-    prompt: IReflectTemplate
+    prompt: IRetroPhaseItem
   }
 
   interface IMoveReflectTemplatePromptPayload {

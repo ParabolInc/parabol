@@ -203,7 +203,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
               value={title || ''}
             />
           </FormBlock>
-          {error && <StyledError>{error.message}</StyledError>}
+          {error && <StyledError>{error}</StyledError>}
         </RootBlock>
         {!readOnly && <PencilIcon isExpanded={isExpanded} name='pencil' onClick={this.onClick} />}
       </React.Fragment>

@@ -34,7 +34,7 @@ const NotificationRow = (props) => {
         onCompleted={onCompleted}
         onError={onError}
       />
-      {error && <FormError>{error.message}</FormError>}
+      {error && <FormError>{error}</FormError>}
     </div>
   )
 }

@@ -52,7 +52,7 @@ const RetroGroupPhase = (props: Props) => {
   const canAutoGroup = !nextAutoGroupThreshold || nextAutoGroupThreshold < 1
   return (
     <React.Fragment>
-      {error && <StyledError>{error.message}</StyledError>}
+      {error && <StyledError>{error}</StyledError>}
       <MeetingPhaseWrapper>
         <PhaseItemMasonry meeting={newMeeting} />
       </MeetingPhaseWrapper>

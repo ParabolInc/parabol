@@ -1,4 +1,6 @@
+import {EditableTemplatePrompt_prompts} from '__generated__/EditableTemplatePrompt_prompts.graphql'
 import React, {Component} from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
 import EditableText from 'universal/components/Editable/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -10,7 +12,7 @@ import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflec
 interface Props extends WithAtmosphereProps, WithMutationProps {
   question: string
   promptId: string
-  prompts: ReadonlyArray<{id: string; question: string}>
+  prompts: EditableTemplatePrompt_prompts
 }
 
 class EditableTemplatePrompt extends Component<Props> {
@@ -32,7 +34,7 @@ class EditableTemplatePrompt extends Component<Props> {
     RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {}, onError, onCompleted)
   }
 
-  legitify (value) {
+  legitify (value: string) {
     const {promptId, prompts} = this.props
     return new Legitity(value)
       .trim()
@@ -61,7 +63,7 @@ class EditableTemplatePrompt extends Component<Props> {
     const {error, question} = this.props
     return (
       <EditableText
-        error={error}
+        error={error as string}
         hideIcon
         handleSubmit={this.handleSubmit}
         initialValue={question}
@@ -73,4 +75,12 @@ class EditableTemplatePrompt extends Component<Props> {
   }
 }
 
-export default withAtmosphere(withMutationProps(EditableTemplatePrompt))
+export default createFragmentContainer(
+  withAtmosphere(withMutationProps(EditableTemplatePrompt)),
+  graphql`
+    fragment EditableTemplatePrompt_prompts on RetroPhaseItem @relay(plural: true) {
+      id
+      question
+    }
+  `
+)

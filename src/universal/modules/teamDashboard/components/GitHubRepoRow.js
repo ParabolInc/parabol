@@ -133,7 +133,7 @@ class GitHubRepoRow extends Component {
               </StyledButton>
             )}
         </IntegrationRow>
-        {error && <ErrorRow>{error.message}</ErrorRow>}
+        {error && <ErrorRow>{error}</ErrorRow>}
       </RowContainer>
     )
   }

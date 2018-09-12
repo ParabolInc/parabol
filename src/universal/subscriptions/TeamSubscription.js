@@ -35,6 +35,8 @@ import {
 } from 'universal/mutations/AutoGroupReflectionsMutation'
 import {addReflectTemplateTeamUpdater} from 'universal/mutations/AddReflectTemplateMutation'
 import {removeReflectTemplateTeamUpdater} from 'universal/mutations/RemoveReflectTemplateMutation'
+import {addReflectTemplatePromptTeamUpdater} from 'universal/mutations/AddReflectTemplatePromptMutation'
+import {removeReflectTemplatePromptTeamUpdater} from 'universal/mutations/RemoveReflectTemplatePromptMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -42,6 +44,7 @@ const subscription = graphql`
       __typename
       ...AcceptTeamInviteMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
+      ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
@@ -60,6 +63,7 @@ const subscription = graphql`
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
       ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
+      ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...RemoveTeamMemberMutation_team @relay(mask: false)
       ...RemoveOrgUserMutation_team @relay(mask: false)
       ...RenameReflectTemplateMutation_team @relay(mask: false)
@@ -111,6 +115,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'AddReflectTemplatePayload':
           addReflectTemplateTeamUpdater(payload, {store})
+          break
+        case 'AddReflectTemplatePromptPayload':
+          addReflectTemplatePromptTeamUpdater(payload, {store})
           break
         case 'AddTeamCreatorPayload':
           addTeamMutationNotificationUpdater(payload, store, viewerId, options)
@@ -174,6 +181,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'RemoveReflectTemplatePayload':
           removeReflectTemplateTeamUpdater(payload, {store, viewerId})
+          break
+        case 'RemoveReflectTemplatePromptPayload':
+          removeReflectTemplatePromptTeamUpdater(payload, {store})
           break
         case 'RemoveReflectionPayload':
           removeReflectionTeamUpdater(payload, store)

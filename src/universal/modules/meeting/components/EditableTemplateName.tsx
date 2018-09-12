@@ -72,7 +72,7 @@ class EditableTemplateName extends Component<Props> {
     return (
       <InheritedStyles>
         <EditableText
-          error={dirty && error}
+          error={dirty ? (error as string) : undefined}
           handleSubmit={this.handleSubmit}
           initialValue={name}
           maxLength={100}

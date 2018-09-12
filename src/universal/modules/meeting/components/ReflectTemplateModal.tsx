@@ -3,8 +3,6 @@ import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import LinkButton from 'universal/components/LinkButton'
-import ui from 'universal/styles/ui'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {typeScale} from 'universal/styles/theme/typography'
 import TextOverflow from 'universal/components/TextOverflow'
@@ -12,9 +10,11 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
+import AddTemplatePrompt from './AddTemplatePrompt'
 import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptItem from './TemplatePromptItem'
+import ui from 'universal/styles/ui'
 
 interface Props extends WithAtmosphereProps {
   onSuccess: () => void
@@ -64,9 +64,8 @@ const TemplateList = styled('ul')({
   padding: 0
 })
 
-// const TemplateItem = styled('li')(({isActive}: {isActive: boolean}) => ({
-const TemplateItem = styled('li')(({isActive}) => ({
-  backgroundColor: isActive && PALETTE.BACKGROUND.MAIN_DARKENED,
+const TemplateItem = styled('li')(({isActive}: {isActive: boolean}) => ({
+  backgroundColor: isActive ? PALETTE.BACKGROUND.MAIN_DARKENED : undefined,
   borderRadius: '.125rem',
   cursor: 'pointer',
   fontSize: typeScale[3],
@@ -91,20 +90,6 @@ const TemplateHeader = styled('div')({
 
 const PromptEditor = styled('div')({
   width: '100%'
-})
-
-const AddPromptLink = styled(LinkButton)({
-  display: 'flex',
-  fontSize: typeScale[5],
-  margin: '.75rem 0',
-  outline: 'none'
-})
-
-const AddPromptLinkPlus = styled('span')({
-  display: 'block',
-  margin: '0 .5rem 0 1.5rem',
-  textAlign: 'center',
-  width: '1rem'
 })
 
 class ReflectTemplateModal extends Component<Props> {
@@ -192,10 +177,7 @@ class ReflectTemplateModal extends Component<Props> {
               )
             })}
           </PromptList>
-          <AddPromptLink palette='blue'>
-            <AddPromptLinkPlus>+</AddPromptLinkPlus>
-            <div>Add another prompt</div>
-          </AddPromptLink>
+          <AddTemplatePrompt templateId={activeTemplate.id} prompts={activeTemplate.prompts} />
         </PromptEditor>
       </ModalBoundary>
     )
@@ -213,6 +195,8 @@ export default createFragmentContainer(
         name
         prompts {
           ...TemplatePromptItem_prompt
+          ...EditableTemplatePrompt_prompts
+          ...AddTemplatePrompt_prompts
           id
           sortOrder
         }

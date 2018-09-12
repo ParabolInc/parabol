@@ -193,7 +193,7 @@ class ReflectionCard extends Component<Props, State> {
           setEditorState={this.setEditorState}
           userSelect={userSelect || isDraggable ? 'none' : 'text'}
         />
-        {error && <StyledError>{error.message}</StyledError>}
+        {error && <StyledError>{error}</StyledError>}
         {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
         {!readOnly &&
           meetingId && (

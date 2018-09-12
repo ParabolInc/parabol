@@ -14,6 +14,9 @@ graphql`
 const mutation = graphql`
   mutation RenameReflectTemplatePromptMutation($promptId: ID!, $question: String!) {
     renameReflectTemplatePrompt(promptId: $promptId, question: $question) {
+      error {
+        message
+      }
       ...RenameReflectTemplatePromptMutation_team @relay(mask: false)
     }
   }

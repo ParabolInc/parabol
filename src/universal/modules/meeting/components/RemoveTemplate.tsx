@@ -46,9 +46,14 @@ class RemoveTemplate extends Component<Props> {
   }
 
   render () {
-    const {templateCount} = this.props
+    const {submitting, templateCount} = this.props
     return (
-      <Button canDelete={templateCount > 1} onClick={this.removeTemplate} size='small'>
+      <Button
+        canDelete={templateCount > 1}
+        onClick={this.removeTemplate}
+        size='small'
+        waiting={submitting}
+      >
         <DeleteIcon name='trash' />
       </Button>
     )

@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import RetroPhaseItem from 'server/graphql/types/RetroPhaseItem'
 
@@ -9,8 +9,9 @@ const RenameReflectTemplatePromptPayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     prompt: {
-      type: new GraphQLNonNull(RetroPhaseItem),
+      type: RetroPhaseItem,
       resolve: ({promptId}, _args, {dataLoader}) => {
+        if (!promptId) return null
         return dataLoader.get('customPhaseItems').load(promptId)
       }
     }
