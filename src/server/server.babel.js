@@ -1,6 +1,4 @@
-const path = require('path')
-const resolve = require('resolve') // eslint-disable-line import/no-extraneous-dependencies
-
+require('./babelRegister')
 const ignorePatterns = [
   '\\/\\.',
   '~$',
@@ -21,31 +19,4 @@ if (process.env.NODE_ENV !== 'production') {
     return
   }
 }
-
-require('babel-register')({
-  only (filename) {
-    return filename.indexOf('build') === -1 && filename.indexOf('node_modules') === -1
-  },
-  plugins: ['transform-object-rest-spread', ['transform-class-properties', {spec: true}]],
-  presets: [
-    [
-      'env',
-      {
-        targets: {
-          node: 'current'
-        }
-      }
-    ],
-    'flow',
-    'react'
-  ],
-  extensions: ['.js'],
-  resolveModuleSource (source, filename) {
-    return resolve.sync(source, {
-      basedir: path.resolve(filename, '..'),
-      extensions: ['.js'],
-      moduleDirectory: ['src', 'node_modules']
-    })
-  }
-})
 require('./server')

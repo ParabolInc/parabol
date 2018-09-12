@@ -3,6 +3,27 @@ const path = require('path')
 const webpack = require('webpack')
 const npmPackage = require('../package.json')
 const vendors = require('../dll/vendors.json')
+const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread')
+const pluginClassProps = require('@babel/plugin-proposal-class-properties')
+const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import')
+const pluginRelay = require('babel-plugin-relay')
+const presetFlow = require('@babel/preset-flow')
+const presetReact = require('@babel/preset-react')
+
+const babelLoader = {
+  loader: 'babel-loader',
+  options: {
+    cacheDirectory: true,
+    babelrc: false,
+    plugins: [
+      pluginObjectRestSpread,
+      pluginClassProps,
+      pluginDynamicImport,
+      [pluginRelay, {artifactDirectory: './src/__generated__'}]
+    ],
+    presets: [presetFlow, [presetReact, {development: true}]]
+  }
+}
 
 module.exports = {
   devtool: 'eval',
@@ -34,20 +55,7 @@ module.exports = {
       {
         test: /\.js$/,
         include: [path.join(__dirname, '../src/client'), path.join(__dirname, '../src/universal')],
-        use: {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            babelrc: false,
-            plugins: [
-              'transform-object-rest-spread',
-              'syntax-dynamic-import',
-              'transform-class-properties',
-              ['relay', {artifactDirectory: './src/__generated__'}]
-            ],
-            presets: ['flow', 'react']
-          }
-        }
+        use: babelLoader
       },
       {
         test: /\.mjs$/,
@@ -64,20 +72,7 @@ module.exports = {
           path.join(__dirname, '../stories')
         ],
         use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              cacheDirectory: true,
-              babelrc: false,
-              plugins: [
-                'syntax-object-rest-spread',
-                'syntax-dynamic-import',
-                'transform-class-properties',
-                ['relay', {artifactDirectory: './src/__generated__'}]
-              ],
-              presets: ['flow', 'react']
-            }
-          },
+          babelLoader,
           {
             loader: 'awesome-typescript-loader',
             options: {

@@ -1,4 +1,4 @@
-require('babel-register')
+require('../../babelRegister')
 const teardown = require('./teardown')
 
 module.exports = (results) => {

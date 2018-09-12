@@ -1,2 +1,2 @@
-require('babel-register'); // eslint-disable-line import/no-extraneous-dependencies
-module.exports = require('./buildThemeJSON');
+require('../../src/server/babelRegister')
+module.exports = require('./buildThemeJSON')

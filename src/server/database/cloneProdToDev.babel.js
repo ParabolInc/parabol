@@ -1,2 +1,2 @@
-require('babel-register') // eslint-disable-line
+require('../babelRegister')
 require('./cloneProdToDev').default()
