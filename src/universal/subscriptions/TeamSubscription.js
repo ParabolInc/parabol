@@ -37,6 +37,7 @@ import {addReflectTemplateTeamUpdater} from 'universal/mutations/AddReflectTempl
 import {removeReflectTemplateTeamUpdater} from 'universal/mutations/RemoveReflectTemplateMutation'
 import {addReflectTemplatePromptTeamUpdater} from 'universal/mutations/AddReflectTemplatePromptMutation'
 import {removeReflectTemplatePromptTeamUpdater} from 'universal/mutations/RemoveReflectTemplatePromptMutation'
+import {moveReflectTemplatePromptTeamUpdater} from 'universal/mutations/MoveReflectTemplatePromptMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -57,6 +58,7 @@ const subscription = graphql`
       ...KillMeetingMutation_team @relay(mask: false)
       ...EndNewMeetingMutation_team @relay(mask: false)
       ...MoveMeetingMutation_team @relay(mask: false)
+      ...MoveReflectTemplatePromptMutation_team @relay(mask: false)
       ...NavigateMeetingMutation_team @relay(mask: false)
       ...NewMeetingCheckInMutation_team @relay(mask: false)
       ...PromoteFacilitatorMutation_team @relay(mask: false)
@@ -165,6 +167,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'MeetingCheckInPayload':
           break
         case 'MoveMeetingPayload':
+          break
+        case 'MoveReflectTemplatePromptPayload':
+          moveReflectTemplatePromptTeamUpdater(payload, {store})
           break
         case 'NavigateMeetingPayload':
           navigateMeetingTeamUpdater(payload, store, viewerId)

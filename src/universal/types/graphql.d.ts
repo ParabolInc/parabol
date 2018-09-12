@@ -6261,45 +6261,45 @@ declare namespace GQL {
   interface IAddReflectTemplatePayload {
     __typename: 'AddReflectTemplatePayload'
     error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
+    reflectTemplate: IReflectTemplate | null
   }
 
   interface IAddReflectTemplatePromptPayload {
     __typename: 'AddReflectTemplatePromptPayload'
     error: IStandardMutationError | null
-    prompt: IRetroPhaseItem
+    prompt: IRetroPhaseItem | null
   }
 
   interface IMoveReflectTemplatePromptPayload {
     __typename: 'MoveReflectTemplatePromptPayload'
     error: IStandardMutationError | null
-    prompt: IReflectTemplate
+    prompt: IRetroPhaseItem | null
   }
 
   interface IRemoveReflectTemplatePayload {
     __typename: 'RemoveReflectTemplatePayload'
     error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
-    retroMeetingSettings: IRetrospectiveMeetingSettings
+    reflectTemplate: IReflectTemplate | null
+    retroMeetingSettings: IRetrospectiveMeetingSettings | null
   }
 
   interface IRemoveReflectTemplatePromptPayload {
     __typename: 'RemoveReflectTemplatePromptPayload'
     error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
-    prompt: IReflectTemplate
+    reflectTemplate: IReflectTemplate | null
+    prompt: IReflectTemplate | null
   }
 
   interface IRenameReflectTemplatePayload {
     __typename: 'RenameReflectTemplatePayload'
     error: IStandardMutationError | null
-    reflectTemplate: IReflectTemplate
+    reflectTemplate: IReflectTemplate | null
   }
 
   interface IRenameReflectTemplatePromptPayload {
     __typename: 'RenameReflectTemplatePromptPayload'
     error: IStandardMutationError | null
-    prompt: IRetroPhaseItem
+    prompt: IRetroPhaseItem | null
   }
 
   interface ISubscription {

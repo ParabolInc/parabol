@@ -1316,6 +1316,12 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-beautiful-dnd@^7.1.2":
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/@types/react-beautiful-dnd/-/react-beautiful-dnd-7.1.2.tgz#98a5bc1dca5dadfe462ba73180e8c66b5a275dcf"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-dom@^16.0.7":
   version "16.0.7"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.7.tgz#54d0f867a76b90597e8432030d297982f25c20ba"
@@ -11747,15 +11753,6 @@ react-redux@^5.0.7:
     lodash-es "^4.17.5"
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
-
-react-relay@1.7.0-rc.1:
-  version "1.7.0-rc.1"
-  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-1.7.0-rc.1.tgz#c40b49553c9a31267347528289c306ddb4efc369"
-  dependencies:
-    babel-runtime "^6.23.0"
-    fbjs "0.8.17"
-    prop-types "^15.5.8"
-    relay-runtime "1.7.0-rc.1"
 
 react-router-dom@4.3.0-rc.3:
   version "4.3.0-rc.3"

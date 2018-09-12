@@ -1,6 +1,6 @@
 import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
-import ReflectTemplate from './ReflectTemplate'
+import RetroPhaseItem from './RetroPhaseItem'
 
 const MoveReflectTemplatePromptPayload = new GraphQLObjectType({
   name: 'MoveReflectTemplatePromptPayload',
@@ -9,7 +9,7 @@ const MoveReflectTemplatePromptPayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     prompt: {
-      type: ReflectTemplate,
+      type: RetroPhaseItem,
       resolve: ({promptId}, _args, {dataLoader}) => {
         if (!promptId) return null
         return dataLoader.get('customPhaseItems').load(promptId)

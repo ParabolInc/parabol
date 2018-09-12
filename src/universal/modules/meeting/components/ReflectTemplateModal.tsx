@@ -3,18 +3,18 @@ import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
-import {PALETTE} from 'universal/styles/paletteV2'
-import {typeScale} from 'universal/styles/theme/typography'
 import TextOverflow from 'universal/components/TextOverflow'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {typeScale} from 'universal/styles/theme/typography'
+import ui from 'universal/styles/ui'
 import AddNewReflectTemplate from './AddNewReflectTemplate'
 import AddTemplatePrompt from './AddTemplatePrompt'
 import EditableTemplateName from './EditableTemplateName'
 import RemoveTemplate from './RemoveTemplate'
-import TemplatePromptItem from './TemplatePromptItem'
-import ui from 'universal/styles/ui'
+import TemplatePromptList from './TemplatePromptList'
 
 interface Props extends WithAtmosphereProps {
   onSuccess: () => void
@@ -72,12 +72,6 @@ const TemplateItem = styled('li')(({isActive}: {isActive: boolean}) => ({
   lineHeight: '1.375rem',
   padding: '.3125rem .5rem'
 }))
-
-const PromptList = styled('ul')({
-  margin: 0,
-  padding: '0 2rem',
-  width: '100%'
-})
 
 const TemplateHeader = styled('div')({
   alignItems: 'center',
@@ -166,17 +160,7 @@ class ReflectTemplateModal extends Component<Props> {
             />
             <RemoveTemplate templateCount={templateCount} templateId={activeTemplate.id} />
           </TemplateHeader>
-          <PromptList>
-            {activeTemplate.prompts.map((prompt) => {
-              return (
-                <TemplatePromptItem
-                  key={prompt.id}
-                  prompt={prompt}
-                  prompts={activeTemplate.prompts}
-                />
-              )
-            })}
-          </PromptList>
+          <TemplatePromptList prompts={activeTemplate.prompts} templateId={activeTemplate.id} />
           <AddTemplatePrompt templateId={activeTemplate.id} prompts={activeTemplate.prompts} />
         </PromptEditor>
       </ModalBoundary>
@@ -194,8 +178,7 @@ export default createFragmentContainer(
         id
         name
         prompts {
-          ...TemplatePromptItem_prompt
-          ...EditableTemplatePrompt_prompts
+          ...TemplatePromptList_prompts
           ...AddTemplatePrompt_prompts
           id
           sortOrder
