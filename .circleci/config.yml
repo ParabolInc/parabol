@@ -29,6 +29,141 @@ jobs:
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
               curl --ssl -X POST -H 'Content-type: application/json' --data '{"text":"Starting CI and Deployment..."}' $SLACK_DEV_URL
             fi
+      - checkout
+      - restore_cache:
+          key: action-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update && apt-get -yq install build-essential
+            yarn
+      - save_cache:
+          key: action-{{ checksum "yarn.lock" }}
+          paths:
+          - ~/action/node_modules
+      - run:
+          name: Database migration (testing)
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              npm run db:migrate-testing
+            fi
+      - run:
+          name: DevOps checkout
+          command: |
+            ssh-agent $(
+            ssh-add -D;
+            ssh-add ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
+            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+            )
+      - run:
+          name: E2E test dependencies
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+            else
+            apt-get update && apt-get -yq install unzip libnss3 libgconf-2-4
+            npm run test:e2e-deps
+            fi
+      - run:
+          name: E2E test build
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              cp $DEVOPS_WORKDIR/environments/e2e ./.env
+              npm run db:migrate
+              npm run build
+            fi
+      - run:
+          name: NPM lint
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              npm run lint
+            fi
+      - run:
+          name: NPM run test
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+            else
+            #            npm run test
+            #            mkdir test-report ; mv test-report.xml test-report
+            fi
+
+      - run:
+          name: E2E test run
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              export SELENIUM_REMOTE_URL='http://localhost:4444/wd/hub'
+              npm run test:e2e
+            fi
+      - run:
+          name: Pre-build environment configuration
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              export DEPLOY_ENV="production"
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              export DEPLOY_ENV="staging"
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              export DEPLOY_ENV="development"
+            else
+              export DEPLOY_ENV="local"
+            fi
+            cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+            cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
+      - deploy
+          name: Possible deployment build
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
+            fi
+            if [ -n "${GITHUB_REMOTE}" ]; then
+              npm run build:deploy &&
+              export ACTION_VERSION="\
+                $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
+                  echo ${BASH_REMATCH[1]})"
+              git config --global user.name "Parabol CircleCI"
+              git config --global user.email "admin+circleci@parabol.co"
+              git add .googlecloudkey.json build -f
+              git commit -m "build $ACTION_VERSION"
+            fi
+      - deploy
+          name: Possible (production backup) and deployment
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
+            fi
+            if [ -n "${GITHUB_REMOTE}" ]; then
+              git remote add dokku $GITHUB_REMOTE
+              export SSH_DESTINATION=$(echo $GITHUB_REMOTE | cut -f1 -d:)
+              ssh -o StrictHostKeyChecking=no "${SSH_DESTINATION}" -T >/dev/null
+            fi &&
+            if [ "${GITHUB_REMOTE}" == "${GITHUB_REMOTE_PRODUCTION}" ]; then
+              $DEVOPS_WORKDIR/dokku/rethinkdb-backup.sh \
+                -s "${SSH_DESTINATION}" -d "${PRODUCTION_BACKUP_VOLUME}"
+            fi &&
+            if [ -n "${GITHUB_REMOTE}" ]; then
+              git push -f dokku $CIRCLE_BRANCH:master
+            fi
+      - store_artifacts
+          path: ~/action/build
+          destination: build
+      - store_test_results
+          path: ~/action/test-report
 workflows:
   version: 2
   build-and-deploy:
