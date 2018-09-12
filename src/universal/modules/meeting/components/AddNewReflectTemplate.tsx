@@ -8,10 +8,14 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplateMutation from 'universal/mutations/AddReflectTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PALETTE} from '../../../styles/paletteV2'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {typeScale} from 'universal/styles/theme/typography'
 
 const Error = styled('span')({
-  color: PALETTE.ERROR.MAIN
+  color: PALETTE.ERROR.MAIN,
+  display: 'block',
+  fontSize: typeScale[1],
+  margin: '0 0 .5rem'
 })
 
 const Button = styled(RaisedButton)({
@@ -37,11 +41,11 @@ class AddNewReflectTemplate extends Component<Props> {
     } = this.props
     if (submitting) return
     if (reflectTemplates.length >= 20) {
-      onError('You may only have 20 templates per team. Please remove one first')
+      onError('You may only have 20 templates per team. Please remove one first.')
       return
     }
     if (reflectTemplates.find((template) => template.name === '*New Template')) {
-      onError('You already have a new template. Try renaming that one first')
+      onError('You already have a new template. Try renaming that one first.')
       return
     }
     submitMutation()

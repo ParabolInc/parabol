@@ -49,7 +49,8 @@ const Input = styled('input')({
 })
 
 const Form = styled('form')({
-  display: 'flex'
+  display: 'flex',
+  flexDirection: 'column'
 })
 
 interface Props {

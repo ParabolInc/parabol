@@ -247,7 +247,7 @@ export const sendLastPromptRemovalError = (authToken, promptId) => {
 
 export const sendAlreadyCreatedTemplateError = (authToken, teamId) => {
   const breadcrumb = {
-    message: 'You already have a new template. Try renaming that one first',
+    message: 'You already have a new template. Try renaming that one first.',
     category: 'already created',
     data: {teamId}
   }
