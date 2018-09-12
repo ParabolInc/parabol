@@ -89,7 +89,7 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "development" ]; then
             echo "info: development server deploy, skipping"
-            else
+            # else
             #            npm run test
             #            mkdir test-report ; mv test-report.xml test-report
             fi
