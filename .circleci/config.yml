@@ -41,6 +41,82 @@ jobs:
           key: action-{{ checksum "yarn.lock" }}
           paths:
           - ~/action/node_modules
+      - run:
+          name: Database migration (testing)
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              npm run db:migrate-testing
+            fi
+      - run:
+          name: DevOps checkout
+          command: |
+            ssh-agent $(
+            ssh-add -D;
+            ssh-add ~/.ssh/id_rsa_53a83735c37e54f519f68ea1e07852da;
+            git clone $DEVOPS_REPO $DEVOPS_WORKDIR
+            )
+      - run:
+          name: E2E test dependencies
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+            else
+            apt-get update && apt-get -yq install unzip libnss3 libgconf-2-4
+            npm run test:e2e-deps
+            fi
+      - run:
+          name: E2E test build
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              cp $DEVOPS_WORKDIR/environments/e2e ./.env
+              npm run db:migrate
+              npm run build
+            fi
+      - run:
+          name: NPM lint
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              npm run lint
+            fi
+      - run:
+          name: NPM run test
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            echo "info: development server deploy, skipping"
+            else
+            #            npm run test
+            #            mkdir test-report ; mv test-report.xml test-report
+            fi
+
+      - run:
+          name: E2E test run
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              echo "info: development server deploy, skipping"
+            else
+              export SELENIUM_REMOTE_URL='http://localhost:4444/wd/hub'
+              npm run test:e2e
+            fi
+      - run:
+          name: Pre-build environment configuration
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              export DEPLOY_ENV="production"
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              export DEPLOY_ENV="staging"
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              export DEPLOY_ENV="development"
+            else
+              export DEPLOY_ENV="local"
+            fi
+            cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+            cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
 workflows:
   version: 2
   build-and-deploy:
