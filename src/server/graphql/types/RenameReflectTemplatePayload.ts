@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import ReflectTemplate from './ReflectTemplate'
 
@@ -9,8 +9,9 @@ const RenameReflectTemplatePayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     reflectTemplate: {
-      type: new GraphQLNonNull(ReflectTemplate),
+      type: ReflectTemplate,
       resolve: ({templateId}, _args, {dataLoader}) => {
+        if (!templateId) return null
         return dataLoader.get('reflectTemplates').load(templateId)
       }
     }

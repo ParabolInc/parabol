@@ -29,7 +29,9 @@ const ReflectPhase = new GraphQLObjectType({
       description: 'The prompts used during the reflect phase',
       resolve: async ({promptTemplateId, teamId}, _args, {dataLoader}) => {
         const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
-        return phaseItems.filter(({templateId}) => templateId === promptTemplateId)
+        const prompts = phaseItems.filter(({templateId}) => templateId === promptTemplateId)
+        prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        return prompts
       }
     },
     stages: {

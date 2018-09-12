@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeetingSettings'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import ReflectTemplate from './ReflectTemplate'
@@ -10,14 +10,16 @@ const RemoveReflectTemplatePayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     reflectTemplate: {
-      type: new GraphQLNonNull(ReflectTemplate),
+      type: ReflectTemplate,
       resolve: ({templateId}, _args, {dataLoader}) => {
+        if (!templateId) return null
         return dataLoader.get('reflectTemplates').load(templateId)
       }
     },
     retroMeetingSettings: {
-      type: new GraphQLNonNull(RetrospectiveMeetingSettings),
+      type: RetrospectiveMeetingSettings,
       resolve: ({settingsId}, _args, {dataLoader}) => {
+        if (!settingsId) return null
         return dataLoader.get('meetingSettings').load(settingsId)
       }
     }
