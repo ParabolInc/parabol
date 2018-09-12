@@ -4,7 +4,7 @@ import SelectRetroTemplatePayload from 'server/graphql/types/SelectRetroTemplate
 import {isTeamMember} from 'server/utils/authorization'
 import {sendTeamAccessError, sendTemplateAccessError} from 'server/utils/authorizationErrors'
 import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
+import {RETROSPECTIVE, TEAM} from 'universal/utils/constants'
 
 const selectRetroTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -41,6 +41,9 @@ const selectRetroTemplate = {
     const meetingSettingsId = await r
       .table('MeetingSettings')
       .getAll(teamId, {index: 'teamId'})
+      .filter({
+        meetingType: RETROSPECTIVE
+      })
       .update(
         {
           selectedTemplateId

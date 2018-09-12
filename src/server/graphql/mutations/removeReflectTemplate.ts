@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver'
 import {isTeamMember} from 'server/utils/authorization'
 import {sendLastTemplateRemovalError, sendTeamAccessError} from 'server/utils/authorizationErrors'
 import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
+import {RETROSPECTIVE, TEAM} from 'universal/utils/constants'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
 
 const removeReflectTemplate = {
@@ -38,6 +38,7 @@ const removeReflectTemplate = {
       settings: r
         .table('MeetingSettings')
         .getAll(teamId, {index: 'teamId'})
+        .filter({meetingType: RETROSPECTIVE})
         .nth(0)
     })
 

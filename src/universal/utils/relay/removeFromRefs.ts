@@ -18,7 +18,6 @@ const removeFromRefs = (promptId: string, store: any, removalFilter?: RemovalFil
       const record = records[key]
       if (!record) continue
       if (removalFilter && !removalFilter[record.__typename]) continue
-      // const noFilter = !removalFilter
       const fieldFilters = removalFilter && removalFilter[record.__typename]
       const fields = Object.keys(record)
       for (let kk = 0; kk < fields.length; kk++) {

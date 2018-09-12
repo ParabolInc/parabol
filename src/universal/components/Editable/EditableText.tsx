@@ -59,7 +59,7 @@ interface Props {
   hideIcon?: boolean
   initialValue: string
   maxLength: number
-  placeholder?: string
+  placeholder: string
 }
 
 interface State {
@@ -91,7 +91,15 @@ class EditableText extends Component<Props, State> {
     })
   }
 
-  onSubmit = async (e) => {
+  onFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    const {value} = this.state
+    const {placeholder} = this.props
+    if (value.toLowerCase().startsWith(placeholder.toLowerCase())) {
+      e.target.select()
+    }
+  }
+
+  onSubmit = async (e: React.FocusEvent | React.FormEvent) => {
     e.preventDefault()
     this.setState({
       isEditing: false
@@ -113,6 +121,7 @@ class EditableText extends Component<Props, State> {
           maxLength={maxLength}
           onBlur={this.onSubmit}
           onChange={this.onChange}
+          onFocus={this.onFocus}
           placeholder={placeholder}
           value={value}
         />
