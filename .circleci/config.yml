@@ -117,6 +117,26 @@ jobs:
             fi
             cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
             cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
+      - deploy
+          name: Possible deployment build
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
+              export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
+            fi
+            if [ -n "${GITHUB_REMOTE}" ]; then
+              npm run build:deploy &&
+              export ACTION_VERSION="\
+                $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
+                  echo ${BASH_REMATCH[1]})"
+              git config --global user.name "Parabol CircleCI"
+              git config --global user.email "admin+circleci@parabol.co"
+              git add .googlecloudkey.json build -f
+              git commit -m "build $ACTION_VERSION"
+            fi
 workflows:
   version: 2
   build-and-deploy:
