@@ -17,7 +17,7 @@ export interface WithMutationProps {
   submitting?: boolean
 }
 
-interface ServerError {
+export interface MutationServerError {
   message: string
   path: Array<string>
 }
@@ -29,7 +29,7 @@ interface ServerError {
 // }
 
 const formatError = (
-  rawError?: string | ErrorObject | ServerError | Array<ServerError> | undefined
+  rawError?: string | ErrorObject | MutationServerError | Array<MutationServerError> | undefined
 ) => {
   const firstError = Array.isArray(rawError) ? rawError[0] : rawError
   if (typeof firstError === 'object' && 'message' in firstError) {
@@ -72,7 +72,7 @@ const withMutationProps = <P extends WithMutationProps>(
       return error
     }
 
-    onError = (rawError?: string | ServerError | Array<ServerError>) => {
+    onError = (rawError?: string | MutationServerError | Array<MutationServerError>) => {
       if (this._mounted) {
         this.setState({
           submitting: false,
