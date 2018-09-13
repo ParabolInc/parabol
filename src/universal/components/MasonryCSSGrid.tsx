@@ -12,9 +12,7 @@ const Grid = styled('div')(({colWidth, gap, maxCols}: GridProps) => ({
   display: 'grid',
   gridColumnGap: gap,
   gridAutoRows: gap / 2,
-  gridTemplateColumns: `repeat(${maxCols || 'auto-fill'}, minmax(${colWidth}, 1fr))`,
-  margin: '0 auto',
-  width: '100%'
+  gridTemplateColumns: `repeat(${maxCols || 'auto-fill'}, minmax(${colWidth}, 1fr))`
 }))
 
 type SetItemRef = (id: string) => (c: HTMLElement | null) => any
