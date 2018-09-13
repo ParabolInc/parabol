@@ -5,24 +5,24 @@ import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {Dispatch} from 'redux'
+import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 import Overflow from 'universal/components/Overflow'
-import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import {meetingGridGap, meetingGridMinWidth, meetingVoteIcon} from 'universal/styles/meeting'
+import {meetingVoteIcon} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
-import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import handleRightArrow from '../utils/handleRightArrow'
 
 interface PassedProps {
@@ -97,12 +97,6 @@ const PhaseWrapper = styled('div')({
   flex: 1,
   flexDirection: 'column',
   overflow: 'hidden'
-})
-
-const ReflectionGrid = styled('div')({
-  display: 'grid',
-  gridGap: meetingGridGap,
-  gridTemplateColumns: `repeat(auto-fill, minmax(${meetingGridMinWidth}, 1fr))`
 })
 
 const Column = styled('div')({
@@ -181,18 +175,7 @@ const RetroDiscussPhase = (props: Props) => {
             </LabelContainer>
             <Overflow>
               <ColumnInner>
-                <ReflectionGrid>
-                  {reflections.map((reflection) => {
-                    return (
-                      <ReflectionCard
-                        key={reflection.id}
-                        reflection={reflection}
-                        readOnly
-                        userSelect='text'
-                      />
-                    )
-                  })}
-                </ReflectionGrid>
+                <DiscussPhaseReflectionGrid reflections={reflections} />
               </ColumnInner>
             </Overflow>
           </Column>
@@ -291,7 +274,7 @@ export default createFragmentContainer<PassedProps>(
               voteCount
               reflections {
                 id
-                ...ReflectionCard_reflection
+                ...DiscussPhaseReflectionGrid_reflections
               }
               tasks {
                 id

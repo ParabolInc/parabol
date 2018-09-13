@@ -1,6 +1,6 @@
 import {ReflectionCard_reflection} from '__generated__/ReflectionCard_reflection.graphql'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-import React, {Component} from 'react'
+import React, {Component, ReactElement} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrapper'
@@ -32,6 +32,7 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   shadow?: number
   showOriginFooter?: boolean
   userSelect?: 'text' | 'none'
+  innerRef?: (c: ReactElement<any>) => void
 }
 
 interface State {
@@ -156,6 +157,7 @@ class ReflectionCard extends Component<Props, State> {
 
   render () {
     const {
+      innerRef,
       atmosphere,
       handleChange,
       error,
@@ -176,7 +178,7 @@ class ReflectionCard extends Component<Props, State> {
     const dragUser = dragContext && dragContext.dragUser
     const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
     return (
-      <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow}>
+      <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow} innerRef={innerRef}>
         {hasDragLock && <UserDraggingHeader user={dragUser} />}
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
