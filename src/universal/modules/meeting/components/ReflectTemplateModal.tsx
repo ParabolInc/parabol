@@ -51,10 +51,6 @@ const Label = styled('div')({
   width: '100%'
 })
 
-const ContentLabel = styled(Label)({
-  paddingLeft: contentPaddingLeft
-})
-
 const ListAndAdd = styled('div')({
   display: 'flex',
   flex: 1,
@@ -80,7 +76,7 @@ const TemplateItem = styled('li')(({isActive}: {isActive: boolean}) => ({
 const TemplateHeader = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  margin: '.5rem 0 1rem',
+  margin: '1rem 0',
   paddingLeft: contentPaddingLeft,
   paddingRight: '2rem',
   width: '100%'
@@ -157,7 +153,6 @@ class ReflectTemplateModal extends Component<Props> {
           </ListAndAdd>
         </TemplateSidebar>
         <PromptEditor>
-          <ContentLabel>Current Template</ContentLabel>
           <TemplateHeader>
             <EditableTemplateName
               key={activeTemplate.id}

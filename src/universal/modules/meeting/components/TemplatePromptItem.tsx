@@ -15,6 +15,7 @@ import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMu
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 
 interface PassedProps {
+  canRemove: boolean
   isDragging: boolean
   prompt: TemplatePromptItem_prompt
   prompts: any
@@ -90,11 +91,9 @@ class TemplatePromptItem extends Component<Props, State> {
   }
 
   render () {
-    const {dragProvided, isDragging, prompt, prompts} = this.props
+    const {canRemove, dragProvided, isDragging, prompt, prompts} = this.props
     const {id: promptId, question} = prompt
     const {isHover} = this.state
-
-    console.log(this.props)
     return (
       <PromptItem
         innerRef={dragProvided.innerRef}
@@ -111,7 +110,9 @@ class TemplatePromptItem extends Component<Props, State> {
           promptId={promptId}
           prompts={prompts}
         />
-        <RemovePromptIcon isHover={isHover} name={'times-circle'} onClick={this.removePrompt} />
+        {canRemove && (
+          <RemovePromptIcon isHover={isHover} name={'times-circle'} onClick={this.removePrompt} />
+        )}
       </PromptItem>
     )
   }

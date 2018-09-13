@@ -70,6 +70,7 @@ class TemplatePromptList extends Component<Props> {
                         {(dragProvided, dragSnapshot) => {
                           return (
                             <TemplatePromptItem
+                              canRemove={prompts.length > 1}
                               prompt={prompt}
                               prompts={prompts}
                               isDragging={dragSnapshot.isDragging}
