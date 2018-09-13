@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.12.0 2018-Sep-13
+
+### Added
+* Retro prompt templates: users can select, customize, and create templates (PR #2366)
+* Upgraded to Babel 7 (PR #2367)
+
+### Fixed
+* Reflection cards have the prompt footer during the discuss phase (#2304)
+
 ## v2.11.0 2018-Sep-05
 
 ### Added
