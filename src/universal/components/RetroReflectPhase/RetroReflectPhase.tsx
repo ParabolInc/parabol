@@ -55,10 +55,11 @@ class RetroReflectPhase extends Component<Props> {
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
-                meeting={newMeeting}
                 key={prompt.retroPhaseItemId}
+                meeting={newMeeting}
                 retroPhaseItemId={prompt.retroPhaseItemId}
                 question={prompt.question}
+                editorIds={prompt.editorIds}
                 idx={idx}
                 phaseRef={this.phaseRef}
               />
@@ -106,6 +107,7 @@ export default createFragmentContainer(
               reflectPrompts {
                 retroPhaseItemId: id
                 question
+                editorIds
               }
             }
           }
@@ -114,6 +116,7 @@ export default createFragmentContainer(
               reflectPrompts {
                 retroPhaseItemId: id
                 question
+                editorIds
               }
             }
           }

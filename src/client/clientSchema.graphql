@@ -36,7 +36,7 @@ extend type DragContext {
   initialComponentCoords: Coords2D
 }
 
-extend type ReflectPhase {
+extend type RetroPhaseItem {
   editorIds: [ID!]
 }
 
