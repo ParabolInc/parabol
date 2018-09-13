@@ -199,3 +199,75 @@ export const sendRateLimitReachedError = (authToken, field, lastMinute, lastHour
   }
   return sendAuthRaven(authToken, 'Rate limit reached', breadcrumb)
 }
+
+export const sendTemplateAccessError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'Template not found',
+    category: 'Auth',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Template not found', breadcrumb)
+}
+
+export const sendLastTemplateRemovalError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'Cannot remove the last template',
+    category: 'Last template',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Cannot remove the last template', breadcrumb)
+}
+
+export const sendTooManyTemplatesError = (authToken, teamId) => {
+  const breadcrumb = {
+    message: 'Too many templates',
+    category: 'too many',
+    data: {teamId}
+  }
+  return sendAuthRaven(authToken, 'Too many templates', breadcrumb)
+}
+
+export const sendTooManyPromptsError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'Too many prompts!',
+    category: 'too many',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Too many prompts!', breadcrumb)
+}
+
+export const sendLastPromptRemovalError = (authToken, promptId) => {
+  const breadcrumb = {
+    message: 'Cannot remove the last prompt',
+    category: 'Last prompt',
+    data: {promptId}
+  }
+  return sendAuthRaven(authToken, 'Cannot remove the last prompt', breadcrumb)
+}
+
+export const sendAlreadyCreatedTemplateError = (authToken, teamId) => {
+  const breadcrumb = {
+    message: 'You already have a new template. Try renaming that one first.',
+    category: 'already created',
+    data: {teamId}
+  }
+  return sendAuthRaven(authToken, 'Already Created', breadcrumb)
+}
+
+export const sendDuplciateNameTemplateError = (authToken, templateId) => {
+  const breadcrumb = {
+    message: 'A template with that name already exists',
+    category: 'already created',
+    data: {templateId}
+  }
+  return sendAuthRaven(authToken, 'Already Created', breadcrumb)
+}
+
+export const sendDuplciateQuestionTemplatePromptError = (authToken, promptId) => {
+  const breadcrumb = {
+    message: 'That question was already asked',
+    category: 'already created',
+    data: {promptId}
+  }
+  return sendAuthRaven(authToken, 'Already Created', breadcrumb)
+}

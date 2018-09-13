@@ -188,6 +188,7 @@ const RetroDiscussPhase = (props: Props) => {
                         key={reflection.id}
                         reflection={reflection}
                         readOnly
+                        showOriginFooter
                         userSelect='text'
                       />
                     )

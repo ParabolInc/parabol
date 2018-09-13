@@ -20,8 +20,25 @@ const ReflectPhase = new GraphQLObjectType({
         return dataLoader.get('customPhaseItems').load(focusedPhaseItemId)
       }
     },
+    promptTemplateId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'FK. The ID of the template used during the reflect phase'
+    },
+    reflectPrompts: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(RetroPhaseItem))),
+      description: 'The prompts used during the reflect phase',
+      resolve: async ({promptTemplateId, teamId}, _args, {dataLoader}) => {
+        const phaseItems = await dataLoader.get('customPhaseItemsByTeamId').load(teamId)
+        const prompts = phaseItems.filter(({templateId}) => templateId === promptTemplateId)
+        prompts.sort((a, b) => (a.sortOrder < b.sortOrder ? -1 : 1))
+        return prompts
+      }
+    },
     stages: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GenericMeetingStage)))
+    },
+    teamId: {
+      type: new GraphQLNonNull(GraphQLID)
     }
   })
 })

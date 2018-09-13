@@ -1,4 +1,4 @@
-class Legitity {
+export class Legitity {
   constructor (value) {
     this.value = value
     this.error = undefined

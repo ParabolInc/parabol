@@ -1316,6 +1316,12 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-beautiful-dnd@^7.1.2":
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/@types/react-beautiful-dnd/-/react-beautiful-dnd-7.1.2.tgz#98a5bc1dca5dadfe462ba73180e8c66b5a275dcf"
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-dom@^16.0.7":
   version "16.0.7"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.7.tgz#54d0f867a76b90597e8432030d297982f25c20ba"
@@ -6159,10 +6165,6 @@ flow-parser@^0.*:
 flow-runtime@0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/flow-runtime/-/flow-runtime-0.14.0.tgz#bbbcb700b19a0a299ab403e807d69912ef077c16"
-
-flow-to-typescript@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/flow-to-typescript/-/flow-to-typescript-1.0.0.tgz#c12f973a557314f253a8e6a30315ea02acc33d56"
 
 flush-write-stream@^1.0.0:
   version "1.0.3"

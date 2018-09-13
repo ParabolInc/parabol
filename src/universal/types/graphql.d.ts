@@ -927,6 +927,7 @@ declare namespace GQL {
      * shortid
      */
     id: string
+    createdAt: any
 
     /**
      * The type of phase item
@@ -947,6 +948,7 @@ declare namespace GQL {
      * The team that owns this customPhaseItem
      */
     team: ITeam | null
+    updatedAt: any
   }
 
   /**
@@ -1060,6 +1062,7 @@ declare namespace GQL {
    */
   interface ITeamMeetingSettings {
     __typename: 'TeamMeetingSettings'
+    id: string
 
     /**
      * The type of meeting these settings apply to
@@ -1070,6 +1073,11 @@ declare namespace GQL {
      * The broad phase types that will be addressed during the meeting
      */
     phaseTypes: Array<NewMeetingPhaseTypeEnum>
+
+    /**
+     * FK
+     */
+    teamId: string
 
     /**
      * The team these settings belong to
@@ -2882,6 +2890,11 @@ declare namespace GQL {
     segmentEventTrack: boolean | null
 
     /**
+     * Set the selected template for the upcoming retro meeting
+     */
+    selectRetroTemplate: ISelectRetroTemplatePayload | null
+
+    /**
      * Set the role of a user
      */
     setOrgUserRole: SetOrgUserRolePayload | null
@@ -3002,6 +3015,41 @@ declare namespace GQL {
      * Upgrade an account to the paid service
      */
     upgradeToPro: IUpgradeToProPayload | null
+
+    /**
+     * Add a new template full of prompts
+     */
+    addReflectTemplate: IAddReflectTemplatePayload | null
+
+    /**
+     * Add a new template full of prompts
+     */
+    addReflectTemplatePrompt: IAddReflectTemplatePromptPayload | null
+
+    /**
+     * Move a reflect template
+     */
+    moveReflectTemplatePrompt: IMoveReflectTemplatePromptPayload | null
+
+    /**
+     * Remove a template full of prompts
+     */
+    removeReflectTemplate: IRemoveReflectTemplatePayload | null
+
+    /**
+     * Remove a prompt from a template
+     */
+    removeReflectTemplatePrompt: IRemoveReflectTemplatePromptPayload | null
+
+    /**
+     * Rename a reflect template prompt
+     */
+    renameReflectTemplate: IRenameReflectTemplatePayload | null
+
+    /**
+     * Rename a reflect template
+     */
+    renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null
   }
 
   interface IAcceptTeamInviteOnMutationArguments {
@@ -3531,6 +3579,11 @@ declare namespace GQL {
     options?: ISegmentEventTrackOptions | null
   }
 
+  interface ISelectRetroTemplateOnMutationArguments {
+    selectedTemplateId: string
+    teamId: string
+  }
+
   interface ISetOrgUserRoleOnMutationArguments {
     /**
      * The org to affect
@@ -3758,6 +3811,37 @@ declare namespace GQL {
      * The token that came back from stripe
      */
     stripeToken: string
+  }
+
+  interface IAddReflectTemplateOnMutationArguments {
+    teamId: string
+  }
+
+  interface IAddReflectTemplatePromptOnMutationArguments {
+    templateId: string
+  }
+
+  interface IMoveReflectTemplatePromptOnMutationArguments {
+    promptId: string
+    sortOrder: string
+  }
+
+  interface IRemoveReflectTemplateOnMutationArguments {
+    templateId: string
+  }
+
+  interface IRemoveReflectTemplatePromptOnMutationArguments {
+    promptId: string
+  }
+
+  interface IRenameReflectTemplateOnMutationArguments {
+    templateId: string
+    name: string
+  }
+
+  interface IRenameReflectTemplatePromptOnMutationArguments {
+    promptId: string
+    question: string
   }
 
   interface IAcceptTeamInvitePayload {
@@ -4388,6 +4472,7 @@ declare namespace GQL {
      * shortid
      */
     id: string
+    createdAt: any
 
     /**
      * The type of phase item
@@ -4408,6 +4493,22 @@ declare namespace GQL {
      * The team that owns this customPhaseItem
      */
     team: ITeam | null
+    updatedAt: any
+
+    /**
+     * the order of the items in the template
+     */
+    sortOrder: number
+
+    /**
+     * FK for template
+     */
+    templateId: string
+
+    /**
+     * The template that this prompt belongs to
+     */
+    template: IReflectTemplate
 
     /**
      * The title of the phase of the retrospective. Often a short version of the question
@@ -4418,6 +4519,41 @@ declare namespace GQL {
      * The question to answer during the phase of the retrospective (eg What went well?)
      */
     question: string
+  }
+
+  /**
+   * The team-specific templates for the reflection prompts
+   */
+  interface IReflectTemplate {
+    __typename: 'ReflectTemplate'
+    id: string
+    createdAt: any
+
+    /**
+     * True if template can be used, else false
+     */
+    isActive: boolean
+
+    /**
+     * The time of the meeting the template was last used
+     */
+    lastUsedAt: any | null
+
+    /**
+     * The name of the template
+     */
+    name: string
+
+    /**
+     * The prompts that are part of this template
+     */
+    prompts: Array<IRetroPhaseItem>
+
+    /**
+     * *Foreign key. The team this template belongs to
+     */
+    teamId: string
+    updatedAt: any
   }
 
   /**
@@ -4579,6 +4715,7 @@ declare namespace GQL {
    */
   interface IRetrospectiveMeetingSettings {
     __typename: 'RetrospectiveMeetingSettings'
+    id: string
 
     /**
      * The type of meeting these settings apply to
@@ -4589,6 +4726,11 @@ declare namespace GQL {
      * The broad phase types that will be addressed during the meeting
      */
     phaseTypes: Array<NewMeetingPhaseTypeEnum>
+
+    /**
+     * FK
+     */
+    teamId: string
 
     /**
      * The team these settings belong to
@@ -4609,6 +4751,16 @@ declare namespace GQL {
      * The maximum number of votes a team member can vote for a single reflection group
      */
     maxVotesPerGroup: number
+
+    /**
+     * FK. The template that will be used to start the retrospective
+     */
+    selectedTemplateId: string
+
+    /**
+     * The list of templates used to start a retrospective
+     */
+    reflectTemplates: Array<IReflectTemplate>
   }
 
   interface ICancelApprovalPayload {
@@ -5660,6 +5812,12 @@ declare namespace GQL {
     inviteeCount?: number | null
   }
 
+  interface ISelectRetroTemplatePayload {
+    __typename: 'SelectRetroTemplatePayload'
+    error: IStandardMutationError | null
+    retroMeetingSettings: IRetrospectiveMeetingSettings
+  }
+
   type SetOrgUserRolePayload = ISetOrgUserRoleAddedPayload | ISetOrgUserRoleRemovedPayload
 
   interface ISetOrgUserRolePayload {
@@ -5702,6 +5860,17 @@ declare namespace GQL {
      * the phase item that the facilitator wants the group to focus on
      */
     focusedPhaseItem: IRetroPhaseItem | null
+
+    /**
+     * FK. The ID of the template used during the reflect phase
+     */
+    promptTemplateId: string
+
+    /**
+     * The prompts used during the reflect phase
+     */
+    reflectPrompts: Array<IRetroPhaseItem>
+    teamId: string
   }
 
   /**
@@ -6089,6 +6258,50 @@ declare namespace GQL {
     teams: Array<ITeam> | null
   }
 
+  interface IAddReflectTemplatePayload {
+    __typename: 'AddReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate | null
+  }
+
+  interface IAddReflectTemplatePromptPayload {
+    __typename: 'AddReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IRetroPhaseItem | null
+  }
+
+  interface IMoveReflectTemplatePromptPayload {
+    __typename: 'MoveReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IRetroPhaseItem | null
+  }
+
+  interface IRemoveReflectTemplatePayload {
+    __typename: 'RemoveReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate | null
+    retroMeetingSettings: IRetrospectiveMeetingSettings | null
+  }
+
+  interface IRemoveReflectTemplatePromptPayload {
+    __typename: 'RemoveReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate | null
+    prompt: IReflectTemplate | null
+  }
+
+  interface IRenameReflectTemplatePayload {
+    __typename: 'RenameReflectTemplatePayload'
+    error: IStandardMutationError | null
+    reflectTemplate: IReflectTemplate | null
+  }
+
+  interface IRenameReflectTemplatePromptPayload {
+    __typename: 'RenameReflectTemplatePromptPayload'
+    error: IStandardMutationError | null
+    prompt: IRetroPhaseItem | null
+  }
+
   interface ISubscription {
     __typename: 'Subscription'
     agendaItemSubscription: AgendaItemSubscriptionPayload
@@ -6288,6 +6501,7 @@ declare namespace GQL {
     | IRemoveOrgUserPayload
     | IRemoveReflectionPayload
     | IRemoveTeamMemberPayload
+    | ISelectRetroTemplatePayload
     | ISetPhaseFocusPayload
     | IStartDraggingReflectionPayload
     | IStartMeetingPayload
@@ -6301,6 +6515,13 @@ declare namespace GQL {
     | IUpdateTeamNamePayload
     | IUpgradeToProPayload
     | IVoteForReflectionGroupPayload
+    | IAddReflectTemplatePayload
+    | IAddReflectTemplatePromptPayload
+    | IMoveReflectTemplatePromptPayload
+    | IRemoveReflectTemplatePayload
+    | IRemoveReflectTemplatePromptPayload
+    | IRenameReflectTemplatePayload
+    | IRenameReflectTemplatePromptPayload
 
   interface IUpdateDragLocationPayload {
     __typename: 'UpdateDragLocationPayload'
@@ -6534,6 +6755,7 @@ declare namespace GQL {
    */
   interface IActionMeetingSettings {
     __typename: 'ActionMeetingSettings'
+    id: string
 
     /**
      * The type of meeting these settings apply to
@@ -6544,6 +6766,11 @@ declare namespace GQL {
      * The broad phase types that will be addressed during the meeting
      */
     phaseTypes: Array<NewMeetingPhaseTypeEnum>
+
+    /**
+     * FK
+     */
+    teamId: string
 
     /**
      * The team these settings belong to

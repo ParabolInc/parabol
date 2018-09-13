@@ -129,6 +129,17 @@ export default class RethinkDataLoader {
         )
       })
     }, this.dataloaderOptions)
+    this.reflectTemplatesByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink()
+      const reflectTemplates = await r
+        .table('ReflectTemplate')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true})
+      primeStandardLoader(this.reflectTemplates, reflectTemplates)
+      return teamIds.map((teamId) => {
+        return reflectTemplates.filter((template) => template.teamId === teamId)
+      })
+    }, this.dataloaderOptions)
     this.retroReflectionsByMeetingId = makeCustomLoader(async (meetingIds) => {
       const r = getRethink()
       const retroReflections = await r
@@ -235,6 +246,7 @@ export default class RethinkDataLoader {
   notifications = this.makeStandardLoader('Notification')
   orgApprovals = this.makeStandardLoader('OrgApproval')
   organizations = this.makeStandardLoader('Organization')
+  reflectTemplates = this.makeStandardLoader('ReflectTemplate')
   retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup')
   retroReflections = this.makeStandardLoader('RetroReflection')
   softTeamMembers = this.makeStandardLoader('SoftTeamMember')

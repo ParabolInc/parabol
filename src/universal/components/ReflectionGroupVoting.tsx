@@ -112,7 +112,7 @@ class ReflectionGroupVoting extends Component<Props> {
             />
           )}
         </UpvoteRow>
-        {error && <StyledError>{error.message}</StyledError>}
+        {error && <StyledError>{error}</StyledError>}
       </CheckColumn>
     )
   }

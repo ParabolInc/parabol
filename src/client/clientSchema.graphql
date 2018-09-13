@@ -36,6 +36,10 @@ extend type DragContext {
   initialComponentCoords: Coords2D
 }
 
-extend type RetroPhaseItem {
+extend type ReflectPhase {
   editorIds: [ID!]
+}
+
+extend type RetrospectiveMeetingSettings {
+  activeTemplateId: String
 }

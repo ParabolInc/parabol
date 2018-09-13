@@ -3,12 +3,12 @@ const path = require('path')
 const webpack = require('webpack')
 const npmPackage = require('../package.json')
 const vendors = require('../dll/vendors.json')
-const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread')
-const pluginClassProps = require('@babel/plugin-proposal-class-properties')
-const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import')
+const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread').default
+const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
+const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
 const pluginRelay = require('babel-plugin-relay')
-const presetFlow = require('@babel/preset-flow')
-const presetReact = require('@babel/preset-react')
+const presetFlow = require('@babel/preset-flow').default
+const presetReact = require('@babel/preset-react').default
 
 const babelLoader = {
   loader: 'babel-loader',

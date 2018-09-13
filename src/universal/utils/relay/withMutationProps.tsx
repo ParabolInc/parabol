@@ -3,14 +3,23 @@ import {Subtract} from 'types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
+export interface ErrorObject {
+  [field: string]: string | undefined
+}
+
 export interface WithMutationProps {
   dirty?: boolean
-  error?: any | undefined
+  error?: ErrorObject | string | undefined
   onCompleted: (res?: any, errors?: any) => void
-  onError: (error: any) => void
+  onError: (error?: any) => void
   setDirty: () => void
   submitMutation: () => void
   submitting?: boolean
+}
+
+export interface MutationServerError {
+  message: string
+  path: Array<string>
 }
 
 // interface State {
@@ -18,6 +27,16 @@ export interface WithMutationProps {
 //   error: any,
 //   dirty: boolean
 // }
+
+const formatError = (
+  rawError?: string | ErrorObject | MutationServerError | Array<MutationServerError> | undefined
+) => {
+  const firstError = Array.isArray(rawError) ? rawError[0] : rawError
+  if (typeof firstError === 'object' && 'message' in firstError) {
+    return firstError.message
+  }
+  return firstError
+}
 
 // Serves as a lightweight alternative for redux-form when we just have a button or something
 const withMutationProps = <P extends WithMutationProps>(
@@ -47,17 +66,17 @@ const withMutationProps = <P extends WithMutationProps>(
       if (this._mounted) {
         this.setState({
           submitting: false,
-          error
+          error: formatError(error)
         })
       }
       return error
     }
 
-    onError = (error) => {
+    onError = (rawError?: string | MutationServerError | Array<MutationServerError>) => {
       if (this._mounted) {
         this.setState({
           submitting: false,
-          error
+          error: formatError(rawError)
         })
       }
     }
@@ -71,6 +90,7 @@ const withMutationProps = <P extends WithMutationProps>(
     submitMutation = () => {
       if (this._mounted) {
         this.setState({
+          dirty: false,
           submitting: true
         })
       }

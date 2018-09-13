@@ -33,6 +33,14 @@ import UpdateDragLocationPayload from 'server/graphql/types/UpdateDragLocationPa
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
 import SetPhaseFocusPayload from 'server/graphql/types/SetPhaseFocusPayload'
 import StartDraggingReflectionPayload from 'server/graphql/types/StartDraggingReflectionPayload'
+import SelectRetroTemplatePayload from 'server/graphql/types/SelectRetroTemplatePayload'
+import AddReflectTemplatePayload from 'server/graphql/types/AddReflectTemplatePayload'
+import AddReflectTemplatePromptPayload from 'server/graphql/types/AddReflectTemplatePromptPayload'
+import MoveReflectTemplatePromptPayload from 'server/graphql/types/MoveReflectTemplatePromptPayload'
+import RemoveReflectTemplatePayload from 'server/graphql/types/RemoveReflectTemplatePayload'
+import RemoveReflectTemplatePromptPayload from 'server/graphql/types/RemoveReflectTemplatePromptPayload'
+import RenameReflectTemplatePayload from 'server/graphql/types/RenameReflectTemplatePayload'
+import RenameReflectTemplatePromptPayload from 'server/graphql/types/RenameReflectTemplatePromptPayload'
 
 const types = [
   AcceptTeamInvitePayload,
@@ -56,6 +64,7 @@ const types = [
   RemoveOrgUserPayload,
   RemoveReflectionPayload,
   RemoveTeamMemberPayload,
+  SelectRetroTemplatePayload,
   SetPhaseFocusPayload,
   StartDraggingReflectionPayload,
   StartMeetingPayload,
@@ -68,7 +77,14 @@ const types = [
   UpdateReflectionGroupTitlePayload,
   UpdateTeamNamePayload,
   UpgradeToProPayload,
-  VoteForReflectionGroupPayload
+  VoteForReflectionGroupPayload,
+  AddReflectTemplatePayload,
+  AddReflectTemplatePromptPayload,
+  MoveReflectTemplatePromptPayload,
+  RemoveReflectTemplatePayload,
+  RemoveReflectTemplatePromptPayload,
+  RenameReflectTemplatePayload,
+  RenameReflectTemplatePromptPayload
 ]
 
 export default graphQLSubscriptionType('TeamSubscriptionPayload', types)

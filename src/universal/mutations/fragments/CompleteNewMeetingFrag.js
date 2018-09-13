@@ -39,6 +39,9 @@ graphql`
       }
       ... on ReflectPhase {
         focusedPhaseItemId
+        reflectPrompts {
+          question
+        }
       }
       ... on DiscussPhase {
         stages {

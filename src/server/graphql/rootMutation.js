@@ -84,6 +84,14 @@ import updateTaskDueDate from 'server/graphql/mutations/updateTaskDueDate'
 import dragDiscussionTopic from 'server/graphql/mutations/dragDiscussionTopic'
 import startDraggingReflection from 'server/graphql/mutations/startDraggingReflection'
 import setPhaseFocus from 'server/graphql/mutations/setPhaseFocus'
+import selectRetroTemplate from 'server/graphql/mutations/selectRetroTemplate'
+import addReflectTemplate from 'server/graphql/mutations/addReflectTemplate'
+import addReflectTemplatePrompt from 'server/graphql/mutations/addReflectTemplatePrompt'
+import moveReflectTemplatePrompt from 'server/graphql/mutations/moveReflectTemplatePrompt'
+import removeReflectTemplate from 'server/graphql/mutations/removeReflectTemplate'
+import removeReflectTemplatePrompt from 'server/graphql/mutations/removeReflectTemplatePrompt'
+import renameReflectTemplate from 'server/graphql/mutations/renameReflectTemplate'
+import renameReflectTemplatePrompt from 'server/graphql/mutations/renameReflectTemplatePrompt'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -147,6 +155,7 @@ export default new GraphQLObjectType({
     requestFacilitator,
     resendTeamInvite,
     segmentEventTrack,
+    selectRetroTemplate,
     setOrgUserRole,
     setPhaseFocus,
     startDraggingReflection,
@@ -172,6 +181,13 @@ export default new GraphQLObjectType({
     updateUserProfile,
     voteForReflectionGroup,
     login,
-    upgradeToPro
+    upgradeToPro,
+    addReflectTemplate,
+    addReflectTemplatePrompt,
+    moveReflectTemplatePrompt,
+    removeReflectTemplate,
+    removeReflectTemplatePrompt,
+    renameReflectTemplate,
+    renameReflectTemplatePrompt
   })
 })

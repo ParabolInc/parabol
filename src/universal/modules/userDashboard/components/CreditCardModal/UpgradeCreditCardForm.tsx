@@ -18,7 +18,10 @@ import {
   CCValidationErrors,
   stripeFieldLookup
 } from 'universal/utils/creditCardLookup'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import withMutationProps, {
+  ErrorObject,
+  WithMutationProps
+} from 'universal/utils/relay/withMutationProps'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
 import PrimaryButton from 'universal/components/PrimaryButton'
@@ -88,7 +91,7 @@ const UpdateButton = styled(PrimaryButton)({
   width: '100%'
 })
 
-interface Errors {
+interface Errors extends ErrorObject {
   creditCardNumber?: string
   expiry?: string
   cvc?: string
