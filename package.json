@@ -222,6 +222,7 @@
     "redux-form": "^7.3.0",
     "redux-raven-middleware": "^1.2.0",
     "redux-thunk": "2.2.0",
+    "resize-observer-polyfill": "^1.5.0",
     "rethinkdbdash": "^2.3.31",
     "secure-compare": "^3.0.1",
     "serve-favicon": "^2.4.3",

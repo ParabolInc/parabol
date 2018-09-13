@@ -1,4 +1,3 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {createFragmentContainer} from 'react-relay'
@@ -10,12 +9,42 @@ import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeC
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import labels from 'universal/styles/theme/labels'
 import ui from 'universal/styles/ui'
-import {cardHoverShadow, cardFocusShadow} from 'universal/styles/elevation'
-import withStyles from 'universal/styles/withStyles'
+import {cardHoverShadow, cardFocusShadow, cardShadow} from 'universal/styles/elevation'
 import isTaskArchived from 'universal/utils/isTaskArchived'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
 import isTempId from 'universal/utils/relay/isTempId'
 import cardRootStyles from 'universal/styles/helpers/cardRootStyles'
+import styled from 'react-emotion'
+
+const RootCard = styled('div')(({cardHasHover, cardHasFocus, hasDragStyles}) => ({
+  ...cardRootStyles,
+  borderTop: 0,
+  outline: 'none',
+  padding: `${ui.cardPaddingBase} 0 0`,
+  transition: `box-shadow ${ui.transition[0]}`,
+  // hover before focus, it matters
+  boxShadow: hasDragStyles
+    ? 'none'
+    : cardHasFocus
+      ? cardFocusShadow
+      : cardHasHover
+        ? cardHoverShadow
+        : cardShadow
+}))
+
+const ContentBlock = styled('div')({
+  position: 'relative',
+  zIndex: ui.ziMenu - 1
+})
+
+const CardTopMeta = styled('div')({
+  paddingBottom: '.5rem'
+})
+
+const StatusIndicatorBlock = styled('div')({
+  display: 'flex',
+  paddingLeft: ui.cardPaddingBase
+})
 
 const OutcomeCard = (props) => {
   const {
@@ -34,20 +63,12 @@ const OutcomeCard = (props) => {
     setEditorRef,
     setEditorState,
     trackEditingComponent,
-    styles,
     toggleMenuState
   } = props
   const isPrivate = isTaskPrivate(task.tags)
   const isArchived = isTaskArchived(task.tags)
   const {status, team} = task
   const {teamId} = team
-  const rootStyles = css(
-    styles.root,
-    // hover before focus, it matters
-    cardHasHover && styles.cardHasHover,
-    cardHasFocus && styles.cardHasFocus,
-    hasDragStyles && styles.hasDragStyles
-  )
   const {integration, taskId} = task
   const {service} = integration || {}
   const statusTitle = `Card status: ${labels.taskStatus[status].label}`
@@ -58,22 +79,22 @@ const OutcomeCard = (props) => {
   }`
   const cardIsActive = cardHasFocus || cardHasHover || cardHasMenuOpen
   return (
-    <div className={rootStyles}>
+    <RootCard cardHasHover={cardHasHover} cardHasFocus={cardHasFocus} hasDragStyles={hasDragStyles}>
       <TaskWatermark service={service} />
-      <div className={css(styles.contentBlock)}>
-        <div className={css(styles.cardTopMeta)}>
-          <div className={css(styles.statusIndicatorBlock)} title={statusIndicatorTitle}>
+      <ContentBlock>
+        <CardTopMeta>
+          <StatusIndicatorBlock title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
-          </div>
+          </StatusIndicatorBlock>
           <EditingStatusContainer
             cardIsActive={cardIsActive}
             isEditing={isEditing}
             task={task}
             toggleMenuState={toggleMenuState}
           />
-        </div>
+        </CardTopMeta>
         <TaskEditor
           editorRef={editorRef}
           editorState={editorState}
@@ -95,8 +116,8 @@ const OutcomeCard = (props) => {
           task={task}
           toggleMenuState={toggleMenuState}
         />
-      </div>
-    </div>
+      </ContentBlock>
+    </RootCard>
   )
 }
 
@@ -117,51 +138,12 @@ OutcomeCard.propTypes = {
   setEditorRef: PropTypes.func.isRequired,
   setEditorState: PropTypes.func,
   trackEditingComponent: PropTypes.func,
-  styles: PropTypes.object,
   teamMembers: PropTypes.array,
   toggleMenuState: PropTypes.func.isRequired
 }
 
-const styleThunk = () => ({
-  root: {
-    ...cardRootStyles,
-    borderTop: 0,
-    outline: 'none',
-    padding: `${ui.cardPaddingBase} 0 0`,
-    transition: `box-shadow ${ui.transition[0]}`
-  },
-
-  // hover before focus, it matters
-
-  cardHasHover: {
-    boxShadow: cardHoverShadow
-  },
-
-  cardHasFocus: {
-    boxShadow: cardFocusShadow
-  },
-
-  hasDragStyles: {
-    boxShadow: 'none'
-  },
-
-  cardTopMeta: {
-    paddingBottom: '.5rem'
-  },
-
-  statusIndicatorBlock: {
-    display: 'flex',
-    paddingLeft: ui.cardPaddingBase
-  },
-
-  contentBlock: {
-    position: 'relative',
-    zIndex: ui.ziMenu - 1
-  }
-})
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(OutcomeCard),
+  OutcomeCard,
   graphql`
     fragment OutcomeCard_task on Task {
       taskId: id

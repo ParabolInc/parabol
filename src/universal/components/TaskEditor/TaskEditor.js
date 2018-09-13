@@ -1,11 +1,9 @@
-import {css} from 'aphrodite-local-styles/no-important'
 import {Editor, EditorState, getDefaultKeyBinding} from 'draft-js'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import withMarkdown from 'universal/components/TaskEditor/withMarkdown'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import withStyles from 'universal/styles/withStyles'
 import {textTags} from 'universal/utils/constants'
 import entitizeText from 'universal/utils/draftjs/entitizeText'
 import './Draft.css'
@@ -13,6 +11,32 @@ import withKeyboardShortcuts from './withKeyboardShortcuts'
 import withLinks from './withLinks'
 import withSuggestions from './withSuggestions'
 import withEmojis from 'universal/components/TaskEditor/withEmojis'
+import styled, {css} from 'react-emotion'
+
+const RootEditor = styled('div')(({noText}) => ({
+  fontSize: ui.cardContentFontSize,
+  lineHeight: ui.cardContentLineHeight,
+  padding: `0 ${ui.cardPaddingBase}`,
+  height: noText ? '2.75rem' : undefined // Use this if the placeholder wraps
+}))
+
+const editorBlockquoteStyles = css({
+  fontStyle: 'italic',
+  borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
+  margin: '.5rem 0',
+  padding: '0 .5rem'
+})
+
+const codeBlockStyles = css({
+  backgroundColor: appTheme.palette.light,
+  borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
+  borderRadius: '.0625rem',
+  fontFamily: appTheme.typography.monospace,
+  fontSize: appTheme.typography.s2,
+  lineHeight: appTheme.typography.s6,
+  margin: '0',
+  padding: '0 .5rem'
+})
 
 class TaskEditor extends Component {
   static propTypes = {
@@ -50,12 +74,11 @@ class TaskEditor extends Component {
   }
 
   blockStyleFn = (contentBlock) => {
-    const {styles} = this.props
     const type = contentBlock.getType()
     if (type === 'blockquote') {
-      return css(styles.editorBlockquote)
+      return editorBlockquoteStyles
     } else if (type === 'code-block') {
-      return css(styles.codeBlock)
+      return codeBlockStyles
     }
     return undefined
   }
@@ -147,13 +170,12 @@ class TaskEditor extends Component {
   }
 
   render () {
-    const {editorState, readOnly, renderModal, styles, setEditorRef} = this.props
+    const {editorState, readOnly, renderModal, setEditorRef} = this.props
     // console.log('es', Editor.getClipboard())
     const noText = !editorState.getCurrentContent().hasText()
-    const rootStyles = css(styles.root, noText && styles.rootNoText)
     const placeholder = 'Describe what “Done” looks like'
     return (
-      <div className={rootStyles}>
+      <RootEditor noText={noText}>
         <Editor
           blockStyleFn={this.blockStyleFn}
           editorState={editorState}
@@ -168,41 +190,11 @@ class TaskEditor extends Component {
           ref={setEditorRef}
         />
         {renderModal && renderModal()}
-      </div>
+      </RootEditor>
     )
   }
 }
 
-const styleThunk = () => ({
-  root: {
-    fontSize: ui.cardContentFontSize,
-    lineHeight: ui.cardContentLineHeight,
-    padding: `0 ${ui.cardPaddingBase}`
-  },
-
-  rootNoText: {
-    height: '2.75rem' // Use this if the placeholder wraps
-  },
-
-  editorBlockquote: {
-    fontStyle: 'italic',
-    borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
-    margin: '.5rem 0',
-    padding: '0 .5rem'
-  },
-
-  codeBlock: {
-    backgroundColor: appTheme.palette.light,
-    borderLeft: `.125rem ${appTheme.palette.mid40a} solid`,
-    borderRadius: '.0625rem',
-    fontFamily: appTheme.typography.monospace,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s6,
-    margin: '0',
-    padding: '0 .5rem'
-  }
-})
-
 export default withSuggestions(
-  withEmojis(withLinks(withMarkdown(withKeyboardShortcuts(withStyles(styleThunk)(TaskEditor)))))
+  withEmojis(withLinks(withMarkdown(withKeyboardShortcuts(TaskEditor))))
 )
