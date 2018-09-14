@@ -10,6 +10,8 @@ const {GQL_START, GQL_STOP} = ServerMessageTypes
 const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
 export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) => {
   const {id: opId, type, payload} = req.body
+  const isTrebuchetClient =
+    typeof opId !== 'undefined' || typeof type !== 'undefined' || typeof payload !== 'undefined'
   const connectionId = req.headers['x-correlation-id']
   const authToken = req.user || {}
   const connectionContext = connectionId
@@ -30,6 +32,13 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) =
     res.sendStatus(200)
   }
 
+  if (!isTrebuchetClient) {
+    // act like a regular GraphQL HTTP endpoint
+    const result = await wsGraphQLHandler(connectionContext, req.body)
+    res.send(result)
+    return
+  }
+
   if (type === GQL_START) {
     if (!isQueryProvided(payload)) {
       // no need to be user friendly because users aren't hitting this API with bespoke queries
@@ -47,4 +56,6 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) =
   } else if (type === GQL_STOP) {
     relayUnsubscribe(connectionContext.subs, opId)
   }
+  // Should never get here
+  res.sendStatus(500)
 }
