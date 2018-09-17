@@ -9,9 +9,8 @@ import sendSentryEvent from 'server/utils/sendSentryEvent'
 const {GQL_START, GQL_STOP} = ServerMessageTypes
 const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
 export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) => {
-  const {id: opId, type, payload} = req.body
-  const isTrebuchetClient =
-    typeof opId !== 'undefined' || typeof type !== 'undefined' || typeof payload !== 'undefined'
+  const {id: opId, type, payload, query, operationName} = req.body
+  const isVanillaGraphQLOverHTTP = query && operationName
   const connectionId = req.headers['x-correlation-id']
   const authToken = req.user || {}
   const connectionContext = connectionId
@@ -32,9 +31,9 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) =
     res.sendStatus(200)
   }
 
-  if (!isTrebuchetClient) {
+  if (isVanillaGraphQLOverHTTP) {
     // act like a regular GraphQL HTTP endpoint
-    const result = await wsGraphQLHandler(connectionContext, req.body)
+    const result = await wsGraphQLHandler(connectionContext, {query, operationName})
     res.send(result)
     return
   }
