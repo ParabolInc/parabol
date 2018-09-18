@@ -8,7 +8,6 @@ import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
-import ui from 'universal/styles/ui'
 import {reflectionCardMaxHeight} from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
@@ -27,7 +26,7 @@ interface State {
 }
 
 const CardStack = styled('div')(({isVisible}: {isVisible: boolean}) => ({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   display: 'flex',
   justifyContent: 'center',
   margin: '2rem 0',
@@ -39,6 +38,55 @@ const CenteredCardStack = styled('div')({
   position: 'relative'
 })
 
+const CARD_IN_STACK = {
+  backgroundColor: 'white',
+  borderRadius: 4,
+  boxShadow: cardShadow,
+  cursor: 'pointer',
+  overflow: 'hidden',
+  position: 'absolute',
+  pointerEvents: 'none',
+  zIndex: 1,
+  // hides partially overflown top lines of text
+  '&::before': {
+    background: 'white',
+    content: '""',
+    height: 12,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 200
+  },
+  // hides partially overflown bottom lines of text
+  '&::after': {
+    background: 'white',
+    bottom: 0,
+    content: '""',
+    height: 12,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    zIndex: 200
+  },
+  '& > div': {
+    bottom: 0,
+    boxShadow: 'none',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    zIndex: 100
+  },
+  '& > div > div': {
+    boxShadow: 'none'
+  }
+}
+
+const STACK_PERSPECTIVE_X = 8
+const STACK_PERSPECTIVE_Y = 6
+// for some reason the parent divs are 4px taller, not sure why #shrug
+const STACK_PERSPECTIVE_PARENT_DIV_ADJUSTMENT = 4
+
 const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}) => {
   switch (count - idx) {
     case 1:
@@ -49,40 +97,19 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
       }
     case 2:
       return {
-        backgroundColor: 'white',
-        borderRadius: 4,
-        boxShadow: cardShadow,
-        cursor: 'pointer',
-        overflow: 'hidden',
-        position: 'absolute',
-        pointerEvents: 'none',
-        top: 6,
-        bottom: -2,
-        transform: 'scale(0.97)',
-        width: ui.retroCardWidth,
-        zIndex: 1,
-        // this feels cleaner than passing a prop, but I don't love it
-        '& > div > div': {
-          color: 'white'
-        }
+        ...CARD_IN_STACK,
+        bottom: -(STACK_PERSPECTIVE_Y - STACK_PERSPECTIVE_PARENT_DIV_ADJUSTMENT),
+        left: STACK_PERSPECTIVE_X,
+        right: STACK_PERSPECTIVE_X,
+        top: STACK_PERSPECTIVE_Y
       }
     case 3:
       return {
-        backgroundColor: 'white',
-        borderRadius: 4,
-        boxShadow: cardShadow,
-        cursor: 'pointer',
-        overflow: 'hidden',
-        position: 'absolute',
-        pointerEvents: 'none',
-        top: 6,
-        bottom: -8,
-        transform: 'scale(0.94)',
-        width: ui.retroCardWidth,
-        zIndex: 1,
-        '& > div > div': {
-          color: 'white'
-        }
+        ...CARD_IN_STACK,
+        bottom: -(STACK_PERSPECTIVE_Y * 2 - STACK_PERSPECTIVE_PARENT_DIV_ADJUSTMENT),
+        left: STACK_PERSPECTIVE_X * 2,
+        right: STACK_PERSPECTIVE_X * 2,
+        top: STACK_PERSPECTIVE_Y * 2
       }
     default:
       return {}
