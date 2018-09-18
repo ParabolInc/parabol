@@ -106,7 +106,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
         top: STACK_PERSPECTIVE_Y,
         '& > div > div': {
           transform: 'scale(.95)',
-          transformOrigin: 'top left',
+          transformOrigin: 'left',
           width: reflectionCardWidth
         }
       }
