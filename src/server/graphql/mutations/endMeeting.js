@@ -28,7 +28,8 @@ export default {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    if (!isTeamMember(authToken, teamId)) {
+    // called by endOldMeetings, so SU is OK
+    if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return sendTeamAccessError(authToken, teamId)
     }
     const meeting = await r
@@ -50,6 +51,7 @@ export default {
     // RESOLUTION
     const now = new Date()
     const {id: meetingId} = meeting
+    const teamDoc = await r.table('Team').get(teamId)
     const completedMeeting = await r
       .table('Task')
       .getAll(teamId, {index: 'teamId'})
@@ -97,7 +99,7 @@ export default {
                 .count()
                 .default(0),
               endedAt: now,
-              facilitator: `${authToken.sub}::${teamId}`,
+              facilitator: teamDoc.activeFacilitator,
               successExpression: makeSuccessExpression(),
               successStatement: makeSuccessStatement(),
               invitees: r

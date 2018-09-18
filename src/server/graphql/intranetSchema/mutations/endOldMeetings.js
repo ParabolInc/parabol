@@ -4,6 +4,7 @@ import endMeeting from 'server/graphql/mutations/endMeeting'
 import {requireSU} from 'server/utils/authorization'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import {OLD_MEETING_AGE} from 'server/utils/serverConstants'
+import endNewMeeting from 'server/graphql/mutations/endNewMeeting'
 
 const endOldMeetings = {
   type: GraphQLInt,
@@ -16,26 +17,38 @@ const endOldMeetings = {
 
     // RESOLUTION
     const activeThresh = new Date(Date.now() - OLD_MEETING_AGE)
-    const idPairs = await r
-      .table('Meeting')
-      .group({index: 'teamId'}) // for each team
-      .max('createdAt') // get the most recent meeting only
-      .ungroup()('reduction') // return as sequence
-      .filter({endedAt: null}, {default: true}) // filter to unended meetings
-      .filter(r.row('createdAt').le(activeThresh))('teamId') // filter to old meetings, return teamIds
-      .do((teamIds) =>
-        r
-          .table('TeamMember')
-          .getAll(r.args(teamIds), {index: 'teamId'})
-          .filter({isLead: true})
-          .pluck('teamId', 'userId')
-      ) // join by team leader userId
-    const promises = idPairs.map(async ({teamId, userId}) => {
-      await endMeeting.resolve(undefined, {teamId}, {authToken, dataLoader})
-      sendSegmentEvent('endOldMeeting', userId, {teamId})
+    const meetingIdsInProgress = await r.table('Team').filter((team) =>
+      team('meetingId')
+        .default(null)
+        .ne(null)
+    )('meetingId')
+
+    const {legacyMeetingTeamIds, newMeetingTeamIds} = r({
+      legacyMeetingTeamIds: r
+        .table('Meeting')
+        .getAll(meetingIdsInProgress, {index: 'id'})
+        .filter((meeting) => meeting('createdAt').le(activeThresh))('teamId'),
+      newMeetingTeamIds: r
+        .table('Meeting')
+        .getAll(meetingIdsInProgress, {index: 'id'})
+        .filter((meeting) => meeting('createdAt').le(activeThresh))('teamId')
     })
-    await Promise.all(promises)
-    return idPairs.length
+
+    await Promise.all(
+      legacyMeetingTeamIds.map((teamId) => {
+        sendSegmentEvent('endOldMeeting', authToken.sub, {teamId})
+        return endMeeting.resolve(undefined, {teamId}, {authToken, socketId: '', dataLoader})
+      })
+    )
+
+    await Promise.all(
+      newMeetingTeamIds.map((teamId) => {
+        sendSegmentEvent('endOldMeeting', authToken.sub, {teamId})
+        return endNewMeeting.resolve(undefined, {teamId}, {authToken, socketId: '', dataLoader})
+      })
+    )
+
+    return legacyMeetingTeamIds.length + newMeetingTeamIds.length
   }
 }
 
