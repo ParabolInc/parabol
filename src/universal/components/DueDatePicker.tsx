@@ -61,7 +61,7 @@ class DueDatePicker extends React.Component<Props> {
         {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
         <DayPicker
           disabledDays={{before: now}}
-          fromMonth={now}
+          fromMonth={selectedDate || now}
           initialMonth={selectedDate || now}
           onDayClick={this.handleDayClick}
           selectedDays={selectedDate}
