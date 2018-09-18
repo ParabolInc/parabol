@@ -66,23 +66,34 @@ const CARD_IN_STACK = {
   '&::after': {
     ...HIDE_LINES_HACK_STYLES,
     bottom: 0
-  },
-  '& > div': {
-    bottom: 0,
-    boxShadow: 'none',
-    // override inline-block from ReflectionCard.tsx
-    // for stack to line up right b/c inline-block breathes vertically
-    display: 'block',
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 100
-  },
-  '& > div > div': {
-    boxShadow: 'none'
   }
+  // '& > div': {
+  //   bottom: 0,
+  //   boxShadow: 'none',
+  //   // override inline-block from ReflectionCard.tsx
+  //   // for stack to line up right b/c inline-block breathes vertically
+  //   display: 'block',
+  //   left: 0,
+  //   position: 'absolute',
+  //   right: 0,
+  //   top: 0,
+  //   zIndex: 100
+  // },
+  // '& > div > div': {
+  //   boxShadow: 'none'
+  // }
 }
+
+const StyledReflectionCard = styled(ReflectionCard)({
+  bottom: 0,
+  boxShadow: 'none',
+  display: 'block',
+  left: 0,
+  position: 'absolute',
+  right: 0,
+  top: 0,
+  zIndex: 100
+})
 
 const STACK_PERSPECTIVE_X = 8
 const STACK_PERSPECTIVE_Y = 6
@@ -225,7 +236,7 @@ class ReflectionStack extends Component<Props, State> {
                     count={maxStack.length}
                     innerRef={idx === maxStack.length - 1 ? this.firstReflectionRef : undefined}
                   >
-                    <ReflectionCard
+                    <StyledReflectionCard
                       meetingId={meetingId}
                       reflection={reflection}
                       phaseItemId={phaseItemId}
