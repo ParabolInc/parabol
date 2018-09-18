@@ -55,6 +55,4 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) =
   } else if (type === GQL_STOP) {
     relayUnsubscribe(connectionContext.subs, opId)
   }
-  // Should never get here
-  res.sendStatus(500)
 }
