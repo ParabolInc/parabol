@@ -21,7 +21,6 @@ import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMu
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
-  className?: string
   handleChange?: () => void
   isDraggable?: boolean
   reflection: ReflectionCard_reflection
@@ -149,7 +148,6 @@ class ReflectionCard extends Component<Props, State> {
 
   render () {
     const {
-      className,
       handleChange,
       error,
       shadow = cardShadow,
@@ -166,7 +164,7 @@ class ReflectionCard extends Component<Props, State> {
       reflectionId
     } = reflection
     return (
-      <ReflectionCardRoot className={className} shadow={shadow}>
+      <ReflectionCardRoot shadow={shadow}>
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
