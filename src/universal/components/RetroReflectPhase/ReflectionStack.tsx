@@ -38,6 +38,16 @@ const CenteredCardStack = styled('div')({
   position: 'relative'
 })
 
+const HIDE_LINES_HACK_STYLES = {
+  background: 'white',
+  content: '""',
+  height: 12,
+  left: 0,
+  position: 'absolute',
+  right: 0,
+  zIndex: 200
+}
+
 const CARD_IN_STACK = {
   backgroundColor: 'white',
   borderRadius: 4,
@@ -49,25 +59,13 @@ const CARD_IN_STACK = {
   zIndex: 1,
   // hides partially overflown top lines of text
   '&::before': {
-    background: 'white',
-    content: '""',
-    height: 12,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    zIndex: 200
+    ...HIDE_LINES_HACK_STYLES,
+    top: 0
   },
   // hides partially overflown bottom lines of text
   '&::after': {
-    background: 'white',
-    bottom: 0,
-    content: '""',
-    height: 12,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    zIndex: 200
+    ...HIDE_LINES_HACK_STYLES,
+    bottom: 0
   },
   '& > div': {
     bottom: 0,
