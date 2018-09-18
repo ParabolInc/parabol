@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, Ref} from 'react'
 import {Subtract} from 'types/generics'
 import getDisplayName from 'universal/utils/getDisplayName'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
@@ -8,13 +8,13 @@ export interface ErrorObject {
 }
 
 export interface WithMutationProps {
-  dirty?: boolean
-  error?: ErrorObject | string | undefined
+  dirty: boolean | undefined
+  error: ErrorObject | string | undefined
   onCompleted: (res?: any, errors?: any) => void
   onError: (error?: any) => void
   setDirty: () => void
   submitMutation: () => void
-  submitting?: boolean
+  submitting: boolean | undefined
 }
 
 export interface MutationServerError {
@@ -22,13 +22,7 @@ export interface MutationServerError {
   path: Array<string>
 }
 
-// interface State {
-//   submitting: boolean,
-//   error: any,
-//   dirty: boolean
-// }
-
-const formatError = (
+export const formatError = (
   rawError?: string | ErrorObject | MutationServerError | Array<MutationServerError> | undefined
 ) => {
   const firstError = Array.isArray(rawError) ? rawError[0] : rawError
@@ -42,7 +36,7 @@ const formatError = (
 const withMutationProps = <P extends WithMutationProps>(
   ComposedComponent: React.ComponentType<P>
 ) => {
-  return class WithMutationProps extends Component<Subtract<P, WithMutationProps>> {
+  class MutationProps extends Component<Subtract<P, WithMutationProps>> {
     static displayName = `WithMutationProps(${getDisplayName(ComposedComponent)})`
 
     _mounted: boolean = false
@@ -98,9 +92,10 @@ const withMutationProps = <P extends WithMutationProps>(
 
     render () {
       const {dirty, error, submitting} = this.state
+      // https://github.com/Microsoft/TypeScript/issues/10727
+      const {forwardedRef, ...props} = this.props as any
       return (
         <ComposedComponent
-          {...this.props}
           dirty={dirty}
           error={error}
           setDirty={this.setDirty}
@@ -108,10 +103,15 @@ const withMutationProps = <P extends WithMutationProps>(
           submitMutation={this.submitMutation}
           onCompleted={this.onCompleted}
           onError={this.onError}
+          ref={forwardedRef}
+          {...props}
         />
       )
     }
   }
+  return React.forwardRef((props: Subtract<P, WithMutationProps>, ref: Ref<any> | undefined) => (
+    <MutationProps {...props} forwardedRef={ref} />
+  ))
 }
 
 export default withMutationProps

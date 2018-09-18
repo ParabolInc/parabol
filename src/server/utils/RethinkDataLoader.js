@@ -199,6 +199,23 @@ export default class RethinkDataLoader {
       primeStandardLoader(this.tasks, tasks)
       return userIds.map(() => tasks)
     }, this.dataloaderOptions)
+    this.teamsByOrgId = makeCustomLoader(async (orgIds) => {
+      const r = getRethink()
+      const tms = this.authToken.tms || []
+      const teams = await r
+        .table('Team')
+        .getAll(r.args(tms), {index: 'id'})
+        .filter((team) => r(orgIds).contains(team('orgId')))
+        .filter((team) =>
+          team('isArchived')
+            .default(false)
+            .ne(true)
+        )
+      primeStandardLoader(this.teams, teams)
+      return orgIds.map((orgId) => {
+        return teams.filter((team) => team.orgId === orgId)
+      })
+    }, this.dataloaderOptions)
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink()
       const teamMembers = await r

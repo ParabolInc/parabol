@@ -6,7 +6,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {Legitity} from 'universal/validation/legitify'
+import Legitity from 'universal/validation/Legitity'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {

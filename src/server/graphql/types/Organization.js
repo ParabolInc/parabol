@@ -18,6 +18,7 @@ import User from 'server/graphql/types/User'
 import {getUserId} from 'server/utils/authorization'
 import {BILLING_LEADER} from 'universal/utils/constants'
 import {resolveForBillingLeaders} from 'server/graphql/resolvers'
+import Team from 'server/graphql/types/Team'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -52,12 +53,19 @@ const Organization = new GraphQLObjectType({
       }
     },
     name: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the organization'
     },
     picture: {
       type: GraphQLURLType,
       description: 'The org avatar'
+    },
+    teams: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
+      description: 'all the teams the viewer is on in the organization',
+      resolve: async ({id: orgId}, args, {dataLoader}) => {
+        return dataLoader.get('teamsByOrgId').load(orgId)
+      }
     },
     tier: {
       type: TierEnum,

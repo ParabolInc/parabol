@@ -4,7 +4,7 @@ import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars'
 import LoadingView from 'universal/components/LoadingView/LoadingView'
-import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName'
+import EditableTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditableTeamName'
 import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
 import UnpaidTeamModalRoot from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot'
 import ui from 'universal/styles/ui'
@@ -19,9 +19,6 @@ import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import DashContent from 'universal/components/Dashboard/DashContent'
-
-// use the same object so the EditTeamName doesn't rerender so gosh darn always
-const initialValues = {teamName: ''}
 
 const TeamViewNavBlock = styled('div')({
   display: 'flex',
@@ -83,12 +80,7 @@ class Team extends Component {
     const {teamId, teamName, isPaid, meetingId, newMeeting} = team
     const hasActiveMeeting = Boolean(meetingId)
     const hasOverlay = hasActiveMeeting || !isPaid
-    initialValues.teamName = teamName
-    const DashHeaderInfoTitle = isSettings ? (
-      <EditTeamName initialValues={initialValues} teamName={teamName} teamId={teamId} />
-    ) : (
-      ''
-    )
+    const DashHeaderInfoTitle = isSettings ? <EditableTeamName team={team} /> : ''
     const modalLayout = hasMeetingAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain
 
     return (
@@ -169,6 +161,7 @@ export default createFragmentContainer(
         meetingType
       }
       ...DashboardAvatars_team
+      ...EditableTeamName_team
     }
   `
 )

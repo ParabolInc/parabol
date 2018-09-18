@@ -34,25 +34,26 @@ const lastIndexOfDelim = (str, delims = [';', ',']) => {
   return highscore
 }
 
-export const inviteesRaw = (value) =>
-  value.test((raw) => {
-    if (!raw) return undefined
-    const parsedAddresses = parseEmailAddressList(raw)
-    if (!parsedAddresses) {
-      let i = lastIndexOfDelim(raw)
-      while (i > 0) {
-        const lastGoodString = raw.substr(0, i)
-        const parseable = parseEmailAddressList(lastGoodString)
-        if (parseable) {
-          const startingIdx = lastIndexOfDelim(lastGoodString) + 1
-          return `The email after ${lastGoodString.substr(startingIdx)} doesn’t look quite right`
-        }
-        i = lastIndexOfDelim(lastGoodString)
+export const inviteesRawTest = (raw) => {
+  if (!raw) return undefined
+  const parsedAddresses = parseEmailAddressList(raw)
+  if (!parsedAddresses) {
+    let i = lastIndexOfDelim(raw)
+    while (i > 0) {
+      const lastGoodString = raw.substr(0, i)
+      const parseable = parseEmailAddressList(lastGoodString)
+      if (parseable) {
+        const startingIdx = lastIndexOfDelim(lastGoodString) + 1
+        return `The email after ${lastGoodString.substr(startingIdx)} doesn’t look quite right`
       }
-      return 'That first email doesn’t look right'
+      i = lastIndexOfDelim(lastGoodString)
     }
-    return undefined
-  })
+    return 'That first email doesn’t look right'
+  }
+  return undefined
+}
+
+export const inviteesRaw = (value) => value.test(inviteesRawTest)
 
 export const id = (value) => value.matches(idRegex)
 
@@ -116,6 +117,14 @@ export const teamName = (value) =>
     .required('“The nameless wonder” is better than nothing')
     .min(2, 'The “A Team” had a longer name than that')
     .max(50, 'That isn’t very memorable. Maybe shorten it up?')
+
+export const makeTeamNameSchema = (teamNames) => (value) =>
+  value
+    .trim()
+    .required('“The nameless wonder” is better than nothing')
+    .min(2, 'The “A Team” had a longer name than that')
+    .max(50, 'That isn’t very memorable. Maybe shorten it up?')
+    .test((val) => teamNames.includes(val) && 'That name is already taken')
 
 export const url = (value) => value.matches(urlRegex)
 

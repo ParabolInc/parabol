@@ -40,10 +40,12 @@ export default {
       if (!userOrgDoc) return sendOrgAccessError(authToken, orgId)
 
       // VALIDATION
+      const orgTeams = await dataLoader.get('teamsByOrgId').load(orgId)
+      const orgTeamNames = orgTeams.map((team) => team.name)
       const {
         data: {invitees, newTeam},
         errors
-      } = addTeamValidation()(args)
+      } = addTeamValidation(orgTeamNames)(args)
       if (Object.keys(errors).length) {
         return sendFailedInputValidation(authToken, errors)
       }

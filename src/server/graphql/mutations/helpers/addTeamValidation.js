@@ -1,7 +1,12 @@
 import legitify from 'universal/validation/legitify'
-import {requiredId, fullName, requiredEmail, teamName} from 'universal/validation/templates'
+import {
+  fullName,
+  makeTeamNameSchema,
+  requiredEmail,
+  requiredId
+} from 'universal/validation/templates'
 
-export default function addTeamValidation () {
+export default function addTeamValidation (teamNames) {
   return legitify({
     invitees: [
       {
@@ -10,7 +15,7 @@ export default function addTeamValidation () {
       }
     ],
     newTeam: {
-      name: teamName,
+      name: makeTeamNameSchema(teamNames),
       orgId: requiredId
     }
   })

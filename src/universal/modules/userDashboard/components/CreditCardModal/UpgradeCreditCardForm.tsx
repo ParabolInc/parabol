@@ -116,7 +116,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
   orgId: string
   onSuccess?: () => void
   stripeCard: any
-  error?: Errors
+  error: Errors
 }
 
 interface State {
