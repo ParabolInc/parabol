@@ -8,7 +8,7 @@ import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
-import {reflectionCardMaxHeight} from 'universal/styles/cards'
+import {reflectionCardMaxHeight, reflectionCardWidth} from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
@@ -78,9 +78,6 @@ const CARD_IN_STACK = {
     right: 0,
     top: 0,
     zIndex: 100
-  },
-  '& > div > div': {
-    boxShadow: 'none'
   }
 }
 
@@ -96,6 +93,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
         zIndex: 2,
         '& > div': {
           // override inline-block from ReflectionCard.tsx
+          // for stack to line up right b/c inline-block breathes vertically
           display: 'block'
         }
       }
@@ -105,7 +103,12 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
         bottom: -STACK_PERSPECTIVE_Y,
         left: STACK_PERSPECTIVE_X,
         right: STACK_PERSPECTIVE_X,
-        top: STACK_PERSPECTIVE_Y
+        top: STACK_PERSPECTIVE_Y,
+        '& > div > div': {
+          transform: 'scale(.95)',
+          transformOrigin: 'top left',
+          width: reflectionCardWidth
+        }
       }
     case 3:
       return {
