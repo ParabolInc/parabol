@@ -255,7 +255,6 @@ const ui = {
   cardButtonBorderColor: appTheme.palette.mid50l,
   cardContentFontSize: '.875rem',
   cardContentLineHeight: '1.25rem',
-  cardMinHeight: '7.75rem',
   cardPaddingBase: '.9375rem',
 
   // Card Controls (tapping these makes cards)
