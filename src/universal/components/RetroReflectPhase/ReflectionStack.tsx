@@ -70,9 +70,13 @@ const CARD_IN_STACK = {
   '& > div': {
     bottom: 0,
     boxShadow: 'none',
+    // override inline-block from ReflectionCard.tsx
+    // for stack to line up right b/c inline-block breathes vertically
+    display: 'block',
     left: 0,
     position: 'absolute',
     right: 0,
+    top: 0,
     zIndex: 100
   },
   '& > div > div': {
@@ -82,8 +86,6 @@ const CARD_IN_STACK = {
 
 const STACK_PERSPECTIVE_X = 8
 const STACK_PERSPECTIVE_Y = 6
-// for some reason the parent divs are 4px taller, not sure why #shrug
-const STACK_PERSPECTIVE_PARENT_DIV_ADJUSTMENT = 4
 
 const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}) => {
   switch (count - idx) {
@@ -91,12 +93,16 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
       return {
         cursor: 'pointer',
         position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        '& > div': {
+          // override inline-block from ReflectionCard.tsx
+          display: 'block'
+        }
       }
     case 2:
       return {
         ...CARD_IN_STACK,
-        bottom: -(STACK_PERSPECTIVE_Y - STACK_PERSPECTIVE_PARENT_DIV_ADJUSTMENT),
+        bottom: -STACK_PERSPECTIVE_Y,
         left: STACK_PERSPECTIVE_X,
         right: STACK_PERSPECTIVE_X,
         top: STACK_PERSPECTIVE_Y
@@ -104,7 +110,7 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
     case 3:
       return {
         ...CARD_IN_STACK,
-        bottom: -(STACK_PERSPECTIVE_Y * 2 - STACK_PERSPECTIVE_PARENT_DIV_ADJUSTMENT),
+        bottom: -(STACK_PERSPECTIVE_Y * 2),
         left: STACK_PERSPECTIVE_X * 2,
         right: STACK_PERSPECTIVE_X * 2,
         top: STACK_PERSPECTIVE_Y * 2
