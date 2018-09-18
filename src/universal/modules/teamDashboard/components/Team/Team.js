@@ -3,7 +3,6 @@ import React, {Component} from 'react'
 import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars'
-import LoadingView from 'universal/components/LoadingView/LoadingView'
 import EditTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditTeamName'
 import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
 import UnpaidTeamModalRoot from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot'
@@ -79,7 +78,7 @@ class Team extends Component {
 
   render () {
     const {children, hasMeetingAlert, isSettings, team} = this.props
-    if (!team) return <LoadingView />
+    if (!team) return null
     const {teamId, teamName, isPaid, meetingId, newMeeting} = team
     const hasActiveMeeting = Boolean(meetingId)
     const hasOverlay = hasActiveMeeting || !isPaid
