@@ -65,13 +65,12 @@ class EditableTeamName extends Component<Props> {
   }
 
   render () {
-    const {error, onError, team} = this.props
+    const {error, team} = this.props
     const {teamName} = team
     return (
       <InheritedStyles>
         <EditableText
           error={error as string}
-          onError={onError}
           handleSubmit={this.handleSubmit}
           initialValue={teamName}
           maxLength={50}

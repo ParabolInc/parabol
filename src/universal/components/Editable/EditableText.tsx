@@ -64,7 +64,6 @@ interface Props {
   hideIcon?: boolean
   initialValue: string
   maxLength: number
-  onError: (err?: string) => void
   placeholder: string
 }
 
