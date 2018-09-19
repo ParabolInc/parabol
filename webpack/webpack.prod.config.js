@@ -18,6 +18,7 @@ const presetReact = require('@babel/preset-react')
 const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread')
 const pluginClassProps = require('@babel/plugin-proposal-class-properties')
 const pluginRelay = require('babel-plugin-relay')
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
 getDotenv.default()
@@ -98,6 +99,13 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'src/server/template.html'
+    }),
+    new ScriptExtHtmlWebpackPlugin({
+      custom: {
+        test: /\.js$/,
+        attribute: 'onerror',
+        value: 'fallback(this)'
+      }
     }),
     new CleanWebpackPlugin([path.join(__dirname, '../build/*.*')], {
       root: path.join(__dirname, '..'),
