@@ -7,6 +7,7 @@ import ReflectionEditorWrapper from 'universal/components/ReflectionEditorWrappe
 import ReflectionFooter from 'universal/components/ReflectionFooter'
 import StyledError from 'universal/components/StyledError'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
+import UserDraggingHeader from 'universal/components/UserDraggingHeader'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -15,6 +16,7 @@ import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutati
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import {cardShadow} from 'universal/styles/elevation'
+// import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -41,11 +43,13 @@ interface State {
 interface ReflectionCardRootProps {
   isClosing?: boolean | null
   shadow?: string | null
+  hasDragLock?: boolean | null
 }
 
 export const ReflectionCardRoot = styled('div')(
   {
     backgroundColor: ui.palette.white,
+    // border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
     // useful for drag preview
     display: 'inline-block',
@@ -57,7 +61,12 @@ export const ReflectionCardRoot = styled('div')(
   ({isClosing, shadow}: ReflectionCardRootProps) =>
     shadow !== null && {
       boxShadow: isClosing ? cardShadow : shadow
-    }
+    },
+  ({hasDragLock}: ReflectionCardRootProps) =>
+    hasDragLock &&
+      {
+      // borderColor: appTheme.palette.warm50a
+      }
 )
 
 class ReflectionCard extends Component<Props, State> {
@@ -169,6 +178,7 @@ class ReflectionCard extends Component<Props, State> {
     } = reflection
     const dragUser = dragContext && dragContext.dragUser
     const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
+    // TODO remove hasDragLock and UserDraggingHeader for this component as we don’t use that here anymore (TA)
     return (
       <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow} innerRef={innerRef}>
         {hasDragLock && <UserDraggingHeader user={dragUser} />}
@@ -203,6 +213,12 @@ export default createFragmentContainer(
   withAtmosphere(withMutationProps(ReflectionCard)),
   graphql`
     fragment ReflectionCard_reflection on RetroReflection {
+      dragContext {
+        dragUser {
+          id
+          ...UserDraggingHeader_user
+        }
+      }
       reflectionId: id
       reflectionGroupId
       content
