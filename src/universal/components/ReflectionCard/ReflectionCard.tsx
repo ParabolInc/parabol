@@ -178,6 +178,7 @@ class ReflectionCard extends Component<Props, State> {
     } = reflection
     const dragUser = dragContext && dragContext.dragUser
     const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
+    // TODO remove hasDragLock and UserDraggingHeader for this component as we don’t use that here anymore (TA)
     return (
       <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow} innerRef={innerRef}>
         {hasDragLock && <UserDraggingHeader user={dragUser} />}
