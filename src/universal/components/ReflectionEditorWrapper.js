@@ -7,8 +7,11 @@ import appTheme from 'universal/styles/theme/appTheme'
 import {textTags} from 'universal/utils/constants'
 import entitizeText from 'universal/utils/draftjs/entitizeText'
 import styled, {css} from 'react-emotion'
-import ui from 'universal/styles/ui'
-import {reflectionCardMaxHeight} from 'universal/styles/cards'
+import {
+  cardContentFontSize,
+  cardContentLineHeight,
+  reflectionCardMaxHeight
+} from 'universal/styles/cards'
 import withEmojis from 'universal/components/TaskEditor/withEmojis'
 
 type Props = {
@@ -50,7 +53,8 @@ const codeBlock = css({
 
 const EditorStyles = styled('div')(({userSelect}) => ({
   color: appTheme.palette.dark,
-  fontSize: ui.cardContentFontSize,
+  fontSize: cardContentFontSize,
+  lineHeight: cardContentLineHeight,
   maxHeight: reflectionCardMaxHeight,
   minHeight: '1rem',
   overflow: 'auto',

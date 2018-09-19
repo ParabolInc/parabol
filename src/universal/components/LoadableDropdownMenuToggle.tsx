@@ -1,4 +1,4 @@
-import React, {ComponentType} from 'react'
+import React, {ComponentType, ReactElement} from 'react'
 import styled from 'react-emotion'
 import FieldBlock from 'universal/components/FieldBlock/FieldBlock'
 import LoadableDropdownMenu from 'universal/components/LoadableDropdownMenu'
@@ -35,35 +35,41 @@ const DropdownBlock = styled('div')({
   width: '100%'
 })
 
-const InputBlock = styled('div')({
-  ...ui.fieldBaseStyles,
-  ...ui.fieldSizeStyles.medium,
-  ...makeFieldColorPalette('white'),
-  position: 'relative',
-  userSelect: 'none'
-})
+const InputBlock = styled('div')(
+  ({disabled}: {disabled: boolean}) => ({
+    ...ui.fieldBaseStyles,
+    ...ui.fieldSizeStyles.medium,
+    ...makeFieldColorPalette('white', !disabled),
+    position: 'relative',
+    userSelect: 'none'
+  }),
+  ({disabled}: {disabled: boolean}) => disabled && {...ui.fieldDisabled}
+)
 
 interface Props {
-  defaultText: string
+  defaultText: string | ReactElement<any>
+  disabled?: boolean
   LoadableComponent: ComponentType<any>
   queryVars?: object
 }
 
 const LoadableDropdownMenuToggle = (props: Props) => {
-  const {defaultText, queryVars, LoadableComponent} = props
+  const {defaultText, disabled, queryVars, LoadableComponent} = props
   return (
     <DropdownBlock>
       <FieldBlock>
-        <InputBlock tabIndex={1}>
+        <InputBlock disabled={!!disabled} tabIndex={1}>
           <span>{defaultText}</span>
-          <LoadableDropdownMenu
-            LoadableComponent={LoadableComponent}
-            maxHeight={350}
-            originAnchor={originAnchor}
-            queryVars={queryVars}
-            targetAnchor={targetAnchor}
-            toggle={<DownButtonIcon name="chevron-down" />}
-          />
+          {!disabled && (
+            <LoadableDropdownMenu
+              LoadableComponent={LoadableComponent}
+              maxHeight={350}
+              originAnchor={originAnchor}
+              queryVars={queryVars}
+              targetAnchor={targetAnchor}
+              toggle={<DownButtonIcon name='chevron-down' />}
+            />
+          )}
         </InputBlock>
       </FieldBlock>
     </DropdownBlock>

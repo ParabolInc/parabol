@@ -36,7 +36,12 @@ storiesOf('Reflect Phase', module)
   ))
   .add('editor', () => (
     <StoryProvider>
-      <PhaseItemEditor meetingId='123' retroPhaseItemId='124' reflectionStack={[]} />
+      <PhaseItemEditor
+        meetingId='123'
+        retroPhaseItemId='124'
+        nextSortOrder={() => 2}
+        phaseEditorRef={undefined as any}
+      />
     </StoryProvider>
   ))
   .add('health bar', () => (
@@ -56,6 +61,8 @@ storiesOf('Reflect Phase', module)
         reflectionStack={reflectionStack as any}
         meetingId='meet1'
         phaseItemId='pi1'
+        phaseRef={undefined as any}
+        phaseEditorRef={undefined as any}
       />
     </StoryProvider>
   ))
@@ -63,8 +70,11 @@ storiesOf('Reflect Phase', module)
     <StoryProvider>
       <PhaseItemColumn
         idx={0}
-        retroPhaseItem={{retroPhaseItemId: '123', question: 'What do?'} as any}
+        editorIds={[]}
+        retroPhaseItemId='123'
         meeting={meeting as any}
+        phaseRef={undefined as any}
+        question='What do'
       />
     </StoryProvider>
   ))

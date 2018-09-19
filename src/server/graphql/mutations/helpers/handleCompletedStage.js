@@ -11,9 +11,9 @@ import removeEmptyReflections from 'server/graphql/mutations/helpers/removeEmpty
  */
 const handleCompletedRetrospectiveStage = async (stage, meeting, dataLoader) => {
   if (stage.phaseType === REFLECT) {
-    // don't wait for the response from google
     const data = await removeEmptyReflections(meeting)
-    addEntitiesToReflections(meeting.id)
+    // wait for the response from google
+    await addEntitiesToReflections(meeting.id)
     return {[REFLECT]: data}
   } else if (stage.phaseType === GROUP) {
     const data = await addDefaultGroupTitles(meeting)

@@ -5,9 +5,9 @@ import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload'
 import {isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
-import updateTeamNameValidation from './helpers/updateTeamNameValidation'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import teamNameValidation from 'universal/validation/teamNameValidation'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -24,17 +24,18 @@ export default {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    if (!isTeamMember(authToken, updatedTeam.id)) {
-      return sendTeamAccessError(authToken, updatedTeam.id)
+    const teamId = updatedTeam.id
+    if (!isTeamMember(authToken, teamId)) {
+      return sendTeamAccessError(authToken, teamId)
     }
 
     // VALIDATION
-    const {
-      errors,
-      data: {id: teamId, name}
-    } = updateTeamNameValidation()(updatedTeam)
-    if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+    const team = await r.table('Team').get(teamId)
+    const orgTeams = await dataLoader.get('teamsByOrgId').load(team.orgId)
+    const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
+    const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)
+    if (error) {
+      return sendFailedInputValidation(authToken, error)
     }
 
     // RESOLUTION

@@ -1,4 +1,3 @@
-// @flow
 import React from 'react'
 import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import {PRO} from 'universal/utils/constants'
@@ -6,21 +5,26 @@ import TagPro from 'universal/components/Tag/TagPro'
 import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {NewTeamOrgDropdown_organizations} from '__generated__/NewTeamOrgDropdown_organizations.graphql'
 
-type Props = {
-  closePortal: () => void,
-  onChange: (orgId: string) => void,
-  organizations: Array<any>
+interface Props {
+  closePortal: () => void
+  defaultActiveIdx: number
+  onChange: (orgId: string) => void
+  organizations: NewTeamOrgDropdown_organizations
 }
 
 const NewTeamOrgDropdown = (props: Props) => {
-  const {onChange, organizations, closePortal} = props
+  const {defaultActiveIdx, onChange, organizations, closePortal} = props
+  console.log('active idx', defaultActiveIdx)
   return (
     <MenuWithShortcuts
       ariaLabel={'Select the organization the new team belongs to'}
       closePortal={closePortal}
+      defaultActiveIdx={defaultActiveIdx + 1}
     >
-      <DropdownMenuLabel>Select Organization:</DropdownMenuLabel>
+      <DropdownMenuLabel notMenuItem>Select Organization:</DropdownMenuLabel>
       {organizations.map((anOrg) => {
         return (
           <MenuItemWithShortcuts
@@ -41,4 +45,13 @@ const NewTeamOrgDropdown = (props: Props) => {
   )
 }
 
-export default NewTeamOrgDropdown
+export default createFragmentContainer(
+  NewTeamOrgDropdown,
+  graphql`
+    fragment NewTeamOrgDropdown_organizations on Organization @relay(plural: true) {
+      id
+      name
+      tier
+    }
+  `
+)

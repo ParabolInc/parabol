@@ -32,7 +32,8 @@ export default {
       .default(null)
     if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
     const {endedAt, meetingNumber, phases, teamId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
+    // called by endOldMeetings, SU is OK
+    if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return sendTeamAccessError(authToken, teamId)
     }
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)

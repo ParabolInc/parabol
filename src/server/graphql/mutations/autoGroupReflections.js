@@ -85,10 +85,8 @@ export default {
           .table('RetroReflection')
           .get(reflection('id'))
           .update({
-            entities: reflection('entities'),
             autoReflectionGroupId: reflection('reflectionGroupId'),
             reflectionGroupId: reflection('reflectionGroupId'),
-            retroPhaseItemId: reflection('retroPhaseItemId'),
             sortOrder: reflection('sortOrder'),
             updatedAt: now
           })

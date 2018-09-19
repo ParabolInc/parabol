@@ -88,6 +88,7 @@ const ChitSection = styled('div')({
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
+  editorIds: ReadonlyArray<string> | null
   meeting: PhaseItemColumn_meeting
   phaseRef: React.RefObject<HTMLDivElement>
   retroPhaseItemId: string
@@ -132,6 +133,7 @@ class PhaseItemColumn extends Component<Props> {
   render () {
     const {
       atmosphere: {viewerId},
+      editorIds,
       idx,
       meeting,
       phaseRef,
@@ -141,7 +143,7 @@ class PhaseItemColumn extends Component<Props> {
     const {
       facilitatorUserId,
       meetingId,
-      localPhase: {editorIds = [], focusedPhaseItemId},
+      localPhase: {focusedPhaseItemId},
       localStage: {isComplete},
       reflectionGroups
     } = meeting
@@ -202,7 +204,6 @@ export default createFragmentContainer(
         phaseId: id
         phaseType
         ... on ReflectPhase {
-          editorIds
           focusedPhaseItemId
         }
       }
@@ -216,7 +217,6 @@ export default createFragmentContainer(
           isComplete
         }
         ... on ReflectPhase {
-          editorIds
           focusedPhaseItemId
         }
       }
