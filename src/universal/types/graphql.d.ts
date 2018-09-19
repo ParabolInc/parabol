@@ -1546,12 +1546,17 @@ declare namespace GQL {
     /**
      * The name of the organization
      */
-    name: string | null
+    name: string
 
     /**
      * The org avatar
      */
     picture: any | null
+
+    /**
+     * all the teams the viewer is on in the organization
+     */
+    teams: Array<ITeam>
 
     /**
      * The level of access to features on the parabol site

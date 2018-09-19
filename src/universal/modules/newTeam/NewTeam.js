@@ -3,12 +3,12 @@ import React from 'react'
 import {createFragmentContainer} from 'react-relay'
 import LinkButton from 'universal/components/LinkButton'
 import IconLabel from 'universal/components/IconLabel'
-import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import {cardShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
+import NewTeamForm from 'universal/modules/newTeam/components/NewTeamForm/NewTeamForm'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
@@ -110,8 +110,7 @@ export default createFragmentContainer(
     fragment NewTeam_viewer on User {
       organizations {
         id
-        name
-        tier
+        ...NewTeamForm_organizations
       }
     }
   `

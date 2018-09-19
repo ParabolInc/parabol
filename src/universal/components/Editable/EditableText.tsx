@@ -3,11 +3,14 @@ import styled from 'react-emotion'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
+import Legitity from '../../validation/Legitity'
+import appTheme from 'universal/styles/theme/appTheme'
 
 const StaticBlock = styled('div')({
   alignItems: 'center',
   cursor: 'pointer',
   display: 'flex',
+  fontFamily: appTheme.typography.sansSerif,
   fontSize: 'inherit',
   fontWeight: 'inherit',
   lineHeight: 'inherit',
@@ -56,7 +59,7 @@ const Form = styled('form')({
 
 interface Props {
   error: string | undefined
-  validate: (value: string) => boolean
+  validate: (value: string) => Legitity
   handleSubmit: (value: string) => void
   hideIcon?: boolean
   initialValue: string
@@ -74,6 +77,8 @@ class EditableText extends Component<Props, State> {
     isEditing: false,
     value: this.props.initialValue
   }
+
+  inputRef = React.createRef<HTMLInputElement>()
 
   setEditing = () => {
     this.setState({
@@ -113,6 +118,24 @@ class EditableText extends Component<Props, State> {
     handleSubmit(value)
   }
 
+  onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      this.reset()
+    }
+  }
+
+  reset = () => {
+    this.setState(
+      {
+        value: this.props.initialValue,
+        isEditing: false
+      },
+      () => {
+        this.props.validate(this.props.initialValue)
+        this.inputRef.current && this.inputRef.current.blur()
+      }
+    )
+  }
   renderEditing = () => {
     const {error, maxLength, placeholder} = this.props
     const {value} = this.state
@@ -120,10 +143,12 @@ class EditableText extends Component<Props, State> {
       <Form onSubmit={this.onSubmit}>
         <Input
           autoFocus
+          innerRef={this.inputRef}
           maxLength={maxLength}
           onBlur={this.onSubmit}
           onChange={this.onChange}
           onFocus={this.onFocus}
+          onKeyDown={this.onKeyDown}
           placeholder={placeholder}
           value={value}
         />

@@ -4,7 +4,6 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import getInProxy from 'universal/utils/relay/getInProxy'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {
@@ -34,10 +33,8 @@ const mutation = graphql`
   }
 `
 
-const popTeamCreatedToast = (payload, {dispatch, history}) => {
-  const teamId = getInProxy(payload, 'team', 'id')
-  if (!teamId) return
-  const teamName = getInProxy(payload, 'team', 'name')
+const popTeamCreatedToast = (res, {dispatch, history}) => {
+  const {id: teamId, name: teamName} = res.addTeam.team
   dispatch(
     showSuccess({
       title: 'Team successfully created!',
@@ -47,10 +44,9 @@ const popTeamCreatedToast = (payload, {dispatch, history}) => {
   history.push(`/team/${teamId}`)
 }
 
-export const addTeamTeamUpdater = (payload, store, viewerId, options) => {
+export const addTeamTeamUpdater = (payload, store, viewerId) => {
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store, viewerId)
-  popTeamCreatedToast(payload, options)
 }
 
 export const addTeamMutationNotificationUpdater = (payload, store, viewerId, options) => {
@@ -59,7 +55,7 @@ export const addTeamMutationNotificationUpdater = (payload, store, viewerId, opt
   popTeamInviteNotificationToast(notification, options)
 }
 
-const AddTeamMutation = (environment, variables, options, onCompleted, onError) => {
+const AddTeamMutation = (environment, variables, options, onError, onCompleted) => {
   const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
@@ -77,7 +73,10 @@ const AddTeamMutation = (environment, variables, options, onCompleted, onError) 
       })
       handleAddTeams(team, store, viewerId)
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      onCompleted(res, errors)
+      popTeamCreatedToast(res, options)
+    },
     onError
   })
 }
