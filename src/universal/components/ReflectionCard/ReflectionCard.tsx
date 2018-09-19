@@ -16,7 +16,7 @@ import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutati
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import {cardShadow} from 'universal/styles/elevation'
-import appTheme from 'universal/styles/theme/appTheme'
+// import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -49,7 +49,7 @@ interface ReflectionCardRootProps {
 export const ReflectionCardRoot = styled('div')(
   {
     backgroundColor: ui.palette.white,
-    border: '.0625rem solid transparent',
+    // border: '.0625rem solid transparent',
     borderRadius: ui.cardBorderRadius,
     // useful for drag preview
     display: 'inline-block',
@@ -63,9 +63,10 @@ export const ReflectionCardRoot = styled('div')(
       boxShadow: isClosing ? cardShadow : shadow
     },
   ({hasDragLock}: ReflectionCardRootProps) =>
-    hasDragLock && {
-      borderColor: appTheme.palette.warm50a
-    }
+    hasDragLock &&
+      {
+      // borderColor: appTheme.palette.warm50a
+      }
 )
 
 class ReflectionCard extends Component<Props, State> {
