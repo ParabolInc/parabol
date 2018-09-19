@@ -27,10 +27,8 @@ graphql`
 export const autoGroupReflectionsTeamUpdater = (payload, {atmosphere, store}) => {
   const reflections = payload.getLinkedRecords('reflections')
   reflections.forEach((reflection) => {
-    const {reflectionGroupId: oldReflectionGroupId} = getBaseRecord(
-      store,
-      reflection.getValue('id')
-    )
+    const baseRecord = getBaseRecord(store, reflection.getValue('id'))
+    const {reflectionGroupId: oldReflectionGroupId} = baseRecord
     const reflectionGroupId = reflection.getValue('reflectionGroupId')
     const reflectionGroup = store.get(reflectionGroupId)
     moveReflectionLocation(reflection, reflectionGroup, oldReflectionGroupId, store)

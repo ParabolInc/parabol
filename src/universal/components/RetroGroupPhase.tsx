@@ -35,6 +35,7 @@ const RetroGroupPhase = (props: Props) => {
     gotoNextRef,
     onError,
     onCompleted,
+    submitting,
     submitMutation,
     team
   } = props
@@ -45,6 +46,7 @@ const RetroGroupPhase = (props: Props) => {
   const isFacilitating = facilitatorUserId === viewerId
   const nextPhaseLabel = phaseLabelLookup[VOTE]
   const autoGroup = () => {
+    if (submitting) return
     submitMutation()
     const groupingThreshold = nextAutoGroupThreshold || 0.5
     AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
@@ -73,7 +75,7 @@ const RetroGroupPhase = (props: Props) => {
             />
           </FlatButton>
           {canAutoGroup && (
-            <FlatButton size='medium' onClick={autoGroup}>
+            <FlatButton size='medium' onClick={autoGroup} waiting={submitting}>
               <IconLabel icon='magic' iconColor='midGray' iconLarge label={'Auto Group'} />
             </FlatButton>
           )}
