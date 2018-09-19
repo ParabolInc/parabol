@@ -16,6 +16,8 @@ const groupReflections = async (meetingId, groupingThreshold) => {
     .filter({isActive: true})
 
   const allReflectionEntities = reflections.map(({entities}) => entities)
+  const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
+
   // create a unique array of all entity names mentioned in the meeting's reflect phase
   const uniqueLemmaArr = getAllLemmasFromReflections(allReflectionEntities)
   // create a distance vector for each reflection
@@ -26,18 +28,13 @@ const groupReflections = async (meetingId, groupingThreshold) => {
   )
   // replace the arrays with reflections
   const updatedReflections = []
-  const removedReflectionGroupIds = []
   const updatedGroups = groupedArrays.map((group) => {
     // look up the reflection by its vector, put them all in the same group
     let reflectionGroupId = ''
     const groupedReflections = group.map((reflectionDistanceArr, sortOrder) => {
       const idx = distanceMatrix.indexOf(reflectionDistanceArr)
       const reflection = reflections[idx]
-      if (reflectionGroupId) {
-        removedReflectionGroupIds.push(reflection.reflectionGroupId)
-      } else {
-        reflectionGroupId = reflection.reflectionGroupId
-      }
+      reflectionGroupId = reflectionGroupId || reflection.reflectionGroupId
       return {
         ...reflection,
         sortOrder,
@@ -58,6 +55,12 @@ const groupReflections = async (meetingId, groupingThreshold) => {
     }
   })
 
+  const newReflectionGroupIds = new Set(
+    updatedReflections.map(({reflectionGroupId}) => reflectionGroupId)
+  )
+  const removedReflectionGroupIds = oldReflectionGroupIds.filter(
+    (groupId) => !newReflectionGroupIds.has(groupId)
+  )
   return {
     autoGroupThreshold: thresh,
     groups: updatedGroups,
