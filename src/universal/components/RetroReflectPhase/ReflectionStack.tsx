@@ -8,8 +8,7 @@ import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
-import ui from 'universal/styles/ui'
-import {reflectionCardMaxHeight} from 'universal/styles/cards'
+import {reflectionCardMaxHeight, reflectionCardWidth} from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
@@ -27,7 +26,7 @@ interface State {
 }
 
 const CardStack = styled('div')(({isVisible}: {isVisible: boolean}) => ({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   display: 'flex',
   justifyContent: 'center',
   margin: '2rem 0',
@@ -39,50 +38,85 @@ const CenteredCardStack = styled('div')({
   position: 'relative'
 })
 
+const HIDE_LINES_HACK_STYLES = {
+  background: 'white',
+  content: '""',
+  height: 12,
+  left: 0,
+  position: 'absolute',
+  right: 0,
+  zIndex: 200
+}
+
+const CARD_IN_STACK = {
+  backgroundColor: 'white',
+  borderRadius: 4,
+  boxShadow: cardShadow,
+  cursor: 'pointer',
+  overflow: 'hidden',
+  position: 'absolute',
+  pointerEvents: 'none',
+  zIndex: 1,
+  // hides partially overflown top lines of text
+  '&::before': {
+    ...HIDE_LINES_HACK_STYLES,
+    top: 0
+  },
+  // hides partially overflown bottom lines of text
+  '&::after': {
+    ...HIDE_LINES_HACK_STYLES,
+    bottom: 0
+  },
+  '& > div': {
+    bottom: 0,
+    boxShadow: 'none',
+    // override inline-block from ReflectionCard.tsx
+    // for stack to line up right b/c inline-block breathes vertically
+    display: 'block',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 100
+  }
+}
+
+const STACK_PERSPECTIVE_X = 8
+const STACK_PERSPECTIVE_Y = 6
+
 const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}) => {
   switch (count - idx) {
     case 1:
       return {
         cursor: 'pointer',
         position: 'relative',
-        zIndex: 2
+        zIndex: 2,
+        '& > div': {
+          // override inline-block from ReflectionCard.tsx
+          // for stack to line up right b/c inline-block breathes vertically
+          display: 'block'
+        }
       }
     case 2:
       return {
-        backgroundColor: 'white',
-        borderRadius: 4,
-        boxShadow: cardShadow,
-        cursor: 'pointer',
-        overflow: 'hidden',
-        position: 'absolute',
-        pointerEvents: 'none',
-        top: 6,
-        bottom: -2,
-        transform: 'scale(0.97)',
-        width: ui.retroCardWidth,
-        zIndex: 1,
-        // this feels cleaner than passing a prop, but I don't love it
+        ...CARD_IN_STACK,
+        bottom: -STACK_PERSPECTIVE_Y,
+        left: STACK_PERSPECTIVE_X,
+        right: STACK_PERSPECTIVE_X,
+        top: STACK_PERSPECTIVE_Y,
         '& > div > div': {
-          color: 'white'
+          transform: 'scale(.95)',
+          transformOrigin: 'left',
+          width: reflectionCardWidth
         }
       }
     case 3:
       return {
-        backgroundColor: 'white',
-        borderRadius: 4,
-        boxShadow: cardShadow,
-        cursor: 'pointer',
-        overflow: 'hidden',
-        position: 'absolute',
-        pointerEvents: 'none',
-        top: 6,
-        bottom: -8,
-        transform: 'scale(0.94)',
-        width: ui.retroCardWidth,
-        zIndex: 1,
-        '& > div > div': {
-          color: 'white'
-        }
+        ...CARD_IN_STACK,
+        bottom: -(STACK_PERSPECTIVE_Y * 2),
+        left: STACK_PERSPECTIVE_X * 2,
+        right: STACK_PERSPECTIVE_X * 2,
+        top: STACK_PERSPECTIVE_Y * 2
       }
     default:
       return {}

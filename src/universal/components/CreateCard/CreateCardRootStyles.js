@@ -1,4 +1,3 @@
-import ui from 'universal/styles/ui'
 import cardRootStyles from 'universal/styles/helpers/cardRootStyles'
 
 const CreateCardRootStyles = {
@@ -7,7 +6,7 @@ const CreateCardRootStyles = {
   border: 0,
   display: 'flex !important',
   justifyContent: 'center',
-  minHeight: ui.cardMinHeight,
+  minHeight: '7.625rem',
   padding: '.6875rem 1.25rem .5rem'
 }
 

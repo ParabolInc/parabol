@@ -247,13 +247,14 @@ const ui = {
 
   // Cards
   // ---------------------------------------------------------------------------
+  // #deprecated move these values to cards.js as needed,
+  // but make sure they are consistent when temporarily duped (TA)
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
   cardButtonHeight: '1.5rem',
   cardButtonBorderColor: appTheme.palette.mid50l,
-  cardContentFontSize: '.9375rem',
-  cardContentLineHeight: '1.375rem',
-  cardMinHeight: '7.75rem',
+  cardContentFontSize: '.875rem',
+  cardContentLineHeight: '1.25rem',
   cardPaddingBase: '.9375rem',
 
   // Card Controls (tapping these makes cards)
