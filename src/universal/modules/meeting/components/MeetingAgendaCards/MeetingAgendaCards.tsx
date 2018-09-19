@@ -13,21 +13,23 @@ import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
 import {meetingGridMinWidth} from 'universal/styles/meeting'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
 
-const MAX_COLS = 4
-const makePlaceholders = (length, setItemRef) => {
-  const emptyCardCount = MAX_COLS - (length % MAX_COLS + 1)
-  /* eslint-disable react/no-array-index-key */
+const makePlaceholders = (
+  length: number,
+  maxCols: number,
+  setItemRef: MasonryCSSGrid['setItemRef']
+) => {
+  const emptyCardCount = maxCols - (length % maxCols + 1)
   return new Array(emptyCardCount).fill(undefined).map((_, idx) => (
-    <div key={`CreateCardPlaceholder${idx}`} ref={setItemRef(idx)}>
+    <div key={`CreateCardPlaceholder${idx}`} ref={setItemRef(String(idx))}>
       <CreateCard />
     </div>
   ))
-  /* eslint-enable */
 }
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
   agendaId?: string
   bindHotkey: (key: string, cb: () => void) => void
+  maxCols?: number
   meetingId: string
   reflectionGroupId?: string
   tasks: Array<MeetingAgendaItems_viewer['tasks']['edges'][0]['node']> | null
@@ -63,11 +65,12 @@ class MeetingAgendaCards extends Component<Props> {
   render () {
     const {
       atmosphere: {userId},
+      maxCols,
       showPlaceholders
     } = this.props
     const tasks = this.props.tasks || []
     return (
-      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={MAX_COLS}>
+      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols}>
         {(setItemRef) => {
           return (
             <React.Fragment>
@@ -87,7 +90,7 @@ class MeetingAgendaCards extends Component<Props> {
               <div ref={setItemRef('createACard')}>
                 <CreateCard handleAddTask={this.handleAddTask()} hasControls />
               </div>
-              {showPlaceholders && makePlaceholders(tasks.length, setItemRef)}
+              {showPlaceholders && maxCols && makePlaceholders(tasks.length, maxCols, setItemRef)}
             </React.Fragment>
           )
         }}
