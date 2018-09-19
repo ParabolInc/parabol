@@ -141,6 +141,7 @@ class MeetingAgendaItems extends Component {
               <TaskCardBlock>
                 <MeetingAgendaCards
                   agendaId={agendaItem.id}
+                  maxCols={4}
                   showPlaceholders
                   tasks={agendaTasks}
                   teamId={team.id}

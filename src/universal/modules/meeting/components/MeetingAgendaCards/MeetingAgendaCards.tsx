@@ -1,59 +1,35 @@
+import {MeetingAgendaItems_viewer} from '__generated__/MeetingAgendaItems_viewer.graphql'
 import React, {Component} from 'react'
 import withHotkey from 'react-hotkey-hoc'
 import {RouteComponentProps, withRouter} from 'react-router'
 import CreateCard from 'universal/components/CreateCard/CreateCard'
+import MasonryCSSGrid from 'universal/components/MasonryCSSGrid'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import CreateTaskMutation from 'universal/mutations/CreateTaskMutation'
+import {meetingGridMinWidth} from 'universal/styles/meeting'
 import {ACTIVE, MEETING} from 'universal/utils/constants'
-import styled from 'react-emotion'
-import {meetingGridGap, meetingGridMinWidth} from 'universal/styles/meeting'
-import {MeetingAgendaItems_viewer} from '__generated__/MeetingAgendaItems_viewer.graphql'
 
-const TaskCardGrid = styled('div')({
-  display: 'grid',
-  gridGap: meetingGridGap,
-  gridTemplateColumns: `repeat(auto-fill, minmax(${meetingGridMinWidth}, 1fr))`,
-  margin: '0 auto',
-  width: '100%'
-})
-
-const makeCards = (tasks: Props['tasks'], myUserId, handleAddTask) => {
-  if (!tasks) return null
-  return tasks.map((task) => {
-    const {id: taskId} = task
-    return (
-      <div key={taskId}>
-        <NullableTask
-          area={MEETING}
-          handleAddTask={handleAddTask}
-          isAgenda
-          myUserId={myUserId}
-          task={task}
-        />
-      </div>
-    )
-  })
-}
-
-const makePlaceholders = (length) => {
-  const rowLength = 4
-  const emptyCardCount = rowLength - (length % rowLength + 1)
-  /* eslint-disable react/no-array-index-key */
+const makePlaceholders = (
+  length: number,
+  maxCols: number,
+  setItemRef: MasonryCSSGrid['setItemRef']
+) => {
+  const emptyCardCount = maxCols - (length % maxCols + 1)
   return new Array(emptyCardCount).fill(undefined).map((_, idx) => (
-    <div key={`CreateCardPlaceholder${idx}`}>
+    <div key={`CreateCardPlaceholder${idx}`} ref={setItemRef(String(idx))}>
       <CreateCard />
     </div>
   ))
-  /* eslint-enable */
 }
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
   agendaId?: string
   bindHotkey: (key: string, cb: () => void) => void
+  maxCols?: number
   meetingId: string
   reflectionGroupId?: string
   tasks: Array<MeetingAgendaItems_viewer['tasks']['edges'][0]['node']> | null
@@ -89,20 +65,36 @@ class MeetingAgendaCards extends Component<Props> {
   render () {
     const {
       atmosphere: {userId},
+      maxCols,
       showPlaceholders
     } = this.props
     const tasks = this.props.tasks || []
     return (
-      <TaskCardGrid>
-        {makeCards(tasks, userId, this.handleAddTask)}
-        {/* Input Card */}
-        {/* wrapping div to deal with flex behaviors */}
-        <div>
-          <CreateCard handleAddTask={this.handleAddTask()} hasControls />
-        </div>
-        {/* Placeholder Cards */}
-        {showPlaceholders && makePlaceholders(tasks.length)}
-      </TaskCardGrid>
+      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols}>
+        {(setItemRef) => {
+          return (
+            <React.Fragment>
+              {tasks.map((task) => {
+                return (
+                  <div key={task.id} ref={setItemRef(task.id)}>
+                    <NullableTask
+                      area={MEETING}
+                      handleAddTask={this.handleAddTask}
+                      isAgenda
+                      myUserId={userId}
+                      task={task}
+                    />
+                  </div>
+                )
+              })}
+              <div ref={setItemRef('createACard')}>
+                <CreateCard handleAddTask={this.handleAddTask()} hasControls />
+              </div>
+              {showPlaceholders && maxCols && makePlaceholders(tasks.length, maxCols, setItemRef)}
+            </React.Fragment>
+          )
+        }}
+      </MasonryCSSGrid>
     )
   }
 }
