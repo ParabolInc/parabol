@@ -7,5 +7,12 @@
 </head>
 <body>
     <div id="root"></div>
+    <script>
+      function fallback(el) {
+        const url = document.createElement('script')
+        url.src = window.location.origin + '/static' + el.src.slice(el.src.lastIndexOf('/'))
+        document.body.append(url)
+      }
+    </script>
 </body>
 </html>
