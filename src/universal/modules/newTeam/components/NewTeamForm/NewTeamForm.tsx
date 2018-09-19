@@ -19,8 +19,9 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Legitity from 'universal/validation/Legitity'
-import {inviteesRawTest, teamNameValidation} from 'universal/validation/templates'
-import NewTeamOrgPicker from '../../../team/components/NewTeamOrgPicker'
+import {inviteesRawTest} from 'universal/validation/templates'
+import teamNameValidation from 'universal/validation/teamNameValidation'
+import NewTeamOrgPicker from 'universal/modules/team/components/NewTeamOrgPicker'
 import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormInvitees from './NewTeamFormInvitees'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
@@ -82,11 +83,6 @@ interface Fields {
 type FieldName = 'rawInvitees' | 'orgName' | 'teamName'
 const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
 
-export interface ValidatedResponse {
-  value: string | null
-  error: string | null
-}
-
 const makeInvitees = (invitees) => {
   return invitees
     ? invitees.map((email) => ({
@@ -124,7 +120,7 @@ class NewTeamForm extends Component<Props, State> {
       orgName: this.validateOrgName,
       rawInvitees: this.validateInvitees
     }
-    const res: ValidatedResponse = validators[name]()
+    const res: Legitity = validators[name]()
 
     const {fields} = this.state
     const field = fields[name]
