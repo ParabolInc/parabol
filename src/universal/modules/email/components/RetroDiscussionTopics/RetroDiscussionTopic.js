@@ -58,6 +58,13 @@ const reflectionCard = {
   padding: 0
 }
 
+const reflectionCardFooter = {
+  color: ui.palette.midGray,
+  fontFamily,
+  fontSize: '11px',
+  padding: '0 .5rem .5rem'
+}
+
 type Reflection = {
   id: string,
   content: string
@@ -101,10 +108,11 @@ const RetroDiscussionTopic = (props: Props) => {
                 {rows.map((row, idx) => (
                   // eslint-disable-next-line
                   <tr key={idx}>
-                    {row.map(({id, content}) => (
+                    {row.map(({id, content, phaseItem: {question}}) => (
                       <td key={id} style={cardCell}>
                         <div style={reflectionCard}>
                           <ReflectionEditorWrapperForEmail content={content} />
+                          <div style={reflectionCardFooter}>{question}</div>
                         </div>
                       </td>
                     ))}
