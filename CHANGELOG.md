@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.13.0 2018-Sep-19
+
+### Added
+* Retro UI updates:
+   * Discussion phase reflections and tasks are now layed out using masonry
+   * Many cosmetic updates to card and stack styling
+* Should loading the app from the CDN fail, we'll load it from the `/static` dir from
+  location the app was served.
+  * This may help the app load behind particularly restrictive corporate firewalls
+* Build scripts now automatically rebuild the dll when yarn.lock changes
+
+### Fixed
+* #1349 no dupe team name during team creation & update
+* #2169 no more double duck flashes when switching teams
+* #2328 add waiting status after new team submit
+* #2343 sort orgs by team
+* #2351 due date picker can't change old dates
+* #2383 Retrospective autogrouping
+* Stale meetings should now automatically end, we've fixed the `endOldMeetings` mutation
+* Graphiql works once again, now uses our new trebuchet transport
+* Graphql endpoint can now fallback to vanilla HTTP transport
+
 ## v2.12.0 2018-Sep-13
 
 ### Added
