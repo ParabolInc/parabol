@@ -84,7 +84,7 @@ const CARD_IN_STACK = {
 const STACK_PERSPECTIVE_X = 8
 const STACK_PERSPECTIVE_Y = 6
 
-const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}) => {
+const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}): any => {
   switch (count - idx) {
     case 1:
       return {

@@ -150,7 +150,6 @@ class ReflectionCard extends Component<Props, State> {
   render () {
     const {
       innerRef,
-      atmosphere,
       handleChange,
       error,
       shadow = cardShadow,
@@ -163,15 +162,11 @@ class ReflectionCard extends Component<Props, State> {
     } = this.props
     const {editorState} = this.state
     const {
-      dragContext,
       phaseItem: {question},
       reflectionId
     } = reflection
-    const dragUser = dragContext && dragContext.dragUser
-    const hasDragLock = dragUser && dragUser.id !== atmosphere.viewerId
     return (
-      <ReflectionCardRoot hasDragLock={hasDragLock} shadow={shadow} innerRef={innerRef}>
-        {hasDragLock && <UserDraggingHeader user={dragUser} />}
+      <ReflectionCardRoot shadow={shadow} innerRef={innerRef}>
         <ReflectionEditorWrapper
           ariaLabel='Edit this reflection'
           editorRef={this.editorRef}
