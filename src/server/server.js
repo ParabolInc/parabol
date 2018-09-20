@@ -36,7 +36,6 @@ getDotenv()
 
 const PROD = process.env.NODE_ENV === 'production'
 const {PORT = 3000} = process.env
-const INTRANET_JWT_SECRET = process.env.INTRANET_JWT_SECRET || ''
 
 const app = express()
 const server = http.createServer(app)
@@ -132,7 +131,7 @@ const intranetGraphQLHandler = intranetHttpGraphQLHandler(sharedDataLoader)
 app.post(
   '/intranet-graphql',
   jwt({
-    secret: Buffer.from(INTRANET_JWT_SECRET, 'base64'),
+    secret: Buffer.from(secretKey, 'base64'),
     credentialsRequired: true
   }),
   intranetGraphQLHandler
