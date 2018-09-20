@@ -1,8 +1,8 @@
 /* cwd needs to be project root */
-const childProcess = require('child_process')
 const fs = require('fs')
 const webpack = require('webpack')
 const config = require('./webpack.config.dll.js')
+const crypto = require('crypto')
 
 let cacheHash
 try {
@@ -11,13 +11,18 @@ try {
   cacheHash = ''
 }
 
-const hash = childProcess.execSync('md5sum yarn.lock')
-if (hash.toString() !== cacheHash) {
+const lockfile = fs.readFileSync('yarn.lock', 'utf8')
+
+const hash = crypto
+  .createHash('md5')
+  .update(lockfile)
+  .digest('hex')
+if (hash !== cacheHash) {
   webpack(config, () => {
     console.log('DLL created')
   })
   if (!fs.existsSync('dll')) {
     fs.mkdirSync('dll')
   }
-  childProcess.exec('md5sum yarn.lock > dll/yarn.md5')
+  fs.writeFileSync('dll/yarn.md5', hash)
 }
