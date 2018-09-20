@@ -53,7 +53,7 @@ module.exports = {
   },
   output: {
     filename: '[name].dll.js',
-    path: path.join(__dirname, '../build'),
+    path: path.join(__dirname, '../dll'),
     library: '[name]'
   },
   plugins: [
