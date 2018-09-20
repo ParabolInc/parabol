@@ -3,10 +3,10 @@ import 'graphiql/graphiql.css'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import requireAuthAndRole from 'universal/decorators/requireAuthAndRole/requireAuthAndRole'
-import logoMarkPrimary from 'universal/styles/theme/images/brand/parabol-lockup-h-dark.svg'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import logoMarkPrimary from 'universal/styles/theme/images/brand/parabol-lockup-h-dark.svg'
 
 const GQL = styled('div')({
   margin: 0,
@@ -73,18 +73,21 @@ class Graphiql extends Component<Props, State> {
               title='Show History'
               label='History'
             />
-            <GraphiQL.Select title='Schema' label='Schema' onSelect={this.selectSchema}>
-              <GraphiQL.SelectOption
-                label='Public'
-                value='Public'
-                selected={currentSchema === 'Public'}
-              />
-              <GraphiQL.SelectOption
-                label='Private'
-                value='Private'
-                selected={currentSchema === 'Private'}
-              />
-            </GraphiQL.Select>
+            <GraphiQL.Group>
+              <span>Schema: </span>
+              <GraphiQL.Select title='Schema' label='Schema' onSelect={this.selectSchema}>
+                <GraphiQL.SelectOption
+                  label='Public'
+                  value='Public'
+                  selected={currentSchema === 'Public'}
+                />
+                <GraphiQL.SelectOption
+                  label='Private'
+                  value='Private'
+                  selected={currentSchema === 'Private'}
+                />
+              </GraphiQL.Select>
+            </GraphiQL.Group>
           </GraphiQL.Toolbar>
         </GraphiQL>
       </GQL>
