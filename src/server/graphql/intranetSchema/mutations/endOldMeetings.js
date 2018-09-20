@@ -23,15 +23,17 @@ const endOldMeetings = {
         .ne(null)
     )('meetingId')
 
-    const {legacyMeetingTeamIds, newMeetingTeamIds} = r({
+    const {legacyMeetingTeamIds, newMeetingMeetingIds} = await r({
       legacyMeetingTeamIds: r
         .table('Meeting')
-        .getAll(meetingIdsInProgress, {index: 'id'})
-        .filter((meeting) => meeting('createdAt').le(activeThresh))('teamId'),
-      newMeetingTeamIds: r
-        .table('Meeting')
-        .getAll(meetingIdsInProgress, {index: 'id'})
+        .getAll(r.args(meetingIdsInProgress), {index: 'id'})
         .filter((meeting) => meeting('createdAt').le(activeThresh))('teamId')
+        .coerceTo('array'),
+      newMeetingMeetingIds: r
+        .table('NewMeeting')
+        .getAll(r.args(meetingIdsInProgress), {index: 'id'})
+        .filter((meeting) => meeting('createdAt').le(activeThresh))('id')
+        .coerceTo('array')
     })
 
     await Promise.all(
@@ -42,13 +44,13 @@ const endOldMeetings = {
     )
 
     await Promise.all(
-      newMeetingTeamIds.map((teamId) => {
-        sendSegmentEvent('endOldMeeting', authToken.sub, {teamId})
-        return endNewMeeting.resolve(undefined, {teamId}, {authToken, socketId: '', dataLoader})
+      newMeetingMeetingIds.map((meetingId) => {
+        sendSegmentEvent('endOldMeeting', authToken.sub, {meetingId})
+        return endNewMeeting.resolve(undefined, {meetingId}, {authToken, socketId: '', dataLoader})
       })
     )
 
-    return legacyMeetingTeamIds.length + newMeetingTeamIds.length
+    return legacyMeetingTeamIds.length + newMeetingMeetingIds.length
   }
 }
 
