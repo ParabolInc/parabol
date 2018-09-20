@@ -1,3 +1,4 @@
+import './cdnFallback'
 import React from 'react'
 import {render} from 'react-dom'
 import makeStore from './makeStore'
