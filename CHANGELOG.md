@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.13.1 2018-Sep-20
+
+### Added
+* GraphiQL now supports requests to the private schema
+
+### Fixed
+* Corrected the private schema (some mutations were listed as queries)
+* Moved su* queries from the public to private schema
+
+### Removed
+* Public schema no longer supports CLI (all relevant queries were moved to private schema)
+
 ## v2.13.0 2018-Sep-19
 
 ### Added
