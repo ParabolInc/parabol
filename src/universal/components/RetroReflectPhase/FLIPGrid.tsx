@@ -1,7 +1,7 @@
 import React, {cloneElement, Component, ComponentElement} from 'react'
 import {findDOMNode} from 'react-dom'
-import ChildrenCache from 'universal/components/RetroReflectPhase/ChildrenCache'
 import {BBox} from 'types/animations'
+import ChildrenCache from 'universal/components/RetroReflectPhase/ChildrenCache'
 import ParentCache from 'universal/components/RetroReflectPhase/ParentCache'
 import {
   CARD_PADDING,
@@ -81,6 +81,11 @@ class FLIPGrid extends Component<Props, State> {
     this.parentCache.setCoords(this.parentCache.el, dims, maxBBox)
     this.props.setBBox(this.parentCache.bbox)
     this.updateChildren()
+  }
+
+  handleWindowResize = () => {
+    const dims = this.childrenCache.updateChildren()
+    this.handleGridChange(dims)
   }
 
   checkForResize (key: string) {

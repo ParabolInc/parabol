@@ -1,6 +1,7 @@
 import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
+import ResizeObserver from 'resize-observer-polyfill'
 import Modal from 'universal/components/Modal'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import FLIPGrid from 'universal/components/RetroReflectPhase/FLIPGrid'
@@ -34,14 +35,29 @@ class ExpandedReflectionStack extends Component<Props, State> {
   state = {
     isClosing: false
   }
+  resizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      this.handleResize(entry.target.id)
+    }
+  })
+
   gridRef = React.createRef<FLIPGrid>()
   getModalFirst = () => getBBox(this.props.stackRef.current)
   getParentBBox = () => getBBox(this.props.phaseRef.current)
   getChildrenFirst = () => getBBox(this.props.firstReflectionRef.current)
 
-  checkForResize = (key) => () => {
+  componentDidMount () {
+    window.addEventListener('resize', this.handleWindowResize)
+  }
+
+  handleWindowResize = () => {
     if (!this.gridRef.current) return
-    this.gridRef.current.checkForResize(key)
+    this.gridRef.current.handleWindowResize()
+  }
+
+  handleResize = (id) => {
+    if (!this.gridRef.current) return
+    this.gridRef.current.checkForResize(id)
   }
 
   handleClose = () => {
@@ -59,6 +75,14 @@ class ExpandedReflectionStack extends Component<Props, State> {
 
   componentWillUnmount () {
     this.props.collapse()
+    window.removeEventListener('resize', this.handleWindowResize)
+    this.resizeObserver.disconnect()
+  }
+
+  setItemRef = (c) => {
+    if (c) {
+      this.resizeObserver.observe(c)
+    }
   }
 
   render () {
@@ -83,12 +107,16 @@ class ExpandedReflectionStack extends Component<Props, State> {
             >
               {reflectionStack.map((reflection, idx) => {
                 return (
-                  <ModalReflectionWrapper key={reflection.id} style={{zIndex: idx + 1}}>
+                  <ModalReflectionWrapper
+                    key={reflection.id}
+                    style={{zIndex: idx + 1}}
+                    innerRef={this.setItemRef}
+                    id={reflection.id}
+                  >
                     <ReflectionCard
                       meetingId={meetingId}
                       reflection={reflection}
                       phaseItemId={phaseItemId}
-                      handleChange={this.checkForResize(reflection.id)}
                     />
                   </ModalReflectionWrapper>
                 )
