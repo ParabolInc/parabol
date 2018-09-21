@@ -74,6 +74,7 @@ export default {
       content: normalizedContent,
       isActive: true,
       meetingId,
+      phaseItem,
       reflectionGroupId,
       retroPhaseItemId,
       sortOrder: 0,

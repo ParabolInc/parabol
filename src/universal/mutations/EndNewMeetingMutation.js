@@ -35,7 +35,7 @@ export const popEndNewMeetingToast = (dispatch) => {
     showInfo({
       autoDismiss: 10,
       title: 'It’s dead!',
-      message: `You killed the meeting. 
+      message: `You killed the meeting.
     Just like your goldfish.`,
       action: {label: 'Good.'}
     })
