@@ -40,7 +40,8 @@ const maxWidth = '114rem'
 const HeaderContainer = styled('div')({
   margin: '0 auto',
   maxWidth,
-  padding: '0 1.25rem'
+  padding: '0 1.25rem',
+  userSelect: 'none'
 })
 
 const LabelContainer = styled('div')({
@@ -156,10 +157,7 @@ const RetroDiscussPhase = (props: Props) => {
       <PhaseWrapper>
         <HeaderContainer>
           <DiscussHeader>
-            <TopicHeading>
-              <span>{'“'}</span>
-              {`${title}”`}
-            </TopicHeading>
+            <TopicHeading>{`“${title}”`}</TopicHeading>
             <VoteMeta>
               <VoteIcon name={meetingVoteIcon} />
               {voteCount}
