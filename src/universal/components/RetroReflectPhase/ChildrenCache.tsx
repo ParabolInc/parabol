@@ -75,7 +75,7 @@ class ChildrenCache {
     return result
   }
 
-  private updateChildren () {
+  updateChildren () {
     let childrenToAnimate = 0
     const {children, height, width} = this.getGridTuples()
     children.forEach((last, idx) => {

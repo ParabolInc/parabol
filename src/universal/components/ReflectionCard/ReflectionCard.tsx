@@ -143,7 +143,7 @@ class ReflectionCard extends Component<Props, State> {
 
   handleReturn = (e) => {
     if (e.shiftKey) return 'not-handled'
-    this.handleEditorBlur()
+    this.editorRef.blur()
     return 'handled'
   }
 
