@@ -71,7 +71,7 @@ const SignInEmailPasswordForm = (props: Props) => {
           disabled={submitting}
         />
       </Block>
-      <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
+      <PrimaryButton size='large' disabled={!valid} waiting={submitting}>
         {SIGNIN_LABEL}
       </PrimaryButton>
       <ForgotPasswordLink to='/reset-password'>{'Forgot your password?'}</ForgotPasswordLink>

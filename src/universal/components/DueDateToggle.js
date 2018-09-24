@@ -11,14 +11,15 @@ import CardButton from 'universal/components/CardButton'
 import ms from 'ms'
 import tinycolor from 'tinycolor2'
 
-const lighten = (color, amount) =>
+const darken = (color, amount) =>
   tinycolor(color)
-    .lighten(amount)
+    .darken(amount)
     .toString()
 
 const Toggle = styled(CardButton)(
   {
     alignItems: 'center',
+    borderRadius: '4em',
     display: 'flex',
     justifyContent: 'center',
     opacity: 0
@@ -26,7 +27,7 @@ const Toggle = styled(CardButton)(
   ({cardIsActive}) => ({
     opacity: cardIsActive && 0.5,
     ':hover, :focus': {
-      borderColor: ui.cardButtonBorderColor,
+      backgroundColor: ui.palette.gray,
       opacity: cardIsActive && 1
     }
   }),
@@ -40,7 +41,8 @@ const Toggle = styled(CardButton)(
       opacity: 1,
       padding: '0 .1875rem',
       ':hover,:focus': {
-        borderColor: lighten(ui.dueDateColor, 30)
+        backgroundColor: darken(ui.dueDateBg, 6),
+        color: darken(ui.dueDateColor, 6)
       }
     },
   ({isDueSoon}) =>
@@ -48,7 +50,8 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDateSoonBg,
       color: ui.dueDateSoonColor,
       ':hover,:focus': {
-        borderColor: lighten(ui.dueDateSoonColor, 20)
+        backgroundColor: darken(ui.dueDateSoonBg, 9),
+        color: darken(ui.dueDateSoonColor, 9)
       }
     },
   ({isPastDue}) =>
@@ -56,7 +59,8 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDatePastBg,
       color: ui.dueDatePastColor,
       ':hover,:focus': {
-        borderColor: lighten(ui.dueDatePastColor, 20)
+        backgroundColor: darken(ui.dueDatePastBg, 9),
+        color: darken(ui.dueDatePastColor, 9)
       }
     }
 )

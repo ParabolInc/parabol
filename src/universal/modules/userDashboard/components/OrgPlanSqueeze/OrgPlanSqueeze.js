@@ -131,9 +131,7 @@ const OrgPlanSqueeze = (props: Props) => {
     }
   } = props
   const toggle = (
-    <StyledPrimaryButton size='medium' depth={2}>
-      {'Upgrade to the Pro Plan'}
-    </StyledPrimaryButton>
+    <StyledPrimaryButton size='medium'>{'Upgrade to the Pro Plan'}</StyledPrimaryButton>
   )
   const openUrl = (url) => () => window.open(url, '_blank')
   const hasManyBillingLeaders = billingLeaders.length !== 1

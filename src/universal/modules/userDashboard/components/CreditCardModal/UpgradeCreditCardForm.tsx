@@ -335,7 +335,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButton size='medium' depth={1} onClick={this.handleSubmit} waiting={submitting}>
+            <UpdateButton size='medium' onClick={this.handleSubmit} waiting={submitting}>
               {actionLabel}
             </UpdateButton>
           </ButtonGroup>

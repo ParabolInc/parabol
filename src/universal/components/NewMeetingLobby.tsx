@@ -187,7 +187,6 @@ class NewMeetingLobby extends React.Component<Props> {
             {(isPro || retroMeetingsRemaining > 0) && (
               <StyledButton
                 aria-label={buttonLabel}
-                depth={1}
                 disabled={!canStartMeeting}
                 onClick={onStartMeetingClick}
                 size='large'
@@ -202,7 +201,7 @@ class NewMeetingLobby extends React.Component<Props> {
                   LoadableComponent={UpgradeModalRootLoadable}
                   queryVars={{orgId}}
                   toggle={
-                    <StyledButton aria-label='Get Access Now' size='large' depth={1}>
+                    <StyledButton aria-label='Get Access Now' size='large'>
                       {'Get Access Now'}
                     </StyledButton>
                   }
