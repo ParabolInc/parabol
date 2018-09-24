@@ -127,14 +127,14 @@ class DraggableReflectionCard extends Component<Props> {
   }
 
   render () {
-    const {connectDragSource, reflection, setItemRef, idx, isDraggable, isModal} = this.props
+    const {connectDragSource, reflection, setItemRef, idx, isModal} = this.props
     const {dragContext, reflectionId} = reflection
     const className = getClassName(idx, dragContext, isModal)
 
     return connectDragSource(
       // the `id` is in the case when the ref callback isn't called in time
       <div className={className} ref={setItemRef(reflectionId, isModal)} id={reflectionId}>
-        <ReflectionCard reflection={reflection} isDraggable={isDraggable} showOriginFooter />
+        <ReflectionCard readOnly userSelect='none' reflection={reflection} showOriginFooter />
       </div>
     )
   }

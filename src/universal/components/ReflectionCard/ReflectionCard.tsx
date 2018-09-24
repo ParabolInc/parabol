@@ -22,7 +22,6 @@ import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   handleChange?: () => void
-  isDraggable?: boolean
   reflection: ReflectionCard_reflection
   meetingId?: string
   phaseItemId?: string
@@ -153,7 +152,6 @@ class ReflectionCard extends Component<Props, State> {
       handleChange,
       error,
       shadow = cardShadow,
-      isDraggable,
       meetingId,
       readOnly,
       reflection,
@@ -172,15 +170,14 @@ class ReflectionCard extends Component<Props, State> {
           editorRef={this.editorRef}
           editorState={editorState}
           innerRef={this.setEditorRef}
-          isDraggable={isDraggable}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleChange={handleChange}
           handleReturn={this.handleReturn}
           placeholder='My reflection thought…'
-          readOnly={readOnly || isTempId(reflectionId) || isDraggable}
+          readOnly={readOnly || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
-          userSelect={userSelect || isDraggable ? 'none' : 'text'}
+          userSelect={userSelect}
         />
         {error && <StyledError>{error}</StyledError>}
         {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}

@@ -9,7 +9,8 @@ const ReflectionFooter = styled('div')({
   borderRadius: ui.cardBorderRadius,
   color: ui.hintColor,
   fontSize: ui.hintFontSize,
-  padding: '.5rem .75rem'
+  padding: '.5rem .75rem',
+  userSelect: 'none'
 })
 
 export default ReflectionFooter
