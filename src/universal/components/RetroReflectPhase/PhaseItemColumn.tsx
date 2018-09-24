@@ -11,6 +11,7 @@ import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChit
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Tooltip from 'universal/components/Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -54,9 +55,9 @@ const HeaderAndEditor = styled('div')({
 })
 
 const TypeDescription = styled('div')({
-  fontSize: '1.25rem',
-  fontStyle: 'italic',
-  fontWeight: 600
+  fontSize: '1.25rem'
+  // fontStyle: 'italic',
+  // fontWeight: 600
 })
 
 const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean}) => ({
@@ -85,6 +86,16 @@ const EditorAndStatus = styled('div')(({isPhaseComplete}: EditorAndStatusProps) 
 const ChitSection = styled('div')({
   flex: 0.3
 })
+
+const originAnchor = {
+  vertical: 'top',
+  horizontal: 'center'
+}
+
+const targetAnchor = {
+  vertical: 'bottom',
+  horizontal: 'center'
+}
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
@@ -151,6 +162,25 @@ class PhaseItemColumn extends Component<Props> {
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
     const isViewerFacilitator = viewerId === facilitatorUserId
+    const tip = <div>Tap to highlight prompt for everybody</div>
+    const prompt = (
+      <React.Fragment>
+        {!isFocused && isViewerFacilitator ? (
+          <Tooltip
+            delay={200}
+            maxHeight={40}
+            maxWidth={500}
+            originAnchor={originAnchor}
+            targetAnchor={targetAnchor}
+            tip={tip}
+          >
+            <span>{question}</span>
+          </Tooltip>
+        ) : (
+          <span>{question}</span>
+        )}
+      </React.Fragment>
+    )
     return (
       <ColumnWrapper>
         <ColumnHighlight isFocused={isFocused}>
@@ -159,7 +189,7 @@ class PhaseItemColumn extends Component<Props> {
               <TypeHeader isClickable={isViewerFacilitator} onClick={this.setColumnFocus}>
                 <TypeDescription>
                   <FocusArrow name='arrow-right' isFocused={isFocused} />
-                  {question}
+                  {prompt}
                 </TypeDescription>
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={!!isComplete}>
