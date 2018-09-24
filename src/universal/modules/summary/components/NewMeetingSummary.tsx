@@ -77,6 +77,9 @@ export default createFragmentContainer(
               id
               content
               sortOrder
+              phaseItem {
+                question
+              }
             }
           }
         }
