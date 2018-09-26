@@ -6,15 +6,28 @@ import PlainButton from 'universal/components/PlainButton/PlainButton'
 import withInnerRef from 'universal/decorators/withInnerRef'
 import elevation from 'universal/styles/elevation'
 
+const isValidElevation = (elevation) => elevation >= 0 && elevation <= 24
+
+const getPressedElevation = (elevation1, elevation2) => {
+  const offset = Math.floor(Math.abs(elevation1 - elevation2) / 2)
+  const hovered = Math.max(elevation1, elevation2)
+  return hovered ? hovered - offset : 0
+}
+
+const getBoxShadow = (disabled, pressedDown, desiredElevation, otherElevation) => {
+  if (disabled || !isValidElevation(desiredElevation)) return undefined
+  if (pressedDown) return getPressedElevation(desiredElevation, otherElevation)
+  return elevation[desiredElevation]
+}
+
 const ButtonRoot = styled(PlainButton)(
   ({disabled, elevationResting, elevationHovered, pressedDown, size}) => {
-    const hasDepth = elevationResting && elevationHovered
     return {
       // size is easy to override, it adds: fontSize, lineHeight, padding
       ...ui.buttonSizeStyles[size],
       alignItems: 'center',
       border: '.0625rem solid transparent',
-      boxShadow: !disabled && hasDepth ? elevation[elevationResting] : undefined,
+      boxShadow: getBoxShadow(disabled, pressedDown, elevationResting, elevationHovered),
       display: 'flex',
       justifyContent: 'center',
       textAlign: 'center',
@@ -22,18 +35,7 @@ const ButtonRoot = styled(PlainButton)(
       userSelect: 'none',
       whiteSpace: 'nowrap',
       ':hover,:focus,:active': {
-        boxShadow: !disabled && hasDepth ? elevation[elevationHovered] : undefined,
-        outline: pressedDown && 0
-      }
-    }
-  },
-  ({disabled, elevationHovered, elevationResting, pressedDown}) => {
-    const pressedDownElevation = elevationHovered - (elevationHovered - elevationResting) / 2
-    const boxShadow = !disabled && pressedDown ? elevation[pressedDownElevation] : undefined
-    return {
-      boxShadow,
-      ':hover,:focus,:active': {
-        boxShadow,
+        boxShadow: getBoxShadow(disabled, pressedDown, elevationHovered.elevationResting),
         outline: pressedDown && 0
       }
     }
@@ -111,9 +113,6 @@ class BaseButton extends Component {
 
     const {pressedDown} = this.state
     const hasDisabledStyles = disabled || waiting
-
-    console.log(`elevationHovered: ${elevationHovered}`)
-    console.log(`elevationResting: ${elevationResting}`)
 
     // spread props to allow for html attributes like type when needed
     return (
