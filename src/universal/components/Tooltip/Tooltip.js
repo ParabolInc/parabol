@@ -46,6 +46,7 @@ const ModalContents = styled('div')(({maxHeight}) => ({
  */
 class Tooltip extends Component {
   static propTypes = {
+    isDisabled: PropTypes.bool,
     isOpen: PropTypes.bool,
     children: PropTypes.any.isRequired,
     coords: PropTypes.object.isRequired,
@@ -207,10 +208,10 @@ class Tooltip extends Component {
   }
 
   render () {
-    const {coords} = this.props
+    const {coords, isDisabled} = this.props
     const {inTip, inToggle, isClosing} = this.state
     const isOpen = inTip || inToggle || isClosing || this.props.isOpen
-
+    if (isDisabled) return React.Children.only(this.props.children)
     return (
       <React.Fragment>
         <span

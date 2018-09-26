@@ -1,3 +1,4 @@
+import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import memoize from 'micro-memoize'
 /**
  * Renders a column for a particular "type" of reflection
@@ -6,11 +7,11 @@ import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Tooltip from 'universal/components/Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -18,8 +19,8 @@ import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -86,6 +87,16 @@ const ChitSection = styled('div')({
   flex: 0.3
 })
 
+const originAnchor = {
+  vertical: 'top',
+  horizontal: 'center'
+}
+
+const targetAnchor = {
+  vertical: 'bottom',
+  horizontal: 'center'
+}
+
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
   editorIds: ReadonlyArray<string> | null
@@ -151,6 +162,22 @@ class PhaseItemColumn extends Component<Props> {
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
     const isViewerFacilitator = viewerId === facilitatorUserId
+    const tip = <div>Tap to highlight prompt for everybody</div>
+    const prompt = (
+      <React.Fragment>
+        <Tooltip
+          delay={200}
+          maxHeight={40}
+          maxWidth={500}
+          originAnchor={originAnchor}
+          targetAnchor={targetAnchor}
+          tip={tip}
+          isDisabled={isFocused || !isViewerFacilitator}
+        >
+          <span>{question}</span>
+        </Tooltip>
+      </React.Fragment>
+    )
     return (
       <ColumnWrapper>
         <ColumnHighlight isFocused={isFocused}>
@@ -159,7 +186,7 @@ class PhaseItemColumn extends Component<Props> {
               <TypeHeader isClickable={isViewerFacilitator} onClick={this.setColumnFocus}>
                 <TypeDescription>
                   <FocusArrow name='arrow-right' isFocused={isFocused} />
-                  {question}
+                  {prompt}
                 </TypeDescription>
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={!!isComplete}>
