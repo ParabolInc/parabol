@@ -1,5 +1,6 @@
 import React from 'react'
 import RaisedButton from 'universal/components/RaisedButton'
+import withInnerRef from 'universal/decorators/withInnerRef'
 
 const FloatingActionButton = (props) => (
   <RaisedButton {...props} className={props.className} elevationHovered={12} elevationResting={6}>
@@ -7,4 +8,4 @@ const FloatingActionButton = (props) => (
   </RaisedButton>
 )
 
-export default FloatingActionButton
+export default withInnerRef(FloatingActionButton)

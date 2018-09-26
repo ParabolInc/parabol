@@ -107,6 +107,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 class PhaseItemColumn extends Component<Props> {
+  hasFocused: boolean = false
   phaseEditorRef = React.createRef<HTMLDivElement>()
   makeColumnStack = memoize(
     (reflectionGroups: PhaseItemColumn_meeting['reflectionGroups'], retroPhaseItemId: string) =>
@@ -158,6 +159,7 @@ class PhaseItemColumn extends Component<Props> {
       localStage: {isComplete},
       reflectionGroups
     } = meeting
+    this.hasFocused = this.hasFocused || !!focusedPhaseItemId
     const isFocused = focusedPhaseItemId === retroPhaseItemId
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
@@ -172,7 +174,7 @@ class PhaseItemColumn extends Component<Props> {
           originAnchor={originAnchor}
           targetAnchor={targetAnchor}
           tip={tip}
-          isDisabled={isFocused || !isViewerFacilitator}
+          isDisabled={this.hasFocused || isFocused || !isViewerFacilitator}
         >
           <span>{question}</span>
         </Tooltip>

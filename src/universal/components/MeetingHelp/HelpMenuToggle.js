@@ -3,6 +3,7 @@ import React from 'react'
 import styled from 'react-emotion'
 import FloatingActionButton from 'universal/components/FloatingActionButton'
 import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
+import withInnerRef from 'universal/decorators/withInnerRef'
 
 const StyledButton = styled(FloatingActionButton)(({floatAboveBottomBar}) => ({
   bottom: floatAboveBottomBar ? meetingHelpWithBottomBar : '1.25rem',
@@ -20,4 +21,4 @@ const HelpMenuToggle = (props) => (
   </StyledButton>
 )
 
-export default HelpMenuToggle
+export default withInnerRef(HelpMenuToggle)
