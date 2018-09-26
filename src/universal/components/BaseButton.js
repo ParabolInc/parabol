@@ -11,7 +11,8 @@ const isValidElevation = (elevation) => elevation >= 0 && elevation <= 24
 const getPressedElevation = (elevation1, elevation2) => {
   const offset = Math.floor(Math.abs(elevation1 - elevation2) / 2)
   const hovered = Math.max(elevation1, elevation2)
-  return hovered ? hovered - offset : 0
+  const pressedElevation = hovered ? hovered - offset : 0
+  return elevation[pressedElevation]
 }
 
 const getBoxShadow = (disabled, pressedDown, desiredElevation, otherElevation) => {
@@ -35,7 +36,7 @@ const ButtonRoot = styled(PlainButton)(
       userSelect: 'none',
       whiteSpace: 'nowrap',
       ':hover,:focus,:active': {
-        boxShadow: getBoxShadow(disabled, pressedDown, elevationHovered.elevationResting),
+        boxShadow: getBoxShadow(disabled, pressedDown, elevationHovered, elevationResting),
         outline: pressedDown && 0
       }
     }
