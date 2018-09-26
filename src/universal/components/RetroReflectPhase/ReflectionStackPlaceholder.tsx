@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {RefObject} from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import {reflectionCardMaxHeight} from 'universal/styles/cards'
@@ -6,6 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 
 interface Props {
   idx: number
+  innerRef: RefObject<HTMLDivElement>
 }
 
 const PlaceholderCard = styled('div')({
@@ -38,11 +39,11 @@ const placeholders = [
 
 const seed = Math.floor(Math.random() * placeholders.length)
 const ReflectionStackPlaceholder = (props: Props) => {
-  const {idx} = props
+  const {idx, innerRef} = props
   const tip = placeholders[(seed + idx) % placeholders.length]
   return (
     <PlaceholderCard>
-      <Tip>{tip}</Tip>
+      <Tip innerRef={innerRef}>{tip}</Tip>
     </PlaceholderCard>
   )
 }

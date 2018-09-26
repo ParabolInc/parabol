@@ -6,7 +6,6 @@ import ExpandedReflectionStack from 'universal/components/RetroReflectPhase/Expa
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
-import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {STANDARD_CURVE} from 'universal/styles/animation'
 import {reflectionCardMaxHeight, reflectionCardWidth} from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
@@ -133,13 +132,15 @@ class ReflectionStack extends Component<Props, State> {
 
   animationStart: number = 0
   stackRef = React.createRef<HTMLDivElement>()
+  placeholderRef = React.createRef<HTMLDivElement>()
   firstReflectionRef = React.createRef<HTMLDivElement>()
 
   getSnapshotBeforeUpdate (prevProps: Props) {
     const oldTop = prevProps.reflectionStack[prevProps.reflectionStack.length - 1]
     const newTop = this.props.reflectionStack[this.props.reflectionStack.length - 1]
+    const start = this.firstReflectionRef.current || this.placeholderRef.current
     if (
-      !this.firstReflectionRef.current ||
+      !start ||
       !this.props.phaseEditorRef.current ||
       (oldTop && oldTop.id) === (newTop && newTop.id)
     ) {
@@ -149,7 +150,7 @@ class ReflectionStack extends Component<Props, State> {
     if (duration <= 0) return {duration: ANIMATION_DURATION, easing: EASING}
     // an animation is already in progress!
     return {
-      startCoords: this.firstReflectionRef.current.getBoundingClientRect(),
+      startCoords: start.getBoundingClientRect(),
       duration,
       easing: getDeCasteljau(1 - duration / ANIMATION_DURATION, EASING)
     }
@@ -168,10 +169,10 @@ class ReflectionStack extends Component<Props, State> {
   }
 
   animateFromEditor (firstReflectionDiv: HTMLDivElement, first, duration, easing) {
-    const last = getBBox(firstReflectionDiv)
+    const last = getBBox(firstReflectionDiv) || getBBox(this.placeholderRef.current)
     if (!first || !last) return
     firstReflectionDiv.style.transform = getTransform(first, last)
-    requestDoubleAnimationFrame(() => {
+    requestAnimationFrame(() => {
       this.animationStart = Date.now()
       firstReflectionDiv.style.transition = `transform ${duration}ms ${easing}`
       firstReflectionDiv.style.transform = null
@@ -193,7 +194,7 @@ class ReflectionStack extends Component<Props, State> {
     const {idx, reflectionStack, phaseItemId, phaseRef, meetingId} = this.props
     const {isExpanded} = this.state
     if (reflectionStack.length === 0) {
-      return <ReflectionStackPlaceholder idx={idx} />
+      return <ReflectionStackPlaceholder idx={idx} innerRef={this.placeholderRef} />
     }
     const maxStack = reflectionStack.slice(Math.max(0, reflectionStack.length - 3))
     return (
