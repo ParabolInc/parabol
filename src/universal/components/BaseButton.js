@@ -4,33 +4,44 @@ import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import withInnerRef from 'universal/decorators/withInnerRef'
+import elevation from 'universal/styles/elevation'
 
-const ButtonRoot = styled(PlainButton)(({size, depth, disabled, pressedDown}) => {
-  const hasDepth = depth || depth === 0
-  const boxShadow = hasDepth ? ui.shadow[depth] : 'none'
-  const hoverDepth = hasDepth ? ui.shadow[depth + 2] : ui.shadow[1]
-  const pressedDepth = hasDepth ? ui.shadow[depth + 1] : ui.shadow[0]
-  const stateDepth = pressedDown ? pressedDepth : hoverDepth
-  return {
-    // size is easy to override, it adds: fontSize, lineHeight, padding
-    ...ui.buttonSizeStyles[size],
-    display: 'block',
-    border: '.0625rem solid transparent',
-    boxShadow,
-    textAlign: 'center',
-    transform: pressedDown && 'translate(0, .125rem)',
-    transition: `
-        box-shadow ${ui.transition[0]},
-        transform ${ui.transition[0]}
-      `,
-    userSelect: 'none',
-    whiteSpace: 'nowrap',
-    ':hover,:focus,:active': {
-      boxShadow: disabled ? 'none' : stateDepth,
-      outline: pressedDown && 0
+const isValidElevation = (elevation) => elevation >= 0 && elevation <= 24
+
+const getPressedElevation = (elevation1, elevation2) => {
+  const offset = Math.floor(Math.abs(elevation1 - elevation2) / 2)
+  const hovered = Math.max(elevation1, elevation2)
+  const pressedElevation = hovered ? hovered - offset : 0
+  return elevation[pressedElevation]
+}
+
+const getBoxShadow = (disabled, pressedDown, desiredElevation, otherElevation) => {
+  if (disabled || !isValidElevation(desiredElevation)) return undefined
+  if (pressedDown) return getPressedElevation(desiredElevation, otherElevation)
+  return elevation[desiredElevation]
+}
+
+const ButtonRoot = styled(PlainButton)(
+  ({disabled, elevationResting, elevationHovered, pressedDown, size}) => {
+    return {
+      // size is easy to override, it adds: fontSize, lineHeight, padding
+      ...ui.buttonSizeStyles[size],
+      alignItems: 'center',
+      border: '.0625rem solid transparent',
+      boxShadow: getBoxShadow(disabled, pressedDown, elevationResting, elevationHovered),
+      display: 'flex',
+      justifyContent: 'center',
+      textAlign: 'center',
+      transition: `box-shadow ${ui.transition[0]}`,
+      userSelect: 'none',
+      whiteSpace: 'nowrap',
+      ':hover,:focus,:active': {
+        boxShadow: getBoxShadow(disabled, pressedDown, elevationHovered, elevationResting),
+        outline: pressedDown && 0
+      }
     }
   }
-})
+)
 
 class BaseButton extends Component {
   static propTypes = {
@@ -39,9 +50,10 @@ class BaseButton extends Component {
     children: PropTypes.any,
     // handling className allows usage of emotion’s styled handler
     className: PropTypes.string,
-    // depth: up to 2 + 2 (for :hover, :focus) = up to ui.shadow[4]
-    depth: PropTypes.oneOf([0, 1, 2]),
     disabled: PropTypes.bool,
+    // elevation values 0 - 24
+    elevationHovered: PropTypes.number,
+    elevationResting: PropTypes.number,
     innerRef: PropTypes.any,
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,
@@ -90,8 +102,9 @@ class BaseButton extends Component {
       size = 'small',
       children,
       className,
-      depth,
       disabled,
+      elevationHovered,
+      elevationResting,
       innerRef,
       onClick,
       onMouseEnter,
@@ -107,17 +120,18 @@ class BaseButton extends Component {
       <ButtonRoot
         {...this.props}
         aria-label={ariaLabel}
-        size={size}
         className={className}
-        depth={depth}
         disabled={hasDisabledStyles}
+        elevationHovered={elevationHovered}
+        elevationResting={elevationResting}
+        innerRef={innerRef}
         onClick={onClick}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseEnter={onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         pressedDown={!hasDisabledStyles && pressedDown}
-        innerRef={innerRef}
+        size={size}
         style={style}
         waiting={waiting}
       >

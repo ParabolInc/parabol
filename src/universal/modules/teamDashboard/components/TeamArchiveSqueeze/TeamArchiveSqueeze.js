@@ -102,7 +102,7 @@ class TeamArchiveSqueeze extends Component {
     }
     return (
       <ArchiveSqueezeOuter>
-        <Panel bgTheme='light' depth={0}>
+        <Panel bgTheme='light'>
           <ArchiveSqueezeInner>
             <ArchiveSqueezeContent>
               <ArchiveSqueezeHeading>
@@ -126,7 +126,7 @@ class TeamArchiveSqueeze extends Component {
             </ArchiveSqueezeContent>
             <ArchiveSqueezeButtonBlock>
               {isBillingLeader ? (
-                <PrimaryButton size='medium' depth={1} onClick={handleUpgrade}>
+                <PrimaryButton size='medium' onClick={handleUpgrade}>
                   {`Upgrade to the ${PRO_LABEL} Plan`}
                 </PrimaryButton>
               ) : (

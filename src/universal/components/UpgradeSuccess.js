@@ -112,7 +112,7 @@ class UpgradeSuccess extends React.Component<Props, State> {
           <b>{PRO_LABEL}</b>
           {' tier.'}
         </ModalCopy>
-        <ModalButton size='large' depth={1} onClick={handleClose}>
+        <ModalButton size='large' onClick={handleClose}>
           {'Let’s Get Back to Business'}
         </ModalButton>
         <Confetti active={active} config={confettiConfig} />

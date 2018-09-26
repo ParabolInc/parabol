@@ -47,7 +47,7 @@ const PasswordResetForm = (props: Props) => {
           disabled={submitting}
         />
       </Block>
-      <PrimaryButton size='large' depth={1} disabled={!valid} waiting={submitting}>
+      <PrimaryButton size='large' disabled={!valid} waiting={submitting}>
         {'Submit'}
       </PrimaryButton>
     </Form>

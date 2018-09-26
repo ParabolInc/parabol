@@ -3,7 +3,7 @@ import ui from 'universal/styles/ui'
 import BaseButton from 'universal/components/BaseButton'
 
 const CardButton = styled(BaseButton)({
-  borderRadius: ui.borderRadiusSmall,
+  borderRadius: '4em',
   color: ui.palette.dark,
   height: ui.cardButtonHeight,
   lineHeight: ui.cardContentLineHeight,
@@ -12,7 +12,7 @@ const CardButton = styled(BaseButton)({
   outline: 0,
   padding: 0,
   ':hover, :focus': {
-    borderColor: ui.cardButtonBorderColor,
+    backgroundColor: ui.palette.gray,
     opacity: 1
   }
 })

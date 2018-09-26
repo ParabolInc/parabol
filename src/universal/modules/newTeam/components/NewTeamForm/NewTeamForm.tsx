@@ -330,7 +330,7 @@ class NewTeamForm extends Component<Props, State> {
               onBlur={this.handleBlur}
             />
 
-            <StyledButton size='large' depth={1} waiting={submitting}>
+            <StyledButton size='large' waiting={submitting}>
               {isNewOrg ? 'Create Team & Org' : 'Create Team'}
             </StyledButton>
           </FormInner>
