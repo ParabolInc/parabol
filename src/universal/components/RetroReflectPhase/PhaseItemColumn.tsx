@@ -55,9 +55,9 @@ const HeaderAndEditor = styled('div')({
 })
 
 const TypeDescription = styled('div')({
-  fontSize: '1.25rem'
-  // fontStyle: 'italic',
-  // fontWeight: 600
+  fontSize: '1.25rem',
+  fontStyle: 'italic',
+  fontWeight: 600
 })
 
 const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean}) => ({
