@@ -136,7 +136,8 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "@google-cloud/language": "^1.2.0",
-    "@mattkrick/fast-rtc-peer": "^0.0.5",
+    "@mattkrick/fast-rtc-peer": "^0.1.0",
+    "@mattkrick/fast-rtc-swarm": "^0.1.0",
     "@mattkrick/graphql-trebuchet-client": "^0.1.1",
     "@mattkrick/react-dnd": "3.0.5",
     "@mattkrick/react-dnd-html5-backend": "3.0.5",
@@ -144,6 +145,7 @@
     "@mattkrick/relay-runtime": "^1.7.0-rc.1",
     "@mattkrick/trebuchet-client": "^0.1.2",
     "@segment/snippet": "^4.0.1",
+    "@types/uws": "^0.13.2",
     "analytics-node": "^3.0.0",
     "aphrodite-local-styles": "0.6.2",
     "auth0": "^2.7.0",

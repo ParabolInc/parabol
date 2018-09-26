@@ -22,93 +22,7 @@ declare namespace GQL {
 
   interface IQuery {
     __typename: 'Query'
-    suCountTiersForUser: IUserTiersCount | null
-    suUserCount: number | null
-    suProOrgInfo: Array<ISuProOrgInfo> | null
-    suOrgCount: number | null
     viewer: IUser | null
-  }
-
-  interface ISuCountTiersForUserOnQueryArguments {
-    /**
-     * the user for which you want the count of tier membership
-     */
-    userId: string
-  }
-
-  interface ISuUserCountOnQueryArguments {
-    /**
-     * filter out users who's email matches this regular expression
-     * @default ""
-     */
-    ignoreEmailRegex?: string | null
-
-    /**
-     * should organizations without active users be included?
-     * @default false
-     */
-    includeInactive?: boolean | null
-
-    /**
-     * @default "pro"
-     */
-    tier?: OrgTierEnum | null
-  }
-
-  interface ISuProOrgInfoOnQueryArguments {
-    /**
-     * should organizations without active users be included?
-     * @default false
-     */
-    includeInactive?: boolean | null
-  }
-
-  interface ISuOrgCountOnQueryArguments {
-    /**
-     * filter out users who's email matches this regular expression
-     * @default ""
-     */
-    ignoreEmailRegex?: string | null
-
-    /**
-     * should organizations without active users be included?
-     * @default false
-     */
-    includeInactive?: boolean | null
-
-    /**
-     * the minimum number of users within the org to count it
-     * @default 2
-     */
-    minOrgSize?: number | null
-
-    /**
-     * @default "pro"
-     */
-    tier?: OrgTierEnum | null
-  }
-
-  /**
-   * A count of the number of account tiers a user belongs to.
-   */
-  interface IUserTiersCount {
-    __typename: 'UserTiersCount'
-
-    /**
-     * The number of personal orgs the user is active upon
-     */
-    tierPersonalCount: number | null
-
-    /**
-     * The number of pro orgs the user is active upon
-     */
-    tierProCount: number | null
-
-    /**
-     * The number of pro orgs the user holds the role of Billing Leader
-     */
-    tierProBillingLeaderCount: number | null
-    user: IUser | null
   }
 
   /**
@@ -1856,7 +1770,7 @@ declare namespace GQL {
     /**
      * foreign key to User table
      */
-    userId: string | null
+    userId: string
 
     /**
      * The team this team member belongs to
@@ -2587,29 +2501,6 @@ declare namespace GQL {
      * *The team that cares about these annoucements
      */
     teamId: string
-  }
-
-  /**
-   * The tier of the Organization
-   */
-  const enum OrgTierEnum {
-    personal = 'personal',
-    pro = 'pro',
-    enterprise = 'enterprise'
-  }
-
-  interface ISuProOrgInfo {
-    __typename: 'SuProOrgInfo'
-
-    /**
-     * The PRO organization
-     */
-    organization: IOrganization | null
-
-    /**
-     * The id of the Organization
-     */
-    organizationId: string
   }
 
   interface IMutation {

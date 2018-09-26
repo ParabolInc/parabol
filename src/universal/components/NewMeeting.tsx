@@ -1,51 +1,52 @@
+import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
+import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import React from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
+import styled from 'react-emotion'
+import {Helmet} from 'react-helmet'
 import withHotkey from 'react-hotkey-hoc'
-import {createFragmentContainer, commitLocalUpdate, graphql} from 'react-relay'
+import {connect} from 'react-redux'
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {Dispatch} from 'redux'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
+import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn'
+import NewMeetingLobby from 'universal/components/NewMeetingLobby'
+import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading'
+import NewMeetingSidebar from 'universal/components/NewMeetingSidebar'
+import RetroDiscussPhase from 'universal/components/RetroDiscussPhase'
+import RetroGroupPhase from 'universal/components/RetroGroupPhase'
+import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase'
+import RetroVotePhase from 'universal/components/RetroVotePhase'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import styled from 'react-emotion'
-import {Helmet} from 'react-helmet'
-import NewMeetingSidebar from 'universal/components/NewMeetingSidebar'
-import NewMeetingLobby from 'universal/components/NewMeetingLobby'
-import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase'
-import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
-import ui from 'universal/styles/ui'
-import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
-import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn'
-import findStageById from 'universal/utils/meetings/findStageById'
-import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation'
-import ErrorBoundary from 'universal/components/ErrorBoundary'
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
-import handleHotkey from 'universal/utils/meetings/handleHotkey'
-import {connect} from 'react-redux'
-import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import updateLocalStage from 'universal/utils/relay/updateLocalStage'
-import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading'
-import RetroGroupPhase from 'universal/components/RetroGroupPhase'
-import RetroVotePhase from 'universal/components/RetroVotePhase'
-import RetroDiscussPhase from 'universal/components/RetroDiscussPhase'
+import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
+import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
+import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
-import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
 import {
   meetingChromeBoxShadow,
   meetingSidebarMediaQuery,
   meetingSidebarWidth
 } from 'universal/styles/meeting'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import ui from 'universal/styles/ui'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
+import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
+import findStageById from 'universal/utils/meetings/findStageById'
+import handleHotkey from 'universal/utils/meetings/handleHotkey'
+import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import updateLocalStage from 'universal/utils/relay/updateLocalStage'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
-import MeetingTypeEnum = GQL.MeetingTypeEnum
 import INavigateMeetingOnMutationArguments = GQL.INavigateMeetingOnMutationArguments
+import MeetingTypeEnum = GQL.MeetingTypeEnum
 
 const {Component} = React
 
@@ -61,6 +62,7 @@ const MeetingContainer = styled('div')({
 interface SidebarStyleProps {
   isMeetingSidebarCollapsed?: boolean | null
 }
+
 const MeetingSidebarLayout = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyleProps) => ({
   boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
   display: 'flex',
@@ -146,17 +148,102 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
   viewer: NewMeeting_viewer
 }
 
-class NewMeeting extends Component<Props> {
+export interface ViewerStreamLookup {
+  [viewerId: string]: Array<MediaStream>
+}
+
+interface State {
+  viewerStreamLookup: ViewerStreamLookup
+}
+
+class NewMeeting extends Component<Props, State> {
+  state = {
+    viewerStreamLookup: {}
+  }
+
   constructor (props) {
     super(props)
-    const {bindHotkey} = props
+    const {atmosphere, bindHotkey} = props
     bindHotkey('right', handleHotkey(this.maybeGotoNext))
     bindHotkey('left', handleHotkey(this.gotoPrev))
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
+    if (atmosphere.transport.trebuchet) {
+      this.createSwarm().catch()
+    } else {
+      atmosphere.eventEmitter.once('newSubscriptionClient', () => {
+        this.createSwarm().catch()
+      })
+    }
   }
 
   sidebarRef = React.createRef()
   gotoNextRef = React.createRef<HTMLDivElement>()
+  swarm!: FastRTCSwarm
+
+  createSwarm = async () => {
+    const {atmosphere} = this.props
+    const {
+      viewerId,
+      transport: {trebuchet}
+    } = atmosphere
+    const {viewerStreamLookup} = this.state
+    let streams
+    try {
+      streams = [await navigator.mediaDevices.getUserMedia({video: true, audio: true})]
+    } catch (e) {
+      streams = []
+    }
+    const audio = {streams}
+    const video = {streams}
+    const swarm = new FastRTCSwarm({sdpSemantics: 'unified-plan', video, audio} as any)
+    trebuchet.on('data', (data) => {
+      const payload = JSON.parse(data)
+      swarm.dispatch(payload)
+    })
+
+    swarm.on('signal', (signal) => {
+      trebuchet.send(JSON.stringify({type: 'WRTC_SIGNAL', signal}))
+    })
+    swarm.on('dataOpen', (peer) => {
+      peer.send(JSON.stringify({type: 'init', viewerId}))
+    })
+
+    const initQueue: {[peerId: string]: Array<() => void>} = {}
+    const addStream = (stream, peer) => {
+      const {viewerId} = peer
+      const streams = (viewerStreamLookup[viewerId] = viewerStreamLookup[viewerId] || [])
+      if (!streams.includes(stream)) {
+        streams.push(stream)
+        this.setState({
+          // low-effort immutability
+          viewerStreamLookup: {...viewerStreamLookup}
+        })
+      }
+    }
+
+    swarm.on('data', (data, peer) => {
+      const payload = JSON.parse(data)
+      if (payload.type === 'init') {
+        peer.viewerId = payload.viewerId
+        const queue = initQueue[peer.id]
+        if (queue) {
+          queue.forEach((thunk) => thunk())
+          delete initQueue[peer.id]
+        }
+      }
+    })
+
+    swarm.on('stream', (stream, peer) => {
+      const {viewerId} = peer
+      if (viewerId) {
+        addStream(stream, peer)
+      } else {
+        initQueue[peer.id] = initQueue[peer.id] || []
+        initQueue[peer.id].push(() => addStream(stream, peer))
+      }
+    })
+  }
+
   endMeeting = () => {
     const {
       atmosphere,
@@ -298,6 +385,7 @@ class NewMeeting extends Component<Props> {
   }
 
   render () {
+    const {viewerStreamLookup} = this.state
     const {meetingType, viewer} = this.props
     const {team} = viewer
     const {newMeeting, teamName} = team
@@ -336,7 +424,11 @@ class NewMeeting extends Component<Props> {
                 isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
                 toggleSidebar={this.toggleSidebar}
               />
-              <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
+              <NewMeetingAvatarGroup
+                gotoStageId={this.gotoStageId}
+                team={team}
+                viewerStreamLookup={viewerStreamLookup}
+              />
             </MeetingAreaHeader>
             <ErrorBoundary>
               <React.Fragment>

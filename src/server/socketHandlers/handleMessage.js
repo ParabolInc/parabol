@@ -7,10 +7,11 @@ import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import isQueryProvided from 'server/graphql/isQueryProvided'
 import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
 import {Events} from '@mattkrick/trebuchet-client'
+import handleWRTCSignal from '@mattkrick/fast-rtc-swarm/server'
 
 const {GQL_START, GQL_STOP} = ServerMessageTypes
 const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
-const handleMessage = (connectionContext) => async (message) => {
+const handleMessage = (connectionContext, wss) => async (message) => {
   const {socket, subs} = connectionContext
   // catch raw, non-graphql protocol messages here
   if (message === Events.KEEP_ALIVE) {
@@ -47,6 +48,8 @@ const handleMessage = (connectionContext) => async (message) => {
     }
   } else if (type === GQL_STOP) {
     relayUnsubscribe(subs, opId)
+  } else if (type === 'WRTC_SIGNAL') {
+    handleWRTCSignal(wss.clients, socket, parsedMessage.signal)
   }
 }
 

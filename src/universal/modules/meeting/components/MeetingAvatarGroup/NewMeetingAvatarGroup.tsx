@@ -9,6 +9,7 @@ import withAtmosphere, {
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
+import {ViewerStreamLookup} from 'universal/components/NewMeeting'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',
@@ -28,12 +29,14 @@ const MeetingAvatarGroupInner = styled('div')({
 interface Props extends WithAtmosphereProps {
   gotoStageId: (stageId: string) => void
   team: NewMeetingAvatarGroup_team
+  viewerStreamLookup: ViewerStreamLookup
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {
   const {
     gotoStageId,
-    team: {newMeeting, teamMembers}
+    team: {newMeeting, teamMembers},
+    viewerStreamLookup
   } = props
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorStageId, phases, localPhase} = meeting
@@ -56,6 +59,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
               isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
               newMeeting={newMeeting}
               teamMember={teamMember}
+              viewerStreams={viewerStreamLookup[teamMember.userId]}
             />
           )
         })}
@@ -71,6 +75,7 @@ export default createFragmentContainer(
       teamId: id
       teamMembers(sortBy: "checkInOrder") {
         id
+        userId
         ...NewMeetingAvatar_teamMember
       }
       newMeeting {

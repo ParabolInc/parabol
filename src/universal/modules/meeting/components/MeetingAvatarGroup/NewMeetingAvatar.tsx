@@ -4,14 +4,13 @@ import React from 'react'
 import styled from 'react-emotion'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Avatar from 'universal/components/Avatar/Avatar'
+import VideoAvatar from 'universal/components/Avatar/VideoAvatar'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import LoadableNewMeetingAvatarMenu from 'universal/modules/meeting/components/LoadableNewMeetingAvatarMenu'
 import appTheme from 'universal/styles/theme/appTheme'
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
@@ -99,23 +98,16 @@ interface Props extends WithAtmosphereProps {
   isFacilitatorStage: boolean
   newMeeting: NewMeetingAvatar_newMeeting | null
   teamMember: NewMeetingAvatar_teamMember
+  viewerStreams: Array<MediaStream> | undefined
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {gotoStage, isFacilitatorStage, newMeeting, teamMember} = props
+  const {gotoStage, isFacilitatorStage, newMeeting, teamMember, viewerStreams} = props
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES
-  const {
-    teamMemberId,
-    isConnected,
-    isSelf,
-    meetingMember,
-    picture = defaultUserAvatar,
-    userId
-  } = teamMember
-  const isCheckedIn = meetingMember ? meetingMember.isCheckedIn : null
+  const {teamMemberId, userId} = teamMember
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
   return (
@@ -140,16 +132,7 @@ const NewMeetingAvatar = (props: Props) => {
             teamMember
           }}
           targetAnchor={targetAnchor}
-          toggle={
-            <Avatar
-              hasBadge
-              isClickable
-              picture={picture}
-              isConnected={isConnected || isSelf}
-              isCheckedIn={isCheckedIn}
-              size='fill'
-            />
-          }
+          toggle={<VideoAvatar teamMember={teamMember} viewerStreams={viewerStreams} />}
         />
       </AvatarBlock>
       {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
@@ -162,14 +145,9 @@ export default createFragmentContainer(
   graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
       teamMemberId: id
-      meetingMember {
-        isCheckedIn
-      }
-      isConnected
-      isSelf
-      picture
       userId
       ...NewMeetingAvatarMenu_teamMember
+      ...VideoAvatar_teamMember
     }
 
     fragment NewMeetingAvatar_newMeeting on NewMeeting {

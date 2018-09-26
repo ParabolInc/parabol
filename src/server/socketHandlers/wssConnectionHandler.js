@@ -11,7 +11,7 @@ import packageJSON from '../../../package.json'
 import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
 
 const APP_VERSION = packageJSON.version
-export default function connectionHandler (sharedDataLoader, rateLimiter) {
+export default function connectionHandler (sharedDataLoader, rateLimiter, wss) {
   return async function socketConnectionHandler (socket) {
     const req = socket.upgradeReq
     const {headers} = req
@@ -40,7 +40,7 @@ export default function connectionHandler (sharedDataLoader, rateLimiter) {
     socket.send(JSON.stringify({version: APP_VERSION}))
     handleConnect(connectionContext)
     keepAlive(connectionContext, WS_KEEP_ALIVE)
-    socket.on('message', handleMessage(connectionContext))
+    socket.on('message', handleMessage(connectionContext, wss))
     socket.on('close', handleDisconnect(connectionContext))
   }
 }

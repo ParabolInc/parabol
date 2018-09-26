@@ -160,4 +160,4 @@ app.get('/sse', SSEConnectionHandler(sharedDataLoader, rateLimiter, sseClients))
 app.get('*', createSSR)
 
 // handle sockets
-wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter))
+wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter, wss))

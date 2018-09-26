@@ -808,20 +808,28 @@
     lodash "^4.2.0"
     redux "^4.0.0"
 
-"@mattkrick/fast-rtc-peer@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.0.5.tgz#315197bd7a01374e622afc2e9a5280caf2a41a0a"
-  dependencies:
-    eventemitter3 "^3.1.0"
-    tslib "^1.9.3"
-    uuid "^3.3.2"
-
 "@mattkrick/fast-rtc-peer@^0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.0.6.tgz#e884b91f6410cd54df2b543fb0ad3beafd41b4cb"
   dependencies:
     eventemitter3 "^3.1.0"
     shortid "^2.2.12"
+    tslib "^1.9.3"
+
+"@mattkrick/fast-rtc-peer@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-peer/-/fast-rtc-peer-0.1.0.tgz#31c808d8ea5d183f5d631adfa16ae33ba13491d9"
+  dependencies:
+    eventemitter3 "^3.1.0"
+    shortid "^2.2.12"
+    tslib "^1.9.3"
+
+"@mattkrick/fast-rtc-swarm@^0.1.0":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/fast-rtc-swarm/-/fast-rtc-swarm-0.1.1.tgz#12875370dc4ffe3a2ad12838ca82d9b863ff36c8"
+  dependencies:
+    "@mattkrick/fast-rtc-peer" "^0.1.0"
+    eventemitter3 "^3.1.0"
     tslib "^1.9.3"
 
 "@mattkrick/graphql-trebuchet-client@^0.1.1":
@@ -1286,6 +1294,10 @@
     "@types/react" "*"
     immutable "^3.8.1"
 
+"@types/events@*":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
+
 "@types/history@*":
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.0.tgz#2fac51050c68f7d6f96c5aafc631132522f4aa3f"
@@ -1374,6 +1386,13 @@
 "@types/relay-runtime@*", "@types/relay-runtime@^1.3.6":
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-1.3.6.tgz#839610054c1747217e814c8993fa642e902d0de0"
+
+"@types/uws@^0.13.2":
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/@types/uws/-/uws-0.13.2.tgz#e3563c636132c171a4c9079620c71aba402ceb00"
+  dependencies:
+    "@types/events" "*"
+    "@types/node" "*"
 
 "@webassemblyjs/ast@1.7.6":
   version "1.7.6"
