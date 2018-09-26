@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.14.0 2018-Sep-26
+
+### Added 
+* facilitator tooltip for focusing a reflection column
+
+### Fixed
+* button elevation
+* reflection spacing inside grouping modal
+* removed emoji popover when no results are found
+* resize handling when editing reflections during reflect phase
+
 ## v2.13.1 2018-Sep-20
 
 ### Added
