@@ -37,6 +37,8 @@ const createAccountPage = () =>
   import(/* webpackChunkName: 'CreateAccountPage' */ 'universal/components/CreateAccountPage/CreateAccountPage')
 const signInPage = () =>
   import(/* webpackChunkName: 'SignInPage' */ 'universal/components/SignInPage/SignInPage')
+const demoMeeting = () =>
+  import(/* webpackChunkName: 'DemoMeeting' */ 'universal/components/DemoMeeting')
 
 const ActionStyles = styled('div')({
   margin: 0,
@@ -55,6 +57,12 @@ const Action = () => {
         <AsyncRoute exact path='/' mod={signInPage} />
         <AsyncRoute exact path={`/${SIGNIN_SLUG}`} mod={signInPage} />
         <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
+        <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
+        <AsyncRoute
+          path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
+          mod={demoMeeting}
+          extraProps={{match: {params: {teamId: 'demoTeam'}}}}
+        />
         <AsyncRoute exact path='/reset-password' mod={resetPasswordPage} />
         <AsyncRoute isPrivate path='(/me|/newteam|/team)' mod={dashWrapper} />
         <AsyncRoute

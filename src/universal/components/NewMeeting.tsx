@@ -405,11 +405,6 @@ export default createFragmentContainer(
         ...RetroGroupPhase_team
         ...RetroVotePhase_team
         ...RetroDiscussPhase_team
-        checkInGreeting {
-          content
-          language
-        }
-        checkInQuestion
         teamId: id
         teamName: name
         meetingId

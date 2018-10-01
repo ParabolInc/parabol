@@ -186,7 +186,7 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     const {environment, cacheConfig} = this.props
     const {ttl} = cacheConfig || {}
     const {queryKey, queryFetcher} = this.state
-    if (queryFetcher.readyToGC()) {
+    if (queryFetcher.readyToGC() && environment.unregisterQuery) {
       environment.unregisterQuery(queryKey)
       queryFetcher.dispose()
     } else {
@@ -200,7 +200,9 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
       timeouts[queryKey] = setTimeout(() => {
         const {relayContextEnvironment, queryFetcher} = this.state
         queryFetcher.dispose()
-        relayContextEnvironment.unregisterQuery(queryKey)
+        if (relayContextEnvironment.unregisterQuery) {
+          relayContextEnvironment.unregisterQuery(queryKey)
+        }
         delete timeouts[queryKey]
       }, ttl)
     }
@@ -274,7 +276,7 @@ function fetchQueryAndComputeStateFromProps(
     const operation = createOperationSelector(request, variables)
     const queryKey = makeQueryKey(request.name, operation.variables)
     ReactRelayQueryRenderer.renewTTL(queryKey)
-    if (props.subscriptions) {
+    if (props.subscriptions && environment.registerQuery) {
       environment.registerQuery(
         queryKey,
         props.subscriptions,

@@ -41,6 +41,8 @@ type State = {
 class NewMeetingWithLocalState extends Component<Props, State> {
   constructor (props) {
     super(props)
+    // const isDemo = props.match.path.includes('retrospective-demo')
+    // const {match: {localPhaseSlug, stageIdxSlug}} = props.params
     const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
       safeRoute
@@ -145,6 +147,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
     const stage = phase.stages[stageIdx]
     const stageId = stage && stage.id
+    console.log('isV', viewerId, facilitatorUserId)
     const isViewerFacilitator = viewerId === facilitatorUserId
     const itemStage = findStageById(phases, stageId)
     if (!itemStage) return false
