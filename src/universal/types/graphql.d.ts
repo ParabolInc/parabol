@@ -39,7 +39,7 @@ declare namespace GQL {
     /**
      * Array of identifier + ip pairs
      */
-    blockedFor: Array<IBlockedUserType> | null
+    blockedFor: Array<IBlockedUserType | null> | null
 
     /**
      * The timestamp of the user was cached
@@ -54,7 +54,7 @@ declare namespace GQL {
     /**
      * The socketIds that the user is currently connected with
      */
-    connectedSockets: Array<string> | null
+    connectedSockets: Array<string | null> | null
 
     /**
      * The timestamp the user was created
@@ -80,7 +80,7 @@ declare namespace GQL {
      * An array of objects with information about the user's identities.
      *       More than one will exists in case accounts are linked
      */
-    identities: Array<IAuthIdentityType> | null
+    identities: Array<IAuthIdentityType | null> | null
 
     /**
      * true if the user is currently online
@@ -140,14 +140,14 @@ declare namespace GQL {
     /**
      * the orgs and roles for this user on each
      */
-    userOrgs: Array<IUserOrg> | null
+    userOrgs: Array<IUserOrg | null> | null
     archivedTasks: ITaskConnection | null
     archivedTasksCount: number | null
 
     /**
      * list of git hub repos available to the viewer
      */
-    githubRepos: Array<IGitHubIntegration> | null
+    githubRepos: Array<IGitHubIntegration | null> | null
 
     /**
      * get an integration provider belonging to the user
@@ -184,7 +184,7 @@ declare namespace GQL {
     /**
      * paginated list of slackChannels
      */
-    slackChannels: Array<ISlackIntegration> | null
+    slackChannels: Array<ISlackIntegration | null> | null
 
     /**
      * get a single organization and the count of users by status
@@ -194,7 +194,7 @@ declare namespace GQL {
     /**
      * Get the list of all organizations a user belongs to
      */
-    organizations: Array<IOrganization> | null
+    organizations: Array<IOrganization | null> | null
     tasks: ITaskConnection
 
     /**
@@ -205,7 +205,7 @@ declare namespace GQL {
     /**
      * all the teams the user is on that the viewer can see.
      */
-    teams: Array<ITeam> | null
+    teams: Array<ITeam | null> | null
 
     /**
      * The team member associated with this user
@@ -215,7 +215,7 @@ declare namespace GQL {
     /**
      * all the teams the user is a part of that the viewer can see
      */
-    tms: Array<string> | null
+    tms: Array<string | null> | null
   }
 
   interface IIsBillingLeaderOnUserArguments {
@@ -538,7 +538,7 @@ declare namespace GQL {
     /**
      * a list of users currently editing the task (fed by a subscription, so queries return null)
      */
-    editors: Array<ITaskEditorDetails> | null
+    editors: Array<ITaskEditorDetails | null> | null
     integration: IGitHubTask | null
 
     /**
@@ -569,7 +569,7 @@ declare namespace GQL {
     /**
      * The tags associated with the task
      */
-    tags: Array<string> | null
+    tags: Array<string | null> | null
 
     /**
      * The id of the team (indexed). Needed for subscribing to archived tasks
@@ -691,7 +691,7 @@ declare namespace GQL {
     /**
      * Arbitrary tags that the team uses
      */
-    tags: Array<string> | null
+    tags: Array<string | null> | null
 
     /**
      * The datetime the team was last updated
@@ -707,7 +707,7 @@ declare namespace GQL {
      * The checkIn question of the week
      */
     checkInQuestion: string | null
-    customPhaseItems: Array<CustomPhaseItem> | null
+    customPhaseItems: Array<CustomPhaseItem | null> | null
 
     /**
      * The unique Id of the active meeting
@@ -732,7 +732,7 @@ declare namespace GQL {
     /**
      * The outstanding invitations to join the team
      */
-    invitations: Array<IInvitation> | null
+    invitations: Array<IInvitation | null> | null
 
     /**
      * true if the viewer is the team lead, else false
@@ -773,7 +773,7 @@ declare namespace GQL {
     /**
      * The agenda items for the upcoming or current meeting
      */
-    agendaItems: Array<IAgendaItem> | null
+    agendaItems: Array<IAgendaItem | null> | null
 
     /**
      * All of the tasks for this team
@@ -783,7 +783,7 @@ declare namespace GQL {
     /**
      * All the soft team members actively associated with the team
      */
-    softTeamMembers: Array<ISoftTeamMember> | null
+    softTeamMembers: Array<ISoftTeamMember | null> | null
 
     /**
      * All the team members actively associated with the team
@@ -1058,7 +1058,7 @@ declare namespace GQL {
     /**
      * The team members that were active during the time of the meeting
      */
-    meetingMembers: Array<MeetingMember> | null
+    meetingMembers: Array<MeetingMember | null> | null
 
     /**
      * The auto-incrementing meeting number for the team
@@ -1331,7 +1331,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   type Notification =
@@ -1368,7 +1368,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   /**
@@ -1915,7 +1915,7 @@ declare namespace GQL {
     /**
      * The users that can CRUD this integration
      */
-    teamMembers: Array<ITeamMember> | null
+    teamMembers: Array<ITeamMember | null> | null
 
     /**
      * The datetime the integration was updated
@@ -1925,7 +1925,7 @@ declare namespace GQL {
     /**
      * *The userIds connected to the repo so they can CRUD things under their own name
      */
-    userIds: Array<string> | null
+    userIds: Array<string | null> | null
   }
 
   /**
@@ -2044,7 +2044,7 @@ declare namespace GQL {
     /**
      * The emails the invoice was sent to
      */
-    billingLeaderEmails: Array<any> | null
+    billingLeaderEmails: Array<any | null> | null
 
     /**
      * the card used to pay the invoice
@@ -2064,7 +2064,7 @@ declare namespace GQL {
     /**
      * An invoice line item for previous month adjustments
      */
-    lines: Array<IInvoiceLineItem>
+    lines: Array<IInvoiceLineItem> | null
 
     /**
      * The details that comprise the charges for next month
@@ -2131,7 +2131,7 @@ declare namespace GQL {
     /**
      * Array of user activity line items that roll up to total activity (add/leave/pause/unpause)
      */
-    details: Array<IInvoiceLineItemDetails>
+    details: Array<IInvoiceLineItemDetails> | null
 
     /**
      * The total number of days that all org users have been inactive during the billing cycle
@@ -2258,7 +2258,7 @@ declare namespace GQL {
      * The teamMemberId of the person who ended the meeting
      */
     facilitator: string | null
-    invitees: Array<IMeetingInvitee> | null
+    invitees: Array<IMeetingInvitee | null> | null
 
     /**
      * The auto-incrementing meeting number for the team
@@ -2268,7 +2268,7 @@ declare namespace GQL {
     /**
      * A list of immutable tasks, as they were created in the meeting
      */
-    tasks: Array<IMeetingTask> | null
+    tasks: Array<IMeetingTask | null> | null
 
     /**
      * The start time used to create the diff (all taskDiffs occurred between this time and the endTime
@@ -2303,7 +2303,7 @@ declare namespace GQL {
     /**
      * All the team members associated who can join this team
      */
-    teamMembers: Array<ITeamMember> | null
+    teamMembers: Array<ITeamMember | null> | null
   }
 
   /**
@@ -2325,7 +2325,7 @@ declare namespace GQL {
     /**
      * A list of immutable tasks, as they were created in the meeting
      */
-    tasks: Array<IMeetingTask> | null
+    tasks: Array<IMeetingTask | null> | null
 
     /**
      * url of user’s profile picture
@@ -2367,7 +2367,7 @@ declare namespace GQL {
     /**
      * The tags associated with the task
      */
-    tags: Array<string> | null
+    tags: Array<string | null> | null
 
     /**
      * The id of the team member the action was assigned to during the meeting
@@ -2495,7 +2495,7 @@ declare namespace GQL {
     /**
      * The types of notifications the team wishes to receive
      */
-    notifications: Array<string> | null
+    notifications: Array<string | null> | null
 
     /**
      * *The team that cares about these annoucements
@@ -2990,7 +2990,7 @@ declare namespace GQL {
      * The new team object with exactly 1 team member
      */
     newTeam: INewTeamInput
-    invitees: Array<IInvitee>
+    invitees?: Array<IInvitee> | null
 
     /**
      * The name of the new team
@@ -3013,7 +3013,7 @@ declare namespace GQL {
      * The new team object
      */
     newTeam: INewTeamInput
-    invitees: Array<IInvitee>
+    invitees?: Array<IInvitee> | null
   }
 
   interface IApproveToOrgOnMutationArguments {
@@ -3778,7 +3778,7 @@ declare namespace GQL {
     /**
      * The tasks that got reassigned from the soft team member to the real team member
      */
-    hardenedTasks: Array<ITask> | null
+    hardenedTasks: Array<ITask | null> | null
   }
 
   interface IStandardMutationError {
@@ -3826,7 +3826,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   interface ICreateAgendaItemInput {
@@ -3872,7 +3872,7 @@ declare namespace GQL {
     /**
      * the users given the super power
      */
-    users: Array<IUser> | null
+    users: Array<IUser | null> | null
 
     /**
      * A human-readable result
@@ -3928,7 +3928,7 @@ declare namespace GQL {
      * The teamMember that just created the new team, if this is a creation
      */
     teamMember: ITeamMember | null
-    invitations: Array<IInvitation> | null
+    invitations: Array<IInvitation | null> | null
 
     /**
      * The invitation sent when an team was being created
@@ -3963,7 +3963,7 @@ declare namespace GQL {
      * The teamMember that just created the new team, if this is a creation
      */
     teamMember: ITeamMember | null
-    invitations: Array<IInvitation> | null
+    invitations: Array<IInvitation | null> | null
 
     /**
      * The invitation sent when an team was being created
@@ -3978,27 +3978,27 @@ declare namespace GQL {
     /**
      * If the viewer is an org leader, the notifications removed after approving to the organization
      */
-    removedRequestNotifications: Array<INotifyRequestNewUser> | null
+    removedRequestNotifications: Array<INotifyRequestNewUser | null> | null
 
     /**
      * If the viegnwer is a team member, the org approvals that were removed in place of team members
      */
-    removedOrgApprovals: Array<IOrgApproval> | null
+    removedOrgApprovals: Array<IOrgApproval | null> | null
 
     /**
      * If the viewer is a team member, the list of team members added as a result of the approval
      */
-    newInvitations: Array<IInvitation> | null
+    newInvitations: Array<IInvitation | null> | null
 
     /**
      * If the viewer invited the invitee, the notifications to say they have been approved
      */
-    inviteeApprovedNotifications: Array<INotifyInviteeApproved> | null
+    inviteeApprovedNotifications: Array<INotifyInviteeApproved | null> | null
 
     /**
      * If the viewer is the invitee, the notifications to invite them to teams
      */
-    teamInviteNotifications: Array<INotifyTeamInvite> | null
+    teamInviteNotifications: Array<INotifyTeamInvite | null> | null
   }
 
   /**
@@ -4037,7 +4037,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   interface IArchiveTeamPayload {
@@ -4049,7 +4049,7 @@ declare namespace GQL {
      * A notification explaining that the team was archived and removed from view
      */
     notification: INotifyTeamArchived | null
-    removedTeamNotifications: Array<TeamNotification> | null
+    removedTeamNotifications: Array<TeamNotification | null> | null
   }
 
   /**
@@ -4078,7 +4078,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   type TeamRemovedNotification = INotifyTeamArchived | INotifyKickedOut
@@ -4105,16 +4105,16 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   interface IAutoGroupReflectionsPayload {
     __typename: 'AutoGroupReflectionsPayload'
     error: IStandardMutationError | null
     meeting: IRetrospectiveMeeting | null
-    reflections: Array<IRetroReflection> | null
-    reflectionGroups: Array<IRetroReflectionGroup> | null
-    removedReflectionGroups: Array<IRetroReflectionGroup> | null
+    reflections: Array<IRetroReflection | null> | null
+    reflectionGroups: Array<IRetroReflectionGroup | null> | null
+    removedReflectionGroups: Array<IRetroReflectionGroup | null> | null
   }
 
   /**
@@ -4156,7 +4156,7 @@ declare namespace GQL {
     /**
      * The team members that were active during the time of the meeting
      */
-    meetingMembers: Array<MeetingMember> | null
+    meetingMembers: Array<MeetingMember | null> | null
 
     /**
      * The auto-incrementing meeting number for the team
@@ -4345,7 +4345,7 @@ declare namespace GQL {
     /**
      * A list of voterIds (userIds). Not available to team to preserve anonymity
      */
-    voterIds: Array<string> | null
+    voterIds: Array<string | null> | null
 
     /**
      * The number of votes this group has received
@@ -4636,7 +4636,7 @@ declare namespace GQL {
     /**
      * the team-specific questions to ask during a retro
      */
-    phaseItems: Array<CustomPhaseItem>
+    phaseItems: Array<CustomPhaseItem> | null
 
     /**
      * The total number of votes each team member receives for the voting phase
@@ -4681,7 +4681,7 @@ declare namespace GQL {
     /**
      * The tasks that belonged to the soft team member
      */
-    archivedSoftTasks: Array<ITask> | null
+    archivedSoftTasks: Array<ITask | null> | null
   }
 
   interface ICancelTeamInvitePayload {
@@ -4702,7 +4702,7 @@ declare namespace GQL {
     /**
      * The tasks that belonged to the soft team member
      */
-    archivedSoftTasks: Array<ITask> | null
+    archivedSoftTasks: Array<ITask | null> | null
   }
 
   interface IChangeTaskTeamPayload {
@@ -4742,7 +4742,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
 
     /**
      * How the user is affiliated with the task
@@ -4861,7 +4861,7 @@ declare namespace GQL {
     /**
      * The stages that were unlocked by navigating
      */
-    unlockedStages: Array<NewMeetingStage>
+    unlockedStages: Array<NewMeetingStage> | null
   }
 
   interface ICreateReflectionGroupPayload {
@@ -5111,7 +5111,7 @@ declare namespace GQL {
     /**
      * The list of tasks that were archived during the meeting
      */
-    archivedTasks: Array<ITask> | null
+    archivedTasks: Array<ITask | null> | null
     meeting: IMeeting | null
   }
 
@@ -5160,32 +5160,32 @@ declare namespace GQL {
     /**
      * The list of emails that turned out to be reactivated team members
      */
-    reactivatedTeamMembers: Array<ITeamMember> | null
+    reactivatedTeamMembers: Array<ITeamMember | null> | null
 
     /**
      * The list of invitations successfully sent out
      */
-    invitationsSent: Array<IInvitation> | null
+    invitationsSent: Array<IInvitation | null> | null
 
     /**
      * The list of orgApprovals sent to the org leader
      */
-    orgApprovalsSent: Array<IOrgApproval> | null
+    orgApprovalsSent: Array<IOrgApproval | null> | null
 
     /**
      * The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval
      */
-    orgApprovalsRemoved: Array<IOrgApproval> | null
+    orgApprovalsRemoved: Array<IOrgApproval | null> | null
 
     /**
      * The new invitees who have yet to accept the invite or get approved to receive an invite
      */
-    newSoftTeamMembers: Array<ISoftTeamMember> | null
+    newSoftTeamMembers: Array<ISoftTeamMember | null> | null
 
     /**
      * Any tasks that were recently assigned to a reactivated soft team member
      */
-    unarchivedSoftTasks: Array<ITask> | null
+    unarchivedSoftTasks: Array<ITask | null> | null
   }
 
   /**
@@ -5213,7 +5213,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
 
     /**
      * The new auth token for the user.
@@ -5282,7 +5282,7 @@ declare namespace GQL {
     /**
      * The list of tasks removed triggered by a removed repo if this was the last viewer on the repo
      */
-    archivedTaskIds: Array<string> | null
+    archivedTaskIds: Array<string | null> | null
   }
 
   interface IMeetingCheckInPayload {
@@ -5325,7 +5325,7 @@ declare namespace GQL {
     /**
      * The stages that were unlocked by navigating
      */
-    unlockedStages: Array<NewMeetingStage>
+    unlockedStages: Array<NewMeetingStage> | null
   }
 
   interface IPhaseCompletePayload {
@@ -5353,7 +5353,7 @@ declare namespace GQL {
     /**
      * a list of empty reflection groups to remove
      */
-    emptyReflectionGroupIds: Array<string> | null
+    emptyReflectionGroupIds: Array<string | null> | null
   }
 
   interface IGroupPhaseCompletePayload {
@@ -5367,7 +5367,7 @@ declare namespace GQL {
     /**
      * a list of updated reflection groups
      */
-    reflectionGroups: Array<IRetroReflectionGroup> | null
+    reflectionGroups: Array<IRetroReflectionGroup | null> | null
   }
 
   interface IVotePhaseCompletePayload {
@@ -5435,27 +5435,27 @@ declare namespace GQL {
     /**
      * The list of org approvals to remove. There may be multiple if many inviters requested the same email
      */
-    removedOrgApprovals: Array<IOrgApproval> | null
+    removedOrgApprovals: Array<IOrgApproval | null> | null
 
     /**
      * The notification going to the inviter saying their invitee has been denied
      */
-    deniedNotifications: Array<INotifyDenial> | null
+    deniedNotifications: Array<INotifyDenial | null> | null
 
     /**
      * The list of notifications to remove. There may be multiple if many inviters requested the same email
      */
-    removedRequestNotifications: Array<INotifyRequestNewUser> | null
+    removedRequestNotifications: Array<INotifyRequestNewUser | null> | null
 
     /**
      * The soft team members that have not yet been invited
      */
-    removedSoftTeamMembers: Array<ISoftTeamMember> | null
+    removedSoftTeamMembers: Array<ISoftTeamMember | null> | null
 
     /**
      * The tasks that belonged to the soft team member
      */
-    archivedSoftTasks: Array<ITask> | null
+    archivedSoftTasks: Array<ITask | null> | null
   }
 
   /**
@@ -5498,7 +5498,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   interface IRemoveAgendaItemPayload {
@@ -5515,13 +5515,13 @@ declare namespace GQL {
     /**
      * The globalIds of the removed integrations
      */
-    deletedIntegrationIds: Array<string>
+    deletedIntegrationIds: Array<string | null>
 
     /**
      * The userId of the person who removed the provider
      */
     userId: string
-    archivedTaskIds: Array<string> | null
+    archivedTaskIds: Array<string | null> | null
   }
 
   interface IRemoveSlackChannelPayload {
@@ -5534,7 +5534,7 @@ declare namespace GQL {
     __typename: 'RemoveGitHubRepoPayload'
     deletedId: string
     error: IStandardMutationError | null
-    archivedTaskIds: Array<string> | null
+    archivedTaskIds: Array<string | null> | null
   }
 
   interface IRemoveOrgUserPayload {
@@ -5549,17 +5549,17 @@ declare namespace GQL {
     /**
      * The teams the user was removed from
      */
-    teams: Array<ITeam> | null
+    teams: Array<ITeam | null> | null
 
     /**
      * The teamMembers removed
      */
-    teamMembers: Array<ITeamMember> | null
+    teamMembers: Array<ITeamMember | null> | null
 
     /**
      * The tasks that were archived or reassigned
      */
-    updatedTasks: Array<ITask> | null
+    updatedTasks: Array<ITask | null> | null
 
     /**
      * The user removed from the organization
@@ -5569,17 +5569,17 @@ declare namespace GQL {
     /**
      * The notifications relating to a team the user was removed from
      */
-    removedTeamNotifications: Array<Notification> | null
+    removedTeamNotifications: Array<Notification | null> | null
 
     /**
      * The notifications that are no longer relevant to the removed org user
      */
-    removedOrgNotifications: Array<Notification> | null
+    removedOrgNotifications: Array<Notification | null> | null
 
     /**
      * The notifications for each team the user was kicked out of
      */
-    kickOutNotifications: Array<INotifyKickedOut> | null
+    kickOutNotifications: Array<INotifyKickedOut | null> | null
 
     /**
      * The organization member that got removed
@@ -5612,7 +5612,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
 
     /**
      * true if kicked out, false if leaving by choice
@@ -5644,7 +5644,7 @@ declare namespace GQL {
     /**
      * The stages that were unlocked by navigating
      */
-    unlockedStages: Array<NewMeetingStage>
+    unlockedStages: Array<NewMeetingStage> | null
   }
 
   interface IRemoveTeamMemberPayload {
@@ -5664,7 +5664,7 @@ declare namespace GQL {
     /**
      * The tasks that got reassigned
      */
-    updatedTasks: Array<ITask> | null
+    updatedTasks: Array<ITask | null> | null
 
     /**
      * The user removed from the team
@@ -5674,7 +5674,7 @@ declare namespace GQL {
     /**
      * Any notifications pertaining to the team that are no longer relevant
      */
-    removedNotifications: Array<Notification> | null
+    removedNotifications: Array<Notification | null> | null
 
     /**
      * A notification if you were kicked out by the team leader
@@ -5904,7 +5904,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   interface IUpdateAgendaItemInput {
@@ -5952,7 +5952,7 @@ declare namespace GQL {
     /**
      * The teams that are now paid up
      */
-    teamsUpdated: Array<ITeam> | null
+    teamsUpdated: Array<ITeam | null> | null
   }
 
   interface IUpdateOrgInput {
@@ -6108,7 +6108,7 @@ declare namespace GQL {
     /**
      * The updated team members
      */
-    teamMembers: Array<ITeamMember> | null
+    teamMembers: Array<ITeamMember | null> | null
   }
 
   interface IVoteForReflectionGroupPayload {
@@ -6121,7 +6121,7 @@ declare namespace GQL {
     /**
      * The stages that were locked or unlocked by having at least 1 vote
      */
-    unlockedStages: Array<NewMeetingStage>
+    unlockedStages: Array<NewMeetingStage> | null
   }
 
   interface ILoginPayload {
@@ -6151,7 +6151,7 @@ declare namespace GQL {
     /**
      * The updated teams under the org
      */
-    teams: Array<ITeam> | null
+    teams: Array<ITeam | null> | null
   }
 
   interface IAddReflectTemplatePayload {
@@ -6278,7 +6278,7 @@ declare namespace GQL {
 
   interface IGitHubMemberRemovedPayload {
     __typename: 'GitHubMemberRemovedPayload'
-    leaveIntegration: Array<ILeaveIntegrationPayload> | null
+    leaveIntegration: Array<ILeaveIntegrationPayload | null> | null
   }
 
   type InvitationSubscriptionPayload =
@@ -6331,7 +6331,7 @@ declare namespace GQL {
     /**
      * If promoted, notify them and give them all other admin notifications
      */
-    notificationsAdded: Array<OrganizationNotification> | null
+    notificationsAdded: Array<OrganizationNotification | null> | null
   }
 
   interface ISetOrgUserRoleRemovedPayload {
@@ -6343,7 +6343,7 @@ declare namespace GQL {
     /**
      * If demoted, notify them and remove all other admin notifications
      */
-    notificationsRemoved: Array<OrganizationNotification> | null
+    notificationsRemoved: Array<OrganizationNotification | null> | null
   }
 
   type TaskSubscriptionPayload =
@@ -6371,7 +6371,7 @@ declare namespace GQL {
     /**
      * All the integrationIds that the provider has successfully joined
      */
-    joinedIntegrationIds: Array<string> | null
+    joinedIntegrationIds: Array<string | null> | null
     teamMember: ITeamMember | null
   }
 
@@ -6643,7 +6643,7 @@ declare namespace GQL {
     /**
      * *The userId that should see this notification
      */
-    userIds: Array<string>
+    userIds: Array<string> | null
   }
 
   /**
@@ -6723,7 +6723,7 @@ declare namespace GQL {
     /**
      * teams. a list of teamIds where the user is active
      */
-    tms: Array<string> | null
+    tms: Array<string | null> | null
   }
 
   /**
