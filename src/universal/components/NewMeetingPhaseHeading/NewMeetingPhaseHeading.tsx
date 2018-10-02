@@ -14,7 +14,7 @@ import {phaseDescriptionLookup, phaseLabelLookup} from 'universal/utils/meetings
 import UNSTARTED_MEETING from '../../utils/meetings/unstartedMeeting'
 
 const HeadingBlock = styled('div')({
-  alignItems: 'center',
+  alignItems: 'flex-start',
   display: 'flex',
   padding: '1.25rem 0 1rem'
 })
