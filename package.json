@@ -117,6 +117,7 @@
     "selenium-webdriver": "^3.6.0",
     "snazzy": "^7.1.1",
     "standard": "^11.0.1",
+    "strict-event-emitter-types": "^2.0.0",
     "style-loader": "^0.21.0",
     "ts-loader": "^4.5.0",
     "tslint": "^5.11.0",

@@ -9,6 +9,7 @@ import {
 } from 'relay-runtime'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
 import ClientGraphQLServer from './ClientGraphQLServer'
+import {TEAM} from 'universal/utils/constants'
 
 export default class LocalAtmosphere extends Environment {
   eventEmitter = new EventEmitter()
@@ -19,6 +20,9 @@ export default class LocalAtmosphere extends Environment {
     super({store: new Store(new RecordSource()), handlerProvider})
     // @ts-ignore
     this._network = Network.create(this.fetchLocal, this.subscribeLocal)
+    // this.clientGraphQLServer.on(TEAM, (teamSubscription) => {
+    //   {teamSubscription}
+    // })
   }
 
   fetchLocal: FetchFunction = (operation, variables) => {
@@ -26,9 +30,11 @@ export default class LocalAtmosphere extends Environment {
   }
 
   subscribeLocal: SubscribeFunction = (operation, _variables, _cacheConfig, observer) => {
-    this.eventEmitter.on(operation.name, (data) => {
+    this.eventEmitter.on(TEAM, (data) => {
       if (observer.onNext) {
-        observer.onNext(data)
+        observer.onNext({
+          [operation.name]: data
+        })
       }
     })
     return {
