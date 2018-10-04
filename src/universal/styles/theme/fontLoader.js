@@ -7,8 +7,6 @@ import plexSansItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Italic
 import plexSansRegularWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Regular.woff2'
 import plexSansSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBold.woff2'
 import plexSansSemiBoldItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBoldItalic.woff2'
-import plexSerifSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexSerif-SemiBold.woff2'
-import plexSerifSemiBoldItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSerif-SemiBoldItalic.woff2'
 
 const fontStylesRegular = {
   fontWeight: 400,
@@ -49,20 +47,11 @@ const plexSansSemiBoldItalic = makeFont(
   fontStylesSemiBoldItalic
 )
 
-const plexSerifSemiBold = makeFont('IBM Plex Serif', plexSerifSemiBoldWoff2, fontStylesSemiBold)
-const plexSerifSemiBoldItalic = makeFont(
-  'IBM Plex Serif',
-  plexSerifSemiBoldItalicWoff2,
-  fontStylesSemiBoldItalic
-)
-
 export default [
   plexMonoRegular,
   plexMonoSemiBold,
   plexSansItalic,
   plexSansRegular,
   plexSansSemiBold,
-  plexSansSemiBoldItalic,
-  plexSerifSemiBold,
-  plexSerifSemiBoldItalic
+  plexSansSemiBoldItalic
 ]

@@ -296,7 +296,6 @@ const ui = {
   dashHeaderMinHeight: '4rem',
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
-    fontFamily: appTheme.typography.serif,
     fontSize: '1.5rem',
     fontWeight: 600,
     lineHeight: '1.5'

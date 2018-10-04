@@ -4,7 +4,6 @@ const typography = {
 
   // Font stacks
   sansSerif: '"IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
-  serif: '"IBM Plex Serif", Georgia, "Times New Roman", Times, serif',
   monospace: '"IBM Plex Mono", Menlo, Monaco, Consolas, "Courier New", monospace',
 
   // Typography scale (matches a subset of Sketch defaults)
@@ -23,7 +22,6 @@ export default typography
 
 export const fontFamily = {
   sansSerif: '"IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif',
-  serif: '"IBM Plex Serif", Georgia, "Times New Roman", Times, serif',
   monospace: '"IBM Plex Mono", Menlo, Monaco, Consolas, "Courier New", monospace'
 }
 
