@@ -1,5 +1,6 @@
 // releases: https://github.com/IBM/plex/releases
 // currently using: Web.zip from https://github.com/IBM/plex/releases/tag/v1.0.1
+// Material Design Icons font: https://google.github.io/material-design-icons/#icon-font-for-the-web
 
 import plexMonoRegularWoff2 from 'universal/styles/theme/fonts/IBMPlexMono-Regular.woff2'
 import plexMonoSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexMono-SemiBold.woff2'

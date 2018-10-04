@@ -5,7 +5,8 @@ const Icon = styled('i')({
   fontFamily: 'Material Icons',
   fontWeight: 'normal',
   fontStyle: 'normal',
-  fontSize: MD_ICONS_SIZE_24, // Preferred icon size
+  // Preferred icon size (24px)
+  fontSize: MD_ICONS_SIZE_24,
   display: 'inline-block',
   lineHeight: 1,
   textTransform: 'none',
