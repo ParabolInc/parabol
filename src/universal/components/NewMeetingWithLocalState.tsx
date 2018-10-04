@@ -10,7 +10,7 @@ import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
-import MeetingTypeEnum = GQL.MeetingTypeEnum
+import {MeetingTypeEnum} from 'universal/types/graphql'
 import NewMeeting from 'universal/components/NewMeeting'
 
 /*

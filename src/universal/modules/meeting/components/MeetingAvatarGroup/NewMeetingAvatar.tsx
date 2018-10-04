@@ -15,7 +15,7 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import NewMeetingTeamMemberStage = GQL.NewMeetingTeamMemberStage
+import {NewMeetingTeamMemberStage} from 'universal/types/graphql'
 
 const originAnchor = {
   vertical: 'bottom',

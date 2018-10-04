@@ -14,7 +14,7 @@ import publish from 'server/utils/publish'
 import {GROUP, REFLECT, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import CreateReflectionInput from 'server/graphql/types/CreateReflectionInput'
-import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase'
+import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 
 export default {
   type: CreateReflectionPayload,

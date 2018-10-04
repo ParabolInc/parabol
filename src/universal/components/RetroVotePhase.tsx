@@ -20,7 +20,7 @@ import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
-import IDiscussPhase = GQL.IDiscussPhase
+import {IDiscussPhase} from 'universal/types/graphql'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void

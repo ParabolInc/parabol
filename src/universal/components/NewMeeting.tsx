@@ -1,51 +1,50 @@
+import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import React from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
+import styled from 'react-emotion'
+import {Helmet} from 'react-helmet'
 import withHotkey from 'react-hotkey-hoc'
-import {createFragmentContainer, commitLocalUpdate, graphql} from 'react-relay'
+import {connect} from 'react-redux'
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {Dispatch} from 'redux'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
+import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn'
+import NewMeetingLobby from 'universal/components/NewMeetingLobby'
+import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading'
+import NewMeetingSidebar from 'universal/components/NewMeetingSidebar'
+import RetroDiscussPhase from 'universal/components/RetroDiscussPhase'
+import RetroGroupPhase from 'universal/components/RetroGroupPhase'
+import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase'
+import RetroVotePhase from 'universal/components/RetroVotePhase'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import styled from 'react-emotion'
-import {Helmet} from 'react-helmet'
-import NewMeetingSidebar from 'universal/components/NewMeetingSidebar'
-import NewMeetingLobby from 'universal/components/NewMeetingLobby'
-import RetroReflectPhase from 'universal/components/RetroReflectPhase/RetroReflectPhase'
-import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
-import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
-import ui from 'universal/styles/ui'
-import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
-import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn'
-import findStageById from 'universal/utils/meetings/findStageById'
-import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation'
-import ErrorBoundary from 'universal/components/ErrorBoundary'
-import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
-import handleHotkey from 'universal/utils/meetings/handleHotkey'
-import {connect} from 'react-redux'
-import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
-import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import updateLocalStage from 'universal/utils/relay/updateLocalStage'
-import NewMeetingPhaseHeading from 'universal/components/NewMeetingPhaseHeading/NewMeetingPhaseHeading'
-import RetroGroupPhase from 'universal/components/RetroGroupPhase'
-import RetroVotePhase from 'universal/components/RetroVotePhase'
-import RetroDiscussPhase from 'universal/components/RetroDiscussPhase'
+import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
+import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
+import NavigateMeetingMutation from 'universal/mutations/NavigateMeetingMutation'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
-import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
+import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import makeShadowColor from 'universal/styles/helpers/makeShadowColor'
 import {
   meetingChromeBoxShadow,
   meetingSidebarMediaQuery,
   meetingSidebarWidth
 } from 'universal/styles/meeting'
-import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import ui from 'universal/styles/ui'
+import {INavigateMeetingOnMutationArguments, MeetingTypeEnum} from 'universal/types/graphql'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
+import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
+import findStageById from 'universal/utils/meetings/findStageById'
+import handleHotkey from 'universal/utils/meetings/handleHotkey'
+import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
+import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import updateLocalStage from 'universal/utils/relay/updateLocalStage'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
-import MeetingTypeEnum = GQL.MeetingTypeEnum
-import INavigateMeetingOnMutationArguments = GQL.INavigateMeetingOnMutationArguments
 
 const {Component} = React
 
@@ -61,6 +60,7 @@ const MeetingContainer = styled('div')({
 interface SidebarStyleProps {
   isMeetingSidebarCollapsed?: boolean | null
 }
+
 const MeetingSidebarLayout = styled('div')(({isMeetingSidebarCollapsed}: SidebarStyleProps) => ({
   boxShadow: isMeetingSidebarCollapsed ? boxShadowNone : meetingChromeBoxShadow[2],
   display: 'flex',

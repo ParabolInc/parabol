@@ -1,5 +1,4 @@
-import ITask = GQL.ITask
-import ITaskConnection = GQL.ITaskConnection
+import {ITask, ITaskConnection} from 'universal/types/graphql'
 
 const getTaskById = (taskConnection: ITaskConnection) => (
   taskId: string

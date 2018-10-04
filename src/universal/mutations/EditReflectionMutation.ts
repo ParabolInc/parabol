@@ -2,7 +2,7 @@ import {commitMutation, graphql} from 'react-relay'
 import {Environment} from 'relay-runtime'
 import handleEditReflection from 'universal/mutations/handlers/handleEditReflection'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import IEditReflectionOnMutationArguments = GQL.IEditReflectionOnMutationArguments
+import {IEditReflectionOnMutationArguments} from 'universal/types/graphql'
 
 graphql`
   fragment EditReflectionMutation_team on EditReflectionPayload {

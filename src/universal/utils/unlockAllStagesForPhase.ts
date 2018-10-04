@@ -1,6 +1,14 @@
-const unlockAllStagesForPhase = (phases, phaseType, isForFacilitator, isUnlock = true) => {
+import {INewMeetingPhase, NewMeetingPhaseTypeEnum} from 'universal/types/gql'
+
+const unlockAllStagesForPhase = (
+  phases: Array<INewMeetingPhase>,
+  phaseType: NewMeetingPhaseTypeEnum,
+  isForFacilitator: boolean,
+  isUnlock = true
+) => {
   const field = isForFacilitator ? 'isNavigableByFacilitator' : 'isNavigable'
   const phase = phases.find((p) => p.phaseType === phaseType)
+  if (!phase) return []
   const {stages} = phase
   // mutates the phase object
   stages.forEach((stage) => {

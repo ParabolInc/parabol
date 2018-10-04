@@ -1,13 +1,11 @@
-import {DropTarget} from 'react-dnd'
 import React, {ReactElement} from 'react'
+import {DropTarget} from 'react-dnd'
 
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import sortOrderBetween from 'universal/dnd/sortOrderBetween'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
+import {ITask, IUpdateTaskInput, TaskStatusEnum} from 'universal/types/graphql'
 import {TASK} from 'universal/utils/constants'
-import ITask = GQL.ITask
-import IUpdateTaskInput = GQL.IUpdateTaskInput
-import TaskStatusEnum = GQL.TaskStatusEnum
 
 interface Props {
   connectDropTarget: (reactEl: ReactElement<HTMLDivElement>) => ReactElement<HTMLDivElement>

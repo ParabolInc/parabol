@@ -19,7 +19,7 @@ import {CHECKIN} from 'universal/utils/constants'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import MeetingTypeEnum = GQL.MeetingTypeEnum
+import {MeetingTypeEnum} from 'universal/types/graphql'
 
 const CheckIn = styled('div')({
   display: 'flex',
