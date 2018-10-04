@@ -7,6 +7,7 @@ import plexSansItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Italic
 import plexSansRegularWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Regular.woff2'
 import plexSansSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBold.woff2'
 import plexSansSemiBoldItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBoldItalic.woff2'
+import materialIconsRegularWoff2 from 'universal/styles/theme/fonts/MaterialIcons-Regular.woff2'
 
 const fontStylesRegular = {
   fontWeight: 400,
@@ -47,11 +48,19 @@ const plexSansSemiBoldItalic = makeFont(
   fontStylesSemiBoldItalic
 )
 
+const materialIconsRegular = {
+  fontFamily: 'Material Icons',
+  fontStyle: 'normal',
+  fontWeight: '400',
+  src: `local('Material Icons'), local('MaterialIcons-Regular'), url(${materialIconsRegularWoff2}) format('woff2')`
+}
+
 export default [
   plexMonoRegular,
   plexMonoSemiBold,
   plexSansItalic,
   plexSansRegular,
   plexSansSemiBold,
-  plexSansSemiBoldItalic
+  plexSansSemiBoldItalic,
+  materialIconsRegular
 ]
