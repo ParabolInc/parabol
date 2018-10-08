@@ -233,14 +233,9 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
     meetingType: RETROSPECTIVE,
     meetingMember: viewerMeetingMember,
     meetingMembers,
+    nextAutoGroupThreshold: null,
     viewerMeetingMember,
     reflectionGroups: [],
-    // settings: {
-    //   meetingType: RETROSPECTIVE,
-    //   totalVotes: 5,
-    //   id: 'settingsId'
-    // },
-    nextAutoGroupThreshold: null,
     teamVotesRemaining: 15,
     phases: initPhases(teamMembers),
     summarySentAt: null,
@@ -267,10 +262,12 @@ const initDB = () => {
     newMeeting,
     organization: org,
     reflections: [] as Array<Partial<IRetroReflection>>,
-    reflectionGroups: [] as Array<Partial<IRetroReflectionGroup>>,
+    reflectionGroups: newMeeting.reflectionGroups as Array<Partial<IRetroReflectionGroup>>,
     team,
     teamMembers,
-    users
+    users,
+    _updatedAt: new Date(),
+    _tempID: 1
   }
 }
 

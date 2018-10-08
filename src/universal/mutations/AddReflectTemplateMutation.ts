@@ -1,7 +1,7 @@
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import {IAddReflectTemplateOnMutationArguments} from 'universal/types/gql'
+import {IAddReflectTemplateOnMutationArguments} from 'universal/types/graphql'
 import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
 import getCachedRecord from '../utils/relay/getCachedRecord'
 import handleAddReflectTemplate from './handlers/handleAddReflectTemplate'

@@ -9,6 +9,7 @@ import updateProxyRecord from 'universal/utils/relay/updateProxyRecord'
 import dndNoise from 'universal/utils/dndNoise'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 import onTeamRoute from 'universal/utils/onTeamRoute'
+import {matchPath} from 'react-router'
 
 type Variables = {
   reflectionId: string,
@@ -169,7 +170,7 @@ export const endDraggingReflectionTeamOnNext = (payload, context) => {
   const childId = reflectionGroup && reflectionGroup.id
   const sourceId = oldReflectionGroup && oldReflectionGroup.id
   const {pathname} = window.location
-  if (onTeamRoute(pathname, teamId)) {
+  if (onTeamRoute(pathname, teamId) || matchPath(pathname, {path: `/retrospective-demo`})) {
     eventEmitter.emit('endDraggingReflection', {
       dropTargetType,
       dropTargetId,

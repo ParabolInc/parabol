@@ -62,6 +62,7 @@ export default {
       return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP)
     }
 
+    // RESOLUTION
     let newReflectionGroupId
     if (dropTargetType === REFLECTION_GRID) {
       // ungroup
@@ -71,11 +72,6 @@ export default {
       newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
     }
 
-    if (typeof newReflectionGroupId === 'object') {
-      publish(TEAM, teamId, EndDraggingReflectionPayload, newReflectionGroupId, subOptions)
-    }
-
-    // RESOLUTION
     const data = {
       meetingId,
       reflectionId,

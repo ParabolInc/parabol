@@ -1,34 +1,9 @@
-// @flow
 import shortid from 'shortid'
 import {DISCUSS} from 'universal/utils/constants'
+import makeDiscussionStage from 'universal/utils/makeDiscussionStage'
+import mapGroupsToStages from 'universal/utils/makeGroupsToStages'
 
-export const makeDiscussionStage = (
-  reflectionGroupId: string,
-  meetingId: string,
-  sortOrder: number,
-  placeholderId: ?string
-) => ({
-  id: placeholderId || shortid.generate(),
-  meetingId,
-  isComplete: false,
-  isNavigable: true,
-  isNavigableByFacilitator: true,
-  phaseType: DISCUSS,
-  reflectionGroupId,
-  sortOrder,
-  startAt: placeholderId ? new Date() : undefined,
-  viewCount: placeholderId ? 1 : 0
-})
-
-const mapGroupsToStages = (reflectionGroups) => {
-  const importantReflectionGroups = reflectionGroups.filter((group) => group.voterIds.length > 0)
-  // handle edge case that no one votes
-  if (importantReflectionGroups.length === 0) return reflectionGroups
-  importantReflectionGroups.sort((a, b) => (a.voterIds.length < b.voterIds.length ? 1 : -1))
-  return importantReflectionGroups
-}
-
-const addDiscussionTopics = async (meeting: Object, dataLoader: Object): Object => {
+const addDiscussionTopics = async (meeting, dataLoader) => {
   const {id: meetingId, phases} = meeting
   const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
   if (!discussPhase) return {}
@@ -36,8 +11,8 @@ const addDiscussionTopics = async (meeting: Object, dataLoader: Object): Object 
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const importantReflectionGroups = mapGroupsToStages(reflectionGroups)
   const nextDiscussStages = importantReflectionGroups.map((reflectionGroup, idx) => {
-    const placeholderId = idx === 0 ? placeholderStage.id : undefined
-    return makeDiscussionStage(reflectionGroup.id, meetingId, idx, placeholderId)
+    const id = idx === 0 ? placeholderStage.id : shortid.generate()
+    return makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
   })
   const firstDiscussStage = nextDiscussStages[0]
   if (!firstDiscussStage || !placeholderStage) return {}

@@ -22,7 +22,7 @@ const unlockNextStageForFacilitator = (facilitatorStageId, phases) => {
   return unlockAllStagesForPhase(phases, nextStage.phaseType, true)
 }
 
-const unlockNextStages = async (facilitatorStageId, phases) => {
+const unlockNextStages = (facilitatorStageId, phases) => {
   const unlockedFacilitatorStageIds = unlockNextStageForFacilitator(facilitatorStageId, phases)
   const unlockedParticipantStageIds = unlockStagesForParticipants(facilitatorStageId, phases)
   return [...unlockedFacilitatorStageIds, ...unlockedParticipantStageIds]

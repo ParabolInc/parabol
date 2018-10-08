@@ -12,7 +12,7 @@ import {GROUP, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload'
 import {sendGroupingThresholdValidationError} from 'server/utils/__tests__/validationErrors'
-import groupReflections from 'server/graphql/mutations/helpers/autoGroup/groupReflections'
+import groupReflections from 'universal/utils/autogroup/groupReflections'
 
 export default {
   type: AutoGroupReflectionsPayload,
@@ -58,13 +58,18 @@ export default {
     }
 
     // RESOLUTION
+    // get reflections
+    const reflections = await r
+      .table('RetroReflection')
+      .getAll(meetingId, {index: 'meetingId'})
+      .filter({isActive: true})
     const {
       autoGroupThreshold,
       groupedReflections,
       groups,
       removedReflectionGroupIds,
       nextThresh
-    } = await groupReflections(meetingId, groupingThreshold)
+    } = groupReflections(reflections, groupingThreshold)
     await r({
       inactivatedGroups: r
         .table('RetroReflectionGroup')

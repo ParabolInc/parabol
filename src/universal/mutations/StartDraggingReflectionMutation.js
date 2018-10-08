@@ -59,7 +59,10 @@ export const startDraggingReflectionTeamUpdater = (
    * we can't call the endDrag handler to remove them because
    * that needs the full context of the grid
    */
-  if (!meetingRoute || meetingRoute.params.teamId !== payload.getValue('teamId')) {
+  if (
+    !matchPath(pathname, {path: `/retrospective-demo`}) &&
+    (!meetingRoute || meetingRoute.params.teamId !== payload.getValue('teamId'))
+  ) {
     return undefined
   }
   const {viewerId} = atmosphere

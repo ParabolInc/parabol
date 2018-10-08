@@ -4345,7 +4345,7 @@ export interface IRetroReflectionGroup {
   /**
    * A list of voterIds (userIds). Not available to team to preserve anonymity
    */
-  voterIds: Array<string | null> | null
+  voterIds: Array<string>
 
   /**
    * The number of votes this group has received

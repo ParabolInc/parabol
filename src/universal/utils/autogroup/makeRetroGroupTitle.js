@@ -2,12 +2,12 @@
  * Takes a guess at what the cards are talking about.
  * If that fails, just gives them a generic name
  */
-import getAllLemmasFromReflections from 'server/graphql/mutations/helpers/autoGroup/getAllLemmasFromReflections'
-import computeDistanceMatrix from 'server/graphql/mutations/helpers/autoGroup/computeDistanceMatrix'
-import getTitleFromComputedGroup from 'server/graphql/mutations/helpers/autoGroup/getTitleFromComputedGroup'
+import getAllLemmasFromReflections from 'universal/utils/autogroup/getAllLemmasFromReflections'
+import computeDistanceMatrix from 'universal/utils/autogroup/computeDistanceMatrix'
+import getTitleFromComputedGroup from 'universal/utils/autogroup/getTitleFromComputedGroup'
 import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
 
-const makeRetroGroupTitle = (meetingId, reflections) => {
+const makeRetroGroupTitle = (reflections) => {
   const allReflectionEntities = reflections.map(({entities}) => entities).filter(Boolean)
   const uniqueLemmaArr = getAllLemmasFromReflections(allReflectionEntities)
 

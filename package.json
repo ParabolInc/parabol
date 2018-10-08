@@ -173,6 +173,7 @@
     "express": "^4.15.4",
     "express-jwt": "5.3.0",
     "fbjs": "^0.8.14",
+    "flatted": "^1.0.2",
     "gql2flow": "^0.4.5",
     "graphiql": "^0.11.11",
     "graphql": "^0.13.2",

@@ -7038,6 +7038,11 @@ flat-cache@^1.2.1:
     graceful-fs "^4.1.2"
     write "^0.2.1"
 
+flatted@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/flatted/-/flatted-1.0.2.tgz#43f615c21f67a578e3e1d2eeee4e68af5e3d7630"
+  integrity sha512-8Afk1OC2CO44rSCyefiosSMIp5dZIzxLLflstqTn8te3WybWv7tIdjTUeY67aKfsArMNZZ1ei5AWUthvEwFOuA==
+
 flatten@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"

@@ -38,6 +38,7 @@ export default {
     }
     if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
 
+    // RESOLUTION
     const lastPhase = phases[phases.length - 1]
     const currentStage = lastPhase.stages.find((stage) => stage.startAt && !stage.endAt)
 
@@ -46,7 +47,6 @@ export default {
       currentStage.endAt = now
     }
 
-    // RESOLUTION
     const {completedMeeting} = await r({
       team: r
         .table('Team')

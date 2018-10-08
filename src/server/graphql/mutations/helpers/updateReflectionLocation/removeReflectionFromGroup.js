@@ -1,4 +1,4 @@
-import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle'
+import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
 import getRethink from 'server/database/rethinkDriver'
 import {sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
 import makeReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/makeReflectionGroup'
@@ -36,14 +36,11 @@ const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) 
     .getAll(oldReflectionGroupId, {index: 'reflectionGroupId'})
     .filter({isActive: true})
 
-  const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(meetingId, [
-    reflection
-  ])
+  const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle([reflection])
   await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle)
 
   if (oldReflections.length > 0) {
     const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
-      meetingId,
       oldReflections
     )
     await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle)

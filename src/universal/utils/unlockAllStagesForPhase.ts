@@ -1,4 +1,4 @@
-import {INewMeetingPhase, NewMeetingPhaseTypeEnum} from 'universal/types/gql'
+import {INewMeetingPhase, NewMeetingPhaseTypeEnum} from 'universal/types/graphql'
 
 const unlockAllStagesForPhase = (
   phases: Array<INewMeetingPhase>,
