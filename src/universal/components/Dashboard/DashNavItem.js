@@ -2,22 +2,30 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import {NavLink} from 'react-router-dom'
-import DashNavItemBaseStyles from './DashNavItemBaseStyles'
-import FontAwesome from 'react-fontawesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import styled, {css} from 'react-emotion'
 
-const ItemIcon = styled(FontAwesome)({
+const StyledIcon = styled(Icon)({
   display: 'block',
-  fontSize: ui.iconSize,
-  height: ui.iconSize,
-  lineHeight: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
+  marginRight: '.5rem',
   opacity: '.5',
-  textAlign: 'left',
-  width: '1.625rem'
+  textAlign: 'left'
 })
 
 const navLinkcss = css({
-  ...DashNavItemBaseStyles,
+  borderLeft: '.1875rem solid transparent',
+  color: 'inherit',
+  display: 'flex',
+  alignItems: 'center',
+  fontSize: ui.navMenuFontSize,
+  fontWeight: 600,
+  lineHeight: ui.navMenuLineHeight,
+  padding: '.625rem .5rem .625rem 2rem',
+  transition: `background-color ${ui.transition[0]}`,
+  userSelect: 'none',
+  width: '100%',
   ':hover': {
     backgroundColor: ui.navMenuDarkBackgroundColorHover,
     color: 'inherit',
@@ -60,7 +68,7 @@ const DashNavItem = (props) => {
       title={label}
       to={href}
     >
-      {icon && <ItemIcon name={icon} />}
+      {icon && <StyledIcon>{icon}</StyledIcon>}
       <Label>{label}</Label>
     </NavLink>
   )
