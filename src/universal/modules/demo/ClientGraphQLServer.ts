@@ -17,9 +17,14 @@ import {
 } from 'universal/types/graphql'
 import groupReflections from 'universal/utils/autogroup/groupReflections'
 import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
-import {GROUP, REFLECT, TEAM} from 'universal/utils/constants'
+import {DISCUSS, GROUP, REFLECT, TASK, TEAM, VOTE} from 'universal/utils/constants'
 import dndNoise from 'universal/utils/dndNoise'
+import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
+import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
+import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
 import findStageById from 'universal/utils/meetings/findStageById'
+import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import startStage_ from 'universal/utils/startStage_'
 import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 import unlockNextStages from 'universal/utils/unlockNextStages'
@@ -63,6 +68,32 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   }
 
   ops = {
+    GitHubReposMenuRootQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          githubRepos: []
+        }
+      }
+    },
+    NewMeetingSummaryRootQuery: () => {
+      console.log('team', this.db.team)
+
+      return {
+        viewer: {
+          ...this.db.users[0],
+          newMeeting: this.db.newMeeting
+        }
+      }
+    },
+    OutcomeCardAssignMenuRootQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          team: this.db.team
+        }
+      }
+    },
     RetroRootQuery: () => {
       console.log('team', this.db.team)
       return {
@@ -103,6 +134,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         id: reflectionGroupId,
         reflectionGroupId,
         title: null,
+        voteCount: 0,
         viewerVoteCount: 0,
         createdAt: now,
         isActive: true,
@@ -213,7 +245,23 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           stage.isComplete = true
           stage.endAt = new Date().toJSON()
           phaseCompleteData = handleCompletedDemoStage(this.db, stage)
+          const groupData = phaseCompleteData[GROUP]
+          if (groupData) {
+            Object.assign(groupData, {
+              meeting: this.db.newMeeting,
+              reflectionGroups: groupData.reflectionGroupIds.map((id) =>
+                this.db.reflectionGroups.find((group) => group.id === id)
+              )
+            })
+          } else if (phaseCompleteData[VOTE]) {
+            Object.assign(phaseCompleteData[VOTE], {
+              meeting: this.db.newMeeting
+            })
+          }
         }
+      }
+      if (!phaseCompleteData || Object.keys(phaseCompleteData).length === 0) {
+        phaseCompleteData = {[REFLECT]: null, [GROUP]: null, [VOTE]: null}
       }
       if (facilitatorStageId) {
         const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -305,6 +353,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           id: newReflectionGroupId,
           reflectionGroupId: newReflectionGroupId,
           title: null,
+          voteCount: 0,
           viewerVoteCount: 0,
           createdAt: now,
           isActive: true,
@@ -507,6 +556,266 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         this.emit(TEAM, data)
       }
       return {autoGroupReflections: data}
+    },
+    UpdateReflectionGroupTitleMutation: ({reflectionGroupId, title}, userId) => {
+      const reflectionGroup = this.db.reflectionGroups.find(
+        (group) => group.id === reflectionGroupId
+      )!
+      const now = new Date().toJSON()
+      Object.assign(reflectionGroup, {
+        title,
+        titleIsUsedDefined: true,
+        updatedAt: now
+      })
+      const data = {
+        __typename: 'UpdateReflectionGroupTitleMutation',
+        error: null,
+        meeting: this.db.newMeeting,
+        meetingId: demoMeetingId,
+        reflectionGroupId,
+        reflectionGroup
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {updateReflectionGroupTitle: data}
+    },
+    VoteForReflectionGroupMutation: ({isUnvote, reflectionGroupId}, userId) => {
+      const reflectionGroup = this.db.reflectionGroups.find(
+        (group) => group.id === reflectionGroupId
+      )!
+      const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
+      const voterIds = reflectionGroup.voterIds!
+      const now = new Date().toJSON()
+      if (isUnvote) {
+        const idx = voterIds.indexOf(userId)
+        if (idx === -1) {
+          return {error: {message: 'no votes'}}
+        }
+        voterIds.splice(idx, 1)
+        Object.assign(meetingMember, {
+          votesRemaining: meetingMember.votesRemaining + 1,
+          updatedAt: now
+        })
+        Object.assign(this.db.newMeeting, {
+          votesRemaining: this.db.newMeeting.votesRemaining! + 1,
+          teamVotesRemaining: this.db.newMeeting.votesRemaining! + 1
+        })
+      } else {
+        voterIds.push(userId)
+        Object.assign(meetingMember, {
+          votesRemaining: meetingMember.votesRemaining - 1,
+          updatedAt: now
+        })
+        Object.assign(this.db.newMeeting, {
+          votesRemaining: this.db.newMeeting.votesRemaining! - 1,
+          teamVotesRemaining: this.db.newMeeting.votesRemaining! - 1
+        })
+      }
+      reflectionGroup.voteCount = voterIds.length
+      reflectionGroup.viewerVoteCount = voterIds.filter((id) => id === userId).length
+      const voteCount = this.db.reflectionGroups.reduce(
+        (sum, group) => sum + group.voterIds!.length,
+        0
+      )
+
+      let isUnlock
+      let unlockedStageIds
+      if (voteCount === 0) {
+        isUnlock = false
+      } else if (voteCount === 1 && !isUnvote) {
+        isUnlock = true
+      }
+      const phases = this.db.newMeeting.phases as any
+      if (isUnlock !== undefined) {
+        unlockedStageIds = unlockAllStagesForPhase(phases, DISCUSS, true, isUnlock)
+      }
+
+      const data = {
+        __typename: 'VoteForReflectionGroupMutation',
+        error: null,
+        meeting: this.db.newMeeting,
+        meetingId: demoMeetingId,
+        meetingMember,
+        userId,
+        reflectionGroupId,
+        reflectionGroup,
+        unlockedStageIds,
+        unlockedStages: unlockedStageIds
+          ? unlockedStageIds.map((stageId) => findStageById(phases, stageId).stage)
+          : []
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {voteForReflectionGroup: data}
+    },
+    CreateTaskMutation: ({newTask}, userId) => {
+      const now = new Date().toJSON()
+      const teamMemberId = toTeamMemberId(demoTeamId, userId)
+      const taskId = this.getTempId('task')
+      const {reflectionGroupId, sortOrder, status} = newTask
+      const content = newTask.content || makeEmptyStr()
+      const {entityMap} = JSON.parse(content)
+      const tags = getTagsFromEntityMap(entityMap)
+      const task = {
+        __typename: 'Task',
+        id: taskId,
+        taskId,
+        agendaId: null,
+        content,
+        createdAt: now,
+        createdBy: userId,
+        dueDate: null,
+        editors: [],
+        integration: null,
+        team: this.db.team,
+        isSoftTask: false,
+        meetingId: demoMeetingId,
+        reflectionGroupId,
+        sortOrder: sortOrder || 0,
+        status,
+        taskStatus: status,
+        tags,
+        teamId: demoTeamId,
+        assigneeId: teamMemberId,
+        assignee: this.db.teamMembers.find((teamMember) => teamMember.id === teamMemberId),
+        updatedAt: now,
+        userId
+      }
+      this.db.tasks.push(task as any)
+      const reflectionGroup = this.db.reflectionGroups.find(
+        (group) => group.id === reflectionGroupId
+      )!
+      const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
+      meetingMember.tasks.push(task as any)
+      reflectionGroup.tasks!.push(task as any)
+      const data = {
+        __typename: 'CreateTaskMutation',
+        error: null,
+        task,
+        involvementNotification: null
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {createTask: data}
+    },
+    EditTaskMutation: ({taskId, isEditing}, userId) => {
+      const task = this.db.tasks.find((task) => task.id === taskId)!
+      const data = {
+        __typename: 'EditTaskMutation',
+        error: null,
+        task,
+        editor: this.db.users.find((user) => user.id === userId),
+        isEditing
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {editTask: data}
+    },
+    UpdateTaskMutation: ({updatedTask}, userId) => {
+      const {agendaId, content, status, assigneeId, sortOrder} = updatedTask
+      const taskUpdates = {
+        agendaId,
+        content,
+        status,
+        tags: content ? getTagsFromEntityMap(JSON.parse(content).entityMap) : undefined,
+        teamId: demoTeamId,
+        assigneeId,
+        sortOrder,
+        isSoftTask: false,
+        userId: null
+      }
+      const task = this.db.tasks.find((task) => task.id === updatedTask.id)!
+      if (assigneeId) {
+        const isSoftTask = getIsSoftTeamMember(assigneeId)
+        taskUpdates.isSoftTask = isSoftTask
+        taskUpdates.userId = isSoftTask ? null : fromTeamMemberId(assigneeId).userId
+        if (assigneeId === false) {
+          taskUpdates.userId = null
+        }
+        const oldMeetingMember = this.db.meetingMembers.find(
+          (member) => member.userId === task.userId
+        )!
+        oldMeetingMember.tasks.splice(oldMeetingMember.tasks.indexOf(task as any), 1)
+        const newMeetingMember = this.db.meetingMembers.find(
+          (member) => member.userId === taskUpdates.userId
+        )
+        if (newMeetingMember) {
+          newMeetingMember.tasks.push(task as any)
+        }
+      }
+      Object.assign(task, {
+        agendaId: taskUpdates.agendaId || task.agendaId,
+        content: taskUpdates.content || task.content,
+        status: taskUpdates.status || task.status,
+        tags: taskUpdates.tags || task.tags,
+        teamId: taskUpdates.teamId || task.teamId,
+        assigneeId: taskUpdates.assigneeId || task.assigneeId,
+        assignee: taskUpdates.assigneeId
+          ? this.db.teamMembers.find((teamMember) => teamMember.id === taskUpdates.assigneeId)
+          : task.assignee,
+        sortOrder: taskUpdates.sortOrder || task.sortOrder,
+        userId: taskUpdates.userId || task.userId
+      })
+
+      const data = {
+        __typename: 'UpdateTaskMutation',
+        error: null,
+        task,
+        privatizedTaskId: null,
+        addedNotification: null,
+        removedNotification: null
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {updateTask: data}
+    },
+    DeleteTaskMutation: ({taskId}, userId) => {
+      const task = this.db.tasks.find((task) => task.id === taskId)!
+      const {reflectionGroupId} = task
+      const reflectionGroup = this.db.reflectionGroups.find(
+        (group) => group.id === reflectionGroupId
+      )!
+      reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
+      const data = {error: null, task, involvementNotification: null}
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {deleteTask: data}
+    },
+    UpdateTaskDueDateMutation: ({taskId, dueDate}, userId) => {
+      const task = this.db.tasks.find((task) => task.id === taskId)!
+      task.dueDate = dueDate
+
+      const data = {__typename: 'UpdateTaskDueDateMutation', error: null, task}
+      if (userId !== demoViewerId) {
+        this.emit(TASK, data)
+      }
+      return {updateTaskDueDate: data}
+    },
+    DragDiscussionTopicMutation: ({stageId, sortOrder}, userId) => {
+      const discussPhase = this.db.newMeeting.phases!.find(
+        (phase) => phase.phaseType === DISCUSS
+      ) as IDiscussPhase
+      const {stages} = discussPhase
+      const draggedStage = stages.find((stage) => stage.id === stageId)!
+      draggedStage.sortOrder = sortOrder
+      stages.sort((a, b) => {
+        return a.sortOrder > b.sortOrder ? 1 : -1
+      })
+      const data = {
+        meeting: this.db.newMeeting,
+        error: null,
+        stage: draggedStage
+      }
+      if (userId !== demoViewerId) {
+        this.emit(TEAM, data)
+      }
+      return {dragDiscussionTopic: data}
     },
     EndNewMeetingMutation: ({meetingId}, userId) => {
       const phases = this.db.newMeeting.phases as Array<NewMeetingPhase>

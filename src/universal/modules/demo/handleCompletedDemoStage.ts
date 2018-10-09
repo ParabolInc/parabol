@@ -80,7 +80,11 @@ const addDiscussionTopics = (db) => {
   const importantReflectionGroups = mapGroupsToStages(db.reflectionGroups)
   const nextDiscussStages = importantReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : shortid.generate()
-    return makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
+    const discussStage = makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
+    return Object.assign(discussStage, {
+      __typename: 'RetroDiscussStage',
+      reflectionGroup
+    })
   })
   const firstDiscussStage = nextDiscussStages[0]
   if (!firstDiscussStage || !placeholderStage) return {}

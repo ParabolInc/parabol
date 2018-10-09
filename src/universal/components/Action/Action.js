@@ -39,6 +39,8 @@ const signInPage = () =>
   import(/* webpackChunkName: 'SignInPage' */ 'universal/components/SignInPage/SignInPage')
 const demoMeeting = () =>
   import(/* webpackChunkName: 'DemoMeeting' */ 'universal/components/DemoMeeting')
+const demoSummary = () =>
+  import(/* webpackChunkName: 'DemoSummary' */ 'universal/components/DemoSummary')
 
 const ActionStyles = styled('div')({
   margin: 0,
@@ -63,6 +65,7 @@ const Action = () => {
           mod={demoMeeting}
           extraProps={{match: {params: {teamId: 'demoTeam'}}}}
         />
+        <AsyncRoute path='/retrospective-demo-summary' mod={demoSummary} />
         <AsyncRoute exact path='/reset-password' mod={resetPasswordPage} />
         <AsyncRoute isPrivate path='(/me|/newteam|/team)' mod={dashWrapper} />
         <AsyncRoute

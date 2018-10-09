@@ -26,8 +26,8 @@ export default class LocalAtmosphere extends Environment {
   }
 
   fetchLocal: FetchFunction = async (operation, variables) => {
-    const res = this.clientGraphQLServer.fetch(operation.name, variables)
-    if (operation.name === 'EndNewMeetingMutation') {
+    const res = this.clientGraphQLServer.fetch(operation.name, variables) as any
+    if (res.endNewMeeting && res.endNewMeeting.isKill) {
       window.localStorage.removeItem('retroDemo')
     } else {
       // await sleep(1000)

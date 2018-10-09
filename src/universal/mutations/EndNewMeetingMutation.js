@@ -57,7 +57,11 @@ export const endNewMeetingTeamOnNext = (payload, context) => {
     }
     popEndNewMeetingToast(dispatch)
   } else {
-    history.push(`/new-summary/${meetingId}`)
+    if (meetingId === 'demoMeeting') {
+      history.push('/retrospective-demo-summary')
+    } else {
+      history.push(`/new-summary/${meetingId}`)
+    }
   }
 }
 

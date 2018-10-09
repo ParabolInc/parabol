@@ -1,11 +1,12 @@
+import {CHECKIN, DISCUSS, GROUP, PRO, REFLECT, RETROSPECTIVE, VOTE} from 'universal/utils/constants'
+import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {
   IRetroReflection,
   IRetroReflectionGroup,
   IRetrospectiveMeeting,
-  IRetrospectiveMeetingSettings
+  IRetrospectiveMeetingSettings,
+  ITask
 } from '../../types/graphql'
-import {CHECKIN, DISCUSS, GROUP, PRO, REFLECT, RETROSPECTIVE, VOTE} from 'universal/utils/constants'
-import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
@@ -64,6 +65,8 @@ const initDemoUser = ({preferredName, email}: BaseUser, idx: number) => {
 const initDemoTeamMember = ({id: userId, preferredName}, idx) => {
   const teamMemberId = toTeamMemberId(demoTeamId, userId)
   return {
+    __typename: 'TeamMember',
+    email: 'you@parabol.co',
     id: teamMemberId,
     checkInOrder: idx,
     teamMemberId,
@@ -86,6 +89,7 @@ const initDemoMeetingMember = (user) => {
     meetingId: demoMeetingId,
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,
+    tasks: [] as Array<ITask>,
     user,
     userId: user.id,
     votesRemaining: 5,
@@ -113,6 +117,7 @@ const initDemoTeam = (organization, teamMembers, newMeeting) => {
     name: demoTeamName,
     teamName: demoTeamName,
     orgId: demoOrgId,
+    softTeamMembers: [],
     tier: PRO,
     teamId: demoTeamId,
     organization,
@@ -213,7 +218,19 @@ const initPhases = (teamMembers) => {
       __typename: 'DiscussPhase',
       id: 'discussPhase',
       phaseType: DISCUSS,
-      stages: []
+      stages: [
+        {
+          __typename: 'RetroDiscussStage',
+          id: 'discussStage0',
+          meetingId: demoMeetingId,
+          isComplete: false,
+          isNavigable: false,
+          isNavigableByFacilitator: false,
+          phaseType: DISCUSS,
+          reflectionGroup: null,
+          sortOrder: 0
+        }
+      ]
     }
   ]
 }
@@ -236,7 +253,8 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
     nextAutoGroupThreshold: null,
     viewerMeetingMember,
     reflectionGroups: [],
-    teamVotesRemaining: 15,
+    votesRemaining: teamMembers.length * 5,
+    teamVotesRemaining: teamMembers.length * 5,
     phases: initPhases(teamMembers),
     summarySentAt: null,
     teamId: demoTeamId
@@ -253,6 +271,9 @@ const initDB = () => {
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(teamMembers, meetingMembers)
   const team = initDemoTeam(org, teamMembers, newMeeting)
+  teamMembers.forEach((teamMember) => {
+    (teamMember as any).team = team
+  })
   team.meetingSettings.team = team as any
   newMeeting.team = team as any
   newMeeting.teamId = team.id
@@ -263,6 +284,7 @@ const initDB = () => {
     organization: org,
     reflections: [] as Array<Partial<IRetroReflection>>,
     reflectionGroups: newMeeting.reflectionGroups as Array<Partial<IRetroReflectionGroup>>,
+    tasks: [] as Array<Partial<ITask>>,
     team,
     teamMembers,
     users,
