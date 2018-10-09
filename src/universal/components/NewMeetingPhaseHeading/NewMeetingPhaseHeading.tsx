@@ -21,10 +21,10 @@ const HeadingBlock = styled('div')({
 
 const Toggle = styled(SidebarToggle)(
   ({isMeetingSidebarCollapsed}: {isMeetingSidebarCollapsed: boolean}) => ({
-    margin: '0 1rem 0 .5rem',
+    margin: '.0625rem .75rem .0625rem .5rem',
 
     [meetingSidebarMediaQuery]: {
-      display: isMeetingSidebarCollapsed ? 'block' : 'none'
+      display: isMeetingSidebarCollapsed ? 'flex' : 'none'
     }
   })
 )
@@ -56,15 +56,21 @@ interface Props {
 const NewMeetingPhaseHeading = (props: Props) => {
   const {newMeeting, isMeetingSidebarCollapsed, toggleSidebar} = props
   const meeting = newMeeting || UNSTARTED_MEETING
-  if (!meeting.localPhase) return null
-  const {phaseType} = meeting.localPhase
-  return (
-    <HeadingBlock>
-      <Toggle onClick={toggleSidebar} isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
+  const makeLabels = () => {
+    // only show labels during a live phase, not the lobby
+    if (!meeting.localPhase) return null
+    const {phaseType} = meeting.localPhase
+    return (
       <div>
         <PhaseTitle>{phaseLabelLookup[phaseType]}</PhaseTitle>
         <PhaseDescription>{phaseDescriptionLookup[phaseType]}</PhaseDescription>
       </div>
+    )
+  }
+  return (
+    <HeadingBlock>
+      <Toggle onClick={toggleSidebar} isMeetingSidebarCollapsed={isMeetingSidebarCollapsed} />
+      {makeLabels()}
     </HeadingBlock>
   )
 }

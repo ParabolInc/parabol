@@ -118,7 +118,7 @@ const DashSidebar = (props) => {
           {/* use div for flex layout */}
           <div>
             <MyDashboard>
-              <DashNavItem location={location} href='/me' icon='table' label='My Dashboard' />
+              <DashNavItem location={location} href='/me' icon='dashboard' label='My Dashboard' />
             </MyDashboard>
             <NavLabel>{'My Teams'}</NavLabel>
           </div>
