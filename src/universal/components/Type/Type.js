@@ -52,7 +52,7 @@ Type.propTypes = {
   bold: PropTypes.bool,
   children: PropTypes.any,
   display: PropTypes.oneOf(['block', 'inline', 'inlineBlock']),
-  family: PropTypes.oneOf(['monospace', 'sansSerif', 'serif']),
+  family: PropTypes.oneOf(['monospace', 'sansSerif']),
   italic: PropTypes.bool,
   lineHeight: PropTypes.string,
   marginBottom: PropTypes.string,

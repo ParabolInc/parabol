@@ -19,7 +19,6 @@ type Props = {
 
 const H1 = styled('h1')({
   color: appTheme.palette.dark,
-  fontFamily: appTheme.typography.serif,
   margin: '3rem 0 .5rem',
   textAlign: 'center'
 })
