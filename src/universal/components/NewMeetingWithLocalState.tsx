@@ -28,7 +28,7 @@ import NewMeeting from 'universal/components/NewMeeting'
 
 interface Props
   extends WithAtmosphereProps,
-    RouteComponentProps<{teamId: string; localPhaseSlug: string; stageIdxSlug?: number}> {
+    RouteComponentProps<{teamId: string; localPhaseSlug: string; stageIdxSlug?: string}> {
   meetingType: MeetingTypeEnum
   viewer: NewMeetingWithLocalState_viewer
 }
