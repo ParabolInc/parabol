@@ -4,7 +4,8 @@ import withStyles from 'universal/styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import FontAwesome from 'react-fontawesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 //    TODO:
 //  • Add themes, not just mid/purple (TA)
@@ -12,8 +13,10 @@ import FontAwesome from 'react-fontawesome'
 //  • Add disabled styles (TA)
 
 const iconStyles = {
-  lineHeight: 'inherit',
-  paddingRight: '.25rem'
+  fontSize: MD_ICONS_SIZE_18,
+  lineHeight: MD_ICONS_SIZE_18,
+  marginRight: '.25rem',
+  verticalAlign: 'middle'
 }
 
 const ToggleNav = (props) => {
@@ -30,7 +33,7 @@ const ToggleNav = (props) => {
       )
       return (
         <div className={itemStyles} key={item.label} onClick={item.onClick} title={item.label}>
-          <FontAwesome name={item.icon} style={iconStyles} /> {item.label}
+          <Icon style={iconStyles}>{item.icon}</Icon> {item.label}
         </div>
       )
     })
@@ -47,13 +50,13 @@ ToggleNav.defaultProps = {
   items: [
     {
       label: 'Billing',
-      icon: 'credit-card',
+      icon: 'credit_card',
       isActive: true,
       onClick: () => {}
     },
     {
       label: 'Members',
-      icon: 'users',
+      icon: 'group',
       isActive: false,
       onClick: () => {}
     }

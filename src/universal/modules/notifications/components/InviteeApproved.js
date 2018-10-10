@@ -29,7 +29,7 @@ const InviteeApproved = (props) => {
   const goToTeam = () => history.push(`/team/${teamId}`)
   return (
     <Row compact>
-      <IconAvatar icon='user-circle-o' size='small' />
+      <IconAvatar icon='account_circle' size='small' />
       <div className={css(defaultStyles.message)}>
         <b>{inviteeEmail}</b>
         {' has been approved to join '}

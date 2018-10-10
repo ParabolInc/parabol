@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import LogoBlock from 'universal/components/LogoBlock/LogoBlock'
@@ -12,6 +11,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
 import styled, {css} from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString()
 const linkBaseStyles = {
@@ -95,12 +96,9 @@ const disabledAddTeamStyles = css({
   })
 })
 
-const AddTeamIcon = styled(FontAwesome)({
-  fontSize: ui.iconSize,
-  height: ui.iconSize,
-  lineHeight: ui.iconSize,
-  paddingLeft: '.1875rem',
-  width: '1.625rem'
+const AddTeamIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
+  marginRight: '.5rem'
 })
 
 const AddTeamLabel = styled('div')({
@@ -131,7 +129,7 @@ const DashSidebar = (props) => {
             title='Add New Team'
             to='/newteam/1'
           >
-            <AddTeamIcon name='plus-circle' />
+            <AddTeamIcon>add_circle</AddTeamIcon>
             <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
           </NavLink>
         </Nav>

@@ -135,7 +135,7 @@ declare global {
 
 class UpgradeCreditCardForm extends React.Component<Props, State> {
   state = {
-    cardTypeIcon: 'credit-card',
+    cardTypeIcon: 'credit_card',
     creditCardNumber: '',
     cvc: '',
     expiry: ''
@@ -301,7 +301,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
                 autoComplete='cc-number'
                 autoFocus
                 hasError={Boolean(error && error.creditCardNumber)}
-                iconName='credit-card'
+                iconName='credit_card'
                 maxLength='20'
                 onChange={this.handleNumberChange}
                 placeholder='Card number'
