@@ -157,7 +157,7 @@ class MeetingAgendaItems extends Component {
             <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
               <FlatButton size='medium' key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
                 <IconLabel
-                  icon='arrow-circle-right'
+                  icon='arrow_forward'
                   iconAfter
                   iconColor='warm'
                   iconLarge

@@ -48,7 +48,7 @@ const MeetingInProgressModal = (props) => {
         </Type>
       )}
       <StyledButton size='large' onClick={handleClick} palette='warm'>
-        <IconLabel icon='arrow-circle-right' iconAfter label='Join Meeting' />
+        <IconLabel icon='arrow_forward' iconAfter label='Join Meeting' />
       </StyledButton>
     </DashModal>
   )

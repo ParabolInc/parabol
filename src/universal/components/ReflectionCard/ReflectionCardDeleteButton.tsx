@@ -73,7 +73,7 @@ class ReflectionCardDeleteButton extends Component<Props> {
     if (submitting) return null
     return (
       <DeleteButton aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
-        <StyledIcon>remove_circle</StyledIcon>
+        <StyledIcon>cancel</StyledIcon>
         <Background />
       </DeleteButton>
     )

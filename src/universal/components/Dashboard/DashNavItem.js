@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import {NavLink} from 'react-router-dom'
+import styled, {css} from 'react-emotion'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import styled, {css} from 'react-emotion'
 
 const StyledIcon = styled(Icon)({
   display: 'block',

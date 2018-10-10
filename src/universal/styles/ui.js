@@ -139,7 +139,7 @@ const iconSize = '14px' // FontAwesome base
 const iconSizeAvatar = '21px' // FontAwesome 1.5x
 const iconSize2x = '28px' // FontAwesome 2x
 const iconSize3x = '42px' // FontAwesome 3x
-const iconExternalLink = 'external-link-square'
+const iconExternalLink = 'open_in_new'
 
 // Modals
 const MODAL_LAYOUT_MAIN = 'main'

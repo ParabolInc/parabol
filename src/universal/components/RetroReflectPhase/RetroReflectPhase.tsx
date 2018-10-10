@@ -76,7 +76,7 @@ class RetroReflectPhase extends Component<Props> {
               innerRef={gotoNextRef}
             >
               <IconLabel
-                icon='arrow-circle-right'
+                icon='arrow_forward'
                 iconAfter
                 iconColor='warm'
                 iconLarge

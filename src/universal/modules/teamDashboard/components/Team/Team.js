@@ -118,11 +118,11 @@ class Team extends Component {
                 key='1'
                 onClick={this.goToTeamDashboard}
               >
-                <IconLabel icon='arrow-circle-left' label='Back to Team Dashboard' />
+                <IconLabel icon='arrow_back' label='Back to Team Dashboard' />
               </StyledButton>
             ) : (
               <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
-                <IconLabel icon='cog' label='Team Settings' />
+                <IconLabel icon='settings' label='Team Settings' />
               </StyledButton>
             )}
             <DashboardAvatars team={team} />

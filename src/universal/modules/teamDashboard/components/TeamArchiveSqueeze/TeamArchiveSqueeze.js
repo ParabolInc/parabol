@@ -3,13 +3,14 @@ import React, {Component} from 'react'
 import {createRefetchContainer} from 'react-relay'
 import withRouter from 'react-router-dom/es/withRouter'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import Panel from 'universal/components/Panel/Panel'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {PERSONAL_LABEL, PRO_LABEL} from 'universal/utils/constants'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import styled from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const ArchiveSqueezeOuter = styled('div')({
   margin: '0 auto',
@@ -67,8 +68,8 @@ const ContactLinkLabel = styled('div')({
 
 const linkLabel = 'Compare Plans'
 
-const StyledIcon = styled(StyledFontAwesome)({
-  fontSize: ui.iconSize,
+const StyledIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   marginLeft: '.25rem',
   verticalAlign: 'middle'
 })
@@ -120,7 +121,7 @@ class TeamArchiveSqueeze extends Component {
                 {'.'}
                 <br />
                 <a href={PRICING_LINK} target='_blank' title={linkLabel}>
-                  <b>{linkLabel}</b> <StyledIcon name={ui.iconExternalLink} />
+                  <b>{linkLabel}</b> <StyledIcon>{ui.iconExternalLink}</StyledIcon>
                 </a>
               </ArchiveSqueezeCopy>
             </ArchiveSqueezeContent>
@@ -139,7 +140,7 @@ class TeamArchiveSqueeze extends Component {
                     title={`Email: ${mainBillingLeader.email}`}
                   >
                     <ContactLinkLabel>{mainBillingLeader.preferredName}</ContactLinkLabel>
-                    <StyledIcon name='envelope' />
+                    <StyledIcon>email</StyledIcon>
                   </ContactLink>
                 </ContactCopy>
               )}

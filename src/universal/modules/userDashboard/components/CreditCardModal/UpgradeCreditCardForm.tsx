@@ -1,7 +1,6 @@
 import React from 'react'
 import formError from 'universal/styles/helpers/formError'
 import {normalizeExpiry, normalizeNumeric} from './normalizers'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -25,11 +24,14 @@ import withMutationProps, {
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import Type from 'universal/components/Type/Type'
 import PrimaryButton from 'universal/components/PrimaryButton'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
 
-const LockIcon = styled(StyledFontAwesome)({
+const LockIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   lineHeight: appTheme.typography.s5,
   marginRight: '.2em'
 })
@@ -274,11 +276,12 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
 
   render () {
     const {isUpdate, dirty, error, submitting} = this.props
-    const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
+    const {creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
+    // cardTypeIcon
     return (
       <ModalBody>
-        <StyledIconAvatar icon={cardTypeIcon} size='large' />
+        <StyledIconAvatar icon='credit_card' size='large' />
         <Type
           align='center'
           colorPalette='dark'
@@ -289,7 +292,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
           {actionLabel}
         </Type>
         <Type align='center' colorPalette='dark' lineHeight={appTheme.typography.s5} scale='s3'>
-          <LockIcon name='lock' />
+          <LockIcon>lock</LockIcon>
           {' Secured by '}
           <b>{'Stripe'}</b>
         </Type>
@@ -313,7 +316,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
                 <UpgradeCreditCardFormField
                   autoComplete='cc-exp'
                   hasError={Boolean(error && error.expiry)}
-                  iconName='calendar'
+                  iconName='date_range'
                   maxLength='5'
                   onChange={this.handleExpiryChange}
                   placeholder='MM/YY'

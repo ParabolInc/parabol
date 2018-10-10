@@ -23,7 +23,7 @@ const TeamSettingsToggleNav = (props) => {
     },
     {
       label: 'Integrations',
-      icon: 'settings_applications',
+      icon: 'extension',
       isActive: activeKey === 'integrations',
       onClick: makeOnClick('integrations')
     }

@@ -34,7 +34,7 @@ const targetAnchor = {
 const MeetingHelpDialog = ({phase}: Props) => {
   const iconButtonToggle = (
     <StyledButton palette='white'>
-      <IconLabel icon='question' />
+      <IconLabel icon='help' />
     </StyledButton>
   )
 

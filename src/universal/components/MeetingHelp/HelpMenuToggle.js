@@ -17,7 +17,7 @@ const StyledButton = styled(FloatingActionButton)(({floatAboveBottomBar}) => ({
 
 const HelpMenuToggle = (props) => (
   <StyledButton palette='white' {...props}>
-    <IconLabel icon='question' />
+    <IconLabel icon='help' />
   </StyledButton>
 )
 

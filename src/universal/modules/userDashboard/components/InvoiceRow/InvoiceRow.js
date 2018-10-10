@@ -7,17 +7,16 @@ import makeMonthString from 'universal/utils/makeMonthString'
 import {Link} from 'react-router-dom'
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat'
 import {PAID, PENDING, UPCOMING} from 'universal/utils/constants'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled, {css, cx} from 'react-emotion'
 import Row from 'universal/components/Row/Row'
 import RowInfo from 'universal/components/Row/RowInfo'
 import Tag from 'universal/components/Tag/Tag'
+import Icon from 'universal/components/Icon'
 
-const FileIcon = styled(StyledFontAwesome)({
+const FileIcon = styled(Icon)({
   alignItems: 'center',
   color: ui.palette.white,
   display: 'flex',
-  fontSize: ui.iconSize2x,
   height: 50,
   justifyContent: 'center',
   width: 50
@@ -91,7 +90,7 @@ const InvoiceRow = (props) => {
   return (
     <Row>
       <InvoiceAvatar isEstimate={isEstimate}>
-        <FileIcon name='file-text' />
+        <FileIcon>receipt</FileIcon>
       </InvoiceAvatar>
       <InvoiceInfo>
         <InfoRow>

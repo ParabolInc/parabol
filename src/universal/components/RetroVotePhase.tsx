@@ -7,7 +7,6 @@ import IconLabel from 'universal/components/IconLabel'
 import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -21,6 +20,8 @@ import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
 import IDiscussPhase = GQL.IDiscussPhase
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -73,13 +74,12 @@ const Label = styled('div')({
   }
 })
 
-const CheckIcon = styled(StyledFontAwesome)(({isDark}: {isDark: boolean | undefined | null}) => ({
+const CheckIcon = styled(Icon)(({isDark}: {isDark: boolean | undefined | null}) => ({
   color: ui.palette.warm,
   display: 'block',
-  height: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   opacity: isDark ? 1 : 0.2,
-  marginRight: '.25rem',
-  width: ui.iconSize
+  marginRight: '.25rem'
 }))
 
 const CheckMarkRow = styled('div')({
@@ -143,7 +143,9 @@ const RetroVotePhase = (props: Props) => {
               <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
               <CheckMarkRow>
                 {checkMarks.map((idx) => (
-                  <CheckIcon key={idx} name={meetingVoteIcon} isDark={idx < myVotesRemaining} />
+                  <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
+                    {meetingVoteIcon}
+                  </CheckIcon>
                 ))}
               </CheckMarkRow>
             </MetaBlock>
@@ -161,7 +163,7 @@ const RetroVotePhase = (props: Props) => {
               innerRef={gotoNextRef}
             >
               <IconLabel
-                icon='arrow-circle-right'
+                icon='arrow_forward'
                 iconAfter
                 iconColor='warm'
                 iconLarge

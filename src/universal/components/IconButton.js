@@ -2,21 +2,21 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
 import LinkButton from 'universal/components/LinkButton'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import ui from 'universal/styles/ui'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24} from 'universal/styles/icons'
 
 const StyledButton = styled(LinkButton)({outline: 0})
 
-const StyledIcon = styled(StyledFontAwesome)(({iconLarge}) => ({
+const StyledIcon = styled(Icon)(({iconLarge}) => ({
   color: 'inherit',
-  fontSize: iconLarge ? ui.iconSize2x : ui.iconSize
+  fontSize: iconLarge ? MD_ICONS_SIZE_24 : MD_ICONS_SIZE_18
 }))
 
 const IconButton = (props) => {
   const {icon, iconLarge} = props
   return (
     <StyledButton {...props} type='button'>
-      <StyledIcon name={icon} iconLarge={iconLarge} />
+      <StyledIcon iconLarge={iconLarge}>{icon}</StyledIcon>
     </StyledButton>
   )
 }

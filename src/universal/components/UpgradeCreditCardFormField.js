@@ -78,7 +78,7 @@ const UpgradeCreditCardFormField = (props: Props) => {
 
   return (
     <FieldBlock>
-      <FieldIcon hasError={hasError} name={iconName} />
+      <FieldIcon hasError={hasError}>{iconName}</FieldIcon>
       <input
         autoComplete={autoComplete}
         autoFocus={autoFocus}

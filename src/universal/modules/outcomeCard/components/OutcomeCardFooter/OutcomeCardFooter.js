@@ -326,7 +326,7 @@ class OutcomeCardFooter extends Component {
                     targetAnchor={targetAnchor}
                     toggle={
                       <CardButton>
-                        <IconLabel icon='github' />
+                        <IconLabel icon='code' />
                       </CardButton>
                     }
                     onOpen={toggleMenuState}
@@ -351,7 +351,7 @@ class OutcomeCardFooter extends Component {
                   targetAnchor={targetAnchor}
                   toggle={
                     <CardButton>
-                      <IconLabel icon='ellipsis-v' />
+                      <IconLabel icon='more_vert' />
                     </CardButton>
                   }
                   onOpen={toggleMenuState}

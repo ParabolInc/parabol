@@ -5,8 +5,9 @@ import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalett
 import ui from 'universal/styles/ui'
 import LoadableServiceDropdown from 'universal/components/LoadableServiceDropdown'
 import styled from 'react-emotion'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import LoadableDropdownMenu from 'universal/components/LoadableDropdownMenu'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -18,7 +19,7 @@ const targetAnchor = {
   horizontal: 'left'
 }
 
-const DownButtonIcon = styled(StyledFontAwesome)({
+const DownButtonIcon = styled(Icon)({
   cursor: 'pointer',
   paddingRight: '1rem',
   lineHeight: '2.375rem',
@@ -29,7 +30,7 @@ const DownButtonIcon = styled(StyledFontAwesome)({
   textAlign: 'right',
   top: 0,
   width: '100%',
-  fontSize: ui.iconSize
+  fontSize: MD_ICONS_SIZE_18
 })
 
 const DropdownBlock = styled('div')({
@@ -61,7 +62,7 @@ const ServiceDropdownInput = (props) => {
               options
             }}
             targetAnchor={targetAnchor}
-            toggle={<DownButtonIcon name='chevron-down' onClick={fetchOptions} />}
+            toggle={<DownButtonIcon onClick={fetchOptions}>expand_more</DownButtonIcon>}
           />
         </InputBlock>
       </FieldBlock>

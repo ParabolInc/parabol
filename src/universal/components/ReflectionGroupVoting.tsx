@@ -3,7 +3,6 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import styled from 'react-emotion'
 import {ReflectionGroupVoting_meeting} from '__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -14,6 +13,8 @@ import {meetingVoteIcon} from 'universal/styles/meeting'
 import StyledError from 'universal/components/StyledError'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -26,11 +27,11 @@ const UpvoteRow = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const UpvoteIcon = styled(StyledFontAwesome)(({color}: {color: string}) => ({
+const UpvoteIcon = styled(Icon)(({color}: {color: string}) => ({
   color,
   cursor: 'pointer',
-  marginRight: '.25rem',
-  width: ui.iconSize
+  fontSize: MD_ICONS_SIZE_18,
+  marginRight: '.25rem'
 }))
 
 const CheckColumn = styled('div')({
@@ -97,19 +98,17 @@ class ReflectionGroupVoting extends Component<Props> {
       <CheckColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
-            <UpvoteIcon
-              key={idx}
-              name={meetingVoteIcon}
-              color={ui.palette.warm}
-              onClick={this.unvote}
-            />
+            <UpvoteIcon key={idx} color={ui.palette.warm} onClick={this.unvote}>
+              {meetingVoteIcon}
+            </UpvoteIcon>
           ))}
           {canVote && (
             <UpvoteIcon
-              name={meetingVoteIcon}
               color={isExpanded ? ui.palette.dark : appTheme.brand.primary.midGray}
               onClick={this.vote}
-            />
+            >
+              {meetingVoteIcon}
+            </UpvoteIcon>
           )}
         </UpvoteRow>
         {error && <StyledError>{error}</StyledError>}

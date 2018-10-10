@@ -1,7 +1,8 @@
 import React from 'react'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const modalCopyBase = {
   fontSize: '.9375rem',
@@ -9,12 +10,11 @@ const modalCopyBase = {
   margin: 0
 }
 
-const StyledIcon = styled(StyledFontAwesome)({
+const StyledIcon = styled(Icon)({
   color: ui.linkColor,
-  fontSize: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   marginRight: '.5rem',
-  opacity: 0.5,
-  width: '1.125rem'
+  opacity: 0.5
 })
 
 const BulletIcon = styled(StyledIcon)({
@@ -34,7 +34,7 @@ const UpgradeBenefits = () => {
   return benefits.map((benefit, idx) => {
     return (
       <ModalCopy key={`modalBulletCopy-${idx + 1}`}>
-        <BulletIcon name='check-circle' />
+        <BulletIcon>check_circle</BulletIcon>
         {benefit}
       </ModalCopy>
     )

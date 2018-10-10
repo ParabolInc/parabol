@@ -67,7 +67,7 @@ const RetroGroupPhase = (props: Props) => {
             innerRef={gotoNextRef}
           >
             <IconLabel
-              icon='arrow-circle-right'
+              icon='arrow_forward'
               iconAfter
               iconColor='warm'
               iconLarge
@@ -76,7 +76,7 @@ const RetroGroupPhase = (props: Props) => {
           </FlatButton>
           {canAutoGroup && (
             <FlatButton size='medium' onClick={autoGroup} waiting={submitting}>
-              <IconLabel icon='magic' iconColor='midGray' iconLarge label={'Auto Group'} />
+              <IconLabel icon='photo_filter' iconColor='midGray' iconLarge label={'Auto Group'} />
             </FlatButton>
           )}
         </MeetingControlBar>

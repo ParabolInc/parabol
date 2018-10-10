@@ -11,7 +11,6 @@ import IconLabel from 'universal/components/IconLabel'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 import Overflow from 'universal/components/Overflow'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -24,6 +23,8 @@ import ui from 'universal/styles/ui'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
 import handleRightArrow from '../utils/handleRightArrow'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface PassedProps {
   gotoNext: () => void
@@ -86,11 +87,10 @@ const VoteMeta = styled('div')({
   padding: '.125rem .75rem'
 })
 
-const VoteIcon = styled(StyledFontAwesome)({
+const VoteIcon = styled(Icon)({
   color: ui.palette.white,
-  fontSize: ui.iconSize,
-  marginRight: '.125rem',
-  width: ui.iconSize
+  fontSize: MD_ICONS_SIZE_18,
+  marginRight: '.125rem'
 })
 
 const PhaseWrapper = styled('div')({
@@ -159,7 +159,7 @@ const RetroDiscussPhase = (props: Props) => {
           <DiscussHeader>
             <TopicHeading>{`“${title}”`}</TopicHeading>
             <VoteMeta>
-              <VoteIcon name={meetingVoteIcon} />
+              <VoteIcon>{meetingVoteIcon}</VoteIcon>
               {voteCount}
             </VoteMeta>
           </DiscussHeader>
@@ -209,7 +209,7 @@ const RetroDiscussPhase = (props: Props) => {
                 onKeyDown={handleRightArrow(gotoNext)}
               >
                 <IconLabel
-                  icon='arrow-circle-right'
+                  icon='arrow_forward'
                   iconColor='warm'
                   iconAfter
                   iconLarge
@@ -220,12 +220,7 @@ const RetroDiscussPhase = (props: Props) => {
           )}
           <ControlButtonBlock>
             <StyledButton size='medium' onClick={endMeeting}>
-              <IconLabel
-                icon='flag-checkered'
-                iconColor='midGray'
-                iconLarge
-                label={'End Meeting'}
-              />
+              <IconLabel icon='flag' iconColor='midGray' iconLarge label={'End Meeting'} />
             </StyledButton>
           </ControlButtonBlock>
           {/* placeholder for layout */}

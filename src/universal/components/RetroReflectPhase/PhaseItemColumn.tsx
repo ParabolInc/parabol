@@ -10,7 +10,6 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -21,6 +20,8 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -60,8 +61,9 @@ const TypeDescription = styled('div')({
   fontWeight: 600
 })
 
-const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean}) => ({
+const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
   color: ui.palette.yellow,
+  fontSize: MD_ICONS_SIZE_18,
   opacity: isFocused ? 1 : 0,
   paddingRight: isFocused ? '0.5rem' : 0,
   transition: `all 150ms ${DECELERATE}`,
@@ -187,7 +189,7 @@ class PhaseItemColumn extends Component<Props> {
             <HeaderAndEditor>
               <TypeHeader isClickable={isViewerFacilitator} onClick={this.setColumnFocus}>
                 <TypeDescription>
-                  <FocusArrow name='arrow-right' isFocused={isFocused} />
+                  <FocusArrow isFocused={isFocused}>forward</FocusArrow>
                   {prompt}
                 </TypeDescription>
               </TypeHeader>

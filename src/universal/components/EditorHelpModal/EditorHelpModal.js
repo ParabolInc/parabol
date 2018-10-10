@@ -97,25 +97,25 @@ const HeaderLabel = styled('div')({
 const typeShortcuts = [
   {
     label: 'Bold',
-    icon: 'bold',
+    icon: 'format_bold',
     keyboard: 'command + b',
     md: '**bold** or __bold__'
   },
   {
     label: 'Italic',
-    icon: 'italic',
+    icon: 'format_italic',
     keyboard: 'command + i',
     md: '*italic* or _italic_'
   },
   {
     label: 'Underline',
-    icon: 'underline',
+    icon: 'format_underline',
     keyboard: 'command + u',
     md: ''
   },
   {
     label: 'Strikethrough',
-    icon: 'strikethrough',
+    icon: 'format_strikethrough',
     keyboard: 'shift + command + x',
     md: '~text~ or ~~text~~'
   }
@@ -129,19 +129,19 @@ const mentionShortcuts = [
   },
   {
     label: 'Tags',
-    icon: 'hashtag',
+    icon: 'label',
     keyboard: 'press ‘#’',
     md: ''
   },
   {
     label: 'Emoji',
-    icon: 'smile-o',
+    icon: 'sentiment_satisfied',
     keyboard: 'press ‘:’',
     md: ''
   },
   {
     label: 'Mentions',
-    icon: 'at',
+    icon: 'chat_bubble',
     keyboard: 'press ‘@’',
     md: ''
   }
@@ -155,7 +155,7 @@ const blockShortcuts = [
   },
   {
     label: 'Code block',
-    icon: 'window-maximize',
+    icon: 'web_asset',
     keyboard: '',
     md: (
       <span>
@@ -169,7 +169,7 @@ const blockShortcuts = [
   },
   {
     label: 'Quotes',
-    icon: 'quote-left',
+    icon: 'format_quote',
     keyboard: '',
     md: '>quote'
   }
@@ -188,10 +188,10 @@ const EditorHelpModal = (props) => {
     >
       <ModalHeader>
         <ModalHeaderIcon>
-          <IconLabel icon='keyboard-o' iconLarge />
+          <IconLabel icon='keyboard' iconLarge />
         </ModalHeaderIcon>
         <ModalHeaderTitle>{'Task Card Formatting'}</ModalHeaderTitle>
-        <CloseButton icon='times-circle' iconLarge onClick={handleCloseModal} palette='midGray' />
+        <CloseButton icon='close' iconLarge onClick={handleCloseModal} palette='midGray' />
       </ModalHeader>
       <HeaderLabelBlock>
         <HeaderLabel>{'Keyboard'}</HeaderLabel>
