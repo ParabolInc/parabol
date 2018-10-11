@@ -34,9 +34,8 @@ const extraHead = `
  <link rel="stylesheet" type="text/css" href=${fontAwesomeUrl} />
  <script>${dehydrate('__ACTION__', clientIds)}</script>
  `
-const devBody = prod
-  ? ''
-  : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
+const devBody = prod ? '' : '<script src="/static/app.js"></script>'
+// : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
 const extraBody = `<script>${segmentSnippet}</script>${devBody}`
 
 const finalHTML = html

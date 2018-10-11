@@ -1,6 +1,5 @@
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
-import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from 'universal/modules/demo/handleCompletedDemoStage'
@@ -30,8 +29,6 @@ import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 import unlockNextStages from 'universal/utils/unlockNextStages'
 import initDB, {demoMeetingId, demoTeamId, demoViewerId} from './initDB'
 
-type PhaseId = 'checkinPhase' | 'reflectPhase' | 'groupPhase' | 'votePhase' | 'discussPhase'
-
 interface DemoEvents {
   team: IEditReflectionPayload | ICreateReflectionPayload
 }
@@ -51,7 +48,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     } catch (e) {
       // noop
     }
-    const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
+    const isStale = true
+    // const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
     this.db = isStale ? initDB() : validDB
   }
 
@@ -65,6 +63,19 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
     })
     return unlockedStages
+  }
+
+  startBot = () => {
+    const facilitatorStageId = this.db.newMeeting.facilitatorStageId as string
+    const mutations = this.db._botScript[facilitatorStageId]
+    const nextMutaton = mutations.shift()
+    if (nextMutaton) {
+      const {delay, op, variables, botId} = nextMutaton
+      setTimeout(() => {
+        this.ops[op](variables, botId)
+        this.startBot()
+      }, delay)
+    }
   }
 
   ops = {
@@ -96,6 +107,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     RetroRootQuery: () => {
       console.log('team', this.db.team)
+      this.startBot()
       return {
         viewer: {
           ...this.db.users[0],
@@ -175,7 +187,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {createReflection: data}
     },
     EditReflectionMutation: (
-      {phaseItemId, isEditing}: {phaseItemId: PhaseId; isEditing: boolean},
+      {phaseItemId, isEditing}: {phaseItemId: string; isEditing: boolean},
       userId
     ) => {
       const data = {
@@ -233,7 +245,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {updateReflectionContent: data}
     },
-    NavigateMeetingMutation: ({completedStageId, facilitatorStageId, meetingId}, userId) => {
+    NavigateMeetingMutation: async ({completedStageId, facilitatorStageId, meetingId}, userId) => {
       let phaseCompleteData
       let unlockedStageIds
       const meeting = this.db.newMeeting
@@ -244,7 +256,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         if (!stage.isComplete) {
           stage.isComplete = true
           stage.endAt = new Date().toJSON()
-          phaseCompleteData = handleCompletedDemoStage(this.db, stage)
+          phaseCompleteData = await handleCompletedDemoStage(this.db, stage)
           const groupData = phaseCompleteData[GROUP]
           if (groupData) {
             Object.assign(groupData, {

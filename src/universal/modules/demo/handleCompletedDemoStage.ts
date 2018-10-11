@@ -1,9 +1,9 @@
-import mapGroupsToStages from 'universal/utils/makeGroupsToStages'
 import shortid from 'shortid'
 import {DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
 import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
 import makeDiscussionStage from 'universal/utils/makeDiscussionStage'
-import {demoMeetingId} from './initDB'
+import mapGroupsToStages from 'universal/utils/makeGroupsToStages'
+import {demoMeetingId, demoViewerId} from './initDB'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -45,15 +45,36 @@ const entityLookup = {
   }
 }
 
-const addEntitiesToReflections = (db) => {
-  db.reflections.forEach((reflection) => {
-    const entities = entityLookup[reflection.id]
-    if (entities) {
-      reflection.entities = entities
-    } else {
-      // TODO what do for the user ones?
-    }
+const getDemoEntities = async (texts) => {
+  const res = await window.fetch('/get-demo-entities', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({texts})
   })
+  if (res.status === 200) return res.json()
+  return texts.map(() => [])
+}
+
+const addEntitiesToReflections = async (db) => {
+  const userReflections = db.reflections.filter(
+    (reflection) => reflection.creatorId === demoViewerId
+  )
+  const contentTexts = userReflections.map((reflection) =>
+    extractTextFromDraftString(reflection.content)
+  )
+
+  const computedEntities = await getDemoEntities(contentTexts)
+  userReflections.forEach((reflection, idx) => {
+    reflection.entities = computedEntities[idx]
+  })
+
+  db.reflections
+    .filter((reflection) => reflection.creatorId !== demoViewerId)
+    .forEach((reflection) => {
+      reflection.entities = entityLookup[reflection.id]
+    })
 }
 
 const addDefaultGroupTitles = (db) => {
@@ -92,10 +113,10 @@ const addDiscussionTopics = (db) => {
   return {meetingId, discussPhaseStages: nextDiscussStages}
 }
 
-const handleCompletedDemoStage = (db, stage) => {
+const handleCompletedDemoStage = async (db, stage) => {
   if (stage.phaseType === REFLECT) {
     const data = removeEmptyReflections(db)
-    addEntitiesToReflections(db)
+    await addEntitiesToReflections(db)
     return {[REFLECT]: data, [GROUP]: null, [VOTE]: null}
   } else if (stage.phaseType === GROUP) {
     const data = addDefaultGroupTitles(db)
