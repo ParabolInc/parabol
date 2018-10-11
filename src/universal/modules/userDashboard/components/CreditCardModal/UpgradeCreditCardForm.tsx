@@ -21,11 +21,11 @@ import withMutationProps, {
   ErrorObject,
   WithMutationProps
 } from 'universal/utils/relay/withMutationProps'
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Type from 'universal/components/Type/Type'
 import PrimaryButton from 'universal/components/PrimaryButton'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {ICON_SIZE_FA_2X, MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {typeScale} from 'universal/styles/theme/typography'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
@@ -44,8 +44,33 @@ const ModalBody = styled('div')({
   width: '100%'
 })
 
-const StyledIconAvatar = styled(IconAvatar)({
-  margin: '0 0 .5rem'
+const Heading = styled('div')({
+  fontSize: typeScale[7],
+  lineHeight: '1.875rem',
+  marginBottom: '.25rem',
+  textAlign: 'center'
+})
+
+const Subheading = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  fontSize: typeScale[3],
+  justifyContent: 'center',
+  lineHeight: typeScale[6]
+})
+
+const CreditCardIcon = styled(StyledFontAwesome)({
+  alignItems: 'center',
+  backgroundColor: appTheme.palette.mid70l,
+  borderRadius: '100%',
+  color: ui.palette.white,
+  display: 'flex',
+  fontSize: ICON_SIZE_FA_2X,
+  height: '4rem',
+  justifyContent: 'center',
+  margin: '0 0 .5rem',
+  textAlign: 'center',
+  width: '4rem'
 })
 
 const CardInputs = styled('div')({
@@ -137,7 +162,7 @@ declare global {
 
 class UpgradeCreditCardForm extends React.Component<Props, State> {
   state = {
-    cardTypeIcon: 'credit_card',
+    cardTypeIcon: 'credit-card',
     creditCardNumber: '',
     cvc: '',
     expiry: ''
@@ -276,26 +301,20 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
 
   render () {
     const {isUpdate, dirty, error, submitting} = this.props
-    const {creditCardNumber, expiry, cvc} = this.state
+    const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
     // cardTypeIcon
     return (
       <ModalBody>
-        <StyledIconAvatar icon='credit_card' size='large' />
-        <Type
-          align='center'
-          colorPalette='dark'
-          lineHeight='1.875rem'
-          marginBottom='.25rem'
-          scale='s6'
-        >
-          {actionLabel}
-        </Type>
-        <Type align='center' colorPalette='dark' lineHeight={appTheme.typography.s5} scale='s3'>
+        <CreditCardIcon name={cardTypeIcon} />
+        <Heading>{actionLabel}</Heading>
+        <Subheading>
           <LockIcon>lock</LockIcon>
-          {' Secured by '}
-          <b>{'Stripe'}</b>
-        </Type>
+          <div>
+            {' Secured by '}
+            <b>{'Stripe'}</b>
+          </div>
+        </Subheading>
         {dirty && error && <ErrorMsg>{Object.values(error)[0]}</ErrorMsg>}
         <form onSubmit={this.handleSubmit}>
           <CardInputs>

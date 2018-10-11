@@ -19,7 +19,7 @@ const Organizations = (props) => {
   }
   const addNewOrg = () => (
     <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam}>
-      <IconLabel icon='plus-circle' label='Add New Organization' />
+      <IconLabel icon='add_circle' label='Add New Organization' />
     </LinkButton>
   )
 

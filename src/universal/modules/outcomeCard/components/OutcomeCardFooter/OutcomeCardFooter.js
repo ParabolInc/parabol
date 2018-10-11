@@ -23,6 +23,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 import BaseButton from 'universal/components/BaseButton'
 import CardButton from 'universal/components/CardButton'
 import IconLabel from 'universal/components/IconLabel'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 import styled from 'react-emotion'
 
 const height = ui.cardButtonHeight
@@ -129,6 +131,15 @@ const ButtonSpacer = styled('div')({
   height,
   verticalAlign: 'middle',
   width: height
+})
+
+const StyledIcon = styled(StyledFontAwesome)({
+  color: 'inherit',
+  display: 'block',
+  fontSize: ICON_SIZE_FA_1X,
+  height: ICON_SIZE_FA_1X,
+  lineHeight: ICON_SIZE_FA_1X,
+  width: ICON_SIZE_FA_1X
 })
 
 const LoadableAssignMenu = Loadable({
@@ -326,7 +337,7 @@ class OutcomeCardFooter extends Component {
                     targetAnchor={targetAnchor}
                     toggle={
                       <CardButton>
-                        <IconLabel icon='code' />
+                        <StyledIcon name='github' />
                       </CardButton>
                     }
                     onOpen={toggleMenuState}

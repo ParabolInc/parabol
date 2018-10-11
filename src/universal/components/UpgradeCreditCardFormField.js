@@ -35,11 +35,10 @@ const FieldIcon = styled(Icon)(({hasError}) => ({
   display: 'block',
   fontSize: MD_ICONS_SIZE_18,
   left: '.5rem',
-  lineHeight: appTheme.typography.s6,
   opacity: 0.5,
   position: 'absolute',
   textAlign: 'center',
-  top: '.5rem'
+  top: '.6875rem'
 }))
 
 type Props = {|

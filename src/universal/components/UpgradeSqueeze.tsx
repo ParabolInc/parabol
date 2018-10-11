@@ -22,12 +22,6 @@ const flexBase = {
   justifyContent: 'center'
 }
 
-const modalCopyBase = {
-  fontSize: '.9375rem',
-  lineHeight: '2rem',
-  margin: 0
-}
-
 const ModalBoundary = styled('div')({
   ...flexBase,
   background: ui.palette.white,
@@ -75,7 +69,11 @@ const StyledIcon = styled(Icon)({
 })
 
 const ModalLink = styled('a')({
-  ...modalCopyBase,
+  alignItems: 'center',
+  display: 'flex',
+  fontSize: '.9375rem',
+  lineHeight: '2rem',
+  margin: 0,
   color: ui.palette.mid,
   ':hover,:focus': {
     textDecoration: 'underline'

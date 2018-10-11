@@ -9,6 +9,7 @@ const StyledButton = styled(LinkButton)({outline: 0})
 
 const StyledIcon = styled(Icon)(({iconLarge}) => ({
   color: 'inherit',
+  display: 'block',
   fontSize: iconLarge ? MD_ICONS_SIZE_24 : MD_ICONS_SIZE_18
 }))
 

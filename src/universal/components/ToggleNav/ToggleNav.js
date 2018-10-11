@@ -72,14 +72,17 @@ const styleThunk = () => ({
   },
 
   item: {
+    alignItems: 'center',
     backgroundColor: 'transparent',
     border: `1px solid ${appTheme.palette.mid}`,
     borderLeftWidth: 0,
     color: appTheme.palette.mid,
     cursor: 'pointer',
+    display: 'flex',
     flex: 1,
     fontSize: appTheme.typography.s3,
     fontWeight: 600,
+    justifyContent: 'center',
     lineHeight: '1.625rem',
     textAlign: 'center',
     textDecoration: 'none',

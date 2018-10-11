@@ -11,8 +11,10 @@ const {green, mid} = ui.palette
 const hoverColor = tinycolor.mix(mid, '#000', 15).toHexString()
 
 const InlineEstimatedCostBlock = styled('div')(({showCost}) => ({
+  alignItems: 'center',
   color: showCost ? green : mid,
   cursor: showCost ? 'default' : 'pointer',
+  display: 'flex',
   fontSize: '.9375rem',
   lineHeight: '2rem',
   ':hover': {
@@ -56,7 +58,7 @@ class InlineEstimatedCost extends Component<Props> {
         showCost={showCost}
         title={`${question}?`}
       >
-        <StyledIcon name='help' showCost={showCost} />
+        <StyledIcon showCost={showCost}>help</StyledIcon>
         <span>{copy}</span>
         {!showCost && <span>{'?'}</span>}
       </InlineEstimatedCostBlock>

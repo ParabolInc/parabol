@@ -5,6 +5,8 @@ import {css} from 'aphrodite-local-styles/no-important'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 
+// TODO: update this component to emotion when we start using MD style tabs again (TA)
+
 const Tab = (props) => {
   const {icon, isActive, label, onClick, styles} = props
   const activeStyles = css(styles.root, isActive && styles.isActive, onClick && styles.canClick)
