@@ -6,8 +6,8 @@ import type {ReflectionGroupHeader_meeting as Meeting} from '__generated__/Refle
 import type {ReflectionGroupHeader_reflectionGroup as ReflectionGroup} from '__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting'
-import ui from 'universal/styles/ui'
 import Tag from 'universal/components/Tag/Tag'
+import {retroMeetingVotingWidth} from 'universal/styles/meeting'
 
 type Props = {
   meeting: Meeting,
@@ -23,14 +23,14 @@ const GroupHeader = styled('div')(({isExpanded, phaseType}) => ({
 }))
 
 const TitleAndCount = styled('div')(({isExpanded}) => ({
-  alignItems: 'flex-start',
+  alignItems: 'center',
   display: 'flex',
   flexShrink: 1,
   justifyContent: !isExpanded && 'center',
   position: 'relative'
 }))
 
-const Spacer = styled('div')({width: ui.votingCheckmarksWidth})
+const Spacer = styled('div')({width: retroMeetingVotingWidth})
 
 const ReflectionGroupHeader = (props: Props) => {
   const {innerRef, isExpanded, meeting, reflectionGroup} = props

@@ -18,7 +18,9 @@ const panelCell = {
 }
 
 const CreditCardInfo = styled('div')({
+  alignItems: 'center',
   color: appTheme.palette.dark,
+  display: 'flex',
   fontSize: appTheme.typography.s3,
   lineHeight: appTheme.typography.s5
 })
@@ -54,9 +56,12 @@ const InfoAndUpdate = styled('div')({
   justifyContent: 'space-between'
 })
 
+const MoreGutter = styled('div')({
+  paddingBottom: ui.panelGutter
+})
+
 const LoadMoreButton = styled(RaisedButton)({
-  margin: '0 auto',
-  marginBottom: ui.panelGutter
+  margin: '0 auto'
 })
 
 const PanelRow = styled('div')({
@@ -65,9 +70,15 @@ const PanelRow = styled('div')({
 })
 
 const Unsubscribe = styled('div')({
+  alignItems: 'center',
   color: appTheme.palette.mid,
+  display: 'flex',
+  justifyContent: 'center',
   '& a': {
+    alignItems: 'center',
     color: appTheme.palette.mid,
+    display: 'flex',
+    marginLeft: '.5rem',
     '& > u': {
       textDecoration: 'none'
     },
@@ -136,7 +147,11 @@ class OrgBilling extends Component {
                   hasCard={Boolean(creditCard.last4)}
                 />
               ))}
-            {hasMore() && <LoadMoreButton onClick={this.loadMore}>{'Load More'}</LoadMoreButton>}
+            {hasMore() && (
+              <MoreGutter>
+                <LoadMoreButton onClick={this.loadMore}>{'Load More'}</LoadMoreButton>
+              </MoreGutter>
+            )}
           </div>
         </Panel>
         <Panel label='Danger Zone'>

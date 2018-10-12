@@ -630,10 +630,6 @@ const ui = {
   upgradeColor: blue,
   upgradeColorOption: 'blue',
 
-  // Voting
-  // ---------------------------------------------------------------------------
-  votingCheckmarksWidth: '3.375rem',
-
   // Generic zIndex scale
   // ---------------------------------------------------------------------------
   zi1: zIndexScale(1),

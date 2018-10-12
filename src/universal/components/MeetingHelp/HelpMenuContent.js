@@ -14,7 +14,7 @@ const Content = styled('div')({
 })
 
 const MenuClose = styled(Icon)({
-  color: ui.palette.warm,
+  color: ui.palette.midGray,
   cursor: 'pointer',
   fontSize: MD_ICONS_SIZE_18,
   position: 'absolute',

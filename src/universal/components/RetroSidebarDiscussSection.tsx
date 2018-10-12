@@ -37,9 +37,12 @@ const SidebarPhaseItemChild = styled('div')({
 
 const VoteTally = styled('div')(
   ({isUnsyncedFacilitatorStage}: {isUnsyncedFacilitatorStage: boolean | null}) => ({
+    alignItems: 'center',
     color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
+    display: 'flex',
     fontSize: ui.iconSize,
     fontWeight: 600,
+    height: ui.navTopicLineHeight,
     lineHeight: ui.navTopicLineHeight,
     marginRight: '0.5rem'
   })
@@ -48,6 +51,8 @@ const VoteTally = styled('div')(
 const VoteIcon = styled(Icon)({
   color: 'inherit',
   fontSize: MD_ICONS_SIZE_18,
+  height: ui.navTopicLineHeight,
+  lineHeight: ui.navTopicLineHeight,
   marginRight: '.125rem'
 })
 

@@ -40,10 +40,10 @@ const underlineStyles = {
 
 const PencilIcon = styled(Icon)(({isExpanded}: {isExpanded?: boolean}) => ({
   color: isExpanded ? '#fff' : ui.hintColor,
-  height: MD_ICONS_SIZE_18,
-  lineHeight,
+  display: 'block',
+  fontSize: MD_ICONS_SIZE_18,
   opacity: 0.5,
-  paddingLeft: '0.25rem',
+  marginLeft: '0.25rem',
   textAlign: 'center',
   top: '-.0625rem'
 }))
@@ -81,7 +81,7 @@ const NameInput = styled('input')(
     // need to use a content editable if we wanna animate this since input el forces width
     textAlign: !isExpanded && 'center',
     // card width is set at REFLECTION_WIDTH, so this can be a PX, too
-    width: 200,
+    width: 188,
     transition: 'all 200ms'
   })
 )

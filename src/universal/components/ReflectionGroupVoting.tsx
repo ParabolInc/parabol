@@ -9,7 +9,7 @@ import withAtmosphere, {
 import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
-import {meetingVoteIcon} from 'universal/styles/meeting'
+import {meetingVoteIcon, retroMeetingVotingWidth} from 'universal/styles/meeting'
 import StyledError from 'universal/components/StyledError'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -31,14 +31,15 @@ const UpvoteIcon = styled(Icon)(({color}: {color: string}) => ({
   color,
   cursor: 'pointer',
   fontSize: MD_ICONS_SIZE_18,
-  marginRight: '.25rem'
+  marginRight: '.25rem',
+  userSelect: 'none'
 }))
 
-const CheckColumn = styled('div')({
+const UpvoteColumn = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  width: ui.votingCheckmarksWidth
+  width: retroMeetingVotingWidth
 })
 
 class ReflectionGroupVoting extends Component<Props> {
@@ -95,7 +96,7 @@ class ReflectionGroupVoting extends Component<Props> {
     const upvotes = [...Array(viewerVoteCount).keys()]
     const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0
     return (
-      <CheckColumn>
+      <UpvoteColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
             <UpvoteIcon key={idx} color={ui.palette.warm} onClick={this.unvote}>
@@ -112,7 +113,7 @@ class ReflectionGroupVoting extends Component<Props> {
           )}
         </UpvoteRow>
         {error && <StyledError>{error}</StyledError>}
-      </CheckColumn>
+      </UpvoteColumn>
     )
   }
 }
