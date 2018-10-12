@@ -141,7 +141,7 @@ const mentionShortcuts = [
   },
   {
     label: 'Mentions',
-    icon: 'chat_bubble',
+    icon: 'person_pin',
     keyboard: 'press ‘@’',
     md: ''
   }

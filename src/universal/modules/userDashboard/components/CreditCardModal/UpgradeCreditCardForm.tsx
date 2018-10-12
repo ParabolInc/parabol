@@ -303,7 +303,6 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
-    // cardTypeIcon
     return (
       <ModalBody>
         <CreditCardIcon name={cardTypeIcon} />
