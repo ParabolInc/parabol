@@ -73,7 +73,7 @@ const StyledButton = styled(FlatButton)({
 
 const MenuButton = (props) => (
   <StyledButton {...props} disabled={props.disabled}>
-    <IconLabel icon='ellipsis-v' />
+    <IconLabel icon='more_vert' />
   </StyledButton>
 )
 

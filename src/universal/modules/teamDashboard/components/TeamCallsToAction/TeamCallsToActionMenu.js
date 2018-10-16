@@ -32,11 +32,11 @@ const TeamCallsToActionMenu = (props: Props) => {
       closePortal={closePortal}
     >
       <MenuItemWithShortcuts
-        icon='arrow-circle-o-right'
+        icon='change_history'
         label='Start Action Meeting'
         onClick={goToMeetingLobby}
       />
-      <MenuItemWithShortcuts icon='clock-o' label='Start Retro Meeting' onClick={goToRetroLobby} />
+      <MenuItemWithShortcuts icon='history' label='Start Retro Meeting' onClick={goToRetroLobby} />
     </MenuWithShortcuts>
   )
 }

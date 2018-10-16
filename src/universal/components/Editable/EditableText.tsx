@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 import Legitity from '../../validation/Legitity'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const StaticBlock = styled('div')({
   alignItems: 'center',
@@ -33,10 +33,9 @@ const Error = styled('div')({
   fontSize: '.85rem'
 })
 
-const Icon = styled(StyledFontAwesome)({
+const StyledIcon = styled(Icon)({
   color: PALETTE.TEXT.LIGHT,
-  fontSize: ICON_SIZE_FA_1X,
-  lineHeight: 'inherit',
+  fontSize: MD_ICONS_SIZE_18,
   marginLeft: '.5rem'
 })
 
@@ -165,7 +164,7 @@ class EditableText extends Component<Props, State> {
       <StaticBlock onClick={this.setEditing}>
         {showPlaceholder && <Placeholder>{placeholder}</Placeholder>}
         {value && <StaticValue>{value}</StaticValue>}
-        {!hideIcon && <Icon name={'pencil'} />}
+        {!hideIcon && <StyledIcon>edit</StyledIcon>}
       </StaticBlock>
     )
   }

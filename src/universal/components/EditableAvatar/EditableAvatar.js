@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
-import FontAwesome from 'react-fontawesome'
 import Avatar from 'universal/components/Avatar/Avatar'
 import ui from 'universal/styles/ui'
 import {panelShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
 
 const borderRadius = '50%'
 const borderRadiusPanel = ui.panelBorderRadius
@@ -57,7 +57,7 @@ const EditableAvatar = (props) => {
   return (
     <EditableAvatarRoot hasPanel={hasPanel} size={size}>
       <EditableAvatarEditOverlay hasPanel={hasPanel} onClick={onClick} size={size}>
-        <FontAwesome name='pencil' />
+        <Icon>edit</Icon>
         <span>{'EDIT'}</span>
       </EditableAvatarEditOverlay>
       <EditableAvatarImgBlock hasPanel={hasPanel} size={size}>

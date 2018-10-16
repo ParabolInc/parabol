@@ -1,9 +1,10 @@
 import * as React from 'react'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled, {css, cx} from 'react-emotion'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const fieldStyles = css({
   ...ui.fieldBaseStyles,
@@ -29,17 +30,15 @@ const FieldBlock = styled('div')({
   position: 'relative'
 })
 
-const FieldIcon = styled(StyledFontAwesome)(({hasError}) => ({
+const FieldIcon = styled(Icon)(({hasError}) => ({
   color: hasError ? ui.colorError : ui.hintColor,
   display: 'block',
-  fontSize: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   left: '.5rem',
-  lineHeight: appTheme.typography.s6,
   opacity: 0.5,
   position: 'absolute',
   textAlign: 'center',
-  top: '.5rem',
-  width: '1rem'
+  top: '.6875rem'
 }))
 
 type Props = {|
@@ -78,7 +77,7 @@ const UpgradeCreditCardFormField = (props: Props) => {
 
   return (
     <FieldBlock>
-      <FieldIcon hasError={hasError} name={iconName} />
+      <FieldIcon hasError={hasError}>{iconName}</FieldIcon>
       <input
         autoComplete={autoComplete}
         autoFocus={autoFocus}

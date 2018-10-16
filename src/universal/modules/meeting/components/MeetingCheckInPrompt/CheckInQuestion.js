@@ -1,7 +1,6 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer} from 'react-relay'
 import EditorInputWrapper from 'universal/components/EditorInputWrapper'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
@@ -13,18 +12,25 @@ import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQues
 import ui from 'universal/styles/ui'
 import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion'
 import styled from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const iconStyle = {
+const StyledIcon = styled(Icon)({
   color: ui.colorText,
   display: 'block',
   height: '1.5rem',
-  fontSize: '1rem',
+  fontSize: MD_ICONS_SIZE_18,
   verticalAlign: 'middle',
   marginLeft: '0.5rem',
   paddingTop: '.1875rem',
   textAlign: 'center',
   width: '1.25rem'
-}
+})
+
+const StyledButtonIcon = styled(StyledIcon)(({isEditing}) => ({
+  cursor: 'pointer',
+  visibility: isEditing ? 'hidden' : 'visible'
+}))
 
 const buttonStyle = {
   color: ui.colorText,
@@ -124,17 +130,9 @@ class CheckInQuestion extends Component {
     const {editorState} = this.state
     const canEdit = tierSupportsUpdateCheckInQuestion(tier)
     const isEditing = editorState.getSelection().getHasFocus()
-
-    const buttonIconStyle = {
-      ...iconStyle,
-      cursor: 'pointer',
-      visibility: isEditing ? 'hidden' : 'visible'
-    }
-
     const tip = canEdit
       ? 'Tap to customize the Social Check-in question.'
       : 'Upgrade to a Pro Account to customize the Social Check-in question.'
-
     return (
       <Tooltip
         tip={<div>{tip}</div>}
@@ -160,10 +158,10 @@ class CheckInQuestion extends Component {
             <div>
               {canEdit ? (
                 <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
-                  <FontAwesome name='cog' style={buttonIconStyle} />
+                  <StyledButtonIcon isEditing={isEditing}>settings</StyledButtonIcon>
                 </PlainButton>
               ) : (
-                <FontAwesome name='cog' style={iconStyle} />
+                <StyledIcon>settings</StyledIcon>
               )}
             </div>
           )}

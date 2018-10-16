@@ -51,7 +51,7 @@ const RemoveFromOrgModal = (props) => {
         invoice.`}
       </Type>
       <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
-        <IconLabel icon='arrow-circle-right' iconAfter label={`Remove ${preferredName}`} />
+        <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
       </StyledButton>
     </DashModal>
   )

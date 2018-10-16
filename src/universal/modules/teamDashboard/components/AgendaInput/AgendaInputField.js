@@ -1,7 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import withHotkey from 'react-hotkey-hoc'
 import {createFragmentContainer} from 'react-relay'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
@@ -15,19 +14,15 @@ import withStyles from 'universal/styles/withStyles'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
+import Icon from 'universal/components/Icon'
 
 const iconStyle = {
   color: appTheme.palette.warm70l,
   display: 'block',
-  fontSize: ui.iconSize2x,
-  height: ui.iconSize2x,
-  left: '1.25rem',
-  lineHeight: ui.iconSize2x,
+  left: '1.625rem',
   pointerEvents: 'none',
   position: 'absolute',
-  textAlign: 'right',
-  top: '.4375rem',
-  width: ui.iconSize2x,
+  top: '.5625rem',
   zIndex: 200
 }
 
@@ -114,7 +109,7 @@ class AgendaInputField extends Component {
           ref={this.innerRef}
           type='text'
         />
-        <FontAwesome name='plus-circle' style={iconStyle} />
+        <Icon style={iconStyle}>add_circle</Icon>
       </form>
     )
   }

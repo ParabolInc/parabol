@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import FontAwesome from 'react-fontawesome'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const DashSearch = styled('div')({
   alignItems: 'center',
@@ -12,9 +13,9 @@ const DashSearch = styled('div')({
   flex: 1
 })
 
-const DashSearchIcon = styled(FontAwesome)({
+const DashSearchIcon = styled(Icon)({
   color: appTheme.palette.dark60l,
-  fontSize: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   marginRight: '.5rem'
 })
 
@@ -36,7 +37,7 @@ const DashSearchControl = (props) => {
   const {onChange, placeholder} = props
   return (
     <DashSearch>
-      <DashSearchIcon name='search' />
+      <DashSearchIcon>search</DashSearchIcon>
       <DashSearchInput onChange={onChange} placeholder={placeholder} />
     </DashSearch>
   )

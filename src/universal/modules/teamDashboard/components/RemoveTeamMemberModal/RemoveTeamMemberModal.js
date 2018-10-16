@@ -46,7 +46,7 @@ const RemoveTeamMemberModal = (props) => {
         the team. <br />
       </Type>
       <StyledButton size='large' onClick={handleClick} palette='warm'>
-        <IconLabel icon='arrow-circle-right' iconAfter label={`Remove ${preferredName}`} />
+        <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
       </StyledButton>
     </DashModal>
   )

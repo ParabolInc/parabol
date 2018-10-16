@@ -99,11 +99,7 @@ const Organization = (props) => {
       <Helmet title={`Organization Settings | ${orgName}`} />
       <SettingsWrapper narrow>
         <BackControlBlock>
-          <DashNavControl
-            icon='arrow-circle-left'
-            label='Back to Organizations'
-            onClick={goToOrgs}
-          />
+          <DashNavControl icon='arrow_back' label='Back to Organizations' onClick={goToOrgs} />
         </BackControlBlock>
         <AvatarAndName>
           {isBillingLeader ? (
