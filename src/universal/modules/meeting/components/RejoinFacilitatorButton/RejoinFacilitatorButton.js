@@ -16,7 +16,7 @@ const RejoinFacilitatorButton = (props) => {
   const {onClickHandler} = props
   return (
     <RejoinButton onClick={onClickHandler} palette='warm'>
-      <IconLabel icon='user' label='Rejoin Facilitator' />
+      <IconLabel icon='person_pin_circle' label='Rejoin Facilitator' />
     </RejoinButton>
   )
 }

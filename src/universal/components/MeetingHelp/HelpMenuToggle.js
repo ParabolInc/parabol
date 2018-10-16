@@ -7,6 +7,7 @@ import withInnerRef from 'universal/decorators/withInnerRef'
 
 const StyledButton = styled(FloatingActionButton)(({floatAboveBottomBar}) => ({
   bottom: floatAboveBottomBar ? meetingHelpWithBottomBar : '1.25rem',
+  height: '2rem',
   paddingLeft: 0,
   paddingRight: 0,
   position: 'fixed',
