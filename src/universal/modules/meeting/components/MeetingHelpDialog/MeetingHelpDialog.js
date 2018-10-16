@@ -16,6 +16,7 @@ type Props = {
 }
 
 const StyledButton = styled(FloatingActionButton)({
+  height: '2rem',
   paddingLeft: 0,
   paddingRight: 0,
   width: '2rem'
