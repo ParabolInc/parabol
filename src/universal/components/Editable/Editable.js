@@ -3,9 +3,9 @@ import React, {Component} from 'react'
 import withStyles from 'universal/styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import makePlaceholderStyles from 'universal/styles/helpers/makePlaceholderStyles'
-import FontAwesome from 'react-fontawesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 class Editable extends Component {
   constructor (props) {
@@ -85,7 +85,7 @@ class Editable extends Component {
     return (
       <div className={css(styles.staticBlock)} onClick={this.setEditing}>
         <div className={staticStyles}>{initialValue || placeholder}</div>
-        {!hideIcon && <FontAwesome className={css(styles.icon)} name={icon || 'pencil'} />}
+        {!hideIcon && <Icon className={css(styles.icon)}>{icon || 'edit'}</Icon>}
       </div>
     )
   }
@@ -170,7 +170,7 @@ const styleThunk = (custom, {typeStyles}) => ({
   icon: {
     color: appTheme.palette.dark,
     display: 'inline-block !important',
-    fontSize: `${ui.iconSize} !important`,
+    fontSize: `${MD_ICONS_SIZE_18} !important`,
     marginLeft: '.375rem',
     verticalAlign: 'middle !important'
   },

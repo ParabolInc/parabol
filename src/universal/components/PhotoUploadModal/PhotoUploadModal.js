@@ -33,7 +33,7 @@ const PhotoUploadModal = (props) => {
       {children}
       <ModalFooter>
         <FlatButton palette='warm' onClick={closePortal} size='medium'>
-          <IconLabel icon='check-circle' iconAfter label='Done' />
+          <IconLabel icon='check_circle' iconAfter label='Done' />
         </FlatButton>
       </ModalFooter>
     </DashModal>

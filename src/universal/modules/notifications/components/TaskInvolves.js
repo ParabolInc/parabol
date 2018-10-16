@@ -114,7 +114,10 @@ class TaskInvolves extends Component {
     const action = involvementWord[involvement]
     return (
       <Row compact>
-        <IconAvatar icon={involvement === MENTIONEE ? 'at' : 'id-card-o'} size='small' />
+        <IconAvatar
+          icon={involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}
+          size='small'
+        />
         <div className={css(defaultStyles.message)}>
           <div className={css(defaultStyles.messageText)}>
             <b>{changeAuthorName}</b>

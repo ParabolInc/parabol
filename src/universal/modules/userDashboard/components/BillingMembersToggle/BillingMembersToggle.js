@@ -16,13 +16,13 @@ const BillingMembersToggle = (props) => {
   const items = [
     {
       label: 'Billing',
-      icon: 'credit-card',
+      icon: 'credit_card',
       isActive: activeOrgDetail === BILLING_PAGE,
       onClick: () => history.push(`/me/organizations/${orgId}/${BILLING_PAGE}`)
     },
     {
       label: 'Members',
-      icon: 'users',
+      icon: 'group',
       isActive: activeOrgDetail === MEMBERS_PAGE,
       onClick: () => history.push(`/me/organizations/${orgId}/${MEMBERS_PAGE}`)
     }

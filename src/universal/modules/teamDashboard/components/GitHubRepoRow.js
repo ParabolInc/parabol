@@ -10,8 +10,9 @@ import withMutationProps from 'universal/utils/relay/withMutationProps'
 import FlatButton from 'universal/components/FlatButton'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Tag from 'universal/components/Tag/Tag'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const StyledButton = styled(FlatButton)({
   marginLeft: ui.rowGutter,
@@ -55,7 +56,8 @@ const NameWithOwner = styled('a')({
   fontWeight: 600
 })
 
-const StyledIcon = styled(StyledFontAwesome)({
+const StyledIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   marginLeft: '.5rem'
 })
 
@@ -115,7 +117,7 @@ class GitHubRepoRow extends Component {
               title={nameWithOwner}
             >
               {nameWithOwner}
-              <StyledIcon name={ui.iconExternalLink} />
+              <StyledIcon>{ui.iconExternalLink}</StyledIcon>
               {isCreator && <Tag colorPalette='light' label='Creator' />}
             </NameWithOwner>
           </RepoInfo>

@@ -12,7 +12,7 @@ const DashFilterToggle = (props) => {
       palette='midGray'
       ref={innerRef}
     >
-      <IconLabel icon='chevron-down' iconAfter label={label} />
+      <IconLabel icon='expand_more' iconAfter label={label} />
     </LinkButton>
   )
 }

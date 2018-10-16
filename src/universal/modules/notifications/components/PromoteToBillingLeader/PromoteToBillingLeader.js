@@ -40,7 +40,7 @@ const PromoteToBillingLeader = (props) => {
 
   return (
     <Row compact>
-      <IconAvatar icon='building' size='small' />
+      <IconAvatar icon='account_balance' size='small' />
       <div className={css(defaultStyles.message)}>
         {'You are now a '}
         <b>

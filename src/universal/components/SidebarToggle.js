@@ -13,7 +13,7 @@ const SidebarToggle = (props) => (
   <StyledButton
     {...props}
     aria-label='Toggle the sidebar'
-    icon='bars'
+    icon='menu'
     iconLarge
     palette='midGray'
   />

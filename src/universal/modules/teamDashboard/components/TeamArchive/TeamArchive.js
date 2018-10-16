@@ -1,7 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createPaginationContainer} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
@@ -13,11 +12,6 @@ import appTheme from 'universal/styles/theme/theme'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
 import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants'
-
-const iconStyle = {
-  fontSize: ui.iconSize,
-  marginRight: '.25rem'
-}
 
 const CARD_WIDTH = 256
 const GRID_PADDING = 16
@@ -225,9 +219,9 @@ class TeamArchive extends Component {
             </div>
           ) : (
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name='smile-o' style={iconStyle} />
               <span>
-                {'Hi there! There are zero archived tasks. '}
+                {'🤓'}
+                {' Hi there! There are zero archived tasks. '}
                 {'Nothing to see here. How about a fun rally video? '}
                 <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
@@ -307,7 +301,7 @@ const styleThunk = () => ({
     backgroundColor: '#fff',
     border: `.0625rem solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    fontSize: appTheme.typography.s2,
+    fontSize: appTheme.typography.s3,
     display: 'inline-block',
     margin: ui.dashGutterSmall,
     padding: '1rem',

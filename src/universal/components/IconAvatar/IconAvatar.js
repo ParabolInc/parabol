@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24, MD_ICONS_SIZE_36} from 'universal/styles/icons'
 
 const smallSize = '2rem'
 const mediumSize = '2.75rem'
@@ -11,19 +12,19 @@ const largeSize = '4rem'
 
 const iconSizes = {
   small: {
-    fontSize: ui.iconSize,
+    fontSize: MD_ICONS_SIZE_18,
     height: smallSize,
     width: smallSize
   },
 
   medium: {
-    fontSize: ui.iconSizeAvatar,
+    fontSize: MD_ICONS_SIZE_24,
     height: mediumSize,
     width: mediumSize
   },
 
   large: {
-    fontSize: ui.iconSize2x,
+    fontSize: MD_ICONS_SIZE_36,
     height: largeSize,
     width: largeSize
   }
@@ -45,15 +46,14 @@ const IconAvatarRoot = styled('div')(({size}) => {
   }
 })
 
-const IconStyled = styled(StyledFontAwesome)({
-  fontSize: 'inherit',
-  lineHeight: ui.iconSize
+const StyledIcon = styled(Icon)({
+  fontSize: 'inherit'
 })
 
 const IconAvatar = ({className, icon, size}) => {
   return (
     <IconAvatarRoot className={className} size={size || 'small'}>
-      <IconStyled name={icon} />
+      <StyledIcon>{icon}</StyledIcon>
     </IconAvatarRoot>
   )
 }

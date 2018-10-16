@@ -4,6 +4,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import ui from 'universal/styles/ui'
 import arrayToRows from '../../helpers/arrayToRows'
 import ReflectionEditorWrapperForEmail from 'universal/components/ReflectionEditorWrapperForEmail'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const fontFamily = ui.emailFontFamily
 
@@ -28,23 +29,23 @@ const topicThemeHeading = {
 const votesBlock = {
   fontSize: '14px',
   fontWeight: 600,
-  lineHeight: '14px',
+  lineHeight: MD_ICONS_SIZE_18,
   textAlign: 'center'
 }
 
 const voteIcon = {
   display: 'inline-block',
-  height: '14px',
+  height: MD_ICONS_SIZE_18,
   margin: '0 2px 0 0',
   verticalAlign: 'top',
-  width: '14px'
+  width: MD_ICONS_SIZE_18
 }
 
 const voteCountLabel = {
   color: ui.palette.midGray,
   display: 'inline-block',
-  height: '14px',
-  lineHeight: '14px',
+  height: MD_ICONS_SIZE_18,
+  lineHeight: MD_ICONS_SIZE_18,
   verticalAlign: 'top'
 }
 
@@ -84,7 +85,7 @@ const RetroDiscussionTopic = (props: Props) => {
   const {imageSource, topic} = props
   const {reflections, title, voteCount} = topic
   const rows = arrayToRows(reflections)
-  const icon = imageSource === 'local' ? 'fa-thumbs-up.svg' : 'fa-thumbs-up@3x.png'
+  const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `/static/images/icons/${icon}`
   return (
     <table style={tableStyle} width='100%'>
@@ -97,7 +98,7 @@ const RetroDiscussionTopic = (props: Props) => {
         </tr>
         <tr>
           <td style={votesBlock}>
-            <img height='14' src={src} style={voteIcon} width='14' />
+            <img height='18' src={src} style={voteIcon} width='18' />
             <div style={voteCountLabel}>{voteCount}</div>
           </td>
         </tr>

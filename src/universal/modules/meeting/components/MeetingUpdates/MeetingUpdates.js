@@ -92,7 +92,7 @@ class MeetingUpdates extends Component {
             <BounceBlock animationDelay='120s' key={`update${localPhaseItem}buttonAnimation`}>
               <FlatButton size='medium' key={`update${localPhaseItem}`} onClick={gotoNext}>
                 <IconLabel
-                  icon='arrow-circle-right'
+                  icon='arrow_forward'
                   iconAfter
                   iconColor='warm'
                   iconLarge

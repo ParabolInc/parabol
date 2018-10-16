@@ -6,10 +6,11 @@ import Panel from 'universal/components/Panel/Panel'
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
 import LoadableModal from 'universal/components/LoadableModal'
 import UpdateCreditCardLoadable from 'universal/components/UpdateCreditCardLoadable'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const panelCell = {
   borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`,
@@ -17,16 +18,20 @@ const panelCell = {
 }
 
 const CreditCardInfo = styled('div')({
+  alignItems: 'center',
   color: appTheme.palette.dark,
+  display: 'flex',
   fontSize: appTheme.typography.s3,
   lineHeight: appTheme.typography.s5
 })
 
-const CreditCardIcon = styled(StyledFontAwesome)({
+const CreditCardIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   marginRight: '1rem'
 })
 
-const EnvelopeIcon = styled(StyledFontAwesome)({
+const EnvelopeIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   marginLeft: '.24rem'
 })
 
@@ -51,9 +56,12 @@ const InfoAndUpdate = styled('div')({
   justifyContent: 'space-between'
 })
 
+const MoreGutter = styled('div')({
+  paddingBottom: ui.panelGutter
+})
+
 const LoadMoreButton = styled(RaisedButton)({
-  margin: '0 auto',
-  marginBottom: ui.panelGutter
+  margin: '0 auto'
 })
 
 const PanelRow = styled('div')({
@@ -62,9 +70,15 @@ const PanelRow = styled('div')({
 })
 
 const Unsubscribe = styled('div')({
+  alignItems: 'center',
   color: appTheme.palette.mid,
+  display: 'flex',
+  justifyContent: 'center',
   '& a': {
+    alignItems: 'center',
     color: appTheme.palette.mid,
+    display: 'flex',
+    marginLeft: '.5rem',
     '& > u': {
       textDecoration: 'none'
     },
@@ -105,7 +119,7 @@ class OrgBilling extends Component {
         <Panel label='Credit Card Information'>
           <InfoAndUpdate>
             <CreditCardInfo>
-              <CreditCardIcon name='credit-card' />
+              <CreditCardIcon>credit_card</CreditCardIcon>
               <CreditCardProvider>{brand || '???'}</CreditCardProvider>
               <CreditCardNumber>
                 {'•••• •••• •••• '}
@@ -133,7 +147,11 @@ class OrgBilling extends Component {
                   hasCard={Boolean(creditCard.last4)}
                 />
               ))}
-            {hasMore() && <LoadMoreButton onClick={this.loadMore}>{'Load More'}</LoadMoreButton>}
+            {hasMore() && (
+              <MoreGutter>
+                <LoadMoreButton onClick={this.loadMore}>{'Load More'}</LoadMoreButton>
+              </MoreGutter>
+            )}
           </div>
         </Panel>
         <Panel label='Danger Zone'>
@@ -145,7 +163,7 @@ class OrgBilling extends Component {
                 title='Instant Unsubscribe from Pro'
               >
                 <u>{'Contact us'}</u>
-                <EnvelopeIcon name='envelope' />
+                <EnvelopeIcon>email</EnvelopeIcon>
               </a>
             </Unsubscribe>
           </PanelRow>

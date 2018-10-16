@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import ui from 'universal/styles/ui'
 import styled, {css, cx} from 'react-emotion'
 import textOverflow from 'universal/styles/helpers/textOverflow'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const rootStyle = css({
   alignItems: 'center',
@@ -116,18 +117,19 @@ class MenuItemWithShortcuts extends Component {
       />
     )
     const makeIcon = () => (
-      <FontAwesome
-        name={icon}
+      <Icon
         className={css({
           color: iconColor || ui.menuItemIconColor,
-          fontSize: ui.iconSize,
+          fontSize: `${MD_ICONS_SIZE_18} !important`,
           lineHeight: 'inherit',
           marginLeft: ui.menuGutterHorizontal,
           marginRight: ui.menuGutterInner,
           textAlign: 'center',
           width: '1.25rem'
         })}
-      />
+      >
+        {icon}
+      </Icon>
     )
     const makeAvatar = () => (
       <img

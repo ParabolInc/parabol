@@ -19,7 +19,7 @@ const DenyNewUser = (props) => {
   const safeReason = reason || 'none given'
   return (
     <Row compact>
-      <IconAvatar icon='user-circle-o' size='small' />
+      <IconAvatar icon='account_circle' size='small' />
       <div className={css(defaultStyles.message)}>
         <b>{deniedByName}</b>
         {' has denied '}

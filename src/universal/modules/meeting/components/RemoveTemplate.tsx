@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import FlatButton from 'universal/components/FlatButton'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -8,7 +7,8 @@ import withAtmosphere, {
 import RemoveReflectTemplateMutation from 'universal/mutations/RemoveReflectTemplateMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const Button = styled(FlatButton)(({canDelete}: {canDelete: boolean}) => ({
   alignItems: 'center',
@@ -21,8 +21,8 @@ const Button = styled(FlatButton)(({canDelete}: {canDelete: boolean}) => ({
   width: '2.125rem'
 }))
 
-const DeleteIcon = styled(StyledFontAwesome)({
-  fontSize: ICON_SIZE_FA_1X
+const DeleteIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
@@ -59,7 +59,7 @@ class RemoveTemplate extends Component<Props> {
         size='small'
         waiting={submitting}
       >
-        <DeleteIcon name='trash' />
+        <DeleteIcon>delete</DeleteIcon>
       </Button>
     )
   }

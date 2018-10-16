@@ -45,7 +45,7 @@ const UnpaidTeamModal = (props) => {
       </Type>
       {isALeader && (
         <StyledButton size='large' onClick={handleClick} palette='warm'>
-          <IconLabel icon='arrow-circle-right' iconAfter label='Take me there' />
+          <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
         </StyledButton>
       )}
     </DashModal>

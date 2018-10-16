@@ -39,7 +39,7 @@ const AgendaToggle = (props) => {
         palette={hideAgenda ? 'warm' : 'mid'}
         style={{width: '100%'}}
       >
-        <IconLabel icon='comments' label={label} />
+        <IconLabel icon='comment' label={label} />
       </ToggleButton>
     </RootBlock>
   )

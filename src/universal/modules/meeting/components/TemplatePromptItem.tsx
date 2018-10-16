@@ -3,16 +3,16 @@ import React, {Component} from 'react'
 import {DraggableProvided} from 'react-beautiful-dnd'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveReflectTemplatePromptMutation from 'universal/mutations/RemoveReflectTemplatePromptMutation'
-import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {typeScale} from 'universal/styles/theme/typography'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface PassedProps {
   canRemove: boolean
@@ -45,11 +45,11 @@ const PromptItem = styled('li')(({isHover, isDragging}: StyledProps) => ({
   padding: '0 .6875rem 0 1rem'
 }))
 
-const RemovePromptIcon = styled(StyledFontAwesome)(({isHover}: StyledProps) => ({
+const RemovePromptIcon = styled(Icon)(({isHover}: StyledProps) => ({
   color: PALETTE.TEXT.LIGHT,
   cursor: 'pointer',
   display: 'block',
-  fontSize: ICON_SIZE_FA_1X,
+  fontSize: MD_ICONS_SIZE_18,
   lineHeight,
   marginLeft: 'auto',
   opacity: isHover ? 1 : 0
@@ -111,7 +111,9 @@ class TemplatePromptItem extends Component<Props, State> {
           prompts={prompts}
         />
         {canRemove && (
-          <RemovePromptIcon isHover={isHover} name={'times-circle'} onClick={this.removePrompt} />
+          <RemovePromptIcon isHover={isHover} onClick={this.removePrompt}>
+            cancel
+          </RemovePromptIcon>
         )}
       </PromptItem>
     )
