@@ -27,7 +27,9 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import startStage_ from 'universal/utils/startStage_'
 import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 import unlockNextStages from 'universal/utils/unlockNextStages'
+import initBotScript from './initBotScript'
 import initDB, {demoMeetingId, demoTeamId, demoViewerId} from './initDB'
+import LocalAtmosphere from './LocalAtmosphere'
 
 interface DemoEvents {
   team: IEditReflectionPayload | ICreateReflectionPayload
@@ -38,8 +40,11 @@ type GQLDemoEmitter = {new (): StrictEventEmitter<EventEmitter, DemoEvents>}
 class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   db: ReturnType<typeof initDB>
   getTempId = (prefix) => `${prefix}${this.db._tempID++}`
+  pendingBotTimeout: number | undefined
+  pendingBotAction?: (() => Array<any>) | undefined
+  flushBotActions = false
 
-  constructor () {
+  constructor (public atmosphere: LocalAtmosphere) {
     super()
     const demoDB = window.localStorage.getItem('retroDemo') || ''
     let validDB
@@ -50,7 +55,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
     const isStale = true
     // const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
-    this.db = isStale ? initDB() : validDB
+    // this.atmosphere = atmosphere
+    this.db = isStale ? initDB(initBotScript()) : validDB
   }
 
   getUnlockedStages (stageIds: Array<string>) {
@@ -69,14 +75,37 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     const facilitatorStageId = this.db.newMeeting.facilitatorStageId as string
     const mutations = this.db._botScript[facilitatorStageId]
     const nextMutaton = mutations.shift()
-    if (nextMutaton) {
-      const {delay, op, variables, botId} = nextMutaton
-      setTimeout(() => {
-        this.ops[op](variables, botId)
-        this.startBot()
-      }, delay)
+    if (!nextMutaton) {
+      return
     }
+    const {delay, op, variables, botId} = nextMutaton
+    this.pendingBotAction = () => {
+      this.ops[op](variables, botId)
+      return mutations
+    }
+    this.pendingBotTimeout = window.setTimeout(() => {
+      this.pendingBotTimeout = undefined
+      if (this.pendingBotAction) {
+        this.pendingBotAction()
+        this.pendingBotAction = undefined
+      }
+      this.startBot()
+    }, delay)
   }
+
+  finishBotActions = () =>
+    new Promise((resolve) => {
+      window.clearTimeout(this.pendingBotTimeout)
+      this.pendingBotTimeout = undefined
+      if (this.pendingBotAction) {
+        const mutationsToFlush = this.pendingBotAction()
+        mutationsToFlush.forEach((mutation) => {
+          this.ops[mutation.op](mutation.variables, mutation.botId)
+        })
+        this.pendingBotAction = undefined
+        resolve()
+      }
+    })
 
   ops = {
     GitHubReposMenuRootQuery: () => {
@@ -115,18 +144,21 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         }
       }
     },
-    CreateReflectionMutation: ({input: {content, retroPhaseItemId, sortOrder}}, userId) => {
+    CreateReflectionMutation: (
+      {input: {content, retroPhaseItemId, sortOrder, id, groupId}},
+      userId
+    ) => {
       const now = new Date().toJSON()
       const reflectPhase = this.db.newMeeting.phases![1] as IReflectPhase
       const phaseItem = reflectPhase.reflectPrompts.find((prompt) => prompt.id === retroPhaseItemId)
-      const reflectionGroupId = this.getTempId('refGroup')
-      const reflectionId = this.getTempId('ref')
+      const reflectionGroupId = groupId || this.getTempId('refGroup')
+      const reflectionId = id || this.getTempId('ref')
       const reflection = {
         __typename: 'RetroReflection',
         id: reflectionId,
         reflectionId,
         createdAt: now,
-        creatorId: demoViewerId,
+        creatorId: userId,
         content,
         dragContext: null,
         editorIds: [],
@@ -250,10 +282,16 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       let unlockedStageIds
       const meeting = this.db.newMeeting
       const {phases} = meeting
+      let runBot = false
       if (completedStageId) {
         const completedStageRes = findStageById(phases, completedStageId)
         const {stage} = completedStageRes
         if (!stage.isComplete) {
+          runBot = true
+          if (this.pendingBotTimeout) {
+            this.flushBotActions = true
+            await this.finishBotActions()
+          }
           stage.isComplete = true
           stage.endAt = new Date().toJSON()
           phaseCompleteData = await handleCompletedDemoStage(this.db, stage)
@@ -306,6 +344,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       if (userId !== demoViewerId) {
         this.emit(TEAM, data)
       }
+      if (runBot) {
+        this.startBot()
+      }
       return {navigateMeeting: data}
     },
     SetPhaseFocusMutation: ({focusedPhaseItemId}, userId) => {
@@ -324,21 +365,27 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       return {setPhaseFocus: data}
     },
-    StartDraggingReflectionMutation: ({reflectionId, initialCoords}, userId) => {
+    StartDraggingReflectionMutation: ({reflectionId, initialCoords, dragId}, userId) => {
+      let dragCoords = initialCoords
+      if (userId !== demoViewerId) {
+        const {itemCache} = this.atmosphere.getMasonry()
+        const cachedItem = itemCache[reflectionId]
+        const bbox = (cachedItem.el as HTMLDivElement).getBoundingClientRect()
+        dragCoords = {x: bbox.left, y: bbox.top}
+      }
       const data = {
         error: null,
         teamId: demoTeamId,
         meetingId: demoMeetingId,
-        meeting: this.db.newMeeting,
         reflectionId,
         reflection: this.db.reflections.find((reflection) => reflection.id === reflectionId),
         dragContext: {
-          id: this.getTempId('drag'),
+          id: dragId || this.getTempId('drag'),
           dragUserId: userId,
           dragUser: this.db.users.find((user) => user.id === userId),
-          dragCoords: initialCoords
+          dragCoords
         },
-        __typename: 'StartDraggingReflectionMutation'
+        __typename: 'StartDraggingReflectionPayload'
       }
       if (userId !== demoViewerId) {
         this.emit(TEAM, data)
@@ -467,6 +514,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
 
       const data = {
+        __typename: 'EndDraggingReflectionPayload',
         meetingId: demoMeetingId,
         meeting: this.db.newMeeting,
         reflectionId,
@@ -477,7 +525,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         ),
         oldReflectionGroupId,
         oldReflectionGroup,
-        userId: demoViewerId,
+        userId,
         dropTargetType,
         dropTargetId,
         dragId
@@ -490,8 +538,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     UpdateDragLocationMutation: ({input}, userId) => {
       const {teamId, ...inputData} = input
-
-      const data = {...inputData, userId, __typename: 'UpdateDragLocationMutation'}
+      const data = {...inputData, userId, __typename: 'UpdateDragLocationPayload'}
       if (userId !== demoViewerId) {
         this.emit(TEAM, data)
       }
@@ -858,7 +905,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }
   }
 
-  fetch (opName: string, variables: Variables) {
+  fetch = async (opName: string, variables: Variables) => {
     const resolve = this.ops[opName]
     if (!resolve) {
       console.log('op not found', opName)
@@ -867,7 +914,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
     }
     return {
-      data: resolve(variables, demoViewerId)
+      data: await resolve(variables, demoViewerId)
     }
   }
 }

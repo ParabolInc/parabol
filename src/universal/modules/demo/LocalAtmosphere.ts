@@ -16,7 +16,7 @@ import ClientGraphQLServer from './ClientGraphQLServer'
 
 export default class LocalAtmosphere extends Environment {
   eventEmitter = new EventEmitter()
-  clientGraphQLServer = new ClientGraphQLServer()
+  clientGraphQLServer = new ClientGraphQLServer(this)
   viewerId = 'demoUser'
 
   constructor () {
@@ -34,7 +34,7 @@ export default class LocalAtmosphere extends Environment {
   }
 
   fetchLocal: FetchFunction = async (operation, variables) => {
-    const res = this.clientGraphQLServer.fetch(operation.name, variables) as any
+    const res = (await this.clientGraphQLServer.fetch(operation.name, variables)) as any
     if (res.endNewMeeting && res.endNewMeeting.isKill) {
       window.localStorage.removeItem('retroDemo')
     } else {

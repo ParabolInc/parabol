@@ -194,8 +194,15 @@ class NewMeeting extends Component<Props> {
     } = findStageById(phases, stageId)
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) return
-    updateLocalStage(atmosphere, meetingId, stageId)
     if (isViewerFacilitator && isNavigableByFacilitator) {
+      const handleCompleted = (res, errors) => {
+        console.log('handle completed')
+        if (onCompleted) {
+          onCompleted(res, errors)
+        }
+        // only redirect after the data is ready (required for the demo)
+        updateLocalStage(atmosphere, meetingId, stageId)
+      }
       const {
         stage: {isComplete}
       } = findStageById(phases, facilitatorStageId)
@@ -207,7 +214,9 @@ class NewMeeting extends Component<Props> {
         variables.completedStageId = facilitatorStageId
       }
       // submitMutation();
-      NavigateMeetingMutation(atmosphere, variables, onError, onCompleted)
+      NavigateMeetingMutation(atmosphere, variables, onError, handleCompleted)
+    } else {
+      updateLocalStage(atmosphere, meetingId, stageId)
     }
   }
 

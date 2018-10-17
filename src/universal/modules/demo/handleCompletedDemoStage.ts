@@ -46,6 +46,7 @@ const entityLookup = {
 }
 
 const getDemoEntities = async (texts) => {
+  if (texts.length === 0) return []
   const res = await window.fetch('/get-demo-entities', {
     method: 'POST',
     headers: {
@@ -65,10 +66,12 @@ const addEntitiesToReflections = async (db) => {
     extractTextFromDraftString(reflection.content)
   )
 
-  const computedEntities = await getDemoEntities(contentTexts)
-  userReflections.forEach((reflection, idx) => {
-    reflection.entities = computedEntities[idx]
-  })
+  if (contentTexts.length > 0) {
+    const computedEntities = await getDemoEntities(contentTexts)
+    userReflections.forEach((reflection, idx) => {
+      reflection.entities = computedEntities[idx]
+    })
+  }
 
   db.reflections
     .filter((reflection) => reflection.creatorId !== demoViewerId)

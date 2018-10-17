@@ -261,55 +261,7 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
   } as Partial<IRetrospectiveMeeting>
 }
 
-const initBotScript = () => {
-  return {
-    reflectStage: [
-      {
-        op: 'EditReflectionMutation',
-        delay: 1000,
-        botId: 'bot1',
-        variables: {
-          phaseItemId: 'startId',
-          isEditing: true
-        }
-      },
-      {
-        op: 'EditReflectionMutation',
-        delay: 300,
-        botId: 'bot2',
-        variables: {
-          phaseItemId: 'startId',
-          isEditing: true
-        }
-      },
-      {
-        op: 'CreateReflectionMutation',
-        delay: 2000,
-        botId: 'bot1',
-        variables: {
-          input: {
-            content: `{"blocks":[{"key":"2t965","text":"I'd like to give our interns and junior staff more space to share their ideas & fresh thinking","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
-            retroPhaseItemId: 'startId',
-            sortOrder: 0
-          }
-        }
-      },
-      {
-        op: 'CreateReflectionMutation',
-        delay: 1000,
-        botId: 'bot2',
-        variables: {
-          input: {
-            content: `{"blocks":[{"key":"2t966","text":"Writing down our processes","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
-            retroPhaseItemId: 'startId',
-            sortOrder: 0
-          }
-        }
-      }
-    ]
-  }
-}
-const initDB = () => {
+const initDB = (botScript) => {
   const users = baseUsers.map(initDemoUser)
   const meetingMembers = users.map(initDemoMeetingMember)
   const teamMembers = users.map(initDemoTeamMember).map((teamMember, idx) => ({
@@ -338,7 +290,7 @@ const initDB = () => {
     users,
     _updatedAt: new Date(),
     _tempID: 1,
-    _botScript: initBotScript()
+    _botScript: botScript
   }
 }
 
