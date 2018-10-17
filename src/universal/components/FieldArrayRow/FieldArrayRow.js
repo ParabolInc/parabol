@@ -74,7 +74,7 @@ const FieldArrayRow = (props) => {
               {hoverRow === index && (
                 <IconButton
                   aria-label={removalAriaLabel}
-                  icon='times-circle'
+                  icon='cancel'
                   onClick={() => fields.remove(index)}
                   palette='warm'
                 />

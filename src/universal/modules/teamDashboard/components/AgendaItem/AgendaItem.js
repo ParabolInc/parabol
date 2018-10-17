@@ -4,13 +4,13 @@ import {DragSource as dragSource} from 'react-dnd'
 import {createFragmentContainer} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup'
-import ui from 'universal/styles/ui'
 import {meetingSidebarGutter} from 'universal/styles/meeting'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback'
 import styled, {css} from 'react-emotion'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
 import IconButton from 'universal/components/IconButton'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const taskSource = {
   beginDrag (props) {
@@ -20,20 +20,16 @@ const taskSource = {
   }
 }
 
-const lineHeight = ui.navTopicLineHeight
-
 const DeleteIconButton = styled(IconButton)(({agendaLength, disabled}) => ({
   display: 'block',
-  height: '1.5rem',
   // we can make the position of the del (x) more centered when there’s a low number of agenda items
   left: agendaLength < 10 ? '.8125rem' : meetingSidebarGutter,
-  lineHeight,
+  lineHeight: MD_ICONS_SIZE_18,
   opacity: 0,
   position: 'absolute',
-  top: '.5625rem',
+  top: '.6875rem',
   transition: 'opacity .1s ease-in',
-  visibility: disabled && 'hidden',
-  width: ui.iconSize
+  visibility: disabled && 'hidden'
 }))
 
 const AvatarBlock = styled('div')({
@@ -146,7 +142,7 @@ class AgendaItem extends Component {
               aria-label={deleteLabel}
               agendaLength={agendaLength}
               disabled={disabled}
-              icon='times-circle'
+              icon='cancel'
               onClick={handleRemove}
               palette='warm'
             />

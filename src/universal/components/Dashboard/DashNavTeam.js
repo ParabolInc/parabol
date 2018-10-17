@@ -1,20 +1,18 @@
 import PropTypes from 'prop-types'
-import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import DashNavItem from 'universal/components/Dashboard/DashNavItem'
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const WarningIcon = styled(FontAwesome)({
+const WarningIcon = styled(Icon)({
   color: appTheme.palette.light,
-  fontSize: `${ui.iconSize} !important`,
+  fontSize: MD_ICONS_SIZE_18,
   position: 'absolute',
-  right: '100%',
-  textAlign: 'center',
-  width: 24
+  left: '.625rem'
 })
 
 const IconAndLink = styled('div')({
@@ -27,8 +25,12 @@ const DashNavTeam = (props) => {
   const {team} = props
   return (
     <IconAndLink>
-      {!team.isPaid && <WarningIcon name='warning' title='Team is disabled for nonpayment' />}
-      <DashNavItem href={`/team/${team.id}`} label={team.name} icon={team.isPaid && 'group'} />
+      {!team.isPaid && <WarningIcon title='Team is disabled for nonpayment'>warning</WarningIcon>}
+      <DashNavItem
+        href={`/team/${team.id}`}
+        label={team.name}
+        icon={team.isPaid ? 'group' : undefined}
+      />
     </IconAndLink>
   )
 }

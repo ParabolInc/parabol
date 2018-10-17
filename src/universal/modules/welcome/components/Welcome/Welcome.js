@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer} from 'react-relay'
 import {Link} from 'react-router-dom'
 import Helmet from 'react-helmet'
@@ -13,6 +12,7 @@ import WelcomeHeader from 'universal/modules/welcome/components/WelcomeHeader/We
 import WelcomeLayout from 'universal/modules/welcome/components/WelcomeLayout/WelcomeLayout'
 import styled from 'react-emotion'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from 'universal/utils/constants'
+import Icon from 'universal/components/Icon'
 
 const Signout = styled(Link)({
   alignSelf: 'flex-end'
@@ -41,7 +41,7 @@ const Welcome = (props) => {
         {page === 3 && <Step3InviteTeam {...props} />}
       </WelcomeContent>
       <Signout title={SIGNOUT_LABEL} to={`/${SIGNOUT_SLUG}`}>
-        <FontAwesome name='sign-out' />
+        <Icon>exit_to_app</Icon>
       </Signout>
     </WelcomeLayout>
   )

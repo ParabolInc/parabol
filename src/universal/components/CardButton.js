@@ -3,9 +3,12 @@ import ui from 'universal/styles/ui'
 import BaseButton from 'universal/components/BaseButton'
 
 const CardButton = styled(BaseButton)({
+  alignItems: 'center',
   borderRadius: '4em',
   color: ui.palette.dark,
+  display: 'flex',
   height: ui.cardButtonHeight,
+  justifyContent: 'center',
   lineHeight: ui.cardContentLineHeight,
   minWidth: ui.cardButtonHeight,
   opacity: '.5',

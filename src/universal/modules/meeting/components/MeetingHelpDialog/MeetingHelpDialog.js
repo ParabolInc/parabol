@@ -16,6 +16,7 @@ type Props = {
 }
 
 const StyledButton = styled(FloatingActionButton)({
+  height: '2rem',
   paddingLeft: 0,
   paddingRight: 0,
   width: '2rem'
@@ -34,7 +35,7 @@ const targetAnchor = {
 const MeetingHelpDialog = ({phase}: Props) => {
   const iconButtonToggle = (
     <StyledButton palette='white'>
-      <IconLabel icon='question' />
+      <IconLabel icon='help_outline' />
     </StyledButton>
   )
 

@@ -35,7 +35,7 @@ const MeetingAgendaFirstCall = (props) => {
                 <BounceBlock animationDelay='30s'>
                   <PrimaryButton size='large' onClick={gotoNext}>
                     <IconLabel
-                      icon='arrow-circle-right'
+                      icon='arrow_forward'
                       iconAfter
                       iconLarge
                       label={`Let’s begin: ${phaseName}`}

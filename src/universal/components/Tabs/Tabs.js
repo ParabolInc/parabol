@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import React, {Children, cloneElement} from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 
+// TODO: update this component to emotion when we start using MD style tabs again (TA)
+
 const Tabs = (props) => {
   const {activeKey, children, styles} = props
   const tabWidth = 100 / Children.count(children)

@@ -8,9 +8,10 @@
 import React from 'react'
 import tinycolor from 'tinycolor2'
 import styled from 'react-emotion'
-import FontAwesome from 'react-fontawesome'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 type Props = {
   message: string
@@ -28,15 +29,15 @@ const ErrorAlertWrapper = styled('div')({
   padding: '.5rem 1rem'
 })
 
-const SpacedIcon = styled(FontAwesome)({
-  fontSize: ui.iconSize,
+const SpacedIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   marginRight: '.5rem'
 })
 
 const ErrorAlert = ({message}: Props) => {
   return (
     <ErrorAlertWrapper role='alert'>
-      <SpacedIcon name='exclamation-circle' />
+      <SpacedIcon>warning</SpacedIcon>
       <span>{message}</span>
     </ErrorAlertWrapper>
   )

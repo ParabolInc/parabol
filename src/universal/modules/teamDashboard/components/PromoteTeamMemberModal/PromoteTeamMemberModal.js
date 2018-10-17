@@ -49,7 +49,7 @@ const PromoteTeamMemberModal = (props) => {
         {'This cannot be undone!'}
       </Type>
       <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
-        <IconLabel icon='arrow-circle-right' iconAfter label={`Yes, promote ${preferredName}`} />
+        <IconLabel icon='arrow_forward' iconAfter label={`Yes, promote ${preferredName}`} />
       </StyledButton>
     </DashModal>
   )

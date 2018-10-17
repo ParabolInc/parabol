@@ -6,7 +6,8 @@ import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker'
 import {createFragmentContainer} from 'react-relay'
 import {shortMonths} from 'universal/utils/makeDateString'
 import ui from 'universal/styles/ui'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import CardButton from 'universal/components/CardButton'
 import ms from 'ms'
 import tinycolor from 'tinycolor2'
@@ -36,10 +37,10 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDateBg,
       color: ui.dueDateColor,
       fontSize: 'inherit',
-      height: '1.125rem',
+      height: '1.375rem',
       lineHeight: '1rem',
       opacity: 1,
-      padding: '0 .1875rem',
+      padding: '0 .25rem 0 .0625rem',
       ':hover,:focus': {
         backgroundColor: darken(ui.dueDateBg, 6),
         color: darken(ui.dueDateColor, 6)
@@ -65,12 +66,12 @@ const Toggle = styled(CardButton)(
     }
 )
 
-const DueDateIcon = styled(StyledFontAwesome)({
-  fontSize: ui.iconSize
+const DueDateIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18
 })
 
 const DateString = styled('span')({
-  marginLeft: '0.25rem'
+  marginLeft: '0.125rem'
 })
 
 const originAnchor = {
@@ -115,7 +116,7 @@ const DueDateToggle = (props: Props) => {
   const {dueDate} = task
   const toggle = (
     <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} {...getDateInfo(dueDate)}>
-      <DueDateIcon name='clock-o' />
+      <DueDateIcon>access_time</DueDateIcon>
       {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
     </Toggle>
   )

@@ -11,15 +11,15 @@ import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpd
 import styled from 'react-emotion'
 import UpdateNewCheckInQuestionMutation from 'universal/mutations/UpdateNewCheckInQuestionMutation'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-
 import type {NewCheckInQuestion_team as Team} from '__generated__/NewCheckInQuestion_team.graphql'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const CogIcon = styled(StyledFontAwesome)(({canEdit, isEditing}) => ({
+const CogIcon = styled(Icon)(({canEdit, isEditing}) => ({
   color: ui.colorText,
   display: 'block',
   height: '1.5rem',
-  fontSize: '1rem',
+  fontSize: MD_ICONS_SIZE_18,
   verticalAlign: 'middle',
   marginLeft: '0.5rem',
   paddingTop: '.1875rem',
@@ -167,10 +167,14 @@ class NewCheckInQuestion extends Component<Props, State> {
             <div>
               {canEdit ? (
                 <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
-                  <CogIcon name='cog' canEdit={canEdit} isEditing={isEditing} />
+                  <CogIcon canEdit={canEdit} isEditing={isEditing}>
+                    settings
+                  </CogIcon>
                 </PlainButton>
               ) : (
-                <CogIcon name='cog' canEdit={canEdit} isEditing={isEditing} />
+                <CogIcon canEdit={canEdit} isEditing={isEditing}>
+                  settings
+                </CogIcon>
               )}
             </div>
           )}

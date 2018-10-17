@@ -78,8 +78,7 @@ class TeamSettings extends Component {
               <Row>
                 <div>{'This team is currently on a personal plan.'}</div>
                 <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
-                  {'Upgrade Team to '}
-                  <b>{PRO_LABEL}</b>
+                  {`Upgrade Team to ${PRO_LABEL}`}
                 </PrimaryButton>
               </Row>
             </Panel>

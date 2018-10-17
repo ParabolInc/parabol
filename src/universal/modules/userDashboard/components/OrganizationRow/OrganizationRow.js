@@ -80,7 +80,7 @@ const OrganizationRow = (props) => {
           </FlatButton>
         )}
         <FlatButton onClick={onRowClick}>
-          <IconLabel icon='cog' label='Settings' />
+          <IconLabel icon='settings' label='Settings' />
         </FlatButton>
       </RowActions>
     </Row>

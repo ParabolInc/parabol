@@ -5,9 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.15.0 2018-Oct-10
+
+### Added
+* Introduces Material Design icons (PR #2434)
+
+### Fixed
+* Fixed sidebar toggle in retro lobby (PR #2431)
+
+### Removed
+* Yanked serif typeface (PR #2433)
+
 ## v2.14.0 2018-Sep-26
 
-### Added 
+### Added
 * facilitator tooltip for focusing a reflection column
 
 ### Fixed

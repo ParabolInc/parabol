@@ -18,7 +18,7 @@ const TeamArchiveHeader = (props) => {
   return (
     <RootBlock>
       <DashSectionHeading icon='archive' label='Archived Tasks' margin='0 2rem 0 0' />
-      <DashNavControl icon='arrow-circle-left' label='Back to Team Tasks' onClick={goToTeamDash} />
+      <DashNavControl icon='arrow_back' label='Back to Team Tasks' onClick={goToTeamDash} />
     </RootBlock>
   )
 }

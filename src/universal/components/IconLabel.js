@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18, MD_ICONS_SIZE_24} from 'universal/styles/icons'
 
 const LabelBlock = styled('div')({
   alignItems: 'center',
@@ -21,11 +22,10 @@ const Label = styled('div')(({iconAfter, iconLarge}) => {
   }
 })
 
-const Icon = styled(StyledFontAwesome)(({iconAfter, iconColor, iconLarge}) => ({
+const StyledIcon = styled(Icon)(({iconAfter, iconColor, iconLarge}) => ({
   color: iconColor ? ui.palette[iconColor] : 'inherit',
   display: 'block',
-  fontSize: iconLarge ? ui.iconSize2x : ui.iconSize,
-  lineHeight: 'inherit',
+  fontSize: iconLarge ? MD_ICONS_SIZE_24 : MD_ICONS_SIZE_18,
   order: iconAfter && 2
 }))
 
@@ -33,7 +33,7 @@ const IconLabel = (props) => {
   const {icon, label} = props
   return (
     <LabelBlock>
-      <Icon name={icon} {...props} />
+      <StyledIcon {...props}>{icon}</StyledIcon>
       {label && <Label {...props}>{label}</Label>}
     </LabelBlock>
   )

@@ -70,6 +70,9 @@ const ItemLabel = styled('div')(({isComplete}) => ({
 }))
 
 const ItemMeta = styled('div')({
+  alignContent: 'center',
+  display: 'flex',
+  height: lineHeight,
   paddingLeft: '.25rem'
 })
 

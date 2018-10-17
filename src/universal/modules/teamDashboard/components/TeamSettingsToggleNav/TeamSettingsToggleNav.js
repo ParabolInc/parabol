@@ -17,13 +17,13 @@ const TeamSettingsToggleNav = (props) => {
   const items = [
     {
       label: 'Team',
-      icon: 'users',
+      icon: 'group',
       isActive: activeKey === '',
       onClick: makeOnClick()
     },
     {
       label: 'Integrations',
-      icon: 'puzzle-piece',
+      icon: 'extension',
       isActive: activeKey === 'integrations',
       onClick: makeOnClick('integrations')
     }

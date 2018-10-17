@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import Avatar from 'universal/components/Avatar/Avatar'
@@ -12,6 +11,8 @@ import styled, {css} from 'react-emotion'
 import LoadableStandardHubUserMenu from 'universal/components/LoadableStandardHubUserMenu'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import textOverflow from 'universal/styles/helpers/textOverflow'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -96,7 +97,8 @@ const BadgeBlock = styled('div')({
   right: '-.375rem'
 })
 
-const NotificationIcon = styled(StyledFontAwesome)({
+const NotificationIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   lineHeight: 'inherit',
   color: 'white'
 })
@@ -134,7 +136,7 @@ const StandardHub = (props) => {
         className={navLinkStyles}
         to='/me/notifications'
       >
-        <NotificationIcon name='bell' />
+        <NotificationIcon>notifications</NotificationIcon>
         {notificationsCount > 0 && (
           <BadgeBlock>
             <Badge value={notificationsCount} />

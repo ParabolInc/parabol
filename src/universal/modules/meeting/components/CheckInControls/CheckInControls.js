@@ -68,7 +68,7 @@ const CheckInControls = (props) => {
           onKeyDown={handleRightArrow(handleOnClickPresent)}
           innerRef={gotoNextRef}
         >
-          <IconLabel icon='check-circle' iconColor='green' iconLarge label={nextLabel} />
+          <IconLabel icon='check_circle' iconColor='green' iconLarge label={nextLabel} />
         </FlatButton>
       </BounceBlock>
       <FlatButton
@@ -77,7 +77,7 @@ const CheckInControls = (props) => {
         key={`checkIn${localPhaseItem}skipButton`}
         onClick={handleOnClickAbsent}
       >
-        <IconLabel icon='minus-circle' iconLarge iconColor='red' label={skipLabel} />
+        <IconLabel icon='remove_circle' iconLarge iconColor='red' label={skipLabel} />
       </FlatButton>
     </ButtonBlock>
   )

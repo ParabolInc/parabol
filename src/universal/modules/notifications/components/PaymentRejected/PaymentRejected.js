@@ -24,7 +24,7 @@ const PaymentRejected = (props) => {
   }
   return (
     <Row compact>
-      <IconAvatar icon='credit-card' size='small' />
+      <IconAvatar icon='credit_card' size='small' />
       <div className={css(defaultStyles.message)}>
         {'Your '}
         <b>{brand}</b>

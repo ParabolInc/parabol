@@ -1,28 +1,23 @@
 import React from 'react'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const modalCopyBase = {
-  fontSize: '.9375rem',
-  lineHeight: '2rem',
-  margin: 0
-}
-
-const StyledIcon = styled(StyledFontAwesome)({
-  color: ui.linkColor,
-  fontSize: ui.iconSize,
-  marginRight: '.5rem',
-  opacity: 0.5,
-  width: '1.125rem'
-})
-
-const BulletIcon = styled(StyledIcon)({
+const StyledIcon = styled(Icon)({
   color: ui.palette.green,
+  fontSize: MD_ICONS_SIZE_18,
+  marginRight: '.5rem',
   opacity: 1
 })
 
-const ModalCopy = styled('p')({...modalCopyBase})
+const ModalCopy = styled('p')({
+  alignItems: 'center',
+  display: 'flex',
+  fontSize: '.9375rem',
+  lineHeight: '2rem',
+  margin: 0
+})
 
 const benefits = [
   'Run Unlimited Retrospective Meetings',
@@ -34,7 +29,7 @@ const UpgradeBenefits = () => {
   return benefits.map((benefit, idx) => {
     return (
       <ModalCopy key={`modalBulletCopy-${idx + 1}`}>
-        <BulletIcon name='check-circle' />
+        <StyledIcon>check_circle</StyledIcon>
         {benefit}
       </ModalCopy>
     )
