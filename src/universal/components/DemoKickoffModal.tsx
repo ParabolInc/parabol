@@ -8,7 +8,7 @@ interface Props {
   closePortal: () => void
 }
 
-const buttonWidth = '16rem'
+const buttonWidth = '18rem'
 
 const ModalBox = styled('div')({
   alignItems: 'center',
