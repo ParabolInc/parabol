@@ -418,6 +418,98 @@ const initBotScript = () => {
           dragId: 'botDrag4'
         }
       }
+    ],
+    voteStage: [
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 1000,
+        botId: 'bot1',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup1'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 100,
+        botId: 'bot1',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup1'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 100,
+        botId: 'bot1',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup1'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 1000,
+        botId: 'bot1',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup2'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 1000,
+        botId: 'bot1',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup2'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 100,
+        botId: 'bot2',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup6'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 100,
+        botId: 'bot2',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup6'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 100,
+        botId: 'bot2',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup6'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 1000,
+        botId: 'bot2',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup7'
+        }
+      },
+      {
+        op: 'VoteForReflectionGroupMutation',
+        delay: 1000,
+        botId: 'bot2',
+        variables: {
+          isUnvote: false,
+          reflectionGroupId: 'botGroup7'
+        }
+      }
     ]
   }
 }

@@ -147,10 +147,15 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
     const stage = phase.stages[stageIdx]
     const stageId = stage && stage.id
-    console.log('isV', viewerId, facilitatorUserId)
     const isViewerFacilitator = viewerId === facilitatorUserId
     const itemStage = findStageById(phases, stageId)
-    if (!itemStage) return false
+    if (!itemStage) {
+      // useful for e.g. /discuss/2, especially on the demo
+      const nextUrl = teamId ? `/${meetingSlug}/${teamId}` : '/retrospective-demo/reflect'
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+      history.replace(nextUrl)
+      return false
+    }
     const {
       stage: {isNavigable, isNavigableByFacilitator}
     } = itemStage

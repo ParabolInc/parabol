@@ -24,12 +24,14 @@ import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
 import findStageById from 'universal/utils/meetings/findStageById'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import sleep from 'universal/utils/sleep'
 import startStage_ from 'universal/utils/startStage_'
 import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 import unlockNextStages from 'universal/utils/unlockNextStages'
 import initBotScript from './initBotScript'
 import initDB, {demoMeetingId, demoTeamId, demoViewerId} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
+import ms from 'ms'
 
 interface DemoEvents {
   team: IEditReflectionPayload | ICreateReflectionPayload
@@ -42,7 +44,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   getTempId = (prefix) => `${prefix}${this.db._tempID++}`
   pendingBotTimeout: number | undefined
   pendingBotAction?: (() => Array<any>) | undefined
-  flushBotActions = false
 
   constructor (public atmosphere: LocalAtmosphere) {
     super()
@@ -53,9 +54,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     } catch (e) {
       // noop
     }
-    const isStale = true
-    // const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
-    // this.atmosphere = atmosphere
+    // const isStale = true
+    const isStale = !validDB || new Date(validDB._updatedAt).getTime() < Date.now() - ms('5m')
     this.db = isStale ? initDB(initBotScript()) : validDB
   }
 
@@ -93,19 +93,32 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     }, delay)
   }
 
-  finishBotActions = () =>
-    new Promise((resolve) => {
-      window.clearTimeout(this.pendingBotTimeout)
-      this.pendingBotTimeout = undefined
-      if (this.pendingBotAction) {
-        const mutationsToFlush = this.pendingBotAction()
-        mutationsToFlush.forEach((mutation) => {
-          this.ops[mutation.op](mutation.variables, mutation.botId)
-        })
-        this.pendingBotAction = undefined
-        resolve()
+  finishBotActions = async () => {
+    window.clearTimeout(this.pendingBotTimeout)
+    this.pendingBotTimeout = undefined
+    if (!this.pendingBotAction) return
+    const mutationsToFlush = this.pendingBotAction()
+    if (this.db.newMeeting.facilitatorStageId !== 'groupStage') {
+      mutationsToFlush.forEach((mutation) => {
+        this.ops[mutation.op](mutation.variables, mutation.botId)
+      })
+      mutationsToFlush.length = 0
+      this.pendingBotAction = undefined
+    } else {
+      const mutationThunks = [] as Array<() => Promise<any>>
+      mutationsToFlush.forEach((mutation) => {
+        if (mutation.op === 'UpdateDragLocationMutation') return
+        const thunk = () => this.ops[mutation.op](mutation.variables, mutation.botId)
+        mutationThunks.push(thunk)
+        if (mutation.op === 'EndDraggingReflectionMutation') {
+          mutationThunks.push(async () => sleep(1010))
+        }
+      })
+      for (const thunk of mutationThunks) {
+        await thunk()
       }
-    })
+    }
+  }
 
   ops = {
     GitHubReposMenuRootQuery: () => {
@@ -117,12 +130,15 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
     },
     NewMeetingSummaryRootQuery: () => {
-      console.log('team', this.db.team)
-
       return {
         viewer: {
           ...this.db.users[0],
-          newMeeting: this.db.newMeeting
+          newMeeting: {
+            ...this.db.newMeeting,
+            reflectionGroups: this.db.newMeeting.reflectionGroups!.filter(
+              (group) => group.voterIds.length > 0
+            )
+          }
         }
       }
     },
@@ -171,7 +187,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         retroPhaseItemId,
         sortOrder: 0,
         updatedAt: now
-      } as Partial<IRetroReflection>
+      } as Partial<IRetroReflection & {isHumanTouched: boolean}>
 
       const reflectionGroup = {
         __typename: 'RetroReflectionGroup',
@@ -288,10 +304,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         const {stage} = completedStageRes
         if (!stage.isComplete) {
           runBot = true
-          if (this.pendingBotTimeout) {
-            this.flushBotActions = true
-            await this.finishBotActions()
-          }
           stage.isComplete = true
           stage.endAt = new Date().toJSON()
           phaseCompleteData = await handleCompletedDemoStage(this.db, stage)
@@ -367,18 +379,22 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     },
     StartDraggingReflectionMutation: ({reflectionId, initialCoords, dragId}, userId) => {
       let dragCoords = initialCoords
+      const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
       if (userId !== demoViewerId) {
-        const {itemCache} = this.atmosphere.getMasonry()
+        if (reflection.isHumanTouched) return
+        const {itemCache} = (this.atmosphere as any).getMasonry()
         const cachedItem = itemCache[reflectionId]
         const bbox = (cachedItem.el as HTMLDivElement).getBoundingClientRect()
         dragCoords = {x: bbox.left, y: bbox.top}
+      } else {
+        reflection.isHumanTouched = true
       }
       const data = {
         error: null,
         teamId: demoTeamId,
         meetingId: demoMeetingId,
         reflectionId,
-        reflection: this.db.reflections.find((reflection) => reflection.id === reflectionId),
+        reflection,
         dragContext: {
           id: dragId || this.getTempId('drag'),
           dragUserId: userId,
@@ -399,6 +415,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const now = new Date().toJSON()
       let newReflectionGroupId
       const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
+      if (userId !== demoViewerId) {
+        if (!reflection || reflection.isHumanTouched) return undefined
+      }
       const {reflectionGroupId: oldReflectionGroupId} = reflection
       const oldReflectionGroup = this.db.reflectionGroups.find(
         (group) => group.id === oldReflectionGroupId
@@ -540,6 +559,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const {teamId, ...inputData} = input
       const data = {...inputData, userId, __typename: 'UpdateDragLocationPayload'}
       if (userId !== demoViewerId) {
+        const {sourceId} = inputData
+        const reflection = this.db.reflections.find((reflection) => reflection.id === sourceId)
+        if (!reflection || reflection.isHumanTouched) return undefined
         this.emit(TEAM, data)
       }
       return {updateDragLocation: data}
@@ -640,9 +662,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       return {updateReflectionGroupTitle: data}
     },
     VoteForReflectionGroupMutation: ({isUnvote, reflectionGroupId}, userId) => {
-      const reflectionGroup = this.db.reflectionGroups.find(
-        (group) => group.id === reflectionGroupId
-      )!
+      const reflectionGroup =
+        this.db.reflectionGroups.find((group) => group.id === reflectionGroupId) ||
+        this.db.reflectionGroups.find((group) => Boolean(group.isActive))
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
       const voterIds = reflectionGroup.voterIds!
       const now = new Date().toJSON()
@@ -672,7 +694,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         })
       }
       reflectionGroup.voteCount = voterIds.length
-      reflectionGroup.viewerVoteCount = voterIds.filter((id) => id === userId).length
+      reflectionGroup.viewerVoteCount = voterIds.filter((id) => id === demoViewerId).length
       const voteCount = this.db.reflectionGroups.reduce(
         (sum, group) => sum + group.voterIds!.length,
         0
@@ -691,13 +713,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
 
       const data = {
-        __typename: 'VoteForReflectionGroupMutation',
+        __typename: 'VoteForReflectionGroupPayload',
         error: null,
         meeting: this.db.newMeeting,
         meetingId: demoMeetingId,
         meetingMember,
         userId,
-        reflectionGroupId,
+        reflectionGroupId: reflectionGroup.id,
         reflectionGroup,
         unlockedStageIds,
         unlockedStages: unlockedStageIds
@@ -712,7 +734,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     CreateTaskMutation: ({newTask}, userId) => {
       const now = new Date().toJSON()
       const teamMemberId = toTeamMemberId(demoTeamId, userId)
-      const taskId = this.getTempId('task')
+      const taskId = newTask.id || this.getTempId('task')
       const {reflectionGroupId, sortOrder, status} = newTask
       const content = newTask.content || makeEmptyStr()
       const {entityMap} = JSON.parse(content)
@@ -750,13 +772,13 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       meetingMember.tasks.push(task as any)
       reflectionGroup.tasks!.push(task as any)
       const data = {
-        __typename: 'CreateTaskMutation',
+        __typename: 'CreateTaskPayload',
         error: null,
         task,
         involvementNotification: null
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(TASK, data)
       }
       return {createTask: data}
     },
@@ -770,7 +792,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isEditing
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(TASK, data)
       }
       return {editTask: data}
     },
@@ -821,7 +843,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       })
 
       const data = {
-        __typename: 'UpdateTaskMutation',
+        __typename: 'UpdateTaskPayload',
         error: null,
         task,
         privatizedTaskId: null,
@@ -829,7 +851,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         removedNotification: null
       }
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(TASK, data)
       }
       return {updateTask: data}
     },
@@ -842,7 +864,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       reflectionGroup.tasks!.splice(reflectionGroup.tasks!.indexOf(task as any), 1)
       const data = {error: null, task, involvementNotification: null}
       if (userId !== demoViewerId) {
-        this.emit(TEAM, data)
+        this.emit(TASK, data)
       }
       return {deleteTask: data}
     },
@@ -850,7 +872,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       const task = this.db.tasks.find((task) => task.id === taskId)!
       task.dueDate = dueDate
 
-      const data = {__typename: 'UpdateTaskDueDateMutation', error: null, task}
+      const data = {__typename: 'UpdateTaskDueDatePayload', error: null, task}
       if (userId !== demoViewerId) {
         this.emit(TASK, data)
       }
@@ -896,7 +918,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         team: this.db.team,
         teamId: demoTeamId,
         isKill: !currentStage,
-        __typename: 'EndNewMeetingMutation'
+        __typename: 'EndNewMeetingPayload'
       }
       if (userId !== demoViewerId) {
         this.emit(TEAM, data)

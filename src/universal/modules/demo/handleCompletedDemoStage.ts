@@ -1,9 +1,10 @@
 import shortid from 'shortid'
-import {DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
+import {ACTIVE, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
 import extractTextFromDraftString from 'universal/utils/draftjs/extractTextFromDraftString'
 import makeDiscussionStage from 'universal/utils/makeDiscussionStage'
 import mapGroupsToStages from 'universal/utils/makeGroupsToStages'
 import {demoMeetingId, demoViewerId} from './initDB'
+import taskLookup from './taskLookup'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -94,6 +95,52 @@ const addDefaultGroupTitles = (db) => {
   return {meetingId: demoMeetingId, reflectionGroupIds}
 }
 
+const addStageToBotScript = (stageId, db, reflectionGroupId) => {
+  const reflectionGroup = db.reflectionGroups.find((group) => group.id === reflectionGroupId)
+  const {reflections} = reflectionGroup
+  const stageTasks = [] as Array<string>
+  reflections.forEach((reflection) => {
+    const tasks = taskLookup[reflection.id]
+    if (!tasks) return
+    stageTasks.push(...tasks)
+  })
+  const ops = [] as Array<any>
+  stageTasks.forEach((taskContent, idx) => {
+    const taskId = `botTask${stageId}:${idx}`
+    const botId = idx % 2 === 0 ? 'bot2' : 'bot1'
+    ops.push(
+      ...[
+        {
+          op: 'CreateTaskMutation',
+          delay: 1000,
+          botId,
+          variables: {
+            newTask: {
+              id: taskId,
+              // content: taskContent,
+              sortOrder: idx,
+              status: ACTIVE,
+              reflectionGroupId
+            }
+          }
+        },
+        {
+          op: 'UpdateTaskMutation',
+          delay: 2000,
+          botId,
+          variables: {
+            updatedTask: {
+              id: taskId,
+              content: taskContent
+            }
+          }
+        }
+      ]
+    )
+  })
+  db._botScript[stageId] = ops
+}
+
 const addDiscussionTopics = (db) => {
   const meeting = db.newMeeting
   const {id: meetingId, phases} = meeting
@@ -105,6 +152,7 @@ const addDiscussionTopics = (db) => {
   const nextDiscussStages = importantReflectionGroups.map((reflectionGroup, idx) => {
     const id = idx === 0 ? placeholderStage.id : shortid.generate()
     const discussStage = makeDiscussionStage(reflectionGroup.id, meetingId, idx, id)
+    addStageToBotScript(id, db, reflectionGroup.id)
     return Object.assign(discussStage, {
       __typename: 'RetroDiscussStage',
       reflectionGroup

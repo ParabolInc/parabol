@@ -282,7 +282,7 @@ const initDB = (botScript) => {
     meetingMembers,
     newMeeting,
     organization: org,
-    reflections: [] as Array<Partial<IRetroReflection>>,
+    reflections: [] as Array<Partial<IRetroReflection & {isHumanTouched: boolean}>>,
     reflectionGroups: newMeeting.reflectionGroups as Array<Partial<IRetroReflectionGroup>>,
     tasks: [] as Array<Partial<ITask>>,
     team,

@@ -44,6 +44,7 @@ import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {demoTeamId} from 'universal/modules/demo/initDB'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 const {Component} = React
@@ -171,7 +172,7 @@ class NewMeeting extends Component<Props> {
     EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
   }
 
-  gotoStageId = (
+  gotoStageId = async (
     stageId: string,
     _submitMutation?: WithMutationProps['submitMutation'],
     onError?: WithMutationProps['onError'],
@@ -181,7 +182,7 @@ class NewMeeting extends Component<Props> {
       atmosphere,
       submitting,
       viewer: {
-        team: {newMeeting}
+        team: {newMeeting, teamId}
       }
     } = this.props
     if (submitting) return
@@ -212,6 +213,9 @@ class NewMeeting extends Component<Props> {
       } as INavigateMeetingOnMutationArguments
       if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
         variables.completedStageId = facilitatorStageId
+      }
+      if (teamId === demoTeamId) {
+        await atmosphere.clientGraphQLServer.finishBotActions()
       }
       // submitMutation();
       NavigateMeetingMutation(atmosphere, variables, onError, handleCompleted)
@@ -257,7 +261,7 @@ class NewMeeting extends Component<Props> {
     } = nextStageRes
     const gotoNextDiv = this.gotoNextRef.current
     if (!options.isHotkey || currentStageRes.stage.isComplete) {
-      this.gotoStageId(nextStageId)
+      this.gotoStageId(nextStageId).catch()
     } else if (options.isHotkey) {
       gotoNextDiv && gotoNextDiv.focus()
     }
@@ -279,7 +283,7 @@ class NewMeeting extends Component<Props> {
     const {
       stage: {id: nextStageId}
     } = nextStageRes
-    this.gotoStageId(nextStageId)
+    this.gotoStageId(nextStageId).catch()
   }
 
   toggleSidebar = () => {

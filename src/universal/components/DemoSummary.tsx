@@ -7,7 +7,6 @@ class DemoSummary extends Component {
     window.localStorage.removeItem('retroDemo')
   }
   render () {
-    console.log('sum')
     return (
       <AtmosphereProvider isDemo>
         <NewMeetingSummaryRoot />
