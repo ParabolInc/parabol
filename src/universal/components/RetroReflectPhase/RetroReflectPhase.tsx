@@ -25,8 +25,15 @@ import DemoKickoffModalLoadable from 'universal/components/DemoKickoffModalLoada
 
 const minWidth = REFLECTION_WIDTH + 32
 
+const StyledOverflow = styled(Overflow)({
+  // using position helps with overflow of columns for small screens
+  position: 'relative'
+})
+
 const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemCount: number}) => ({
-  minWidth: phaseItemCount * minWidth
+  minWidth: phaseItemCount * minWidth,
+  // using position helps with overflow of columns for small screens
+  position: 'absolute'
 }))
 
 interface Props extends WithAtmosphereProps {
@@ -59,7 +66,7 @@ class RetroReflectPhase extends Component<Props> {
           queryVars={{isOpen}}
           toggle={<div>toggle</div>}
         />
-        <Overflow>
+        <StyledOverflow>
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
@@ -73,7 +80,7 @@ class RetroReflectPhase extends Component<Props> {
               />
             ))}
           </StyledWrapper>
-        </Overflow>
+        </StyledOverflow>
         {isFacilitating && (
           <MeetingControlBar>
             <FlatButton
