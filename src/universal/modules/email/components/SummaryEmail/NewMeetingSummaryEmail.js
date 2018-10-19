@@ -2,12 +2,14 @@
 import React from 'react'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import Body from '../../components/Body/Body'
-import ContactUs from '../../components/ContactUs/ContactUs'
-import EmptySpace from '../../components/EmptySpace/EmptySpace'
-import Footer from '../../components/Footer/Footer'
-import Layout from '../../components/Layout/Layout'
-import SummaryHeader from '../../components/SummaryHeader/SummaryHeader'
+import {emailPrimaryButtonStyle} from 'universal/styles/emails'
+import Body from 'universal/modules/email/components/Body/Body'
+import ContactUs from 'universal/modules/email/components/ContactUs/ContactUs'
+import EmptySpace from 'universal/modules/email/components/EmptySpace/EmptySpace'
+import Footer from 'universal/modules/email/components/Footer/Footer'
+import Layout from 'universal/modules/email/components/Layout/Layout'
+import SummaryHeader from 'universal/modules/email/components/SummaryHeader/SummaryHeader'
+import CreateAccountSection from 'universal/modules/email/components/CreateAccountSection/CreateAccountSection'
 import {Link} from 'react-router-dom'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import RetroQuickStats from 'universal/modules/email/components/QuickStats/RetroQuickStats'
@@ -47,25 +49,10 @@ const quickStatsBlock = {
   textAlign: 'center'
 }
 
-const textStyle = {
-  fontFamily: ui.emailFontFamily
-}
-
 const teamDashLinkStyle = {
-  ...textStyle,
-  backgroundColor: appTheme.palette.warm,
-  backgroundImage: ui.gradientWarm,
-  borderRadius: '4em',
-  color: '#ffffff',
-  cursor: 'pointer',
-  display: 'block',
+  ...emailPrimaryButtonStyle,
   fontSize: '14px',
-  fontWeight: 600,
-  lineHeight: '20px',
-  margin: '0 auto',
   padding: '6px 0',
-  textAlign: 'center',
-  textDecoration: 'none',
   width: '186px'
 }
 
@@ -86,6 +73,7 @@ const SummaryEmail = (props: Props) => {
     team: {name: teamName}
   } = meeting
   const meetingLabel = meetingTypeToLabel[meetingType]
+  const showCreateAccountCTA = false // set to true when demo (TA)
   return (
     <Layout>
       {referrer === 'email' && (
@@ -146,6 +134,12 @@ const SummaryEmail = (props: Props) => {
             </tr>
           </tbody>
         </table>
+        {showCreateAccountCTA && (
+          <React.Fragment>
+            <hr style={ruleStyle} />
+            <CreateAccountSection />
+          </React.Fragment>
+        )}
         {meetingType === RETROSPECTIVE && (
           <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />
         )}

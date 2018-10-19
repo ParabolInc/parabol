@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
+import {emailPrimaryButtonStyle} from 'universal/styles/emails'
 import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites'
 import Body from '../../components/Body/Body'
 import ContactUs from '../../components/ContactUs/ContactUs'
@@ -15,6 +16,7 @@ import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutco
 import {Link} from 'react-router-dom'
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy'
 import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE, ACTION} from 'universal/utils/constants'
+import CreateAccountSection from 'universal/modules/email/components/CreateAccountSection/CreateAccountSection'
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
@@ -129,20 +131,9 @@ const SummaryEmail = (props) => {
     verticalAlign: 'middle'
   }
   const teamDashLinkStyle = {
-    ...textStyle,
-    backgroundColor: appTheme.palette.warm,
-    backgroundImage: ui.gradientWarm,
-    borderRadius: '4em',
-    color: '#ffffff',
-    cursor: 'pointer',
-    display: 'block',
+    ...emailPrimaryButtonStyle,
     fontSize: '14px',
-    fontWeight: 600,
-    lineHeight: '20px',
-    margin: '0 auto',
     padding: '6px 0',
-    textAlign: 'center',
-    textDecoration: 'none',
     width: '186px'
   }
   const tipStyle = {
@@ -151,6 +142,7 @@ const SummaryEmail = (props) => {
     fontSize: '16px',
     lineHeight: '24px'
   }
+  const showCreateAccountCTA = false // flag to view here since new summary was borked (TA)
   return (
     <Layout>
       {referrer === 'email' && (
@@ -217,6 +209,12 @@ const SummaryEmail = (props) => {
             </tr>
           </tbody>
         </table>
+        {showCreateAccountCTA && (
+          <React.Fragment>
+            <hr style={ruleStyle} />
+            <CreateAccountSection />
+          </React.Fragment>
+        )}
         {membersWithOutcomes.map((member) => (
           <UserTasks member={member} key={`userTasks'${member.id}`} />
         ))}
