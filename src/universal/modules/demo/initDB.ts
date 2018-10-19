@@ -12,18 +12,21 @@ export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
 export const demoPictureURL = '/static/images/avatars/avatar-user@3x.png'
+export const botAvatar1 = '/static/images/avatars/demo/engineering-ellie-06.png'
+export const botAvatar2 = '/static/images/avatars/demo/intern-isabel-21.png'
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
 
 interface BaseUser {
   preferredName: string
   email: string
+  picture: string
 }
 
 const baseUsers = [
-  {preferredName: 'You', email: 'demoUser@parabol.co'},
-  {preferredName: 'Bot1', email: 'bot1@parabol.co'},
-  {preferredName: 'Bot2', email: 'bot2@parabol.co'}
+  {preferredName: 'You', email: 'demoUser@parabol.co', picture: demoPictureURL},
+  {preferredName: 'Engineering Ellie', email: 'engineering-ellie@parabol.co', picture: botAvatar1},
+  {preferredName: 'Intern Isabel', email: 'intern-isabel@parabol.co', picture: botAvatar2}
 ]
 
 const initMeetingSettings = () => {
@@ -41,7 +44,7 @@ const initMeetingSettings = () => {
   } as Partial<IRetrospectiveMeetingSettings>
 }
 
-const initDemoUser = ({preferredName, email}: BaseUser, idx: number) => {
+const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) => {
   const now = new Date().toJSON()
   const id = idx === 0 ? demoViewerId : `bot${idx}`
   return {
@@ -56,13 +59,13 @@ const initDemoUser = ({preferredName, email}: BaseUser, idx: number) => {
     lastLogin: now,
     lastSeenAt: now,
     // name: 'You',
-    picture: demoPictureURL,
+    picture: picture,
     preferredName,
     tms: [demoTeamId]
   }
 }
 
-const initDemoTeamMember = ({id: userId, preferredName}, idx) => {
+const initDemoTeamMember = ({id: userId, preferredName, picture}, idx) => {
   const teamMemberId = toTeamMemberId(demoTeamId, userId)
   return {
     __typename: 'TeamMember',
@@ -74,7 +77,7 @@ const initDemoTeamMember = ({id: userId, preferredName}, idx) => {
     isFacilitator: idx === 0,
     isLead: idx === 0,
     isSelf: idx === 0,
-    picture: demoPictureURL,
+    picture: picture,
     preferredName,
     teamId: demoTeamId,
     userId
