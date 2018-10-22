@@ -14,18 +14,21 @@ const linkLookup = {
 }
 
 const CheckInHelpMenu = (props) => {
-  const {closePortal, meetingType} = props
+  const {closePortal, isFacilitating, meetingType} = props
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>{phaseLabelLookup[CHECKIN]}</HelpMenuHeader>
       <HelpMenuCopy>
-        {
-          'The Social Check-In is an opportunity to quickly share some personal context with your team.'
-        }
+        The Social Check-In is an opportunity to quickly share some personal context with your team.
       </HelpMenuCopy>
       <HelpMenuCopy>
-        {'Avoid cross-talk so that everybody can have uninterrupted airtime.'}
+        Avoid cross-talk so that everybody can have uninterrupted airtime.
       </HelpMenuCopy>
+      {isFacilitating && (
+        <HelpMenuCopy>
+          <b>Facilitator</b>, mark people as “here” or “not here” using the bottom bar.
+        </HelpMenuCopy>
+      )}
       <HelpMenuLink copy='Learn More' href={linkLookup[meetingType]} />
     </HelpMenuContent>
   )

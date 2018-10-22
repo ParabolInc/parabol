@@ -7,19 +7,23 @@ import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
 
-const DiscussHelpMenu = ({closePortal}) => (
+const DiscussHelpMenu = ({closePortal, isFacilitating}) => (
   <HelpMenuContent closePortal={closePortal}>
     <HelpMenuHeader>{phaseLabelLookup[DISCUSS]}</HelpMenuHeader>
     <HelpMenuCopy>
-      {
-        'The goal of this phase is to identify next steps and capture them as task cards assigned to an owner.'
-      }
+      The goal of this phase is to identify next steps and capture them as task cards assigned to an
+      owner.
     </HelpMenuCopy>
     <HelpMenuCopy>
-      {
-        'Sometimes the next task is to schedule a time to discuss a topic more in depth at a later time.'
-      }
+      Sometimes the next task is to schedule a time to discuss a topic more in depth at a later
+      time.
     </HelpMenuCopy>
+    {isFacilitating && (
+      <HelpMenuCopy>
+        <b>Facilitator</b>, using the left nav you can go back, drag to reorder topics, or skip a
+        topic. You can also end the meeting at anytime in the bottom bar.
+      </HelpMenuCopy>
+    )}
     <HelpMenuLink
       copy='Learn More'
       href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss'

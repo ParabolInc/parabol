@@ -174,7 +174,7 @@ class ReflectionCard extends Component<Props, State> {
           onFocus={this.handleEditorFocus}
           handleChange={handleChange}
           handleReturn={this.handleReturn}
-          placeholder='My reflection thought…'
+          placeholder='My reflection… (press enter to add)'
           readOnly={readOnly || isTempId(reflectionId)}
           setEditorState={this.setEditorState}
           userSelect={userSelect}

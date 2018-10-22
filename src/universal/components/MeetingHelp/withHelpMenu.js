@@ -17,7 +17,7 @@ const withHelpMenu = (ComposedComponent) => (props) => {
   return (
     <LoadableMenu
       LoadableComponent={ComposedComponent}
-      maxWidth={280}
+      maxWidth={320}
       maxHeight={320}
       originAnchor={originAnchor}
       queryVars={queryVars}

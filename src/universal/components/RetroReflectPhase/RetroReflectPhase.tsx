@@ -100,7 +100,7 @@ class RetroReflectPhase extends Component<Props> {
             </FlatButton>
           </MeetingControlBar>
         )}
-        <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
+        <ReflectHelpMenu floatAboveBottomBar={isFacilitating} isFacilitating={isFacilitating} />
       </React.Fragment>
     )
   }

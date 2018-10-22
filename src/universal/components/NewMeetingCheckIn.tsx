@@ -119,7 +119,11 @@ class NewMeetingCheckIn extends Component<Props> {
             />
           </MeetingControlBar>
         )}
-        <CheckInHelpMenu floatAboveBottomBar={isFacilitating} meetingType={meetingType} />
+        <CheckInHelpMenu
+          floatAboveBottomBar={isFacilitating}
+          isFacilitating={isFacilitating}
+          meetingType={meetingType}
+        />
       </React.Fragment>
     )
   }

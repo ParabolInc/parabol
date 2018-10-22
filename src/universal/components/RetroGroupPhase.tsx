@@ -81,7 +81,7 @@ const RetroGroupPhase = (props: Props) => {
           )}
         </MeetingControlBar>
       )}
-      <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
+      <GroupHelpMenu floatAboveBottomBar={isFacilitating} isFacilitating={isFacilitating} />
     </React.Fragment>
   )
 }
