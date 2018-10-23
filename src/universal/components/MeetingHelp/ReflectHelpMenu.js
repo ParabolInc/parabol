@@ -10,7 +10,7 @@ import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
 
 const ReflectHelpMenu = ({closePortal}) => (
   <HelpMenuContent closePortal={closePortal}>
-    {isDemoRoute() ? (
+    {isDemoRoute ? (
       <React.Fragment>
         {/* Demo Help Content */}
         <HelpMenuHeader>Welcome to the Parabol Retro Demo</HelpMenuHeader>
@@ -28,7 +28,7 @@ const ReflectHelpMenu = ({closePortal}) => (
         </HelpMenuCopy>
       </React.Fragment>
     ) : (
-      <React.Frament>
+      <React.Fragment>
         {/* Retro Help Content */}
         <HelpMenuHeader>{phaseLabelLookup[REFLECT]}</HelpMenuHeader>
         <HelpMenuCopy>The goal of this phase is to gather honest input from the team.</HelpMenuCopy>
@@ -41,7 +41,7 @@ const ReflectHelpMenu = ({closePortal}) => (
           copy='Learn More'
           href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#reflect'
         />
-      </React.Frament>
+      </React.Fragment>
     )}
   </HelpMenuContent>
 )

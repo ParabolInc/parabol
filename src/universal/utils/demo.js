@@ -1,1 +1,1 @@
-export const isDemoRoute = () => window.location.pathname.startsWith('/retrospective-demo')
+export const isDemoRoute = Boolean(window.location.pathname.startsWith('/retrospective-demo'))
