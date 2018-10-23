@@ -17,12 +17,14 @@ const VoteHelpMenu = ({closePortal}) => (
     {isDemoRoute ? (
       <React.Fragment>
         {/* Demo Help Content */}
-        <HelpMenuCopy>Here the Demo Team is voting on what they want to discuss.</HelpMenuCopy>
         <HelpMenuCopy>
-          Each teammate has 5 total votes, and can vote on a single theme up to 3 times.
+          Now the Demo Team is voting on what topics they want to discuss.
         </HelpMenuCopy>
         <HelpMenuCopy>
-          To vote, simply tap on the check icon above the card. Toggle votes to remove.
+          Each teammate has 5 total votes, and can vote on a single group up to 3 times.
+        </HelpMenuCopy>
+        <HelpMenuCopy>
+          To vote, simply tap on the thumb-up icon above a group. Toggle votes to remove.
         </HelpMenuCopy>
         <StyledCopy>Try voting on a few groups, then move forward.</StyledCopy>
       </React.Fragment>
@@ -34,10 +36,10 @@ const VoteHelpMenu = ({closePortal}) => (
           team.
         </HelpMenuCopy>
         <HelpMenuCopy>
-          Each teammate has 5 total votes, and can vote on a single theme up to 3 times.
+          Each teammate has 5 total votes, and can vote on a single group up to 3 times.
         </HelpMenuCopy>
         <HelpMenuCopy>
-          To vote, simply tap on the check icon above the card. Toggle votes to remove.
+          To vote, simply tap on the thumb-up icon above a group. Toggle votes to remove.
         </HelpMenuCopy>
         <HelpMenuLink
           copy='Learn More'

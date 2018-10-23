@@ -18,17 +18,13 @@ const DiscussHelpMenu = ({closePortal}) => (
       <React.Fragment>
         {/* Demo Help Content */}
         <HelpMenuCopy>
-          Here the Demo Team is creating takeaway tasks based on the discussion. Try creating a
-          task.
+          Here the Demo Team is creating takeaway tasks based on the current topic.
         </HelpMenuCopy>
         <HelpMenuCopy>
-          Tap the avatar on the task to assign it to somebody else on the team.
-        </HelpMenuCopy>
-        <HelpMenuCopy>
-          Tap <b>shift + ?</b> to see how to add links, mentions, etc. to the task card.
+          Try creating a task. Tap the avatar on the task to assign it to somebody else on the team.
         </HelpMenuCopy>
         <StyledCopy>
-          End the meeting to see a meeting summary. The summary is emailed to everyone on the team.
+          End the meeting to see a summary. The summary is emailed to everyone on the team.
         </StyledCopy>
       </React.Fragment>
     ) : (

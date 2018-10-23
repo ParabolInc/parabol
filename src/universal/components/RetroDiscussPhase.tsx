@@ -8,6 +8,7 @@ import {Dispatch} from 'redux'
 import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
+import EditorTip from 'universal/components/EditorTip'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 import Overflow from 'universal/components/Overflow'
@@ -192,6 +193,7 @@ const RetroDiscussPhase = (props: Props) => {
                     teamId={teamId}
                   />
                 </TaskCardBlock>
+                <EditorTip />
               </ColumnInner>
             </Overflow>
           </TaskColumn>

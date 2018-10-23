@@ -18,24 +18,26 @@ const ReflectHelpMenu = ({closePortal}) => (
         {/* Demo Help Content */}
         <HelpMenuHeader>Welcome to the Parabol Retro Demo</HelpMenuHeader>
         <HelpMenuCopy>
-          During this phase, folks add reflections for a specific context, like a project or
-          timeframe.
+          When meeting, each team member signs in to Parabol, often while on a video conference.
+        </HelpMenuCopy>
+        <HelpMenuCopy>
+          Our scripted Demo Team is adding reflections for a recent project. Try adding a few of
+          your own.
         </HelpMenuCopy>
         <HelpMenuCopy>
           During this phase nobody can see your reflections. After this phase reflections will be
           visible, but remain anonymous.
         </HelpMenuCopy>
-        <StyledCopy>
-          Our scripted demo team is adding reflections. Try adding a few of your own. Use the bottom
-          bar to move forward.
-        </StyledCopy>
+        <StyledCopy>Use the bottom bar to move forward.</StyledCopy>
       </React.Fragment>
     ) : (
       <React.Fragment>
         {/* Retro Help Content */}
         <HelpMenuHeader>{phaseLabelLookup[REFLECT]}</HelpMenuHeader>
         <HelpMenuCopy>The goal of this phase is to gather honest input from the team.</HelpMenuCopy>
-        <HelpMenuCopy>As a group, reflect on projects for a specific timeframe.</HelpMenuCopy>
+        <HelpMenuCopy>
+          As a group, reflect on how work’s going for a specific project or timeframe.
+        </HelpMenuCopy>
         <HelpMenuCopy>
           During this phase nobody can see your reflections. After this phase reflections will be
           visible, but remain anonymous.
