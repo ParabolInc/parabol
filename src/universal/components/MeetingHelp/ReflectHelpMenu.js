@@ -1,4 +1,5 @@
 import React from 'react'
+import styled from 'react-emotion'
 import {REFLECT} from 'universal/utils/constants'
 import {isDemoRoute} from 'universal/utils/demo'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
@@ -7,6 +8,8 @@ import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
+
+const StyledCopy = styled(HelpMenuCopy)({margin: 0})
 
 const ReflectHelpMenu = ({closePortal}) => (
   <HelpMenuContent closePortal={closePortal}>
@@ -22,10 +25,10 @@ const ReflectHelpMenu = ({closePortal}) => (
           During this phase nobody can see your reflections. After this phase reflections will be
           visible, but remain anonymous.
         </HelpMenuCopy>
-        <HelpMenuCopy>
+        <StyledCopy>
           Our scripted demo team is adding reflections. Try adding a few of your own. Use the bottom
           bar to move forward.
-        </HelpMenuCopy>
+        </StyledCopy>
       </React.Fragment>
     ) : (
       <React.Fragment>

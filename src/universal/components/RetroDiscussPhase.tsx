@@ -25,6 +25,7 @@ import plural from 'universal/utils/plural'
 import handleRightArrow from '../utils/handleRightArrow'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 
 interface PassedProps {
   gotoNext: () => void
@@ -228,6 +229,7 @@ const RetroDiscussPhase = (props: Props) => {
         </SpacedMeetingControlBar>
       )}
       <DiscussHelpMenu floatAboveBottomBar={isFacilitating} />
+      <EditorHelpModalContainer />
     </React.Fragment>
   )
 }
