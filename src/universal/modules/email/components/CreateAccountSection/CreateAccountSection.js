@@ -1,14 +1,10 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
-// import {Link} from 'react-router-dom'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {emailPrimaryButtonStyle, emailLinkStyle} from 'universal/styles/emails'
 
-const CreateAccountSection = (props) => {
-  const {referrer} = props
-  console.log(`referrer: ${referrer}`)
+const CreateAccountSection = () => {
   const tableStyle = {
     ...ui.emailTableBase,
     width: '100%'
@@ -130,10 +126,6 @@ const CreateAccountSection = (props) => {
       <EmptySpace height={32} />
     </div>
   )
-}
-
-CreateAccountSection.propTypes = {
-  referrer: PropTypes.oneOf(['meeting', 'email', 'history'])
 }
 
 export default CreateAccountSection
