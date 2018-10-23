@@ -137,7 +137,11 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
             ...this.db.newMeeting,
             reflectionGroups: this.db.newMeeting.reflectionGroups!.filter(
               (group) => group.voterIds.length > 0
-            )
+            ),
+            meetingMembers: this.db.newMeeting.meetingMembers!.map((member) => ({
+              ...member,
+              tasks: member!.tasks.filter((task) => !task.tags!.includes('private'))
+            }))
           }
         }
       }
@@ -664,7 +668,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     VoteForReflectionGroupMutation: ({isUnvote, reflectionGroupId}, userId) => {
       const reflectionGroup =
         this.db.reflectionGroups.find((group) => group.id === reflectionGroupId) ||
-        this.db.reflectionGroups.find((group) => Boolean(group.isActive))
+        this.db.reflectionGroups.find((group) => Boolean(group.isActive))!
       const meetingMember = this.db.meetingMembers.find((member) => member.userId === userId)!
       const voterIds = reflectionGroup.voterIds!
       const now = new Date().toJSON()

@@ -2,22 +2,18 @@
 import React from 'react'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import {emailPrimaryButtonStyle} from 'universal/styles/emails'
 import Body from 'universal/modules/email/components/Body/Body'
 import ContactUs from 'universal/modules/email/components/ContactUs/ContactUs'
 import EmptySpace from 'universal/modules/email/components/EmptySpace/EmptySpace'
 import Footer from 'universal/modules/email/components/Footer/Footer'
 import Layout from 'universal/modules/email/components/Layout/Layout'
 import SummaryHeader from 'universal/modules/email/components/SummaryHeader/SummaryHeader'
-import CreateAccountSection from 'universal/modules/email/components/CreateAccountSection/CreateAccountSection'
-import {Link} from 'react-router-dom'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import RetroQuickStats from 'universal/modules/email/components/QuickStats/RetroQuickStats'
 import MeetingMemberTasks from 'universal/modules/email/components/SummaryEmail/MeetingMemberTasks'
 import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscussionTopics/RetroDiscussionTopics'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
-
-const teamDashLabel = 'Go to Team Dashboard'
+import SummaryCTA from 'universal/modules/email/components/SummaryEmail/SummaryCTA'
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
@@ -49,14 +45,8 @@ const quickStatsBlock = {
   textAlign: 'center'
 }
 
-const teamDashLinkStyle = {
-  ...emailPrimaryButtonStyle,
-  fontSize: '14px',
-  padding: '6px 0',
-  width: '186px'
-}
-
 type Props = {|
+  isDemo: boolean,
   meeting: Object,
   referrer: 'meeting' | 'email' | 'history',
   referrerUrl?: string,
@@ -65,7 +55,7 @@ type Props = {|
 |}
 
 const SummaryEmail = (props: Props) => {
-  const {meeting, referrer, referrerUrl, teamDashUrl} = props
+  const {isDemo, meeting, referrer, referrerUrl, teamDashUrl} = props
   const {
     createdAt,
     meetingNumber,
@@ -73,7 +63,6 @@ const SummaryEmail = (props: Props) => {
     team: {name: teamName}
   } = meeting
   const meetingLabel = meetingTypeToLabel[meetingType]
-  const showCreateAccountCTA = false // set to true when demo (TA)
   return (
     <Layout>
       {referrer === 'email' && (
@@ -120,26 +109,13 @@ const SummaryEmail = (props: Props) => {
             <tr>
               <td>
                 {/* Team Dashboard Button */}
-                {referrer === 'email' ? (
-                  <a href={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
-                    {teamDashLabel}
-                  </a>
-                ) : (
-                  <Link to={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
-                    {teamDashLabel}
-                  </Link>
-                )}
+                <SummaryCTA referrer={referrer} teamDashUrl={teamDashUrl} isDemo={isDemo} />
                 <EmptySpace height={32} />
               </td>
             </tr>
           </tbody>
         </table>
-        {showCreateAccountCTA && (
-          <React.Fragment>
-            <hr style={ruleStyle} />
-            <CreateAccountSection />
-          </React.Fragment>
-        )}
+
         {meetingType === RETROSPECTIVE && (
           <MeetingMemberTasks meetingType={meetingType} meeting={meeting} />
         )}

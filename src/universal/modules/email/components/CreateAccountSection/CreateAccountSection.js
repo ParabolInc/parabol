@@ -88,12 +88,11 @@ const CreateAccountSection = (props) => {
   }
   const features = [
     {icon: 'prompts@3x.png', copy: 'Custom retrospective formats'},
-    {icon: 'grouping@3x.png', copy: 'Multiplayer grouping and voting'},
-    {icon: 'summary@3x.png', copy: 'A detailed meeting summary'},
-    {icon: 'owners@3x.png', copy: 'Takeaway tasks with owners'},
-    {icon: 'integrations@3x.png', copy: 'Integrates with Slack and more'}
+    {icon: 'grouping@3x.png', copy: 'Engaging UX for 8+ team members'},
+    {icon: 'summary@3x.png', copy: 'Detailed meeting summary email'},
+    {icon: 'owners@3x.png', copy: 'Takeaway tasks with owners'}
   ]
-  const primaryActionLabel = 'Create a Free Account'
+  const primaryActionLabel = 'Create Free Account'
   const primaryActionLink = '/create-account'
   return (
     <div style={{padding: '0 16px'}}>
@@ -102,34 +101,20 @@ const CreateAccountSection = (props) => {
         <tbody>
           <tr>
             <td style={blockStyle}>
-              <div style={headingStyle}>How was the demo?</div>
-              <div style={copyStyle}>
-                Try running your team’s next retrospective using Parabol for free:
-              </div>
+              <div style={headingStyle}>Thanks for playing!</div>
+              <div style={copyStyle}>Retrospectives are more fun with humans</div>
               <div>
                 <a href={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
                   {primaryActionLabel}
                 </a>
-                {/* {referrer === 'email' ? (
-                  <a href={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
-                    {primaryActionLabel}
-                  </a>
-                ) : (
-                  <Link to={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
-                    {primaryActionLabel}
-                  </Link>
-                )} */}
               </div>
               <div>
-                <a
-                  href='mailto:love@parabol.co?subject=Feedback for Parabol Retro Demo'
-                  style={linkStyle}
-                >
-                  Or, tell us what you liked and didn’t like
+                <a href='mailto:love@parabol.co?subject=Retro Demo' style={linkStyle}>
+                  Still have questions? Contact us
                 </a>
               </div>
-              <div style={subHeadingStyle}>What folks say they like about Parabol Retros…</div>
-              <table style={featureTableStyle} width='298'>
+              <div style={subHeadingStyle}>The Parabol Difference</div>
+              <table style={featureTableStyle} width='314'>
                 <tbody>
                   {features.map(({icon, copy}, idx) => makeFeatureRow(icon, copy, idx))}
                 </tbody>
