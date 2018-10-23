@@ -97,7 +97,7 @@ class PhaseItemEditor extends Component<Props, State> {
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleReturn={this.handleReturn}
-          placeholder='My reflection thought…'
+          placeholder='My reflection… (press enter to add)'
           setEditorState={this.setEditorState}
         />
       </ReflectionCardRoot>
