@@ -20,8 +20,6 @@ import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
-import LoadableModal from 'universal/components/LoadableModal'
-import DemoKickoffModalLoadable from 'universal/components/DemoKickoffModalLoadable'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -58,14 +56,8 @@ class RetroReflectPhase extends Component<Props> {
     const reflectPrompts = localPhase!.reflectPrompts!
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
-    const isOpen = true
     return (
       <React.Fragment>
-        <LoadableModal
-          LoadableComponent={DemoKickoffModalLoadable}
-          queryVars={{isOpen}}
-          toggle={<div>toggle</div>}
-        />
         <StyledOverflow>
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
