@@ -214,6 +214,7 @@
     "react-notification-system": "^0.2.16",
     "react-portal-hoc": "^0.4.2",
     "react-redux": "^5.0.7",
+    "react-relay": "^1.6.2",
     "react-router": "4.3.0-rc.3",
     "react-router-dom": "4.3.0-rc.3",
     "react-test-renderer": "^16.0.0",

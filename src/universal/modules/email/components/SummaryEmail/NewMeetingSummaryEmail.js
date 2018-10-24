@@ -14,6 +14,7 @@ import RetroQuickStats from 'universal/modules/email/components/QuickStats/Retro
 import MeetingMemberTasks from 'universal/modules/email/components/SummaryEmail/MeetingMemberTasks'
 import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscussionTopics/RetroDiscussionTopics'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import ExportToCSV from 'universal/modules/email/components/SummaryEmail/ExportToCSV'
 
 const teamDashLabel = 'Go to Team Dashboard'
 
@@ -162,6 +163,7 @@ const SummaryEmail = (props: Props) => {
           <EmptySpace height={48} />
           <hr style={ruleStyle} />
           <EmptySpace height={48} />
+          {referrer !== 'email' && <ExportToCSV />}
           <ContactUs
             fontSize={16}
             hasLearningLink={meetingType === ACTION}

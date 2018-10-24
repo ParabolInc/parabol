@@ -6,8 +6,9 @@ const presetReact = require('@babel/preset-react').default
 const presetTypescript = require('@babel/preset-typescript').default
 const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread').default
 const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
+const pluginRelay = require('babel-plugin-relay')
 
-const extensions = ['.js', '.ts']
+const extensions = ['.js', '.ts', '.tsx']
 require('@babel/register')({
   extensions,
   plugins: [
@@ -20,7 +21,8 @@ require('@babel/register')({
         extensions,
         root: ['./src']
       }
-    ]
+    ],
+    [pluginRelay, {artifactDirectory: './src/__generated__'}]
   ],
   presets: [
     [
