@@ -6,8 +6,8 @@ import {RetroReflectPhase_team} from '__generated__/RetroReflectPhase_team.graph
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
@@ -20,6 +20,7 @@ import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
+import {isDemoRoute} from 'universal/utils/demo'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -33,6 +34,18 @@ const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemC
   // using position helps with overflow of columns for small screens
   position: 'absolute'
 }))
+
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomControl = styled(BottomNavControl)({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+})
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -56,6 +69,7 @@ class RetroReflectPhase extends Component<Props> {
     const reflectPrompts = localPhase!.reflectPrompts!
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
+    const endMeetingLabel = isDemoRoute ? 'End Demo' : 'End Meeting'
     return (
       <React.Fragment>
         <StyledOverflow>
@@ -74,23 +88,24 @@ class RetroReflectPhase extends Component<Props> {
           </StyledWrapper>
         </StyledOverflow>
         {isFacilitating && (
-          <MeetingControlBar>
-            <FlatButton
-              size='medium'
+          <StyledBottomBar>
+            <BottomControlSpacer />
+            <StyledBottomControl
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
             >
-              <IconLabel
+              <BottomNavIconLabel
                 icon='arrow_forward'
-                iconAfter
                 iconColor='warm'
-                iconLarge
-                label={`Done! Let’s ${nextPhaseLabel}`}
+                label={`Next: ${nextPhaseLabel}`}
               />
-            </FlatButton>
-          </MeetingControlBar>
+            </StyledBottomControl>
+            <StyledBottomControl onClick={() => console.log('End Meeting')}>
+              <BottomNavIconLabel icon='flag' iconColor='blue' label={endMeetingLabel} />
+            </StyledBottomControl>
+          </StyledBottomBar>
         )}
         <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
       </React.Fragment>

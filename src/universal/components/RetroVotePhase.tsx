@@ -2,8 +2,8 @@ import {RetroVotePhase_team} from '__generated__/RetroVotePhase_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
@@ -24,6 +24,7 @@ import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {PALETTE} from 'universal/styles/paletteV2'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import {isDemoRoute} from 'universal/utils/demo'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -104,6 +105,18 @@ const MyVotesCountLabel = styled(VoteCountLabel)({
   }
 })
 
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomControl = styled(BottomNavControl)({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+})
+
 const RetroVotePhase = (props: Props) => {
   const {
     atmosphere: {viewerId},
@@ -124,6 +137,7 @@ const RetroVotePhase = (props: Props) => {
   const discussStage = discussPhase.stages[0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
+  const endMeetingLabel = isDemoRoute ? 'End Demo' : 'End Meeting'
   return (
     <React.Fragment>
       <VoteMeta>
@@ -149,23 +163,24 @@ const RetroVotePhase = (props: Props) => {
         </MeetingPhaseWrapper>
       </ScrollableBlock>
       {isFacilitating && (
-        <MeetingControlBar>
-          <FlatButton
-            size='medium'
+        <StyledBottomBar>
+          <BottomControlSpacer />
+          <StyledBottomControl
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={gotoNext}
             onKeyDown={handleRightArrow(gotoNext)}
             innerRef={gotoNextRef}
           >
-            <IconLabel
+            <BottomNavIconLabel
               icon='arrow_forward'
-              iconAfter
               iconColor='warm'
-              iconLarge
-              label={`Done! Let’s ${nextPhaseLabel}`}
+              label={`Next: ${nextPhaseLabel}`}
             />
-          </FlatButton>
-        </MeetingControlBar>
+          </StyledBottomControl>
+          <StyledBottomControl onClick={() => console.log('End Meeting')}>
+            <BottomNavIconLabel icon='flag' iconColor='blue' label={endMeetingLabel} />
+          </StyledBottomControl>
+        </StyledBottomBar>
       )}
       {/* Set floatAboveBottomBar to true because the bottom bar is always present in this view */}
       <VoteHelpMenu floatAboveBottomBar />

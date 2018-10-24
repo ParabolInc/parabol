@@ -2,8 +2,8 @@ import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
@@ -90,19 +90,17 @@ class MeetingUpdates extends Component {
         {showMoveMeetingControls && (
           <MeetingControlBar>
             <BounceBlock animationDelay='120s' key={`update${localPhaseItem}buttonAnimation`}>
-              <FlatButton size='medium' key={`update${localPhaseItem}`} onClick={gotoNext}>
-                <IconLabel
+              <BottomNavControl key={`update${localPhaseItem}`} onClick={gotoNext}>
+                <BottomNavIconLabel
                   icon='arrow_forward'
-                  iconAfter
                   iconColor='warm'
-                  iconLarge
                   label={
                     isLastMember
-                      ? `Advance to the ${nextPhaseName}`
+                      ? `Next: ${nextPhaseName}`
                       : `Move to ${nextTeamMember.preferredName}`
                   }
                 />
-              </FlatButton>
+              </BottomNavControl>
             </BounceBlock>
           </MeetingControlBar>
         )}

@@ -17,9 +17,10 @@ import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
 import ui from 'universal/styles/ui'
 import {CHECKIN} from 'universal/utils/constants'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {MeetingTypeEnum} from 'universal/types/graphql'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -42,6 +43,18 @@ const CheckIn = styled('div')({
 
 const Hint = styled('div')({
   marginTop: '2.5rem'
+})
+
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomControl = styled(BottomNavControl)({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
@@ -71,10 +84,8 @@ class NewMeetingCheckIn extends Component<Props> {
     const nextStageRes = findStageAfterId(phases, localStageId)
     // in case the checkin is the last phase of the meeting
     if (!nextStageRes) return null
-    const {stage: nextStage, phase: nextPhase} = nextStageRes
+    const {phase: nextPhase} = nextStageRes
     const lastCheckInStage = nextPhase.phaseType !== CHECKIN
-    const nextMemberName =
-      (nextStage && nextStage.teamMember && nextStage.teamMember.preferredName) || ''
     const {viewerId} = atmosphere
     const isFacilitating = facilitatorUserId === viewerId
     return (
@@ -108,16 +119,18 @@ class NewMeetingCheckIn extends Component<Props> {
           </CheckIn>
         </MeetingSection>
         {isFacilitating && (
-          <MeetingControlBar>
+          <StyledBottomBar>
+            <BottomControlSpacer />
             <CheckInControls
               checkInPressFactory={this.checkinPressFactory}
               currentMemberName={teamMember.preferredName}
               localPhaseItem={localStageId}
-              nextMemberName={nextMemberName}
-              nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
               gotoNextRef={gotoNextRef}
             />
-          </MeetingControlBar>
+            <StyledBottomControl onClick={() => console.log('End Meeting')}>
+              <BottomNavIconLabel icon='flag' iconColor='blue' label='End Meeting' />
+            </StyledBottomControl>
+          </StyledBottomBar>
         )}
         <CheckInHelpMenu floatAboveBottomBar={isFacilitating} meetingType={meetingType} />
       </React.Fragment>
