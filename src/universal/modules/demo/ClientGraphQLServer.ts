@@ -484,16 +484,19 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GROUP &&
         dropTargetId
       ) {
+        newReflectionGroupId = dropTargetId
         // group
         const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
-        const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === dropTargetId)!
+        const reflectionGroup = this.db.reflectionGroups.find(
+          (group) => group.id === newReflectionGroupId
+        )!
         const sortOrders = this.db.reflections
-          .filter((r) => r.reflectionGroupId === dropTargetId)
+          .filter((r) => r.reflectionGroupId === newReflectionGroupId)
           .map((r) => (r && r.sortOrder) || 0)
         const maxSortOrder = Math.max(...sortOrders)
         Object.assign(reflection, {
           sortOrder: maxSortOrder + 1 + dndNoise(),
-          reflectionGroupId: dropTargetId,
+          reflectionGroupId: newReflectionGroupId,
           retroReflectionGroup: reflectionGroup as any,
           updatedAt: now
         })
@@ -502,9 +505,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
           oldReflections.findIndex((reflection) => reflection === reflection),
           1
         )
-        if (oldReflectionGroupId !== dropTargetId) {
+        if (oldReflectionGroupId !== newReflectionGroupId) {
           const nextReflections = this.db.reflections.filter(
-            (reflection) => reflection.reflectionGroupId === dropTargetId
+            (reflection) => reflection.reflectionGroupId === newReflectionGroupId
           )
           const oldReflections = this.db.reflections.filter(
             (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
@@ -580,11 +583,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         removedReflectionGroupIds,
         nextThresh
       } = groupReflections(reflections, groupingThreshold)
-      // this.db.reflectionGroups.forEach((group) => {
-      //   if (removedReflectionGroupIds.includes(group.id)) {
-      //     group.isActive = false
-      //   }
-      // })
       removedReflectionGroupIds.forEach((groupId) => {
         const group = this.db.reflectionGroups.find((group) => group.id === groupId)!
         group.isActive = false
