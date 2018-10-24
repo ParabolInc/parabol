@@ -22,6 +22,8 @@ import PhaseItemMasonry from './PhaseItemMasonry'
 import {IDiscussPhase} from 'universal/types/graphql'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {PALETTE} from 'universal/styles/paletteV2'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -31,46 +33,37 @@ interface Props extends WithAtmosphereProps {
 
 const votePhaseBreakpoint = minWidthMediaQueries[1]
 
-const ControlBarInner = styled('div')(
-  ({isFacilitating}: {isFacilitating: boolean | null | undefined}) => ({
-    alignItems: 'center',
-    display: 'flex',
-    // ts tells me 0 isn't valid
-    // flexWrap: 0,
-    justifyContent: isFacilitating ? 'space-between' : 'center',
-    width: '100%',
-    [votePhaseBreakpoint]: {
-      justifyContent: 'center'
-    }
-  })
-)
-
 const VoteMeta = styled('div')({
+  alignItems: 'center',
+  borderBottom: `.0625rem solid ${PALETTE.BORDER.LIGHT}`,
+  display: 'flex',
+  justifyContent: 'center',
+  margin: '0 auto 1rem',
+  padding: '.5rem .5rem',
+  width: '100%',
   [votePhaseBreakpoint]: {
-    alignItems: 'center',
-    display: 'flex',
-    marginRight: 0
+    padding: '0 0 .5rem'
   }
 })
 
 const MetaBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  flexWrap: 'nowrap',
+  flexWrap: 'nowrap'
+})
+
+const StyledMetaBlock = styled(MetaBlock)({
+  marginRight: '1.25rem',
   [votePhaseBreakpoint]: {
     marginRight: '2rem'
   }
 })
 
-const Label = styled('div')({
-  color: ui.labelHeadingColor,
-  fontSize: typeScale[1],
-  fontWeight: 600,
-  lineHeight: typeScale[6],
+const Label = styled(LabelHeading)({
   marginRight: '.75rem',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
-    fontSize: typeScale[2]
+    paddingTop: '.125rem'
   }
 })
 
@@ -130,49 +123,47 @@ const RetroVotePhase = (props: Props) => {
   const checkMarks = [...Array(totalVotes).keys()]
   return (
     <React.Fragment>
+      <VoteMeta>
+        <StyledMetaBlock>
+          <Label>{'My Votes Remaining'}</Label>
+          <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
+          <CheckMarkRow>
+            {checkMarks.map((idx) => (
+              <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
+                {meetingVoteIcon}
+              </CheckIcon>
+            ))}
+          </CheckMarkRow>
+        </StyledMetaBlock>
+        <MetaBlock>
+          <Label>{'Team Votes Remaining'}</Label>
+          <VoteCountLabel>{teamVotesRemaining}</VoteCountLabel>
+        </MetaBlock>
+      </VoteMeta>
       <ScrollableBlock>
         <MeetingPhaseWrapper>
           <PhaseItemMasonry meeting={newMeeting} />
         </MeetingPhaseWrapper>
       </ScrollableBlock>
-      <MeetingControlBar>
-        <ControlBarInner isFacilitating={isFacilitating}>
-          <VoteMeta>
-            <MetaBlock>
-              <Label>{'My Votes Remaining'}</Label>
-              <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
-              <CheckMarkRow>
-                {checkMarks.map((idx) => (
-                  <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
-                    {meetingVoteIcon}
-                  </CheckIcon>
-                ))}
-              </CheckMarkRow>
-            </MetaBlock>
-            <MetaBlock>
-              <Label>{'Team Votes Remaining'}</Label>
-              <VoteCountLabel>{teamVotesRemaining}</VoteCountLabel>
-            </MetaBlock>
-          </VoteMeta>
-          {isFacilitating && (
-            <FlatButton
-              size='medium'
-              disabled={!discussStage.isNavigableByFacilitator}
-              onClick={gotoNext}
-              onKeyDown={handleRightArrow(gotoNext)}
-              innerRef={gotoNextRef}
-            >
-              <IconLabel
-                icon='arrow_forward'
-                iconAfter
-                iconColor='warm'
-                iconLarge
-                label={`Done! Let’s ${nextPhaseLabel}`}
-              />
-            </FlatButton>
-          )}
-        </ControlBarInner>
-      </MeetingControlBar>
+      {isFacilitating && (
+        <MeetingControlBar>
+          <FlatButton
+            size='medium'
+            disabled={!discussStage.isNavigableByFacilitator}
+            onClick={gotoNext}
+            onKeyDown={handleRightArrow(gotoNext)}
+            innerRef={gotoNextRef}
+          >
+            <IconLabel
+              icon='arrow_forward'
+              iconAfter
+              iconColor='warm'
+              iconLarge
+              label={`Done! Let’s ${nextPhaseLabel}`}
+            />
+          </FlatButton>
+        </MeetingControlBar>
+      )}
       {/* Set floatAboveBottomBar to true because the bottom bar is always present in this view */}
       <VoteHelpMenu floatAboveBottomBar />
     </React.Fragment>
