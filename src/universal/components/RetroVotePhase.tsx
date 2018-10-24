@@ -53,16 +53,19 @@ const MetaBlock = styled('div')({
 })
 
 const StyledMetaBlock = styled(MetaBlock)({
-  marginRight: '1.25rem',
+  marginRight: '1.5rem',
   [votePhaseBreakpoint]: {
     marginRight: '2rem'
   }
 })
 
 const Label = styled(LabelHeading)({
-  marginRight: '.75rem',
+  fontSize: typeScale[0],
+  marginRight: '.5rem',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
+    fontSize: typeScale[1],
+    marginRight: '.75rem',
     paddingTop: '.125rem'
   }
 })
