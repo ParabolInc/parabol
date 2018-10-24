@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
+import EditorTip from 'universal/components/EditorTip'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
@@ -146,6 +147,7 @@ class MeetingAgendaItems extends Component {
                   tasks={agendaTasks}
                   teamId={team.id}
                 />
+                <EditorTip />
               </TaskCardBlock>
               <EditorHelpModalContainer />
             </Layout>

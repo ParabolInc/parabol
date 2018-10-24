@@ -8,6 +8,7 @@ import {Dispatch} from 'redux'
 import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
+import EditorTip from 'universal/components/EditorTip'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 import Overflow from 'universal/components/Overflow'
@@ -25,6 +26,7 @@ import plural from 'universal/utils/plural'
 import handleRightArrow from '../utils/handleRightArrow'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 
 interface PassedProps {
   gotoNext: () => void
@@ -191,6 +193,7 @@ const RetroDiscussPhase = (props: Props) => {
                     teamId={teamId}
                   />
                 </TaskCardBlock>
+                <EditorTip />
               </ColumnInner>
             </Overflow>
           </TaskColumn>
@@ -228,6 +231,7 @@ const RetroDiscussPhase = (props: Props) => {
         </SpacedMeetingControlBar>
       )}
       <DiscussHelpMenu floatAboveBottomBar={isFacilitating} />
+      <EditorHelpModalContainer />
     </React.Fragment>
   )
 }

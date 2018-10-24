@@ -1,14 +1,10 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
-// import {Link} from 'react-router-dom'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {emailPrimaryButtonStyle, emailLinkStyle} from 'universal/styles/emails'
 
-const CreateAccountSection = (props) => {
-  const {referrer} = props
-  console.log(`referrer: ${referrer}`)
+const CreateAccountSection = () => {
   const tableStyle = {
     ...ui.emailTableBase,
     width: '100%'
@@ -54,9 +50,11 @@ const CreateAccountSection = (props) => {
     margin: '20px 0 32px'
   }
   const iconSize = 40
+  const labelWidth = 298
+  const featureWidth = iconSize + labelWidth
   const featureTableStyle = {
     ...tableStyle,
-    width: 298
+    width: featureWidth
   }
   const featureIconCellStyle = {
     height: iconSize,
@@ -73,16 +71,18 @@ const CreateAccountSection = (props) => {
     height: iconSize,
     padding: '8px 0 8px 18px',
     textAlign: 'left',
-    width: 240
+    width: 280
   }
   const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
     const src = `/static/images/email/icons/${featureIconFile}`
     return (
       <tr key={`feature${idx}`}>
-        <td style={featureIconCellStyle}>
+        <td style={featureIconCellStyle} width={iconSize}>
           <img height={iconSize} src={src} style={featureIconStyle} width={iconSize} />
         </td>
-        <td style={featureCopyCellStyle}>{featureCopy}</td>
+        <td style={featureCopyCellStyle} width={labelWidth}>
+          {featureCopy}
+        </td>
       </tr>
     )
   }
@@ -102,7 +102,7 @@ const CreateAccountSection = (props) => {
           <tr>
             <td style={blockStyle}>
               <div style={headingStyle}>Thanks for playing!</div>
-              <div style={copyStyle}>Retrospectives are more fun with humans</div>
+              <div style={copyStyle}>Retrospectives are more fun with humans.</div>
               <div>
                 <a href={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
                   {primaryActionLabel}
@@ -114,7 +114,7 @@ const CreateAccountSection = (props) => {
                 </a>
               </div>
               <div style={subHeadingStyle}>The Parabol Difference</div>
-              <table style={featureTableStyle} width='314'>
+              <table style={featureTableStyle} width={featureWidth}>
                 <tbody>
                   {features.map(({icon, copy}, idx) => makeFeatureRow(icon, copy, idx))}
                 </tbody>
@@ -126,10 +126,6 @@ const CreateAccountSection = (props) => {
       <EmptySpace height={32} />
     </div>
   )
-}
-
-CreateAccountSection.propTypes = {
-  referrer: PropTypes.oneOf(['meeting', 'email', 'history'])
 }
 
 export default CreateAccountSection

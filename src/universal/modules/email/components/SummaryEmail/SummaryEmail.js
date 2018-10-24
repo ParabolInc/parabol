@@ -16,7 +16,6 @@ import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutco
 import {Link} from 'react-router-dom'
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy'
 import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE, ACTION} from 'universal/utils/constants'
-import CreateAccountSection from 'universal/modules/email/components/CreateAccountSection/CreateAccountSection'
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
@@ -142,7 +141,6 @@ const SummaryEmail = (props) => {
     fontSize: '16px',
     lineHeight: '24px'
   }
-  const showCreateAccountCTA = false // flag to view here since new summary was borked (TA)
   return (
     <Layout>
       {referrer === 'email' && (
@@ -209,12 +207,6 @@ const SummaryEmail = (props) => {
             </tr>
           </tbody>
         </table>
-        {showCreateAccountCTA && (
-          <React.Fragment>
-            <hr style={ruleStyle} />
-            <CreateAccountSection />
-          </React.Fragment>
-        )}
         {membersWithOutcomes.map((member) => (
           <UserTasks member={member} key={`userTasks'${member.id}`} />
         ))}
