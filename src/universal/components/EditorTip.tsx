@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import styled from 'react-emotion'
 import {typeScale} from 'universal/styles/theme/typography'
 import elevation from 'universal/styles/elevation'
@@ -31,16 +31,12 @@ const ShortcutBlock = styled('div')({
   width: shortcutBlockSize
 })
 
-class EditorTip extends Component {
-  render () {
-    return (
-      <TipBlock>
-        <TipCopy>Press the</TipCopy>
-        <ShortcutBlock>?</ShortcutBlock>
-        <TipCopy>key for card formatting help</TipCopy>
-      </TipBlock>
-    )
-  }
-}
+const EditorTip = () => (
+  <TipBlock>
+    <TipCopy>Press the</TipCopy>
+    <ShortcutBlock>?</ShortcutBlock>
+    <TipCopy>key for card formatting help</TipCopy>
+  </TipBlock>
+)
 
 export default EditorTip
