@@ -12,6 +12,10 @@ const TipBlock = styled('div')({
   lineHeight: typeScale[7]
 })
 
+const TipCopy = styled('span')({
+  whiteSpace: 'nowrap'
+})
+
 const shortcutBlockSize = '1.25rem'
 
 const ShortcutBlock = styled('div')({
@@ -31,8 +35,9 @@ class EditorTip extends Component {
   render () {
     return (
       <TipBlock>
-        <span>Press the</span> <ShortcutBlock>?</ShortcutBlock>{' '}
-        <span>key for card formatting help</span>
+        <TipCopy>Press the</TipCopy>
+        <ShortcutBlock>?</ShortcutBlock>
+        <TipCopy>key for card formatting help</TipCopy>
       </TipBlock>
     )
   }
