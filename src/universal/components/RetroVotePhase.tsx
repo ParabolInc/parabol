@@ -182,8 +182,7 @@ const RetroVotePhase = (props: Props) => {
           </StyledBottomControl>
         </StyledBottomBar>
       )}
-      {/* Set floatAboveBottomBar to true because the bottom bar is always present in this view */}
-      <VoteHelpMenu floatAboveBottomBar />
+      <VoteHelpMenu floatAboveBottomBar={isFacilitating} />
     </React.Fragment>
   )
 }
