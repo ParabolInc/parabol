@@ -59,7 +59,7 @@ const styleThunk = () => ({
   },
 
   helpIsFacilitating: {
-    bottom: '5.25rem'
+    bottom: '4.75rem'
   }
 })
 
