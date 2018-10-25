@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import styled from 'react-emotion'
 import {typeScale} from 'universal/styles/theme/typography'
 import elevation from 'universal/styles/elevation'
@@ -10,6 +10,10 @@ const TipBlock = styled('div')({
   display: 'flex',
   fontSize: typeScale[1],
   lineHeight: typeScale[7]
+})
+
+const TipCopy = styled('span')({
+  whiteSpace: 'nowrap'
 })
 
 const shortcutBlockSize = '1.25rem'
@@ -27,15 +31,12 @@ const ShortcutBlock = styled('div')({
   width: shortcutBlockSize
 })
 
-class EditorTip extends Component {
-  render () {
-    return (
-      <TipBlock>
-        <span>Press the</span> <ShortcutBlock>?</ShortcutBlock>{' '}
-        <span>key for card formatting help</span>
-      </TipBlock>
-    )
-  }
-}
+const EditorTip = () => (
+  <TipBlock>
+    <TipCopy>Press the</TipCopy>
+    <ShortcutBlock>?</ShortcutBlock>
+    <TipCopy>key for card formatting help</TipCopy>
+  </TipBlock>
+)
 
 export default EditorTip

@@ -6,8 +6,8 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {Dispatch} from 'redux'
 import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import EditorTip from 'universal/components/EditorTip'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
@@ -27,6 +27,7 @@ import handleRightArrow from '../utils/handleRightArrow'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
+import {isDemoRoute} from 'universal/utils/demo'
 
 interface PassedProps {
   gotoNext: () => void
@@ -123,15 +124,15 @@ const TaskCardBlock = styled('div')({
   width: '100%'
 })
 
-const ControlButtonBlock = styled('div')({
-  width: '12rem'
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
 })
 
-const StyledButton = styled(FlatButton)({
-  width: '100%'
+const StyledBottomControl = styled(BottomNavControl)({
+  minWidth: '6rem'
 })
 
-const SpacedMeetingControlBar = styled(MeetingControlBar)({
+const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
@@ -154,6 +155,7 @@ const RetroDiscussPhase = (props: Props) => {
   const endMeeting = () => {
     EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
   }
+  const endMeetingLabel = isDemoRoute ? 'End Demo' : 'End Meeting'
   return (
     <React.Fragment>
       <PhaseWrapper>
@@ -200,35 +202,24 @@ const RetroDiscussPhase = (props: Props) => {
         </ColumnsContainer>
       </PhaseWrapper>
       {isFacilitating && (
-        <SpacedMeetingControlBar>
-          {/* placeholder for layout */}
-          <ControlButtonBlock />
+        <StyledBottomBar>
+          <BottomControlSpacer />
           {nextStageRes && (
-            <ControlButtonBlock>
-              <StyledButton
-                size='medium'
+            <React.Fragment>
+              <StyledBottomControl
                 onClick={gotoNext}
                 innerRef={gotoNextRef}
                 onKeyDown={handleRightArrow(gotoNext)}
               >
-                <IconLabel
-                  icon='arrow_forward'
-                  iconColor='warm'
-                  iconAfter
-                  iconLarge
-                  label={'Done! Next topic'}
-                />
-              </StyledButton>
-            </ControlButtonBlock>
+                <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
+              </StyledBottomControl>
+            </React.Fragment>
           )}
-          <ControlButtonBlock>
-            <StyledButton size='medium' onClick={endMeeting}>
-              <IconLabel icon='flag' iconColor='midGray' iconLarge label={'End Meeting'} />
-            </StyledButton>
-          </ControlButtonBlock>
-          {/* placeholder for layout */}
-          {!nextStageRes && <ControlButtonBlock />}
-        </SpacedMeetingControlBar>
+          <StyledBottomControl onClick={endMeeting}>
+            <BottomNavIconLabel icon='flag' iconColor='blue' label={endMeetingLabel} />
+          </StyledBottomControl>
+          {!nextStageRes && <BottomControlSpacer />}
+        </StyledBottomBar>
       )}
       <DiscussHelpMenu floatAboveBottomBar={isFacilitating} />
       <EditorHelpModalContainer />

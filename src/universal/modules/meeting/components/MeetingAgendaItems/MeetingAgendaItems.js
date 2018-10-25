@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import EditorTip from 'universal/components/EditorTip'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
@@ -47,11 +47,15 @@ const TaskCardBlock = styled('div')({
   width: '100%'
 })
 
-const ControlButtonBlock = styled('div')({
-  width: '12rem'
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
 })
 
-const SpacedMeetingControlBar = styled(MeetingControlBar)({
+const StyledBottomControl = styled(BottomNavControl)({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
@@ -154,25 +158,17 @@ class MeetingAgendaItems extends Component {
           </MeetingSection>
         </MeetingSection>
         {showMoveMeetingControls && (
-          <SpacedMeetingControlBar>
-            <ControlButtonBlock />
+          <StyledBottomBar>
+            <BottomControlSpacer />
             <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
-              <FlatButton size='medium' key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
-                <IconLabel
-                  icon='arrow_forward'
-                  iconAfter
-                  iconColor='warm'
-                  iconLarge
-                  label='Done! Next…'
-                />
-              </FlatButton>
+              <StyledBottomControl key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
+                <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label='Next Topic' />
+              </StyledBottomControl>
             </BounceBlock>
-            <ControlButtonBlock>
-              <FlatButton size='medium' onClick={endMeeting}>
-                <IconLabel icon='flag' iconColor='midGray' iconLarge label={'End Meeting'} />
-              </FlatButton>
-            </ControlButtonBlock>
-          </SpacedMeetingControlBar>
+            <StyledBottomControl onClick={endMeeting}>
+              <BottomNavIconLabel icon='flag' iconColor='blue' label={'End Meeting'} />
+            </StyledBottomControl>
+          </StyledBottomBar>
         )}
       </MeetingMain>
     )
