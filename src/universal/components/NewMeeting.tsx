@@ -21,6 +21,7 @@ import RetroVotePhase from 'universal/components/RetroVotePhase'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {demoTeamId} from 'universal/modules/demo/initDB'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
@@ -44,7 +45,6 @@ import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {demoTeamId} from 'universal/modules/demo/initDB'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 const {Component} = React
@@ -195,15 +195,11 @@ class NewMeeting extends Component<Props> {
     } = findStageById(phases, stageId)
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) return
+    if (teamId === demoTeamId) {
+      await atmosphere.clientGraphQLServer.finishBotActions()
+    }
+    updateLocalStage(atmosphere, meetingId, stageId)
     if (isViewerFacilitator && isNavigableByFacilitator) {
-      const handleCompleted = (res, errors) => {
-        console.log('handle completed')
-        if (onCompleted) {
-          onCompleted(res, errors)
-        }
-        // only redirect after the data is ready (required for the demo)
-        updateLocalStage(atmosphere, meetingId, stageId)
-      }
       const {
         stage: {isComplete}
       } = findStageById(phases, facilitatorStageId)
@@ -214,13 +210,7 @@ class NewMeeting extends Component<Props> {
       if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
         variables.completedStageId = facilitatorStageId
       }
-      if (teamId === demoTeamId) {
-        await atmosphere.clientGraphQLServer.finishBotActions()
-      }
-      // submitMutation();
-      NavigateMeetingMutation(atmosphere, variables, onError, handleCompleted)
-    } else {
-      updateLocalStage(atmosphere, meetingId, stageId)
+      NavigateMeetingMutation(atmosphere, variables, onError, onCompleted)
     }
   }
 

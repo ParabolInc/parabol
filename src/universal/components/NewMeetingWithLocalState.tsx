@@ -41,8 +41,6 @@ type State = {
 class NewMeetingWithLocalState extends Component<Props, State> {
   constructor (props) {
     super(props)
-    // const isDemo = props.match.path.includes('retrospective-demo')
-    // const {match: {localPhaseSlug, stageIdxSlug}} = props.params
     const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
       safeRoute

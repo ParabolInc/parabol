@@ -125,7 +125,6 @@ const TemplatePickerBlock = styled('div')({
 
 class NewMeetingLobby extends React.Component<Props> {
   render () {
-    console.log('lobby')
     const {
       atmosphere,
       history,

@@ -38,6 +38,9 @@ const getRetroMeeting = (meetingId) => {
             .table('RetroReflection')
             .getAll(reflectionGroup('id'), {index: 'reflectionGroupId'})
             .filter({isActive: true})
+            .merge((reflection) => ({
+              phaseItem: r.table('CustomPhaseItem').get(reflection('retroPhaseItemId'))
+            }))
             .coerceTo('array'),
           voteCount: reflectionGroup('voterIds')
             .count()
