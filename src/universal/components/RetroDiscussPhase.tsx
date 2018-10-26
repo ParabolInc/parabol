@@ -1,41 +1,33 @@
 import {RetroDiscussPhase_team} from '__generated__/RetroDiscussPhase_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
-import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {Dispatch} from 'redux'
-import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import DiscussPhaseReflectionGrid from 'universal/components/DiscussPhaseReflectionGrid'
+import Icon from 'universal/components/Icon'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import DiscussHelpMenu from 'universal/components/MeetingHelp/DiscussHelpMenu'
 import Overflow from 'universal/components/Overflow'
+import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
-import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {meetingVoteIcon} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
 import handleRightArrow from '../utils/handleRightArrow'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import {isDemoRoute} from 'universal/utils/demo'
+import EndMeetingButton from './EndMeetingButton'
 
-interface PassedProps {
+interface Props extends WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroDiscussPhase_team
-}
-
-interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, PassedProps {
-  dispatch: Dispatch<{}>
 }
 
 const maxWidth = '114rem'
@@ -127,16 +119,12 @@ const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
 })
 
-const StyledBottomControl = styled(BottomNavControl)({
-  minWidth: '6rem'
-})
-
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, dispatch, gotoNext, gotoNextRef, history, team} = props
+  const {atmosphere, gotoNext, gotoNextRef, team} = props
   const {viewerId} = atmosphere
   const {newMeeting, teamId} = team
   if (!newMeeting) return null
@@ -151,10 +139,6 @@ const RetroDiscussPhase = (props: Props) => {
   const {reflectionGroupId, tasks, title, reflections, voteCount} = reflectionGroup
   const isFacilitating = facilitatorUserId === viewerId
   const nextStageRes = findStageAfterId(phases, localStageId)
-  const endMeeting = () => {
-    EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
-  }
-  const endMeetingLabel = isDemoRoute ? 'End Demo' : 'End Meeting'
   return (
     <React.Fragment>
       <PhaseWrapper>
@@ -204,18 +188,16 @@ const RetroDiscussPhase = (props: Props) => {
           <BottomControlSpacer />
           {nextStageRes && (
             <React.Fragment>
-              <StyledBottomControl
+              <BottomNavControl
                 onClick={gotoNext}
                 innerRef={gotoNextRef}
                 onKeyDown={handleRightArrow(gotoNext)}
               >
                 <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
-              </StyledBottomControl>
+              </BottomNavControl>
             </React.Fragment>
           )}
-          <StyledBottomControl onClick={endMeeting}>
-            <BottomNavIconLabel icon='flag' iconColor='blue' label={endMeetingLabel} />
-          </StyledBottomControl>
+          <EndMeetingButton meetingId={meetingId} />
           {!nextStageRes && <BottomControlSpacer />}
         </StyledBottomBar>
       )}
@@ -225,8 +207,8 @@ const RetroDiscussPhase = (props: Props) => {
   )
 }
 
-export default createFragmentContainer<PassedProps>(
-  (connect as any)()(withRouter(withAtmosphere(RetroDiscussPhase))),
+export default createFragmentContainer(
+  withAtmosphere(RetroDiscussPhase),
   graphql`
     fragment RetroDiscussPhase_team on Team {
       teamId: id

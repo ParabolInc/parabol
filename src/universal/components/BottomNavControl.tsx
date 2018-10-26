@@ -1,28 +1,28 @@
-import React from 'react'
+import React, {ReactNode} from 'react'
 import styled from 'react-emotion'
-import FlatButton from 'universal/components/FlatButton'
+import FlatButton, {FlatButtonProps} from 'universal/components/FlatButton'
 import withInnerRef from 'universal/decorators/withInnerRef'
 
 const StyledFlatButton = styled(FlatButton)({
   border: 0,
   borderRadius: 0,
   height: 56,
-  minWidth: 80,
+  minWidth: '6rem',
   padding: 0
 })
 
-interface Props {
-  children: any | undefined
-  className: string | undefined
+interface Props extends FlatButtonProps {
+  children?: ReactNode
+  disabled: boolean
 }
 
 const BottomNavControl = (props: Props) => {
-  const {children, className} = props
+  const {children, disabled} = props
   return (
-    <StyledFlatButton {...props} className={className}>
+    <StyledFlatButton {...props} disabled={disabled}>
       {children}
     </StyledFlatButton>
   )
 }
 
-export default withInnerRef(BottomNavControl)
+export default (withInnerRef as any)(BottomNavControl)

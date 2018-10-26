@@ -21,7 +21,7 @@ import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 import handleRightArrow from '../utils/handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
-import {isDemoRoute} from 'universal/utils/demo'
+import EndMeetingButton from './EndMeetingButton'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void
@@ -30,10 +30,6 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 }
 
 const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
-})
-
-const StyledBottomControl = styled(BottomNavControl)({
   minWidth: '6rem'
 })
 
@@ -70,7 +66,6 @@ const RetroGroupPhase = (props: Props) => {
     AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
   }
   const canAutoGroup = !nextAutoGroupThreshold || nextAutoGroupThreshold < 1
-  const endMeetingLabel = isDemoRoute ? 'End Demo' : 'End Meeting'
   return (
     <React.Fragment>
       {error && <StyledError>{error}</StyledError>}
@@ -82,7 +77,7 @@ const RetroGroupPhase = (props: Props) => {
           {/* ControlBlock and div for layout spacing */}
           <BottomControlSpacer />
           <CenteredControlBlock>
-            <StyledBottomControl
+            <BottomNavControl
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
@@ -92,16 +87,14 @@ const RetroGroupPhase = (props: Props) => {
                 iconColor='warm'
                 label={`Next: ${nextPhaseLabel}`}
               />
-            </StyledBottomControl>
+            </BottomNavControl>
             {canAutoGroup && (
-              <StyledBottomControl onClick={autoGroup} waiting={submitting}>
+              <BottomNavControl onClick={autoGroup} waiting={submitting}>
                 <BottomNavIconLabel icon='photo_filter' iconColor='midGray' label={'Auto Group'} />
-              </StyledBottomControl>
+              </BottomNavControl>
             )}
           </CenteredControlBlock>
-          <StyledBottomControl onClick={() => console.log('End Meeting')} waiting={submitting}>
-            <BottomNavIconLabel icon='flag' iconColor='blue' label={endMeetingLabel} />
-          </StyledBottomControl>
+          <EndMeetingButton meetingId={meetingId} />
         </StyledBottomBar>
       )}
       <GroupHelpMenu floatAboveBottomBar={isFacilitating} />

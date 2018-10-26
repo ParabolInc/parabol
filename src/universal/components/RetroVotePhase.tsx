@@ -18,13 +18,13 @@ import ui from 'universal/styles/ui'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
+import EndMeetingButton from './EndMeetingButton'
 import PhaseItemMasonry from './PhaseItemMasonry'
 import {IDiscussPhase} from 'universal/types/graphql'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {PALETTE} from 'universal/styles/paletteV2'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import {isDemoRoute} from 'universal/utils/demo'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -109,10 +109,6 @@ const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
 })
 
-const StyledBottomControl = styled(BottomNavControl)({
-  minWidth: '6rem'
-})
-
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
@@ -129,7 +125,7 @@ const RetroVotePhase = (props: Props) => {
     newMeeting
   } = team
   if (!newMeeting) return null
-  const {facilitatorUserId, phases, viewerMeetingMember} = newMeeting
+  const {facilitatorUserId, meetingId, phases, viewerMeetingMember} = newMeeting
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
@@ -137,7 +133,6 @@ const RetroVotePhase = (props: Props) => {
   const discussStage = discussPhase.stages[0]
   const nextPhaseLabel = phaseLabelLookup[DISCUSS]
   const checkMarks = [...Array(totalVotes).keys()]
-  const endMeetingLabel = isDemoRoute ? 'End Demo' : 'End Meeting'
   return (
     <React.Fragment>
       <VoteMeta>
@@ -165,7 +160,7 @@ const RetroVotePhase = (props: Props) => {
       {isFacilitating && (
         <StyledBottomBar>
           <BottomControlSpacer />
-          <StyledBottomControl
+          <BottomNavControl
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={gotoNext}
             onKeyDown={handleRightArrow(gotoNext)}
@@ -176,10 +171,8 @@ const RetroVotePhase = (props: Props) => {
               iconColor='warm'
               label={`Next: ${nextPhaseLabel}`}
             />
-          </StyledBottomControl>
-          <StyledBottomControl onClick={() => console.log('End Meeting')}>
-            <BottomNavIconLabel icon='flag' iconColor='blue' label={endMeetingLabel} />
-          </StyledBottomControl>
+          </BottomNavControl>
+          <EndMeetingButton meetingId={meetingId} />
         </StyledBottomBar>
       )}
       <VoteHelpMenu floatAboveBottomBar={isFacilitating} />

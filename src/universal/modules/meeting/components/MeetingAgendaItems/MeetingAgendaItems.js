@@ -50,10 +50,6 @@ const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
 })
 
-const StyledBottomControl = styled(BottomNavControl)({
-  minWidth: '6rem'
-})
-
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
@@ -159,13 +155,13 @@ class MeetingAgendaItems extends Component {
           <StyledBottomBar>
             <BottomControlSpacer />
             <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
-              <StyledBottomControl key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
+              <BottomNavControl key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
                 <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label='Next Topic' />
-              </StyledBottomControl>
+              </BottomNavControl>
             </BounceBlock>
-            <StyledBottomControl onClick={endMeeting}>
+            <BottomNavControl onClick={endMeeting}>
               <BottomNavIconLabel icon='flag' iconColor='blue' label={'End Meeting'} />
-            </StyledBottomControl>
+            </BottomNavControl>
           </StyledBottomBar>
         )}
       </MeetingMain>
