@@ -50,7 +50,8 @@ const VoteMeta = styled('div')({
 const MetaBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
-  flexWrap: 'nowrap'
+  flexWrap: 'nowrap',
+  userSelect: 'none'
 })
 
 const StyledMetaBlock = styled(MetaBlock)({
