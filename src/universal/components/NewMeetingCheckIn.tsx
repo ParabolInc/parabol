@@ -15,11 +15,11 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
 import ui from 'universal/styles/ui'
+import {MeetingTypeEnum} from 'universal/types/graphql'
 import {CHECKIN} from 'universal/utils/constants'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import MeetingTypeEnum = GQL.MeetingTypeEnum
+import EndMeetingButton from './EndMeetingButton'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -44,6 +44,14 @@ const Hint = styled('div')({
   marginTop: '2.5rem'
 })
 
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+})
+
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   gotoNext (options: {isCheckedIn: boolean}): void
   gotoNextRef: React.RefObject<HTMLDivElement>
@@ -64,6 +72,7 @@ class NewMeetingCheckIn extends Component<Props> {
     const {
       facilitator: {facilitatorName, facilitatorUserId},
       localStage: {localStageId},
+      meetingId,
       phases
     } = newMeeting
     const teamMember = newMeeting.localStage.teamMember!
@@ -71,10 +80,8 @@ class NewMeetingCheckIn extends Component<Props> {
     const nextStageRes = findStageAfterId(phases, localStageId)
     // in case the checkin is the last phase of the meeting
     if (!nextStageRes) return null
-    const {stage: nextStage, phase: nextPhase} = nextStageRes
+    const {phase: nextPhase} = nextStageRes
     const lastCheckInStage = nextPhase.phaseType !== CHECKIN
-    const nextMemberName =
-      (nextStage && nextStage.teamMember && nextStage.teamMember.preferredName) || ''
     const {viewerId} = atmosphere
     const isFacilitating = facilitatorUserId === viewerId
     return (
@@ -108,16 +115,16 @@ class NewMeetingCheckIn extends Component<Props> {
           </CheckIn>
         </MeetingSection>
         {isFacilitating && (
-          <MeetingControlBar>
+          <StyledBottomBar>
+            <BottomControlSpacer />
             <CheckInControls
               checkInPressFactory={this.checkinPressFactory}
               currentMemberName={teamMember.preferredName}
               localPhaseItem={localStageId}
-              nextMemberName={nextMemberName}
-              nextPhaseName={phaseLabelLookup[nextPhase.phaseType]}
               gotoNextRef={gotoNextRef}
             />
-          </MeetingControlBar>
+            <EndMeetingButton meetingId={meetingId} />
+          </StyledBottomBar>
         )}
         <CheckInHelpMenu floatAboveBottomBar={isFacilitating} meetingType={meetingType} />
       </React.Fragment>

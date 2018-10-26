@@ -73,7 +73,7 @@ const getGroupMatrix = (distanceMatrix, groupingThreshold) => {
     }
   }
   const nextDistance = distancesArr.find((d) => d > thresh)
-  const nextThresh = nextDistance ? Math.ceil(nextDistance * 100) / 100 : undefined
+  const nextThresh = nextDistance ? Math.ceil(nextDistance * 100) / 100 : null
   return {thresh, groups, nextThresh}
 }
 

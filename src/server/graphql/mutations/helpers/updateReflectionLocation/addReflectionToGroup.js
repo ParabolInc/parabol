@@ -1,4 +1,4 @@
-import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle'
+import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
 import getRethink from 'server/database/rethinkDriver'
 import {
   sendReflectionGroupNotFoundError,
@@ -56,14 +56,12 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
     })
 
     const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
-      meetingId,
       nextReflections
     )
     await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle)
 
     if (oldReflections.length > 0) {
       const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
-        meetingId,
         oldReflections
       )
       await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle)

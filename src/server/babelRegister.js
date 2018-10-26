@@ -8,6 +8,7 @@ const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-sprea
 const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
 const pluginRelay = require('babel-plugin-relay')
 
+// .tsx required for email SSR
 const extensions = ['.js', '.ts', '.tsx']
 require('@babel/register')({
   extensions,

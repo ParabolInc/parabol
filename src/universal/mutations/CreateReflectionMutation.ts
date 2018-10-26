@@ -8,7 +8,7 @@ import handleAddReflectionGroups from 'universal/mutations/handlers/handleAddRef
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import ICreateReflectionOnMutationArguments = GQL.ICreateReflectionOnMutationArguments
+import {ICreateReflectionOnMutationArguments} from 'universal/types/graphql'
 
 interface Context {
   meetingId: string

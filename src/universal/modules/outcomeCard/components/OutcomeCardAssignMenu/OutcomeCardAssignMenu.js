@@ -100,9 +100,11 @@ class OutcomeCardAssignMenu extends Component {
             />
           )
         })}
-        <MenuItemWithShortcuts noCloseOnClick>
-          <AddSoftTeamMember area={area} closePortal={closePortal} taskId={taskId} team={team} />
-        </MenuItemWithShortcuts>
+        {!window.location.pathname.startsWith('/retrospective-demo') && (
+          <MenuItemWithShortcuts noCloseOnClick>
+            <AddSoftTeamMember area={area} closePortal={closePortal} taskId={taskId} team={team} />
+          </MenuItemWithShortcuts>
+        )}
       </MenuWithShortcuts>
     )
   }

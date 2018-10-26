@@ -12,7 +12,7 @@ import publish from 'server/utils/publish'
 import {GROUP, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload'
-import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle'
+import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
 import {sendTooManyReflectionsError} from 'server/utils/__tests__/validationErrors'
 
 export default {
@@ -60,7 +60,7 @@ export default {
 
     // RESOLUTION
     const reflectionGroupId = shortid.generate()
-    const {title, smartTitle} = makeRetroGroupTitle(meetingId, reflections)
+    const {title, smartTitle} = makeRetroGroupTitle(reflections)
 
     const reflectionGroup = {
       id: reflectionGroupId,

@@ -24,8 +24,7 @@ import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
-
-import MeetingTypeEnum = GQL.MeetingTypeEnum
+import {MeetingTypeEnum} from 'universal/types/graphql'
 
 const ButtonGroup = styled('div')({
   display: 'flex',

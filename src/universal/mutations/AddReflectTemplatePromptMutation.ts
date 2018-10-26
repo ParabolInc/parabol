@@ -3,7 +3,7 @@ import Atmosphere from 'universal/Atmosphere'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
 import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
-import IAddReflectTemplatePromptOnMutationArguments = GQL.IAddReflectTemplatePromptOnMutationArguments
+import {IAddReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
 
 interface Context {
   promptCount: number

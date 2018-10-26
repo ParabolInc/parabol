@@ -1,10 +1,12 @@
-import ICoords2D = GQL.ICoords2D
-import IDragContext = GQL.IDragContext
-import INewMeeting = GQL.INewMeeting
-import IRetroReflection = GQL.IRetroReflection
-import IRetrospectiveMeeting = GQL.IRetrospectiveMeeting
-import NewMeetingPhase = GQL.NewMeetingPhase
-import NewMeetingStage = GQL.NewMeetingStage
+import {
+  ICoords2D,
+  IDragContext,
+  INewMeeting,
+  IRetroReflection,
+  IRetrospectiveMeeting,
+  NewMeetingPhase,
+  NewMeetingStage
+} from 'universal/types/graphql'
 
 export interface ClientNewMeeting extends INewMeeting {
   localPhase: NewMeetingPhase

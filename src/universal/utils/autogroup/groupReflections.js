@@ -1,20 +1,12 @@
-import getRethink from 'server/database/rethinkDriver'
-import getAllLemmasFromReflections from 'server/graphql/mutations/helpers/autoGroup/getAllLemmasFromReflections'
-import computeDistanceMatrix from 'server/graphql/mutations/helpers/autoGroup/computeDistanceMatrix'
+import getAllLemmasFromReflections from 'universal/utils/autogroup/getAllLemmasFromReflections'
+import computeDistanceMatrix from 'universal/utils/autogroup/computeDistanceMatrix'
 import getGroupMatrix from 'server/graphql/mutations/helpers/autoGroup/getGroupMatrix'
-import getTitleFromComputedGroup from 'server/graphql/mutations/helpers/autoGroup/getTitleFromComputedGroup'
+import getTitleFromComputedGroup from 'universal/utils/autogroup/getTitleFromComputedGroup'
 
 /*
  * Read each reflection, parse the content for entities (i.e. nouns), group the reflections based on common themes
  */
-const groupReflections = async (meetingId, groupingThreshold) => {
-  // get reflections
-  const r = getRethink()
-  const reflections = await r
-    .table('RetroReflection')
-    .getAll(meetingId, {index: 'meetingId'})
-    .filter({isActive: true})
-
+const groupReflections = (reflections, groupingThreshold) => {
   const allReflectionEntities = reflections.map(({entities}) => entities)
   const oldReflectionGroupIds = reflections.map(({reflectionGroupId}) => reflectionGroupId)
 

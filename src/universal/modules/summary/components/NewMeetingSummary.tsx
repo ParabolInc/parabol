@@ -7,6 +7,7 @@ import ui from 'universal/styles/ui'
 import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import {demoTeamId} from 'universal/modules/demo/initDB'
 
 interface Props {
   viewer: NewMeetingSummary_viewer
@@ -29,6 +30,7 @@ const NewMeetingSummary = (props: Props) => {
     <div style={{backgroundColor: ui.emailBackgroundColor, minHeight: '100vh'}}>
       <Helmet title={title} />
       <NewMeetingSummaryEmail
+        isDemo={teamId === demoTeamId}
         meeting={newMeeting}
         referrer='meeting'
         meetingUrl={meetingUrl}

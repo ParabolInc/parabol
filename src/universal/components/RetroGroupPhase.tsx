@@ -3,6 +3,7 @@
  *
  */
 import React from 'react'
+import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import StyledError from 'universal/components/StyledError'
@@ -14,18 +15,31 @@ import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectio
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 import handleRightArrow from '../utils/handleRightArrow'
 import PhaseItemMasonry from './PhaseItemMasonry'
+import EndMeetingButton from './EndMeetingButton'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
   team: RetroGroupPhase_team
 }
+
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+})
+
+const CenteredControlBlock = styled('div')({
+  display: 'flex'
+})
 
 const RetroGroupPhase = (props: Props) => {
   const {
@@ -59,27 +73,29 @@ const RetroGroupPhase = (props: Props) => {
         <PhaseItemMasonry meeting={newMeeting} />
       </MeetingPhaseWrapper>
       {isFacilitating && (
-        <MeetingControlBar>
-          <FlatButton
-            size='medium'
-            onClick={gotoNext}
-            onKeyDown={handleRightArrow(gotoNext)}
-            innerRef={gotoNextRef}
-          >
-            <IconLabel
-              icon='arrow_forward'
-              iconAfter
-              iconColor='warm'
-              iconLarge
-              label={`Done! Let’s ${nextPhaseLabel}`}
-            />
-          </FlatButton>
-          {canAutoGroup && (
-            <FlatButton size='medium' onClick={autoGroup} waiting={submitting}>
-              <IconLabel icon='photo_filter' iconColor='midGray' iconLarge label={'Auto Group'} />
-            </FlatButton>
-          )}
-        </MeetingControlBar>
+        <StyledBottomBar>
+          {/* ControlBlock and div for layout spacing */}
+          <BottomControlSpacer />
+          <CenteredControlBlock>
+            <BottomNavControl
+              onClick={gotoNext}
+              onKeyDown={handleRightArrow(gotoNext)}
+              innerRef={gotoNextRef}
+            >
+              <BottomNavIconLabel
+                icon='arrow_forward'
+                iconColor='warm'
+                label={`Next: ${nextPhaseLabel}`}
+              />
+            </BottomNavControl>
+            {canAutoGroup && (
+              <BottomNavControl onClick={autoGroup} waiting={submitting}>
+                <BottomNavIconLabel icon='photo_filter' iconColor='midGray' label={'Auto Group'} />
+              </BottomNavControl>
+            )}
+          </CenteredControlBlock>
+          <EndMeetingButton meetingId={meetingId} />
+        </StyledBottomBar>
       )}
       <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
     </React.Fragment>

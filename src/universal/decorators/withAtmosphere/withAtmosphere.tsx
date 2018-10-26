@@ -16,7 +16,7 @@ export default <P extends WithAtmosphereProps>(ComposedComponent: React.Componen
 
     render () {
       const {atmosphere} = this.context
-      return <ComposedComponent {...this.props} atmosphere={atmosphere} />
+      return <ComposedComponent atmosphere={atmosphere} {...this.props} />
     }
   }
 }

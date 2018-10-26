@@ -18,7 +18,7 @@ const query = graphql`
 
 const NewMeetingSummaryRoot = ({atmosphere, match}) => {
   const {
-    params: {meetingId}
+    params: {meetingId = 'demoMeeting'}
   } = match
   return (
     <QueryRenderer

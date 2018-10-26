@@ -77,7 +77,7 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 
 const EditingStatus = (props) => {
   const {
-    atmosphere: {userId: myUserId},
+    atmosphere: {viewerId},
     cardIsActive,
     handleClick,
     task,
@@ -86,7 +86,7 @@ const EditingStatus = (props) => {
     toggleMenuState
   } = props
   const {editors} = task
-  const otherEditors = editors.filter((editor) => editor.userId !== myUserId)
+  const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated'
   return (

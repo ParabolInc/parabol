@@ -1,7 +1,7 @@
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
-import IMoveReflectTemplatePromptOnMutationArguments = GQL.IMoveReflectTemplatePromptOnMutationArguments
+import {IMoveReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
 import getInProxy from 'universal/utils/relay/getInProxy'
 
 interface Context {

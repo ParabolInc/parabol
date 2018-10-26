@@ -46,7 +46,7 @@ class MeetingAgendaCards extends Component<Props> {
   handleAddTask = (content?: string) => () => {
     const {agendaId, atmosphere, meetingId, reflectionGroupId, teamId} = this.props
     const tasks = this.props.tasks || []
-    const {userId} = atmosphere
+    const {viewerId} = atmosphere
     const maybeLastTask = tasks[tasks.length - 1]
     const sortOrder = sortOrderBetween(maybeLastTask, null, null, false)
     const newTask = {
@@ -56,7 +56,7 @@ class MeetingAgendaCards extends Component<Props> {
       agendaId,
       meetingId,
       reflectionGroupId,
-      userId,
+      userId: viewerId,
       teamId
     }
     CreateTaskMutation(atmosphere, newTask, MEETING)
@@ -64,7 +64,7 @@ class MeetingAgendaCards extends Component<Props> {
 
   render () {
     const {
-      atmosphere: {userId},
+      atmosphere: {viewerId},
       maxCols,
       showPlaceholders
     } = this.props
@@ -81,7 +81,7 @@ class MeetingAgendaCards extends Component<Props> {
                       area={MEETING}
                       handleAddTask={this.handleAddTask}
                       isAgenda
-                      myUserId={userId}
+                      myUserId={viewerId}
                       task={task}
                     />
                   </div>

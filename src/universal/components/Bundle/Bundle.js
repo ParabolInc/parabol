@@ -53,7 +53,7 @@ class Bundle extends Component {
     const {history, location, match, extraProps} = this.props
     return (
       <ErrorBoundary>
-        <Mod {...extraProps} history={history} location={location} match={match} />
+        <Mod history={history} location={location} match={match} {...extraProps} />
       </ErrorBoundary>
     )
   }

@@ -9,8 +9,8 @@ const Content = styled('div')({
   fontSize: appTheme.typography.s2,
   lineHeight: '1.5',
   position: 'relative',
-  padding: '.75rem 1.25rem',
-  width: '15rem'
+  padding: '.75rem 1rem',
+  width: '20rem'
 })
 
 const MenuClose = styled(Icon)({

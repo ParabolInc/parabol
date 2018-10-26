@@ -1,7 +1,7 @@
 import {commitMutation, graphql} from 'react-relay'
 import Atmosphere from 'universal/Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
-import IRenameReflectTemplateOnMutationArguments = GQL.IRenameReflectTemplateOnMutationArguments
+import {IRenameReflectTemplateOnMutationArguments} from 'universal/types/graphql'
 
 graphql`
   fragment RenameReflectTemplateMutation_team on RenameReflectTemplatePayload {

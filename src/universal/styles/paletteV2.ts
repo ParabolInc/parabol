@@ -19,4 +19,8 @@ export namespace PALETTE {
   export const enum ERROR {
     MAIN = '#ED4C56'
   }
+  export const enum LINK {
+    COLOR = '#329AE5',
+    COLOR_NEUTRAL = '#444258'
+  }
 }
