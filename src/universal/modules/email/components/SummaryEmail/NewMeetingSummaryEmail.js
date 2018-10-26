@@ -13,6 +13,7 @@ import RetroQuickStats from 'universal/modules/email/components/QuickStats/Retro
 import MeetingMemberTasks from 'universal/modules/email/components/SummaryEmail/MeetingMemberTasks'
 import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscussionTopics/RetroDiscussionTopics'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import ExportToCSV from 'universal/modules/email/components/SummaryEmail/ExportToCSV'
 import SummaryCTA from 'universal/modules/email/components/SummaryEmail/SummaryCTA'
 
 const ruleStyle = {
@@ -57,6 +58,7 @@ type Props = {|
 const SummaryEmail = (props: Props) => {
   const {isDemo, meeting, referrer, referrerUrl, teamDashUrl} = props
   const {
+    id: meetingId,
     createdAt,
     meetingNumber,
     meetingType,
@@ -110,6 +112,7 @@ const SummaryEmail = (props: Props) => {
               <td>
                 {/* Team Dashboard Button */}
                 <SummaryCTA referrer={referrer} teamDashUrl={teamDashUrl} isDemo={isDemo} />
+                {referrer !== 'email' && <ExportToCSV meetingId={meetingId} />}
                 <EmptySpace height={32} />
               </td>
             </tr>
