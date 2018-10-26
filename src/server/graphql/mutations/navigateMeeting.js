@@ -12,8 +12,8 @@ import {
 } from 'server/utils/docNotFoundErrors'
 import findStageById from 'universal/utils/meetings/findStageById'
 import handleCompletedStage from 'server/graphql/mutations/helpers/handleCompletedStage'
-import unlockNextStages from 'server/graphql/mutations/helpers/unlockNextStages'
-import startStage_ from 'server/graphql/mutations/helpers/startStage_'
+import unlockNextStages from 'universal/utils/unlockNextStages'
+import startStage_ from 'universal/utils/startStage_'
 
 export default {
   type: NavigateMeetingPayload,
@@ -90,7 +90,7 @@ export default {
       startStage_(facilitatorStage)
 
       // mutative! sets isNavigable and isNavigableByFacilitator
-      unlockedStageIds = await unlockNextStages(facilitatorStageId, phases, meetingId)
+      unlockedStageIds = unlockNextStages(facilitatorStageId, phases, meetingId)
     }
 
     // RESOLUTION

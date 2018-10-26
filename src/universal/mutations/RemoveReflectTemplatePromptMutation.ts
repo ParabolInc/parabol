@@ -3,7 +3,7 @@ import Atmosphere from 'universal/Atmosphere'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
 import handleRemoveReflectTemplatePrompt from './handlers/handleRemoveReflectTemplatePrompt'
-import IRemoveReflectTemplatePromptOnMutationArguments = GQL.IRemoveReflectTemplatePromptOnMutationArguments
+import {IRemoveReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
 
 graphql`
   fragment RemoveReflectTemplatePromptMutation_team on RemoveReflectTemplatePromptPayload {

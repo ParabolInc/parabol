@@ -7,7 +7,8 @@ const presetTypescript = require('@babel/preset-typescript').default
 const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread').default
 const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
 
-const extensions = ['.js', '.ts']
+// .tsx required for email SSR
+const extensions = ['.js', '.ts', '.tsx']
 require('@babel/register')({
   extensions,
   plugins: [

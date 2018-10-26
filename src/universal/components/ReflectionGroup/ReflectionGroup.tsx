@@ -36,7 +36,7 @@ import {
   SetChildRef,
   SetItemRef
 } from '../PhaseItemMasonry'
-import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
+import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting

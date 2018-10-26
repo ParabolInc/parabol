@@ -29,6 +29,9 @@ import RateLimiter from 'server/graphql/RateLimiter'
 import SSEConnectionHandler from 'server/sse/SSEConnectionHandler'
 import intranetHttpGraphQLHandler from 'server/graphql/intranetGraphQLHandler'
 import SSEPingHandler from 'server/sse/SSEPingHandler'
+import ms from 'ms'
+import rateLimit from 'express-rate-limit'
+import demoEntityHandler from 'server/demoEntityHandler'
 
 const {version} = packageJSON
 // Import .env and expand variables:
@@ -155,6 +158,14 @@ app.post('/webhooks/github', handleGitHubWebhooks)
 // SSE Fallback
 app.get('/sse-ping', SSEPingHandler(sseClients))
 app.get('/sse', SSEConnectionHandler(sharedDataLoader, rateLimiter, sseClients))
+
+// Entity generator for demo
+app.enable('trust proxy')
+const demoEntityLimiter = rateLimit({
+  windowMs: ms('1h'),
+  max: 20
+})
+app.post('/get-demo-entities', demoEntityLimiter, demoEntityHandler)
 
 // return web app
 app.get('*', createSSR)

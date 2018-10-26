@@ -17,7 +17,7 @@ import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectionGroupPayload'
 import safelyCastVote from 'server/graphql/mutations/helpers/safelyCastVote'
 import safelyWithdrawVote from 'server/graphql/mutations/helpers/safelyWithdrawVote'
-import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase'
+import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 
 export default {
   type: VoteForReflectionGroupPayload,

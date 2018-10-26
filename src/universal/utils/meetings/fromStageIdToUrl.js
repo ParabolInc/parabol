@@ -12,6 +12,9 @@ const fromStageIdToUrl = (stageId: string, phases: $ReadOnlyArray<Object>) => {
   if (!meetingSlug || !teamId) return '/'
   const isPhaseMultiStage = phaseIsMultiStage[phaseType]
   const maybeStage = isPhaseMultiStage ? `/${stageIdx + 1}` : ''
+  if (teamId === 'demo') {
+    return `/retrospective-demo/${phaseSlug}${maybeStage}`
+  }
   return `/${meetingSlug}/${teamId}/${phaseSlug}${maybeStage}`
 }
 

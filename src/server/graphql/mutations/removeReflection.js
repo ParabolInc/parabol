@@ -12,7 +12,7 @@ import {GROUP, REFLECT, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import RemoveReflectionPayload from 'server/graphql/types/RemoveReflectionPayload'
 import removeEmptyReflectionGroup from 'server/graphql/mutations/helpers/removeEmptyReflectionGroup'
-import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase'
+import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 
 export default {
   type: RemoveReflectionPayload,

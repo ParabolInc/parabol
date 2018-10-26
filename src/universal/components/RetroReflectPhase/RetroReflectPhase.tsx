@@ -1,13 +1,9 @@
 import {RetroReflectPhase_team} from '__generated__/RetroReflectPhase_team.graphql'
-/**
- * Renders the UI for the reflection phase of the retrospective meeting
- *
- */
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import ReflectHelpMenu from 'universal/components/MeetingHelp/ReflectHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import PhaseItemColumn from 'universal/components/RetroReflectPhase/PhaseItemColumn'
@@ -20,12 +16,28 @@ import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
+import EndMeetingButton from '../EndMeetingButton'
 
 const minWidth = REFLECTION_WIDTH + 32
 
+const StyledOverflow = styled(Overflow)({
+  // using position helps with overflow of columns for small screens
+  position: 'relative'
+})
+
 const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemCount: number}) => ({
-  minWidth: phaseItemCount * minWidth
+  minWidth: phaseItemCount * minWidth,
+  // using position helps with overflow of columns for small screens
+  position: 'absolute'
 }))
+
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+})
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -45,13 +57,13 @@ class RetroReflectPhase extends Component<Props> {
     } = this.props
     const {newMeeting} = team
     if (!newMeeting) return
-    const {facilitatorUserId, localPhase, reflectionGroups} = newMeeting
+    const {facilitatorUserId, localPhase, meetingId, reflectionGroups} = newMeeting
     const reflectPrompts = localPhase!.reflectPrompts!
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
     return (
       <React.Fragment>
-        <Overflow>
+        <StyledOverflow>
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
@@ -65,25 +77,24 @@ class RetroReflectPhase extends Component<Props> {
               />
             ))}
           </StyledWrapper>
-        </Overflow>
+        </StyledOverflow>
         {isFacilitating && (
-          <MeetingControlBar>
-            <FlatButton
-              size='medium'
+          <StyledBottomBar>
+            <BottomControlSpacer />
+            <BottomNavControl
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
             >
-              <IconLabel
+              <BottomNavIconLabel
                 icon='arrow_forward'
-                iconAfter
                 iconColor='warm'
-                iconLarge
-                label={`Done! Let’s ${nextPhaseLabel}`}
+                label={`Next: ${nextPhaseLabel}`}
               />
-            </FlatButton>
-          </MeetingControlBar>
+            </BottomNavControl>
+            <EndMeetingButton meetingId={meetingId} />
+          </StyledBottomBar>
         )}
         <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
       </React.Fragment>
@@ -97,6 +108,7 @@ export default createFragmentContainer(
     fragment RetroReflectPhase_team on Team {
       newMeeting {
         ...PhaseItemColumn_meeting
+        meetingId: id
         facilitatorUserId
         ... on RetrospectiveMeeting {
           reflectionGroups {

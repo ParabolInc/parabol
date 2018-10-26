@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
+import {emailPrimaryButtonStyle} from 'universal/styles/emails'
 import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites'
 import Body from '../../components/Body/Body'
 import ContactUs from '../../components/ContactUs/ContactUs'
@@ -129,20 +130,9 @@ const SummaryEmail = (props) => {
     verticalAlign: 'middle'
   }
   const teamDashLinkStyle = {
-    ...textStyle,
-    backgroundColor: appTheme.palette.warm,
-    backgroundImage: ui.gradientWarm,
-    borderRadius: '4em',
-    color: '#ffffff',
-    cursor: 'pointer',
-    display: 'block',
+    ...emailPrimaryButtonStyle,
     fontSize: '14px',
-    fontWeight: 600,
-    lineHeight: '20px',
-    margin: '0 auto',
     padding: '6px 0',
-    textAlign: 'center',
-    textDecoration: 'none',
     width: '186px'
   }
   const tipStyle = {

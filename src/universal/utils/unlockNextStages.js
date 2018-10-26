@@ -1,6 +1,6 @@
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import findStageById from 'universal/utils/meetings/findStageById'
-import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase'
+import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
 import {DISCUSS, GROUP} from 'universal/utils/constants'
 
 const phasesWithExtraRequirements = [GROUP, DISCUSS]
@@ -22,7 +22,7 @@ const unlockNextStageForFacilitator = (facilitatorStageId, phases) => {
   return unlockAllStagesForPhase(phases, nextStage.phaseType, true)
 }
 
-const unlockNextStages = async (facilitatorStageId, phases) => {
+const unlockNextStages = (facilitatorStageId, phases) => {
   const unlockedFacilitatorStageIds = unlockNextStageForFacilitator(facilitatorStageId, phases)
   const unlockedParticipantStageIds = unlockStagesForParticipants(facilitatorStageId, phases)
   return [...unlockedFacilitatorStageIds, ...unlockedParticipantStageIds]

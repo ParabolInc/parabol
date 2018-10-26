@@ -50,10 +50,18 @@ export const endNewMeetingTeamOnNext = (payload, context) => {
   const {id: meetingId} = meeting
   if (isKill) {
     const {meetingSlug, teamId} = getMeetingPathParams()
-    history.push(`/${meetingSlug}/${teamId}`)
+    if (teamId === 'demo') {
+      history.push('/retrospective-demo')
+    } else {
+      history.push(`/${meetingSlug}/${teamId}`)
+    }
     popEndNewMeetingToast(dispatch)
   } else {
-    history.push(`/new-summary/${meetingId}`)
+    if (meetingId === 'demoMeeting') {
+      history.push('/retrospective-demo-summary')
+    } else {
+      history.push(`/new-summary/${meetingId}`)
+    }
   }
 }
 

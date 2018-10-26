@@ -2,7 +2,7 @@ const resolve = require('./webpackResolve')
 const path = require('path')
 const webpack = require('webpack')
 const npmPackage = require('../package.json')
-const vendors = require('../dll/vendors.json')
+// const vendors = require('../dll/vendors.json')
 const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread').default
 const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').default
@@ -45,10 +45,10 @@ module.exports = {
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(npmPackage.version),
       'process.env.NODE_ENV': JSON.stringify('development')
-    }),
-    new webpack.DllReferencePlugin({
-      manifest: vendors
     })
+    // new webpack.DllReferencePlugin({
+    //   manifest: vendors
+    // })
   ],
   module: {
     rules: [

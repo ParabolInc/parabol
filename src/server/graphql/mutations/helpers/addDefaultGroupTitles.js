@@ -1,11 +1,11 @@
 import getRethink from 'server/database/rethinkDriver'
 import promiseAllPartial from 'universal/utils/promiseAllPartial'
 import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle'
-import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle'
+import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
 
 const getTitleFromReflection = async (reflection) => {
-  const {meetingId, reflectionGroupId} = reflection
-  const {smartTitle, title} = makeRetroGroupTitle(meetingId, [reflection])
+  const {reflectionGroupId} = reflection
+  const {smartTitle, title} = makeRetroGroupTitle([reflection])
   return updateGroupTitle(reflectionGroupId, smartTitle, title)
 }
 

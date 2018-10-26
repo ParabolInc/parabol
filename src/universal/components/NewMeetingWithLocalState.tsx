@@ -10,7 +10,7 @@ import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
-import MeetingTypeEnum = GQL.MeetingTypeEnum
+import {MeetingTypeEnum} from 'universal/types/graphql'
 import NewMeeting from 'universal/components/NewMeeting'
 
 /*
@@ -147,7 +147,13 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     const stageId = stage && stage.id
     const isViewerFacilitator = viewerId === facilitatorUserId
     const itemStage = findStageById(phases, stageId)
-    if (!itemStage) return false
+    if (!itemStage) {
+      // useful for e.g. /discuss/2, especially on the demo
+      const nextUrl = teamId ? `/${meetingSlug}/${teamId}` : '/retrospective-demo/reflect'
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+      history.replace(nextUrl)
+      return false
+    }
     const {
       stage: {isNavigable, isNavigableByFacilitator}
     } = itemStage

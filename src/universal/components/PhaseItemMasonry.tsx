@@ -27,7 +27,7 @@ import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTr
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
+import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 
 interface CollectedProps {
   connectDropTarget: ConnectDropTarget
