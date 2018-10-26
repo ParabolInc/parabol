@@ -106,6 +106,12 @@ const MyVotesCountLabel = styled(VoteCountLabel)({
   }
 })
 
+const TeamVotesCountLabel = styled(VoteCountLabel)({
+  // most likely will start out with 2 digits
+  // min-width reduces change in layout
+  minWidth: '1.25rem'
+})
+
 const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
 })
@@ -150,7 +156,7 @@ const RetroVotePhase = (props: Props) => {
         </StyledMetaBlock>
         <MetaBlock>
           <Label>{'Team Votes Remaining'}</Label>
-          <VoteCountLabel>{teamVotesRemaining}</VoteCountLabel>
+          <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
         </MetaBlock>
       </VoteMeta>
       <ScrollableBlock>
