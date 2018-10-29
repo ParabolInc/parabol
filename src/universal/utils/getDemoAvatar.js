@@ -1,195 +1,243 @@
 const path = '/static/images/avatars/demo/'
 const avatars = [
   {
-    name: 'Designer Dani',
+    preferredName: 'Designer Dani',
+    email: 'dani@example.co',
     picture: `${path}01.png`
   },
   {
-    name: 'Legal Leo',
+    preferredName: 'Legal Leo',
+    email: 'leo@example.co',
     picture: `${path}02.png`
   },
   {
-    name: 'Designer Diane',
+    preferredName: 'Designer Diane',
+    email: 'diane@example.co',
     picture: `${path}03.png`
   },
   {
-    name: 'Warehouse Will',
+    preferredName: 'Warehouse Will',
+    email: 'will@example.co',
     picture: `${path}04.png`
   },
   {
-    name: 'Researcher Rumi',
+    preferredName: 'Researcher Rumi',
+    email: 'rumi@example.co',
     picture: `${path}05.png`
   },
   {
-    name: 'Engineering Ellie',
+    preferredName: 'Engineering Ellie',
+    email: 'ellie@example.co',
     picture: `${path}06.png`
   },
   {
-    name: 'Business Dev Bud',
+    preferredName: 'Business Dev Bud',
+    email: 'bud@example.co',
     picture: `${path}07.png`
   },
   {
-    name: 'HR Harry',
+    preferredName: 'HR Harry',
+    email: 'harry@example.co',
     picture: `${path}08.png`
   },
   {
-    name: 'Product Lead Paula',
+    preferredName: 'Product Lead Paula',
+    email: 'paula@example.co',
     picture: `${path}09.png`
   },
   {
-    name: 'QA Cody',
+    preferredName: 'QA Cody',
+    email: 'cody@example.co',
     picture: `${path}10.png`
   },
   {
-    name: 'Customer Support Carly',
+    preferredName: 'Customer Support Carly',
+    email: 'carly@example.co',
     picture: `${path}11.png`
   },
   {
-    name: 'Data Scientist Don',
+    preferredName: 'Data Scientist Don',
+    email: 'don@example.co',
     picture: `${path}12.png`
   },
   {
-    name: 'Zen SME Zeb',
+    preferredName: 'Zen SME Zeb',
+    email: 'zeb@example.co',
     picture: `${path}13.png`
   },
   {
-    name: 'HR Hank',
+    preferredName: 'HR Hank',
+    email: 'hank@example.co',
     picture: `${path}14.png`
   },
   {
-    name: 'Legal Liam',
+    preferredName: 'Legal Liam',
+    email: 'liam@example.co',
     picture: `${path}15.png`
   },
   {
-    name: 'Product Manager Polly',
+    preferredName: 'Product Manager Polly',
+    email: 'polly@example.co',
     picture: `${path}16.png`
   },
   {
-    name: 'HR Hanna',
+    preferredName: 'HR Hanna',
+    email: 'hanna@example.co',
     picture: `${path}17.png`
   },
   {
-    name: 'Sales Sally',
+    preferredName: 'Sales Sally',
+    email: 'sally@example.co',
     picture: `${path}18.png`
   },
   {
-    name: 'Business Dev Brianna',
+    preferredName: 'Business Dev Brianna',
+    email: 'brianna@example.co',
     picture: `${path}19.png`
   },
   {
-    name: 'Programmer Petra',
+    preferredName: 'Programmer Petra',
+    email: 'petra@example.co',
     picture: `${path}20.png`
   },
   {
-    name: 'Intern Isabel',
+    preferredName: 'Intern Isabel',
+    email: 'isabel@example.co',
     picture: `${path}21.png`
   },
   {
-    name: 'Operations Oscar',
+    preferredName: 'Operations Oscar',
+    email: 'oscar@example.co',
     picture: `${path}22.png`
   },
   {
-    name: 'Developer Darryl',
+    preferredName: 'Developer Darryl',
+    email: 'darryl@example.co',
     picture: `${path}23.png`
   },
   {
-    name: 'Customer Support Cali',
+    preferredName: 'Customer Support Cali',
+    email: 'cali@example.co',
     picture: `${path}24.png`
   },
   {
-    name: 'Manager Mike',
+    preferredName: 'Manager Mike',
+    email: 'mike@example.co',
     picture: `${path}25.png`
   },
   {
-    name: 'Researcher Ralph',
+    preferredName: 'Researcher Ralph',
+    email: 'ralph@example.co',
     picture: `${path}26.png`
   },
   {
-    name: 'Programmer Polly',
+    preferredName: 'Programmer Polly',
+    email: 'polly@example.co',
     picture: `${path}27.png`
   },
   {
-    name: 'Researcher Randy',
+    preferredName: 'Researcher Randy',
+    email: 'randy@example.co',
     picture: `${path}28.png`
   },
   {
-    name: 'QA Kara',
+    preferredName: 'QA Kara',
+    email: 'kara@example.co',
     picture: `${path}29.png`
   },
   {
-    name: 'HR Heidi',
+    preferredName: 'HR Heidi',
+    email: 'heidi@example.co',
     picture: `${path}30.png`
   },
   {
-    name: 'Customer Support Cary',
+    preferredName: 'Customer Support Cary',
+    email: 'cary@example.co',
     picture: `${path}31.png`
   },
   {
-    name: 'Manager Miguel',
+    preferredName: 'Manager Miguel',
+    email: 'miguel@example.co',
     picture: `${path}32.png`
   },
   {
-    name: 'Logistics Leonard',
+    preferredName: 'Logistics Leonard',
+    email: 'leonard@example.co',
     picture: `${path}33.png`
   },
   {
-    name: 'QA Kyle',
+    preferredName: 'QA Kyle',
+    email: 'kyle@example.co',
     picture: `${path}34.png`
   },
   {
-    name: 'Custom Support Carl',
+    preferredName: 'Custom Support Carl',
+    email: 'carl@example.co',
     picture: `${path}35.png`
   },
   {
-    name: 'Warehouse Wally',
+    preferredName: 'Warehouse Wally',
+    email: 'wally@example.co',
     picture: `${path}36.png`
   },
   {
-    name: 'Manager Molly',
+    preferredName: 'Manager Molly',
+    email: 'molly@example.co',
     picture: `${path}37.png`
   },
   {
-    name: 'Developer Dana',
+    preferredName: 'Developer Dana',
+    email: 'dana@example.co',
     picture: `${path}38.png`
   },
   {
-    name: 'Research Rudy',
+    preferredName: 'Research Rudy',
+    email: 'rudy@example.co',
     picture: `${path}39.png`
   },
   {
-    name: 'Art Director Al',
+    preferredName: 'Art Director Al',
+    email: 'al@example.co',
     picture: `${path}40.png`
   },
   {
-    name: 'Finance Fred',
+    preferredName: 'Finance Fred',
+    email: 'fred@example.co',
     picture: `${path}41.png`
   },
   {
-    name: 'Business Dev Betty',
+    preferredName: 'Business Dev Betty',
+    email: 'betty@example.co',
     picture: `${path}42.png`
   },
   {
-    name: 'Sales Sam',
+    preferredName: 'Sales Sam',
+    email: 'sam@example.co',
     picture: `${path}43.png`
   },
   {
-    name: 'Product Tester Ted',
+    preferredName: 'Product Tester Ted',
+    email: 'ted@example.co',
     picture: `${path}44.png`
   },
   {
-    name: 'Manager Mary',
+    preferredName: 'Manager Mary',
+    email: 'mary@example.co',
     picture: `${path}45.png`
   },
   {
-    name: 'Technical Advisor Terri',
+    preferredName: 'Technical Advisor Terri',
+    email: 'terri@example.co',
     picture: `${path}46.png`
   },
   {
-    name: 'QA Tester Tito',
+    preferredName: 'QA Tester Tito',
+    email: 'tito@example.co',
     picture: `${path}47.png`
   },
   {
-    name: 'Designer Dolly',
+    preferredName: 'Designer Dolly',
+    email: 'dolly@example.co',
     picture: `${path}48.png`
   }
 ]
