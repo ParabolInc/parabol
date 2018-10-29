@@ -312,6 +312,17 @@ const initBotScript = () => {
         }
       },
       {
+        op: 'EndDraggingReflectionMutation',
+        delay: 1000,
+        botId: 'bot2',
+        variables: {
+          reflectionId: 'botRef4',
+          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
+          dropTargetId: 'botGroup1',
+          dragId: 'botDrag2'
+        }
+      },
+      {
         op: 'StartDraggingReflectionMutation',
         delay: 100,
         botId: 'bot1',
@@ -338,17 +349,6 @@ const initBotScript = () => {
             targetId: 'botGroup8',
             targetOffset: {x: 100, y: -10}
           }
-        }
-      },
-      {
-        op: 'EndDraggingReflectionMutation',
-        delay: 1000,
-        botId: 'bot2',
-        variables: {
-          reflectionId: 'botRef4',
-          dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
-          dropTargetId: 'botGroup1',
-          dragId: 'botDrag2'
         }
       },
       {
