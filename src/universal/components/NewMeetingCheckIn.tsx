@@ -15,12 +15,11 @@ import MeetingFacilitationHint from 'universal/modules/meeting/components/Meetin
 import MeetingSection from 'universal/modules/meeting/components/MeetingSection/MeetingSection'
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
 import ui from 'universal/styles/ui'
+import {MeetingTypeEnum} from 'universal/types/graphql'
 import {CHECKIN} from 'universal/utils/constants'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {MeetingTypeEnum} from 'universal/types/graphql'
-import BottomNavControl from 'universal/components/BottomNavControl'
-import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import EndMeetingButton from './EndMeetingButton'
 
 const CheckIn = styled('div')({
   display: 'flex',
@@ -49,10 +48,6 @@ const BottomControlSpacer = styled('div')({
   minWidth: '6rem'
 })
 
-const StyledBottomControl = styled(BottomNavControl)({
-  minWidth: '6rem'
-})
-
 const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
@@ -77,6 +72,7 @@ class NewMeetingCheckIn extends Component<Props> {
     const {
       facilitator: {facilitatorName, facilitatorUserId},
       localStage: {localStageId},
+      meetingId,
       phases
     } = newMeeting
     const teamMember = newMeeting.localStage.teamMember!
@@ -127,9 +123,7 @@ class NewMeetingCheckIn extends Component<Props> {
               localPhaseItem={localStageId}
               gotoNextRef={gotoNextRef}
             />
-            <StyledBottomControl onClick={() => console.log('End Meeting')}>
-              <BottomNavIconLabel icon='flag' iconColor='blue' label='End Meeting' />
-            </StyledBottomControl>
+            <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
         )}
         <CheckInHelpMenu floatAboveBottomBar={isFacilitating} meetingType={meetingType} />

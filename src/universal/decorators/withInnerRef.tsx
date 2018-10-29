@@ -1,6 +1,6 @@
 import React, {ComponentType, forwardRef, Ref} from 'react'
 
-interface WithInnerRefProps<T> {
+export interface WithInnerRefProps<T> {
   innerRef: Ref<T>
 }
 

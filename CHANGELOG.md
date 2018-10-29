@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.17.0 2018-Oct-25
+
+### Added
+* Demo (first pass, not advertised)
+* End Meeting button to all phases
+* Export to CSV button for retros
+
+### Changed
+* Bottom nav buttons in meeting
+* Moved vote details to top of phase
+
+## v2.16.0
+
+### Added
+* Completed switched to Material Design icons
+
+### Removed
+* Completely removed Font Awesome icons
+
 ## v2.15.0 2018-Oct-10
 
 ### Added

@@ -1,20 +1,20 @@
 import React from 'react'
 import styled from 'react-emotion'
 import {DISCUSS} from 'universal/utils/constants'
-import {isDemoRoute} from 'universal/utils/demo'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
 import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
+import isDemoRoute from 'universal/utils/isDemoRoute'
 
 const StyledCopy = styled(HelpMenuCopy)({margin: 0})
 
 const DiscussHelpMenu = ({closePortal}) => (
   <HelpMenuContent closePortal={closePortal}>
     <HelpMenuHeader>{phaseLabelLookup[DISCUSS]}</HelpMenuHeader>
-    {isDemoRoute ? (
+    {isDemoRoute() ? (
       <React.Fragment>
         {/* Demo Help Content */}
         <HelpMenuCopy>

@@ -1,8 +1,4 @@
 import {RetroReflectPhase_team} from '__generated__/RetroReflectPhase_team.graphql'
-/**
- * Renders the UI for the reflection phase of the retrospective meeting
- *
- */
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -20,7 +16,7 @@ import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
-import {isDemoRoute} from 'universal/utils/demo'
+import EndMeetingButton from '../EndMeetingButton'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -36,10 +32,6 @@ const StyledWrapper = styled(MeetingPhaseWrapper)(({phaseItemCount}: {phaseItemC
 }))
 
 const BottomControlSpacer = styled('div')({
-  minWidth: '6rem'
-})
-
-const StyledBottomControl = styled(BottomNavControl)({
   minWidth: '6rem'
 })
 
@@ -65,11 +57,10 @@ class RetroReflectPhase extends Component<Props> {
     } = this.props
     const {newMeeting} = team
     if (!newMeeting) return
-    const {facilitatorUserId, localPhase, reflectionGroups} = newMeeting
+    const {facilitatorUserId, localPhase, meetingId, reflectionGroups} = newMeeting
     const reflectPrompts = localPhase!.reflectPrompts!
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
-    const endMeetingLabel = isDemoRoute ? 'End Demo' : 'End Meeting'
     return (
       <React.Fragment>
         <StyledOverflow>
@@ -90,7 +81,7 @@ class RetroReflectPhase extends Component<Props> {
         {isFacilitating && (
           <StyledBottomBar>
             <BottomControlSpacer />
-            <StyledBottomControl
+            <BottomNavControl
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
@@ -101,10 +92,8 @@ class RetroReflectPhase extends Component<Props> {
                 iconColor='warm'
                 label={`Next: ${nextPhaseLabel}`}
               />
-            </StyledBottomControl>
-            <StyledBottomControl onClick={() => console.log('End Meeting')}>
-              <BottomNavIconLabel icon='flag' iconColor='blue' label={endMeetingLabel} />
-            </StyledBottomControl>
+            </BottomNavControl>
+            <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
         )}
         <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
@@ -119,6 +108,7 @@ export default createFragmentContainer(
     fragment RetroReflectPhase_team on Team {
       newMeeting {
         ...PhaseItemColumn_meeting
+        meetingId: id
         facilitatorUserId
         ... on RetrospectiveMeeting {
           reflectionGroups {
