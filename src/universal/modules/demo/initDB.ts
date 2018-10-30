@@ -8,12 +8,14 @@ import {
   ITask
 } from '../../types/graphql'
 
+import {getDemoAvatar} from 'universal/utils/getDemoAvatar'
+
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
-export const demoPictureURL = '/static/images/avatars/avatar-user@3x.png'
-export const botAvatar1 = '/static/images/avatars/demo/engineering-ellie-06.png'
-export const botAvatar2 = '/static/images/avatars/demo/intern-isabel-21.png'
+export const demoUserAvatar = '/static/images/avatars/avatar-user@3x.png'
+export const demoAvatar1 = getDemoAvatar(1)
+export const demoAvatar2 = getDemoAvatar(2)
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
 
@@ -24,9 +26,13 @@ interface BaseUser {
 }
 
 const baseUsers = [
-  {preferredName: 'You', email: 'demoUser@parabol.co', picture: demoPictureURL},
-  {preferredName: 'Engineering Ellie', email: 'engineering-ellie@parabol.co', picture: botAvatar1},
-  {preferredName: 'Intern Isabel', email: 'intern-isabel@parabol.co', picture: botAvatar2}
+  {
+    preferredName: 'You',
+    email: 'demo-user@example.co',
+    picture: demoUserAvatar
+  },
+  demoAvatar1,
+  demoAvatar2
 ]
 
 const initMeetingSettings = () => {
