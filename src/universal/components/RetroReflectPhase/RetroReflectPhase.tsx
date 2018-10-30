@@ -16,7 +16,9 @@ import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
+import isDemoRoute from 'universal/utils/isDemoRoute'
 import EndMeetingButton from '../EndMeetingButton'
+import DemoReflectHelpMenu from '../MeetingHelp/DemoReflectHelpMenu'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -96,7 +98,11 @@ class RetroReflectPhase extends Component<Props> {
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
         )}
-        <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
+        {isDemoRoute() ? (
+          <DemoReflectHelpMenu />
+        ) : (
+          <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
+        )}
       </React.Fragment>
     )
   }

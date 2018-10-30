@@ -1,3 +1,4 @@
+import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
@@ -5,6 +6,9 @@
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
@@ -15,13 +19,11 @@ import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectio
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import BottomNavControl from 'universal/components/BottomNavControl'
-import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
-import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
-import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 import handleRightArrow from '../utils/handleRightArrow'
-import PhaseItemMasonry from './PhaseItemMasonry'
+import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
+import DemoGroupHelpMenu from './MeetingHelp/DemoGroupHelpMenu'
+import PhaseItemMasonry from './PhaseItemMasonry'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void
@@ -97,7 +99,11 @@ const RetroGroupPhase = (props: Props) => {
           <EndMeetingButton meetingId={meetingId} />
         </StyledBottomBar>
       )}
-      <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
+      {isDemoRoute() ? (
+        <DemoGroupHelpMenu />
+      ) : (
+        <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
+      )}
     </React.Fragment>
   )
 }

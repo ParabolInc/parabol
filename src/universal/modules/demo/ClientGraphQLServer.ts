@@ -121,6 +121,19 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   }
 
   ops = {
+    ExportToCSVQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          newMeeting: {
+            ...this.db.newMeeting,
+            reflectionGroups: this.db.newMeeting.reflectionGroups!.filter(
+              (group) => group.voterIds.length > 0
+            )
+          }
+        }
+      }
+    },
     GitHubReposMenuRootQuery: () => {
       return {
         viewer: {

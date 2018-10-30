@@ -22,7 +22,9 @@ import ui from 'universal/styles/ui'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import plural from 'universal/utils/plural'
 import handleRightArrow from '../utils/handleRightArrow'
+import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
+import DemoDiscussHelpMenu from './MeetingHelp/DemoDiscussHelpMenu'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
@@ -201,7 +203,12 @@ const RetroDiscussPhase = (props: Props) => {
           {!nextStageRes && <BottomControlSpacer />}
         </StyledBottomBar>
       )}
-      <DiscussHelpMenu floatAboveBottomBar={isFacilitating} />
+      {isDemoRoute() ? (
+        <DemoDiscussHelpMenu />
+      ) : (
+        <DiscussHelpMenu floatAboveBottomBar={isFacilitating} />
+      )}
+
       <EditorHelpModalContainer />
     </React.Fragment>
   )
