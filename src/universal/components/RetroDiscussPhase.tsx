@@ -29,6 +29,7 @@ import DemoDiscussHelpMenu from './MeetingHelp/DemoDiscussHelpMenu'
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroDiscussPhase_team
 }
 
@@ -126,7 +127,7 @@ const StyledBottomBar = styled(MeetingControlBar)({
 })
 
 const RetroDiscussPhase = (props: Props) => {
-  const {atmosphere, gotoNext, gotoNextRef, team} = props
+  const {atmosphere, gotoNext, gotoNextRef, team, isDemoStageComplete} = props
   const {viewerId} = atmosphere
   const {newMeeting, teamId} = team
   if (!newMeeting) return null
@@ -191,6 +192,7 @@ const RetroDiscussPhase = (props: Props) => {
           {nextStageRes && (
             <React.Fragment>
               <BottomNavControl
+                isBouncing={isDemoStageComplete}
                 onClick={gotoNext}
                 innerRef={gotoNextRef}
                 onKeyDown={handleRightArrow(gotoNext)}

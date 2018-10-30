@@ -44,6 +44,7 @@ const StyledBottomBar = styled(MeetingControlBar)({
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroReflectPhase_team
 }
 
@@ -51,12 +52,8 @@ class RetroReflectPhase extends Component<Props> {
   phaseRef = React.createRef<HTMLDivElement>()
 
   render () {
-    const {
-      atmosphere: {viewerId},
-      team,
-      gotoNext,
-      gotoNextRef
-    } = this.props
+    const {atmosphere, team, gotoNext, gotoNextRef, isDemoStageComplete} = this.props
+    const {viewerId} = atmosphere
     const {newMeeting} = team
     if (!newMeeting) return
     const {facilitatorUserId, localPhase, meetingId, reflectionGroups} = newMeeting
@@ -84,6 +81,7 @@ class RetroReflectPhase extends Component<Props> {
           <StyledBottomBar>
             <BottomControlSpacer />
             <BottomNavControl
+              isBouncing={isDemoStageComplete}
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}

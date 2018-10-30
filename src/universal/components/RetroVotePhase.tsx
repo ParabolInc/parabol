@@ -31,6 +31,7 @@ import PhaseItemMasonry from './PhaseItemMasonry'
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroVotePhase_team
 }
 
@@ -127,7 +128,8 @@ const RetroVotePhase = (props: Props) => {
     atmosphere: {viewerId},
     gotoNext,
     gotoNextRef,
-    team
+    team,
+    isDemoStageComplete
   } = props
   const {
     meetingSettings: {totalVotes = 0},
@@ -170,6 +172,7 @@ const RetroVotePhase = (props: Props) => {
         <StyledBottomBar>
           <BottomControlSpacer />
           <BottomNavControl
+            isBouncing={isDemoStageComplete}
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={gotoNext}
             onKeyDown={handleRightArrow(gotoNext)}

@@ -28,6 +28,7 @@ import PhaseItemMasonry from './PhaseItemMasonry'
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroGroupPhase_team
 }
 
@@ -53,7 +54,8 @@ const RetroGroupPhase = (props: Props) => {
     onCompleted,
     submitting,
     submitMutation,
-    team
+    team,
+    isDemoStageComplete
   } = props
   const {viewerId} = atmosphere
   const {newMeeting} = team
@@ -80,6 +82,7 @@ const RetroGroupPhase = (props: Props) => {
           <BottomControlSpacer />
           <CenteredControlBlock>
             <BottomNavControl
+              isBouncing={isDemoStageComplete}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
