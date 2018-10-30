@@ -1,244 +1,144 @@
-const path = '/static/images/avatars/demo/'
+const demoAvatar02 = () =>
+  import(/* webpackChunkName: 'demoAvatar02' */ '/static/images/avatars/demo/02.png')
+const demoAvatar03 = () =>
+  import(/* webpackChunkName: 'demoAvatar03' */ '/static/images/avatars/demo/03.png')
+const demoAvatar04 = () =>
+  import(/* webpackChunkName: 'demoAvatar04' */ '/static/images/avatars/demo/04.png')
+const demoAvatar06 = () =>
+  import(/* webpackChunkName: 'demoAvatar06' */ '/static/images/avatars/demo/06.png')
+const demoAvatar09 = () =>
+  import(/* webpackChunkName: 'demoAvatar09' */ '/static/images/avatars/demo/09.png')
+const demoAvatar14 = () =>
+  import(/* webpackChunkName: 'demoAvatar14' */ '/static/images/avatars/demo/14.png')
+const demoAvatar15 = () =>
+  import(/* webpackChunkName: 'demoAvatar15' */ '/static/images/avatars/demo/15.png')
+const demoAvatar16 = () =>
+  import(/* webpackChunkName: 'demoAvatar16' */ '/static/images/avatars/demo/16.png')
+const demoAvatar17 = () =>
+  import(/* webpackChunkName: 'demoAvatar17' */ '/static/images/avatars/demo/17.png')
+const demoAvatar20 = () =>
+  import(/* webpackChunkName: 'demoAvatar20' */ '/static/images/avatars/demo/20.png')
+const demoAvatar21 = () =>
+  import(/* webpackChunkName: 'demoAvatar21' */ '/static/images/avatars/demo/21.png')
+const demoAvatar22 = () =>
+  import(/* webpackChunkName: 'demoAvatar22' */ '/static/images/avatars/demo/22.png')
+const demoAvatar24 = () =>
+  import(/* webpackChunkName: 'demoAvatar24' */ '/static/images/avatars/demo/24.png')
+const demoAvatar26 = () =>
+  import(/* webpackChunkName: 'demoAvatar26' */ '/static/images/avatars/demo/26.png')
+const demoAvatar29 = () =>
+  import(/* webpackChunkName: 'demoAvatar29' */ '/static/images/avatars/demo/29.png')
+const demoAvatar31 = () =>
+  import(/* webpackChunkName: 'demoAvatar31' */ '/static/images/avatars/demo/31.png')
+const demoAvatar38 = () =>
+  import(/* webpackChunkName: 'demoAvatar38' */ '/static/images/avatars/demo/38.png')
+const demoAvatar39 = () =>
+  import(/* webpackChunkName: 'demoAvatar39' */ '/static/images/avatars/demo/39.png')
+const demoAvatar41 = () =>
+  import(/* webpackChunkName: 'demoAvatar41' */ '/static/images/avatars/demo/41.png')
+const demoAvatar42 = () =>
+  import(/* webpackChunkName: 'demoAvatar42' */ '/static/images/avatars/demo/42.png')
+
 const avatars = [
-  {
-    preferredName: 'Designer Dani',
-    email: 'dani@example.co',
-    picture: `${path}01.png`
-  },
   {
     preferredName: 'Legal Leo',
     email: 'leo@example.co',
-    picture: `${path}02.png`
+    picture: demoAvatar02
   },
   {
-    preferredName: 'Designer Diane',
+    preferredName: 'Designer Dani',
     email: 'diane@example.co',
-    picture: `${path}03.png`
+    picture: demoAvatar03
   },
   {
-    preferredName: 'Warehouse Will',
+    preferredName: 'Warehouse Wally',
     email: 'will@example.co',
-    picture: `${path}04.png`
-  },
-  {
-    preferredName: 'Researcher Rumi',
-    email: 'rumi@example.co',
-    picture: `${path}05.png`
+    picture: demoAvatar04
   },
   {
     preferredName: 'Engineering Ellie',
     email: 'ellie@example.co',
-    picture: `${path}06.png`
-  },
-  {
-    preferredName: 'Business Dev Bud',
-    email: 'bud@example.co',
-    picture: `${path}07.png`
-  },
-  {
-    preferredName: 'HR Harry',
-    email: 'harry@example.co',
-    picture: `${path}08.png`
+    picture: demoAvatar06
   },
   {
     preferredName: 'Product Lead Paula',
     email: 'paula@example.co',
-    picture: `${path}09.png`
-  },
-  {
-    preferredName: 'QA Cody',
-    email: 'cody@example.co',
-    picture: `${path}10.png`
-  },
-  {
-    preferredName: 'Customer Support Carly',
-    email: 'carly@example.co',
-    picture: `${path}11.png`
-  },
-  {
-    preferredName: 'Data Scientist Don',
-    email: 'don@example.co',
-    picture: `${path}12.png`
-  },
-  {
-    preferredName: 'Zen SME Zeb',
-    email: 'zeb@example.co',
-    picture: `${path}13.png`
+    picture: demoAvatar09
   },
   {
     preferredName: 'HR Hank',
     email: 'hank@example.co',
-    picture: `${path}14.png`
+    picture: demoAvatar14
   },
   {
     preferredName: 'Legal Liam',
     email: 'liam@example.co',
-    picture: `${path}15.png`
+    picture: demoAvatar15
   },
   {
     preferredName: 'Product Manager Polly',
     email: 'polly@example.co',
-    picture: `${path}16.png`
+    picture: demoAvatar16
   },
   {
     preferredName: 'HR Hanna',
     email: 'hanna@example.co',
-    picture: `${path}17.png`
-  },
-  {
-    preferredName: 'Sales Sally',
-    email: 'sally@example.co',
-    picture: `${path}18.png`
-  },
-  {
-    preferredName: 'Business Dev Brianna',
-    email: 'brianna@example.co',
-    picture: `${path}19.png`
+    picture: demoAvatar17
   },
   {
     preferredName: 'Programmer Petra',
     email: 'petra@example.co',
-    picture: `${path}20.png`
+    picture: demoAvatar20
   },
   {
     preferredName: 'Intern Isabel',
     email: 'isabel@example.co',
-    picture: `${path}21.png`
+    picture: demoAvatar21
   },
   {
     preferredName: 'Operations Oscar',
     email: 'oscar@example.co',
-    picture: `${path}22.png`
-  },
-  {
-    preferredName: 'Developer Darryl',
-    email: 'darryl@example.co',
-    picture: `${path}23.png`
+    picture: demoAvatar22
   },
   {
     preferredName: 'Customer Support Cali',
     email: 'cali@example.co',
-    picture: `${path}24.png`
+    picture: demoAvatar24
   },
   {
-    preferredName: 'Manager Mike',
-    email: 'mike@example.co',
-    picture: `${path}25.png`
-  },
-  {
-    preferredName: 'Researcher Ralph',
-    email: 'ralph@example.co',
-    picture: `${path}26.png`
-  },
-  {
-    preferredName: 'Programmer Polly',
-    email: 'polly@example.co',
-    picture: `${path}27.png`
-  },
-  {
-    preferredName: 'Researcher Randy',
-    email: 'randy@example.co',
-    picture: `${path}28.png`
+    preferredName: 'Researcher Rumi',
+    email: 'rumi@example.co',
+    picture: demoAvatar26
   },
   {
     preferredName: 'QA Kara',
     email: 'kara@example.co',
-    picture: `${path}29.png`
-  },
-  {
-    preferredName: 'HR Heidi',
-    email: 'heidi@example.co',
-    picture: `${path}30.png`
+    picture: demoAvatar29
   },
   {
     preferredName: 'Customer Support Cary',
     email: 'cary@example.co',
-    picture: `${path}31.png`
+    picture: demoAvatar31
   },
   {
-    preferredName: 'Manager Miguel',
-    email: 'miguel@example.co',
-    picture: `${path}32.png`
-  },
-  {
-    preferredName: 'Logistics Leonard',
-    email: 'leonard@example.co',
-    picture: `${path}33.png`
-  },
-  {
-    preferredName: 'QA Kyle',
-    email: 'kyle@example.co',
-    picture: `${path}34.png`
-  },
-  {
-    preferredName: 'Custom Support Carl',
-    email: 'carl@example.co',
-    picture: `${path}35.png`
-  },
-  {
-    preferredName: 'Warehouse Wally',
-    email: 'wally@example.co',
-    picture: `${path}36.png`
-  },
-  {
-    preferredName: 'Manager Molly',
-    email: 'molly@example.co',
-    picture: `${path}37.png`
-  },
-  {
-    preferredName: 'Developer Dana',
+    preferredName: 'Developer Don',
     email: 'dana@example.co',
-    picture: `${path}38.png`
+    picture: demoAvatar38
   },
   {
-    preferredName: 'Research Rudy',
+    preferredName: 'Researcher Rudy',
     email: 'rudy@example.co',
-    picture: `${path}39.png`
-  },
-  {
-    preferredName: 'Art Director Al',
-    email: 'al@example.co',
-    picture: `${path}40.png`
+    picture: demoAvatar39
   },
   {
     preferredName: 'Finance Fred',
     email: 'fred@example.co',
-    picture: `${path}41.png`
+    picture: demoAvatar41
   },
   {
-    preferredName: 'Business Dev Betty',
-    email: 'betty@example.co',
-    picture: `${path}42.png`
-  },
-  {
-    preferredName: 'Sales Sam',
-    email: 'sam@example.co',
-    picture: `${path}43.png`
-  },
-  {
-    preferredName: 'Product Tester Ted',
-    email: 'ted@example.co',
-    picture: `${path}44.png`
-  },
-  {
-    preferredName: 'Manager Mary',
-    email: 'mary@example.co',
-    picture: `${path}45.png`
-  },
-  {
-    preferredName: 'Technical Advisor Terri',
-    email: 'terri@example.co',
-    picture: `${path}46.png`
-  },
-  {
-    preferredName: 'QA Tester Tito',
-    email: 'tito@example.co',
-    picture: `${path}47.png`
-  },
-  {
-    preferredName: 'Designer Dolly',
-    email: 'dolly@example.co',
-    picture: `${path}48.png`
+    preferredName: 'QA Cody',
+    email: 'cody@example.co',
+    picture: demoAvatar42
   }
 ]
 
