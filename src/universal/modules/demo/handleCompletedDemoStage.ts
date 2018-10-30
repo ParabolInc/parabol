@@ -5,6 +5,7 @@ import makeDiscussionStage from 'universal/utils/makeDiscussionStage'
 import mapGroupsToStages from 'universal/utils/makeGroupsToStages'
 import {demoMeetingId, demoViewerId} from './initDB'
 import taskLookup from './taskLookup'
+import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
 
 const removeEmptyReflections = (db) => {
   const reflections = db.reflections.filter((reflection) => reflection.isActive)
@@ -117,11 +118,9 @@ const addDefaultGroupTitles = (db) => {
   const reflectionGroupIds = db.reflectionGroups
     .filter((group) => group.reflections.length === 1)
     .map((group) => {
-      const [reflection] = group.reflections
-      const title =
-        entityLookup[reflection.id] || extractTextFromDraftString(reflection.content).slice(0, 20)
+      const {smartTitle, title} = makeRetroGroupTitle(group.reflections)
       group.title = title
-      group.smartTitle = title
+      group.smartTitle = smartTitle
       return group.id
     })
   return {meetingId: demoMeetingId, reflectionGroupIds}
