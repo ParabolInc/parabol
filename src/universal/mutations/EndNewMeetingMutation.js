@@ -51,11 +51,12 @@ export const endNewMeetingTeamOnNext = (payload, context) => {
   if (isKill) {
     const {meetingSlug, teamId} = getMeetingPathParams()
     if (teamId === 'demo') {
-      history.push('/retrospective-demo')
+      window.localStorage.removeItem('retroDemo')
+      history.push('/create-account')
     } else {
       history.push(`/${meetingSlug}/${teamId}`)
+      popEndNewMeetingToast(dispatch)
     }
-    popEndNewMeetingToast(dispatch)
   } else {
     if (meetingId === 'demoMeeting') {
       history.push('/retrospective-demo-summary')

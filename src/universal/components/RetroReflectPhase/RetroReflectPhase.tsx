@@ -16,7 +16,9 @@ import handleRightArrow from 'universal/utils/handleRightArrow'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import {REFLECTION_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import Overflow from 'universal/components/Overflow'
+import isDemoRoute from 'universal/utils/isDemoRoute'
 import EndMeetingButton from '../EndMeetingButton'
+import DemoReflectHelpMenu from '../MeetingHelp/DemoReflectHelpMenu'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -42,6 +44,7 @@ const StyledBottomBar = styled(MeetingControlBar)({
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroReflectPhase_team
 }
 
@@ -49,12 +52,8 @@ class RetroReflectPhase extends Component<Props> {
   phaseRef = React.createRef<HTMLDivElement>()
 
   render () {
-    const {
-      atmosphere: {viewerId},
-      team,
-      gotoNext,
-      gotoNextRef
-    } = this.props
+    const {atmosphere, team, gotoNext, gotoNextRef, isDemoStageComplete} = this.props
+    const {viewerId} = atmosphere
     const {newMeeting} = team
     if (!newMeeting) return
     const {facilitatorUserId, localPhase, meetingId, reflectionGroups} = newMeeting
@@ -82,6 +81,7 @@ class RetroReflectPhase extends Component<Props> {
           <StyledBottomBar>
             <BottomControlSpacer />
             <BottomNavControl
+              isBouncing={isDemoStageComplete}
               disabled={!reflectionGroups || reflectionGroups.length === 0}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
@@ -96,7 +96,11 @@ class RetroReflectPhase extends Component<Props> {
             <EndMeetingButton meetingId={meetingId} />
           </StyledBottomBar>
         )}
-        <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
+        {isDemoRoute() ? (
+          <DemoReflectHelpMenu />
+        ) : (
+          <ReflectHelpMenu floatAboveBottomBar={isFacilitating} />
+        )}
       </React.Fragment>
     )
   }

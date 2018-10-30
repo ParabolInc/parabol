@@ -14,6 +14,7 @@ import {meetingSidebarWidth} from 'universal/styles/meeting'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import isDemoRoute from '../utils/isDemoRoute'
 
 const SidebarHeader = styled('div')({
   alignItems: 'center',
@@ -59,11 +60,12 @@ const NewMeetingSidebar = (props: Props) => {
     team: {teamId, teamName}
   } = viewer
   const meetingLabel = meetingTypeToLabel[meetingType]
+  const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   return (
     <SidebarParent>
       <SidebarHeader>
         <StyledToggle onClick={toggleSidebar} />
-        <TeamDashboardLink to={`/team/${teamId}`}>{teamName}</TeamDashboardLink>
+        <TeamDashboardLink to={teamLink}>{teamName}</TeamDashboardLink>
       </SidebarHeader>
       <MeetingSidebarLabelBlock>
         <LabelHeading>{`${meetingLabel} Meeting`}</LabelHeading>

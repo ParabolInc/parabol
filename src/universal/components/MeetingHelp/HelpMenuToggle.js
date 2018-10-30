@@ -16,10 +16,12 @@ const StyledButton = styled(FloatingActionButton)(({floatAboveBottomBar}) => ({
   zIndex: 200
 }))
 
-const HelpMenuToggle = (props) => (
-  <StyledButton palette='white' {...props}>
-    <IconLabel icon='help_outline' />
-  </StyledButton>
-)
+const HelpMenuToggle = (props) => {
+  return (
+    <StyledButton palette='white' {...props} innerRef={props.toggleRef}>
+      <IconLabel icon='help_outline' />
+    </StyledButton>
+  )
+}
 
 export default withInnerRef(HelpMenuToggle)

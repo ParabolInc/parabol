@@ -1,29 +1,27 @@
 import React from 'react'
-import {VOTE} from 'universal/utils/constants'
+import styled from 'react-emotion'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
-import HelpMenuLink from 'universal/components/MeetingHelp/HelpMenuLink'
+import {VOTE} from 'universal/utils/constants'
+import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import withDemoHelpMenu from './withDemoHelpMenu'
+
+const StyledCopy = styled(HelpMenuCopy)({margin: 0})
 
 const VoteHelpMenu = ({closePortal}) => (
   <HelpMenuContent closePortal={closePortal}>
     <HelpMenuHeader>{phaseLabelLookup[VOTE]}</HelpMenuHeader>
-    <HelpMenuCopy>
-      The goal of this phase is to find signal on what topics are the most important to the team.
-    </HelpMenuCopy>
+    <HelpMenuCopy>Now the Demo Team is voting on what topics they want to discuss.</HelpMenuCopy>
     <HelpMenuCopy>
       Each teammate has 5 total votes, and can vote on a single group up to 3 times.
     </HelpMenuCopy>
     <HelpMenuCopy>
       To vote, simply tap on the thumb-up icon above a group. Toggle votes to remove.
     </HelpMenuCopy>
-    <HelpMenuLink
-      copy='Learn More'
-      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#vote'
-    />
+    <StyledCopy>Try voting on a few groups, then move forward.</StyledCopy>
   </HelpMenuContent>
 )
 
-export default withHelpMenu(VoteHelpMenu)
+export default withDemoHelpMenu(withHelpMenu(VoteHelpMenu))
