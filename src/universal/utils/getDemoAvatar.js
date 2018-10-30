@@ -47,12 +47,12 @@ const avatars = [
   },
   {
     preferredName: 'Designer Dani',
-    email: 'diane@example.co',
+    email: 'dani@example.co',
     picture: demoAvatar03
   },
   {
     preferredName: 'Warehouse Wally',
-    email: 'will@example.co',
+    email: 'wally@example.co',
     picture: demoAvatar04
   },
   {
@@ -122,7 +122,7 @@ const avatars = [
   },
   {
     preferredName: 'Developer Don',
-    email: 'dana@example.co',
+    email: 'don@example.co',
     picture: demoAvatar38
   },
   {
