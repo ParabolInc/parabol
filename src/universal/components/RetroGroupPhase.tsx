@@ -67,7 +67,7 @@ const RetroGroupPhase = (props: Props) => {
     const groupingThreshold = nextAutoGroupThreshold || 0.5
     AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
   }
-  const canAutoGroup = !nextAutoGroupThreshold || nextAutoGroupThreshold < 1
+  const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1)
   return (
     <React.Fragment>
       {error && <StyledError>{error}</StyledError>}
