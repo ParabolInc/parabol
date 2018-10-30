@@ -43,23 +43,26 @@ export default {
         .table('Invoice')
         .between([orgId, r.minval], [orgId, dbAfter], {
           index: 'orgIdStartAt',
-          leftBound: 'open'
+          leftBound: 'open',
+          rightBound: 'closed'
         })
         .filter((invoice) =>
           invoice('status')
             .ne(UPCOMING)
             .and(invoice('total').ne(0))
         )
-        .orderBy(r.desc('startAt'))
+        // it's possible that stripe gives the same startAt to 2 invoices (the first $5 charge & the next)
+        // break ties based on when created. In the future, we might want to consider using the created_at provided by stripe instead of our own
+        .orderBy(r.desc('startAt'), r.desc('createdAt'))
         .limit(first + 1),
       upcomingInvoice: after
         ? Promise.resolve(undefined)
         : makeUpcomingInvoice(orgId, stripeId, stripeSubscriptionId)
     })
-
+    const paginatedInvoices = after ? tooManyInvoices.slice(1) : tooManyInvoices
     const allInvoices = upcomingInvoice
-      ? [upcomingInvoice].concat(tooManyInvoices)
-      : tooManyInvoices
+      ? [upcomingInvoice].concat(paginatedInvoices)
+      : paginatedInvoices
     const nodes = allInvoices.slice(0, first)
     const edges = nodes.map((node) => ({
       cursor: node.startAt,
@@ -71,7 +74,7 @@ export default {
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
         endCursor: firstEdge && edges[edges.length - 1].cursor,
-        hasNextPage: allInvoices.length > nodes.length
+        hasNextPage: tooManyInvoices.length + (upcomingInvoice ? 1 : 0) > first
       }
     }
   }
