@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.18.0 2018-Oct-31
+
+### Added
+* The Retro Demo, ready to try in marketing funnel
+* A new Check-In question (#1531)
+
+### Fixed
+* Fixed invoice pagination for organizations
+
 ## v2.17.0 2018-Oct-25
 
 ### Added
