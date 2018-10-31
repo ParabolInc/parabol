@@ -7,13 +7,12 @@ import {
   IRetrospectiveMeetingSettings,
   ITask
 } from '../../types/graphql'
+import getDemoAvatar from 'universal/utils/getDemoAvatar'
 
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
-export const demoPictureURL = '/static/images/avatars/avatar-user@3x.png'
-export const botAvatar1 = '/static/images/avatars/demo/engineering-ellie-06.png'
-export const botAvatar2 = '/static/images/avatars/demo/intern-isabel-21.png'
+export const demoUserAvatar = '/static/images/avatars/avatar-user@3x.png'
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
 
@@ -22,12 +21,6 @@ interface BaseUser {
   email: string
   picture: string
 }
-
-const baseUsers = [
-  {preferredName: 'You', email: 'demoUser@parabol.co', picture: demoPictureURL},
-  {preferredName: 'Engineering Ellie', email: 'engineering-ellie@parabol.co', picture: botAvatar1},
-  {preferredName: 'Intern Isabel', email: 'intern-isabel@parabol.co', picture: botAvatar2}
-]
 
 const initMeetingSettings = () => {
   return {
@@ -265,6 +258,15 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
 }
 
 const initDB = (botScript) => {
+  const baseUsers = [
+    {
+      preferredName: 'You',
+      email: 'demo-user@example.co',
+      picture: demoUserAvatar
+    },
+    getDemoAvatar(1),
+    getDemoAvatar(2)
+  ]
   const users = baseUsers.map(initDemoUser)
   const meetingMembers = users.map(initDemoMeetingMember)
   const teamMembers = users.map(initDemoTeamMember).map((teamMember, idx) => ({

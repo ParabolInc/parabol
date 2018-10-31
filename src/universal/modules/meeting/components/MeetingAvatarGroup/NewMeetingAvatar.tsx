@@ -131,7 +131,7 @@ const NewMeetingAvatar = (props: Props) => {
       >
         <LoadableMenu
           LoadableComponent={LoadableNewMeetingAvatarMenu}
-          maxWidth={350}
+          maxWidth={400}
           maxHeight={225}
           originAnchor={originAnchor}
           queryVars={{

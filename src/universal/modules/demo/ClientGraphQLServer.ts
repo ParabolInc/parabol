@@ -174,7 +174,6 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
     },
     RetroRootQuery: () => {
-      console.log('team', this.db.team)
       this.startBot()
       return {
         viewer: {
