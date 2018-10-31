@@ -19,47 +19,6 @@ import demoAvatar39 from '../../../static/images/avatars/demo/39.png'
 import demoAvatar41 from '../../../static/images/avatars/demo/41.png'
 import demoAvatar42 from '../../../static/images/avatars/demo/42.png'
 
-// const demoAvatar02 = () =>
-//   import(/* webpackChunkName: 'demoAvatar02' */ '../../../static/images/avatars/demo/02.png')
-// const demoAvatar03 = () =>
-//   import(/* webpackChunkName: 'demoAvatar03' */ '../../../static/images/avatars/demo/03.png')
-// const demoAvatar04 = () =>
-//   import(/* webpackChunkName: 'demoAvatar04' */ '../../../static/images/avatars/demo/04.png')
-// const demoAvatar06 = () =>
-//   import(/* webpackChunkName: 'demoAvatar06' */ '../../../static/images/avatars/demo/06.png')
-// const demoAvatar09 = () =>
-//   import(/* webpackChunkName: 'demoAvatar09' */ '../../../static/images/avatars/demo/09.png')
-// const demoAvatar14 = () =>
-//   import(/* webpackChunkName: 'demoAvatar14' */ '../../../static/images/avatars/demo/14.png')
-// const demoAvatar15 = () =>
-//   import(/* webpackChunkName: 'demoAvatar15' */ '../../../static/images/avatars/demo/15.png')
-// const demoAvatar16 = () =>
-//   import(/* webpackChunkName: 'demoAvatar16' */ '../../../static/images/avatars/demo/16.png')
-// const demoAvatar17 = () =>
-//   import(/* webpackChunkName: 'demoAvatar17' */ '../../../static/images/avatars/demo/17.png')
-// const demoAvatar20 = () =>
-//   import(/* webpackChunkName: 'demoAvatar20' */ '../../../static/images/avatars/demo/20.png')
-// const demoAvatar21 = () =>
-//   import(/* webpackChunkName: 'demoAvatar21' */ '../../../static/images/avatars/demo/21.png')
-// const demoAvatar22 = () =>
-//   import(/* webpackChunkName: 'demoAvatar22' */ '../../../static/images/avatars/demo/22.png')
-// const demoAvatar24 = () =>
-//   import(/* webpackChunkName: 'demoAvatar24' */ '../../../static/images/avatars/demo/24.png')
-// const demoAvatar26 = () =>
-//   import(/* webpackChunkName: 'demoAvatar26' */ '../../../static/images/avatars/demo/26.png')
-// const demoAvatar29 = () =>
-//   import(/* webpackChunkName: 'demoAvatar29' */ '../../../static/images/avatars/demo/29.png')
-// const demoAvatar31 = () =>
-//   import(/* webpackChunkName: 'demoAvatar31' */ '../../../static/images/avatars/demo/31.png')
-// const demoAvatar38 = () =>
-//   import(/* webpackChunkName: 'demoAvatar38' */ '../../../static/images/avatars/demo/38.png')
-// const demoAvatar39 = () =>
-//   import(/* webpackChunkName: 'demoAvatar39' */ '../../../static/images/avatars/demo/39.png')
-// const demoAvatar41 = () =>
-//   import(/* webpackChunkName: 'demoAvatar41' */ '../../../static/images/avatars/demo/41.png')
-// const demoAvatar42 = () =>
-//   import(/* webpackChunkName: 'demoAvatar42' */ '../../../static/images/avatars/demo/42.png')
-
 const avatars = [
   {
     preferredName: 'Legal Leo',
@@ -163,8 +122,10 @@ const avatars = [
   }
 ]
 
-export const getDemoAvatar = (seed = '') => {
+const getDemoAvatar = (seed) => {
   const date = Date.now()
   const idx = (seed + date) % avatars.length
   return avatars[idx]
 }
+
+export default getDemoAvatar

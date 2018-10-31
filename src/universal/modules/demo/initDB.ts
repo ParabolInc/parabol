@@ -7,15 +7,12 @@ import {
   IRetrospectiveMeetingSettings,
   ITask
 } from '../../types/graphql'
-
-import {getDemoAvatar} from 'universal/utils/getDemoAvatar'
+import getDemoAvatar from 'universal/utils/getDemoAvatar'
 
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
 export const demoUserAvatar = '/static/images/avatars/avatar-user@3x.png'
-export const demoAvatar1 = getDemoAvatar(1)
-export const demoAvatar2 = getDemoAvatar(2)
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
 
@@ -24,16 +21,6 @@ interface BaseUser {
   email: string
   picture: string
 }
-
-const baseUsers = [
-  {
-    preferredName: 'You',
-    email: 'demo-user@example.co',
-    picture: demoUserAvatar
-  },
-  demoAvatar1,
-  demoAvatar2
-]
 
 const initMeetingSettings = () => {
   return {
@@ -271,6 +258,15 @@ const initNewMeeting = (teamMembers, meetingMembers) => {
 }
 
 const initDB = (botScript) => {
+  const baseUsers = [
+    {
+      preferredName: 'You',
+      email: 'demo-user@example.co',
+      picture: demoUserAvatar,
+      demoAvatar1: getDemoAvatar(1),
+      demoAvatar2: getDemoAvatar(2)
+    }
+  ]
   const users = baseUsers.map(initDemoUser)
   const meetingMembers = users.map(initDemoMeetingMember)
   const teamMembers = users.map(initDemoTeamMember).map((teamMember, idx) => ({
