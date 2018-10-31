@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import {parse} from 'flatted'
+import ms from 'ms'
 import {Variables} from 'relay-runtime'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import handleCompletedDemoStage from 'universal/modules/demo/handleCompletedDemoStage'
@@ -31,7 +32,6 @@ import unlockNextStages from 'universal/utils/unlockNextStages'
 import initBotScript from './initBotScript'
 import initDB, {demoMeetingId, demoTeamId, demoViewerId} from './initDB'
 import LocalAtmosphere from './LocalAtmosphere'
-import ms from 'ms'
 
 interface DemoEvents {
   team: IEditReflectionPayload | ICreateReflectionPayload
@@ -179,6 +179,17 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         viewer: {
           ...this.db.users[0],
           team: this.db.team
+        }
+      }
+    },
+    SuggestMentionableUsersRootQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          team: {
+            ...this.db.team,
+            teamMembers: this.db.team.teamMembers.filter((member) => member.userId !== demoViewerId)
+          }
         }
       }
     },
