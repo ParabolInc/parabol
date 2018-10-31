@@ -92,7 +92,7 @@ const CreateAccountSection = () => {
     {icon: 'summary@3x.png', copy: 'Detailed meeting summary email'},
     {icon: 'owners@3x.png', copy: 'Takeaway tasks with owners'}
   ]
-  const primaryActionLabel = 'Create Free Account'
+  const primaryActionLabel = 'Invite your team'
   const primaryActionLink = '/create-account'
   return (
     <div style={{padding: '0 16px'}}>
