@@ -41,7 +41,7 @@ const avatars = [
     picture: demoAvatar06
   },
   {
-    preferredName: 'Product Lead Paula',
+    preferredName: 'PM Paula',
     email: 'paula@example.co',
     picture: demoAvatar09
   },
@@ -56,7 +56,7 @@ const avatars = [
     picture: demoAvatar15
   },
   {
-    preferredName: 'Product Manager Polly',
+    preferredName: 'PM Polly',
     email: 'polly@example.co',
     picture: demoAvatar16
   },
@@ -81,7 +81,7 @@ const avatars = [
     picture: demoAvatar22
   },
   {
-    preferredName: 'Customer Support Cali',
+    preferredName: 'CS Cali',
     email: 'cali@example.co',
     picture: demoAvatar24
   },
@@ -96,7 +96,7 @@ const avatars = [
     picture: demoAvatar29
   },
   {
-    preferredName: 'Customer Support Cary',
+    preferredName: 'CS Cary',
     email: 'cary@example.co',
     picture: demoAvatar31
   },

@@ -262,10 +262,10 @@ const initDB = (botScript) => {
     {
       preferredName: 'You',
       email: 'demo-user@example.co',
-      picture: demoUserAvatar,
-      demoAvatar1: getDemoAvatar(1),
-      demoAvatar2: getDemoAvatar(2)
-    }
+      picture: demoUserAvatar
+    },
+    getDemoAvatar(1),
+    getDemoAvatar(2)
   ]
   const users = baseUsers.map(initDemoUser)
   const meetingMembers = users.map(initDemoMeetingMember)
