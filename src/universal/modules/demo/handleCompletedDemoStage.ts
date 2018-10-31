@@ -157,7 +157,7 @@ const addStageToBotScript = (stageId, db, reflectionGroupId) => {
         },
         {
           op: 'UpdateTaskMutation',
-          delay: 2000,
+          delay: 3000,
           botId,
           variables: {
             updatedTask: {

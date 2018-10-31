@@ -4,6 +4,8 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BottomNavControl from 'universal/components/BottomNavControl'
 import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import Icon from 'universal/components/Icon'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
@@ -12,23 +14,24 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {meetingVoteIcon} from 'universal/styles/meeting'
+import {PALETTE} from 'universal/styles/paletteV2'
 import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
+import {IDiscussPhase} from 'universal/types/graphql'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
+import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
+import DemoVoteHelpMenu from './MeetingHelp/DemoVoteHelpMenu'
 import PhaseItemMasonry from './PhaseItemMasonry'
-import {IDiscussPhase} from 'universal/types/graphql'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import {PALETTE} from 'universal/styles/paletteV2'
-import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroVotePhase_team
 }
 
@@ -125,7 +128,8 @@ const RetroVotePhase = (props: Props) => {
     atmosphere: {viewerId},
     gotoNext,
     gotoNextRef,
-    team
+    team,
+    isDemoStageComplete
   } = props
   const {
     meetingSettings: {totalVotes = 0},
@@ -168,6 +172,7 @@ const RetroVotePhase = (props: Props) => {
         <StyledBottomBar>
           <BottomControlSpacer />
           <BottomNavControl
+            isBouncing={isDemoStageComplete}
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={gotoNext}
             onKeyDown={handleRightArrow(gotoNext)}
@@ -182,7 +187,7 @@ const RetroVotePhase = (props: Props) => {
           <EndMeetingButton meetingId={meetingId} />
         </StyledBottomBar>
       )}
-      <VoteHelpMenu floatAboveBottomBar={isFacilitating} />
+      {isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu floatAboveBottomBar={isFacilitating} />}
     </React.Fragment>
   )
 }

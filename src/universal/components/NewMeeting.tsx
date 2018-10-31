@@ -150,10 +150,16 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
 class NewMeeting extends Component<Props> {
   constructor (props) {
     super(props)
-    const {bindHotkey} = props
+    const {atmosphere, bindHotkey} = props
     bindHotkey('right', handleHotkey(this.maybeGotoNext))
     bindHotkey('left', handleHotkey(this.gotoPrev))
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
+    if (atmosphere.clientGraphQLServer) {
+      atmosphere.clientGraphQLServer.on('botsFinished', () => {
+        // for the demo, we're essentially using the isBotFinished() prop as state
+        this.forceUpdate()
+      })
+    }
   }
 
   sidebarRef = React.createRef()
@@ -301,15 +307,17 @@ class NewMeeting extends Component<Props> {
   }
 
   render () {
-    const {meetingType, viewer} = this.props
+    const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
-    const {newMeeting, teamName} = team
+    const {newMeeting, teamName, teamId} = team
     const isMeetingSidebarCollapsed = team.isMeetingSidebarCollapsed || false
     const meeting = newMeeting || UNSTARTED_MEETING
     const {facilitatorStageId, localPhase, localStage} = meeting
     const meetingLabel = meetingTypeToLabel[meetingType]
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true
     const localPhaseType = localPhase && localPhase.phaseType
+    const isDemoStageComplete =
+      teamId === demoTeamId ? atmosphere.clientGraphQLServer.isBotFinished() : false
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
@@ -357,6 +365,7 @@ class NewMeeting extends Component<Props> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
                 {localPhaseType === GROUP && (
@@ -364,6 +373,7 @@ class NewMeeting extends Component<Props> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
                 {localPhaseType === VOTE && (
@@ -371,6 +381,7 @@ class NewMeeting extends Component<Props> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
                 {localPhaseType === DISCUSS && (
@@ -378,6 +389,7 @@ class NewMeeting extends Component<Props> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
                 {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}

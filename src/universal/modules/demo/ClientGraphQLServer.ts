@@ -35,6 +35,7 @@ import ms from 'ms'
 
 interface DemoEvents {
   team: IEditReflectionPayload | ICreateReflectionPayload
+  botsFinished: void
 }
 
 type GQLDemoEmitter = {new (): StrictEventEmitter<EventEmitter, DemoEvents>}
@@ -76,6 +77,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
     const mutations = this.db._botScript[facilitatorStageId]
     const nextMutaton = mutations.shift()
     if (!nextMutaton) {
+      this.emit('botsFinished')
       return
     }
     const {delay, op, variables, botId} = nextMutaton
@@ -91,6 +93,10 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       }
       this.startBot()
     }, delay)
+  }
+
+  isBotFinished = () => {
+    return !this.pendingBotAction
   }
 
   finishBotActions = async () => {
@@ -121,6 +127,19 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
   }
 
   ops = {
+    ExportToCSVQuery: () => {
+      return {
+        viewer: {
+          ...this.db.users[0],
+          newMeeting: {
+            ...this.db.newMeeting,
+            reflectionGroups: this.db.newMeeting.reflectionGroups!.filter(
+              (group) => group.voterIds.length > 0
+            )
+          }
+        }
+      }
+    },
     GitHubReposMenuRootQuery: () => {
       return {
         viewer: {

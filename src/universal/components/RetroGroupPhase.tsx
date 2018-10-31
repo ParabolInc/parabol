@@ -1,3 +1,4 @@
+import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
@@ -5,6 +6,9 @@
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
@@ -15,17 +19,16 @@ import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectio
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import BottomNavControl from 'universal/components/BottomNavControl'
-import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
-import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
-import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 import handleRightArrow from '../utils/handleRightArrow'
-import PhaseItemMasonry from './PhaseItemMasonry'
+import isDemoRoute from '../utils/isDemoRoute'
 import EndMeetingButton from './EndMeetingButton'
+import DemoGroupHelpMenu from './MeetingHelp/DemoGroupHelpMenu'
+import PhaseItemMasonry from './PhaseItemMasonry'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroGroupPhase_team
 }
 
@@ -51,7 +54,8 @@ const RetroGroupPhase = (props: Props) => {
     onCompleted,
     submitting,
     submitMutation,
-    team
+    team,
+    isDemoStageComplete
   } = props
   const {viewerId} = atmosphere
   const {newMeeting} = team
@@ -65,7 +69,7 @@ const RetroGroupPhase = (props: Props) => {
     const groupingThreshold = nextAutoGroupThreshold || 0.5
     AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
   }
-  const canAutoGroup = !nextAutoGroupThreshold || nextAutoGroupThreshold < 1
+  const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1)
   return (
     <React.Fragment>
       {error && <StyledError>{error}</StyledError>}
@@ -78,6 +82,7 @@ const RetroGroupPhase = (props: Props) => {
           <BottomControlSpacer />
           <CenteredControlBlock>
             <BottomNavControl
+              isBouncing={isDemoStageComplete}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
@@ -97,7 +102,11 @@ const RetroGroupPhase = (props: Props) => {
           <EndMeetingButton meetingId={meetingId} />
         </StyledBottomBar>
       )}
-      <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
+      {isDemoRoute() ? (
+        <DemoGroupHelpMenu />
+      ) : (
+        <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
+      )}
     </React.Fragment>
   )
 }
