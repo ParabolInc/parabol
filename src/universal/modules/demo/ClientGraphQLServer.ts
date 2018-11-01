@@ -456,6 +456,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         (group) => group.id === oldReflectionGroupId
       )!
       const oldReflections = oldReflectionGroup.reflections!
+      let failedDrop = false
       if (dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GRID) {
         const {retroPhaseItemId} = reflection
         newReflectionGroupId = this.getTempId('group')
@@ -513,61 +514,61 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         dropTargetType === DragReflectionDropTargetTypeEnum.REFLECTION_GROUP &&
         dropTargetId
       ) {
-        newReflectionGroupId = dropTargetId
         // group
-        const reflection = this.db.reflections.find((reflection) => reflection.id === reflectionId)!
-        const reflectionGroup = this.db.reflectionGroups.find(
-          (group) => group.id === newReflectionGroupId
-        )!
-        const sortOrders = this.db.reflections
-          .filter((r) => r.reflectionGroupId === newReflectionGroupId)
-          .map((r) => (r && r.sortOrder) || 0)
-        const maxSortOrder = Math.max(...sortOrders)
-        Object.assign(reflection, {
-          sortOrder: maxSortOrder + 1 + dndNoise(),
-          reflectionGroupId: newReflectionGroupId,
-          retroReflectionGroup: reflectionGroup as any,
-          updatedAt: now
-        })
-        reflectionGroup.reflections!.push(reflection as any)
-        oldReflections.splice(
-          oldReflections.findIndex((reflection) => reflection === reflection),
-          1
-        )
-        if (oldReflectionGroupId !== newReflectionGroupId) {
-          const nextReflections = this.db.reflections.filter(
-            (reflection) => reflection.reflectionGroupId === newReflectionGroupId
+        const reflectionGroup = this.db.reflectionGroups.find((group) => group.id === dropTargetId)!
+        if (reflectionGroup) {
+          newReflectionGroupId = dropTargetId
+          const sortOrders = this.db.reflections
+            .filter((r) => r.reflectionGroupId === newReflectionGroupId)
+            .map((r) => (r && r.sortOrder) || 0)
+          const maxSortOrder = Math.max(...sortOrders)
+          Object.assign(reflection, {
+            sortOrder: maxSortOrder + 1 + dndNoise(),
+            reflectionGroupId: newReflectionGroupId,
+            retroReflectionGroup: reflectionGroup as any,
+            updatedAt: now
+          })
+          reflectionGroup.reflections!.push(reflection as any)
+          oldReflections.splice(
+            oldReflections.findIndex((reflection) => reflection === reflection),
+            1
           )
-          const oldReflections = this.db.reflections.filter(
-            (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
-          )
-          const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
-            nextReflections
-          )
-          reflectionGroup.smartTitle = nextGroupSmartTitle
-          if (!reflectionGroup.titleIsUserDefined) {
-            reflectionGroup.title = nextGroupTitle
-          }
-          const oldReflectionGroup = this.db.reflectionGroups.find(
-            (group) => group.id === oldReflectionGroupId
-          )!
-          if (oldReflections.length > 0) {
-            const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
-              oldReflections
+          if (oldReflectionGroupId !== newReflectionGroupId) {
+            const nextReflections = this.db.reflections.filter(
+              (reflection) => reflection.reflectionGroupId === newReflectionGroupId
             )
-            oldReflectionGroup.smartTitle = oldGroupSmartTitle
-            if (!oldReflectionGroup.titleIsUserDefined) {
-              oldReflectionGroup.title = oldGroupTitle
+            const oldReflections = this.db.reflections.filter(
+              (reflection) => reflection.reflectionGroupId === oldReflectionGroupId
+            )
+            const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
+              nextReflections
+            )
+            reflectionGroup.smartTitle = nextGroupSmartTitle
+            if (!reflectionGroup.titleIsUserDefined) {
+              reflectionGroup.title = nextGroupTitle
             }
-          } else {
-            const meetingGroups = this.db.newMeeting.reflectionGroups!
-            meetingGroups.splice(meetingGroups.indexOf(oldReflectionGroup as any), 1)
-            oldReflectionGroup.isActive = false
-            oldReflectionGroup.updatedAt = now
+            const oldReflectionGroup = this.db.reflectionGroups.find(
+              (group) => group.id === oldReflectionGroupId
+            )!
+            if (oldReflections.length > 0) {
+              const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
+                oldReflections
+              )
+              oldReflectionGroup.smartTitle = oldGroupSmartTitle
+              if (!oldReflectionGroup.titleIsUserDefined) {
+                oldReflectionGroup.title = oldGroupTitle
+              }
+            } else {
+              const meetingGroups = this.db.newMeeting.reflectionGroups!
+              meetingGroups.splice(meetingGroups.indexOf(oldReflectionGroup as any), 1)
+              oldReflectionGroup.isActive = false
+              oldReflectionGroup.updatedAt = now
+            }
           }
+        } else {
+          failedDrop = true
         }
       }
-
       const data = {
         __typename: 'EndDraggingReflectionPayload',
         meetingId: demoMeetingId,
@@ -581,8 +582,8 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         oldReflectionGroupId,
         oldReflectionGroup,
         userId,
-        dropTargetType,
-        dropTargetId,
+        dropTargetType: failedDrop ? null : dropTargetType,
+        dropTargetId: failedDrop ? null : dropTargetId,
         dragId
       }
 

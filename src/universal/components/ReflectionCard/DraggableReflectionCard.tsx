@@ -13,13 +13,13 @@ import {Dispatch} from 'redux'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import {cardShadow} from 'universal/styles/elevation'
 import ui from 'universal/styles/ui'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import {SetItemRef} from '../PhaseItemMasonry'
+import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
 import ReflectionCard from './ReflectionCard'
 
 interface Props extends WithAtmosphereProps {
@@ -180,7 +180,7 @@ const reflectionDragSpec = {
     } = props
     // endDrag is also called when the viewer loses a conflict
     if (!dragContext || !dragContext.isViewerDragging) return
-    const {dragId} = dragContext
+    const dragId = dragContext.dragId as string
     const dropResult = monitor.getDropResult()
     const {dropTargetType = null, dropTargetId = null} = dropResult || {}
     // must come before the mutation so we can clear the itemCache
