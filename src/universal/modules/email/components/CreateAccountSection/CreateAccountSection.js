@@ -2,98 +2,101 @@ import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import {emailPrimaryButtonStyle, emailLinkStyle} from 'universal/styles/emails'
+import {emailLinkStyle, emailPrimaryButtonStyle} from 'universal/styles/emails'
+
+const tableStyle = {
+  ...ui.emailTableBase,
+  width: '100%'
+}
+const blockStyle = {
+  backgroundColor: '#fff',
+  color: appTheme.palette.dark,
+  fontFamily: ui.emailFontFamily,
+  fontSize: '24px',
+  lineHeight: 1.5,
+  padding: '0 20px',
+  textAlign: 'center'
+}
+const textStyle = {
+  color: appTheme.palette.dark,
+  fontFamily: ui.emailFontFamily
+}
+const headingStyle = {
+  ...textStyle,
+  fontSize: 24,
+  margin: '0 0 8px'
+}
+const copyStyle = {
+  ...textStyle,
+  fontSize: 14,
+  margin: '0 0 20px'
+}
+const subHeadingStyle = {
+  ...textStyle,
+  fontSize: 16,
+  fontStyle: 'italic',
+  fontWeight: 600,
+  margin: '0 0 16px'
+}
+const primaryButtonStyle = {
+  ...emailPrimaryButtonStyle,
+  width: '320px'
+}
+const linkStyle = {
+  ...emailLinkStyle,
+  display: 'block',
+  fontSize: 14,
+  margin: '20px 0 32px'
+}
+const iconSize = 40
+const labelWidth = 298
+const featureWidth = iconSize + labelWidth
+const featureTableStyle = {
+  ...tableStyle,
+  width: featureWidth
+}
+const featureIconCellStyle = {
+  height: iconSize,
+  padding: '8px 0',
+  width: iconSize
+}
+const featureIconStyle = {
+  display: 'block',
+  height: iconSize,
+  width: iconSize
+}
+const featureCopyCellStyle = {
+  fontSize: 16,
+  height: iconSize,
+  padding: '8px 0 8px 18px',
+  textAlign: 'left',
+  width: 280
+}
+
+const features = [
+  {icon: 'prompts@3x.png', copy: 'Custom retrospective formats'},
+  {icon: 'grouping@3x.png', copy: 'Engaging UX for 8+ team members'},
+  {icon: 'summary@3x.png', copy: 'Detailed meeting summary email'},
+  {icon: 'owners@3x.png', copy: 'Takeaway tasks with owners'}
+]
+const primaryActionLabel = 'Invite Your Team'
+const primaryActionLink = '/create-account?from=demo'
+
+const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
+  const src = `/static/images/email/icons/${featureIconFile}`
+  return (
+    <tr key={`feature${idx}`}>
+      <td style={featureIconCellStyle} width={iconSize}>
+        <img height={iconSize} src={src} style={featureIconStyle} width={iconSize} />
+      </td>
+      <td style={featureCopyCellStyle} width={labelWidth}>
+        {featureCopy}
+      </td>
+    </tr>
+  )
+}
 
 const CreateAccountSection = () => {
-  const tableStyle = {
-    ...ui.emailTableBase,
-    width: '100%'
-  }
-  const blockStyle = {
-    backgroundColor: '#fff',
-    color: appTheme.palette.dark,
-    fontFamily: ui.emailFontFamily,
-    fontSize: '24px',
-    lineHeight: 1.5,
-    padding: '0 20px',
-    textAlign: 'center'
-  }
-  const textStyle = {
-    color: appTheme.palette.dark,
-    fontFamily: ui.emailFontFamily
-  }
-  const headingStyle = {
-    ...textStyle,
-    fontSize: 24,
-    margin: '0 0 8px'
-  }
-  const copyStyle = {
-    ...textStyle,
-    fontSize: 14,
-    margin: '0 0 20px'
-  }
-  const subHeadingStyle = {
-    ...textStyle,
-    fontSize: 16,
-    fontStyle: 'italic',
-    fontWeight: 600,
-    margin: '0 0 16px'
-  }
-  const primaryButtonStyle = {
-    ...emailPrimaryButtonStyle,
-    width: '320px'
-  }
-  const linkStyle = {
-    ...emailLinkStyle,
-    display: 'block',
-    fontSize: 14,
-    margin: '20px 0 32px'
-  }
-  const iconSize = 40
-  const labelWidth = 298
-  const featureWidth = iconSize + labelWidth
-  const featureTableStyle = {
-    ...tableStyle,
-    width: featureWidth
-  }
-  const featureIconCellStyle = {
-    height: iconSize,
-    padding: '8px 0',
-    width: iconSize
-  }
-  const featureIconStyle = {
-    display: 'block',
-    height: iconSize,
-    width: iconSize
-  }
-  const featureCopyCellStyle = {
-    fontSize: 16,
-    height: iconSize,
-    padding: '8px 0 8px 18px',
-    textAlign: 'left',
-    width: 280
-  }
-  const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
-    const src = `/static/images/email/icons/${featureIconFile}`
-    return (
-      <tr key={`feature${idx}`}>
-        <td style={featureIconCellStyle} width={iconSize}>
-          <img height={iconSize} src={src} style={featureIconStyle} width={iconSize} />
-        </td>
-        <td style={featureCopyCellStyle} width={labelWidth}>
-          {featureCopy}
-        </td>
-      </tr>
-    )
-  }
-  const features = [
-    {icon: 'prompts@3x.png', copy: 'Custom retrospective formats'},
-    {icon: 'grouping@3x.png', copy: 'Engaging UX for 8+ team members'},
-    {icon: 'summary@3x.png', copy: 'Detailed meeting summary email'},
-    {icon: 'owners@3x.png', copy: 'Takeaway tasks with owners'}
-  ]
-  const primaryActionLabel = 'Invite Your Team'
-  const primaryActionLink = '/create-account'
   return (
     <div style={{padding: '0 16px'}}>
       <EmptySpace height={32} />
