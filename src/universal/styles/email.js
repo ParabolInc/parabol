@@ -1,4 +1,4 @@
-// styles/emails.js
+// styles/email.js
 
 import ui from 'universal/styles/ui'
 import {buttonShadow} from 'universal/styles/elevation'
@@ -28,3 +28,19 @@ export const emailLinkStyle = {
   fontSize: '13px',
   textDecoration: 'underline'
 }
+
+export const headCSS = `
+  table[class=body] .responsiveEmailTest {
+    color: red !important;
+  }
+  @media only screen and (max-width: 620px) {
+    table[class=body] .container {
+      padding: 0 !important;
+      width: 100% !important;
+    }
+
+    table[class=body] .responsiveEmailTest {
+      color: green !important;
+    }
+  }
+`

@@ -28,12 +28,18 @@ const Layout = (props) => {
     textAlign: 'center'
   }
 
+  // const responsiveEmailTest = {
+  //   color: 'blue'
+  // }
+
+  // <div className='responsiveEmailTest' style={responsiveEmailTest}>Test</div>
+
   return (
-    <table align='center' style={containerStyle} width='100%'>
+    <table align='center' className='body' style={containerStyle} width='100%'>
       <tbody>
         <tr>
           <td align='center' style={cellStyle}>
-            <table align='center' style={innerStyle} width='600'>
+            <table align='center' className='container' style={innerStyle} width='600'>
               <tbody>
                 <tr>
                   <td style={cellStyle}>{props.children}</td>

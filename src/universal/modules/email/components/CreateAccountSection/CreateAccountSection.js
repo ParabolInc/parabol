@@ -2,7 +2,7 @@ import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import {emailPrimaryButtonStyle, emailLinkStyle} from 'universal/styles/emails'
+import {emailPrimaryButtonStyle, emailLinkStyle} from 'universal/styles/email'
 
 const CreateAccountSection = () => {
   const tableStyle = {

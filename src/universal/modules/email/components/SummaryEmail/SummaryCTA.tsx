@@ -2,7 +2,7 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import CreateAccountSection from 'universal/modules/email/components/CreateAccountSection/CreateAccountSection'
 import ui from 'universal/styles/ui'
-import {emailPrimaryButtonStyle} from 'universal/styles/emails'
+import {emailPrimaryButtonStyle} from 'universal/styles/email'
 
 type SummaryReferrer = 'email' | 'meeting' | 'history'
 
