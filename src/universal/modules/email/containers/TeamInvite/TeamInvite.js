@@ -9,13 +9,15 @@ import EmailFooter from '../../components/EmailFooter/EmailFooter'
 import ui from 'universal/styles/ui'
 import {emailCopyStyle, emailLinkStyle} from 'universal/styles/email'
 
+const innerMaxWidth = 480
+
 const bodyCellStyle = {
   padding: '0 24px 48px'
 }
 
 const bodyInnerStyle = {
   margin: '0 auto',
-  maxWidth: '480px',
+  maxWidth: innerMaxWidth,
   width: '100%'
 }
 
@@ -39,13 +41,11 @@ const videoLinkStyle = {
 const videoGraphicStyle = {
   display: 'block',
   margin: '0 auto',
-  maxWidth: '480px',
+  maxWidth: innerMaxWidth,
   width: '100%'
 }
 
 const videoGraphicSrc = '/static/images/email/graphics/retro-video-still.png'
-
-const innerMaxWidth = 480
 
 const TeamInvite = (props) => {
   const {inviterName, inviterEmail, inviteeEmail, inviteeName, teamName, inviteLink} = props

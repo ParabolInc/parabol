@@ -32,12 +32,6 @@ const containerDiv = {
   width: '100%'
 }
 
-// const responsiveEmailTest = {
-//   color: 'blue'
-// }
-
-// <div className='responsiveEmailTest' style={responsiveEmailTest}>Test</div>
-
 const Layout = (props) => {
   const {children, maxWidth} = props
   return (

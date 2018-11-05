@@ -17,7 +17,7 @@ const Header = (props) => {
 
   const emailHeaderStyle = {
     ...ui.emailTableBase,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: ui.emailBodyColor,
     color: ui.palette.dark,
     padding: '32px 24px',
     textAlign: 'left'

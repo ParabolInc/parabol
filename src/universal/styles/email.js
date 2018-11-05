@@ -40,17 +40,10 @@ export const emailLinkStyle = {
 }
 
 export const headCSS = `
-  table[class=body] .responsiveEmailTest {
-    color: red !important;
-  }
   @media only screen and (max-width: 620px) {
     table[class=body] .container {
       padding: 0 !important;
       width: 100% !important;
-    }
-
-    table[class=body] .responsiveEmailTest {
-      color: green !important;
     }
   }
 `
