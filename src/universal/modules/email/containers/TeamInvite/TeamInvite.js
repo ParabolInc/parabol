@@ -5,166 +5,158 @@ import Button from '../../components/Button/Button'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import Body from '../../components/Body/Body'
 import Header from '../../components/Header/Header'
-import Callout from '../../components/Callout/Callout'
-import Footer from '../../components/Footer/Footer'
+import EmailFooter from '../../components/EmailFooter/EmailFooter'
 import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+import {emailCopyStyle, emailLinkStyle} from 'universal/styles/email'
 
-const textColor = {
-  color: ui.colorText
+const bodyCellStyle = {
+  padding: '0 24px 48px'
 }
 
-const colorWarm = {
-  color: appTheme.palette.warm
+const bodyInnerStyle = {
+  margin: '0 auto',
+  maxWidth: '480px',
+  width: '100%'
 }
 
-const boldLinkStyle = {
-  color: appTheme.palette.warm,
+const linkStyle = {
+  ...emailLinkStyle,
+  fontWeight: 600
+}
+
+const boldStyle = {
+  ...emailCopyStyle,
+  fontWeight: 600
+}
+
+const videoLinkStyle = {
+  border: 0,
+  display: 'block',
+  margin: '0 auto',
   textDecoration: 'none'
 }
 
-const teamNameStyle = {
-  color: ui.colorText,
-  fontSize: '36px'
+const videoGraphicStyle = {
+  display: 'block',
+  margin: '0 auto',
+  maxWidth: '480px',
+  width: '100%'
 }
 
-const ruleStyle = {
-  ...ui.emailRuleStyle,
-  width: '80%'
-}
+const videoGraphicSrc = '/static/images/email/graphics/retro-video-still.png'
 
-const calloutTextStyle = {
-  color: ui.colorText
-}
-
-const secondaryMessage = {
-  color: ui.colorText,
-  fontSize: '20px',
-  lineHeight: '30px'
-}
+const innerMaxWidth = 480
 
 const TeamInvite = (props) => {
-  const {
-    inviterAvatar,
-    inviterName,
-    inviterEmail,
-    inviteeEmail,
-    inviteeName,
-    // firstTask,
-    teamName,
-    inviteLink
-  } = props
-  const nameOrEmail = inviteeName || inviteeEmail
+  const {inviterName, inviterEmail, inviteeEmail, inviteeName, teamName, inviteLink} = props
+  const inviteeEmailBlock = (
+    <a href={`mailto:${inviteeEmail}`} style={emailCopyStyle}>
+      {inviteeEmail}
+    </a>
+  )
+  const nameOrEmail = inviteeName || inviteeEmailBlock
   return (
-    <Layout>
-      <Header />
-
-      <Body verticalGutter={32}>
-        <table style={ui.emailTableBase} align='center'>
-          <tbody>
-            <tr>
-              <td width='64'>
-                <img src={inviterAvatar} height='64' width='64' />
-              </td>
-              <td style={{paddingLeft: '16px', textAlign: 'left'}}>
-                {inviterName}
-                <br />
-                <a href={`mailto:${inviterEmail}`} style={{...textColor, fontSize: '14px'}}>
-                  {inviterEmail}
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <Layout maxWidth={544}>
+      <Header maxWidth={innerMaxWidth} />
+      <Body align='left'>
         <table style={ui.emailTableBase} width='100%'>
           <tbody>
             <tr>
-              <td style={{paddingLeft: '16px', paddingRight: '16px'}}>
-                <Callout fontSize={18} width='100%'>
-                  <span style={calloutTextStyle}>
+              <td style={bodyCellStyle}>
+                <div style={bodyInnerStyle}>
+                  <p style={emailCopyStyle}>
                     {'Hi '}
+                    <span style={emailCopyStyle}>{nameOrEmail}</span>
+                    {','}
+                  </p>
+                  <p style={emailCopyStyle}>
+                    <span style={boldStyle}>{inviterName}</span>
+                    {' ('}
+                    <a href={`mailto:${inviterEmail}`} style={linkStyle}>
+                      {inviterEmail}
+                    </a>
+                    {') has invited you to join a team on Parabol: '}
+                    <span style={boldStyle}>{teamName}</span>
+                  </p>
+                  <Button url={inviteLink}>{'Join Team'}</Button>
+                  <EmptySpace height={24} />
+                  <p style={emailCopyStyle}>
+                    <span style={boldStyle}>{'New to Parabol?'}</span>
+                    <br />
+                    {
+                      'Parabol is software for remote teams to run online retrospective and check-in meetings. See the video and links below:'
+                    }
+                  </p>
+                  <a
+                    href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
+                    style={videoLinkStyle}
+                    title='Retro 101'
+                  >
+                    <img alt='' src={videoGraphicSrc} style={videoGraphicStyle} />
+                  </a>
+                  <EmptySpace height={24} />
+                  <p style={emailCopyStyle}>
+                    {'Learn more about Parabol meetings:'}
+                    <br />
                     <a
-                      href={`mailto:${inviteeEmail}`}
-                      style={{...colorWarm, textDecoration: 'none'}}
+                      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
+                      style={linkStyle}
+                      title='Getting Started: Retro 101'
                     >
-                      {nameOrEmail}
-                    </a>!<br />
-                    {inviterName}
-                    {' has invited you to join a team on Parabol:'}
-                  </span>
-                  <EmptySpace height={12} />
-                  <span style={teamNameStyle}>{teamName}</span>
-                </Callout>
+                      {'Getting Started: Retro 101'}
+                    </a>
+                    <br />
+                    <a
+                      href='https://www.parabol.co/getting-started-guide/action-meetings-101'
+                      style={linkStyle}
+                      title='Leveling Up: Action 101'
+                    >
+                      {'Leveling Up: Action 101'}
+                    </a>
+                  </p>
+                  <p style={{...emailCopyStyle, margin: 0}}>
+                    {'Get in touch if we can help in any way,'}
+                    <br />
+                    {'The Parabol Product Team'}
+                    <br />
+                    <a href='mailto:love@parabol.co' style={linkStyle} title='love@parabol.co'>
+                      {'love@parabol.co'}
+                    </a>
+                  </p>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
-        <Button backgroundColor={appTheme.palette.warm} url={inviteLink}>
-          {'Join Team'}
-        </Button>
-        <EmptySpace height={16} />
-        {'Or go to: '}
-        <a href={inviteLink} style={colorWarm}>
-          {inviteLink}
-        </a>
-        <EmptySpace height={32} />
-        <div style={ruleStyle} />
-        <EmptySpace height={32} />
-        <div className={secondaryMessage}>
-          Parabol helps teams{' '}
-          <a
-            href='https://focus.parabol.co/how-to-navigate-uncertainty-fc0dfaaf3830'
-            style={boldLinkStyle}
-            title='How to Navigate Uncertainty using the Action Rhythm'
-          >
-            {'develop a weekly rhythm'}
-          </a>
-          {'.'}
-          <br />
-          <a href={inviteLink} style={boldLinkStyle}>
-            {'Add a task to the board'}
-          </a>
-          {' to get started.'}
-        </div>
-        <EmptySpace height={32} />
       </Body>
-      <Footer color={ui.colorText} />
+      <EmailFooter maxWidth={innerMaxWidth} />
     </Layout>
   )
 }
 
-// TODO: Don’t show this until we actually transfer it to the dashboard as a task? (TA)
-// {firstTask &&
-//   <div>
-//     <b>{inviterName} added one of your tasks to Parabol</b>:
-//     <EmptySpace height={32} />
-//     <span style={taskNameStyle}>“{firstTask}”</span>
-//     <EmptySpace height={32} />
-//   </div>
-// }
-
 TeamInvite.propTypes = {
-  inviterAvatar: PropTypes.string.isRequired,
   inviteeName: PropTypes.string,
   inviteeEmail: PropTypes.string.isRequired,
   inviterName: PropTypes.string.isRequired,
   inviterEmail: PropTypes.string.isRequired,
-  firstTask: PropTypes.string,
   teamName: PropTypes.string.isRequired,
   inviteLink: PropTypes.string.isRequired
 }
 
-export const teamInviteText = (props) => `
-Hello ${props.inviteeName || props.inviteeEmail},
+export const teamInviteText = (props) => {
+  const {inviteeName, inviteeEmail, inviterName, inviterEmail, inviteLink, teamName} = props
+  return `
+Hello ${inviteeName || inviteeEmail},
 
-${props.inviterName} has invited you to join the ${props.teamName} on Parabol.
+${inviterName} (${inviterEmail}) has invited you to join a team on Parabol: ${teamName}
 
-Parabol is a place where your team will develop a weekly rhythm.
+Parabol is software for remote teams to run online retrospective and check-in meetings.
 
-Get started here: ${props.inviteLink}
+Get started here: ${inviteLink}
 
 Your friends,
-The Parabol Crew
+The Parabol Product Team
 `
+}
 
 export default TeamInvite

@@ -8,24 +8,34 @@ export const emailPrimaryButtonStyle = {
   backgroundImage: ui.gradientWarm,
   borderRadius: '4em',
   boxShadow: buttonShadow,
-  color: '#ffffff',
+  color: '#FFFFFF',
   cursor: 'pointer',
   display: 'block',
   fontFamily: ui.emailFontFamily,
   fontSize: '16px',
   fontWeight: 600,
-  lineHeight: '20px',
+  lineHeight: '1.5',
   margin: '0 auto',
-  padding: '18px 0',
+  padding: '10px 0',
   textAlign: 'center',
   textDecoration: 'none',
   width: '128px'
 }
 
+export const emailCopyStyle = {
+  color: ui.palette.dark,
+  fontFamily: ui.emailFontFamily,
+  fontSize: '16px',
+  fontWeight: 400,
+  lineHeight: '1.5',
+  margin: '0 0 24px',
+  padding: 0,
+  textDecoration: 'none'
+}
+
 export const emailLinkStyle = {
   color: ui.palette.blue,
   fontFamily: ui.emailFontFamily,
-  fontSize: '13px',
   textDecoration: 'underline'
 }
 

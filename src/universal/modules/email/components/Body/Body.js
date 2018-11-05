@@ -1,17 +1,16 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import EmptySpace from '../EmptySpace/EmptySpace'
 import ui from 'universal/styles/ui'
 
 const Body = (props) => {
-  const {align, children, fontSize, lineHeight, verticalGutter} = props
+  const {align, children} = props
 
   const cellStyle = {
     color: ui.colorText,
     backgroundColor: ui.emailBodyColor,
     fontFamily: ui.emailFontFamily,
-    fontSize: `${fontSize}px`,
-    lineHeight: `${lineHeight}`,
+    fontSize: '16px',
+    lineHeight: '1.5',
     padding: 0,
     textAlign: align
   }
@@ -21,9 +20,7 @@ const Body = (props) => {
       <tbody>
         <tr>
           <td align={align} style={cellStyle}>
-            <EmptySpace height={verticalGutter} />
             {children}
-            <EmptySpace height={verticalGutter} />
           </td>
         </tr>
       </tbody>
@@ -33,17 +30,11 @@ const Body = (props) => {
 
 Body.propTypes = {
   align: PropTypes.oneOf(['center', 'left']),
-  children: PropTypes.any,
-  fontSize: PropTypes.number,
-  lineHeight: PropTypes.number,
-  verticalGutter: PropTypes.number
+  children: PropTypes.any
 }
 
 Body.defaultProps = {
-  align: 'center',
-  fontSize: 18,
-  lineHeight: 1.25,
-  verticalGutter: 48
+  align: 'center'
 }
 
 export default Body

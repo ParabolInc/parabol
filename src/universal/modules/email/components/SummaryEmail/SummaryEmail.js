@@ -162,7 +162,7 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
       )}
-      <Body verticalGutter={0}>
+      <Body>
         <table align='center' style={ui.emailTableBase} width='100%'>
           <tbody>
             <tr>
