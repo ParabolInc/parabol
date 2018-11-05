@@ -11,14 +11,12 @@ const removeTeamMember = async (teamMemberId, options, dataLoader) => {
   const r = getRethink()
   const now = new Date()
   const {userId, teamId} = fromTeamMemberId(teamMemberId)
-  console.log('member', teamMemberId)
   // see if they were a leader, make a new guy leader so later we can reassign tasks
   const activeTeamMembers = await r.table('TeamMember').getAll(teamId, {index: 'teamId'})
   const teamMember = activeTeamMembers.find((t) => t.id === teamMemberId)
   const {isLead, isNotRemoved} = teamMember
   // if the guy being removed is the leader & not the last, pick a new one. else, use him
   const teamLeader = activeTeamMembers.find((t) => t.isLead === !isLead) || teamMember
-  console.log('teamLeader', teamLeader)
   if (!isNotRemoved) {
     throw new Error('Team member already removed')
   }
