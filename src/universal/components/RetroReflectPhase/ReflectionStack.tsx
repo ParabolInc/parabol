@@ -17,6 +17,7 @@ interface Props {
   phaseItemId: string
   phaseEditorRef: React.RefObject<HTMLDivElement>
   phaseRef: React.RefObject<HTMLDivElement>
+  readOnly: boolean
   reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
 }
 
@@ -191,7 +192,7 @@ class ReflectionStack extends Component<Props, State> {
   }
 
   render () {
-    const {idx, reflectionStack, phaseItemId, phaseRef, meetingId} = this.props
+    const {idx, reflectionStack, phaseItemId, phaseRef, meetingId, readOnly} = this.props
     const {isExpanded} = this.state
     if (reflectionStack.length === 0) {
       return <ReflectionStackPlaceholder idx={idx} innerRef={this.placeholderRef} />
@@ -208,6 +209,7 @@ class ReflectionStack extends Component<Props, State> {
           meetingId={meetingId}
           phaseItemId={phaseItemId}
           firstReflectionRef={this.firstReflectionRef}
+          readOnly={readOnly}
         />
         <CardStack onClick={this.expand} isVisible={!isExpanded} innerRef={this.stackRef}>
           <CenteredCardStack>
@@ -217,6 +219,7 @@ class ReflectionStack extends Component<Props, State> {
                   meetingId={meetingId}
                   reflection={maxStack[0]}
                   phaseItemId={phaseItemId}
+                  readOnly={readOnly}
                 />
               </div>
             )}
