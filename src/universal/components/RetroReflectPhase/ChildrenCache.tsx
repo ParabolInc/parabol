@@ -1,13 +1,11 @@
 import {BBox, Dims, Point} from 'types/animations'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
-import {STANDARD_CURVE} from 'universal/styles/animation'
+import {DECELERATE, STANDARD_CURVE} from 'universal/styles/animation'
 import {
   ITEM_DURATION,
-  MIN_ITEM_DELAY,
   MIN_VAR_ITEM_DELAY,
   MOVE_DELAY,
   MOVE_DURATION
@@ -145,13 +143,11 @@ class ChildrenCache {
     })
 
     requestAnimationFrame(() => {
-      const staggerDelay = getStaggerDelay(this.cache.length)
-      this.cache.forEach((cachedChild, idx) => {
+      this.cache.forEach((cachedChild) => {
         const {
           el: {style}
         } = cachedChild
-        const delay = MIN_ITEM_DELAY + staggerDelay * (this.cache.length - idx - 1)
-        style.transition = `transform ${ITEM_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
+        style.transition = `transform ${ITEM_DURATION}ms ${DECELERATE}`
         style.transform = null
       })
     })
@@ -174,13 +170,11 @@ class ChildrenCache {
     })
 
     requestAnimationFrame(() => {
-      const staggerDelay = getStaggerDelay(this.cache.length)
-      this.cache.forEach((cachedChild, idx) => {
+      this.cache.forEach((cachedChild) => {
         const {
           el: {style}
         } = cachedChild
-        const delay = MIN_ITEM_DELAY + staggerDelay * idx
-        style.transition = `transform ${ITEM_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
+        style.transition = `transform ${ITEM_DURATION}ms ${DECELERATE}`
         style.transform = null
       })
     })

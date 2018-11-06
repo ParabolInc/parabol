@@ -118,7 +118,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
                       meetingId={meetingId}
                       reflection={reflection}
                       phaseItemId={phaseItemId}
-                      readOnly={readOnly}
+                      readOnly={isClosing || readOnly}
                     />
                   </ModalReflectionWrapper>
                 )

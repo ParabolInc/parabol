@@ -4,11 +4,10 @@ import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
 import {BBox} from 'types/animations'
-import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import {DECELERATE} from 'universal/styles/animation'
 import {ZINDEX_MODAL} from 'universal/styles/elevation'
-import {ITEM_DURATION, MIN_ITEM_DELAY} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import {ITEM_DURATION} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
 
 interface Props {
@@ -88,7 +87,7 @@ class FLIPModal extends Component<Props> {
   }
 
   animateIn () {
-    const {childrenLen, getFirst, getParentBBox} = this.props
+    const {getFirst, getParentBBox} = this.props
     const backgroundDiv = this.backgroundRef.current
     const contentDiv = this.contentRef.current
     if (!this.childBBox || !backgroundDiv || !contentDiv) return
@@ -101,8 +100,6 @@ class FLIPModal extends Component<Props> {
     const left = (maxBBox.width - this.childBBox.width) / 2 + maxBBox.left
     const last = {top, left, height, width}
 
-    const staggerDelay = getStaggerDelay(childrenLen)
-    const totalDuration = MIN_ITEM_DELAY + ITEM_DURATION + staggerDelay * childrenLen
     const {style: bgStyle} = backgroundDiv
 
     setElementBBox(contentDiv, last)
@@ -111,7 +108,7 @@ class FLIPModal extends Component<Props> {
     bgStyle.opacity = '0'
     const resetBodyStyles = hideBodyScroll()
     requestDoubleAnimationFrame(() => {
-      bgStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
+      bgStyle.transition = `all ${ITEM_DURATION}ms ${DECELERATE}`
       bgStyle.transform = null
       bgStyle.opacity = null
     })
@@ -124,18 +121,16 @@ class FLIPModal extends Component<Props> {
   }
 
   animateOut () {
-    const {childrenLen, close, getFirst} = this.props
+    const {close, getFirst} = this.props
     const first = getFirst()
     const backgroundDiv = this.backgroundRef.current
     const contentDiv = this.contentRef.current
     const last = getBBox(backgroundDiv)
     if (!first || !last || !backgroundDiv || !contentDiv) return
     const {style: bgStyle} = backgroundDiv
-    const staggerDelay = getStaggerDelay(childrenLen)
-    const totalDuration = MIN_ITEM_DELAY + ITEM_DURATION + staggerDelay * childrenLen
     contentDiv.style.overflow = ''
     const resetBodyStyles = hideBodyScroll()
-    bgStyle.transition = `all ${totalDuration}ms ${DECELERATE}`
+    bgStyle.transition = `all ${ITEM_DURATION}ms ${DECELERATE}`
     bgStyle.transform = getTransform(first, last, {scale: true})
     bgStyle.opacity = '0'
     const cleanup = () => {
