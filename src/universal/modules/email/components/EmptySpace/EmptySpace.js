@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types'
 // EmptySpace:
 // Table-based way to add vertical space. Uses line-height.
 
+import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
+import {emailTableBase} from 'universal/styles/email'
 
 const EmptySpace = (props) => {
   const cellStyle = {
@@ -14,7 +14,7 @@ const EmptySpace = (props) => {
   }
 
   return (
-    <table style={ui.emailTableBase} width='100%'>
+    <table style={emailTableBase} width='100%'>
       <tbody>
         <tr>
           <td
