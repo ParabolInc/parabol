@@ -17,7 +17,7 @@ const linkStyle = {
 const Button = (props) => {
   const {url, width} = props
   return (
-    <table style={emailTableBase} width={`${width}px`}>
+    <table style={{...emailTableBase, width}} width={width}>
       <tbody>
         <tr>
           <td align='center' style={cellStyle}>
