@@ -20,6 +20,7 @@ type RenderProp = (setItemRef: SetItemRef) => ReactNode
 
 interface Props extends GridProps {
   children: RenderProp
+  items?: Array<any>
 }
 
 interface ItemRefs {
@@ -37,6 +38,13 @@ class MasonryCSSGrid extends Component<Props> {
 
   componentDidMount () {
     window.addEventListener('resize', this.setSpans, {passive: true})
+  }
+
+  componentDidUpdate (prevProps) {
+    if (this.props.items !== prevProps.items) {
+      // the setTimeout is required for the task list (issue #2432), but it shouldn't be.
+      setTimeout(() => this.setSpans())
+    }
   }
 
   componentWillUnmount () {

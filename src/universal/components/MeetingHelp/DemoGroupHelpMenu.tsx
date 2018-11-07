@@ -1,27 +1,25 @@
 import React from 'react'
-import styled from 'react-emotion'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
-import {GROUP} from 'universal/utils/constants'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import DelayedCopy from './DelayedCopy'
 import withDemoHelpMenu from './withDemoHelpMenu'
+import withStaggerShow from './withStaggerShow'
 
-const StyledCopy = styled(HelpMenuCopy)({margin: 0})
+let permShow = 0
+const DemoGroupHelpMenu = ({closePortal, staggerShow}) => {
+  if (staggerShow > permShow) permShow = staggerShow
+  return (
+    <HelpMenuContent closePortal={closePortal}>
+      <HelpMenuHeader>Grouping Time!</HelpMenuHeader>
+      <DelayedCopy show={permShow >= 1}>
+        Join in by grouping cards and perfecting the titles.
+      </DelayedCopy>
+      <DelayedCopy show={permShow >= 2} margin={'0'}>
+        Parabol's collaborative drag and drop let's you work together seamlessly.
+      </DelayedCopy>
+    </HelpMenuContent>
+  )
+}
 
-const DemoGroupHelpMenu = ({closePortal}) => (
-  <HelpMenuContent closePortal={closePortal}>
-    <HelpMenuHeader>{phaseLabelLookup[GROUP]}</HelpMenuHeader>
-    <HelpMenuCopy>
-      The Demo Team is busy grouping common reflections for discussion. Anybody on the team can
-      group.
-    </HelpMenuCopy>
-    <HelpMenuCopy>
-      To group, drag and drop a card onto another card or group. Tap group headings to edit.
-    </HelpMenuCopy>
-    <StyledCopy>Try grouping a few yourself, then move forward.</StyledCopy>
-  </HelpMenuContent>
-)
-
-export default withDemoHelpMenu(withHelpMenu(DemoGroupHelpMenu))
+export default withDemoHelpMenu(withHelpMenu(withStaggerShow(DemoGroupHelpMenu)))

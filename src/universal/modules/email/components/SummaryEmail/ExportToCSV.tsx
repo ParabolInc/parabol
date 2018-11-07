@@ -11,6 +11,7 @@ import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMu
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   meetingId: string
+  urlAction?: 'csv' | undefined
 }
 
 const query = graphql`
@@ -46,6 +47,12 @@ interface CSVRow {
 }
 
 class ExportToCSV extends Component<Props> {
+  componentDidMount () {
+    if (this.props.urlAction === 'csv') {
+      this.exportToCSV().catch()
+    }
+  }
+
   exportToCSV = async () => {
     const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = this.props
     if (submitting) return

@@ -22,11 +22,13 @@ const newMeetingSummaryEmailCreator = (props) => {
   const referrerUrl = makeAppLink(`new-summary/${meetingId}`)
   const meetingUrl = makeAppLink(`${meetingSlug}/${teamId}`)
   const teamDashUrl = makeAppLink(`team/${teamId}`)
+  const emailCSVLUrl = makeAppLink(`new-summary/${meetingId}/csv`)
   return {
     subject,
     body: `Hello, ${teamName}. Here is your ${meetingLabel} meeting summary`,
     html: Oy.renderTemplate(
       <NewMeetingSummaryEmail
+        emailCSVLUrl={emailCSVLUrl}
         meeting={meeting}
         meetingUrl={meetingUrl}
         referrer='email'
