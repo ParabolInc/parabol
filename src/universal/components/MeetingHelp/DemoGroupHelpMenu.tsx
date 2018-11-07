@@ -13,10 +13,10 @@ const DemoGroupHelpMenu = ({closePortal, staggerShow}) => {
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>Grouping Time!</HelpMenuHeader>
       <DelayedCopy show={permShow >= 1}>
-        Join in by creating groups and perfecting the titles.
+        Join in by grouping cards and perfecting the titles.
       </DelayedCopy>
       <DelayedCopy show={permShow >= 2} margin={'0'}>
-        Parabol's collaborative drag and drop let's you work together seamlessly
+        Parabol's collaborative drag and drop let's you work together seamlessly.
       </DelayedCopy>
     </HelpMenuContent>
   )

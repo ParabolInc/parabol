@@ -14,10 +14,11 @@ const DemoVoteHelpMenu = ({closePortal, staggerShow}) => {
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>To the Ballots!</HelpMenuHeader>
       <DelayedCopy show={permShow >= 1}>
-        Anonymously vote for the topics you'd like to discuss
+        Anonymously vote for the topics you'd like to discuss.
       </DelayedCopy>
       <DelayedCopy show={permShow >= 2} margin={'0'}>
-        Cast up to 3 votes per group to get what you care about to the top!
+        Cast up to 3 votes per group to get what you care about prioritized for the discussion to
+        come!
       </DelayedCopy>
     </HelpMenuContent>
   )
