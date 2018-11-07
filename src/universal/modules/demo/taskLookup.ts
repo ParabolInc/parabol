@@ -1,6 +1,6 @@
 const taskLookup = {
   botRef1: [
-    `{"blocks":[{"key":"2t991","text":"Create a system/process for making a collective decision, together","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
+    `{"blocks":[{"key":"2t991","text":"Create a process for making a collective decision, together","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`
   ],
   botRef2: [
     `{"blocks":[{"key":"2t992","text":"Document our testing process","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
