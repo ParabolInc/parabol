@@ -1,28 +1,27 @@
 import React from 'react'
-import styled from 'react-emotion'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
-import {DISCUSS} from 'universal/utils/constants'
-import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
+import DelayedCopy from './DelayedCopy'
 import withDemoHelpMenu from './withDemoHelpMenu'
+import withStaggerShow from './withStaggerShow'
 
-const StyledCopy = styled(HelpMenuCopy)({margin: 0})
+let permShow = 0
 
-const DemoDiscussHelpMenu = ({closePortal}) => (
-  <HelpMenuContent closePortal={closePortal}>
-    <HelpMenuHeader>{phaseLabelLookup[DISCUSS]}</HelpMenuHeader>
-    <HelpMenuCopy>
-      Here the Demo Team is creating takeaway tasks based on the current topic.
-    </HelpMenuCopy>
-    <HelpMenuCopy>
-      Try creating a task. Tap the avatar on the task to assign it to somebody else on the team.
-    </HelpMenuCopy>
-    <StyledCopy>
-      End the meeting to see a summary. The summary is emailed to everyone on the team.
-    </StyledCopy>
-  </HelpMenuContent>
-)
+const DemoDiscussHelpMenu = ({closePortal, staggerShow}) => {
+  if (staggerShow > permShow) permShow = staggerShow
+  return (
+    <HelpMenuContent closePortal={closePortal}>
+      <HelpMenuHeader>Now Talk it Out</HelpMenuHeader>
+      <DelayedCopy show={permShow >= 1}>Take action by assigning next steps.</DelayedCopy>
+      <DelayedCopy show={permShow >= 1}>
+        Track task progress with our Action meeting (It’s Free!)
+      </DelayedCopy>
+      <DelayedCopy show={permShow >= 2} margin={'0'}>
+        When you’re ready, end the demo to see the summary.
+      </DelayedCopy>
+    </HelpMenuContent>
+  )
+}
 
-export default withDemoHelpMenu(withHelpMenu(DemoDiscussHelpMenu))
+export default withDemoHelpMenu(withHelpMenu(withStaggerShow(DemoDiscussHelpMenu)))

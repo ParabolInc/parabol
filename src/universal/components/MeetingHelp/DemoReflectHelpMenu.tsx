@@ -1,29 +1,35 @@
 import React from 'react'
-import styled from 'react-emotion'
 import HelpMenuContent from 'universal/components/MeetingHelp/HelpMenuContent'
-import HelpMenuCopy from 'universal/components/MeetingHelp/HelpMenuCopy'
 import HelpMenuHeader from 'universal/components/MeetingHelp/HelpMenuHeader'
 import withHelpMenu from 'universal/components/MeetingHelp/withHelpMenu'
+import DelayedCopy from './DelayedCopy'
 import withDemoHelpMenu from './withDemoHelpMenu'
+import withStaggerShow from './withStaggerShow'
 
-const StyledCopy = styled(HelpMenuCopy)({margin: 0})
+interface Props {
+  closePortal: () => void
+  staggerShow: number
+}
 
-const ReflectHelpMenu = ({closePortal}) => (
-  <HelpMenuContent closePortal={closePortal}>
-    <HelpMenuHeader>Welcome to the Parabol Retro Demo!</HelpMenuHeader>
-    <HelpMenuCopy>
-      When meeting, each team member signs in to Parabol, often while on a video conference.
-    </HelpMenuCopy>
-    <HelpMenuCopy>
-      Our scripted Demo Team is adding reflections for a recent project. Try adding a few of your
-      own.
-    </HelpMenuCopy>
-    <HelpMenuCopy>
-      During this phase nobody can see your reflections. After this phase reflections will be
-      visible, but remain anonymous.
-    </HelpMenuCopy>
-    <StyledCopy>Use the bottom bar to move forward.</StyledCopy>
-  </HelpMenuContent>
-)
+let permShow = 0
 
-export default withDemoHelpMenu(withHelpMenu(ReflectHelpMenu))
+function ReflectHelpMenu (props: Props) {
+  const {closePortal, staggerShow} = props
+  if (staggerShow > permShow) permShow = staggerShow
+  return (
+    <HelpMenuContent closePortal={closePortal}>
+      <HelpMenuHeader>Welcome to the Parabol Retro Demo!</HelpMenuHeader>
+      <DelayedCopy show={permShow >= 1}>
+        The team just finished a sprint and is reflecting on how it went.
+      </DelayedCopy>
+      <DelayedCopy show={permShow >= 2}>
+        Join in by typing in a few anonymous reflections into the boxes above.
+      </DelayedCopy>
+      <DelayedCopy show={permShow >= 3} margin={'0'}>
+        When you're ready, hit the Next button, below.
+      </DelayedCopy>
+    </HelpMenuContent>
+  )
+}
+
+export default withDemoHelpMenu(withHelpMenu(withStaggerShow(ReflectHelpMenu)))
