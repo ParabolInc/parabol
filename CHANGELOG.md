@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.19.0 2018-Nov-07
+
+### Added
+* Added CSV download link to retrospective meeting summary email
+
+### Fixed
+* Fix #1956 bug: remove user from org fails
+* Fix #2400 completed reflect phase is read only
+* Fix #2432 resize grid when tasks update
+* Fix #2468 retrospective demo bug on quick DnD/grouping
+* Fix #2469 Support mentions in demo tasks
+* Fix #2482 Delete Task not always working
+* Many retrospective meeting demo copy updates
+
 ## v2.18.0 2018-Oct-31
 
 ### Added
