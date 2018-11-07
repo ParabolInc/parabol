@@ -19,7 +19,7 @@ const sendBatchNotificationEmails = {
     const r = getRethink()
     const now = Date.now()
     const today = new Date(now)
-    const yesterday = new Date(now - ms('1m'))
+    const yesterday = new Date(now - ms('1d'))
     const userNotifications = await r
       .table('Notification')
       // Only include notifications which occurred within the last day
