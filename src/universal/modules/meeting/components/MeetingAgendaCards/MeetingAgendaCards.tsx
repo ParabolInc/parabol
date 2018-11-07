@@ -48,7 +48,7 @@ class MeetingAgendaCards extends Component<Props> {
     const tasks = this.props.tasks || []
     const {viewerId} = atmosphere
     const maybeLastTask = tasks[tasks.length - 1]
-    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false)
+    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false) || 0
     const newTask = {
       content,
       status: ACTIVE,
@@ -70,7 +70,7 @@ class MeetingAgendaCards extends Component<Props> {
     } = this.props
     const tasks = this.props.tasks || []
     return (
-      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols}>
+      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols} items={tasks}>
         {(setItemRef) => {
           return (
             <React.Fragment>
