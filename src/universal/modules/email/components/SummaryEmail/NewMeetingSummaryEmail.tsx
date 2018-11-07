@@ -89,7 +89,7 @@ const SummaryEmail = (props: Props) => {
         </table>
       )}
       <Body>
-        <table align='center' style={ui.emailTableBase} width='100%'>
+        <table style={ui.emailTableBase}>
           <tbody>
             <tr>
               <td align='center' style={{padding: 0}}>
