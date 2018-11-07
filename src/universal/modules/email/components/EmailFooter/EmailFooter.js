@@ -1,12 +1,10 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
-import ui from 'universal/styles/ui'
-import {emailCopyStyle} from 'universal/styles/email'
+import {emailCopyStyle, emailTextColorLight, emailTableBase} from 'universal/styles/email'
 
 const copyStyle = {
   ...emailCopyStyle,
-  color: ui.palette.midGray,
+  color: emailTextColorLight,
   fontSize: '13px',
   lineHeight: '20px',
   margin: 0,
@@ -25,29 +23,21 @@ const linkStyle = {
 
 const year = new Date().getFullYear()
 
-const EmailFooter = (props) => {
-  const {maxWidth} = props
-  const innerDiv = {
-    margin: '0 auto',
-    maxWidth: `${maxWidth || 600}px`,
-    width: '100%'
-  }
+const EmailFooter = () => {
   return (
-    <table align='left' width='100%' style={ui.emailTableBase}>
+    <table align='left' width='100%' style={emailTableBase}>
       <tbody>
         <tr>
-          <td style={{padding: '0 24px'}}>
+          <td>
             <EmptySpace height={24} />
-            <div style={innerDiv}>
-              <div style={copyStyle}>
-                {`©${year} Parabol, Inc.`}
-                <br />
-                <span style={boldCopyStyle}>{'Get in touch'}</span>
-                {': '}
-                <a href='mailto:love@parabol.co' title='Get in touch' style={linkStyle}>
-                  love@parabol.co
-                </a>
-              </div>
+            <div style={copyStyle}>
+              {`©${year} Parabol, Inc.`}
+              <br />
+              <span style={boldCopyStyle}>{'Get in touch'}</span>
+              {': '}
+              <a href='mailto:love@parabol.co' title='Get in touch' style={linkStyle}>
+                {'love@parabol.co'}
+              </a>
             </div>
             <EmptySpace height={8} />
           </td>
@@ -55,10 +45,6 @@ const EmailFooter = (props) => {
       </tbody>
     </table>
   )
-}
-
-EmailFooter.propTypes = {
-  maxWidth: PropTypes.number
 }
 
 export default EmailFooter
