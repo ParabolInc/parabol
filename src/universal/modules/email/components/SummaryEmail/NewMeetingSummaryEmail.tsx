@@ -1,4 +1,3 @@
-// @flow
 import React from 'react'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -15,6 +14,7 @@ import RetroDiscussionTopics from 'universal/modules/email/components/RetroDiscu
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import ExportToCSV from 'universal/modules/email/components/SummaryEmail/ExportToCSV'
 import SummaryCTA from 'universal/modules/email/components/SummaryEmail/SummaryCTA'
+import ExportToCSVEmail from 'universal/modules/email/components/SummaryEmail/ExportToCSVEmail'
 
 const ruleStyle = {
   ...ui.emailRuleStyle,
@@ -46,17 +46,19 @@ const quickStatsBlock = {
   textAlign: 'center'
 }
 
-type Props = {|
-  isDemo: boolean,
-  meeting: Object,
-  referrer: 'meeting' | 'email' | 'history',
-  referrerUrl?: string,
-  teamDashUrl: string,
+interface Props {
+  emailCSVLUrl?: string
+  isDemo: boolean
+  meeting: any
+  referrer: 'meeting' | 'email' | 'history'
+  referrerUrl?: string
+  teamDashUrl: string
   meetingUrl?: string
-|}
+  urlAction?: 'csv'
+}
 
 const SummaryEmail = (props: Props) => {
-  const {isDemo, meeting, referrer, referrerUrl, teamDashUrl} = props
+  const {isDemo, emailCSVLUrl, meeting, referrer, referrerUrl, teamDashUrl, urlAction} = props
   const {
     id: meetingId,
     createdAt,
@@ -68,12 +70,12 @@ const SummaryEmail = (props: Props) => {
   return (
     <Layout>
       {referrer === 'email' && (
-        <table style={ui.emailTableBase} width='100%'>
+        <table style={ui.emailTableBase}>
           <tbody>
             <tr>
-              <td style={bannerStyle}>
+              <td style={bannerStyle as React.CSSProperties}>
                 <EmptySpace height={8} />
-                <div style={topMessageStyles}>
+                <div style={topMessageStyles as React.CSSProperties}>
                   <span>
                     <a href={referrerUrl} style={bannerLink}>
                       {'View this in your browser'}
@@ -87,7 +89,7 @@ const SummaryEmail = (props: Props) => {
         </table>
       )}
       <Body verticalGutter={0}>
-        <table align='center' style={ui.emailTableBase} width='100%'>
+        <table style={ui.emailTableBase}>
           <tbody>
             <tr>
               <td align='center' style={{padding: 0}}>
@@ -103,7 +105,7 @@ const SummaryEmail = (props: Props) => {
               </td>
             </tr>
             <tr>
-              <td align='center' style={quickStatsBlock}>
+              <td align='center' style={quickStatsBlock as React.CSSProperties}>
                 {/* Quick Stats */}
                 {meetingType === RETROSPECTIVE && <RetroQuickStats meeting={meeting} />}
               </td>
@@ -112,7 +114,11 @@ const SummaryEmail = (props: Props) => {
               <td>
                 {/* Team Dashboard Button */}
                 <SummaryCTA referrer={referrer} teamDashUrl={teamDashUrl} isDemo={isDemo} />
-                {referrer !== 'email' && <ExportToCSV meetingId={meetingId} />}
+                {referrer === 'email' ? (
+                  <ExportToCSVEmail emailCSVLUrl={emailCSVLUrl!} />
+                ) : (
+                  <ExportToCSV meetingId={meetingId} urlAction={urlAction} />
+                )}
                 <EmptySpace height={32} />
               </td>
             </tr>

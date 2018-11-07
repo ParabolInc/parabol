@@ -18,7 +18,7 @@ const query = graphql`
 
 const NewMeetingSummaryRoot = ({atmosphere, match}) => {
   const {
-    params: {meetingId = 'demoMeeting'}
+    params: {urlAction, meetingId = 'demoMeeting'}
   } = match
   return (
     <QueryRenderer
@@ -30,7 +30,7 @@ const NewMeetingSummaryRoot = ({atmosphere, match}) => {
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight='50vh' />}
-          ready={<NewMeetingSummary />}
+          ready={<NewMeetingSummary urlAction={urlAction} />}
         />
       )}
     />
