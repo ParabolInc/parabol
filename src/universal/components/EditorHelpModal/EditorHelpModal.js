@@ -7,6 +7,10 @@ import DashModal from 'universal/components/Dashboard/DashModal'
 import IconButton from 'universal/components/IconButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
+import UserAgent from 'fbjs/lib/UserAgent'
+
+const isOSX = UserAgent.isPlatform('Mac OS X')
+const modKey = isOSX ? '⌘' : 'ctrl'
 
 const ModalHeader = styled('div')({
   alignItems: 'center',
@@ -98,25 +102,25 @@ const typeShortcuts = [
   {
     label: 'Bold',
     icon: 'format_bold',
-    keyboard: 'command + b',
+    keyboard: `${modKey} + b`,
     md: '**bold** or __bold__'
   },
   {
     label: 'Italic',
     icon: 'format_italic',
-    keyboard: 'command + i',
+    keyboard: `${modKey} + i`,
     md: '*italic* or _italic_'
   },
   {
     label: 'Underline',
     icon: 'format_underline',
-    keyboard: 'command + u',
+    keyboard: `${modKey} + u`,
     md: ''
   },
   {
     label: 'Strikethrough',
     icon: 'format_strikethrough',
-    keyboard: 'shift + command + x',
+    keyboard: `${modKey} + shift + x`,
     md: '~text~ or ~~text~~'
   }
 ]
@@ -124,7 +128,7 @@ const mentionShortcuts = [
   {
     label: 'Links',
     icon: 'link',
-    keyboard: 'command + k',
+    keyboard: `${modKey} + k`,
     md: '[linked text](url)'
   },
   {
