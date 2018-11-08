@@ -2,7 +2,7 @@ import sendEmail from 'server/email/sendEmail'
 import templates from 'server/email/templates'
 import {RETROSPECTIVE} from 'universal/utils/constants'
 
-const EMAIL_DESTINATION = 'terry@parabol.co, terry_acker@yahoo.com'
+const EMAIL_DESTINATION = 'terry@parabol.co'
 
 const EMAIL_ALL_PROPS = {
   summaryEmail: {
