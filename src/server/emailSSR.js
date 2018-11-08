@@ -1,16 +1,17 @@
 import sendEmail from 'server/email/sendEmail'
 import templates from 'server/email/templates'
-import {MEETING_NAME, MEETING_SUMMARY_LABEL, RETROSPECTIVE} from 'universal/utils/constants'
-
-// erica.seldin.contractor@pepsico.com
-// jordan@parabol.co
+import {RETROSPECTIVE} from 'universal/utils/constants'
 
 const EMAIL_DESTINATION = 'terry@parabol.co, terry_acker@yahoo.com'
 
 const EMAIL_ALL_PROPS = {
   summaryEmail: {
-    title: `${MEETING_NAME} ${MEETING_SUMMARY_LABEL} from Parabol`,
-    previewText: `${MEETING_NAME} ${MEETING_SUMMARY_LABEL} from Parabol`
+    meeting: {
+      teamName: 'Team 123',
+      endedAt: new Date().toJSON(),
+      agendaItemsCompleted: 3,
+      invitees: []
+    }
   },
   newMeetingSummaryEmailCreator: {
     meeting: {
