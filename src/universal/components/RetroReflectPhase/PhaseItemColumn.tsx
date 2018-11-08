@@ -204,6 +204,7 @@ class PhaseItemColumn extends Component<Props> {
             </HeaderAndEditor>
             <ReflectionStack
               reflectionStack={reflectionStack}
+              readOnly={!!isComplete}
               idx={idx}
               phaseEditorRef={this.phaseEditorRef}
               phaseItemId={retroPhaseItemId}

@@ -1,9 +1,12 @@
 // styles/email.js
 
 import ui from 'universal/styles/ui'
+import appTheme from 'universal/styles/theme/appTheme'
 import {buttonShadow} from 'universal/styles/elevation'
 
 export const emailBackgroundColor = ui.palette.light
+export const emailBodyColor = '#FFFFFF'
+export const emailBrandColor = ui.palette.mid
 export const emailFontFamily =
   '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif'
 export const emailFontSize = '16px'
@@ -34,7 +37,7 @@ export const emailCopyStyle = {
   fontWeight: 400,
   lineHeight: '1.5',
   margin: '0px 0px 24px',
-  padding: 0,
+  padding: '0px',
   textDecoration: 'none'
 }
 
@@ -49,10 +52,20 @@ export const emailLinkStyle = {
 export const emailInnerMaxWidth = 536
 export const emailMaxWidth = 600
 
+export const emailRuleColor = appTheme.palette.mid20l
+export const emailRuleHeight = '1px'
+export const emailRuleStyle = {
+  backgroundColor: appTheme.palette.mid20l,
+  border: '0px',
+  height: '1px',
+  margin: '0 auto'
+}
+
 export const emailTableBase = {
   borderCollapse: 'collapse',
   borderSpacing: '0px',
-  margin: '0px auto'
+  margin: '0px auto',
+  width: '100%'
 }
 
 export const emailTextColor = ui.palette.dark

@@ -1,8 +1,15 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import {emailPrimaryButtonStyle} from 'universal/styles/email'
+import {
+  emailBrandColor,
+  emailFontFamily,
+  emailPrimaryButtonStyle,
+  emailRuleStyle,
+  emailTableBase,
+  emailTextColor,
+  emailTextColorLight
+} from 'universal/styles/email'
 import {createGoogleCalendarInviteURL, makeIcsUrl} from 'universal/utils/makeCalendarInvites'
 import Body from '../../components/Body/Body'
 import ContactUs from '../../components/ContactUs/ContactUs'
@@ -16,15 +23,21 @@ import UserNoNewOutcomes from '../../components/UserNoNewOutcomes/UserNoNewOutco
 import {Link} from 'react-router-dom'
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy'
 import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE, ACTION} from 'universal/utils/constants'
+import {sheetShadow} from 'universal/styles/elevation'
+
+const sheetStyle = {
+  boxShadow: sheetShadow,
+  margin: '16px 0'
+}
 
 const ruleStyle = {
-  ...ui.emailRuleStyle,
+  ...emailRuleStyle,
   width: '100%'
 }
 
 const message = {
   color: appTheme.palette.dark,
-  fontFamily: ui.emailFontFamily,
+  fontFamily: emailFontFamily,
   fontSize: '18px',
   lineHeight: '27px',
   padding: '0 16px',
@@ -39,7 +52,7 @@ const linkStyles = {
 }
 
 const greetingStyles = {
-  color: ui.colorText,
+  color: emailTextColor,
   fontWeight: 600,
   fontSize: '27px',
   lineHeight: '40px',
@@ -47,16 +60,15 @@ const greetingStyles = {
 }
 
 const bannerStyle = {
-  backgroundColor: '#ffffff',
   textAlign: 'center'
 }
 
 const topMessageStyles = {
-  color: ui.palette.mid,
-  fontFamily: ui.emailFontFamily,
+  color: emailBrandColor,
+  fontFamily: emailFontFamily,
   fontSize: '11px',
   fontWeight: 400,
-  textAlign: 'right',
+  textAlign: 'center',
   padding: '0 16px'
 }
 
@@ -77,7 +89,7 @@ const meetingLink = {
 }
 
 const bannerLink = {
-  color: ui.palette.dark,
+  color: emailTextColorLight,
   cursor: 'pointer',
   textDecoration: 'underline'
 }
@@ -105,7 +117,7 @@ const SummaryEmail = (props) => {
   const iconSize = 28
   const teamDashLabel = 'Go to Team Dashboard'
   const textStyle = {
-    fontFamily: ui.emailFontFamily
+    fontFamily: emailFontFamily
   }
   const iconLinkBlock = {
     backgroundColor: appTheme.palette.cool10l,
@@ -144,7 +156,7 @@ const SummaryEmail = (props) => {
   return (
     <Layout>
       {referrer === 'email' && (
-        <table style={ui.emailTableBase} width='100%'>
+        <table style={emailTableBase} width='100%'>
           <tbody>
             <tr>
               <td style={bannerStyle}>
@@ -162,179 +174,181 @@ const SummaryEmail = (props) => {
           </tbody>
         </table>
       )}
-      <Body>
-        <table align='center' style={ui.emailTableBase} width='100%'>
-          <tbody>
-            <tr>
-              <td align='center' style={{padding: 0}}>
-                {/* Summary Header */}
-                <SummaryHeader
-                  createdAt={createdAt}
-                  meetingNumber={meetingNumber}
-                  meetingType={ACTION}
-                  referrer={referrer}
-                  teamDashUrl={teamDashUrl}
-                  teamName={teamName}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td align='center' style={quickStatsBlock}>
-                {/* Quick Stats */}
-                <QuickStats
-                  agendaItems={agendaItemsCompleted}
-                  doneTaskCount={doneTaskCount}
-                  newTaskCount={newTaskCount}
-                  teamMembers={invitees.length}
-                  teamMembersPresent={presentMemberCount}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                {/* Team Dashboard Button */}
-                {referrer === 'email' ? (
-                  <a href={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
-                    {teamDashLabel}
-                  </a>
-                ) : (
-                  <Link to={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
-                    {teamDashLabel}
-                  </Link>
-                )}
-                <EmptySpace height={32} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        {membersWithOutcomes.map((member) => (
-          <UserTasks member={member} key={`userTasks'${member.id}`} />
-        ))}
-        {hasUsersWithoutOutcomes && <UserNoNewOutcomes members={membersSansOutcomes} />}
-        <EmptySpace height={0} />
-        {/* Show this tip for the first 3 summaries. */}
-        {meetingNumber < 4 && (
-          <table align='center' style={ui.emailTableBase} width='100%'>
+      <div style={referrer !== 'email' ? sheetStyle : undefined}>
+        <Body>
+          <table align='center' style={emailTableBase} width='100%'>
             <tbody>
               <tr>
                 <td align='center' style={{padding: 0}}>
-                  <hr style={ruleStyle} />
-                  <EmptySpace height={32} />
-                  <div style={tipStyle}>
-                    <b>{'Pro Tip'}</b>
-                    {': all Tasks in the '}
-                    <b>{'Done'}</b>
-                    {' column are'}
-                    <br />
-                    {'automatically archived after each meeting.'}
-                  </div>
+                  {/* Summary Header */}
+                  <SummaryHeader
+                    createdAt={createdAt}
+                    meetingNumber={meetingNumber}
+                    meetingType={ACTION}
+                    referrer={referrer}
+                    teamDashUrl={teamDashUrl}
+                    teamName={teamName}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td align='center' style={quickStatsBlock}>
+                  {/* Quick Stats */}
+                  <QuickStats
+                    agendaItems={agendaItemsCompleted}
+                    doneTaskCount={doneTaskCount}
+                    newTaskCount={newTaskCount}
+                    teamMembers={invitees.length}
+                    teamMembersPresent={presentMemberCount}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  {/* Team Dashboard Button */}
+                  {referrer === 'email' ? (
+                    <a href={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
+                      {teamDashLabel}
+                    </a>
+                  ) : (
+                    <Link to={teamDashUrl} style={teamDashLinkStyle} title={teamDashLabel}>
+                      {teamDashLabel}
+                    </Link>
+                  )}
                   <EmptySpace height={32} />
                 </td>
               </tr>
             </tbody>
           </table>
-        )}
-        <hr style={ruleStyle} />
-        <EmptySpace height={48} />
-        {/* First-time prompt to schedule recurring meeting */}
-        {meetingNumber === 1 ? (
-          <table align='center' style={ui.emailTableBase} width='100%'>
-            <tbody>
-              <tr>
-                <td align='center' style={{padding: 0}}>
-                  <div style={message}>
-                    <div style={greetingStyles}>{makeSuccessExpression()}!</div>
-                    {`Way to go on your first ${MEETING_NAME}!
-                      You are unlocking new superpowers.
-                      High-performing teams have regular habits!
-                      Create a 30-minute meeting at the start of each week.`}
-                    <br />
-                    <div>
-                      <span>{'Tap here to schedule:'}</span>
+          {membersWithOutcomes.map((member) => (
+            <UserTasks member={member} key={`userTasks'${member.id}`} />
+          ))}
+          {hasUsersWithoutOutcomes && <UserNoNewOutcomes members={membersSansOutcomes} />}
+          <EmptySpace height={0} />
+          {/* Show this tip for the first 3 summaries. */}
+          {meetingNumber < 4 && (
+            <table align='center' style={emailTableBase} width='100%'>
+              <tbody>
+                <tr>
+                  <td align='center' style={{padding: 0}}>
+                    <hr style={ruleStyle} />
+                    <EmptySpace height={32} />
+                    <div style={tipStyle}>
+                      <b>{'Pro Tip'}</b>
+                      {': all Tasks in the '}
+                      <b>{'Done'}</b>
+                      {' column are'}
                       <br />
-                      <div style={iconLinkBlock}>
-                        <a
-                          href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
-                          rel='noopener noreferrer'
-                          style={iconLink}
-                          target='_blank'
-                        >
-                          <img
-                            style={iconLinkIcon}
-                            src='/static/images/icons/google@5x.png'
-                            height={iconSize}
-                            width={iconSize}
-                          />
-                          <span style={iconLinkLabel}>{'Google Calendar'}</span>
-                        </a>
-                      </div>
-                      <div style={iconLinkBlock}>
-                        <a
-                          href={makeIcsUrl(createdAt, meetingUrl, teamName)}
-                          rel='noopener noreferrer'
-                          style={iconLink}
-                          target='_blank'
-                        >
-                          <img
-                            style={iconLinkIcon}
-                            src='/static/images/icons/calendar-plus-o@5x.png'
-                            height={iconSize}
-                            width={iconSize}
-                          />
-                          <span style={iconLinkLabel}>{'Outlook, etc.'}</span>
-                        </a>
-                      </div>
+                      {'automatically archived after each meeting.'}
                     </div>
-                    {'Or, make your own and include this link as the location:'}
-                    <EmptySpace height={8} />
-                    <table align='center' style={meetingLinkTable} width='80%'>
-                      <tbody>
-                        <tr>
-                          <td align='center' style={meetingLinkBlock}>
-                            <a href={meetingUrl} style={meetingLink}>
-                              {meetingUrl}
-                            </a>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        ) : (
-          <div>
-            {agendaItemsCompleted === 0 ? (
-              <div style={message}>
-                {/* No Agenda Items? */}
-                <div style={greetingStyles}>{'Hey there!'}</div>
-                {`It looks like there weren’t any ${AGENDA_ITEM_LABEL}s.
-                  Did our software give you trouble?
-                  Let us know: `}
-                <a
-                  href='mailto:love@parabol.co'
-                  style={linkStyles}
-                  title='Email us at: love@parabol.co'
-                >
-                  love@parabol.co
-                </a>
-              </div>
-            ) : (
-              <ContactUs
-                fontSize={18}
-                hasLearningLink
-                lineHeight={1.5}
-                prompt={`How’d your ${MEETING_NAME} go?`}
-                tagline='We’re eager for your feedback!'
-                vSpacing={0}
-              />
-            )}
-          </div>
-        )}
-        <EmptySpace height={32} />
-      </Body>
-      <Footer color={appTheme.palette.dark} />
+                    <EmptySpace height={32} />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+          <hr style={ruleStyle} />
+          <EmptySpace height={48} />
+          {/* First-time prompt to schedule recurring meeting */}
+          {meetingNumber === 1 ? (
+            <table align='center' style={emailTableBase} width='100%'>
+              <tbody>
+                <tr>
+                  <td align='center' style={{padding: 0}}>
+                    <div style={message}>
+                      <div style={greetingStyles}>{makeSuccessExpression()}!</div>
+                      {`Way to go on your first ${MEETING_NAME}!
+                        You are unlocking new superpowers.
+                        High-performing teams have regular habits!
+                        Create a 30-minute meeting at the start of each week.`}
+                      <br />
+                      <div>
+                        <span>{'Tap here to schedule:'}</span>
+                        <br />
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
+                            rel='noopener noreferrer'
+                            style={iconLink}
+                            target='_blank'
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src='/static/images/icons/google@5x.png'
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>{'Google Calendar'}</span>
+                          </a>
+                        </div>
+                        <div style={iconLinkBlock}>
+                          <a
+                            href={makeIcsUrl(createdAt, meetingUrl, teamName)}
+                            rel='noopener noreferrer'
+                            style={iconLink}
+                            target='_blank'
+                          >
+                            <img
+                              style={iconLinkIcon}
+                              src='/static/images/icons/calendar-plus-o@5x.png'
+                              height={iconSize}
+                              width={iconSize}
+                            />
+                            <span style={iconLinkLabel}>{'Outlook, etc.'}</span>
+                          </a>
+                        </div>
+                      </div>
+                      {'Or, make your own and include this link as the location:'}
+                      <EmptySpace height={8} />
+                      <table align='center' style={meetingLinkTable} width='80%'>
+                        <tbody>
+                          <tr>
+                            <td align='center' style={meetingLinkBlock}>
+                              <a href={meetingUrl} style={meetingLink}>
+                                {meetingUrl}
+                              </a>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          ) : (
+            <div>
+              {agendaItemsCompleted === 0 ? (
+                <div style={message}>
+                  {/* No Agenda Items? */}
+                  <div style={greetingStyles}>{'Hey there!'}</div>
+                  {`It looks like there weren’t any ${AGENDA_ITEM_LABEL}s.
+                    Did our software give you trouble?
+                    Let us know: `}
+                  <a
+                    href='mailto:love@parabol.co'
+                    style={linkStyles}
+                    title='Email us at: love@parabol.co'
+                  >
+                    love@parabol.co
+                  </a>
+                </div>
+              ) : (
+                <ContactUs
+                  fontSize={18}
+                  hasLearningLink
+                  lineHeight={1.5}
+                  prompt={`How’d your ${MEETING_NAME} go?`}
+                  tagline='We’re eager for your feedback!'
+                  vSpacing={0}
+                />
+              )}
+            </div>
+          )}
+          <EmptySpace height={32} />
+        </Body>
+        <Footer color={appTheme.palette.dark} />
+      </div>
     </Layout>
   )
 }

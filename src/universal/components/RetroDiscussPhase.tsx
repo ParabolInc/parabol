@@ -256,6 +256,7 @@ export default createFragmentContainer(
               tasks {
                 id
                 reflectionGroupId
+                content
                 createdAt
                 sortOrder
                 ...NullableTask_task

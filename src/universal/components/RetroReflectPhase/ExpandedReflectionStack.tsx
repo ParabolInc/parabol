@@ -19,6 +19,7 @@ interface Props {
   reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
   meetingId: string
   phaseItemId: string
+  readOnly: boolean
 }
 
 interface State {
@@ -86,7 +87,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
   }
 
   render () {
-    const {isExpanded, reflectionStack, meetingId, phaseItemId} = this.props
+    const {isExpanded, reflectionStack, meetingId, phaseItemId, readOnly} = this.props
     const {isClosing} = this.state
     return (
       <Modal clickToClose escToClose isOpen={isExpanded} onClose={this.handleClose}>
@@ -117,6 +118,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
                       meetingId={meetingId}
                       reflection={reflection}
                       phaseItemId={phaseItemId}
+                      readOnly={readOnly}
                     />
                   </ModalReflectionWrapper>
                 )

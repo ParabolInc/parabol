@@ -109,7 +109,7 @@ const TeamInvite = (props) => {
         </p>
         <EmptySpace height={16} />
       </EmailBlock>
-      <EmailBlock bgColor='silver' innerMaxWidth={innerMaxWidth}>
+      <EmailBlock hasBackgroundColor innerMaxWidth={innerMaxWidth}>
         <EmailFooter />
       </EmailBlock>
     </Layout>

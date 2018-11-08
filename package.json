@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "2.18.0",
+  "version": "2.19.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -45,7 +45,6 @@
     "test:dev": "jest --runInBand --watch",
     "test:e2e": "node ./e2e/scripts/runTests.babel.js",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
-    "test:intranetToken": "node ./src/server/utils/getIntranetToken.babel.js",
     "lint": "yarn standard",
     "relay": "yarn build:relay --watch",
     "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn tsgen",

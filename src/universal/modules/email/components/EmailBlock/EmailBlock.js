@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {
   emailBackgroundColor,
+  emailBodyColor,
   emailFontFamily,
   emailFontSize,
   emailInnerMaxWidth,
@@ -26,8 +27,8 @@ const innerStyle = {
 }
 
 const EmailBlock = (props) => {
-  const {align, bgColor, children, innerMaxWidth} = props
-  const backgroundColor = bgColor === 'silver' ? emailBackgroundColor : '#FFFFFF'
+  const {align, hasBackgroundColor, children, innerMaxWidth} = props
+  const backgroundColor = hasBackgroundColor ? emailBackgroundColor : emailBodyColor
   const maxWidth = innerMaxWidth || emailInnerMaxWidth
   return (
     <table align={align} style={{...emailTableBase, backgroundColor}} width='100%'>
@@ -44,8 +45,8 @@ const EmailBlock = (props) => {
 
 EmailBlock.propTypes = {
   align: PropTypes.oneOf(['center', 'left']),
-  bgColor: PropTypes.oneOf(['silver', 'white']),
   children: PropTypes.any,
+  hasBackgroundColor: PropTypes.bool,
   innerMaxWidth: PropTypes.number
 }
 
