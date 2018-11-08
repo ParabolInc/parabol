@@ -39,6 +39,9 @@ export default {
     }
 
     // RESOLUTION
+    // update the dataLoader cache
+    const cachedTeam = orgTeams.find((team) => team.id === teamId)
+    cachedTeam.name = name
     const dbUpdate = {
       name,
       updatedAt: now
