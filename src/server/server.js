@@ -142,7 +142,7 @@ app.post(
 
 // server-side rendering for emails
 if (!PROD) {
-  app.get('/email', emailSSR)
+  app.get('/email/:template', emailSSR)
 }
 app.get('/email/createics', sendICS)
 
