@@ -6,7 +6,7 @@ import Button from '../../components/Button/Button'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import Header from '../../components/Header/Header'
 import EmailFooter from '../../components/EmailFooter/EmailFooter'
-import {emailCopyStyle, emailLinkStyle} from 'universal/styles/email'
+import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from 'universal/styles/email'
 
 const innerMaxWidth = 480
 
@@ -101,7 +101,7 @@ const TeamInvite = (props) => {
         <p style={emailCopyStyle}>
           {'Get in touch if we can help in any way,'}
           <br />
-          {'The Parabol Product Team'}
+          {emailProductTeamSignature}
           <br />
           <a href='mailto:love@parabol.co' style={linkStyle} title='love@parabol.co'>
             {'love@parabol.co'}

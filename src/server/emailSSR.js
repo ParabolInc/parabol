@@ -31,6 +31,14 @@ const EMAIL_ALL_PROPS = {
     email: 'fake@123.co',
     name: 'First Last',
     numNotifications: '4'
+  },
+  teamInvite: {
+    inviteLink: '#inviteLink',
+    inviteeName: undefined,
+    inviteeEmail: 'nolan@example.co',
+    inviterName: 'Sara',
+    inviterEmail: 'sara@example.co',
+    teamName: 'Example Team'
   }
 }
 export default async function emailSSR (req, res) {

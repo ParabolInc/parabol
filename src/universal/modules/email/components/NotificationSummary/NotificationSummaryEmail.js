@@ -2,10 +2,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import makeAppLink from 'server/utils/makeAppLink'
 import EmailBlock from '../EmailBlock/EmailBlock'
+import EmptySpace from '..//EmptySpace/EmptySpace'
 import Button from '../Button/Button'
 import Header from '../Header/Header'
 import Layout from '../Layout/Layout'
-import {emailCopyStyle, emailLinkStyle} from 'universal/styles/email'
+import EmailFooter from '../EmailFooter/EmailFooter'
+import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from 'universal/styles/email'
+
+const innerMaxWidth = 480
 
 const copyStyle = {
   ...emailCopyStyle
@@ -21,11 +25,11 @@ const notificationPageUrl = makeAppLink('me/notifications')
 
 export default function NotificationSummaryEmail () {
   return (
-    <Layout>
-      <EmailBlock>
+    <Layout maxWidth={544}>
+      <EmailBlock innerMaxWidth={innerMaxWidth}>
         <Header imgProvider='hubspot' />
         <p style={copyStyle}>
-          {'Hi there, '}%recipient.name%{'!'}
+          {'Hi '}%recipient.name%{','}
         </p>
         <p style={copyStyle}>
           {'You have received '}
@@ -35,9 +39,10 @@ export default function NotificationSummaryEmail () {
           {' in the last day.'}
         </p>
         <Button url={notificationPageUrl}>{'See My Notifications'}</Button>
+        <EmptySpace height={24} />
         <p style={copyStyle}>{'This is just a friendly, automated nudge!'}</p>
         <p style={copyStyle}>{'Your teammates need you!'}</p>
-        <p style={copyStyle}>{'The product team @Parabol 🙉 🙈 🙊'}</p>
+        <p style={copyStyle}>{emailProductTeamSignature}</p>
         <p style={copyStyle}>
           <b>{'P.S. We want to hear from you:'}</b>
         </p>
@@ -55,6 +60,10 @@ export default function NotificationSummaryEmail () {
             {'https://calendly.com/parabol/product/'}
           </a>
         </p>
+        <EmptySpace height={16} />
+      </EmailBlock>
+      <EmailBlock hasBackgroundColor innerMaxWidth={innerMaxWidth}>
+        <EmailFooter />
       </EmailBlock>
     </Layout>
   )

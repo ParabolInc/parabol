@@ -61,6 +61,8 @@ export const emailRuleStyle = {
   margin: '0 auto'
 }
 
+export const emailProductTeamSignature = 'The Parabol Product Team 🙉 🙈 🙊'
+
 export const emailTableBase = {
   borderCollapse: 'collapse',
   borderSpacing: '0px',
