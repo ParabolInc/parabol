@@ -57,7 +57,7 @@ const VoteIcon = styled(Icon)({
 })
 
 const DraggableMeetingSubnavItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
-  boxShadow: isDragging && navItemRaised
+  boxShadow: isDragging ? navItemRaised : undefined
 }))
 
 const RetroSidebarDiscussSection = (props: Props) => {
@@ -81,7 +81,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
     if (
       !destination ||
       destination.droppableId !== DISCUSSION_TOPIC ||
-      source.droppableId !== DISCUSSION_TOPIC
+      source.droppableId !== DISCUSSION_TOPIC ||
+      destination.index === source.index
     ) {
       return
     }
@@ -95,8 +96,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
     } else if (destination.index === stages.length - 1) {
       sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
     } else {
+      const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stages[destination.index - 1].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
+        (stages[destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
     }
 
     const {id: stageId} = sourceTopic
