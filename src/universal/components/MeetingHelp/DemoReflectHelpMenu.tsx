@@ -19,13 +19,13 @@ function ReflectHelpMenu (props: Props) {
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>Welcome to the Parabol Retro Demo!</HelpMenuHeader>
-      <DelayedCopy show={permShow >= 1}>
+      <DelayedCopy show={permShow} thresh={1}>
         The team just finished a sprint and is reflecting on how it went.
       </DelayedCopy>
-      <DelayedCopy show={permShow >= 2}>
+      <DelayedCopy show={permShow} thresh={2}>
         Join in by typing in a few anonymous reflections into the boxes above.
       </DelayedCopy>
-      <DelayedCopy show={permShow >= 3} margin={'0'}>
+      <DelayedCopy show={permShow} thresh={3} margin={'0'}>
         When you're ready, hit the Next button, below.
       </DelayedCopy>
     </HelpMenuContent>

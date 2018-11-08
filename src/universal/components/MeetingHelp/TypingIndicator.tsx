@@ -16,7 +16,8 @@ const BlinkKeyframes = keyframes`
 
 const THOUGHT_BUBBLE_STYLES = {
   content: '',
-  position: 'absolute',
+  // silly typescript https://github.com/Microsoft/TypeScript/issues/11465
+  position: 'absolute' as 'absolute',
   bottom: '-2px',
   left: '-2px',
   height: '12px',
@@ -25,7 +26,7 @@ const THOUGHT_BUBBLE_STYLES = {
   'background-color': ui.palette.gray
 }
 
-const MinorThoughtBubble = styled('div')((): any => ({
+const MinorThoughtBubble = styled('div')(() => ({
   ...THOUGHT_BUBBLE_STYLES,
   height: '6px',
   width: '6px',
@@ -33,7 +34,7 @@ const MinorThoughtBubble = styled('div')((): any => ({
   bottom: '-4px'
 }))
 
-const MajorThoughtBubble = styled('div')((): any => ({
+const MajorThoughtBubble = styled('div')(() => ({
   ...THOUGHT_BUBBLE_STYLES
 }))
 
@@ -50,7 +51,7 @@ const TypingIndicatorBubble = styled('div')(() => ({
   animation: `2s ${BulgeKeyframes} infinite ease-out`
 }))
 
-const BlinkyThoughtDot = styled('span')(({n}: {n: number}): any => ({
+const BlinkyThoughtDot = styled('span')(({n}: {n: number}) => ({
   height: '8px',
   width: '8px',
   float: 'left',
@@ -58,11 +59,11 @@ const BlinkyThoughtDot = styled('span')(({n}: {n: number}): any => ({
   'background-color': ui.palette.midGray,
   display: 'block',
   'border-radius': '50%',
-  opacity: '0.4',
+  opacity: 0.4,
   animation: `1s ${BlinkKeyframes} infinite ${n * 0.3333}s`
 }))
 
-const TypingIndicator = () => {
+const TypingIndicator = React.memo(() => {
   return (
     <TypingIndicatorBubble>
       <MinorThoughtBubble />
@@ -72,6 +73,6 @@ const TypingIndicator = () => {
       <BlinkyThoughtDot n={3} />
     </TypingIndicatorBubble>
   )
-}
+})
 
 export default TypingIndicator
