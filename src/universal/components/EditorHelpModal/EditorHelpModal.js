@@ -10,7 +10,7 @@ import styled from 'react-emotion'
 import UserAgent from 'fbjs/lib/UserAgent'
 
 const isOSX = UserAgent.isPlatform('Mac OS X')
-const modKey = !isOSX ? '⌘' : 'ctrl'
+const modKey = isOSX ? '⌘' : 'ctrl'
 
 const ModalHeader = styled('div')({
   alignItems: 'center',
