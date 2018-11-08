@@ -10,7 +10,7 @@ const Content = styled('div')({
   lineHeight: '1.5',
   position: 'relative',
   padding: '.75rem 1rem',
-  width: '20rem'
+  width: '17rem'
 })
 
 const MenuClose = styled(Icon)({

@@ -16,7 +16,7 @@ const DemoGroupHelpMenu = ({closePortal, staggerShow}) => {
         Join in by grouping cards and perfecting the titles.
       </DelayedCopy>
       <DelayedCopy show={permShow} thresh={2} margin={'0'}>
-        Parabol's collaborative drag and drop let's you work together seamlessly.
+        Parabol’s collaborative drag and drop let’s you work together seamlessly.
       </DelayedCopy>
     </HelpMenuContent>
   )

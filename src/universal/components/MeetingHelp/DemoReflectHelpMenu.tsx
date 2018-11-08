@@ -26,7 +26,7 @@ function ReflectHelpMenu (props: Props) {
         Join in by typing in a few anonymous reflections into the boxes above.
       </DelayedCopy>
       <DelayedCopy show={permShow} thresh={3} margin={'0'}>
-        When you're ready, hit the Next button, below.
+        When you’re ready to move on, hit the Next button below.
       </DelayedCopy>
     </HelpMenuContent>
   )
