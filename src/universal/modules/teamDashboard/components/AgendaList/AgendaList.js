@@ -15,6 +15,7 @@ import {navItemRaised} from 'universal/styles/elevation'
 import UpdateAgendaItemMutation from 'universal/mutations/UpdateAgendaItemMutation'
 import dndNoise from 'universal/utils/dndNoise'
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import ScrollableBlock from 'universal/components/ScrollableBlock'
 
 const agendaListRoot = {
   display: 'flex',
@@ -235,71 +236,73 @@ class AgendaList extends Component {
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <div className={css(agendaListRoot)}>
-          {filteredAgendaItems.slice(0, firstDraggableItem).map((item, idx) => {
-            return (
-              <AgendaItem
-                key={`agendaItem${item.id}`}
-                agendaItem={item}
-                agendaLength={filteredAgendaItems.length}
-                agendaPhaseItem={agendaPhaseItem}
-                canNavigate={canNavigateItems}
-                disabled={disabled}
-                ensureVisible={visibleAgendaItemId === item.id}
-                facilitatorPhase={facilitatorPhase}
-                gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
-                handleRemove={this.removeItemFactory(item.id)}
-                idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
-                inSync={inSync}
-                isCurrent={idx + 1 === agendaPhaseItem}
-                isFacilitator={idx + 1 === facilitatorPhaseItem}
-                localPhase={localPhase}
-                localPhaseItem={localPhaseItem}
-              />
-            )
-          })}
-          <Droppable droppableId={AGENDA_ITEM}>
-            {(provided) => {
+          <ScrollableBlock>
+            {filteredAgendaItems.slice(0, firstDraggableItem).map((item, idx) => {
               return (
-                <div ref={provided.innerRef}>
-                  {filteredAgendaItems.slice(firstDraggableItem).map((item, idx) => {
-                    return (
-                      <Draggable key={item.id} draggableId={item.id} index={idx}>
-                        {(dragProvided, dragSnapshot) => {
-                          return (
-                            <DraggableAgendaItem
-                              isDragging={dragSnapshot.isDragging}
-                              innerRef={dragProvided.innerRef}
-                              {...dragProvided.draggableProps}
-                              {...dragProvided.dragHandleProps}
-                            >
-                              <AgendaItem
-                                key={`agendaItem${item.id}`}
-                                agendaItem={item}
-                                agendaLength={filteredAgendaItems.length}
-                                agendaPhaseItem={agendaPhaseItem}
-                                canNavigate={canNavigateItems}
-                                disabled={disabled}
-                                ensureVisible={visibleAgendaItemId === item.id}
-                                facilitatorPhase={facilitatorPhase}
-                                gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
-                                handleRemove={this.removeItemFactory(item.id)}
-                                idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
-                                inSync={inSync}
-                                isCurrent={idx + 1 === agendaPhaseItem}
-                                isFacilitator={idx + 1 === facilitatorPhaseItem}
-                                localPhase={localPhase}
-                                localPhaseItem={localPhaseItem}
-                              />
-                            </DraggableAgendaItem>
-                          )
-                        }}
-                      </Draggable>
-                    )
-                  })}
-                </div>
+                <AgendaItem
+                  key={`agendaItem${item.id}`}
+                  agendaItem={item}
+                  agendaLength={filteredAgendaItems.length}
+                  agendaPhaseItem={agendaPhaseItem}
+                  canNavigate={canNavigateItems}
+                  disabled={disabled}
+                  ensureVisible={visibleAgendaItemId === item.id}
+                  facilitatorPhase={facilitatorPhase}
+                  gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
+                  handleRemove={this.removeItemFactory(item.id)}
+                  idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                  inSync={inSync}
+                  isCurrent={idx + 1 === agendaPhaseItem}
+                  isFacilitator={idx + 1 === facilitatorPhaseItem}
+                  localPhase={localPhase}
+                  localPhaseItem={localPhaseItem}
+                />
               )
-            }}
-          </Droppable>
+            })}
+            <Droppable droppableId={AGENDA_ITEM}>
+              {(provided) => {
+                return (
+                  <div ref={provided.innerRef}>
+                    {filteredAgendaItems.slice(firstDraggableItem).map((item, idx) => {
+                      return (
+                        <Draggable key={item.id} draggableId={item.id} index={idx}>
+                          {(dragProvided, dragSnapshot) => {
+                            return (
+                              <DraggableAgendaItem
+                                isDragging={dragSnapshot.isDragging}
+                                innerRef={dragProvided.innerRef}
+                                {...dragProvided.draggableProps}
+                                {...dragProvided.dragHandleProps}
+                              >
+                                <AgendaItem
+                                  key={`agendaItem${item.id}`}
+                                  agendaItem={item}
+                                  agendaLength={filteredAgendaItems.length}
+                                  agendaPhaseItem={agendaPhaseItem}
+                                  canNavigate={canNavigateItems}
+                                  disabled={disabled}
+                                  ensureVisible={visibleAgendaItemId === item.id}
+                                  facilitatorPhase={facilitatorPhase}
+                                  gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
+                                  handleRemove={this.removeItemFactory(item.id)}
+                                  idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                                  inSync={inSync}
+                                  isCurrent={idx + 1 === agendaPhaseItem}
+                                  isFacilitator={idx + 1 === facilitatorPhaseItem}
+                                  localPhase={localPhase}
+                                  localPhaseItem={localPhaseItem}
+                                />
+                              </DraggableAgendaItem>
+                            )
+                          }}
+                        </Draggable>
+                      )
+                    })}
+                  </div>
+                )
+              }}
+            </Droppable>
+          </ScrollableBlock>
         </div>
       </DragDropContext>
     )
