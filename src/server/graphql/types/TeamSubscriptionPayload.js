@@ -41,6 +41,7 @@ import RemoveReflectTemplatePayload from 'server/graphql/types/RemoveReflectTemp
 import RemoveReflectTemplatePromptPayload from 'server/graphql/types/RemoveReflectTemplatePromptPayload'
 import RenameReflectTemplatePayload from 'server/graphql/types/RenameReflectTemplatePayload'
 import RenameReflectTemplatePromptPayload from 'server/graphql/types/RenameReflectTemplatePromptPayload'
+import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonalPayload'
 
 const types = [
   AcceptTeamInvitePayload,
@@ -49,6 +50,7 @@ const types = [
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,
   CreateReflectionGroupPayload,
+  DowngradeToPersonalPayload,
   DragDiscussionTopicPayload,
   EndDraggingReflectionPayload,
   EditReflectionPayload,

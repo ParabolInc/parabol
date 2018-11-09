@@ -2619,6 +2619,11 @@ export interface IMutation {
   disconnectSocket: IDisconnectSocketPayload | null
 
   /**
+   * Downgrade a paid account to the personal service
+   */
+  downgradeToPersonal: IDowngradeToPersonalPayload | null
+
+  /**
    * Changes the priority of the discussion topics
    */
   dragDiscussionTopic: IDragDiscussionTopicPayload | null
@@ -3155,6 +3160,13 @@ export interface IDeleteTaskOnMutationArguments {
    * The taskId to delete
    */
   taskId: string
+}
+
+export interface IDowngradeToPersonalOnMutationArguments {
+  /**
+   * the org requesting the upgrade
+   */
+  orgId: string
 }
 
 export interface IDragDiscussionTopicOnMutationArguments {
@@ -4947,6 +4959,21 @@ export interface IDisconnectSocketPayload {
   user: IUser | null
 }
 
+export interface IDowngradeToPersonalPayload {
+  __typename: 'DowngradeToPersonalPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new Personal Org
+   */
+  organization: IOrganization | null
+
+  /**
+   * The updated teams under the org
+   */
+  teams: Array<ITeam | null> | null
+}
+
 export interface IDragDiscussionTopicPayload {
   __typename: 'DragDiscussionTopicPayload'
   error: IStandardMutationError | null
@@ -6315,6 +6342,7 @@ export type OrgApprovalSubscriptionPayload =
 export type OrganizationSubscriptionPayload =
   | IAddOrgPayload
   | IApproveToOrgPayload
+  | IDowngradeToPersonalPayload
   | IRemoveOrgUserPayload
   | ISetOrgUserRoleAddedPayload
   | ISetOrgUserRoleRemovedPayload
@@ -6382,6 +6410,7 @@ export type TeamSubscriptionPayload =
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload
   | ICreateReflectionGroupPayload
+  | IDowngradeToPersonalPayload
   | IDragDiscussionTopicPayload
   | IEndDraggingReflectionPayload
   | IEditReflectionPayload

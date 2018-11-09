@@ -16,6 +16,7 @@ import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue'
 import createTask from 'server/graphql/mutations/createTask'
 import deleteTask from 'server/graphql/mutations/deleteTask'
 import disconnectSocket from 'server/graphql/mutations/disconnectSocket'
+import downgradeToPersonal from 'server/graphql/mutations/downgradeToPersonal'
 import editTask from 'server/graphql/mutations/editTask'
 import endMeeting from 'server/graphql/mutations/endMeeting'
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee'
@@ -122,6 +123,7 @@ export default new GraphQLObjectType({
     createUserPicturePutUrl,
     deleteTask,
     disconnectSocket,
+    downgradeToPersonal,
     dragDiscussionTopic,
     endDraggingReflection,
     editReflection,
