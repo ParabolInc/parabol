@@ -93,7 +93,6 @@ const GroupStyle = styled('div')(
     isModal && {
       borderRadius: 6,
       padding: MODAL_PADDING,
-      outline: 'none',
       position: 'absolute',
       transition: 'unset',
       zIndex: 100
@@ -101,7 +100,6 @@ const GroupStyle = styled('div')(
   ({isHidden}: GroupProps) =>
     isHidden && {
       opacity: 0,
-      outline: 'none',
       pointerEvents: 'none'
     }
 )
