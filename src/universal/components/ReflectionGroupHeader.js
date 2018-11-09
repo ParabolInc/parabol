@@ -7,7 +7,6 @@ import type {ReflectionGroupHeader_reflectionGroup as ReflectionGroup} from '__g
 import {GROUP, VOTE} from 'universal/utils/constants'
 import ReflectionGroupVoting from 'universal/components/ReflectionGroupVoting'
 import Tag from 'universal/components/Tag/Tag'
-import {retroMeetingVotingWidth} from 'universal/styles/meeting'
 
 type Props = {
   meeting: Meeting,
@@ -18,7 +17,7 @@ const GroupHeader = styled('div')(({isExpanded, phaseType}) => ({
   display: 'flex',
   fontSize: '.875rem',
   justifyContent: isExpanded ? 'flex-start' : phaseType === VOTE ? 'space-between' : 'center',
-  paddingBottom: 8,
+  padding: '0 .75rem .5rem',
   width: '100%'
 }))
 
@@ -26,11 +25,10 @@ const TitleAndCount = styled('div')(({isExpanded}) => ({
   alignItems: 'center',
   display: 'flex',
   flexShrink: 1,
-  justifyContent: !isExpanded && 'center',
-  position: 'relative'
+  justifyContent: 'space-between',
+  position: 'relative',
+  width: '100%'
 }))
-
-const Spacer = styled('div')({width: retroMeetingVotingWidth})
 
 const ReflectionGroupHeader = (props: Props) => {
   const {innerRef, isExpanded, meeting, reflectionGroup} = props
@@ -42,7 +40,6 @@ const ReflectionGroupHeader = (props: Props) => {
   const canEdit = phaseType === GROUP && localStage.isComplete === false
   return (
     <GroupHeader innerRef={innerRef} isExpanded={isExpanded} phaseType={phaseType}>
-      {phaseType === VOTE && <Spacer />}
       <TitleAndCount>
         <ReflectionGroupTitleEditor
           isExpanded={isExpanded}

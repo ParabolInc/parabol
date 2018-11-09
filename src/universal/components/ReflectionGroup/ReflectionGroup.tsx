@@ -82,13 +82,16 @@ interface GroupProps {
 }
 
 const GroupStyle = styled('div')(
-  ({gutterN}: GroupProps) => ({
+  {
     padding: CARD_PADDING,
-    paddingBottom: gutterN ? CARD_PADDING + gutterN * 6 : undefined,
     position: 'absolute',
     display: 'inline-block',
     transition: 'transform 200ms'
-  }),
+  },
+  ({gutterN}: GroupProps) =>
+    gutterN && {
+      paddingBottom: gutterN ? CARD_PADDING + gutterN * 6 : undefined
+    },
   ({isModal}: GroupProps) =>
     isModal && {
       borderRadius: 6,
