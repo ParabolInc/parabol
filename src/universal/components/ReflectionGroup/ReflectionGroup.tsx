@@ -90,7 +90,7 @@ const GroupStyle = styled('div')(
   },
   ({gutterN}: GroupProps) =>
     gutterN && {
-      paddingBottom: gutterN ? CARD_PADDING + gutterN * 6 : undefined
+      paddingBottom: CARD_PADDING + gutterN * 6
     },
   ({isModal}: GroupProps) =>
     isModal && {

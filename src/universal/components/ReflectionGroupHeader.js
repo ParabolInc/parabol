@@ -17,7 +17,7 @@ const GroupHeader = styled('div')(({isExpanded, phaseType}) => ({
   display: 'flex',
   fontSize: '.875rem',
   justifyContent: isExpanded ? 'flex-start' : phaseType === VOTE ? 'space-between' : 'center',
-  padding: '0 .75rem .5rem',
+  padding: '0 .5rem .5rem .75rem',
   width: '100%'
 }))
 
@@ -29,6 +29,8 @@ const TitleAndCount = styled('div')(({isExpanded}) => ({
   position: 'relative',
   width: '100%'
 }))
+
+const StyledTag = styled(Tag)({marginRight: 4})
 
 const ReflectionGroupHeader = (props: Props) => {
   const {innerRef, isExpanded, meeting, reflectionGroup} = props
@@ -48,7 +50,7 @@ const ReflectionGroupHeader = (props: Props) => {
           readOnly={!canEdit}
         />
         {phaseType === GROUP && (
-          <Tag
+          <StyledTag
             colorPalette={isExpanded ? 'white' : 'midGray'}
             label={`${reflections.length} Cards`}
           />

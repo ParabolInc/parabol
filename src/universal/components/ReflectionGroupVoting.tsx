@@ -31,7 +31,7 @@ const UpvoteIcon = styled(Icon)(({color}: {color: string}) => ({
   color,
   cursor: 'pointer',
   fontSize: MD_ICONS_SIZE_18,
-  marginRight: '.25rem',
+  marginLeft: '.25rem',
   userSelect: 'none'
 }))
 
