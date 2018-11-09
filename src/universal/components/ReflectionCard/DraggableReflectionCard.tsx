@@ -16,7 +16,6 @@ import withAtmosphere, {
 import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import {cardShadow} from 'universal/styles/elevation'
-import ui from 'universal/styles/ui'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import clientTempId from 'universal/utils/relay/clientTempId'
@@ -74,7 +73,7 @@ const hiddenCardStyle = css({
   top: 6,
   right: -6,
   bottom: -2,
-  width: ui.retroCardWidth
+  width: REFLECTION_CARD_WIDTH
 })
 
 const STACK_PERSPECTIVE_X = 8

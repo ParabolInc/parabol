@@ -78,20 +78,22 @@ const Background = styled('div')({
 interface GroupProps {
   isModal?: boolean | null
   isHidden?: boolean | null
+  gutterN?: number | null
 }
 
 const GroupStyle = styled('div')(
-  {
+  ({gutterN}: GroupProps) => ({
     padding: CARD_PADDING,
+    paddingBottom: gutterN ? CARD_PADDING + gutterN * 6 : undefined,
     position: 'absolute',
     display: 'inline-block',
-    // necessary for smooth updating column heights
     transition: 'transform 200ms'
-  },
+  }),
   ({isModal}: GroupProps) =>
     isModal && {
       borderRadius: 6,
       padding: MODAL_PADDING,
+      outline: 'none',
       position: 'absolute',
       transition: 'unset',
       zIndex: 100
@@ -99,6 +101,7 @@ const GroupStyle = styled('div')(
   ({isHidden}: GroupProps) =>
     isHidden && {
       opacity: 0,
+      outline: 'none',
       pointerEvents: 'none'
     }
 )
@@ -300,11 +303,15 @@ class ReflectionGroup extends Component<Props> {
     const isDraggable = phaseType === GROUP && !isComplete
     const showHeader = reflections.length > 1 || phaseType !== GROUP
     // always render the in-grid group so we can get a read on the size if the title is removed
+    let gutterN = 0
+    if (reflections.length === 2) gutterN = 1
+    if (reflections.length >= 3) gutterN = 2
     return (
       <React.Fragment>
         <GroupStyle
           innerRef={setChildRef(reflectionGroupId, firstReflection.id)}
           isHidden={isExpanded}
+          gutterN={gutterN}
         >
           {showHeader && (
             <ReflectionGroupHeader
