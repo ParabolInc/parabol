@@ -36,7 +36,12 @@ export default {
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId
-    const subscription = await stripe.subscriptions.del(stripeSubscriptionId)
+    try {
+      await stripe.subscriptions.del(stripeSubscriptionId)
+    } catch (e) {
+      console.log(e)
+    }
+
     const {teamIds} = await r({
       org: r
         .table('Organization')
@@ -44,7 +49,7 @@ export default {
         .update({
           creditCard: {},
           tier: PERSONAL,
-          periodEnd: subscription.current_period_end,
+          periodEnd: now,
           stripeSubscriptionId: null,
           updatedAt: now
         }),
