@@ -135,7 +135,7 @@ const AcceptTeamInviteMutation = (
       }
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
-        handleOnCompletedToastError(serverError, dispatch)
+        handleOnCompletedToastError(serverError, atmosphere)
         // give them the benefit of the doubt & don't sign them out
         history.push('/')
         return

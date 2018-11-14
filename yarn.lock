@@ -1535,6 +1535,13 @@
     "@types/node" "*"
     "@types/react" "*"
 
+"@types/react-notification-system@^0.2.39":
+  version "0.2.39"
+  resolved "https://registry.yarnpkg.com/@types/react-notification-system/-/react-notification-system-0.2.39.tgz#18664f44fa724b93493a04efee8984b3898ba78f"
+  integrity sha512-yfptO86dbfW4qaw34CIedfakdKWV3sPM0xb4T5EQZOza80WLvOUUKjdmZTeGyEKk/7n2za8RJa6aZpz/A+2Qbw==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-redux@^6.0.6":
   version "6.0.9"
   resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-6.0.9.tgz#96aa7f5b0716bcc3bfb36ceaa1223118d509f79a"
