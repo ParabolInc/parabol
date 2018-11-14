@@ -46,6 +46,7 @@ export const ReflectionCardRoot = styled('div')(
   {
     backgroundColor: cardBackgroundColor,
     borderRadius: cardBorderRadius,
+    // display was 'inline-block' which causes layout issues (TA)
     display: 'block',
     maxWidth: '100%',
     position: 'relative',

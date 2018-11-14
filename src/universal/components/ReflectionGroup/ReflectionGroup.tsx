@@ -86,6 +86,7 @@ const GroupStyle = styled('div')(
   {
     padding: CARD_PADDING,
     position: 'absolute',
+    // display was 'inline-block' which causes layout issues (TA)
     display: 'block',
     transition: 'transform 200ms'
   },
