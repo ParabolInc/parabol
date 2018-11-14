@@ -1,4 +1,7 @@
-import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation'
+import {
+  addOrgMutationOrganizationOnNext,
+  addOrgMutationOrganizationUpdater
+} from 'universal/mutations/AddOrgMutation'
 import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation'
 import {
   setOrgUserRoleAddedOrganizationUpdater,
@@ -26,7 +29,8 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
-  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext
+  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
+  AddOrgPayload: addOrgMutationOrganizationOnNext
 }
 
 const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {

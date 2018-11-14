@@ -1,5 +1,8 @@
 import {showWarning} from 'universal/modules/toast/ducks/toastDuck'
-import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
+import {
+  addOrgMutationNotificationOnNext,
+  addOrgMutationNotificationUpdater
+} from 'universal/mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation'
 import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgMutation'
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
@@ -18,18 +21,18 @@ const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       __typename
-      ...AddOrgMutation_notification
-      ...AddTeamMutation_notification
-      ...ApproveToOrgMutation_notification
-      ...CancelApprovalMutation_notification
-      ...CancelTeamInviteMutation_notification
-      ...ClearNotificationMutation_notification
-      ...CreateTaskMutation_notification
-      ...DeleteTaskMutation_notification
-      ...InviteTeamMembersMutation_notification
-      ...RemoveOrgUserMutation_notification
-      ...RejectOrgApprovalMutation_notification
-      ...UpdateUserProfileMutation_notification
+      ...AddOrgMutation_notification @relay(mask: false)
+      ...AddTeamMutation_notification @relay(mask: false)
+      ...ApproveToOrgMutation_notification @relay(mask: false)
+      ...CancelApprovalMutation_notification @relay(mask: false)
+      ...CancelTeamInviteMutation_notification @relay(mask: false)
+      ...ClearNotificationMutation_notification @relay(mask: false)
+      ...CreateTaskMutation_notification @relay(mask: false)
+      ...DeleteTaskMutation_notification @relay(mask: false)
+      ...InviteTeamMembersMutation_notification @relay(mask: false)
+      ...RemoveOrgUserMutation_notification @relay(mask: false)
+      ...RejectOrgApprovalMutation_notification @relay(mask: false)
+      ...UpdateUserProfileMutation_notification @relay(mask: false)
 
       # ConnectSocket
       ... on User {
@@ -117,7 +120,9 @@ const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options)
   popPaymentFailedToast(payload, options)
 }
 
-const onNextHandlers = {}
+const onNextHandlers = {
+  AddOrgCreatorPayload: addOrgMutationNotificationOnNext
+}
 
 const NotificationSubscription = (environment, queryVariables, subParams) => {
   const {dispatch, history, location} = subParams
@@ -133,7 +138,7 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
         case 'AddFeatureFlagPayload':
           break
         case 'AddOrgPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId, options)
+          addOrgMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'AddTeamPayload':
           addTeamMutationNotificationUpdater(payload, store, viewerId, options)
