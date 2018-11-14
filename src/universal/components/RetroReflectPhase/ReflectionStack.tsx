@@ -7,7 +7,14 @@ import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import ReflectionStackPlaceholder from 'universal/components/RetroReflectPhase/ReflectionStackPlaceholder'
 import {STANDARD_CURVE} from 'universal/styles/animation'
-import {reflectionCardMaxHeight, reflectionCardWidth} from 'universal/styles/cards'
+import {
+  cardBackgroundColor,
+  cardBorderRadius,
+  cardStackPerspectiveX,
+  cardStackPerspectiveY,
+  reflectionCardMaxHeight,
+  reflectionCardWidth
+} from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
 
@@ -39,7 +46,7 @@ const CenteredCardStack = styled('div')({
 })
 
 const HIDE_LINES_HACK_STYLES = {
-  background: 'white',
+  background: cardBackgroundColor,
   content: '""',
   height: 12,
   left: 0,
@@ -49,8 +56,8 @@ const HIDE_LINES_HACK_STYLES = {
 }
 
 const CARD_IN_STACK = {
-  backgroundColor: 'white',
-  borderRadius: 4,
+  backgroundColor: cardBackgroundColor,
+  borderRadius: cardBorderRadius,
   boxShadow: cardShadow,
   cursor: 'pointer',
   overflow: 'hidden',
@@ -70,9 +77,6 @@ const CARD_IN_STACK = {
   '& > div': {
     bottom: 0,
     boxShadow: 'none',
-    // override inline-block from ReflectionCard.tsx
-    // for stack to line up right b/c inline-block breathes vertically
-    display: 'block',
     left: 0,
     position: 'absolute',
     right: 0,
@@ -81,29 +85,21 @@ const CARD_IN_STACK = {
   }
 }
 
-const STACK_PERSPECTIVE_X = 8
-const STACK_PERSPECTIVE_Y = 6
-
 const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}): any => {
   switch (count - idx) {
     case 1:
       return {
         cursor: 'pointer',
         position: 'relative',
-        zIndex: 2,
-        '& > div': {
-          // override inline-block from ReflectionCard.tsx
-          // for stack to line up right b/c inline-block breathes vertically
-          display: 'block'
-        }
+        zIndex: 2
       }
     case 2:
       return {
         ...CARD_IN_STACK,
-        bottom: -STACK_PERSPECTIVE_Y,
-        left: STACK_PERSPECTIVE_X,
-        right: STACK_PERSPECTIVE_X,
-        top: STACK_PERSPECTIVE_Y,
+        bottom: -cardStackPerspectiveY,
+        left: cardStackPerspectiveX,
+        right: cardStackPerspectiveX,
+        top: cardStackPerspectiveY,
         '& > div > div': {
           transform: 'scale(.95)',
           transformOrigin: 'left',
@@ -113,10 +109,10 @@ const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: numb
     case 3:
       return {
         ...CARD_IN_STACK,
-        bottom: -(STACK_PERSPECTIVE_Y * 2),
-        left: STACK_PERSPECTIVE_X * 2,
-        right: STACK_PERSPECTIVE_X * 2,
-        top: STACK_PERSPECTIVE_Y * 2
+        bottom: -(cardStackPerspectiveY * 2),
+        left: cardStackPerspectiveX * 2,
+        right: cardStackPerspectiveX * 2,
+        top: cardStackPerspectiveY * 2
       }
     default:
       return {}

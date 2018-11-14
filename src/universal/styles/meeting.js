@@ -23,4 +23,5 @@ export const meetingSidebarWidth = '15rem'
 export const meetingSplashGutter = '4.5rem'
 export const meetingBottomBarHeight = '3.5rem' // 56px MD bottom bar
 export const meetingVoteIcon = 'thumb_up'
-export const retroMeetingVotingWidth = '4.125rem'
+export const retroMeetingVotingWidth = 66
+export const retroGroupTitleWidth = 196
