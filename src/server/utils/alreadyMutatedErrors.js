@@ -100,6 +100,15 @@ export const sendAlreadyProTierError = (authToken, orgId) => {
   return sendAuthRaven(authToken, 'Easy there', breadcrumb)
 }
 
+export const sendAlreadyPersonalTierError = (authToken, orgId) => {
+  const breadcrumb = {
+    message: 'You are already on the personal tier!',
+    category: 'Already personal tier',
+    data: {orgId}
+  }
+  return sendAuthRaven(authToken, 'Easy there', breadcrumb)
+}
+
 export const sendAlreadyRemovedVoteError = (authToken, reflectionGroupId) => {
   const breadcrumb = {
     message: 'You’ve already removed that vote',
