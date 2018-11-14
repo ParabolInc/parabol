@@ -42,7 +42,6 @@ const targetAnchor = {
 const PendingApprovalRow = (props: Props) => {
   const {atmosphere, onError, onCompleted, submitMutation, orgApproval, submitting, team} = props
   const {orgApprovalId, email, createdAt, notification} = orgApproval
-  if (!notification) return null
   const {
     organization: {orgId, orgName, isBillingLeader, billingLeaders, tier}
   } = team
@@ -96,25 +95,27 @@ const PendingApprovalRow = (props: Props) => {
       </RowInfo>
       <RowActions>
         <UserRowActionsBlock>
-          {isBillingLeader ? (
-            <React.Fragment>
-              <PrimaryButton
-                onClick={() => {
-                  if (submitting) return
-                  submitMutation()
-                  ApproveToOrgMutation(atmosphere, email, orgId, onError, onCompleted)
-                }}
-              >
-                {'Approve'}
-              </PrimaryButton>
-              <RejectOrgApprovalModal
-                notificationId={notification.notificationId}
-                inviteeEmail={email}
-                inviterName={notification.inviter && notification.inviter.inviterName}
-                toggle={<UserRowFlatButton>{'Decline'}</UserRowFlatButton>}
-              />
-            </React.Fragment>
-          ) : (
+          {isBillingLeader &&
+            notification && (
+              <React.Fragment>
+                <PrimaryButton
+                  onClick={() => {
+                    if (submitting) return
+                    submitMutation()
+                    ApproveToOrgMutation(atmosphere, email, orgId, onError, onCompleted)
+                  }}
+                >
+                  {'Approve'}
+                </PrimaryButton>
+                <RejectOrgApprovalModal
+                  notificationId={notification.notificationId}
+                  inviteeEmail={email}
+                  inviterName={notification.inviter && notification.inviter.inviterName}
+                  toggle={<UserRowFlatButton>{'Decline'}</UserRowFlatButton>}
+                />
+              </React.Fragment>
+            )}
+          {!isBillingLeader && (
             <UserRowFlatButton onClick={cancel}>{'Cancel Invitation'}</UserRowFlatButton>
           )}
         </UserRowActionsBlock>
