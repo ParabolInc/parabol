@@ -87,6 +87,7 @@ const HIDE_LINES_HACK_STYLES = {
   content: '""',
   height: 12,
   left: 0,
+  position: 'absolute' as 'absolute',
   right: 0,
   zIndex: 200
 }
@@ -103,13 +104,11 @@ const CARD_IN_STACK = {
   // hides partially overflown top lines of text
   '&::before': {
     ...HIDE_LINES_HACK_STYLES,
-    position: 'absolute' as 'absolute',
     top: 0
   },
   // hides partially overflown bottom lines of text
   '&::after': {
     ...HIDE_LINES_HACK_STYLES,
-    position: 'absolute' as 'absolute',
     bottom: 0
   },
   '& > div': {
