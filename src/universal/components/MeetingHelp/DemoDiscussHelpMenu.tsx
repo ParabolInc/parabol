@@ -13,11 +13,13 @@ const DemoDiscussHelpMenu = ({closePortal, staggerShow}) => {
   return (
     <HelpMenuContent closePortal={closePortal}>
       <HelpMenuHeader>Now Talk it Out</HelpMenuHeader>
-      <DelayedCopy show={permShow >= 1}>Take action by assigning next steps.</DelayedCopy>
-      <DelayedCopy show={permShow >= 1}>
-        Track task progress with our Action meeting (It’s Free!)
+      <DelayedCopy show={permShow} thresh={1}>
+        Take action by assigning next steps.
       </DelayedCopy>
-      <DelayedCopy show={permShow >= 2} margin={'0'}>
+      <DelayedCopy show={permShow} thresh={2}>
+        Track task progress with our Action meeting. (It’s Free!)
+      </DelayedCopy>
+      <DelayedCopy show={permShow} thresh={3} margin={'0'}>
         When you’re ready, end the demo to see the summary.
       </DelayedCopy>
     </HelpMenuContent>

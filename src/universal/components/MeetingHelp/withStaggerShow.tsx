@@ -6,11 +6,12 @@ const withStaggerShow = (ComposedComponent) => {
     constructor (props) {
       super(props)
       this.state = {show: 0}
-      this.timeout = setInterval(() => {
+      this.timeout = window.setInterval(() => {
+        if (this.state.show > 5) clearInterval(this.timeout)
         this.setState({
           show: this.state.show + 1
         })
-      }, 1500)
+      }, 2000)
     }
     componentWillUnmount () {
       clearInterval(this.timeout)
