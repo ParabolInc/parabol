@@ -21,6 +21,12 @@ import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryC
 import clientTempId from 'universal/utils/relay/clientTempId'
 import {SetItemRef} from '../PhaseItemMasonry'
 import ReflectionCard from './ReflectionCard'
+import {
+  cardBackgroundColor,
+  cardBorderRadius,
+  cardStackPerspectiveX,
+  cardStackPerspectiveY
+} from 'universal/styles/cards'
 
 interface Props extends WithAtmosphereProps {
   closeGroupModal? (): void
@@ -76,11 +82,8 @@ const hiddenCardStyle = css({
   width: REFLECTION_CARD_WIDTH
 })
 
-const STACK_PERSPECTIVE_X = 8
-
-const STACK_PERSPECTIVE_Y = 6
 const HIDE_LINES_HACK_STYLES = {
-  background: 'white',
+  background: cardBackgroundColor,
   content: '""',
   height: 12,
   left: 0,
@@ -89,8 +92,8 @@ const HIDE_LINES_HACK_STYLES = {
 }
 
 const CARD_IN_STACK = {
-  backgroundColor: 'white',
-  borderRadius: 4,
+  backgroundColor: cardBackgroundColor,
+  borderRadius: cardBorderRadius,
   boxShadow: cardShadow,
   cursor: 'pointer',
   overflow: 'hidden',
@@ -100,19 +103,18 @@ const CARD_IN_STACK = {
   // hides partially overflown top lines of text
   '&::before': {
     ...HIDE_LINES_HACK_STYLES,
+    position: 'absolute' as 'absolute',
     top: 0
   },
   // hides partially overflown bottom lines of text
   '&::after': {
     ...HIDE_LINES_HACK_STYLES,
+    position: 'absolute' as 'absolute',
     bottom: 0
   },
   '& > div': {
     bottom: 0,
     boxShadow: 'none',
-    // override inline-block from ReflectionCard.tsx
-    // for stack to line up right b/c inline-block breathes vertically
-    display: 'block',
     left: 0,
     position: 'absolute' as 'absolute',
     right: 0,
@@ -124,20 +126,15 @@ const CARD_IN_STACK = {
 const topCardStyle = css({
   cursor: 'pointer',
   position: 'relative',
-  zIndex: 2,
-  '& > div': {
-    // override inline-block from ReflectionCard.tsx
-    // for stack to line up right b/c inline-block breathes vertically
-    display: 'block'
-  }
+  zIndex: 2
 })
 
 const secondCardStyle = css({
   ...CARD_IN_STACK,
-  bottom: -STACK_PERSPECTIVE_Y,
-  left: STACK_PERSPECTIVE_X,
-  right: STACK_PERSPECTIVE_X,
-  top: STACK_PERSPECTIVE_Y,
+  bottom: -cardStackPerspectiveY,
+  left: cardStackPerspectiveX,
+  right: cardStackPerspectiveX,
+  top: cardStackPerspectiveY,
   '& > div > div': {
     transform: 'scale(.95)',
     transformOrigin: 'left',
@@ -147,10 +144,10 @@ const secondCardStyle = css({
 
 const thirdCardStyle = css({
   ...CARD_IN_STACK,
-  bottom: -(STACK_PERSPECTIVE_Y * 2),
-  left: STACK_PERSPECTIVE_X * 2,
-  right: STACK_PERSPECTIVE_X * 2,
-  top: STACK_PERSPECTIVE_Y * 2
+  bottom: -(cardStackPerspectiveY * 2),
+  left: cardStackPerspectiveX * 2,
+  right: cardStackPerspectiveX * 2,
+  top: cardStackPerspectiveY * 2
 } as any)
 
 const getClassName = (idx, dragContext, isModal) => {

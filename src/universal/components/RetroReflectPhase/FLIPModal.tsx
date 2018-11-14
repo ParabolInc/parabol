@@ -24,7 +24,7 @@ interface Props {
 
 const ModalBackground = styled('div')({
   backgroundColor: 'rgba(68, 66, 88, .65)',
-  borderRadius: 4,
+  borderRadius: 8,
   position: 'absolute',
   transformOrigin: '0 0',
   zIndex: ZINDEX_MODAL

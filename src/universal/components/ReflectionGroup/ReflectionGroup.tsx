@@ -37,6 +37,7 @@ import {
   SetItemRef
 } from '../PhaseItemMasonry'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
+import {cardStackPerspectiveY} from 'universal/styles/cards'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -85,16 +86,16 @@ const GroupStyle = styled('div')(
   {
     padding: CARD_PADDING,
     position: 'absolute',
-    display: 'inline-block',
+    display: 'block',
     transition: 'transform 200ms'
   },
   ({gutterN}: GroupProps) =>
     gutterN && {
-      paddingBottom: CARD_PADDING + gutterN * 6
+      paddingBottom: CARD_PADDING + gutterN * cardStackPerspectiveY
     },
   ({isModal}: GroupProps) =>
     isModal && {
-      borderRadius: 6,
+      borderRadius: 8,
       padding: MODAL_PADDING,
       position: 'absolute',
       transition: 'unset',
