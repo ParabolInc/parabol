@@ -88,8 +88,7 @@ class ExportToCSV extends Component<Props> {
         })
       })
     })
-    const fields = ['title', 'votes', 'type', 'content']
-    const parser = new Json2csv.Parser(fields)
+    const parser = new Json2csv.Parser()
     const csv = parser.parse(rows)
     const csvContent = 'data:text/csv;charset=utf-8,' + csv
     const date = new Date(endedAt)
