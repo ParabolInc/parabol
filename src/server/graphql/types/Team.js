@@ -179,7 +179,7 @@ const Team = new GraphQLObjectType({
       resolve: resolveOrganization
     },
     agendaItems: {
-      type: new GraphQLList(AgendaItem),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
       async resolve ({id: teamId}, args, {dataLoader}) {
         const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)

@@ -17,7 +17,7 @@ const wipeAfterSuccess = (formToClear) => (state, action) => {
 
 const formPluginFactory = () => {
   // add new fields to this array if you want em cleared
-  const clearMeAfterSubmit = ['agendaInput', 'inviteTeamMember']
+  const clearMeAfterSubmit = ['inviteTeamMember']
   return clearMeAfterSubmit.reduce((formPlugin, name) => {
     formPlugin[name] = wipeAfterSuccess(name)
     return formPlugin

@@ -171,7 +171,7 @@ export default createFragmentContainer(
           id
         }
       }
-      ...AgendaInputField_team
+      ...AgendaInput_team
       ...AgendaList_team
     }
   `

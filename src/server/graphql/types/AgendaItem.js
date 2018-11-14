@@ -35,7 +35,7 @@ const AgendaItem = new GraphQLObjectType({
         'true if the agenda item has been addressed in a meeting (will have a strikethrough or similar)'
     },
     sortOrder: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
       description: 'The sort order of the agenda item in the list'
     },
     teamId: {

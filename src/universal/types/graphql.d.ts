@@ -773,7 +773,7 @@ export interface ITeam {
   /**
    * The agenda items for the upcoming or current meeting
    */
-  agendaItems: Array<IAgendaItem | null> | null
+  agendaItems: Array<IAgendaItem>
 
   /**
    * All of the tasks for this team
@@ -1668,7 +1668,7 @@ export interface IAgendaItem {
   /**
    * The sort order of the agenda item in the list
    */
-  sortOrder: number | null
+  sortOrder: number
 
   /**
    * *The team for this agenda item
