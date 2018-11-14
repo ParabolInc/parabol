@@ -7,7 +7,6 @@ export default function createEmailPromises (inviterInfoAndTeamName, inviteesWit
       ...inviterInfoAndTeamName,
       inviteeEmail: invitee.email,
       inviteeName: invitee.fullName,
-      firstTask: invitee.task,
       inviteLink: makeAppLink(`invitation/${invitee.inviteToken}`)
     }
     return sendEmailPromise(emailProps.inviteeEmail, 'teamInvite', emailProps)

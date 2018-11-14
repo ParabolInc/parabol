@@ -5,6 +5,7 @@ import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
 import makeAppLink from 'server/utils/makeAppLink'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {headCSS} from 'universal/styles/email'
 
 const newMeetingSummaryEmailCreator = (props) => {
   const {meeting} = props
@@ -35,6 +36,7 @@ const newMeetingSummaryEmailCreator = (props) => {
         teamDashUrl={teamDashUrl}
       />,
       {
+        headCSS,
         title: subject,
         previewText: subject
       }

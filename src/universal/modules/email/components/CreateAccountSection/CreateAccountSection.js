@@ -1,17 +1,21 @@
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
-import {emailLinkStyle, emailPrimaryButtonStyle} from 'universal/styles/emails'
+import {
+  emailFontFamily,
+  emailLinkStyle,
+  emailPrimaryButtonStyle,
+  emailTableBase
+} from 'universal/styles/email'
 
 const tableStyle = {
-  ...ui.emailTableBase,
+  ...emailTableBase,
   width: '100%'
 }
 const blockStyle = {
   backgroundColor: '#fff',
   color: appTheme.palette.dark,
-  fontFamily: ui.emailFontFamily,
+  fontFamily: emailFontFamily,
   fontSize: '24px',
   lineHeight: 1.5,
   padding: '0 20px',
@@ -19,7 +23,7 @@ const blockStyle = {
 }
 const textStyle = {
   color: appTheme.palette.dark,
-  fontFamily: ui.emailFontFamily
+  fontFamily: emailFontFamily
 }
 const headingStyle = {
   ...textStyle,

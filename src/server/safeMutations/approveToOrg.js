@@ -46,7 +46,6 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
     const team = teams.find(({id}) => id === notification.teamId)
     return {
       inviterUserId: inviterUser.id,
-      inviterAvatar: inviterUser.picture,
       inviterEmail: inviterUser.email,
       inviterName: inviterUser.preferredName,
       teamName: team.name,
