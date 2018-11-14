@@ -26,7 +26,6 @@ import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitator
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects'
 import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase'
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL'
-import {showError} from 'universal/modules/toast/ducks/toastDuck'
 import EndMeetingMutation from 'universal/mutations/EndMeetingMutation'
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation'
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation'
@@ -137,7 +136,6 @@ class MeetingContainer extends Component {
     if (this.unsafeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
         const {
-          dispatch,
           teamId,
           myTeamMemberId,
           viewer: {
@@ -161,13 +159,12 @@ class MeetingContainer extends Component {
           }
         }
         this.gotoItem(1, CHECKIN)
-        dispatch(
-          showError({
-            title: 'Awh shoot',
-            message:
-              'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
-          })
-        )
+        nextProps.atmosphere.eventEmitter.emit('addToast', {
+          level: 'error',
+          title: 'Awh shoot',
+          message:
+            'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
+        })
         raven.captureMessage(
           'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered'
         )

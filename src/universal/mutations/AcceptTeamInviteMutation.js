@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay'
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
 import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import handleRemoveInvitations from 'universal/mutations/handlers/handleRemoveInvitations'
@@ -75,19 +74,6 @@ const mutation = graphql`
   }
 `
 
-const popJoinedYourTeamToast = (payload, dispatch) => {
-  const teamName = getInProxy(payload, 'team', 'name')
-  const preferredName = getInProxy(payload, 'teamMember', 'preferredName')
-  if (!preferredName) return
-  dispatch(
-    showInfo({
-      autoDismiss: 10,
-      title: 'Ahoy, a new crewmate!',
-      message: `${preferredName} just joined team ${teamName}`
-    })
-  )
-}
-
 export const acceptTeamInviteTeamUpdater = (payload, store, viewerId) => {
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store, viewerId)
@@ -96,14 +82,24 @@ export const acceptTeamInviteTeamUpdater = (payload, store, viewerId) => {
   handleRemoveNotifications(notificationId, store, viewerId)
 }
 
-export const acceptTeamInviteTeamMemberUpdater = (payload, store, viewerId, dispatch) => {
+export const acceptTeamInviteTeamMemberUpdater = (payload, store) => {
   const teamMember = payload.getLinkedRecord('teamMember')
   handleAddTeamMembers(teamMember, store)
 
   const removedSoftTeamMember = payload.getLinkedRecord('removedSoftTeamMember')
   handleRemoveSoftTeamMembers(removedSoftTeamMember, store)
+}
 
-  popJoinedYourTeamToast(payload, dispatch)
+export const acceptTeamInviteTeamMemberOnNext = (payload, {atmosphere}) => {
+  const teamName = payload.team && payload.team.name
+  const preferredName = payload.teamMember && payload.teamMember.preferredName
+  if (!preferredName) return
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'info',
+    autoDismiss: 10,
+    title: 'Ahoy, a new crewmate!',
+    message: `${preferredName} just joined team ${teamName}`
+  })
 }
 
 export const acceptTeamInviteTaskUpdater = (payload, store, viewerId) => {
@@ -150,14 +146,13 @@ const AcceptTeamInviteMutation = (
       const {id: teamId, name: teamName} = team
       const {tms} = jwtDecode(authToken)
       atmosphere.setAuthToken(authToken)
-      dispatch(
-        showInfo({
-          autoDismiss: 10,
-          title: 'Congratulations!',
-          message: `You’ve been added to team ${teamName}`,
-          action: {label: 'Great!'}
-        })
-      )
+      atmosphere.eventEmitter.emit('addToast', {
+        level: 'info',
+        autoDismiss: 10,
+        title: 'Congratulations!',
+        message: `You’ve been added to team ${teamName}`,
+        action: {label: 'Great!'}
+      })
       if (tms.length <= 1) {
         dispatch(setWelcomeActivity(`/team/${teamId}`))
         history.push('/me/settings')

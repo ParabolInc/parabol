@@ -1,4 +1,7 @@
-import {acceptTeamInviteTeamMemberUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
+import {
+  acceptTeamInviteTeamMemberOnNext,
+  acceptTeamInviteTeamMemberUpdater
+} from 'universal/mutations/AcceptTeamInviteMutation'
 import {inviteTeamMembersTeamMemberUpdater} from 'universal/mutations/InviteTeamMembersMutation'
 import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
 import {removeOrgUserTeamMemberUpdater} from 'universal/mutations/RemoveOrgUserMutation'
@@ -23,10 +26,14 @@ const subscription = graphql`
     }
   }
 `
+const onNextHandlers = {
+  AcceptTeamInvitePayload: acceptTeamInviteTeamMemberOnNext
+}
 
-const TeamMemberSubscription = (environment, queryVariables, subParams) => {
+const TeamMemberSubscription = (atmosphere, queryVariables, subParams) => {
   const {dispatch} = subParams
-  const {viewerId} = environment
+  const {viewerId} = atmosphere
+  const context = {...subParams, atmosphere}
   return {
     subscription,
     variables: {},
@@ -36,7 +43,7 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
       const type = payload.getValue('__typename')
       switch (type) {
         case 'AcceptTeamInvitePayload':
-          acceptTeamInviteTeamMemberUpdater(payload, store, viewerId, dispatch)
+          acceptTeamInviteTeamMemberUpdater(payload, store)
           break
         case 'CancelApprovalPayload':
           cancelApprovalTeamMemberUpdater(payload, store)
@@ -64,6 +71,13 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
           break
         default:
           console.error('TeamMemberSubscription case fail', type)
+      }
+    },
+    onNext: ({teamMemberSubscription}) => {
+      const {__typename: type} = teamMemberSubscription
+      const handler = onNextHandlers[type]
+      if (handler) {
+        handler(teamMemberSubscription, context)
       }
     }
   }

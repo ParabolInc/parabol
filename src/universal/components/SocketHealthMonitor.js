@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types'
 import {Component} from 'react'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {connect} from 'react-redux'
 import popUpgradeAppToast from 'universal/mutations/toasts/popUpgradeAppToast'
-import {showSuccess, showWarning} from 'universal/modules/toast/ducks/toastDuck'
 import {APP_VERSION_KEY} from 'universal/utils/constants'
 
 class SocketHealthMonitor extends Component {
   static propTypes = {
-    atmosphere: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
+    atmosphere: PropTypes.object.isRequired
   }
 
   componentWillMount () {
@@ -26,38 +23,34 @@ class SocketHealthMonitor extends Component {
 
   onData = (payload) => {
     if (!payload.version) return
-    const {dispatch} = this.props
+    const {atmosphere} = this.props
     const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY)
     if (payload.version !== versionInStorage) {
-      popUpgradeAppToast({dispatch})
+      popUpgradeAppToast({atmosphere})
     }
   }
 
   onReconnected = () => {
-    const {dispatch} = this.props
+    const {atmosphere} = this.props
     if (this.disconnectedToastTimer) {
       clearTimeout(this.disconnectedToastTimer)
     } else {
-      dispatch(
-        showSuccess({
-          autoDismiss: 5,
-          title: 'You’re back online!',
-          message: 'You were offline for a bit, but we’ve reconnected you.'
-        })
-      )
+      atmosphere.eventEmitter.emit('addToast', {
+        autoDismiss: 5,
+        title: 'You’re back online!',
+        message: 'You were offline for a bit, but we’ve reconnected you.'
+      })
     }
   }
   onDisconnected = () => {
-    const {dispatch} = this.props
+    const {atmosphere} = this.props
     this.disconnectedToastTimer = setTimeout(() => {
       this.disconnectedToastTimer = undefined
-      dispatch(
-        showWarning({
-          autoDismiss: 5,
-          title: 'You’re offline!',
-          message: 'We’re trying to reconnect you'
-        })
-      )
+      atmosphere.eventEmitter.emit('addToast', {
+        autoDismiss: 5,
+        title: 'You’re offline!',
+        message: 'We’re trying to reconnect you'
+      })
     }, 1000)
   }
 
@@ -66,4 +59,4 @@ class SocketHealthMonitor extends Component {
   }
 }
 
-export default connect()(withAtmosphere(SocketHealthMonitor))
+export default withAtmosphere(SocketHealthMonitor)

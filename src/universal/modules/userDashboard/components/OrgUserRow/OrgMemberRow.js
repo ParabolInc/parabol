@@ -1,6 +1,5 @@
 import React from 'react'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import {showError, showInfo} from 'universal/modules/toast/ducks/toastDuck'
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
@@ -11,13 +10,11 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal'
 import {createFragmentContainer} from 'react-relay'
+import type {MutationProps} from 'universal/utils/relay/withMutationProps'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {connect} from 'react-redux'
 import LoadableBillingLeaderActionMenu from 'universal/components/LoadableBillingLeaderActionMenu'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import type {Dispatch} from 'react-redux'
 import {OrgMemberRow_organization as Organization} from '__generated__/OrgMemberRow_organization.graphql'
 import {OrgMemberRow_orgMember as OrgMember} from '__generated__/OrgMemberRow_orgMember.graphql'
 import Row from 'universal/components/Row/Row'
@@ -59,7 +56,6 @@ type Props = {|
   atmosphere: Object,
   billingLeaderCount: number,
   closePortal: () => void,
-  dispatch: Dispatch<*>,
   orgMember: OrgMember,
   organization: Organization,
   ...MutationProps
@@ -81,7 +77,6 @@ const OrgMemberRow = (props: Props) => {
   const {
     atmosphere,
     billingLeaderCount,
-    dispatch,
     submitMutation,
     onError,
     onCompleted,
@@ -101,23 +96,21 @@ const OrgMemberRow = (props: Props) => {
     if (!inactive) {
       submitMutation()
       const handleError = (error) => {
-        dispatch(
-          showError({
-            title: 'Oh no',
-            message: error || 'Cannot pause user'
-          })
-        )
+        atmosphere.eventEmitter.emit('addToast', {
+          level: 'error',
+          title: 'Oh no',
+          message: error || 'Cannot pause user'
+        })
         onError(error)
       }
       InactivateUserMutation(atmosphere, userId, handleError, onCompleted)
     } else {
-      dispatch(
-        showInfo({
-          title: 'We’ve got you covered!',
-          message:
-            'We’ll reactivate that user the next time they log in so you don’t pay a penny too much'
-        })
-      )
+      atmosphere.eventEmitter.emit('addToast', {
+        title: 'We’ve got you covered!',
+        message:
+          'We’ll reactivate that user the next time they log in so you don’t pay a penny too much',
+        level: 'info'
+      })
     }
   }
   return (
@@ -206,7 +199,7 @@ const OrgMemberRow = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  connect()(withAtmosphere(withMutationProps(OrgMemberRow))),
+  withAtmosphere(withMutationProps(OrgMemberRow)),
   graphql`
     fragment OrgMemberRow_organization on Organization {
       isViewerBillingLeader: isBillingLeader
