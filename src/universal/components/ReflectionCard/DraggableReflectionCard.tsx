@@ -144,7 +144,7 @@ const secondCardStyle = css({
     transformOrigin: 'left',
     width: REFLECTION_CARD_WIDTH
   }
-})
+} as any)
 
 const thirdCardStyle = css({
   ...CARD_IN_STACK,
@@ -152,7 +152,7 @@ const thirdCardStyle = css({
   left: STACK_PERSPECTIVE_X * 2,
   right: STACK_PERSPECTIVE_X * 2,
   top: STACK_PERSPECTIVE_Y * 2
-})
+} as any)
 
 const getClassName = (idx, dragContext, isModal) => {
   const isTopCard = idx === 0
