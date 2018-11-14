@@ -36,6 +36,7 @@ class SocketHealthMonitor extends Component {
       clearTimeout(this.disconnectedToastTimer)
     } else {
       atmosphere.eventEmitter.emit('addToast', {
+        level: 'success',
         autoDismiss: 5,
         title: 'You’re back online!',
         message: 'You were offline for a bit, but we’ve reconnected you.'
@@ -47,6 +48,7 @@ class SocketHealthMonitor extends Component {
     this.disconnectedToastTimer = setTimeout(() => {
       this.disconnectedToastTimer = undefined
       atmosphere.eventEmitter.emit('addToast', {
+        level: 'warning',
         autoDismiss: 5,
         title: 'You’re offline!',
         message: 'We’re trying to reconnect you'

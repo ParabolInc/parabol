@@ -13,16 +13,16 @@ const subscription = graphql`
   subscription TeamMemberSubscription {
     teamMemberSubscription {
       __typename
-      ...AcceptTeamInviteMutation_teamMember
-      ...CancelApprovalMutation_teamMember
-      ...CancelTeamInviteMutation_teamMember
-      ...InviteTeamMembersMutation_teamMember
-      ...MeetingCheckInMutation_teamMember
-      ...PromoteToTeamLeadMutation_teamMember
-      ...RejectOrgApprovalMutation_teamMember
-      ...RemoveOrgUserMutation_teamMember
-      ...RemoveTeamMemberMutation_teamMember
-      ...UpdateUserProfileMutation_teamMember
+      ...AcceptTeamInviteMutation_teamMember @relay(mask: false)
+      ...CancelApprovalMutation_teamMember @relay(mask: false)
+      ...CancelTeamInviteMutation_teamMember @relay(mask: false)
+      ...InviteTeamMembersMutation_teamMember @relay(mask: false)
+      ...MeetingCheckInMutation_teamMember @relay(mask: false)
+      ...PromoteToTeamLeadMutation_teamMember @relay(mask: false)
+      ...RejectOrgApprovalMutation_teamMember @relay(mask: false)
+      ...RemoveOrgUserMutation_teamMember @relay(mask: false)
+      ...RemoveTeamMemberMutation_teamMember @relay(mask: false)
+      ...UpdateUserProfileMutation_teamMember @relay(mask: false)
     }
   }
 `
