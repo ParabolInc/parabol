@@ -63,7 +63,8 @@ const BlinkyThoughtDot = styled('span')(({n}: {n: number}) => ({
   animation: `1s ${BlinkKeyframes} infinite ${n * 0.3333}s`
 }))
 
-const TypingIndicator = React.memo(() => {
+// TODO: remove `any` when React refreshes their TS types:
+const TypingIndicator = (React as any).memo(() => {
   return (
     <TypingIndicatorBubble>
       <MinorThoughtBubble />
