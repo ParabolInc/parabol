@@ -84,7 +84,6 @@ const HIDE_LINES_HACK_STYLES = {
   content: '""',
   height: 12,
   left: 0,
-  position: 'absolute',
   right: 0,
   zIndex: 200
 }
@@ -95,8 +94,8 @@ const CARD_IN_STACK = {
   boxShadow: cardShadow,
   cursor: 'pointer',
   overflow: 'hidden',
-  position: 'absolute',
-  pointerEvents: 'none',
+  position: 'absolute' as 'absolute',
+  pointerEvents: 'none' as 'none',
   zIndex: 1,
   // hides partially overflown top lines of text
   '&::before': {
@@ -115,7 +114,7 @@ const CARD_IN_STACK = {
     // for stack to line up right b/c inline-block breathes vertically
     display: 'block',
     left: 0,
-    position: 'absolute',
+    position: 'absolute' as 'absolute',
     right: 0,
     top: 0,
     zIndex: 100
