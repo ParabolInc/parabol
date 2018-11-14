@@ -42,7 +42,11 @@ const truncateCard = (content, maxBlocks = MAX_BLOCKS, maxChars = MAX_CHARS) => 
         isBackward: false,
         hasFocus: false
       })
-      return Modifier.replaceText(contentState, selection, ELLIPSIS)
+      const contentStateWithEntity = contentState.createEntity('TRUNCATED_ELLIPSIS', 'IMMUTABLE', {
+        value: content
+      })
+      const entityKey = contentStateWithEntity.getLastCreatedEntityKey()
+      return Modifier.replaceText(contentState, selection, ELLIPSIS, null, entityKey)
     }
     block = contentState.getBlockAfter(key)
     if (!block) break

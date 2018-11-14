@@ -2,6 +2,7 @@ import EditorLink from './EditorLink'
 import {CompositeDecorator} from 'draft-js'
 import Hashtag from 'universal/components/TaskEditor/Hashtag'
 import Mention from 'universal/components/TaskEditor/Mention'
+import TruncatedEllipsis from 'universal/components/TaskEditor/TruncatedEllipsis'
 
 const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   contentBlock.findEntityRanges((character) => {
@@ -10,7 +11,7 @@ const findEntity = (entityType) => (contentBlock, callback, contentState) => {
   }, callback)
 }
 
-const decorators = (getEditorState) =>
+const decorators = (getEditorState, setEditorState) =>
   new CompositeDecorator([
     {
       strategy: findEntity('LINK'),
@@ -23,6 +24,10 @@ const decorators = (getEditorState) =>
     {
       strategy: findEntity('MENTION'),
       component: Mention
+    },
+    {
+      strategy: findEntity('TRUNCATED_ELLIPSIS'),
+      component: TruncatedEllipsis(setEditorState)
     }
   ])
 
