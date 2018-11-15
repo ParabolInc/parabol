@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.20.0 2018-Nov-14
+
+### Added
+* Animations to demo help menu
+* Downgrade mutation on the backend
+* Click-to-expand ellipsis in the meeting summaries for reflections and tasks #2497 
+
+### Changed
+* Team invite & notification emails look better
+
+### Fixed
+* Fix #2397 team name now updates without refresh
+* Fix #2454 Use OS-specific keys in help modal
+* Retro card groups now match the reflection group style
+* Org Approvals are now visible to everyone on the team
+* Minification bug caused export to CSV to fail
+* Agenda list migrated to react-beautiful-dnd
+* All components using react-beautiful-dnd now accurately update when dragging top to bottom
+
 ## v2.19.0 2018-Nov-07
 
 ### Added
