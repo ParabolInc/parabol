@@ -121,7 +121,7 @@ const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options)
 }
 
 const onNextHandlers = {
-  AddOrgCreatorPayload: addOrgMutationNotificationOnNext
+  AddOrgPayload: addOrgMutationNotificationOnNext
 }
 
 const NotificationSubscription = (environment, queryVariables, subParams) => {
@@ -189,7 +189,7 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
       const {__typename: type} = notificationSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(notificationSubscription, {...subParams, environment})
+        handler(notificationSubscription, {...subParams, atmosphere: environment})
       }
     }
   }

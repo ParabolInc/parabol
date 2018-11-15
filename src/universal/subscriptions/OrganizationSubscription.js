@@ -1,7 +1,4 @@
-import {
-  addOrgMutationOrganizationOnNext,
-  addOrgMutationOrganizationUpdater
-} from 'universal/mutations/AddOrgMutation'
+import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation'
 import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation'
 import {
   setOrgUserRoleAddedOrganizationUpdater,
@@ -16,21 +13,20 @@ const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
       __typename
-      ...AddOrgMutation_organization
-      ...ApproveToOrgMutation_organization
-      ...SetOrgUserRoleMutationAdded_organization
-      ...SetOrgUserRoleMutationRemoved_organization
-      ...UpdateCreditCardMutation_organization
-      ...UpdateOrgMutation_organization
-      ...UpgradeToProMutation_organization
-      ...RemoveOrgUserMutation_organization
+      ...AddOrgMutation_organization @relay(mask: false)
+      ...ApproveToOrgMutation_organization @relay(mask: false)
+      ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
+      ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
+      ...UpdateCreditCardMutation_organization @relay(mask: false)
+      ...UpdateOrgMutation_organization @relay(mask: false)
+      ...UpgradeToProMutation_organization @relay(mask: false)
+      ...RemoveOrgUserMutation_organization @relay(mask: false)
     }
   }
 `
 
 const onNextHandlers = {
-  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
-  AddOrgPayload: addOrgMutationOrganizationOnNext
+  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext
 }
 
 const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {

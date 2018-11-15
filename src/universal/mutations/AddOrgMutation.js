@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
+import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
@@ -17,6 +18,8 @@ graphql`
       tier
     }
     team {
+      id
+      name
       ...CompleteTeamFragWithMembers @relay(mask: false)
     }
   }
@@ -26,6 +29,13 @@ graphql`
   fragment AddOrgMutation_notification on AddOrgPayload {
     teamInviteNotification {
       type
+      inviter {
+        preferredName
+      }
+      team {
+        name
+      }
+      id
       ...TeamInvite_notification @relay(mask: false)
     }
   }
@@ -42,16 +52,14 @@ const mutation = graphql`
   }
 `
 
-const popOrganizationCreatedToast = (payload, {atmosphere, history}) => {
-  const teamId = payload.team && payload.team.id
-  if (!teamId) return
+const popOrganizationCreatedToast = (payload, {atmosphere}) => {
   const teamName = payload.team.name
+  if (!teamName) return
   atmosphere.eventEmitter.emit('addToast', {
     level: 'success',
     title: 'Organization successfully created!',
     message: `Here's your new team dashboard for ${teamName}`
   })
-  history.push(`/team/${teamId}`)
 }
 
 export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
@@ -62,12 +70,8 @@ export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
   handleAddTeams(team, store, viewerId)
 }
 
-export const addOrgMutationOrganizationOnNext = (payload, options) => {
-  popOrganizationCreatedToast(payload, options)
-}
-
-export const addOrgMutationNotificationOnNext = (payload, options) => {
-  popOrganizationCreatedToast(payload, options)
+export const addOrgMutationNotificationOnNext = (payload, {atmosphere}) => {
+  popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere})
 }
 
 export const addOrgMutationNotificationUpdater = (payload, store, viewerId) => {
@@ -75,9 +79,9 @@ export const addOrgMutationNotificationUpdater = (payload, store, viewerId) => {
   handleAddNotifications(notification, store, viewerId)
 }
 
-const AddOrgMutation = (environment, variables, options, onError, onCompleted) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const AddOrgMutation = (atmosphere, variables, {history}, onError, onCompleted) => {
+  const {viewerId} = atmosphere
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -85,7 +89,17 @@ const AddOrgMutation = (environment, variables, options, onError, onCompleted) =
       if (!payload) return
       addOrgMutationOrganizationUpdater(payload, store, viewerId)
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors)
+      }
+      if (!errors) {
+        const payload = res.addOrg
+        popOrganizationCreatedToast(payload, {history, atmosphere})
+        const teamId = payload.team && payload.team.id
+        history.push(`/team/${teamId}`)
+      }
+    },
     onError
   })
 }

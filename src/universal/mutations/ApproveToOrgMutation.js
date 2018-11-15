@@ -118,6 +118,17 @@ export const approveToOrgNotificationUpdater = (payload, store, viewerId, option
   }
 }
 
+export const approveToOrgNotificationOnNext = (payload, {atmosphere}) => {
+  // TODO fix me
+  popInviteeApprovedToast(payload, {atmosphere})
+  const {teamInviteNotifications} = payload
+  if (teamInviteNotifications) {
+    teamInviteNotifications.forEach((notification) => {
+      popTeamInviteNotificationToast(notification, {atmosphere})
+    })
+  }
+}
+
 const ApproveToOrgMutation = (environment, email, orgId, onError, onCompleted) => {
   const {viewerId} = environment
   return commitMutation(environment, {

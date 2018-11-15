@@ -232,6 +232,12 @@ export const inviteTeamMembersNotificationUpdater = (payload, store, viewerId, o
   handleAddTeams(team, store, viewerId)
 }
 
+export const inviteTeamMembersNotificationOnNext = (payload, {atmosphere}) => {
+  // TODO handle all the toasts here!
+  const {teamInviteNotification} = payload
+  popTeamInviteNotificationToast(teamInviteNotification, {atmosphere})
+}
+
 export const inviteTeamMembersOrgApprovalUpdater = (payload, store) => {
   const orgApprovalsRemoved = payload.getLinkedRecords('orgApprovalsRemoved')
   handleRemoveOrgApprovals(orgApprovalsRemoved, store)

@@ -80,7 +80,7 @@ class Toast extends Component<Props> {
         ref={(c) => {
           this.el = c
         }}
-        refstyle={styles}
+        style={styles}
       />
     )
   }
