@@ -37,6 +37,7 @@ import {
   SetItemRef
 } from '../PhaseItemMasonry'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
+import {cardStackPerspectiveY} from 'universal/styles/cards'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -78,19 +79,24 @@ const Background = styled('div')({
 interface GroupProps {
   isModal?: boolean | null
   isHidden?: boolean | null
+  gutterN?: number | null
 }
 
 const GroupStyle = styled('div')(
   {
     padding: CARD_PADDING,
     position: 'absolute',
-    display: 'inline-block',
-    // necessary for smooth updating column heights
+    // display was 'inline-block' which causes layout issues (TA)
+    display: 'block',
     transition: 'transform 200ms'
   },
+  ({gutterN}: GroupProps) =>
+    gutterN && {
+      paddingBottom: CARD_PADDING + gutterN * cardStackPerspectiveY
+    },
   ({isModal}: GroupProps) =>
     isModal && {
-      borderRadius: 6,
+      borderRadius: 8,
       padding: MODAL_PADDING,
       position: 'absolute',
       transition: 'unset',
@@ -300,11 +306,15 @@ class ReflectionGroup extends Component<Props> {
     const isDraggable = phaseType === GROUP && !isComplete
     const showHeader = reflections.length > 1 || phaseType !== GROUP
     // always render the in-grid group so we can get a read on the size if the title is removed
+    let gutterN = 0
+    if (reflections.length === 2) gutterN = 1
+    if (reflections.length >= 3) gutterN = 2
     return (
       <React.Fragment>
         <GroupStyle
           innerRef={setChildRef(reflectionGroupId, firstReflection.id)}
           isHidden={isExpanded}
+          gutterN={gutterN}
         >
           {showHeader && (
             <ReflectionGroupHeader

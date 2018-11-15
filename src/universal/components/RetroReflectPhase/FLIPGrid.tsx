@@ -55,6 +55,7 @@ class FLIPGrid extends Component<Props, State> {
 
   componentDidUpdate (prevProps) {
     if (this.props.isClosing && !prevProps.isClosing) {
+      this.updateChildren()
       this.childrenCache.animateOut(this.first, this.parentCache.bbox)
     }
     const childArray = this.props.children as Array<ComponentElement<any, any>>

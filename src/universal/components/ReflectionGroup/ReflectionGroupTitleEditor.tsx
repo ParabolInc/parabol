@@ -19,6 +19,7 @@ import {RETRO_TOPIC_LABEL} from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {retroGroupTitleWidth} from 'universal/styles/meeting'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -37,6 +38,11 @@ const underlineStyles = {
   borderTopColor: 'transparent !important',
   boxShadow: 'none !important'
 }
+
+const InputWithIconWrap = styled('div')({
+  alignItems: 'center',
+  display: 'flex'
+})
 
 const PencilIcon = styled(Icon)(({isExpanded}: {isExpanded?: boolean}) => ({
   color: isExpanded ? '#fff' : ui.hintColor,
@@ -79,9 +85,9 @@ const NameInput = styled('input')(
     lineHeight,
     padding: 0,
     // need to use a content editable if we wanna animate this since input el forces width
-    textAlign: !isExpanded && 'center',
     // card width is set at REFLECTION_WIDTH, so this can be a PX, too
-    width: 188,
+    textAlign: 'left',
+    width: retroGroupTitleWidth,
     transition: 'all 200ms'
   })
 )
@@ -188,7 +194,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       reflectionGroup: {title}
     } = this.props
     return (
-      <React.Fragment>
+      <InputWithIconWrap>
         <RootBlock>
           <FormBlock onSubmit={this.onSubmit}>
             <NameInput
@@ -210,7 +216,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
             edit
           </PencilIcon>
         )}
-      </React.Fragment>
+      </InputWithIconWrap>
     )
   }
 }

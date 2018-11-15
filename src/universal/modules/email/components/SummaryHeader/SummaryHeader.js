@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import {emailBodyColor, emailFontFamily} from 'universal/styles/email'
 import makeDateString from 'universal/utils/makeDateString'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
@@ -10,9 +10,9 @@ const SummaryHeader = (props) => {
   const {createdAt, meetingNumber, meetingType, teamName} = props
   const meetingLabel = meetingTypeToLabel[meetingType]
   const blockStyle = {
-    backgroundColor: '#fff',
+    backgroundColor: emailBodyColor,
     color: appTheme.palette.dark,
-    fontFamily: ui.emailFontFamily,
+    fontFamily: emailFontFamily,
     fontSize: `${props.fontSize}px`,
     lineHeight: `${props.lineHeight}`,
     padding: `${props.padding}px`,
@@ -20,7 +20,7 @@ const SummaryHeader = (props) => {
   }
 
   const textStyle = {
-    fontFamily: ui.emailFontFamily
+    fontFamily: emailFontFamily
   }
 
   const meetingDateStyle = {
@@ -40,13 +40,13 @@ const SummaryHeader = (props) => {
     color: appTheme.palette.dark70l,
     fontSize: '13px',
     fontWeight: 600,
-    padding: '0 0 16px',
+    padding: '0px 0px 16px',
     textAlign: 'center',
     textTransform: 'uppercase'
   }
 
   return (
-    <div style={{padding: '0 16px'}}>
+    <div style={{padding: '0px 16px'}}>
       <EmptySpace height={props.vSpacing} />
       <table width={props.width}>
         <tbody>

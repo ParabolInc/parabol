@@ -15,10 +15,10 @@ import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutati
 import UpdateReflectionContentMutation from 'universal/mutations/UpdateReflectionContentMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import {cardShadow} from 'universal/styles/elevation'
-import ui from 'universal/styles/ui'
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import ReflectionCardDeleteButton from './ReflectionCardDeleteButton'
+import {cardBackgroundColor, cardBorderRadius, reflectionCardWidth} from 'universal/styles/cards'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   handleChange?: () => void
@@ -44,14 +44,14 @@ interface ReflectionCardRootProps {
 
 export const ReflectionCardRoot = styled('div')(
   {
-    backgroundColor: ui.palette.white,
-    borderRadius: ui.cardBorderRadius,
-    // useful for drag preview
-    display: 'inline-block',
+    backgroundColor: cardBackgroundColor,
+    borderRadius: cardBorderRadius,
+    // display was 'inline-block' which causes layout issues (TA)
+    display: 'block',
     maxWidth: '100%',
     position: 'relative',
     transition: `box-shadow 2000ms ${DECELERATE}`,
-    width: ui.retroCardWidth
+    width: reflectionCardWidth
   },
   ({isClosing, shadow}: ReflectionCardRootProps) =>
     shadow !== null && {

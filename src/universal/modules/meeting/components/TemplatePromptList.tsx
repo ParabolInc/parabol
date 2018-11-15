@@ -32,7 +32,8 @@ class TemplatePromptList extends Component<Props> {
     if (
       !destination ||
       destination.droppableId !== TEMPLATE_PROMPT ||
-      source.droppableId !== TEMPLATE_PROMPT
+      source.droppableId !== TEMPLATE_PROMPT ||
+      destination.index === source.index
     ) {
       return
     }
@@ -46,8 +47,10 @@ class TemplatePromptList extends Component<Props> {
     } else if (destination.index === prompts.length - 1) {
       sortOrder = destinationPrompt.sortOrder + 1 + dndNoise()
     } else {
+      const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (prompts[destination.index - 1].sortOrder + destinationPrompt.sortOrder) / 2 + dndNoise()
+        (prompts[destination.index + offset].sortOrder + destinationPrompt.sortOrder) / 2 +
+        dndNoise()
     }
 
     const {id: promptId} = sourcePrompt

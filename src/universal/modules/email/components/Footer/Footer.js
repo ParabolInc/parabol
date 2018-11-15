@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import {emailBodyColor, emailFontFamily, emailTableBase} from 'universal/styles/email'
 
 const Footer = (props) => {
   const tableStyle = {
-    ...ui.emailTableBase,
-    backgroundColor: ui.emailBodyColor,
+    ...emailTableBase,
+    backgroundColor: emailBodyColor,
     color: props.color
   }
 
@@ -17,9 +17,9 @@ const Footer = (props) => {
   }
 
   const cellStyles = {
-    backgroundColor: ui.emailBodyColor,
+    backgroundColor: emailBodyColor,
     color: props.color,
-    fontFamily: ui.emailFontFamily,
+    fontFamily: emailFontFamily,
     textAlign: 'center'
   }
 

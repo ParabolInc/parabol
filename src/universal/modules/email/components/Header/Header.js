@@ -1,48 +1,40 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+import {emailTableBase} from 'universal/styles/email'
+
+const imageStyle = {
+  border: '0px',
+  display: 'block',
+  margin: '0px'
+}
+
+const cellStyle = {
+  padding: '32px 0px'
+}
+
+const logoName = 'email-header-branding-color'
 
 const Header = (props) => {
   const {imgProvider} = props
 
-  const tableStyle = {
-    ...ui.emailTableBase
-  }
-
-  const imageStyle = {
-    border: 0,
-    display: 'block',
-    margin: '0 auto'
-  }
-
-  const emailHeaderStyle = {
-    ...ui.emailTableBase,
-    backgroundColor: appTheme.palette.mid,
-    color: '#FFFFFF',
-    paddingBottom: '20px',
-    paddingTop: '20px',
-    textAlign: 'center'
-  }
-
-  const variantLogo = 'email-header-branding-white'
   const provider =
     imgProvider === 'hubspot'
       ? 'https://email.parabol.co/hubfs/app-emails/'
       : '/static/images/email/email-header-branding/'
-  const imageSrc = `${provider}${variantLogo}@2x.png`
+
+  const imageSrc = `${provider}${logoName}@3x.png`
 
   return (
-    <table style={tableStyle} width='100%'>
+    <table style={emailTableBase} width='100%'>
       <tbody>
         <tr>
-          <td align='center' style={emailHeaderStyle}>
+          <td align='left' style={cellStyle}>
             <img
               alt='Parabol, Inc. Logo'
-              height={56}
+              height={40}
               src={imageSrc}
               style={imageStyle}
-              width={209}
+              width={192}
             />
           </td>
         </tr>

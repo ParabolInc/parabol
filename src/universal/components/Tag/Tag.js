@@ -68,11 +68,16 @@ const TagRoot = styled('div')(({colorPalette}) => ({
 }))
 
 const Tag = (props) => {
-  const {colorPalette, label} = props
-  return <TagRoot colorPalette={colorPalette || 'midGray'}>{label}</TagRoot>
+  const {className, colorPalette, label} = props
+  return (
+    <TagRoot className={className} colorPalette={colorPalette || 'midGray'}>
+      {label}
+    </TagRoot>
+  )
 }
 
 Tag.propTypes = {
+  className: PropTypes.string,
   colorPalette: PropTypes.oneOf(Object.keys(tagTheme)),
   label: PropTypes.string
 }

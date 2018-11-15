@@ -40,7 +40,6 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
   const inviter = {
     userOrgs: inviterDoc.userOrgs,
     inviterUserId: inviterDoc.id,
-    inviterAvatar: inviterDoc.picture,
     inviterEmail: inviterDoc.email,
     inviterName: inviterDoc.preferredName,
     orgId,

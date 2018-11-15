@@ -1,8 +1,12 @@
 import React, {RefObject} from 'react'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
-import {reflectionCardMaxHeight} from 'universal/styles/cards'
-import appTheme from 'universal/styles/theme/appTheme'
+import {
+  cardBorderRadius,
+  reflectionCardMaxHeight,
+  reflectionCardWidth
+} from 'universal/styles/cards'
+import {typeScale} from 'universal/styles/theme/typography'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 interface Props {
   idx: number
@@ -12,17 +16,17 @@ interface Props {
 const PlaceholderCard = styled('div')({
   alignItems: 'center',
   border: `1px lightgray dashed`,
-  borderRadius: 4,
+  borderRadius: cardBorderRadius,
   display: 'flex',
   justifyContent: 'center',
   margin: '2rem 0',
   minHeight: reflectionCardMaxHeight,
-  width: ui.retroCardWidth
+  width: reflectionCardWidth
 })
 
 const Tip = styled('div')({
-  color: ui.hintColor,
-  fontSize: appTheme.typography.s2,
+  color: PALETTE.TEXT.LIGHT,
+  fontSize: typeScale[2],
   padding: '1rem',
   textAlign: 'center',
   userSelect: 'none'
