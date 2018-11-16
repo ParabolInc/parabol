@@ -1,11 +1,21 @@
 import AcceptTeamInviteMutation from 'universal/mutations/AcceptTeamInviteMutation'
 
-const popTeamInviteNotificationToast = (teamInviteNotification, {atmosphere, history}) => {
-  const inviterName =
-    teamInviteNotification &&
-    teamInviteNotification.inviter &&
-    teamInviteNotification.inviter.preferredName
-  if (!inviterName) return
+interface Notification {
+  inviter: {
+    preferredName: string
+  }
+  team: {
+    name: string
+  }
+  id: string
+}
+
+const popTeamInviteNotificationToast = (
+  teamInviteNotification: Notification | null,
+  {atmosphere, history}
+) => {
+  if (!teamInviteNotification) return
+  const inviterName = teamInviteNotification.inviter && teamInviteNotification.inviter.preferredName
   const teamName = teamInviteNotification.team.name
   const notificationId = teamInviteNotification.id
   atmosphere.eventEmitter.emit('addToast', {

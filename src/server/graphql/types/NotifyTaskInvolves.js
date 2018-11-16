@@ -42,7 +42,7 @@ const NotifyTaskInvolves = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID)
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       description: 'The team the task is on',
       resolve: ({teamId}, args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)

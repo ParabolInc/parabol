@@ -67,7 +67,6 @@ LeaveTeamModal.propTypes = {
   onBackdropClick: PropTypes.func,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  team: PropTypes.object.isRequired,
   teamMember: PropTypes.object.isRequired
 }
 

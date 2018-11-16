@@ -1,4 +1,4 @@
-import {GraphQLObjectType} from 'graphql'
+import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {resolveTeam} from 'server/graphql/resolvers'
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
 import Team from 'server/graphql/types/Team'
@@ -11,14 +11,14 @@ const NotifyTeamInvite = new GraphQLObjectType({
   interfaces: () => [Notification, TeamNotification],
   fields: () => ({
     inviter: {
-      type: User,
+      type: new GraphQLNonNull(User),
       description: 'The user that triggered the invitation',
       resolve: ({inviterUserId}, args, {dataLoader}) => {
         return dataLoader.get('users').load(inviterUserId)
       }
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       resolve: resolveTeam
     },
     ...notificationInterfaceFields

@@ -16,6 +16,13 @@ graphql`
   fragment AddTeamMutation_notification on AddTeamPayload {
     teamInviteNotification {
       type
+      inviter {
+        preferredName
+      }
+      team {
+        name
+      }
+      id
       ...TeamInvite_notification @relay(mask: false)
     }
   }
@@ -52,8 +59,8 @@ export const addTeamMutationNotificationUpdater = (payload, store, viewerId) => 
   handleAddNotifications(notification, store, viewerId)
 }
 
-export const addTeamMutationNotificationOnNext = (payload, {atmosphere}) => {
-  popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere})
+export const addTeamMutationNotificationOnNext = (payload, {atmosphere, history}) => {
+  popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere, history})
 }
 
 const AddTeamMutation = (environment, variables, options, onError, onCompleted) => {
@@ -76,7 +83,10 @@ const AddTeamMutation = (environment, variables, options, onError, onCompleted) 
     },
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
-      popTeamCreatedToast(res, options)
+      if (!errors) {
+        const payload = res.addTeam
+        popTeamCreatedToast(payload, options)
+      }
     },
     onError
   })

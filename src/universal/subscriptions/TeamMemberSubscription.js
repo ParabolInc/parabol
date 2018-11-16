@@ -2,7 +2,10 @@ import {
   acceptTeamInviteTeamMemberOnNext,
   acceptTeamInviteTeamMemberUpdater
 } from 'universal/mutations/AcceptTeamInviteMutation'
-import {inviteTeamMembersTeamMemberUpdater} from 'universal/mutations/InviteTeamMembersMutation'
+import {
+  inviteTeamMembersTeamMemberOnNext,
+  inviteTeamMembersTeamMemberUpdater
+} from 'universal/mutations/InviteTeamMembersMutation'
 import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
 import {removeOrgUserTeamMemberUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {cancelApprovalTeamMemberUpdater} from 'universal/mutations/CancelApprovalMutation'
@@ -27,7 +30,8 @@ const subscription = graphql`
   }
 `
 const onNextHandlers = {
-  AcceptTeamInvitePayload: acceptTeamInviteTeamMemberOnNext
+  AcceptTeamInvitePayload: acceptTeamInviteTeamMemberOnNext,
+  InviteTeamMembersPayload: inviteTeamMembersTeamMemberOnNext
 }
 
 const TeamMemberSubscription = (atmosphere, queryVariables, subParams) => {

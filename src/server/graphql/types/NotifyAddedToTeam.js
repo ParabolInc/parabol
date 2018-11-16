@@ -15,7 +15,7 @@ const NotifyAddedToTeam = new GraphQLObjectType({
       description: 'The new auth token for the user.'
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       description: 'The team the invitee is being invited to',
       resolve: resolveTeam
     },

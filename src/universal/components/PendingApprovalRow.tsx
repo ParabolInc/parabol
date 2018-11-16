@@ -13,7 +13,6 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RejectOrgApprovalModal from 'universal/modules/notifications/components/RejectOrgApprovalModal/RejectOrgApprovalModal'
-import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation'
 import CancelApprovalMutation from 'universal/mutations/CancelApprovalMutation'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import appTheme from 'universal/styles/theme/theme'
@@ -23,6 +22,7 @@ import {PendingApprovalRow_orgApproval} from '__generated__/PendingApprovalRow_o
 import PrimaryButton from 'universal/components/PrimaryButton'
 import UserRowFlatButton from 'universal/modules/teamDashboard/components/TeamSettings/UserRowFlatButton'
 import {PendingApprovalRow_team} from '__generated__/PendingApprovalRow_team.graphql'
+import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   orgApproval: PendingApprovalRow_orgApproval

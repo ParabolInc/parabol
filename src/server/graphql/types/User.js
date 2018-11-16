@@ -132,7 +132,7 @@ const User = new GraphQLObjectType({
     },
     isBillingLeader,
     preferredName: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The application-specific name, defaults to nickname'
     },
     userOrgs: {

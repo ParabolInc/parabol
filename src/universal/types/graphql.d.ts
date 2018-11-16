@@ -135,7 +135,7 @@ export interface IUser {
   /**
    * The application-specific name, defaults to nickname
    */
-  preferredName: string | null
+  preferredName: string
 
   /**
    * the orgs and roles for this user on each
@@ -1309,13 +1309,13 @@ export interface INotifyRequestNewUser {
   /**
    * The user that triggered the invitation
    */
-  inviter: IUser | null
-  team: ITeam | null
+  inviter: IUser
+  team: ITeam
 
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -1352,7 +1352,7 @@ export interface INotification {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -3816,13 +3816,13 @@ export interface INotifyTeamInvite {
   /**
    * The user that triggered the invitation
    */
-  inviter: IUser | null
-  team: ITeam | null
+  inviter: IUser
+  team: ITeam
 
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -3990,27 +3990,27 @@ export interface IApproveToOrgPayload {
   /**
    * If the viewer is an org leader, the notifications removed after approving to the organization
    */
-  removedRequestNotifications: Array<INotifyRequestNewUser | null> | null
+  removedRequestNotifications: Array<INotifyRequestNewUser> | null
 
   /**
    * If the viegnwer is a team member, the org approvals that were removed in place of team members
    */
-  removedOrgApprovals: Array<IOrgApproval | null> | null
+  removedOrgApprovals: Array<IOrgApproval> | null
 
   /**
    * If the viewer is a team member, the list of team members added as a result of the approval
    */
-  newInvitations: Array<IInvitation | null> | null
+  newInvitations: Array<IInvitation> | null
 
   /**
    * If the viewer invited the invitee, the notifications to say they have been approved
    */
-  inviteeApprovedNotifications: Array<INotifyInviteeApproved | null> | null
+  inviteeApprovedNotifications: Array<INotifyInviteeApproved> | null
 
   /**
    * If the viewer is the invitee, the notifications to invite them to teams
    */
-  teamInviteNotifications: Array<INotifyTeamInvite | null> | null
+  teamInviteNotifications: Array<INotifyTeamInvite> | null
 }
 
 /**
@@ -4028,12 +4028,12 @@ export interface INotifyInviteeApproved {
    * The user that triggered the invitation
    */
   inviter: IUser | null
-  team: ITeam | null
+  team: ITeam
 
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -4069,12 +4069,12 @@ export interface IArchiveTeamPayload {
  */
 export interface INotifyTeamArchived {
   __typename: 'NotifyTeamArchived'
-  team: ITeam | null
+  team: ITeam
 
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -4101,7 +4101,7 @@ export interface ITeamRemovedNotification {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -4738,7 +4738,7 @@ export interface INotifyTaskInvolves {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -4785,7 +4785,7 @@ export interface INotifyTaskInvolves {
   /**
    * The team the task is on
    */
-  team: ITeam | null
+  team: ITeam
 }
 
 /**
@@ -5187,32 +5187,32 @@ export interface IInviteTeamMembersPayload {
   /**
    * The list of emails that turned out to be reactivated team members
    */
-  reactivatedTeamMembers: Array<ITeamMember | null> | null
+  reactivatedTeamMembers: Array<ITeamMember> | null
 
   /**
    * The list of invitations successfully sent out
    */
-  invitationsSent: Array<IInvitation | null> | null
+  invitationsSent: Array<IInvitation> | null
 
   /**
    * The list of orgApprovals sent to the org leader
    */
-  orgApprovalsSent: Array<IOrgApproval | null> | null
+  orgApprovalsSent: Array<IOrgApproval> | null
 
   /**
    * The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval
    */
-  orgApprovalsRemoved: Array<IOrgApproval | null> | null
+  orgApprovalsRemoved: Array<IOrgApproval> | null
 
   /**
    * The new invitees who have yet to accept the invite or get approved to receive an invite
    */
-  newSoftTeamMembers: Array<ISoftTeamMember | null> | null
+  newSoftTeamMembers: Array<ISoftTeamMember> | null
 
   /**
    * Any tasks that were recently assigned to a reactivated soft team member
    */
-  unarchivedSoftTasks: Array<ITask | null> | null
+  unarchivedSoftTasks: Array<ITask> | null
 }
 
 /**
@@ -5224,7 +5224,7 @@ export interface INotifyAddedToTeam {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5250,7 +5250,7 @@ export interface INotifyAddedToTeam {
   /**
    * The team the invitee is being invited to
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The name of the team the user is joining
@@ -5509,7 +5509,7 @@ export interface INotifyDenial {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5623,7 +5623,7 @@ export interface INotifyKickedOut {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5659,7 +5659,7 @@ export interface INotifyKickedOut {
   /**
    * The team the task is on
    */
-  team: ITeam | null
+  team: ITeam
 }
 
 export interface IRemoveReflectionPayload {
@@ -5915,7 +5915,7 @@ export interface INotifyPaymentRejected {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -6656,7 +6656,7 @@ export interface INotifyPromoteToOrgLeader {
   /**
    * A shortid for the notification
    */
-  id: string | null
+  id: string
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications

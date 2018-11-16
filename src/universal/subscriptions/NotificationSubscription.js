@@ -3,15 +3,24 @@ import {
   addOrgMutationNotificationOnNext,
   addOrgMutationNotificationUpdater
 } from 'universal/mutations/AddOrgMutation'
-import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation'
-import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgMutation'
+import {
+  addTeamMutationNotificationOnNext,
+  addTeamMutationNotificationUpdater
+} from 'universal/mutations/AddTeamMutation'
+import {
+  approveToOrgNotificationOnNext,
+  approveToOrgNotificationUpdater
+} from 'universal/mutations/ApproveToOrgMutation'
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
 import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
 import {createTaskNotificationUpdater} from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation'
+import {
+  inviteTeamMembersNotificationOnNext,
+  inviteTeamMembersNotificationUpdater
+} from 'universal/mutations/InviteTeamMembersMutation'
 import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
@@ -121,7 +130,10 @@ const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options)
 }
 
 const onNextHandlers = {
-  AddOrgPayload: addOrgMutationNotificationOnNext
+  AddOrgPayload: addOrgMutationNotificationOnNext,
+  AddTeamPayload: addTeamMutationNotificationOnNext,
+  ApproveToOrgPayload: approveToOrgNotificationOnNext,
+  InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext
 }
 
 const NotificationSubscription = (environment, queryVariables, subParams) => {
@@ -141,10 +153,10 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
           addOrgMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'AddTeamPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId, options)
+          addTeamMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'ApproveToOrgPayload':
-          approveToOrgNotificationUpdater(payload, store, viewerId, options)
+          approveToOrgNotificationUpdater(payload, store, viewerId)
           break
         case 'CancelApprovalPayload':
           cancelApprovalNotificationUpdater(payload, store, viewerId)
@@ -165,7 +177,7 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
           disconnectSocketNotificationUpdater(payload, store)
           break
         case 'InviteTeamMembersPayload':
-          inviteTeamMembersNotificationUpdater(payload, store, viewerId, options)
+          inviteTeamMembersNotificationUpdater(payload, store, viewerId)
           break
         case 'RejectOrgApprovalPayload':
           rejectOrgApprovalNotificationUpdater(payload, store, viewerId, options)

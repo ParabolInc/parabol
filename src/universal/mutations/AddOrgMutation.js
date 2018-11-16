@@ -70,8 +70,8 @@ export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
   handleAddTeams(team, store, viewerId)
 }
 
-export const addOrgMutationNotificationOnNext = (payload, {atmosphere}) => {
-  popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere})
+export const addOrgMutationNotificationOnNext = (payload, {atmosphere, history}) => {
+  popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere, history})
 }
 
 export const addOrgMutationNotificationUpdater = (payload, store, viewerId) => {
