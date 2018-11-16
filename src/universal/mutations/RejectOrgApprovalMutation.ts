@@ -1,11 +1,11 @@
-import {commitMutation} from 'react-relay'
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
+import {commitMutation, graphql} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers'
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
+import {RejectOrgApprovalMutation_notification} from '__generated__/RejectOrgApprovalMutation_notification.graphql'
 
 graphql`
   fragment RejectOrgApprovalMutation_orgApproval on RejectOrgApprovalPayload {
@@ -56,41 +56,40 @@ const mutation = graphql`
   }
 `
 
-const popDeniedOrgApprovalToast = (payload, {dispatch, history}) => {
-  const notifications = payload.getLinkedRecords('deniedNotifications')
-  const inviteeEmails = getInProxy(notifications, 'inviteeEmail')
-  if (!inviteeEmails || inviteeEmails.length === 0) return
+export const rejectOrgApprovalNotificationOnNext = (
+  payload: RejectOrgApprovalMutation_notification,
+  {atmosphere, history}
+) => {
+  if (!payload) return
+  const notifications = payload.deniedNotifications
+  if (!notifications || notifications.length === 0) return
+  const inviteeEmails = notifications.map((notification) => notification.inviteeEmail)
   const [email] = inviteeEmails
-  dispatch(
-    showInfo({
-      autoDismiss: 10,
-      title: 'Oh no!',
-      message: `${email} was denied to join the team.`,
-      action: {
-        label: 'Find out why',
-        callback: () => {
-          history.push('/me/notifications')
-        }
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'info',
+    autoDismiss: 10,
+    title: 'Oh no!',
+    message: `${email} was denied to join the team.`,
+    action: {
+      label: 'Find out why',
+      callback: () => {
+        history.push('/me/notifications')
       }
-    })
-  )
+    }
+  })
 }
-
 export const rejectOrgApprovalOrgApprovalUpdater = (payload, store) => {
   const removedOrgApprovals = payload.getLinkedRecords('removedOrgApprovals')
   handleRemoveOrgApprovals(removedOrgApprovals, store)
 }
 
-export const rejectOrgApprovalNotificationUpdater = (payload, store, viewerId, options) => {
+export const rejectOrgApprovalNotificationUpdater = (payload, store, viewerId) => {
   const removedRequestNotifications = payload.getLinkedRecords('removedRequestNotifications')
   const notificationIds = getInProxy(removedRequestNotifications, 'id')
   handleRemoveNotifications(notificationIds, store, viewerId)
 
   const deniedNotifications = payload.getLinkedRecords('deniedNotifications')
   handleAddNotifications(deniedNotifications, store, viewerId)
-  if (options) {
-    popDeniedOrgApprovalToast(payload, options)
-  }
 }
 
 export const rejectOrgApprovalTeamMemberUpdater = (payload, store) => {

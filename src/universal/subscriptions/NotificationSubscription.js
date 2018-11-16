@@ -21,7 +21,10 @@ import {
   inviteTeamMembersNotificationOnNext,
   inviteTeamMembersNotificationUpdater
 } from 'universal/mutations/InviteTeamMembersMutation'
-import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation'
+import {
+  rejectOrgApprovalNotificationOnNext,
+  rejectOrgApprovalNotificationUpdater
+} from 'universal/mutations/RejectOrgApprovalMutation'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation'
@@ -133,7 +136,8 @@ const onNextHandlers = {
   AddOrgPayload: addOrgMutationNotificationOnNext,
   AddTeamPayload: addTeamMutationNotificationOnNext,
   ApproveToOrgPayload: approveToOrgNotificationOnNext,
-  InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext
+  InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext,
+  RejectOrgApprovalPayload: rejectOrgApprovalNotificationOnNext
 }
 
 const NotificationSubscription = (environment, queryVariables, subParams) => {
@@ -180,7 +184,7 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
           inviteTeamMembersNotificationUpdater(payload, store, viewerId)
           break
         case 'RejectOrgApprovalPayload':
-          rejectOrgApprovalNotificationUpdater(payload, store, viewerId, options)
+          rejectOrgApprovalNotificationUpdater(payload, store, viewerId)
           break
         case 'User':
           connectSocketUserUpdater(payload, store)

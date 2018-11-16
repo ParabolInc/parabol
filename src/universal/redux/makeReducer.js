@@ -1,5 +1,4 @@
 import {combineReducers} from 'redux'
-import toasts from 'universal/modules/toast/ducks/toastDuck'
 import {reducer as formReducer, actionTypes} from 'redux-form'
 import makeRootReducer from 'universal/redux/rootDuck'
 
@@ -27,8 +26,7 @@ const formPluginFactory = () => {
 const formPlugin = formPluginFactory()
 
 const appReducers = {
-  form: formReducer.plugin(formPlugin),
-  toasts
+  form: formReducer.plugin(formPlugin)
 }
 
 export default (newReducers) => {

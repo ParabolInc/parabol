@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveArchivedSoftTasks,
@@ -19,7 +19,7 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     removedOrgApprovals: {
-      type: new GraphQLList(OrgApproval),
+      type: new GraphQLList(new GraphQLNonNull(OrgApproval)),
       description:
         'The list of org approvals to remove. There may be multiple if many inviters requested the same email',
       resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
@@ -30,12 +30,12 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
       }
     },
     deniedNotifications: {
-      type: new GraphQLList(NotifyDenial),
+      type: new GraphQLList(new GraphQLNonNull(NotifyDenial)),
       description: 'The notification going to the inviter saying their invitee has been denied',
       resolve: makeResolveNotificationsForViewer('deniedNotificationIds')
     },
     removedRequestNotifications: {
-      type: new GraphQLList(NotifyRequestNewUser),
+      type: new GraphQLList(new GraphQLNonNull(NotifyRequestNewUser)),
       description:
         'The list of notifications to remove. There may be multiple if many inviters requested the same email',
       resolve: ({removedRequestNotifications}, args, {authToken}) => {
@@ -47,12 +47,12 @@ const RejectOrgApprovalPayload = new GraphQLObjectType({
       }
     },
     removedSoftTeamMembers: {
-      type: new GraphQLList(SoftTeamMember),
+      type: new GraphQLList(new GraphQLNonNull(SoftTeamMember)),
       description: 'The soft team members that have not yet been invited',
       resolve: resolveSoftTeamMembers
     },
     archivedSoftTasks: {
-      type: new GraphQLList(Task),
+      type: new GraphQLList(new GraphQLNonNull(Task)),
       description: 'The tasks that belonged to the soft team member',
       resolve: resolveArchivedSoftTasks
     }

@@ -5462,27 +5462,27 @@ export interface IRejectOrgApprovalPayload {
   /**
    * The list of org approvals to remove. There may be multiple if many inviters requested the same email
    */
-  removedOrgApprovals: Array<IOrgApproval | null> | null
+  removedOrgApprovals: Array<IOrgApproval> | null
 
   /**
    * The notification going to the inviter saying their invitee has been denied
    */
-  deniedNotifications: Array<INotifyDenial | null> | null
+  deniedNotifications: Array<INotifyDenial> | null
 
   /**
    * The list of notifications to remove. There may be multiple if many inviters requested the same email
    */
-  removedRequestNotifications: Array<INotifyRequestNewUser | null> | null
+  removedRequestNotifications: Array<INotifyRequestNewUser> | null
 
   /**
    * The soft team members that have not yet been invited
    */
-  removedSoftTeamMembers: Array<ISoftTeamMember | null> | null
+  removedSoftTeamMembers: Array<ISoftTeamMember> | null
 
   /**
    * The tasks that belonged to the soft team member
    */
-  archivedSoftTasks: Array<ITask | null> | null
+  archivedSoftTasks: Array<ITask> | null
 }
 
 /**
