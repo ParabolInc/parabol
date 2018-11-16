@@ -15,7 +15,7 @@ import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionM
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation'
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation'
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation'
-import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation'
+import {promoteFacilitatorTeamOnNext} from 'universal/mutations/PromoteFacilitatorMutation'
 import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation'
 import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation'
@@ -100,6 +100,7 @@ const onNextHandlers = {
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
+  PromoteFacilitatorPayload: promoteFacilitatorTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext
@@ -185,7 +186,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'NewMeetingCheckInPayload':
           break
         case 'PromoteFacilitatorPayload':
-          promoteFacilitatorTeamUpdater(payload, viewerId, dispatch)
           break
         case 'PromoteNewMeetingFacilitatorPayload':
           break
