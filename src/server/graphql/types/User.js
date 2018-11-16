@@ -28,12 +28,13 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import organization from 'server/graphql/queries/organization'
 import tasks from 'server/graphql/queries/tasks'
 import archivedTasks from 'server/graphql/queries/archivedTasks'
-import {getUserId, isTeamMember} from 'server/utils/authorization'
+import {getUserId, isSuperUser, isTeamMember} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
 import MeetingMember from 'server/graphql/types/MeetingMember'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
+import Organization from 'server/graphql/types/Organization'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -218,21 +219,33 @@ const User = new GraphQLObjectType({
     providerMap,
     slackChannels,
     organization,
-    organizations: require('../queries/organizations').default,
+    organizations: {
+      description: 'Get the list of all organizations a user belongs to',
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
+      async resolve ({id: userId}, args, {authToken, dataLoader}) {
+        const userOrgs = await dataLoader.get('orgsByUserId').load(userId)
+        userOrgs.sort((a, b) => (a.name > b.name ? 1 : -1))
+        const viewerId = getUserId(authToken)
+        if (viewerId === userId || isSuperUser(authToken)) {
+          return userOrgs
+        }
+        const viewer = await dataLoader.get('users').load(viewerId)
+        const viewerOrgIds = viewer.userOrgs.map((userOrg) => userOrg.id)
+        return userOrgs.filter((userOrg) => viewerOrgIds.includes(userOrg.id))
+      }
+    },
     tasks,
     team: require('../queries/team').default,
     teams: {
-      type: new GraphQLList(Team),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the user is on that the viewer can see.',
       resolve: async ({id: userId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        let teamIds
-        if (viewerId === userId) {
-          teamIds = authToken.tms
-        } else {
-          const user = await dataLoader.get('users').load(userId)
-          teamIds = user.tms.filter((teamId) => authToken.tms.includes(teamId))
-        }
+        const user = await dataLoader.get('users').load(userId)
+        const teamIds =
+          viewerId === userId || isSuperUser(authToken)
+            ? user.tms
+            : user.tms.filter((teamId) => authToken.tms.includes(teamId))
         const teams = await dataLoader.get('teams').loadMany(teamIds)
         teams.sort((a, b) => (a.name > b.name ? 1 : -1))
         return teams

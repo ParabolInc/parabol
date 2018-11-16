@@ -194,7 +194,7 @@ export interface IUser {
   /**
    * Get the list of all organizations a user belongs to
    */
-  organizations: Array<IOrganization | null> | null
+  organizations: Array<IOrganization>
   tasks: ITaskConnection
 
   /**
@@ -205,7 +205,7 @@ export interface IUser {
   /**
    * all the teams the user is on that the viewer can see.
    */
-  teams: Array<ITeam | null> | null
+  teams: Array<ITeam>
 
   /**
    * The team member associated with this user
