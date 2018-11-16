@@ -1,10 +1,11 @@
-import {commitMutation} from 'react-relay'
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
+import {commitMutation, graphql} from 'react-relay'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 import onTeamRoute from 'universal/utils/onTeamRoute'
+import {ArchiveTeamMutationResponse} from '__generated__/ArchiveTeamMutation.graphql'
+import {ArchiveTeamMutation_team} from '__generated__/ArchiveTeamMutation_team.graphql'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
@@ -31,59 +32,71 @@ const mutation = graphql`
   }
 `
 
-const popTeamArchivedToast = (payload, {dispatch, history, location, environment}) => {
-  const teamId = getInProxy(payload, 'team', 'id')
-  const teamName = getInProxy(payload, 'team', 'name')
-  dispatch(
-    showInfo({
-      autoDismiss: 10,
-      title: 'That’s it, folks!',
-      message: `${teamName} has been archived.`,
-      action: {
-        label: 'OK',
-        callback: () => {
-          const notificationId = getInProxy(payload, 'notification', 'id')
-          // notification is not persisted for the mutator
-          if (notificationId) {
-            ClearNotificationMutation(environment, notificationId)
-          }
+const popTeamArchivedToast = (
+  payload: ArchiveTeamMutation_team,
+  {history, location, atmosphere}
+) => {
+  if (!payload || !payload.team) return
+  const {id: teamId, name: teamName} = payload.team
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'info',
+    autoDismiss: 10,
+    title: 'That’s it, folks!',
+    message: `${teamName} has been archived.`,
+    action: {
+      label: 'OK',
+      callback: () => {
+        const notificationId = payload.notification && payload.notification.id
+        // notification is not persisted for the mutator
+        if (notificationId) {
+          ClearNotificationMutation(atmosphere, notificationId)
         }
       }
-    })
-  )
+    }
+  })
   const {pathname} = location
   if (onTeamRoute(pathname, teamId)) {
     history.push('/me')
   }
 }
 
-export const archiveTeamTeamUpdater = (payload, store, viewerId, options) => {
+export const archiveTeamTeamUpdater = (payload, store, viewerId) => {
   const viewer = store.get(viewerId)
   const teamId = getInProxy(payload, 'team', 'id')
   safeRemoveNodeFromArray(teamId, viewer, 'teams')
 
   const notification = payload.getLinkedRecord('notification')
   handleAddNotifications(notification, store, viewerId)
+}
 
-  popTeamArchivedToast(payload, options)
+export const archiveTeamTeamOnNext = (
+  payload: ArchiveTeamMutation_team,
+  {atmosphere, history, location}
+) => {
+  popTeamArchivedToast(payload, {atmosphere, history, location})
 }
 
 // We technically don't need dispatch on this mutation since our biz logic guarantees the archiver won't get a toast
 const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted) => {
   const {viewerId} = environment
+  const {history, location} = options
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
     updater: (store) => {
       const payload = store.getRootField('archiveTeam')
       if (!payload) return
-      archiveTeamTeamUpdater(payload, store, viewerId, {
-        ...options,
-        store,
-        environment
-      })
+      archiveTeamTeamUpdater(payload, store, viewerId)
     },
-    onCompleted,
+    onCompleted: (res: ArchiveTeamMutationResponse, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors)
+      }
+      const payload = res.archiveTeam
+      if (payload) {
+        popTeamArchivedToast(payload as any, {atmosphere: environment, history, location})
+      }
+    },
     onError
   })
 }

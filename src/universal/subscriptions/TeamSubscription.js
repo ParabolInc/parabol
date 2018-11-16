@@ -7,7 +7,10 @@ import {
   addTeamMutationNotificationUpdater,
   addTeamTeamUpdater
 } from 'universal/mutations/AddTeamMutation'
-import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation'
+import {
+  archiveTeamTeamOnNext,
+  archiveTeamTeamUpdater
+} from 'universal/mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation'
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation'
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation'
@@ -94,6 +97,7 @@ const subscription = graphql`
 const onNextHandlers = {
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   AddOrgCreatorPayload: addOrgMutationNotificationOnNext,
+  ArchiveTeamPayload: archiveTeamTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
@@ -152,7 +156,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           addTeamTeamUpdater(payload, store, viewerId)
           break
         case 'ArchiveTeamPayload':
-          archiveTeamTeamUpdater(payload, store, viewerId, options)
+          archiveTeamTeamUpdater(payload, store, viewerId)
           break
         case 'EditReflectionPayload':
           editReflectionTeamUpdater(payload, store)

@@ -5,9 +5,7 @@
  */
 
 import React, {Component, Fragment, ReactElement} from 'react'
-import {connect} from 'react-redux'
 import {Link, RouteComponentProps, withRouter} from 'react-router-dom'
-import {Dispatch} from 'redux'
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -22,7 +20,6 @@ import LoadingView from 'universal/components/LoadingView/LoadingView'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  dispatch: Dispatch<any>
   webAuth: any
 }
 
@@ -84,8 +81,8 @@ class SignInPage extends Component<Props, State> {
   }
 
   appSignIn = (response: AuthResponse): void => {
-    const {atmosphere, dispatch, history, location} = this.props
-    signinAndUpdateToken(atmosphere, dispatch, history, location, response.idToken)
+    const {atmosphere, history, location} = this.props
+    signinAndUpdateToken(atmosphere, history, location, response.idToken)
   }
 
   webAuth = getWebAuth()
@@ -147,4 +144,4 @@ class SignInPage extends Component<Props, State> {
   }
 }
 
-export default (connect() as any)((autoLogin as any)(withAtmosphere(withRouter(SignInPage))))
+export default (autoLogin as any)(withAtmosphere(withRouter(SignInPage)))
