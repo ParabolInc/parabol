@@ -79,7 +79,10 @@ export default {
       publish(TEAM, teamId, DowngradeToPersonalPayload, teamData, subOptions)
     })
     // the count of this users tier stats just changed, update:
-    await sendSegmentIdentify(viewerId)
+    const allUserIds = await r.table('User').getAll(orgId, {index: 'userOrgs'})('id')
+    allUserIds.forEach((userId) => {
+      sendSegmentIdentify(userId)
+    })
     return data
   }
 }
