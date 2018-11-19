@@ -1,6 +1,7 @@
 import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation'
 import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation'
 import {
+  setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater,
   setOrgUserRoleRemovedOrganizationUpdater
 } from 'universal/mutations/SetOrgUserRoleMutation'
@@ -26,11 +27,11 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
-  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext
+  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
+  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
 }
 
 const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
-  const {dispatch, history} = subParams
   const {viewerId} = atmosphere
   return {
     subscription,
@@ -39,7 +40,6 @@ const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
       const payload = store.getRootField('organizationSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
-      const options = {dispatch, history}
       switch (type) {
         case 'AddOrgPayload':
           addOrgMutationOrganizationUpdater(payload, store, viewerId)
@@ -48,7 +48,7 @@ const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
           approveToOrgOrganizationUpdater(payload, store, viewerId)
           break
         case 'SetOrgUserRoleAddedPayload':
-          setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId, options)
+          setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId)
           break
         case 'SetOrgUserRoleRemovedPayload':
           setOrgUserRoleRemovedOrganizationUpdater(payload, store, viewerId)

@@ -21,7 +21,7 @@ import {
   removeTeamMemberTeamOnNext,
   removeTeamMemberTeamUpdater
 } from 'universal/mutations/RemoveTeamMemberMutation'
-import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation'
+import {requestFacilitatorTeamOnNext} from 'universal/mutations/RequestFacilitatorMutation'
 import {
   removeOrgUserTeamOnNext,
   removeOrgUserTeamUpdater
@@ -107,7 +107,8 @@ const onNextHandlers = {
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
   EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
-  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext
+  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
+  RequestFacilitatorPayload: requestFacilitatorTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
@@ -152,7 +153,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           dragDiscussionTopicTeamUpdater(payload, {store})
           break
         case 'RequestFacilitatorPayload':
-          requestFacilitatorTeamUpdater(payload, options)
           break
         case 'AddTeamMutationPayload':
           addTeamTeamUpdater(payload, store, viewerId)
@@ -208,9 +208,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'RenameReflectTemplatePayload':
           break
         case 'RenameReflectTemplatePromptPayload':
-          break
-        case 'RequestFaciltatorPayload':
-          requestFacilitatorTeamUpdater(payload, options)
           break
         case 'SelectRetroTemplatePayload':
           break

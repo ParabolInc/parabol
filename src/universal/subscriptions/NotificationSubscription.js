@@ -1,4 +1,3 @@
-import {showWarning} from 'universal/modules/toast/ducks/toastDuck'
 import {
   addOrgMutationNotificationOnNext,
   addOrgMutationNotificationUpdater
@@ -14,7 +13,10 @@ import {
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
 import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
-import {createTaskNotificationUpdater} from 'universal/mutations/CreateTaskMutation'
+import {
+  createTaskNotificationOnNext,
+  createTaskNotificationUpdater
+} from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import {
@@ -25,7 +27,6 @@ import {
   rejectOrgApprovalNotificationOnNext,
   rejectOrgApprovalNotificationUpdater
 } from 'universal/mutations/RejectOrgApprovalMutation'
-import getInProxy from 'universal/utils/relay/getInProxy'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {
   removeOrgUserNotificationOnNext,
@@ -110,47 +111,45 @@ const disconnectSocketNotificationUpdater = (payload, store) => {
   })
 }
 
-const popPaymentFailedToast = (payload, {dispatch, history}) => {
-  const orgId = getInProxy(payload, 'organization', 'id')
-  const orgName = getInProxy(payload, 'organization', 'name')
-  // TODO add brand and last 4
-  dispatch(
-    showWarning({
-      autoDismiss: 10,
-      title: 'Oh no!',
-      message: `Your credit card for ${orgName} was rejected.`,
-      action: {
-        label: 'Fix it!',
-        callback: () => {
-          history.push(`/me/organizations/${orgId}`)
-        }
+const stripeFailPaymentNotificationOnNext = (payload, {atmosphere, history}) => {
+  if (!payload) return
+  const {organization} = payload
+  if (!organization) return
+  const {id: orgId, name: orgName} = organization
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'warning',
+    autoDismiss: 10,
+    title: 'Oh no!',
+    message: `Your credit card for ${orgName} was rejected.`,
+    action: {
+      label: 'Fix it!',
+      callback: () => {
+        history.push(`/me/organizations/${orgId}`)
       }
-    })
-  )
+    }
+  })
 }
-
-const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options) => {
+const stripeFailPaymentNotificationUpdater = (payload, store, viewerId) => {
   const notification = payload.getLinkedRecord('notification')
   handleAddNotifications(notification, store, viewerId)
-  popPaymentFailedToast(payload, options)
 }
 
 const onNextHandlers = {
   AddOrgPayload: addOrgMutationNotificationOnNext,
   AddTeamPayload: addTeamMutationNotificationOnNext,
   ApproveToOrgPayload: approveToOrgNotificationOnNext,
+  CreateTaskPayload: createTaskNotificationOnNext,
   InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext,
   RejectOrgApprovalPayload: rejectOrgApprovalNotificationOnNext,
-  RemoveOrgUserPayload: removeOrgUserNotificationOnNext
+  RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
+  StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext
 }
 
 const NotificationSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams
   const {viewerId} = environment
   return {
     subscription,
     updater: (store) => {
-      const options = {dispatch, environment, history, location, store}
       const payload = store.getRootField('notificationSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
@@ -176,7 +175,7 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
           clearNotificationNotificationUpdater(payload, store, viewerId)
           break
         case 'CreateTaskPayload':
-          createTaskNotificationUpdater(payload, store, viewerId, options)
+          createTaskNotificationUpdater(payload, store, viewerId)
           break
         case 'DeleteTaskPayload':
           deleteTaskNotificationUpdater(payload, store, viewerId)
@@ -194,10 +193,10 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
           connectSocketUserUpdater(payload, store)
           break
         case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, store, viewerId, options)
+          removeOrgUserNotificationUpdater(payload, store, viewerId)
           break
         case 'StripeFailPaymentPayload':
-          stripeFailPaymentNotificationUpdater(payload, store, viewerId, options)
+          stripeFailPaymentNotificationUpdater(payload, store, viewerId)
           break
         case 'UpdateUserProfilePayload':
           break

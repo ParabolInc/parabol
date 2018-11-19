@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay'
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
@@ -57,31 +56,33 @@ const mutation = graphql`
   }
 `
 
-const popPromoteToBillingLeaderToast = (payload, {dispatch, history}) => {
-  const orgId = getInProxy(payload, 'organization', 'id')
-  if (!orgId) return
-  const orgName = getInProxy(payload, 'organization', 'name')
-  dispatch(
-    showInfo({
-      autoDismiss: 10,
-      title: 'Congratulations!',
-      message: `You’ve been promoted to billing leader for ${orgName}`,
-      action: {
-        label: 'Check it out!',
-        callback: () => {
-          history.push(`/me/organizations/${orgId}/members`)
-        }
+const popPromoteToBillingLeaderToast = (payload, {atmosphere, history}) => {
+  if (!payload || !payload.organization) return
+  const {id: orgId, name: orgName} = payload.organization
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'info',
+    autoDismiss: 10,
+    title: 'Congratulations!',
+    message: `You’ve been promoted to billing leader for ${orgName}`,
+    action: {
+      label: 'Check it out!',
+      callback: () => {
+        history.push(`/me/organizations/${orgId}/members`)
       }
-    })
-  )
+    }
+  })
 }
 
-export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId, options) => {
+export const setOrgUserRoleAddedOrganizationOnNext = (payload, {atmosphere, history}) => {
+  popPromoteToBillingLeaderToast(payload, {atmosphere, history})
+}
+
+export const setOrgUserRoleAddedOrganizationUpdater = (payload, store, viewerId) => {
   const promotedUserId = getInProxy(payload, 'updatedOrgMember', 'user', 'id')
   if (promotedUserId === viewerId) {
     const notificationsAdded = payload.getLinkedRecords('notificationsAdded')
     handleAddNotifications(notificationsAdded, store, viewerId)
-    popPromoteToBillingLeaderToast(payload, options)
+
     const org = payload.getLinkedRecord('organization')
     handleAddOrganization(org, store, viewerId)
   }

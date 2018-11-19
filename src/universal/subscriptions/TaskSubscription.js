@@ -2,7 +2,7 @@ import {createTaskTaskUpdater} from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from 'universal/mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from 'universal/mutations/EditTaskMutation'
 import {removeTeamMemberTasksUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
-import {updateTaskTaskUpdater} from 'universal/mutations/UpdateTaskMutation'
+import {updateTaskTaskOnNext, updateTaskTaskUpdater} from 'universal/mutations/UpdateTaskMutation'
 import {endMeetingTaskUpdater} from 'universal/mutations/EndMeetingMutation'
 import {removeOrgUserTaskUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {cancelApprovalTaskUpdater} from 'universal/mutations/CancelApprovalMutation'
@@ -35,7 +35,9 @@ const subscription = graphql`
   }
 `
 
-const onNextHandlers = {}
+const onNextHandlers = {
+  UpdateTaskPayload: updateTaskTaskOnNext
+}
 
 const TaskSubscription = (atmosphere, queryVariables, subParams) => {
   const {dispatch, history, location} = subParams

@@ -3,7 +3,7 @@ import ToastSystem from 'react-notification-system'
 import appTheme from 'universal/styles/theme/appTheme'
 import withAtmosphere, {
   WithAtmosphereProps
-} from '../../../../decorators/withAtmosphere/withAtmosphere'
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 
 interface Props extends WithAtmosphereProps {}
 
