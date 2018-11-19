@@ -46,10 +46,7 @@ const mutation = graphql`
   }
 `
 
-export const startDraggingReflectionTeamUpdater = (
-  payload,
-  {atmosphere, dispatch, store, isLocal}
-) => {
+export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store, isLocal}) => {
   const {pathname} = window.location
   const slug = meetingTypeToSlug[RETROSPECTIVE]
   const meetingRoute = matchPath(pathname, {path: `/${slug}/:teamId`})
@@ -88,7 +85,6 @@ export const startDraggingReflectionTeamUpdater = (
       commitLocalUpdate(atmosphere, (store) => {
         startDraggingReflectionTeamUpdater(payload, {
           atmosphere,
-          dispatch,
           store,
           isLocal: true
         })
@@ -163,13 +159,12 @@ const StartDraggingReflectionMutation = (
     onCompleted,
     onError,
     updater: (store) => {
-      const {dispatch, initialCursorCoords} = context
+      const {initialCursorCoords} = context
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
       payload.getLinkedRecord('dragContext').setValue(true, 'isViewerDragging')
       const acceptIncoming = startDraggingReflectionTeamUpdater(payload, {
         atmosphere,
-        dispatch,
         store
       })
       if (!acceptIncoming) return

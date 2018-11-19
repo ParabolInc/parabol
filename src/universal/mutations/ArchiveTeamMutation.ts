@@ -70,7 +70,6 @@ export const archiveTeamTeamOnNext = (payload: ArchiveTeamMutation_team, {atmosp
   popTeamArchivedToast(payload, {atmosphere, history})
 }
 
-// We technically don't need dispatch on this mutation since our biz logic guarantees the archiver won't get a toast
 const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted) => {
   const {viewerId} = environment
   const {history} = options

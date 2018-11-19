@@ -7,26 +7,24 @@ import React, {Component, ReactElement} from 'react'
 import {DragSource as dragSource} from 'react-dnd'
 import {getEmptyImage} from 'react-dnd-html5-backend'
 import {css} from 'react-emotion'
-import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {Dispatch} from 'redux'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
-import {cardShadow} from 'universal/styles/elevation'
-import {REFLECTION_CARD} from 'universal/utils/constants'
-import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
-import clientTempId from 'universal/utils/relay/clientTempId'
-import {SetItemRef} from '../PhaseItemMasonry'
 import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
-import ReflectionCard from './ReflectionCard'
+import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
 import {
   cardBackgroundColor,
   cardBorderRadius,
   cardStackPerspectiveX,
   cardStackPerspectiveY
 } from 'universal/styles/cards'
+import {cardShadow} from 'universal/styles/elevation'
+import {REFLECTION_CARD} from 'universal/utils/constants'
+import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
+import clientTempId from 'universal/utils/relay/clientTempId'
+import {SetItemRef} from '../PhaseItemMasonry'
+import ReflectionCard from './ReflectionCard'
 
 interface Props extends WithAtmosphereProps {
   closeGroupModal? (): void
@@ -35,7 +33,6 @@ interface Props extends WithAtmosphereProps {
 
   connectDragSource (reactEl: ReactElement<{}>): ReactElement<{}>
 
-  dispatch: Dispatch<{}>
   reflection: DraggableReflectionCard_reflection
 
   setItemRef: SetItemRef
@@ -44,7 +41,6 @@ interface Props extends WithAtmosphereProps {
   idx: number
   isDraggable: boolean
   isModal: boolean
-  isViewerDragInProgress: boolean
   isSingleCardGroup: boolean
 }
 
@@ -204,9 +200,9 @@ const reflectionDragSpec = {
   canDrag (props: Props) {
     // make sure no one is trying to drag invisible cards
     const {
+      meeting: {isViewerDragInProgress},
       reflection: {dragContext},
-      isDraggable,
-      isViewerDragInProgress
+      isDraggable
     } = props
     return !dragContext && !isViewerDragInProgress && isDraggable
   },
@@ -214,7 +210,6 @@ const reflectionDragSpec = {
   beginDrag (props: Props, monitor) {
     const {
       atmosphere,
-      dispatch,
       reflection: {meetingId, reflectionId, reflectionGroupId},
       isSingleCardGroup
     } = props
@@ -223,7 +218,7 @@ const reflectionDragSpec = {
     StartDraggingReflectionMutation(
       atmosphere,
       {reflectionId, initialCoords},
-      {dispatch, initialCursorCoords, meetingId}
+      {initialCursorCoords, meetingId}
     )
     return {
       reflectionId,
@@ -276,12 +271,8 @@ const reflectionDragCollect = (connectSource) => ({
 })
 
 export default createFragmentContainer(
-  (connect as any)()(
-    withAtmosphere(
-      dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(
-        DraggableReflectionCard
-      )
-    )
+  (dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect) as any)(
+    withAtmosphere(DraggableReflectionCard)
   ),
   graphql`
     fragment DraggableReflectionCard_reflection on RetroReflection {

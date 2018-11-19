@@ -1,10 +1,8 @@
 import {NewTeamForm_organizations} from '__generated__/NewTeamForm_organizations.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {Dispatch} from 'redux'
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
 import Panel from 'universal/components/Panel/Panel'
 import PrimaryButton from 'universal/components/PrimaryButton'
@@ -12,6 +10,7 @@ import Radio from 'universal/components/Radio/Radio'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import NewTeamOrgPicker from 'universal/modules/team/components/NewTeamOrgPicker'
 import AddOrgMutation from 'universal/mutations/AddOrgMutation'
 import AddTeamMutation from 'universal/mutations/AddTeamMutation'
 import ui from 'universal/styles/ui'
@@ -19,9 +18,8 @@ import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Legitity from 'universal/validation/Legitity'
-import {inviteesRawTest} from 'universal/validation/templates'
 import teamNameValidation from 'universal/validation/teamNameValidation'
-import NewTeamOrgPicker from 'universal/modules/team/components/NewTeamOrgPicker'
+import {inviteesRawTest} from 'universal/validation/templates'
 import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormInvitees from './NewTeamFormInvitees'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
@@ -57,7 +55,6 @@ const StyledButton = styled(PrimaryButton)({
 const controlSize = 'medium'
 
 interface Props extends WithMutationProps, WithAtmosphereProps, RouteComponentProps<{}> {
-  dispatch: Dispatch<any>
   isNewOrganization: boolean
   organizations: NewTeamForm_organizations
 }
@@ -235,15 +232,7 @@ class NewTeamForm extends Component<Props, State> {
   }
 
   onSubmit = (e: React.FormEvent) => {
-    const {
-      atmosphere,
-      dispatch,
-      history,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting
-    } = this.props
+    const {atmosphere, history, onError, onCompleted, submitMutation, submitting} = this.props
     e.preventDefault()
     if (submitting) return
     const {isNewOrg, orgId} = this.state
@@ -271,7 +260,7 @@ class NewTeamForm extends Component<Props, State> {
         orgId
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam, invitees}, {dispatch, history}, onError, onCompleted)
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {history}, onError, onCompleted)
     }
   }
 
@@ -341,7 +330,7 @@ class NewTeamForm extends Component<Props, State> {
 }
 
 export default createFragmentContainer(
-  (connect() as any)(withAtmosphere(withRouter(withMutationProps(NewTeamForm)))),
+  withAtmosphere(withRouter(withMutationProps(NewTeamForm))),
   graphql`
     fragment NewTeamForm_organizations on Organization @relay(plural: true) {
       ...NewTeamOrgPicker_organizations

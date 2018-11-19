@@ -35,7 +35,6 @@ const onNextHandlers = {
 }
 
 const TeamMemberSubscription = (atmosphere, queryVariables, subParams) => {
-  const {dispatch} = subParams
   const {viewerId} = atmosphere
   const context = {...subParams, atmosphere}
   return {
@@ -56,7 +55,7 @@ const TeamMemberSubscription = (atmosphere, queryVariables, subParams) => {
           cancelTeamInviteTeamMemberUpdater(payload, store)
           break
         case 'InviteTeamMembersPayload':
-          inviteTeamMembersTeamMemberUpdater(payload, store, dispatch)
+          inviteTeamMembersTeamMemberUpdater(payload, store)
           break
         case 'MeetingCheckInPayload':
           break

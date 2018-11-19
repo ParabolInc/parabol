@@ -8,16 +8,7 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import FormError from 'universal/components/FormError/FormError'
 
 const NotificationRow = (props) => {
-  const {
-    atmosphere,
-    dispatch,
-    error,
-    submitting,
-    submitMutation,
-    onCompleted,
-    onError,
-    notification
-  } = props
+  const {atmosphere, error, submitting, submitMutation, onCompleted, onError, notification} = props
   const {type} = notification
   const fetchMod = typePicker[type]
   return (
@@ -27,7 +18,6 @@ const NotificationRow = (props) => {
         loadingWidth='inherit'
         loadingHeight='5rem'
         fetchMod={fetchMod}
-        dispatch={dispatch}
         notification={notification}
         submitting={submitting}
         submitMutation={submitMutation}
@@ -41,7 +31,6 @@ const NotificationRow = (props) => {
 
 NotificationRow.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
   notification: PropTypes.object.isRequired,
   // mutationProps
   error: PropTypes.any,

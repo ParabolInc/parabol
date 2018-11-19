@@ -4,7 +4,6 @@ import React, {Component} from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import withHotkey from 'react-hotkey-hoc'
-import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall'
@@ -54,7 +53,6 @@ class MeetingContainer extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     bindHotkey: PropTypes.func.isRequired,
-    dispatch: PropTypes.func.isRequired,
     localPhase: PropTypes.string,
     localPhaseItem: PropTypes.number,
     match: PropTypes.shape({
@@ -193,7 +191,6 @@ class MeetingContainer extends Component {
   electFacilitatorIfNone () {
     const {
       atmosphere,
-      dispatch,
       viewer: {
         team: {activeFacilitator, teamMembers}
       }
@@ -212,7 +209,7 @@ class MeetingContainer extends Component {
             facilitatorId: nextFacilitator.id,
             disconnectedFacilitatorId: facilitator.id
           },
-          dispatch
+          {}
         )
       }
     }
@@ -406,10 +403,8 @@ class MeetingContainer extends Component {
 }
 
 export default createFragmentContainer(
-  connect()(
-    dragDropContext(HTML5Backend)(
-      withHotkey(withAtmosphere(withMutationProps(withRouter(MeetingContainer))))
-    )
+  dragDropContext(HTML5Backend)(
+    withHotkey(withAtmosphere(withMutationProps(withRouter(MeetingContainer))))
   ),
   graphql`
     fragment MeetingContainer_viewer on User {

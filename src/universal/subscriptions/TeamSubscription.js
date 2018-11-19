@@ -112,7 +112,7 @@ const onNextHandlers = {
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams
+  const {history} = subParams
   const {viewerId} = environment
   return {
     subscription,
@@ -121,7 +121,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const payload = store.getRootField('teamSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
-      const options = {store, environment, dispatch, history, location}
       switch (type) {
         case 'AcceptTeamInvitePayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId)
@@ -136,7 +135,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           addReflectTemplatePromptTeamUpdater(payload, {store})
           break
         case 'AddTeamCreatorPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId, options)
+          addTeamMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'AutoGroupReflectionsPayload':
           autoGroupReflectionsTeamUpdater(payload, {atmosphere: environment, store})
@@ -164,7 +163,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           editReflectionTeamUpdater(payload, store)
           break
         case 'EndMeetingPayload':
-          endMeetingTeamUpdater(payload, options)
+          endMeetingTeamUpdater(payload, {atmosphere: environment, history})
           break
         case 'EndNewMeetingPayload':
           break
@@ -214,7 +213,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'SetPhaseFocusPayload':
           break
         case 'StartDraggingReflectionPayload':
-          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, dispatch, store})
+          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'StartMeetingPayload':
           break

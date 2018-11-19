@@ -40,7 +40,6 @@ const onNextHandlers = {
 }
 
 const TaskSubscription = (atmosphere, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams
   const {viewerId} = atmosphere
   return {
     subscription,
@@ -89,11 +88,7 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
           removeOrgUserTaskUpdater(payload, store, viewerId)
           break
         case 'UpdateTaskPayload':
-          updateTaskTaskUpdater(payload, store, viewerId, {
-            dispatch,
-            history,
-            location
-          })
+          updateTaskTaskUpdater(payload, store, viewerId)
           break
         case 'UpdateTaskDueDatePayload':
           break

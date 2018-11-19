@@ -65,6 +65,7 @@ export const endNewMeetingTeamOnNext = (payload, context) => {
 }
 
 const EndNewMeetingMutation = (atmosphere, variables, context, onError, onCompleted) => {
+  const {history} = context
   return commitMutation(atmosphere, {
     mutation,
     variables,
@@ -72,7 +73,7 @@ const EndNewMeetingMutation = (atmosphere, variables, context, onError, onComple
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endNewMeetingTeamOnNext(res.endNewMeeting, {...context, atmosphere})
+      endNewMeetingTeamOnNext(res.endNewMeeting, {atmosphere, history})
     },
     onError
   })
