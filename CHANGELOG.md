@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
-## v2.20.1 2018-Nov-18
+## v2.20.2 2018-Nov-18
 
 ### Fixed
 * When su permissions given: can run downgrade mutation & request certain 
