@@ -35,8 +35,11 @@ const subscription = graphql`
   }
 `
 
-const TaskSubscription = (environment, queryVariables, {dispatch, history, location}) => {
-  const {viewerId} = environment
+const onNextHandlers = {}
+
+const TaskSubscription = (atmosphere, queryVariables, subParams) => {
+  const {dispatch, history, location} = subParams
+  const {viewerId} = atmosphere
   return {
     subscription,
     variables: {},
@@ -94,6 +97,13 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
           break
         default:
           console.error('TaskSubscription case fail', type)
+      }
+    },
+    onNext: ({taskSubscription}) => {
+      const {__typename: type} = taskSubscription
+      const handler = onNextHandlers[type]
+      if (handler) {
+        handler(taskSubscription, {...subParams, atmosphere})
       }
     }
   }

@@ -17,7 +17,10 @@ import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMember
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation'
 import {promoteFacilitatorTeamOnNext} from 'universal/mutations/PromoteFacilitatorMutation'
 import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation'
-import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
+import {
+  removeTeamMemberTeamOnNext,
+  removeTeamMemberTeamUpdater
+} from 'universal/mutations/RemoveTeamMemberMutation'
 import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation'
 import {
   removeOrgUserTeamOnNext,
@@ -103,7 +106,8 @@ const onNextHandlers = {
   PromoteFacilitatorPayload: promoteFacilitatorTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
-  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext
+  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
+  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
@@ -146,9 +150,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'DragDiscussionTopicPayload':
           dragDiscussionTopicTeamUpdater(payload, {store})
-          break
-        case 'RemoveTeamMemberSelfPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
           break
         case 'RequestFacilitatorPayload':
           requestFacilitatorTeamUpdater(payload, options)
@@ -202,7 +203,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           removeReflectionTeamUpdater(payload, store)
           break
         case 'RemoveTeamMemberPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
+          removeTeamMemberTeamUpdater(payload, store, viewerId)
           break
         case 'RenameReflectTemplatePayload':
           break

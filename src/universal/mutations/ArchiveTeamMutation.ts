@@ -66,17 +66,14 @@ export const archiveTeamTeamUpdater = (payload, store, viewerId) => {
   handleAddNotifications(notification, store, viewerId)
 }
 
-export const archiveTeamTeamOnNext = (
-  payload: ArchiveTeamMutation_team,
-  {atmosphere, history, location}
-) => {
-  popTeamArchivedToast(payload, {atmosphere, history, location})
+export const archiveTeamTeamOnNext = (payload: ArchiveTeamMutation_team, {atmosphere, history}) => {
+  popTeamArchivedToast(payload, {atmosphere, history})
 }
 
 // We technically don't need dispatch on this mutation since our biz logic guarantees the archiver won't get a toast
 const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted) => {
   const {viewerId} = environment
-  const {history, location} = options
+  const {history} = options
   return commitMutation(environment, {
     mutation,
     variables: {teamId},
@@ -91,7 +88,7 @@ const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted)
       }
       const payload = res.archiveTeam
       if (payload) {
-        popTeamArchivedToast(payload as any, {atmosphere: environment, history, location})
+        popTeamArchivedToast(payload as any, {atmosphere: environment, history})
       }
     },
     onError
