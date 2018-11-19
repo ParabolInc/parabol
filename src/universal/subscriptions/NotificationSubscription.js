@@ -27,7 +27,10 @@ import {
 } from 'universal/mutations/RejectOrgApprovalMutation'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation'
+import {
+  removeOrgUserNotificationOnNext,
+  removeOrgUserNotificationUpdater
+} from 'universal/mutations/RemoveOrgUserMutation'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -137,7 +140,8 @@ const onNextHandlers = {
   AddTeamPayload: addTeamMutationNotificationOnNext,
   ApproveToOrgPayload: approveToOrgNotificationOnNext,
   InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext,
-  RejectOrgApprovalPayload: rejectOrgApprovalNotificationOnNext
+  RejectOrgApprovalPayload: rejectOrgApprovalNotificationOnNext,
+  RemoveOrgUserPayload: removeOrgUserNotificationOnNext
 }
 
 const NotificationSubscription = (environment, queryVariables, subParams) => {

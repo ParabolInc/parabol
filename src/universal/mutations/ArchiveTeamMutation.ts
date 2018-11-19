@@ -32,10 +32,7 @@ const mutation = graphql`
   }
 `
 
-const popTeamArchivedToast = (
-  payload: ArchiveTeamMutation_team,
-  {history, location, atmosphere}
-) => {
+const popTeamArchivedToast = (payload: ArchiveTeamMutation_team, {history, atmosphere}) => {
   if (!payload || !payload.team) return
   const {id: teamId, name: teamName} = payload.team
   atmosphere.eventEmitter.emit('addToast', {
@@ -54,7 +51,7 @@ const popTeamArchivedToast = (
       }
     }
   })
-  const {pathname} = location
+  const {pathname} = history.location
   if (onTeamRoute(pathname, teamId)) {
     history.push('/me')
   }
