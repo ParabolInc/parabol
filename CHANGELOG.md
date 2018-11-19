@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+
+## v2.20.1 2018-Nov-18
+
+### Fixed
+* When su permissions given: can run downgrade mutation & request certain 
+  nested team & org fields
+
 ## v2.20.0 2018-Nov-14
 
 ### Added
