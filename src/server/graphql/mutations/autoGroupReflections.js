@@ -1,6 +1,6 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
 import {
@@ -13,6 +13,7 @@ import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload'
 import {sendGroupingThresholdValidationError} from 'server/utils/__tests__/validationErrors'
 import groupReflections from 'universal/utils/autogroup/groupReflections'
+import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 
 export default {
   type: AutoGroupReflectionsPayload,
@@ -109,6 +110,8 @@ export default {
     const reflectionIds = groupedReflections.map(({id}) => id)
     const data = {meetingId, reflectionGroupIds, reflectionIds, removedReflectionGroupIds}
     publish(TEAM, teamId, AutoGroupReflectionsPayload, data, subOptions)
+    const viewerId = getUserId(authToken)
+    sendSegmentEvent('Autogroup', viewerId, {meetingId})
     return data
   }
 }
