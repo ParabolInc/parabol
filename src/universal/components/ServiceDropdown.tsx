@@ -1,15 +1,18 @@
-// @flow
 import React from 'react'
 import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
 import LoadingComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
 
-type Props = {
-  closePortal: () => void,
-  handleItemClick: (option: any) => void,
-  isLoaded: boolean,
-  options: Array<any>
+interface Option {
+  id: string
+  label: string
+}
+interface Props {
+  closePortal: () => void
+  handleItemClick: (option: Option) => () => void
+  isLoaded: boolean
+  options: Array<Option>
 }
 
 const ServiceDropdown = (props: Props) => {
@@ -22,9 +25,7 @@ const ServiceDropdown = (props: Props) => {
           <MenuItemWithShortcuts
             key={option.id}
             label={<DropdownMenuItemLabel>{option.label}</DropdownMenuItemLabel>}
-            onClick={() => {
-              handleItemClick(option)
-            }}
+            onClick={handleItemClick(option)}
           />
         )
       })}

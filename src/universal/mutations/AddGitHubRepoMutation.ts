@@ -1,9 +1,11 @@
-import {commitMutation} from 'react-relay'
-
+import {commitMutation, graphql} from 'react-relay'
 import {GITHUB} from 'universal/utils/constants'
 import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember'
-import {insertNodeBefore} from 'universal/utils/relay/insertEdge'
 import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import addNodeToArray from 'universal/utils/relay/addNodeToArray'
+import {IAddGitHubRepoOnMutationArguments} from 'universal/types/graphql'
+import {CompletedHandler, ErrorHandler} from 'universal/types/relayMutations'
 
 const mutation = graphql`
   mutation AddGitHubRepoMutation($nameWithOwner: String!, $teamId: ID!) {
@@ -25,39 +27,37 @@ const mutation = graphql`
   }
 `
 
-let tempId = 0
-
 export const addGitHubRepoUpdater = (store, viewerId, teamId, newNode) => {
   // update the integration list
   const viewer = store.get(viewerId)
-  const githubRepos = viewer.getLinkedRecords('githubRepos', {teamId})
-  if (githubRepos) {
-    const newNodes = insertNodeBefore(githubRepos, newNode, 'nameWithOwner')
-    viewer.setLinkedRecords(newNodes, 'githubRepos', {teamId})
-  }
-
+  addNodeToArray(newNode, viewer, 'githubRepos', 'nameWithOwner', {storageKeyArgs: {teamId}})
   incrementIntegrationCount(viewer, teamId, GITHUB, 1)
 }
 
-const AddGitHubRepoMutation = (environment, nameWithOwner, teamId, onError, onCompleted) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const AddGitHubRepoMutation = (
+  atmosphere: any,
+  variables: IAddGitHubRepoOnMutationArguments,
+  onError: ErrorHandler,
+  onCompleted: CompletedHandler
+) => {
+  const {viewerId} = atmosphere
+  const {nameWithOwner, teamId} = variables
+  return commitMutation(atmosphere, {
     mutation,
-    variables: {nameWithOwner, teamId},
+    variables,
     updater: (store) => {
-      const payload = store.getRoot('addGitHubRepo')
+      const payload = store.getRootField('addGitHubRepo')
       if (!payload) return
       const node = payload.getLinkedRecord('repo')
       addGitHubRepoUpdater(store, viewerId, teamId, node)
     },
     optimisticUpdater: (store) => {
       const teamMemberNode = getOptimisticTeamMember(store, viewerId, teamId)
-      const repoId = `addGitHubRepo:${tempId++}`
-      const repo = store
-        .create(repoId, GITHUB)
-        .setValue(nameWithOwner, 'nameWithOwner')
-        .setValue(repoId, 'id')
-        .setLinkedRecords([teamMemberNode], 'teamMembers')
+      const repo = createProxyRecord(store, 'GitHubRepo', {
+        adminUserId: viewerId,
+        nameWithOwner
+      })
+      repo.setLinkedRecords([teamMemberNode], 'teamMembers')
       addGitHubRepoUpdater(store, viewerId, teamId, repo)
     },
     onCompleted,

@@ -99,12 +99,7 @@ const GitHubIntegrations = (props) => {
       <Panel label='Repositories'>
         {accessToken ? (
           <Row>
-            <AddGitHubRepo
-              accessToken={accessToken}
-              environment={environment}
-              teamId={teamId}
-              subbedRepos={githubRepos}
-            />
+            <AddGitHubRepo accessToken={accessToken} teamId={teamId} subbedRepos={githubRepos} />
           </Row>
         ) : (
           <AddGitHubButton size='medium' onClick={openOauth} palette='warm'>
