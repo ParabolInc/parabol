@@ -1,9 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import {fromGlobalId} from 'graphql-relay'
 import getRethink from 'server/database/rethinkDriver'
 import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayload'
 import {getUserId, isTeamLead, isTeamMember} from 'server/utils/authorization'
-import getPubSub from 'server/utils/getPubSub'
 import {GITHUB} from 'universal/utils/constants'
 import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo'
 import {sendTeamAccessError, sendTeamLeadAccessError} from 'server/utils/authorizationErrors'
@@ -15,33 +13,33 @@ export default {
   description: 'Remove a github repo integration from a team',
   type: new GraphQLNonNull(RemoveGitHubRepoPayload),
   args: {
-    githubGlobalId: {
+    githubIntegrationId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolve: async (source, {githubGlobalId}, {authToken, socketId: mutatorId, dataLoader}) => {
+  resolve: async (source, {githubIntegrationId}, {authToken, socketId: mutatorId, dataLoader}) => {
     const r = getRethink()
-    const {id} = fromGlobalId(githubGlobalId)
+    const now = new Date()
 
     // AUTH
     const viewerId = getUserId(authToken)
-    const integration = await r.table(GITHUB).get(id)
+    const integration = await r.table(GITHUB).get(githubIntegrationId)
     if (!integration) {
       return sendGitHubProviderNotFoundError(authToken, {
-        globalId: githubGlobalId
+        githubIntegrationId
       })
     }
-    const {teamId, isActive, userIds, nameWithOwner} = integration
+    const {adminUserId, teamId, isActive, nameWithOwner} = integration
     if (!isTeamMember(authToken, teamId)) {
       return sendTeamAccessError(authToken, teamId)
     }
 
     // VALIDATION
     if (!isActive) {
-      return sendAlreadyRemovedIntegrationError(authToken, githubGlobalId)
+      return sendAlreadyRemovedIntegrationError(authToken, githubIntegrationId)
     }
 
-    if (!userIds.includes(viewerId)) {
+    if (adminUserId !== viewerId) {
       if (!(await isTeamLead(viewerId, teamId))) {
         return sendTeamLeadAccessError(authToken, teamId)
       }
@@ -50,21 +48,23 @@ export default {
     // RESOLUTION
     await r
       .table(GITHUB)
-      .get(id)
+      .get(githubIntegrationId)
       .update({
         isActive: false,
-        userIds: []
+        userIds: [],
+        updatedAt: now
       })
 
     const archivedTaskIds = await archiveTasksByGitHubRepo(teamId, nameWithOwner, dataLoader)
-    const githubRepoRemoved = {
-      deletedId: githubGlobalId,
+    const data = {
+      deletedId: githubIntegrationId,
       archivedTaskIds
     }
-    getPubSub().publish(`githubRepoRemoved.${teamId}`, {
-      githubRepoRemoved,
-      mutatorId
-    })
-    return githubRepoRemoved
+    // TODO publish these changes somewhere
+    // getPubSub().publish(`githubRepoRemoved.${teamId}`, {
+    //   githubRepoRemoved: data,
+    //   mutatorId
+    // })
+    return data
   }
 }

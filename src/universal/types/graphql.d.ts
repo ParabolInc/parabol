@@ -3445,7 +3445,7 @@ export interface IRemoveSlackChannelOnMutationArguments {
 }
 
 export interface IRemoveGitHubRepoOnMutationArguments {
-  githubGlobalId: string
+  githubIntegrationId: string
 }
 
 export interface IRemoveOrgUserOnMutationArguments {

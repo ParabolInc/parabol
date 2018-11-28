@@ -109,13 +109,7 @@ const GitHubIntegrations = (props) => {
         {githubRepos && (
           <RowInfo>
             {githubRepos.map((repo) => (
-              <GitHubRepoRow
-                accessToken={accessToken}
-                key={repo.id}
-                repo={repo}
-                environment={environment}
-                teamId={teamId}
-              />
+              <GitHubRepoRow accessToken={accessToken} key={repo.id} repo={repo} teamId={teamId} />
             ))}
           </RowInfo>
         )}
