@@ -5,7 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v2.20.3 2018-Nov-27
 
+### Fixed
+* Can add GitHub repos #2347
+  
 ## v2.20.2 2018-Nov-18
 
 ### Fixed
