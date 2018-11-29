@@ -15,6 +15,7 @@ graphql`
       accessToken
       providerUserName
       service
+      userId
     }
     joinedIntegrationIds
     teamMember {
@@ -36,7 +37,9 @@ const mutation = graphql`
   }
 `
 
-const addProviderIntegrationUpdater = (payload, store, viewer, teamId) => {
+export const addProviderIntegrationUpdater = (payload, store, {atmosphere, teamId}) => {
+  const {viewerId} = atmosphere
+  const viewer = store.get(viewerId)
   const newIntegrationProvider = payload.getLinkedRecord('provider')
   const newProviderRow = payload.getLinkedRecord('providerRow')
   const service = newProviderRow.getValue('service')
@@ -80,7 +83,6 @@ const AddProviderMutation = (
   onError: ErrorHandler,
   onCompleted: CompletedHandler
 ) => {
-  const {viewerId} = atmosphere
   const {teamId} = variables
   return commitMutation(atmosphere, {
     mutation,
@@ -88,8 +90,7 @@ const AddProviderMutation = (
     updater: (store) => {
       const payload = store.getRootField('addProvider')
       if (!payload) return
-      const viewer = store.get(viewerId)
-      addProviderIntegrationUpdater(payload, store, viewer, teamId)
+      addProviderIntegrationUpdater(payload, store, {atmosphere, teamId})
     },
     onCompleted,
     onError

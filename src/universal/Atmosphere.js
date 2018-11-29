@@ -70,7 +70,7 @@ export default class Atmosphere extends Environment {
     await this.upgradeTransport()
     const newQuerySubs = subConfigs.map((config) => {
       const {subscription, variables = {}} = config
-      const {name} = subscription()
+      const {name} = getRequest(subscription)
       const subKey = JSON.stringify({name, variables})
       const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
       if (!isRequested) {

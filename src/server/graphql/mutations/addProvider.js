@@ -38,9 +38,9 @@ export default {
     const userId = getUserId(authToken)
     let data
     if (service === SLACK) {
-      data = addProviderSlack(code, teamId, userId)
+      data = await addProviderSlack(code, teamId, userId)
     } else if (service === GITHUB) {
-      data = addProviderGitHub(code, teamId, userId)
+      data = await addProviderGitHub(code, teamId, userId)
     }
     publish(INTEGRATION, teamId, AddProviderPayload, data, subOptions)
     return data

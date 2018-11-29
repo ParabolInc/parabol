@@ -2,19 +2,21 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import TeamIntegrations from 'universal/modules/teamDashboard/components/TeamIntegrations/TeamIntegrations'
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription'
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription'
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription'
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription'
 import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription'
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription'
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants'
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
+import LoadingView from 'universal/components/LoadingView/LoadingView'
+import ProviderList from 'universal/modules/teamDashboard/components/ProviderList/ProviderList'
+import {withRouter} from 'react-router'
+import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
 const teamIntegrationsQuery = graphql`
   query TeamIntegrationsRootQuery($teamId: ID!) {
@@ -26,7 +28,7 @@ const teamIntegrationsQuery = graphql`
 
 const subscriptions = [
   ProviderRemovedSubscription,
-  ProviderAddedSubscription,
+  IntegrationSubscription,
   GitHubMemberRemovedSubscription,
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
@@ -38,7 +40,7 @@ const subscriptions = [
 
 const cacheConfig = {ttl: DEFAULT_TTL}
 
-const TeamIntegrationsRoot = ({atmosphere, teamMemberId}) => {
+const TeamIntegrationsRoot = ({atmosphere, history, teamMemberId}) => {
   const {teamId} = fromTeamMemberId(teamMemberId)
   return (
     <QueryRenderer
@@ -47,17 +49,15 @@ const TeamIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       query={teamIntegrationsQuery}
       variables={{teamId}}
       subscriptions={subscriptions}
-      render={({error, props}) => {
-        if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />
-        }
-        if (props) {
-          return (
-            <TeamIntegrations viewer={props.viewer} jwt={atmosphere.authToken} teamId={teamId} />
-          )
-        }
-        return <LoadingComponent height={'14rem'} />
-      }}
+      subParams={{teamId, history}}
+      render={(readyState) => (
+        <RelayTransitionGroup
+          readyState={readyState}
+          error={<ErrorComponent height={'14rem'} />}
+          loading={<LoadingView minHeight='50vh' />}
+          ready={<ProviderList teamId={teamId} />}
+        />
+      )}
     />
   )
 }
@@ -68,4 +68,4 @@ TeamIntegrationsRoot.propTypes = {
   viewer: PropTypes.object
 }
 
-export default withAtmosphere(TeamIntegrationsRoot)
+export default withRouter(withAtmosphere(TeamIntegrationsRoot))

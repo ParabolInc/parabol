@@ -3,6 +3,7 @@ import ProviderRow from 'server/graphql/types/ProviderRow'
 import Provider from 'server/graphql/types/Provider'
 import TeamMember from 'server/graphql/types/TeamMember'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import {getUserId} from 'server/utils/authorization'
 
 const AddProviderPayload = new GraphQLObjectType({
   name: 'AddProviderPayload',
@@ -11,10 +12,25 @@ const AddProviderPayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     providerRow: {
-      type: ProviderRow
+      type: ProviderRow,
+      resolve: ({providerRow, provider}, args, {authToken}) => {
+        if (!provider) return null
+        const viewerId = getUserId(authToken)
+        const {userId} = provider
+        if (viewerId === userId) return providerRow
+        return {
+          ...providerRow,
+          accessToken: null
+        }
+      }
     },
     provider: {
-      type: Provider
+      type: Provider,
+      resolve: (source, args, {authToken}) => {
+        const {provider} = source
+        const viewerId = getUserId(authToken)
+        return viewerId === provider.userId ? provider : null
+      }
     },
     joinedIntegrationIds: {
       type: new GraphQLList(new GraphQLNonNull(GraphQLID)),

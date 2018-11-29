@@ -7,25 +7,19 @@ import {GITHUB, SLACK} from 'universal/utils/constants'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 
 const ProviderList = (props) => {
-  const {jwt, viewer, teamId} = props
+  const {viewer, teamId} = props
   const {providerMap} = viewer
   return (
     <SettingsWrapper>
       <Panel hideFirstRowBorder>
-        <ProviderRow
-          name={GITHUB}
-          providerDetails={providerMap[GITHUB]}
-          jwt={jwt}
-          teamId={teamId}
-        />
-        <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} jwt={jwt} teamId={teamId} />
+        <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} teamId={teamId} />
+        <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} teamId={teamId} />
       </Panel>
     </SettingsWrapper>
   )
 }
 
 ProviderList.propTypes = {
-  jwt: PropTypes.string,
   viewer: PropTypes.object.isRequired,
   teamId: PropTypes.string
 }

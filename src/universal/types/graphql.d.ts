@@ -6244,6 +6244,7 @@ export interface ISubscription {
   githubMemberRemoved: IGitHubMemberRemovedPayload
   githubRepoAdded: IAddGitHubRepoPayload
   githubRepoRemoved: IRemoveGitHubRepoPayload
+  integrationSubscription: IntegrationSubscriptionPayload
   integrationJoined: IJoinIntegrationPayload
   integrationLeft: ILeaveIntegrationPayload
   invitationSubscription: InvitationSubscriptionPayload
@@ -6273,6 +6274,10 @@ export interface IGithubRepoAddedOnSubscriptionArguments {
 }
 
 export interface IGithubRepoRemovedOnSubscriptionArguments {
+  teamId: string
+}
+
+export interface IIntegrationSubscriptionOnSubscriptionArguments {
   teamId: string
 }
 
@@ -6320,6 +6325,8 @@ export interface IGitHubMemberRemovedPayload {
   __typename: 'GitHubMemberRemovedPayload'
   leaveIntegration: Array<ILeaveIntegrationPayload | null> | null
 }
+
+export type IntegrationSubscriptionPayload = IAddProviderPayload
 
 export type InvitationSubscriptionPayload =
   | IAcceptTeamInvitePayload
