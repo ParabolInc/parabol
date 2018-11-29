@@ -2447,12 +2447,12 @@ export interface IProviderRow {
   /**
    * The count of all the people on the team that have linked their account to the provider
    */
-  userCount: number | null
+  userCount: number
 
   /**
    * The number of integrations under this provider for the team
    */
-  integrationCount: number | null
+  integrationCount: number
 
   /**
    * The username according to the provider
@@ -2528,7 +2528,7 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addOrg: IAddOrgPayload | null
-  addProvider: boolean | null
+  addProvider: IAddProviderPayload
   addSlackChannel: IAddSlackChannelPayload
 
   /**
@@ -3005,8 +3005,8 @@ export interface IAddOrgOnMutationArguments {
 
 export interface IAddProviderOnMutationArguments {
   code: string
-  state: string
   service: IntegrationService
+  teamId: string
 }
 
 export interface IAddSlackChannelOnMutationArguments {
@@ -3946,6 +3946,19 @@ export interface IAddOrgPayload {
    * The invitation sent when an team was being created
    */
   teamInviteNotification: INotifyTeamInvite | null
+}
+
+export interface IAddProviderPayload {
+  __typename: 'AddProviderPayload'
+  error: IStandardMutationError | null
+  providerRow: IProviderRow | null
+  provider: IProvider | null
+
+  /**
+   * All the integrationIds that the provider has successfully joined
+   */
+  joinedIntegrationIds: Array<string> | null
+  teamMember: ITeamMember | null
 }
 
 export interface IAddSlackChannelInput {
@@ -5559,7 +5572,7 @@ export interface IRemoveSlackChannelPayload {
 
 export interface IRemoveGitHubRepoPayload {
   __typename: 'RemoveGitHubRepoPayload'
-  deletedId: string
+  deletedId: string | null
   error: IStandardMutationError | null
   archivedTaskIds: Array<string | null> | null
 }
@@ -6390,18 +6403,6 @@ export type TaskSubscriptionPayload =
   | IRemoveTeamMemberPayload
   | IUpdateTaskPayload
   | IUpdateTaskDueDatePayload
-
-export interface IAddProviderPayload {
-  __typename: 'AddProviderPayload'
-  providerRow: IProviderRow
-  provider: IProvider | null
-
-  /**
-   * All the integrationIds that the provider has successfully joined
-   */
-  joinedIntegrationIds: Array<string | null> | null
-  teamMember: ITeamMember | null
-}
 
 export type TeamSubscriptionPayload =
   | IAcceptTeamInvitePayload

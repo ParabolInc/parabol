@@ -4,7 +4,6 @@ import getRethink from 'server/database/rethinkDriver'
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos'
 import getProviderRowData from 'server/safeQueries/getProviderRowData'
 import postOptions from 'server/utils/fetchOptions'
-import getPubSub from 'server/utils/getPubSub'
 import shortid from 'shortid'
 import {GITHUB, GITHUB_ENDPOINT, GITHUB_SCOPE} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
@@ -130,7 +129,7 @@ const addProviderGitHub = async (code, teamId, userId) => {
   )
   const teamMemberId = `${userId}::${teamId}`
   const teamMember = await getTeamMember(joinedIntegrationIds, teamMemberId)
-  const providerAdded = {
+  return {
     provider,
     providerRow: {
       ...rowDetails,
@@ -142,8 +141,6 @@ const addProviderGitHub = async (code, teamId, userId) => {
     joinedIntegrationIds,
     teamMember
   }
-
-  getPubSub().publish(`providerAdded.${teamId}`, {providerAdded})
 }
 
 export default addProviderGitHub

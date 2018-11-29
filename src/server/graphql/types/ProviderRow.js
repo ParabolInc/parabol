@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {globalIdField} from 'graphql-relay'
 import IntegrationService from 'server/graphql/types/IntegrationService'
 
@@ -13,12 +13,12 @@ const ProviderRow = new GraphQLObjectType({
         'The access token attached to the userId. null if user does not have a token for the provider'
     },
     userCount: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
       description:
         'The count of all the people on the team that have linked their account to the provider'
     },
     integrationCount: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of integrations under this provider for the team'
     },
     providerUserName: {

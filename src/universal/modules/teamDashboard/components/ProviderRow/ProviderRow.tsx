@@ -1,20 +1,26 @@
-import PropTypes from 'prop-types'
+import {ProviderRow_providerDetails} from '__generated__/ProviderRow_providerDetails.graphql'
 import React from 'react'
-import FontAwesome from 'react-fontawesome'
-import {createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
-import makeHref from 'universal/utils/makeHref'
 import styled, {css} from 'react-emotion'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import RowActions from 'universal/components/Row/RowActions'
+import FontAwesome from 'react-fontawesome'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink'
-import RowInfo from 'universal/components/Row/RowInfo'
-import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import RaisedButton from 'universal/components/RaisedButton'
 import Row from 'universal/components/Row/Row'
+import RowActions from 'universal/components/Row/RowActions'
+import RowInfo from 'universal/components/Row/RowInfo'
+import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import AddProviderMutation from 'universal/mutations/AddProviderMutation'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
+import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
+import makeHref from 'universal/utils/makeHref'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {IntegrationService} from 'universal/types/graphql'
 
 const StyledButton = styled(RaisedButton)({
   paddingLeft: 0,
@@ -26,7 +32,7 @@ const StyledRow = styled(Row)({
   justifyContent: 'flex-start'
 })
 
-const ProviderAvatar = styled('div')(({backgroundColor}) => ({
+const ProviderAvatar = styled('div')(({backgroundColor}: {backgroundColor: 'string'}) => ({
   backgroundColor,
   borderRadius: ui.providerIconBorderRadius
 }))
@@ -88,23 +94,16 @@ export const providerLookup = {
   [GITHUB]: {
     ...ui.providers.github,
     route: 'github',
-    makeUri: (jwt, teamId) => {
-      // const redirect = makeHref('/auth/github/entry');
-      const state = `${teamId}::${jwt}`
-      // eslint-disable-next-line
-      return `https://github.com/login/oauth/authorize?client_id=${
+    makeUri: (state) =>
+      `https://github.com/login/oauth/authorize?client_id=${
         window.__ACTION__.github
       }&scope=${GITHUB_SCOPE}&state=${state}`
-    }
   },
   [SLACK]: {
     ...ui.providers.slack,
     route: 'slack',
-    makeUri: (jwt, teamId) => {
+    makeUri: (state) => {
       const redirect = makeHref('/auth/slack')
-      // state is useful for CSRF, but we jwt to make sure the person isn't overwriting the int for another team
-      const state = `${teamId}::${jwt}`
-      // eslint-disable-next-line
       return `https://slack.com/oauth/authorize?client_id=${
         window.__ACTION__.slack
       }&scope=${SLACK_SCOPE}&state=${state}&redirect_uri=${redirect}`
@@ -117,19 +116,62 @@ const defaultDetails = {
   integrationCount: 0
 }
 
-const ProviderRow = (props) => {
-  const {comingSoon, history, jwt, name, providerDetails, teamId} = props
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+  comingSoon: boolean
+  name: IntegrationService
+  providerDetails: ProviderRow_providerDetails
+  teamId: string
+}
+
+const ProviderRow = (props: Props) => {
   const {
-    accessToken,
-    userCount,
-    integrationCount
-    // providerUserName
-  } =
-    providerDetails || defaultDetails
+    atmosphere,
+    comingSoon,
+    history,
+    name,
+    providerDetails,
+    teamId,
+    submitting,
+    submitMutation,
+    onError,
+    onCompleted
+  } = props
+  const {accessToken, userCount, integrationCount} = providerDetails || defaultDetails
   const {color, icon, description, makeUri, providerName, route} = providerLookup[name]
   const openOauth = () => {
-    const uri = makeUri(jwt, teamId)
-    window.open(uri)
+    const providerState = Math.random()
+      .toString(36)
+      .substring(5)
+    const uri = makeUri(providerState)
+    const popup = window.open(uri)
+    window.addEventListener(
+      'message',
+      (event) => {
+        if (
+          typeof event.data !== 'object' ||
+          event.origin !== window.location.origin ||
+          submitting
+        ) {
+          return
+        }
+        const {code, state} = event.data
+        if (state !== providerState || typeof code !== 'string') return
+        submitMutation()
+        AddProviderMutation(
+          atmosphere,
+          {
+            code,
+            service: name,
+            teamId
+          },
+          {},
+          onError,
+          onCompleted
+        )
+        popup && popup.close()
+      },
+      {once: true}
+    )
   }
   const linkStyle = {
     display: 'block',
@@ -179,7 +221,7 @@ const ProviderRow = (props) => {
               {'Team Settings'}
             </StyledButton>
           ) : (
-            <StyledButton key='linkAccount' onClick={openOauth} palette='warm'>
+            <StyledButton key='linkAccount' onClick={openOauth} palette='warm' waiting={submitting}>
               {'Link My Account'}
             </StyledButton>
           )}
@@ -189,18 +231,8 @@ const ProviderRow = (props) => {
   )
 }
 
-ProviderRow.propTypes = {
-  actions: PropTypes.any,
-  comingSoon: PropTypes.bool,
-  history: PropTypes.object,
-  jwt: PropTypes.string,
-  name: PropTypes.string,
-  providerDetails: PropTypes.object,
-  teamId: PropTypes.string.isRequired
-}
-
 export default createFragmentContainer(
-  withRouter(ProviderRow),
+  withAtmosphere(withMutationProps(withRouter(ProviderRow))),
   graphql`
     fragment ProviderRow_providerDetails on ProviderRow {
       accessToken
