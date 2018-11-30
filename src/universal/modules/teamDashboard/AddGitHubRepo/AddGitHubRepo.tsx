@@ -141,7 +141,11 @@ class AddGitHubRepo extends Component<Props, State> {
   }
 
   componentDidMount () {
-    this.fetchOptions(this.props.accessToken).catch()
+    const {accessToken, atmosphere} = this.props
+    this.fetchOptions(accessToken).catch()
+    atmosphere.eventEmitter.on('removeGitHubRepo', () => {
+      this.fetchOptions(accessToken, {isForce: true}).catch()
+    })
   }
 
   componentWillReceiveProps (nextProps) {
@@ -199,11 +203,12 @@ class AddGitHubRepo extends Component<Props, State> {
     this.fetchOptions(accessToken).catch()
   }
 
-  fetchOptions = async (accessToken) => {
+  fetchOptions = async (accessToken, options = {isForce: false}) => {
     const now = Date.now()
-    const isStale = now - this.lastUpdated > ms('30s')
+    const isStale = now - this.lastUpdated > ms('10s')
     const {onCompleted, onError, submitMutation, submitting, subbedRepos} = this.props
-    if (accessToken && isStale && !submitting) {
+    const {isForce} = options
+    if (accessToken && (isStale || isForce) && !submitting) {
       this.lastUpdated = now
       const postOptions = makeGitHubPostOptions(accessToken, {
         query: getReposQuery

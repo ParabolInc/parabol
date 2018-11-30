@@ -85,7 +85,11 @@ class GitHubRepoRow extends Component<Props> {
     if (submitting) return
     submitMutation()
     const githubIntegrationId = fromGlobalId(repo.id).id
-    RemoveGitHubRepoMutation(atmosphere, {githubIntegrationId}, {teamId}, onError, onCompleted)
+    const handleCompleted = () => {
+      onCompleted()
+      atmosphere.eventEmitter.emit('removeGitHubRepo')
+    }
+    RemoveGitHubRepoMutation(atmosphere, {githubIntegrationId}, {teamId}, onError, handleCompleted)
   }
 
   toggleIntegrationMembership = (githubGlobalId) => () => {
