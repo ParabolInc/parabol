@@ -59,10 +59,11 @@ interface Props extends WithAtmosphereProps, WithMutationProps, PassedProps, Col
 const reflectionsStyle = (
   canDrop: boolean | undefined,
   isDraggable: boolean | undefined,
-  canExpand: boolean | undefined
+  canExpand: boolean | undefined,
+  isComplete: boolean | null
 ) =>
   css({
-    cursor: isDraggable || canExpand ? 'pointer' : 'default',
+    cursor: !isComplete && (isDraggable || canExpand) ? 'pointer' : 'default',
     opacity: canDrop ? 0.6 : 1,
     position: 'relative'
   })
@@ -250,13 +251,16 @@ class ReflectionGroup extends Component<Props> {
   ) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
+    const {
+      localStage: {isComplete}
+    } = meeting
     return (
       <DraggableReflectionCard
         // @ts-ignore
         closeGroupModal={isModal ? this.closeGroupModal : undefined}
         key={reflection.id}
         idx={reflections.length - idx - 1}
-        isDraggable={isDraggable}
+        isDraggable={isDraggable && !isComplete}
         isModal={isModal}
         meeting={meeting}
         reflection={reflection}
@@ -323,7 +327,7 @@ class ReflectionGroup extends Component<Props> {
           )}
           {connectDropTarget(
             <div
-              className={reflectionsStyle(canDrop, isDraggable, canExpand)}
+              className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}
               onClick={canExpand ? this.expandGroup : undefined}
             >
               {reflections.map((reflection, idx) =>
@@ -341,7 +345,7 @@ class ReflectionGroup extends Component<Props> {
               meeting={meeting}
               reflectionGroup={reflectionGroup}
             />
-            <div className={reflectionsStyle(canDrop, isDraggable, canExpand)}>
+            <div className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}>
               {reflections.map((reflection, idx) =>
                 this.renderReflection(reflection, idx, {isModal: true, isDraggable})
               )}
