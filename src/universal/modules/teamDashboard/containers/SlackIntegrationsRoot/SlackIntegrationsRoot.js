@@ -8,7 +8,6 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription'
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription'
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
@@ -23,7 +22,6 @@ const slackChannelQuery = graphql`
 const subscriptions = [
   SlackChannelAddedSubscription,
   SlackChannelRemovedSubscription,
-  ProviderRemovedSubscription,
   IntegrationSubscription
 ]
 

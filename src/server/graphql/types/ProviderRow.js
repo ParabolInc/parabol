@@ -1,12 +1,15 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import {globalIdField} from 'graphql-relay'
 import IntegrationService from 'server/graphql/types/IntegrationService'
 
 const ProviderRow = new GraphQLObjectType({
   name: 'ProviderRow',
   description: 'All the details about a particular provider',
   fields: () => ({
-    id: globalIdField('ProviderRow', ({teamId, service}) => `${service}:${teamId}`),
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'composite keyID',
+      resolve: ({teamId, service}) => `${service}:${teamId}`
+    },
     accessToken: {
       type: GraphQLID,
       description:

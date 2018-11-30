@@ -1,16 +1,19 @@
 import {graphql} from 'react-relay'
 import {addProviderIntegrationUpdater} from 'universal/mutations/AddProviderMutation'
+import {removeProviderIntegrationUpdater} from 'universal/mutations/RemoveProviderMutation'
 
 const subscription = graphql`
   subscription IntegrationSubscription($teamId: ID!) {
     integrationSubscription(teamId: $teamId) {
       __typename
       ...AddProviderMutation_integration @relay(mask: false)
+      ...RemoveProviderMutation_integration @relay(mask: false)
     }
   }
 `
 const updaters = {
-  AddProviderPayload: addProviderIntegrationUpdater
+  AddProviderPayload: addProviderIntegrationUpdater,
+  RemoveProviderPayload: removeProviderIntegrationUpdater
 }
 const onNextHandlers = {}
 

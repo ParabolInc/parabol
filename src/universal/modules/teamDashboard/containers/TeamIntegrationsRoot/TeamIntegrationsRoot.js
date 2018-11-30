@@ -6,7 +6,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription'
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription'
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription'
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription'
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription'
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants'
@@ -27,7 +26,6 @@ const teamIntegrationsQuery = graphql`
 `
 
 const subscriptions = [
-  ProviderRemovedSubscription,
   IntegrationSubscription,
   GitHubMemberRemovedSubscription,
   GitHubRepoAddedSubscription,

@@ -1,6 +1,7 @@
 import ms from 'ms'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
 import RaisedButton from 'universal/components/RaisedButton'
 import Row from 'universal/components/Row/Row'
 import withAtmosphere, {
@@ -14,6 +15,7 @@ import ui from 'universal/styles/ui'
 import {GITHUB_ENDPOINT} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {AddGitHubRepo_subbedRepos} from '__generated__/AddGitHubRepo_subbedRepos.graphql'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -106,7 +108,7 @@ interface Repo {
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   accessToken: string
-  subbedRepos: Array<Repo>
+  subbedRepos: AddGitHubRepo_subbedRepos
   teamId: string
 }
 
@@ -271,4 +273,11 @@ class AddGitHubRepo extends Component<Props, State> {
   }
 }
 
-export default withAtmosphere(withMutationProps(AddGitHubRepo))
+export default createFragmentContainer(
+  withAtmosphere(withMutationProps(AddGitHubRepo)),
+  graphql`
+    fragment AddGitHubRepo_subbedRepos on GitHubIntegration @relay(plural: true) {
+      nameWithOwner
+    }
+  `
+)

@@ -14,13 +14,13 @@ import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import AddProviderMutation from 'universal/mutations/AddProviderMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {IntegrationService} from 'universal/types/graphql'
 import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {IntegrationService} from 'universal/types/graphql'
+import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 
 const StyledButton = styled(RaisedButton)({
   paddingLeft: 0,
@@ -137,42 +137,7 @@ const ProviderRow = (props: Props) => {
     onCompleted
   } = props
   const {accessToken, userCount, integrationCount} = providerDetails || defaultDetails
-  const {color, icon, description, makeUri, providerName, route} = providerLookup[name]
-  const openOauth = () => {
-    const providerState = Math.random()
-      .toString(36)
-      .substring(5)
-    const uri = makeUri(providerState)
-    const popup = window.open(uri)
-    window.addEventListener(
-      'message',
-      (event) => {
-        if (
-          typeof event.data !== 'object' ||
-          event.origin !== window.location.origin ||
-          submitting
-        ) {
-          return
-        }
-        const {code, state} = event.data
-        if (state !== providerState || typeof code !== 'string') return
-        submitMutation()
-        AddProviderMutation(
-          atmosphere,
-          {
-            code,
-            service: name,
-            teamId
-          },
-          {},
-          onError,
-          onCompleted
-        )
-        popup && popup.close()
-      },
-      {once: true}
-    )
-  }
+  const {color, icon, description, providerName, route} = providerLookup[name]
   const linkStyle = {
     display: 'block',
     textDecoration: 'none'
@@ -184,6 +149,15 @@ const ProviderRow = (props: Props) => {
     fontWeight: 400
   }
   const hasActivity = userCount > 0 || integrationCount > 0
+  const openOAuth = handleOpenOAuth({
+    name,
+    submitting,
+    submitMutation,
+    atmosphere,
+    onError,
+    onCompleted,
+    teamId
+  })
   return (
     <StyledRow>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
@@ -221,7 +195,7 @@ const ProviderRow = (props: Props) => {
               {'Team Settings'}
             </StyledButton>
           ) : (
-            <StyledButton key='linkAccount' onClick={openOauth} palette='warm' waiting={submitting}>
+            <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>
               {'Link My Account'}
             </StyledButton>
           )}

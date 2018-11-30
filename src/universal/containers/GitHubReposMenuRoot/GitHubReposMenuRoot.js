@@ -6,7 +6,6 @@ import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAdded
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription'
 import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription'
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription'
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants'
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
@@ -45,7 +44,6 @@ const subscriptions = [
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
   GitHubMemberRemovedSubscription,
-  ProviderRemovedSubscription,
   IntegrationSubscription,
   IntegrationLeftSubscription(GITHUB),
   IntegrationJoinedSubscription(GITHUB)

@@ -11,7 +11,6 @@ import notificationSubscription from 'server/graphql/subscriptions/notificationS
 import organizationSubscription from 'server/graphql/subscriptions/organizationSubscription'
 import orgApprovalSubscription from 'server/graphql/subscriptions/orgApprovalSubscription'
 import taskSubscription from 'server/graphql/subscriptions/taskSubscription'
-import providerRemoved from 'server/graphql/subscriptions/providerRemoved'
 import slackChannelAdded from 'server/graphql/subscriptions/slackChannelAdded'
 import slackChannelRemoved from 'server/graphql/subscriptions/slackChannelRemoved'
 import teamMemberSubscription from 'server/graphql/subscriptions/teamMemberSubscription'
@@ -37,7 +36,6 @@ export default new GraphQLObjectType({
     taskSubscription,
     slackChannelAdded,
     slackChannelRemoved,
-    providerRemoved,
     teamSubscription,
     teamMemberSubscription
   })

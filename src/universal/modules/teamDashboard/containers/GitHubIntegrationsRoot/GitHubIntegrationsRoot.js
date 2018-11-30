@@ -8,7 +8,6 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription'
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription'
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
 import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription'
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription'
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription'
@@ -27,7 +26,6 @@ const subscriptions = [
   GitHubMemberRemovedSubscription,
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
-  ProviderRemovedSubscription,
   IntegrationSubscription,
   IntegrationJoinedSubscription(GITHUB),
   IntegrationLeftSubscription(GITHUB)

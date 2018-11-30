@@ -9,14 +9,14 @@ const RemoveProviderPayload = new GraphQLObjectType({
       type: StandardMutationError
     },
     providerRow: {
-      type: new GraphQLNonNull(ProviderRow)
+      type: ProviderRow
     },
     deletedIntegrationIds: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLID)),
+      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
       description: 'The globalIds of the removed integrations'
     },
     userId: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The userId of the person who removed the provider'
     },
     archivedTaskIds: {

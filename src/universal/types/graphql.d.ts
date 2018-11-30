@@ -147,7 +147,7 @@ export interface IUser {
   /**
    * list of git hub repos available to the viewer
    */
-  githubRepos: Array<IGitHubIntegration | null> | null
+  githubRepos: Array<IGitHubIntegration>
 
   /**
    * get an integration provider belonging to the user
@@ -184,7 +184,7 @@ export interface IUser {
   /**
    * paginated list of slackChannels
    */
-  slackChannels: Array<ISlackIntegration | null> | null
+  slackChannels: Array<ISlackIntegration>
 
   /**
    * get a single organization and the count of users by status
@@ -1915,7 +1915,7 @@ export interface IGitHubIntegration {
   /**
    * The users that can CRUD this integration
    */
-  teamMembers: Array<ITeamMember | null> | null
+  teamMembers: Array<ITeamMember>
 
   /**
    * The datetime the integration was updated
@@ -2435,7 +2435,7 @@ export interface IProviderRow {
   __typename: 'ProviderRow'
 
   /**
-   * The ID of an object
+   * composite keyID
    */
   id: string
 
@@ -5550,17 +5550,17 @@ export interface IRemoveAgendaItemPayload {
 export interface IRemoveProviderPayload {
   __typename: 'RemoveProviderPayload'
   error: IStandardMutationError | null
-  providerRow: IProviderRow
+  providerRow: IProviderRow | null
 
   /**
    * The globalIds of the removed integrations
    */
-  deletedIntegrationIds: Array<string | null>
+  deletedIntegrationIds: Array<string> | null
 
   /**
    * The userId of the person who removed the provider
    */
-  userId: string
+  userId: string | null
   archivedTaskIds: Array<string | null> | null
 }
 
@@ -6255,8 +6255,6 @@ export interface ISubscription {
   taskSubscription: TaskSubscriptionPayload
   slackChannelAdded: IAddSlackChannelPayload
   slackChannelRemoved: IRemoveSlackChannelPayload
-  providerAdded: IAddProviderPayload
-  providerRemoved: IRemoveProviderPayload
   teamSubscription: TeamSubscriptionPayload
   teamMemberSubscription: TeanMemberSubscriptionPayload
 }
@@ -6307,14 +6305,6 @@ export interface ISlackChannelRemovedOnSubscriptionArguments {
   teamId: string
 }
 
-export interface IProviderAddedOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface IProviderRemovedOnSubscriptionArguments {
-  teamId: string
-}
-
 export type AgendaItemSubscriptionPayload =
   | IAddAgendaItemPayload
   | IRemoveAgendaItemPayload
@@ -6326,7 +6316,7 @@ export interface IGitHubMemberRemovedPayload {
   leaveIntegration: Array<ILeaveIntegrationPayload | null> | null
 }
 
-export type IntegrationSubscriptionPayload = IAddProviderPayload
+export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProviderPayload
 
 export type InvitationSubscriptionPayload =
   | IAcceptTeamInvitePayload

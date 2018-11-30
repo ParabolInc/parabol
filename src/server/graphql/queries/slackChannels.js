@@ -6,7 +6,7 @@ import {SLACK} from 'universal/utils/constants'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
-  type: new GraphQLList(SlackIntegration),
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SlackIntegration))),
   description: 'paginated list of slackChannels',
   args: {
     teamId: {
@@ -28,5 +28,6 @@ export default {
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('channelName')
+      .default([])
   }
 }

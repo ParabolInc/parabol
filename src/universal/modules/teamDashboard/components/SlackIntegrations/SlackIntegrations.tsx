@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import AddSlackChannel from 'universal/modules/teamDashboard/components/AddSlackChannel/AddSlackChannel'
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow'
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack'
-import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow'
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
 import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -19,6 +17,10 @@ import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
 import styled from 'react-emotion'
+import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
+import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {SlackIntegrations_viewer} from '__generated__/SlackIntegrations_viewer.graphql'
 
 const ProviderDetails = styled(Row)({
   border: 0,
@@ -59,27 +61,40 @@ const ChannelName = styled('div')({
   fontWeight: 600
 })
 
-const {makeUri} = providerLookup[SLACK]
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  teamId: string
+  viewer: SlackIntegrations_viewer
+  teamMemberId: string
+}
 
-const SlackIntegrations = (props) => {
+const SlackIntegrations = (props: Props) => {
   const {
-    relay: {environment},
-    jwt,
     teamId,
-    teamMemberId,
-    viewer
+    viewer,
+    submitting,
+    submitMutation,
+    atmosphere,
+    onError,
+    onCompleted,
+    teamMemberId
   } = props
   const {slackChannels, integrationProvider} = viewer
   const handleRemoveChannel = (slackGlobalId) => () => {
-    RemoveSlackChannelMutation(environment, slackGlobalId, teamId)
+    RemoveSlackChannelMutation(atmosphere, slackGlobalId, teamId)
   }
   const accessToken = integrationProvider && integrationProvider.accessToken
-  const openOauth = () => {
-    const uri = makeUri(jwt, teamId)
-    window.open(uri)
-  }
+  const openOAuth = handleOpenOAuth({
+    name: SLACK,
+    submitting,
+    submitMutation,
+    atmosphere,
+    onError,
+    onCompleted,
+    teamId
+  })
   return (
     <SettingsWrapper>
+      k
       <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <ProviderDetails>
@@ -94,13 +109,17 @@ const SlackIntegrations = (props) => {
           <RowActions>
             <FlatButton
               onClick={() =>
-                RemoveProviderMutation(environment, integrationProvider.id, SLACK, teamId)
+                RemoveProviderMutation(
+                  atmosphere,
+                  {providerId: integrationProvider && integrationProvider.id, teamId},
+                  {service: SLACK, onError, onCompleted}
+                )
               }
               palette='mid'
             >
               {'Remove Slack'}
             </FlatButton>
-            <FlatButton onClick={openOauth} palette='mid'>
+            <FlatButton onClick={openOAuth} palette='mid'>
               {'Refresh Token'}
             </FlatButton>
           </RowActions>
@@ -111,13 +130,13 @@ const SlackIntegrations = (props) => {
           <Row>
             <AddSlackChannel
               accessToken={accessToken}
-              environment={environment}
+              environment={atmosphere}
               teamMemberId={teamMemberId}
               subbedChannels={slackChannels}
             />
           </Row>
         ) : (
-          <AddSlackButton size='medium' onClick={openOauth} palette='warm'>
+          <AddSlackButton size='medium' onClick={openOAuth} palette='warm'>
             {'Authorize Slack to Add a Channel'}
           </AddSlackButton>
         )}
@@ -137,14 +156,6 @@ const SlackIntegrations = (props) => {
       </Panel>
     </SettingsWrapper>
   )
-}
-
-SlackIntegrations.propTypes = {
-  jwt: PropTypes.string.isRequired,
-  relay: PropTypes.object.isRequired,
-  viewer: PropTypes.object.isRequired,
-  teamId: PropTypes.string.isRequired,
-  teamMemberId: PropTypes.string.isRequired
 }
 
 export default createFragmentContainer(
