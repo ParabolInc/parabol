@@ -46,7 +46,7 @@ const Step3InviteeList = (props) => {
       InviteTeamMembersMutation(
         atmosphere,
         {invitees: serverInvitees, teamId},
-        dispatch,
+        {},
         undefined,
         gotoTeamDash
       )

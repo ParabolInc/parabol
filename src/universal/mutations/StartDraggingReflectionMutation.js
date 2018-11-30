@@ -4,7 +4,6 @@ import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import type {Coords2DInput} from 'universal/types/schema.flow'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
 import {matchPath} from 'react-router-dom'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {RETROSPECTIVE} from 'universal/utils/constants'
@@ -47,10 +46,7 @@ const mutation = graphql`
   }
 `
 
-export const startDraggingReflectionTeamUpdater = (
-  payload,
-  {atmosphere, dispatch, store, isLocal}
-) => {
+export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store, isLocal}) => {
   const {pathname} = window.location
   const slug = meetingTypeToSlug[RETROSPECTIVE]
   const meetingRoute = matchPath(pathname, {path: `/${slug}/:teamId`})
@@ -89,7 +85,6 @@ export const startDraggingReflectionTeamUpdater = (
       commitLocalUpdate(atmosphere, (store) => {
         startDraggingReflectionTeamUpdater(payload, {
           atmosphere,
-          dispatch,
           store,
           isLocal: true
         })
@@ -122,13 +117,13 @@ export const startDraggingReflectionTeamUpdater = (
 
   if (isViewerConflictLoser) {
     const name = getInProxy(reflection, 'dragContext', 'dragUser', 'preferredName')
-    dispatch(
-      showInfo({
-        autoDismiss: 5,
-        title: 'Interception!',
-        message: `${name} stole that reflection right from under your nose!`
-      })
-    )
+    // ideally this wouldn't be in the updater, but i don't wanna touch it because it's finicky MK
+    atmosphere.eventEmitter.emit('addToast', {
+      level: 'info',
+      autoDismiss: 5,
+      title: 'Interception!',
+      message: `${name} stole that reflection right from under your nose!`
+    })
     const {itemCache} = atmosphere.getMasonry()
     // setTimeout required because otherwise it will call the endDrag handler before isViewerDragging is set to false
     setTimeout(() => {
@@ -164,13 +159,12 @@ const StartDraggingReflectionMutation = (
     onCompleted,
     onError,
     updater: (store) => {
-      const {dispatch, initialCursorCoords} = context
+      const {initialCursorCoords} = context
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
       payload.getLinkedRecord('dragContext').setValue(true, 'isViewerDragging')
       const acceptIncoming = startDraggingReflectionTeamUpdater(payload, {
         atmosphere,
-        dispatch,
         store
       })
       if (!acceptIncoming) return

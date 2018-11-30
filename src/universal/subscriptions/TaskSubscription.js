@@ -2,7 +2,7 @@ import {createTaskTaskUpdater} from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from 'universal/mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from 'universal/mutations/EditTaskMutation'
 import {removeTeamMemberTasksUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
-import {updateTaskTaskUpdater} from 'universal/mutations/UpdateTaskMutation'
+import {updateTaskTaskOnNext, updateTaskTaskUpdater} from 'universal/mutations/UpdateTaskMutation'
 import {endMeetingTaskUpdater} from 'universal/mutations/EndMeetingMutation'
 import {removeOrgUserTaskUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {cancelApprovalTaskUpdater} from 'universal/mutations/CancelApprovalMutation'
@@ -35,8 +35,12 @@ const subscription = graphql`
   }
 `
 
-const TaskSubscription = (environment, queryVariables, {dispatch, history, location}) => {
-  const {viewerId} = environment
+const onNextHandlers = {
+  UpdateTaskPayload: updateTaskTaskOnNext
+}
+
+const TaskSubscription = (atmosphere, queryVariables, subParams) => {
+  const {viewerId} = atmosphere
   return {
     subscription,
     variables: {},
@@ -84,16 +88,19 @@ const TaskSubscription = (environment, queryVariables, {dispatch, history, locat
           removeOrgUserTaskUpdater(payload, store, viewerId)
           break
         case 'UpdateTaskPayload':
-          updateTaskTaskUpdater(payload, store, viewerId, {
-            dispatch,
-            history,
-            location
-          })
+          updateTaskTaskUpdater(payload, store, viewerId)
           break
         case 'UpdateTaskDueDatePayload':
           break
         default:
           console.error('TaskSubscription case fail', type)
+      }
+    },
+    onNext: ({taskSubscription}) => {
+      const {__typename: type} = taskSubscription
+      const handler = onNextHandlers[type]
+      if (handler) {
+        handler(taskSubscription, {...subParams, atmosphere})
       }
     }
   }

@@ -1,7 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
-import {connect} from 'react-redux'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Tag from 'universal/components/Tag/Tag'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -46,7 +45,6 @@ const targetAnchor = {
 const MeetingAvatarGroup = (props) => {
   const {
     atmosphere,
-    dispatch,
     gotoItem,
     isFacilitating,
     localPhase,
@@ -75,7 +73,7 @@ const MeetingAvatarGroup = (props) => {
             gotoItem(count)
           }
           const promoteToFacilitator = () => {
-            PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, dispatch)
+            PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, {})
           }
           const requestFacilitator = () => {
             RequestFacilitatorMutation(atmosphere, teamId)
@@ -128,7 +126,6 @@ const MeetingAvatarGroup = (props) => {
 
 MeetingAvatarGroup.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
   gotoItem: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
@@ -217,7 +214,7 @@ const styleThunk = () => ({
 })
 
 export default createFragmentContainer(
-  connect()(withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup))),
+  withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup)),
   graphql`
     fragment MeetingAvatarGroup_team on Team {
       teamId: id

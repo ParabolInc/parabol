@@ -65,15 +65,15 @@ export const createTaskTaskUpdater = (payload, store, viewerId, isEditing) => {
   handleUpsertTasks(task, store, viewerId)
 }
 
-export const createTaskNotificationUpdater = (payload, store, viewerId, options) => {
+export const createTaskNotificationOnNext = (payload, {atmosphere, history}) => {
+  if (!payload) return
+  popInvolvementToast(payload.involvementNotification, {atmosphere, history})
+}
+
+export const createTaskNotificationUpdater = (payload, store, viewerId) => {
   const notification = payload.getLinkedRecord('involvementNotification')
   if (!notification) return
   handleAddNotifications(notification, store, viewerId)
-
-  // No need to pass options for the mutation because you can't notify yourself of your involvement
-  if (options) {
-    popInvolvementToast(notification, options)
-  }
 }
 
 const CreateTaskMutation = (environment, newTask, area, onError, onCompleted) => {

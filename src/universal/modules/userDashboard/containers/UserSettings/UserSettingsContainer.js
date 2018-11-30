@@ -5,7 +5,6 @@ import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import {initialize, reduxForm} from 'redux-form'
 import withReducer from 'universal/decorators/withReducer/withReducer'
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck'
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings'
 import userSettingsReducer, {
   ACTIVITY_WELCOME,
@@ -71,7 +70,7 @@ class UserSettingsContainer extends Component {
           onError(serverError.message)
           return
         }
-        dispatch(showSuccess(updateSuccess))
+        atmosphere.eventEmitter.emit('addToast', updateSuccess)
         if (activity === ACTIVITY_WELCOME) {
           dispatch(clearActivity())
         }

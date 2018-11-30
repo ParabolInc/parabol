@@ -5,10 +5,8 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import styled from 'react-emotion'
 import {Helmet} from 'react-helmet'
 import withHotkey from 'react-hotkey-hoc'
-import {connect} from 'react-redux'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {Dispatch} from 'redux'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn'
 import NewMeetingLobby from 'universal/components/NewMeetingLobby'
@@ -142,7 +140,6 @@ const MeetingAreaHeader = styled('div')({
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutationProps {
   bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void
-  dispatch: Dispatch<any>
   meetingType: MeetingTypeEnum
   viewer: NewMeeting_viewer
 }
@@ -167,7 +164,6 @@ class NewMeeting extends Component<Props> {
   endMeeting = () => {
     const {
       atmosphere,
-      dispatch,
       history,
       viewer: {
         team: {newMeeting}
@@ -175,7 +171,7 @@ class NewMeeting extends Component<Props> {
     } = this.props
     if (!newMeeting) return
     const {meetingId} = newMeeting
-    EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history})
   }
 
   gotoStageId = async (
@@ -407,7 +403,7 @@ class NewMeeting extends Component<Props> {
 
 export default createFragmentContainer(
   dragDropContext(HTML5Backend)(
-    (connect() as any)(withHotkey(withAtmosphere(withMutationProps(withRouter(NewMeeting)))))
+    withHotkey(withAtmosphere(withMutationProps(withRouter(NewMeeting))))
   ),
   graphql`
     fragment NewMeeting_viewer on User {

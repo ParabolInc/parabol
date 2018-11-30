@@ -50,15 +50,7 @@ const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
 const requiresAction = (type): boolean => NOTIFICATION_TYPES_REQUIRING_ACTION.has(type)
 
 const Notifications = (props) => {
-  const {
-    atmosphere,
-    dispatch,
-    notifications,
-    submitMutation,
-    onCompleted,
-    onError,
-    submitting
-  } = props
+  const {atmosphere, notifications, submitMutation, onCompleted, onError, submitting} = props
 
   const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node.type))
   const clearAllNotifications = () => {
@@ -88,11 +80,7 @@ const Notifications = (props) => {
               {notifications.edges
                 .filter(({node}) => Boolean(node))
                 .map(({node}) => (
-                  <NotificationRow
-                    dispatch={dispatch}
-                    key={`notification${node.id}`}
-                    notification={node}
-                  />
+                  <NotificationRow key={`notification${node.id}`} notification={node} />
                 ))}
             </NotificationListBlock>
           ) : (
@@ -108,7 +96,6 @@ const Notifications = (props) => {
 
 Notifications.propTypes = {
   atmosphere: PropTypes.instanceOf(Atmosphere),
-  dispatch: PropTypes.func.isRequired,
   notifications: PropTypes.object,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,

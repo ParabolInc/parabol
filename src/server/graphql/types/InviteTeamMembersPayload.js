@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {
   makeResolveNotificationForViewer,
   resolveTasks,
@@ -53,7 +53,7 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
     },
     // annoucement fields
     reactivatedTeamMembers: {
-      type: new GraphQLList(TeamMember),
+      type: new GraphQLList(new GraphQLNonNull(TeamMember)),
       description: 'The list of emails that turned out to be reactivated team members',
       resolve: ({reactivatedTeamMemberIds}, args, {dataLoader}) => {
         if (!reactivatedTeamMemberIds || reactivatedTeamMemberIds.length === 0) {
@@ -63,7 +63,7 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       }
     },
     invitationsSent: {
-      type: new GraphQLList(Invitation),
+      type: new GraphQLList(new GraphQLNonNull(Invitation)),
       description: 'The list of invitations successfully sent out',
       resolve: ({invitationIds}, args, {dataLoader}) => {
         if (!invitationIds || invitationIds.length === 0) return null
@@ -71,7 +71,7 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       }
     },
     orgApprovalsSent: {
-      type: new GraphQLList(OrgApproval),
+      type: new GraphQLList(new GraphQLNonNull(OrgApproval)),
       description: 'The list of orgApprovals sent to the org leader',
       resolve: ({orgApprovalIds}, args, {dataLoader}) => {
         if (!orgApprovalIds || orgApprovalIds.length === 0) return null
@@ -79,7 +79,7 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       }
     },
     orgApprovalsRemoved: {
-      type: new GraphQLList(OrgApproval),
+      type: new GraphQLList(new GraphQLNonNull(OrgApproval)),
       description:
         'The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval',
       resolve: ({removedOrgApprovalIds}, args, {dataLoader}) => {
@@ -90,13 +90,13 @@ const InviteTeamMembersPayload = new GraphQLObjectType({
       }
     },
     newSoftTeamMembers: {
-      type: new GraphQLList(SoftTeamMember),
+      type: new GraphQLList(new GraphQLNonNull(SoftTeamMember)),
       description:
         'The new invitees who have yet to accept the invite or get approved to receive an invite',
       resolve: resolveSoftTeamMembers
     },
     unarchivedSoftTasks: {
-      type: new GraphQLList(Task),
+      type: new GraphQLList(new GraphQLNonNull(Task)),
       description: 'Any tasks that were recently assigned to a reactivated soft team member',
       resolve: resolveTasks
     }

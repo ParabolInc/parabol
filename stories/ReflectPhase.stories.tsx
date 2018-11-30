@@ -63,6 +63,7 @@ storiesOf('Reflect Phase', module)
         phaseItemId='pi1'
         phaseRef={undefined as any}
         phaseEditorRef={undefined as any}
+        readOnly={false}
       />
     </StoryProvider>
   ))

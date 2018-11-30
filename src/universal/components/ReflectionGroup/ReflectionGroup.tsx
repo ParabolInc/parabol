@@ -250,7 +250,6 @@ class ReflectionGroup extends Component<Props> {
   ) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
-    const {isViewerDragInProgress} = meeting
     return (
       <DraggableReflectionCard
         // @ts-ignore
@@ -263,7 +262,6 @@ class ReflectionGroup extends Component<Props> {
         reflection={reflection}
         setItemRef={setItemRef}
         isSingleCardGroup={reflections.length === 1}
-        isViewerDragInProgress={isViewerDragInProgress}
       />
     )
   }

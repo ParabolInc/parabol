@@ -4,7 +4,6 @@
  */
 import promisify from 'es6-promisify'
 import React, {Component} from 'react'
-import {Dispatch} from 'redux'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -19,9 +18,7 @@ import CreateAccount from './CreateAccount'
 import autoLogin from 'universal/decorators/autoLogin'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
 
-interface Props extends WithAtmosphereProps {
-  dispatch: Dispatch<any>
-}
+interface Props extends WithAtmosphereProps {}
 
 interface State {
   error: string | null

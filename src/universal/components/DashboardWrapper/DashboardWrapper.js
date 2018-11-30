@@ -44,6 +44,7 @@ const teamRoot = () =>
 const newTeam = () =>
   import(/* webpackChunkName: 'NewTeamRoot' */ 'universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot')
 
+// TODO remove dispatch when we completely remove redux (welcome, filters, etc. still need it)
 const subscriptions = [
   NewAuthTokenSubscription,
   NotificationSubscription,

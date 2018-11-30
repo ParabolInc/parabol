@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
-import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import InvitationRow from 'universal/components/InvitationRow'
@@ -42,7 +41,6 @@ const PanelRow = styled('div')({
 class TeamSettings extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     viewer: PropTypes.object.isRequired
   }
@@ -50,7 +48,6 @@ class TeamSettings extends Component {
   render () {
     const {
       atmosphere: {viewerId},
-      dispatch,
       history,
       viewer: {team}
     } = this.props
@@ -85,7 +82,7 @@ class TeamSettings extends Component {
           )}
           <Panel label='Manage Team'>
             <PanelInner>
-              <InviteUser dispatch={dispatch} team={team} />
+              <InviteUser team={team} />
               {teamMembers.map((teamMember) => {
                 const {teamMemberId, userId} = teamMember
                 return (
@@ -134,7 +131,7 @@ class TeamSettings extends Component {
 }
 
 export default createFragmentContainer(
-  withAtmosphere(withRouter(connect()(TeamSettings))),
+  withAtmosphere(withRouter(TeamSettings)),
   graphql`
     fragment TeamSettings_viewer on User {
       team(teamId: $teamId) {

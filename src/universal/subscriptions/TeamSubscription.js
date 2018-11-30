@@ -1,18 +1,27 @@
 import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
-import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
+import {
+  addOrgMutationNotificationOnNext,
+  addOrgMutationNotificationUpdater
+} from 'universal/mutations/AddOrgMutation'
 import {
   addTeamMutationNotificationUpdater,
   addTeamTeamUpdater
 } from 'universal/mutations/AddTeamMutation'
-import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation'
+import {
+  archiveTeamTeamOnNext,
+  archiveTeamTeamUpdater
+} from 'universal/mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation'
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation'
 import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation'
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation'
-import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation'
+import {promoteFacilitatorTeamOnNext} from 'universal/mutations/PromoteFacilitatorMutation'
 import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation'
-import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
-import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation'
+import {
+  removeTeamMemberTeamOnNext,
+  removeTeamMemberTeamUpdater
+} from 'universal/mutations/RemoveTeamMemberMutation'
+import {requestFacilitatorTeamOnNext} from 'universal/mutations/RequestFacilitatorMutation'
 import {
   removeOrgUserTeamOnNext,
   removeOrgUserTeamUpdater
@@ -90,15 +99,20 @@ const subscription = graphql`
 
 const onNextHandlers = {
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
+  AddOrgCreatorPayload: addOrgMutationNotificationOnNext,
+  ArchiveTeamPayload: archiveTeamTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
+  PromoteFacilitatorPayload: promoteFacilitatorTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
-  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext
+  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
+  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
+  RequestFacilitatorPayload: requestFacilitatorTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams
+  const {history} = subParams
   const {viewerId} = environment
   return {
     subscription,
@@ -107,13 +121,12 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const payload = store.getRootField('teamSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
-      const options = {store, environment, dispatch, history, location}
       switch (type) {
         case 'AcceptTeamInvitePayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId)
           break
         case 'AddOrgCreatorPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId, options)
+          addOrgMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'AddReflectTemplatePayload':
           addReflectTemplateTeamUpdater(payload, {store})
@@ -122,7 +135,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           addReflectTemplatePromptTeamUpdater(payload, {store})
           break
         case 'AddTeamCreatorPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId, options)
+          addTeamMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'AutoGroupReflectionsPayload':
           autoGroupReflectionsTeamUpdater(payload, {atmosphere: environment, store})
@@ -138,23 +151,19 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'DragDiscussionTopicPayload':
           dragDiscussionTopicTeamUpdater(payload, {store})
           break
-        case 'RemoveTeamMemberSelfPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
-          break
         case 'RequestFacilitatorPayload':
-          requestFacilitatorTeamUpdater(payload, options)
           break
         case 'AddTeamMutationPayload':
           addTeamTeamUpdater(payload, store, viewerId)
           break
         case 'ArchiveTeamPayload':
-          archiveTeamTeamUpdater(payload, store, viewerId, options)
+          archiveTeamTeamUpdater(payload, store, viewerId)
           break
         case 'EditReflectionPayload':
           editReflectionTeamUpdater(payload, store)
           break
         case 'EndMeetingPayload':
-          endMeetingTeamUpdater(payload, options)
+          endMeetingTeamUpdater(payload, {atmosphere: environment, history})
           break
         case 'EndNewMeetingPayload':
           break
@@ -177,7 +186,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'NewMeetingCheckInPayload':
           break
         case 'PromoteFacilitatorPayload':
-          promoteFacilitatorTeamUpdater(payload, viewerId, dispatch)
           break
         case 'PromoteNewMeetingFacilitatorPayload':
           break
@@ -194,21 +202,18 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           removeReflectionTeamUpdater(payload, store)
           break
         case 'RemoveTeamMemberPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
+          removeTeamMemberTeamUpdater(payload, store, viewerId)
           break
         case 'RenameReflectTemplatePayload':
           break
         case 'RenameReflectTemplatePromptPayload':
-          break
-        case 'RequestFaciltatorPayload':
-          requestFacilitatorTeamUpdater(payload, options)
           break
         case 'SelectRetroTemplatePayload':
           break
         case 'SetPhaseFocusPayload':
           break
         case 'StartDraggingReflectionPayload':
-          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, dispatch, store})
+          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'StartMeetingPayload':
           break

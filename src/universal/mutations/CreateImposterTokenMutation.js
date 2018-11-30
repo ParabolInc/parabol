@@ -1,7 +1,6 @@
 import {commitMutation} from 'react-relay'
 import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
 import signout from 'universal/containers/Signout/signout'
-import {showError} from 'universal/modules/toast/ducks/toastDuck'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
 graphql`
@@ -26,12 +25,16 @@ const mutation = graphql`
   }
 `
 
-const CreateImposterTokenMutation = (environment, userId, {dispatch, history, location}) => {
+const CreateImposterTokenMutation = (atmosphere, userId, {dispatch, history, location}) => {
   const onError = (err) => {
-    dispatch(showError({title: 'Whoa there!', message: err.message}))
+    atmosphere.eventEmitter.emit('addToast', {
+      level: 'error',
+      title: 'Whoa there!',
+      message: err.message
+    })
   }
 
-  return commitMutation(environment, {
+  return commitMutation(atmosphere, {
     mutation,
     variables: {userId},
     onCompleted: async (res, errors) => {
@@ -44,10 +47,10 @@ const CreateImposterTokenMutation = (environment, userId, {dispatch, history, lo
       const {authToken} = createImposterToken
 
       // Reset application state:
-      await signout(environment, dispatch)
+      await signout(atmosphere, dispatch)
 
       // Assume the identity of the new user:
-      await signinAndUpdateToken(environment, dispatch, history, location, authToken)
+      await signinAndUpdateToken(atmosphere, history, location, authToken)
 
       // Navigate to a default location, the application root:
       history.replace('/')

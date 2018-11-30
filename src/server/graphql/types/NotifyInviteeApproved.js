@@ -23,7 +23,7 @@ const NotifyInviteeApproved = new GraphQLObjectType({
       }
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       resolve: resolveTeam
     },
     ...notificationInterfaceFields

@@ -6,7 +6,6 @@ import ui from 'universal/styles/ui'
 import avatarUser from 'universal/styles/theme/images/add-round-button.svg'
 import InviteTeamMembersMutation from 'universal/mutations/InviteTeamMembersMutation'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {connect} from 'react-redux'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import {emailRegex} from 'universal/validation/regex'
@@ -47,7 +46,6 @@ class AddSoftTeamMember extends Component {
     dirty: PropTypes.bool.isRequired,
     setDirty: PropTypes.func.isRequired,
     closePortal: PropTypes.func.isRequired,
-    dispatch: PropTypes.func.isRequired,
     isActive: PropTypes.bool.isRequired,
     menuRef: PropTypes.instanceOf(window.Element),
     taskId: PropTypes.string.isRequired,
@@ -81,7 +79,6 @@ class AddSoftTeamMember extends Component {
       atmosphere,
       closePortal,
       setDirty,
-      dispatch,
       taskId,
       submitting,
       submitMutation,
@@ -120,7 +117,7 @@ class AddSoftTeamMember extends Component {
       }
       UpdateTaskMutation(atmosphere, updatedTask, area, onCompleted, onError)
     }
-    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch, onError, handleCompleted)
+    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, {}, onError, handleCompleted)
   }
 
   onChange = (e) => {
@@ -238,7 +235,7 @@ const styleThunk = () => ({
 })
 
 export default createFragmentContainer(
-  withMutationProps(connect()(withAtmosphere(withStyles(styleThunk)(AddSoftTeamMember)))),
+  withMutationProps(withAtmosphere(withStyles(styleThunk)(AddSoftTeamMember))),
   graphql`
     fragment AddSoftTeamMember_team on Team {
       teamId: id

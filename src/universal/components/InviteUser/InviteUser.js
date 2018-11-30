@@ -44,7 +44,7 @@ const FieldBlock = styled('div')({
 })
 
 const InviteUser = (props) => {
-  const {atmosphere, dispatch, handleSubmit, submitting, team, touch, untouch} = props
+  const {atmosphere, handleSubmit, submitting, team, touch, untouch} = props
   const {teamId} = team
 
   const updateEditable = async (submissionData) => {
@@ -58,7 +58,7 @@ const InviteUser = (props) => {
       throw new SubmissionError(errors)
     }
     const invitees = [{email: inviteTeamMember}]
-    InviteTeamMembersMutation(atmosphere, {invitees, teamId}, dispatch)
+    InviteTeamMembersMutation(atmosphere, {invitees, teamId})
   }
   return (
     <InviteRow>
@@ -85,7 +85,6 @@ const InviteUser = (props) => {
 InviteUser.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   actions: PropTypes.any,
-  dispatch: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   onInviteSubmitted: PropTypes.func,
   picture: PropTypes.string,

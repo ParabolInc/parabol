@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import portal from 'react-portal-hoc'
-import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import Type from 'universal/components/Type/Type'
@@ -17,28 +16,14 @@ const StyledButton = styled(FlatButton)({
 })
 
 const LeaveTeamModal = (props) => {
-  const {
-    atmosphere,
-    closeAfter,
-    closePortal,
-    dispatch,
-    isClosing,
-    location,
-    history,
-    teamLead,
-    teamMember
-  } = props
+  const {atmosphere, closeAfter, closePortal, isClosing, history, teamLead, teamMember} = props
   const {teamMemberId} = teamMember
   const teamLeadName = teamLead ? teamLead.preferredName : 'your leader'
   const handleClick = () => {
     // the KICKED_OUT message will handle this anyways, but it's great to do it here to avoid the ducks of doom
     history.push('/me')
     closePortal()
-    RemoveTeamMemberMutation(atmosphere, teamMemberId, {
-      dispatch,
-      location,
-      history
-    })
+    RemoveTeamMemberMutation(atmosphere, teamMemberId)
   }
   return (
     <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
@@ -61,20 +46,16 @@ LeaveTeamModal.propTypes = {
   atmosphere: PropTypes.object.isRequired,
   closeAfter: PropTypes.number,
   closePortal: PropTypes.func,
-  dispatch: PropTypes.func,
   inputModal: PropTypes.bool,
   isClosing: PropTypes.bool,
   onBackdropClick: PropTypes.func,
   history: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  team: PropTypes.object.isRequired,
   teamMember: PropTypes.object.isRequired
 }
 
 export default createFragmentContainer(
-  portal({escToClose: true, closeAfter: 100})(
-    connect()(withAtmosphere(withRouter(LeaveTeamModal)))
-  ),
+  portal({escToClose: true, closeAfter: 100})(withAtmosphere(withRouter(LeaveTeamModal))),
   graphql`
     fragment LeaveTeamModal_teamLead on TeamMember {
       preferredName

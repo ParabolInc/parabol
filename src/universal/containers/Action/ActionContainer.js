@@ -7,7 +7,6 @@ import globalStyles from 'universal/styles/theme/globalStyles'
 
 class ActionContainer extends Component {
   static propTypes = {
-    dispatch: PropTypes.func,
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired
     }).isRequired,

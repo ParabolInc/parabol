@@ -34,7 +34,7 @@ import {
 
 export const notificationInterfaceFields = {
   id: {
-    type: GraphQLID,
+    type: new GraphQLNonNull(GraphQLID),
     description: 'A shortid for the notification'
   },
   orgId: {

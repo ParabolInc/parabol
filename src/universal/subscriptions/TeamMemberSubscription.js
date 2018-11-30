@@ -1,5 +1,11 @@
-import {acceptTeamInviteTeamMemberUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
-import {inviteTeamMembersTeamMemberUpdater} from 'universal/mutations/InviteTeamMembersMutation'
+import {
+  acceptTeamInviteTeamMemberOnNext,
+  acceptTeamInviteTeamMemberUpdater
+} from 'universal/mutations/AcceptTeamInviteMutation'
+import {
+  inviteTeamMembersTeamMemberOnNext,
+  inviteTeamMembersTeamMemberUpdater
+} from 'universal/mutations/InviteTeamMembersMutation'
 import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
 import {removeOrgUserTeamMemberUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {cancelApprovalTeamMemberUpdater} from 'universal/mutations/CancelApprovalMutation'
@@ -10,23 +16,27 @@ const subscription = graphql`
   subscription TeamMemberSubscription {
     teamMemberSubscription {
       __typename
-      ...AcceptTeamInviteMutation_teamMember
-      ...CancelApprovalMutation_teamMember
-      ...CancelTeamInviteMutation_teamMember
-      ...InviteTeamMembersMutation_teamMember
-      ...MeetingCheckInMutation_teamMember
-      ...PromoteToTeamLeadMutation_teamMember
-      ...RejectOrgApprovalMutation_teamMember
-      ...RemoveOrgUserMutation_teamMember
-      ...RemoveTeamMemberMutation_teamMember
-      ...UpdateUserProfileMutation_teamMember
+      ...AcceptTeamInviteMutation_teamMember @relay(mask: false)
+      ...CancelApprovalMutation_teamMember @relay(mask: false)
+      ...CancelTeamInviteMutation_teamMember @relay(mask: false)
+      ...InviteTeamMembersMutation_teamMember @relay(mask: false)
+      ...MeetingCheckInMutation_teamMember @relay(mask: false)
+      ...PromoteToTeamLeadMutation_teamMember @relay(mask: false)
+      ...RejectOrgApprovalMutation_teamMember @relay(mask: false)
+      ...RemoveOrgUserMutation_teamMember @relay(mask: false)
+      ...RemoveTeamMemberMutation_teamMember @relay(mask: false)
+      ...UpdateUserProfileMutation_teamMember @relay(mask: false)
     }
   }
 `
+const onNextHandlers = {
+  AcceptTeamInvitePayload: acceptTeamInviteTeamMemberOnNext,
+  InviteTeamMembersPayload: inviteTeamMembersTeamMemberOnNext
+}
 
-const TeamMemberSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch} = subParams
-  const {viewerId} = environment
+const TeamMemberSubscription = (atmosphere, queryVariables, subParams) => {
+  const {viewerId} = atmosphere
+  const context = {...subParams, atmosphere}
   return {
     subscription,
     variables: {},
@@ -36,7 +46,7 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
       const type = payload.getValue('__typename')
       switch (type) {
         case 'AcceptTeamInvitePayload':
-          acceptTeamInviteTeamMemberUpdater(payload, store, viewerId, dispatch)
+          acceptTeamInviteTeamMemberUpdater(payload, store)
           break
         case 'CancelApprovalPayload':
           cancelApprovalTeamMemberUpdater(payload, store)
@@ -45,7 +55,7 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
           cancelTeamInviteTeamMemberUpdater(payload, store)
           break
         case 'InviteTeamMembersPayload':
-          inviteTeamMembersTeamMemberUpdater(payload, store, dispatch)
+          inviteTeamMembersTeamMemberUpdater(payload, store)
           break
         case 'MeetingCheckInPayload':
           break
@@ -64,6 +74,13 @@ const TeamMemberSubscription = (environment, queryVariables, subParams) => {
           break
         default:
           console.error('TeamMemberSubscription case fail', type)
+      }
+    },
+    onNext: ({teamMemberSubscription}) => {
+      const {__typename: type} = teamMemberSubscription
+      const handler = onNextHandlers[type]
+      if (handler) {
+        handler(teamMemberSubscription, context)
       }
     }
   }
