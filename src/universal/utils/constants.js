@@ -183,6 +183,7 @@ export const NEW_AUTH_TOKEN = 'newAuthToken'
 export const NOTIFICATION = 'notification'
 export const ORGANIZATION = 'organization'
 export const ORG_APPROVAL = 'orgApproval'
+export const INTEGRATION = 'integration'
 // export const TASK = 'task'; // TODO refactor so it doesn't conflict with DnD
 // export const MEETING = 'meeting'; // conflicts with area
 // export const AGENDA_ITEM = 'agendaItem'; // conflict

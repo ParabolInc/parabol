@@ -1,6 +1,7 @@
 import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import FlatButton from 'universal/components/FlatButton'
 import Icon from 'universal/components/Icon'
@@ -11,14 +12,15 @@ import withAtmosphere, {
 import IntegrationRow from 'universal/modules/teamDashboard/components/IntegrationRow/IntegrationRow'
 import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation'
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation'
+import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation'
 import formError from 'universal/styles/helpers/formError'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import fromGlobalId from 'universal/utils/relay/fromGlobalId'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation'
-import fromGlobalId from 'universal/utils/relay/fromGlobalId'
+import {GitHubRepoRow_repo} from '__generated__/GitHubRepoRow_repo.graphql'
 
 const StyledButton = styled(FlatButton)({
   marginLeft: ui.rowGutter,
@@ -67,19 +69,9 @@ const StyledIcon = styled(Icon)({
   marginLeft: '.5rem'
 })
 
-interface RowRepo {
-  id: string
-  adminUserId: string
-  nameWithOwner: string
-  viewerCanAdminister: boolean
-  teamMembers: Array<{
-    id: string
-  }>
-}
-
 interface Props extends WithAtmosphereProps, WithMutationProps {
-  accessToken: string
-  repo: RowRepo
+  accessToken: string | null
+  repo: GitHubRepoRow_repo
   teamId: string
 }
 
@@ -93,7 +85,11 @@ class GitHubRepoRow extends Component<Props> {
     if (submitting) return
     submitMutation()
     const githubIntegrationId = fromGlobalId(repo.id).id
-    RemoveGitHubRepoMutation(atmosphere, {githubIntegrationId}, {teamId}, onError, onCompleted)
+    const handleCompleted = () => {
+      onCompleted()
+      atmosphere.eventEmitter.emit('removeGitHubRepo')
+    }
+    RemoveGitHubRepoMutation(atmosphere, {githubIntegrationId}, {teamId}, onError, handleCompleted)
   }
 
   toggleIntegrationMembership = (githubGlobalId) => () => {
@@ -130,7 +126,7 @@ class GitHubRepoRow extends Component<Props> {
               href={`https://github.com/${nameWithOwner}`}
               rel='noopener noreferrer'
               target='_blank'
-              title={nameWithOwner}
+              title={nameWithOwner || ''}
             >
               {nameWithOwner}
               <StyledIcon>{ui.iconExternalLink}</StyledIcon>
@@ -163,4 +159,18 @@ class GitHubRepoRow extends Component<Props> {
   }
 }
 
-export default withAtmosphere(withMutationProps(GitHubRepoRow))
+export default createFragmentContainer(
+  withAtmosphere(withMutationProps(GitHubRepoRow)),
+  graphql`
+    fragment GitHubRepoRow_repo on GitHubIntegration {
+      id
+      adminUserId
+      nameWithOwner
+      teamMembers {
+        id
+        preferredName
+        picture
+      }
+    }
+  `
+)

@@ -6,7 +6,7 @@ import {GITHUB} from 'universal/utils/constants'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
-  type: new GraphQLList(GitHubIntegration),
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitHubIntegration))),
   description: 'list of git hub repos available to the viewer',
   args: {
     teamId: {
@@ -28,5 +28,6 @@ export default {
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('nameWithOwner')
+      .default([])
   }
 }

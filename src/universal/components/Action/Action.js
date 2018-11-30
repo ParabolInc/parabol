@@ -41,6 +41,8 @@ const demoMeeting = () =>
   import(/* webpackChunkName: 'DemoMeeting' */ 'universal/components/DemoMeeting')
 const demoSummary = () =>
   import(/* webpackChunkName: 'DemoSummary' */ 'universal/components/DemoSummary')
+const authProvider = () =>
+  import(/* webpackChunkName: 'AuthProvider' */ 'universal/components/AuthProvider')
 
 const ActionStyles = styled('div')({
   margin: 0,
@@ -60,6 +62,7 @@ const Action = () => {
         <AsyncRoute exact path={`/${SIGNIN_SLUG}`} mod={signInPage} />
         <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
         <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
+        <AsyncRoute exact path={`/auth/:provider`} mod={authProvider} />
         <AsyncRoute
           path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
           mod={demoMeeting}

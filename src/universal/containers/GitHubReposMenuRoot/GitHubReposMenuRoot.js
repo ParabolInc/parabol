@@ -6,8 +6,6 @@ import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAdded
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription'
 import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription'
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription'
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription'
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
 import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants'
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
@@ -20,6 +18,7 @@ import {
 import Loadable from 'react-loadable'
 import LoadableLoading from 'universal/components/LoadableLoading'
 import RelayLoadableTransitionGroup from 'universal/components/RelayLoadableTransitionGroup'
+import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
 const githubRepoQuery = graphql`
   query GitHubReposMenuRootQuery($teamId: ID!) {
@@ -45,8 +44,7 @@ const subscriptions = [
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
   GitHubMemberRemovedSubscription,
-  ProviderRemovedSubscription,
-  ProviderAddedSubscription,
+  IntegrationSubscription,
   IntegrationLeftSubscription(GITHUB),
   IntegrationJoinedSubscription(GITHUB)
 ]
@@ -71,6 +69,7 @@ const GitHubReposMenuRoot = (rootProps) => {
       query={githubRepoQuery}
       variables={{teamId, service: GITHUB}}
       subscriptions={subscriptions}
+      subParams={{teamId}}
       render={(readyState) => (
         <RelayLoadableTransitionGroup
           LoadableComponent={LoadableGitHubRepoListMenu}

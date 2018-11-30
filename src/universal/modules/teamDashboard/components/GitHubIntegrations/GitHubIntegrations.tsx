@@ -1,22 +1,26 @@
-import PropTypes from 'prop-types'
+import {GitHubIntegrations_viewer} from '__generated__/GitHubIntegrations_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo'
-import GitHubRepoRow from 'universal/modules/teamDashboard/components/GitHubRepoRow'
-import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack'
-import {providerLookup} from 'universal/modules/teamDashboard/components/ProviderRow/ProviderRow'
-import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
-import ui from 'universal/styles/ui'
-import {GITHUB} from 'universal/utils/constants'
-import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
+import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
-import RaisedButton from 'universal/components/RaisedButton'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import Panel from 'universal/components/Panel/Panel'
+import RaisedButton from 'universal/components/RaisedButton'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
-import styled from 'react-emotion'
+import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import AddGitHubRepo from 'universal/modules/teamDashboard/AddGitHubRepo/AddGitHubRepo'
+import GitHubRepoRow from 'universal/modules/teamDashboard/components/GitHubRepoRow'
+import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack'
+import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
+import ui from 'universal/styles/ui'
+import {GITHUB} from 'universal/utils/constants'
+import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 const ProviderDetails = styled(Row)({
   border: 0,
@@ -52,22 +56,25 @@ const AddGitHubButton = styled(RaisedButton)({
   marginBottom: ui.rowGutter
 })
 
-const {makeUri} = providerLookup[GITHUB]
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  teamId: string
+  viewer: GitHubIntegrations_viewer
+}
 
-const GitHubIntegrations = (props) => {
-  const {
-    relay: {environment},
-    jwt,
-    teamId,
-    viewer
-  } = props
+const GitHubIntegrations = (props: Props) => {
+  const {teamId, viewer, submitting, submitMutation, atmosphere, onError, onCompleted} = props
   const {githubRepos, integrationProvider} = viewer
   const accessToken = integrationProvider && integrationProvider.accessToken
   const providerUserName = integrationProvider && integrationProvider.providerUserName
-  const openOauth = () => {
-    const uri = makeUri(jwt, teamId)
-    window.open(uri)
-  }
+  const openOAuth = handleOpenOAuth({
+    name: GITHUB,
+    submitting,
+    submitMutation,
+    atmosphere,
+    onError,
+    onCompleted,
+    teamId
+  })
   return (
     <SettingsWrapper>
       <IntegrationsNavigateBack teamId={teamId} />
@@ -84,13 +91,20 @@ const GitHubIntegrations = (props) => {
           <RowActions>
             <FlatButton
               onClick={() =>
-                RemoveProviderMutation(environment, integrationProvider.id, GITHUB, teamId)
+                RemoveProviderMutation(
+                  atmosphere,
+                  {
+                    providerId: integrationProvider && integrationProvider.id,
+                    teamId
+                  },
+                  {service: GITHUB, onError, onCompleted}
+                )
               }
               palette='mid'
             >
               {'Remove GitHub'}
             </FlatButton>
-            <FlatButton onClick={openOauth} palette='mid'>
+            <FlatButton onClick={openOAuth} palette='mid'>
               {`Refresh Token for ${providerUserName}`}
             </FlatButton>
           </RowActions>
@@ -102,7 +116,7 @@ const GitHubIntegrations = (props) => {
             <AddGitHubRepo accessToken={accessToken} teamId={teamId} subbedRepos={githubRepos} />
           </Row>
         ) : (
-          <AddGitHubButton size='medium' onClick={openOauth} palette='warm'>
+          <AddGitHubButton size='medium' onClick={openOAuth} palette='warm'>
             {'Authorize GitHub to Add a Repo'}
           </AddGitHubButton>
         )}
@@ -118,15 +132,8 @@ const GitHubIntegrations = (props) => {
   )
 }
 
-GitHubIntegrations.propTypes = {
-  jwt: PropTypes.string.isRequired,
-  relay: PropTypes.object.isRequired,
-  viewer: PropTypes.object.isRequired,
-  teamId: PropTypes.string.isRequired
-}
-
 export default createFragmentContainer(
-  GitHubIntegrations,
+  withAtmosphere(withMutationProps(GitHubIntegrations)),
   graphql`
     fragment GitHubIntegrations_viewer on User {
       integrationProvider(teamId: $teamId, service: $service) {
@@ -136,13 +143,8 @@ export default createFragmentContainer(
       }
       githubRepos(teamId: $teamId) {
         id
-        adminUserId
-        nameWithOwner
-        teamMembers {
-          id
-          preferredName
-          picture
-        }
+        ...AddGitHubRepo_subbedRepos
+        ...GitHubRepoRow_repo
       }
     }
   `

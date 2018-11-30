@@ -1,30 +1,45 @@
-// import {updateProviderMapUpdater} from 'universal/mutations/RemoveProviderMutation';
-const subscription = graphql`
-  subscription ProviderAddedSubscription($teamId: ID!) {
-    providerAdded(teamId: $teamId) {
-      providerRow {
-        service
-        accessToken
-        userCount
-        integrationCount
-      }
-      provider {
-        id
-        accessToken
-        providerUserName
-        service
-      }
-      joinedIntegrationIds
-      teamMember {
-        id
-        preferredName
-        picture
-      }
+import {commitMutation, graphql} from 'react-relay'
+import {IAddProviderOnMutationArguments} from '../types/graphql'
+import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
+
+graphql`
+  fragment AddProviderMutation_integration on AddProviderPayload {
+    providerRow {
+      service
+      accessToken
+      userCount
+      integrationCount
+    }
+    provider {
+      id
+      accessToken
+      providerUserName
+      service
+      userId
+    }
+    joinedIntegrationIds
+    teamMember {
+      id
+      preferredName
+      picture
     }
   }
 `
 
-const addProviderUpdater = (store, viewer, teamId, payload) => {
+const mutation = graphql`
+  mutation AddProviderMutation($code: ID!, $service: IntegrationService!, $teamId: ID!) {
+    addProvider(code: $code, service: $service, teamId: $teamId) {
+      error {
+        message
+      }
+      ...AddProviderMutation_integration @relay(mask: false)
+    }
+  }
+`
+
+export const addProviderIntegrationUpdater = (payload, store, {atmosphere, teamId}) => {
+  const {viewerId} = atmosphere
+  const viewer = store.get(viewerId)
   const newIntegrationProvider = payload.getLinkedRecord('provider')
   const newProviderRow = payload.getLinkedRecord('providerRow')
   const service = newProviderRow.getValue('service')
@@ -61,19 +76,25 @@ const addProviderUpdater = (store, viewer, teamId, payload) => {
   }
 }
 
-const ProviderAddedSubscription = (environment, queryVariables) => {
-  const {viewerId} = environment
-  const {teamId} = queryVariables
-  return {
-    subscription,
-    variables: {teamId},
+const AddProviderMutation = (
+  atmosphere,
+  variables: IAddProviderOnMutationArguments,
+  _context,
+  onError: ErrorHandler,
+  onCompleted: CompletedHandler
+) => {
+  const {teamId} = variables
+  return commitMutation(atmosphere, {
+    mutation,
+    variables,
     updater: (store) => {
-      const payload = store.getRootField('providerAdded')
+      const payload = store.getRootField('addProvider')
       if (!payload) return
-      const viewer = store.get(viewerId)
-      addProviderUpdater(store, viewer, teamId, payload)
-    }
-  }
+      addProviderIntegrationUpdater(payload, store, {atmosphere, teamId})
+    },
+    onCompleted,
+    onError
+  })
 }
 
-export default ProviderAddedSubscription
+export default AddProviderMutation

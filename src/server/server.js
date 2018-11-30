@@ -13,10 +13,8 @@ import connectionHandler from './socketHandlers/wssConnectionHandler'
 import httpGraphQLHandler from './graphql/httpGraphQLHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import getDotenv from '../universal/utils/dotenv'
-import handleIntegration from './integrations/handleIntegration'
 import sendICS from './sendICS'
 import './polyfills'
-import {GITHUB, SLACK} from '../universal/utils/constants'
 import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks'
 import SharedDataLoader from 'shared-dataloader'
 import {Server} from 'uws'
@@ -149,8 +147,6 @@ app.get('/email/createics', sendICS)
 // stripe webhooks
 app.post('/stripe', stripeWebhookHandler(sharedDataLoader))
 
-app.get('/auth/github', handleIntegration(GITHUB))
-app.get('/auth/slack', handleIntegration(SLACK))
 app.post('/webhooks/github', handleGitHubWebhooks)
 
 // app.post('/rtc-fallback', WRTCFallbackHandler(sharedDataLoader, rateLimiter))

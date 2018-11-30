@@ -147,7 +147,7 @@ export interface IUser {
   /**
    * list of git hub repos available to the viewer
    */
-  githubRepos: Array<IGitHubIntegration | null> | null
+  githubRepos: Array<IGitHubIntegration>
 
   /**
    * get an integration provider belonging to the user
@@ -184,7 +184,7 @@ export interface IUser {
   /**
    * paginated list of slackChannels
    */
-  slackChannels: Array<ISlackIntegration | null> | null
+  slackChannels: Array<ISlackIntegration>
 
   /**
    * get a single organization and the count of users by status
@@ -1915,7 +1915,7 @@ export interface IGitHubIntegration {
   /**
    * The users that can CRUD this integration
    */
-  teamMembers: Array<ITeamMember | null> | null
+  teamMembers: Array<ITeamMember>
 
   /**
    * The datetime the integration was updated
@@ -2435,7 +2435,7 @@ export interface IProviderRow {
   __typename: 'ProviderRow'
 
   /**
-   * The ID of an object
+   * composite keyID
    */
   id: string
 
@@ -2447,12 +2447,12 @@ export interface IProviderRow {
   /**
    * The count of all the people on the team that have linked their account to the provider
    */
-  userCount: number | null
+  userCount: number
 
   /**
    * The number of integrations under this provider for the team
    */
-  integrationCount: number | null
+  integrationCount: number
 
   /**
    * The username according to the provider
@@ -2528,7 +2528,7 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addOrg: IAddOrgPayload | null
-  addProvider: boolean | null
+  addProvider: IAddProviderPayload
   addSlackChannel: IAddSlackChannelPayload
 
   /**
@@ -3005,8 +3005,8 @@ export interface IAddOrgOnMutationArguments {
 
 export interface IAddProviderOnMutationArguments {
   code: string
-  state: string
   service: IntegrationService
+  teamId: string
 }
 
 export interface IAddSlackChannelOnMutationArguments {
@@ -3946,6 +3946,19 @@ export interface IAddOrgPayload {
    * The invitation sent when an team was being created
    */
   teamInviteNotification: INotifyTeamInvite | null
+}
+
+export interface IAddProviderPayload {
+  __typename: 'AddProviderPayload'
+  error: IStandardMutationError | null
+  providerRow: IProviderRow | null
+  provider: IProvider | null
+
+  /**
+   * All the integrationIds that the provider has successfully joined
+   */
+  joinedIntegrationIds: Array<string> | null
+  teamMember: ITeamMember | null
 }
 
 export interface IAddSlackChannelInput {
@@ -5537,17 +5550,17 @@ export interface IRemoveAgendaItemPayload {
 export interface IRemoveProviderPayload {
   __typename: 'RemoveProviderPayload'
   error: IStandardMutationError | null
-  providerRow: IProviderRow
+  providerRow: IProviderRow | null
 
   /**
    * The globalIds of the removed integrations
    */
-  deletedIntegrationIds: Array<string | null>
+  deletedIntegrationIds: Array<string> | null
 
   /**
    * The userId of the person who removed the provider
    */
-  userId: string
+  userId: string | null
   archivedTaskIds: Array<string | null> | null
 }
 
@@ -5559,7 +5572,7 @@ export interface IRemoveSlackChannelPayload {
 
 export interface IRemoveGitHubRepoPayload {
   __typename: 'RemoveGitHubRepoPayload'
-  deletedId: string
+  deletedId: string | null
   error: IStandardMutationError | null
   archivedTaskIds: Array<string | null> | null
 }
@@ -6231,6 +6244,7 @@ export interface ISubscription {
   githubMemberRemoved: IGitHubMemberRemovedPayload
   githubRepoAdded: IAddGitHubRepoPayload
   githubRepoRemoved: IRemoveGitHubRepoPayload
+  integrationSubscription: IntegrationSubscriptionPayload
   integrationJoined: IJoinIntegrationPayload
   integrationLeft: ILeaveIntegrationPayload
   invitationSubscription: InvitationSubscriptionPayload
@@ -6241,8 +6255,6 @@ export interface ISubscription {
   taskSubscription: TaskSubscriptionPayload
   slackChannelAdded: IAddSlackChannelPayload
   slackChannelRemoved: IRemoveSlackChannelPayload
-  providerAdded: IAddProviderPayload
-  providerRemoved: IRemoveProviderPayload
   teamSubscription: TeamSubscriptionPayload
   teamMemberSubscription: TeanMemberSubscriptionPayload
 }
@@ -6260,6 +6272,10 @@ export interface IGithubRepoAddedOnSubscriptionArguments {
 }
 
 export interface IGithubRepoRemovedOnSubscriptionArguments {
+  teamId: string
+}
+
+export interface IIntegrationSubscriptionOnSubscriptionArguments {
   teamId: string
 }
 
@@ -6289,14 +6305,6 @@ export interface ISlackChannelRemovedOnSubscriptionArguments {
   teamId: string
 }
 
-export interface IProviderAddedOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface IProviderRemovedOnSubscriptionArguments {
-  teamId: string
-}
-
 export type AgendaItemSubscriptionPayload =
   | IAddAgendaItemPayload
   | IRemoveAgendaItemPayload
@@ -6307,6 +6315,8 @@ export interface IGitHubMemberRemovedPayload {
   __typename: 'GitHubMemberRemovedPayload'
   leaveIntegration: Array<ILeaveIntegrationPayload | null> | null
 }
+
+export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProviderPayload
 
 export type InvitationSubscriptionPayload =
   | IAcceptTeamInvitePayload
@@ -6390,18 +6400,6 @@ export type TaskSubscriptionPayload =
   | IRemoveTeamMemberPayload
   | IUpdateTaskPayload
   | IUpdateTaskDueDatePayload
-
-export interface IAddProviderPayload {
-  __typename: 'AddProviderPayload'
-  providerRow: IProviderRow
-  provider: IProvider | null
-
-  /**
-   * All the integrationIds that the provider has successfully joined
-   */
-  joinedIntegrationIds: Array<string | null> | null
-  teamMember: ITeamMember | null
-}
 
 export type TeamSubscriptionPayload =
   | IAcceptTeamInvitePayload

@@ -11,12 +11,11 @@ import notificationSubscription from 'server/graphql/subscriptions/notificationS
 import organizationSubscription from 'server/graphql/subscriptions/organizationSubscription'
 import orgApprovalSubscription from 'server/graphql/subscriptions/orgApprovalSubscription'
 import taskSubscription from 'server/graphql/subscriptions/taskSubscription'
-import providerAdded from 'server/graphql/subscriptions/providerAdded'
-import providerRemoved from 'server/graphql/subscriptions/providerRemoved'
 import slackChannelAdded from 'server/graphql/subscriptions/slackChannelAdded'
 import slackChannelRemoved from 'server/graphql/subscriptions/slackChannelRemoved'
 import teamMemberSubscription from 'server/graphql/subscriptions/teamMemberSubscription'
 import teamSubscription from 'server/graphql/subscriptions/teamSubscription'
+import integrationSubscription from 'server/graphql/subscriptions/integrationSubscription'
 // import invoice from './models/Invoice/invoiceSubscription';
 
 export default new GraphQLObjectType({
@@ -26,6 +25,7 @@ export default new GraphQLObjectType({
     githubMemberRemoved,
     githubRepoAdded,
     githubRepoRemoved,
+    integrationSubscription,
     integrationJoined,
     integrationLeft,
     invitationSubscription,
@@ -36,8 +36,6 @@ export default new GraphQLObjectType({
     taskSubscription,
     slackChannelAdded,
     slackChannelRemoved,
-    providerAdded,
-    providerRemoved,
     teamSubscription,
     teamMemberSubscription
   })
