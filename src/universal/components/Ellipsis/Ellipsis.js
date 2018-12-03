@@ -9,7 +9,7 @@ const Ellipsis = (props) => {
   const dotStyles2 = css(styles.dot, styles.dot2, isAnimated && styles.dotAnimated)
   const dotStyles3 = css(styles.dot, styles.dot3, isAnimated && styles.dotAnimated)
   return (
-    <div className={css(styles.root)} style={{fontSize}}>
+    <span className={css(styles.root)} style={{fontSize}}>
       {isAnimated ? (
         <span>
           <span className={dotStyles1}>.</span>
@@ -19,7 +19,7 @@ const Ellipsis = (props) => {
       ) : (
         <span>…</span>
       )}
-    </div>
+    </span>
   )
 }
 
