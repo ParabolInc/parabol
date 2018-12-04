@@ -1,5 +1,9 @@
 import shortid from 'shortid'
-import {JOINED_PARABOL} from 'server/graphql/types/TimelineEventTypeEnum'
+import {
+  COMPLETED_ACTION_MEETING,
+  COMPLETED_RETRO_MEETING,
+  JOINED_PARABOL
+} from 'server/graphql/types/TimelineEventTypeEnum'
 
 exports.up = async (r) => {
   try {
@@ -11,21 +15,64 @@ exports.up = async (r) => {
       .indexCreate('userIdCreatedAt', (row) => [row('userId'), row('createdAt')])
   } catch (e) {}
 
-  const users = await r.table('User').pluck('id', 'createdAt')
-  // const teams =
+  const {users, completedActionMeetings, completedRetroMeetings} = await r({
+    users: r
+      .table('User')
+      .pluck('id', 'createdAt', 'tms')
+      .coerceTo('array'),
+    completedActionMeetings: r
+      .table('Meeting')
+      .pluck('id', 'teamId', 'endedAt')
+      .merge({eventType: COMPLETED_ACTION_MEETING})
+      .coerceTo('array'),
+    completedRetroMeetings: r
+      .table('NewMeeting')
+      .pluck('id', 'teamId', 'endedAt')
+      .merge({eventType: COMPLETED_RETRO_MEETING})
+      .coerceTo('array')
+  })
+
+  const completedMeetings = [...completedActionMeetings, ...completedRetroMeetings]
+
   // account created
-  const joinedParabolEvents = users.map((user) => {
-    return {
+  const events = []
+  events.push(
+    ...users.map((user) => {
+      return {
+        id: shortid.generate(),
+        createdAt: user.createdAt,
+        interactionCount: 0,
+        seenCount: 0,
+        eventType: JOINED_PARABOL,
+        userId: user.id
+      }
+    })
+  )
+
+  // meetings completed
+  const usersByTeamId = {}
+  users.forEach((user) => {
+    if (!user.tms) return
+    user.tms.forEach((teamId) => {
+      usersByTeamId[teamId] = usersByTeamId[teamId] || []
+      usersByTeamId[teamId].push(user.id)
+    })
+  })
+
+  completedMeetings.forEach((meeting) => {
+    const userIds = usersByTeamId[meeting.teamId]
+    if (!userIds) return
+    const userEvents = userIds.map((userId) => ({
       id: shortid.generate(),
-      createdAt: user.createdAt,
+      createdAt: meeting.endedAt,
       interactionCount: 0,
       seenCount: 0,
-      eventType: JOINED_PARABOL,
-      userId: user.id
-    }
+      eventType: meeting.eventType,
+      userId
+    }))
+    events.push(...userEvents)
   })
-  console.log('joinedP', joinedParabolEvents)
-  // action meeting completed
+  await r.table('TimelineEvent').insert(events)
 }
 
 exports.down = async (r) => {
