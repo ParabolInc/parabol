@@ -8,6 +8,7 @@ import EventEmitter from 'eventemitter3'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
 import GQLTrebuchetClient, {GQLHTTPClient} from '@mattkrick/graphql-trebuchet-client'
+// import sleep from 'universal/utils/sleep'
 
 const defaultErrorHandler = (err) => {
   console.error('Captured error:', err)

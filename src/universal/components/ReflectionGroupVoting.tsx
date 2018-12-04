@@ -10,11 +10,12 @@ import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectio
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
 import {meetingVoteIcon, retroMeetingVotingWidth} from 'universal/styles/meeting'
-import StyledError from 'universal/components/StyledError'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -52,13 +53,18 @@ class ReflectionGroupVoting extends Component<Props> {
     } = meeting
     const {reflectionGroupId} = reflectionGroup
     submitMutation()
+    const handleCompleted = (res, errors) => {
+      onCompleted()
+      const error = getGraphQLError(res, errors)
+      error && handleOnCompletedToastError(error, atmosphere)
+    }
     const sendVote = () =>
       VoteForReflectionGroupMutation(
         atmosphere,
         {reflectionGroupId},
         {meetingId},
         onError,
-        onCompleted
+        handleCompleted
       )
     if (!isCheckedIn) {
       const {viewerId: userId} = atmosphere
@@ -77,18 +83,23 @@ class ReflectionGroupVoting extends Component<Props> {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props
     const {meetingId} = meeting
     const {reflectionGroupId} = reflectionGroup
+    const handleCompleted = (res, errors) => {
+      onCompleted()
+      const error = getGraphQLError(res, errors)
+      error && handleOnCompletedToastError(error, atmosphere)
+    }
     submitMutation()
     VoteForReflectionGroupMutation(
       atmosphere,
       {isUnvote: true, reflectionGroupId},
       {meetingId},
       onError,
-      onCompleted
+      handleCompleted
     )
   }
 
   render () {
-    const {error, meeting, reflectionGroup, isExpanded} = this.props
+    const {meeting, reflectionGroup, isExpanded} = this.props
     const viewerVoteCount = reflectionGroup.viewerVoteCount || 0
     const {settings, viewerMeetingMember} = meeting
     const {maxVotesPerGroup} = settings
@@ -112,7 +123,6 @@ class ReflectionGroupVoting extends Component<Props> {
             </UpvoteIcon>
           )}
         </UpvoteRow>
-        {error && <StyledError>{error}</StyledError>}
       </UpvoteColumn>
     )
   }
