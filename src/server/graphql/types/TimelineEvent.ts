@@ -6,11 +6,13 @@ import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 import Team from 'server/graphql/types/Team'
 import TimelineEventTypeEnum, {
   COMPLETED_RETRO_MEETING,
+  CREATED_TEAM,
   JOINED_PARABOL
 } from 'server/graphql/types/TimelineEventTypeEnum'
 import User from 'server/graphql/types/User'
 import TimelineEventCompletedRetroMeeting from './TimelineEventCompletedRetroMeeting'
 import TimelineEventJoinedParabol from './TimelineEventJoinedParabol'
+import TimelineEventTeamCreated from './TimelineEventTeamCreated'
 
 export const timelineEventInterfaceFields = () => ({
   id: {
@@ -80,7 +82,8 @@ const TimelineEvent = new GraphQLObjectType({
   resovleType: (value) => {
     const resolveTypeLookup = {
       [COMPLETED_RETRO_MEETING]: TimelineEventCompletedRetroMeeting,
-      [JOINED_PARABOL]: TimelineEventJoinedParabol
+      [JOINED_PARABOL]: TimelineEventJoinedParabol,
+      [CREATED_TEAM]: TimelineEventTeamCreated
     }
     return resolveTypeLookup[value.type]
   }

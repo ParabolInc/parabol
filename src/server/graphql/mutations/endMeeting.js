@@ -12,6 +12,8 @@ import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants'
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import sendAuthRaven from 'server/utils/sendAuthRaven'
+import shortid from 'shortid'
+import {COMPLETED_ACTION_MEETING} from 'server/graphql/types/TimelineEventTypeEnum'
 
 export default {
   type: EndMeetingPayload,
@@ -200,7 +202,18 @@ export default {
       meetingId
     }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-
+    const events = teamMembers.map((teamMember) => ({
+      id: shortid.generate(),
+      createdAt: now,
+      interactionCount: 0,
+      seenCount: 0,
+      eventType: COMPLETED_ACTION_MEETING,
+      userId: teamMember.userId,
+      teamId,
+      orgId: team.orgId,
+      meetingId
+    }))
+    await r.table('TimelineEvent').insert(events)
     publish(TEAM, teamId, EndMeetingPayload, data, subOptions)
     teamMembers.forEach(({userId}) => {
       publish(TASK, userId, EndMeetingPayload, data, subOptions)

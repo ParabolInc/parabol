@@ -10,6 +10,8 @@ import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import sendNewMeetingSummary from 'server/graphql/mutations/helpers/endMeeting/sendNewMeetingSummary'
+import shortid from 'shortid'
+import {COMPLETED_RETRO_MEETING} from 'server/graphql/types/TimelineEventTypeEnum'
 
 export default {
   type: EndNewMeetingPayload,
@@ -47,13 +49,16 @@ export default {
       currentStage.endAt = now
     }
 
-    const {completedMeeting} = await r({
+    const {completedMeeting, team} = await r({
       team: r
         .table('Team')
         .get(teamId)
-        .update({
-          meetingId: null
-        }),
+        .update(
+          {
+            meetingId: null
+          },
+          {returnChanges: true}
+        )('changes')(0)('new_val'),
       completedMeeting: r
         .table('NewMeeting')
         .get(meetingId)
@@ -78,8 +83,19 @@ export default {
         teamId,
         meetingNumber
       })
-      // TODO create summary and reactivate this if minimum phases complete
       await sendNewMeetingSummary(completedMeeting, dataLoader)
+      const events = meetingMembers.map((meetingMember) => ({
+        id: shortid.generate(),
+        createdAt: now,
+        interactionCount: 0,
+        seenCount: 0,
+        eventType: COMPLETED_RETRO_MEETING,
+        userId: meetingMember.userId,
+        teamId,
+        orgId: team.orgId,
+        meetingId
+      }))
+      await r.table('TimelineEvent').insert(events)
     }
 
     const data = {meetingId, teamId, isKill: !currentStage}

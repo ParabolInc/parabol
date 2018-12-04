@@ -21,9 +21,15 @@ import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
 import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg'
 import shortid from 'shortid'
 import makeRetroTemplates from 'server/graphql/mutations/helpers/makeRetroTemplates'
+import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 
 // used for addorg, addTeam, createFirstTeam
-export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
+export default async function createTeamAndLeader (
+  userId,
+  newTeam,
+  options = {isNewOrg: false, isOnboardTeam: false}
+) {
+  const {isNewOrg, isOnboardTeam} = options
   const r = getRethink()
   const now = new Date()
   const {id: teamId, orgId} = newTeam
@@ -43,7 +49,7 @@ export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
     meetingPhaseItem: null,
     tier
   }
-  const options = {
+  const dbOptions = {
     returnChanges: true,
     role: isNewOrg ? BILLING_LEADER : null
   }
@@ -83,8 +89,20 @@ export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
       isLead: true,
       checkInOrder: 0
     }),
+    event: r.table('TimelineEvent').insert({
+      id: shortid.generate(),
+      // + 5 to make sure it comes after parabol joined event
+      createdAt: new Date(Date.now() + 5),
+      interactionCount: 0,
+      seenCount: 0,
+      eventType: CREATED_TEAM,
+      userId,
+      teamId,
+      orgId,
+      isOnboardTeam: !!isOnboardTeam
+    }),
     // add teamId to user tms array
-    tms: addUserToTMSUserOrg(userId, teamId, orgId, options)('changes')(0)('new_val')('tms')
+    tms: addUserToTMSUserOrg(userId, teamId, orgId, dbOptions)('changes')(0)('new_val')('tms')
   })
 
   const {tms} = res

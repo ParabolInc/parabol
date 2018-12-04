@@ -17,6 +17,8 @@ import {
 } from 'server/utils/authorizationErrors'
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
 import ensureDate from 'universal/utils/ensureDate'
+import shortid from 'shortid'
+import {JOINED_PARABOL} from 'server/graphql/types/TimelineEventTypeEnum'
 
 const login = {
   type: LoginPayload,
@@ -96,7 +98,17 @@ const login = {
       createdAt: ensureDate(userInfo.created_at),
       userOrgs: []
     }
-    await r.table('User').insert(newUser)
+    await r({
+      user: r.table('User').insert(newUser),
+      event: r.table('TimelineEvent').insert({
+        id: shortid.generate(),
+        createdAt: newUser.createdAt,
+        interactionCount: 0,
+        seenCount: 0,
+        eventType: JOINED_PARABOL,
+        userId: newUser.id
+      })
+    })
 
     try {
       await sendSegmentIdentify(newUser.id)

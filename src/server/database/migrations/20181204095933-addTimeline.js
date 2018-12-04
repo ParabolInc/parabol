@@ -23,12 +23,18 @@ exports.up = async (r) => {
     completedActionMeetings: r
       .table('Meeting')
       .pluck('id', 'teamId', 'endedAt')
-      .merge({eventType: COMPLETED_ACTION_MEETING})
+      .merge((row) => ({
+        eventType: COMPLETED_ACTION_MEETING,
+        orgId: r.table('Team').get(row('teamId'))('orgId')
+      }))
       .coerceTo('array'),
     completedRetroMeetings: r
       .table('NewMeeting')
       .pluck('id', 'teamId', 'endedAt')
-      .merge({eventType: COMPLETED_RETRO_MEETING})
+      .merge((row) => ({
+        eventType: COMPLETED_RETRO_MEETING,
+        orgId: r.table('Team').get(row('teamId'))('orgId')
+      }))
       .coerceTo('array')
   })
 
@@ -68,7 +74,10 @@ exports.up = async (r) => {
       interactionCount: 0,
       seenCount: 0,
       eventType: meeting.eventType,
-      userId
+      userId,
+      teamId: meeting.teamId,
+      orgId: meeting.orgId,
+      meetingId: meeting.id
     }))
     events.push(...userEvents)
   })

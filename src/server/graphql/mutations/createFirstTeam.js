@@ -63,7 +63,7 @@ export default {
     const {
       newTeamUpdatedUser: {team, teamLead, tms}
     } = await resolvePromiseObj({
-      newTeamUpdatedUser: createTeamAndLeader(viewerId, validNewTeam, true),
+      newTeamUpdatedUser: createTeamAndLeader(viewerId, validNewTeam, {isNewOrg: true}),
       seedTeam: addSeedTasks(viewerId, teamId)
     })
     sendSegmentEvent('Welcome Step2 Completed', viewerId, {teamId})

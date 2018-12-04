@@ -53,7 +53,7 @@ export default {
       const orgId = shortid.generate()
       const teamId = shortid.generate()
       await createNewOrg(orgId, orgName, viewerId)
-      await createTeamAndLeader(viewerId, {id: teamId, orgId, ...newTeam}, true)
+      await createTeamAndLeader(viewerId, {id: teamId, orgId, ...newTeam}, {isNewOrg: true})
 
       const tms = authToken.tms.concat(teamId)
       const inviteeCount = invitees ? invitees.length : 0
