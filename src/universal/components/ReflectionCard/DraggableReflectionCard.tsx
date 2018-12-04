@@ -271,8 +271,10 @@ const reflectionDragCollect = (connectSource) => ({
 })
 
 export default createFragmentContainer(
-  (dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect) as any)(
-    withAtmosphere(DraggableReflectionCard)
+  withAtmosphere(
+    (dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect) as any)(
+      DraggableReflectionCard
+    )
   ),
   graphql`
     fragment DraggableReflectionCard_reflection on RetroReflection {
