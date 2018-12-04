@@ -25,13 +25,15 @@ import makeRetroTemplates from 'server/graphql/mutations/helpers/makeRetroTempla
 // used for addorg, addTeam, createFirstTeam
 export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
   const r = getRethink()
-
+  const now = new Date()
   const {id: teamId, orgId} = newTeam
   const organization = await r.table('Organization').get(orgId)
   const {tier} = organization
   const verifiedTeam = {
     ...newTeam,
     activeFacilitator: null,
+    createdAt: now,
+    createdBy: userId,
     facilitatorPhase: LOBBY,
     facilitatorPhaseItem: null,
     isArchived: false,

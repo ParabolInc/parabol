@@ -5,21 +5,23 @@ import Organization from 'server/graphql/types/Organization'
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 import Team from 'server/graphql/types/Team'
 import TimelineEventTypeEnum, {
-  COMPLETED_RETRO_MEETING
+  COMPLETED_RETRO_MEETING,
+  JOINED_PARABOL
 } from 'server/graphql/types/TimelineEventTypeEnum'
 import User from 'server/graphql/types/User'
 import TimelineEventCompletedRetroMeeting from './TimelineEventCompletedRetroMeeting'
+import TimelineEventJoinedParabol from './TimelineEventJoinedParabol'
 
 export const timelineEventInterfaceFields = () => ({
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
-  actorId: {
-    type: GraphQLID,
-    description:
-      'The userId that performed an action that created the event. Null if not traceable to one user'
-  },
+  // actorId: {
+  //   type: GraphQLID,
+  //   description:
+  //     'The userId that performed an action that created the event. Null if not traceable to one user'
+  // },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: '* The timestamp the event was created at'
@@ -77,7 +79,8 @@ const TimelineEvent = new GraphQLObjectType({
   fields: timelineEventInterfaceFields,
   resovleType: (value) => {
     const resolveTypeLookup = {
-      [COMPLETED_RETRO_MEETING]: TimelineEventCompletedRetroMeeting
+      [COMPLETED_RETRO_MEETING]: TimelineEventCompletedRetroMeeting,
+      [JOINED_PARABOL]: TimelineEventJoinedParabol
     }
     return resolveTypeLookup[value.type]
   }

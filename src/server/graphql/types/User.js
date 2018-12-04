@@ -36,6 +36,7 @@ import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
 import Organization from 'server/graphql/types/Organization'
 import {TimelineEventConnection} from 'server/graphql/types/TimelineEvent'
+import getRethink from 'server/database/rethinkDriver'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -109,11 +110,33 @@ const User = new GraphQLObjectType({
     timeline: {
       type: TimelineEventConnection,
       description: 'The timeline of important events for the viewer',
-      resolve: ({id}, _args, {dataLoader, authToken}) => {
+      args: {
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        },
+        first: {
+          type: new GraphQLNonNull(GraphQLInt),
+          description: 'the number of timeline events to return'
+        }
+      },
+      resolve: async ({id}, {after, first}, {dataLoader, authToken}) => {
+        const r = getRethink()
         const viewerId = getUserId(authToken)
         if (viewerId !== id) return null
-        // TODO the rest of the owl
-        const edges = []
+        const dbAfter = after ? new Date(after) : r.maxval
+        const events = await r
+          .table('TimelineEvent')
+          .between([viewerId, r.minval], [viewerId, dbAfter], {
+            index: 'userIdCreatedAt'
+          })
+          .orderBy(r.desc('createdAt'))
+          .limit(first + 1)
+          .coerceTo('array')
+        const edges = events.slice(0, first).map((node) => ({
+          cursor: node.createdAt,
+          node
+        }))
         const [firstEdge] = edges
         return {
           edges,
