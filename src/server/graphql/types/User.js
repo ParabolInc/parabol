@@ -35,6 +35,7 @@ import MeetingMember from 'server/graphql/types/MeetingMember'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
 import Organization from 'server/graphql/types/Organization'
+import {TimelineEventConnection} from 'server/graphql/types/TimelineEvent'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -104,6 +105,25 @@ const User = new GraphQLObjectType({
     name: {
       type: GraphQLString,
       description: 'Name associated with the user'
+    },
+    timeline: {
+      type: TimelineEventConnection,
+      description: 'The timeline of important events for the viewer',
+      resolve: ({id}, _args, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== id) return null
+        // TODO the rest of the owl
+        const edges = []
+        const [firstEdge] = edges
+        return {
+          edges,
+          pageInfo: {
+            startCursor: firstEdge ? firstEdge.cursor : null,
+            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
+            hasNextPage: false
+          }
+        }
+      }
     },
     nickname: {
       type: GraphQLString,
