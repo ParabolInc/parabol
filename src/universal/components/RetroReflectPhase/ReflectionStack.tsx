@@ -17,6 +17,7 @@ import {
 } from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
 import getDeCasteljau from 'universal/utils/getDeCasteljau'
+import isTempId from 'universal/utils/relay/isTempId'
 
 interface Props {
   idx: number
@@ -144,7 +145,9 @@ class ReflectionStack extends Component<Props, State> {
       return null
     }
     const duration = ANIMATION_DURATION - (Date.now() - this.animationStart)
-    if (duration <= 0) return {duration: ANIMATION_DURATION, easing: EASING}
+    if (duration <= 0) {
+      return isTempId(newTop.id) ? {duration: ANIMATION_DURATION, easing: EASING} : null
+    }
     // an animation is already in progress!
     return {
       startCoords: start.getBoundingClientRect(),
