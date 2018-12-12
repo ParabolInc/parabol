@@ -6,12 +6,11 @@ import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from '
 import NullableTask from 'universal/components/NullableTask/NullableTask'
 import Helmet from 'react-helmet'
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader'
-import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot'
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink'
 import appTheme from 'universal/styles/theme/theme'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
-import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants'
+import {MAX_INT, TEAM_DASH} from 'universal/utils/constants'
 
 const CARD_WIDTH = 256
 const GRID_PADDING = 16
@@ -154,19 +153,10 @@ class TeamArchive extends Component {
   }
 
   render () {
-    const {
-      relay: {hasMore},
-      styles,
-      team,
-      teamId,
-      viewer
-    } = this.props
-    const {teamName, tier, orgId} = team
+    const {styles, team, teamId, viewer} = this.props
+    const {teamName} = team
     const {archivedTasks} = viewer
     const {edges} = archivedTasks
-    // Archive squeeze
-    const showArchiveSqueeze = Boolean(tier === PERSONAL && !hasMore())
-
     return (
       <div className={css(styles.root)}>
         <Helmet title={`Team Archive | ${teamName}`} />
@@ -225,15 +215,6 @@ class TeamArchive extends Component {
                 {'Nothing to see here. How about a fun rally video? '}
                 <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
-            </div>
-          )}
-          {showArchiveSqueeze && (
-            <div className={css(styles.archiveSqueezeBlock)}>
-              <TeamArchiveSqueezeRoot
-                tasksAvailableCount={edges.length}
-                orgId={orgId}
-                teamId={teamId}
-              />
             </div>
           )}
         </div>
@@ -344,7 +325,6 @@ export default createPaginationContainer(
     fragment TeamArchive_team on Team {
       teamName: name
       orgId
-      tier
     }
   `,
   {
