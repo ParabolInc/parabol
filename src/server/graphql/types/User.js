@@ -161,9 +161,9 @@ const User = new GraphQLObjectType({
       description: 'The timestamp the user was last updated'
     },
     /* User Profile */
-    broadcastFlags: {
+    broadcastNumber: {
       type: GraphQLInt,
-      description: 'flag to determine which broadcasts to show'
+      description: 'flag to determine which broadcast to show'
     },
     lastSeenAt: {
       type: GraphQLISO8601Type,
