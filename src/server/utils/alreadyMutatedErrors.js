@@ -135,12 +135,3 @@ export const sendMaxVotesPerGroupError = (authToken, reflectionGroupId, maxVotes
   }
   return sendAuthRaven(authToken, 'Feeling passionate? We like that', breadcrumb)
 }
-
-export const outOfMeetingsError = (authToken, teamId) => {
-  const breadcrumb = {
-    message: `Unfortunately, you have no more meetings left to run`,
-    category: 'Out of meetings',
-    data: {teamId}
-  }
-  return sendAuthRaven(authToken, 'Oh no! Time for Pro', breadcrumb)
-}

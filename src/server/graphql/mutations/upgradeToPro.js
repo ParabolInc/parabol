@@ -76,7 +76,6 @@ export default {
           tier: PRO,
           periodEnd: fromEpochSeconds(currentPeriodEnd),
           periodStart: fromEpochSeconds(currentPeriodStart),
-          retroMeetingsRemaining: 0,
           stripeId: customer.id,
           stripeSubscriptionId: subscription.id,
           updatedAt: now
