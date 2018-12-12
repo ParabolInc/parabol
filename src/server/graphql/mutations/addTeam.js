@@ -9,12 +9,13 @@ import {getUserId, getUserOrgDoc} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import shortid from 'shortid'
-import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from 'universal/utils/constants'
+import {NEW_AUTH_TOKEN, NOTIFICATION, PERSONAL, TEAM, UPDATED} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import addTeamValidation from './helpers/addTeamValidation'
-import {sendOrgAccessError} from 'server/utils/authorizationErrors'
+import {sendMaxFreeTeamsError, sendOrgAccessError} from 'server/utils/authorizationErrors'
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import rateLimit from 'server/graphql/rateLimit'
+import {MAX_FREE_TEAMS} from 'server/utils/serverConstants'
 
 export default {
   type: AddTeamPayload,
@@ -48,6 +49,13 @@ export default {
       } = addTeamValidation(orgTeamNames)(args)
       if (Object.keys(errors).length) {
         return sendFailedInputValidation(authToken, errors)
+      }
+      if (orgTeams.length >= MAX_FREE_TEAMS) {
+        const organization = await dataLoader.get('organizations').load(orgId)
+        const {tier} = organization
+        if (tier === PERSONAL) {
+          return sendMaxFreeTeamsError(authToken, orgId)
+        }
       }
 
       // RESOLUTION

@@ -16,6 +16,7 @@ export const REMOVE_USER = 'removeUser'
 export const UNPAUSE_USER = 'unpauseUser'
 export const MAX_MONTHLY_PAUSES = 4
 export const UPCOMING_INVOICE_TIME_VALID = ms('2m')
+export const MAX_FREE_TEAMS = 10
 
 /* invite token keys */
 export const INVITE_TOKEN_INVITE_ID_LEN = 6

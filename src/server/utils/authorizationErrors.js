@@ -271,3 +271,12 @@ export const sendDuplciateQuestionTemplatePromptError = (authToken, promptId) =>
   }
   return sendAuthRaven(authToken, 'Already Created', breadcrumb)
 }
+
+export const sendMaxFreeTeamsError = (authToken, orgId) => {
+  const breadcrumb = {
+    message: 'Max teams limit reached! Please upgrade to the Pro tier or archive a team',
+    category: 'Team limit reached',
+    data: {orgId}
+  }
+  return sendAuthRaven(authToken, 'Team limit reached!', breadcrumb)
+}

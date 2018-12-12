@@ -24,6 +24,7 @@ import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormInvitees from './NewTeamFormInvitees'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
+import StyledError from 'universal/components/StyledError'
 
 const StyledForm = styled('form')({
   margin: 0,
@@ -266,7 +267,7 @@ class NewTeamForm extends Component<Props, State> {
 
   render () {
     const {fields, isNewOrg, orgId} = this.state
-    const {submitting, organizations} = this.props
+    const {error, submitting, organizations} = this.props
 
     return (
       <StyledForm onSubmit={this.onSubmit}>
@@ -322,6 +323,7 @@ class NewTeamForm extends Component<Props, State> {
             <StyledButton size='large' waiting={submitting}>
               {isNewOrg ? 'Create Team & Org' : 'Create Team'}
             </StyledButton>
+            {error && <StyledError>{error}</StyledError>}
           </FormInner>
         </Panel>
       </StyledForm>
