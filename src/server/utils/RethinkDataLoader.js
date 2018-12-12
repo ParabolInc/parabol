@@ -2,6 +2,7 @@ import DataLoader from 'dataloader'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
 import sendSentryEvent from 'server/utils/sendSentryEvent'
+import {TEAM_INVITATION_LIFESPAN} from 'server/utils/serverConstants'
 
 const defaultCacheKeyFn = (key) => key
 
@@ -216,6 +217,19 @@ export default class RethinkDataLoader {
         return teams.filter((team) => team.orgId === orgId)
       })
     }, this.dataloaderOptions)
+    this.teamInvitationsByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink()
+      const expirationThresh = new Date(Date.now() - TEAM_INVITATION_LIFESPAN)
+      const teamInvitations = await r
+        .table('TeamInvitation')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({acceptedAt: null})
+        .filter((row) => row('createdAt').ge(expirationThresh))
+      primeStandardLoader(this.teamInvitations, teamInvitations)
+      return teamIds.map((teamId) => {
+        return teamInvitations.filter((teamInvitation) => teamInvitation.teamId === teamId)
+      })
+    }, this.dataloaderOptions)
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink()
       const teamMembers = await r
@@ -269,6 +283,7 @@ export default class RethinkDataLoader {
   softTeamMembers = this.makeStandardLoader('SoftTeamMember')
   tasks = this.makeStandardLoader('Task')
   teamMembers = this.makeStandardLoader('TeamMember')
+  teamInvitations = this.makeStandardLoader('TeamInvitation')
   teams = this.makeStandardLoader('Team')
   users = this.makeStandardLoader('User')
 }

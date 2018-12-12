@@ -19,8 +19,10 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITE,
+  TEAM_INVITATION
 } from 'universal/utils/constants'
+import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
 
 const TeamNotification = new GraphQLInterfaceType({
   name: 'TeamNotification',
@@ -43,6 +45,7 @@ const TeamNotification = new GraphQLInterfaceType({
       [REJOIN_TEAM]: NotifyNewTeamMember,
       [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [TEAM_INVITE]: NotifyTeamInvite,
+      [TEAM_INVITATION]: NotificationTeamInvitation,
       [TEAM_ARCHIVED]: NotifyTeamArchived
     }
 

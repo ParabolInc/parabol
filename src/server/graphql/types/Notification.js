@@ -29,8 +29,10 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITE,
+  TEAM_INVITATION
 } from 'universal/utils/constants'
+import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
 
 export const notificationInterfaceFields = {
   id: {
@@ -74,7 +76,8 @@ const Notification = new GraphQLInterfaceType({
       [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [TEAM_INVITE]: NotifyTeamInvite,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
-      [TEAM_ARCHIVED]: NotifyTeamArchived
+      [TEAM_ARCHIVED]: NotifyTeamArchived,
+      [TEAM_INVITATION]: NotificationTeamInvitation
     }
 
     return resolveTypeLookup[value.type]

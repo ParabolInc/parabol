@@ -88,7 +88,9 @@ export const REJOIN_TEAM = 'REJOIN_TEAM'
 // Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
 export const REQUEST_NEW_USER = 'REQUEST_NEW_USER'
 // Sent along with an email to someone invited to join the team
-export const TEAM_INVITE = 'TEAM_INVITE'
+export const TEAM_INVITE = 'TEAM_INVITE' // DEPRECATED
+// new version of TEAM_INVITE
+export const TEAM_INVITATION = 'TEAM_INVITATION'
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED'
 // sent to members when a task is assigned to them or mentions them

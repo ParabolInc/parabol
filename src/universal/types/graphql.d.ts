@@ -732,6 +732,11 @@ export interface ITeam {
   /**
    * The outstanding invitations to join the team
    */
+  teamInvitations: Array<ITeamInvitation> | null
+
+  /**
+   * The outstanding invitations to join the team
+   */
   invitations: Array<IInvitation | null> | null
 
   /**
@@ -883,6 +888,48 @@ export const enum ActionMeetingPhaseEnum {
   agendaitems = 'agendaitems',
   lastcall = 'lastcall',
   summary = 'summary'
+}
+
+/**
+ * An invitation to become a team member
+ */
+export interface ITeamInvitation {
+  __typename: 'TeamInvitation'
+
+  /**
+   * The unique invitation Id
+   */
+  id: string
+
+  /**
+   * null if not accepted, else the datetime the invitation was accepted
+   */
+  acceptedAt: any | null
+
+  /**
+   * The datetime the invitation was created
+   */
+  createdAt: any
+
+  /**
+   * The email of the invitee
+   */
+  email: any
+
+  /**
+   * The userId of the person that sent the invitation
+   */
+  invitedBy: string
+
+  /**
+   * The team invited to
+   */
+  teamId: string
+
+  /**
+   * 48-byte base64 encoded random string
+   */
+  token: string
 }
 
 /**
@@ -1344,6 +1391,7 @@ export type Notification =
   | INotifyDenial
   | INotifyKickedOut
   | INotifyPaymentRejected
+  | INotificationTeamInvitation
   | INotifyPromoteToOrgLeader
 
 export interface INotification {
@@ -1410,6 +1458,7 @@ export type TeamNotification =
   | INotifyTaskInvolves
   | INotifyAddedToTeam
   | INotifyDenial
+  | INotificationTeamInvitation
 
 export interface ITeamNotification {
   __typename: 'TeamNotification'
@@ -6644,6 +6693,55 @@ export interface IGenericMeetingPhase {
    */
   phaseType: NewMeetingPhaseTypeEnum | null
   stages: Array<IGenericMeetingStage>
+}
+
+/**
+ * A notification sent to a user that was invited to a new team
+ */
+export interface INotificationTeamInvitation {
+  __typename: 'NotificationTeamInvitation'
+
+  /**
+   * The user that triggered the invitation
+   */
+  inviter: IUser
+
+  /**
+   * FK
+   */
+  teamId: string
+
+  /**
+   * FK
+   */
+  invitationId: string
+
+  /**
+   * The invitation that triggered this notification
+   */
+  invitation: TeamNotification
+  team: ITeam
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any | null
+  type: NotificationEnum | null
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: Array<string> | null
 }
 
 /**

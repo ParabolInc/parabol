@@ -2,6 +2,7 @@ import ms from 'ms'
 
 export const JWT_LIFESPAN = ms('30d')
 export const INVITATION_LIFESPAN = ms('30d')
+export const TEAM_INVITATION_LIFESPAN = ms('7d')
 export const REFRESH_JWT_AFTER = ms('15d')
 export const AUTO_PAUSE_THRESH = ms('30d')
 export const OLD_MEETING_AGE = ms('1d')
@@ -16,7 +17,7 @@ export const REMOVE_USER = 'removeUser'
 export const UNPAUSE_USER = 'unpauseUser'
 export const MAX_MONTHLY_PAUSES = 4
 export const UPCOMING_INVOICE_TIME_VALID = ms('2m')
-export const MAX_FREE_TEAMS = 10
+export const MAX_FREE_TEAMS = 2
 
 /* invite token keys */
 export const INVITE_TOKEN_INVITE_ID_LEN = 6
