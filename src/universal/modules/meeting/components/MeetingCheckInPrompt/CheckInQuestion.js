@@ -10,7 +10,6 @@ import Tooltip from 'universal/components/Tooltip/Tooltip'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation'
 import ui from 'universal/styles/ui'
-import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion'
 import styled from 'react-emotion'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
@@ -123,16 +122,10 @@ class CheckInQuestion extends Component {
   }
 
   render () {
-    const {
-      isFacilitating,
-      team: {tier}
-    } = this.props
+    const {isFacilitating} = this.props
     const {editorState} = this.state
-    const canEdit = tierSupportsUpdateCheckInQuestion(tier)
     const isEditing = editorState.getSelection().getHasFocus()
-    const tip = canEdit
-      ? 'Tap to customize the Social Check-in question.'
-      : 'Upgrade to a Pro Account to customize the Social Check-in question.'
+    const tip = 'Tap to customize the Social Check-in question.'
     return (
       <Tooltip
         tip={<div>{tip}</div>}
@@ -148,22 +141,15 @@ class CheckInQuestion extends Component {
               editorState={editorState}
               setEditorState={this.setEditorState}
               placehodler='e.g. How are you?'
-              readOnly={!canEdit}
               innerRef={(c) => {
                 this.editorRef = c
               }}
             />
           </EditorBlock>
           {isFacilitating && (
-            <div>
-              {canEdit ? (
-                <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
-                  <StyledButtonIcon isEditing={isEditing}>settings</StyledButtonIcon>
-                </PlainButton>
-              ) : (
-                <StyledIcon>settings</StyledIcon>
-              )}
-            </div>
+            <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
+              <StyledButtonIcon isEditing={isEditing}>settings</StyledButtonIcon>
+            </PlainButton>
           )}
         </QuestionBlock>
       </Tooltip>
@@ -177,7 +163,6 @@ export default createFragmentContainer(
     fragment CheckInQuestion_team on Team {
       id
       checkInQuestion
-      tier
     }
   `
 )
