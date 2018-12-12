@@ -11,7 +11,8 @@ export const SHARED_DATA_LOADER_TTL = 5000
 // $199,999/mo
 // export const ACTION_MONTHLY = 'dev-monthly';
 // $5/mo
-export const ACTION_MONTHLY = 'action-monthly'
+export const ACTION_MONTHLY = 'action-monthly' // $5/seat/mo DEPRECATED
+export const PARABOL_PRO_MONTHLY = 'parabol-pro-monthly' // $12/seat/mo
 export const ADD_USER = 'addUser'
 export const PAUSE_USER = 'pauseUser'
 export const AUTO_PAUSE_USER = 'autoPauseUser'
