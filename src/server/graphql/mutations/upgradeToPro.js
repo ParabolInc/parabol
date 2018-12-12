@@ -60,8 +60,12 @@ export default {
       metadata: {
         orgId
       },
-      plan: PARABOL_PRO_MONTHLY,
-      quantity: orgUsers.length,
+      items: [
+        {
+          plan: PARABOL_PRO_MONTHLY,
+          quantity: orgUsers.length
+        }
+      ],
       trial_period_days: 0
     })
     const currentPeriodStart = subscription.current_period_start
