@@ -20,9 +20,9 @@ const ModalCopy = styled('p')({
 })
 
 const benefits = [
-  'Run Unlimited Retrospective Meetings',
-  'Customize Social Check-In Rounds',
-  'Access an Unlimited Archive'
+  'Unlimited Teams',
+  'Direct Support Channel (Slack, etc.)',
+  '24-Hour Support Window'
 ]
 
 const UpgradeBenefits = () => {
