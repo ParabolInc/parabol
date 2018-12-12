@@ -7,11 +7,7 @@ export const AUTO_PAUSE_THRESH = ms('30d')
 export const OLD_MEETING_AGE = ms('1d')
 export const MEETING_FACILITATOR_ELECTION_TIMEOUT = 5000
 export const SHARED_DATA_LOADER_TTL = 5000
-/* stripe variables */
-// $199,999/mo
-// export const ACTION_MONTHLY = 'dev-monthly';
-// $5/mo
-export const ACTION_MONTHLY = 'action-monthly' // $5/seat/mo DEPRECATED
+// export const ACTION_MONTHLY = 'action-monthly' // $5/seat/mo DEPRECATED
 export const PARABOL_PRO_MONTHLY = 'parabol-pro-monthly' // $12/seat/mo
 export const ADD_USER = 'addUser'
 export const PAUSE_USER = 'pauseUser'
