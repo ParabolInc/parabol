@@ -23,6 +23,14 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
+  verifiedInvitation: IVerifiedInvitationPayload | null
+}
+
+export interface IVerifiedInvitationOnQueryArguments {
+  /**
+   * The invitation token
+   */
+  token: string
 }
 
 /**
@@ -925,6 +933,7 @@ export interface ITeamInvitation {
    * The userId of the person that sent the invitation
    */
   invitedBy: string
+  team: ITeam
 
   /**
    * The team invited to
@@ -2567,6 +2576,40 @@ export interface ISlackIntegration {
    * *The team that cares about these annoucements
    */
   teamId: string
+}
+
+export interface IVerifiedInvitationPayload {
+  __typename: 'VerifiedInvitationPayload'
+  errorType: TeamInvitationErrorEnum | null
+
+  /**
+   * true if the mx record is hosted by google, else false
+   */
+  isGoogle: boolean | null
+
+  /**
+   * The valid invitation
+   */
+  teamInvitation: ITeamInvitation | null
+
+  /**
+   * The userId of the invitee, if already a parabol user
+   */
+  userId: string | null
+
+  /**
+   * The invitee, if already a parabol user
+   */
+  user: IUser | null
+}
+
+/**
+ * The reason the invitation failed
+ */
+export const enum TeamInvitationErrorEnum {
+  accepted = 'accepted',
+  expired = 'expired',
+  notFound = 'notFound'
 }
 
 export interface IMutation {

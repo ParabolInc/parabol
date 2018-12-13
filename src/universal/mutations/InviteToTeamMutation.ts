@@ -3,6 +3,7 @@ import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutat
 import {commitMutation, graphql} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import plural from 'universal/utils/plural'
+import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 
 graphql`
   fragment InviteToTeamMutation_notification on InviteToTeamPayload {

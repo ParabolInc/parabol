@@ -1,6 +1,8 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import {resolveTeam} from 'server/graphql/resolvers'
+import Team from 'server/graphql/types/Team'
 
 const TeamInvitation = new GraphQLObjectType({
   name: 'TeamInvitation',
@@ -29,6 +31,10 @@ const TeamInvitation = new GraphQLObjectType({
     invitedBy: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId of the person that sent the invitation'
+    },
+    team: {
+      type: new GraphQLNonNull(Team),
+      resolve: resolveTeam
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
