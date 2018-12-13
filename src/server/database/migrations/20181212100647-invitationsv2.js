@@ -5,7 +5,10 @@ exports.up = async (r) => {
     // noop
   }
   try {
-    await r.table('TeamInvitation').indexCreate('token')
+    await r({
+      token: r.table('TeamInvitation').indexCreate('token'),
+      email: r.table('TeamInvitation').indexCreate('email')
+    })
   } catch (e) {}
 }
 

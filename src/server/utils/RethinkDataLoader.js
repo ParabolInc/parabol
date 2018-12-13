@@ -105,7 +105,14 @@ export default class RethinkDataLoader {
     this.notificationsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink()
       const viewerId = getUserId(this.authToken)
-      const notifications = await r.table('Notification').getAll(viewerId, {index: 'userIds'})
+      const notifications = await r
+        .table('Notification')
+        .getAll(viewerId, {index: 'userIds'})
+        .filter((notification) =>
+          notification('isArchived')
+            .default(false)
+            .ne(true)
+        )
       primeStandardLoader(this.notifications, notifications)
       return userIds.map(() => notifications)
     }, this.dataloaderOptions)

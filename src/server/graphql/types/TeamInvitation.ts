@@ -1,7 +1,6 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import {isSuperUser} from 'server/utils/authorization'
 
 const TeamInvitation = new GraphQLObjectType({
   name: 'TeamInvitation',
@@ -14,6 +13,10 @@ const TeamInvitation = new GraphQLObjectType({
     acceptedAt: {
       type: GraphQLISO8601Type,
       description: 'null if not accepted, else the datetime the invitation was accepted'
+    },
+    acceptedBy: {
+      type: GraphQLID,
+      description: 'null if not accepted, else the userId that accepted the invitation'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
@@ -32,11 +35,9 @@ const TeamInvitation = new GraphQLObjectType({
       description: 'The team invited to'
     },
     token: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: '48-byte base64 encoded random string',
-      resolve: ({token}, _args, {authToken}) => {
-        return isSuperUser(authToken) ? token : null
-      }
+      type: new GraphQLNonNull(GraphQLID),
+      description: '48-byte base64 encoded random string'
+      // access to the notification implies access to the token
     }
   })
 })

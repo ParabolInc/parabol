@@ -47,11 +47,13 @@ import {removeReflectTemplateTeamUpdater} from 'universal/mutations/RemoveReflec
 import {addReflectTemplatePromptTeamUpdater} from 'universal/mutations/AddReflectTemplatePromptMutation'
 import {removeReflectTemplatePromptTeamUpdater} from 'universal/mutations/RemoveReflectTemplatePromptMutation'
 import {moveReflectTemplatePromptTeamUpdater} from 'universal/mutations/MoveReflectTemplatePromptMutation'
+import {accceptTeamInvitationTeamUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
+      ...AcceptTeamInvitationMutation_team @relay(mask: false)
       ...AcceptTeamInviteMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
@@ -122,6 +124,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
+        case 'AcceptTeamInvitationPayload':
+          accceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
+          break
         case 'AcceptTeamInvitePayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId)
           break

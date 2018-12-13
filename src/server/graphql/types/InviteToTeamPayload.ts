@@ -17,6 +17,7 @@ const InviteToTeamPayload = new GraphQLObjectType({
       resolve: resolveTeam
     },
     invitees: {
+      description: 'A list of email addresses the invitations were sent to',
       type: new GraphQLList(new GraphQLNonNull(GraphQLEmailType))
     },
     teamInvitationNotificationId: {

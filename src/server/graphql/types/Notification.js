@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import NotificationEnum from 'server/graphql/types/NotificationEnum'
@@ -38,6 +38,10 @@ export const notificationInterfaceFields = {
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'A shortid for the notification'
+  },
+  isArchived: {
+    type: GraphQLBoolean,
+    description: 'true if the notification has been archived, else false (or null)'
   },
   orgId: {
     type: GraphQLID,

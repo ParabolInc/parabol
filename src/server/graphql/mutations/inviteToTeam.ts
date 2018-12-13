@@ -51,13 +51,18 @@ export default {
       // RESOLUTION
       const subOptions = {mutatorId, operationId}
       const users = await r.table('User').getAll(r.args(invitees), {index: 'email'})
+
+      // filter out emails already on team
+      const newInvitees = invitees.filter((email) => {
+        const user = users.find((user) => user.email === email)
+        return !(user && user.tms && user.tms.includes(teamId))
+      })
       const team = await dataLoader.get('teams').load(teamId)
       const inviter = await dataLoader.get('users').load(viewerId)
-
-      const tokens = await Promise.all(invitees.map(() => randomBytes(48)))
+      const tokens = await Promise.all(newInvitees.map(() => randomBytes(48)))
 
       // insert invitation records
-      const teamInvitationsToInsert = invitees.map((email, idx) => ({
+      const teamInvitationsToInsert = newInvitees.map((email, idx) => ({
         id: shortid.generate(),
         acceptedAt: null,
         createdAt: now,
@@ -104,7 +109,7 @@ export default {
 
       const data = {
         teamId,
-        invitees
+        invitees: newInvitees
       }
 
       // Tell each invitee
