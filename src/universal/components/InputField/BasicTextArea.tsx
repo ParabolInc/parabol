@@ -16,7 +16,7 @@ interface Props {
   disabled?: boolean
   error: string | undefined
   name?: string
-  onBlur: (e: React.FocusEvent<HTMLTextAreaElement>) => void
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void
   placeholder?: string
   value: string

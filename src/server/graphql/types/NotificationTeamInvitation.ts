@@ -2,8 +2,9 @@ import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {resolveTeam} from 'server/graphql/resolvers'
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
 import Team from 'server/graphql/types/Team'
-import User from 'server/graphql/types/User'
 import TeamNotification from 'server/graphql/types/TeamNotification'
+import User from 'server/graphql/types/User'
+import TeamInvitation from './TeamInvitation'
 
 const NotificationTeamInvitation = new GraphQLObjectType({
   name: 'NotificationTeamInvitation',
@@ -27,7 +28,7 @@ const NotificationTeamInvitation = new GraphQLObjectType({
     },
     invitation: {
       description: 'The invitation that triggered this notification',
-      type: new GraphQLNonNull(TeamNotification),
+      type: new GraphQLNonNull(TeamInvitation),
       resolve: async ({invitationId}, _args, {dataLoader}) => {
         return dataLoader.get('teamInvitations').load(invitationId)
       }

@@ -1,22 +1,35 @@
-import {css} from 'aphrodite-local-styles/no-important'
-import PropTypes from 'prop-types'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import withStyles from 'universal/styles/withStyles'
+import styled from 'react-emotion'
+import {DashboardAvatars_team} from '__generated__/DashboardAvatars_team.graphql'
+import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
 
-const DashboardAvatars = (props) => {
+const AvatarsList = styled('div')({
+  display: 'flex',
+  width: '100%'
+})
+
+const AvatarItem = styled('div')({
+  margin: '0 0 0 1rem',
+  position: 'relative'
+})
+
+interface Props {
+  team: DashboardAvatars_team
+}
+
+const DashboardAvatars = (props: Props) => {
   const {
-    team: {teamMembers},
-    styles
+    team: {id: teamId, teamMembers}
   } = props
   return (
-    <div className={css(styles.root)}>
+    <AvatarsList>
       {teamMembers.map((avatar) => {
         const picture = avatar.picture || defaultUserAvatar
         return (
-          <div className={css(styles.item)} key={`dbAvatar${avatar.id}`}>
+          <AvatarItem key={`dbAvatar${avatar.id}`}>
             <Avatar
               {...avatar}
               picture={picture}
@@ -25,34 +38,19 @@ const DashboardAvatars = (props) => {
               isConnected={avatar.isConnected || avatar.isSelf}
               size='smaller'
             />
-          </div>
+          </AvatarItem>
         )
       })}
-    </div>
+      <AddTeamMemberAvatarButton teamId={teamId} />
+    </AvatarsList>
   )
 }
 
-DashboardAvatars.propTypes = {
-  styles: PropTypes.object,
-  team: PropTypes.object.isRequired
-}
-
-const styleThunk = () => ({
-  root: {
-    display: 'flex',
-    width: '100%'
-  },
-
-  item: {
-    margin: '0 0 0 1rem',
-    position: 'relative'
-  }
-})
-
 export default createFragmentContainer(
-  withStyles(styleThunk)(DashboardAvatars),
+  DashboardAvatars,
   graphql`
     fragment DashboardAvatars_team on Team {
+      id
       teamMembers(sortBy: "preferredName") {
         id
         isCheckedIn

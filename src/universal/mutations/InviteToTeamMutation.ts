@@ -1,8 +1,10 @@
-import {InviteToTeamMutationResponse} from '__generated__/InviteToTeamMutation.graphql'
+import {InviteToTeamMutation} from '__generated__/InviteToTeamMutation.graphql'
 import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import plural from 'universal/utils/plural'
+import {IInviteToTeamOnMutationArguments} from '../types/graphql'
+import {LocalHandlers} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
 
 graphql`
@@ -16,7 +18,9 @@ graphql`
       inviter {
         preferredName
       }
-      invitationId
+      invitation {
+        token
+      }
     }
   }
 `
@@ -49,9 +53,9 @@ const popInvitationReceivedToast = (
 ) => {
   if (!notification) return
   const {
-    invitationId,
     inviter: {preferredName: inviterName},
-    team: {name: teamName}
+    team: {name: teamName},
+    invitation: {token: invitationToken}
   } = notification
   atmosphere.eventEmitter.emit('addToast', {
     autoDismiss: 10,
@@ -60,7 +64,7 @@ const popInvitationReceivedToast = (
     action: {
       label: 'Accept!',
       callback: () => {
-        AcceptTeamInvitationMutation(atmosphere, {invitationId}, {atmosphere, history})
+        AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history})
       }
     }
   })
@@ -80,11 +84,15 @@ export const inviteToTeamNotificationOnNext = (
   popInvitationReceivedToast(teamInvitationNotification, {atmosphere, history})
 }
 
-const InviteToTeamMutation = (atmosphere, variables, _context, onError, onCompleted) => {
-  return commitMutation(atmosphere, {
+const InviteToTeamMutation = (
+  atmosphere: any,
+  variables: IInviteToTeamOnMutationArguments,
+  {onError, onCompleted}: LocalHandlers
+) => {
+  return commitMutation<InviteToTeamMutation>(atmosphere, {
     mutation,
     variables,
-    onCompleted: (res: InviteToTeamMutationResponse, errors) => {
+    onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }

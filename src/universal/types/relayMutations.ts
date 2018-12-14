@@ -1,11 +1,16 @@
-import {RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
+import {PayloadError, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 export interface CompletedHandler {
-  (response: any, errors?: Array<Error>): void
+  (response: any, errors?: Array<Error | string | PayloadError> | null): void
 }
 
 export interface ErrorHandler {
   (error: Error): void
+}
+
+export interface LocalHandlers {
+  onError: ErrorHandler
+  onCompleted: CompletedHandler
 }
 
 interface UpdaterContext {

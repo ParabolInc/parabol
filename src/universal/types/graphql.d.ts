@@ -2582,16 +2582,6 @@ export interface IVerifiedInvitationPayload {
   errorType: TeamInvitationErrorEnum | null
 
   /**
-   * true if the mx record is hosted by google, else falsy
-   */
-  isGoogle: boolean | null
-
-  /**
-   * name of the inviting team
-   */
-  teamName: string
-
-  /**
    * The name of the person that send the invitation, present if errorType is expired
    */
   inviterName: string | null
@@ -2602,9 +2592,19 @@ export interface IVerifiedInvitationPayload {
   inviterEmail: string | null
 
   /**
+   * true if the mx record is hosted by google, else falsy
+   */
+  isGoogle: boolean | null
+
+  /**
    * The valid invitation
    */
   teamInvitation: ITeamInvitation | null
+
+  /**
+   * name of the inviting team
+   */
+  teamName: string
 
   /**
    * The userId of the invitee, if already a parabol user
@@ -5523,7 +5523,7 @@ export interface INotificationTeamInvitation {
   /**
    * The invitation that triggered this notification
    */
-  invitation: TeamNotification
+  invitation: ITeamInvitation
   team: ITeam
 
   /**
