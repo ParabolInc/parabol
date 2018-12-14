@@ -32,14 +32,27 @@ export default {
       .nth(0)
       .default(null)
     if (!teamInvitation) return {errorType: 'notFound'}
-    const {email, acceptedAt, createdAt} = teamInvitation
+    const {email, acceptedAt, createdAt, invitedBy, teamId} = teamInvitation
     if (acceptedAt) {
-      return {errorType: 'accepted'}
+      return {
+        errorType: 'accepted',
+        teamInvitation
+      }
     }
     const expirationThresh = new Date(Date.now() - TEAM_INVITATION_LIFESPAN)
+    const {team, inviter} = await r({
+      team: r.table('Team').get(teamId),
+      inviter: r.table('User').get(invitedBy)
+    })
     if (createdAt < expirationThresh) {
-      return {errorType: 'expired'}
+      return {
+        errorType: 'expired',
+        teamName: team.name,
+        inviterName: inviter.preferredName,
+        inviterEmail: inviter.email
+      }
     }
+
     const viewer = await r
       .table('User')
       .getAll(email, {index: 'email'})
@@ -48,9 +61,12 @@ export default {
     const userId = viewer ? viewer.id : null
     const isGoogle = getIsGoogleProvider(viewer, email)
     return {
+      inviterName: inviter.preferredName,
+      inviterEmail: inviter.email,
       isGoogle,
-      userId,
-      teamInvitation
+      teamInvitation,
+      teamName: team.name,
+      userId
     }
   })
 }

@@ -6,6 +6,8 @@ import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCo
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import getInProxy from 'universal/utils/relay/getInProxy'
+import {IAcceptTeamInvitationOnMutationArguments} from '../types/graphql'
+import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -69,7 +71,13 @@ export const accceptTeamInvitationNotificationOnNext = (
   })
 }
 
-const AcceptTeamInvitationMutation = (atmosphere, variables, {history}, onError, onCompleted) => {
+const AcceptTeamInvitationMutation = (
+  atmosphere,
+  variables: IAcceptTeamInvitationOnMutationArguments,
+  {history},
+  onError?: ErrorHandler,
+  onCompleted?: CompletedHandler
+) => {
   return commitMutation(atmosphere, {
     mutation,
     variables,
@@ -91,7 +99,7 @@ const AcceptTeamInvitationMutation = (atmosphere, variables, {history}, onError,
         return
       }
       const {
-        accceptTeamInvitation: {team}
+        acceptTeamInvitation: {team}
       } = data
       const {id: teamId, name: teamName} = team
       atmosphere.eventEmitter.emit('addToast', {

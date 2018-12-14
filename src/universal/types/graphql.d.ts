@@ -933,7 +933,6 @@ export interface ITeamInvitation {
    * The userId of the person that sent the invitation
    */
   invitedBy: string
-  team: ITeam
 
   /**
    * The team invited to
@@ -2583,9 +2582,24 @@ export interface IVerifiedInvitationPayload {
   errorType: TeamInvitationErrorEnum | null
 
   /**
-   * true if the mx record is hosted by google, else false
+   * true if the mx record is hosted by google, else falsy
    */
   isGoogle: boolean | null
+
+  /**
+   * name of the inviting team
+   */
+  teamName: string
+
+  /**
+   * The name of the person that send the invitation, present if errorType is expired
+   */
+  inviterName: string | null
+
+  /**
+   * The email of the person that send the invitation, present if errorType is expired
+   */
+  inviterEmail: string | null
 
   /**
    * The valid invitation
@@ -2598,7 +2612,7 @@ export interface IVerifiedInvitationPayload {
   userId: string | null
 
   /**
-   * The invitee, if already a parabol user
+   * The invitee, if already a parabol user, present if errorType is null
    */
   user: IUser | null
 }
