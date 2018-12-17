@@ -21,9 +21,8 @@ interface Props {
 }
 
 const DashboardAvatars = (props: Props) => {
-  const {
-    team: {id: teamId, teamMembers}
-  } = props
+  const {team} = props
+  const {teamMembers} = team
   return (
     <AvatarsList>
       {teamMembers.map((avatar) => {
@@ -41,7 +40,7 @@ const DashboardAvatars = (props: Props) => {
           </AvatarItem>
         )
       })}
-      <AddTeamMemberAvatarButton teamId={teamId} />
+      <AddTeamMemberAvatarButton team={team} />
     </AvatarsList>
   )
 }
@@ -51,6 +50,7 @@ export default createFragmentContainer(
   graphql`
     fragment DashboardAvatars_team on Team {
       id
+      ...AddTeamMemberModal_team
       teamMembers(sortBy: "preferredName") {
         id
         isCheckedIn

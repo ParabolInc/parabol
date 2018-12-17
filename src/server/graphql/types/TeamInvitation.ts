@@ -41,7 +41,7 @@ const TeamInvitation = new GraphQLObjectType({
     },
     token: {
       type: new GraphQLNonNull(GraphQLID),
-      description: '48-byte base64 encoded random string'
+      description: '48-byte hex encoded random string'
       // access to the notification implies access to the token
     }
   })

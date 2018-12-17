@@ -5,7 +5,7 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import LoadableModal from './LoadableModal'
 
 interface Props extends WithAtmosphereProps {
-  teamId: string
+  team: any
 }
 
 const AddButton = styled(FloatingActionButton)({
@@ -24,11 +24,11 @@ const AddTeamMemberModal = lazy(() =>
 
 class AddTeamMemberAvatarButton extends Component<Props> {
   render () {
-    const {teamId} = this.props
+    const {team} = this.props
     return (
       <LoadableModal
         LoadableComponent={AddTeamMemberModal}
-        queryVars={{teamId}}
+        queryVars={{team}}
         toggle={<AddButton palette='blue'>+</AddButton>}
       />
     )

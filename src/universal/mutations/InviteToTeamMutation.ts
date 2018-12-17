@@ -2,7 +2,6 @@ import {InviteToTeamMutation} from '__generated__/InviteToTeamMutation.graphql'
 import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import plural from 'universal/utils/plural'
 import {IInviteToTeamOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
@@ -36,16 +35,6 @@ const mutation = graphql`
     }
   }
 `
-
-const popInvitationSentToast = (invitees: ReadonlyArray<string> | null, {atmosphere}) => {
-  if (!invitees) return
-  const emailStr = invitees.join(', ')
-  atmosphere.eventEmitter.emit('addToast', {
-    level: 'success',
-    title: `${plural(invitees, 'Invitation')} sent!`,
-    message: `An invitation has been sent to ${emailStr}`
-  })
-}
 
 const popInvitationReceivedToast = (
   notification: InviteToTeamMutation_notification['teamInvitationNotification'] | null,
@@ -95,10 +84,6 @@ const InviteToTeamMutation = (
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
-      }
-      const payload = res.inviteToTeam
-      if (payload && !payload.error) {
-        popInvitationSentToast(payload.invitees, {atmosphere})
       }
     },
     onError

@@ -1527,12 +1527,11 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@16.0.7":
-  version "16.0.7"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.7.tgz#54d0f867a76b90597e8432030d297982f25c20ba"
-  integrity sha512-vaq4vMaJOaNgFff1t3LnHYr6vRa09vRspMkmLdXtFZmO1fwDI2snP+dpOkwrtlU8UC8qsqemCu4RmVM2OLq/fA==
+"@types/react-dom@^16.0.7":
+  version "16.0.11"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.0.11.tgz#bd10ccb0d9260343f4b9a49d4f7a8330a5c1f081"
+  integrity sha512-x6zUx9/42B5Kl2Vl9HlopV8JF64wLpX3c+Pst9kc1HgzrsH+mkehe/zmHMQTplIrR48H2gpU7ZqurQolYu8XBA==
   dependencies:
-    "@types/node" "*"
     "@types/react" "*"
 
 "@types/react-notification-system@^0.2.39":
@@ -1542,10 +1541,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-redux@^6.0.6":
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-6.0.9.tgz#96aa7f5b0716bcc3bfb36ceaa1223118d509f79a"
-  integrity sha512-LatgnnZ7bG63SmzEqGMjAIP1bN36iaXpb4G7UW3SqpHyo+OQ97MnMXm9BoNi720r61+PvseyIUJN4el4GVhAAg==
+"@types/react-redux@^6.0.11":
+  version "6.0.11"
+  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-6.0.11.tgz#d872254bbcba42465195a5475f40b22502b0407d"
+  integrity sha512-I3POoeGGwNqZjbK7TfnPJS2C51TFvT0atQPz4M+xpVTrLMjsX37AAfcTF3XUOTnmxHsryEjwJN9r/ScGwSXdtg==
   dependencies:
     "@types/react" "*"
     redux "^4.0.0"
@@ -1583,10 +1582,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/react@16.4.11":
-  version "16.4.11"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.11.tgz#330f3d864300f71150dc2d125e48644c098f8770"
-  integrity sha512-1DQnmwO8u8N3ucvRX2ZLDEjQ2VctkAvL/rpbm2ev4uaZA0z4ysU+I0tk+K8ZLblC6p7MCgFyF+cQlSNIPUHzeQ==
+"@types/react@^16.4.11":
+  version "16.7.17"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.7.17.tgz#3242e796a1ffbba4f49eae5915a67f4c079504e9"
+  integrity sha512-YcXcaoXaxo7A76mBCGlKlN2aZu3REQfF0DTrhiyXVJLA7PDdxVCr+wiQOrkVNn44D/zLlIyDSn3U918Ve0AaEA==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -16393,10 +16392,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.2.tgz#fe8101c46aa123f8353523ebdcf5730c2ae493e5"
-  integrity sha512-VCj5UiSyHBjwfYacmDuc/NOk4QQixbE+Wn7MFJuS0nRuPQbof132Pw4u53dm264O8LPc2MVsc7RJNml5szurkg==
+typescript@next:
+  version "3.3.0-dev.20181214"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.3.0-dev.20181214.tgz#36890168e9b965727204eaa0ee05de2782fd2e40"
+  integrity sha512-dy3hilVp3gHsKEqj837gzo6YLn5IuX+5obTkdLJuvceYQ1B/fBnj4Y+FB44IQdmZ4oaeQd5+7u+uI6vDvp5FhQ==
 
 ua-parser-js@^0.7.18:
   version "0.7.19"

@@ -9,8 +9,8 @@ export interface ErrorHandler {
 }
 
 export interface LocalHandlers {
-  onError: ErrorHandler
-  onCompleted: CompletedHandler
+  onError?: ErrorHandler
+  onCompleted?: CompletedHandler
 }
 
 interface UpdaterContext {

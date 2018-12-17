@@ -14,7 +14,7 @@ const TextArea = styled('textarea')({
 interface Props {
   autoFocus?: boolean
   disabled?: boolean
-  error: string | undefined
+  error?: string | undefined | null
   name?: string
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void

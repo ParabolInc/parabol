@@ -24,13 +24,7 @@ class TeamInvitation extends Component<Props> {
     const onCompleted = () => {
       history.replace(`/team/${teamId}`)
     }
-    AcceptTeamInvitationMutation(
-      atmosphere,
-      {invitationToken: token},
-      {history},
-      undefined,
-      onCompleted
-    )
+    AcceptTeamInvitationMutation(atmosphere, {invitationToken: token}, {history, onCompleted})
   }
 
   render () {
