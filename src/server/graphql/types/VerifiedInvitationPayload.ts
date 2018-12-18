@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLString, GraphQLID, GraphQLBoolean, GraphQLObjectType} from 'graphql'
+import {GraphQLString, GraphQLID, GraphQLBoolean, GraphQLObjectType} from 'graphql'
 import TeamInvitation from './TeamInvitation'
 import {resolveUser} from 'server/graphql/resolvers'
 import User from 'server/graphql/types/User'
@@ -26,11 +26,11 @@ const VerifiedInvitationPayload = new GraphQLObjectType({
     },
     teamInvitation: {
       type: TeamInvitation,
-      description: 'The valid invitation'
+      description: 'The valid invitation, if any'
     },
     teamName: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'name of the inviting team'
+      type: GraphQLString,
+      description: 'name of the inviting team, present if invitation exists'
     },
     userId: {
       type: GraphQLID,

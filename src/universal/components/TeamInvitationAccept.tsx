@@ -11,7 +11,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}
 }
 
 class TeamInvitation extends Component<Props> {
-  constructor (props) {
+  constructor (props: Props) {
     super(props)
     const {
       atmosphere,
@@ -19,8 +19,10 @@ class TeamInvitation extends Component<Props> {
       match: {
         params: {token}
       },
-      teamInvitation: {teamId}
+      verifiedInvitation: {teamInvitation}
     } = props
+    if (!teamInvitation) return
+    const {teamId} = teamInvitation
     const onCompleted = () => {
       history.replace(`/team/${teamId}`)
     }

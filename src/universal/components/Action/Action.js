@@ -44,7 +44,7 @@ const demoSummary = () =>
 const authProvider = () =>
   import(/* webpackChunkName: 'AuthProvider' */ 'universal/components/AuthProvider')
 const teamInvitation = () =>
-  import(/* webpackChunkName: 'TeamInvitation' */ 'universal/components/TeamInvitation')
+  import(/* webpackChunkName: 'TeamInvitationRoot' */ 'universal/components/TeamInvitationRoot')
 
 const ActionStyles = styled('div')({
   margin: 0,
