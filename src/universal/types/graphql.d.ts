@@ -1489,11 +1489,13 @@ export interface IOrganization {
 
   /**
    * The total number of retroMeetings given to the team
+   * @deprecated "Unlimited retros for all!"
    */
   retroMeetingsOffered: number
 
   /**
    * Number of retro meetings that can be run (if not pro)
+   * @deprecated "Unlimited retros for all!"
    */
   retroMeetingsRemaining: number
 

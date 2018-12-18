@@ -7,7 +7,7 @@ import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authori
 import {fromEpochSeconds} from 'server/utils/epochTime'
 import publish from 'server/utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
-import {ACTION_MONTHLY} from 'server/utils/serverConstants'
+import {PARABOL_PRO_MONTHLY} from 'server/utils/serverConstants'
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants'
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
 import {sendAlreadyProTierError} from 'server/utils/alreadyMutatedErrors'
@@ -60,8 +60,12 @@ export default {
       metadata: {
         orgId
       },
-      plan: ACTION_MONTHLY,
-      quantity: orgUsers.length,
+      items: [
+        {
+          plan: PARABOL_PRO_MONTHLY,
+          quantity: orgUsers.length
+        }
+      ],
       trial_period_days: 0
     })
     const currentPeriodStart = subscription.current_period_start
@@ -76,7 +80,6 @@ export default {
           tier: PRO,
           periodEnd: fromEpochSeconds(currentPeriodEnd),
           periodStart: fromEpochSeconds(currentPeriodStart),
-          retroMeetingsRemaining: 0,
           stripeId: customer.id,
           stripeSubscriptionId: subscription.id,
           updatedAt: now

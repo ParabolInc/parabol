@@ -123,7 +123,7 @@ export const BILLING_LEADER_LABEL = 'Billing Leader'
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
-export const MONTHLY_PRICE = 5
+export const MONTHLY_PRICE = 12
 export const ADDED_USERS = 'ADDED_USERS'
 export const REMOVED_USERS = 'REMOVED_USERS'
 export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS'

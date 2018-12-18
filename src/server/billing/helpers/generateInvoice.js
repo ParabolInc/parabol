@@ -179,6 +179,7 @@ const makeItemDict = (stripeLineItems) => {
       proration,
       quantity
     } = lineItem
+    // this conditional is not sufficient for newer APIs (proration field went away maybe?)
     if (description === null && proration === false) {
       // this must be the next month's charge
       nextMonthCharges = {

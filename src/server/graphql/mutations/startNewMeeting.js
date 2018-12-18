@@ -4,13 +4,13 @@ import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
-import {TEAM, RETROSPECTIVE, PERSONAL} from 'universal/utils/constants'
+import {TEAM} from 'universal/utils/constants'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 import extendNewMeetingForType from 'server/graphql/mutations/helpers/extendNewMeetingForType'
 import createNewMeetingPhases from 'server/graphql/mutations/helpers/createNewMeetingPhases'
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyStartedMeetingError, outOfMeetingsError} from 'server/utils/alreadyMutatedErrors'
+import {sendAlreadyStartedMeetingError} from 'server/utils/alreadyMutatedErrors'
 import sendAuthRaven from 'server/utils/sendAuthRaven'
 import extendMeetingMembersForType from 'server/graphql/mutations/helpers/extendMeetingMembersForType'
 import createMeetingMember from 'server/graphql/mutations/helpers/createMeetingMember'
@@ -49,20 +49,6 @@ export default {
         .count()
         .default(0)
     })
-
-    if (meetingType === RETROSPECTIVE && team.tier === PERSONAL) {
-      const meetingsRemaining = await r
-        .table('Organization')
-        .get(team.orgId)
-        .update(
-          (org) => ({
-            retroMeetingsRemaining: r.max([0, org('retroMeetingsRemaining').sub(1)]).default(0)
-          }),
-          {returnChanges: true}
-        )('changes')(0)('old_val')('retroMeetingsRemaining')
-        .default(0)
-      if (meetingsRemaining < 1) return outOfMeetingsError(authToken, teamId)
-    }
 
     if (team.meetingId) {
       return sendAlreadyStartedMeetingError(authToken, teamId)

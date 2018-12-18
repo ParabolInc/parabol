@@ -82,10 +82,12 @@ const Organization = new GraphQLObjectType({
       resolve: resolveForBillingLeaders('periodStart')
     },
     retroMeetingsOffered: {
+      deprecationReason: 'Unlimited retros for all!',
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The total number of retroMeetings given to the team'
     },
     retroMeetingsRemaining: {
+      deprecationReason: 'Unlimited retros for all!',
       type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of retro meetings that can be run (if not pro)'
     },

@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload'
-import {isPaidTier, isTeamMember} from 'server/utils/authorization'
+import {isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
-import {sendTeamAccessError, sendTeamPaidTierError} from 'server/utils/authorizationErrors'
+import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 
 export default {
   type: UpdateCheckInQuestionPayload,
@@ -28,9 +28,6 @@ export default {
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
       return sendTeamAccessError(authToken, teamId)
-    }
-    if (!(await isPaidTier(teamId))) {
-      return sendTeamPaidTierError(authToken, teamId)
     }
 
     // VALIDATION
