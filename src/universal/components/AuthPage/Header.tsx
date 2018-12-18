@@ -1,7 +1,6 @@
 /**
  * The brand header for the authentication homepages.
  *
- * @flow
  */
 import React from 'react'
 import styled from 'react-emotion'

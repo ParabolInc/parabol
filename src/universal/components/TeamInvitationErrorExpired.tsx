@@ -1,7 +1,11 @@
-import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
 import {TeamInvitationErrorExpired_verifiedInvitation} from '__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
+import React from 'react'
 import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
+import InvitationDialog from './InvitationDialog'
+import InvitationDialogContent from './InvitationDialogContent'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InvitationDialogTitle from './InvitationDialogTitle'
 
 interface Props {
   verifiedInvitation: TeamInvitationErrorExpired_verifiedInvitation
@@ -11,13 +15,17 @@ const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
   return (
-    <div>
+    <InvitationDialog>
       <Helmet title={`Token Expired | Team Invitation`} />
-      <span>Your invitation to {teamName} has expired!</span>
-      <span>
-        Reach out to {inviterName} at {inviterEmail} to request a new one
-      </span>
-    </div>
+      <InvitationDialogTitle>Invitation Expired</InvitationDialogTitle>
+      <InvitationDialogContent>
+        <InvitationDialogCopy>The invitation to {teamName} has expired</InvitationDialogCopy>
+        <InvitationDialogCopy>
+          Reach out to {inviterName} at {inviterEmail}
+        </InvitationDialogCopy>
+        <InvitationDialogCopy>to request a new one</InvitationDialogCopy>
+      </InvitationDialogContent>
+    </InvitationDialog>
   )
 }
 

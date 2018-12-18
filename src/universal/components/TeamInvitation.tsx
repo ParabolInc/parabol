@@ -1,69 +1,47 @@
-import {TeamInvitation_verifiedInvitation} from '__generated__/TeamInvitation_verifiedInvitation.graphql'
-import React, {Component} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router'
-import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
-import withAtmosphere from '../decorators/withAtmosphere/withAtmosphere'
-import TeamInvitationAccept from './TeamInvitationAccept'
-import TeamInvitationEmailCreateAccount from './TeamInvitationEmailCreateAccount'
-import TeamInvitationEmailSignin from './TeamInvitationEmailSignin'
-import TeamInvitationErrorAccepted from './TeamInvitationErrorAccepted'
-import TeamInvitationErrorExpired from './TeamInvitationErrorExpired'
-import TeamInvitationErrorNotFound from './TeamInvitationErrorNotFound'
-import TeamInvitationGoogleCreateAccount from './TeamInvitationGoogleCreateAccount'
-import TeamInvitationGoogleSignin from './TeamInvitationGoogleSignin'
+import React from 'react'
+import styled from 'react-emotion'
+import {PALETTE} from '../styles/paletteV2'
+import Header from './AuthPage/Header'
+import TeamInvitationDialog from './TeamInvitationDialog'
+import BACKGROUND = PALETTE.BACKGROUND
+import TEXT = PALETTE.TEXT
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}> {
-  verifiedInvitation: TeamInvitation_verifiedInvitation
+interface Props {
+  verifiedInvitation: any
 }
 
-class TeamInvitation extends Component<Props> {
-  render () {
-    const {atmosphere, verifiedInvitation} = this.props
-    const {errorType, isGoogle, user} = verifiedInvitation
-    switch (errorType) {
-      case 'notFound':
-        return <TeamInvitationErrorNotFound />
-      case 'accepted':
-        return <TeamInvitationErrorAccepted verifiedInvitation={verifiedInvitation} />
-      case 'expired':
-        return <TeamInvitationErrorExpired verifiedInvitation={verifiedInvitation} />
-    }
-    const {authToken} = atmosphere
-    if (authToken) {
-      return <TeamInvitationAccept verifiedInvitation={verifiedInvitation} />
-    }
-    if (user) {
-      return isGoogle ? (
-        <TeamInvitationGoogleSignin verifiedInvitation={verifiedInvitation} />
-      ) : (
-        <TeamInvitationEmailSignin verifiedInvitation={verifiedInvitation} />
-      )
-    }
-    return isGoogle ? (
-      <TeamInvitationGoogleCreateAccount verifiedInvitation={verifiedInvitation} />
-    ) : (
-      <TeamInvitationEmailCreateAccount verifiedInvitation={verifiedInvitation} />
-    )
-  }
+const PageContainer = styled('div')({
+  alignItems: 'center',
+  backgroundColor: BACKGROUND.MAIN,
+  color: TEXT.MAIN,
+  display: 'flex',
+  flexDirection: 'column',
+  maxWidth: '100%',
+  minHeight: '100vh',
+  height: '100vh'
+})
+
+const CenteredBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  justifyContent: 'center',
+  maxWidth: '100%',
+  padding: '0 1rem 2rem',
+  width: '100%'
+})
+
+function TeamInvitation (props: Props) {
+  const {verifiedInvitation} = props
+  return (
+    <PageContainer>
+      <Header />
+      <CenteredBlock>
+        <TeamInvitationDialog verifiedInvitation={verifiedInvitation} />
+      </CenteredBlock>
+    </PageContainer>
+  )
 }
 
-export default createFragmentContainer(
-  withAtmosphere(withRouter(TeamInvitation)),
-  graphql`
-    fragment TeamInvitation_verifiedInvitation on VerifiedInvitationPayload {
-      ...TeamInvitationErrorAccepted_verifiedInvitation
-      ...TeamInvitationErrorExpired_verifiedInvitation
-      ...TeamInvitationGoogleSignin_verifiedInvitation
-      ...TeamInvitationGoogleCreateAccount_verifiedInvitation
-      ...TeamInvitationEmailSignin_verifiedInvitation
-      ...TeamInvitationEmailCreateAccount_verifiedInvitation
-      ...TeamInvitationAccept_verifiedInvitation
-      errorType
-      isGoogle
-      user {
-        preferredName
-      }
-    }
-  `
-)
+export default TeamInvitation

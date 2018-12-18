@@ -2603,14 +2603,14 @@ export interface IVerifiedInvitationPayload {
   isGoogle: boolean | null
 
   /**
-   * The valid invitation
+   * The valid invitation, if any
    */
   teamInvitation: ITeamInvitation | null
 
   /**
-   * name of the inviting team
+   * name of the inviting team, present if invitation exists
    */
-  teamName: string
+  teamName: string | null
 
   /**
    * The userId of the invitee, if already a parabol user

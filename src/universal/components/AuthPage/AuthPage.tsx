@@ -1,10 +1,8 @@
 /**
  * Wraps content with the authentication page scaffolding (e.g. header).
  *
- * @flow
  */
-import type {Node} from 'react'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import ui from 'universal/styles/ui'
@@ -12,7 +10,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import Header from './Header'
 
 type Props = {
-  children: Node,
+  children: ReactNode
   title: string
 }
 
@@ -23,7 +21,8 @@ const PageContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   maxWidth: '100%',
-  minHeight: '100vh'
+  minHeight: '100vh',
+  height: '100vh'
 })
 
 const CenteredBlock = styled('div')({

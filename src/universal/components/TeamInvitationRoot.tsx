@@ -10,7 +10,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}
 const query = graphql`
   query TeamInvitationRootQuery($token: ID!) {
     verifiedInvitation(token: $token) {
-      ...TeamInvitation_verifiedInvitation
+      ...TeamInvitationDialog_verifiedInvitation
     }
   }
 `

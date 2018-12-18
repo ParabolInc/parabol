@@ -1,32 +1,47 @@
-import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps, withRouter} from 'react-router'
 import {TeamInvitationErrorAccepted_verifiedInvitation} from '__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
+import React from 'react'
+import styled from 'react-emotion'
 import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
+import InvitationDialog from './InvitationDialog'
+import InvitationDialogContent from './InvitationDialogContent'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InvitationDialogTitle from './InvitationDialogTitle'
+import StyledLink from './StyledLink'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   verifiedInvitation: TeamInvitationErrorAccepted_verifiedInvitation
 }
 
+const InlineCopy = styled(InvitationDialogCopy)({
+  display: 'inline-block'
+})
+
 const TeamInvitationErrorAccepted = (props: Props) => {
-  const {history, verifiedInvitation} = props
-  const {teamInvitation} = verifiedInvitation
-  if (!teamInvitation) return null
+  const {verifiedInvitation} = props
+  const {teamInvitation, teamName} = verifiedInvitation
+  if (!teamInvitation || teamName === null) return null
   const {teamId} = teamInvitation
   return (
-    <div>
+    <InvitationDialog>
       <Helmet title={`Token already accepted | Team Invitation`} />
-      <span>Your token has already been redeemed!</span>
-      <span onClick={() => history.replace(`/team/${teamId}`)}>Click here</span>
-      <span> to head to the team dashboard</span>
-    </div>
+      <InvitationDialogTitle>Invitation Already Accepted</InvitationDialogTitle>
+      <InvitationDialogContent>
+        <InvitationDialogCopy>
+          The invitation to {teamName} has already been redeemed
+        </InvitationDialogCopy>
+        <InlineCopy>Visit the</InlineCopy>
+        <StyledLink to={`/team/${teamId}`}> Team Dashboard</StyledLink>
+      </InvitationDialogContent>
+    </InvitationDialog>
   )
 }
 
 export default createFragmentContainer(
-  withRouter(TeamInvitationErrorAccepted),
+  TeamInvitationErrorAccepted,
   graphql`
     fragment TeamInvitationErrorAccepted_verifiedInvitation on VerifiedInvitationPayload {
+      teamName
       teamInvitation {
         teamId
       }
