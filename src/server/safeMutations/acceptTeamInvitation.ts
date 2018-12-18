@@ -43,9 +43,6 @@ const acceptTeamInvitation = async (
         type: TEAM_INVITATION,
         teamId
       })
-      .update({
-        isArchived: true
-      })
       .update({isArchived: true}, {returnChanges: true})('changes')('new_val')('id')
   })
   if (!userInOrg) {

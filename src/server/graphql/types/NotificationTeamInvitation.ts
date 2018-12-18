@@ -3,7 +3,6 @@ import {resolveTeam} from 'server/graphql/resolvers'
 import Notification, {notificationInterfaceFields} from 'server/graphql/types/Notification'
 import Team from 'server/graphql/types/Team'
 import TeamNotification from 'server/graphql/types/TeamNotification'
-import User from 'server/graphql/types/User'
 import TeamInvitation from './TeamInvitation'
 
 const NotificationTeamInvitation = new GraphQLObjectType({
@@ -11,13 +10,6 @@ const NotificationTeamInvitation = new GraphQLObjectType({
   description: 'A notification sent to a user that was invited to a new team',
   interfaces: () => [Notification, TeamNotification],
   fields: () => ({
-    inviter: {
-      type: new GraphQLNonNull(User),
-      description: 'The user that triggered the invitation',
-      resolve: ({inviterUserId}, _args, {dataLoader}) => {
-        return dataLoader.get('users').load(inviterUserId)
-      }
-    },
     teamId: {
       description: 'FK',
       type: new GraphQLNonNull(GraphQLID)

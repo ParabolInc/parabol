@@ -36,10 +36,7 @@ import {
   inviteToTeamNotificationOnNext,
   inviteToTeamNotificationUpdater
 } from 'universal/mutations/InviteToTeamMutation'
-import {
-  accceptTeamInvitationNotificationOnNext,
-  accceptTeamInvitationNotificationUpdater
-} from 'universal/mutations/AcceptTeamInvitationMutation'
+import {acceptTeamInvitationNotificationUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -144,7 +141,6 @@ const stripeFailPaymentNotificationUpdater = (payload, store, viewerId) => {
 }
 
 const onNextHandlers = {
-  AcceptTeamInvitationPayload: accceptTeamInvitationNotificationOnNext,
   AddOrgPayload: addOrgMutationNotificationOnNext,
   AddTeamPayload: addTeamMutationNotificationOnNext,
   ApproveToOrgPayload: approveToOrgNotificationOnNext,
@@ -166,7 +162,7 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
       const type = payload.getValue('__typename')
       switch (type) {
         case 'AcceptTeamInvitationPayload':
-          accceptTeamInvitationNotificationUpdater(payload, {store, atmosphere})
+          acceptTeamInvitationNotificationUpdater(payload, {store, atmosphere})
           break
         case 'AddFeatureFlagPayload':
           break

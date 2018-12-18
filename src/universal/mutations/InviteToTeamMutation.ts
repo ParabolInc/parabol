@@ -14,10 +14,10 @@ graphql`
       team {
         name
       }
-      inviter {
-        preferredName
-      }
       invitation {
+        inviter {
+          preferredName
+        }
         token
       }
     }
@@ -42,9 +42,11 @@ const popInvitationReceivedToast = (
 ) => {
   if (!notification) return
   const {
-    inviter: {preferredName: inviterName},
     team: {name: teamName},
-    invitation: {token: invitationToken}
+    invitation: {
+      token: invitationToken,
+      inviter: {preferredName: inviterName}
+    }
   } = notification
   atmosphere.eventEmitter.emit('addToast', {
     autoDismiss: 10,

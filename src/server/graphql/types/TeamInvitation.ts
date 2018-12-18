@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import User from 'server/graphql/types/User'
 
 const TeamInvitation = new GraphQLObjectType({
   name: 'TeamInvitation',
@@ -30,7 +31,15 @@ const TeamInvitation = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId of the person that sent the invitation'
     },
+    inviter: {
+      type: new GraphQLNonNull(User),
+      description: 'The userId of the person that sent the invitation',
+      resolve: async ({invitedBy}, _args, {dataLoader}) => {
+        return dataLoader.get('users').load(invitedBy)
+      }
+    },
     // Don't allow trusted resolvers to run on this objects since it's a payload of an untrusted user
+    // TODO this should be the job of the Team object to protect from non-team reqs
     // team: {
     //   type: Team,
     //   resolve: resolveTeam

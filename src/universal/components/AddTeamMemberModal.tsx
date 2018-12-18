@@ -92,6 +92,7 @@ class AddTeamMemberModal extends Component<Props, State> {
         <span>Type in invitee emails</span>
         <EmailTextArea>
           <BasicTextArea
+            autoFocus
             name='rawInvitees'
             onChange={this.onChange}
             placeholder={randomPlaceholderTheme.emailMulti}

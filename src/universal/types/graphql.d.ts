@@ -935,12 +935,17 @@ export interface ITeamInvitation {
   invitedBy: string
 
   /**
+   * The userId of the person that sent the invitation
+   */
+  inviter: IUser
+
+  /**
    * The team invited to
    */
   teamId: string
 
   /**
-   * 48-byte base64 encoded random string
+   * 48-byte hex encoded random string
    */
   token: string
 }
@@ -1458,6 +1463,7 @@ export const enum NotificationEnum {
   REJOIN_TEAM = 'REJOIN_TEAM',
   REQUEST_NEW_USER = 'REQUEST_NEW_USER',
   TEAM_INVITE = 'TEAM_INVITE',
+  TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   VERSION_INFO = 'VERSION_INFO',
   PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
@@ -2582,7 +2588,7 @@ export interface IVerifiedInvitationPayload {
   errorType: TeamInvitationErrorEnum | null
 
   /**
-   * The name of the person that send the invitation, present if errorType is expired
+   * The name of the person that sent the invitation, present if errorType is expired
    */
   inviterName: string | null
 
@@ -3100,9 +3106,14 @@ export interface IAcceptTeamInviteOnMutationArguments {
 
 export interface IAcceptTeamInvitationOnMutationArguments {
   /**
-   * The invitation token (first 6 bytes are the id, next 8 are the pre-hash)
+   * The 48-byte hex encoded invitation token
    */
-  invitationToken?: string | null
+  invitationToken: string
+
+  /**
+   * the notification clicked to accept, if any
+   */
+  notificationId?: string | null
 }
 
 export interface IAddAgendaItemOnMutationArguments {
@@ -5504,11 +5515,6 @@ export interface IInviteToTeamPayload {
  */
 export interface INotificationTeamInvitation {
   __typename: 'NotificationTeamInvitation'
-
-  /**
-   * The user that triggered the invitation
-   */
-  inviter: IUser
 
   /**
    * FK

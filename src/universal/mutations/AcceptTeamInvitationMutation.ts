@@ -3,7 +3,6 @@ import {commitMutation, graphql} from 'react-relay'
 import {RouterProps} from 'react-router'
 import {RecordProxy} from 'relay-runtime'
 import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers'
-import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import getInProxy from 'universal/utils/relay/getInProxy'
@@ -28,6 +27,10 @@ graphql`
 graphql`
   fragment AcceptTeamInvitationMutation_notification on AcceptTeamInvitationPayload {
     removedNotificationIds
+    team {
+      id
+      name
+    }
   }
 `
 
@@ -43,7 +46,7 @@ const mutation = graphql`
   }
 `
 
-export const accceptTeamInvitationNotificationUpdater = (
+export const acceptTeamInvitationNotificationUpdater = (
   payload: RecordProxy,
   {atmosphere, store}
 ) => {
@@ -52,12 +55,12 @@ export const accceptTeamInvitationNotificationUpdater = (
   handleRemoveNotifications(notificationIds, store, viewerId)
 }
 
-export const accceptTeamInvitationTeamUpdater = (payload: RecordProxy, {store}) => {
+export const acceptTeamInvitationTeamUpdater = (payload: RecordProxy, {store}) => {
   const teamMember = payload.getLinkedRecord('teamMember')
   handleAddTeamMembers(teamMember, store)
 }
 
-export const accceptTeamInvitationNotificationOnNext = (
+export const acceptTeamInvitationTeamOnNext = (
   payload: AcceptTeamInvitationMutation_team,
   {atmosphere}
 ) => {
@@ -83,9 +86,9 @@ const AcceptTeamInvitationMutation = (
     mutation,
     variables,
     updater: (store) => {
-      const payload = store.getRootField('accceptTeamInvitation')
+      const payload = store.getRootField('acceptTeamInvitation')
       if (!payload) return
-      accceptTeamInvitationTeamUpdater(payload, {store})
+      acceptTeamInvitationNotificationUpdater(payload, {atmosphere, store})
     },
     onError,
     onCompleted: (data, errors) => {
@@ -93,12 +96,7 @@ const AcceptTeamInvitationMutation = (
         onCompleted(data, errors)
       }
       const serverError = getGraphQLError(data, errors)
-      if (serverError) {
-        handleOnCompletedToastError(serverError, atmosphere)
-        // give them the benefit of the doubt & don't sign them out
-        history.push('/')
-        return
-      }
+      if (serverError) return
       const {
         acceptTeamInvitation: {team}
       } = data

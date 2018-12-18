@@ -13,7 +13,7 @@ const VerifiedInvitationPayload = new GraphQLObjectType({
     inviterName: {
       type: GraphQLString,
       description:
-        'The name of the person that send the invitation, present if errorType is expired'
+        'The name of the person that sent the invitation, present if errorType is expired'
     },
     inviterEmail: {
       type: GraphQLString,

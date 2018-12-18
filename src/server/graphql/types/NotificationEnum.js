@@ -14,7 +14,8 @@ import {
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
   TEAM_INVITE,
-  VERSION_INFO
+  VERSION_INFO,
+  TEAM_INVITATION
 } from 'universal/utils/constants'
 
 const NotificationEnum = new GraphQLEnumType({
@@ -33,6 +34,7 @@ const NotificationEnum = new GraphQLEnumType({
     [REJOIN_TEAM]: {},
     [REQUEST_NEW_USER]: {},
     [TEAM_INVITE]: {},
+    [TEAM_INVITATION]: {},
     [TEAM_ARCHIVED]: {},
     [VERSION_INFO]: {},
     [PROMOTE_TO_BILLING_LEADER]: {}

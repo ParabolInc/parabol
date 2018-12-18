@@ -1,18 +1,19 @@
 import {TeamInvitation_notification} from '__generated__/TeamInvitation_notification.graphql'
 import React from 'react'
-import styled, {css} from 'react-emotion'
+import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 import Row from 'universal/components/Row/Row'
-import defaultStyles from 'universal/modules/notifications/helpers/styles'
-import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
-import ui from 'universal/styles/ui'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
+import ui from 'universal/styles/ui'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import NotificationButton from './NotificationButton'
+import NotificationMessage from './NotificationMessage'
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   notification: TeamInvitation_notification
@@ -31,32 +32,33 @@ const TeamInvitation = (props: Props) => {
     onCompleted
   } = props
   const {
-    invitation: {token},
-    inviter: {preferredName: inviterName},
+    id: notificationId,
+    invitation: {
+      token,
+      inviter: {preferredName: inviterName}
+    },
     team: {name: teamName}
   } = notification
   const accept = () => {
     submitMutation()
     AcceptTeamInvitationMutation(
       atmosphere,
-      {invitationToken: token},
+      {notificationId, invitationToken: token},
       {history, onError, onCompleted}
     )
   }
 
   return (
     <Row compact>
-      <div className={css(defaultStyles.icon)}>
-        <IconAvatar icon='group' size='small' />
-      </div>
-      <div className={css(defaultStyles.message)}>
+      <IconAvatar icon='group' size='small' />
+      <NotificationMessage>
         {'You have been invited by '}
         <b>{inviterName}</b>
         {' to join '}
         <b>{teamName}</b>
         {'.'}
-      </div>
-      <div className={css(defaultStyles.button)}>
+      </NotificationMessage>
+      <NotificationButton>
         <StyledButton
           aria-label='Accept team invitation'
           size={ui.notificationButtonSize}
@@ -66,7 +68,7 @@ const TeamInvitation = (props: Props) => {
         >
           {'Accept'}
         </StyledButton>
-      </div>
+      </NotificationButton>
     </Row>
   )
 }
@@ -76,11 +78,11 @@ export default createFragmentContainer(
   graphql`
     fragment TeamInvitation_notification on NotificationTeamInvitation {
       id
-      inviter {
-        preferredName
-      }
       invitation {
         token
+        inviter {
+          preferredName
+        }
       }
       team {
         name

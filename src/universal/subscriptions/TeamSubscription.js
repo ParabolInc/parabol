@@ -47,7 +47,10 @@ import {removeReflectTemplateTeamUpdater} from 'universal/mutations/RemoveReflec
 import {addReflectTemplatePromptTeamUpdater} from 'universal/mutations/AddReflectTemplatePromptMutation'
 import {removeReflectTemplatePromptTeamUpdater} from 'universal/mutations/RemoveReflectTemplatePromptMutation'
 import {moveReflectTemplatePromptTeamUpdater} from 'universal/mutations/MoveReflectTemplatePromptMutation'
-import {accceptTeamInvitationTeamUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
+import {
+  acceptTeamInvitationTeamOnNext,
+  acceptTeamInvitationTeamUpdater
+} from 'universal/mutations/AcceptTeamInvitationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -100,6 +103,7 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   AddOrgCreatorPayload: addOrgMutationNotificationOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
@@ -125,7 +129,7 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const type = payload.getValue('__typename')
       switch (type) {
         case 'AcceptTeamInvitationPayload':
-          accceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
+          acceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
           break
         case 'AcceptTeamInvitePayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId)
