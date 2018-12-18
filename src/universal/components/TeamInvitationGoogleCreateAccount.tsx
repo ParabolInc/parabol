@@ -1,6 +1,7 @@
 import {TeamInvitationGoogleCreateAccount_verifiedInvitation} from '__generated__/TeamInvitationGoogleCreateAccount_verifiedInvitation.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
+import Helmet from 'react-helmet'
 
 interface Props {
   verifiedInvitation: TeamInvitationGoogleCreateAccount_verifiedInvitation
@@ -28,6 +29,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     const {email} = teamInvitation
     return (
       <div>
+        <Helmet title={`Sign up with Google | Team Invitation`} />
         <span>Welcome!</span>
         <span>
           It looks like your email is hosted by Google. Sign up below for immediate access to{' '}

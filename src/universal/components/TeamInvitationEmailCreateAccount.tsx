@@ -1,6 +1,7 @@
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
+import Helmet from 'react-helmet'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
@@ -13,6 +14,7 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
   const {email} = teamInvitation
   return (
     <div>
+      <Helmet title={`Sign up | Team Invitation`} />
       <span>Welcome!</span>
       <span>Enter your password for immediate access to {teamName}</span>
       <input value={email} />

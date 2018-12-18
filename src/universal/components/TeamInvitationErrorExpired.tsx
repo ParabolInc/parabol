@@ -12,7 +12,7 @@ const TeamInvitationErrorExpired = (props: Props) => {
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
   return (
     <div>
-      <Helmet title={`Token expired | Team Invitation`} />
+      <Helmet title={`Token Expired | Team Invitation`} />
       <span>Your invitation to {teamName} has expired!</span>
       <span>
         Reach out to {inviterName} at {inviterEmail} to request a new one
