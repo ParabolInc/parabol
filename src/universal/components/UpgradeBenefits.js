@@ -19,11 +19,7 @@ const ModalCopy = styled('p')({
   margin: 0
 })
 
-const benefits = [
-  'Unlimited Teams',
-  'Direct Support Channel (Slack, etc.)',
-  '24-Hour Support Window'
-]
+const benefits = ['Unlimited Teams', 'Priority Customer Support', 'Monthly Billing']
 
 const UpgradeBenefits = () => {
   return benefits.map((benefit, idx) => {
