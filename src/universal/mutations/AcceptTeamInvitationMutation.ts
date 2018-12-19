@@ -7,6 +7,7 @@ import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import {IAcceptTeamInvitationOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
+import {AcceptTeamInvitationMutation} from '__generated__/AcceptTeamInvitationMutation.graphql'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -79,7 +80,7 @@ const AcceptTeamInvitationMutation = (
   variables: IAcceptTeamInvitationOnMutationArguments,
   {history, onCompleted, onError}: LocalHandlers
 ) => {
-  return commitMutation(atmosphere, {
+  return commitMutation<AcceptTeamInvitationMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -97,6 +98,7 @@ const AcceptTeamInvitationMutation = (
       const {
         acceptTeamInvitation: {team}
       } = data
+      if (!team) return
       const {id: teamId, name: teamName} = team
       atmosphere.eventEmitter.emit('addToast', {
         level: 'info',
@@ -105,7 +107,7 @@ const AcceptTeamInvitationMutation = (
         message: `You’ve been added to team ${teamName}`,
         action: {label: 'Great!'}
       })
-      history.push(`/team/${teamId}`)
+      history && history.push(`/team/${teamId}`)
     }
   })
 }
