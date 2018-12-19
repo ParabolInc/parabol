@@ -1,7 +1,7 @@
 import {WebAuth} from 'auth0-js/build/auth0'
 import {SIGNIN_SLUG} from 'universal/utils/constants'
 
-export default function getWebAuth () {
+const getWebAuth = () => {
   if (typeof __CLIENT__ !== 'undefined' && __CLIENT__) {
     return new WebAuth({
       domain: __ACTION__.auth0Domain,
@@ -12,3 +12,5 @@ export default function getWebAuth () {
   }
   return {}
 }
+
+export default getWebAuth

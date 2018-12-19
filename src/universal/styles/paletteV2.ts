@@ -10,7 +10,8 @@ export namespace PALETTE {
     MAIN_LIGHTENED = '#F5F4FB' // BACKGROUND.MAIN alpha .15 over #FFF
   }
   export const enum BORDER {
-    LIGHT = '#DBD6E3'
+    LIGHT = '#DBD6E3',
+    DARK = '#b6adc7'
   }
   export const enum TEXT {
     MAIN = '#444258',

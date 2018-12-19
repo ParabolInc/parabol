@@ -43,6 +43,8 @@ const demoSummary = () =>
   import(/* webpackChunkName: 'DemoSummary' */ 'universal/components/DemoSummary')
 const authProvider = () =>
   import(/* webpackChunkName: 'AuthProvider' */ 'universal/components/AuthProvider')
+const oauthRedirect = () =>
+  import(/* webpackChunkName: 'GoogleOAuthProvider' */ 'universal/components/OAuthRedirect')
 const teamInvitation = () =>
   import(/* webpackChunkName: 'TeamInvitationRoot' */ 'universal/components/TeamInvitationRoot')
 
@@ -65,6 +67,7 @@ const Action = () => {
         <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
         <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
         <AsyncRoute exact path={`/auth/:provider`} mod={authProvider} />
+        <AsyncRoute exact path={`/oauth-redirect`} mod={oauthRedirect} />
         <AsyncRoute
           path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
           mod={demoMeeting}

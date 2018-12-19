@@ -1,29 +1,73 @@
-import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
 import {TeamInvitationGoogleSignin_verifiedInvitation} from '__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
+import React, {Component} from 'react'
+import styled from 'react-emotion'
 import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router'
+import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import auth0Authorize from '../utils/auth0Authorize'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import GoogleOAuthButton from './GoogleOAuthButton'
+import InvitationDialog from './InvitationDialog'
+import InvitationDialogContent from './InvitationDialogContent'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InvitationDialogTitle from './InvitationDialogTitle'
+import StyledError from './StyledError'
 
-interface Props {
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation
 }
 
-const TeamInvitationGoogleSignin = (props: Props) => {
-  const {verifiedInvitation} = props
-  const {user, teamName} = verifiedInvitation
-  if (!user) return null
-  const {preferredName} = user
-  return (
-    <div>
-      <Helmet title={`Sign in with Google | Team Invitation`} />
-      <span>Welcome back {preferredName}!</span>
-      <span>You last signed in using Google. Click below for immediate access to {teamName}</span>
-      <button>Google OAuth</button>
-    </div>
-  )
+const CenteredCopy = styled(InvitationDialogCopy)({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  paddingTop: '1rem',
+  justifyContent: 'center'
+})
+class TeamInvitationGoogleSignin extends Component<Props> {
+  onOAuth = async () => {
+    const {atmosphere, history, location, onCompleted, onError, submitMutation} = this.props
+    submitMutation()
+    let res
+    try {
+      res = await auth0Authorize()
+    } catch (e) {
+      onError(e)
+      return
+    }
+    onCompleted()
+    const {idToken} = res
+    signinAndUpdateToken(atmosphere, history, location, idToken)
+  }
+
+  render () {
+    const {error, submitting, verifiedInvitation} = this.props
+    const {user, teamName} = verifiedInvitation
+    if (!user) return null
+    const {preferredName} = user
+    return (
+      <InvitationDialog>
+        <Helmet title={`Sign in with Google | Team Invitation`} />
+        <InvitationDialogTitle>Welcome back, {preferredName}!</InvitationDialogTitle>
+        <InvitationDialogContent>
+          <InvitationDialogCopy>You last signed in using Google. </InvitationDialogCopy>
+          <InvitationDialogCopy>
+            Click below for immediate access to {teamName}
+          </InvitationDialogCopy>
+          <CenteredCopy>
+            <GoogleOAuthButton onClick={this.onOAuth} waiting={submitting} />
+            {error && <StyledError>Error logging in! Did you close the popup?</StyledError>}
+          </CenteredCopy>
+        </InvitationDialogContent>
+      </InvitationDialog>
+    )
+  }
 }
 
 export default createFragmentContainer(
-  TeamInvitationGoogleSignin,
+  withAtmosphere(withMutationProps(withRouter(TeamInvitationGoogleSignin))),
   graphql`
     fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
       user {

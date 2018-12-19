@@ -1,17 +1,31 @@
 import React from 'react'
 import styled from 'react-emotion'
 import StyledError from 'universal/components/StyledError'
-import makeFieldColorPalette from 'universal/styles/helpers/makeFieldColorPalette'
-import ui from 'universal/styles/ui'
+import {PALETTE} from '../../styles/paletteV2'
+import {TYPOGRAPHY} from '../../styles/typographyV2'
+import BORDER = PALETTE.BORDER
+import TEXT = PALETTE.TEXT
+import SANS_SERIF = TYPOGRAPHY.SANS_SERIF
 
-const Input = styled('input')(
-  ({disabled}) => ({
-    ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles.medium,
-    ...makeFieldColorPalette('gray', !disabled)
-  }),
-  ({disabled}: {disabled: boolean}) => disabled && {...ui.fieldDisabled}
-)
+const Input = styled('input')({
+  appearance: 'none',
+  borderWidth: 0,
+  borderBottom: `0.0625rem solid ${BORDER.LIGHT}`,
+  borderRadius: 0,
+  boxShadow: 'none',
+  color: TEXT.MAIN,
+  display: 'block',
+  fontFamily: SANS_SERIF,
+  fontSize: '1rem',
+  lineHeight: '1.75rem',
+  margin: 0,
+  outline: 0,
+  padding: '.6875rem .9375rem 0 0',
+  width: '100%',
+  ':hover,:focus,:active': {
+    borderColor: BORDER.DARK
+  }
+})
 
 interface Props {
   autoFocus?: boolean
@@ -26,7 +40,7 @@ interface Props {
   value: string
 }
 
-const BasicInput = (props: Props) => {
+const UnderlineInput = (props: Props) => {
   const {
     autoFocus,
     disabled,
@@ -57,4 +71,4 @@ const BasicInput = (props: Props) => {
   )
 }
 
-export default BasicInput
+export default UnderlineInput

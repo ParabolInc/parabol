@@ -208,13 +208,13 @@ export const ASSIGNEE = 'ASSIGNEE'
 export const MENTIONEE = 'MENTIONEE'
 
 /* Third-party authentication providers */
-export const THIRD_PARTY_AUTH_PROVIDERS = [
-  {
-    displayName: 'Google',
-    auth0Connection: 'google-oauth2',
-    iconName: 'google'
-  }
-]
+export const GOOGLE_AUTH_PROVIDER = {
+  displayName: 'Google',
+  auth0Connection: 'google-oauth2',
+  iconName: 'google'
+}
+
+export const THIRD_PARTY_AUTH_PROVIDERS = [GOOGLE_AUTH_PROVIDER]
 
 /* Auth Labels, Slugs */
 export const SIGNIN_LABEL = 'Sign In'
