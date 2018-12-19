@@ -1,10 +1,10 @@
 import {TeamInvitationEmailSignin_verifiedInvitation} from '__generated__/TeamInvitationEmailSignin_verifiedInvitation.graphql'
 import React from 'react'
-import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import ForgotPasswordOneClick from './ForgotPasswordOneClick'
+import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialog from './InvitationDialog'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
@@ -13,14 +13,6 @@ import InvitationDialogTitle from './InvitationDialogTitle'
 interface Props {
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation
 }
-
-const CenteredCopy = styled(InvitationDialogCopy)({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  paddingTop: '1rem',
-  justifyContent: 'center'
-})
 
 const TeamInvitationEmailSignin = (props: Props) => {
   const {verifiedInvitation} = props
@@ -36,10 +28,10 @@ const TeamInvitationEmailSignin = (props: Props) => {
         <InvitationDialogCopy>
           Enter your password for immediate access to {teamName}
         </InvitationDialogCopy>
-        <CenteredCopy>
-          <EmailPasswordAuthForm email={email} />
+        <InvitationCenteredCopy>
+          <EmailPasswordAuthForm email={email} label='Sign In' />
           <ForgotPasswordOneClick email={email} />
-        </CenteredCopy>
+        </InvitationCenteredCopy>
       </InvitationDialogContent>
     </InvitationDialog>
   )

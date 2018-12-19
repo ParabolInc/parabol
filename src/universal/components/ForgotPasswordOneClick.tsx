@@ -11,7 +11,7 @@ interface Props extends WithMutationProps {
 }
 
 const ForgotButton = styled(PlainButton)({
-  color: LINK.COLOR,
+  color: LINK.BLUE,
   marginTop: '1rem'
 })
 

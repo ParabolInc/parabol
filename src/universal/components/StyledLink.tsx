@@ -4,7 +4,7 @@ import {PALETTE} from '../styles/paletteV2'
 import LINK = PALETTE.LINK
 
 const StyledLink = styled(Link)({
-  color: LINK.COLOR
+  color: LINK.BLUE
 })
 
 export default StyledLink

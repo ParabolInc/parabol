@@ -11,6 +11,7 @@ import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 
 interface Props {
   email: string
+  label: string
 }
 
 type FieldName = 'email' | 'password'
@@ -130,21 +131,18 @@ class EmailPasswordAuthForm extends Component<Props> {
     if (hasError) return
     const [emailRes, passwordRes] = fieldRes
     submitMutation()
-    let res
     try {
-      res = await auth0LoginWithEmail(emailRes.value, passwordRes.value)
+      await auth0LoginWithEmail(emailRes.value, passwordRes.value)
     } catch (e) {
       onError(e.error_description)
       return
     }
-    alert(res)
-    console.log('RES', res)
     onCompleted()
   }
 
   render () {
     const {fields} = this.state
-    const {error, submitting} = this.props
+    const {error, label, submitting} = this.props
     return (
       <Form className='create-account-form' onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
@@ -166,10 +164,11 @@ class EmailPasswordAuthForm extends Component<Props> {
           </FieldBlock>
         </FieldGroup>
         <PrimaryButton size='large' disabled={false} waiting={submitting}>
-          {'Sign in'}
+          {label}
         </PrimaryButton>
       </Form>
     )
   }
 }
+
 export default withMutationProps(EmailPasswordAuthForm)

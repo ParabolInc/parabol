@@ -1,6 +1,5 @@
 import {TeamInvitationGoogleSignin_verifiedInvitation} from '__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
 import React, {Component} from 'react'
-import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
@@ -9,6 +8,7 @@ import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/
 import auth0Authorize from '../utils/auth0Authorize'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import GoogleOAuthButton from './GoogleOAuthButton'
+import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialog from './InvitationDialog'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
@@ -19,13 +19,6 @@ interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentPr
   verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation
 }
 
-const CenteredCopy = styled(InvitationDialogCopy)({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  paddingTop: '1rem',
-  justifyContent: 'center'
-})
 class TeamInvitationGoogleSignin extends Component<Props> {
   onOAuth = async () => {
     const {atmosphere, history, location, onCompleted, onError, submitMutation} = this.props
@@ -56,10 +49,14 @@ class TeamInvitationGoogleSignin extends Component<Props> {
           <InvitationDialogCopy>
             Click below for immediate access to {teamName}
           </InvitationDialogCopy>
-          <CenteredCopy>
-            <GoogleOAuthButton onClick={this.onOAuth} waiting={submitting} />
+          <InvitationCenteredCopy>
+            <GoogleOAuthButton
+              label='Sign in using Google'
+              onClick={this.onOAuth}
+              waiting={submitting}
+            />
             {error && <StyledError>Error logging in! Did you close the popup?</StyledError>}
-          </CenteredCopy>
+          </InvitationCenteredCopy>
         </InvitationDialogContent>
       </InvitationDialog>
     )

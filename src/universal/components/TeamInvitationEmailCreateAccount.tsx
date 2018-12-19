@@ -1,7 +1,13 @@
-import React from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
 import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
+import React from 'react'
 import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
+import EmailPasswordAuthForm from './EmailPasswordAuthForm'
+import InvitationCenteredCopy from './InvitationCenteredCopy'
+import InvitationDialog from './InvitationDialog'
+import InvitationDialogContent from './InvitationDialogContent'
+import InvitationDialogCopy from './InvitationDialogCopy'
+import InvitationDialogTitle from './InvitationDialogTitle'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
@@ -13,13 +19,18 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (
-    <div>
+    <InvitationDialog>
       <Helmet title={`Sign up | Team Invitation`} />
-      <span>Welcome!</span>
-      <span>Enter your password for immediate access to {teamName}</span>
-      <input value={email} />
-      <input autoFocus type='password' />
-    </div>
+      <InvitationDialogTitle>Welcome!</InvitationDialogTitle>
+      <InvitationDialogContent>
+        <InvitationDialogCopy>
+          Enter your password for immediate access to {teamName}
+        </InvitationDialogCopy>
+        <InvitationCenteredCopy>
+          <EmailPasswordAuthForm email={email} label='Sign Up' />
+        </InvitationCenteredCopy>
+      </InvitationDialogContent>
+    </InvitationDialog>
   )
 }
 

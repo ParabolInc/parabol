@@ -17,16 +17,17 @@ const StyledIcon = styled(StyledFontAwesome)({
 })
 
 interface Props {
+  label: string
   onClick: () => void
   waiting: boolean | undefined
 }
 
 function GoogleOAuthButton (props: Props) {
-  const {onClick, waiting} = props
+  const {onClick, label, waiting} = props
   return (
     <WideButton size='medium' onClick={onClick} palette='gray' waiting={waiting}>
       <StyledIcon name='google' />
-      <span>Sign in with Google</span>
+      <span>{label}</span>
     </WideButton>
   )
 }
