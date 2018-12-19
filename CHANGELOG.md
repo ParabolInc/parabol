@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.0.0 2018-Dec-19
+
+### Changed
+* FREE! The whole thing is free!
+* New Pro accounts cost $12/user/mo
+
+### Fixed
+* Fixed due date color for past-due items
+* Fixed check in question updates
+
 ## v2.21.0 2018-Dec-05
 
 ### Added
