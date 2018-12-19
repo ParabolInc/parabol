@@ -69,6 +69,7 @@ export default createFragmentContainer(
   graphql`
     fragment NewMeetingAvatarGroup_team on Team {
       teamId: id
+      ...AddTeamMemberModal_team
       teamMembers(sortBy: "checkInOrder") {
         id
         ...NewMeetingAvatar_teamMember

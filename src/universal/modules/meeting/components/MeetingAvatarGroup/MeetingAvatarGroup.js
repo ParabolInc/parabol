@@ -216,6 +216,7 @@ export default createFragmentContainer(
       activeFacilitator
       facilitatorPhase
       facilitatorPhaseItem
+      ...AddTeamMemberModal_team
       teamMembers(sortBy: "checkInOrder") {
         id
         isCheckedIn

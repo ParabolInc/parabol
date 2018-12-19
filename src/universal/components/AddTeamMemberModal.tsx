@@ -1,8 +1,8 @@
+import {AddTeamMemberModal_team} from '__generated__/AddTeamMemberModal_team.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
@@ -10,8 +10,9 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import AddTeamMemberModalBoundary from './AddTeamMemberModalBoundary'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import BasicTextArea from './InputField/BasicTextArea'
+import InvitationDialogContent from './InvitationDialogContent'
+import InvitationDialogTitle from './InvitationDialogTitle'
 import StyledError from './StyledError'
-import {AddTeamMemberModal_team} from '__generated__/AddTeamMemberModal_team.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
@@ -24,8 +25,18 @@ interface State {
   rawInvitees: string
 }
 
-const EmailTextArea = styled('div')({
-  margin: '0 0 1rem 0'
+const WideContent = styled(InvitationDialogContent)({
+  minWidth: 500
+})
+
+const ButtonGroup = styled('div')({
+  marginTop: '1rem',
+  display: 'flex',
+  justifyContent: 'flex-end'
+})
+
+const OffsetTitle = styled(InvitationDialogTitle)({
+  paddingLeft: '1.75rem'
 })
 
 class AddTeamMemberModal extends Component<Props, State> {
@@ -89,24 +100,26 @@ class AddTeamMemberModal extends Component<Props, State> {
     const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
     return (
       <AddTeamMemberModalBoundary>
-        <span>Type in invitee emails</span>
-        <EmailTextArea>
+        <OffsetTitle>Invite to Team</OffsetTitle>
+        <WideContent>
           <BasicTextArea
             autoFocus
             name='rawInvitees'
             onChange={this.onChange}
-            placeholder={randomPlaceholderTheme.emailMulti}
+            placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
-        </EmailTextArea>
-        {error && <StyledError>{error}</StyledError>}
-        <PrimaryButton
-          onClick={this.sendInvitations}
-          disabled={invitees.length === 0}
-          waiting={submitting}
-        >
-          {title}
-        </PrimaryButton>
+          {error && <StyledError>{error}</StyledError>}
+          <ButtonGroup>
+            <PrimaryButton
+              onClick={this.sendInvitations}
+              disabled={invitees.length === 0}
+              waiting={submitting}
+            >
+              {title}
+            </PrimaryButton>
+          </ButtonGroup>
+        </WideContent>
       </AddTeamMemberModalBoundary>
     )
   }
