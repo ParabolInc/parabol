@@ -20,6 +20,7 @@ import {createFragmentContainer} from 'react-relay'
 import Loadable from 'react-loadable'
 import LoadableLoading from 'universal/components/LoadableLoading'
 import LoadableMenu from 'universal/components/LoadableMenu'
+import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
 
 const LoadableMeetingAvatarMenu = Loadable({
   loader: () =>
@@ -43,15 +44,8 @@ const targetAnchor = {
 }
 
 const MeetingAvatarGroup = (props) => {
-  const {
-    atmosphere,
-    gotoItem,
-    isFacilitating,
-    localPhase,
-    localPhaseItem,
-    styles,
-    team: {activeFacilitator, teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers}
-  } = props
+  const {atmosphere, gotoItem, isFacilitating, localPhase, localPhaseItem, styles, team} = props
+  const {activeFacilitator, teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers} = team
   const onFacilitatorPhase = facilitatorPhase === localPhase
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES
   return (
@@ -119,6 +113,7 @@ const MeetingAvatarGroup = (props) => {
             </div>
           )
         })}
+        <AddTeamMemberAvatarButton isMeeting team={team} />
       </div>
     </div>
   )

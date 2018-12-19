@@ -9,6 +9,7 @@ import withAtmosphere, {
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
+import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',
@@ -31,10 +32,8 @@ interface Props extends WithAtmosphereProps {
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {
-  const {
-    gotoStageId,
-    team: {newMeeting, teamMembers}
-  } = props
+  const {gotoStageId, team} = props
+  const {newMeeting, teamMembers} = team
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorStageId, phases, localPhase} = meeting
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -59,6 +58,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
             />
           )
         })}
+        <AddTeamMemberAvatarButton isMeeting team={team} />
       </MeetingAvatarGroupInner>
     </MeetingAvatarGroupRoot>
   )
