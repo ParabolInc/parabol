@@ -7,7 +7,6 @@ import {endMeetingTaskUpdater} from 'universal/mutations/EndMeetingMutation'
 import {removeOrgUserTaskUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {cancelApprovalTaskUpdater} from 'universal/mutations/CancelApprovalMutation'
 import {rejectOrgApprovalTaskUpdater} from 'universal/mutations/RejectOrgApprovalMutation'
-import {cancelTeamInviteTaskUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 import {inviteTeamMembersTaskUpdater} from 'universal/mutations/InviteTeamMembersMutation'
 import {acceptTeamInviteTaskUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
 import {changeTaskTeamTaskUpdater} from 'universal/mutations/ChangeTaskTeamMutation'
@@ -19,7 +18,6 @@ const subscription = graphql`
       ...AcceptTeamInviteMutation_task @relay(mask: false)
       ...RemoveTeamMemberMutation_task @relay(mask: false)
       ...CancelApprovalMutation_task @relay(mask: false)
-      ...CancelTeamInviteMutation_task @relay(mask: false)
       ...ChangeTaskTeamMutation_task @relay(mask: false)
       ...CreateGitHubIssueMutation_task @relay(mask: false)
       ...CreateTaskMutation_task @relay(mask: false)
@@ -57,9 +55,6 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'CancelApprovalPayload':
           cancelApprovalTaskUpdater(payload, store, viewerId)
-          break
-        case 'CancelTeamInvitePayload':
-          cancelTeamInviteTaskUpdater(payload, store, viewerId)
           break
         case 'CreateGitHubIssuePayload':
           break

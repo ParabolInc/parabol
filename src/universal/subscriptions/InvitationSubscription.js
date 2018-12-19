@@ -1,5 +1,4 @@
 import {approveToOrgInvitationUpdater} from 'universal/mutations/ApproveToOrgMutation'
-import {cancelTeamInviteInvitationUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 import {inviteTeamMembersInvitationUpdater} from 'universal/mutations/InviteTeamMembersMutation'
 import {acceptTeamInviteInvitationUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
 
@@ -9,9 +8,7 @@ const subscription = graphql`
       __typename
       ...AcceptTeamInviteMutation_invitation
       ...ApproveToOrgMutation_invitation
-      ...CancelTeamInviteMutation_invitation
       ...InviteTeamMembersMutation_invitation
-      ...ResendTeamInviteMutation_invitation
     }
   }
 `
@@ -31,9 +28,6 @@ const InvitationSubscription = (environment, queryVariables) => {
           break
         case 'ApproveToOrgPayload':
           approveToOrgInvitationUpdater(payload, store)
-          break
-        case 'CancelTeamInvitePayload':
-          cancelTeamInviteInvitationUpdater(payload, store)
           break
         case 'InviteTeamMembersPayload':
           inviteTeamMembersInvitationUpdater(payload, store)

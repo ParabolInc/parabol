@@ -10,7 +10,6 @@ import {removeTeamMemberTeamMemberUpdater} from 'universal/mutations/RemoveTeamM
 import {removeOrgUserTeamMemberUpdater} from 'universal/mutations/RemoveOrgUserMutation'
 import {cancelApprovalTeamMemberUpdater} from 'universal/mutations/CancelApprovalMutation'
 import {rejectOrgApprovalTeamMemberUpdater} from 'universal/mutations/RejectOrgApprovalMutation'
-import {cancelTeamInviteTeamMemberUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 
 const subscription = graphql`
   subscription TeamMemberSubscription {
@@ -18,7 +17,6 @@ const subscription = graphql`
       __typename
       ...AcceptTeamInviteMutation_teamMember @relay(mask: false)
       ...CancelApprovalMutation_teamMember @relay(mask: false)
-      ...CancelTeamInviteMutation_teamMember @relay(mask: false)
       ...InviteTeamMembersMutation_teamMember @relay(mask: false)
       ...MeetingCheckInMutation_teamMember @relay(mask: false)
       ...PromoteToTeamLeadMutation_teamMember @relay(mask: false)
@@ -50,9 +48,6 @@ const TeamMemberSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'CancelApprovalPayload':
           cancelApprovalTeamMemberUpdater(payload, store)
-          break
-        case 'CancelTeamInvitePayload':
-          cancelTeamInviteTeamMemberUpdater(payload, store)
           break
         case 'InviteTeamMembersPayload':
           inviteTeamMembersTeamMemberUpdater(payload, store)

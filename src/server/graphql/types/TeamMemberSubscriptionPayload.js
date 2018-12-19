@@ -7,13 +7,11 @@ import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload'
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload'
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload'
-import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload'
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload'
 
 const types = [
   AcceptTeamInvitePayload,
   CancelApprovalPayload,
-  CancelTeamInvitePayload,
   RemoveTeamMemberPayload,
   InviteTeamMembersPayload,
   MeetingCheckInPayload,
@@ -23,4 +21,4 @@ const types = [
   UpdateUserProfilePayload
 ]
 
-export default graphQLSubscriptionType('TeanMemberSubscriptionPayload', types)
+export default graphQLSubscriptionType('TeamMemberSubscriptionPayload', types)
