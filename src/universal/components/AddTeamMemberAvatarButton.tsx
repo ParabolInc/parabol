@@ -8,6 +8,7 @@ import LoadableModal from './LoadableModal'
 interface Props extends WithAtmosphereProps {
   isMeeting?: boolean
   team: any
+  teamMembers: ReadonlyArray<any>
 }
 
 const AddButton = styled(FloatingActionButton)(
@@ -45,11 +46,11 @@ const AddTeamMemberModal = lazy(() =>
 
 class AddTeamMemberAvatarButton extends Component<Props> {
   render () {
-    const {isMeeting, team} = this.props
+    const {isMeeting, team, teamMembers} = this.props
     return (
       <LoadableModal
         LoadableComponent={AddTeamMemberModal}
-        queryVars={{team}}
+        queryVars={{team, teamMembers}}
         toggle={
           <AddButton isMeeting={isMeeting} palette='blue'>
             +

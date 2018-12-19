@@ -58,7 +58,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
             />
           )
         })}
-        <AddTeamMemberAvatarButton isMeeting team={team} />
+        <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
       </MeetingAvatarGroupInner>
     </MeetingAvatarGroupRoot>
   )
@@ -71,6 +71,7 @@ export default createFragmentContainer(
       teamId: id
       ...AddTeamMemberModal_team
       teamMembers(sortBy: "checkInOrder") {
+        ...AddTeamMemberModal_teamMembers
         id
         ...NewMeetingAvatar_teamMember
       }

@@ -13,9 +13,11 @@ import BasicTextArea from './InputField/BasicTextArea'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogTitle from './InvitationDialogTitle'
 import StyledError from './StyledError'
+import {AddTeamMemberModal_teamMembers} from '__generated__/AddTeamMemberModal_teamMembers.graphql'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
+  teamMembers: AddTeamMemberModal_teamMembers
   team: AddTeamMemberModal_team
 }
 
@@ -24,10 +26,6 @@ interface State {
   successfulInvitations: null | Array<string>
   rawInvitees: string
 }
-
-const WideContent = styled(InvitationDialogContent)({
-  minWidth: 500
-})
 
 const ButtonGroup = styled('div')({
   marginTop: '1rem',
@@ -46,12 +44,7 @@ class AddTeamMemberModal extends Component<Props, State> {
     invitees: [] as Array<string>
   }
   onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const {
-      error,
-      onCompleted,
-      onError,
-      team: {teamMembers}
-    } = this.props
+    const {error, onCompleted, onError, teamMembers} = this.props
     const rawInvitees = e.target.value
     const parsedInvitees = parseEmailAddressList(rawInvitees)
     const allInvitees = parsedInvitees
@@ -92,16 +85,21 @@ class AddTeamMemberModal extends Component<Props, State> {
   }
 
   render () {
-    const {error, submitting} = this.props
+    const {closePortal, error, submitting} = this.props
     const {invitees, successfulInvitations, rawInvitees} = this.state
     if (successfulInvitations) {
-      return <AddTeamMemberModalSuccess successfulInvitations={successfulInvitations} />
+      return (
+        <AddTeamMemberModalSuccess
+          closePortal={closePortal}
+          successfulInvitations={['a@a.co', 'matt@parabol.co']}
+        />
+      )
     }
     const title = invitees.length <= 1 ? 'Send Invitation' : `Send ${invitees.length} Invitations`
     return (
       <AddTeamMemberModalBoundary>
         <OffsetTitle>Invite to Team</OffsetTitle>
-        <WideContent>
+        <InvitationDialogContent>
           <BasicTextArea
             autoFocus
             name='rawInvitees'
@@ -119,7 +117,7 @@ class AddTeamMemberModal extends Component<Props, State> {
               {title}
             </PrimaryButton>
           </ButtonGroup>
-        </WideContent>
+        </InvitationDialogContent>
       </AddTeamMemberModalBoundary>
     )
   }
@@ -130,9 +128,10 @@ export default createFragmentContainer(
   graphql`
     fragment AddTeamMemberModal_team on Team {
       id
-      teamMembers(sortBy: "preferredName") {
-        email
-      }
+    }
+
+    fragment AddTeamMemberModal_teamMembers on TeamMember @relay(plural: true) {
+      email
     }
   `
 )

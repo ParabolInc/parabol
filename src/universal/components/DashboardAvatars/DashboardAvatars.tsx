@@ -40,7 +40,7 @@ const DashboardAvatars = (props: Props) => {
           </AvatarItem>
         )
       })}
-      <AddTeamMemberAvatarButton team={team} />
+      <AddTeamMemberAvatarButton team={team} teamMembers={teamMembers} />
     </AvatarsList>
   )
 }
@@ -52,6 +52,7 @@ export default createFragmentContainer(
       id
       ...AddTeamMemberModal_team
       teamMembers(sortBy: "preferredName") {
+        ...AddTeamMemberModal_teamMembers
         id
         isCheckedIn
         isConnected

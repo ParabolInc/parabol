@@ -113,7 +113,7 @@ const MeetingAvatarGroup = (props) => {
             </div>
           )
         })}
-        <AddTeamMemberAvatarButton isMeeting team={team} />
+        <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
       </div>
     </div>
   )
@@ -218,6 +218,7 @@ export default createFragmentContainer(
       facilitatorPhaseItem
       ...AddTeamMemberModal_team
       teamMembers(sortBy: "checkInOrder") {
+        ...AddTeamMemberModal_teamMembers
         id
         isCheckedIn
         isConnected
