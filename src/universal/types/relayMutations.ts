@@ -1,3 +1,4 @@
+import {RouterProps} from 'react-router'
 import {PayloadError, RecordProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 
 export interface CompletedHandler {
@@ -11,6 +12,7 @@ export interface ErrorHandler {
 export interface LocalHandlers {
   onError?: ErrorHandler
   onCompleted?: CompletedHandler
+  history?: RouterProps['history']
 }
 
 interface UpdaterContext {

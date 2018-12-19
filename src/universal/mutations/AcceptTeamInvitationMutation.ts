@@ -1,6 +1,5 @@
 import {AcceptTeamInvitationMutation_team} from '__generated__/AcceptTeamInvitationMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
-import {RouterProps} from 'react-router'
 import {RecordProxy} from 'relay-runtime'
 import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMembers'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
@@ -75,12 +74,10 @@ export const acceptTeamInvitationTeamOnNext = (
   })
 }
 
-interface Handlers extends LocalHandlers, RouterProps {}
-
 const AcceptTeamInvitationMutation = (
   atmosphere,
   variables: IAcceptTeamInvitationOnMutationArguments,
-  {history, onCompleted, onError}: Handlers
+  {history, onCompleted, onError}: LocalHandlers
 ) => {
   return commitMutation(atmosphere, {
     mutation,

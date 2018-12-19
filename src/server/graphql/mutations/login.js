@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {verify} from 'jsonwebtoken'
 import getRethink from 'server/database/rethinkDriver'
 import LoginPayload from 'server/graphql/types/LoginPayload'
@@ -17,9 +17,10 @@ import {
 } from 'server/utils/authorizationErrors'
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
 import ensureDate from 'universal/utils/ensureDate'
+import acceptTeamInvitation from 'server/safeMutations/acceptTeamInvitation'
 
 const login = {
-  type: LoginPayload,
+  type: new GraphQLNonNull(LoginPayload),
   description: 'Log in, or sign up if it is a new user',
   args: {
     // even though the token comes with the bearer, we include it here we use it like an arg since the gatekeeper
@@ -27,9 +28,13 @@ const login = {
     auth0Token: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The ID Token from auth0, a base64 JWT'
+    },
+    invitationToken: {
+      type: GraphQLID,
+      description: 'if logging in via an invitation, the token to expire'
     }
   },
-  async resolve (source, {auth0Token}, {dataLoader}) {
+  async resolve (source, {auth0Token, invitationToken}, {dataLoader}) {
     const r = getRethink()
     const now = new Date()
 
@@ -45,6 +50,19 @@ const login = {
     const viewerId = getUserId(authToken)
 
     // RESOLUTION
+    // invalidate the invtationToken
+    if (invitationToken) {
+      const invitation = await r
+        .table('TeamInvitation')
+        .getAll(invitationToken, {index: 'token'})
+        .nth(0)
+        .default(null)
+      if (invitation && !invitation.acceptedAt) {
+        const {id: invitationId, teamId} = invitation
+        await acceptTeamInvitation(teamId, viewerId, invitationId, dataLoader)
+      }
+    }
+
     if (authToken.tms) {
       const user = await dataLoader.get('users').load(viewerId)
       // LOGIN

@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
-import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
+import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import auth0Authorize from '../utils/auth0Authorize'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
@@ -15,13 +15,25 @@ import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
 import StyledError from './StyledError'
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props
+  extends WithAtmosphereProps,
+    WithMutationProps,
+    RouteComponentProps<{token: string}> {
   verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation
 }
 
 class TeamInvitationGoogleSignin extends Component<Props> {
   onOAuth = async () => {
-    const {atmosphere, history, location, onCompleted, onError, submitMutation} = this.props
+    const {
+      atmosphere,
+      history,
+      match: {
+        params: {token: invitationToken}
+      },
+      onCompleted,
+      onError,
+      submitMutation
+    } = this.props
     submitMutation()
     let res
     try {
@@ -32,7 +44,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
     }
     onCompleted()
     const {idToken} = res
-    signinAndUpdateToken(atmosphere, history, location, idToken)
+    LoginMutation(atmosphere, {auth0Token: idToken, invitationToken}, {history})
   }
 
   render () {

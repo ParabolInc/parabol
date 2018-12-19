@@ -3049,7 +3049,7 @@ export interface IMutation {
   /**
    * Log in, or sign up if it is a new user
    */
-  login: ILoginPayload | null
+  login: ILoginPayload
 
   /**
    * Upgrade an account to the paid service
@@ -3866,6 +3866,11 @@ export interface ILoginOnMutationArguments {
    * The ID Token from auth0, a base64 JWT
    */
   auth0Token: string
+
+  /**
+   * if logging in via an invitation, the token to expire
+   */
+  invitationToken?: string | null
 }
 
 export interface IUpgradeToProOnMutationArguments {

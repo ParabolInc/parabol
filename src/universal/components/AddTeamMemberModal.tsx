@@ -91,7 +91,7 @@ class AddTeamMemberModal extends Component<Props, State> {
       return (
         <AddTeamMemberModalSuccess
           closePortal={closePortal}
-          successfulInvitations={['a@a.co', 'matt@parabol.co']}
+          successfulInvitations={successfulInvitations}
         />
       )
     }

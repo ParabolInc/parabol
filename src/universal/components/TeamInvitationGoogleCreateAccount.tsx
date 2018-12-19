@@ -4,6 +4,7 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Helmet from 'react-helmet'
 import {RouteComponentProps, withRouter} from 'react-router'
+import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import auth0Authorize from '../utils/auth0Authorize'
@@ -16,12 +17,14 @@ import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
 import StyledError from './StyledError'
-import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import {CREATE_ACCOUNT_BUTTON_LABEL} from 'universal/utils/constants'
 
-interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+interface Props
+  extends WithAtmosphereProps,
+    WithMutationProps,
+    RouteComponentProps<{token: string}> {
   verifiedInvitation: TeamInvitationGoogleCreateAccount_verifiedInvitation
 }
 
@@ -45,7 +48,16 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
   }
 
   onOAuth = async () => {
-    const {atmosphere, history, location, onCompleted, onError, submitMutation} = this.props
+    const {
+      atmosphere,
+      history,
+      match: {
+        params: {token: invitationToken}
+      },
+      onCompleted,
+      onError,
+      submitMutation
+    } = this.props
     submitMutation()
     let res
     try {
@@ -56,7 +68,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     }
     onCompleted()
     const {idToken} = res
-    signinAndUpdateToken(atmosphere, history, location, idToken)
+    LoginMutation(atmosphere, {auth0Token: idToken, invitationToken}, {history})
   }
 
   useEmail = () => {

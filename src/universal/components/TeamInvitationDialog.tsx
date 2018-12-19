@@ -18,6 +18,15 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}
 }
 
 class TeamInvitationDialog extends Component<Props> {
+  componentDidMount () {
+    const {
+      match: {
+        params: {token}
+      }
+    } = this.props
+    window.localStorage.setItem('invitationToken', token)
+  }
+
   render () {
     const {atmosphere, verifiedInvitation} = this.props
     const {errorType, isGoogle, user} = verifiedInvitation
