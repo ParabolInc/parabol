@@ -1,6 +1,5 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload'
 import {isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {CHECKIN, TEAM} from 'universal/utils/constants'
@@ -55,7 +54,7 @@ export default {
       })
 
     const data = {meetingId}
-    publish(TEAM, teamId, UpdateCheckInQuestionPayload, data, subOptions)
+    publish(TEAM, teamId, UpdateNewCheckInQuestionPayload, data, subOptions)
     return data
   }
 }
