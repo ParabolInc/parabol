@@ -293,7 +293,6 @@ const ui = {
   dashBreakpoint: BREAKPOINT_WIDER,
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
-  dashHeaderMinHeight: '4rem',
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
     fontSize: '1.5rem',
