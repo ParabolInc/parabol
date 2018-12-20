@@ -77,6 +77,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_team @relay(mask: false)
       ...PromoteFacilitatorMutation_team @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
+      ...PromoteToTeamLeadMutation_team @relay(mask: false)
       ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
       ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -195,6 +196,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'NewMeetingCheckInPayload':
           break
         case 'PromoteFacilitatorPayload':
+          break
+        case 'PromoteToTeamLeadPayload':
           break
         case 'PromoteNewMeetingFacilitatorPayload':
           break

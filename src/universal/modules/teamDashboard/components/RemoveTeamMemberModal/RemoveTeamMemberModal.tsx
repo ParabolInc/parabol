@@ -1,28 +1,34 @@
-import PropTypes from 'prop-types'
+import {RemoveTeamMemberModal_teamMember} from '__generated__/RemoveTeamMemberModal_teamMember.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import Type from 'universal/components/Type/Type'
-import portal from 'react-portal-hoc'
-import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import DashModal from 'universal/components/Dashboard/DashModal'
+import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
-import styled from 'react-emotion'
+import Type from 'universal/components/Type/Type'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
+import TeamManagementModalBoundary from '../PromoteTeamMemberModal/TeamManagementModalBoundary'
 
 const StyledButton = styled(FlatButton)({
   margin: '1.5rem auto 0'
 })
 
-const RemoveTeamMemberModal = (props) => {
-  const {atmosphere, closeAfter, closePortal, isClosing, teamMember} = props
+interface Props extends WithAtmosphereProps {
+  closePortal: () => void
+  teamMember: RemoveTeamMemberModal_teamMember
+}
+
+const RemoveTeamMemberModal = (props: Props) => {
+  const {atmosphere, closePortal, teamMember} = props
   const {teamMemberId, preferredName} = teamMember
   const handleClick = () => {
     closePortal()
     RemoveTeamMemberMutation(atmosphere, teamMemberId)
   }
   return (
-    <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
+    <TeamManagementModalBoundary>
       <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
         Are you sure?
       </Type>
@@ -33,21 +39,12 @@ const RemoveTeamMemberModal = (props) => {
       <StyledButton size='large' onClick={handleClick} palette='warm'>
         <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
       </StyledButton>
-    </DashModal>
+    </TeamManagementModalBoundary>
   )
 }
 
-RemoveTeamMemberModal.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  closeAfter: PropTypes.number,
-  closePortal: PropTypes.func,
-  isClosing: PropTypes.bool,
-  teamMember: PropTypes.object.isRequired,
-  toggle: PropTypes.any
-}
-
 export default createFragmentContainer(
-  portal({escToClose: true, closeAfter: 100})(withAtmosphere(RemoveTeamMemberModal)),
+  withAtmosphere(RemoveTeamMemberModal),
   graphql`
     fragment RemoveTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id

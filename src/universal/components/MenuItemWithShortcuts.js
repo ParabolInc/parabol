@@ -1,40 +1,24 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import ui from 'universal/styles/ui'
-import styled, {css, cx} from 'react-emotion'
-import textOverflow from 'universal/styles/helpers/textOverflow'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import styled from 'react-emotion'
+import MenuItemLabel from 'universal/components/MenuItemLabel'
+import MenuItemIcon from 'universal/components/MenuItemIcon'
+import MenuItemDot from 'universal/components/MenuItemDot'
+import MenuItemAvatar from 'universal/components/MenuItemAvatar'
 
-const rootStyle = css({
+const MenuItem = styled('div')(({isActive}) => ({
   alignItems: 'center',
-  backgroundColor: ui.menuBackgroundColor,
-  color: ui.menuItemColor,
+  backgroundColor: isActive ? ui.menuItemBackgroundColorActive : ui.menuBackgroundColor,
+  color: isActive ? ui.menuItemColorHoverActive : ui.menuItemColor,
   cursor: 'pointer',
   display: 'flex',
   transition: `background-color ${ui.transition[0]}`,
   '&:hover,:focus': {
-    backgroundColor: ui.menuItemBackgroundColorHover,
+    backgroundColor: isActive ? ui.menuItemBackgroundColorActive : ui.menuItemBackgroundColorHover,
     color: ui.menuItemColorHoverActive,
     outline: 0
   }
-})
-
-const activeStyle = css({
-  backgroundColor: ui.menuItemBackgroundColorActive,
-  color: ui.menuItemColorHoverActive,
-  '&:hover,:focus': {
-    backgroundColor: ui.menuItemBackgroundColorActive
-  }
-})
-
-const Label = styled('div')(({hasIcon, disabled}) => ({
-  ...textOverflow,
-  fontSize: ui.menuItemFontSize,
-  lineHeight: ui.menuItemHeight,
-  padding: `0 ${ui.menuGutterHorizontal}`,
-  paddingLeft: hasIcon && 0,
-  color: disabled && 'grey'
 }))
 
 class MenuItemWithShortcuts extends Component {
@@ -58,13 +42,14 @@ class MenuItemWithShortcuts extends Component {
 
   componentDidMount () {
     const {isActive} = this.props
-    if (isActive) {
+    if (isActive && this.itemRef) {
       this.itemRef.scrollIntoViewIfNeeded()
     }
   }
+
   componentWillReceiveProps (nextProps) {
     const {isActive} = nextProps
-    if (isActive && !this.props.isActive) {
+    if (isActive && !this.props.isActive && this.itemRef) {
       this.itemRef.scrollIntoViewIfNeeded()
     }
   }
@@ -96,70 +81,29 @@ class MenuItemWithShortcuts extends Component {
     } = this.props
     const labelEl =
       typeof label === 'string' ? (
-        <Label hasIcon={Boolean(avatar || icon)} disabled={disabled}>
+        <MenuItemLabel hasIcon={Boolean(avatar || icon)} disabled={disabled}>
           {label}
-        </Label>
+        </MenuItemLabel>
       ) : (
         label
       )
     const titleFallbackStr = typeof label === 'string' ? label : 'Menu Item'
     const titleStr = title || titleFallbackStr
-    const makeDot = () => (
-      <div
-        className={css({
-          backgroundColor: iconColor || 'inherit',
-          borderRadius: '.375rem',
-          height: '.375rem',
-          marginLeft: ui.menuGutterHorizontal,
-          marginRight: ui.menuGutterInner,
-          width: '.375rem'
-        })}
-      />
-    )
-    const makeIcon = () => (
-      <Icon
-        className={css({
-          color: iconColor || ui.menuItemIconColor,
-          fontSize: `${MD_ICONS_SIZE_18} !important`,
-          lineHeight: 'inherit',
-          marginLeft: ui.menuGutterHorizontal,
-          marginRight: ui.menuGutterInner,
-          textAlign: 'center',
-          width: '1.25rem'
-        })}
-      >
-        {icon}
-      </Icon>
-    )
-    const makeAvatar = () => (
-      <img
-        alt={titleStr}
-        className={css({
-          borderRadius: '100%',
-          height: '1.5rem',
-          marginLeft: ui.menuGutterHorizontal,
-          marginRight: ui.menuGutterInner,
-          minWidth: '1.5rem',
-          width: '1.5rem'
-        })}
-        src={avatar}
-      />
-    )
     return (
-      <div
+      <MenuItem
+        isActive={isActive}
         role='menuitem'
         title={titleStr}
-        ref={(c) => {
+        innerRef={(c) => {
           this.itemRef = c
         }}
-        className={cx(rootStyle, isActive && activeStyle)}
         onClick={this.handleClick}
       >
-        {avatar && makeAvatar()}
-        {!avatar && icon && !hasDotIcon && makeIcon()}
-        {!avatar && hasDotIcon && makeDot()}
+        {avatar && <MenuItemAvatar alt={titleStr} src={avatar} />}
+        {!avatar && icon && !hasDotIcon && <MenuItemIcon icon={icon} iconColor={iconColor} />}
+        {!avatar && hasDotIcon && <MenuItemDot iconColor={iconColor} />}
         {children ? React.cloneElement(children, {isActive, menuRef}) : labelEl}
-      </div>
+      </MenuItem>
     )
   }
 }

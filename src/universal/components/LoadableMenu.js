@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Suspense} from 'react'
 import ui from 'universal/styles/ui'
 import {menuShadow} from 'universal/styles/elevation'
 import AnimatedFade from 'universal/components/AnimatedFade'
@@ -59,7 +59,9 @@ const LoadableMenu = (props: Props) => {
       <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>
         <MenuBlock style={{...coords, maxWidth, minWidth}} innerRef={setModalRef}>
           <MenuContents style={{maxHeight}}>
-            <LoadableComponent {...queryVars} closePortal={handleClose} />
+            <Suspense fallback={''}>
+              <LoadableComponent {...queryVars} closePortal={handleClose} />
+            </Suspense>
           </MenuContents>
         </MenuBlock>
       </AnimatedFade>

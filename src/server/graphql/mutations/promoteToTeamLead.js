@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver'
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload'
 import {getUserId, isTeamLead} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
-import {TEAM_MEMBER} from 'universal/utils/constants'
+import {TEAM} from 'universal/utils/constants'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {
@@ -55,8 +55,8 @@ export default {
         })
     })
 
-    const data = {oldTeamLeadId: myTeamMemberId, newTeamLeadId: teamMemberId}
-    publish(TEAM_MEMBER, teamId, PromoteToTeamLeadPayload, data, subOptions)
+    const data = {teamId}
+    publish(TEAM, teamId, PromoteToTeamLeadPayload, data, subOptions)
     return data
   }
 }

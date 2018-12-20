@@ -19,7 +19,6 @@ const subscription = graphql`
       ...CancelApprovalMutation_teamMember @relay(mask: false)
       ...InviteTeamMembersMutation_teamMember @relay(mask: false)
       ...MeetingCheckInMutation_teamMember @relay(mask: false)
-      ...PromoteToTeamLeadMutation_teamMember @relay(mask: false)
       ...RejectOrgApprovalMutation_teamMember @relay(mask: false)
       ...RemoveOrgUserMutation_teamMember @relay(mask: false)
       ...RemoveTeamMemberMutation_teamMember @relay(mask: false)
@@ -53,8 +52,6 @@ const TeamMemberSubscription = (atmosphere, queryVariables, subParams) => {
           inviteTeamMembersTeamMemberUpdater(payload, store)
           break
         case 'MeetingCheckInPayload':
-          break
-        case 'PromoteToTeamLeadPayload':
           break
         case 'RejectOrgApprovalPayload':
           rejectOrgApprovalTeamMemberUpdater(payload, store)

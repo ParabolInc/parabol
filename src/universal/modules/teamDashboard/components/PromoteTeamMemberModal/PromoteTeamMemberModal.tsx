@@ -1,26 +1,29 @@
-import PropTypes from 'prop-types'
+import {PromoteTeamMemberModal_teamMember} from '__generated__/PromoteTeamMemberModal_teamMember.graphql'
 import React from 'react'
-import portal from 'react-portal-hoc'
-import {createFragmentContainer} from 'react-relay'
-import Type from 'universal/components/Type/Type'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import DashModal from 'universal/components/Dashboard/DashModal'
+import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
-import styled from 'react-emotion'
+import Type from 'universal/components/Type/Type'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMutation'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import TeamManagementModalBoundary from './TeamManagementModalBoundary'
 
 const StyledButton = styled(FlatButton)({
   margin: '1.5rem auto 0'
 })
 
-const PromoteTeamMemberModal = (props) => {
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  closePortal: () => void
+  teamMember: PromoteTeamMemberModal_teamMember
+}
+const PromoteTeamMemberModal = (props: Props) => {
   const {
     atmosphere,
-    closeAfter,
     closePortal,
-    isClosing,
     submitMutation,
     submitting,
     onError,
@@ -34,7 +37,7 @@ const PromoteTeamMemberModal = (props) => {
     closePortal()
   }
   return (
-    <DashModal onBackdropClick={closePortal} isClosing={isClosing} closeAfter={closeAfter}>
+    <TeamManagementModalBoundary>
       <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
         {'Are you sure?'}
       </Type>
@@ -51,27 +54,12 @@ const PromoteTeamMemberModal = (props) => {
       <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
         <IconLabel icon='arrow_forward' iconAfter label={`Yes, promote ${preferredName}`} />
       </StyledButton>
-    </DashModal>
+    </TeamManagementModalBoundary>
   )
 }
 
-PromoteTeamMemberModal.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  closeAfter: PropTypes.number,
-  closePortal: PropTypes.func,
-  isClosing: PropTypes.bool,
-  onBackdropClick: PropTypes.func,
-  teamMember: PropTypes.object.isRequired,
-  submitting: PropTypes.bool,
-  submitMutation: PropTypes.func.isRequired,
-  onCompleted: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired
-}
-
 export default createFragmentContainer(
-  portal({escToClose: true, closeAfter: 100})(
-    withMutationProps(withAtmosphere(PromoteTeamMemberModal))
-  ),
+  withMutationProps(withAtmosphere(PromoteTeamMemberModal)),
   graphql`
     fragment PromoteTeamMemberModal_teamMember on TeamMember {
       teamMemberId: id

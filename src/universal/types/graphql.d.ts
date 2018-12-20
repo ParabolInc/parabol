@@ -2687,11 +2687,6 @@ export interface IMutation {
   cancelApproval: ICancelApprovalPayload | null
 
   /**
-   * Cancel an invitation
-   */
-  cancelTeamInvite: ICancelTeamInvitePayload | null
-
-  /**
    * Change the team a task is associated with
    */
   changeTaskTeam: IChangeTaskTeamPayload | null
@@ -2918,11 +2913,6 @@ export interface IMutation {
    * Request to become the facilitator in a meeting
    */
   requestFacilitator: IRequestFacilitatorPayload | null
-
-  /**
-   * Resend an invitation
-   */
-  resendTeamInvite: IResendTeamInvitePayload | null
 
   /**
    * track an event in segment, like when errors are hit
@@ -3198,13 +3188,6 @@ export interface ICancelApprovalOnMutationArguments {
    * org approval id to cancel
    */
   orgApprovalId: string
-}
-
-export interface ICancelTeamInviteOnMutationArguments {
-  /**
-   * The id of the invitation
-   */
-  invitationId: string
 }
 
 export interface IChangeTaskTeamOnMutationArguments {
@@ -3632,13 +3615,6 @@ export interface IRemoveTeamMemberOnMutationArguments {
 
 export interface IRequestFacilitatorOnMutationArguments {
   teamId: string
-}
-
-export interface IResendTeamInviteOnMutationArguments {
-  /**
-   * The id of the invitation
-   */
-  inviteId: string
 }
 
 export interface ISegmentEventTrackOnMutationArguments {
@@ -4913,27 +4889,6 @@ export interface ICancelApprovalPayload {
   archivedSoftTasks: Array<ITask | null> | null
 }
 
-export interface ICancelTeamInvitePayload {
-  __typename: 'CancelTeamInvitePayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The cancelled invitation
-   */
-  invitation: IInvitation | null
-  removedTeamInviteNotification: INotifyTeamInvite | null
-
-  /**
-   * The soft team members that are no longer tentatively on the team
-   */
-  removedSoftTeamMember: ISoftTeamMember | null
-
-  /**
-   * The tasks that belonged to the soft team member
-   */
-  archivedSoftTasks: Array<ITask | null> | null
-}
-
 export interface IChangeTaskTeamPayload {
   __typename: 'ChangeTaskTeamPayload'
   error: IStandardMutationError | null
@@ -5752,8 +5707,7 @@ export interface IPromoteNewMeetingFacilitatorPayload {
 export interface IPromoteToTeamLeadPayload {
   __typename: 'PromoteToTeamLeadPayload'
   error: IStandardMutationError | null
-  oldTeamLead: ITeamMember | null
-  newTeamLead: ITeamMember | null
+  team: ITeamMember | null
 }
 
 export interface IRejectOrgApprovalPayload {
@@ -6028,12 +5982,6 @@ export interface IRequestFacilitatorPayload {
    * The team member that wants to be the facilitator
    */
   requestor: ITeamMember | null
-}
-
-export interface IResendTeamInvitePayload {
-  __typename: 'ResendTeamInvitePayload'
-  error: IStandardMutationError | null
-  invitation: IInvitation | null
 }
 
 export interface ISegmentEventTrackOptions {
@@ -6559,7 +6507,7 @@ export interface ISubscription {
   slackChannelAdded: IAddSlackChannelPayload
   slackChannelRemoved: IRemoveSlackChannelPayload
   teamSubscription: TeamSubscriptionPayload
-  teamMemberSubscription: TeanMemberSubscriptionPayload
+  teamMemberSubscription: TeamMemberSubscriptionPayload
 }
 
 export interface IAgendaItemSubscriptionOnSubscriptionArguments {
@@ -6624,9 +6572,7 @@ export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProvid
 export type InvitationSubscriptionPayload =
   | IAcceptTeamInvitePayload
   | IApproveToOrgPayload
-  | ICancelTeamInvitePayload
   | IInviteTeamMembersPayload
-  | IResendTeamInvitePayload
 
 export type NotificationSubscriptionPayload =
   | IAcceptTeamInvitationPayload
@@ -6635,7 +6581,6 @@ export type NotificationSubscriptionPayload =
   | IAddTeamPayload
   | IApproveToOrgPayload
   | ICancelApprovalPayload
-  | ICancelTeamInvitePayload
   | IClearNotificationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
@@ -6692,7 +6637,6 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IAcceptTeamInvitePayload
   | ICancelApprovalPayload
-  | ICancelTeamInvitePayload
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
   | ICreateTaskPayload
@@ -6726,6 +6670,7 @@ export type TeamSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteFacilitatorPayload
   | IPromoteNewMeetingFacilitatorPayload
+  | IPromoteToTeamLeadPayload
   | IRequestFacilitatorPayload
   | IRemoveOrgUserPayload
   | IRemoveReflectionPayload
@@ -6775,14 +6720,12 @@ export interface IUpdateDragLocationPayload {
   userId: string
 }
 
-export type TeanMemberSubscriptionPayload =
+export type TeamMemberSubscriptionPayload =
   | IAcceptTeamInvitePayload
   | ICancelApprovalPayload
-  | ICancelTeamInvitePayload
   | IRemoveTeamMemberPayload
   | IInviteTeamMembersPayload
   | IMeetingCheckInPayload
-  | IPromoteToTeamLeadPayload
   | IRejectOrgApprovalPayload
   | IRemoveOrgUserPayload
   | IUpdateUserProfilePayload
