@@ -135,7 +135,6 @@ export default createFragmentContainer(
           id
           preferredName
         }
-        ...AddSoftTeamMember_team
       }
     }
 
