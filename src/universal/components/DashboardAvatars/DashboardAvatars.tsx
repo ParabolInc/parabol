@@ -1,11 +1,10 @@
-import React, {lazy} from 'react'
-import {createFragmentContainer, graphql} from 'react-relay'
-import Avatar from 'universal/components/Avatar/Avatar'
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
-import styled from 'react-emotion'
 import {DashboardAvatars_team} from '__generated__/DashboardAvatars_team.graphql'
-import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
+import React, {lazy} from 'react'
+import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
 import LoadableMenu from 'universal/components/LoadableMenu'
+import AddTeamMemberAvatarButton from '../AddTeamMemberAvatarButton'
+import DashboardAvatar from './DashboardAvatar'
 
 const AvatarsList = styled('div')({
   display: 'flex',
@@ -41,7 +40,6 @@ const DashboardAvatars = (props: Props) => {
   return (
     <AvatarsList>
       {teamMembers.map((teamMember) => {
-        const picture = teamMember.picture || defaultUserAvatar
         return (
           <AvatarItem key={`dbAvatar${teamMember.id}`}>
             <LoadableMenu
@@ -54,17 +52,7 @@ const DashboardAvatars = (props: Props) => {
                 teamMember
               }}
               targetAnchor={targetAnchor}
-              toggle={
-                <Avatar
-                  {...teamMember}
-                  picture={picture}
-                  hasBadge
-                  isCheckedIn={teamMember.isCheckedIn}
-                  isConnected={teamMember.isConnected || teamMember.isSelf}
-                  isClickable
-                  size='smaller'
-                />
-              }
+              toggle={<DashboardAvatar teamMember={teamMember} />}
             />
           </AvatarItem>
         )
@@ -84,11 +72,8 @@ export default createFragmentContainer(
       teamMembers(sortBy: "preferredName") {
         ...AddTeamMemberModal_teamMembers
         ...TeamMemberAvatarMenu_teamMember
+        ...DashboardAvatar_teamMember
         id
-        isCheckedIn
-        isConnected
-        isSelf
-        picture
       }
     }
   `
