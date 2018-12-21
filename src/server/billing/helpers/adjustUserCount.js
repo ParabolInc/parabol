@@ -30,11 +30,12 @@ const changePause = (inactive) => (orgIds, userId) => {
 const addUser = (orgIds, userId) => {
   const r = getRethink()
   const docs = orgIds.map((orgId) => ({
-    id: `${orgId}::${userId}`,
+    id: shortid.generate(),
     inactive: false,
     joinedAt: new Date(),
     newUserUntil: new Date(Date.now() + NEW_USER_GRACE_PERIOD),
     orgId,
+    removedAt: null,
     role: null,
     userId
   }))

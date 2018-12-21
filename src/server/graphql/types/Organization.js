@@ -19,6 +19,7 @@ import {getUserId} from 'server/utils/authorization'
 import {BILLING_LEADER} from 'universal/utils/constants'
 import {resolveForBillingLeaders} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
+import getRethink from 'server/database/rethinkDriver'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -142,23 +143,28 @@ const Organization = new GraphQLObjectType({
     orgUserCount: {
       type: new GraphQLNonNull(OrgUserCount),
       description: 'The count of active & inactive users',
-      resolve: async (source) => {
-        const {orgUsers} = source
-        if (!Array.isArray(orgUsers)) throw new Error('No orgUsers supplied!')
-        const inactiveUserCount = orgUsers.filter((orgUser) => orgUser.inactive).length
+      resolve: async ({id: orgId}) => {
+        const r = getRethink()
+        const organizationUsers = await r
+          .table('OrganizationUser')
+          .getAll(orgId, {index: 'orgId'})
+          .filter({removedAt: null})
+        const inactiveUserCount = organizationUsers.filter(({inactive}) => inactive).length
         return {
           inactiveUserCount,
-          activeUserCount: orgUsers.length - inactiveUserCount
+          activeUserCount: organizationUsers.length - inactiveUserCount
         }
       }
     },
     billingLeaders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
-      resolve: async ({orgUsers}, args, {dataLoader}) => {
-        const billingLeaderUserIds = orgUsers
-          .filter((orgUser) => orgUser.role === BILLING_LEADER)
-          .map(({id}) => id)
+      resolve: async ({id: orgId}, args, {dataLoader}) => {
+        const r = getRethink()
+        const billingLeaderUserIds = await r
+          .table('OrganizationUser')
+          .getAll(orgId, {index: 'orgId'})
+          .filter({removedAt: null, role: BILLING_LEADER})('userId')
         return dataLoader.get('users').loadMany(billingLeaderUserIds)
       }
     }

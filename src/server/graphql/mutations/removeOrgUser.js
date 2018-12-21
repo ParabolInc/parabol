@@ -73,25 +73,13 @@ const removeOrgUser = {
       return arr
     }, [])
 
-    const {allRemovedOrgNotifications, updatedUser} = await r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update((org) => ({
-          orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
-          updatedAt: now
-        })),
-      updatedUser: r
-        .table('User')
-        .get(userId)
-        .update(
-          (row) => ({
-            userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
-            updatedAt: now
-          }),
-          {returnChanges: true}
-        )('changes')(0)('new_val')
-        .default(null),
+    const {allRemovedOrgNotifications, user} = await r({
+      updatedOrganizationUser: r
+        .table('OrganizationUser')
+        .get(userId, {index: 'userId'})
+        .filter({orgId, removedAt: null})
+        .update({removedAt: now}),
+      user: r.table('User').get(userId),
       // remove stale notifications
       allRemovedOrgNotifications: r
         .table('Notification')
@@ -137,7 +125,7 @@ const removeOrgUser = {
     // need to make sure the org doc is updated before adjusting this
     await adjustUserCount(userId, orgId, REMOVE_USER)
 
-    const {tms} = updatedUser
+    const {tms} = user
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms})
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
 

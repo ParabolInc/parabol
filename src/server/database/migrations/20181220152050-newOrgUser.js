@@ -1,3 +1,5 @@
+import shortid from 'shortid'
+
 exports.up = async (r) => {
   try {
     await r.tableCreate('OrganizationUser')
@@ -14,9 +16,7 @@ exports.up = async (r) => {
     await r.table('Organization').forEach((organization) => {
       return organization('orgUsers').forEach((orgUser) => {
         return r.table('OrganizationUser').insert({
-          id: organization('id')
-            .add('::')
-            .add(orgUser('id')),
+          id: shortid.generate(),
           inactive: orgUser('inactive').default(false),
           joinedAt: organization('createdAt'),
           newUserUntil: organization('createdAt'),

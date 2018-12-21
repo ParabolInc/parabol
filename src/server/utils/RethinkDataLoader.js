@@ -118,10 +118,18 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions)
     this.orgsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink()
-      const orgs = await r.table('Organization').getAll(r.args(userIds), {index: 'orgUsers'})
+      const organizationUsers = await r
+        .table('OrganizationUser')
+        .getAll(r.args(userIds), {index: 'userId'})
+        .filter({removedAt: null})
+      const orgIds = Array.from(new Set(organizationUsers.map(({orgId}) => orgId)))
+      const orgs = await r.table('Organization').getAll(r.args(orgIds), {index: 'id'})
       primeStandardLoader(this.organizations, orgs)
       return userIds.map((userId) => {
-        return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)))
+        const orgIds = organizationUsers
+          .filter((organizationUser) => organizationUser.userId === userId)
+          .map(({orgId}) => orgId)
+        return orgs.filter((org) => orgIds.includes(org.id))
       })
     }, this.dataloaderOptions)
     this.retroReflectionGroupsByMeetingId = makeCustomLoader(async (meetingIds) => {
@@ -284,6 +292,7 @@ export default class RethinkDataLoader {
   notifications = this.makeStandardLoader('Notification')
   orgApprovals = this.makeStandardLoader('OrgApproval')
   organizations = this.makeStandardLoader('Organization')
+  organizationUsers = this.makeStandardLoader('OrganizationUser')
   reflectTemplates = this.makeStandardLoader('ReflectTemplate')
   retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup')
   retroReflections = this.makeStandardLoader('RetroReflection')

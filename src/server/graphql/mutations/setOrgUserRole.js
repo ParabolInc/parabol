@@ -81,11 +81,9 @@ export default {
     // if someone is leaving, make sure there is someone else to take their place
     if (userId === viewerId) {
       const leaderCount = await r
-        .table('Organization')
-        .get(orgId)('orgUsers')
-        .filter({
-          role: BILLING_LEADER
-        })
+        .table('OrganizationUser')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({removedAt: null, role: BILLING_LEADER})
         .count()
       if (leaderCount === 1) {
         const breadcrumb = {
@@ -97,48 +95,20 @@ export default {
       }
     }
 
+    // no change required
+    const organizationUser = await r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({orgId, removedAt: null})
+      .nth(0)
+    if (organizationUser.role === role) return null
+
     // RESOLUTION
-    const {organizationChanges} = await r({
-      userOrgsUpdate: r
-        .table('User')
-        .get(userId)
-        .update((user) => ({
-          userOrgs: user('userOrgs').map((userOrg) => {
-            return r.branch(
-              userOrg('id').eq(orgId),
-              userOrg.merge({
-                role
-              }),
-              userOrg
-            )
-          }),
-          updatedAt: now
-        })),
-      organizationChanges: r
-        .table('Organization')
-        .get(orgId)
-        .update(
-          (org) => ({
-            orgUsers: org('orgUsers').map((orgUser) => {
-              return r.branch(
-                orgUser('id').eq(userId),
-                orgUser.merge({
-                  role
-                }),
-                orgUser
-              )
-            }),
-            updatedAt: now
-          }),
-          {returnChanges: true}
-        )('changes')(0)
-    })
-    const {old_val: oldOrg, new_val: organization} = organizationChanges
-    const oldUser = oldOrg.orgUsers.find((orgUser) => orgUser.id === userId)
-    const newUser = organization.orgUsers.find((orgUser) => orgUser.id === userId)
-    if (oldUser.role === newUser.role) {
-      return null
-    }
+    await r
+      .table('OrganizationUser')
+      .get(organizationUser.id)
+      .update({role})
+
     if (role === BILLING_LEADER) {
       const promotionNotificationId = shortid.generate()
       const promotionNotification = {
