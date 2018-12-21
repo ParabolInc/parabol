@@ -52,29 +52,20 @@ export const isOrgBillingLeader = (userOrgDoc) => {
 
 export const isOrgLeaderOfUser = async (authToken, userId) => {
   const r = getRethink()
-  return r
-    .table('User')
-    .get(authToken.sub)('userOrgs')
-    .filter({
-      role: BILLING_LEADER
-    })('id')
-    .do((leaderOrgs) => {
-      return {
-        leaderOrgs,
-        memberOrgs: r.table('User').get(userId)('userOrgs')('id')
-      }
-    })
-    .do((res) => {
-      return res('leaderOrgs')
-        .union(res('memberOrgs'))
-        .distinct()
-        .count()
-        .lt(
-          res('leaderOrgs')
-            .count()
-            .add(res('memberOrgs').count())
-        )
-    })
+  const viewerId = getUserId(authToken)
+  const {viewerOrgIds, userOrgIds} = await r({
+    viewerOrgIds: r
+      .table('OrganizationUser')
+      .getAll(viewerId, {index: 'userId'})
+      .filter({removedAt: null})('orgId'),
+    userOrgIds: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null})('orgId')
+  })
+  const uniques = new Set(viewerOrgIds.concat(userOrgIds))
+  const total = viewerOrgIds.length + userOrgIds.length
+  return uniques.size < total
 }
 
 export const isPaidTier = async (teamId) => {

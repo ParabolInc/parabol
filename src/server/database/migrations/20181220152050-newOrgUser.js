@@ -29,7 +29,9 @@ exports.up = async (r) => {
     })
     await r({
       users: r.table('User').replace(r.row.without('userOrgs')),
-      orgs: r.table('Organization').replace(r.row.without('orgUsers'))
+      orgs: r.table('Organization').replace(r.row.without('orgUsers')),
+      userIdx: r.table('User').indexDrop('userOrgs'),
+      orgIdx: r.table('Organization').indexDrop('orgUsers')
     })
   } catch (e) {}
 }
@@ -37,6 +39,8 @@ exports.up = async (r) => {
 exports.down = async (r) => {
   try {
     await r.tableDrop('OrganizationUser')
+    await r.table('User').indexCreate('userOrgs')
+    await r.table('Organization').indexCreate('orgUsers')
   } catch (e) {
     // noop
   }

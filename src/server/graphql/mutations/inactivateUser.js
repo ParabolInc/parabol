@@ -27,16 +27,22 @@ export default {
       return sendOrgLeadOfUserAccessError(authToken, userId, false)
     }
 
-    const orgDocs = await r
-      .table('Organization')
-      .getAll(userId, {index: 'orgUsers'})
-      .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId', 'tier')
-    const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId)
-    if (!firstOrgUser) {
-      // no userOrgs means there were no changes, which means inactive was already true
+    // VALIDATION
+    const {user, orgs} = await r({
+      user: r.table('User').get(userId),
+      orgs: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null})('orgId')
+        .do((orgIds) => {
+          return r.table('Organization').getAll(r.args(orgIds), {index: 'id'})
+        })
+    })
+    if (user.inactive) {
       return sendAlreadyInactivatedUserError(authToken, userId)
     }
-    const hookPromises = orgDocs.map((orgDoc) => {
+
+    const hookPromises = orgs.map((orgDoc) => {
       const {periodStart, periodEnd, stripeSubscriptionId, tier} = orgDoc
       if (tier === PERSONAL) return undefined
       const periodStartInSeconds = toEpochSeconds(periodStart)
@@ -68,32 +74,9 @@ export default {
     // TODO ping the user to see if they're currently online
 
     // RESOLUTION
-    await r({
-      orgUpdate: r
-        .table('Organization')
-        .getAll(userId, {index: 'orgUsers'})
-        .update((org) => ({
-          orgUsers: org('orgUsers').map((orgUser) => {
-            return r.branch(
-              orgUser('id').eq(userId),
-              orgUser.merge({
-                inactive: true
-              }),
-              orgUser
-            )
-          })
-        })),
-      userUpdate: r
-        .table('User')
-        .get(userId)
-        .update({
-          inactive: true
-        })
-    })
-    const orgIds = orgDocs.map((doc) => doc.id)
-    await adjustUserCount(userId, orgIds, PAUSE_USER)
+    await adjustUserCount(userId, [], PAUSE_USER)
 
-    // TOOD wire up subscription
+    // TODO wire up subscription
     return {userId}
   }
 }

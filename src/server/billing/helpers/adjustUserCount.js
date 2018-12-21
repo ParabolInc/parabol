@@ -19,10 +19,11 @@ const changePause = (inactive) => (orgIds, userId) => {
       .table('User')
       .get(userId)
       .update({inactive}),
-    orgUser: r
+    organizationUser: r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
-      .update({inactive}, {returnChanges: true})
+      .filter({removedAt: null})
+      .update({inactive})
   })
 }
 
