@@ -15,11 +15,6 @@ const OrganizationUser = new GraphQLObjectType({
       description: 'true if the user is paused and the orgs are not being billed, else false',
       resolve: ({inactive}) => !!inactive
     },
-    isArchived: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description: 'true if the user is no longer part of the org, else false',
-      resolve: ({isArchived}) => !!isArchived
-    },
     joinedAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'the datetime the user first joined the org'
@@ -36,6 +31,10 @@ const OrganizationUser = new GraphQLObjectType({
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'FK'
+    },
+    removedAt: {
+      type: GraphQLISO8601Type,
+      description: 'if not a member, the datetime the user was removed from the org'
     },
     role: {
       type: OrgUserRoleEnum,
