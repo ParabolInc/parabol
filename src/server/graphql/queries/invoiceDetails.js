@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import generateUpcomingInvoice from 'server/billing/helpers/generateUpcomingInvoice'
 import getRethink from 'server/database/rethinkDriver'
 import Invoice from 'server/graphql/types/Invoice'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import {UPCOMING_INVOICE_TIME_VALID} from 'server/utils/serverConstants'
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
 
@@ -19,7 +19,7 @@ export default {
     const now = new Date()
 
     // AUTH
-    const userId = getUserId(authToken)
+    const viewerId = getUserId(authToken)
     const [type, maybeOrgId] = invoiceId.split('_')
     const isUpcoming = type === 'upcoming'
     const currentInvoice = await r
@@ -27,9 +27,8 @@ export default {
       .get(invoiceId)
       .default(null)
     const orgId = (currentInvoice && currentInvoice.orgId) || maybeOrgId
-    const userOrgDoc = await getUserOrgDoc(userId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc, null)
+    if (!(await isUserBillingLeader(viewerId, orgId))) {
+      return sendOrgLeadAccessError(authToken, orgId, null)
     }
 
     // RESOLUTION

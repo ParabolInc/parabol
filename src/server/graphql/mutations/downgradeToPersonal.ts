@@ -3,7 +3,7 @@ import stripe from 'server/billing/stripe'
 import getRethink from 'server/database/rethinkDriver'
 import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonalPayload'
 import {sendAlreadyPersonalTierError} from 'server/utils/alreadyMutatedErrors'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader, isSuperUser} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader, isSuperUser} from 'server/utils/authorization'
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
 import publish from 'server/utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
@@ -27,8 +27,9 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isSuperUser(authToken)) {
-      const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
-      if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc)
+      if (!(await isUserBillingLeader(viewerId, orgId))) {
+        return sendOrgLeadAccessError(authToken, orgId)
+      }
     }
 
     // VALIDATION

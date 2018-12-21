@@ -1,11 +1,6 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
 import SegmentEventTrackOptions from 'server/graphql/types/SegmentEventTrackOptions'
-import {
-  getUserId,
-  getUserOrgDoc,
-  isOrgBillingLeader,
-  isTeamMember
-} from 'server/utils/authorization'
+import {getUserId, isTeamMember, isUserBillingLeader} from 'server/utils/authorization'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import {sendOrgLeadAccessError, sendTeamAccessError} from 'server/utils/authorizationErrors'
 
@@ -23,7 +18,7 @@ export default {
   },
   resolve: async (source, {event, options = {}}, {authToken}) => {
     // AUTH
-    const userId = getUserId(authToken)
+    const viewerId = getUserId(authToken)
     const {teamId, orgId} = options
     if (teamId) {
       // fail silently. they're being sneaky
@@ -32,14 +27,13 @@ export default {
       }
     }
     if (orgId) {
-      const userOrgDoc = await getUserOrgDoc(userId, orgId)
-      if (!isOrgBillingLeader(userOrgDoc)) {
-        return sendOrgLeadAccessError(authToken, userOrgDoc, true)
+      if (!(await isUserBillingLeader(viewerId, orgId))) {
+        return sendOrgLeadAccessError(authToken, orgId, true)
       }
     }
 
     // RESOLUTION
-    sendSegmentEvent(event, userId, options)
+    sendSegmentEvent(event, viewerId, options)
     return true
   }
 }

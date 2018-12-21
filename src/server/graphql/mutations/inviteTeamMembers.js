@@ -2,12 +2,7 @@ import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import Invitee from 'server/graphql/types/Invitee'
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload'
 import inviteTeamMembers from 'server/safeMutations/inviteTeamMembers'
-import {
-  getUserId,
-  getUserOrgDoc,
-  isOrgBillingLeader,
-  isTeamMember
-} from 'server/utils/authorization'
+import {getUserId, isTeamMember, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'universal/utils/constants'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
@@ -42,8 +37,7 @@ export default {
           .table('Team')
           .get(teamId)('orgId')
           .default('')
-        const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
-        if (!isOrgBillingLeader(userOrgDoc)) {
+        if (!(await isUserBillingLeader(viewerId, orgId))) {
           return sendTeamAccessError(authToken, teamId)
         }
       }

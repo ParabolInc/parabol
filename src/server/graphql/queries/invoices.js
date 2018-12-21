@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver'
 import makeUpcomingInvoice from 'server/graphql/queries/helpers/makeUpcomingInvoice'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import {InvoiceConnection} from 'server/graphql/types/Invoice'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import {UPCOMING} from 'universal/utils/constants'
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
@@ -26,10 +26,9 @@ export default {
     const r = getRethink()
 
     // AUTH
-    const userId = getUserId(authToken)
-    const userOrgDoc = await getUserOrgDoc(userId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc, null)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId))) {
+      return sendOrgLeadAccessError(authToken, orgId, null)
     }
 
     // RESOLUTION

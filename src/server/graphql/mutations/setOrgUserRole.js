@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload'
-import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {
@@ -62,10 +62,11 @@ export default {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+
     // AUTH
-    const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId))) {
+      return sendOrgLeadAccessError(authToken, orgId)
     }
 
     // VALIDATION
@@ -78,7 +79,7 @@ export default {
       return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
     }
     // if someone is leaving, make sure there is someone else to take their place
-    if (userId === authToken.sub) {
+    if (userId === viewerId) {
       const leaderCount = await r
         .table('Organization')
         .get(orgId)('orgUsers')

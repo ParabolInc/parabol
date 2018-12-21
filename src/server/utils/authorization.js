@@ -34,20 +34,26 @@ export const requireSU = (authToken) => {
   }
 }
 
-// undefined orgId will disable the filter
-export const getUserOrgDoc = (userId, orgId = '') => {
+export const isUserBillingLeader = async (userId, orgId) => {
   const r = getRethink()
-  return r
-    .table('User')
-    .get(userId)('userOrgs')
-    .filter({id: orgId})
+  const organizationUser = await r
+    .table('OrganizationUser')
+    .getAll(userId, {index: 'userId'})
+    .filter({orgId})
+    .filter({removedAt: null})
     .nth(0)
-    .default(null)
-    .run()
+  return organizationUser ? organizationUser.role === BILLING_LEADER : false
 }
 
-export const isOrgBillingLeader = (userOrgDoc) => {
-  return userOrgDoc && userOrgDoc.role === BILLING_LEADER
+export const isUserInOrg = async (userId, orgId) => {
+  const r = getRethink()
+  const organizationUser = await r
+    .table('OrganizationUser')
+    .getAll(userId, {index: 'userId'})
+    .filter({orgId})
+    .filter({removedAt: null})
+    .nth(0)
+  return !!organizationUser
 }
 
 export const isOrgLeaderOfUser = async (authToken, userId) => {

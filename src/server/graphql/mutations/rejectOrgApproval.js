@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver'
 import rejectOrgApprovalValidation from 'server/graphql/mutations/helpers/rejectOrgApprovalValidation'
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload'
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {
@@ -50,9 +50,8 @@ export default {
       return sendNotificationAccessError(authToken, notificationId)
     }
     const {orgId, inviteeEmail} = rejectionNotification
-    const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
+    if (!(await isUserBillingLeader(viewerId, orgId))) {
+      return sendOrgLeadAccessError(authToken, orgId)
     }
 
     // VALIDATION

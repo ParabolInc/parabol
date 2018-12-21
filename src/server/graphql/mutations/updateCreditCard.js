@@ -3,7 +3,7 @@ import stripe from 'server/billing/stripe'
 import getRethink from 'server/database/rethinkDriver'
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer'
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {ORGANIZATION, TEAM} from 'universal/utils/constants'
 import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
@@ -29,10 +29,9 @@ export default {
     const now = new Date()
 
     // AUTH
-    const userId = getUserId(authToken)
-    const userOrgDoc = await getUserOrgDoc(userId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId))) {
+      return sendOrgLeadAccessError(authToken, orgId)
     }
 
     // VALIDATION

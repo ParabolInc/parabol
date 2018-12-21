@@ -5,7 +5,7 @@ import AddTeamPayload from 'server/graphql/types/AddTeamPayload'
 import Invitee from 'server/graphql/types/Invitee'
 import NewTeamInput from 'server/graphql/types/NewTeamInput'
 import {auth0ManagementClient} from 'server/utils/auth0Helpers'
-import {getUserId, getUserOrgDoc} from 'server/utils/authorization'
+import {getUserId, isUserInOrg} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import shortid from 'shortid'
@@ -37,8 +37,9 @@ export default {
       // AUTH
       const {orgId} = args.newTeam
       const viewerId = getUserId(authToken)
-      const userOrgDoc = await getUserOrgDoc(viewerId, orgId)
-      if (!userOrgDoc) return sendOrgAccessError(authToken, orgId)
+      if (!(await isUserInOrg(viewerId, orgId))) {
+        sendOrgAccessError(authToken, orgId)
+      }
 
       // VALIDATION
       const orgTeams = await dataLoader.get('teamsByOrgId').load(orgId)

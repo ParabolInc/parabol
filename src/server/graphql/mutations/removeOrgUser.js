@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver'
 import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember'
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
 import {auth0ManagementClient} from 'server/utils/auth0Helpers'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {REMOVE_USER} from 'server/utils/serverConstants'
 import {
@@ -40,9 +40,8 @@ const removeOrgUser = {
     // AUTH
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) {
-      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId)
-      if (!isOrgBillingLeader(userOrgDoc)) {
-        return sendOrgLeadAccessError(authToken, userOrgDoc)
+      if (!(await isUserBillingLeader(viewerId, orgId))) {
+        return sendOrgLeadAccessError(authToken, orgId)
       }
     }
 
