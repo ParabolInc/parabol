@@ -35,6 +35,7 @@ import MeetingMember from 'server/graphql/types/MeetingMember'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
 import Organization from 'server/graphql/types/Organization'
+import OrganizationUser from 'server/graphql/types/OrganizationUser'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -219,19 +220,70 @@ const User = new GraphQLObjectType({
     providerMap,
     slackChannels,
     organization,
+    organizationUser: {
+      description: 'The connection between a user and an organization',
+      type: OrganizationUser,
+      args: {
+        orgId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'the orgId'
+        }
+      },
+      resolve: async ({id: userId}, {orgId}, {authToken, dataLoader}) => {
+        // AUTH
+        const viewerId = getUserId(authToken)
+        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+        const organizationUsersForOrgId = organizationUsers.find(
+          (organizationUser) => organizationUser.orgId === orgId
+        )
+        if (viewerId === userId) {
+          return organizationUsersForOrgId
+        }
+        const viewerOrganizationUsers = await dataLoader
+          .get('organizationUsersByUserId')
+          .load(viewerId)
+        const viewerOrganizationUsersForOrgId = viewerOrganizationUsers.find(
+          (organizationUser) => organizationUser.orgId === orgId
+        )
+        return viewerOrganizationUsersForOrgId ? organizationUsersForOrgId : null
+      }
+    },
+    organizationUsers: {
+      description: 'A single user that is connected to a single organization',
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrganizationUser))),
+      resolve: async ({id: userId}, args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
+        if (viewerId === userId || isSuperUser(authToken)) {
+          return organizationUsers
+        }
+        const viewerOrganizationUsers = await dataLoader
+          .get('organizationUsersByUserId')
+          .load(viewerId)
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+        return organizationUsers.filter((organizationUser) =>
+          viewerOrgIds.includes(organizationUser.orgId)
+        )
+      }
+    },
     organizations: {
       description: 'Get the list of all organizations a user belongs to',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
       async resolve ({id: userId}, args, {authToken, dataLoader}) {
-        const userOrgs = await dataLoader.get('orgsByUserId').load(userId)
-        userOrgs.sort((a, b) => (a.name > b.name ? 1 : -1))
+        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+        const orgIds = organizationUsers.map(({orgId}) => orgId)
+        const organizations = await dataLoader.get('organizations').loadMany(orgIds)
+        organizations.sort((a, b) => (a.name > b.name ? 1 : -1))
         const viewerId = getUserId(authToken)
         if (viewerId === userId || isSuperUser(authToken)) {
-          return userOrgs
+          return organizations
         }
-        const viewer = await dataLoader.get('users').load(viewerId)
-        const viewerOrgIds = viewer.userOrgs.map((userOrg) => userOrg.id)
-        return userOrgs.filter((userOrg) => viewerOrgIds.includes(userOrg.id))
+        const viewerOrganizationUsers = await dataLoader
+          .get('organizationUsersByUserId')
+          .load(viewerId)
+        const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
+        return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
       }
     },
     tasks,

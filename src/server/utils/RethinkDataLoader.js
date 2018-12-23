@@ -116,20 +116,26 @@ export default class RethinkDataLoader {
       primeStandardLoader(this.notifications, notifications)
       return userIds.map(() => notifications)
     }, this.dataloaderOptions)
-    this.orgsByUserId = makeCustomLoader(async (userIds) => {
+    this.organizationUsersByOrgId = makeCustomLoader(async (orgIds) => {
+      const r = getRethink()
+      const organizationUsers = await r
+        .table('OrganizationUser')
+        .getAll(r.args(orgIds), {index: 'orgId'})
+        .filter({removedAt: null})
+      primeStandardLoader(this.organizationUsers, organizationUsers)
+      return orgIds.map((orgId) => {
+        return organizationUsers.filter((organizationUser) => organizationUser.orgId === orgId)
+      })
+    }, this.dataloaderOptions)
+    this.organizationUsersByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink()
       const organizationUsers = await r
         .table('OrganizationUser')
         .getAll(r.args(userIds), {index: 'userId'})
         .filter({removedAt: null})
-      const orgIds = Array.from(new Set(organizationUsers.map(({orgId}) => orgId)))
-      const orgs = await r.table('Organization').getAll(r.args(orgIds), {index: 'id'})
-      primeStandardLoader(this.organizations, orgs)
+      primeStandardLoader(this.organizationUsers, organizationUsers)
       return userIds.map((userId) => {
-        const orgIds = organizationUsers
-          .filter((organizationUser) => organizationUser.userId === userId)
-          .map(({orgId}) => orgId)
-        return orgs.filter((org) => orgIds.includes(org.id))
+        return organizationUsers.filter((organizationUser) => organizationUser.userId === userId)
       })
     }, this.dataloaderOptions)
     this.retroReflectionGroupsByMeetingId = makeCustomLoader(async (meetingIds) => {

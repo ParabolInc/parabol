@@ -19,7 +19,7 @@ import {getUserId} from 'server/utils/authorization'
 import {BILLING_LEADER} from 'universal/utils/constants'
 import {resolveForBillingLeaders} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
-import getRethink from 'server/database/rethinkDriver'
+import {OrganizationUserConnection} from 'server/graphql/types/OrganizationUser'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -140,15 +140,37 @@ const Organization = new GraphQLObjectType({
         }
       }
     },
+    organizationUsers: {
+      args: {
+        ...forwardConnectionArgs
+      },
+      type: new GraphQLNonNull(OrganizationUserConnection),
+      resolve: async ({id: orgId}, {first}, {dataLoader}) => {
+        const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+        const userIds = organizationUsers.map(({userId}) => userId)
+        const users = await dataLoader.get('users').loadMany(userIds)
+        users.sort(
+          (a, b) => (a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1)
+        )
+        const edges = users.map((user) => ({
+          cursor: user.id,
+          node: user
+        }))
+        const firstEdge = edges[0]
+        return {
+          edges,
+          pageInfo: {
+            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
+            hasNextPage: false
+          }
+        }
+      }
+    },
     orgUserCount: {
       type: new GraphQLNonNull(OrgUserCount),
       description: 'The count of active & inactive users',
-      resolve: async ({id: orgId}) => {
-        const r = getRethink()
-        const organizationUsers = await r
-          .table('OrganizationUser')
-          .getAll(orgId, {index: 'orgId'})
-          .filter({removedAt: null})
+      resolve: async ({id: orgId}, _args, {dataLoader}) => {
+        const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
         const inactiveUserCount = organizationUsers.filter(({inactive}) => inactive).length
         return {
           inactiveUserCount,
@@ -160,11 +182,10 @@ const Organization = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
       resolve: async ({id: orgId}, args, {dataLoader}) => {
-        const r = getRethink()
-        const billingLeaderUserIds = await r
-          .table('OrganizationUser')
-          .getAll(orgId, {index: 'orgId'})
-          .filter({removedAt: null, role: BILLING_LEADER})('userId')
+        const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+        const billingLeaderUserIds = organizationUsers
+          .filter((organizationUser) => organizationUser.role === BILLING_LEADER)
+          .map(({userId}) => userId)
         return dataLoader.get('users').loadMany(billingLeaderUserIds)
       }
     }
