@@ -12,7 +12,6 @@ import githubRepos from 'server/graphql/queries/githubRepos'
 import integrationProvider from 'server/graphql/queries/integrationProvider'
 import invoiceDetails from 'server/graphql/queries/invoiceDetails'
 import invoices from 'server/graphql/queries/invoices'
-import isBillingLeader from 'server/graphql/queries/isBillingLeader'
 import providerMap from 'server/graphql/queries/providerMap'
 import slackChannels from 'server/graphql/queries/slackChannels'
 import AuthIdentityType from 'server/graphql/types/AuthIdentityType'
@@ -23,7 +22,6 @@ import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
 import Meeting from 'server/graphql/types/Meeting'
 import Team from 'server/graphql/types/Team'
 import TeamMember from 'server/graphql/types/TeamMember'
-import UserOrg from 'server/graphql/types/UserOrg'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import organization from 'server/graphql/queries/organization'
 import tasks from 'server/graphql/queries/tasks'
@@ -132,18 +130,9 @@ const User = new GraphQLObjectType({
       description:
         'true if the user is not currently being billed for service. removed on every websocket handshake'
     },
-    isBillingLeader,
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The application-specific name, defaults to nickname'
-    },
-    userOrgs: {
-      type: new GraphQLList(UserOrg),
-      description: 'the orgs and roles for this user on each',
-      resolve: (source, args, {authToken}) => {
-        const userId = getUserId(authToken)
-        return userId === source.id ? source.userOrgs : undefined
-      }
     },
     archivedTasks,
     archivedTasksCount,

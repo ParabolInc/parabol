@@ -1,4 +1,4 @@
-import {GraphQLObjectType, GraphQLList} from 'graphql'
+import {GraphQLObjectType, GraphQLList, GraphQLString} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveFilterByTeam,
@@ -13,10 +13,10 @@ import Task from 'server/graphql/types/Task'
 import Team from 'server/graphql/types/Team'
 import TeamMember from 'server/graphql/types/TeamMember'
 import User from 'server/graphql/types/User'
-import OrganizationMember from 'server/graphql/types/OrganizationMember'
 import Notification from 'server/graphql/types/Notification'
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import OrganizationUser from 'server/graphql/types/OrganizationUser'
 
 const RemoveOrgUserPayload = new GraphQLObjectType({
   name: 'RemoveOrgUserPayload',
@@ -68,9 +68,12 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
       resolve: makeResolveNotificationsForViewer('kickOutNotificationIds', '')
     },
     removedOrgMember: {
-      type: OrganizationMember,
+      type: OrganizationUser,
       description: 'The organization member that got removed',
       resolve: (source) => source
+    },
+    orgUserId: {
+      type: GraphQLString
     }
   })
 })

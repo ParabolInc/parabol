@@ -111,8 +111,7 @@ const login = {
       name: userInfo.name,
       preferredName,
       identities: userInfo.identities || [],
-      createdAt: ensureDate(userInfo.created_at),
-      userOrgs: []
+      createdAt: ensureDate(userInfo.created_at)
     }
     await r.table('User').insert(newUser)
 

@@ -2,9 +2,7 @@ import {commitMutation} from 'react-relay'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
-import {BILLING_LEADER} from 'universal/utils/constants'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import toOrgMemberId from 'universal/utils/relay/toOrgMemberId'
 
 graphql`
   fragment SetOrgUserRoleMutationAdded_organization on SetOrgUserRoleAddedPayload {
@@ -100,17 +98,9 @@ export const setOrgUserRoleRemovedOrganizationUpdater = (payload, store, viewerI
 }
 
 const SetOrgUserRoleMutation = (environment, variables, options, onError, onCompleted) => {
-  const {orgId, role, userId} = variables
   return commitMutation(environment, {
     mutation,
     variables,
-    optimisticUpdater: (store) => {
-      const isBillingLeader = role === BILLING_LEADER
-      const orgMemberId = toOrgMemberId(orgId, userId)
-      const orgMember = store.get(orgMemberId)
-      if (!orgMember) return
-      orgMember.setValue(isBillingLeader, 'isBillingLeader')
-    },
     onCompleted,
     onError
   })

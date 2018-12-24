@@ -1,12 +1,12 @@
 import adjustUserCount from 'server/billing/helpers/adjustUserCount'
 import getRethink from 'server/database/rethinkDriver'
-import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg'
 import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
 import getTeamInviteNotifications from 'server/safeQueries/getTeamInviteNotifications'
 import {getUserId} from 'server/utils/authorization'
 import {ADD_USER} from 'server/utils/serverConstants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import addTeamMemberToNewMeeting from 'server/graphql/mutations/helpers/addTeamMemberToNewMeeting'
+import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
 
 const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
   const r = getRethink()
@@ -17,13 +17,22 @@ const acceptTeamInvite = async (teamId, authToken, email, dataLoader) => {
     user
   } = await r({
     team: r.table('Team').get(teamId),
-    user: r.table('User').get(userId)
+    user: r
+      .table('User')
+      .get(userId)
+      .merge({
+        organizationUsers: r
+          .table('OrganizationUser')
+          .getAll(userId, {index: 'userId'})
+          .filter({removedAt: null})
+      })
   })
-  const userOrgs = user.userOrgs || []
-  const userInOrg = Boolean(userOrgs.find((org) => org.id === orgId))
+  const userInOrg = Boolean(
+    user.organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
+  )
   const {removedInvitationId, removedNotification, removedSoftTeamMember, teamMember} = await r({
     // add the team to the user doc
-    userUpdate: addUserToTMSUserOrg(userId, teamId, orgId),
+    userUpdate: addTeamIdToTMS(userId, teamId),
     teamMember: insertNewTeamMember(userId, teamId),
     // find all possible emails linked to this person and mark them as accepted
     removedInvitationId: r

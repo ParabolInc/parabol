@@ -33,12 +33,17 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
     users: r
       .table('User')
       .getAll(r.args(emailArr), {index: 'email'})
+      .merge((user) => ({
+        organizationUsers: r
+          .table('OrganizationUser')
+          .getAll(user('id'), {index: 'userId'})
+          .filter({removedAt: null})
+      }))
       .coerceTo('array'),
     inviterDoc: r.table('User').get(userId)
   })
   const isBillingLeader = await isUserBillingLeader(userId, orgId)
   const inviter = {
-    userOrgs: inviterDoc.userOrgs,
     inviterUserId: inviterDoc.id,
     inviterEmail: inviterDoc.email,
     inviterName: inviterDoc.preferredName,
