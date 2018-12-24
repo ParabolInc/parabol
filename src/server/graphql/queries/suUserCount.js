@@ -32,36 +32,21 @@ export default {
     // RESOLUTION
     return r
       .table('Organization')
-      .getAll(tier, {index: 'tier'})
-      .map((org) =>
-        org.merge({
-          orgUsers: org('orgUsers')
-            .eqJoin((ou) => ou('id'), r.table('User'))
-            .zip()
-            .pluck('email', 'inactive')
-        })
-      )
-      .coerceTo('array')
-      .do((orgs) =>
-        r.branch(
-          r.eq(ignoreEmailRegex, ''),
-          orgs,
-          orgs.map((org) =>
-            org.merge({
-              orgUsers: org('orgUsers').filter((ou) =>
-                r.eq(ou('email').match(ignoreEmailRegex), null)
-              )
-            })
+      .getAll(tier, {index: 'tier'})('id')
+      .do((orgIds) => {
+        return r
+          .table('OrganizationUser')
+          .getAll(r.args(orgIds), {index: 'orgId'})
+          .filter({removedAt: null})
+          .eqJoin('userId', r.table('User'))
+          .zip()
+          .filter((user) =>
+            user('email')
+              .match(ignoreEmailRegex)
+              .not()
           )
-        )
-      )
-      .concatMap((org) => org('orgUsers')('inactive'))
-      .count((inactive) =>
-        r.branch(
-          includeInactive,
-          true, // count everybody
-          r.not(inactive)
-        )
-      )
+          .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
+          .count()
+      })
   }
 }

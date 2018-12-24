@@ -1,61 +1,27 @@
 import getRethink from 'server/database/rethinkDriver'
-import {PERSONAL, PRO} from 'universal/utils/constants'
+import {BILLING_LEADER, PERSONAL, PRO} from 'universal/utils/constants'
 
 // breaking this out into its own helper so it can be used directly to
 // populate segment traits
 
-const countTiersForUserId = (userId) => {
+const countTiersForUserId = async (userId) => {
   const r = getRethink()
-
-  return r
-    .table('Organization')
-    .getAll(userId, {index: 'orgUsers'})
-    .fold(
-      {
-        tierPersonalCount: 0,
-        tierProCount: 0,
-        tierProBillingLeaderCount: 0
-      },
-      (acc, org) => ({
-        tierPersonalCount: r.add(
-          acc('tierPersonalCount'),
-          r.branch(
-            org('tier')
-              .default(PERSONAL)
-              .eq(PERSONAL),
-            org('orgUsers').count((ou) => ou('inactive').not()),
-            0
-          )
-        ),
-        tierProCount: r.add(
-          acc('tierProCount'),
-          r.branch(
-            org('tier')
-              .default(PERSONAL)
-              .eq(PRO),
-            org('orgUsers').count((ou) => ou('inactive').not()),
-            0
-          )
-        ),
-        tierProBillingLeaderCount: r.add(
-          acc('tierProBillingLeaderCount'),
-          r.branch(
-            org('tier')
-              .default(PERSONAL)
-              .eq(PRO),
-            org('orgUsers').count((ou) =>
-              r.and(
-                ou('id').eq(userId),
-                ou('role')
-                  .default('')
-                  .eq('billingLeader')
-              )
-            ),
-            0
-          )
-        )
-      })
-    )
+  const organizationUsers = await r
+    .table('OrganizationUser')
+    .getAll(userId, {index: 'userId'})
+    .filter({inactive: false, removedAt: null})
+    .merge((organizationUser) => ({
+      tier: r.table('Organization').get(organizationUser('orgId')('tier').default(PERSONAL))
+    }))
+  const tierPersonalCount = organizationUsers.filter(
+    (organizationUser) => organizationUser.tier === PERSONAL
+  ).length
+  const tierProCount = organizationUsers.filter((organizationUser) => organizationUser.tier === PRO)
+    .length
+  const tierProBillingLeaderCount = organizationUsers.filter(
+    (organizationUser) => organizationUser.tier === PRO && organizationUser.role === BILLING_LEADER
+  ).length
+  return {tierPersonalCount, tierProCount, tierProBillingLeaderCount}
 }
 
 export default countTiersForUserId

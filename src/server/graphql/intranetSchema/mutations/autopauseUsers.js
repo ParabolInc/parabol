@@ -16,17 +16,23 @@ const autopauseUsers = {
 
     // RESOLUTION
     const activeThresh = new Date(Date.now() - AUTO_PAUSE_THRESH)
-    const userIdsToPause = await r
+    const usersToPause = await r
       .table('User')
       .filter((user) => user('lastSeenAt').le(activeThresh))
       .filter({
         inactive: false
-      })('id')
+      })
+      .merge((user) => ({
+        orgIds: r
+          .table('OrganizationUser')
+          .getAll(user('id'), {index: 'userId'})
+          .filter({removedAt: null})('orgId')
+      }))
 
     await Promise.all(
-      userIdsToPause.map((userId) => {
+      usersToPause.map((user) => {
         try {
-          return adjustUserCount(userId, [], AUTO_PAUSE_USER)
+          return adjustUserCount(user.id, user.orgIds, AUTO_PAUSE_USER)
         } catch (e) {
           console.warn(`Error adjusting user count: ${e}`)
         }
@@ -34,7 +40,7 @@ const autopauseUsers = {
       })
     )
 
-    return userIdsToPause.length
+    return usersToPause.length
   }
 }
 

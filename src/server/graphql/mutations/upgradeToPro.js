@@ -38,10 +38,16 @@ export default {
     }
 
     // VALIDATION
-    const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r
+    const {quantity, stripeSubscriptionId: startingSubId, stripeId} = await r
       .table('Organization')
       .get(orgId)
-      .pluck('orgUsers', 'stripeId', 'stripeSubscriptionId')
+      .merge((org) => ({
+        quantity: r
+          .table('OrganizationUser')
+          .getAll(org('id'), {index: 'orgId'})
+          .filter({removedAt: null})
+          .count()
+      }))
 
     if (startingSubId) return sendAlreadyProTierError(authToken, orgId)
 
@@ -64,7 +70,7 @@ export default {
       items: [
         {
           plan: PARABOL_PRO_MONTHLY,
-          quantity: orgUsers.length
+          quantity
         }
       ],
       trial_period_days: 0

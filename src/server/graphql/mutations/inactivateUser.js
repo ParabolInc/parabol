@@ -74,7 +74,8 @@ export default {
     // TODO ping the user to see if they're currently online
 
     // RESOLUTION
-    await adjustUserCount(userId, [], PAUSE_USER)
+    const orgIds = orgs.map((org) => org.id)
+    await adjustUserCount(userId, orgIds, PAUSE_USER)
 
     // TODO wire up subscription
     return {userId}

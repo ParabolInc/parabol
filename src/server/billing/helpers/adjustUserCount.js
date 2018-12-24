@@ -75,11 +75,6 @@ export default async function adjustUserCount (userId, orgInput, type) {
       quantity: r
         .table('OrganizationUser')
         .getAll(organization('id'), {index: 'orgId'})
-        .filter((row) =>
-          row('removedAt')
-            .default(null)
-            .ne(null)
-        )
         .filter({
           inactive: false,
           removedAt: null

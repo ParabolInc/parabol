@@ -213,11 +213,17 @@ export const resolveArchivedSoftTasks = async (
   return softTasks.filter(({teamId}) => tms.includes(teamId))
 }
 
-export const resolveForBillingLeaders = (fieldName) => async (source, args, {authToken}) => {
+export const resolveForBillingLeaders = (fieldName) => async (
+  source,
+  args,
+  {authToken, dataLoader}
+) => {
+  const {id: orgId} = source
   const viewerId = getUserId(authToken)
-  const {orgUsers} = source
-  const isBillingLeader = Boolean(
-    orgUsers.find((user) => user.id === viewerId && user.role === BILLING_LEADER)
+  const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+  const organizationUser = organizationUsers.find(
+    (organizationUser) => organizationUser.userId === viewerId
   )
+  const isBillingLeader = organizationUser && organizationUser.role === BILLING_LEADER
   return isBillingLeader ? source[fieldName] : undefined
 }

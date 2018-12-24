@@ -1,11 +1,11 @@
-import {GraphQLBoolean, GraphQLList} from 'graphql'
-import SuProOrgInfo from 'server/graphql/types/SuProOrgInfo'
+import {GraphQLBoolean, GraphQLList, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {requireSU} from 'server/utils/authorization'
 import {PRO} from 'universal/utils/constants'
+import Organization from 'server/graphql/types/Organization'
 
 export default {
-  type: new GraphQLList(SuProOrgInfo),
+  type: new GraphQLList(new GraphQLNonNull(Organization)),
   args: {
     includeInactive: {
       type: GraphQLBoolean,
@@ -23,17 +23,14 @@ export default {
     return r
       .table('Organization')
       .getAll(PRO, {index: 'tier'})
-      .pluck('id', 'orgUsers')
-      .map((org) => ({
-        activeCount: org('orgUsers')
-          .filter((ou) =>
-            ou('inactive')
-              .default('true')
-              .not()
-          )
-          .count(),
-        organizationId: org('id')
+      .merge((organization) => ({
+        users: r
+          .table('OrganizationUser')
+          .getAll(organization('id'), {index: 'orgId'})
+          .filter({removedAt: null})
+          .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
+          .count()
       }))
-      .filter((proOrgInfo) => r.branch(includeInactive, true, r.gt(proOrgInfo('activeCount'), 0)))
+      .filter((org) => r.branch(includeInactive, true, org('users').ge(1)))
   }
 }
