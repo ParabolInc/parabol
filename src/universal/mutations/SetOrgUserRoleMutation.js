@@ -19,7 +19,7 @@ graphql`
       user {
         id
       }
-      isBillingLeader
+      role
     }
   }
 `
@@ -37,7 +37,7 @@ graphql`
       user {
         id
       }
-      isBillingLeader
+      role
     }
   }
 `

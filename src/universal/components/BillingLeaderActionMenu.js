@@ -35,7 +35,8 @@ const BillingLeaderActionMenu = (props: Props) => {
   } = props
   const {orgId} = organization
   const {viewerId} = atmosphere
-  const {isBillingLeader, user} = orgMember
+  const {role, user} = orgMember
+  const isBillingLeader = role === BILLING_LEADER
   const {userId, preferredName} = user
 
   const setRole = (role = null) => () => {
@@ -84,8 +85,8 @@ export default createFragmentContainer(
       orgId: id
     }
 
-    fragment BillingLeaderActionMenu_orgMember on OrganizationMember {
-      isBillingLeader
+    fragment BillingLeaderActionMenu_orgMember on OrganizationUser {
+      role
       user {
         userId: id
         preferredName

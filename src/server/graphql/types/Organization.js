@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLID,
   GraphQLInt,
   GraphQLList,
@@ -17,6 +18,7 @@ import {BILLING_LEADER} from 'universal/utils/constants'
 import {resolveForBillingLeaders} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
 import {OrganizationUserConnection} from 'server/graphql/types/OrganizationUser'
+import {getUserId} from 'server/utils/authorization'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -32,16 +34,17 @@ const Organization = new GraphQLObjectType({
       description: 'The safe credit card details',
       resolve: resolveForBillingLeaders('creditCard')
     },
-    // isBillingLeader: {
-    //   type: GraphQLBoolean,
-    //   description: 'true if the viewer is the billing leader for the org',
-    //   resolve ({orgUsers}, args, {authToken}) {
-    //     const viewerId = getUserId(authToken)
-    //     return Boolean(
-    //       orgUsers.find((user) => user.id === viewerId && user.role === BILLING_LEADER)
-    //     )
-    //   }
-    // },
+    isBillingLeader: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: 'true if the viewer is the billing leader for the org',
+      resolve: async ({orgUsers}, args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
+        return !!organizationUsers.find(
+          (organizationUser) => organizationUser.role === BILLING_LEADER
+        )
+      }
+    },
     // mainBillingLeader: {
     //   type: new GraphQLNonNull(User),
     //   description: 'The billing leader of the organization (or the first, if more than 1)',

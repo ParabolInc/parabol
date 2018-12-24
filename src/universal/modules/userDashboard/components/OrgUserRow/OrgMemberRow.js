@@ -3,7 +3,7 @@ import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
-import {PERSONAL} from 'universal/utils/constants'
+import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import Toggle from 'universal/components/Toggle/Toggle'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import FlatButton from 'universal/components/FlatButton'
@@ -84,7 +84,8 @@ const OrgMemberRow = (props: Props) => {
     organization
   } = props
   const {orgId, isViewerBillingLeader, tier} = organization
-  const {user, isBillingLeader} = orgMember
+  const {user, role} = orgMember
+  const isBillingLeader = role === BILLING_LEADER
   const {email, inactive, picture, preferredName, userId} = user
   const isPersonalTier = tier === PERSONAL
   const isViewerLastBillingLeader =
@@ -208,7 +209,7 @@ export default createFragmentContainer(
       ...BillingLeaderActionMenu_organization
     }
 
-    fragment OrgMemberRow_orgMember on OrganizationMember {
+    fragment OrgMemberRow_orgMember on OrganizationUser {
       user {
         userId: id
         email
@@ -216,7 +217,7 @@ export default createFragmentContainer(
         picture
         preferredName
       }
-      isBillingLeader
+      role
       ...BillingLeaderActionMenu_orgMember
     }
   `
