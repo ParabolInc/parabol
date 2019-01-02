@@ -92,6 +92,7 @@ const subscription = graphql`
       ...StartMeetingMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
+      ...UpdateNewCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
@@ -237,6 +238,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'UpdateDragLocationPayload':
           updateDragLocationTeamUpdater(payload, {atmosphere: environment, store})
+          break
+        case 'UpdateNewCheckInQuestionPayload':
           break
         case 'UpdateReflectionContentPayload':
           break

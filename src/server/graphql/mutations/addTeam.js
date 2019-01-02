@@ -16,6 +16,7 @@ import {sendMaxFreeTeamsError, sendOrgAccessError} from 'server/utils/authorizat
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import rateLimit from 'server/graphql/rateLimit'
 import {MAX_FREE_TEAMS} from 'server/utils/serverConstants'
+import getRethink from 'server/database/rethinkDriver'
 
 export default {
   type: AddTeamPayload,
@@ -33,6 +34,7 @@ export default {
     async (source, args, {authToken, dataLoader, socketId: mutatorId}) => {
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
+      const r = getRethink()
 
       // AUTH
       const {orgId} = args.newTeam
@@ -42,13 +44,28 @@ export default {
       }
 
       // VALIDATION
-      const orgTeams = await dataLoader.get('teamsByOrgId').load(orgId)
+      const orgTeams = await r
+        .table('Team')
+        .getAll(orgId, {index: 'orgId'})
+        .filter((team) =>
+          team('isArchived')
+            .default(false)
+            .ne(true)
+        )
+
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
         data: {invitees, newTeam},
         errors
       } = addTeamValidation(orgTeamNames)(args)
       if (Object.keys(errors).length) {
+        if (errors.newTeam && errors.newTeam.name) {
+          return {
+            error: {
+              message: errors.newTeam.name
+            }
+          }
+        }
         return sendFailedInputValidation(authToken, errors)
       }
       if (orgTeams.length >= MAX_FREE_TEAMS) {

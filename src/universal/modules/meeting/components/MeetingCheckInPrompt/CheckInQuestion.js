@@ -122,18 +122,18 @@ class CheckInQuestion extends Component {
   }
 
   render () {
-    const {isFacilitating} = this.props
     const {editorState} = this.state
     const isEditing = editorState.getSelection().getHasFocus()
     const tip = 'Tap to customize the Social Check-in question.'
     return (
       <Tooltip
+        delay={300}
         tip={<div>{tip}</div>}
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
         maxHeight={40}
-        isOpen={isFacilitating && !isEditing ? undefined : false}
+        isOpen={isEditing ? false : undefined}
       >
         <QuestionBlock>
           <EditorBlock>
@@ -146,11 +146,9 @@ class CheckInQuestion extends Component {
               }}
             />
           </EditorBlock>
-          {isFacilitating && (
-            <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
-              <StyledButtonIcon isEditing={isEditing}>settings</StyledButtonIcon>
-            </PlainButton>
-          )}
+          <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
+            <StyledButtonIcon isEditing={isEditing}>settings</StyledButtonIcon>
+          </PlainButton>
         </QuestionBlock>
       </Tooltip>
     )
