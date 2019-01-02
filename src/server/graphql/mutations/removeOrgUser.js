@@ -73,12 +73,13 @@ const removeOrgUser = {
       return arr
     }, [])
 
-    const {allRemovedOrgNotifications, user, orgUserId} = await r({
-      orgUserId: r
+    const {allRemovedOrgNotifications, user, organizationUserId} = await r({
+      organizationUserId: r
         .table('OrganizationUser')
         .get(userId, {index: 'userId'})
         .filter({orgId, removedAt: null})
-        .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('userId')
+        .nth(0)
+        .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('id')
         .default(null),
       user: r.table('User').get(userId),
       // remove stale notifications
@@ -139,7 +140,7 @@ const removeOrgUser = {
       removedTeamNotifications,
       removedOrgNotifications: allRemovedOrgNotifications.notifications,
       userId,
-      orgUserId
+      organizationUserId
     }
 
     publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions)

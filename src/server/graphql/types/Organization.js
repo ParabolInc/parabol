@@ -45,16 +45,6 @@ const Organization = new GraphQLObjectType({
         )
       }
     },
-    // mainBillingLeader: {
-    //   type: new GraphQLNonNull(User),
-    //   description: 'The billing leader of the organization (or the first, if more than 1)',
-    //   resolve: ({id: orgId}, args, {dataLoader}) => {
-    //     const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-    //
-    //     const firstBillingLeader = orgUsers.find((user) => user.role === BILLING_LEADER)
-    //     return firstBillingLeader ? dataLoader.get('users').load(firstBillingLeader.id) : undefined
-    //   }
-    // },
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The name of the organization'
@@ -108,40 +98,6 @@ const Organization = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The datetime the organization was last updated'
     },
-    // orgMembers: {
-    //   args: {
-    //     ...forwardConnectionArgs
-    //   },
-    //   type: OrganizationMemberConnection,
-    //   async resolve ({id: orgId, orgUsers}, {first}, {dataLoader}) {
-    //     if (!Array.isArray(orgUsers)) return null
-    //
-    //     // RESOLUTION
-    //     const limitedOrgUsers = orgUsers.slice(0, first)
-    //
-    //     const userIds = limitedOrgUsers.map(({id}) => id)
-    //     const users = await dataLoader.get('users').loadMany(userIds)
-    //     users.sort(
-    //       (a, b) => (a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1)
-    //     )
-    //     const edges = users.map((user) => ({
-    //       cursor: user.preferredName.toLowerCase(),
-    //       node: {
-    //         userId: user.id,
-    //         orgId
-    //       }
-    //     }))
-    //
-    //     const firstEdge = edges[0]
-    //     return {
-    //       edges,
-    //       pageInfo: {
-    //         endCursor: firstEdge && edges[edges.length - 1].cursor,
-    //         hasNextPage: false
-    //       }
-    //     }
-    //   }
-    // },
     organizationUsers: {
       args: {
         ...forwardConnectionArgs
@@ -149,15 +105,12 @@ const Organization = new GraphQLObjectType({
       type: new GraphQLNonNull(OrganizationUserConnection),
       resolve: async ({id: orgId}, {first}, {dataLoader}) => {
         const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-        const userIds = organizationUsers.map(({userId}) => userId)
-        const users = await dataLoader.get('users').loadMany(userIds)
-        users.sort(
-          (a, b) => (a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1)
-        )
-        const edges = users.map((user) => ({
-          cursor: user.id,
-          node: user
+        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
+        const edges = organizationUsers.map((node) => ({
+          cursor: node.id,
+          node
         }))
+        // TODO implement pagination
         const firstEdge = edges[0]
         return {
           edges,

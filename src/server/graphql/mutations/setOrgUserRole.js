@@ -102,11 +102,11 @@ export default {
       .filter({orgId, removedAt: null})
       .nth(0)
     if (organizationUser.role === role) return null
-
+    const {id: organizationUserId} = organizationUser
     // RESOLUTION
     await r
       .table('OrganizationUser')
-      .get(organizationUser.id)
+      .get(organizationUserId)
       .update({role})
 
     if (role === BILLING_LEADER) {
@@ -135,7 +135,7 @@ export default {
       })
       const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId)
       // add the org to the list of owned orgs
-      const data = {orgId, userId, notificationIdsAdded}
+      const data = {orgId, userId, organizationUserId, notificationIdsAdded}
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
       await sendSegmentIdentify(userId)
@@ -165,7 +165,7 @@ export default {
           .default([])
       })
       const notificationsRemoved = removedNotifications.concat(oldPromotion)
-      const data = {orgId, userId, notificationsRemoved}
+      const data = {orgId, userId, organizationUserId, notificationsRemoved}
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
       await sendSegmentIdentify(userId)

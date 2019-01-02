@@ -16,8 +16,9 @@ export const setOrgUserRoleFields = {
   },
   updatedOrgMember: {
     type: OrganizationUser,
-    // This feels weird, but it's the DRYest way
-    resolve: (source) => source
+    resolve: async ({organizationUserId}, _args, {dataLoader}) => {
+      return dataLoader.get('organizationUsers').load(organizationUserId)
+    }
   }
 }
 

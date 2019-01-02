@@ -1655,7 +1655,7 @@ export interface IOrganizationUserEdge {
   /**
    * The item at the end of the edge
    */
-  node: IOrganizationUser | null
+  node: IOrganizationUser
 
   /**
    * A cursor for use in pagination
@@ -2123,7 +2123,7 @@ export interface IInvoiceEdge {
   /**
    * The item at the end of the edge
    */
-  node: IInvoice | null
+  node: IInvoice
   cursor: any | null
 }
 
@@ -2513,7 +2513,7 @@ export interface INotificationEdge {
   /**
    * The item at the end of the edge
    */
-  node: Notification | null
+  node: Notification
   cursor: any | null
 }
 
@@ -5904,7 +5904,7 @@ export interface IRemoveOrgUserPayload {
    * The organization member that got removed
    */
   removedOrgMember: IOrganizationUser | null
-  orgUserId: string | null
+  organizationUserId: string | null
 }
 
 /**

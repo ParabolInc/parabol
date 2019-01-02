@@ -13,21 +13,24 @@ exports.up = async (r) => {
     })
   } catch (e) {}
   try {
-    await r.table('Organization').forEach((organization) => {
-      return organization('orgUsers').forEach((orgUser) => {
-        return r.table('OrganizationUser').insert({
+    const orgs = await r.table('Organization').pluck('id', 'createdAt', 'orgUsers')
+    const organizationUsers = []
+    orgs.forEach((org) => {
+      org.orgUsers.forEach((orgUser) => {
+        organizationUsers.push({
           id: shortid.generate(),
-          inactive: orgUser('inactive').default(false),
-          joinedAt: organization('createdAt'),
-          newUserUntil: organization('createdAt'),
-          orgId: organization('id'),
+          inactive: orgUser.inactive || false,
+          joinedAt: org.createdAt,
+          newUserUntil: org.createdAt,
+          orgId: org.id,
           removedAt: null,
-          role: orgUser('role').default(null),
-          userId: orgUser('id')
+          role: orgUser.role || null,
+          userId: orgUser.id
         })
       })
     })
     await r({
+      organizationUsers: r.table('OrganizationUser').insert(organizationUsers),
       users: r.table('User').replace(r.row.without('userOrgs')),
       orgs: r.table('Organization').replace(r.row.without('orgUsers')),
       userIdx: r.table('User').indexDrop('userOrgs'),

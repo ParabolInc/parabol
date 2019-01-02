@@ -21,7 +21,7 @@ graphql`
     user {
       id
     }
-    orgUserId
+    organizationUserId
   }
 `
 
@@ -120,7 +120,7 @@ const popKickedOutToast = (payload, {atmosphere, history}) => {
 
 export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'user', 'id')
-  const removedOrgUserId = getInProxy(payload, 'orgUserId')
+  const removedOrgUserId = getInProxy(payload, 'organizationUserId')
   const orgId = getInProxy(payload, 'organization', 'id')
   if (removedUserId === viewerId) {
     handleRemoveOrganization(orgId, store, viewerId)

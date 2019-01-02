@@ -70,9 +70,11 @@ const RemoveOrgUserPayload = new GraphQLObjectType({
     removedOrgMember: {
       type: OrganizationUser,
       description: 'The organization member that got removed',
-      resolve: (source) => source
+      resolve: async ({organizationUserId}, _args, {dataLoader}) => {
+        return dataLoader.get('organizationUsers').load(organizationUserId)
+      }
     },
-    orgUserId: {
+    organizationUserId: {
       type: GraphQLString
     }
   })
