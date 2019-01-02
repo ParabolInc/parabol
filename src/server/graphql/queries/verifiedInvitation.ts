@@ -5,13 +5,16 @@ import VerifiedInvitationPayload from 'server/graphql/types/VerifiedInvitationPa
 // import {IUser} from 'universal/types/graphql'
 import {TEAM_INVITATION_LIFESPAN} from 'server/utils/serverConstants'
 import getRethink from 'server/database/rethinkDriver'
+import promisify from 'es6-promisify'
 
-const getIsGoogleProvider = (user: any, email: string) => {
+const resolveMx = promisify(dns.resolveMx, dns)
+
+const getIsGoogleProvider = async (user: any, email: string) => {
   if (user && user.identities) {
     return !!user.identities.find((identity) => identity.provider === 'google-oauth2')
   }
   const [, domain] = email.split('@')
-  const [mxRecord] = (dns as any).promises.resolveMx(domain)
+  const [mxRecord] = await resolveMx(domain)
   const {exchange} = mxRecord
   return exchange.toLowerCase().endsWith('google.com')
 }
@@ -63,7 +66,7 @@ export default {
       .nth(0)
       .default(null)
     const userId = viewer ? viewer.id : null
-    const isGoogle = getIsGoogleProvider(viewer, email)
+    const isGoogle = await getIsGoogleProvider(viewer, email)
     return {
       teamName: team.name,
       inviterName: inviter.preferredName,
