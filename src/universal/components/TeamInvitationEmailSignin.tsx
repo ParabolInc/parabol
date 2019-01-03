@@ -39,7 +39,7 @@ const TeamInvitationEmailSignin = (props: Props) => {
           Enter your password for immediate access to your team: <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
-          <EmailPasswordAuthForm email={email} label='Sign In' />
+          <EmailPasswordAuthForm email={email} isSignin />
           <ForgotPasswordOneClick email={email} />
         </InvitationCenteredCopy>
       </InvitationDialogContent>

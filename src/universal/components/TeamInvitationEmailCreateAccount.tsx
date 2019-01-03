@@ -32,7 +32,7 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
           Choose a password for immediate access to your team: <b>{teamName}</b>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
-          <EmailPasswordAuthForm email={email} label='Create Account' />
+          <EmailPasswordAuthForm email={email} />
         </InvitationCenteredCopy>
       </InvitationDialogContent>
     </StyledDialog>

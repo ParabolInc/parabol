@@ -8,10 +8,12 @@ import Legitity from '../validation/Legitity'
 import EmailInputField from './EmailInputField'
 import PasswordInputField from './PasswordInputField'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
+import auth0CreateAccountWithEmail from 'universal/utils/auth0CreateAccountWithEmail'
+import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from 'universal/utils/constants'
 
 interface Props {
   email: string
-  label: string
+  isSignin?: boolean
 }
 
 type FieldName = 'email' | 'password'
@@ -123,7 +125,7 @@ class EmailPasswordAuthForm extends Component<Props> {
   }
 
   onSubmit = async (e: React.FormEvent) => {
-    const {onError, onCompleted, submitMutation, submitting} = this.props
+    const {isSignin, onError, onCompleted, submitMutation, submitting} = this.props
     e.preventDefault()
     if (submitting) return
     const fieldNames: Array<FieldName> = ['email', 'password']
@@ -132,9 +134,12 @@ class EmailPasswordAuthForm extends Component<Props> {
     const hasError = fieldRes.reduce((err: boolean, val) => err || !!val.error, false)
     if (hasError) return
     const [emailRes, passwordRes] = fieldRes
+    const {value: email} = emailRes
+    const {value: password} = passwordRes
     submitMutation()
+    const auth0Request = isSignin ? auth0LoginWithEmail : auth0CreateAccountWithEmail
     try {
-      await auth0LoginWithEmail(emailRes.value, passwordRes.value)
+      await auth0Request(email, password)
     } catch (e) {
       onError(e.error_description)
       return
@@ -144,7 +149,7 @@ class EmailPasswordAuthForm extends Component<Props> {
 
   render () {
     const {fields} = this.state
-    const {error, label, submitting} = this.props
+    const {error, isSignin, submitting} = this.props
     return (
       <Form className='create-account-form' onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
@@ -166,7 +171,7 @@ class EmailPasswordAuthForm extends Component<Props> {
           </FieldBlock>
         </FieldGroup>
         <PrimaryButton size='large' disabled={false} waiting={submitting}>
-          {label}
+          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
         </PrimaryButton>
       </Form>
     )
