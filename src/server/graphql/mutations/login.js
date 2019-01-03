@@ -19,6 +19,22 @@ import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
 import ensureDate from 'universal/utils/ensureDate'
 import acceptTeamInvitation from 'server/safeMutations/acceptTeamInvitation'
 
+const handleInvitationToken = async (invitationToken, viewerId, dataLoader) => {
+  // invalidate the invtationToken
+  if (invitationToken) {
+    const r = getRethink()
+    const invitation = await r
+      .table('TeamInvitation')
+      .getAll(invitationToken, {index: 'token'})
+      .nth(0)
+      .default(null)
+    if (invitation && !invitation.acceptedAt) {
+      const {id: invitationId, teamId} = invitation
+      await acceptTeamInvitation(teamId, viewerId, invitationId, dataLoader)
+    }
+  }
+}
+
 const login = {
   type: new GraphQLNonNull(LoginPayload),
   description: 'Log in, or sign up if it is a new user',
@@ -50,19 +66,6 @@ const login = {
     const viewerId = getUserId(authToken)
 
     // RESOLUTION
-    // invalidate the invtationToken
-    if (invitationToken) {
-      const invitation = await r
-        .table('TeamInvitation')
-        .getAll(invitationToken, {index: 'token'})
-        .nth(0)
-        .default(null)
-      if (invitation && !invitation.acceptedAt) {
-        const {id: invitationId, teamId} = invitation
-        await acceptTeamInvitation(teamId, viewerId, invitationId, dataLoader)
-      }
-    }
-
     if (authToken.tms) {
       const user = await dataLoader.get('users').load(viewerId)
       // LOGIN
@@ -77,6 +80,7 @@ const login = {
          *
          * See also: https://community.segment.com/t/631m9s/identify-per-signup-or-signin
          */
+        await handleInvitationToken(invitationToken, viewerId, dataLoader)
         await sendSegmentIdentify(user.id)
         return {
           userId: viewerId,
@@ -111,10 +115,10 @@ const login = {
       name: userInfo.name,
       preferredName,
       identities: userInfo.identities || [],
-      createdAt: ensureDate(userInfo.created_at),
-      userOrgs: []
+      createdAt: ensureDate(userInfo.created_at)
     }
     await r.table('User').insert(newUser)
+    await handleInvitationToken(invitationToken, viewerId, dataLoader)
 
     try {
       await sendSegmentIdentify(newUser.id)
