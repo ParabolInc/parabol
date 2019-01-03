@@ -4,9 +4,9 @@ import TEXT = PALETTE.TEXT
 
 const InvitationDialogContent = styled('div')({
   color: TEXT.MAIN,
-  fontSize: '1rem',
-  lineHeight: '1.5rem',
-  padding: '1rem'
+  fontSize: '.875rem',
+  lineHeight: 1.5,
+  padding: '1rem 2rem 2rem'
 })
 
 export default InvitationDialogContent

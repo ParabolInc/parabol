@@ -4,10 +4,11 @@ import TEXT = PALETTE.TEXT
 
 const InvitationDialogTitle = styled('h2')({
   color: TEXT.MAIN,
-  fontSize: '1.5rem',
+  fontSize: '1.25rem',
   fontWeight: 600,
-  lineHeight: '1.25',
-  padding: '0rem 1rem 0 1rem'
+  lineHeight: 1.5,
+  margin: 0,
+  padding: '1.5rem 2rem 0'
 })
 
 export default InvitationDialogTitle

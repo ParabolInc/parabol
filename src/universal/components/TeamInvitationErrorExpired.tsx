@@ -1,5 +1,8 @@
 import {TeamInvitationErrorExpired_verifiedInvitation} from '__generated__/TeamInvitationErrorExpired_verifiedInvitation.graphql'
 import React from 'react'
+import styled from 'react-emotion'
+import {PALETTE} from '../styles/paletteV2'
+import LINK = PALETTE.LINK
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import InvitationDialog from './InvitationDialog'
@@ -11,6 +14,10 @@ interface Props {
   verifiedInvitation: TeamInvitationErrorExpired_verifiedInvitation
 }
 
+const StyledEmailLink = styled('a')({
+  color: LINK.BLUE
+})
+
 const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
@@ -19,9 +26,12 @@ const TeamInvitationErrorExpired = (props: Props) => {
       <Helmet title={`Token Expired | Team Invitation`} />
       <InvitationDialogTitle>Invitation Expired</InvitationDialogTitle>
       <InvitationDialogContent>
-        <InvitationDialogCopy>The invitation to {teamName} has expired</InvitationDialogCopy>
+        <InvitationDialogCopy>The invitation to {teamName} has expired.</InvitationDialogCopy>
         <InvitationDialogCopy>
-          Reach out to {inviterName} at {inviterEmail}
+          Reach out to {inviterName} at{' '}
+          <StyledEmailLink href={`mailto:${inviterEmail}`} title={`Email ${inviterEmail}`}>
+            {inviterEmail}
+          </StyledEmailLink>
         </InvitationDialogCopy>
         <InvitationDialogCopy>to request a new one</InvitationDialogCopy>
       </InvitationDialogContent>

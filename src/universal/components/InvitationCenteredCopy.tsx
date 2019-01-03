@@ -5,7 +5,7 @@ const InvitationCenteredCopy = styled(InvitationDialogCopy)({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  paddingTop: '1rem',
+  padding: '1.5rem 0 .5rem',
   justifyContent: 'center'
 })
 
