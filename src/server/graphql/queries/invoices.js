@@ -22,12 +22,12 @@ export default {
       description: 'The id of the organization'
     }
   },
-  async resolve (source, {orgId, first, after}, {authToken}) {
+  async resolve (source, {orgId, first, after}, {authToken, dataLoader}) {
     const r = getRethink()
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isUserBillingLeader(viewerId, orgId))) {
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
       return sendOrgLeadAccessError(authToken, orgId, null)
     }
 

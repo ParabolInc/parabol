@@ -34,14 +34,14 @@ export const requireSU = (authToken) => {
   }
 }
 
-export const isUserBillingLeader = async (userId, orgId) => {
-  const r = getRethink()
-  const organizationUser = await r
-    .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
-    .filter({orgId})
-    .filter({removedAt: null})
-    .nth(0)
+export const isUserBillingLeader = async (userId, orgId, dataLoader, options) => {
+  const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+  const organizationUser = organizationUsers.find(
+    (organizationUser) => organizationUser.orgId === orgId
+  )
+  if (options && options.clearCache) {
+    dataLoader.get('organizationUsersByUserId').clear(userId)
+  }
   return organizationUser ? organizationUser.role === BILLING_LEADER : false
 }
 

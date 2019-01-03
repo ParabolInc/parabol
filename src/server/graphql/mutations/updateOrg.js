@@ -26,7 +26,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isUserBillingLeader(viewerId, updatedOrg.id))) {
+    if (!(await isUserBillingLeader(viewerId, updatedOrg.id, dataLoader))) {
       return sendOrgLeadAccessError(authToken, updatedOrg.id)
     }
 

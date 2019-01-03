@@ -50,7 +50,7 @@ export default {
       return sendNotificationAccessError(authToken, notificationId)
     }
     const {orgId, inviteeEmail} = rejectionNotification
-    if (!(await isUserBillingLeader(viewerId, orgId))) {
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
       return sendOrgLeadAccessError(authToken, orgId)
     }
 

@@ -23,10 +23,10 @@ const createOrgPicturePutUrl = {
       description: 'The organization id to update'
     }
   },
-  async resolve (source, {orgId, contentType, contentLength}, {authToken}) {
+  async resolve (source, {orgId, contentType, contentLength}, {authToken, dataLoader}) {
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!(await isUserBillingLeader(viewerId, orgId))) {
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
       return sendOrgLeadAccessError(authToken, orgId)
     }
 

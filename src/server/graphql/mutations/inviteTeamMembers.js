@@ -37,7 +37,7 @@ export default {
           .table('Team')
           .get(teamId)('orgId')
           .default('')
-        if (!(await isUserBillingLeader(viewerId, orgId))) {
+        if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
           return sendTeamAccessError(authToken, teamId)
         }
       }

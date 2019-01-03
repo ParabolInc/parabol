@@ -18,7 +18,7 @@ import {BILLING_LEADER} from 'universal/utils/constants'
 import {resolveForBillingLeaders} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
 import {OrganizationUserConnection} from 'server/graphql/types/OrganizationUser'
-import {getUserId} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -37,12 +37,9 @@ const Organization = new GraphQLObjectType({
     isBillingLeader: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the billing leader for the org',
-      resolve: async ({orgUsers}, args, {authToken, dataLoader}) => {
+      resolve: async ({id: orgId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-        return !!organizationUsers.find(
-          (organizationUser) => organizationUser.role === BILLING_LEADER
-        )
+        return isUserBillingLeader(viewerId, orgId, dataLoader)
       }
     },
     name: {

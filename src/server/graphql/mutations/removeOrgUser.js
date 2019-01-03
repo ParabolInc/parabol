@@ -40,7 +40,7 @@ const removeOrgUser = {
     // AUTH
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) {
-      if (!(await isUserBillingLeader(viewerId, orgId))) {
+      if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
         return sendOrgLeadAccessError(authToken, orgId)
       }
     }

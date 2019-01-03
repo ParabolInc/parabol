@@ -42,7 +42,7 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
       .coerceTo('array'),
     inviterDoc: r.table('User').get(userId)
   })
-  const isBillingLeader = await isUserBillingLeader(userId, orgId)
+  const isBillingLeader = await isUserBillingLeader(userId, orgId, dataLoader)
   const inviter = {
     inviterUserId: inviterDoc.id,
     inviterEmail: inviterDoc.email,

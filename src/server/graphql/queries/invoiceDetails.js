@@ -14,7 +14,7 @@ export default {
       description: 'The id of the invoice'
     }
   },
-  async resolve (source, {invoiceId}, {authToken}) {
+  async resolve (source, {invoiceId}, {authToken, dataLoader}) {
     const r = getRethink()
     const now = new Date()
 
@@ -27,7 +27,7 @@ export default {
       .get(invoiceId)
       .default(null)
     const orgId = (currentInvoice && currentInvoice.orgId) || maybeOrgId
-    if (!(await isUserBillingLeader(viewerId, orgId))) {
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
       return sendOrgLeadAccessError(authToken, orgId, null)
     }
 

@@ -1,8 +1,7 @@
-import {getUserId, isSuperUser} from 'server/utils/authorization'
+import {getUserId, isSuperUser, isUserBillingLeader} from 'server/utils/authorization'
 import nullIfEmpty from 'universal/utils/nullIfEmpty'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import findStageById from 'universal/utils/meetings/findStageById'
-import {BILLING_LEADER} from 'universal/utils/constants'
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
@@ -220,10 +219,6 @@ export const resolveForBillingLeaders = (fieldName) => async (
 ) => {
   const {id: orgId} = source
   const viewerId = getUserId(authToken)
-  const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
-  const organizationUser = organizationUsers.find(
-    (organizationUser) => organizationUser.userId === viewerId
-  )
-  const isBillingLeader = organizationUser && organizationUser.role === BILLING_LEADER
+  const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
   return isBillingLeader ? source[fieldName] : undefined
 }

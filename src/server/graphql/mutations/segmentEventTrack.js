@@ -16,7 +16,7 @@ export default {
       type: SegmentEventTrackOptions
     }
   },
-  resolve: async (source, {event, options = {}}, {authToken}) => {
+  resolve: async (source, {event, options = {}}, {authToken, dataLoader}) => {
     // AUTH
     const viewerId = getUserId(authToken)
     const {teamId, orgId} = options
@@ -27,7 +27,7 @@ export default {
       }
     }
     if (orgId) {
-      if (!(await isUserBillingLeader(viewerId, orgId))) {
+      if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
         return sendOrgLeadAccessError(authToken, orgId, true)
       }
     }
