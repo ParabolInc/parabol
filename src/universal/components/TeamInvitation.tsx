@@ -17,18 +17,17 @@ const PageContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   maxWidth: '100%',
-  minHeight: '100vh',
-  height: '100vh'
+  minHeight: '100vh'
 })
 
 const CenteredBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',
+  flex: 1,
   justifyContent: 'center',
   maxWidth: '100%',
-  padding: '0 1rem 2rem',
+  padding: '2rem 1rem',
   width: '100%'
 })
 

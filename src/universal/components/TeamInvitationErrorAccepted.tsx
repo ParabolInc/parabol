@@ -28,10 +28,12 @@ const TeamInvitationErrorAccepted = (props: Props) => {
       <InvitationDialogTitle>Invitation Already Accepted</InvitationDialogTitle>
       <InvitationDialogContent>
         <InvitationDialogCopy>
-          The invitation to {teamName} has already been redeemed
+          The invitation to {teamName} has already been redeemed.
         </InvitationDialogCopy>
-        <InlineCopy>Visit the</InlineCopy>
-        <StyledLink to={`/team/${teamId}`}> Team Dashboard</StyledLink>
+        <InlineCopy>Visit the</InlineCopy>{' '}
+        <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
+          Team Dashboard
+        </StyledLink>
       </InvitationDialogContent>
     </InvitationDialog>
   )

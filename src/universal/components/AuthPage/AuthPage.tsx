@@ -20,9 +20,10 @@ const PageContainer = styled('div')({
   color: appTheme.palette.dark,
   display: 'flex',
   flexDirection: 'column',
+  // TODO: need to double check this, not always desired effect (TA)
+  // height: '100vh'
   maxWidth: '100%',
-  minHeight: '100vh',
-  height: '100vh'
+  minHeight: '100vh'
 })
 
 const CenteredBlock = styled('div')({

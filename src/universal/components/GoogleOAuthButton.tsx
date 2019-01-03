@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from 'react-emotion'
-import RaisedButton from 'universal/components/RaisedButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {authButtonWidth} from 'universal/styles/auth'
 import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 
-const WideButton = styled(RaisedButton)({
+const WideButton = styled(PrimaryButton)({
   width: authButtonWidth
 })
 
