@@ -293,7 +293,8 @@ export default async function generateInvoice (invoice, stripeLineItems, orgId, 
           billingLeaderEmails: r
             .table('OrganizationUser')
             .getAll(orgId, {index: 'orgId'})
-            .filter({removedAt: null, role: BILLING_LEADER})('userId')
+            .filter({removedAt: null, role: BILLING_LEADER})
+            .coerceTo('array')('userId')
             .do((userIds) => {
               return r.table('User').getAll(userIds, {index: 'id'})('email')
             })
