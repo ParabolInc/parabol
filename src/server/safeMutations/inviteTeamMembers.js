@@ -38,6 +38,7 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
           .table('OrganizationUser')
           .getAll(user('id'), {index: 'userId'})
           .filter({removedAt: null})
+          .coerceTo('array')
       }))
       .coerceTo('array'),
     inviterDoc: r.table('User').get(userId)

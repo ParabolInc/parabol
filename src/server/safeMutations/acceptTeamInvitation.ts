@@ -28,6 +28,7 @@ const acceptTeamInvitation = async (
           .table('OrganizationUser')
           .getAll(userId, {index: 'userId'})
           .filter({removedAt: null})
+          .coerceTo('array')
       })
   })
   const userInOrg = Boolean(
