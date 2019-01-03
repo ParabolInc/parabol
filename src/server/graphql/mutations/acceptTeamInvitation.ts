@@ -9,7 +9,6 @@ import {
 } from 'server/utils/authorizationErrors'
 import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors'
 import publish from 'server/utils/publish'
-import {TEAM_INVITATION_LIFESPAN} from 'server/utils/serverConstants'
 import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
@@ -39,6 +38,7 @@ export default {
       {authToken, dataLoader, socketId: mutatorId}
     ) => {
       const r = getRethink()
+      const now = new Date()
       const operationId = dataLoader.share()
       const subOptions = {mutatorId, operationId}
 
@@ -55,9 +55,8 @@ export default {
       if (!invitation) {
         return sendInvitationNotFoundError(authToken, invitationToken)
       }
-      const {id: invitationId, acceptedAt, createdAt, teamId} = invitation
-      const expirationThresh = new Date(Date.now() - TEAM_INVITATION_LIFESPAN)
-      if (createdAt < expirationThresh) {
+      const {id: invitationId, acceptedAt, expiresAt, teamId} = invitation
+      if (expiresAt < now) {
         // using the notification has no expiry
         if (notificationId) {
           const notification = await r.table('Notification').get(notificationId)

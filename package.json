@@ -71,6 +71,7 @@
     "@storybook/addons": "4.0.0-alpha.16",
     "@storybook/cli": "4.0.0-alpha.16",
     "@storybook/react": "4.0.0-alpha.16",
+    "@types/auth0-js": "^8.11.8",
     "@types/draft-js": "^0.10.24",
     "@types/react": "^16.4.11",
     "@types/react-beautiful-dnd": "^7.1.2",

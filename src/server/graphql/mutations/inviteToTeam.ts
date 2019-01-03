@@ -12,6 +12,7 @@ import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {NOTIFICATION, TEAM_INVITATION} from 'universal/utils/constants'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
+import {TEAM_INVITATION_LIFESPAN} from 'server/utils/serverConstants'
 
 const randomBytes = promisify(crypto.randomBytes, crypto)
 
@@ -62,11 +63,13 @@ export default {
       const inviter = await dataLoader.get('users').load(viewerId)
       const bufferTokens = await Promise.all<Buffer>(newInvitees.map(() => randomBytes(48)))
       const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
+      const expiresAt = new Date(Date.now() + TEAM_INVITATION_LIFESPAN)
       // insert invitation records
       const teamInvitationsToInsert = newInvitees.map((email, idx) => ({
         id: shortid.generate(),
         acceptedAt: null,
         createdAt: now,
+        expiresAt,
         email,
         invitedBy: viewerId,
         teamId,
