@@ -21,7 +21,7 @@ const FieldLabelStyles = styled('label')(({customStyles, fieldSize, indent, inli
     lineHeight: ui.labelHeadingLineHeight,
     letterSpacing: ui.labelHeadingLetterSpacing,
     padding: 0,
-    textTransform: 'uppercase',
+    textTransform: 'none',
     // 1. Line up controls when inline
     ...useInlineStyles,
     // 2. Optionally line up left edge of text using indent bool

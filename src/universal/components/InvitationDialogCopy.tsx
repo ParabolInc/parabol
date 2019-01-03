@@ -1,7 +1,7 @@
 import styled from 'react-emotion'
 
 const InvitationDialogCopy = styled('div')({
-  lineHeight: '1.5rem'
+  lineHeight: 1.5
 })
 
 export default InvitationDialogCopy

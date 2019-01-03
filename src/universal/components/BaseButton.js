@@ -30,6 +30,7 @@ const ButtonRoot = styled(PlainButton)(
       border: '.0625rem solid transparent',
       boxShadow: getBoxShadow(disabled, pressedDown, elevationResting, elevationHovered),
       display: 'flex',
+      flexShrink: 0,
       justifyContent: 'center',
       textAlign: 'center',
       transition: `box-shadow ${ui.transition[0]}`,

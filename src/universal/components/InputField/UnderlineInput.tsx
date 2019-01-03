@@ -16,14 +16,14 @@ const Input = styled('input')({
   color: TEXT.MAIN,
   display: 'block',
   fontFamily: SANS_SERIF,
-  fontSize: '1rem',
-  lineHeight: '1.75rem',
+  fontSize: '.875rem',
+  lineHeight: '1.375rem',
   margin: 0,
   outline: 0,
-  padding: '.6875rem .9375rem 0 0',
+  padding: '.3125rem 1rem .3125rem 0',
   width: '100%',
   ':hover,:focus,:active': {
-    borderColor: BORDER.DARK
+    borderColor: BORDER.MAIN
   }
 })
 

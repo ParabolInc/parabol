@@ -28,7 +28,9 @@ const FieldBlock = styled('div')({
 
 const Form = styled('form')({
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
+  maxWidth: 240,
+  width: '100%'
 })
 
 class EmailPasswordAuthForm extends Component<Props> {

@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'react-emotion'
 import UnderlineInput from './InputField/UnderlineInput'
+import TinyLabel from 'universal/components/TinyLabel'
 
 interface Props {
   dirty: boolean
@@ -10,9 +11,11 @@ interface Props {
   onBlur: (e: React.FocusEvent<HTMLInputElement>) => void
 }
 
-const Label = styled('label')({
-  fontSize: '.875rem'
+const Label = styled(TinyLabel)({
+  fontSize: 12,
+  fontWeight: 600
 })
+
 const EmailInputField = (props: Props) => {
   const {dirty, error, onChange, onBlur, value} = props
   return (
