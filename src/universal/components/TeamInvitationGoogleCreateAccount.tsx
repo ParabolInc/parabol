@@ -1,4 +1,5 @@
 import {TeamInvitationGoogleCreateAccount_verifiedInvitation} from '__generated__/TeamInvitationGoogleCreateAccount_verifiedInvitation.graphql'
+import {WebAuth} from 'auth0-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
@@ -8,6 +9,7 @@ import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import auth0Authorize from '../utils/auth0Authorize'
+import makeWebAuth from '../utils/makeWebAuth'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButton from './GoogleOAuthButton'
@@ -20,6 +22,7 @@ import StyledError from './StyledError'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import {CREATE_ACCOUNT_BUTTON_LABEL} from 'universal/utils/constants'
+import StyledTip from './StyledTip'
 
 interface Props
   extends WithAtmosphereProps,
@@ -43,8 +46,17 @@ const HR = styled('hr')({
 })
 
 class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
+  webAuth?: WebAuth
   state = {
     isEmailFallback: false
+  }
+
+  componentDidMount () {
+    makeWebAuth()
+      .then((webAuth) => {
+        this.webAuth = webAuth
+      })
+      .catch()
   }
 
   onOAuth = async () => {
@@ -58,10 +70,11 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
       onError,
       submitMutation
     } = this.props
+    if (!this.webAuth) return
     submitMutation()
     let res
     try {
-      res = await auth0Authorize()
+      res = await auth0Authorize(this.webAuth)
     } catch (e) {
       onError(e)
       return
@@ -99,6 +112,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
               waiting={submitting}
             />
             {error && <StyledError>Error logging in! Did you close the popup?</StyledError>}
+            {submitting && <StyledTip>Continue through the login popup</StyledTip>}
             {isEmailFallback ? (
               <HR />
             ) : (

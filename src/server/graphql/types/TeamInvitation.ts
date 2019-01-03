@@ -27,6 +27,10 @@ const TeamInvitation = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLEmailType),
       description: 'The email of the invitee'
     },
+    expiresAt: {
+      type: new GraphQLNonNull(GraphQLISO8601Type),
+      description: 'The datetime the invitation expires. Changes when team is archived.'
+    },
     invitedBy: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId of the person that sent the invitation'

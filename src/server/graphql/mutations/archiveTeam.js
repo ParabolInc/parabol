@@ -52,6 +52,16 @@ export default {
             })('changes')('new_val')
             .default([])
         }),
+      invitations: r
+        .table('Team')
+        .get(teamId)
+        .do((team) => {
+          return r
+            .table('TeamInvitation')
+            .getAll(team('orgId'), {index: 'orgId'})
+            .filter({acceptedAt: null})
+            .update({expiresAt: now})
+        }),
       removedTeamNotifications: r
         .table('Notification')
         // TODO index
