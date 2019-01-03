@@ -1,15 +1,15 @@
 import promisify from 'es6-promisify'
-import makeWebAuth from './makeWebAuth'
 import {AUTH0_DB_CONNECTION} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
+import makeWebAuth from './makeWebAuth'
 
-const auth0CreateAccountWithEmail = async (email, password) => {
+const auth0CreateAccountWithEmail = async (email: string, password: string) => {
   const webAuth = await makeWebAuth()
-  const signin = promisify(webAuth.signin, webAuth)
-  return signin({
+  const signup = promisify(webAuth.signup, webAuth)
+  return signup({
     email,
     password,
-    realm: AUTH0_DB_CONNECTION,
+    connection: AUTH0_DB_CONNECTION,
     redirectUri: makeHref(`/oauth-redirect${window.location.search}`),
     responseType: 'token'
   })

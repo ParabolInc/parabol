@@ -1,9 +1,9 @@
 import promisify from 'es6-promisify'
-import makeWebAuth from './makeWebAuth'
 import {AUTH0_DB_CONNECTION} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
+import makeWebAuth from './makeWebAuth'
 
-const auth0LoginWithEmail = async (email, password) => {
+const auth0LoginWithEmail = async (email: string, password: string) => {
   const webAuth = await makeWebAuth()
   const login = promisify(webAuth.login, webAuth)
   return login({
