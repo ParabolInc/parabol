@@ -12,9 +12,14 @@ const getIsGoogleProvider = async (user: any, email: string) => {
     return !!user.identities.find((identity) => identity.provider === 'google-oauth2')
   }
   const [, domain] = email.split('@')
-  const [mxRecord] = await resolveMx(domain)
-  const {exchange} = mxRecord
-  return exchange.toLowerCase().endsWith('google.com')
+  let res
+  try {
+    res = await resolveMx(domain)
+  } catch (e) {
+    return false
+  }
+  const exchange = res && res.mxRecord && res.mxRecord.exchange
+  return exchange ? exchange.toLowerCase().endsWith('google.com') : false
 }
 
 export default {
