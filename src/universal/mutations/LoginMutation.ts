@@ -1,13 +1,12 @@
+import {LoginMutation, LoginMutationVariables} from '__generated__/LoginMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
-import {LoginMutation} from '__generated__/LoginMutation.graphql'
-import {ILoginOnMutationArguments} from '../types/graphql'
-import {LocalHandlers} from '../types/relayMutations'
-import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import {LocalHandlers} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation LoginMutation($auth0Token: String!, $invitationToken: ID) {
-    login(auth0Token: $auth0Token, invitationToken: $invitationToken) {
+    login(auth0Token: $auth0Token) {
       error {
         message
       }
@@ -17,12 +16,16 @@ const mutation = graphql`
         ...UserAnalyticsFrag @relay(mask: false)
       }
     }
+    acceptTeamInvitation(invitationToken: $invitationToken) {
+      team {
+        id
+      }
+    }
   }
 `
-
 const LoginMutation = (
   atmosphere: any,
-  variables: ILoginOnMutationArguments,
+  variables: LoginMutationVariables,
   {onCompleted, history}: LocalHandlers
 ) => {
   atmosphere.setAuthToken(variables.auth0Token)

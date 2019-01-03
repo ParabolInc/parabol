@@ -44,6 +44,7 @@ const acceptTeamInvitation = async (
         teamId
       })
       .update({isArchived: true}, {returnChanges: true})('changes')('new_val')('id')
+      .default([])
   })
   if (!userInOrg) {
     await adjustUserCount(userId, orgId, ADD_USER)
@@ -55,7 +56,7 @@ const acceptTeamInvitation = async (
   // update auth0
   const tms = user.tms ? user.tms.concat(teamId) : [teamId]
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-  return removedNotificationIds
+  return removedNotificationIds as Array<string>
 }
 
 export default acceptTeamInvitation

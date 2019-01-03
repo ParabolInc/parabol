@@ -930,6 +930,11 @@ export interface ITeamInvitation {
   email: any
 
   /**
+   * The datetime the invitation expires. Changes when team is archived.
+   */
+  expiresAt: any
+
+  /**
    * The userId of the person that sent the invitation
    */
   invitedBy: string
@@ -3108,7 +3113,7 @@ export interface IAcceptTeamInvitationOnMutationArguments {
   /**
    * The 48-byte hex encoded invitation token
    */
-  invitationToken: string
+  invitationToken?: string | null
 
   /**
    * the notification clicked to accept, if any
@@ -3866,11 +3871,6 @@ export interface ILoginOnMutationArguments {
    * The ID Token from auth0, a base64 JWT
    */
   auth0Token: string
-
-  /**
-   * if logging in via an invitation, the token to expire
-   */
-  invitationToken?: string | null
 }
 
 export interface IUpgradeToProOnMutationArguments {

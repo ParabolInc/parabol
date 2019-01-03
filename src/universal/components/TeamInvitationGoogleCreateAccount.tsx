@@ -21,7 +21,6 @@ import InvitationDialogTitle from './InvitationDialogTitle'
 import StyledError from './StyledError'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
-import {CREATE_ACCOUNT_BUTTON_LABEL} from 'universal/utils/constants'
 import StyledTip from './StyledTip'
 
 interface Props
@@ -118,9 +117,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
             ) : (
               <UseEmailFallback onClick={this.useEmail}>Sign up without Google</UseEmailFallback>
             )}
-            {isEmailFallback && (
-              <EmailPasswordAuthForm email={email} label={CREATE_ACCOUNT_BUTTON_LABEL} />
-            )}
+            {isEmailFallback && <EmailPasswordAuthForm email={email} />}
           </InvitationCenteredCopy>
         </InvitationDialogContent>
       </InvitationDialog>

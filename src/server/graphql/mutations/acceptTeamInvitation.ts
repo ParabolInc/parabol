@@ -19,7 +19,7 @@ export default {
   description: `Redeem an invitation token for a logged in user`,
   args: {
     invitationToken: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: GraphQLID,
       description: 'The 48-byte hex encoded invitation token'
     },
     notificationId: {
@@ -45,6 +45,13 @@ export default {
       // AUTH
       const viewerId = getUserId(authToken)
       if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError()
+      if (!invitationToken) {
+        return {
+          error: {
+            message: 'No invitation token provided'
+          }
+        }
+      }
 
       // VALIDATION
       const invitation = await r
@@ -91,7 +98,9 @@ export default {
       publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
 
       // remove the old notifications
-      publish(NOTIFICATION, viewerId, AcceptTeamInvitationPayload, data, subOptions)
+      if (removedNotificationIds.length > 0) {
+        publish(NOTIFICATION, viewerId, AcceptTeamInvitationPayload, data, subOptions)
+      }
 
       // Tell the rest of the team about the new team member
       publish(TEAM, teamId, AcceptTeamInvitationPayload, data, subOptions)

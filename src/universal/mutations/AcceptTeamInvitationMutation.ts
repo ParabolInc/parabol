@@ -5,9 +5,11 @@ import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMemb
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import {IAcceptTeamInvitationOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
-import {AcceptTeamInvitationMutation} from '__generated__/AcceptTeamInvitationMutation.graphql'
+import {
+  AcceptTeamInvitationMutation,
+  AcceptTeamInvitationMutationVariables
+} from '__generated__/AcceptTeamInvitationMutation.graphql'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -35,8 +37,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AcceptTeamInvitationMutation($invitationToken: ID!) {
-    acceptTeamInvitation(invitationToken: $invitationToken) {
+  mutation AcceptTeamInvitationMutation($invitationToken: ID!, $notificationId: ID) {
+    acceptTeamInvitation(invitationToken: $invitationToken, notificationId: $notificationId) {
       error {
         message
         title
@@ -77,7 +79,7 @@ export const acceptTeamInvitationTeamOnNext = (
 
 const AcceptTeamInvitationMutation = (
   atmosphere,
-  variables: IAcceptTeamInvitationOnMutationArguments,
+  variables: AcceptTeamInvitationMutationVariables,
   {history, onCompleted, onError}: LocalHandlers
 ) => {
   return commitMutation<AcceptTeamInvitationMutation>(atmosphere, {
