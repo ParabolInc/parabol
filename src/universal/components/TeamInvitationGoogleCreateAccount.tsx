@@ -67,13 +67,17 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
       },
       onCompleted,
       onError,
-      submitMutation
+      submitMutation,
+      verifiedInvitation
     } = this.props
     if (!this.webAuth) return
+    const {teamInvitation} = verifiedInvitation
+    if (!teamInvitation) return
+    const {email} = teamInvitation
     submitMutation()
     let res
     try {
-      res = await auth0Authorize(this.webAuth)
+      res = await auth0Authorize(this.webAuth, email)
     } catch (e) {
       onError(e)
       return
@@ -110,7 +114,8 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
               onClick={this.onOAuth}
               waiting={submitting}
             />
-            {error && <StyledError>Error logging in! Did you close the popup?</StyledError>}
+            {error &&
+              !submitting && <StyledError>Error logging in! Did you close the popup?</StyledError>}
             {submitting && <StyledTip>Continue through the login popup</StyledTip>}
             {isEmailFallback ? (
               <HR />

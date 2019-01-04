@@ -134,7 +134,10 @@ const User = new GraphQLObjectType({
     isBillingLeader,
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The application-specific name, defaults to nickname'
+      description: 'The application-specific name, defaults to nickname',
+      resolve: ({preferredName, name}) => {
+        return preferredName || name
+      }
     },
     userOrgs: {
       type: new GraphQLList(UserOrg),

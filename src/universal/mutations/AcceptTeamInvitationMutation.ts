@@ -10,6 +10,7 @@ import {
   AcceptTeamInvitationMutation,
   AcceptTeamInvitationMutationVariables
 } from '__generated__/AcceptTeamInvitationMutation.graphql'
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -30,8 +31,7 @@ graphql`
   fragment AcceptTeamInvitationMutation_notification on AcceptTeamInvitationPayload {
     removedNotificationIds
     team {
-      id
-      name
+      ...CompleteTeamFrag @relay(mask: false)
     }
   }
 `
@@ -53,6 +53,8 @@ export const acceptTeamInvitationNotificationUpdater = (
   {atmosphere, store}
 ) => {
   const {viewerId} = atmosphere
+  const team = payload.getLinkedRecord('team')
+  handleAddTeams(team, store, viewerId)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')
   handleRemoveNotifications(notificationIds, store, viewerId)
 }

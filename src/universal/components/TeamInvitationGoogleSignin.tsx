@@ -44,13 +44,17 @@ class TeamInvitationGoogleSignin extends Component<Props> {
       },
       onCompleted,
       onError,
-      submitMutation
+      submitMutation,
+      verifiedInvitation
     } = this.props
     if (!this.webAuth) return
+    const {user} = verifiedInvitation
+    if (!user) return
+    const {email} = user
     submitMutation()
     let res
     try {
-      res = await auth0Authorize(this.webAuth)
+      res = await auth0Authorize(this.webAuth, email)
     } catch (e) {
       onError(e)
       return
@@ -80,7 +84,8 @@ class TeamInvitationGoogleSignin extends Component<Props> {
               onClick={this.onOAuth}
               waiting={submitting}
             />
-            {error && <StyledError>Error logging in! Did you close the popup?</StyledError>}
+            {error &&
+              !submitting && <StyledError>Error logging in! Did you close the popup?</StyledError>}
             {submitting && <StyledTip>Continue through the login popup</StyledTip>}
           </InvitationCenteredCopy>
         </InvitationDialogContent>
@@ -94,6 +99,7 @@ export default createFragmentContainer(
   graphql`
     fragment TeamInvitationGoogleSignin_verifiedInvitation on VerifiedInvitationPayload {
       user {
+        email
         preferredName
       }
       teamName
