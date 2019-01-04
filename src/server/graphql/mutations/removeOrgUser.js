@@ -76,7 +76,7 @@ const removeOrgUser = {
     const {allRemovedOrgNotifications, user, organizationUserId} = await r({
       organizationUserId: r
         .table('OrganizationUser')
-        .get(userId, {index: 'userId'})
+        .getAll(userId, {index: 'userId'})
         .filter({orgId, removedAt: null})
         .nth(0)
         .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('id')

@@ -34,8 +34,12 @@ export default {
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({removedAt: null})('orgId')
+        .coerceTo('array')
         .do((orgIds) => {
-          return r.table('Organization').getAll(r.args(orgIds), {index: 'id'})
+          return r
+            .table('Organization')
+            .getAll(r.args(orgIds), {index: 'id'})
+            .coerceTo('array')
         })
     })
     if (user.inactive) {

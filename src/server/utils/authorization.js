@@ -63,11 +63,13 @@ export const isOrgLeaderOfUser = async (authToken, userId) => {
     viewerOrgIds: r
       .table('OrganizationUser')
       .getAll(viewerId, {index: 'userId'})
-      .filter({removedAt: null})('orgId'),
+      .filter({removedAt: null, role: BILLING_LEADER})('orgId')
+      .coerceTo('array'),
     userOrgIds: r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
       .filter({removedAt: null})('orgId')
+      .coerceTo('array')
   })
   const uniques = new Set(viewerOrgIds.concat(userOrgIds))
   const total = viewerOrgIds.length + userOrgIds.length
