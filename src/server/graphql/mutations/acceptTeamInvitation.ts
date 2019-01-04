@@ -13,6 +13,8 @@ import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from 'universal/utils/const
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
+import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
+import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
@@ -104,8 +106,10 @@ export default {
 
       // Tell the rest of the team about the new team member
       publish(TEAM, teamId, AcceptTeamInvitationPayload, data, subOptions)
-
-      return data
+      return {
+        ...data,
+        authToken: encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms}))
+      }
     }
   )
 }

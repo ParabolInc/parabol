@@ -4015,6 +4015,11 @@ export interface IAcceptTeamInvitationPayload {
   error: IStandardMutationError | null
 
   /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
+
+  /**
    * The team that the invitee will be joining
    */
   team: ITeam | null

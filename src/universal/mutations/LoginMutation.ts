@@ -17,9 +17,7 @@ const mutation = graphql`
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      team {
-        id
-      }
+      authToken
     }
   }
 `
@@ -39,13 +37,12 @@ const LoginMutation = (
         console.error(serverError.message)
         return
       }
-      const {
-        login: {authToken, user}
-      } = res
+      const {acceptTeamInvitation, login} = res
+      const authToken = acceptTeamInvitation.authToken || login.authToken
       atmosphere.setAuthToken(authToken)
-      const nextUrl =
-        new URLSearchParams(location.search).get('redirectTo') ||
-        (user && user.tms ? '/me' : '/welcome')
+      const {tms} = atmosphere.authObj
+      const redirectTo = new URLSearchParams(location.search).get('redirectTo')
+      const nextUrl = redirectTo || (tms ? '/me' : '/welcome')
       history && history.push(nextUrl)
       SendClientSegmentEventMutation(atmosphere, 'User Login')
     },
