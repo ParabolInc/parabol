@@ -1,14 +1,20 @@
+import {WebAuth} from 'auth0-js'
 import promisify from 'es6-promisify'
-import makeWebAuth from './makeWebAuth'
 import makeHref from 'universal/utils/makeHref'
 
-const auth0Authorize = async () => {
-  const webAuth = await makeWebAuth()
+/*
+ * Requires sync webAuth to ensure it is not caught by a popup blocker.
+ * Popup blockers usually ignore trusted user events (like clicks)
+ * But doing asynchronous things within the click handler can cause a false positive
+ */
+
+const auth0Authorize = async (webAuth: WebAuth, loginHint?: string) => {
   const authorize = promisify(webAuth.popup.authorize, webAuth.popup)
   return authorize({
     connection: 'google-oauth2',
     redirectUri: makeHref('/oauth-redirect'),
-    responseType: 'token'
+    responseType: 'token',
+    login_hint: loginHint
   })
 }
 

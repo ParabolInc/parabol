@@ -11,11 +11,13 @@ export namespace PALETTE {
   }
   export const enum BORDER {
     LIGHT = '#DBD6E3',
-    DARK = '#b6adc7'
+    DARK = '#b6adc7',
+    MAIN = '#493272'
   }
   export const enum TEXT {
     MAIN = '#444258',
-    LIGHT = '#82809A'
+    LIGHT = '#82809A',
+    GREEN = '#61BF8B'
   }
   export const enum ERROR {
     MAIN = '#ED4C56'

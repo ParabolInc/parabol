@@ -10,6 +10,10 @@ const AcceptTeamInvitationPayload = new GraphQLObjectType({
     error: {
       type: StandardMutationError
     },
+    authToken: {
+      type: GraphQLID,
+      description: 'The new auth token sent to the mutator'
+    },
     team: {
       type: Team,
       description: 'The team that the invitee will be joining',

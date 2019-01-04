@@ -42,6 +42,7 @@ const popInvitationReceivedToast = (
 ) => {
   if (!notification) return
   const {
+    id: notificationId,
     team: {name: teamName},
     invitation: {
       token: invitationToken,
@@ -55,7 +56,7 @@ const popInvitationReceivedToast = (
     action: {
       label: 'Accept!',
       callback: () => {
-        AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history})
+        AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {history})
       }
     }
   })

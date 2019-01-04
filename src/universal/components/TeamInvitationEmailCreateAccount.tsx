@@ -1,5 +1,6 @@
 import {TeamInvitationEmailCreateAccount_verifiedInvitation} from '__generated__/TeamInvitationEmailCreateAccount_verifiedInvitation.graphql'
 import React from 'react'
+import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
@@ -13,24 +14,28 @@ interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
 }
 
+const StyledDialog = styled(InvitationDialog)({
+  maxWidth: 356
+})
+
 const TeamInvitationEmailCreateAccount = (props: Props) => {
   const {verifiedInvitation} = props
   const {teamName, teamInvitation} = verifiedInvitation
   if (!teamInvitation) return null
   const {email} = teamInvitation
   return (
-    <InvitationDialog>
+    <StyledDialog>
       <Helmet title={`Sign up | Team Invitation`} />
       <InvitationDialogTitle>Welcome!</InvitationDialogTitle>
       <InvitationDialogContent>
         <InvitationDialogCopy>
-          Enter your password for immediate access to {teamName}
+          Choose a password for immediate access to your team: <b>{teamName}</b>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
-          <EmailPasswordAuthForm email={email} label='Sign Up' />
+          <EmailPasswordAuthForm email={email} />
         </InvitationCenteredCopy>
       </InvitationDialogContent>
-    </InvitationDialog>
+    </StyledDialog>
   )
 }
 

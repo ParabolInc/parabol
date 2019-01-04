@@ -5,9 +5,12 @@ import handleAddTeamMembers from 'universal/mutations/handlers/handleAddTeamMemb
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import {IAcceptTeamInvitationOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
-import {AcceptTeamInvitationMutation} from '__generated__/AcceptTeamInvitationMutation.graphql'
+import {
+  AcceptTeamInvitationMutation,
+  AcceptTeamInvitationMutationVariables
+} from '__generated__/AcceptTeamInvitationMutation.graphql'
+import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 
 graphql`
   fragment AcceptTeamInvitationMutation_team on AcceptTeamInvitationPayload {
@@ -28,15 +31,14 @@ graphql`
   fragment AcceptTeamInvitationMutation_notification on AcceptTeamInvitationPayload {
     removedNotificationIds
     team {
-      id
-      name
+      ...CompleteTeamFrag @relay(mask: false)
     }
   }
 `
 
 const mutation = graphql`
-  mutation AcceptTeamInvitationMutation($invitationToken: ID!) {
-    acceptTeamInvitation(invitationToken: $invitationToken) {
+  mutation AcceptTeamInvitationMutation($invitationToken: ID!, $notificationId: ID) {
+    acceptTeamInvitation(invitationToken: $invitationToken, notificationId: $notificationId) {
       error {
         message
         title
@@ -51,6 +53,8 @@ export const acceptTeamInvitationNotificationUpdater = (
   {atmosphere, store}
 ) => {
   const {viewerId} = atmosphere
+  const team = payload.getLinkedRecord('team')
+  handleAddTeams(team, store, viewerId)
   const notificationIds = getInProxy(payload, 'removedNotificationIds')
   handleRemoveNotifications(notificationIds, store, viewerId)
 }
@@ -77,7 +81,7 @@ export const acceptTeamInvitationTeamOnNext = (
 
 const AcceptTeamInvitationMutation = (
   atmosphere,
-  variables: IAcceptTeamInvitationOnMutationArguments,
+  variables: AcceptTeamInvitationMutationVariables,
   {history, onCompleted, onError}: LocalHandlers
 ) => {
   return commitMutation<AcceptTeamInvitationMutation>(atmosphere, {

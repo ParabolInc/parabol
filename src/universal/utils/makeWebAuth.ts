@@ -1,4 +1,6 @@
-let webAuth
+import {WebAuth} from 'auth0-js'
+
+let webAuth: WebAuth
 const makeWebAuth = async () => {
   const auth0 = await import('auth0-js/build/auth0')
   if (!webAuth) {

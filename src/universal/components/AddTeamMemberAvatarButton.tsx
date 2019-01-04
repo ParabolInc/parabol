@@ -1,9 +1,10 @@
 import React, {Component, lazy} from 'react'
 import styled from 'react-emotion'
-import FloatingActionButton from 'universal/components/FloatingActionButton'
+import OutlinedButton from 'universal/components/OutlinedButton'
 import ui from 'universal/styles/ui'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import LoadableModal from './LoadableModal'
+import Icon from 'universal/components/Icon'
 
 interface Props extends WithAtmosphereProps {
   isMeeting?: boolean
@@ -11,7 +12,7 @@ interface Props extends WithAtmosphereProps {
   teamMembers: ReadonlyArray<any>
 }
 
-const AddButton = styled(FloatingActionButton)(
+const AddButton = styled(OutlinedButton)(
   {
     fontSize: '1.5rem',
     fontWeight: 400,
@@ -22,10 +23,13 @@ const AddButton = styled(FloatingActionButton)(
   },
   ({isMeeting}: {isMeeting: boolean}) =>
     isMeeting && {
+      height: 36,
+      width: 36,
+      maxWidth: 36,
       [ui.breakpoint.wide]: {
-        height: 36,
-        width: 36,
-        maxWidth: 36
+        height: 40,
+        width: 40,
+        maxWidth: 40
       },
       [ui.breakpoint.wider]: {
         height: 48,
@@ -53,7 +57,7 @@ class AddTeamMemberAvatarButton extends Component<Props> {
         queryVars={{team, teamMembers}}
         toggle={
           <AddButton isMeeting={isMeeting} palette='blue'>
-            +
+            <Icon>add</Icon>
           </AddButton>
         }
       />
