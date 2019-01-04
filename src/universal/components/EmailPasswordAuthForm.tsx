@@ -137,10 +137,9 @@ class EmailPasswordAuthForm extends Component<Props> {
   }
 
   trySignUp = async (email, password) => {
-    const {onCompleted, onError} = this.props
+    const {onError} = this.props
     try {
       await auth0CreateAccountWithEmail(email, password)
-      onCompleted()
     } catch (e) {
       const handleError = () => {
         onError(e.error_description || e.description || e.message)
@@ -152,7 +151,9 @@ class EmailPasswordAuthForm extends Component<Props> {
       } else {
         handleError()
       }
+      return
     }
+    this.tryLogin(email, password).catch()
   }
 
   onSubmit = async (e: React.FormEvent) => {

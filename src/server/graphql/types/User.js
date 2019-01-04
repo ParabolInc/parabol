@@ -132,7 +132,10 @@ const User = new GraphQLObjectType({
     },
     preferredName: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The application-specific name, defaults to nickname'
+      description: 'The application-specific name, defaults to nickname',
+      resolve: ({preferredName, name}) => {
+        return preferredName || name
+      }
     },
     archivedTasks,
     archivedTasksCount,

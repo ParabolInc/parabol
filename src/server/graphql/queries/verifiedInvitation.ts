@@ -1,4 +1,4 @@
-import dns from 'dns'
+import dns, {MxRecord} from 'dns'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import rateLimit from 'server/graphql/rateLimit'
 import VerifiedInvitationPayload from 'server/graphql/types/VerifiedInvitationPayload'
@@ -18,8 +18,9 @@ const getIsGoogleProvider = async (user: any, email: string) => {
   } catch (e) {
     return false
   }
-  const exchange = res && res.mxRecord && res.mxRecord.exchange
-  return exchange ? exchange.toLowerCase().endsWith('google.com') : false
+  const [mxRecord] = res as Array<MxRecord>
+  const exchange = (mxRecord && mxRecord.exchange) || ''
+  return exchange.toLowerCase().endsWith('google.com')
 }
 
 export default {

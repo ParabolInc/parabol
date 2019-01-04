@@ -21,7 +21,6 @@ import InvitationDialogTitle from './InvitationDialogTitle'
 import StyledError from './StyledError'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
-import {CREATE_ACCOUNT_BUTTON_LABEL} from 'universal/utils/constants'
 import StyledTip from './StyledTip'
 
 interface Props
@@ -68,13 +67,17 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
       },
       onCompleted,
       onError,
-      submitMutation
+      submitMutation,
+      verifiedInvitation
     } = this.props
     if (!this.webAuth) return
+    const {teamInvitation} = verifiedInvitation
+    if (!teamInvitation) return
+    const {email} = teamInvitation
     submitMutation()
     let res
     try {
-      res = await auth0Authorize(this.webAuth)
+      res = await auth0Authorize(this.webAuth, email)
     } catch (e) {
       onError(e)
       return
@@ -111,16 +114,15 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
               onClick={this.onOAuth}
               waiting={submitting}
             />
-            {error && <StyledError>Error logging in! Did you close the popup?</StyledError>}
+            {error &&
+              !submitting && <StyledError>Error logging in! Did you close the popup?</StyledError>}
             {submitting && <StyledTip>Continue through the login popup</StyledTip>}
             {isEmailFallback ? (
               <HR />
             ) : (
               <UseEmailFallback onClick={this.useEmail}>Sign up without Google</UseEmailFallback>
             )}
-            {isEmailFallback && (
-              <EmailPasswordAuthForm email={email} label={CREATE_ACCOUNT_BUTTON_LABEL} />
-            )}
+            {isEmailFallback && <EmailPasswordAuthForm email={email} />}
           </InvitationCenteredCopy>
         </InvitationDialogContent>
       </InvitationDialog>
