@@ -46,9 +46,13 @@ export default {
           .eqJoin('userId', r.table('User'))
           .zip()
           .filter((user) =>
-            user('email')
-              .match(ignoreEmailRegex)
-              .not()
+            r.branch(
+              r(ignoreEmailRegex).eq(''),
+              true,
+              user('email')
+                .match(ignoreEmailRegex)
+                .eq(null)
+            )
           )
           .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
           .count()

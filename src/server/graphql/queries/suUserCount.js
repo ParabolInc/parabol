@@ -20,7 +20,7 @@ export default {
     tier: {
       type: OrgTierEnum,
       defaultValue: PRO,
-      descrption: 'which tier of org shall we count?'
+      description: 'which tier of org shall we count?'
     }
   },
   async resolve (source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
@@ -33,6 +33,7 @@ export default {
     return r
       .table('Organization')
       .getAll(tier, {index: 'tier'})('id')
+      .coerceTo('array')
       .do((orgIds) => {
         return r
           .table('OrganizationUser')
@@ -41,9 +42,13 @@ export default {
           .eqJoin('userId', r.table('User'))
           .zip()
           .filter((user) =>
-            user('email')
-              .match(ignoreEmailRegex)
-              .not()
+            r.branch(
+              r(ignoreEmailRegex).eq(''),
+              true,
+              user('email')
+                .match(ignoreEmailRegex)
+                .eq(null)
+            )
           )
           .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
           .count()
