@@ -27,6 +27,7 @@ const autopauseUsers = {
           .table('OrganizationUser')
           .getAll(user('id'), {index: 'userId'})
           .filter({removedAt: null})('orgId')
+          .coerceTo('array')
       }))
 
     await Promise.all(
