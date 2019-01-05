@@ -8,7 +8,7 @@ import React from 'react'
 import styled from 'react-emotion'
 import {Link} from 'react-router-dom'
 import {Field, reduxForm} from 'redux-form'
-import PrimaryButton from 'universal/components/PrimaryButton'
+import RaisedButton from 'universal/components/RaisedButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -30,16 +30,21 @@ const Form = styled('form')({
 
 const Block = styled('div')(({margin, width}) => ({margin, width}))
 
+const linkColor = {
+  color: appTheme.brand.secondary.blue
+}
+
 const linkStyles = {
-  color: appTheme.palette.mid,
-  textDecoration: 'underline'
+  ...linkColor,
+  ':hover': {...linkColor, textDecoration: 'underline'},
+  marginTop: '1rem',
+  textAlign: 'center'
 }
 
 const ForgotPasswordLink = styled(Link)({
   ...linkStyles,
-  ':hover': linkStyles,
-  marginTop: '1rem',
-  textAlign: 'center'
+  fontSize: '.875rem',
+  lineHeight: '1.5rem'
 })
 
 const SignInEmailPasswordForm = (props: Props) => {
@@ -71,9 +76,9 @@ const SignInEmailPasswordForm = (props: Props) => {
           disabled={submitting}
         />
       </Block>
-      <PrimaryButton size='large' disabled={!valid} waiting={submitting}>
+      <RaisedButton size='medium' disabled={!valid} waiting={submitting}>
         {SIGNIN_LABEL}
-      </PrimaryButton>
+      </RaisedButton>
       <ForgotPasswordLink to='/reset-password'>{'Forgot your password?'}</ForgotPasswordLink>
     </Form>
   )

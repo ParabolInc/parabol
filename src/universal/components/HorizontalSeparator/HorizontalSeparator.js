@@ -14,7 +14,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 const SeparatorContainer = styled('div')(({margin}) => ({
   color: ui.labelHeadingColor,
   display: 'flex',
-  fontSize: ui.labelHeadingFontSize,
+  fontSize: '.6875rem',
   fontWeight: ui.labelHeadingFontWeight,
   lineHeight: ui.labelHeadingLineHeight,
   letterSpacing: ui.labelHeadingLetterSpacing,
@@ -27,7 +27,7 @@ const SeparatorContainer = styled('div')(({margin}) => ({
 const separatorLineStyles = {
   borderBottom: `0.0625rem solid ${appTheme.palette.mid20a}`,
   margin: 'auto',
-  width: '10rem'
+  width: '12rem'
 }
 
 const LeftSeparator = styled('div')({

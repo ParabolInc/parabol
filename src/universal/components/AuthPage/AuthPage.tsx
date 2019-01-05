@@ -27,13 +27,12 @@ const PageContainer = styled('div')({
 })
 
 const CenteredBlock = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
   alignItems: 'center',
-  height: '100%',
-  maxWidth: '100%',
-  padding: '0 1rem 2rem',
-  width: '30rem'
+  padding: '1.5rem 1rem',
+  display: 'flex',
+  flex: 1,
+  justifyContent: 'center',
+  width: '100%'
 })
 
 export default ({children, title}: Props) => (
