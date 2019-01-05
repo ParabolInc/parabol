@@ -57,7 +57,7 @@ const SignInEmailPasswordForm = (props: Props) => {
             type='email'
             autoFocus
             component={InputField}
-            fieldSize='large'
+            fieldSize='medium'
             placeholder='you@company.co'
             label='Email:'
             name='email'
@@ -68,7 +68,7 @@ const SignInEmailPasswordForm = (props: Props) => {
         <Field
           type='password'
           component={InputField}
-          fieldSize='large'
+          fieldSize='medium'
           placeholder='********'
           label='Password:'
           name='password'
