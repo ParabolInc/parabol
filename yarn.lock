@@ -1414,6 +1414,11 @@
     react-lifecycles-compat "^3.0.4"
     react-modal "^3.5.1"
 
+"@types/auth0-js@^8.11.8":
+  version "8.11.8"
+  resolved "https://registry.yarnpkg.com/@types/auth0-js/-/auth0-js-8.11.8.tgz#7091701d5d3782e66ec5f61cef25af9c6366c56d"
+  integrity sha512-hXC9wtUpD4+K3o4VGjjR6v7slm/nRrFC2Kj4tcXx3Zzzzhuwe/fTsmfqVE+9TGTcafcvhqv/oDAguvjX7sU+6g==
+
 "@types/body-parser@*":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.17.0.tgz#9f5c9d9bd04bb54be32d5eb9fc0d8c974e6cf58c"
