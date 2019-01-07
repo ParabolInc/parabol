@@ -12,8 +12,7 @@ import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
 
 const APP_VERSION = packageJSON.version
 export default function connectionHandler (sharedDataLoader, rateLimiter) {
-  return async function socketConnectionHandler (socket) {
-    const req = socket.upgradeReq
+  return async function socketConnectionHandler (socket, req) {
     const {headers} = req
     const protocol = headers['sec-websocket-protocol']
     if (protocol !== TREBUCHET_WS) {

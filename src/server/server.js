@@ -17,7 +17,7 @@ import sendICS from './sendICS'
 import './polyfills'
 import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks'
 import SharedDataLoader from 'shared-dataloader'
-import {Server} from 'uws'
+import {WebSocketServer} from '@clusterws/cws'
 import http from 'http'
 // import startMemwatch from 'server/utils/startMemwatch'
 import packageJSON from '../../package.json'
@@ -40,7 +40,7 @@ const {PORT = 3000} = process.env
 
 const app = express()
 const server = http.createServer(app)
-const wss = new Server({server})
+const wss = new WebSocketServer({server})
 server.listen(PORT)
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
 const sharedDataLoader = new SharedDataLoader({

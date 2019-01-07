@@ -21,12 +21,12 @@ const OrgMembers = (props: Props) => {
   )
   return (
     <Panel label='Organization Members'>
-      {organizationUsers.edges.map(({node: orgMember}) => {
+      {organizationUsers.edges.map(({node: organizationUser}) => {
         return (
           <OrgMemberRow
-            key={orgMember.id}
+            key={organizationUser.id}
             billingLeaderCount={billingLeaderCount}
-            orgMember={orgMember}
+            organizationUser={organizationUser}
             organization={organization}
           />
         )
@@ -48,7 +48,7 @@ export default createPaginationContainer<Props>(
             node {
               id
               role
-              ...OrgMemberRow_orgMember
+              ...OrgMemberRow_organizationUser
             }
           }
           pageInfo {

@@ -137,6 +137,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
+    "@clusterws/cws": "^0.10.0",
     "@google-cloud/language": "^1.2.0",
     "@mattkrick/fast-rtc-peer": "^0.0.5",
     "@mattkrick/graphql-trebuchet-client": "^0.1.1",
@@ -244,7 +245,6 @@
     "tlds": "^1.192.0",
     "ts-node": "^7.0.1",
     "unicode-substring": "^1.0.0",
-    "uws": "10.148.1",
     "wrtc": "^0.1.6"
   },
   "engines": {
