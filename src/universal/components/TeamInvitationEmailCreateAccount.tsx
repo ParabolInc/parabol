@@ -9,6 +9,7 @@ import InvitationDialog from './InvitationDialog'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
+import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
@@ -16,6 +17,11 @@ interface Props {
 
 const StyledDialog = styled(InvitationDialog)({
   maxWidth: 356
+})
+
+const TeamName = styled('span')({
+  fontWeight: 600,
+  whiteSpace: 'nowrap'
 })
 
 const TeamInvitationEmailCreateAccount = (props: Props) => {
@@ -29,11 +35,12 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
       <InvitationDialogTitle>Welcome!</InvitationDialogTitle>
       <InvitationDialogContent>
         <InvitationDialogCopy>
-          Choose a password for immediate access to your team: <b>{teamName}</b>
+          Choose a password for immediate access to your team: <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
-          <EmailPasswordAuthForm email={email} />
+          <EmailPasswordAuthForm email={email} isPrimary />
         </InvitationCenteredCopy>
+        <AuthPrivacyFooter />
       </InvitationDialogContent>
     </StyledDialog>
   )
