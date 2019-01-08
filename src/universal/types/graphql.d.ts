@@ -750,7 +750,7 @@ export interface ITeam {
   /**
    * true if the viewer is the team lead, else false
    */
-  isLead: boolean | null
+  isLead: boolean
 
   /**
    * The phase of the meeting, usually matches the facilitator phase, be could be further along
@@ -5712,7 +5712,7 @@ export interface IPromoteNewMeetingFacilitatorPayload {
 export interface IPromoteToTeamLeadPayload {
   __typename: 'PromoteToTeamLeadPayload'
   error: IStandardMutationError | null
-  team: ITeamMember | null
+  team: ITeam | null
 }
 
 export interface IRejectOrgApprovalPayload {

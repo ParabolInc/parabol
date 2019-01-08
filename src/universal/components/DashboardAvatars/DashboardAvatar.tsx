@@ -7,6 +7,7 @@ import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import Tag from 'universal/components/Tag/Tag'
 
 interface Props {
+  onClick: () => void
   teamMember: DashboardAvatar_teamMember
 }
 
@@ -23,7 +24,7 @@ const AvatarTag = styled(Tag)({
 })
 
 const DashboardAvatar = (props: Props) => {
-  const {teamMember} = props
+  const {onClick, teamMember} = props
   const {isLead, picture} = teamMember
   return (
     <AvatarAndTag>
@@ -34,6 +35,7 @@ const DashboardAvatar = (props: Props) => {
         isCheckedIn={teamMember.isCheckedIn}
         isConnected={teamMember.isConnected || teamMember.isSelf}
         isClickable
+        onClick={onClick}
         size='smaller'
       />
       {isLead && <AvatarTag colorPalette='blue' label='Team Lead' />}

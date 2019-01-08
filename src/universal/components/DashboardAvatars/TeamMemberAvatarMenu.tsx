@@ -39,7 +39,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
       ariaLabel={'Select what to do with this team member'}
       closePortal={closePortal}
     >
-      <DropdownMenuLabel isEmpty={!hasOptions}>{`${
+      <DropdownMenuLabel notMenuItem isEmpty={!hasOptions}>{`${
         isSelf ? 'You are' : `${preferredName} is`
       } ${connected}`}</DropdownMenuLabel>
       {isViewerLead &&
