@@ -27,6 +27,11 @@ const Input = styled('input')({
   }
 })
 
+const ErrorMessage = styled(StyledError)({
+  fontSize: '.8125rem',
+  marginTop: '.5rem'
+})
+
 interface Props {
   autoFocus?: boolean
   disabled?: boolean
@@ -66,7 +71,7 @@ const UnderlineInput = (props: Props) => {
         type={type}
         value={value}
       />
-      {error && <StyledError>{error}</StyledError>}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </React.Fragment>
   )
 }

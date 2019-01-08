@@ -7,7 +7,7 @@ import type {Credentials} from 'universal/types/auth'
 import React from 'react'
 import styled from 'react-emotion'
 import {Field, reduxForm} from 'redux-form'
-import PrimaryButton from 'universal/components/PrimaryButton'
+import RaisedButton from 'universal/components/RaisedButton'
 import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import shouldValidate from 'universal/validation/shouldValidate'
 import InputField from 'universal/components/InputField/InputField'
@@ -37,7 +37,7 @@ const SignInEmailPasswordForm = (props: Props) => {
           <Field
             autoFocus
             component={InputField}
-            fieldSize='large'
+            fieldSize='medium'
             type='email'
             placeholder='you@company.co'
             label='Email:'
@@ -48,7 +48,7 @@ const SignInEmailPasswordForm = (props: Props) => {
         </Block>
         <Field
           component={InputField}
-          fieldSize='large'
+          fieldSize='medium'
           type='password'
           placeholder='********'
           label='Password:'
@@ -57,9 +57,9 @@ const SignInEmailPasswordForm = (props: Props) => {
           disabled={submitting}
         />
       </Block>
-      <PrimaryButton size='large' disabled={!valid} waiting={submitting}>
+      <RaisedButton size='medium' disabled={!valid} waiting={submitting}>
         {CREATE_ACCOUNT_BUTTON_LABEL}
-      </PrimaryButton>
+      </RaisedButton>
     </Form>
   )
 }
