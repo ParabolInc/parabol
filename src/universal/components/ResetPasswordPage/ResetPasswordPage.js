@@ -5,12 +5,13 @@
  */
 import promisify from 'es6-promisify'
 import React, {Component} from 'react'
-import {AUTH0_DB_CONNECTION, SIGNIN_LABEL, SIGNIN_SLUG} from 'universal/utils/constants'
+import styled from 'react-emotion'
+import {AUTH0_DB_CONNECTION, SIGNIN_SLUG} from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
 import PasswordReset from './ResetPassword'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
+import AuthDialog from 'universal/components/AuthDialog'
 import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
-import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 
 type Props = {}
 
@@ -18,6 +19,10 @@ type State = {
   error: ?string,
   emailSent: boolean
 }
+
+const StyledDialog = styled(AuthDialog)({
+  maxWidth: '19rem'
+})
 
 export default class PasswordResetPage extends Component<Props, State> {
   state = {
@@ -52,17 +57,18 @@ export default class PasswordResetPage extends Component<Props, State> {
     const {error, emailSent} = this.state
     return (
       <AuthPage title='Reset Password | Parabol'>
-        <AuthHeader
-          heading='Forgot your password?'
-          secondaryAction={{relativeUrl: `/${SIGNIN_SLUG}`, displayName: SIGNIN_LABEL}}
-        />
-        <HorizontalSeparator />
-        <PasswordReset
-          error={error}
-          emailSent={emailSent}
-          handleSubmitResetPassword={this.handleSubmitResetPassword}
-          tryAgain={this.resetState}
-        />
+        <StyledDialog>
+          <AuthHeader
+            heading='Forgot your password?'
+            secondaryAction={{relativeUrl: `/${SIGNIN_SLUG}`, displayName: 'Sign in with password'}}
+          />
+          <PasswordReset
+            error={error}
+            emailSent={emailSent}
+            handleSubmitResetPassword={this.handleSubmitResetPassword}
+            tryAgain={this.resetState}
+          />
+        </StyledDialog>
       </AuthPage>
     )
   }

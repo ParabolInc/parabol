@@ -23,6 +23,14 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
+  verifiedInvitation: IVerifiedInvitationPayload | null
+}
+
+export interface IVerifiedInvitationOnQueryArguments {
+  /**
+   * The invitation token
+   */
+  token: string
 }
 
 /**
@@ -732,6 +740,11 @@ export interface ITeam {
   /**
    * The outstanding invitations to join the team
    */
+  teamInvitations: Array<ITeamInvitation> | null
+
+  /**
+   * The outstanding invitations to join the team
+   */
   invitations: Array<IInvitation | null> | null
 
   /**
@@ -883,6 +896,63 @@ export const enum ActionMeetingPhaseEnum {
   agendaitems = 'agendaitems',
   lastcall = 'lastcall',
   summary = 'summary'
+}
+
+/**
+ * An invitation to become a team member
+ */
+export interface ITeamInvitation {
+  __typename: 'TeamInvitation'
+
+  /**
+   * The unique invitation Id
+   */
+  id: string
+
+  /**
+   * null if not accepted, else the datetime the invitation was accepted
+   */
+  acceptedAt: any | null
+
+  /**
+   * null if not accepted, else the userId that accepted the invitation
+   */
+  acceptedBy: string | null
+
+  /**
+   * The datetime the invitation was created
+   */
+  createdAt: any
+
+  /**
+   * The email of the invitee
+   */
+  email: any
+
+  /**
+   * The datetime the invitation expires. Changes when team is archived.
+   */
+  expiresAt: any
+
+  /**
+   * The userId of the person that sent the invitation
+   */
+  invitedBy: string
+
+  /**
+   * The userId of the person that sent the invitation
+   */
+  inviter: IUser
+
+  /**
+   * The team invited to
+   */
+  teamId: string
+
+  /**
+   * 48-byte hex encoded random string
+   */
+  token: string
 }
 
 /**
@@ -1318,6 +1388,11 @@ export interface INotifyRequestNewUser {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -1341,6 +1416,7 @@ export type Notification =
   | INotifyTeamArchived
   | INotifyTaskInvolves
   | INotifyAddedToTeam
+  | INotificationTeamInvitation
   | INotifyDenial
   | INotifyKickedOut
   | INotifyPaymentRejected
@@ -1353,6 +1429,11 @@ export interface INotification {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -1387,6 +1468,7 @@ export const enum NotificationEnum {
   REJOIN_TEAM = 'REJOIN_TEAM',
   REQUEST_NEW_USER = 'REQUEST_NEW_USER',
   TEAM_INVITE = 'TEAM_INVITE',
+  TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   VERSION_INFO = 'VERSION_INFO',
   PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
@@ -1409,6 +1491,7 @@ export type TeamNotification =
   | INotifyInviteeApproved
   | INotifyTaskInvolves
   | INotifyAddedToTeam
+  | INotificationTeamInvitation
   | INotifyDenial
 
 export interface ITeamNotification {
@@ -2505,6 +2588,55 @@ export interface ISlackIntegration {
   teamId: string
 }
 
+export interface IVerifiedInvitationPayload {
+  __typename: 'VerifiedInvitationPayload'
+  errorType: TeamInvitationErrorEnum | null
+
+  /**
+   * The name of the person that sent the invitation, present if errorType is expired
+   */
+  inviterName: string | null
+
+  /**
+   * The email of the person that send the invitation, present if errorType is expired
+   */
+  inviterEmail: string | null
+
+  /**
+   * true if the mx record is hosted by google, else falsy
+   */
+  isGoogle: boolean | null
+
+  /**
+   * The valid invitation, if any
+   */
+  teamInvitation: ITeamInvitation | null
+
+  /**
+   * name of the inviting team, present if invitation exists
+   */
+  teamName: string | null
+
+  /**
+   * The userId of the invitee, if already a parabol user
+   */
+  userId: string | null
+
+  /**
+   * The invitee, if already a parabol user, present if errorType is null
+   */
+  user: IUser | null
+}
+
+/**
+ * The reason the invitation failed
+ */
+export const enum TeamInvitationErrorEnum {
+  accepted = 'accepted',
+  expired = 'expired',
+  notFound = 'notFound'
+}
+
 export interface IMutation {
   __typename: 'Mutation'
 
@@ -2514,6 +2646,11 @@ export interface IMutation {
    *     Side effect: deletes all other outstanding invitations for user.
    */
   acceptTeamInvite: IAcceptTeamInvitePayload
+
+  /**
+   * Redeem an invitation token for a logged in user
+   */
+  acceptTeamInvitation: IAcceptTeamInvitationPayload
 
   /**
    * Create a new agenda item
@@ -2676,6 +2813,11 @@ export interface IMutation {
    *      Else, send a request to the org leader to get them approval and put them in the OrgApproval table.
    */
   inviteTeamMembers: IInviteTeamMembersPayload
+
+  /**
+   * Send a team invitation to an email address
+   */
+  inviteToTeam: IInviteToTeamPayload
 
   /**
    * Add a user to an integration
@@ -2912,7 +3054,7 @@ export interface IMutation {
   /**
    * Log in, or sign up if it is a new user
    */
-  login: ILoginPayload | null
+  login: ILoginPayload
 
   /**
    * Upgrade an account to the paid service
@@ -2963,6 +3105,18 @@ export interface IAcceptTeamInviteOnMutationArguments {
 
   /**
    * The notification id of the team invite
+   */
+  notificationId?: string | null
+}
+
+export interface IAcceptTeamInvitationOnMutationArguments {
+  /**
+   * The 48-byte hex encoded invitation token
+   */
+  invitationToken?: string | null
+
+  /**
+   * the notification clicked to accept, if any
    */
   notificationId?: string | null
 }
@@ -3278,6 +3432,14 @@ export interface IInviteTeamMembersOnMutationArguments {
    */
   teamId: string
   invitees: Array<IInvitee>
+}
+
+export interface IInviteToTeamOnMutationArguments {
+  /**
+   * The id of the inviting team
+   */
+  teamId: string
+  invitees: Array<any>
 }
 
 export interface IJoinIntegrationOnMutationArguments {
@@ -3827,6 +3989,11 @@ export interface INotifyTeamInvite {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -3841,6 +4008,31 @@ export interface INotifyTeamInvite {
    * *The userId that should see this notification
    */
   userIds: Array<string> | null
+}
+
+export interface IAcceptTeamInvitationPayload {
+  __typename: 'AcceptTeamInvitationPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
+
+  /**
+   * The team that the invitee will be joining
+   */
+  team: ITeam | null
+
+  /**
+   * The new team member on the team
+   */
+  teamMember: ITeamMember | null
+
+  /**
+   * The invite notifications that are no longer necessary
+   */
+  removedNotificationIds: Array<string> | null
 }
 
 export interface ICreateAgendaItemInput {
@@ -4051,6 +4243,11 @@ export interface INotifyInviteeApproved {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -4092,6 +4289,11 @@ export interface INotifyTeamArchived {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -4117,6 +4319,11 @@ export interface ITeamRemovedNotification {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -4756,6 +4963,11 @@ export interface INotifyTaskInvolves {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -5242,6 +5454,11 @@ export interface INotifyAddedToTeam {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -5276,6 +5493,80 @@ export interface INotifyAddedToTeam {
    * The teamId the user is joining
    */
   teamId: string
+}
+
+export interface IInviteToTeamPayload {
+  __typename: 'InviteToTeamPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The team the inviter is inviting the invitee to
+   */
+  team: ITeam | null
+
+  /**
+   * A list of email addresses the invitations were sent to
+   */
+  invitees: Array<any> | null
+
+  /**
+   * the notification ID if this payload is sent to a subscriber, else null
+   */
+  teamInvitationNotificationId: string | null
+
+  /**
+   * The notification sent to the invitee if they are a parabol user
+   */
+  teamInvitationNotification: INotificationTeamInvitation | null
+}
+
+/**
+ * A notification sent to a user that was invited to a new team
+ */
+export interface INotificationTeamInvitation {
+  __typename: 'NotificationTeamInvitation'
+
+  /**
+   * FK
+   */
+  teamId: string
+
+  /**
+   * FK
+   */
+  invitationId: string
+
+  /**
+   * The invitation that triggered this notification
+   */
+  invitation: ITeamInvitation
+  team: ITeam
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any | null
+  type: NotificationEnum | null
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: Array<string> | null
 }
 
 export interface IJoinIntegrationPayload {
@@ -5527,6 +5818,11 @@ export interface INotifyDenial {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -5639,6 +5935,11 @@ export interface INotifyKickedOut {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5931,6 +6232,11 @@ export interface INotifyPaymentRejected {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -6328,6 +6634,7 @@ export type InvitationSubscriptionPayload =
   | IResendTeamInvitePayload
 
 export type NotificationSubscriptionPayload =
+  | IAcceptTeamInvitationPayload
   | IAddFeatureFlagPayload
   | IAddOrgPayload
   | IAddTeamPayload
@@ -6339,6 +6646,7 @@ export type NotificationSubscriptionPayload =
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
   | IInviteTeamMembersPayload
+  | IInviteToTeamPayload
   | IRejectOrgApprovalPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
@@ -6404,6 +6712,7 @@ export type TaskSubscriptionPayload =
   | IUpdateTaskDueDatePayload
 
 export type TeamSubscriptionPayload =
+  | IAcceptTeamInvitationPayload
   | IAcceptTeamInvitePayload
   | IAddTeamPayload
   | IArchiveTeamPayload
@@ -6657,6 +6966,11 @@ export interface INotifyPromoteToOrgLeader {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications

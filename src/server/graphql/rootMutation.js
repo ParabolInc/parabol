@@ -93,11 +93,14 @@ import removeReflectTemplate from 'server/graphql/mutations/removeReflectTemplat
 import removeReflectTemplatePrompt from 'server/graphql/mutations/removeReflectTemplatePrompt'
 import renameReflectTemplate from 'server/graphql/mutations/renameReflectTemplate'
 import renameReflectTemplatePrompt from 'server/graphql/mutations/renameReflectTemplatePrompt'
+import inviteToTeam from 'server/graphql/mutations/inviteToTeam'
+import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     acceptTeamInvite,
+    acceptTeamInvitation,
     addAgendaItem,
     addFeatureFlag,
     addGitHubRepo,
@@ -134,6 +137,7 @@ export default new GraphQLObjectType({
     githubRemoveMember,
     inactivateUser,
     inviteTeamMembers,
+    inviteToTeam,
     joinIntegration,
     killMeeting,
     endNewMeeting,

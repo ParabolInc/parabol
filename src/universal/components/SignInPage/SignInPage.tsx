@@ -6,7 +6,6 @@
 
 import React, {Component, Fragment, ReactElement} from 'react'
 import {Link, RouteComponentProps, withRouter} from 'react-router-dom'
-import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -14,6 +13,7 @@ import auth0Login from 'universal/utils/auth0Login'
 import {THIRD_PARTY_AUTH_PROVIDERS, SIGNIN_LABEL, SIGNIN_SLUG} from 'universal/utils/constants'
 import getWebAuth from 'universal/utils/getWebAuth'
 import promisify from 'es6-promisify'
+import LoginMutation from 'universal/mutations/LoginMutation'
 import SignIn from './SignIn'
 import autoLogin from 'universal/decorators/autoLogin'
 import LoadingView from 'universal/components/LoadingView/LoadingView'
@@ -81,8 +81,9 @@ class SignInPage extends Component<Props, State> {
   }
 
   appSignIn = (response: AuthResponse): void => {
-    const {atmosphere, history, location} = this.props
-    signinAndUpdateToken(atmosphere, history, location, response.idToken)
+    const {atmosphere, history} = this.props
+    const {idToken} = response
+    LoginMutation(atmosphere, {auth0Token: idToken}, {history})
   }
 
   webAuth = getWebAuth()

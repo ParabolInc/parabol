@@ -13,6 +13,7 @@ import LoadableMenu from 'universal/components/LoadableMenu'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {APP_BAR_HEIGHT} from 'universal/styles/appbars'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -28,7 +29,7 @@ const StandardHubRoot = styled('div')({
   alignItems: 'center',
   borderBottom: ui.dashMenuBorder,
   display: 'flex',
-  minHeight: ui.dashHeaderMinHeight,
+  minHeight: APP_BAR_HEIGHT + 1, // add border
   padding: '.5625rem 1rem',
   width: '100%'
 })

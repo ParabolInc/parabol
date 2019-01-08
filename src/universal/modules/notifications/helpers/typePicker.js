@@ -4,10 +4,11 @@ import {
   INVITEE_APPROVED,
   KICKED_OUT,
   PAYMENT_REJECTED,
-  TASK_INVOLVES,
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER,
+  TASK_INVOLVES,
   TEAM_ARCHIVED,
+  TEAM_INVITATION,
   TEAM_INVITE
 } from 'universal/utils/constants'
 
@@ -32,5 +33,7 @@ export default {
   [TEAM_ARCHIVED]: () =>
     import(/* webpackChunkName: 'TeamArchived' */ 'universal/modules/notifications/components/TeamArchived/TeamArchived'),
   [TEAM_INVITE]: () =>
-    import(/* webpackChunkName: 'TeamInvite' */ 'universal/modules/notifications/components/TeamInvite/TeamInvite')
+    import(/* webpackChunkName: 'TeamInvite' */ 'universal/modules/notifications/components/TeamInvite/TeamInvite'),
+  [TEAM_INVITATION]: () =>
+    import(/* webpackChunkName: 'TeamInvite' */ 'universal/modules/notifications/components/TeamInvitation')
 }

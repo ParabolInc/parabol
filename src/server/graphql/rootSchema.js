@@ -1,5 +1,6 @@
 import {GraphQLSchema} from 'graphql'
 import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader'
+import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
 import mutation from './rootMutation'
 import query from './rootQuery'
 import subscription from './rootSubscription'
@@ -23,6 +24,7 @@ export default new GraphQLSchema({
     ReflectPhase,
     DiscussPhase,
     GenericMeetingPhase,
+    NotificationTeamInvitation,
     NotifyPromoteToOrgLeader,
     RetroPhaseItem,
     RetrospectiveMeeting,

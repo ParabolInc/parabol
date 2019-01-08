@@ -24,6 +24,8 @@ const backgroundColor = tinycolor(ui.colorError)
 const ErrorAlertWrapper = styled('div')({
   backgroundColor,
   borderRadius: ui.borderRadiusSmall,
+  display: 'flex',
+  alignItems: 'center',
   fontSize: appTheme.typography.s3,
   marginBottom: '1rem',
   padding: '.5rem 1rem'

@@ -48,7 +48,7 @@ export default class Atmosphere extends Environment {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        Authorization: `Bearer ${this.authToken}`,
+        Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
         'x-correlation-id': connectionId || ''
       },
       body

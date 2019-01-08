@@ -10,17 +10,20 @@ export namespace PALETTE {
     MAIN_LIGHTENED = '#F5F4FB' // BACKGROUND.MAIN alpha .15 over #FFF
   }
   export const enum BORDER {
-    LIGHT = '#DBD6E3'
+    LIGHT = '#D1CBDB',
+    DARK = '#b6adc7',
+    MAIN = '#493272'
   }
   export const enum TEXT {
     MAIN = '#444258',
-    LIGHT = '#82809A'
+    LIGHT = '#82809A',
+    GREEN = '#61BF8B'
   }
   export const enum ERROR {
     MAIN = '#ED4C56'
   }
   export const enum LINK {
-    COLOR = '#329AE5',
+    BLUE = '#329AE5',
     COLOR_NEUTRAL = '#444258'
   }
 }

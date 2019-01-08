@@ -55,6 +55,7 @@ export default createFragmentContainer(
       ...RequestNewUser_notification
       ...TeamArchived_notification
       ...TeamInvite_notification
+      ...TeamInvitation_notification
     }
   `
 )

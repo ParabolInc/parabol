@@ -19,7 +19,7 @@ import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
 import ensureDate from 'universal/utils/ensureDate'
 
 const login = {
-  type: LoginPayload,
+  type: new GraphQLNonNull(LoginPayload),
   description: 'Log in, or sign up if it is a new user',
   args: {
     // even though the token comes with the bearer, we include it here we use it like an arg since the gatekeeper
@@ -93,8 +93,7 @@ const login = {
       name: userInfo.name,
       preferredName,
       identities: userInfo.identities || [],
-      createdAt: ensureDate(userInfo.created_at),
-      userOrgs: []
+      createdAt: ensureDate(userInfo.created_at)
     }
     await r.table('User').insert(newUser)
 

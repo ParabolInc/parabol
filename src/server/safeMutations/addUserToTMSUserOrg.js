@@ -15,10 +15,12 @@ const addUserToTMSUserOrg = (userId, teamId, orgId, options = {}) => {
             .contains((userOrg) => userOrg('id').eq(orgId))
             .default(false),
           user('userOrgs'),
-          user('userOrgs').append({
-            id: orgId,
-            role
-          })
+          user('userOrgs')
+            .default([])
+            .append({
+              id: orgId,
+              role
+            })
         ),
         tms: r.branch(
           user('tms')
