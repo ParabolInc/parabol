@@ -105,7 +105,7 @@ const getDateInfo = (dueDate) => {
   const now = new Date()
   const timeDiff = date - now
   const diffDays = Math.ceil(timeDiff / ms('1d'))
-  if (diffDays < 0) return {title: `Past due, ${action}`, isPastDue: true}
+  if (diffDays <= 0) return {title: `Past due, ${action}`, isPastDue: true}
   if (diffDays < 3) return {title: `Due soon, ${action}`, isDueSoon: true}
   const dateString = formatDueDate(dueDate)
   return {title: `Due ${dateString}, ${action}`}

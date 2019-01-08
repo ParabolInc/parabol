@@ -1,6 +1,7 @@
 import {TeamInvitationGoogleSignin_verifiedInvitation} from '__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
 import {WebAuth} from 'auth0-js'
 import React, {Component} from 'react'
+import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
@@ -24,6 +25,24 @@ interface Props
     RouteComponentProps<{token: string}> {
   verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation
 }
+
+const TeamName = styled('span')({
+  fontWeight: 600,
+  whiteSpace: 'nowrap'
+})
+
+const helpText = {
+  fontSize: '.8125rem',
+  marginTop: '.5rem'
+}
+
+const ErrorMessage = styled(StyledError)({
+  ...helpText
+})
+
+const HelpMessage = styled(StyledTip)({
+  ...helpText
+})
 
 class TeamInvitationGoogleSignin extends Component<Props> {
   webAuth?: WebAuth
@@ -76,7 +95,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
         <InvitationDialogContent>
           <InvitationDialogCopy>You last signed in using Google. </InvitationDialogCopy>
           <InvitationDialogCopy>
-            Click below for immediate access to {teamName}
+            Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
           </InvitationDialogCopy>
           <InvitationCenteredCopy>
             <GoogleOAuthButton
@@ -85,8 +104,10 @@ class TeamInvitationGoogleSignin extends Component<Props> {
               waiting={submitting}
             />
             {error &&
-              !submitting && <StyledError>Error logging in! Did you close the popup?</StyledError>}
-            {submitting && <StyledTip>Continue through the login popup</StyledTip>}
+              !submitting && (
+                <ErrorMessage>Error logging in! Did you close the popup?</ErrorMessage>
+              )}
+            {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
           </InvitationCenteredCopy>
         </InvitationDialogContent>
       </InvitationDialog>

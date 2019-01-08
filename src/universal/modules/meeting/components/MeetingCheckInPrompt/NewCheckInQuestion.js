@@ -127,24 +127,22 @@ class NewCheckInQuestion extends Component<Props, State> {
 
   render () {
     const {
-      atmosphere,
       team: {newMeeting}
     } = this.props
     if (!newMeeting) return null
-    const {facilitatorUserId} = newMeeting
     const {editorState} = this.state
     const isEditing = editorState.getSelection().getHasFocus()
-    const {viewerId} = atmosphere
-    const isFacilitating = facilitatorUserId === viewerId
 
     const tip = 'Tap to customize the Social Check-in question.'
     return (
       <Tooltip
+        delay={300}
         tip={<div>{tip}</div>}
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
         maxHeight={40}
+        isOpen={isEditing ? false : undefined}
       >
         <QuestionBlock>
           <EditorBlock>
@@ -152,17 +150,14 @@ class NewCheckInQuestion extends Component<Props, State> {
               editorState={editorState}
               setEditorState={this.setEditorState}
               placehodler='e.g. How are you?'
-              readOnly={!isFacilitating}
               innerRef={(c) => {
                 this.editorRef = c
               }}
             />
           </EditorBlock>
-          {isFacilitating && (
-            <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
-              <CogIcon isEditing={isEditing}>settings</CogIcon>
-            </PlainButton>
-          )}
+          <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
+            <CogIcon isEditing={isEditing}>settings</CogIcon>
+          </PlainButton>
         </QuestionBlock>
       </Tooltip>
     )
