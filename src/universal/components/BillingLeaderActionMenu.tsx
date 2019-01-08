@@ -34,7 +34,7 @@ const BillingLeaderActionMenu = (props: Props) => {
   } = props
   const {orgId} = organization
   const {viewerId} = atmosphere
-  const {role, user} = organizationUser
+  const {newUserUntil, role, user} = organizationUser
   const isBillingLeader = role === BILLING_LEADER
   const {userId, preferredName} = user
 
@@ -70,7 +70,15 @@ const BillingLeaderActionMenu = (props: Props) => {
           orgId={orgId}
           preferredName={preferredName}
           userId={userId}
-          toggle={<MenuItemWithShortcuts label='Remove from Organization' />}
+          toggle={
+            <MenuItemWithShortcuts
+              label={
+                new Date(newUserUntil) > new Date()
+                  ? 'Refund and Remove'
+                  : 'Remove from Organization'
+              }
+            />
+          }
         />
       )}
     </MenuWithShortcuts>
@@ -86,6 +94,7 @@ export default createFragmentContainer(
 
     fragment BillingLeaderActionMenu_organizationUser on OrganizationUser {
       role
+      newUserUntil
       user {
         userId: id
         preferredName

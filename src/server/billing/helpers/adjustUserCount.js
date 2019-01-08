@@ -27,18 +27,30 @@ const changePause = (inactive) => (orgIds, userId) => {
   })
 }
 
-const addUser = (orgIds, userId) => {
+const addUser = async (orgIds, userId) => {
   const r = getRethink()
-  const docs = orgIds.map((orgId) => ({
-    id: shortid.generate(),
-    inactive: false,
-    joinedAt: new Date(),
-    newUserUntil: new Date(Date.now() + NEW_USER_GRACE_PERIOD),
-    orgId,
-    removedAt: null,
-    role: null,
-    userId
-  }))
+  const organizationUsers = await r
+    .table('OrganizationUser')
+    .getAll(userId, {index: 'userId'})
+    .orderBy(r.desc('newUserUntil'))
+  const docs = orgIds.map((orgId) => {
+    const oldOrganizationUser = organizationUsers.find(
+      (organizationUser) => organizationUser.orgId === orgId
+    )
+    return {
+      id: shortid.generate(),
+      inactive: false,
+      joinedAt: new Date(),
+      // if they've been on the team before, they no longer get a grace period
+      newUserUntil: new Date(
+        oldOrganizationUser ? oldOrganizationUser.newUserUntil : Date.now() + NEW_USER_GRACE_PERIOD
+      ),
+      orgId,
+      removedAt: null,
+      role: null,
+      userId
+    }
+  })
   return r.table('OrganizationUser').insert(docs)
 }
 
