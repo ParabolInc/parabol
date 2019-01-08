@@ -2,9 +2,10 @@ import {PromoteTeamMemberModal_teamMember} from '__generated__/PromoteTeamMember
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
-import Type from 'universal/components/Type/Type'
+import DialogHeading from 'universal/components/DialogHeading'
+import DialogContent from 'universal/components/DialogContent'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -12,7 +13,11 @@ import PromoteToTeamLeadMutation from 'universal/mutations/PromoteToTeamLeadMuta
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import TeamManagementModalBoundary from './TeamManagementModalBoundary'
 
-const StyledButton = styled(FlatButton)({
+const StyledModalBoundary = styled(TeamManagementModalBoundary)({
+  width: 420
+})
+
+const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
@@ -37,24 +42,15 @@ const PromoteTeamMemberModal = (props: Props) => {
     closePortal()
   }
   return (
-    <TeamManagementModalBoundary>
-      <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        {'Are you sure?'}
-      </Type>
-      <Type align='center' bold marginBottom='1.5rem' scale='s4'>
-        {'You will be removed as the team leader'}
-        <br />
-        {`and promote ${preferredName}. You will no`}
-        <br />
-        {'longer be able to change team membership.'}
-        <br />
-        <br />
-        {'This cannot be undone!'}
-      </Type>
-      <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
-        <IconLabel icon='arrow_forward' iconAfter label={`Yes, promote ${preferredName}`} />
-      </StyledButton>
-    </TeamManagementModalBoundary>
+    <StyledModalBoundary>
+      <DialogHeading>{'Are you sure?'}</DialogHeading>
+      <DialogContent>
+        {`You will be removed as the team leader and promote ${preferredName}. You will no longer be able to change team membership. This cannot be undone!`}
+        <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
+          <IconLabel icon='arrow_forward' iconAfter label={`Yes, promote ${preferredName}`} />
+        </StyledButton>
+      </DialogContent>
+    </StyledModalBoundary>
   )
 }
 
