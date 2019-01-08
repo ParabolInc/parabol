@@ -5713,6 +5713,8 @@ export interface IPromoteToTeamLeadPayload {
   __typename: 'PromoteToTeamLeadPayload'
   error: IStandardMutationError | null
   team: ITeam | null
+  oldLeader: ITeamMember | null
+  newLeader: ITeamMember | null
 }
 
 export interface IRejectOrgApprovalPayload {

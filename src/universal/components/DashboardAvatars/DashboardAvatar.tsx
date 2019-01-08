@@ -16,12 +16,15 @@ const AvatarAndTag = styled('div')({
   flexDirection: 'column',
   alignItems: 'center'
 })
-const AvatarTag = styled(Tag)({
+const AvatarTag = styled(Tag)(({isLead}: {isLead: boolean}) => ({
   bottom: '-1.5rem',
   marginLeft: 0,
+  opacity: isLead ? 1 : 0,
   position: 'absolute',
+  transform: `scale(${isLead ? 1 : 0})`,
+  transition: 'all 300ms',
   whiteSpace: 'nowrap'
-})
+}))
 
 const DashboardAvatar = (props: Props) => {
   const {onClick, teamMember} = props
@@ -38,7 +41,7 @@ const DashboardAvatar = (props: Props) => {
         onClick={onClick}
         size='smaller'
       />
-      {isLead && <AvatarTag colorPalette='blue' label='Team Lead' />}
+      <AvatarTag colorPalette='blue' label='Team Lead' isLead={isLead} />
     </AvatarAndTag>
   )
 }
