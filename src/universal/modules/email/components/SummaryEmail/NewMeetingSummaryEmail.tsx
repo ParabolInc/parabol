@@ -109,6 +109,7 @@ const SummaryEmail = (props: Props) => {
                   {/* Summary Header */}
                   <SummaryHeader
                     createdAt={createdAt}
+                    isDemo={isDemo}
                     meetingNumber={meetingNumber}
                     meetingType={meetingType}
                     referrer={referrer}

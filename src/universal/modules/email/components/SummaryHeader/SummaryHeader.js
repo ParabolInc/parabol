@@ -7,7 +7,7 @@ import makeDateString from 'universal/utils/makeDateString'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 
 const SummaryHeader = (props) => {
-  const {createdAt, meetingNumber, meetingType, teamName} = props
+  const {createdAt, isDemo, meetingNumber, meetingType, teamName} = props
   const meetingLabel = meetingTypeToLabel[meetingType]
   const blockStyle = {
     backgroundColor: emailBodyColor,
@@ -25,8 +25,10 @@ const SummaryHeader = (props) => {
 
   const meetingDateStyle = {
     ...textStyle,
-    fontSize: '18px',
-    fontWeight: 400
+    color: appTheme.brand.primary.midGray,
+    fontSize: '16px',
+    fontWeight: 400,
+    lineHeight: '24px'
   }
 
   const teamNameStyle = {
@@ -55,8 +57,8 @@ const SummaryHeader = (props) => {
               <div style={labelStyles}>{'Meeting Summary'}</div>
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>
-                {`${meetingLabel} Meeting #${meetingNumber}`}
-                {' • '}
+                {!isDemo && `${meetingLabel} Meeting #${meetingNumber}`}
+                {!isDemo && ' • '}
                 {meetingDate}
               </div>
             </td>
@@ -75,6 +77,7 @@ SummaryHeader.propTypes = {
     PropTypes.instanceOf(Date)
   ]),
   fontSize: PropTypes.number,
+  isDemo: PropTypes.boolean,
   lineHeight: PropTypes.number,
   meetingNumber: PropTypes.number,
   meetingType: PropTypes.string,
