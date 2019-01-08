@@ -73,7 +73,7 @@ const typeLookup = {
   [UNPAUSE_USER]: changePause(false)
 }
 
-export default async function adjustUserCount (userId, orgInput, type) {
+export default async function adjustUserCount (userId, orgInput, type, options = {}) {
   const r = getRethink()
   const now = new Date()
 
@@ -93,7 +93,7 @@ export default async function adjustUserCount (userId, orgInput, type) {
         })
         .count()
     }))
-  const prorationDate = toEpochSeconds(now)
+  const prorationDate = toEpochSeconds(type === REMOVE_USER ? options.prorationDate : now)
   const hooks = orgs.reduce((arr, org) => {
     const {stripeSubscriptionId} = org
     if (stripeSubscriptionId) {
