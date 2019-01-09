@@ -33,7 +33,6 @@ const HelpLayout = styled('div')({
 })
 
 const HelpBlock = styled('div')({
-  // background: appTheme.palette.yellow20l,
   backgroundColor: 'white',
   borderRadius: 4,
   boxShadow: cardShadow,
