@@ -2,7 +2,7 @@ import styled from 'react-emotion'
 
 const TeamManagementModalBoundary = styled('div')({
   background: 'white',
-  borderRadius: '4px',
+  borderRadius: 8,
   display: 'flex',
   flexDirection: 'column',
   maxWidth: '100%',

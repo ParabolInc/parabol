@@ -33,25 +33,26 @@ const HelpLayout = styled('div')({
 })
 
 const HelpBlock = styled('div')({
-  background: appTheme.palette.yellow30l,
-  borderRadius: ui.borderRadiusSmall,
+  // background: appTheme.palette.yellow20l,
+  backgroundColor: 'white',
+  borderRadius: 4,
   boxShadow: cardShadow,
   color: appTheme.palette.dark,
   margin: '1rem 0',
-  padding: '.75rem',
-  textAlign: 'center',
-  width: '15rem'
+  padding: 16,
+  width: '17rem'
 })
 
 const HelpHeading = styled('div')({
-  fontSize: appTheme.typography.s4,
+  fontSize: 16,
   fontWeight: 600,
+  lineHeight: 1.5,
   margin: 0
 })
 
 const HelpCopy = styled('div')({
-  fontSize: appTheme.typography.s2,
-  lineHeight: appTheme.typography.s4,
+  fontSize: 12,
+  lineHeight: 1.5,
   margin: '.5rem 0'
 })
 
@@ -82,14 +83,10 @@ const NewTeam = (props) => {
               such as a company, non-profit, or
               for your personal use. Once created, you can
               create teams and invite others, even if they
-              don't share your email domain.`}
+              don't share your email domain. New Organizations
+              start out on the Free Personal Plan.`}
             </HelpCopy>
-            <HelpCopy>
-              {'New Organizations start out on the '}
-              <b>{'Free Personal Plan'}</b>
-              {'.'}
-            </HelpCopy>
-            <LearnMoreLink palette='warm' onClick={() => window.open(PRICING_LINK, '_blank')}>
+            <LearnMoreLink palette='blue' onClick={() => window.open(PRICING_LINK, '_blank')}>
               <IconLabel icon={ui.iconExternalLink} iconAfter label='Learn More' />
             </LearnMoreLink>
           </HelpBlock>
