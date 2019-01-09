@@ -21,8 +21,10 @@ const AvatarTag = styled(Tag)(({isLead}: {isLead: boolean}) => ({
   marginLeft: 0,
   opacity: isLead ? 1 : 0,
   position: 'absolute',
+  pointerEvents: 'none',
   transform: `scale(${isLead ? 1 : 0})`,
   transition: 'all 300ms',
+  userSelect: 'none',
   whiteSpace: 'nowrap'
 }))
 
