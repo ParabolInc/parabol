@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.1.0 2019-Jan-09
+
+### Changed
+
+* New invitation UX (see PRs #2550, #2556 and issues #2537, #2538, #2539, #2540)
+* Refactored the relationship between organizations and their users (see PR #2560 and issue #2547)
+
+### Fixed
+
+* Check-in prompt editing UX #2548
+* Organization help card styles #1968
+
 ## v3.0.0 2018-Dec-19
 
 ### Changed

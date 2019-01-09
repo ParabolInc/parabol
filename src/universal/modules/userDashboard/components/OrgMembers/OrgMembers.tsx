@@ -1,21 +1,27 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import {createPaginationContainer} from 'react-relay'
+import {createPaginationContainer, graphql} from 'react-relay'
 import OrgMemberRow from 'universal/modules/userDashboard/components/OrgUserRow/OrgMemberRow'
 import Panel from 'universal/components/Panel/Panel'
+import {BILLING_LEADER} from 'universal/utils/constants'
+import {OrgMembers_viewer} from '__generated__/OrgMembers_viewer.graphql'
 
-const OrgMembers = (props) => {
+interface Props {
+  viewer: OrgMembers_viewer
+}
+
+const OrgMembers = (props: Props) => {
   const {
     viewer: {organization}
   } = props
-  const {orgMembers} = organization
-  const billingLeaderCount = orgMembers.edges.reduce(
-    (count, {node}) => (node.isBillingLeader ? count + 1 : count),
+  if (!organization) return null
+  const {organizationUsers} = organization
+  const billingLeaderCount = organizationUsers.edges.reduce(
+    (count, {node}) => (node.role === BILLING_LEADER ? count + 1 : count),
     0
   )
   return (
     <Panel label='Organization Members'>
-      {orgMembers.edges.map(({node: orgMember}) => {
+      {organizationUsers.edges.map(({node: orgMember}) => {
         return (
           <OrgMemberRow
             key={orgMember.id}
@@ -29,22 +35,19 @@ const OrgMembers = (props) => {
   )
 }
 
-OrgMembers.propTypes = {
-  viewer: PropTypes.object.isRequired
-}
-
-export default createPaginationContainer(
+export default createPaginationContainer<Props>(
   OrgMembers,
   graphql`
     fragment OrgMembers_viewer on User {
       organization(orgId: $orgId) {
         ...OrgMemberRow_organization
-        orgMembers(first: $first, after: $after) @connection(key: "OrgMembers_orgMembers") {
+        organizationUsers(first: $first, after: $after)
+          @connection(key: "OrgMembers_organizationUsers") {
           edges {
             cursor
             node {
               id
-              isBillingLeader
+              role
               ...OrgMemberRow_orgMember
             }
           }
@@ -59,7 +62,8 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     getConnectionFromProps (props) {
-      return props.viewer && props.viewer.orgMembers
+      const {viewer} = props
+      return viewer && viewer.organization && viewer.organization.organizationUsers
     },
     getFragmentVariables (prevVars, totalCount) {
       return {
@@ -67,7 +71,7 @@ export default createPaginationContainer(
         first: totalCount
       }
     },
-    getVariables (props, {count, cursor}, fragmentVariables) {
+    getVariables (_props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

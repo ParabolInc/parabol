@@ -34,47 +34,46 @@ export const requireSU = (authToken) => {
   }
 }
 
-// undefined orgId will disable the filter
-export const getUserOrgDoc = (userId, orgId = '') => {
-  const r = getRethink()
-  return r
-    .table('User')
-    .get(userId)('userOrgs')
-    .filter({id: orgId})
-    .nth(0)
-    .default(null)
-    .run()
+export const isUserBillingLeader = async (userId, orgId, dataLoader, options) => {
+  const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+  const organizationUser = organizationUsers.find(
+    (organizationUser) => organizationUser.orgId === orgId
+  )
+  if (options && options.clearCache) {
+    dataLoader.get('organizationUsersByUserId').clear(userId)
+  }
+  return organizationUser ? organizationUser.role === BILLING_LEADER : false
 }
 
-export const isOrgBillingLeader = (userOrgDoc) => {
-  return userOrgDoc && userOrgDoc.role === BILLING_LEADER
+export const isUserInOrg = async (userId, orgId) => {
+  const r = getRethink()
+  const organizationUser = await r
+    .table('OrganizationUser')
+    .getAll(userId, {index: 'userId'})
+    .filter({orgId})
+    .filter({removedAt: null})
+    .nth(0)
+  return !!organizationUser
 }
 
 export const isOrgLeaderOfUser = async (authToken, userId) => {
   const r = getRethink()
-  return r
-    .table('User')
-    .get(authToken.sub)('userOrgs')
-    .filter({
-      role: BILLING_LEADER
-    })('id')
-    .do((leaderOrgs) => {
-      return {
-        leaderOrgs,
-        memberOrgs: r.table('User').get(userId)('userOrgs')('id')
-      }
-    })
-    .do((res) => {
-      return res('leaderOrgs')
-        .union(res('memberOrgs'))
-        .distinct()
-        .count()
-        .lt(
-          res('leaderOrgs')
-            .count()
-            .add(res('memberOrgs').count())
-        )
-    })
+  const viewerId = getUserId(authToken)
+  const {viewerOrgIds, userOrgIds} = await r({
+    viewerOrgIds: r
+      .table('OrganizationUser')
+      .getAll(viewerId, {index: 'userId'})
+      .filter({removedAt: null, role: BILLING_LEADER})('orgId')
+      .coerceTo('array'),
+    userOrgIds: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null})('orgId')
+      .coerceTo('array')
+  })
+  const uniques = new Set(viewerOrgIds.concat(userOrgIds))
+  const total = viewerOrgIds.length + userOrgIds.length
+  return uniques.size < total
 }
 
 export const isPaidTier = async (teamId) => {

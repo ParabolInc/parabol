@@ -115,12 +115,26 @@ export default class RethinkDataLoader {
       primeStandardLoader(this.notifications, notifications)
       return userIds.map(() => notifications)
     }, this.dataloaderOptions)
-    this.orgsByUserId = makeCustomLoader(async (userIds) => {
+    this.organizationUsersByOrgId = makeCustomLoader(async (orgIds) => {
       const r = getRethink()
-      const orgs = await r.table('Organization').getAll(r.args(userIds), {index: 'orgUsers'})
-      primeStandardLoader(this.organizations, orgs)
+      const organizationUsers = await r
+        .table('OrganizationUser')
+        .getAll(r.args(orgIds), {index: 'orgId'})
+        .filter({removedAt: null})
+      primeStandardLoader(this.organizationUsers, organizationUsers)
+      return orgIds.map((orgId) => {
+        return organizationUsers.filter((organizationUser) => organizationUser.orgId === orgId)
+      })
+    }, this.dataloaderOptions)
+    this.organizationUsersByUserId = makeCustomLoader(async (userIds) => {
+      const r = getRethink()
+      const organizationUsers = await r
+        .table('OrganizationUser')
+        .getAll(r.args(userIds), {index: 'userId'})
+        .filter({removedAt: null})
+      primeStandardLoader(this.organizationUsers, organizationUsers)
       return userIds.map((userId) => {
-        return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)))
+        return organizationUsers.filter((organizationUser) => organizationUser.userId === userId)
       })
     }, this.dataloaderOptions)
     this.retroReflectionGroupsByMeetingId = makeCustomLoader(async (meetingIds) => {
@@ -283,6 +297,7 @@ export default class RethinkDataLoader {
   notifications = this.makeStandardLoader('Notification')
   orgApprovals = this.makeStandardLoader('OrgApproval')
   organizations = this.makeStandardLoader('Organization')
+  organizationUsers = this.makeStandardLoader('OrganizationUser')
   reflectTemplates = this.makeStandardLoader('ReflectTemplate')
   retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup')
   retroReflections = this.makeStandardLoader('RetroReflection')

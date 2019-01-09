@@ -291,15 +291,13 @@ export default async function generateInvoice (invoice, stripeLineItems, orgId, 
           createdAt: now,
           total: invoice.total,
           billingLeaderEmails: r
-            .table('User')
-            .getAll(orgId, {index: 'userOrgs'})
-            .filter((user) =>
-              user('userOrgs').contains((userOrg) =>
-                userOrg('id')
-                  .eq(orgId)
-                  .and(userOrg('role').eq(BILLING_LEADER))
-              )
-            )('email')
+            .table('OrganizationUser')
+            .getAll(orgId, {index: 'orgId'})
+            .filter({removedAt: null, role: BILLING_LEADER})
+            .coerceTo('array')('userId')
+            .do((userIds) => {
+              return r.table('User').getAll(userIds, {index: 'id'})('email')
+            })
             .coerceTo('array'),
           creditCard: org('creditCard').default({}),
           endAt: fromEpochSeconds(invoice.period_end),

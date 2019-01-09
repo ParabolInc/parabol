@@ -10,7 +10,6 @@ import RemoveTeamMemberPayload from 'server/graphql/types/RemoveTeamMemberPayloa
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload'
 import RejectOrgApprovalPayload from 'server/graphql/types/RejectOrgApprovalPayload'
-import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload'
 import InviteTeamMembersPayload from 'server/graphql/types/InviteTeamMembersPayload'
 import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload'
 import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayload'
@@ -18,7 +17,6 @@ import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayl
 const types = [
   AcceptTeamInvitePayload,
   CancelApprovalPayload,
-  CancelTeamInvitePayload,
   ChangeTaskTeamPayload,
   CreateGitHubIssuePayload,
   CreateTaskPayload,

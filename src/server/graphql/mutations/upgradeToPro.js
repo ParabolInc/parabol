@@ -3,7 +3,7 @@ import stripe from 'server/billing/stripe'
 import getRethink from 'server/database/rethinkDriver'
 import getCCFromCustomer from 'server/graphql/mutations/helpers/getCCFromCustomer'
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import {fromEpochSeconds} from 'server/utils/epochTime'
 import publish from 'server/utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
@@ -32,15 +32,22 @@ export default {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const userId = getUserId(authToken)
-    const userOrgDoc = await getUserOrgDoc(userId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) return sendOrgLeadAccessError(authToken, userOrgDoc)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+      return sendOrgLeadAccessError(authToken, orgId)
+    }
 
     // VALIDATION
-    const {orgUsers, stripeSubscriptionId: startingSubId, stripeId} = await r
+    const {quantity, stripeSubscriptionId: startingSubId, stripeId} = await r
       .table('Organization')
       .get(orgId)
-      .pluck('orgUsers', 'stripeId', 'stripeSubscriptionId')
+      .merge((org) => ({
+        quantity: r
+          .table('OrganizationUser')
+          .getAll(org('id'), {index: 'orgId'})
+          .filter({removedAt: null})
+          .count()
+      }))
 
     if (startingSubId) return sendAlreadyProTierError(authToken, orgId)
 
@@ -63,7 +70,7 @@ export default {
       items: [
         {
           plan: PARABOL_PRO_MONTHLY,
-          quantity: orgUsers.length
+          quantity
         }
       ],
       trial_period_days: 0
@@ -97,18 +104,18 @@ export default {
         )('changes')('new_val')('id')
         .default([])
     })
-    sendSegmentEvent('Upgrade to Pro', userId, {orgId})
+    sendSegmentEvent('Upgrade to Pro', viewerId, {orgId})
     const data = {orgId, teamIds}
     publish(ORGANIZATION, orgId, UpgradeToProPayload, data, subOptions)
 
     teamIds.forEach((teamId) => {
       // I can't readily think of a clever way to use the data obj and filter in the resolver so I'll reduce here.
-      // This is probably a smelly piece of code telling me I should be sending this per-userId or per-org
+      // This is probably a smelly piece of code telling me I should be sending this per-viewerId or per-org
       const teamData = {orgId, teamIds: [teamId]}
       publish(TEAM, teamId, UpgradeToProPayload, teamData, subOptions)
     })
     // the count of this users tier stats just changed, update:
-    await sendSegmentIdentify(userId)
+    await sendSegmentIdentify(viewerId)
     return data
   }
 }

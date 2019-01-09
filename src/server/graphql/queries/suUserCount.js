@@ -20,7 +20,7 @@ export default {
     tier: {
       type: OrgTierEnum,
       defaultValue: PRO,
-      descrption: 'which tier of org shall we count?'
+      description: 'which tier of org shall we count?'
     }
   },
   async resolve (source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
@@ -32,36 +32,26 @@ export default {
     // RESOLUTION
     return r
       .table('Organization')
-      .getAll(tier, {index: 'tier'})
-      .map((org) =>
-        org.merge({
-          orgUsers: org('orgUsers')
-            .eqJoin((ou) => ou('id'), r.table('User'))
-            .zip()
-            .pluck('email', 'inactive')
-        })
-      )
+      .getAll(tier, {index: 'tier'})('id')
       .coerceTo('array')
-      .do((orgs) =>
-        r.branch(
-          r.eq(ignoreEmailRegex, ''),
-          orgs,
-          orgs.map((org) =>
-            org.merge({
-              orgUsers: org('orgUsers').filter((ou) =>
-                r.eq(ou('email').match(ignoreEmailRegex), null)
-              )
-            })
+      .do((orgIds) => {
+        return r
+          .table('OrganizationUser')
+          .getAll(r.args(orgIds), {index: 'orgId'})
+          .filter({removedAt: null})
+          .eqJoin('userId', r.table('User'))
+          .zip()
+          .filter((user) =>
+            r.branch(
+              r(ignoreEmailRegex).eq(''),
+              true,
+              user('email')
+                .match(ignoreEmailRegex)
+                .eq(null)
+            )
           )
-        )
-      )
-      .concatMap((org) => org('orgUsers')('inactive'))
-      .count((inactive) =>
-        r.branch(
-          includeInactive,
-          true, // count everybody
-          r.not(inactive)
-        )
-      )
+          .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
+          .count()
+      })
   }
 }
