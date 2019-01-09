@@ -129,13 +129,13 @@ const Team = new GraphQLObjectType({
       }
     },
     isLead: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
       resolve: async ({id: teamId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-        return teamMember.isLead
+        return !!teamMember.isLead
       }
     },
     meetingPhase: {

@@ -11,7 +11,6 @@ import {
   approveToOrgNotificationUpdater
 } from 'universal/mutations/ApproveToOrgMutation'
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
-import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
 import {
   createTaskNotificationOnNext,
@@ -46,7 +45,6 @@ const subscription = graphql`
       ...AddTeamMutation_notification @relay(mask: false)
       ...ApproveToOrgMutation_notification @relay(mask: false)
       ...CancelApprovalMutation_notification @relay(mask: false)
-      ...CancelTeamInviteMutation_notification @relay(mask: false)
       ...ClearNotificationMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
       ...DeleteTaskMutation_notification @relay(mask: false)
@@ -177,9 +175,6 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'CancelApprovalPayload':
           cancelApprovalNotificationUpdater(payload, store, viewerId)
-          break
-        case 'CancelTeamInvitePayload':
-          cancelTeamInviteNotificationUpdater(payload, store, viewerId)
           break
         case 'ClearNotificationPayload':
           clearNotificationNotificationUpdater(payload, store, viewerId)

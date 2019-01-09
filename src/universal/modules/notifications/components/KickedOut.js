@@ -12,7 +12,7 @@ import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 const KickedOut = (props) => {
   const {atmosphere, notification, submitting, submitMutation, onError, onCompleted} = props
   const {notificationId, team} = notification
-  const {teamName} = team
+  const {name: teamName} = team
   const acknowledge = () => {
     submitMutation()
     ClearNotificationMutation(atmosphere, notificationId, onError, onCompleted)
@@ -50,7 +50,7 @@ export default createFragmentContainer(
       notificationId: id
       team {
         id
-        teamName: name
+        name
       }
     }
   `

@@ -15,13 +15,10 @@ import AddOrgMutation from 'universal/mutations/AddOrgMutation'
 import AddTeamMutation from 'universal/mutations/AddTeamMutation'
 import ui from 'universal/styles/ui'
 import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
-import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Legitity from 'universal/validation/Legitity'
 import teamNameValidation from 'universal/validation/teamNameValidation'
-import {inviteesRawTest} from 'universal/validation/templates'
 import NewTeamFormBlock from './NewTeamFormBlock'
-import NewTeamFormInvitees from './NewTeamFormInvitees'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
 import StyledError from 'universal/components/StyledError'
@@ -73,29 +70,18 @@ interface Field {
 }
 
 interface Fields {
-  rawInvitees: Field
   orgName: Field
   teamName: Field
 }
 
-type FieldName = 'rawInvitees' | 'orgName' | 'teamName'
+type FieldName = 'orgName' | 'teamName'
 const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
-
-const makeInvitees = (invitees) => {
-  return invitees
-    ? invitees.map((email) => ({
-      email: email.address,
-      fullName: email.fullName
-    }))
-    : []
-}
 
 class NewTeamForm extends Component<Props, State> {
   state = {
     isNewOrg: this.props.isNewOrganization,
     orgId: '',
     fields: {
-      rawInvitees: {...DEFAULT_FIELD},
       orgName: {...DEFAULT_FIELD},
       teamName: {...DEFAULT_FIELD}
     }
@@ -115,8 +101,7 @@ class NewTeamForm extends Component<Props, State> {
   validate = (name: FieldName) => {
     const validators = {
       teamName: this.validateTeamName,
-      orgName: this.validateOrgName,
-      rawInvitees: this.validateInvitees
+      orgName: this.validateOrgName
     }
     const res: Legitity = validators[name]()
 
@@ -148,12 +133,6 @@ class NewTeamForm extends Component<Props, State> {
       }
     }
     return teamNameValidation(rawTeamName, teamNames)
-  }
-
-  validateInvitees = () => {
-    const {fields} = this.state
-    const rawInvitees = fields.rawInvitees.value
-    return new Legitity(rawInvitees).test(inviteesRawTest)
   }
 
   validateOrgName = () => {
@@ -237,14 +216,12 @@ class NewTeamForm extends Component<Props, State> {
     e.preventDefault()
     if (submitting) return
     const {isNewOrg, orgId} = this.state
-    const fieldNames: Array<FieldName> = ['teamName', 'rawInvitees']
+    const fieldNames: Array<FieldName> = ['teamName']
     fieldNames.forEach(this.setDirty)
     const fieldRes = fieldNames.map(this.validate)
     const hasError = fieldRes.reduce((err: boolean, val) => err || !!val.error, false)
     if (hasError) return
-    const [teamRes, rawInviteesRes] = fieldRes
-    const parsedInvitees = parseEmailAddressList(rawInviteesRes.value)
-    const invitees = makeInvitees(parsedInvitees)
+    const [teamRes] = fieldRes
     if (isNewOrg) {
       this.setDirty('orgName')
       const {error, value: orgName} = this.validate('orgName')
@@ -252,7 +229,7 @@ class NewTeamForm extends Component<Props, State> {
       const newTeam = {
         name: teamRes.value
       }
-      const variables = {newTeam, invitees, orgName}
+      const variables = {newTeam, orgName}
       submitMutation()
       AddOrgMutation(atmosphere, variables, {history}, onError, onCompleted)
     } else {
@@ -261,7 +238,7 @@ class NewTeamForm extends Component<Props, State> {
         orgId
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam, invitees}, {history}, onError, onCompleted)
+      AddTeamMutation(atmosphere, {newTeam}, {history}, onError, onCompleted)
     }
   }
 
@@ -309,14 +286,6 @@ class NewTeamForm extends Component<Props, State> {
               error={fields.teamName.error}
               onChange={this.handleInputChange}
               teamName={fields.teamName.value}
-              onBlur={this.handleBlur}
-            />
-            <NewTeamFormInvitees
-              placeholder={randomPlaceholderTheme.emailMulti}
-              dirty={fields.rawInvitees.dirty}
-              error={fields.rawInvitees.error}
-              onChange={this.handleInputChange}
-              rawInvitees={fields.rawInvitees.value}
               onBlur={this.handleBlur}
             />
 

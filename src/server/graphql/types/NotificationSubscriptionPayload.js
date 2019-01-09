@@ -3,7 +3,6 @@ import AddOrgPayload from 'server/graphql/types/AddOrgPayload'
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload'
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload'
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload'
-import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload'
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload'
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload'
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload'
@@ -25,7 +24,6 @@ const types = [
   AddTeamPayload,
   ApproveToOrgPayload,
   CancelApprovalPayload,
-  CancelTeamInvitePayload,
   ClearNotificationPayload,
   CreateTaskPayload,
   DeleteTaskPayload,
