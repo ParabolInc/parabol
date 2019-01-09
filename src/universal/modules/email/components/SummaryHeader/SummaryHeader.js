@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {Fragment} from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
 import {emailBodyColor, emailFontFamily} from 'universal/styles/email'
@@ -57,8 +57,12 @@ const SummaryHeader = (props) => {
               <div style={labelStyles}>{'Meeting Summary'}</div>
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>
-                {!isDemo && `${meetingLabel} Meeting #${meetingNumber}`}
-                {!isDemo && ' • '}
+                {!isDemo && (
+                  <Fragment>
+                    {`${meetingLabel} Meeting #${meetingNumber}`}
+                    {' • '}
+                  </Fragment>
+                )}
                 {meetingDate}
               </div>
             </td>
