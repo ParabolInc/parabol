@@ -3,16 +3,21 @@ import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import FlatButton from 'universal/components/FlatButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
-import Type from 'universal/components/Type/Type'
+import DialogHeading from 'universal/components/DialogHeading'
+import DialogContent from 'universal/components/DialogContent'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveTeamMemberMutation from 'universal/mutations/RemoveTeamMemberMutation'
 import TeamManagementModalBoundary from '../PromoteTeamMemberModal/TeamManagementModalBoundary'
 
-const StyledButton = styled(FlatButton)({
+const StyledModalBoundary = styled(TeamManagementModalBoundary)({
+  width: 356
+})
+
+const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
@@ -30,19 +35,17 @@ const LeaveTeamModal = (props: Props) => {
     RemoveTeamMemberMutation(atmosphere, teamMemberId)
   }
   return (
-    <TeamManagementModalBoundary>
-      <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        {'Are you sure?'}
-      </Type>
-      <Type align='center' bold marginBottom='1.5rem' scale='s4'>
+    <StyledModalBoundary>
+      <DialogHeading>{'Are you sure?'}</DialogHeading>
+      <DialogContent>
         {'This will remove you from the team.'}
         <br />
-        {`All of your tasks will be given to the team lead`}
-      </Type>
-      <StyledButton size='large' onClick={handleClick} palette='warm'>
-        <IconLabel icon='arrow_forward' iconAfter label='Leave the team' />
-      </StyledButton>
-    </TeamManagementModalBoundary>
+        {'All of your tasks will be given to the team lead.'}
+        <StyledButton size='medium' onClick={handleClick}>
+          <IconLabel icon='arrow_forward' iconAfter label='Leave the team' />
+        </StyledButton>
+      </DialogContent>
+    </StyledModalBoundary>
   )
 }
 

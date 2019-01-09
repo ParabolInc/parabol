@@ -12,6 +12,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 type Props = {
   heading: string,
   secondaryAction: {
+    actionCopy: string,
     displayName: string,
     relativeUrl: string
   }
@@ -19,21 +20,27 @@ type Props = {
 
 const H1 = styled('h1')({
   color: appTheme.palette.dark,
-  margin: '3rem 0 .5rem',
+  fontSize: '1.25rem',
+  lineHeight: 1.5,
+  margin: '0 0 1rem',
   textAlign: 'center'
 })
 
 const H2 = styled('h2')({
-  color: appTheme.palette.mid,
-  fontSize: '1rem',
+  color: appTheme.palette.dark,
+  fontSize: '.875rem',
   fontWeight: 400,
-  margin: '.5rem 0 2rem',
+  lineHeight: 1.5,
+  margin: '0 0 1.5rem',
   textAlign: 'center'
 })
 
 const linkStyles = {
-  color: appTheme.palette.mid,
-  textDecoration: 'underline'
+  color: appTheme.brand.secondary.blue,
+  ':hover': {
+    color: appTheme.brand.secondary.blue,
+    textDecoration: 'underline'
+  }
 }
 
 const brandStyledLink = (tag: Tag): StyledComponent<*> =>
@@ -49,7 +56,7 @@ const AuthHeader = (props: Props) => (
   <Fragment>
     <H1>{props.heading}</H1>
     <H2>
-      {'or '}
+      {props.secondaryAction.actionCopy}{' '}
       <BrandedLink to={props.secondaryAction.relativeUrl}>
         {props.secondaryAction.displayName}
       </BrandedLink>

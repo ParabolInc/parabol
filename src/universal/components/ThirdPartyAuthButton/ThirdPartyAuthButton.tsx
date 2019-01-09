@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import RaisedButton from 'universal/components/RaisedButton'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import {authButtonWidth} from 'universal/styles/auth'
 import styled from 'react-emotion'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
@@ -42,7 +42,7 @@ const Label = styled('div')({
 export default ({waiting, provider, handleClick}: Props) => {
   const label = `Sign in with ${provider.displayName}`
   return (
-    <RaisedButton
+    <PrimaryButton
       size='medium'
       onClick={handleClick}
       palette='white'
@@ -51,6 +51,6 @@ export default ({waiting, provider, handleClick}: Props) => {
     >
       <StyledIcon name={provider.iconName} />
       <Label>{label}</Label>
-    </RaisedButton>
+    </PrimaryButton>
   )
 }

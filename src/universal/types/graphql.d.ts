@@ -136,9 +136,19 @@ export interface IUser {
   inactive: boolean | null
 
   /**
+   * true if the user is a part of the supplied orgId
+   */
+  isBillingLeader: boolean | null
+
+  /**
    * The application-specific name, defaults to nickname
    */
   preferredName: string
+
+  /**
+   * the orgs and roles for this user on each
+   */
+  userOrgs: Array<IUserOrg | null> | null
   archivedTasks: ITaskConnection | null
   archivedTasksCount: number | null
 
@@ -424,6 +434,30 @@ export interface IAuthIdentityType {
    * true if the identity provider is a social provider, false otherwise
    */
   isSocial: boolean | null
+}
+
+/**
+ * The user/org M:F join, denormalized on the user/org tables
+ */
+export interface IUserOrg {
+  __typename: 'UserOrg'
+
+  /**
+   * The orgId
+   */
+  id: string | null
+
+  /**
+   * role of the user in the org
+   */
+  role: OrgUserRole | null
+}
+
+/**
+ * The role of the org user
+ */
+export const enum OrgUserRole {
+  billingLeader = 'billingLeader'
 }
 
 /**
@@ -1510,6 +1544,11 @@ export interface IOrganization {
    * true if the viewer is the billing leader for the org
    */
   isBillingLeader: boolean
+
+  /**
+   * The billing leader of the organization (or the first, if more than 1)
+   */
+  mainBillingLeader: IUser | null
 
   /**
    * The name of the organization
@@ -5745,6 +5784,8 @@ export interface IPromoteToTeamLeadPayload {
   __typename: 'PromoteToTeamLeadPayload'
   error: IStandardMutationError | null
   team: ITeam | null
+  oldLeader: ITeamMember | null
+  newLeader: ITeamMember | null
 }
 
 export interface IRejectOrgApprovalPayload {

@@ -39,7 +39,7 @@ const PasswordResetForm = (props: Props) => {
           type='email'
           autoFocus
           component={InputField}
-          fieldSize='large'
+          fieldSize='medium'
           placeholder='you@company.co'
           label='Email:'
           name='email'
@@ -47,8 +47,8 @@ const PasswordResetForm = (props: Props) => {
           disabled={submitting}
         />
       </Block>
-      <PrimaryButton size='large' disabled={!valid} waiting={submitting}>
-        {'Submit'}
+      <PrimaryButton size='medium' disabled={!valid} waiting={submitting}>
+        {'Send Email'}
       </PrimaryButton>
     </Form>
   )
