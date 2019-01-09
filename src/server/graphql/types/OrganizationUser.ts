@@ -26,7 +26,7 @@ const OrganizationUser = new GraphQLObjectType({
     newUserUntil: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description:
-        'The last moment a billing leader can remove the user from the org & receive a refund'
+        'The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd'
     },
     newUserRefundAppliedAt: {
       type: GraphQLISO8601Type,

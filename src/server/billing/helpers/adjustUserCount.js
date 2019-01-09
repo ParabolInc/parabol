@@ -2,7 +2,6 @@ import getRethink from 'server/database/rethinkDriver'
 import {
   ADD_USER,
   AUTO_PAUSE_USER,
-  NEW_USER_GRACE_PERIOD,
   PAUSE_USER,
   REMOVE_USER,
   UNPAUSE_USER
@@ -29,21 +28,29 @@ const changePause = (inactive) => (orgIds, userId) => {
 
 const addUser = async (orgIds, userId) => {
   const r = getRethink()
-  const organizationUsers = await r
-    .table('OrganizationUser')
-    .getAll(userId, {index: 'userId'})
-    .orderBy(r.desc('newUserUntil'))
+  const {organizations, organizationUsers} = await r({
+    organizationUsers: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .orderBy(r.desc('newUserUntil'))
+      .coerceTo('array'),
+    organizations: r
+      .table('Organization')
+      .getAll(r.args(orgIds))
+      .coerceTo('array')
+  })
   const docs = orgIds.map((orgId) => {
     const oldOrganizationUser = organizationUsers.find(
       (organizationUser) => organizationUser.orgId === orgId
     )
+    const organization = organizations.find((organization) => organization.id === orgId)
     return {
       id: shortid.generate(),
       inactive: false,
       joinedAt: new Date(),
       // if they've been on the team before, they no longer get a grace period
       newUserUntil: new Date(
-        oldOrganizationUser ? oldOrganizationUser.newUserUntil : Date.now() + NEW_USER_GRACE_PERIOD
+        oldOrganizationUser ? oldOrganizationUser.newUserUntil : organization.periodEnd
       ),
       orgId,
       removedAt: null,
