@@ -37,6 +37,11 @@ const OffsetTitle = styled(InvitationDialogTitle)({
   paddingLeft: '1.75rem'
 })
 
+const ErrorMessage = styled(StyledError)({
+  fontSize: '.8125rem',
+  marginTop: '.5rem'
+})
+
 class AddTeamMemberModal extends Component<Props, State> {
   state = {
     successfulInvitations: null,
@@ -107,7 +112,7 @@ class AddTeamMemberModal extends Component<Props, State> {
             placeholder='email@example.co, another@example.co'
             value={rawInvitees}
           />
-          {error && <StyledError>{error}</StyledError>}
+          {error && <ErrorMessage>{error}</ErrorMessage>}
           <ButtonGroup>
             <PrimaryButton
               onClick={this.sendInvitations}

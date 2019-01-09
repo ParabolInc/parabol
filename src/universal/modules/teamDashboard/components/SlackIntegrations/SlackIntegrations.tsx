@@ -94,7 +94,6 @@ const SlackIntegrations = (props: Props) => {
   })
   return (
     <SettingsWrapper>
-      k
       <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <ProviderDetails>
