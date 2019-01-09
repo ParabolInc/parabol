@@ -125,8 +125,8 @@ const removeOrgUser = {
     })
 
     // need to make sure the org doc is updated before adjusting this
-    const {newUserUntil} = organizationUser
-    const prorationDate = newUserUntil >= now ? newUserUntil : now
+    const {joinedAt, newUserUntil} = organizationUser
+    const prorationDate = newUserUntil >= now ? new Date(joinedAt) : now
     await adjustUserCount(userId, orgId, REMOVE_USER, {prorationDate})
 
     const {tms} = user
