@@ -7,7 +7,7 @@ import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import Tag from 'universal/components/Tag/Tag'
 
 interface Props {
-  onClick: () => void
+  onClick?: () => void
   teamMember: DashboardAvatar_teamMember
 }
 
