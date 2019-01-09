@@ -68,8 +68,7 @@ export const sendTeamPaidTierError = (authToken, teamId, returnValue) => {
   return sendAuthRaven(authToken, 'Not available', breadcrumb, returnValue)
 }
 
-export const sendOrgLeadAccessError = (authToken, userOrgDoc, returnValue) => {
-  const orgId = userOrgDoc ? userOrgDoc.id : 'unknown organization'
+export const sendOrgLeadAccessError = (authToken, orgId, returnValue) => {
   const breadcrumb = {
     message: `You are not the billing leader for ${orgId}`,
     category: 'Unauthorized Access',

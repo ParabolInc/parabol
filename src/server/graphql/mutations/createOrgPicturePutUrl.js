@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLString} from 'graphql'
 import CreatePicturePutUrlPayload from 'server/graphql/types/CreatePicturePutUrlPayload'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import getS3PutUrl from 'server/utils/getS3PutUrl'
 import validateAvatarUpload from 'server/utils/validateAvatarUpload'
 import shortid from 'shortid'
@@ -23,12 +23,11 @@ const createOrgPicturePutUrl = {
       description: 'The organization id to update'
     }
   },
-  async resolve (source, {orgId, contentType, contentLength}, {authToken}) {
+  async resolve (source, {orgId, contentType, contentLength}, {authToken, dataLoader}) {
     // AUTH
-    const userId = getUserId(authToken)
-    const userOrgDoc = await getUserOrgDoc(userId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+      return sendOrgLeadAccessError(authToken, orgId)
     }
 
     // VALIDATION

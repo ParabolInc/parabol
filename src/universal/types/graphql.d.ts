@@ -136,19 +136,9 @@ export interface IUser {
   inactive: boolean | null
 
   /**
-   * true if the user is a part of the supplied orgId
-   */
-  isBillingLeader: boolean | null
-
-  /**
    * The application-specific name, defaults to nickname
    */
   preferredName: string
-
-  /**
-   * the orgs and roles for this user on each
-   */
-  userOrgs: Array<IUserOrg | null> | null
   archivedTasks: ITaskConnection | null
   archivedTasksCount: number | null
 
@@ -197,7 +187,17 @@ export interface IUser {
   /**
    * get a single organization and the count of users by status
    */
-  organization: IOrganization
+  organization: IOrganization | null
+
+  /**
+   * The connection between a user and an organization
+   */
+  organizationUser: IOrganizationUser | null
+
+  /**
+   * A single user that is connected to a single organization
+   */
+  organizationUsers: Array<IOrganizationUser>
 
   /**
    * Get the list of all organizations a user belongs to
@@ -224,13 +224,6 @@ export interface IUser {
    * all the teams the user is a part of that the viewer can see
    */
   tms: Array<string | null> | null
-}
-
-export interface IIsBillingLeaderOnUserArguments {
-  /**
-   * the org for which you want the users
-   */
-  orgId: string
 }
 
 export interface IArchivedTasksOnUserArguments {
@@ -344,6 +337,13 @@ export interface IOrganizationOnUserArguments {
   orgId: string
 }
 
+export interface IOrganizationUserOnUserArguments {
+  /**
+   * the orgId
+   */
+  orgId: string
+}
+
 export interface ITasksOnUserArguments {
   /**
    * the datetime cursor
@@ -424,30 +424,6 @@ export interface IAuthIdentityType {
    * true if the identity provider is a social provider, false otherwise
    */
   isSocial: boolean | null
-}
-
-/**
- * The user/org M:F join, denormalized on the user/org tables
- */
-export interface IUserOrg {
-  __typename: 'UserOrg'
-
-  /**
-   * The orgId
-   */
-  id: string | null
-
-  /**
-   * role of the user in the org
-   */
-  role: OrgUserRole | null
-}
-
-/**
- * The role of the org user
- */
-export const enum OrgUserRole {
-  billingLeader = 'billingLeader'
 }
 
 /**
@@ -1533,12 +1509,7 @@ export interface IOrganization {
   /**
    * true if the viewer is the billing leader for the org
    */
-  isBillingLeader: boolean | null
-
-  /**
-   * The billing leader of the organization (or the first, if more than 1)
-   */
-  mainBillingLeader: IUser | null
+  isBillingLeader: boolean
 
   /**
    * The name of the organization
@@ -1596,7 +1567,7 @@ export interface IOrganization {
    * The datetime the organization was last updated
    */
   updatedAt: any | null
-  orgMembers: IOrganizationMemberConnection | null
+  organizationUsers: IOrganizationUserConnection
 
   /**
    * The count of active & inactive users
@@ -1609,7 +1580,7 @@ export interface IOrganization {
   billingLeaders: Array<IUser>
 }
 
-export interface IOrgMembersOnOrganizationArguments {
+export interface IOrganizationUsersOnOrganizationArguments {
   after?: string | null
   first?: number | null
 }
@@ -1639,8 +1610,8 @@ export interface ICreditCard {
 /**
  * A connection to a list of items.
  */
-export interface IOrganizationMemberConnection {
-  __typename: 'OrganizationMemberConnection'
+export interface IOrganizationUserConnection {
+  __typename: 'OrganizationUserConnection'
 
   /**
    * Information to aid in pagination.
@@ -1650,7 +1621,7 @@ export interface IOrganizationMemberConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IOrganizationMemberEdge>
+  edges: Array<IOrganizationUserEdge>
 }
 
 /**
@@ -1683,13 +1654,13 @@ export interface IPageInfo {
 /**
  * An edge in a connection.
  */
-export interface IOrganizationMemberEdge {
-  __typename: 'OrganizationMemberEdge'
+export interface IOrganizationUserEdge {
+  __typename: 'OrganizationUserEdge'
 
   /**
    * The item at the end of the edge
    */
-  node: IOrganizationMember | null
+  node: IOrganizationUser
 
   /**
    * A cursor for use in pagination
@@ -1697,12 +1668,73 @@ export interface IOrganizationMemberEdge {
   cursor: string
 }
 
-export interface IOrganizationMember {
-  __typename: 'OrganizationMember'
-  id: string | null
-  organization: IOrganization | null
-  user: IUser | null
-  isBillingLeader: boolean | null
+/**
+ * organization-specific details about a user
+ */
+export interface IOrganizationUser {
+  __typename: 'OrganizationUser'
+
+  /**
+   * orgId::userId
+   */
+  id: string
+
+  /**
+   * true if the user is paused and the orgs are not being billed, else false
+   */
+  inactive: boolean
+
+  /**
+   * the datetime the user first joined the org
+   */
+  joinedAt: any
+
+  /**
+   * The last moment a billing leader can remove the user from the org & receive a refund
+   */
+  newUserUntil: any
+
+  /**
+   * the datetime the user was removed from the organization if they were a new user
+   */
+  newUserRefundAppliedAt: any | null
+
+  /**
+   * FK
+   */
+  orgId: string
+
+  /**
+   * The user attached to the organization
+   */
+  organization: IOrganization
+
+  /**
+   * if not a member, the datetime the user was removed from the org
+   */
+  removedAt: any | null
+
+  /**
+   * role of the user in the org
+   */
+  role: OrgUserRole | null
+
+  /**
+   * FK
+   */
+  userId: string
+
+  /**
+   * The user attached to the organization
+   */
+  user: IUser
+}
+
+/**
+ * The role of the org user
+ */
+export const enum OrgUserRole {
+  billingLeader = 'billingLeader'
 }
 
 export interface IOrgUserCount {
@@ -2096,7 +2128,7 @@ export interface IInvoiceEdge {
   /**
    * The item at the end of the edge
    */
-  node: IInvoice | null
+  node: IInvoice
   cursor: any | null
 }
 
@@ -2486,7 +2518,7 @@ export interface INotificationEdge {
   /**
    * The item at the end of the edge
    */
-  node: Notification | null
+  node: Notification
   cursor: any | null
 }
 
@@ -5878,7 +5910,8 @@ export interface IRemoveOrgUserPayload {
   /**
    * The organization member that got removed
    */
-  removedOrgMember: IOrganizationMember | null
+  removedOrgMember: IOrganizationUser | null
+  organizationUserId: string | null
 }
 
 /**
@@ -6013,7 +6046,7 @@ export interface ISetOrgUserRolePayload {
   __typename: 'SetOrgUserRolePayload'
   error: IStandardMutationError | null
   organization: IOrganization | null
-  updatedOrgMember: IOrganizationMember | null
+  updatedOrgMember: IOrganizationUser | null
 }
 
 export interface ISetPhaseFocusPayload {
@@ -6621,7 +6654,7 @@ export interface ISetOrgUserRoleAddedPayload {
   __typename: 'SetOrgUserRoleAddedPayload'
   error: IStandardMutationError | null
   organization: IOrganization | null
-  updatedOrgMember: IOrganizationMember | null
+  updatedOrgMember: IOrganizationUser | null
 
   /**
    * If promoted, notify them and give them all other admin notifications
@@ -6633,7 +6666,7 @@ export interface ISetOrgUserRoleRemovedPayload {
   __typename: 'SetOrgUserRoleRemovedPayload'
   error: IStandardMutationError | null
   organization: IOrganization | null
-  updatedOrgMember: IOrganizationMember | null
+  updatedOrgMember: IOrganizationUser | null
 
   /**
    * If demoted, notify them and remove all other admin notifications

@@ -5,7 +5,7 @@ import reactivateTeamMembersAndMakeNotifications from 'server/safeMutations/reac
 import removeOrgApprovalAndNotification from 'server/safeMutations/removeOrgApprovalAndNotification'
 import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations'
 import getPendingInvitations from 'server/safeQueries/getPendingInvitations'
-import {isOrgBillingLeader} from 'server/utils/authorization'
+import {isUserBillingLeader} from 'server/utils/authorization'
 import {ASK_APPROVAL, DENIED, REACTIVATE, SEND_INVITATION} from 'server/utils/serverConstants'
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
 import unarchiveTasksForReactivatedSoftTeamMembers from 'server/safeMutations/unarchiveTasksForReactivatedSoftTeamMembers'
@@ -33,12 +33,18 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
     users: r
       .table('User')
       .getAll(r.args(emailArr), {index: 'email'})
+      .merge((user) => ({
+        organizationUsers: r
+          .table('OrganizationUser')
+          .getAll(user('id'), {index: 'userId'})
+          .filter({removedAt: null})
+          .coerceTo('array')
+      }))
       .coerceTo('array'),
     inviterDoc: r.table('User').get(userId)
   })
-  const userOrgDoc = inviterDoc.userOrgs.find((userOrg) => userOrg.id === orgId)
+  const isBillingLeader = await isUserBillingLeader(userId, orgId, dataLoader)
   const inviter = {
-    userOrgs: inviterDoc.userOrgs,
     inviterUserId: inviterDoc.id,
     inviterEmail: inviterDoc.email,
     inviterName: inviterDoc.preferredName,
@@ -46,7 +52,7 @@ const inviteTeamMembers = async (invitees, teamId, userId, dataLoader) => {
     teamId,
     teamName,
     userId,
-    isBillingLeader: isOrgBillingLeader(userOrgDoc)
+    isBillingLeader
   }
   const detailedInvitations = makeDetailedInvitations(
     teamMembers,

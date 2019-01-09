@@ -39,12 +39,15 @@ export default {
       .default({})
 
     const {old_val: oldUser, new_val: user} = userChanges
-    const {inactive, userOrgs} = oldUser
+    const {inactive} = oldUser
     const {connectedSockets, tms} = user
 
     // no need to wait for this, it's just for billing
     if (inactive) {
-      const orgIds = userOrgs.map(({id}) => id)
+      const orgIds = await r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null, inactive: true})('orgId')
       adjustUserCount(userId, orgIds, UNPAUSE_USER)
       // TODO: re-identify
     }

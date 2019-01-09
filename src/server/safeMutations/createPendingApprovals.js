@@ -19,15 +19,9 @@ export default async function createPendingApprovals (outOfOrgEmails, inviteSend
   // add a notification to the Billing Leaders
   const {userIds, inviter} = await r({
     userIds: r
-      .table('User')
-      .getAll(orgId, {index: 'userOrgs'})
-      .filter((user) =>
-        user('userOrgs').contains((userOrg) =>
-          userOrg('id')
-            .eq(orgId)
-            .and(userOrg('role').eq(BILLING_LEADER))
-        )
-      )('id')
+      .table('OrganizationUser')
+      .getAll(orgId, {index: 'orgId'})
+      .filter({removedAt: null, role: BILLING_LEADER})('userId')
       .coerceTo('array'),
     inviter: r
       .table('User')

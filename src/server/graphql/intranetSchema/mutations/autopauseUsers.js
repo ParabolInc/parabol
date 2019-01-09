@@ -16,52 +16,32 @@ const autopauseUsers = {
 
     // RESOLUTION
     const activeThresh = new Date(Date.now() - AUTO_PAUSE_THRESH)
-    const users = await r
+    const usersToPause = await r
       .table('User')
       .filter((user) => user('lastSeenAt').le(activeThresh))
       .filter({
         inactive: false
       })
-      .pluck('id', 'userOrgs')
-    const userIds = users.map(({id}) => id)
-    const updates = userIds.map((userId) => {
-      return r
-        .table('Organization')
-        .getAll(userId, {index: 'orgUsers'})
-        .update((org) => ({
-          orgUsers: org('orgUsers').map((orgUser) => {
-            return r.branch(
-              orgUser('id').eq(userId),
-              orgUser.merge({
-                inactive: true
-              }),
-              orgUser
-            )
-          })
-        }))
-        .do(() => {
-          return r
-            .table('User')
-            .get(userId)
-            .update({
-              inactive: true
-            })
-        })
-        .run()
-    })
-    await Promise.all(updates)
-    const adjustmentPromises = users.map((user) => {
-      const orgIds = user.userOrgs.map(({id}) => id)
-      try {
-        return adjustUserCount(user.id, orgIds, AUTO_PAUSE_USER)
-      } catch (e) {
-        console.warn(`Error adjusting user count: ${e}`)
-      }
-      return undefined
-    })
+      .merge((user) => ({
+        orgIds: r
+          .table('OrganizationUser')
+          .getAll(user('id'), {index: 'userId'})
+          .filter({removedAt: null})('orgId')
+          .coerceTo('array')
+      }))
 
-    await Promise.all(adjustmentPromises)
-    return adjustmentPromises.length
+    await Promise.all(
+      usersToPause.map((user) => {
+        try {
+          return adjustUserCount(user.id, user.orgIds, AUTO_PAUSE_USER)
+        } catch (e) {
+          console.warn(`Error adjusting user count: ${e}`)
+        }
+        return undefined
+      })
+    )
+
+    return usersToPause.length
   }
 }
 
