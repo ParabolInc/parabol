@@ -1564,6 +1564,11 @@ export interface IOrganization {
   stripeSubscriptionId: string | null
 
   /**
+   * The last upcoming invoice email that was sent, null if never sent
+   */
+  upcomingInvoiceEmailSentAt: any | null
+
+  /**
    * The datetime the organization was last updated
    */
   updatedAt: any | null
@@ -1690,14 +1695,9 @@ export interface IOrganizationUser {
   joinedAt: any
 
   /**
-   * The last moment a billing leader can remove the user from the org & receive a refund
+   * The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
    */
   newUserUntil: any
-
-  /**
-   * the datetime the user was removed from the organization if they were a new user
-   */
-  newUserRefundAppliedAt: any | null
 
   /**
    * FK
