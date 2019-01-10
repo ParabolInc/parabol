@@ -7,6 +7,7 @@ import suCountTiersForUser from 'server/graphql/queries/suCountTiersForUser'
 import suUserCount from 'server/graphql/queries/suUserCount'
 import suProOrgInfo from 'server/graphql/queries/suProOrgInfo'
 import suOrgCount from 'server/graphql/queries/suOrgCount'
+import sendUpcomingInvoiceEmails from 'server/graphql/intranetSchema/mutations/sendUpcomingInvoiceEmails'
 
 const query = new GraphQLObjectType({
   name: 'Query',
@@ -24,7 +25,8 @@ const mutation = new GraphQLObjectType({
   fields: () => ({
     autopauseUsers,
     endOldMeetings,
-    sendBatchNotificationEmails
+    sendBatchNotificationEmails,
+    sendUpcomingInvoiceEmails
   })
 })
 

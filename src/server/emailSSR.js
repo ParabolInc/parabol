@@ -39,6 +39,20 @@ const EMAIL_ALL_PROPS = {
     inviterName: 'Sara',
     inviterEmail: 'sara@example.co',
     teamName: 'Example Team'
+  },
+  UpcomingInvoiceEmailTemplate: {
+    memberUrl: 'localhost:3000/me/organizations/kRWOo3ge0/members',
+    periodEndStr: 'December 31',
+    newUsers: [
+      {
+        email: 'john@john.co',
+        name: 'John'
+      },
+      {
+        email: 'foo@foo.co',
+        name: 'Foo'
+      }
+    ]
   }
 }
 export default async function emailSSR (req, res) {

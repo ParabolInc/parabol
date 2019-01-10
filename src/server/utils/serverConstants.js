@@ -6,6 +6,7 @@ export const TEAM_INVITATION_LIFESPAN = ms('7d')
 export const REFRESH_JWT_AFTER = ms('15d')
 export const AUTO_PAUSE_THRESH = ms('30d')
 export const OLD_MEETING_AGE = ms('1d')
+export const UPCOMING_INVOICE_EMAIL_WARNING = ms('4d')
 export const MEETING_FACILITATOR_ELECTION_TIMEOUT = 5000
 export const SHARED_DATA_LOADER_TTL = 5000
 // export const ACTION_MONTHLY = 'action-monthly' // $5/seat/mo DEPRECATED

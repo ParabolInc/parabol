@@ -28,10 +28,6 @@ const OrganizationUser = new GraphQLObjectType({
       description:
         'The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd'
     },
-    newUserRefundAppliedAt: {
-      type: GraphQLISO8601Type,
-      description: 'the datetime the user was removed from the organization if they were a new user'
-    },
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'FK'
