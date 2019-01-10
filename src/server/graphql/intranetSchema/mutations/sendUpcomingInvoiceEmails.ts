@@ -71,13 +71,13 @@ const sendUpcomingInvoiceEmails = {
           .table('OrganizationUser')
           .getAll(organization('id'), {index: 'orgId'})
           .filter((organizationUser) => organizationUser('newUserUntil').ge(now))
+          .filter({removedAt: null, role: null})
           .coerceTo('array')
           .merge((organizationUser) => ({
             user: r
               .table('User')
               .get(organizationUser('userId'))
               .pluck('preferredName', 'email')
-              .coerceTo('array')
           }))
       }))
       .filter((organization) =>
@@ -96,7 +96,6 @@ const sendUpcomingInvoiceEmails = {
               .table('User')
               .get(organizationUser('userId'))
               .pluck('preferredName', 'email')
-              .coerceTo('array')
           }))
       }))
       .coerceTo('array')
