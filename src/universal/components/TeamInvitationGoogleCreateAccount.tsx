@@ -59,6 +59,19 @@ const TeamName = styled('span')({
   whiteSpace: 'nowrap'
 })
 
+const helpText = {
+  fontSize: '.8125rem',
+  marginTop: '.5rem'
+}
+
+const ErrorMessage = styled(StyledError)({
+  ...helpText
+})
+
+const HelpMessage = styled(StyledTip)({
+  ...helpText
+})
+
 class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
   webAuth?: WebAuth
   state = {
@@ -134,8 +147,10 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
               waiting={submitting}
             />
             {error &&
-              !submitting && <StyledError>Error logging in! Did you close the popup?</StyledError>}
-            {submitting && <StyledTip>Continue through the login popup</StyledTip>}
+              !submitting && (
+                <ErrorMessage>Error logging in! Did you close the popup?</ErrorMessage>
+              )}
+            {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
             {isEmailFallback ? (
               <HorizontalSeparator margin='1rem 0 0' text='or' />
             ) : (
