@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import portal from 'react-portal-hoc'
-import Type from 'universal/components/Type/Type'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {withRouter} from 'react-router-dom'
 import DashModal from 'universal/components/Dashboard/DashModal'
-import FlatButton from 'universal/components/FlatButton'
+import DialogHeading from 'universal/components/DialogHeading'
+import DialogContent from 'universal/components/DialogContent'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 
-const StyledButton = styled(FlatButton)({
+const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
@@ -41,17 +42,15 @@ const LeaveOrgModal = (props) => {
       isClosing={isClosing}
       onBackdropClick={closePortal}
     >
-      <Type align='center' bold marginBottom='1.5rem' scale='s5' colorPalette='dark'>
-        {'Are you sure?'}
-      </Type>
-      <Type align='center' marginBottom='1.5rem' scale='s3'>
+      <DialogHeading>{'Are you sure?'}</DialogHeading>
+      <DialogContent>
         {'This will remove you from the organization and all teams under it! '}
         <br />
         {'To undo it, you’ll have to ask another Billing Leader to re-add you.'}
-      </Type>
-      <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
-        <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
-      </StyledButton>
+        <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
+          <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
+        </StyledButton>
+      </DialogContent>
     </DashModal>
   )
 }

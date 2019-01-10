@@ -1,17 +1,30 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import portal from 'react-portal-hoc'
-import Type from 'universal/components/Type/Type'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import RemoveOrgUserMutation from 'universal/mutations/RemoveOrgUserMutation'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import {withRouter} from 'react-router-dom'
 import DashModal from 'universal/components/Dashboard/DashModal'
-import FlatButton from 'universal/components/FlatButton'
+import DialogHeading from 'universal/components/DialogHeading'
+import DialogContent from 'universal/components/DialogContent'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 
-const StyledButton = styled(FlatButton)({
+const StyledHeading = styled(DialogHeading)({
+  paddingLeft: 12,
+  paddingRight: 12,
+  paddingTop: 4
+})
+
+const StyledContent = styled(DialogContent)({
+  paddingBottom: 12,
+  paddingLeft: 12,
+  paddingRight: 12
+})
+
+const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
@@ -42,17 +55,15 @@ const RemoveFromOrgModal = (props) => {
       isClosing={isClosing}
       onBackdropClick={closePortal}
     >
-      <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        {'Are you sure?'}
-      </Type>
-      <Type align='center' bold marginBottom='1.5rem' scale='s4'>
+      <StyledHeading>{'Are you sure?'}</StyledHeading>
+      <StyledContent>
         {`This will remove ${preferredName} from the organization. Any outstanding tasks will be given
         to the team leads. Any time remaining on their subscription will be refunded on the next
         invoice.`}
-      </Type>
-      <StyledButton size='large' onClick={handleClick} palette='warm' waiting={submitting}>
-        <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
-      </StyledButton>
+        <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
+          <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
+        </StyledButton>
+      </StyledContent>
     </DashModal>
   )
 }
