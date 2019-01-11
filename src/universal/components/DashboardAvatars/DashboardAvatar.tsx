@@ -7,6 +7,7 @@ import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import Tag from 'universal/components/Tag/Tag'
 
 interface Props {
+  onClick?: () => void
   teamMember: DashboardAvatar_teamMember
 }
 
@@ -15,15 +16,20 @@ const AvatarAndTag = styled('div')({
   flexDirection: 'column',
   alignItems: 'center'
 })
-const AvatarTag = styled(Tag)({
+const AvatarTag = styled(Tag)(({isLead}: {isLead: boolean}) => ({
   bottom: '-1.5rem',
   marginLeft: 0,
+  opacity: isLead ? 1 : 0,
   position: 'absolute',
+  pointerEvents: 'none',
+  transform: `scale(${isLead ? 1 : 0})`,
+  transition: 'all 300ms',
+  userSelect: 'none',
   whiteSpace: 'nowrap'
-})
+}))
 
 const DashboardAvatar = (props: Props) => {
-  const {teamMember} = props
+  const {onClick, teamMember} = props
   const {isLead, picture} = teamMember
   return (
     <AvatarAndTag>
@@ -34,9 +40,10 @@ const DashboardAvatar = (props: Props) => {
         isCheckedIn={teamMember.isCheckedIn}
         isConnected={teamMember.isConnected || teamMember.isSelf}
         isClickable
+        onClick={onClick}
         size='smaller'
       />
-      {isLead && <AvatarTag colorPalette='blue' label='Team Lead' />}
+      <AvatarTag colorPalette='blue' label='Team Lead' isLead={isLead} />
     </AvatarAndTag>
   )
 }

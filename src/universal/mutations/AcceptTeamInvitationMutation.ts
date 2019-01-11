@@ -39,6 +39,7 @@ graphql`
 const mutation = graphql`
   mutation AcceptTeamInvitationMutation($invitationToken: ID!, $notificationId: ID) {
     acceptTeamInvitation(invitationToken: $invitationToken, notificationId: $notificationId) {
+      authToken
       error {
         message
         title
@@ -100,8 +101,9 @@ const AcceptTeamInvitationMutation = (
       const serverError = getGraphQLError(data, errors)
       if (serverError) return
       const {
-        acceptTeamInvitation: {team}
+        acceptTeamInvitation: {authToken, team}
       } = data
+      atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName} = team
       atmosphere.eventEmitter.emit('addToast', {

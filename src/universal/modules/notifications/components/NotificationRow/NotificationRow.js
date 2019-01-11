@@ -1,11 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import styled from 'react-emotion'
 import {createFragmentContainer} from 'react-relay'
 import AsyncComponent from 'universal/components/AsyncComponent'
 import typePicker from 'universal/modules/notifications/helpers/typePicker'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import FormError from 'universal/components/FormError/FormError'
+
+const StyledErrorMessage = styled(FormError)({
+  fontSize: '.8125rem',
+  padding: '0 8rem .75rem 3.5rem'
+})
 
 const NotificationRow = (props) => {
   const {atmosphere, error, submitting, submitMutation, onCompleted, onError, notification} = props
@@ -24,7 +30,7 @@ const NotificationRow = (props) => {
         onCompleted={onCompleted}
         onError={onError}
       />
-      {error && <FormError>{error}</FormError>}
+      {error && <StyledErrorMessage>{error}</StyledErrorMessage>}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import {emailLabelColorPresent, emailLabelColorAbsent} from 'universal/styles/email'
 
 const UserNoNewOutcomes = (props) => {
   const {members} = props
@@ -52,12 +53,12 @@ const UserNoNewOutcomes = (props) => {
 
   const presentStyles = {
     ...attendingStyles,
-    color: appTheme.palette.cool
+    color: emailLabelColorPresent
   }
 
   const absentStyles = {
     ...attendingStyles,
-    color: appTheme.palette.cool10g
+    color: emailLabelColorAbsent
   }
 
   const getMemberRows = (arr) => {

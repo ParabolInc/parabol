@@ -74,6 +74,9 @@ export const emailTableBase = {
 export const emailTextColor = ui.palette.dark
 export const emailTextColorLight = ui.palette.midGray
 
+export const emailLabelColorPresent = appTheme.brand.secondary.green
+export const emailLabelColorAbsent = appTheme.palette.mid50l
+
 export const headCSS = `
   @media only screen and (max-width: 620px) {
     table[class=body] .maxWidthContainer {

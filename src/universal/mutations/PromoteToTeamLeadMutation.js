@@ -5,6 +5,12 @@ graphql`
     team {
       isLead
     }
+    oldLeader {
+      isLead
+    }
+    newLeader {
+      isLead
+    }
   }
 `
 

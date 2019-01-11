@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types'
-import React from 'react'
-import Type from 'universal/components/Type/Type'
+import React, {Fragment} from 'react'
 import {withRouter} from 'react-router-dom'
 import portal from 'react-portal-hoc'
 import ui from 'universal/styles/ui'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import DashModal from 'universal/components/Dashboard/DashModal'
-import FlatButton from 'universal/components/FlatButton'
+import DialogHeading from 'universal/components/DialogHeading'
+import DialogContent from 'universal/components/DialogContent'
+import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
 
-const StyledButton = styled(FlatButton)({
+const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
@@ -28,28 +29,24 @@ const MeetingInProgressModal = (props) => {
       isClosing={isClosing}
       closeAfter={closeAfter}
     >
-      <Type align='center' bold marginBottom='1.5rem' scale='s7' colorPalette='warm'>
-        {'Oh, hi there!'}
-      </Type>
-      {meetingType === ACTION && (
-        <Type align='center' marginBottom='1rem' bold scale='s4'>
-          {`The dashboard for ${teamName} is disabled`}
-          <br />
-          {'as we are actively meeting to review'}
-          <br />
-          {'Tasks and Agenda Items.'}
-        </Type>
-      )}
-      {meetingType === RETROSPECTIVE && (
-        <Type align='center' marginBottom='1rem' bold scale='s4'>
-          {`The dashboard for ${teamName} is disabled `}
-          <br />
-          {'as we are actively in a retrospective.'}
-        </Type>
-      )}
-      <StyledButton size='large' onClick={handleClick} palette='warm'>
-        <IconLabel icon='arrow_forward' iconAfter label='Join Meeting' />
-      </StyledButton>
+      <DialogHeading>{'Meeting in Progress…'}</DialogHeading>
+      <DialogContent>
+        {meetingType === ACTION && (
+          <Fragment>
+            The dashboard for <b>{teamName}</b> is disabled as we are actively meeting to review
+            Tasks and Agenda Items.
+          </Fragment>
+        )}
+        {meetingType === RETROSPECTIVE && (
+          <Fragment>
+            The dashboard for <b>{teamName}</b> is disabled as we are actively in a retrospective
+            meeting.
+          </Fragment>
+        )}
+        <StyledButton size='medium' onClick={handleClick}>
+          <IconLabel icon='arrow_forward' iconAfter label='Join Meeting' />
+        </StyledButton>
+      </DialogContent>
     </DashModal>
   )
 }

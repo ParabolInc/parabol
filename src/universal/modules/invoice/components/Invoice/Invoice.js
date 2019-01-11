@@ -14,6 +14,7 @@ import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineIte
 import plural from 'universal/utils/plural'
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat'
 import Tag from 'universal/components/Tag/Tag'
+import {sheetShadow} from 'universal/styles/elevation'
 
 import {
   PAID,
@@ -177,7 +178,7 @@ const panelGutterLarge = ui.invoicePanelGutterLarge
 const styleThunk = () => ({
   invoice: {
     backgroundColor: ui.backgroundColor,
-    boxShadow: '0 .125rem .25rem 0 rgba(0, 0, 0, .5)',
+    boxShadow: sheetShadow,
     color: appTheme.palette.dark,
     margin: '0 auto',
     maxWidth: '37.5rem',

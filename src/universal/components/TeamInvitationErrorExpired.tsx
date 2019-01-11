@@ -18,6 +18,11 @@ const StyledEmailLink = styled('a')({
   color: LINK.BLUE
 })
 
+const TeamName = styled('span')({
+  fontWeight: 600,
+  whiteSpace: 'nowrap'
+})
+
 const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
@@ -26,7 +31,9 @@ const TeamInvitationErrorExpired = (props: Props) => {
       <Helmet title={`Token Expired | Team Invitation`} />
       <InvitationDialogTitle>Invitation Expired</InvitationDialogTitle>
       <InvitationDialogContent>
-        <InvitationDialogCopy>The invitation to {teamName} has expired.</InvitationDialogCopy>
+        <InvitationDialogCopy>
+          The invitation to <TeamName>{teamName}</TeamName> has expired.
+        </InvitationDialogCopy>
         <InvitationDialogCopy>
           Reach out to {inviterName} at{' '}
           <StyledEmailLink href={`mailto:${inviterEmail}`} title={`Email ${inviterEmail}`}>

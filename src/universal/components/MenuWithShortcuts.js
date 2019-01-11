@@ -91,7 +91,8 @@ class MenuWithShortcuts extends Component {
 
   makeSmartChildren (children, active) {
     const {closePortal} = this.props
-    return Children.map(children, (child, idx) => {
+    // toArray removes bools whereas map does not
+    return Children.toArray(children).map((child, idx) => {
       if (isValidMenuItem(child)) {
         const activate = () => this.setActiveIndex(idx)
         return cloneElement(child, {

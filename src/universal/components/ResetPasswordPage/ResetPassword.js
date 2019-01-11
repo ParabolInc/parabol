@@ -9,6 +9,7 @@ import styled from 'react-emotion'
 import PasswordResetForm from './ResetPasswordForm'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
+import appTheme from 'universal/styles/theme/appTheme'
 
 type Props = {
   error: ?string,
@@ -18,17 +19,28 @@ type Props = {
 }
 
 const P = styled('p')({
+  fontSize: '.875rem',
   lineHeight: 1.5,
   margin: '1rem 0',
   textAlign: 'center'
 })
 
+const Container = styled('div')({
+  margin: '0 auto',
+  maxWidth: 240,
+  width: '100%'
+})
+
 const LinkButton = styled(PlainButton)({
-  textDecoration: 'underline'
+  color: appTheme.brand.secondary.blue,
+  ':hover': {
+    color: appTheme.brand.secondary.blue,
+    textDecoration: 'underline'
+  }
 })
 
 const PasswordReset = (props: Props) => (
-  <Fragment>
+  <Container>
     {props.error && <ErrorAlert message={props.error} />}
     {props.emailSent ? (
       <Fragment>
@@ -43,14 +55,14 @@ const PasswordReset = (props: Props) => (
     ) : (
       <Fragment>
         <P>
-          {'Confirm your email address, and we’ll send you '}
-          <br />
-          {'an email with password recovery instructions.'}
+          {
+            'Confirm your email address, and we’ll send you an email with password recovery instructions.'
+          }
         </P>
         <PasswordResetForm onSubmit={props.handleSubmitResetPassword} />
       </Fragment>
     )}
-  </Fragment>
+  </Container>
 )
 
 export default PasswordReset
