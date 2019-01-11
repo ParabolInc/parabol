@@ -22,7 +22,8 @@ const quickStatsStyles = {
 
   statValue: {
     ...fontStyles,
-    fontSize: '36px'
+    fontSize: '36px',
+    lineHeight: '44px'
   },
 
   statLabel: {

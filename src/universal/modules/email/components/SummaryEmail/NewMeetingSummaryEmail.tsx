@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Fragment} from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import Body from 'universal/modules/email/components/Body/Body'
 import ContactUs from 'universal/modules/email/components/ContactUs/ContactUs'
@@ -109,6 +109,7 @@ const SummaryEmail = (props: Props) => {
                   {/* Summary Header */}
                   <SummaryHeader
                     createdAt={createdAt}
+                    isDemo={isDemo}
                     meetingNumber={meetingNumber}
                     meetingType={meetingType}
                     referrer={referrer}
@@ -153,17 +154,20 @@ const SummaryEmail = (props: Props) => {
           <div>
             <EmptySpace height={48} />
             <hr style={ruleStyle} />
-            <EmptySpace height={48} />
-            <ContactUs
-              fontSize={16}
-              hasLearningLink={meetingType === ACTION}
-              lineHeight={1.5}
-              prompt={`How’d your ${meetingLabel} meeting go?`}
-              tagline='We’re eager for your feedback!'
-              vSpacing={0}
-            />
+            {!isDemo && (
+              <Fragment>
+                <EmptySpace height={48} />
+                <ContactUs
+                  fontSize={16}
+                  hasLearningLink={meetingType === ACTION}
+                  lineHeight={1.5}
+                  prompt={`How’d your ${meetingLabel} meeting go?`}
+                  tagline='We’re eager for your feedback!'
+                  vSpacing={0}
+                />
+              </Fragment>
+            )}
           </div>
-          <EmptySpace height={32} />
         </Body>
         <Footer color={appTheme.palette.dark} />
       </div>
