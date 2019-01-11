@@ -10,11 +10,6 @@ import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from 'univers
 
 const innerMaxWidth = 480
 
-const linkStyle = {
-  ...emailLinkStyle,
-  fontWeight: 600
-}
-
 const boldStyle = {
   ...emailCopyStyle,
   fontWeight: 600
@@ -56,7 +51,7 @@ const TeamInvite = (props) => {
         <p style={emailCopyStyle}>
           <span style={boldStyle}>{inviterName}</span>
           {' ('}
-          <a href={`mailto:${inviterEmail}`} style={linkStyle}>
+          <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
             {inviterEmail}
           </a>
           {') has invited you to join a team on Parabol: '}
@@ -84,7 +79,7 @@ const TeamInvite = (props) => {
           <br />
           <a
             href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
-            style={linkStyle}
+            style={emailLinkStyle}
             title='Getting Started: Retro 101'
           >
             {'Getting Started: Retro 101'}
@@ -92,7 +87,7 @@ const TeamInvite = (props) => {
           <br />
           <a
             href='https://www.parabol.co/getting-started-guide/action-meetings-101'
-            style={linkStyle}
+            style={emailLinkStyle}
             title='Leveling Up: Action 101'
           >
             {'Leveling Up: Action 101'}
@@ -103,7 +98,7 @@ const TeamInvite = (props) => {
           <br />
           {emailProductTeamSignature}
           <br />
-          <a href='mailto:love@parabol.co' style={linkStyle} title='love@parabol.co'>
+          <a href='mailto:love@parabol.co' style={emailLinkStyle} title='love@parabol.co'>
             {'love@parabol.co'}
           </a>
         </p>

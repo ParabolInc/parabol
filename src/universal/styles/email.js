@@ -46,7 +46,8 @@ export const emailLineHeight = 1.5
 export const emailLinkStyle = {
   color: ui.palette.blue,
   fontFamily: ui.emailFontFamily,
-  textDecoration: 'underline'
+  fontWeight: 600,
+  textDecoration: 'none'
 }
 
 export const emailInnerMaxWidth = 536
