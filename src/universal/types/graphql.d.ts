@@ -3879,6 +3879,11 @@ export interface ILoginOnMutationArguments {
    * The ID Token from auth0, a base64 JWT
    */
   auth0Token: string
+
+  /**
+   * optional segment id created before they were a user
+   */
+  segmentId?: string | null
 }
 
 export interface IUpgradeToProOnMutationArguments {

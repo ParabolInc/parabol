@@ -184,7 +184,7 @@ class EmailPasswordAuthForm extends Component<Props> {
     const {error, isPrimary, isSignin, submitting} = this.props
     const Button = isPrimary ? PrimaryButton : RaisedButton
     return (
-      <Form className='create-account-form' onSubmit={this.onSubmit}>
+      <Form onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
         <FieldGroup>
           <FieldBlock>

@@ -1,21 +1,17 @@
 /**
  * Renders the top section of an auth page (such as sign in or sign up).
  *
- * @flow
  */
-import type {StyledComponent, Tag} from 'react-emotion'
 import React, {Fragment} from 'react'
 import styled from 'react-emotion'
 import {Link} from 'react-router-dom'
 import appTheme from 'universal/styles/theme/appTheme'
 
 type Props = {
-  heading: string,
-  secondaryAction: {
-    actionCopy: string,
-    displayName: string,
-    relativeUrl: string
-  }
+  heading: string
+  actionCopy: string
+  displayName: string
+  relativeUrl: string
 }
 
 const H1 = styled('h1')({
@@ -43,23 +39,16 @@ const linkStyles = {
   }
 }
 
-const brandStyledLink = (tag: Tag): StyledComponent<*> =>
-  styled(tag)({
-    ...linkStyles,
-    ':hover': linkStyles,
-    ':focus': linkStyles
-  })
-
-const BrandedLink = brandStyledLink(Link)
+const BrandedLink = styled(Link)({
+  ...linkStyles,
+  ':hover,:focus': linkStyles
+})
 
 const AuthHeader = (props: Props) => (
   <Fragment>
     <H1>{props.heading}</H1>
     <H2>
-      {props.secondaryAction.actionCopy}{' '}
-      <BrandedLink to={props.secondaryAction.relativeUrl}>
-        {props.secondaryAction.displayName}
-      </BrandedLink>
+      {props.actionCopy} <BrandedLink to={props.relativeUrl}>{props.displayName}</BrandedLink>
     </H2>
   </Fragment>
 )

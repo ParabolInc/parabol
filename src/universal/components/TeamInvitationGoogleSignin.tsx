@@ -5,19 +5,17 @@ import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
+import GoogleOAuthButtonBlock from 'universal/components/GoogleOAuthButtonBlock'
 import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import auth0Authorize from '../utils/auth0Authorize'
 import makeWebAuth from '../utils/makeWebAuth'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
-import GoogleOAuthButton from './GoogleOAuthButton'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialog from './InvitationDialog'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
-import StyledError from './StyledError'
-import StyledTip from './StyledTip'
 
 interface Props
   extends WithAtmosphereProps,
@@ -31,21 +29,9 @@ const TeamName = styled('span')({
   whiteSpace: 'nowrap'
 })
 
-const helpText = {
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-}
-
-const ErrorMessage = styled(StyledError)({
-  ...helpText
-})
-
-const HelpMessage = styled(StyledTip)({
-  ...helpText
-})
-
 class TeamInvitationGoogleSignin extends Component<Props> {
   webAuth?: WebAuth
+
   componentDidMount () {
     makeWebAuth()
       .then((webAuth) => {
@@ -98,16 +84,12 @@ class TeamInvitationGoogleSignin extends Component<Props> {
             Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
           </InvitationDialogCopy>
           <InvitationCenteredCopy>
-            <GoogleOAuthButton
+            <GoogleOAuthButtonBlock
               label='Sign in using Google'
               onClick={this.onOAuth}
-              waiting={submitting}
+              isError={!!error}
+              submitting={!!submitting}
             />
-            {error &&
-              !submitting && (
-                <ErrorMessage>Error logging in! Did you close the popup?</ErrorMessage>
-              )}
-            {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
           </InvitationCenteredCopy>
         </InvitationDialogContent>
       </InvitationDialog>

@@ -2,11 +2,10 @@ import React from 'react'
 import styled from 'react-emotion'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import StyledFontAwesome from 'universal/components/StyledFontAwesome'
-import {authButtonWidth} from 'universal/styles/auth'
 import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 
 const WideButton = styled(PrimaryButton)({
-  width: authButtonWidth
+  width: '15rem'
 })
 
 const StyledIcon = styled(StyledFontAwesome)({
