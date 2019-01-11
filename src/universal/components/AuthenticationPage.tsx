@@ -4,6 +4,9 @@ import styled from 'react-emotion'
 import {RouteComponentProps, withRouter} from 'react-router'
 import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
+import EmailPasswordAuthForm, {
+  EmailPasswordAuthFormBase
+} from 'universal/components/EmailPasswordAuthForm'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import autoLogin from 'universal/decorators/autoLogin'
@@ -23,7 +26,6 @@ import auth0Authorize from '../utils/auth0Authorize'
 import makeWebAuth from '../utils/makeWebAuth'
 import AuthDialog from './AuthDialog'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
-import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps, WithMutationProps {}
@@ -68,7 +70,7 @@ class AuthenticationPage extends Component<Props> {
     LoginMutation(atmosphere, {auth0Token: idToken}, {history})
   }
 
-  authFormRef = React.createRef<EmailPasswordAuthForm>()
+  authFormRef = React.createRef<EmailPasswordAuthFormBase>()
 
   onForgot = () => {
     const {history} = this.props

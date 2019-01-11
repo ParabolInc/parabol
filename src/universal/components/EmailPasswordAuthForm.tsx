@@ -12,17 +12,28 @@ import Legitity from '../validation/Legitity'
 import EmailInputField from './EmailInputField'
 import PasswordInputField from './PasswordInputField'
 
-interface Props {
+interface Props extends WithMutationProps {
   email: string
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
 }
 
+interface Field {
+  value: string
+  error?: string
+  dirty: boolean
+}
+
+interface State {
+  fields: {
+    email: Field
+    password: Field
+  }
+}
+
 type FieldName = 'email' | 'password'
 const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
-
-interface Props extends WithMutationProps {}
 
 const FieldGroup = styled('div')({
   margin: '1rem 0 1rem'
@@ -38,7 +49,8 @@ const Form = styled('form')({
   width: '100%'
 })
 
-class EmailPasswordAuthForm extends Component<Props> {
+// exporting as a Base is a good indicator that a parent component is using this as a ref
+export class EmailPasswordAuthFormBase extends Component<Props, State> {
   state = {
     fields: {
       email: {
@@ -211,4 +223,4 @@ class EmailPasswordAuthForm extends Component<Props> {
   }
 }
 
-export default withMutationProps(EmailPasswordAuthForm)
+export default withMutationProps(EmailPasswordAuthFormBase)
