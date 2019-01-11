@@ -1,8 +1,11 @@
 import sendEmail from 'server/email/sendEmail'
 import templates from 'server/email/templates'
 import {RETROSPECTIVE} from 'universal/utils/constants'
+import makeAppLink from 'server/utils/makeAppLink'
 
 const EMAIL_DESTINATION = 'terry@parabol.co'
+
+const ORG_MEMBERS_LINK = makeAppLink('me/organizations/tzsqFnuzh/members')
 
 const EMAIL_ALL_PROPS = {
   summaryEmail: {
@@ -41,16 +44,16 @@ const EMAIL_ALL_PROPS = {
     teamName: 'Example Team'
   },
   UpcomingInvoiceEmailTemplate: {
-    memberUrl: 'localhost:3000/me/organizations/kRWOo3ge0/members',
-    periodEndStr: 'December 31',
+    memberUrl: ORG_MEMBERS_LINK,
+    periodEndStr: 'January 31',
     newUsers: [
       {
-        email: 'john@john.co',
-        name: 'John'
+        email: 'nolan@company.co',
+        name: 'Nolan'
       },
       {
-        email: 'foo@foo.co',
-        name: 'Foo'
+        email: 'sara@another.co',
+        name: 'Sara'
       }
     ]
   }

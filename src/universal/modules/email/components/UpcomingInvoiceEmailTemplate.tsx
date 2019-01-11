@@ -19,7 +19,7 @@ Hello,
 Your teams have added the following users to your organization for the billing cycle ending on ${periodEndStr}:
 ${newUserBullets}
 
-If any of these users were added in error, simply remove them here: ${memberUrl}
+If any of these users were added by mistake, simply remove them under Organization Settings: ${memberUrl}
 
 Your friends,
 The Parabol Product Team

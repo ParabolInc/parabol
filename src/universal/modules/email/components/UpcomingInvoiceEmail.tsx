@@ -8,9 +8,9 @@ import Layout from './Layout/Layout'
 
 const innerMaxWidth = 480
 
-const linkStyle = {
-  ...emailLinkStyle,
-  fontWeight: 600
+const listItemStyle = {
+  ...emailCopyStyle,
+  margin: 0
 }
 
 export interface UpcomingInvoiceEmailProps {
@@ -29,16 +29,28 @@ const UpcomingInvoiceEmail = (props: UpcomingInvoiceEmailProps) => {
         <p style={emailCopyStyle}>
           {`Your teams have added the following users to your organization for the billing cycle ending on ${periodEndStr}.`}
         </p>
-        {newUsers.map((newUser) => (
-          <p key={newUser.email}>{`${newUser.name} (${newUser.email})`}</p>
-        ))}
-        <p>{`If any of these users were added in error, simply remove them here: ${memberUrl}`}</p>
+        <ul>
+          {newUsers.map((newUser) => (
+            <li key={newUser.email} style={listItemStyle}>
+              <b>{`${newUser.name}`}</b>
+              {' ('}
+              <a href={`mailto:${newUser.email}`} style={emailLinkStyle}>{`${newUser.email}`}</a>
+              {')'}
+            </li>
+          ))}
+        </ul>
+        <p style={emailCopyStyle}>
+          {'If any of these users were added by mistake, simply remove them under: '}
+          <a href={memberUrl} style={emailLinkStyle} title='Organization Settings'>
+            {'Organization Settings'}
+          </a>
+        </p>
         <p style={emailCopyStyle}>
           {'Get in touch if we can help in any way,'}
           <br />
           {emailProductTeamSignature}
           <br />
-          <a href='mailto:love@parabol.co' style={linkStyle} title='love@parabol.co'>
+          <a href='mailto:love@parabol.co' style={emailLinkStyle} title='love@parabol.co'>
             {'love@parabol.co'}
           </a>
         </p>

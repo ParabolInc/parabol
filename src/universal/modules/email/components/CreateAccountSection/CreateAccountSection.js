@@ -1,12 +1,7 @@
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
-import {
-  emailFontFamily,
-  emailLinkStyle,
-  emailPrimaryButtonStyle,
-  emailTableBase
-} from 'universal/styles/email'
+import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'universal/styles/email'
 
 const tableStyle = {
   ...emailTableBase,
@@ -28,29 +23,23 @@ const textStyle = {
 const headingStyle = {
   ...textStyle,
   fontSize: 24,
-  margin: '0 0 8px'
+  fontWeight: 600,
+  margin: '0 0 16px'
 }
 const copyStyle = {
   ...textStyle,
-  fontSize: 14,
-  margin: '0 0 20px'
+  fontSize: 16,
+  margin: '0 0 24px'
 }
 const subHeadingStyle = {
   ...textStyle,
-  fontSize: 16,
-  fontStyle: 'italic',
   fontWeight: 600,
-  margin: '0 0 16px'
+  fontSize: 16,
+  margin: '48px 0 16px'
 }
 const primaryButtonStyle = {
   ...emailPrimaryButtonStyle,
   width: '320px'
-}
-const linkStyle = {
-  ...emailLinkStyle,
-  display: 'block',
-  fontSize: 14,
-  margin: '20px 0 32px'
 }
 const iconSize = 40
 const labelWidth = 298
@@ -61,7 +50,7 @@ const featureTableStyle = {
 }
 const featureIconCellStyle = {
   height: iconSize,
-  padding: '8px 0',
+  padding: '6px 0',
   width: iconSize
 }
 const featureIconStyle = {
@@ -72,18 +61,18 @@ const featureIconStyle = {
 const featureCopyCellStyle = {
   fontSize: 16,
   height: iconSize,
-  padding: '8px 0 8px 18px',
+  padding: '6px 0 6px 18px',
   textAlign: 'left',
   width: 280
 }
 
 const features = [
-  {icon: 'prompts@3x.png', copy: 'Custom retrospective formats'},
-  {icon: 'grouping@3x.png', copy: 'Engaging UX for 8+ team members'},
-  {icon: 'summary@3x.png', copy: 'Detailed meeting summary email'},
-  {icon: 'owners@3x.png', copy: 'Takeaway tasks with owners'}
+  {icon: 'feature-prompts@3x.png', copy: 'Custom retrospective formats'},
+  {icon: 'feature-grouping@3x.png', copy: 'Realtime group participation'},
+  {icon: 'feature-summary@3x.png', copy: 'Detailed meeting summary email'},
+  {icon: 'feature-owners@3x.png', copy: 'Takeaway tasks with owners'}
 ]
-const primaryActionLabel = 'Invite Your Team'
+const primaryActionLabel = 'Create a Free Account'
 const primaryActionLink = '/create-account?from=demo'
 
 const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
@@ -109,15 +98,13 @@ const CreateAccountSection = () => {
           <tr>
             <td style={blockStyle}>
               <div style={headingStyle}>Thanks for playing!</div>
-              <div style={copyStyle}>Retrospectives are more fun with humans.</div>
+              <div style={copyStyle}>
+                In just a few seconds you’ll have access<br />
+                to run <b>unlimited retrospectives</b> with your team.
+              </div>
               <div>
                 <a href={primaryActionLink} style={primaryButtonStyle} title={primaryActionLabel}>
                   {primaryActionLabel}
-                </a>
-              </div>
-              <div>
-                <a href='mailto:love@parabol.co?subject=Retro Demo' style={linkStyle}>
-                  Still have questions? Contact us
                 </a>
               </div>
               <div style={subHeadingStyle}>The Parabol Difference</div>

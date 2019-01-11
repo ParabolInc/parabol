@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import styled from 'react-emotion'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 import PrimaryButton from 'universal/components/PrimaryButton'
+import RaisedButton from 'universal/components/RaisedButton'
 import auth0CreateAccountWithEmail from 'universal/utils/auth0CreateAccountWithEmail'
 import auth0LoginWithEmail from 'universal/utils/auth0LoginWithEmail'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from 'universal/utils/constants'
@@ -13,6 +14,8 @@ import PasswordInputField from './PasswordInputField'
 
 interface Props {
   email: string
+  // is the primary login action (not secondary to Google Oauth)
+  isPrimary?: boolean
   isSignin?: boolean
 }
 
@@ -25,7 +28,7 @@ const FieldGroup = styled('div')({
   margin: '1rem 0 1rem'
 })
 const FieldBlock = styled('div')({
-  margin: '0 0 1.5rem'
+  margin: '0 0 1.25rem'
 })
 
 const Form = styled('form')({
@@ -178,7 +181,8 @@ class EmailPasswordAuthForm extends Component<Props> {
 
   render () {
     const {fields} = this.state
-    const {error, isSignin, submitting} = this.props
+    const {error, isPrimary, isSignin, submitting} = this.props
+    const Button = isPrimary ? PrimaryButton : RaisedButton
     return (
       <Form className='create-account-form' onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
@@ -199,9 +203,9 @@ class EmailPasswordAuthForm extends Component<Props> {
             />
           </FieldBlock>
         </FieldGroup>
-        <PrimaryButton size='large' disabled={false} waiting={submitting}>
+        <Button size='medium' disabled={false} waiting={submitting}>
           {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
-        </PrimaryButton>
+        </Button>
       </Form>
     )
   }

@@ -55,7 +55,7 @@ export default {
         })
     })
 
-    const data = {teamId}
+    const data = {teamId, oldLeaderId: myTeamMemberId, newLeaderId: teamMemberId}
     publish(TEAM, teamId, PromoteToTeamLeadPayload, data, subOptions)
     return data
   }

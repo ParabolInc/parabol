@@ -22,6 +22,8 @@ import StyledError from './StyledError'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import StyledTip from './StyledTip'
+import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
+import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
 
 interface Props
   extends WithAtmosphereProps,
@@ -34,14 +36,40 @@ interface State {
   isEmailFallback: boolean
 }
 
+const StyledDialog = styled(InvitationDialog)({
+  maxWidth: 356
+})
+
+const StyledContent = styled(InvitationDialogContent)({
+  paddingLeft: 0,
+  paddingRight: 0
+})
+
+const CopyMargins = styled('div')({
+  padding: '0 2rem'
+})
+
 const UseEmailFallback = styled(PlainButton)({
   margin: '1rem',
   color: LINK.BLUE
 })
 
-const HR = styled('hr')({
-  marginTop: '1rem',
-  width: '100%'
+const TeamName = styled('span')({
+  fontWeight: 600,
+  whiteSpace: 'nowrap'
+})
+
+const helpText = {
+  fontSize: '.8125rem',
+  marginTop: '.5rem'
+}
+
+const ErrorMessage = styled(StyledError)({
+  ...helpText
+})
+
+const HelpMessage = styled(StyledTip)({
+  ...helpText
 })
 
 class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
@@ -100,14 +128,18 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     if (!teamInvitation) return null
     const {email} = teamInvitation
     return (
-      <InvitationDialog>
+      <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
         <InvitationDialogTitle>Welcome!</InvitationDialogTitle>
-        <InvitationDialogContent>
-          <InvitationDialogCopy>It looks like your email is hosted by Google.</InvitationDialogCopy>
-          <InvitationDialogCopy>
-            Click below for immediate access to {teamName}
-          </InvitationDialogCopy>
+        <StyledContent>
+          <CopyMargins>
+            <InvitationDialogCopy>
+              It looks like your email is hosted by Google.
+            </InvitationDialogCopy>
+            <InvitationDialogCopy>
+              Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
+            </InvitationDialogCopy>
+          </CopyMargins>
           <InvitationCenteredCopy>
             <GoogleOAuthButton
               label='Sign up using Google'
@@ -115,17 +147,20 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
               waiting={submitting}
             />
             {error &&
-              !submitting && <StyledError>Error logging in! Did you close the popup?</StyledError>}
-            {submitting && <StyledTip>Continue through the login popup</StyledTip>}
+              !submitting && (
+                <ErrorMessage>Error logging in! Did you close the popup?</ErrorMessage>
+              )}
+            {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
             {isEmailFallback ? (
-              <HR />
+              <HorizontalSeparator margin='1rem 0 0' text='or' />
             ) : (
               <UseEmailFallback onClick={this.useEmail}>Sign up without Google</UseEmailFallback>
             )}
             {isEmailFallback && <EmailPasswordAuthForm email={email} />}
           </InvitationCenteredCopy>
-        </InvitationDialogContent>
-      </InvitationDialog>
+          <AuthPrivacyFooter />
+        </StyledContent>
+      </StyledDialog>
     )
   }
 }
