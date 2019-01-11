@@ -48,10 +48,11 @@ const addUser = async (orgIds, userId) => {
       id: shortid.generate(),
       inactive: false,
       joinedAt: new Date(),
-      // if they've been on the team before, they no longer get a grace period
-      newUserUntil: new Date(
-        oldOrganizationUser ? oldOrganizationUser.newUserUntil : organization.periodEnd
-      ),
+      // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
+      newUserUntil:
+        (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
+        organization.periodEnd ||
+        new Date(),
       orgId,
       removedAt: null,
       role: null,
