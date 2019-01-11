@@ -4,19 +4,20 @@ import {Component} from 'react'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
 import makeHref from 'universal/utils/makeHref'
 
+import AnalyticsJS = SegmentAnalytics.AnalyticsJS
+
+declare global {
+  interface Window {
+    analytics?: AnalyticsJS
+  }
+}
+
 interface Props {
   location: any
   viewer: AnalyticsIdentifierRootQueryResponse['viewer'] | null
 }
-
 interface State {
   viewer: AnalyticsIdentifierRootQueryResponse['viewer'] | null
-}
-
-declare global {
-  interface Window {
-    analytics?: {identify: any; page: any}
-  }
 }
 
 class AnalyticsIdentifier extends Component<Props, State> {

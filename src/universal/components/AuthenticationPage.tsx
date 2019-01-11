@@ -67,7 +67,10 @@ class AuthenticationPage extends Component<Props> {
     }
     onCompleted()
     const {idToken} = res
-    LoginMutation(atmosphere, {auth0Token: idToken}, {history})
+    const isCreate = location.pathname.includes(CREATE_ACCOUNT_SLUG)
+    const segmentId =
+      isCreate && window.analytics ? window.analytics.user().anonymousId() : undefined
+    LoginMutation(atmosphere, {auth0Token: idToken, segmentId}, {history})
   }
 
   authFormRef = React.createRef<EmailPasswordAuthFormBase>()

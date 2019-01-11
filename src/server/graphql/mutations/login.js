@@ -19,6 +19,7 @@ import sleep from 'universal/utils/sleep'
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
     await segmentIo.alias({previousId, userId})
+    // https://segment.com/docs/destinations/mixpanel/#aliasing-server-side
     await sleep(1000)
   }
   return sendSegmentIdentify(userId)
@@ -103,7 +104,8 @@ const login = {
       name: userInfo.name,
       preferredName,
       identities: userInfo.identities || [],
-      createdAt: ensureDate(userInfo.created_at)
+      createdAt: ensureDate(userInfo.created_at),
+      segmentId
     }
     await r.table('User').insert(newUser)
 

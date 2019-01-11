@@ -1604,6 +1604,11 @@
   resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-1.3.6.tgz#839610054c1747217e814c8993fa642e902d0de0"
   integrity sha512-NobpY0XFh0O9FTRkFJsN5ZNd+M+4eac8ZgM5LP3C0tLd1JkfrwuGkyBUMTuDDGYf+T5zl6vTO6EGgXKD+0QpGA==
 
+"@types/segment-analytics@^0.0.28":
+  version "0.0.28"
+  resolved "https://registry.yarnpkg.com/@types/segment-analytics/-/segment-analytics-0.0.28.tgz#a23e26d3171cf6a735ae2ae12974b5f6a707c414"
+  integrity sha512-Oo+1ZQPMlmAXWnE2du97uWOyifMbRWdbmQZDWkXGgZppMLmQB55kAFREf0Z5AfMUD2iymqGJgmu+FsbK8+QNsw==
+
 "@types/serve-static@*":
   version "1.13.2"
   resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.13.2.tgz#f5ac4d7a6420a99a6a45af4719f4dcd8cd907a48"
