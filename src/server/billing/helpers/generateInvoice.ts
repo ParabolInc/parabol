@@ -18,7 +18,10 @@ import IInvoiceLineItem = Stripe.invoices.IInvoiceLineItem
 
 // type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
 interface InvoicesByStartTime {
-  [start: string]: Array<IInvoiceLineItem>
+  [start: string]: {
+    unusedTime?: IInvoiceLineItem
+    remainingTime?: IInvoiceLineItem
+  }
 }
 
 interface TypesDict {
@@ -99,7 +102,7 @@ const getEmailLookup = async (userIds: Array<string>) => {
   }, {}) as EmailLookup
 }
 
-const reduceItemsByType = (typesDict: TypesDict, email: string, invoiceId: string) => {
+const reduceItemsByType = (typesDict: TypesDict, email: string) => {
   const userTypes = Object.keys(typesDict) as Array<keyof TypesDict>
   const reducedItemsByType: ReducedItemsByType = {
     addUser: [] as Array<ReducedStandardPartial>,
@@ -119,26 +122,13 @@ const reduceItemsByType = (typesDict: TypesDict, email: string, invoiceId: strin
       // for each time period
       const startTime = startTimes[k]
       const lineItems = startTimeDict[startTime]
-      // this will be "Unused time on Qty * PlanName after prorationDate" or "Remaining time..." 1 is negative, 1 is positive, we want to match them together
-      const firstLineItem = lineItems[0]
-      let secondLineItem = lineItems[1]
-      if (lineItems.length !== 2) {
-        if (firstLineItem.quantity !== 1) {
-          secondLineItem = lineItems.find(({amount}) => amount * firstLineItem.amount < 0)!
-          if (!secondLineItem) {
-            console.warn(
-              `We did not get 2 line items and qty > 1. What do? Invoice: ${invoiceId}, ${JSON.stringify(
-                {lineItems, typesDict}
-              )}`
-            )
-            continue
-          }
-        }
-      }
-      const secondLineItemAmount = secondLineItem ? secondLineItem.amount : 0
+      // combine unusedTime with remainingTime to create a single activity
+      const {unusedTime, remainingTime} = lineItems
+      const unusedTimeAmount = unusedTime ? unusedTime.amount : 0
+      const remainingTimeAmount = remainingTime ? remainingTime.amount : 0
       reducedItems[k] = {
         id: shortid.generate(),
-        amount: firstLineItem.amount + secondLineItemAmount,
+        amount: unusedTimeAmount + remainingTimeAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
       } as ReducedUnpausePartial | ReducedStandardPartial
@@ -200,7 +190,7 @@ const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) =>
   return quantityChangeLineItems
 }
 
-const makeDetailedLineItems = async (itemDict: ItemDict, invoiceId: string) => {
+const makeDetailedLineItems = async (itemDict: ItemDict) => {
   // Make lookup table to get user Emails
   const userIds = Object.keys(itemDict)
   const emailLookup = await getEmailLookup(userIds)
@@ -215,7 +205,7 @@ const makeDetailedLineItems = async (itemDict: ItemDict, invoiceId: string) => {
     const userId = userIds[i]
     const email = emailLookup[userId]
     const typesDict = itemDict[userId]
-    const reducedItemsByType = reduceItemsByType(typesDict, email, invoiceId)
+    const reducedItemsByType = reduceItemsByType(typesDict, email)
     const pausedItems = reducedItemsByType.pauseUser
     const unpausedItems = reducedItemsByType.unpauseUser
     detailedLineItems.ADDED_USERS.push(...reducedItemsByType.addUser)
@@ -235,8 +225,12 @@ const addToDict = (itemDict: ItemDict, lineItem: IInvoiceLineItem) => {
   const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
-  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || []
-  itemDict[userId][safeType][start].push(lineItem)
+  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}
+  const startTimeItems = itemDict[userId][safeType][start] as InvoicesByStartTime['start']
+  const bucket = lineItem.amount < 0 ? 'unusedTime' : 'remainingTime'
+  // an identical line item may already exist in the bucket, e.g. a user was removed & prorated to the exact same timestamp (subscription start)
+  // since the start time is the same, we know the amount will be the same, so we do this to avoid a duplicate line item on the invoice
+  startTimeItems[bucket] = lineItem
 }
 
 const makeItemDict = (stripeLineItems: Array<IInvoiceLineItem>) => {
@@ -329,7 +323,7 @@ export default async function generateInvoice (
     itemDict,
     invoice.subscription as string
   )
-  const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId)
+  const detailedLineItems = await makeDetailedLineItems(itemDict)
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems)
   const invoiceLineItems = [
     ...unknownInvoiceLines.map((item) => ({
