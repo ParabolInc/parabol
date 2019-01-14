@@ -3,8 +3,7 @@ import getRethink from 'server/database/rethinkDriver'
 import {fromEpochSeconds} from 'server/utils/epochTime'
 import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from 'server/utils/serverConstants'
 import shortid from 'shortid'
-// noinspection ES6UnusedImports
-import * as Stripe from 'stripe'
+import Stripe from 'stripe'
 import {
   BILLING_LEADER,
   FAILED,
@@ -13,14 +12,12 @@ import {
   PENDING,
   UPCOMING
 } from 'universal/utils/constants'
-import IInvoice = Stripe.invoices.IInvoice
-import IInvoiceLineItem = Stripe.invoices.IInvoiceLineItem
 
 // type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
 interface InvoicesByStartTime {
   [start: string]: {
-    unusedTime?: IInvoiceLineItem
-    remainingTime?: IInvoiceLineItem
+    unusedTime?: Stripe.invoices.IInvoiceLineItem
+    remainingTime?: Stripe.invoices.IInvoiceLineItem
   }
 }
 
@@ -217,7 +214,7 @@ const makeDetailedLineItems = async (itemDict: ItemDict) => {
   return detailedLineItems
 }
 
-const addToDict = (itemDict: ItemDict, lineItem: IInvoiceLineItem) => {
+const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineItem) => {
   const {
     metadata: {userId, type},
     period: {start}
@@ -233,9 +230,9 @@ const addToDict = (itemDict: ItemDict, lineItem: IInvoiceLineItem) => {
   startTimeItems[bucket] = lineItem
 }
 
-const makeItemDict = (stripeLineItems: Array<IInvoiceLineItem>) => {
+const makeItemDict = (stripeLineItems: Array<Stripe.invoices.IInvoiceLineItem>) => {
   const itemDict = {} as ItemDict
-  const unknownLineItems = [] as Array<IInvoiceLineItem>
+  const unknownLineItems = [] as Array<Stripe.invoices.IInvoiceLineItem>
   let nextMonthCharges!: NextMonthCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i]
@@ -269,12 +266,12 @@ const makeItemDict = (stripeLineItems: Array<IInvoiceLineItem>) => {
 }
 
 const maybeReduceUnknowns = async (
-  unknownLineItems: Array<IInvoiceLineItem>,
+  unknownLineItems: Array<Stripe.invoices.IInvoiceLineItem>,
   itemDict: ItemDict,
   stripeSubscriptionId: string
 ) => {
   const r = getRethink()
-  const unknowns = [] as Array<IInvoiceLineItem>
+  const unknowns = [] as Array<Stripe.invoices.IInvoiceLineItem>
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i]
     // this could be inefficient but if all goes as planned, we'll never use this function
@@ -308,8 +305,8 @@ const maybeReduceUnknowns = async (
 }
 
 export default async function generateInvoice (
-  invoice: IInvoice,
-  stripeLineItems: Array<IInvoiceLineItem>,
+  invoice: Stripe.invoices.IInvoice,
+  stripeLineItems: Array<Stripe.invoices.IInvoiceLineItem>,
   orgId: string,
   invoiceId: string
 ) {
