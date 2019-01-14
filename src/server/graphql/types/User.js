@@ -160,10 +160,18 @@ const User = new GraphQLObjectType({
       description: 'The timestamp the user was last updated'
     },
     /* User Profile */
-    broadcastNumber: {
-      type: GraphQLInt,
-      description: 'flag to determine which broadcast to show'
-    },
+    // hideFeatureNumber: {
+    //   type: GraphQLInt,
+    //   description: 'The number of the most recent feature that the user has hidden'
+    // },
+    // newFeature: {
+    //   type: NewFeatureBroadcast,
+    //   description: 'The new feature released by Parabol. null if the user already hid it',
+    //   resolve: async ({hideFeatureNumber}) => {
+    //     const newFeature = await r.table('NewFeature').max('number')
+    //     return newFeature.number === hideFeatureNumber ? null : newFeature
+    //   }
+    // },
     lastSeenAt: {
       type: GraphQLISO8601Type,
       description: 'The last time the user connected via websocket'
