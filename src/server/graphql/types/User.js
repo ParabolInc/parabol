@@ -36,6 +36,7 @@ import Organization from 'server/graphql/types/Organization'
 import {TimelineEventConnection} from 'server/graphql/types/TimelineEvent'
 import getRethink from 'server/database/rethinkDriver'
 import OrganizationUser from 'server/graphql/types/OrganizationUser'
+import SuggestedAction from 'server/graphql/types/SuggestedAction'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -105,6 +106,17 @@ const User = new GraphQLObjectType({
     name: {
       type: GraphQLString,
       description: 'Name associated with the user'
+    },
+    suggestedAction: {
+      type: SuggestedAction,
+      description: 'the most important action for the user to perform',
+      resolve: async ({id: userId}, _args, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId) return null
+        const suggestedActions = dataLoader.get('suggestedActionsByUserId').load(userId)
+        suggestedActions.sort((a, b) => (a.priority < b.priority ? -1 : 1))
+        return suggestedActions[0]
+      }
     },
     timeline: {
       type: TimelineEventConnection,
