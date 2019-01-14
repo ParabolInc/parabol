@@ -25,7 +25,7 @@ export default {
     tier: {
       type: OrgTierEnum,
       defaultValue: PRO,
-      descrption: 'which tier of org shall we count?'
+      description: 'which tier of org shall we count?'
     }
   },
   async resolve (source, {ignoreEmailRegex, includeInactive, minOrgSize, tier}, {authToken}) {
@@ -38,41 +38,26 @@ export default {
     return r
       .table('Organization')
       .getAll(tier, {index: 'tier'})
-      .map((org) =>
-        org.merge({
-          orgUsers: org('orgUsers')
-            .eqJoin((ou) => ou('id'), r.table('User'))
-            .zip()
-            .pluck('email', 'inactive')
-        })
-      )
-      .coerceTo('array')
-      .do((orgs) =>
-        r.branch(
-          r.eq(ignoreEmailRegex, ''),
-          orgs,
-          orgs.map((org) =>
-            org.merge({
-              orgUsers: org('orgUsers').filter((ou) =>
-                r.eq(ou('email').match(ignoreEmailRegex), null)
-              )
-            })
+      .merge((organization) => ({
+        users: r
+          .table('OrganizationUser')
+          .getAll(organization('id'), {index: 'orgId'})
+          .filter({removedAt: null})
+          .eqJoin('userId', r.table('User'))
+          .zip()
+          .filter((user) =>
+            r.branch(
+              r(ignoreEmailRegex).eq(''),
+              true,
+              user('email')
+                .match(ignoreEmailRegex)
+                .eq(null)
+            )
           )
-        )
-      )
-      .do((orgs) =>
-        r.branch(
-          includeInactive,
-          orgs,
-          orgs.map((org) =>
-            org.merge({
-              orgUsers: org('orgUsers').filter((ou) => r.not(ou('inactive')))
-            })
-          )
-        )
-      )
-      .map((org) => org('orgUsers').count())
-      .filter((c) => c.ge(minOrgSize))
+          .filter((user) => r.branch(includeInactive, true, user('inactive').not()))
+          .count()
+      }))
+      .filter((org) => org('users').ge(minOrgSize))
       .count()
   }
 }

@@ -5,7 +5,7 @@ import AnalyticsIdentifierRoot from 'universal/components/AnalyticsIdentifierRoo
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
 import SocketHealthMonitor from 'universal/components/SocketHealthMonitor'
 import Toast from 'universal/modules/toast/containers/Toast/Toast'
-import {SIGNIN_SLUG, CREATE_ACCOUNT_SLUG} from 'universal/utils/constants'
+import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from 'universal/utils/constants'
 
 const invoice = () =>
   import(/* webpackChunkName: 'InvoiceRoot' */ 'universal/modules/invoice/containers/InvoiceRoot')
@@ -33,16 +33,18 @@ const resetPasswordPage = () =>
   import(/* webpackChunkName: 'ResetPasswordPage' */ 'universal/components/ResetPasswordPage/ResetPasswordPage')
 const retroRoot = () =>
   import(/* webpackChunkName: 'RetroRoot' */ 'universal/components/RetroRoot/RetroRoot')
-const createAccountPage = () =>
-  import(/* webpackChunkName: 'CreateAccountPage' */ 'universal/components/CreateAccountPage/CreateAccountPage')
-const signInPage = () =>
-  import(/* webpackChunkName: 'SignInPage' */ 'universal/components/SignInPage/SignInPage')
+const authenticationPage = () =>
+  import(/* webpackChunkName: 'AuthenticationPage' */ 'universal/components/AuthenticationPage')
 const demoMeeting = () =>
   import(/* webpackChunkName: 'DemoMeeting' */ 'universal/components/DemoMeeting')
 const demoSummary = () =>
   import(/* webpackChunkName: 'DemoSummary' */ 'universal/components/DemoSummary')
 const authProvider = () =>
   import(/* webpackChunkName: 'AuthProvider' */ 'universal/components/AuthProvider')
+const oauthRedirect = () =>
+  import(/* webpackChunkName: 'GoogleOAuthProvider' */ 'universal/components/OAuthRedirect')
+const teamInvitation = () =>
+  import(/* webpackChunkName: 'TeamInvitationRoot' */ 'universal/components/TeamInvitationRoot')
 
 const ActionStyles = styled('div')({
   margin: 0,
@@ -58,11 +60,11 @@ const Action = () => {
       <SocketHealthMonitor />
       <AnalyticsIdentifierRoot />
       <Switch>
-        <AsyncRoute exact path='/' mod={signInPage} />
-        <AsyncRoute exact path={`/${SIGNIN_SLUG}`} mod={signInPage} />
-        <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
-        <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={createAccountPage} />
+        <AsyncRoute exact path='/' mod={authenticationPage} />
+        <AsyncRoute exact path={`/${SIGNIN_SLUG}`} mod={authenticationPage} />
+        <AsyncRoute exact path={`/${CREATE_ACCOUNT_SLUG}`} mod={authenticationPage} />
         <AsyncRoute exact path={`/auth/:provider`} mod={authProvider} />
+        <AsyncRoute exact path={`/oauth-redirect`} mod={oauthRedirect} />
         <AsyncRoute
           path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
           mod={demoMeeting}
@@ -88,6 +90,7 @@ const Action = () => {
         <AsyncRoute path='/admin/graphql' mod={graphql} />
         <AsyncRoute path='/admin/impersonate/:newUserId' mod={impersonate} />
         <AsyncRoute path='/invitation/:inviteToken' mod={invitation} />
+        <AsyncRoute path='/team-invitation/:token' mod={teamInvitation} />
         <AsyncRoute mod={signout} />
         <AsyncRoute mod={notFound} />
       </Switch>

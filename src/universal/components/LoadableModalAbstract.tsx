@@ -1,4 +1,4 @@
-import React, {Component, ComponentType} from 'react'
+import React, {Component, ComponentType, Suspense} from 'react'
 import styled from 'react-emotion'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import Modal from 'universal/components/Modal'
@@ -62,7 +62,9 @@ class LoadableModalAbstract extends Component<LoadableModalAbstractProps, State>
           </AnimatedFade>
           <AnimatedFade appear duration={200} slide={32} in={!isClosing} onExited={terminatePortal}>
             <ModalContents>
-              <LoadableComponent {...queryVars} closePortal={closePortal} />
+              <Suspense fallback={''}>
+                <LoadableComponent {...queryVars} closePortal={closePortal} />
+              </Suspense>
             </ModalContents>
           </AnimatedFade>
         </ModalBlock>

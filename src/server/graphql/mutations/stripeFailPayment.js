@@ -59,13 +59,11 @@ export default {
     )
     const nextMonthAmount = (nextMonthCharges && nextMonthCharges.amount) || 0
 
-    const orgDoc = await terminateSubscription(orgId)
-    const userIds = orgDoc.orgUsers.reduce((billingLeaders, orgUser) => {
-      if (orgUser.role === BILLING_LEADER) {
-        billingLeaders.push(orgUser.id)
-      }
-      return billingLeaders
-    }, [])
+    await terminateSubscription(orgId)
+    const billingLeaderUserIds = await r
+      .table('OrganizationUser')
+      .getAll(orgId, {index: 'orgId'})
+      .filter({removedAt: null, role: BILLING_LEADER})('userId')
     const {last4, brand} = creditCard
     await stripe.customers.update(customerId, {
       // amount_due includes the old account_balance, so we can (kinda) atomically set this
@@ -78,7 +76,7 @@ export default {
       type: PAYMENT_REJECTED,
       startAt: now,
       orgId,
-      userIds,
+      userIds: billingLeaderUserIds,
       last4,
       brand
     }

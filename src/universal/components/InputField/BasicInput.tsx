@@ -22,12 +22,23 @@ interface Props {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
+  type?: string
   value: string
 }
 
 const BasicInput = (props: Props) => {
-  const {autoFocus, disabled, error, innerRef, name, onBlur, onChange, placeholder, value} = props
-
+  const {
+    autoFocus,
+    disabled,
+    error,
+    innerRef,
+    name,
+    onBlur,
+    onChange,
+    placeholder,
+    type = 'text',
+    value
+  } = props
   return (
     <React.Fragment>
       <Input
@@ -38,7 +49,7 @@ const BasicInput = (props: Props) => {
         placeholder={placeholder}
         onBlur={onBlur}
         onChange={onChange}
-        type='text'
+        type={type}
         value={value}
       />
       {error && <StyledError>{error}</StyledError>}

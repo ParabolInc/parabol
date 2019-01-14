@@ -3,6 +3,7 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
 import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {
@@ -63,9 +64,9 @@ export const addTeamMutationNotificationOnNext = (payload, {atmosphere, history}
   popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere, history})
 }
 
-const AddTeamMutation = (environment, variables, options, onError, onCompleted) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) => {
+  const {viewerId} = atmosphere
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -83,9 +84,10 @@ const AddTeamMutation = (environment, variables, options, onError, onCompleted) 
     },
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
-      if (!errors) {
+      const error = getGraphQLError(res, errors)
+      if (!error) {
         const payload = res.addTeam
-        popTeamCreatedToast(payload, options)
+        popTeamCreatedToast(payload, {atmosphere, ...options})
       }
     },
     onError

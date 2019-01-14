@@ -13,92 +13,63 @@ import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 
 const changePause = (inactive) => (orgIds, userId) => {
   const r = getRethink()
-  return r
-    .table('User')
-    .get(userId)
-    .update({inactive})
-    .do(() => {
-      return r
-        .table('Organization')
-        .getAll(r.args(orgIds), {index: 'id'})
-        .update(
-          (org) => ({
-            orgUsers: org('orgUsers').map((orgUser) => {
-              return r.branch(
-                orgUser('id').eq(userId),
-                orgUser.merge({
-                  inactive
-                }),
-                orgUser
-              )
-            }),
-            updatedAt: new Date()
-          }),
-          {returnChanges: true}
-        )
-    })
-    .run()
+  return r({
+    user: r
+      .table('User')
+      .get(userId)
+      .update({inactive}),
+    organizationUser: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null})
+      .update({inactive})
+  })
 }
 
-const addUser = (orgIds, userId) => {
+const addUser = async (orgIds, userId) => {
   const r = getRethink()
-  const userOrgAdditions = orgIds.map((id) => ({
-    id,
-    role: null
-  }))
-  return r
-    .table('User')
-    .get(userId)
-    .update((user) => ({
-      // we may have already added them in the previous step, so use distinct
-      userOrgs: user('userOrgs')
-        .add(userOrgAdditions)
-        .distinct()
-    }))
-    .do(() => {
-      return r
-        .table('Organization')
-        .getAll(r.args(orgIds), {index: 'id'})
-        .update(
-          (org) => ({
-            orgUsers: org('orgUsers').append({
-              id: userId,
-              inactive: false
-            }),
-            updatedAt: new Date()
-          }),
-          {returnChanges: true}
-        )
-    })
-    .run()
+  const {organizations, organizationUsers} = await r({
+    organizationUsers: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .orderBy(r.desc('newUserUntil'))
+      .coerceTo('array'),
+    organizations: r
+      .table('Organization')
+      .getAll(r.args(orgIds))
+      .coerceTo('array')
+  })
+  const docs = orgIds.map((orgId) => {
+    const oldOrganizationUser = organizationUsers.find(
+      (organizationUser) => organizationUser.orgId === orgId
+    )
+    const organization = organizations.find((organization) => organization.id === orgId)
+    return {
+      id: shortid.generate(),
+      inactive: false,
+      joinedAt: new Date(),
+      // if they've been on the team before, they no longer get a grace period
+      newUserUntil: new Date(
+        oldOrganizationUser ? oldOrganizationUser.newUserUntil : organization.periodEnd
+      ),
+      orgId,
+      removedAt: null,
+      role: null,
+      userId
+    }
+  })
+  return r.table('OrganizationUser').insert(docs)
 }
 
 const deleteUser = (orgIds, userId) => {
   const r = getRethink()
   return r
-    .table('User')
-    .get(userId)
-    .update((user) => ({
-      userOrgs: user('userOrgs').filter((userOrg) =>
-        r
-          .expr(orgIds)
-          .contains(userOrg('id'))
-          .not()
-      )
-    }))
-    .do(() => {
-      return r
-        .table('Organization')
-        .getAll(r.args(orgIds), {index: 'id'})
-        .update(
-          (org) => ({
-            orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
-            updatedAt: new Date()
-          }),
-          {returnChanges: true}
-        )
+    .table('OrganizationUser')
+    .getAll(userId, {index: 'userId'})
+    .filter((row) => r.expr(orgIds).contains(row('orgId')))
+    .update({
+      removedAt: new Date()
     })
-    .run()
 }
 
 const typeLookup = {
@@ -109,15 +80,27 @@ const typeLookup = {
   [UNPAUSE_USER]: changePause(false)
 }
 
-export default async function adjustUserCount (userId, orgInput, type) {
+export default async function adjustUserCount (userId, orgInput, type, options = {}) {
   const r = getRethink()
   const now = new Date()
 
   const orgIds = Array.isArray(orgInput) ? orgInput : [orgInput]
   const dbAction = typeLookup[type]
-  const {changes: orgChanges} = await dbAction(orgIds, userId)
-  const orgs = orgChanges.map((change) => change.new_val)
-  const prorationDate = toEpochSeconds(now)
+  await dbAction(orgIds, userId)
+  const orgs = await r
+    .table('Organization')
+    .getAll(r.args(orgIds), {index: 'id'})
+    .merge((organization) => ({
+      quantity: r
+        .table('OrganizationUser')
+        .getAll(organization('id'), {index: 'orgId'})
+        .filter({
+          inactive: false,
+          removedAt: null
+        })
+        .count()
+    }))
+  const prorationDate = toEpochSeconds(type === REMOVE_USER ? options.prorationDate : now)
   const hooks = orgs.reduce((arr, org) => {
     const {stripeSubscriptionId} = org
     if (stripeSubscriptionId) {
@@ -134,12 +117,12 @@ export default async function adjustUserCount (userId, orgInput, type) {
   // wait here to make sure the webhook finds what it's looking for
   await r.table('InvoiceItemHook').insert(hooks)
   const stripePromises = orgs.reduce((arr, org) => {
-    const {orgUsers, stripeSubscriptionId} = org
+    const {quantity, stripeSubscriptionId} = org
     if (stripeSubscriptionId) {
       arr.push(
         stripe.subscriptions.update(stripeSubscriptionId, {
           proration_date: prorationDate,
-          quantity: orgUsers.reduce((count, orgUser) => (orgUser.inactive ? count : count + 1), 0)
+          quantity
         })
       )
     }

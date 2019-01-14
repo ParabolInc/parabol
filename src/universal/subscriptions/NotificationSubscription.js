@@ -11,7 +11,6 @@ import {
   approveToOrgNotificationUpdater
 } from 'universal/mutations/ApproveToOrgMutation'
 import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
-import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
 import {
   createTaskNotificationOnNext,
@@ -32,6 +31,11 @@ import {
   removeOrgUserNotificationOnNext,
   removeOrgUserNotificationUpdater
 } from 'universal/mutations/RemoveOrgUserMutation'
+import {
+  inviteToTeamNotificationOnNext,
+  inviteToTeamNotificationUpdater
+} from 'universal/mutations/InviteToTeamMutation'
+import {acceptTeamInvitationNotificationUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -41,11 +45,11 @@ const subscription = graphql`
       ...AddTeamMutation_notification @relay(mask: false)
       ...ApproveToOrgMutation_notification @relay(mask: false)
       ...CancelApprovalMutation_notification @relay(mask: false)
-      ...CancelTeamInviteMutation_notification @relay(mask: false)
       ...ClearNotificationMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
       ...DeleteTaskMutation_notification @relay(mask: false)
       ...InviteTeamMembersMutation_notification @relay(mask: false)
+      ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
       ...RejectOrgApprovalMutation_notification @relay(mask: false)
       ...UpdateUserProfileMutation_notification @relay(mask: false)
@@ -140,13 +144,14 @@ const onNextHandlers = {
   ApproveToOrgPayload: approveToOrgNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext,
+  InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RejectOrgApprovalPayload: rejectOrgApprovalNotificationOnNext,
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext
 }
 
-const NotificationSubscription = (environment, queryVariables, subParams) => {
-  const {viewerId} = environment
+const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
+  const {viewerId} = atmosphere
   return {
     subscription,
     updater: (store) => {
@@ -154,6 +159,9 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
+        case 'AcceptTeamInvitationPayload':
+          acceptTeamInvitationNotificationUpdater(payload, {store, atmosphere})
+          break
         case 'AddFeatureFlagPayload':
           break
         case 'AddOrgPayload':
@@ -167,9 +175,6 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
           break
         case 'CancelApprovalPayload':
           cancelApprovalNotificationUpdater(payload, store, viewerId)
-          break
-        case 'CancelTeamInvitePayload':
-          cancelTeamInviteNotificationUpdater(payload, store, viewerId)
           break
         case 'ClearNotificationPayload':
           clearNotificationNotificationUpdater(payload, store, viewerId)
@@ -185,6 +190,9 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
           break
         case 'InviteTeamMembersPayload':
           inviteTeamMembersNotificationUpdater(payload, store, viewerId)
+          break
+        case 'InviteToTeamPayload':
+          inviteToTeamNotificationUpdater(payload, {atmosphere, store})
           break
         case 'RejectOrgApprovalPayload':
           rejectOrgApprovalNotificationUpdater(payload, store, viewerId)
@@ -208,7 +216,7 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
       const {__typename: type} = notificationSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(notificationSubscription, {...subParams, atmosphere: environment})
+        handler(notificationSubscription, {...subParams, atmosphere})
       }
     }
   }

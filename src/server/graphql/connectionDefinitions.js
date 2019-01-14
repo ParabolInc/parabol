@@ -18,7 +18,8 @@ export default function connectionDefinitions (config) {
     description: 'An edge in a connection.',
     fields: () => ({
       node: {
-        type: nodeType,
+        // breaks away from the relay practice. our backend should guarantee nonnull nodes!
+        type: new GraphQLNonNull(nodeType),
         resolve: resolveNode,
         description: 'The item at the end of the edge'
       },

@@ -1,23 +1,23 @@
-import {AnalyticsIdentifier_viewer} from '__generated__/AnalyticsIdentifier_viewer.graphql'
+import {AnalyticsIdentifierRootQueryResponse} from '__generated__/AnalyticsIdentifierRootQuery.graphql'
 import raven from 'raven-js'
 import {Component} from 'react'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
-import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps} from 'react-router'
 import makeHref from 'universal/utils/makeHref'
 
-interface Props extends RouteComponentProps<{}> {
-  viewer: AnalyticsIdentifier_viewer
-}
-
-interface State {
-  viewer: AnalyticsIdentifier_viewer | null
-}
+import AnalyticsJS = SegmentAnalytics.AnalyticsJS
 
 declare global {
   interface Window {
-    analytics?: {identify: any; page: any}
+    analytics?: AnalyticsJS
   }
+}
+
+interface Props {
+  location: any
+  viewer: AnalyticsIdentifierRootQueryResponse['viewer'] | null
+}
+interface State {
+  viewer: AnalyticsIdentifierRootQueryResponse['viewer'] | null
 }
 
 class AnalyticsIdentifier extends Component<Props, State> {
@@ -91,15 +91,4 @@ class AnalyticsIdentifier extends Component<Props, State> {
 
 reactLifecyclesCompat(AnalyticsIdentifier)
 
-export default createFragmentContainer(
-  AnalyticsIdentifier,
-  graphql`
-    fragment AnalyticsIdentifier_viewer on User {
-      viewerId: id
-      created: createdAt
-      avatar: picture
-      name: preferredName
-      email
-    }
-  `
-)
+export default AnalyticsIdentifier

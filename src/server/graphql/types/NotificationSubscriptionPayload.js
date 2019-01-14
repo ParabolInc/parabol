@@ -3,7 +3,6 @@ import AddOrgPayload from 'server/graphql/types/AddOrgPayload'
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload'
 import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload'
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload'
-import CancelTeamInvitePayload from 'server/graphql/types/CancelTeamInvitePayload'
 import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayload'
 import CreateTaskPayload from 'server/graphql/types/CreateTaskPayload'
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload'
@@ -15,19 +14,22 @@ import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
 import UpdateUserProfilePayload from 'server/graphql/types/UpdateUserProfilePayload'
 import DisconnectSocketPayload from 'server/graphql/types/DisconnectSocketPayload'
 import AddFeatureFlagPayload from 'server/graphql/types/AddFeatureFlagPayload'
+import InviteToTeamPayload from 'server/graphql/types/InviteToTeamPayload'
+import AcceptTeamInvitationPayload from 'server/graphql/types/AcceptTeamInvitationPayload'
 
 const types = [
+  AcceptTeamInvitationPayload,
   AddFeatureFlagPayload,
   AddOrgPayload,
   AddTeamPayload,
   ApproveToOrgPayload,
   CancelApprovalPayload,
-  CancelTeamInvitePayload,
   ClearNotificationPayload,
   CreateTaskPayload,
   DeleteTaskPayload,
   DisconnectSocketPayload,
   InviteTeamMembersPayload,
+  InviteToTeamPayload,
   RejectOrgApprovalPayload,
   RemoveOrgUserPayload,
   StripeFailPaymentPayload,

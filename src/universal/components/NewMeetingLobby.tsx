@@ -3,12 +3,9 @@ import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import InlineAlert from 'universal/components/InlineAlert'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import LoadableModal from 'universal/components/LoadableModal'
 import RetroLobbyHelpMenu from 'universal/components/MeetingHelp/RetroLobbyHelpMenu'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import UpgradeModalRootLoadable from 'universal/components/UpgradeModalRootLoadable'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -18,13 +15,11 @@ import MeetingPhaseHeading from 'universal/modules/meeting/components/MeetingPha
 import StartNewMeetingMutation from 'universal/mutations/StartNewMeetingMutation'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
 import {meetingSplashGutter} from 'universal/styles/meeting'
-import ui from 'universal/styles/ui'
-import {PRO} from 'universal/utils/constants'
+import {MeetingTypeEnum} from 'universal/types/graphql'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import RetroTemplatePicker from '../modules/meeting/components/RetroTemplatePicker'
-import {MeetingTypeEnum} from 'universal/types/graphql'
 
 const ButtonGroup = styled('div')({
   display: 'flex',
@@ -97,19 +92,6 @@ interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentPr
   team: NewMeetingLobby_team
 }
 
-const StyledInlineAlert = styled(InlineAlert)({
-  display: 'inline-block',
-  paddingLeft: '1rem',
-  paddingRight: '1rem'
-})
-
-const AlertAction = styled('span')({
-  color: ui.palette.mid,
-  cursor: 'pointer',
-  fontWeight: 600,
-  textDecoration: 'underline'
-})
-
 const StyledButton = styled(PrimaryButton)({
   width: '100%'
 })
@@ -135,14 +117,11 @@ class NewMeetingLobby extends React.Component<Props> {
       submitting,
       team
     } = this.props
-    const {meetingSettings, orgId, organization, teamId, teamName} = team
-    const {retroMeetingsOffered, retroMeetingsRemaining, tier} = organization
+    const {meetingSettings, teamId, teamName} = team
     const onStartMeetingClick = () => {
       submitMutation()
       StartNewMeetingMutation(atmosphere, {teamId, meetingType}, {history}, onError, onCompleted)
     }
-    const isPro = tier === PRO
-    const canStartMeeting = isPro || retroMeetingsRemaining > 0
     const meetingLabel = meetingTypeToLabel[meetingType]
     const meetingSlug = meetingTypeToSlug[meetingType]
     const buttonLabel = `Start ${meetingLabel} Meeting`
@@ -150,62 +129,22 @@ class NewMeetingLobby extends React.Component<Props> {
       <Lobby>
         <StyledLabel>{`${meetingLabel} Meeting Lobby`}</StyledLabel>
         <StyledHeading>{`${teamName} ${meetingLabel}`}</StyledHeading>
-        {isPro ? (
-          <StyledCopy>
-            {'The person who presses “Start Meeting” will be today’s Facilitator.'}
-            <br />
-            <br />
-            {'Everyone’s display automatically follows the Facilitator.'}
-          </StyledCopy>
-        ) : (
-          <StyledCopy>
-            {
-              'Running a retrospective is the most effective way to learn how your team can work smarter.'
-            }
-            <br />
-            <br />
-            {
-              'In 30 minutes you can discover underlying tensions, create next steps, and have a summary delivered to your inbox.'
-            }
-          </StyledCopy>
-        )}
-        {!isPro && (
-          <StyledInlineAlert>
-            <span
-            >{`${retroMeetingsRemaining} of ${retroMeetingsOffered} Meetings Remaining — `}</span>
-            <LoadableModal
-              LoadableComponent={UpgradeModalRootLoadable}
-              queryVars={{orgId}}
-              toggle={<AlertAction>Upgrade to Pro</AlertAction>}
-            />
-            <span>{' to unlock unlimited retrospectives'}</span>
-          </StyledInlineAlert>
-        )}
+        <StyledCopy>
+          {'The person who presses “Start Meeting” will be today’s Facilitator.'}
+          <br />
+          <br />
+          {'Everyone’s display automatically follows the Facilitator.'}
+        </StyledCopy>
         <ButtonGroup>
           <ButtonBlock>
-            {(isPro || retroMeetingsRemaining > 0) && (
-              <StyledButton
-                aria-label={buttonLabel}
-                disabled={!canStartMeeting}
-                onClick={onStartMeetingClick}
-                size='large'
-                waiting={submitting}
-              >
-                {buttonLabel}
-              </StyledButton>
-            )}
-            {!isPro &&
-              retroMeetingsRemaining === 0 && (
-                <LoadableModal
-                  LoadableComponent={UpgradeModalRootLoadable}
-                  queryVars={{orgId}}
-                  toggle={
-                    <StyledButton aria-label='Get Access Now' size='large'>
-                      {'Get Access Now'}
-                    </StyledButton>
-                  }
-                />
-              )}
+            <StyledButton
+              aria-label={buttonLabel}
+              onClick={onStartMeetingClick}
+              size='large'
+              waiting={submitting}
+            >
+              {buttonLabel}
+            </StyledButton>
           </ButtonBlock>
         </ButtonGroup>
         <TemplatePickerBlock>
@@ -215,7 +154,7 @@ class NewMeetingLobby extends React.Component<Props> {
         <UrlBlock>
           <CopyShortLink url={makeHref(`/${meetingSlug}/${teamId}`)} />
         </UrlBlock>
-        <RetroLobbyHelpMenu isPro={isPro} />
+        <RetroLobbyHelpMenu />
       </Lobby>
     )
   }
@@ -227,12 +166,6 @@ export default createFragmentContainer(
     fragment NewMeetingLobby_team on Team {
       teamId: id
       teamName: name
-      orgId
-      organization {
-        retroMeetingsOffered
-        retroMeetingsRemaining
-        tier
-      }
       meetingSettings(meetingType: $meetingType) {
         ...RetroTemplatePicker_settings
       }

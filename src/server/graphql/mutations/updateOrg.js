@@ -2,7 +2,7 @@ import {GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import UpdateOrgInput from 'server/graphql/types/UpdateOrgInput'
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {ORGANIZATION} from 'universal/utils/constants'
 import updateOrgValidation from './helpers/updateOrgValidation'
@@ -25,10 +25,9 @@ export default {
     const subOptions = {mutatorId, operationId}
 
     // AUTH
-    const userId = getUserId(authToken)
-    const userOrgDoc = await getUserOrgDoc(userId, updatedOrg.id)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, updatedOrg.id, dataLoader))) {
+      return sendOrgLeadAccessError(authToken, updatedOrg.id)
     }
 
     // VALIDATION

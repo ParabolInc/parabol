@@ -5,15 +5,50 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.1.0 2019-Jan-09
+
+### Changed
+
+* New invitation UX (see PRs #2550, #2556 and issues #2537, #2538, #2539, #2540)
+* Refactored the relationship between organizations and their users (see PR #2560 and issue #2547)
+
+### Fixed
+
+* Check-in prompt editing UX #2548
+* Organization help card styles #1968
+
+## v3.0.0 2018-Dec-19
+
+### Changed
+* FREE! The whole thing is free!
+* New Pro accounts cost $12/user/mo
+
+### Fixed
+* Fixed due date color for past-due items
+* Fixed check in question updates
+
+## v2.21.0 2018-Dec-05
+
+### Added
+* Improvements to completed retro phases (PR #2518)
+* Support page events for non-users (PR #2520)
+
+### Changed
+* Refactor redux out of toasts (PR #2501)
+
+### Fixed
+* Fixed remove provider (PR #2517)
+* Fixed agenda input behavior issue for Safari (Issue #2521)
+
 ## v2.20.3 2018-Nov-27
 
 ### Fixed
 * Can add GitHub repos #2347
-  
+
 ## v2.20.2 2018-Nov-18
 
 ### Fixed
-* When su permissions given: can run downgrade mutation & request certain 
+* When su permissions given: can run downgrade mutation & request certain
   nested team & org fields
 
 ## v2.20.0 2018-Nov-14
@@ -21,7 +56,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Added
 * Animations to demo help menu
 * Downgrade mutation on the backend
-* Click-to-expand ellipsis in the meeting summaries for reflections and tasks #2497 
+* Click-to-expand ellipsis in the meeting summaries for reflections and tasks #2497
 
 ### Changed
 * Team invite & notification emails look better

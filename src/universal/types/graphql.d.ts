@@ -23,6 +23,14 @@ export interface IGraphQLResponseErrorLocation {
 export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
+  verifiedInvitation: IVerifiedInvitationPayload | null
+}
+
+export interface IVerifiedInvitationOnQueryArguments {
+  /**
+   * The invitation token
+   */
+  token: string
 }
 
 /**
@@ -128,19 +136,9 @@ export interface IUser {
   inactive: boolean | null
 
   /**
-   * true if the user is a part of the supplied orgId
-   */
-  isBillingLeader: boolean | null
-
-  /**
    * The application-specific name, defaults to nickname
    */
   preferredName: string
-
-  /**
-   * the orgs and roles for this user on each
-   */
-  userOrgs: Array<IUserOrg | null> | null
   archivedTasks: ITaskConnection | null
   archivedTasksCount: number | null
 
@@ -189,7 +187,17 @@ export interface IUser {
   /**
    * get a single organization and the count of users by status
    */
-  organization: IOrganization
+  organization: IOrganization | null
+
+  /**
+   * The connection between a user and an organization
+   */
+  organizationUser: IOrganizationUser | null
+
+  /**
+   * A single user that is connected to a single organization
+   */
+  organizationUsers: Array<IOrganizationUser>
 
   /**
    * Get the list of all organizations a user belongs to
@@ -216,13 +224,6 @@ export interface IUser {
    * all the teams the user is a part of that the viewer can see
    */
   tms: Array<string | null> | null
-}
-
-export interface IIsBillingLeaderOnUserArguments {
-  /**
-   * the org for which you want the users
-   */
-  orgId: string
 }
 
 export interface IArchivedTasksOnUserArguments {
@@ -336,6 +337,13 @@ export interface IOrganizationOnUserArguments {
   orgId: string
 }
 
+export interface IOrganizationUserOnUserArguments {
+  /**
+   * the orgId
+   */
+  orgId: string
+}
+
 export interface ITasksOnUserArguments {
   /**
    * the datetime cursor
@@ -416,30 +424,6 @@ export interface IAuthIdentityType {
    * true if the identity provider is a social provider, false otherwise
    */
   isSocial: boolean | null
-}
-
-/**
- * The user/org M:F join, denormalized on the user/org tables
- */
-export interface IUserOrg {
-  __typename: 'UserOrg'
-
-  /**
-   * The orgId
-   */
-  id: string | null
-
-  /**
-   * role of the user in the org
-   */
-  role: OrgUserRole | null
-}
-
-/**
- * The role of the org user
- */
-export const enum OrgUserRole {
-  billingLeader = 'billingLeader'
 }
 
 /**
@@ -732,12 +716,17 @@ export interface ITeam {
   /**
    * The outstanding invitations to join the team
    */
+  teamInvitations: Array<ITeamInvitation> | null
+
+  /**
+   * The outstanding invitations to join the team
+   */
   invitations: Array<IInvitation | null> | null
 
   /**
    * true if the viewer is the team lead, else false
    */
-  isLead: boolean | null
+  isLead: boolean
 
   /**
    * The phase of the meeting, usually matches the facilitator phase, be could be further along
@@ -883,6 +872,63 @@ export const enum ActionMeetingPhaseEnum {
   agendaitems = 'agendaitems',
   lastcall = 'lastcall',
   summary = 'summary'
+}
+
+/**
+ * An invitation to become a team member
+ */
+export interface ITeamInvitation {
+  __typename: 'TeamInvitation'
+
+  /**
+   * The unique invitation Id
+   */
+  id: string
+
+  /**
+   * null if not accepted, else the datetime the invitation was accepted
+   */
+  acceptedAt: any | null
+
+  /**
+   * null if not accepted, else the userId that accepted the invitation
+   */
+  acceptedBy: string | null
+
+  /**
+   * The datetime the invitation was created
+   */
+  createdAt: any
+
+  /**
+   * The email of the invitee
+   */
+  email: any
+
+  /**
+   * The datetime the invitation expires. Changes when team is archived.
+   */
+  expiresAt: any
+
+  /**
+   * The userId of the person that sent the invitation
+   */
+  invitedBy: string
+
+  /**
+   * The userId of the person that sent the invitation
+   */
+  inviter: IUser
+
+  /**
+   * The team invited to
+   */
+  teamId: string
+
+  /**
+   * 48-byte hex encoded random string
+   */
+  token: string
 }
 
 /**
@@ -1318,6 +1364,11 @@ export interface INotifyRequestNewUser {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -1341,6 +1392,7 @@ export type Notification =
   | INotifyTeamArchived
   | INotifyTaskInvolves
   | INotifyAddedToTeam
+  | INotificationTeamInvitation
   | INotifyDenial
   | INotifyKickedOut
   | INotifyPaymentRejected
@@ -1353,6 +1405,11 @@ export interface INotification {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -1387,6 +1444,7 @@ export const enum NotificationEnum {
   REJOIN_TEAM = 'REJOIN_TEAM',
   REQUEST_NEW_USER = 'REQUEST_NEW_USER',
   TEAM_INVITE = 'TEAM_INVITE',
+  TEAM_INVITATION = 'TEAM_INVITATION',
   TEAM_ARCHIVED = 'TEAM_ARCHIVED',
   VERSION_INFO = 'VERSION_INFO',
   PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
@@ -1409,6 +1467,7 @@ export type TeamNotification =
   | INotifyInviteeApproved
   | INotifyTaskInvolves
   | INotifyAddedToTeam
+  | INotificationTeamInvitation
   | INotifyDenial
 
 export interface ITeamNotification {
@@ -1450,12 +1509,7 @@ export interface IOrganization {
   /**
    * true if the viewer is the billing leader for the org
    */
-  isBillingLeader: boolean | null
-
-  /**
-   * The billing leader of the organization (or the first, if more than 1)
-   */
-  mainBillingLeader: IUser | null
+  isBillingLeader: boolean
 
   /**
    * The name of the organization
@@ -1489,11 +1543,13 @@ export interface IOrganization {
 
   /**
    * The total number of retroMeetings given to the team
+   * @deprecated "Unlimited retros for all!"
    */
   retroMeetingsOffered: number
 
   /**
    * Number of retro meetings that can be run (if not pro)
+   * @deprecated "Unlimited retros for all!"
    */
   retroMeetingsRemaining: number
 
@@ -1508,10 +1564,15 @@ export interface IOrganization {
   stripeSubscriptionId: string | null
 
   /**
+   * The last upcoming invoice email that was sent, null if never sent
+   */
+  upcomingInvoiceEmailSentAt: any | null
+
+  /**
    * The datetime the organization was last updated
    */
   updatedAt: any | null
-  orgMembers: IOrganizationMemberConnection | null
+  organizationUsers: IOrganizationUserConnection
 
   /**
    * The count of active & inactive users
@@ -1524,7 +1585,7 @@ export interface IOrganization {
   billingLeaders: Array<IUser>
 }
 
-export interface IOrgMembersOnOrganizationArguments {
+export interface IOrganizationUsersOnOrganizationArguments {
   after?: string | null
   first?: number | null
 }
@@ -1554,8 +1615,8 @@ export interface ICreditCard {
 /**
  * A connection to a list of items.
  */
-export interface IOrganizationMemberConnection {
-  __typename: 'OrganizationMemberConnection'
+export interface IOrganizationUserConnection {
+  __typename: 'OrganizationUserConnection'
 
   /**
    * Information to aid in pagination.
@@ -1565,7 +1626,7 @@ export interface IOrganizationMemberConnection {
   /**
    * A list of edges.
    */
-  edges: Array<IOrganizationMemberEdge>
+  edges: Array<IOrganizationUserEdge>
 }
 
 /**
@@ -1598,13 +1659,13 @@ export interface IPageInfo {
 /**
  * An edge in a connection.
  */
-export interface IOrganizationMemberEdge {
-  __typename: 'OrganizationMemberEdge'
+export interface IOrganizationUserEdge {
+  __typename: 'OrganizationUserEdge'
 
   /**
    * The item at the end of the edge
    */
-  node: IOrganizationMember | null
+  node: IOrganizationUser
 
   /**
    * A cursor for use in pagination
@@ -1612,12 +1673,68 @@ export interface IOrganizationMemberEdge {
   cursor: string
 }
 
-export interface IOrganizationMember {
-  __typename: 'OrganizationMember'
-  id: string | null
-  organization: IOrganization | null
-  user: IUser | null
-  isBillingLeader: boolean | null
+/**
+ * organization-specific details about a user
+ */
+export interface IOrganizationUser {
+  __typename: 'OrganizationUser'
+
+  /**
+   * orgId::userId
+   */
+  id: string
+
+  /**
+   * true if the user is paused and the orgs are not being billed, else false
+   */
+  inactive: boolean
+
+  /**
+   * the datetime the user first joined the org
+   */
+  joinedAt: any
+
+  /**
+   * The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
+   */
+  newUserUntil: any
+
+  /**
+   * FK
+   */
+  orgId: string
+
+  /**
+   * The user attached to the organization
+   */
+  organization: IOrganization
+
+  /**
+   * if not a member, the datetime the user was removed from the org
+   */
+  removedAt: any | null
+
+  /**
+   * role of the user in the org
+   */
+  role: OrgUserRole | null
+
+  /**
+   * FK
+   */
+  userId: string
+
+  /**
+   * The user attached to the organization
+   */
+  user: IUser
+}
+
+/**
+ * The role of the org user
+ */
+export const enum OrgUserRole {
+  billingLeader = 'billingLeader'
 }
 
 export interface IOrgUserCount {
@@ -2011,7 +2128,7 @@ export interface IInvoiceEdge {
   /**
    * The item at the end of the edge
    */
-  node: IInvoice | null
+  node: IInvoice
   cursor: any | null
 }
 
@@ -2401,7 +2518,7 @@ export interface INotificationEdge {
   /**
    * The item at the end of the edge
    */
-  node: Notification | null
+  node: Notification
   cursor: any | null
 }
 
@@ -2503,6 +2620,55 @@ export interface ISlackIntegration {
   teamId: string
 }
 
+export interface IVerifiedInvitationPayload {
+  __typename: 'VerifiedInvitationPayload'
+  errorType: TeamInvitationErrorEnum | null
+
+  /**
+   * The name of the person that sent the invitation, present if errorType is expired
+   */
+  inviterName: string | null
+
+  /**
+   * The email of the person that send the invitation, present if errorType is expired
+   */
+  inviterEmail: string | null
+
+  /**
+   * true if the mx record is hosted by google, else falsy
+   */
+  isGoogle: boolean | null
+
+  /**
+   * The valid invitation, if any
+   */
+  teamInvitation: ITeamInvitation | null
+
+  /**
+   * name of the inviting team, present if invitation exists
+   */
+  teamName: string | null
+
+  /**
+   * The userId of the invitee, if already a parabol user
+   */
+  userId: string | null
+
+  /**
+   * The invitee, if already a parabol user, present if errorType is null
+   */
+  user: IUser | null
+}
+
+/**
+ * The reason the invitation failed
+ */
+export const enum TeamInvitationErrorEnum {
+  accepted = 'accepted',
+  expired = 'expired',
+  notFound = 'notFound'
+}
+
 export interface IMutation {
   __typename: 'Mutation'
 
@@ -2512,6 +2678,11 @@ export interface IMutation {
    *     Side effect: deletes all other outstanding invitations for user.
    */
   acceptTeamInvite: IAcceptTeamInvitePayload
+
+  /**
+   * Redeem an invitation token for a logged in user
+   */
+  acceptTeamInvitation: IAcceptTeamInvitationPayload
 
   /**
    * Create a new agenda item
@@ -2551,11 +2722,6 @@ export interface IMutation {
    * Cancel a pending request for an invitee to join the org
    */
   cancelApproval: ICancelApprovalPayload | null
-
-  /**
-   * Cancel an invitation
-   */
-  cancelTeamInvite: ICancelTeamInvitePayload | null
 
   /**
    * Change the team a task is associated with
@@ -2676,6 +2842,11 @@ export interface IMutation {
   inviteTeamMembers: IInviteTeamMembersPayload
 
   /**
+   * Send a team invitation to an email address
+   */
+  inviteToTeam: IInviteToTeamPayload
+
+  /**
    * Add a user to an integration
    */
   joinIntegration: IJoinIntegrationPayload
@@ -2779,11 +2950,6 @@ export interface IMutation {
    * Request to become the facilitator in a meeting
    */
   requestFacilitator: IRequestFacilitatorPayload | null
-
-  /**
-   * Resend an invitation
-   */
-  resendTeamInvite: IResendTeamInvitePayload | null
 
   /**
    * track an event in segment, like when errors are hit
@@ -2910,7 +3076,7 @@ export interface IMutation {
   /**
    * Log in, or sign up if it is a new user
    */
-  login: ILoginPayload | null
+  login: ILoginPayload
 
   /**
    * Upgrade an account to the paid service
@@ -2961,6 +3127,18 @@ export interface IAcceptTeamInviteOnMutationArguments {
 
   /**
    * The notification id of the team invite
+   */
+  notificationId?: string | null
+}
+
+export interface IAcceptTeamInvitationOnMutationArguments {
+  /**
+   * The 48-byte hex encoded invitation token
+   */
+  invitationToken?: string | null
+
+  /**
+   * the notification clicked to accept, if any
    */
   notificationId?: string | null
 }
@@ -3047,13 +3225,6 @@ export interface ICancelApprovalOnMutationArguments {
    * org approval id to cancel
    */
   orgApprovalId: string
-}
-
-export interface ICancelTeamInviteOnMutationArguments {
-  /**
-   * The id of the invitation
-   */
-  invitationId: string
 }
 
 export interface IChangeTaskTeamOnMutationArguments {
@@ -3278,6 +3449,14 @@ export interface IInviteTeamMembersOnMutationArguments {
   invitees: Array<IInvitee>
 }
 
+export interface IInviteToTeamOnMutationArguments {
+  /**
+   * The id of the inviting team
+   */
+  teamId: string
+  invitees: Array<any>
+}
+
 export interface IJoinIntegrationOnMutationArguments {
   /**
    * The global id of the integration to join
@@ -3473,13 +3652,6 @@ export interface IRemoveTeamMemberOnMutationArguments {
 
 export interface IRequestFacilitatorOnMutationArguments {
   teamId: string
-}
-
-export interface IResendTeamInviteOnMutationArguments {
-  /**
-   * The id of the invitation
-   */
-  inviteId: string
 }
 
 export interface ISegmentEventTrackOnMutationArguments {
@@ -3707,6 +3879,11 @@ export interface ILoginOnMutationArguments {
    * The ID Token from auth0, a base64 JWT
    */
   auth0Token: string
+
+  /**
+   * optional segment id created before they were a user
+   */
+  segmentId?: string | null
 }
 
 export interface IUpgradeToProOnMutationArguments {
@@ -3825,6 +4002,11 @@ export interface INotifyTeamInvite {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -3839,6 +4021,31 @@ export interface INotifyTeamInvite {
    * *The userId that should see this notification
    */
   userIds: Array<string> | null
+}
+
+export interface IAcceptTeamInvitationPayload {
+  __typename: 'AcceptTeamInvitationPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The new auth token sent to the mutator
+   */
+  authToken: string | null
+
+  /**
+   * The team that the invitee will be joining
+   */
+  team: ITeam | null
+
+  /**
+   * The new team member on the team
+   */
+  teamMember: ITeamMember | null
+
+  /**
+   * The invite notifications that are no longer necessary
+   */
+  removedNotificationIds: Array<string> | null
 }
 
 export interface ICreateAgendaItemInput {
@@ -4049,6 +4256,11 @@ export interface INotifyInviteeApproved {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -4090,6 +4302,11 @@ export interface INotifyTeamArchived {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -4115,6 +4332,11 @@ export interface ITeamRemovedNotification {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -4709,27 +4931,6 @@ export interface ICancelApprovalPayload {
   archivedSoftTasks: Array<ITask | null> | null
 }
 
-export interface ICancelTeamInvitePayload {
-  __typename: 'CancelTeamInvitePayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The cancelled invitation
-   */
-  invitation: IInvitation | null
-  removedTeamInviteNotification: INotifyTeamInvite | null
-
-  /**
-   * The soft team members that are no longer tentatively on the team
-   */
-  removedSoftTeamMember: ISoftTeamMember | null
-
-  /**
-   * The tasks that belonged to the soft team member
-   */
-  archivedSoftTasks: Array<ITask | null> | null
-}
-
 export interface IChangeTaskTeamPayload {
   __typename: 'ChangeTaskTeamPayload'
   error: IStandardMutationError | null
@@ -4752,6 +4953,11 @@ export interface INotifyTaskInvolves {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5240,6 +5446,11 @@ export interface INotifyAddedToTeam {
   id: string
 
   /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
    */
   orgId: string | null
@@ -5274,6 +5485,80 @@ export interface INotifyAddedToTeam {
    * The teamId the user is joining
    */
   teamId: string
+}
+
+export interface IInviteToTeamPayload {
+  __typename: 'InviteToTeamPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The team the inviter is inviting the invitee to
+   */
+  team: ITeam | null
+
+  /**
+   * A list of email addresses the invitations were sent to
+   */
+  invitees: Array<any> | null
+
+  /**
+   * the notification ID if this payload is sent to a subscriber, else null
+   */
+  teamInvitationNotificationId: string | null
+
+  /**
+   * The notification sent to the invitee if they are a parabol user
+   */
+  teamInvitationNotification: INotificationTeamInvitation | null
+}
+
+/**
+ * A notification sent to a user that was invited to a new team
+ */
+export interface INotificationTeamInvitation {
+  __typename: 'NotificationTeamInvitation'
+
+  /**
+   * FK
+   */
+  teamId: string
+
+  /**
+   * FK
+   */
+  invitationId: string
+
+  /**
+   * The invitation that triggered this notification
+   */
+  invitation: ITeamInvitation
+  team: ITeam
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any | null
+  type: NotificationEnum | null
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: Array<string> | null
 }
 
 export interface IJoinIntegrationPayload {
@@ -5464,8 +5749,9 @@ export interface IPromoteNewMeetingFacilitatorPayload {
 export interface IPromoteToTeamLeadPayload {
   __typename: 'PromoteToTeamLeadPayload'
   error: IStandardMutationError | null
-  oldTeamLead: ITeamMember | null
-  newTeamLead: ITeamMember | null
+  team: ITeam | null
+  oldLeader: ITeamMember | null
+  newLeader: ITeamMember | null
 }
 
 export interface IRejectOrgApprovalPayload {
@@ -5523,6 +5809,11 @@ export interface INotifyDenial {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5624,7 +5915,8 @@ export interface IRemoveOrgUserPayload {
   /**
    * The organization member that got removed
    */
-  removedOrgMember: IOrganizationMember | null
+  removedOrgMember: IOrganizationUser | null
+  organizationUserId: string | null
 }
 
 /**
@@ -5637,6 +5929,11 @@ export interface INotifyKickedOut {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -5732,12 +6029,6 @@ export interface IRequestFacilitatorPayload {
   requestor: ITeamMember | null
 }
 
-export interface IResendTeamInvitePayload {
-  __typename: 'ResendTeamInvitePayload'
-  error: IStandardMutationError | null
-  invitation: IInvitation | null
-}
-
 export interface ISegmentEventTrackOptions {
   teamId?: string | null
   orgId?: string | null
@@ -5760,7 +6051,7 @@ export interface ISetOrgUserRolePayload {
   __typename: 'SetOrgUserRolePayload'
   error: IStandardMutationError | null
   organization: IOrganization | null
-  updatedOrgMember: IOrganizationMember | null
+  updatedOrgMember: IOrganizationUser | null
 }
 
 export interface ISetPhaseFocusPayload {
@@ -5929,6 +6220,11 @@ export interface INotifyPaymentRejected {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications
@@ -6256,7 +6552,7 @@ export interface ISubscription {
   slackChannelAdded: IAddSlackChannelPayload
   slackChannelRemoved: IRemoveSlackChannelPayload
   teamSubscription: TeamSubscriptionPayload
-  teamMemberSubscription: TeanMemberSubscriptionPayload
+  teamMemberSubscription: TeamMemberSubscriptionPayload
 }
 
 export interface IAgendaItemSubscriptionOnSubscriptionArguments {
@@ -6321,22 +6617,21 @@ export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProvid
 export type InvitationSubscriptionPayload =
   | IAcceptTeamInvitePayload
   | IApproveToOrgPayload
-  | ICancelTeamInvitePayload
   | IInviteTeamMembersPayload
-  | IResendTeamInvitePayload
 
 export type NotificationSubscriptionPayload =
+  | IAcceptTeamInvitationPayload
   | IAddFeatureFlagPayload
   | IAddOrgPayload
   | IAddTeamPayload
   | IApproveToOrgPayload
   | ICancelApprovalPayload
-  | ICancelTeamInvitePayload
   | IClearNotificationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
   | IInviteTeamMembersPayload
+  | IInviteToTeamPayload
   | IRejectOrgApprovalPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
@@ -6364,7 +6659,7 @@ export interface ISetOrgUserRoleAddedPayload {
   __typename: 'SetOrgUserRoleAddedPayload'
   error: IStandardMutationError | null
   organization: IOrganization | null
-  updatedOrgMember: IOrganizationMember | null
+  updatedOrgMember: IOrganizationUser | null
 
   /**
    * If promoted, notify them and give them all other admin notifications
@@ -6376,7 +6671,7 @@ export interface ISetOrgUserRoleRemovedPayload {
   __typename: 'SetOrgUserRoleRemovedPayload'
   error: IStandardMutationError | null
   organization: IOrganization | null
-  updatedOrgMember: IOrganizationMember | null
+  updatedOrgMember: IOrganizationUser | null
 
   /**
    * If demoted, notify them and remove all other admin notifications
@@ -6387,7 +6682,6 @@ export interface ISetOrgUserRoleRemovedPayload {
 export type TaskSubscriptionPayload =
   | IAcceptTeamInvitePayload
   | ICancelApprovalPayload
-  | ICancelTeamInvitePayload
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
   | ICreateTaskPayload
@@ -6402,6 +6696,7 @@ export type TaskSubscriptionPayload =
   | IUpdateTaskDueDatePayload
 
 export type TeamSubscriptionPayload =
+  | IAcceptTeamInvitationPayload
   | IAcceptTeamInvitePayload
   | IAddTeamPayload
   | IArchiveTeamPayload
@@ -6420,6 +6715,7 @@ export type TeamSubscriptionPayload =
   | INewMeetingCheckInPayload
   | IPromoteFacilitatorPayload
   | IPromoteNewMeetingFacilitatorPayload
+  | IPromoteToTeamLeadPayload
   | IRequestFacilitatorPayload
   | IRemoveOrgUserPayload
   | IRemoveReflectionPayload
@@ -6469,14 +6765,12 @@ export interface IUpdateDragLocationPayload {
   userId: string
 }
 
-export type TeanMemberSubscriptionPayload =
+export type TeamMemberSubscriptionPayload =
   | IAcceptTeamInvitePayload
   | ICancelApprovalPayload
-  | ICancelTeamInvitePayload
   | IRemoveTeamMemberPayload
   | IInviteTeamMembersPayload
   | IMeetingCheckInPayload
-  | IPromoteToTeamLeadPayload
   | IRejectOrgApprovalPayload
   | IRemoveOrgUserPayload
   | IUpdateUserProfilePayload
@@ -6655,6 +6949,11 @@ export interface INotifyPromoteToOrgLeader {
    * A shortid for the notification
    */
   id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
 
   /**
    * *The unique organization ID for this notification. Can be blank for targeted notifications

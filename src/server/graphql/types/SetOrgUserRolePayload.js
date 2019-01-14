@@ -1,10 +1,10 @@
 import {GraphQLInterfaceType} from 'graphql'
 import {resolveOrganization} from 'server/graphql/resolvers'
 import Organization from 'server/graphql/types/Organization'
-import OrganizationMember from 'server/graphql/types/OrganizationMember'
 import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAddedPayload'
 import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRemovedPayload'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import OrganizationUser from 'server/graphql/types/OrganizationUser'
 
 export const setOrgUserRoleFields = {
   error: {
@@ -15,9 +15,10 @@ export const setOrgUserRoleFields = {
     resolve: resolveOrganization
   },
   updatedOrgMember: {
-    type: OrganizationMember,
-    // This feels weird, but it's the DRYest way
-    resolve: (source) => source
+    type: OrganizationUser,
+    resolve: async ({organizationUserId}, _args, {dataLoader}) => {
+      return dataLoader.get('organizationUsers').load(organizationUserId)
+    }
   }
 }
 

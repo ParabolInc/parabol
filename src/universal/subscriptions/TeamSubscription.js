@@ -47,11 +47,16 @@ import {removeReflectTemplateTeamUpdater} from 'universal/mutations/RemoveReflec
 import {addReflectTemplatePromptTeamUpdater} from 'universal/mutations/AddReflectTemplatePromptMutation'
 import {removeReflectTemplatePromptTeamUpdater} from 'universal/mutations/RemoveReflectTemplatePromptMutation'
 import {moveReflectTemplatePromptTeamUpdater} from 'universal/mutations/MoveReflectTemplatePromptMutation'
+import {
+  acceptTeamInvitationTeamOnNext,
+  acceptTeamInvitationTeamUpdater
+} from 'universal/mutations/AcceptTeamInvitationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
+      ...AcceptTeamInvitationMutation_team @relay(mask: false)
       ...AcceptTeamInviteMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
@@ -72,6 +77,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_team @relay(mask: false)
       ...PromoteFacilitatorMutation_team @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
+      ...PromoteToTeamLeadMutation_team @relay(mask: false)
       ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
       ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -86,6 +92,7 @@ const subscription = graphql`
       ...StartMeetingMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
+      ...UpdateNewCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
@@ -98,6 +105,7 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
   AddOrgCreatorPayload: addOrgMutationNotificationOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
@@ -122,6 +130,9 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
+        case 'AcceptTeamInvitationPayload':
+          acceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
+          break
         case 'AcceptTeamInvitePayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId)
           break
@@ -187,6 +198,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'PromoteFacilitatorPayload':
           break
+        case 'PromoteToTeamLeadPayload':
+          break
         case 'PromoteNewMeetingFacilitatorPayload':
           break
         case 'RemoveOrgUserPayload':
@@ -225,6 +238,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'UpdateDragLocationPayload':
           updateDragLocationTeamUpdater(payload, {atmosphere: environment, store})
+          break
+        case 'UpdateNewCheckInQuestionPayload':
           break
         case 'UpdateReflectionContentPayload':
           break

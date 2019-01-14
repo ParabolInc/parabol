@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import NotificationEnum from 'server/graphql/types/NotificationEnum'
@@ -29,13 +29,19 @@ import {
   REJOIN_TEAM,
   REQUEST_NEW_USER,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITE,
+  TEAM_INVITATION
 } from 'universal/utils/constants'
+import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
 
 export const notificationInterfaceFields = {
   id: {
     type: new GraphQLNonNull(GraphQLID),
     description: 'A shortid for the notification'
+  },
+  isArchived: {
+    type: GraphQLBoolean,
+    description: 'true if the notification has been archived, else false (or null)'
   },
   orgId: {
     type: GraphQLID,
@@ -74,7 +80,8 @@ const Notification = new GraphQLInterfaceType({
       [REQUEST_NEW_USER]: NotifyRequestNewUser,
       [TEAM_INVITE]: NotifyTeamInvite,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
-      [TEAM_ARCHIVED]: NotifyTeamArchived
+      [TEAM_ARCHIVED]: NotifyTeamArchived,
+      [TEAM_INVITATION]: NotificationTeamInvitation
     }
 
     return resolveTypeLookup[value.type]

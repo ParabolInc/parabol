@@ -19,11 +19,7 @@ const ModalCopy = styled('p')({
   margin: 0
 })
 
-const benefits = [
-  'Run Unlimited Retrospective Meetings',
-  'Customize Social Check-In Rounds',
-  'Access an Unlimited Archive'
-]
+const benefits = ['Unlimited Teams', 'Priority Customer Support', 'Monthly Billing']
 
 const UpgradeBenefits = () => {
   return benefits.map((benefit, idx) => {

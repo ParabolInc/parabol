@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver'
 import removeTeamMember from 'server/graphql/mutations/helpers/removeTeamMember'
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
 import {auth0ManagementClient} from 'server/utils/auth0Helpers'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {REMOVE_USER} from 'server/utils/serverConstants'
 import {
@@ -40,9 +40,8 @@ const removeOrgUser = {
     // AUTH
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) {
-      const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId)
-      if (!isOrgBillingLeader(userOrgDoc)) {
-        return sendOrgLeadAccessError(authToken, userOrgDoc)
+      if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+        return sendOrgLeadAccessError(authToken, orgId)
       }
     }
 
@@ -74,25 +73,15 @@ const removeOrgUser = {
       return arr
     }, [])
 
-    const {allRemovedOrgNotifications, updatedUser} = await r({
-      updatedOrg: r
-        .table('Organization')
-        .get(orgId)
-        .update((org) => ({
-          orgUsers: org('orgUsers').filter((orgUser) => orgUser('id').ne(userId)),
-          updatedAt: now
-        })),
-      updatedUser: r
-        .table('User')
-        .get(userId)
-        .update(
-          (row) => ({
-            userOrgs: row('userOrgs').filter((userOrg) => userOrg('id').ne(orgId)),
-            updatedAt: now
-          }),
-          {returnChanges: true}
-        )('changes')(0)('new_val')
+    const {allRemovedOrgNotifications, user, organizationUser} = await r({
+      organizationUser: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({orgId, removedAt: null})
+        .nth(0)
+        .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
         .default(null),
+      user: r.table('User').get(userId),
       // remove stale notifications
       allRemovedOrgNotifications: r
         .table('Notification')
@@ -136,9 +125,11 @@ const removeOrgUser = {
     })
 
     // need to make sure the org doc is updated before adjusting this
-    await adjustUserCount(userId, orgId, REMOVE_USER)
+    const {joinedAt, newUserUntil} = organizationUser
+    const prorationDate = newUserUntil >= now ? new Date(joinedAt) : now
+    await adjustUserCount(userId, orgId, REMOVE_USER, {prorationDate})
 
-    const {tms} = updatedUser
+    const {tms} = user
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms})
     auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
 
@@ -150,7 +141,8 @@ const removeOrgUser = {
       taskIds,
       removedTeamNotifications,
       removedOrgNotifications: allRemovedOrgNotifications.notifications,
-      userId
+      userId,
+      organizationUserId: organizationUser.id
     }
 
     publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions)

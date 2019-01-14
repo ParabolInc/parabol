@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
-import signinAndUpdateToken from 'universal/components/Auth0ShowLock/signinAndUpdateToken'
 import signout from 'universal/containers/Signout/signout'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import LoginMutation from 'universal/mutations/LoginMutation'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
@@ -25,7 +25,7 @@ const mutation = graphql`
   }
 `
 
-const CreateImposterTokenMutation = (atmosphere, userId, {dispatch, history, location}) => {
+const CreateImposterTokenMutation = (atmosphere, userId, {dispatch, history}) => {
   const onError = (err) => {
     atmosphere.eventEmitter.emit('addToast', {
       level: 'error',
@@ -50,10 +50,11 @@ const CreateImposterTokenMutation = (atmosphere, userId, {dispatch, history, loc
       await signout(atmosphere, dispatch)
 
       // Assume the identity of the new user:
-      await signinAndUpdateToken(atmosphere, history, location, authToken)
-
-      // Navigate to a default location, the application root:
-      history.replace('/')
+      const onCompleted = () => {
+        // Navigate to a default location, the application root:
+        history.replace('/')
+      }
+      LoginMutation(atmosphere, {auth0Token: authToken}, {onCompleted, history})
     },
     onError
   })

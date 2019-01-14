@@ -30,6 +30,7 @@ import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 import {isTeamMember, getUserId} from 'server/utils/authorization'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import TeamInvitation from 'server/graphql/types/TeamInvitation'
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -109,7 +110,15 @@ const Team = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The current item number for the current phase for the facilitator, 1-indexed'
     },
+    teamInvitations: {
+      type: new GraphQLList(new GraphQLNonNull(TeamInvitation)),
+      description: 'The outstanding invitations to join the team',
+      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+        return dataLoader.get('teamInvitationsByTeamId').load(teamId)
+      }
+    },
     invitations: {
+      deprecatedReason: 'Use teamInvitations instead for invites created after Dec 2018',
       type: new GraphQLList(Invitation),
       description: 'The outstanding invitations to join the team',
       resolve: ({id: teamId}) => {
@@ -124,13 +133,13 @@ const Team = new GraphQLObjectType({
       }
     },
     isLead: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
       resolve: async ({id: teamId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-        return teamMember.isLead
+        return !!teamMember.isLead
       }
     },
     meetingPhase: {

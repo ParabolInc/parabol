@@ -166,31 +166,30 @@ class PhaseItemColumn extends Component<Props> {
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
     const isViewerFacilitator = viewerId === facilitatorUserId
-    const tip = <div>Tap to highlight prompt for everybody</div>
-    const prompt = (
-      <React.Fragment>
-        <Tooltip
-          delay={200}
-          maxHeight={40}
-          maxWidth={500}
-          originAnchor={originAnchor}
-          targetAnchor={targetAnchor}
-          tip={tip}
-          isDisabled={this.hasFocused || isFocused || !isViewerFacilitator}
-        >
-          <span>{question}</span>
-        </Tooltip>
-      </React.Fragment>
-    )
     return (
       <ColumnWrapper>
         <ColumnHighlight isFocused={isFocused}>
           <ColumnContent>
             <HeaderAndEditor>
-              <TypeHeader isClickable={isViewerFacilitator} onClick={this.setColumnFocus}>
+              <TypeHeader
+                isClickable={isViewerFacilitator && !isComplete}
+                onClick={this.setColumnFocus}
+              >
                 <TypeDescription>
                   <FocusArrow isFocused={isFocused}>forward</FocusArrow>
-                  {prompt}
+                  <Tooltip
+                    delay={200}
+                    maxHeight={40}
+                    maxWidth={500}
+                    originAnchor={originAnchor}
+                    targetAnchor={targetAnchor}
+                    tip={<div>Tap to highlight prompt for everybody</div>}
+                    isDisabled={
+                      this.hasFocused || isFocused || !isViewerFacilitator || !!isComplete
+                    }
+                  >
+                    <span>{question}</span>
+                  </Tooltip>
                 </TypeDescription>
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={!!isComplete}>

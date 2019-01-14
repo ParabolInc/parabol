@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload'
-import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {
@@ -62,10 +62,11 @@ export default {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+
     // AUTH
-    const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader, {clearCache: true}))) {
+      return sendOrgLeadAccessError(authToken, orgId)
     }
 
     // VALIDATION
@@ -78,13 +79,11 @@ export default {
       return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
     }
     // if someone is leaving, make sure there is someone else to take their place
-    if (userId === authToken.sub) {
+    if (userId === viewerId) {
       const leaderCount = await r
-        .table('Organization')
-        .get(orgId)('orgUsers')
-        .filter({
-          role: BILLING_LEADER
-        })
+        .table('OrganizationUser')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({removedAt: null, role: BILLING_LEADER})
         .count()
       if (leaderCount === 1) {
         const breadcrumb = {
@@ -96,48 +95,20 @@ export default {
       }
     }
 
+    // no change required
+    const organizationUser = await r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({orgId, removedAt: null})
+      .nth(0)
+    if (organizationUser.role === role) return null
+    const {id: organizationUserId} = organizationUser
     // RESOLUTION
-    const {organizationChanges} = await r({
-      userOrgsUpdate: r
-        .table('User')
-        .get(userId)
-        .update((user) => ({
-          userOrgs: user('userOrgs').map((userOrg) => {
-            return r.branch(
-              userOrg('id').eq(orgId),
-              userOrg.merge({
-                role
-              }),
-              userOrg
-            )
-          }),
-          updatedAt: now
-        })),
-      organizationChanges: r
-        .table('Organization')
-        .get(orgId)
-        .update(
-          (org) => ({
-            orgUsers: org('orgUsers').map((orgUser) => {
-              return r.branch(
-                orgUser('id').eq(userId),
-                orgUser.merge({
-                  role
-                }),
-                orgUser
-              )
-            }),
-            updatedAt: now
-          }),
-          {returnChanges: true}
-        )('changes')(0)
-    })
-    const {old_val: oldOrg, new_val: organization} = organizationChanges
-    const oldUser = oldOrg.orgUsers.find((orgUser) => orgUser.id === userId)
-    const newUser = organization.orgUsers.find((orgUser) => orgUser.id === userId)
-    if (oldUser.role === newUser.role) {
-      return null
-    }
+    await r
+      .table('OrganizationUser')
+      .get(organizationUserId)
+      .update({role})
+
     if (role === BILLING_LEADER) {
       const promotionNotificationId = shortid.generate()
       const promotionNotification = {
@@ -164,7 +135,7 @@ export default {
       })
       const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId)
       // add the org to the list of owned orgs
-      const data = {orgId, userId, notificationIdsAdded}
+      const data = {orgId, userId, organizationUserId, notificationIdsAdded}
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
       await sendSegmentIdentify(userId)
@@ -194,7 +165,7 @@ export default {
           .default([])
       })
       const notificationsRemoved = removedNotifications.concat(oldPromotion)
-      const data = {orgId, userId, notificationsRemoved}
+      const data = {orgId, userId, organizationUserId, notificationsRemoved}
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
       await sendSegmentIdentify(userId)

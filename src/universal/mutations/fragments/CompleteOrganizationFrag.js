@@ -16,8 +16,6 @@ graphql`
     }
     periodStart
     periodEnd
-    retroMeetingsOffered
-    retroMeetingsRemaining
     tier
   }
 `

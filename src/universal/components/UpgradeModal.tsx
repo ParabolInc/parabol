@@ -38,6 +38,7 @@ class UpgradeModal extends React.Component<Props, State> {
       closePortal,
       viewer: {organization}
     } = this.props
+    if (!organization) return null
     const handleClose = () => {
       closePortal()
       const {orgId} = organization

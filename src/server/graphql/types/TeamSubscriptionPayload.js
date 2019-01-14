@@ -42,8 +42,11 @@ import RemoveReflectTemplatePromptPayload from 'server/graphql/types/RemoveRefle
 import RenameReflectTemplatePayload from 'server/graphql/types/RenameReflectTemplatePayload'
 import RenameReflectTemplatePromptPayload from 'server/graphql/types/RenameReflectTemplatePromptPayload'
 import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonalPayload'
+import AcceptTeamInvitationPayload from 'server/graphql/types/AcceptTeamInvitationPayload'
+import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload'
 
 const types = [
+  AcceptTeamInvitationPayload,
   AcceptTeamInvitePayload,
   AddTeamPayload,
   ArchiveTeamPayload,
@@ -62,6 +65,7 @@ const types = [
   NewMeetingCheckInPayload,
   PromoteFacilitatorPayload,
   PromoteNewMeetingFacilitatorPayload,
+  PromoteToTeamLeadPayload,
   RequestFacilitatorPayload,
   RemoveOrgUserPayload,
   RemoveReflectionPayload,

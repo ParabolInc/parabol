@@ -88,7 +88,9 @@ export const REJOIN_TEAM = 'REJOIN_TEAM'
 // Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
 export const REQUEST_NEW_USER = 'REQUEST_NEW_USER'
 // Sent along with an email to someone invited to join the team
-export const TEAM_INVITE = 'TEAM_INVITE'
+export const TEAM_INVITE = 'TEAM_INVITE' // DEPRECATED
+// new version of TEAM_INVITE
+export const TEAM_INVITATION = 'TEAM_INVITATION'
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED'
 // sent to members when a task is assigned to them or mentions them
@@ -123,7 +125,7 @@ export const BILLING_LEADER_LABEL = 'Billing Leader'
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
-export const MONTHLY_PRICE = 5
+export const MONTHLY_PRICE = 12
 export const ADDED_USERS = 'ADDED_USERS'
 export const REMOVED_USERS = 'REMOVED_USERS'
 export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS'
@@ -206,13 +208,13 @@ export const ASSIGNEE = 'ASSIGNEE'
 export const MENTIONEE = 'MENTIONEE'
 
 /* Third-party authentication providers */
-export const THIRD_PARTY_AUTH_PROVIDERS = [
-  {
-    displayName: 'Google',
-    auth0Connection: 'google-oauth2',
-    iconName: 'google'
-  }
-]
+export const GOOGLE_AUTH_PROVIDER = {
+  displayName: 'Google',
+  auth0Connection: 'google-oauth2',
+  iconName: 'google'
+}
+
+export const THIRD_PARTY_AUTH_PROVIDERS = [GOOGLE_AUTH_PROVIDER]
 
 /* Auth Labels, Slugs */
 export const SIGNIN_LABEL = 'Sign In'

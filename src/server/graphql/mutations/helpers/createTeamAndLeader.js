@@ -3,7 +3,6 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers'
 import {
   ACTION,
   AGENDA_ITEMS,
-  BILLING_LEADER,
   CHECKIN,
   DISCUSS,
   FIRST_CALL,
@@ -18,18 +17,19 @@ import {
   VOTE
 } from 'universal/utils/constants'
 import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
-import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg'
 import shortid from 'shortid'
 import makeRetroTemplates from 'server/graphql/mutations/helpers/makeRetroTemplates'
+import adjustUserCount from 'server/billing/helpers/adjustUserCount'
+import {ADD_USER} from 'server/utils/serverConstants'
+import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 
 // used for addorg, addTeam, createFirstTeam
 export default async function createTeamAndLeader (
   userId,
   newTeam,
-  options = {isNewOrg: false, isOnboardTeam: false}
+  options = {isOnboardTeam: false}
 ) {
-  const {isNewOrg, isOnboardTeam} = options
   const r = getRethink()
   const now = new Date()
   const {id: teamId, orgId} = newTeam
@@ -49,12 +49,8 @@ export default async function createTeamAndLeader (
     meetingPhaseItem: null,
     tier
   }
-  const dbOptions = {
-    returnChanges: true,
-    role: isNewOrg ? BILLING_LEADER : null
-  }
   const {phaseItems, templates} = makeRetroTemplates(teamId)
-
+  const {isOnboardTeam} = options
   const meetingSettings = [
     {
       id: shortid.generate(),
@@ -102,13 +98,23 @@ export default async function createTeamAndLeader (
       isOnboardTeam: !!isOnboardTeam
     }),
     // add teamId to user tms array
-    tms: addUserToTMSUserOrg(userId, teamId, orgId, dbOptions)('changes')(0)('new_val')('tms')
+    user: addTeamIdToTMS(userId, teamId),
+    organizationUser: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null, orgId})
+      .nth(0)
+      .default(null)
   })
 
-  const {tms} = res
+  const {team, teamLead, organizationUser} = res
+  if (!organizationUser) {
+    await adjustUserCount(userId, orgId, ADD_USER)
+  }
 
-  // no need to wait for auth0
+  const tms = await r.table('User').get(userId)('tms')
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
 
-  return res
+  // TODO refactor after removing welcome wizard createFirstTeam
+  return {team, teamLead, tms}
 }

@@ -97,8 +97,6 @@ const initDemoOrg = () => {
   return {
     id: demoOrgId,
     name: 'Demo Organization',
-    retroMeetingsOffered: 3,
-    retroMeetingsRemaining: 3,
     tier: PRO
   }
 }

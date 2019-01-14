@@ -24,7 +24,8 @@ const makeDetailedInvitations = (
       isPendingInvitation: pendingInvitations.includes(email),
       isUser: Boolean(userDoc),
       isOrgMember:
-        userDoc && Boolean(userDoc.userOrgs.find((userDocOrg) => userDocOrg.id === orgId)),
+        userDoc &&
+        Boolean(userDoc.organizationUsers.find((userDocOrg) => userDocOrg.orgId === orgId)),
       isNewTeamMember: !teamMemberDoc,
       teamMemberId: teamMemberDoc && teamMemberDoc.id,
       userId: userDoc && userDoc.id,

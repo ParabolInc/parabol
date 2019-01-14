@@ -8,7 +8,6 @@ import addSlackChannel from 'server/graphql/mutations/addSlackChannel'
 import approveToOrg from 'server/graphql/mutations/approveToOrg'
 import archiveTeam from 'server/graphql/mutations/archiveTeam'
 import cancelApproval from 'server/graphql/mutations/cancelApproval'
-import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite'
 import clearNotification from 'server/graphql/mutations/clearNotification'
 import changeTaskTeam from 'server/graphql/mutations/changeTaskTeam'
 import connectSocket from 'server/graphql/mutations/connectSocket'
@@ -40,7 +39,6 @@ import removeProvider from 'server/graphql/mutations/removeProvider'
 import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel'
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember'
 import requestFacilitator from 'server/graphql/mutations/requestFacilitator'
-import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite'
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack'
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole'
 import startMeeting from 'server/graphql/mutations/startMeeting'
@@ -93,11 +91,14 @@ import removeReflectTemplate from 'server/graphql/mutations/removeReflectTemplat
 import removeReflectTemplatePrompt from 'server/graphql/mutations/removeReflectTemplatePrompt'
 import renameReflectTemplate from 'server/graphql/mutations/renameReflectTemplate'
 import renameReflectTemplatePrompt from 'server/graphql/mutations/renameReflectTemplatePrompt'
+import inviteToTeam from 'server/graphql/mutations/inviteToTeam'
+import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     acceptTeamInvite,
+    acceptTeamInvitation,
     addAgendaItem,
     addFeatureFlag,
     addGitHubRepo,
@@ -109,7 +110,6 @@ export default new GraphQLObjectType({
     archiveTeam,
     autoGroupReflections,
     cancelApproval,
-    cancelTeamInvite,
     changeTaskTeam,
     clearNotification,
     connectSocket,
@@ -134,6 +134,7 @@ export default new GraphQLObjectType({
     githubRemoveMember,
     inactivateUser,
     inviteTeamMembers,
+    inviteToTeam,
     joinIntegration,
     killMeeting,
     endNewMeeting,
@@ -155,7 +156,6 @@ export default new GraphQLObjectType({
     removeReflection,
     removeTeamMember,
     requestFacilitator,
-    resendTeamInvite,
     segmentEventTrack,
     selectRetroTemplate,
     setOrgUserRole,

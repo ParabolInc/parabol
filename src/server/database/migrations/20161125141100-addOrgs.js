@@ -1,7 +1,6 @@
 import shortid from 'shortid'
 import {BILLING_LEADER, TRIAL_EXPIRES_SOON} from '../../../universal/utils/constants'
 import stripe from '../../billing/stripe'
-import {ACTION_MONTHLY} from '../../utils/serverConstants'
 import {fromEpochSeconds} from '../../utils/epochTime'
 import ms from 'ms'
 
@@ -93,7 +92,7 @@ exports.up = async (r) => {
       return stripe.subscriptions.create({
         customer: customer.id,
         metadata: customer.metadata,
-        plan: ACTION_MONTHLY,
+        plan: 'action-monthly',
         quantity: Object.keys(orgs[customer.metadata.orgId].orgUserMap).length,
         trial_period_days: TRIAL_PERIOD_DAYS
       })

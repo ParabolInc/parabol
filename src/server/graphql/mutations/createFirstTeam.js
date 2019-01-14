@@ -35,9 +35,15 @@ export default {
     const user = await r
       .table('User')
       .get(viewerId)
-      .pluck('id', 'preferredName', 'userOrgs')
+      .merge((user) => ({
+        organizationUserCount: r
+          .table('OrganizationUser')
+          .getAll(user('id'), {index: 'userId'})
+          .count()
+          .default(0)
+      }))
 
-    if (user.userOrgs && user.userOrgs.length > 0) {
+    if (user.organizationUserCount > 0) {
       const breadcrumb = {
         message: 'Cannot use createFirstTeam when already part of an org',
         category: 'Unauthorized access'
@@ -63,7 +69,7 @@ export default {
     const {
       newTeamUpdatedUser: {team, teamLead, tms}
     } = await resolvePromiseObj({
-      newTeamUpdatedUser: createTeamAndLeader(viewerId, validNewTeam, {isNewOrg: true}),
+      newTeamUpdatedUser: createTeamAndLeader(viewerId, validNewTeam, {isOnboardTeam: true}),
       seedTeam: addSeedTasks(viewerId, teamId)
     })
     sendSegmentEvent('Welcome Step2 Completed', viewerId, {teamId})

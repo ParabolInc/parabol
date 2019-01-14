@@ -68,8 +68,7 @@ export const sendTeamPaidTierError = (authToken, teamId, returnValue) => {
   return sendAuthRaven(authToken, 'Not available', breadcrumb, returnValue)
 }
 
-export const sendOrgLeadAccessError = (authToken, userOrgDoc, returnValue) => {
-  const orgId = userOrgDoc ? userOrgDoc.id : 'unknown organization'
+export const sendOrgLeadAccessError = (authToken, orgId, returnValue) => {
   const breadcrumb = {
     message: `You are not the billing leader for ${orgId}`,
     category: 'Unauthorized Access',
@@ -270,4 +269,13 @@ export const sendDuplciateQuestionTemplatePromptError = (authToken, promptId) =>
     data: {promptId}
   }
   return sendAuthRaven(authToken, 'Already Created', breadcrumb)
+}
+
+export const sendMaxFreeTeamsError = (authToken, orgId) => {
+  const breadcrumb = {
+    message: 'Max teams limit reached! Please upgrade to the Pro tier or archive a team',
+    category: 'Team limit reached',
+    data: {orgId}
+  }
+  return sendAuthRaven(authToken, 'Team limit reached!', breadcrumb)
 }
