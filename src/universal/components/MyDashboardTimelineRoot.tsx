@@ -1,26 +1,26 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import MyDashboardTasks from 'universal/components/MyDashboardTasks'
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
+import MyDashboardTimeline from 'universal/components/MyDashboardTimeline'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {cacheConfig} from 'universal/utils/constants'
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 
 const query = graphql`
-  query MyDashboardTasksRootQuery {
+  query MyDashboardTimelineRootQuery {
     viewer {
-      ...MyDashboardTasks_viewer
+      ...MyDashboardTimeline_viewer
     }
   }
 `
 
 interface Props extends WithAtmosphereProps {}
 
-const MyDashboardTasksRoot = ({atmosphere}: Props) => {
+const MyDashboardTimelineRoot = ({atmosphere}: Props) => {
   return (
     <QueryRenderer
       // FIXME remove when relay merges PR https://github.com/facebook/relay/pull/2416
@@ -34,11 +34,11 @@ const MyDashboardTasksRoot = ({atmosphere}: Props) => {
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingComponent />}
           // @ts-ignore
-          ready={<MyDashboardTasks />}
+          ready={<MyDashboardTimeline />}
         />
       )}
     />
   )
 }
 
-export default withAtmosphere(MyDashboardTasksRoot)
+export default withAtmosphere(MyDashboardTimelineRoot)

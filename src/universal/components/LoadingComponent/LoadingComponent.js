@@ -1,9 +1,8 @@
 import React from 'react'
 import Spinner from 'universal/modules/spinner/components/Spinner/Spinner'
-import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 
-const LoadingWrapper = styled('div')(({height = '20rem', width = ui.settingsPanelMaxWidth}) => ({
+const LoadingWrapper = styled('div')(({height = '100%', width = '100%'}) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -22,7 +21,7 @@ type Props = {
 const LoadingComponent = (props: Props) => {
   const {height, width, spinnerSize = 40, timedOut} = props
   return (
-    <LoadingWrapper heigth={height} width={width}>
+    <LoadingWrapper height={height} width={width}>
       <Spinner fillColor={timedOut ? 'warm' : 'cool'} width={spinnerSize} />
     </LoadingWrapper>
   )

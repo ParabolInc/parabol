@@ -1,10 +1,11 @@
 import React from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
+import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router'
+import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
 import DashContent from 'universal/components/Dashboard/DashContent'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashMain from 'universal/components/Dashboard/DashMain'
-import MyDashboardTasksRoot from 'universal/components/MyDashboardTasksRoot'
 import Tab from 'universal/components/Tab/Tab'
 import Tabs from 'universal/components/Tabs/Tabs'
 
@@ -37,14 +38,24 @@ const RallyLink = styled('span')({
 const TopTabs = styled(Tabs)({
   marginTop: 8
 })
-const UserDashMain = () => {
+
+interface Props extends RouteComponentProps<{}> {}
+
+const myDashboardTasksRoot = () =>
+  import(/* webpackChunkName: MyDashboardTasksRoot */ 'universal/components/MyDashboardTasksRoot')
+const myDashboardTimelineRoot = () =>
+  import(/* webpackChunkName: MyDashboardTimelineRoot */ 'universal/components/MyDashboardTimelineRoot')
+
+const UserDashMain = (props: Props) => {
+  const {history, match} = props
+  const isTasks = !!matchPath(location.pathname, {path: `${match.url}/tasks`})
   return (
     <DashMain>
       <Helmet title='My Dashboard | Parabol' />
       <DashHeader area='userDash'>
-        <TopTabs activeIdx={0}>
-          <Tab label='TIMELINE' />
-          <Tab label='TASKS' />
+        <TopTabs activeIdx={isTasks ? 1 : 0}>
+          <Tab label='TIMELINE' onClick={() => history.push('/me')} />
+          <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />
         </TopTabs>
         <HeaderCopy>
           {makeDateString(new Date(), {showDay: true})} *
@@ -56,11 +67,14 @@ const UserDashMain = () => {
       </DashHeader>
       <DashContent padding='0'>
         <LayoutBlock>
-          <MyDashboardTasksRoot />
+          <Switch>
+            <AsyncRoute path={`${match.url}/tasks`} mod={myDashboardTasksRoot} />
+            <AsyncRoute path={match.url} mod={myDashboardTimelineRoot} />
+          </Switch>
         </LayoutBlock>
       </DashContent>
     </DashMain>
   )
 }
 
-export default UserDashMain
+export default withRouter(UserDashMain)

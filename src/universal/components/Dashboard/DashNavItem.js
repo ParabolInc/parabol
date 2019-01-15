@@ -57,14 +57,19 @@ const Label = styled('div')({
   wordBreak: 'break-word'
 })
 
+const myDashActive = (match, location) => {
+  const {pathname} = location
+  const slashlessPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+  return slashlessPath.endsWith('/tasks') || slashlessPath.endsWith('/me')
+}
+
 const DashNavItem = (props) => {
   const {label, href, icon} = props
-
   return (
     <NavLink
       activeClassName={activeNavLinkcss}
       className={navLinkcss}
-      exact={href === '/me'}
+      isActive={myDashActive}
       title={label}
       to={href}
     >
