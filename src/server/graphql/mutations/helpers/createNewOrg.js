@@ -1,7 +1,6 @@
 import getRethink from 'server/database/rethinkDriver'
 import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import shortid from 'shortid'
-import {NEW_USER_GRACE_PERIOD} from 'server/utils/serverConstants'
 
 export default async function createNewOrg (orgId, orgName, leaderUserId) {
   const r = getRethink()
@@ -19,7 +18,7 @@ export default async function createNewOrg (orgId, orgName, leaderUserId) {
       id: shortid.generate(),
       inactive: false,
       joinedAt: now,
-      newUserUntil: new Date(Date.now() + NEW_USER_GRACE_PERIOD),
+      newUserUntil: now,
       orgId,
       removedAt: null,
       role: BILLING_LEADER,

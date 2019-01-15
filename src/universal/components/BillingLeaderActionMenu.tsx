@@ -5,28 +5,27 @@ import {BILLING_LEADER} from 'universal/utils/constants'
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal'
 import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal'
-import {createFragmentContainer} from 'react-relay'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import {BillingLeaderActionMenu_organization as Organization} from '__generated__/BillingLeaderActionMenu_organization.graphql'
-import {BillingLeaderActionMenu_orgMember as OrgMember} from '__generated__/BillingLeaderActionMenu_orgMember.graphql'
+import {createFragmentContainer, graphql} from 'react-relay'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {BillingLeaderActionMenu_organizationUser} from '__generated__/BillingLeaderActionMenu_organizationUser.graphql'
+import {BillingLeaderActionMenu_organization} from '__generated__/BillingLeaderActionMenu_organization.graphql'
 
-type Props = {|
-  atmosphere: Object,
-  closePortal: () => void,
-  isViewerLastBillingLeader: boolean,
-  orgMember: OrgMember,
-  organization: Organization,
-  ...MutationProps
-|}
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  closePortal: () => void
+  isViewerLastBillingLeader: boolean
+  organizationUser: BillingLeaderActionMenu_organizationUser
+  organization: BillingLeaderActionMenu_organization
+}
 
 const BillingLeaderActionMenu = (props: Props) => {
   const {
     atmosphere,
     closePortal,
     isViewerLastBillingLeader,
-    orgMember,
+    organizationUser,
     submitting,
     submitMutation,
     onError,
@@ -35,7 +34,7 @@ const BillingLeaderActionMenu = (props: Props) => {
   } = props
   const {orgId} = organization
   const {viewerId} = atmosphere
-  const {role, user} = orgMember
+  const {newUserUntil, role, user} = organizationUser
   const isBillingLeader = role === BILLING_LEADER
   const {userId, preferredName} = user
 
@@ -71,7 +70,15 @@ const BillingLeaderActionMenu = (props: Props) => {
           orgId={orgId}
           preferredName={preferredName}
           userId={userId}
-          toggle={<MenuItemWithShortcuts label='Remove from Organization' />}
+          toggle={
+            <MenuItemWithShortcuts
+              label={
+                new Date(newUserUntil) > new Date()
+                  ? 'Refund and Remove'
+                  : 'Remove from Organization'
+              }
+            />
+          }
         />
       )}
     </MenuWithShortcuts>
@@ -85,8 +92,9 @@ export default createFragmentContainer(
       orgId: id
     }
 
-    fragment BillingLeaderActionMenu_orgMember on OrganizationUser {
+    fragment BillingLeaderActionMenu_organizationUser on OrganizationUser {
       role
+      newUserUntil
       user {
         userId: id
         preferredName

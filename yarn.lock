@@ -782,6 +782,11 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@clusterws/cws@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@clusterws/cws/-/cws-0.10.0.tgz#59343ac6510653568019082724be7ec00ce5fcff"
+  integrity sha512-QEfyOFeGR0AZM8JzA5RqEnE8dGsnSUW3vk68hlspaqGj79SnlSHdSAhspxO3GEI/Xb92ON3FVZ/YxCOCxF0rLg==
+
 "@emotion/babel-utils@^0.6.4":
   version "0.6.10"
   resolved "https://registry.yarnpkg.com/@emotion/babel-utils/-/babel-utils-0.6.10.tgz#83dbf3dfa933fae9fc566e54fbb45f14674c6ccc"
@@ -1606,6 +1611,18 @@
   dependencies:
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
+
+"@types/shortid@^0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/shortid/-/shortid-0.0.29.tgz#8093ee0416a6e2bf2aa6338109114b3fbffa0e9b"
+  integrity sha1-gJPuBBam4r8qpjOBCRFLP7/6Dps=
+
+"@types/stripe@^6.19.1":
+  version "6.19.1"
+  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.19.1.tgz#62264970a4076ccec7daaef421eee8a593d469c3"
+  integrity sha512-VQjQpY+lhLsnG1rxRexoY3exfccf55pGcLIiw+fLKhyFzQJjIB21vP9NWVxVT37ZqZ2ir8BaFGJlINq28h/S4Q==
+  dependencies:
+    "@types/node" "*"
 
 "@webassemblyjs/ast@1.7.11":
   version "1.7.11"
@@ -16921,11 +16938,6 @@ uuid@3.3.2, uuid@^3.0.0, uuid@^3.0.1, uuid@^3.1.0, uuid@^3.2.1, uuid@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
   integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
-
-uws@10.148.1:
-  version "10.148.1"
-  resolved "https://registry.yarnpkg.com/uws/-/uws-10.148.1.tgz#fd1a79cf6118a388e0a1bed8a1397030d2c4fd2c"
-  integrity sha1-/Rp5z2EYo4jgob7YoTlwMNLE/Sw=
 
 v8-compile-cache@^2.0.0:
   version "2.0.2"

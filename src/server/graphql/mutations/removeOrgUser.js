@@ -73,13 +73,13 @@ const removeOrgUser = {
       return arr
     }, [])
 
-    const {allRemovedOrgNotifications, user, organizationUserId} = await r({
-      organizationUserId: r
+    const {allRemovedOrgNotifications, user, organizationUser} = await r({
+      organizationUser: r
         .table('OrganizationUser')
         .getAll(userId, {index: 'userId'})
         .filter({orgId, removedAt: null})
         .nth(0)
-        .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('id')
+        .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')
         .default(null),
       user: r.table('User').get(userId),
       // remove stale notifications
@@ -125,7 +125,9 @@ const removeOrgUser = {
     })
 
     // need to make sure the org doc is updated before adjusting this
-    await adjustUserCount(userId, orgId, REMOVE_USER)
+    const {joinedAt, newUserUntil} = organizationUser
+    const prorationDate = newUserUntil >= now ? new Date(joinedAt) : now
+    await adjustUserCount(userId, orgId, REMOVE_USER, {prorationDate})
 
     const {tms} = user
     publish(NEW_AUTH_TOKEN, userId, UPDATED, {tms})
@@ -140,7 +142,7 @@ const removeOrgUser = {
       removedTeamNotifications,
       removedOrgNotifications: allRemovedOrgNotifications.notifications,
       userId,
-      organizationUserId
+      organizationUserId: organizationUser.id
     }
 
     publish(ORGANIZATION, orgId, RemoveOrgUserPayload, data, subOptions)

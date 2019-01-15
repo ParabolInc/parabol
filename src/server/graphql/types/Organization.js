@@ -91,6 +91,10 @@ const Organization = new GraphQLObjectType({
       description: 'The subscriptionId from stripe',
       resolve: resolveForBillingLeaders('stripeSubscriptionId')
     },
+    upcomingInvoiceEmailSentAt: {
+      type: GraphQLISO8601Type,
+      description: 'The last upcoming invoice email that was sent, null if never sent'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the organization was last updated'

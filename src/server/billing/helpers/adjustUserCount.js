@@ -2,7 +2,6 @@ import getRethink from 'server/database/rethinkDriver'
 import {
   ADD_USER,
   AUTO_PAUSE_USER,
-  NEW_USER_GRACE_PERIOD,
   PAUSE_USER,
   REMOVE_USER,
   UNPAUSE_USER
@@ -27,18 +26,39 @@ const changePause = (inactive) => (orgIds, userId) => {
   })
 }
 
-const addUser = (orgIds, userId) => {
+const addUser = async (orgIds, userId) => {
   const r = getRethink()
-  const docs = orgIds.map((orgId) => ({
-    id: shortid.generate(),
-    inactive: false,
-    joinedAt: new Date(),
-    newUserUntil: new Date(Date.now() + NEW_USER_GRACE_PERIOD),
-    orgId,
-    removedAt: null,
-    role: null,
-    userId
-  }))
+  const {organizations, organizationUsers} = await r({
+    organizationUsers: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .orderBy(r.desc('newUserUntil'))
+      .coerceTo('array'),
+    organizations: r
+      .table('Organization')
+      .getAll(r.args(orgIds))
+      .coerceTo('array')
+  })
+  const docs = orgIds.map((orgId) => {
+    const oldOrganizationUser = organizationUsers.find(
+      (organizationUser) => organizationUser.orgId === orgId
+    )
+    const organization = organizations.find((organization) => organization.id === orgId)
+    return {
+      id: shortid.generate(),
+      inactive: false,
+      joinedAt: new Date(),
+      // continue the grace period from before, if any OR set to the end of the invoice OR (if it is a free account) no grace period
+      newUserUntil:
+        (oldOrganizationUser && oldOrganizationUser.newUserUntil) ||
+        organization.periodEnd ||
+        new Date(),
+      orgId,
+      removedAt: null,
+      role: null,
+      userId
+    }
+  })
   return r.table('OrganizationUser').insert(docs)
 }
 
@@ -61,7 +81,7 @@ const typeLookup = {
   [UNPAUSE_USER]: changePause(false)
 }
 
-export default async function adjustUserCount (userId, orgInput, type) {
+export default async function adjustUserCount (userId, orgInput, type, options = {}) {
   const r = getRethink()
   const now = new Date()
 
@@ -81,7 +101,7 @@ export default async function adjustUserCount (userId, orgInput, type) {
         })
         .count()
     }))
-  const prorationDate = toEpochSeconds(now)
+  const prorationDate = toEpochSeconds(type === REMOVE_USER ? options.prorationDate : now)
   const hooks = orgs.reduce((arr, org) => {
     const {stripeSubscriptionId} = org
     if (stripeSubscriptionId) {

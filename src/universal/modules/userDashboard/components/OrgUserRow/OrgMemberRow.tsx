@@ -9,14 +9,13 @@ import LoadableMenu from 'universal/components/LoadableMenu'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal'
-import {createFragmentContainer} from 'react-relay'
-import type {MutationProps} from 'universal/utils/relay/withMutationProps'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {createFragmentContainer, graphql} from 'react-relay'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import LoadableBillingLeaderActionMenu from 'universal/components/LoadableBillingLeaderActionMenu'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
-import {OrgMemberRow_organization as Organization} from '__generated__/OrgMemberRow_organization.graphql'
-import {OrgMemberRow_orgMember as OrgMember} from '__generated__/OrgMemberRow_orgMember.graphql'
 import Row from 'universal/components/Row/Row'
 import Avatar from 'universal/components/Avatar/Avatar'
 import RowInfo from 'universal/components/Row/RowInfo'
@@ -25,6 +24,8 @@ import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 import Tag from 'universal/components/Tag/Tag'
 import RowInfoLink from 'universal/components/Row/RowInfoLink'
 import RowActions from 'universal/components/Row/RowActions'
+import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
+import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
 
 const originAnchor = {
   vertical: 'top',
@@ -52,14 +53,11 @@ const ToggleBlock = styled('div')({
   width: '6.25rem'
 })
 
-type Props = {|
-  atmosphere: Object,
-  billingLeaderCount: number,
-  closePortal: () => void,
-  orgMember: OrgMember,
-  organization: Organization,
-  ...MutationProps
-|}
+interface Props extends WithMutationProps, WithAtmosphereProps {
+  billingLeaderCount: number
+  organizationUser: OrgMemberRow_organizationUser
+  organization: OrgMemberRow_organization
+}
 
 const StyledButton = styled(FlatButton)({
   paddingLeft: 0,
@@ -80,11 +78,11 @@ const OrgMemberRow = (props: Props) => {
     submitMutation,
     onError,
     onCompleted,
-    orgMember,
+    organizationUser,
     organization
   } = props
   const {orgId, isViewerBillingLeader, tier} = organization
-  const {user, role} = orgMember
+  const {newUserUntil, user, role} = organizationUser
   const isBillingLeader = role === BILLING_LEADER
   const {email, inactive, picture, preferredName, userId} = user
   const isPersonalTier = tier === PERSONAL
@@ -128,6 +126,7 @@ const OrgMemberRow = (props: Props) => {
           <RowInfoHeading>{preferredName}</RowInfoHeading>
           {isBillingLeader && <Tag colorPalette='blue' label='Billing Leader' />}
           {inactive && !isViewerBillingLeader && <Tag colorPalette='midGray' label='Inactive' />}
+          {new Date(newUserUntil) > new Date() && <Tag colorPalette='yellow' label='New' />}
         </RowInfoHeader>
         <RowInfoLink href={`mailto:${email}`} title='Send an email'>
           {email}
@@ -185,7 +184,7 @@ const OrgMemberRow = (props: Props) => {
                   originAnchor={originAnchor}
                   queryVars={{
                     isViewerLastBillingLeader,
-                    orgMember,
+                    organizationUser,
                     organization
                   }}
                   targetAnchor={targetAnchor}
@@ -209,7 +208,7 @@ export default createFragmentContainer(
       ...BillingLeaderActionMenu_organization
     }
 
-    fragment OrgMemberRow_orgMember on OrganizationUser {
+    fragment OrgMemberRow_organizationUser on OrganizationUser {
       user {
         userId: id
         email
@@ -218,7 +217,8 @@ export default createFragmentContainer(
         preferredName
       }
       role
-      ...BillingLeaderActionMenu_orgMember
+      newUserUntil
+      ...BillingLeaderActionMenu_organizationUser
     }
   `
 )
