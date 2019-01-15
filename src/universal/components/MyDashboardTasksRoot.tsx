@@ -1,22 +1,26 @@
-import PropTypes from 'prop-types'
 import React from 'react'
+import {graphql} from 'react-relay'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import UserDashMain from 'universal/modules/userDashboard/components/UserDashMain/UserDashMain'
-import {cacheConfig} from 'universal/utils/constants'
+import LoadingView from 'universal/components/LoadingView/LoadingView'
+import MyDashboardTasks from 'universal/components/MyDashboardTasks'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
-import LoadingView from 'universal/components/LoadingView/LoadingView'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {cacheConfig} from 'universal/utils/constants'
 
 const query = graphql`
-  query UserDashRootQuery {
+  query MyDashboardTasksRootQuery {
     viewer {
-      ...UserDashMain_viewer
+      ...MyDashboardTasks_viewer
     }
   }
 `
 
-const UserDashRoot = ({atmosphere}) => {
+interface Props extends WithAtmosphereProps {}
+
+const MyDashboardTasksRoot = ({atmosphere}: Props) => {
   return (
     <QueryRenderer
       // FIXME remove when relay merges PR https://github.com/facebook/relay/pull/2416
@@ -29,15 +33,12 @@ const UserDashRoot = ({atmosphere}) => {
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight='50vh' />}
-          ready={<UserDashMain />}
+          // @ts-ignore
+          ready={<MyDashboardTasks />}
         />
       )}
     />
   )
 }
 
-UserDashRoot.propTypes = {
-  atmosphere: PropTypes.object.isRequired
-}
-
-export default withAtmosphere(UserDashRoot)
+export default withAtmosphere(MyDashboardTasksRoot)

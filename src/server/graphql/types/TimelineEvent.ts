@@ -91,7 +91,7 @@ const TimelineEvent = new GraphQLObjectType({
 
 const {connectionType, edgeType} = connectionDefinitions({
   name: TimelineEvent.name,
-  nodeType: new GraphQLNonNull(TimelineEvent),
+  nodeType: TimelineEvent,
   edgeFields: () => ({
     cursor: {
       type: GraphQLISO8601Type

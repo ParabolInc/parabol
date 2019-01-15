@@ -106,6 +106,16 @@ export interface IUser {
   name: string | null
 
   /**
+   * the most important action for the user to perform
+   */
+  suggestedAction: ISuggestedAction | null
+
+  /**
+   * The timeline of important events for the viewer
+   */
+  timeline: ITimelineEventConnection | null
+
+  /**
    * Nickname associated with the user
    */
   nickname: string | null
@@ -119,11 +129,6 @@ export interface IUser {
    * The timestamp the user was last updated
    */
   updatedAt: any | null
-
-  /**
-   * flag to determine which broadcasts to show
-   */
-  broadcastFlags: number | null
 
   /**
    * The last time the user connected via websocket
@@ -224,6 +229,18 @@ export interface IUser {
    * all the teams the user is a part of that the viewer can see
    */
   tms: Array<string | null> | null
+}
+
+export interface ITimelineOnUserArguments {
+  /**
+   * the datetime cursor
+   */
+  after?: any | null
+
+  /**
+   * the number of timeline events to return
+   */
+  first: number
 }
 
 export interface IArchivedTasksOnUserArguments {
@@ -427,10 +444,54 @@ export interface IAuthIdentityType {
 }
 
 /**
+ * A past event that is important to the viewer
+ */
+export interface ISuggestedAction {
+  __typename: 'SuggestedAction'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any
+
+  /**
+   * The specific type of suggested action
+   */
+  suggestedActionType: SuggestedActionTypeEnum
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+}
+
+/**
+ * The specific type of the suggested action
+ */
+export const enum SuggestedActionTypeEnum {
+  inviteYourTeam = 'inviteYourTeam'
+}
+
+/**
  * A connection to a list of items.
  */
-export interface ITaskConnection {
-  __typename: 'TaskConnection'
+export interface ITimelineEventConnection {
+  __typename: 'TimelineEventConnection'
 
   /**
    * Page info with cursors coerced to ISO8601 dates
@@ -440,7 +501,7 @@ export interface ITaskConnection {
   /**
    * A list of edges.
    */
-  edges: Array<ITaskEdge>
+  edges: Array<ITimelineEventEdge>
 }
 
 /**
@@ -473,21 +534,21 @@ export interface IPageInfoDateCursor {
 /**
  * An edge in a connection.
  */
-export interface ITaskEdge {
-  __typename: 'TaskEdge'
+export interface ITimelineEventEdge {
+  __typename: 'TimelineEventEdge'
 
   /**
    * The item at the end of the edge
    */
-  node: ITask
+  node: ITimelineEvent
   cursor: any | null
 }
 
 /**
- * A long-term task shared across the team, assigned to a single user
+ * A past event that is important to the viewer
  */
-export interface ITask {
-  __typename: 'Task'
+export interface ITimelineEvent {
+  __typename: 'TimelineEvent'
 
   /**
    * shortid
@@ -495,145 +556,181 @@ export interface ITask {
   id: string
 
   /**
-   * the agenda item that created this task, if any
+   * * The timestamp the event was created at
    */
-  agendaId: string | null
+  createdAt: any
 
   /**
-   * The body of the task. If null, it is a new task.
+   * the number of times the user has interacted with (ie clicked) this event
    */
-  content: string | null
+  interactionCount: number
 
   /**
-   * The timestamp the task was created
+   * The orgId this event is associated with. Null if not traceable to one org
    */
-  createdAt: any | null
+  orgId: string | null
 
   /**
-   * The userId that created the task
+   * The organization this event is associated with
    */
-  createdBy: string | null
+  organization: IOrganization | null
 
   /**
-   * a user-defined due date
+   * the number of times the user has seen this event
    */
-  dueDate: any | null
+  seenCount: number
 
   /**
-   * a list of users currently editing the task (fed by a subscription, so queries return null)
-   */
-  editors: Array<ITaskEditorDetails | null> | null
-  integration: IGitHubTask | null
-
-  /**
-   * true if this is assigned to a soft team member
-   */
-  isSoftTask: boolean | null
-
-  /**
-   * the foreign key for the meeting the task was created in
-   */
-  meetingId: string | null
-
-  /**
-   * the foreign key for the retrospective reflection group this was created in
-   */
-  reflectionGroupId: string | null
-
-  /**
-   * the shared sort order for tasks on the team dash & user dash
-   */
-  sortOrder: number
-
-  /**
-   * The status of the task
-   */
-  status: TaskStatusEnum | null
-
-  /**
-   * The tags associated with the task
-   */
-  tags: Array<string | null> | null
-
-  /**
-   * The id of the team (indexed). Needed for subscribing to archived tasks
+   * The teamId this event is associated with. Null if not traceable to one team
    */
   teamId: string | null
 
   /**
-   * The team this task belongs to
+   * The team that can see this event
    */
   team: ITeam | null
 
   /**
-   * The team member (or soft team member) that owns this task
+   * The specific type of event
    */
-  assignee: Assignee | null
+  eventType: TimelineEventEnum
 
   /**
-   * The id of the team member (or soft team member) assigned to this task
-   */
-  assigneeId: string
-
-  /**
-   * The timestamp the task was updated
-   */
-  updatedAt: any | null
-
-  /**
-   * * The userId, index useful for server-side methods getting all tasks under a user
-   */
-  userId: string | null
-}
-
-export interface ITaskEditorDetails {
-  __typename: 'TaskEditorDetails'
-
-  /**
-   * The userId of the person editing the task
+   * * The userId that can see this event
    */
   userId: string
 
   /**
-   * The name of the userId editing the task
+   * The user than can see this event
    */
-  preferredName: string
+  user: IUser
 }
 
 /**
- * The details associated with a task integrated with GitHub
+ * An organization
  */
-export interface IGitHubTask {
-  __typename: 'GitHubTask'
-  integrationId: string
-  service: IntegrationService
-  nameWithOwner: string | null
-  issueNumber: number | null
+export interface IOrganization {
+  __typename: 'Organization'
+
+  /**
+   * The unique organization ID
+   */
+  id: string
+
+  /**
+   * The datetime the organization was created
+   */
+  createdAt: any
+
+  /**
+   * The safe credit card details
+   */
+  creditCard: ICreditCard | null
+
+  /**
+   * true if the viewer is the billing leader for the org
+   */
+  isBillingLeader: boolean
+
+  /**
+   * The name of the organization
+   */
+  name: string
+
+  /**
+   * The org avatar
+   */
+  picture: any | null
+
+  /**
+   * all the teams the viewer is on in the organization
+   */
+  teams: Array<ITeam>
+
+  /**
+   * The level of access to features on the parabol site
+   */
+  tier: TierEnum | null
+
+  /**
+   * THe datetime the current billing cycle ends
+   */
+  periodEnd: any | null
+
+  /**
+   * The datetime the current billing cycle starts
+   */
+  periodStart: any | null
+
+  /**
+   * The total number of retroMeetings given to the team
+   * @deprecated "Unlimited retros for all!"
+   */
+  retroMeetingsOffered: number
+
+  /**
+   * Number of retro meetings that can be run (if not pro)
+   * @deprecated "Unlimited retros for all!"
+   */
+  retroMeetingsRemaining: number
+
+  /**
+   * The customerId from stripe
+   */
+  stripeId: string | null
+
+  /**
+   * The subscriptionId from stripe
+   */
+  stripeSubscriptionId: string | null
+
+  /**
+   * The last upcoming invoice email that was sent, null if never sent
+   */
+  upcomingInvoiceEmailSentAt: any | null
+
+  /**
+   * The datetime the organization was last updated
+   */
+  updatedAt: any | null
+  organizationUsers: IOrganizationUserConnection
+
+  /**
+   * The count of active & inactive users
+   */
+  orgUserCount: IOrgUserCount
+
+  /**
+   * The leaders of the org
+   */
+  billingLeaders: Array<IUser>
 }
 
-export type TaskIntegration = IGitHubTask
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration'
-  service: IntegrationService | null
+export interface IOrganizationUsersOnOrganizationArguments {
+  after?: string | null
+  first?: number | null
 }
 
 /**
- * The list of services for integrations
+ * A credit card
  */
-export const enum IntegrationService {
-  GitHubIntegration = 'GitHubIntegration',
-  SlackIntegration = 'SlackIntegration'
-}
+export interface ICreditCard {
+  __typename: 'CreditCard'
 
-/**
- * The status of the task
- */
-export const enum TaskStatusEnum {
-  active = 'active',
-  stuck = 'stuck',
-  done = 'done',
-  future = 'future'
+  /**
+   * The brand of the credit card, as provided by skype
+   */
+  brand: string | null
+
+  /**
+   * The MM/YY string of the expiration date
+   */
+  expiry: string | null
+
+  /**
+   * The last 4 digits of a credit card
+   */
+  last4: number | null
 }
 
 /**
@@ -651,6 +748,11 @@ export interface ITeam {
    * The datetime the team was created
    */
   createdAt: any
+
+  /**
+   * The userId that created the team. Non-null at v2.22.0+
+   */
+  createdBy: string | null
 
   /**
    * true if the underlying org has a validUntil date greater than now. if false, subs do not work
@@ -1486,272 +1588,6 @@ export const enum OrgApprovalStatusEnum {
 }
 
 /**
- * An organization
- */
-export interface IOrganization {
-  __typename: 'Organization'
-
-  /**
-   * The unique organization ID
-   */
-  id: string
-
-  /**
-   * The datetime the organization was created
-   */
-  createdAt: any
-
-  /**
-   * The safe credit card details
-   */
-  creditCard: ICreditCard | null
-
-  /**
-   * true if the viewer is the billing leader for the org
-   */
-  isBillingLeader: boolean
-
-  /**
-   * The name of the organization
-   */
-  name: string
-
-  /**
-   * The org avatar
-   */
-  picture: any | null
-
-  /**
-   * all the teams the viewer is on in the organization
-   */
-  teams: Array<ITeam>
-
-  /**
-   * The level of access to features on the parabol site
-   */
-  tier: TierEnum | null
-
-  /**
-   * THe datetime the current billing cycle ends
-   */
-  periodEnd: any | null
-
-  /**
-   * The datetime the current billing cycle starts
-   */
-  periodStart: any | null
-
-  /**
-   * The total number of retroMeetings given to the team
-   * @deprecated "Unlimited retros for all!"
-   */
-  retroMeetingsOffered: number
-
-  /**
-   * Number of retro meetings that can be run (if not pro)
-   * @deprecated "Unlimited retros for all!"
-   */
-  retroMeetingsRemaining: number
-
-  /**
-   * The customerId from stripe
-   */
-  stripeId: string | null
-
-  /**
-   * The subscriptionId from stripe
-   */
-  stripeSubscriptionId: string | null
-
-  /**
-   * The last upcoming invoice email that was sent, null if never sent
-   */
-  upcomingInvoiceEmailSentAt: any | null
-
-  /**
-   * The datetime the organization was last updated
-   */
-  updatedAt: any | null
-  organizationUsers: IOrganizationUserConnection
-
-  /**
-   * The count of active & inactive users
-   */
-  orgUserCount: IOrgUserCount
-
-  /**
-   * The leaders of the org
-   */
-  billingLeaders: Array<IUser>
-}
-
-export interface IOrganizationUsersOnOrganizationArguments {
-  after?: string | null
-  first?: number | null
-}
-
-/**
- * A credit card
- */
-export interface ICreditCard {
-  __typename: 'CreditCard'
-
-  /**
-   * The brand of the credit card, as provided by skype
-   */
-  brand: string | null
-
-  /**
-   * The MM/YY string of the expiration date
-   */
-  expiry: string | null
-
-  /**
-   * The last 4 digits of a credit card
-   */
-  last4: number | null
-}
-
-/**
- * A connection to a list of items.
- */
-export interface IOrganizationUserConnection {
-  __typename: 'OrganizationUserConnection'
-
-  /**
-   * Information to aid in pagination.
-   */
-  pageInfo: IPageInfo
-
-  /**
-   * A list of edges.
-   */
-  edges: Array<IOrganizationUserEdge>
-}
-
-/**
- * Information about pagination in a connection.
- */
-export interface IPageInfo {
-  __typename: 'PageInfo'
-
-  /**
-   * When paginating forwards, are there more items?
-   */
-  hasNextPage: boolean
-
-  /**
-   * When paginating backwards, are there more items?
-   */
-  hasPreviousPage: boolean
-
-  /**
-   * When paginating backwards, the cursor to continue.
-   */
-  startCursor: string | null
-
-  /**
-   * When paginating forwards, the cursor to continue.
-   */
-  endCursor: string | null
-}
-
-/**
- * An edge in a connection.
- */
-export interface IOrganizationUserEdge {
-  __typename: 'OrganizationUserEdge'
-
-  /**
-   * The item at the end of the edge
-   */
-  node: IOrganizationUser
-
-  /**
-   * A cursor for use in pagination
-   */
-  cursor: string
-}
-
-/**
- * organization-specific details about a user
- */
-export interface IOrganizationUser {
-  __typename: 'OrganizationUser'
-
-  /**
-   * orgId::userId
-   */
-  id: string
-
-  /**
-   * true if the user is paused and the orgs are not being billed, else false
-   */
-  inactive: boolean
-
-  /**
-   * the datetime the user first joined the org
-   */
-  joinedAt: any
-
-  /**
-   * The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
-   */
-  newUserUntil: any
-
-  /**
-   * FK
-   */
-  orgId: string
-
-  /**
-   * The user attached to the organization
-   */
-  organization: IOrganization
-
-  /**
-   * if not a member, the datetime the user was removed from the org
-   */
-  removedAt: any | null
-
-  /**
-   * role of the user in the org
-   */
-  role: OrgUserRole | null
-
-  /**
-   * FK
-   */
-  userId: string
-
-  /**
-   * The user attached to the organization
-   */
-  user: IUser
-}
-
-/**
- * The role of the org user
- */
-export const enum OrgUserRole {
-  billingLeader = 'billingLeader'
-}
-
-export interface IOrgUserCount {
-  __typename: 'OrgUserCount'
-
-  /**
-   * The number of orgUsers who have an inactive flag
-   */
-  inactiveUserCount: number
-
-  /**
-   * The number of orgUsers who do not have an inactive flag
-   */
-  activeUserCount: number
-}
-
-/**
  * A request placeholder that will likely turn into 1 or more tasks
  */
 export interface IAgendaItem {
@@ -1939,6 +1775,189 @@ export interface IAssignee {
 }
 
 /**
+ * A connection to a list of items.
+ */
+export interface ITaskConnection {
+  __typename: 'TaskConnection'
+
+  /**
+   * Page info with cursors coerced to ISO8601 dates
+   */
+  pageInfo: IPageInfoDateCursor | null
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<ITaskEdge>
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface ITaskEdge {
+  __typename: 'TaskEdge'
+
+  /**
+   * The item at the end of the edge
+   */
+  node: ITask
+  cursor: any | null
+}
+
+/**
+ * A long-term task shared across the team, assigned to a single user
+ */
+export interface ITask {
+  __typename: 'Task'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * the agenda item that created this task, if any
+   */
+  agendaId: string | null
+
+  /**
+   * The body of the task. If null, it is a new task.
+   */
+  content: string | null
+
+  /**
+   * The timestamp the task was created
+   */
+  createdAt: any | null
+
+  /**
+   * The userId that created the task
+   */
+  createdBy: string | null
+
+  /**
+   * a user-defined due date
+   */
+  dueDate: any | null
+
+  /**
+   * a list of users currently editing the task (fed by a subscription, so queries return null)
+   */
+  editors: Array<ITaskEditorDetails | null> | null
+  integration: IGitHubTask | null
+
+  /**
+   * true if this is assigned to a soft team member
+   */
+  isSoftTask: boolean | null
+
+  /**
+   * the foreign key for the meeting the task was created in
+   */
+  meetingId: string | null
+
+  /**
+   * the foreign key for the retrospective reflection group this was created in
+   */
+  reflectionGroupId: string | null
+
+  /**
+   * the shared sort order for tasks on the team dash & user dash
+   */
+  sortOrder: number
+
+  /**
+   * The status of the task
+   */
+  status: TaskStatusEnum | null
+
+  /**
+   * The tags associated with the task
+   */
+  tags: Array<string | null> | null
+
+  /**
+   * The id of the team (indexed). Needed for subscribing to archived tasks
+   */
+  teamId: string | null
+
+  /**
+   * The team this task belongs to
+   */
+  team: ITeam | null
+
+  /**
+   * The team member (or soft team member) that owns this task
+   */
+  assignee: Assignee | null
+
+  /**
+   * The id of the team member (or soft team member) assigned to this task
+   */
+  assigneeId: string
+
+  /**
+   * The timestamp the task was updated
+   */
+  updatedAt: any | null
+
+  /**
+   * * The userId, index useful for server-side methods getting all tasks under a user
+   */
+  userId: string | null
+}
+
+export interface ITaskEditorDetails {
+  __typename: 'TaskEditorDetails'
+
+  /**
+   * The userId of the person editing the task
+   */
+  userId: string
+
+  /**
+   * The name of the userId editing the task
+   */
+  preferredName: string
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface IGitHubTask {
+  __typename: 'GitHubTask'
+  integrationId: string
+  service: IntegrationService
+  nameWithOwner: string | null
+  issueNumber: number | null
+}
+
+export type TaskIntegration = IGitHubTask
+
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration'
+  service: IntegrationService | null
+}
+
+/**
+ * The list of services for integrations
+ */
+export const enum IntegrationService {
+  GitHubIntegration = 'GitHubIntegration',
+  SlackIntegration = 'SlackIntegration'
+}
+
+/**
+ * The status of the task
+ */
+export const enum TaskStatusEnum {
+  active = 'active',
+  stuck = 'stuck',
+  done = 'done',
+  future = 'future'
+}
+
+/**
  * A member of a team
  */
 export interface ISoftTeamMember {
@@ -1991,6 +2010,155 @@ export interface ITasksOnSoftTeamMemberArguments {
    */
   after?: any | null
   first?: number | null
+}
+
+/**
+ * A connection to a list of items.
+ */
+export interface IOrganizationUserConnection {
+  __typename: 'OrganizationUserConnection'
+
+  /**
+   * Information to aid in pagination.
+   */
+  pageInfo: IPageInfo
+
+  /**
+   * A list of edges.
+   */
+  edges: Array<IOrganizationUserEdge>
+}
+
+/**
+ * Information about pagination in a connection.
+ */
+export interface IPageInfo {
+  __typename: 'PageInfo'
+
+  /**
+   * When paginating forwards, are there more items?
+   */
+  hasNextPage: boolean
+
+  /**
+   * When paginating backwards, are there more items?
+   */
+  hasPreviousPage: boolean
+
+  /**
+   * When paginating backwards, the cursor to continue.
+   */
+  startCursor: string | null
+
+  /**
+   * When paginating forwards, the cursor to continue.
+   */
+  endCursor: string | null
+}
+
+/**
+ * An edge in a connection.
+ */
+export interface IOrganizationUserEdge {
+  __typename: 'OrganizationUserEdge'
+
+  /**
+   * The item at the end of the edge
+   */
+  node: IOrganizationUser
+
+  /**
+   * A cursor for use in pagination
+   */
+  cursor: string
+}
+
+/**
+ * organization-specific details about a user
+ */
+export interface IOrganizationUser {
+  __typename: 'OrganizationUser'
+
+  /**
+   * orgId::userId
+   */
+  id: string
+
+  /**
+   * true if the user is paused and the orgs are not being billed, else false
+   */
+  inactive: boolean
+
+  /**
+   * the datetime the user first joined the org
+   */
+  joinedAt: any
+
+  /**
+   * The last moment a billing leader can remove the user from the org & receive a refund. Set to the subscription periodEnd
+   */
+  newUserUntil: any
+
+  /**
+   * FK
+   */
+  orgId: string
+
+  /**
+   * The user attached to the organization
+   */
+  organization: IOrganization
+
+  /**
+   * if not a member, the datetime the user was removed from the org
+   */
+  removedAt: any | null
+
+  /**
+   * role of the user in the org
+   */
+  role: OrgUserRole | null
+
+  /**
+   * FK
+   */
+  userId: string
+
+  /**
+   * The user attached to the organization
+   */
+  user: IUser
+}
+
+/**
+ * The role of the org user
+ */
+export const enum OrgUserRole {
+  billingLeader = 'billingLeader'
+}
+
+export interface IOrgUserCount {
+  __typename: 'OrgUserCount'
+
+  /**
+   * The number of orgUsers who have an inactive flag
+   */
+  inactiveUserCount: number
+
+  /**
+   * The number of orgUsers who do not have an inactive flag
+   */
+  activeUserCount: number
+}
+
+/**
+ * The specific type of event
+ */
+export const enum TimelineEventEnum {
+  retroComplete = 'retroComplete',
+  actionComplete = 'actionComplete',
+  joinedParabol = 'joinedParabol',
+  createdTeam = 'createdTeam'
 }
 
 /**
