@@ -8,10 +8,3 @@ export const enum ICON_SIZE {
   MD36 = '36px',
   MD48 = '48px'
 }
-
-export namespace TYPOGRAPHY {
-  export const enum SIZE {
-    S3 = '.875rem',
-    S4 = '1.125rem'
-  }
-}

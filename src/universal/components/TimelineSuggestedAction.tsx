@@ -1,7 +1,7 @@
 import React, {lazy} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {TimelineSuggestedAction_viewer} from '__generated__/TimelineSuggestedAction_viewer.graphql'
-// import SuggestedActionInviteYourTeam from './SuggestedActionInviteYourTeam'
+import SuggestedActionInviteYourTeam from './SuggestedActionInviteYourTeam'
 
 interface Props {
   viewer: TimelineSuggestedAction_viewer
@@ -16,8 +16,8 @@ const lookup = {
 const TimelineSuggestedAction = (props: Props) => {
   const {viewer} = props
   const {suggestedAction} = viewer
-  // const mockViewer = {suggestedAction: {team: {name: 'My Team'}}} || suggestedAction
-  // return <SuggestedActionInviteYourTeam viewer={mockViewer} />
+  const mockSuggestedAction = {team: {name: 'My Team', teamMembers: []}} || suggestedAction
+  return <SuggestedActionInviteYourTeam suggestedAction={mockSuggestedAction} />
   if (!suggestedAction) return null
   const {__typename} = suggestedAction
   const AsyncComponent = lookup[__typename]
@@ -29,8 +29,8 @@ export default createFragmentContainer(
   TimelineSuggestedAction,
   graphql`
     fragment TimelineSuggestedAction_viewer on User {
-      ...SuggestedActionInviteYourTeam_viewer
       suggestedAction {
+        ...SuggestedActionInviteYourTeam_suggestedAction
         __typename
       }
     }

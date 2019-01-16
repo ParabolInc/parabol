@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {TYPOGRAPHY} from 'universal/styles/typographyV2'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 
 interface Props {
@@ -16,7 +15,7 @@ const TabStyle = styled(PlainButton)(
     color: isActive ? PALETTE.PRIMARY.MAIN : PALETTE.TEXT.LIGHT,
     cursor: isClickable ? 'pointer' : 'default',
     display: 'flex',
-    fontSize: TYPOGRAPHY.SIZE.S4,
+    fontSize: 18,
     outline: 0,
     padding: '1rem 1.5rem',
     userSelect: 'none'

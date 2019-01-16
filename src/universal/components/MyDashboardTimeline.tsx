@@ -11,7 +11,7 @@ interface Props {
   viewer: MyDashboardTimeline_viewer
 }
 
-const enum DIMS {
+export const enum DASH_TIMELINE {
   FEED_MAX_WIDTH = 600,
   FEED_MIN_WIDTH = 400,
   TIMELINE_DRAWER_WIDTH = 336
@@ -29,18 +29,21 @@ const TimelineFeed = styled('div')({
 })
 
 const TimelineFeedItems = styled('div')({
-  maxWidth: DIMS.FEED_MAX_WIDTH,
-  minWidth: DIMS.FEED_MIN_WIDTH,
+  maxWidth: DASH_TIMELINE.FEED_MAX_WIDTH,
+  minWidth: DASH_TIMELINE.FEED_MIN_WIDTH,
   width: '100%'
 })
 
 const MIN_WIDTH =
-  DASH_SIDEBAR.WIDTH + DIMS.FEED_MIN_WIDTH + DIMS.TIMELINE_DRAWER_WIDTH + MIN_PADDING * 2
+  DASH_SIDEBAR.WIDTH +
+  DASH_TIMELINE.FEED_MIN_WIDTH +
+  DASH_TIMELINE.TIMELINE_DRAWER_WIDTH +
+  MIN_PADDING * 2
 
 const RightDrawer = styled('div')({
   display: 'none',
-  minWidth: DIMS.TIMELINE_DRAWER_WIDTH,
-  maxWidth: DIMS.TIMELINE_DRAWER_WIDTH,
+  minWidth: DASH_TIMELINE.TIMELINE_DRAWER_WIDTH,
+  maxWidth: DASH_TIMELINE.TIMELINE_DRAWER_WIDTH,
   borderLeft: `1px solid ${PALETTE.BORDER.LIGHT}`,
   padding: 24,
   [`@media screen and (min-width: ${MIN_WIDTH}px)`]: {

@@ -68,9 +68,9 @@ export default createFragmentContainer(
     fragment DashboardAvatars_team on Team {
       id
       isLead
-      ...AddTeamMemberModal_team
+      ...AddTeamMemberAvatarButton_team
       teamMembers(sortBy: "preferredName") {
-        ...AddTeamMemberModal_teamMembers
+        ...AddTeamMemberAvatarButton_teamMembers
         ...TeamMemberAvatarMenu_teamMember
         ...DashboardAvatar_teamMember
         id
