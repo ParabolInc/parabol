@@ -106,9 +106,9 @@ export interface IUser {
   name: string | null
 
   /**
-   * the most important action for the user to perform
+   * the most important actions for the user to perform
    */
-  suggestedAction: SuggestedAction | null
+  suggestedActions: Array<SuggestedAction>
 
   /**
    * The timeline of important events for the viewer
@@ -446,7 +446,7 @@ export interface IAuthIdentityType {
 /**
  * A past event that is important to the viewer
  */
-export type SuggestedAction = ISuggestedActionInviteYourTeam
+export type SuggestedAction = ISuggestedActionInviteYourTeam | ISuggestedActionTryTheDemo
 
 /**
  * A past event that is important to the viewer
@@ -2966,6 +2966,11 @@ export interface IMutation {
   disconnectSocket: IDisconnectSocketPayload | null
 
   /**
+   * Dismiss a suggested action
+   */
+  dismissSuggestedAction: IDismissSuggestedActionPayload
+
+  /**
    * Downgrade a paid account to the personal service
    */
   downgradeToPersonal: IDowngradeToPersonalPayload | null
@@ -3512,6 +3517,13 @@ export interface IDeleteTaskOnMutationArguments {
    * The taskId to delete
    */
   taskId: string
+}
+
+export interface IDismissSuggestedActionOnMutationArguments {
+  /**
+   * The id of the suggested action to dismiss
+   */
+  suggestedActionId: string
 }
 
 export interface IDowngradeToPersonalOnMutationArguments {
@@ -5359,6 +5371,21 @@ export interface IDisconnectSocketPayload {
   user: IUser | null
 }
 
+export interface IDismissSuggestedActionPayload {
+  __typename: 'DismissSuggestedActionPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The user that dismissed the action
+   */
+  user: IUser | null
+
+  /**
+   * The id of the removed suggested action
+   */
+  removedSuggestedActionId: string | null
+}
+
 export interface IDowngradeToPersonalPayload {
   __typename: 'DowngradeToPersonalPayload'
   error: IStandardMutationError | null
@@ -7198,6 +7225,43 @@ export interface ISuggestedActionInviteYourTeam {
    * The team you should invite people to
    */
   team: ITeam
+}
+
+/**
+ * a suggestion to invite others to your team
+ */
+export interface ISuggestedActionTryTheDemo {
+  __typename: 'SuggestedActionTryTheDemo'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any
+
+  /**
+   * The specific type of suggested action
+   */
+  suggestedActionType: SuggestedActionTypeEnum
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
 }
 
 /**

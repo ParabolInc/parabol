@@ -1,16 +1,20 @@
-import React, {ReactNode} from 'react'
+import React, {Component, ReactNode} from 'react'
 import styled from 'react-emotion'
 import Icon from 'universal/components/Icon'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
+import DismissSuggestedActionMutation from 'universal/mutations/DismissSuggestedActionMutation'
 import {buttonShadow, cardShadow} from 'universal/styles/elevation'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import {PALETTE} from '../styles/paletteV2'
 import {ICON_SIZE} from '../styles/typographyV2'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import SuggestedActionBackground from './SuggestedActionBackground'
 
-interface Props {
+interface Props extends WithAtmosphereProps, WithMutationProps {
   backgroundColor: string
   children: ReactNode
   iconName: string
+  suggestedActionId: string
 }
 
 const Surface = styled('div')({
@@ -47,18 +51,34 @@ const FloatingSealIcon = styled(Icon)({
   userSelect: 'none'
 })
 
-const SuggestedActionCard = (props: Props) => {
-  const {backgroundColor, children, iconName} = props
-  return (
-    <Surface>
-      <SuggestedActionBackground backgroundColor={backgroundColor} />
-      {children}
-      <PlainButton>
-        <CancelIcon>cancel</CancelIcon>
-      </PlainButton>
-      <FloatingSealIcon>{iconName}</FloatingSealIcon>
-    </Surface>
-  )
+class SuggestedActionCard extends Component<Props> {
+  onCancel = () => {
+    const {
+      atmosphere,
+      submitting,
+      submitMutation,
+      suggestedActionId,
+      onCompleted,
+      onError
+    } = this.props
+    if (submitting) return
+    submitMutation()
+    DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
+  }
+
+  render () {
+    const {backgroundColor, children, iconName} = this.props
+    return (
+      <Surface>
+        <SuggestedActionBackground backgroundColor={backgroundColor} />
+        {children}
+        <PlainButton onClick={this.onCancel}>
+          <CancelIcon>cancel</CancelIcon>
+        </PlainButton>
+        <FloatingSealIcon>{iconName}</FloatingSealIcon>
+      </Surface>
+    )
+  }
 }
 
-export default SuggestedActionCard
+export default withMutationProps(withAtmosphere(SuggestedActionCard))

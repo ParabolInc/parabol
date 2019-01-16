@@ -107,15 +107,15 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Name associated with the user'
     },
-    suggestedAction: {
-      type: SuggestedAction,
-      description: 'the most important action for the user to perform',
+    suggestedActions: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SuggestedAction))),
+      description: 'the most important actions for the user to perform',
       resolve: async ({id: userId}, _args, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return null
         const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
         suggestedActions.sort((a, b) => (a.priority < b.priority ? -1 : 1))
-        return suggestedActions[0]
+        return suggestedActions
       }
     },
     timeline: {

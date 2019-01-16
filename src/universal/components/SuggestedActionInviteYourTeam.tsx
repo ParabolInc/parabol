@@ -16,11 +16,15 @@ const AddTeamMemberModal = lazy(() =>
 )
 
 const SuggestedActionInviteYourTeam = (props: Props) => {
-  const {suggestedAction} = props
+  const {id: suggestedActionId, suggestedAction} = props
   const {team} = suggestedAction
   const {name: teamName, teamMembers} = team
   return (
-    <SuggestedActionCard backgroundColor={PALETTE.BACKGROUND.BLUE} iconName='group_add'>
+    <SuggestedActionCard
+      backgroundColor={PALETTE.BACKGROUND.BLUE}
+      iconName='group_add'
+      suggestedActionId={suggestedActionId}
+    >
       <SuggestedActionCopy>Invite your teammates to: {teamName} </SuggestedActionCopy>
       <LoadableModal
         LoadableComponent={AddTeamMemberModal}
@@ -35,6 +39,7 @@ export default createFragmentContainer(
   SuggestedActionInviteYourTeam,
   graphql`
     fragment SuggestedActionInviteYourTeam_suggestedAction on SuggestedActionInviteYourTeam {
+      id
       team {
         name
         ...AddTeamMemberModal_team

@@ -4,22 +4,32 @@ import patternTile from '../styles/theme/images/icon-pattern-tile.svg'
 import {DASH_TIMELINE} from './MyDashboardTimeline'
 
 const ROTATION = 15
-const ROT_RADS = ROTATION * Math.PI / 180
 const BACKGROUND_HEIGHT = 142
 const BACKGROUND_WIDTH = DASH_TIMELINE.FEED_MAX_WIDTH
 
 // make the pattern large enough to fill the background
 // imagine fitting a rectangle into a larger rect that is rotated 15 degrees, how big is that bigger one?
+const getRotatedBBox = (rotationDegrees: number, width: number, height: number) => {
+  const radians = rotationDegrees * Math.PI / 180
+  const sinROT = Math.sin(radians)
+  const cosROT = Math.cos(radians)
+  const w1 = sinROT * height
+  const w2 = cosROT * width
+  const h1 = cosROT * height
+  const h2 = sinROT * width
+  return {
+    width: Math.ceil(w1 + w2),
+    height: Math.ceil(h1 + h2),
+    xOffset: Math.round(w1),
+    yOffset: Math.round(sinROT * w1)
+  }
+}
 
-const sinROT = Math.sin(ROT_RADS)
-const cosROT = Math.cos(ROT_RADS)
-const w1 = sinROT * BACKGROUND_HEIGHT
-const w2 = cosROT * BACKGROUND_WIDTH
-const h1 = cosROT * BACKGROUND_HEIGHT
-const h2 = sinROT * BACKGROUND_WIDTH
-const width = Math.ceil(w1 + w2)
-const height = Math.ceil(h1 + h2)
-const yOffset = sinROT * w1
+const {width, height, xOffset, yOffset} = getRotatedBBox(
+  ROTATION,
+  BACKGROUND_WIDTH,
+  BACKGROUND_HEIGHT
+)
 
 const FullBackground = styled('div')({
   backgroundImage: `url(${patternTile})`,
@@ -27,7 +37,7 @@ const FullBackground = styled('div')({
   height,
   opacity: 0.35,
   // needs rotate3d to not look blurry
-  transform: `translate3d(${-w1}px,${yOffset}px,0)rotate3d(0,0,1,-${ROTATION}deg)`,
+  transform: `translate3d(${-xOffset}px,${yOffset}px,0)rotate3d(0,0,1,-${ROTATION}deg)`,
   transformOrigin: '0 0',
   width,
   position: 'absolute'
