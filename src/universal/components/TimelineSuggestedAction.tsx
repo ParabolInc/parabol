@@ -1,7 +1,7 @@
 import React, {lazy} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {TimelineSuggestedAction_viewer} from '__generated__/TimelineSuggestedAction_viewer.graphql'
-import SuggestedActionTryTheDemo from './SuggestedActionTryTheDemo'
+import SuggestedActionTryRetroMeeting from './SuggestedActionTryRetroMeeting'
 
 interface Props {
   viewer: TimelineSuggestedAction_viewer
@@ -13,6 +13,12 @@ const lookup = {
   ),
   SuggestedActionTryTheDemo: lazy(() =>
     import(/* webpackChunkName: 'SuggestedActionTryTheDemo' */ 'universal/components/SuggestedActionTryTheDemo')
+  ),
+  SuggestedActionTryRetroMeeting: lazy(() =>
+    import(/* webpackChunkName: 'SuggestedActionTryRetroMeeting' */ 'universal/components/SuggestedActionTryRetroMeeting')
+  ),
+  SuggestedActionTryActionMeeting: lazy(() =>
+    import(/* webpackChunkName: 'SuggestedActionTryActionMeeting' */ 'universal/components/SuggestedActionTryActionMeeting')
   )
 }
 
@@ -21,7 +27,7 @@ const TimelineSuggestedAction = (props: Props) => {
   const {suggestedActions} = viewer
   const [suggestedAction] = suggestedActions
   const mockSuggestedAction = {team: {name: 'My Team', teamMembers: []}} || suggestedAction
-  return <SuggestedActionTryTheDemo suggestedAction={mockSuggestedAction} />
+  return <SuggestedActionTryRetroMeeting suggestedAction={mockSuggestedAction} />
   if (!suggestedAction) return null
   const {__typename} = suggestedAction
   const AsyncComponent = lookup[__typename]

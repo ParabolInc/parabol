@@ -446,7 +446,12 @@ export interface IAuthIdentityType {
 /**
  * A past event that is important to the viewer
  */
-export type SuggestedAction = ISuggestedActionInviteYourTeam | ISuggestedActionTryTheDemo
+export type SuggestedAction =
+  | ISuggestedActionInviteYourTeam
+  | ISuggestedActionTryRetroMeeting
+  | ISuggestedActionTryActionMeeting
+  | ISuggestedActionCreateNewTeam
+  | ISuggestedActionTryTheDemo
 
 /**
  * A past event that is important to the viewer
@@ -463,6 +468,11 @@ export interface ISuggestedAction {
    * * The timestamp the action was created at
    */
   createdAt: any
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null
 
   /**
    * * The timestamp the action was removed at
@@ -489,7 +499,11 @@ export interface ISuggestedAction {
  * The specific type of the suggested action
  */
 export const enum SuggestedActionTypeEnum {
-  inviteYourTeam = 'inviteYourTeam'
+  inviteYourTeam = 'inviteYourTeam',
+  tryTheDemo = 'tryTheDemo',
+  tryRetroMeeting = 'tryRetroMeeting',
+  tryActionMeeting = 'tryActionMeeting',
+  createNewTeam = 'createNewTeam'
 }
 
 /**
@@ -7197,6 +7211,11 @@ export interface ISuggestedActionInviteYourTeam {
   createdAt: any
 
   /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null
+
+  /**
    * * The timestamp the action was removed at
    */
   removedAt: any
@@ -7228,6 +7247,152 @@ export interface ISuggestedActionInviteYourTeam {
 }
 
 /**
+ * a suggestion to try a retro with your team
+ */
+export interface ISuggestedActionTryRetroMeeting {
+  __typename: 'SuggestedActionTryRetroMeeting'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any
+
+  /**
+   * The specific type of suggested action
+   */
+  suggestedActionType: SuggestedActionTypeEnum
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+
+  /**
+   * fk
+   */
+  teamId: string
+
+  /**
+   * The team you should run a retro with
+   */
+  team: ITeam
+}
+
+/**
+ * a suggestion to try a retro with your team
+ */
+export interface ISuggestedActionTryActionMeeting {
+  __typename: 'SuggestedActionTryActionMeeting'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any
+
+  /**
+   * The specific type of suggested action
+   */
+  suggestedActionType: SuggestedActionTypeEnum
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+
+  /**
+   * fk
+   */
+  teamId: string
+
+  /**
+   * The team you should run a retro with
+   */
+  team: ITeam
+}
+
+/**
+ * a suggestion to try a retro with your team
+ */
+export interface ISuggestedActionCreateNewTeam {
+  __typename: 'SuggestedActionCreateNewTeam'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any
+
+  /**
+   * The specific type of suggested action
+   */
+  suggestedActionType: SuggestedActionTypeEnum
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+}
+
+/**
  * a suggestion to invite others to your team
  */
 export interface ISuggestedActionTryTheDemo {
@@ -7242,6 +7407,11 @@ export interface ISuggestedActionTryTheDemo {
    * * The timestamp the action was created at
    */
   createdAt: any
+
+  /**
+   * The priority of the suggested action compared to other suggested actions (smaller number is higher priority)
+   */
+  priority: number | null
 
   /**
    * * The timestamp the action was removed at
