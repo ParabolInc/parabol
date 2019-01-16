@@ -23,18 +23,26 @@ exports.up = async (r) => {
     completedActionMeetings: r
       .table('Meeting')
       .pluck('id', 'teamId', 'endedAt')
-      .merge((row) => ({
+      .merge((meeting) => ({
         eventType: COMPLETED_ACTION_MEETING,
-        orgId: r.table('Team').get(row('teamId'))('orgId')
+        orgId: r
+          .table('Team')
+          .get(meeting('teamId'))('orgId')
+          .default(null)
       }))
+      .filter((meeting) => meeting('orgId').ne(null))
       .coerceTo('array'),
     completedRetroMeetings: r
       .table('NewMeeting')
       .pluck('id', 'teamId', 'endedAt')
-      .merge((row) => ({
+      .merge((meeting) => ({
         eventType: COMPLETED_RETRO_MEETING,
-        orgId: r.table('Team').get(row('teamId'))('orgId')
+        orgId: r
+          .table('Team')
+          .get(meeting('teamId'))('orgId')
+          .default(null)
       }))
+      .filter((meeting) => meeting('orgId').ne(null))
       .coerceTo('array')
   })
 

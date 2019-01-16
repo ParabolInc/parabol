@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLInterfaceType} from 'graphql'
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import Organization from 'server/graphql/types/Organization'
@@ -75,7 +75,7 @@ export const timelineEventInterfaceFields = () => ({
   }
 })
 
-const TimelineEvent = new GraphQLObjectType({
+const TimelineEvent = new GraphQLInterfaceType({
   name: 'TimelineEvent',
   description: 'A past event that is important to the viewer',
   fields: timelineEventInterfaceFields,

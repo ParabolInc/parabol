@@ -3,7 +3,6 @@ import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router'
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
-import DashContent from 'universal/components/Dashboard/DashContent'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashMain from 'universal/components/Dashboard/DashMain'
 import Tab from 'universal/components/Tab/Tab'
@@ -13,8 +12,10 @@ import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import makeDateString from 'universal/utils/makeDateString'
+import {PALETTE} from '../../../../styles/paletteV2'
 
-const LayoutBlock = styled('div')({
+const TabBody = styled('div')({
+  backgroundColor: PALETTE.BACKGROUND.MAIN,
   display: 'flex',
   flex: 1,
   flexDirection: 'column'
@@ -65,14 +66,12 @@ const UserDashMain = (props: Props) => {
           </RallyLink>
         </HeaderCopy>
       </DashHeader>
-      <DashContent padding='0'>
-        <LayoutBlock>
-          <Switch>
-            <AsyncRoute path={`${match.url}/tasks`} mod={myDashboardTasksRoot} />
-            <AsyncRoute path={match.url} mod={myDashboardTimelineRoot} />
-          </Switch>
-        </LayoutBlock>
-      </DashContent>
+      <TabBody>
+        <Switch>
+          <AsyncRoute path={`${match.url}/tasks`} mod={myDashboardTasksRoot} />
+          <AsyncRoute path={match.url} mod={myDashboardTimelineRoot} />
+        </Switch>
+      </TabBody>
     </DashMain>
   )
 }

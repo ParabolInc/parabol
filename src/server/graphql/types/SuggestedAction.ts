@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLInterfaceType} from 'graphql'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import SuggestedActionTypeEnum from 'server/graphql/types/SuggestedActionTypeEnum'
 import User from 'server/graphql/types/User'
@@ -33,11 +33,11 @@ export const suggestedActionInterfaceFields = () => ({
   }
 })
 
-const SuggestedAction = new GraphQLObjectType({
+const SuggestedAction = new GraphQLInterfaceType({
   name: 'SuggestedAction',
   description: 'A past event that is important to the viewer',
   fields: suggestedActionInterfaceFields,
-  resovleType: (value) => {
+  resolveType: (value) => {
     const resolveTypeLookup = {}
     return resolveTypeLookup[value.type]
   }

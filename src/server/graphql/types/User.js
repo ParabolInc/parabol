@@ -113,7 +113,7 @@ const User = new GraphQLObjectType({
       resolve: async ({id: userId}, _args, {dataLoader, authToken}) => {
         const viewerId = getUserId(authToken)
         if (viewerId !== userId) return null
-        const suggestedActions = dataLoader.get('suggestedActionsByUserId').load(userId)
+        const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
         suggestedActions.sort((a, b) => (a.priority < b.priority ? -1 : 1))
         return suggestedActions[0]
       }

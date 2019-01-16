@@ -108,7 +108,7 @@ export interface IUser {
   /**
    * the most important action for the user to perform
    */
-  suggestedAction: ISuggestedAction | null
+  suggestedAction: SuggestedAction | null
 
   /**
    * The timeline of important events for the viewer
@@ -446,6 +446,11 @@ export interface IAuthIdentityType {
 /**
  * A past event that is important to the viewer
  */
+export type SuggestedAction = ISuggestedActionInviteYourTeam
+
+/**
+ * A past event that is important to the viewer
+ */
 export interface ISuggestedAction {
   __typename: 'SuggestedAction'
 
@@ -540,9 +545,17 @@ export interface ITimelineEventEdge {
   /**
    * The item at the end of the edge
    */
-  node: ITimelineEvent
+  node: TimelineEvent
   cursor: any | null
 }
+
+/**
+ * A past event that is important to the viewer
+ */
+export type TimelineEvent =
+  | ITimelineEventTeamCreated
+  | ITimelineEventJoinedParabol
+  | ITimelineEventCompletedRetroMeeting
 
 /**
  * A past event that is important to the viewer
@@ -7138,6 +7151,254 @@ export interface INotifyPromoteToOrgLeader {
    * *The userId that should see this notification
    */
   userIds: Array<string> | null
+}
+
+/**
+ * a suggestion to invite others to your team
+ */
+export interface ISuggestedActionInviteYourTeam {
+  __typename: 'SuggestedActionInviteYourTeam'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the action was created at
+   */
+  createdAt: any
+
+  /**
+   * * The timestamp the action was removed at
+   */
+  removedAt: any
+
+  /**
+   * The specific type of suggested action
+   */
+  suggestedActionType: SuggestedActionTypeEnum
+
+  /**
+   * * The userId this action is for
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+
+  /**
+   * The teamId that we suggest you should invite people to
+   */
+  teamId: string
+
+  /**
+   * The team you should invite people to
+   */
+  team: ITeam
+}
+
+/**
+ * An event triggered whenever a team is created
+ */
+export interface ITimelineEventTeamCreated {
+  __typename: 'TimelineEventTeamCreated'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam | null
+
+  /**
+   * The specific type of event
+   */
+  eventType: TimelineEventEnum
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+
+  /**
+   * true if this is the first team auto-created for a user (does not apply to users who joined via invitation)
+   */
+  isOnboardTeam: boolean
+}
+
+/**
+ * An event for joining the app
+ */
+export interface ITimelineEventJoinedParabol {
+  __typename: 'TimelineEventJoinedParabol'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number
+
+  /**
+   * The orgId this event is associated with. Null if not traceable to one org
+   */
+  orgId: string | null
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number
+
+  /**
+   * The teamId this event is associated with. Null if not traceable to one team
+   */
+  teamId: string | null
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam | null
+
+  /**
+   * The specific type of event
+   */
+  eventType: TimelineEventEnum
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+}
+
+/**
+ * An event for a completed retro meeting
+ */
+export interface ITimelineEventCompletedRetroMeeting {
+  __typename: 'TimelineEventCompletedRetroMeeting'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam | null
+
+  /**
+   * The specific type of event
+   */
+  eventType: TimelineEventEnum
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IRetrospectiveMeeting
+
+  /**
+   * The meetingId that was completed
+   */
+  meetingId: string
 }
 
 /**

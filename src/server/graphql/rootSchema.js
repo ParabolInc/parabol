@@ -14,6 +14,10 @@ import RetrospectiveMeetingSettings from 'server/graphql/types/RetrospectiveMeet
 import ActionMeetingSettings from 'server/graphql/types/ActionMeetingSettings'
 import RetrospectiveMeetingMember from 'server/graphql/types/RetrospectiveMeetingMember'
 import AuthToken from 'server/graphql/types/AuthToken'
+import SuggestedActionInviteYourTeam from 'server/graphql/types/SuggestedActionInviteYourTeam'
+import TimelineEventTeamCreated from 'server/graphql/types/TimelineEventTeamCreated'
+import TimelineEventJoinedParabol from 'server/graphql/types/TimelineEventJoinedParabol'
+import TimelineEventCompletedRetroMeeting from 'server/graphql/types/TimelineEventCompletedRetroMeeting'
 
 export default new GraphQLSchema({
   query,
@@ -30,6 +34,10 @@ export default new GraphQLSchema({
     RetrospectiveMeeting,
     RetrospectiveMeetingMember,
     RetrospectiveMeetingSettings,
+    SuggestedActionInviteYourTeam,
+    TimelineEventTeamCreated,
+    TimelineEventJoinedParabol,
+    TimelineEventCompletedRetroMeeting,
     ActionMeetingSettings,
     AuthToken
   ]
