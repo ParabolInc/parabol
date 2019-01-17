@@ -30,6 +30,8 @@ const Surface = styled('div')({
 })
 
 const CancelIcon = styled(Icon)({
+  background: `rgba(255,255,255,0.8)`,
+  borderRadius: '100%',
   color: PALETTE.TEXT.MAIN,
   position: 'absolute',
   right: 8,

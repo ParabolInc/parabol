@@ -41,6 +41,7 @@ const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       __typename
+      ...AcceptTeamInvitationMutation_notification @relay(mask: false)
       ...AddOrgMutation_notification @relay(mask: false)
       ...AddTeamMutation_notification @relay(mask: false)
       ...ApproveToOrgMutation_notification @relay(mask: false)

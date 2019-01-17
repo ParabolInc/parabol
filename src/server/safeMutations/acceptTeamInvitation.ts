@@ -6,7 +6,59 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers'
 import {ADD_USER} from 'server/utils/serverConstants'
 import {TEAM_INVITATION} from 'universal/utils/constants'
 import addTeamIdToTMS from './addTeamIdToTMS'
+import shortid from 'shortid'
 
+const handleFirstAcceptedInvitation = async (team) => {
+  const r = getRethink()
+  const now = new Date()
+  const {id: teamId, isOnboardTeam} = team
+  if (isOnboardTeam) {
+    const teamLeadUserId = await r
+      .table('TeamMember')
+      .getAll(teamId, {index: 'teamId'})
+      .filter({isLead: true})
+      .nth(0)('userId')
+      .default(null)
+    const isNew = await r
+      .table('SuggestedAction')
+      .getAll(teamLeadUserId, {index: 'userId'})
+      .filter({type: 'tryRetroMeeting'})
+      .count()
+      .eq(0)
+    if (isNew) {
+      await r.table('SuggestedAction').insert([
+        {
+          id: shortid.generate(),
+          createdAt: now,
+          priority: 3,
+          removedAt: null,
+          teamId,
+          type: 'tryRetroMeeting',
+          userId: teamLeadUserId
+        },
+        {
+          id: shortid.generate(),
+          createdAt: now,
+          priority: 4,
+          removedAt: null,
+          type: 'createNewTeam',
+          userId: teamLeadUserId
+        },
+        {
+          id: shortid.generate(),
+          createdAt: now,
+          priority: 5,
+          removedAt: null,
+          teamId,
+          type: 'tryActionMeeting',
+          userId: teamLeadUserId
+        }
+      ])
+      return teamLeadUserId
+    }
+  }
+  return null
+}
 const acceptTeamInvitation = async (
   teamId: string,
   userId: string,
@@ -15,10 +67,7 @@ const acceptTeamInvitation = async (
 ) => {
   const r = getRethink()
   const now = new Date()
-  const {
-    team: {orgId},
-    user
-  } = await r({
+  const {team, user} = await r({
     team: r.table('Team').get(teamId),
     user: r
       .table('User')
@@ -31,6 +80,8 @@ const acceptTeamInvitation = async (
           .coerceTo('array')
       })
   })
+  const {orgId} = team
+  const teamLeadUserIdWithNewActions = handleFirstAcceptedInvitation(team)
   const userInOrg = Boolean(
     user.organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   )
@@ -66,7 +117,10 @@ const acceptTeamInvitation = async (
   // update auth0
   const tms = user.tms ? user.tms.concat(teamId) : [teamId]
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-  return removedNotificationIds as Array<string>
+  return {
+    teamLeadUserIdWithNewActions,
+    removedNotificationIds: removedNotificationIds as Array<string>
+  }
 }
 
 export default acceptTeamInvitation

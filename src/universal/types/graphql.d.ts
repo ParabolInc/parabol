@@ -502,8 +502,8 @@ export const enum SuggestedActionTypeEnum {
   inviteYourTeam = 'inviteYourTeam',
   tryTheDemo = 'tryTheDemo',
   tryRetroMeeting = 'tryRetroMeeting',
-  tryActionMeeting = 'tryActionMeeting',
-  createNewTeam = 'createNewTeam'
+  createNewTeam = 'createNewTeam',
+  tryActionMeeting = 'tryActionMeeting'
 }
 
 /**
@@ -4258,6 +4258,11 @@ export interface IAcceptTeamInvitationPayload {
    * The invite notifications that are no longer necessary
    */
   removedNotificationIds: Array<string> | null
+
+  /**
+   * For payloads going to the team leader that got new suggested actions
+   */
+  teamLead: IUser | null
 }
 
 export interface ICreateAgendaItemInput {

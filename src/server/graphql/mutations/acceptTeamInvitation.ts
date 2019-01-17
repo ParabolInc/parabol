@@ -8,13 +8,13 @@ import {
   sendTeamAlreadyJoinedError
 } from 'server/utils/authorizationErrors'
 import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors'
+import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
+import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
 import publish from 'server/utils/publish'
 import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
-import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
-import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
 
 export default {
   type: new GraphQLNonNull(AcceptTeamInvitationPayload),
@@ -81,7 +81,7 @@ export default {
       }
 
       // RESOLUTION
-      const removedNotificationIds = await acceptTeamInvitation(
+      const {teamLeadUserIdWithNewActions, removedNotificationIds} = await acceptTeamInvitation(
         teamId,
         viewerId,
         invitationId,
@@ -106,6 +106,19 @@ export default {
 
       // Tell the rest of the team about the new team member
       publish(TEAM, teamId, AcceptTeamInvitationPayload, data, subOptions)
+
+      // Give the team lead new suggested actions
+      if (teamLeadUserIdWithNewActions) {
+        // the team lead just needs data about themselves. alternatively we could make an eg AcceptTeamInvitationTeamLeadPayload, but nulls are just as good
+        publish(
+          NOTIFICATION,
+          teamLeadUserIdWithNewActions,
+          AcceptTeamInvitationPayload,
+          {teamLeadId: teamLeadUserIdWithNewActions},
+          subOptions
+        )
+      }
+
       return {
         ...data,
         authToken: encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms}))

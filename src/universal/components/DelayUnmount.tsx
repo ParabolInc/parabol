@@ -1,4 +1,4 @@
-import React, {Component, ReactNode} from 'react'
+import React, {Component, ComponentClass, ReactNode} from 'react'
 import DelayUnmountShrinkAndScale from './DelayUnmountShrinkAndScale'
 
 enum TransitionState {
@@ -12,9 +12,14 @@ interface State {
   transitionState: TransitionState
 }
 
+interface PassthroughProps {
+  isExiting: boolean
+  duration: number
+}
+
 interface Props {
   children: ReactNode
-  Animator?: Component
+  Animator?: ComponentClass<PassthroughProps>
   unmountAfter: number
 }
 

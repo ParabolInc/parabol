@@ -41,17 +41,24 @@ function TimelineSuggestedAction (props: Props) {
   )
 }
 
+// broken out so mutations can request all of these at once
+graphql`
+  fragment TimelineSuggestedAction_suggestedAction on SuggestedAction {
+    __typename
+    ...SuggestedActionInviteYourTeam_suggestedAction
+    ...SuggestedActionTryTheDemo_suggestedAction
+    ...SuggestedActionTryRetroMeeting_suggestedAction
+    ...SuggestedActionTryActionMeeting_suggestedAction
+    ...SuggestedActionCreateNewTeam_suggestedAction
+  }
+`
+
 export default createFragmentContainer(
   TimelineSuggestedAction,
   graphql`
     fragment TimelineSuggestedAction_viewer on User {
       suggestedActions {
-        ...SuggestedActionInviteYourTeam_suggestedAction
-        ...SuggestedActionTryTheDemo_suggestedAction
-        ...SuggestedActionTryRetroMeeting_suggestedAction
-        ...SuggestedActionTryActionMeeting_suggestedAction
-        ...SuggestedActionCreateNewTeam_suggestedAction
-        __typename
+        ...TimelineSuggestedAction_suggestedAction @relay(mask: false)
       }
     }
   `

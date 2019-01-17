@@ -15,8 +15,8 @@ const SuggestedActionTypeEnum = new GraphQLEnumType({
     inviteYourTeam: {},
     tryTheDemo: {},
     tryRetroMeeting: {},
-    tryActionMeeting: {},
-    createNewTeam: {}
+    createNewTeam: {},
+    tryActionMeeting: {}
   }
 })
 

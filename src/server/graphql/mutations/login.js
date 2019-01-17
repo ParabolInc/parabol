@@ -127,14 +127,6 @@ const login = {
         seenCount: 0,
         eventType: JOINED_PARABOL,
         userId: newUser.id
-      }),
-      createATeamSuggestedAction: r.table('SuggestedAction').insert({
-        id: shortid.generate(),
-        createdAt: now,
-        priority: 4,
-        removedAt: null,
-        type: 'createNewTeam',
-        userId: newUser.id
       })
     })
 
@@ -172,14 +164,24 @@ const login = {
       // run action goes away action action completes
       // the meetings goe away if team is deleted
     } else {
-      await r.table('SuggestedAction').insert({
-        id: shortid.generate(),
-        createdAt: now,
-        priority: 1,
-        removedAt: null,
-        type: 'tryTheDemo',
-        userId: newUser.id
-      })
+      await r.table('SuggestedAction').insert([
+        {
+          id: shortid.generate(),
+          createdAt: now,
+          priority: 1,
+          removedAt: null,
+          type: 'tryTheDemo',
+          userId: newUser.id
+        },
+        {
+          id: shortid.generate(),
+          createdAt: now,
+          priority: 4,
+          removedAt: null,
+          type: 'createNewTeam',
+          userId: newUser.id
+        }
+      ])
       // create run a demo cta and create a team cta
       // it goes away after they click it
     }

@@ -20,7 +20,7 @@ const getRotatedBBox = (rotationDegrees: number, width: number, height: number) 
   return {
     width: Math.ceil(w1 + w2),
     height: Math.ceil(h1 + h2),
-    xOffset: Math.round(w1),
+    xOffset: Math.round(sinROT * h1),
     yOffset: Math.round(sinROT * w1)
   }
 }
