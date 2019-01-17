@@ -32,6 +32,10 @@ const InviteToTeamPayload = new GraphQLObjectType({
           ? dataLoader.get('notifications').load(teamInvitationNotificationId)
           : null
       }
+    },
+    removedSuggestedActionId: {
+      type: GraphQLID,
+      description: 'the `invite your team` suggested action that was removed, if any'
     }
   })
 })

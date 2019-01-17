@@ -60,6 +60,7 @@ export default {
         return !(user && user.tms && user.tms.includes(teamId))
       })
       const team = await dataLoader.get('teams').load(teamId)
+      const {name: teamName, isOnboardTeam} = team
       const inviter = await dataLoader.get('users').load(viewerId)
       const bufferTokens = await Promise.all<Buffer>(newInvitees.map(() => randomBytes(48)))
       const tokens = bufferTokens.map((buffer: Buffer) => buffer.toString('hex'))
@@ -77,6 +78,16 @@ export default {
       }))
       await r.table('TeamInvitation').insert(teamInvitationsToInsert)
 
+      // remove suggested action, if any
+      let removedSuggestedActionId
+      if (isOnboardTeam) {
+        removedSuggestedActionId = await r
+          .table('SuggestedAction')
+          .getAll(viewerId, {index: 'userId'})
+          .filter({type: 'inviteYourTeam', removedAt: null})
+          .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('id')
+          .default(null)
+      }
       // insert notification records
       const notificationsToInsert = [] as Array<NotificationToInsert>
       teamInvitationsToInsert.forEach((invitation) => {
@@ -106,12 +117,13 @@ export default {
             inviteeEmail: invitation.email,
             inviterName: inviter.preferredName,
             inviterEmail: inviter.email,
-            teamName: team.name
+            teamName
           })
         })
       )
 
       const data = {
+        removedSuggestedActionId,
         teamId,
         invitees: newInvitees
       }

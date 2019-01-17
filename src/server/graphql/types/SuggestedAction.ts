@@ -26,7 +26,7 @@ export const suggestedActionInterfaceFields = () => ({
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: '* The timestamp the action was removed at'
   },
-  suggestedActionType: {
+  type: {
     type: new GraphQLNonNull(SuggestedActionTypeEnum),
     description: 'The specific type of suggested action'
   },
@@ -56,7 +56,7 @@ const SuggestedAction = new GraphQLInterfaceType({
       createNewTeam: SuggestedActionCreateNewTeam
     }
 
-    return resolveTypeLookup[value.suggestedActionType]
+    return resolveTypeLookup[value.type]
   }
 })
 

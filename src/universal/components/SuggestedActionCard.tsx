@@ -24,6 +24,7 @@ const Surface = styled('div')({
   boxShadow: cardShadow,
   display: 'flex',
   flexDirection: 'column',
+  overflow: 'hidden',
   position: 'relative',
   width: '100%'
 })

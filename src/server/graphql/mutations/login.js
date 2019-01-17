@@ -133,7 +133,7 @@ const login = {
         createdAt: now,
         priority: 4,
         removedAt: null,
-        suggestedActionType: 'createNewTeam',
+        type: 'createNewTeam',
         userId: newUser.id
       })
     })
@@ -157,7 +157,7 @@ const login = {
           createdAt: now,
           priority: 2,
           removedAt: null,
-          suggestedActionType: 'inviteYourTeam',
+          type: 'inviteYourTeam',
           teamId,
           userId: newUser.id
         })
@@ -177,7 +177,7 @@ const login = {
         createdAt: now,
         priority: 1,
         removedAt: null,
-        suggestedActionType: 'tryTheDemo',
+        type: 'tryTheDemo',
         userId: newUser.id
       })
       // create run a demo cta and create a team cta

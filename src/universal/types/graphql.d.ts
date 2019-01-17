@@ -482,7 +482,7 @@ export interface ISuggestedAction {
   /**
    * The specific type of suggested action
    */
-  suggestedActionType: SuggestedActionTypeEnum
+  type: SuggestedActionTypeEnum
 
   /**
    * * The userId this action is for
@@ -5737,6 +5737,11 @@ export interface IInviteToTeamPayload {
    * The notification sent to the invitee if they are a parabol user
    */
   teamInvitationNotification: INotificationTeamInvitation | null
+
+  /**
+   * the `invite your team` suggested action that was removed, if any
+   */
+  removedSuggestedActionId: string | null
 }
 
 /**
@@ -7228,7 +7233,7 @@ export interface ISuggestedActionInviteYourTeam {
   /**
    * The specific type of suggested action
    */
-  suggestedActionType: SuggestedActionTypeEnum
+  type: SuggestedActionTypeEnum
 
   /**
    * * The userId this action is for
@@ -7280,7 +7285,7 @@ export interface ISuggestedActionTryRetroMeeting {
   /**
    * The specific type of suggested action
    */
-  suggestedActionType: SuggestedActionTypeEnum
+  type: SuggestedActionTypeEnum
 
   /**
    * * The userId this action is for
@@ -7332,7 +7337,7 @@ export interface ISuggestedActionTryActionMeeting {
   /**
    * The specific type of suggested action
    */
-  suggestedActionType: SuggestedActionTypeEnum
+  type: SuggestedActionTypeEnum
 
   /**
    * * The userId this action is for
@@ -7384,7 +7389,7 @@ export interface ISuggestedActionCreateNewTeam {
   /**
    * The specific type of suggested action
    */
-  suggestedActionType: SuggestedActionTypeEnum
+  type: SuggestedActionTypeEnum
 
   /**
    * * The userId this action is for
@@ -7426,7 +7431,7 @@ export interface ISuggestedActionTryTheDemo {
   /**
    * The specific type of suggested action
    */
-  suggestedActionType: SuggestedActionTypeEnum
+  type: SuggestedActionTypeEnum
 
   /**
    * * The userId this action is for

@@ -4,9 +4,8 @@ import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArr
 const handleRemoveSuggestedAction = (suggestedActionId, store) => {
   const suggestedAction = store.get(suggestedActionId)
   if (!suggestedAction) return
-  const userId = suggestedAction.getValue('userId')
-  const user = store.get(userId)
-  safeRemoveNodeFromArray(suggestedActionId, user, 'suggestedActions')
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  safeRemoveNodeFromArray(suggestedActionId, viewer, 'suggestedActions')
 }
 
 const handleRemoveSuggestedActions = pluralizeHandler(handleRemoveSuggestedAction)
