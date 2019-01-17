@@ -8,7 +8,7 @@ import {TEAM_INVITATION} from 'universal/utils/constants'
 import addTeamIdToTMS from './addTeamIdToTMS'
 import shortid from 'shortid'
 
-const handleFirstAcceptedInvitation = async (team) => {
+const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = getRethink()
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
@@ -81,7 +81,7 @@ const acceptTeamInvitation = async (
       })
   })
   const {orgId} = team
-  const teamLeadUserIdWithNewActions = handleFirstAcceptedInvitation(team)
+  const teamLeadUserIdWithNewActions = await handleFirstAcceptedInvitation(team)
   const userInOrg = Boolean(
     user.organizationUsers.find((organizationUser) => organizationUser.orgId === orgId)
   )

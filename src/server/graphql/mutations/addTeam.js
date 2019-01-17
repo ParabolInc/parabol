@@ -78,7 +78,7 @@ export default {
 
       // RESOLUTION
       const teamId = shortid.generate()
-      await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: false, ...newTeam})
+      await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: true, ...newTeam})
 
       const tms = authToken.tms.concat(teamId)
       const inviteeCount = invitees ? invitees.length : 0
