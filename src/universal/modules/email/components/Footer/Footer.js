@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
-import appTheme from 'universal/styles/theme/appTheme'
 import {emailBodyColor, emailFontFamily, emailTableBase} from 'universal/styles/email'
 
 const Footer = (props) => {
@@ -20,6 +19,7 @@ const Footer = (props) => {
     backgroundColor: emailBodyColor,
     color: props.color,
     fontFamily: emailFontFamily,
+    fontSize: 13,
     textAlign: 'center'
   }
 
@@ -28,13 +28,13 @@ const Footer = (props) => {
       <tbody>
         <tr>
           <td>
-            <EmptySpace height={20} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={20} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={20} />
+            <EmptySpace height={48} />
           </td>
         </tr>
 
@@ -51,17 +51,7 @@ const Footer = (props) => {
                     <EmptySpace height={10} />
                     <img src='/static/images/brand/mark-color@3x.png' height='28' width='31' />
                     <EmptySpace height={10} />
-                    Crafted with care by the folks at{' '}
-                    <a
-                      style={{
-                        color: appTheme.palette.warm,
-                        textDecoration: 'none'
-                      }}
-                      href='http://www.parabol.co/'
-                    >
-                      {' '}
-                      Parabol
-                    </a>.
+                    Crafted with care by the folks at Parabol
                     <EmptySpace height={10} />
                   </td>
                 </tr>
@@ -76,13 +66,13 @@ const Footer = (props) => {
 
         <tr>
           <td>
-            <EmptySpace height={32} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={32} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={32} />
+            <EmptySpace height={48} />
           </td>
         </tr>
       </tbody>

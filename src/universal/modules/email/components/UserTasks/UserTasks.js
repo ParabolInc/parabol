@@ -6,6 +6,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import plural from 'universal/utils/plural'
 import {DONE} from 'universal/utils/constants'
+import {emailLabelColorPresent, emailLabelColorAbsent} from 'universal/styles/email'
 
 const UserTasks = (props) => {
   const {member} = props
@@ -51,7 +52,7 @@ const UserTasks = (props) => {
   }
 
   const presentLabelStyles = {
-    color: present ? appTheme.brand.secondary.green : appTheme.palette.mid50l,
+    color: present ? emailLabelColorPresent : emailLabelColorAbsent,
     fontFamily: ui.emailFontFamily,
     fontSize: '14px',
     fontStyle: 'italic',

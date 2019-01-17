@@ -1,27 +1,93 @@
 import stripe from 'server/billing/stripe'
 import getRethink from 'server/database/rethinkDriver'
+import {fromEpochSeconds} from 'server/utils/epochTime'
+import {AUTO_PAUSE_USER, PAUSE_USER, UNPAUSE_USER} from 'server/utils/serverConstants'
 import shortid from 'shortid'
+import Stripe from 'stripe'
 import {
+  BILLING_LEADER,
   FAILED,
+  OTHER_ADJUSTMENTS,
   PAID,
   PENDING,
-  UPCOMING,
-  ADDED_USERS,
-  BILLING_LEADER,
-  REMOVED_USERS,
-  INACTIVITY_ADJUSTMENTS,
-  OTHER_ADJUSTMENTS
+  UPCOMING
 } from 'universal/utils/constants'
-import {
-  ADD_USER,
-  AUTO_PAUSE_USER,
-  PAUSE_USER,
-  REMOVE_USER,
-  UNPAUSE_USER
-} from 'server/utils/serverConstants'
-import {fromEpochSeconds} from 'server/utils/epochTime'
 
-const getEmailLookup = async (userIds) => {
+// type type = 'pauseUser' | 'unpauseUser' | 'autoPauseUser' | 'addUser' | 'removeUser'
+interface InvoicesByStartTime {
+  [start: string]: {
+    unusedTime?: Stripe.invoices.IInvoiceLineItem
+    remainingTime?: Stripe.invoices.IInvoiceLineItem
+  }
+}
+
+interface TypesDict {
+  pauseUser: InvoicesByStartTime
+  unpauseUser: InvoicesByStartTime
+  addUser: InvoicesByStartTime
+  removeUser: InvoicesByStartTime
+}
+
+interface ItemDict {
+  [userId: string]: TypesDict
+}
+
+interface NextMonthCharges {
+  amount: number
+  quantity: number
+  nextPeriodEnd: number
+  unitPrice: number
+}
+
+interface EmailLookup {
+  [userId: string]: string
+}
+
+interface ReducedItemBase {
+  id: string
+  amount: number
+  email: string
+}
+
+interface ReducedUnpausePartial extends ReducedItemBase {
+  endAt: number
+}
+
+interface ReducedStandardPartial extends ReducedItemBase {
+  startAt: number
+}
+
+interface ReducedItem extends ReducedItemBase {
+  startAt?: number
+  endAt?: number
+}
+
+interface ReducedItemsByType {
+  addUser: Array<ReducedStandardPartial>
+  removeUser: Array<ReducedStandardPartial>
+  pauseUser: Array<ReducedStandardPartial>
+  unpauseUser: Array<ReducedUnpausePartial>
+}
+
+interface QuantityChangeDetail extends ReducedItem {
+  parentId: string
+}
+
+interface QuantityChangeLineItem {
+  id: string
+  amount: number
+  details: Array<QuantityChangeDetail>
+  quantity: number
+  type: keyof DetailedLineItemDict
+}
+
+interface DetailedLineItemDict {
+  ADDED_USERS: Array<ReducedStandardPartial>
+  REMOVED_USERS: Array<ReducedStandardPartial>
+  INACTIVITY_ADJUSTMENTS: Array<ReducedItem>
+}
+
+const getEmailLookup = async (userIds: Array<string>) => {
   const r = getRethink()
   const usersAndEmails = await r
     .table('User')
@@ -30,16 +96,16 @@ const getEmailLookup = async (userIds) => {
   return usersAndEmails.reduce((dict, doc) => {
     dict[doc.id] = doc.email
     return dict
-  }, {})
+  }, {}) as EmailLookup
 }
 
-const reduceItemsByType = (typesDict, email, invoiceId) => {
-  const userTypes = Object.keys(typesDict)
-  const reducedItemsByType = {
-    [ADD_USER]: [],
-    [REMOVE_USER]: [],
-    [PAUSE_USER]: [],
-    [UNPAUSE_USER]: []
+const reduceItemsByType = (typesDict: TypesDict, email: string) => {
+  const userTypes = Object.keys(typesDict) as Array<keyof TypesDict>
+  const reducedItemsByType: ReducedItemsByType = {
+    addUser: [] as Array<ReducedStandardPartial>,
+    removeUser: [] as Array<ReducedStandardPartial>,
+    pauseUser: [] as Array<ReducedStandardPartial>,
+    unpauseUser: [] as Array<ReducedUnpausePartial>
   }
   for (let j = 0; j < userTypes.length; j++) {
     // for each type
@@ -53,38 +119,33 @@ const reduceItemsByType = (typesDict, email, invoiceId) => {
       // for each time period
       const startTime = startTimes[k]
       const lineItems = startTimeDict[startTime]
-      const firstLineItem = lineItems[0]
-      if (lineItems.length !== 2) {
-        if (firstLineItem.quantity !== 1) {
-          console.warn(
-            `We did not get 2 line items and qty > 1. What do? Invoice: ${invoiceId}, ${JSON.stringify(
-              lineItems
-            )}`
-          )
-          continue
-        }
-      }
-      const secondLineItemAmount = lineItems[1] ? lineItems[1].amount : 0
+      // combine unusedTime with remainingTime to create a single activity
+      const {unusedTime, remainingTime} = lineItems
+      const unusedTimeAmount = unusedTime ? unusedTime.amount : 0
+      const remainingTimeAmount = remainingTime ? remainingTime.amount : 0
       reducedItems[k] = {
         id: shortid.generate(),
-        amount: firstLineItem.amount + secondLineItemAmount,
+        amount: unusedTimeAmount + remainingTimeAmount,
         email,
         [dateField]: fromEpochSeconds(startTime)
-      }
+      } as ReducedUnpausePartial | ReducedStandardPartial
     }
   }
   return reducedItemsByType
 }
 
-const makeDetailedPauseEvents = (pausedItems, unpausedItems) => {
-  const inactivityDetails = []
+const makeDetailedPauseEvents = (
+  pausedItems: Array<ReducedStandardPartial>,
+  unpausedItems: Array<ReducedUnpausePartial>
+) => {
+  const inactivityDetails: Array<ReducedItem> = []
   // if an unpause happened before a pause, we know they came into this period paused, so we don't want a start date
   if (
     unpausedItems.length > 0 &&
     (pausedItems.length === 0 || unpausedItems[0].endAt < pausedItems[0].startAt)
   ) {
     // mutative
-    const firstUnpausedItem = unpausedItems.shift()
+    const firstUnpausedItem = unpausedItems.shift()!
     inactivityDetails.push(firstUnpausedItem)
   }
   // match up every pause with an unpause so it's clear that Foo was paused for 5 days
@@ -106,12 +167,12 @@ const makeDetailedPauseEvents = (pausedItems, unpausedItems) => {
   return inactivityDetails
 }
 
-const makeQuantityChangeLineItems = (detailedLineItems) => {
-  const quantityChangeLineItems = []
-  const lineItemTypes = Object.keys(detailedLineItems)
+const makeQuantityChangeLineItems = (detailedLineItems: DetailedLineItemDict) => {
+  const quantityChangeLineItems: Array<QuantityChangeLineItem> = []
+  const lineItemTypes = Object.keys(detailedLineItems) as Array<keyof DetailedLineItemDict>
   for (let i = 0; i < lineItemTypes.length; i++) {
     const lineItemType = lineItemTypes[i]
-    const details = detailedLineItems[lineItemType]
+    const details = detailedLineItems[lineItemType] as Array<ReducedItem>
     if (details.length > 0) {
       const id = shortid.generate()
       quantityChangeLineItems.push({
@@ -126,34 +187,34 @@ const makeQuantityChangeLineItems = (detailedLineItems) => {
   return quantityChangeLineItems
 }
 
-const makeDetailedLineItems = async (itemDict, invoiceId) => {
+const makeDetailedLineItems = async (itemDict: ItemDict) => {
   // Make lookup table to get user Emails
   const userIds = Object.keys(itemDict)
   const emailLookup = await getEmailLookup(userIds)
   const detailedLineItems = {
-    [ADDED_USERS]: [],
-    [REMOVED_USERS]: [],
-    [INACTIVITY_ADJUSTMENTS]: []
-  }
+    ADDED_USERS: [] as Array<ReducedStandardPartial>,
+    REMOVED_USERS: [] as Array<ReducedStandardPartial>,
+    INACTIVITY_ADJUSTMENTS: [] as Array<ReducedItem>
+  } as DetailedLineItemDict
 
   for (let i = 0; i < userIds.length; i++) {
     // for each userId
     const userId = userIds[i]
     const email = emailLookup[userId]
     const typesDict = itemDict[userId]
-    const reducedItemsByType = reduceItemsByType(typesDict, email, invoiceId)
-    const pausedItems = reducedItemsByType[PAUSE_USER]
-    const unpausedItems = reducedItemsByType[UNPAUSE_USER]
-    detailedLineItems[ADDED_USERS].push(...reducedItemsByType[ADD_USER])
-    detailedLineItems[REMOVED_USERS].push(...reducedItemsByType[REMOVE_USER])
-    detailedLineItems[INACTIVITY_ADJUSTMENTS].push(
+    const reducedItemsByType = reduceItemsByType(typesDict, email)
+    const pausedItems = reducedItemsByType.pauseUser
+    const unpausedItems = reducedItemsByType.unpauseUser
+    detailedLineItems.ADDED_USERS.push(...reducedItemsByType.addUser)
+    detailedLineItems.REMOVED_USERS.push(...reducedItemsByType.removeUser)
+    detailedLineItems.INACTIVITY_ADJUSTMENTS.push(
       ...makeDetailedPauseEvents(pausedItems, unpausedItems)
     )
   }
   return detailedLineItems
 }
 
-const addToDict = (itemDict, lineItem) => {
+const addToDict = (itemDict: ItemDict, lineItem: Stripe.invoices.IInvoiceLineItem) => {
   const {
     metadata: {userId, type},
     period: {start}
@@ -161,25 +222,29 @@ const addToDict = (itemDict, lineItem) => {
   const safeType = type === AUTO_PAUSE_USER ? PAUSE_USER : type
   itemDict[userId] = itemDict[userId] || {}
   itemDict[userId][safeType] = itemDict[userId][safeType] || {}
-  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || []
-  itemDict[userId][safeType][start].push(lineItem)
+  itemDict[userId][safeType][start] = itemDict[userId][safeType][start] || {}
+  const startTimeItems = itemDict[userId][safeType][start] as InvoicesByStartTime['start']
+  const bucket = lineItem.amount < 0 ? 'unusedTime' : 'remainingTime'
+  // an identical line item may already exist in the bucket, e.g. a user was removed & prorated to the exact same timestamp (subscription start)
+  // since the start time is the same, we know the amount will be the same, so we do this to avoid a duplicate line item on the invoice
+  startTimeItems[bucket] = lineItem
 }
 
-const makeItemDict = (stripeLineItems) => {
-  const itemDict = {}
-  const unknownLineItems = []
-  let nextMonthCharges
+const makeItemDict = (stripeLineItems: Array<Stripe.invoices.IInvoiceLineItem>) => {
+  const itemDict = {} as ItemDict
+  const unknownLineItems = [] as Array<Stripe.invoices.IInvoiceLineItem>
+  let nextMonthCharges!: NextMonthCharges
   for (let i = 0; i < stripeLineItems.length; i++) {
     const lineItem = stripeLineItems[i]
     const {
       amount,
       metadata,
-      description,
       period: {end},
       proration,
       quantity
     } = lineItem
-    // this conditional is not sufficient for newer APIs (proration field went away maybe?)
+    // This has apparently changed in the new API (cannot be null). we need to fix this if we upgrade to the latest stripe API
+    const description = lineItem.description as string | null
     if (description === null && proration === false) {
       // this must be the next month's charge
       nextMonthCharges = {
@@ -200,9 +265,13 @@ const makeItemDict = (stripeLineItems) => {
   return {itemDict, nextMonthCharges, unknownLineItems}
 }
 
-const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptionId) => {
+const maybeReduceUnknowns = async (
+  unknownLineItems: Array<Stripe.invoices.IInvoiceLineItem>,
+  itemDict: ItemDict,
+  stripeSubscriptionId: string
+) => {
   const r = getRethink()
-  const unknowns = []
+  const unknowns = [] as Array<Stripe.invoices.IInvoiceLineItem>
   for (let i = 0; i < unknownLineItems.length; i++) {
     const unknownLineItem = unknownLineItems[i]
     // this could be inefficient but if all goes as planned, we'll never use this function
@@ -235,7 +304,12 @@ const maybeReduceUnknowns = async (unknownLineItems, itemDict, stripeSubscriptio
   return unknowns
 }
 
-export default async function generateInvoice (invoice, stripeLineItems, orgId, invoiceId) {
+export default async function generateInvoice (
+  invoice: Stripe.invoices.IInvoice,
+  stripeLineItems: Array<Stripe.invoices.IInvoiceLineItem>,
+  orgId: string,
+  invoiceId: string
+) {
   const r = getRethink()
   const now = new Date()
 
@@ -244,9 +318,9 @@ export default async function generateInvoice (invoice, stripeLineItems, orgId, 
   const unknownInvoiceLines = await maybeReduceUnknowns(
     unknownLineItems,
     itemDict,
-    invoice.subscription
+    invoice.subscription as string
   )
-  const detailedLineItems = await makeDetailedLineItems(itemDict, invoiceId)
+  const detailedLineItems = await makeDetailedLineItems(itemDict)
   const quantityChangeLineItems = makeQuantityChangeLineItems(detailedLineItems)
   const invoiceLineItems = [
     ...unknownInvoiceLines.map((item) => ({

@@ -46,7 +46,8 @@ export const emailLineHeight = 1.5
 export const emailLinkStyle = {
   color: ui.palette.blue,
   fontFamily: ui.emailFontFamily,
-  textDecoration: 'underline'
+  fontWeight: 600,
+  textDecoration: 'none'
 }
 
 export const emailInnerMaxWidth = 536
@@ -72,6 +73,9 @@ export const emailTableBase = {
 
 export const emailTextColor = ui.palette.dark
 export const emailTextColorLight = ui.palette.midGray
+
+export const emailLabelColorPresent = appTheme.brand.secondary.green
+export const emailLabelColorAbsent = appTheme.palette.mid50l
 
 export const headCSS = `
   @media only screen and (max-width: 620px) {

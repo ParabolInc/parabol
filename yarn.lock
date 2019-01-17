@@ -1617,6 +1617,18 @@
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
 
+"@types/shortid@^0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/shortid/-/shortid-0.0.29.tgz#8093ee0416a6e2bf2aa6338109114b3fbffa0e9b"
+  integrity sha1-gJPuBBam4r8qpjOBCRFLP7/6Dps=
+
+"@types/stripe@^6.19.1":
+  version "6.19.1"
+  resolved "https://registry.yarnpkg.com/@types/stripe/-/stripe-6.19.1.tgz#62264970a4076ccec7daaef421eee8a593d469c3"
+  integrity sha512-VQjQpY+lhLsnG1rxRexoY3exfccf55pGcLIiw+fLKhyFzQJjIB21vP9NWVxVT37ZqZ2ir8BaFGJlINq28h/S4Q==
+  dependencies:
+    "@types/node" "*"
+
 "@webassemblyjs/ast@1.7.11":
   version "1.7.11"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.7.11.tgz#b988582cafbb2b095e8b556526f30c90d057cace"
