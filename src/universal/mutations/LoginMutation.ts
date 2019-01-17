@@ -7,8 +7,8 @@ import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 
 const mutation = graphql`
-  mutation LoginMutation($auth0Token: String!, $invitationToken: ID) {
-    login(auth0Token: $auth0Token) {
+  mutation LoginMutation($auth0Token: String!, $invitationToken: ID, $segmentId: ID) {
+    login(auth0Token: $auth0Token, segmentId: $segmentId) {
       error {
         message
       }
