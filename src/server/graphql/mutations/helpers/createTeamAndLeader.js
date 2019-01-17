@@ -25,14 +25,10 @@ import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 
 // used for addorg, addTeam, createFirstTeam
-export default async function createTeamAndLeader (
-  userId,
-  newTeam,
-  options = {isOnboardTeam: false}
-) {
+export default async function createTeamAndLeader (userId, newTeam) {
   const r = getRethink()
   const now = new Date()
-  const {id: teamId, orgId} = newTeam
+  const {id: teamId, orgId, isOnboardTeam} = newTeam
   const organization = await r.table('Organization').get(orgId)
   const {tier} = organization
   const verifiedTeam = {
@@ -50,7 +46,6 @@ export default async function createTeamAndLeader (
     tier
   }
   const {phaseItems, templates} = makeRetroTemplates(teamId)
-  const {isOnboardTeam} = options
   const meetingSettings = [
     {
       id: shortid.generate(),
@@ -95,7 +90,7 @@ export default async function createTeamAndLeader (
       userId,
       teamId,
       orgId,
-      isOnboardTeam: !!isOnboardTeam
+      isOnboardTeam
     }),
     // add teamId to user tms array
     user: addTeamIdToTMS(userId, teamId),

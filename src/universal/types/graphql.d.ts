@@ -4088,6 +4088,11 @@ export interface ILoginOnMutationArguments {
   auth0Token: string
 
   /**
+   * true if the user is signing up without a team invitation, else false
+   */
+  isOrganic: boolean
+
+  /**
    * optional segment id created before they were a user
    */
   segmentId?: string | null

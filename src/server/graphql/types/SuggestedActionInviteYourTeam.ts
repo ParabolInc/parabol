@@ -1,6 +1,7 @@
 import {GraphQLNonNull, GraphQLObjectType, GraphQLID} from 'graphql'
 import SuggestedAction, {suggestedActionInterfaceFields} from './SuggestedAction'
 import Team from './Team'
+import {resolveTeam} from 'server/graphql/resolvers'
 
 const SuggestedActionInviteYourTeam = new GraphQLObjectType({
   name: 'SuggestedActionInviteYourTeam',
@@ -14,7 +15,8 @@ const SuggestedActionInviteYourTeam = new GraphQLObjectType({
     },
     team: {
       type: new GraphQLNonNull(Team),
-      description: 'The team you should invite people to'
+      description: 'The team you should invite people to',
+      resolve: resolveTeam
     }
   })
 })

@@ -12,10 +12,13 @@ interface Props {
 const INKBAR_HEIGHT = 2
 
 const InkBar = styled('div')({
-  height: INKBAR_HEIGHT,
   background: PALETTE.PRIMARY.DARK,
+  bottom: 0,
+  height: INKBAR_HEIGHT,
+  left: 0,
   position: 'absolute',
   transformOrigin: 'left',
+  transition: 'all 300ms',
   width: 1000
 })
 
@@ -37,27 +40,30 @@ class Tabs extends Component<Props> {
   parentRef?: HTMLDivElement
 
   state = {
-    transform: ''
+    transform: `scaleX(0)`
   }
   setChildRef = (c) => {
+    if (c && c !== this.activeChildRef) {
+      this.moveInkBar(this.parentRef, c)
+    }
     this.activeChildRef = c
   }
 
   setParentRef = (c) => {
     if (c && c !== this.parentRef) {
-      const childBBox = this.activeChildRef && this.activeChildRef.getBoundingRect()
-      if (childBBox) {
-        const parentBBox = c.getBoundingClientRect()
-        if (parentBBox) {
-          const left = childBBox.left - parentBBox.left
-          const top = childBBox.top - parentBBox.top + childBBox.height - INKBAR_HEIGHT
-          this.setState({
-            transform: `translate3d(${left}px, ${top}px, 0)scaleX(${childBBox.width / 1000})`
-          })
-        }
-      }
+      this.moveInkBar(c, this.activeChildRef)
     }
-    this.activeChildRef = c
+    this.parentRef = c
+  }
+
+  moveInkBar = (parent: HTMLDivElement | undefined, child: Tab | undefined) => {
+    const childBBox = child && child.getBoundingRect()
+    const parentBBox = parent && parent.getBoundingClientRect()
+    if (!childBBox || !parentBBox) return
+    const left = childBBox.left - parentBBox.left
+    this.setState({
+      transform: `translate3d(${left}px, 0, 0)scaleX(${childBBox.width / 1000})`
+    })
   }
 
   render () {

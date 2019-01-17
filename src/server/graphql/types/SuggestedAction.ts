@@ -56,7 +56,7 @@ const SuggestedAction = new GraphQLInterfaceType({
       createNewTeam: SuggestedActionCreateNewTeam
     }
 
-    return resolveTypeLookup[value.type]
+    return resolveTypeLookup[value.suggestedActionType]
   }
 })
 

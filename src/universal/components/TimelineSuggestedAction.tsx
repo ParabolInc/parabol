@@ -1,7 +1,6 @@
+import {TimelineSuggestedAction_viewer} from '__generated__/TimelineSuggestedAction_viewer.graphql'
 import React, {lazy} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {TimelineSuggestedAction_viewer} from '__generated__/TimelineSuggestedAction_viewer.graphql'
-import SuggestedActionTryRetroMeeting from './SuggestedActionTryRetroMeeting'
 
 interface Props {
   viewer: TimelineSuggestedAction_viewer
@@ -26,13 +25,11 @@ const TimelineSuggestedAction = (props: Props) => {
   const {viewer} = props
   const {suggestedActions} = viewer
   const [suggestedAction] = suggestedActions
-  const mockSuggestedAction = {team: {name: 'My Team', teamMembers: []}} || suggestedAction
-  return <SuggestedActionTryRetroMeeting suggestedAction={mockSuggestedAction} />
   if (!suggestedAction) return null
   const {__typename} = suggestedAction
   const AsyncComponent = lookup[__typename]
   if (!AsyncComponent) return null
-  return <AsyncComponent viewer={viewer} />
+  return <AsyncComponent suggestedAction={suggestedAction} />
 }
 
 export default createFragmentContainer(
