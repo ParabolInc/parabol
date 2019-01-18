@@ -17,8 +17,7 @@ const copyStyle = {
 
 const linkStyle = {
   ...emailCopyStyle,
-  ...emailLinkStyle,
-  fontWeight: 600
+  ...emailLinkStyle
 }
 
 const notificationPageUrl = makeAppLink('me/notifications')
