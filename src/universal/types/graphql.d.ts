@@ -2937,11 +2937,6 @@ export interface IMutation {
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload | null
-
-  /**
-   * Create a new team and add the first team member. Called from the welcome wizard
-   */
-  createFirstTeam: ICreateFirstTeamPayload | null
   createGitHubIssue: ICreateGitHubIssuePayload | null
 
   /**
@@ -3449,13 +3444,6 @@ export interface ICreateImposterTokenOnMutationArguments {
    * The target userId to impersonate
    */
   userId: string
-}
-
-export interface ICreateFirstTeamOnMutationArguments {
-  /**
-   * The new team object with exactly 1 team member
-   */
-  newTeam: INewTeamInput
 }
 
 export interface ICreateGitHubIssueOnMutationArguments {
@@ -4480,6 +4468,11 @@ export interface IArchiveTeamPayload {
    */
   notification: INotifyTeamArchived | null
   removedTeamNotifications: Array<TeamNotification | null> | null
+
+  /**
+   * all the suggested actions that never happened
+   */
+  removedSuggestedActionIds: Array<string | null> | null
 }
 
 /**
@@ -5233,19 +5226,6 @@ export interface ICreateImposterTokenPayload {
   user: IUser | null
 }
 
-export interface ICreateFirstTeamPayload {
-  __typename: 'CreateFirstTeamPayload'
-  error: IStandardMutationError | null
-  team: ITeam | null
-  teamLead: ITeamMember | null
-
-  /**
-   * The new JWT after adding the team
-   */
-  jwt: string | null
-  user: IUser | null
-}
-
 export interface ICreateGitHubIssuePayload {
   __typename: 'CreateGitHubIssuePayload'
   error: IStandardMutationError | null
@@ -5567,6 +5547,11 @@ export interface IEndMeetingPayload {
    */
   archivedTasks: Array<ITask | null> | null
   meeting: IMeeting | null
+
+  /**
+   * The ID of the suggestion to try an action meeting, if tried
+   */
+  removedSuggestedActionId: string | null
 }
 
 export interface IInactivateUserPayload {
@@ -6868,6 +6853,7 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | IInviteTeamMembersPayload
   | IInviteToTeamPayload

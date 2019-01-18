@@ -7,8 +7,6 @@ import getInProxy from 'universal/utils/relay/getInProxy'
 import handleRemoveSoftTeamMembers from 'universal/mutations/handlers/handleRemoveSoftTeamMembers'
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
-import jwtDecode from 'jwt-decode'
-import {setWelcomeActivity} from 'universal/modules/userDashboard/ducks/settingsDuck'
 import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError'
 
 graphql`
@@ -144,7 +142,6 @@ const AcceptTeamInviteMutation = (
         acceptTeamInvite: {team, authToken}
       } = data
       const {id: teamId, name: teamName} = team
-      const {tms} = jwtDecode(authToken)
       atmosphere.setAuthToken(authToken)
       atmosphere.eventEmitter.emit('addToast', {
         level: 'info',
@@ -153,12 +150,7 @@ const AcceptTeamInviteMutation = (
         message: `You’ve been added to team ${teamName}`,
         action: {label: 'Great!'}
       })
-      if (tms.length <= 1) {
-        dispatch(setWelcomeActivity(`/team/${teamId}`))
-        history.push('/me/settings')
-      } else {
-        history.push(`/team/${teamId}`)
-      }
+      history.push(`/team/${teamId}`)
     }
   })
 }

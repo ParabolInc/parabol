@@ -24,7 +24,7 @@ import {ADD_USER} from 'server/utils/serverConstants'
 import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 
-// used for addorg, addTeam, createFirstTeam
+// used for addorg, addTeam
 export default async function createTeamAndLeader (userId, newTeam) {
   const r = getRethink()
   const now = new Date()
@@ -102,14 +102,11 @@ export default async function createTeamAndLeader (userId, newTeam) {
       .default(null)
   })
 
-  const {team, teamLead, organizationUser} = res
+  const {organizationUser} = res
   if (!organizationUser) {
     await adjustUserCount(userId, orgId, ADD_USER)
   }
 
   const tms = await r.table('User').get(userId)('tms')
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-
-  // TODO refactor after removing welcome wizard createFirstTeam
-  return {team, teamLead, tms}
 }
