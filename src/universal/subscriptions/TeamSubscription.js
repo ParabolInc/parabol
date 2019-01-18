@@ -1,9 +1,5 @@
 import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
 import {
-  addOrgMutationNotificationOnNext,
-  addOrgMutationNotificationUpdater
-} from 'universal/mutations/AddOrgMutation'
-import {
   addTeamMutationNotificationUpdater,
   addTeamTeamUpdater
 } from 'universal/mutations/AddTeamMutation'
@@ -61,7 +57,6 @@ const subscription = graphql`
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
-      ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...AutoGroupReflectionsMutation_team @relay(mask: false)
       ...CreateReflectionMutation_team @relay(mask: false)
@@ -107,7 +102,6 @@ const subscription = graphql`
 const onNextHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
-  AddOrgCreatorPayload: addOrgMutationNotificationOnNext,
   ArchiveTeamPayload: archiveTeamTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
@@ -135,9 +129,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'AcceptTeamInvitePayload':
           acceptTeamInviteTeamUpdater(payload, store, viewerId)
-          break
-        case 'AddOrgCreatorPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'AddReflectTemplatePayload':
           addReflectTemplateTeamUpdater(payload, {store})

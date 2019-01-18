@@ -1,9 +1,13 @@
 import React, {Component} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import withAtmosphere from '../../../../decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from '../../../../decorators/withAtmosphere/withAtmosphere'
 
-class DebugButton extends Component {
+interface Props extends WithAtmosphereProps {}
+
+class DebugButton extends Component<Props> {
   onClick = () => {
     const {atmosphere} = this.props
     commitLocalUpdate(atmosphere, (store) => {

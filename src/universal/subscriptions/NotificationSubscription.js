@@ -1,11 +1,5 @@
-import {
-  addOrgMutationNotificationOnNext,
-  addOrgMutationNotificationUpdater
-} from 'universal/mutations/AddOrgMutation'
-import {
-  addTeamMutationNotificationOnNext,
-  addTeamMutationNotificationUpdater
-} from 'universal/mutations/AddTeamMutation'
+import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
+import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation'
 import {
   approveToOrgNotificationOnNext,
   approveToOrgNotificationUpdater
@@ -36,6 +30,7 @@ import {
   inviteToTeamNotificationUpdater
 } from 'universal/mutations/InviteToTeamMutation'
 import {acceptTeamInvitationNotificationUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
+import {endNewMeetingNotificationUpdater} from 'universal/mutations/EndNewMeetingMutation'
 
 const subscription = graphql`
   subscription NotificationSubscription {
@@ -140,8 +135,6 @@ const stripeFailPaymentNotificationUpdater = (payload, store, viewerId) => {
 }
 
 const onNextHandlers = {
-  AddOrgPayload: addOrgMutationNotificationOnNext,
-  AddTeamPayload: addTeamMutationNotificationOnNext,
   ApproveToOrgPayload: approveToOrgNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext,
@@ -166,10 +159,10 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
         case 'AddFeatureFlagPayload':
           break
         case 'AddOrgPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId)
+          addOrgMutationNotificationUpdater(payload, {store})
           break
         case 'AddTeamPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId)
+          addTeamMutationNotificationUpdater(payload, {store})
           break
         case 'ApproveToOrgPayload':
           approveToOrgNotificationUpdater(payload, store, viewerId)
@@ -188,6 +181,9 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'DisconnectSocketPayload':
           disconnectSocketNotificationUpdater(payload, store)
+          break
+        case 'EndNewMeetingPayload':
+          endNewMeetingNotificationUpdater(payload, {store})
           break
         case 'InviteTeamMembersPayload':
           inviteTeamMembersNotificationUpdater(payload, store, viewerId)

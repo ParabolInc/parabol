@@ -4,61 +4,50 @@ import addTeamMemberToNewMeeting from 'server/graphql/mutations/helpers/addTeamM
 import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
 import {auth0ManagementClient} from 'server/utils/auth0Helpers'
 import {ADD_USER} from 'server/utils/serverConstants'
-import {TEAM_INVITATION} from 'universal/utils/constants'
-import addTeamIdToTMS from './addTeamIdToTMS'
 import shortid from 'shortid'
+import {TEAM_INVITATION} from 'universal/utils/constants'
+import getNewTeamLeadUserId from '../safeQueries/getNewTeamLeadUserId'
+import addTeamIdToTMS from './addTeamIdToTMS'
 
 const handleFirstAcceptedInvitation = async (team): Promise<string | null> => {
   const r = getRethink()
   const now = new Date()
   const {id: teamId, isOnboardTeam} = team
-  if (isOnboardTeam) {
-    const teamLeadUserId = await r
-      .table('TeamMember')
-      .getAll(teamId, {index: 'teamId'})
-      .filter({isLead: true})
-      .nth(0)('userId')
-      .default(null)
-    const isNew = await r
-      .table('SuggestedAction')
-      .getAll(teamLeadUserId, {index: 'userId'})
-      .filter({type: 'tryRetroMeeting'})
-      .count()
-      .eq(0)
-    if (isNew) {
-      await r.table('SuggestedAction').insert([
-        {
-          id: shortid.generate(),
-          createdAt: now,
-          priority: 3,
-          removedAt: null,
-          teamId,
-          type: 'tryRetroMeeting',
-          userId: teamLeadUserId
-        },
-        {
-          id: shortid.generate(),
-          createdAt: now,
-          priority: 4,
-          removedAt: null,
-          type: 'createNewTeam',
-          userId: teamLeadUserId
-        },
-        {
-          id: shortid.generate(),
-          createdAt: now,
-          priority: 5,
-          removedAt: null,
-          teamId,
-          type: 'tryActionMeeting',
-          userId: teamLeadUserId
-        }
-      ])
-      return teamLeadUserId
-    }
+  if (!isOnboardTeam) return null
+  const newTeamLeadUserId = await getNewTeamLeadUserId(teamId)
+  if (newTeamLeadUserId) {
+    await r.table('SuggestedAction').insert([
+      {
+        id: shortid.generate(),
+        createdAt: now,
+        priority: 3,
+        removedAt: null,
+        teamId,
+        type: 'tryRetroMeeting',
+        userId: newTeamLeadUserId
+      },
+      {
+        id: shortid.generate(),
+        createdAt: now,
+        priority: 4,
+        removedAt: null,
+        type: 'createNewTeam',
+        userId: newTeamLeadUserId
+      },
+      {
+        id: shortid.generate(),
+        createdAt: now,
+        priority: 5,
+        removedAt: null,
+        teamId,
+        type: 'tryActionMeeting',
+        userId: newTeamLeadUserId
+      }
+    ])
   }
-  return null
+  return newTeamLeadUserId
 }
+
 const acceptTeamInvitation = async (
   teamId: string,
   userId: string,

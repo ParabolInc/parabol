@@ -1,8 +1,6 @@
-import {GraphQLList, GraphQLNonNull} from 'graphql'
-import addTeamInvitees from 'server/graphql/mutations/helpers/addTeamInvitees'
+import {GraphQLNonNull} from 'graphql'
 import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader'
 import AddTeamPayload from 'server/graphql/types/AddTeamPayload'
-import Invitee from 'server/graphql/types/Invitee'
 import NewTeamInput from 'server/graphql/types/NewTeamInput'
 import {auth0ManagementClient} from 'server/utils/auth0Helpers'
 import {getUserId, isUserInOrg} from 'server/utils/authorization'
@@ -17,6 +15,7 @@ import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import rateLimit from 'server/graphql/rateLimit'
 import {MAX_FREE_TEAMS} from 'server/utils/serverConstants'
 import getRethink from 'server/database/rethinkDriver'
+import removeCreateNewTeamSuggestedAction from 'server/safeMutations/removeCreateNewTeamSuggestedAction'
 
 export default {
   type: AddTeamPayload,
@@ -25,9 +24,6 @@ export default {
     newTeam: {
       type: new GraphQLNonNull(NewTeamInput),
       description: 'The new team object'
-    },
-    invitees: {
-      type: new GraphQLList(new GraphQLNonNull(Invitee))
     }
   },
   resolve: rateLimit({perMinute: 4, perHour: 20})(
@@ -55,7 +51,7 @@ export default {
 
       const orgTeamNames = orgTeams.map((team) => team.name)
       const {
-        data: {invitees, newTeam},
+        data: {newTeam},
         errors
       } = addTeamValidation(orgTeamNames)(args)
       if (Object.keys(errors).length) {
@@ -78,35 +74,25 @@ export default {
 
       // RESOLUTION
       const teamId = shortid.generate()
+      // FIXME turn isOnboardTeam to false after finished debugging
       await createTeamAndLeader(viewerId, {id: teamId, isOnboardTeam: true, ...newTeam})
 
       const tms = authToken.tms.concat(teamId)
-      const inviteeCount = invitees ? invitees.length : 0
-      sendSegmentEvent('New Team', viewerId, {orgId, teamId, inviteeCount})
+      sendSegmentEvent('New Team', viewerId, {orgId, teamId})
       publish(NEW_AUTH_TOKEN, viewerId, UPDATED, {tms})
       auth0ManagementClient.users.updateAppMetadata({id: viewerId}, {tms})
 
-      const {invitationIds, teamInviteNotifications} = await addTeamInvitees(
-        invitees,
-        teamId,
-        viewerId,
-        dataLoader
-      )
       const teamMemberId = toTeamMemberId(teamId, viewerId)
       const data = {
         orgId,
         teamId,
-        teamMemberId,
-        invitationIds,
-        teamInviteNotifications
+        teamMemberId
       }
 
-      teamInviteNotifications.forEach((notification) => {
-        const {
-          userIds: [invitedUserId]
-        } = notification
-        publish(NOTIFICATION, invitedUserId, AddTeamPayload, data, subOptions)
-      })
+      const removedSuggestedActionId = await removeCreateNewTeamSuggestedAction(viewerId)
+      if (removedSuggestedActionId) {
+        publish(NOTIFICATION, viewerId, AddTeamPayload, {removedSuggestedActionId}, subOptions)
+      }
       publish(TEAM, viewerId, AddTeamPayload, data, subOptions)
 
       return data

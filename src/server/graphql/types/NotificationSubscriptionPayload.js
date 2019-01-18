@@ -16,6 +16,7 @@ import DisconnectSocketPayload from 'server/graphql/types/DisconnectSocketPayloa
 import AddFeatureFlagPayload from 'server/graphql/types/AddFeatureFlagPayload'
 import InviteToTeamPayload from 'server/graphql/types/InviteToTeamPayload'
 import AcceptTeamInvitationPayload from 'server/graphql/types/AcceptTeamInvitationPayload'
+import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
@@ -28,6 +29,7 @@ const types = [
   CreateTaskPayload,
   DeleteTaskPayload,
   DisconnectSocketPayload,
+  EndNewMeetingPayload,
   InviteTeamMembersPayload,
   InviteToTeamPayload,
   RejectOrgApprovalPayload,

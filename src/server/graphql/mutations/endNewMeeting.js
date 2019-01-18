@@ -2,7 +2,7 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
-import {TEAM} from 'universal/utils/constants'
+import {NOTIFICATION, TEAM} from 'universal/utils/constants'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
@@ -96,6 +96,29 @@ export default {
         meetingId
       }))
       await r.table('TimelineEvent').insert(events)
+      if (team.isOnboardTeam) {
+        const teamLeadUserId = await r
+          .table('TeamMember')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({isLead: true})
+          .nth(0)('userId')
+
+        const removedSuggestedActionId = await r
+          .table('SuggestedAction')
+          .getAll(teamLeadUserId, {index: 'userId'})
+          .filter({removedAt: null, type: 'tryRetroMeeting'})
+          .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('id')
+          .default(null)
+        if (removedSuggestedActionId) {
+          publish(
+            NOTIFICATION,
+            teamLeadUserId,
+            EndNewMeetingPayload,
+            {removedSuggestedActionId},
+            subOptions
+          )
+        }
+      }
     }
 
     const data = {meetingId, teamId, isKill: !currentStage}

@@ -3373,7 +3373,6 @@ export interface IAddOrgOnMutationArguments {
    * The new team object with exactly 1 team member
    */
   newTeam: INewTeamInput
-  invitees?: Array<IInvitee> | null
 
   /**
    * The name of the new team
@@ -3396,7 +3395,6 @@ export interface IAddTeamOnMutationArguments {
    * The new team object
    */
   newTeam: INewTeamInput
-  invitees?: Array<IInvitee> | null
 }
 
 export interface IApproveToOrgOnMutationArguments {
@@ -4334,26 +4332,6 @@ export interface INewTeamInput {
   orgId?: string | null
 }
 
-/**
- * The email and task of an invited team member
- */
-export interface IInvitee {
-  /**
-   * The email address of the invitee
-   */
-  email: any
-
-  /**
-   * The name derived from an RFC5322 email string
-   */
-  fullName?: string | null
-
-  /**
-   * The current task the invitee is working on
-   */
-  task?: string | null
-}
-
 export interface IAddOrgPayload {
   __typename: 'AddOrgPayload'
   organization: IOrganization | null
@@ -4364,12 +4342,11 @@ export interface IAddOrgPayload {
    * The teamMember that just created the new team, if this is a creation
    */
   teamMember: ITeamMember | null
-  invitations: Array<IInvitation | null> | null
 
   /**
-   * The invitation sent when an team was being created
+   * The ID of the suggestion to create a new team
    */
-  teamInviteNotification: INotifyTeamInvite | null
+  removedSuggestedActionId: string | null
 }
 
 export interface IAddProviderPayload {
@@ -4412,12 +4389,11 @@ export interface IAddTeamPayload {
    * The teamMember that just created the new team, if this is a creation
    */
   teamMember: ITeamMember | null
-  invitations: Array<IInvitation | null> | null
 
   /**
-   * The invitation sent when an team was being created
+   * The ID of the suggestion to create a new team
    */
-  teamInviteNotification: INotifyTeamInvite | null
+  removedSuggestedActionId: string | null
 }
 
 export interface IApproveToOrgPayload {
@@ -5604,6 +5580,26 @@ export interface IInactivateUserPayload {
 }
 
 /**
+ * The email and task of an invited team member
+ */
+export interface IInvitee {
+  /**
+   * The email address of the invitee
+   */
+  email: any
+
+  /**
+   * The name derived from an RFC5322 email string
+   */
+  fullName?: string | null
+
+  /**
+   * The current task the invitee is working on
+   */
+  task?: string | null
+}
+
+/**
  * A list of all the possible outcomes when trying to invite a team member
  */
 export interface IInviteTeamMembersPayload {
@@ -5825,6 +5821,11 @@ export interface IEndNewMeetingPayload {
   isKill: boolean | null
   team: ITeam | null
   meeting: NewMeeting | null
+
+  /**
+   * The ID of the suggestion to try a retro meeting, if tried
+   */
+  removedSuggestedActionId: string | null
 }
 
 export interface ILeaveIntegrationPayload {
@@ -6867,6 +6868,7 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndNewMeetingPayload
   | IInviteTeamMembersPayload
   | IInviteToTeamPayload
   | IRejectOrgApprovalPayload
@@ -7360,7 +7362,7 @@ export interface ISuggestedActionTryActionMeeting {
   teamId: string
 
   /**
-   * The team you should run a retro with
+   * The team you should run an action meeting with
    */
   team: ITeam
 }
