@@ -13,7 +13,7 @@ import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, UPDATED} from 'universal/uti
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import rateLimit from 'server/graphql/rateLimit'
-import removeCreateNewTeamSuggestedAction from 'server/safeMutations/removeCreateNewTeamSuggestedAction'
+import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
 
 export default {
   type: AddOrgPayload,
@@ -63,7 +63,7 @@ export default {
         teamMemberId
       }
 
-      const removedSuggestedActionId = await removeCreateNewTeamSuggestedAction(viewerId)
+      const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
       if (removedSuggestedActionId) {
         publish(NOTIFICATION, viewerId, AddOrgPayload, {removedSuggestedActionId}, subOptions)
       }

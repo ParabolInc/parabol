@@ -12,6 +12,7 @@ import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import sendNewMeetingSummary from 'server/graphql/mutations/helpers/endMeeting/sendNewMeetingSummary'
 import shortid from 'shortid'
 import {COMPLETED_RETRO_MEETING} from 'server/graphql/types/TimelineEventTypeEnum'
+import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
 
 export default {
   type: EndNewMeetingPayload,
@@ -103,12 +104,10 @@ export default {
           .filter({isLead: true})
           .nth(0)('userId')
 
-        const removedSuggestedActionId = await r
-          .table('SuggestedAction')
-          .getAll(teamLeadUserId, {index: 'userId'})
-          .filter({removedAt: null, type: 'tryRetroMeeting'})
-          .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('id')
-          .default(null)
+        const removedSuggestedActionId = await removeSuggestedAction(
+          teamLeadUserId,
+          'tryRetroMeeting'
+        )
         if (removedSuggestedActionId) {
           publish(
             NOTIFICATION,

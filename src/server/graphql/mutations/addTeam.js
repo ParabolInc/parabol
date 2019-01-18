@@ -15,7 +15,7 @@ import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import rateLimit from 'server/graphql/rateLimit'
 import {MAX_FREE_TEAMS} from 'server/utils/serverConstants'
 import getRethink from 'server/database/rethinkDriver'
-import removeCreateNewTeamSuggestedAction from 'server/safeMutations/removeCreateNewTeamSuggestedAction'
+import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
 
 export default {
   type: AddTeamPayload,
@@ -89,7 +89,7 @@ export default {
         teamMemberId
       }
 
-      const removedSuggestedActionId = await removeCreateNewTeamSuggestedAction(viewerId)
+      const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
       if (removedSuggestedActionId) {
         publish(NOTIFICATION, viewerId, AddTeamPayload, {removedSuggestedActionId}, subOptions)
       }

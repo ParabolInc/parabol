@@ -11,6 +11,7 @@ import makeAppLink from 'server/utils/makeAppLink'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {NOTIFICATION, TEAM_INVITATION} from 'universal/utils/constants'
+import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import {TEAM_INVITATION_LIFESPAN} from 'server/utils/serverConstants'
 
@@ -81,12 +82,8 @@ export default {
       // remove suggested action, if any
       let removedSuggestedActionId
       if (isOnboardTeam) {
-        removedSuggestedActionId = await r
-          .table('SuggestedAction')
-          .getAll(viewerId, {index: 'userId'})
-          .filter({type: 'inviteYourTeam', removedAt: null})
-          .update({removedAt: now}, {returnChanges: true})('changes')(0)('new_val')('id')
-          .default(null)
+        // TODO we'll need to use ts on the server instead of babel since babel doesn't support const enum
+        removedSuggestedActionId = await removeSuggestedAction(viewerId, 'inviteYourTeam' as any)
       }
       // insert notification records
       const notificationsToInsert = [] as Array<NotificationToInsert>

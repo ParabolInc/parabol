@@ -6,6 +6,7 @@ import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArr
 import onTeamRoute from 'universal/utils/onTeamRoute'
 import {ArchiveTeamMutationResponse} from '__generated__/ArchiveTeamMutation.graphql'
 import {ArchiveTeamMutation_team} from '__generated__/ArchiveTeamMutation_team.graphql'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment ArchiveTeamMutation_team on ArchiveTeamPayload {
@@ -27,6 +28,7 @@ const mutation = graphql`
       error {
         message
       }
+      removedSuggestedActionIds
       ...ArchiveTeamMutation_team @relay(mask: false)
     }
   }
@@ -80,6 +82,8 @@ const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted)
       const payload = store.getRootField('archiveTeam')
       if (!payload) return
       archiveTeamTeamUpdater(payload, store, viewerId)
+      const removedSuggestedActionIds = payload.getValue('removedSuggestedActionIds')
+      handleRemoveSuggestedActions(removedSuggestedActionIds, store)
     },
     onCompleted: (res: ArchiveTeamMutationResponse, errors) => {
       if (onCompleted) {
