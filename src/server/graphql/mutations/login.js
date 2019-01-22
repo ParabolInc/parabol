@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {verify} from 'jsonwebtoken'
 import getRethink from 'server/database/rethinkDriver'
 import LoginPayload from 'server/graphql/types/LoginPayload'
@@ -10,13 +10,20 @@ import {
 import {getUserId} from 'server/utils/authorization'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
-import {
-  sendAuth0Error,
-  sendBadAuthTokenError,
-  sendSegmentIdentifyError
-} from 'server/utils/authorizationErrors'
+import {sendAuth0Error, sendBadAuthTokenError} from 'server/utils/authorizationErrors'
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
 import ensureDate from 'universal/utils/ensureDate'
+import segmentIo from 'server/utils/segmentIo'
+import sleep from 'universal/utils/sleep'
+
+const handleSegment = async (userId, previousId) => {
+  if (previousId) {
+    await segmentIo.alias({previousId, userId})
+    // https://segment.com/docs/destinations/mixpanel/#aliasing-server-side
+    await sleep(1000)
+  }
+  return sendSegmentIdentify(userId)
+}
 
 const login = {
   type: new GraphQLNonNull(LoginPayload),
@@ -27,9 +34,13 @@ const login = {
     auth0Token: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The ID Token from auth0, a base64 JWT'
+    },
+    segmentId: {
+      type: GraphQLID,
+      description: 'optional segment id created before they were a user'
     }
   },
-  async resolve (source, {auth0Token}, {dataLoader}) {
+  async resolve (source, {auth0Token, segmentId}, {dataLoader}) {
     const r = getRethink()
     const now = new Date()
 
@@ -93,15 +104,13 @@ const login = {
       name: userInfo.name,
       preferredName,
       identities: userInfo.identities || [],
-      createdAt: ensureDate(userInfo.created_at)
+      createdAt: ensureDate(userInfo.created_at),
+      segmentId
     }
     await r.table('User').insert(newUser)
 
-    try {
-      await sendSegmentIdentify(newUser.id)
-    } catch (e) {
-      return sendSegmentIdentifyError(authToken, e)
-    }
+    // no waiting necessary, it's just analytics
+    handleSegment(newUser.id, segmentId)
 
     return {
       authToken: auth0Token,

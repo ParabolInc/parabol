@@ -2,8 +2,8 @@ import {TeamInvitationGoogleCreateAccount_verifiedInvitation} from '__generated_
 import {WebAuth} from 'auth0-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import {createFragmentContainer, graphql} from 'react-relay'
 import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
@@ -12,16 +12,14 @@ import auth0Authorize from '../utils/auth0Authorize'
 import makeWebAuth from '../utils/makeWebAuth'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
-import GoogleOAuthButton from './GoogleOAuthButton'
+import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialog from './InvitationDialog'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
-import StyledError from './StyledError'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
-import StyledTip from './StyledTip'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
 import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
 
@@ -57,19 +55,6 @@ const UseEmailFallback = styled(PlainButton)({
 const TeamName = styled('span')({
   fontWeight: 600,
   whiteSpace: 'nowrap'
-})
-
-const helpText = {
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-}
-
-const ErrorMessage = styled(StyledError)({
-  ...helpText
-})
-
-const HelpMessage = styled(StyledTip)({
-  ...helpText
 })
 
 class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
@@ -141,16 +126,12 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
             </InvitationDialogCopy>
           </CopyMargins>
           <InvitationCenteredCopy>
-            <GoogleOAuthButton
+            <GoogleOAuthButtonBlock
               label='Sign up using Google'
               onClick={this.onOAuth}
-              waiting={submitting}
+              isError={!!error}
+              submitting={!!submitting}
             />
-            {error &&
-              !submitting && (
-                <ErrorMessage>Error logging in! Did you close the popup?</ErrorMessage>
-              )}
-            {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
             {isEmailFallback ? (
               <HorizontalSeparator margin='1rem 0 0' text='or' />
             ) : (
