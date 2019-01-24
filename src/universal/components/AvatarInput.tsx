@@ -1,7 +1,8 @@
-import React, {Component} from 'react'
+import React, {Component, lazy, Suspense} from 'react'
 import styled from 'react-emotion'
 import RaisedButton from 'universal/components/RaisedButton'
 import StyledError from 'universal/components/StyledError'
+import Confetti from './Confetti'
 
 const HiddenInput = styled('input')({
   display: 'none'
@@ -20,6 +21,10 @@ interface Props {
   error?: string
 }
 
+const Confetti = lazy(() =>
+  import(/* webpackChunkName: 'Confetti' */ 'universal/components/Confetti')
+)
+
 class AvatarInput extends Component<Props> {
   inputRef = React.createRef<HTMLInputElement>()
   onClick = () => {
@@ -35,8 +40,11 @@ class AvatarInput extends Component<Props> {
     // TODO see if we still need the setTimeout
     setTimeout(() => onSubmit(imageToUpload))
   }
+
   render () {
     const {error} = this.props
+    const isHack = error === 'xss'
+    const errorStr = isHack ? 'You hacked us!' : error
     return (
       <div>
         <Control>
@@ -52,7 +60,10 @@ class AvatarInput extends Component<Props> {
             />
           </form>
         </Control>
-        {error && <StyledError>{error}</StyledError>}
+        <Suspense fallback={''}>
+          <Confetti active={isHack} />
+        </Suspense>
+        {error && <StyledError>{errorStr}</StyledError>}
       </div>
     )
   }

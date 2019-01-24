@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {lazy} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Field} from 'redux-form'
 import RaisedButton from 'universal/components/RaisedButton'
@@ -8,14 +8,13 @@ import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
 import InputField from 'universal/components/InputField/InputField'
 import Panel from 'universal/components/Panel/Panel'
 import Helmet from 'react-helmet'
-import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal'
-import UserAvatarInput from 'universal/modules/userDashboard/components/UserAvatarInput/UserAvatarInput'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder'
 import styled from 'react-emotion'
+import LoadableModal from 'universal/components/LoadableModal'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -69,12 +68,16 @@ const renderActivity = (activity) => {
   return null
 }
 
+const UserAvatarInput = lazy(() =>
+  import(/* webpackChunkName: 'UserAvatarInput' */ 'universal/components/UserAvatarInput')
+)
+
 const UserSettings = (props) => {
   const {
     activity,
     handleSubmit,
     onSubmit,
-    viewer: {userId, picture}
+    viewer: {picture}
   } = props
   const pictureOrDefault = picture || defaultUserAvatar
   const toggle = (
@@ -89,9 +92,13 @@ const UserSettings = (props) => {
       <SettingsBlock>
         <Panel label='My Information'>
           <SettingsForm onSubmit={handleSubmit(onSubmit)}>
-            <PhotoUploadModal picture={pictureOrDefault} toggle={toggle}>
-              <UserAvatarInput userId={userId} />
-            </PhotoUploadModal>
+            <LoadableModal
+              LoadableComponent={UserAvatarInput}
+              maxWidth={700}
+              maxHeight={374}
+              queryVars={{picture: pictureOrDefault}}
+              toggle={toggle}
+            />
             <InfoBlock>
               {activity && <ActivityBlock>{renderActivity(activity)}</ActivityBlock>}
               <FieldLabel

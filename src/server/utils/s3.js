@@ -29,6 +29,10 @@ function s3CheckInitialized () {
  */
 const keyifyPath = (path) => path.replace(/^\//, '')
 
+export function s3GetObject (url) {
+  return s3.getObject({Bucket: process.env.AWS_S3_BUCKET, Key: url}).promise()
+}
+
 export function s3DeleteObject (url) {
   s3CheckInitialized()
   const s3Params = {

@@ -9,6 +9,9 @@ import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors'
 import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import {JSDOM} from 'jsdom'
+import sanitizeSVG from '@mattkrick/sanitize-svg'
+import fetch from 'node-fetch'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -35,6 +38,15 @@ const updateUserProfile = {
       return sendFailedInputValidation(authToken, errors)
     }
 
+    if (validUpdatedUser.picture && validUpdatedUser.picture.endsWith('.svg')) {
+      const res = await fetch(validUpdatedUser.picture)
+      const buffer = await res.buffer()
+      const {window} = new JSDOM()
+      const sanitaryPicture = await sanitizeSVG(buffer, window)
+      if (!sanitaryPicture) {
+        return {error: {message: 'Attempted Stored XSS attack', title: 'Uh oh'}}
+      }
+    }
     // RESOLUTION
     const updates = {
       ...validUpdatedUser,

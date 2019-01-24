@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, {lazy} from 'react'
 import {createFragmentContainer} from 'react-relay'
 import {Redirect, Switch, withRouter} from 'react-router-dom'
 import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
 import Helmet from 'react-helmet'
-import PhotoUploadModal from 'universal/components/PhotoUploadModal/PhotoUploadModal'
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle'
 import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName'
-import OrgAvatarInput from 'universal/modules/userDashboard/components/OrgAvatarInput/OrgAvatarInput'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
 import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants'
@@ -21,6 +19,7 @@ import DashNavControl from 'universal/components/DashNavControl/DashNavControl'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import TagBlock from 'universal/components/Tag/TagBlock'
 import TagPro from 'universal/components/Tag/TagPro'
+import LoadableModal from 'universal/modules/userDashboard/components/UserSettings/UserSettings'
 
 const orgSqueeze = () =>
   import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
@@ -74,6 +73,10 @@ const OrgNameBlock = styled('div')({
   placeholderColor: ui.placeholderColor
 })
 
+const OrgAvatarInput = lazy(() =>
+  import(/* webpackChunkName: 'OrgAvatarInput' */ 'universal/components/OrgAvatarInput')
+)
+
 const Organization = (props) => {
   const {
     history,
@@ -103,9 +106,13 @@ const Organization = (props) => {
         </BackControlBlock>
         <AvatarAndName>
           {isBillingLeader ? (
-            <PhotoUploadModal picture={pictureOrDefault} toggle={toggle} unstyled>
-              <OrgAvatarInput orgId={orgId} />
-            </PhotoUploadModal>
+            <LoadableModal
+              LoadableComponent={OrgAvatarInput}
+              maxWidth={700}
+              maxHeight={374}
+              queryVars={{picture: pictureOrDefault, orgId}}
+              toggle={toggle}
+            />
           ) : (
             <AvatarBlock>
               <Avatar picture={pictureOrDefault} size='fill' sansRadius sansShadow />
