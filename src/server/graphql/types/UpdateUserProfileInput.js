@@ -1,12 +1,12 @@
 import {GraphQLInputObjectType, GraphQLString} from 'graphql'
-import UploadMeta from 'server/graphql/types/UploadMeta'
+import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
 
 const UpdateUserProfileInput = new GraphQLInputObjectType({
   name: 'UpdateUserProfileInput',
   fields: () => ({
     picture: {
-      type: UploadMeta,
-      description: 'an uploaded image'
+      type: GraphQLURLType,
+      description: 'A link to the user’s profile image.'
     },
     preferredName: {
       type: GraphQLString,

@@ -30,13 +30,9 @@ const mutation = graphql`
   }
 `
 
-const UpdateUserProfileMutation = (
-  atmosphere,
-  updatedUser,
-  {onError, onCompleted, uploadables}
-) => {
-  const {viewerId} = atmosphere
-  return commitMutation(atmosphere, {
+const UpdateUserProfileMutation = (environment, updatedUser, onError, onCompleted) => {
+  const {viewerId} = environment
+  return commitMutation(environment, {
     mutation,
     variables: {updatedUser},
     optimisticUpdater: (store) => {

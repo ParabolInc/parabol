@@ -186,7 +186,6 @@
     "graphql": "^0.13.2",
     "graphql-redis-subscriptions": "^1.2.0",
     "graphql-relay": "^0.5.2",
-    "graphql-upload": "^8.0.4",
     "hoist-non-react-statics": "^2.5.0",
     "immutable": "^4.0.0-rc.9",
     "ioredis": "^3.1.4",

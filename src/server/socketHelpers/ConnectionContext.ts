@@ -1,6 +1,5 @@
 import shortid from 'shortid'
 import {IAuthToken} from '../../universal/types/graphql'
-import UploadManager from './UploadManager'
 
 class ConnectionContext {
   authToken: IAuthToken
@@ -12,7 +11,6 @@ class ConnectionContext {
   socket: WebSocket
   sharedDataLoader: any
   subs: any = {}
-  uploadManager = new UploadManager()
   constructor (socket, authToken, sharedDataLoader, rateLimiter) {
     this.authToken = authToken
     this.rateLimiter = rateLimiter
