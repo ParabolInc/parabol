@@ -29,6 +29,17 @@ function s3CheckInitialized () {
  */
 const keyifyPath = (path) => path.replace(/^\//, '')
 
+export function s3Upload (Key, Body) {
+  Body.resume()
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key,
+    Body,
+    ACL: 'authenticated-read'
+  }
+  return s3.upload(params).promise()
+}
+
 export function s3DeleteObject (url) {
   s3CheckInitialized()
   const s3Params = {

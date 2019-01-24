@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import raven from 'raven-js'
 import React from 'react'
 import {Field, reduxForm} from 'redux-form'
-import FileInput from 'universal/components/FileInput/FileInput'
+import AvatarInput from 'universal/components/FileInput/FileInput'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import CreateOrgPicturePutUrlMutation from 'universal/mutations/CreateOrgPicturePutUrlMutation'
 import UpdateOrgMutation from 'universal/mutations/UpdateOrgMutation'
@@ -64,7 +64,7 @@ const OrgAvatarInput = (props) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <Field
         accept='image/*'
-        component={(cProps) => <FileInput {...cProps} />}
+        component={(cProps) => <AvatarInput {...cProps} />}
         doSubmit={handleSubmit(onSubmit)}
         name='pictureFile'
       />

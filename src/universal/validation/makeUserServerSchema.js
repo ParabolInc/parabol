@@ -1,15 +1,8 @@
-import {urlRegex} from 'universal/validation/regex'
-import {avatar} from 'universal/validation/templates'
 import legitify from './legitify'
 
 export default function makeUserServerSchema () {
   return legitify({
-    pictureFile: avatar,
-    picture: (value) =>
-      value
-        .trim()
-        .matches(urlRegex, 'that picture url doesn’t look quite right')
-        .max(2000, 'please use a shorter url'),
+    picture: (value) => value,
     preferredName: (value) =>
       value
         .trim()

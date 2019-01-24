@@ -6,12 +6,13 @@ import rateLimitedGraphQL from 'server/graphql/graphql'
 
 export default async function wsGraphQLHandler (connectionContext, payload) {
   const {query, variables} = payload
-  const {id: socketId, authToken, sharedDataLoader, rateLimiter} = connectionContext
+  const {id: socketId, authToken, sharedDataLoader, rateLimiter, uploadManager} = connectionContext
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken))
   const context = {
     authToken,
     socketId,
     dataLoader,
+    uploadManager,
     rateLimiter
   }
   const result = await rateLimitedGraphQL(Schema, query, {}, context, variables)
