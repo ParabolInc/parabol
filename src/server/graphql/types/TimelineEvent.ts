@@ -79,7 +79,7 @@ const TimelineEvent = new GraphQLInterfaceType({
   name: 'TimelineEvent',
   description: 'A past event that is important to the viewer',
   fields: timelineEventInterfaceFields,
-  resovleType: (value) => {
+  resolveType: (value) => {
     const resolveTypeLookup = {
       [COMPLETED_RETRO_MEETING]: TimelineEventCompletedRetroMeeting,
       [JOINED_PARABOL]: TimelineEventJoinedParabol,

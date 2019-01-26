@@ -1,0 +1,92 @@
+import {TimelineEventCard_timelineEvent} from '__generated__/TimelineEventCard_timelineEvent.graphql'
+import React, {Component, ReactNode} from 'react'
+import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
+import Icon from 'universal/components/Icon'
+import {buttonShadow, cardShadow} from 'universal/styles/elevation'
+import {PALETTE} from '../styles/paletteV2'
+import {ICON_SIZE} from '../styles/typographyV2'
+import TimelineEventDate from './TimelineEventDate'
+
+// import PlainButton from 'universal/components/PlainButton/PlainButton'
+
+interface Props {
+  children: ReactNode
+  iconName: string
+  title: ReactNode
+  timelineEvent: TimelineEventCard_timelineEvent
+}
+
+const Surface = styled('div')({
+  background: '#fff',
+  borderRadius: 4,
+  boxShadow: cardShadow,
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+  position: 'relative',
+  width: '100%'
+})
+
+const CardHeader = styled('div')({
+  display: 'flex',
+  margin: 16,
+  position: 'relative'
+})
+const EventIcon = styled(Icon)({
+  color: '#fff',
+  background: PALETTE.TEXT.LIGHT,
+  borderRadius: '100%',
+  boxShadow: buttonShadow,
+  fontSize: ICON_SIZE.MD24,
+  padding: 8,
+  userSelect: 'none'
+})
+
+// const MenuIcon = styled(Icon)({
+//   color: PALETTE.PRIMARY.MAIN,
+//   position: 'absolute',
+//   fontSize: ICON_SIZE.MD18,
+//   top: 0,
+//   right: 0,
+//   userSelect: 'none'
+// })
+
+const HeaderText = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  paddingLeft: 16,
+  justifyContent: 'space-around'
+})
+
+class TimelineEventCard extends Component<Props> {
+  render () {
+    const {children, iconName, title, timelineEvent} = this.props
+    const {createdAt} = timelineEvent
+    return (
+      <Surface>
+        <CardHeader>
+          <EventIcon>{iconName}</EventIcon>
+          <HeaderText>
+            {title}
+            <TimelineEventDate createdAt={createdAt} />
+          </HeaderText>
+          {/*<PlainButton>*/}
+          {/*<MenuIcon>more_vert</MenuIcon>*/}
+          {/*</PlainButton>*/}
+        </CardHeader>
+        {children}
+      </Surface>
+    )
+  }
+}
+
+export default createFragmentContainer(
+  TimelineEventCard,
+  graphql`
+    fragment TimelineEventCard_timelineEvent on TimelineEvent {
+      id
+      createdAt
+    }
+  `
+)

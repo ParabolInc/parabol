@@ -119,7 +119,7 @@ const User = new GraphQLObjectType({
       }
     },
     timeline: {
-      type: TimelineEventConnection,
+      type: new GraphQLNonNull(TimelineEventConnection),
       description: 'The timeline of important events for the viewer',
       args: {
         after: {

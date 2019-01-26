@@ -113,7 +113,7 @@ export interface IUser {
   /**
    * The timeline of important events for the viewer
    */
-  timeline: ITimelineEventConnection | null
+  timeline: ITimelineEventConnection
 
   /**
    * Nickname associated with the user

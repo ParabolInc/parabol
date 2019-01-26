@@ -6,6 +6,7 @@ import TimelineSuggestedAction from 'universal/components/TimelineSuggestedActio
 import {PALETTE} from '../styles/paletteV2'
 import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
+import TimelineFeedList from 'universal/components/TimelineFeedList'
 
 interface Props {
   viewer: MyDashboardTimeline_viewer
@@ -28,7 +29,7 @@ const TimelineFeed = styled('div')({
   paddingTop: 24
 })
 
-const TimelineFeedItems = styled('div')({
+export const TimelineFeedItems = styled('div')({
   maxWidth: DASH_TIMELINE.FEED_MAX_WIDTH,
   minWidth: DASH_TIMELINE.FEED_MIN_WIDTH,
   width: '100%'
@@ -64,6 +65,7 @@ const MyDashboardTimeline = (props: Props) => {
         <TimelineFeedItems>
           <Suspense fallback={<TimelineLoadingEvents />}>
             <TimelineSuggestedAction viewer={viewer} />
+            <TimelineFeedList viewer={viewer} />
           </Suspense>
         </TimelineFeedItems>
       </TimelineFeed>
