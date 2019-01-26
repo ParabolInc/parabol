@@ -34,6 +34,7 @@ export default createFragmentContainer(
   TimelineEventJoinedParabol,
   graphql`
     fragment TimelineEventJoinedParabol_timelineEvent on TimelineEventJoinedParabol {
+      ...TimelineEventCard_timelineEvent
       id
     }
   `

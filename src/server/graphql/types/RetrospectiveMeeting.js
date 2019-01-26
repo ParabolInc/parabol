@@ -73,6 +73,16 @@ const RetrospectiveMeeting = new GraphQLObjectType({
         return allSettings.find((settings) => settings.meetingType === RETROSPECTIVE)
       }
     },
+    taskCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of tasks generated in the meeting',
+      resolve: async ({id: meetingId}, _args, {dataLoader}) => {
+        const meeting = await dataLoader.get('newMeetings').load(meetingId)
+        const {teamId} = meeting
+        const teamTasks = await dataLoader.get('tasksByTeamId').load(teamId)
+        return teamTasks.filter((task) => task.meetingId === meetingId).length
+      }
+    },
     tasks: {
       type: new GraphQLNonNull(GraphQLList(GraphQLNonNull(Task))),
       description: 'The tasks created within the meeting',

@@ -1,5 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
+import Team from './Team'
 
 const TimelineEventTeamCreated = new GraphQLObjectType({
   name: 'TimelineEventTeamCreated',
@@ -13,7 +14,11 @@ const TimelineEventTeamCreated = new GraphQLObjectType({
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The teamId this event is associated with'
+      description: 'The teamId this event is associated with. Null if not traceable to one team'
+    },
+    team: {
+      type: new GraphQLNonNull(Team),
+      description: 'The team that can see this event'
     },
     isOnboardTeam: {
       type: new GraphQLNonNull(GraphQLBoolean),

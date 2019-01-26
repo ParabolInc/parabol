@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
+import Team from './Team'
 
 const TimelineEventCompletedRetroMeeting = new GraphQLObjectType({
   name: 'TimelineEventCompletedRetroMeeting',
@@ -22,6 +23,10 @@ const TimelineEventCompletedRetroMeeting = new GraphQLObjectType({
     orgId: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The orgId this event is associated with'
+    },
+    team: {
+      type: new GraphQLNonNull(Team),
+      description: 'The team that can see this event'
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),

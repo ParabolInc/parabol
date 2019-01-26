@@ -4648,6 +4648,11 @@ export interface IRetrospectiveMeeting {
   settings: IRetrospectiveMeetingSettings
 
   /**
+   * The number of tasks generated in the meeting
+   */
+  taskCount: number
+
+  /**
    * The tasks created within the meeting
    */
   tasks: Array<ITask>
@@ -7474,14 +7479,14 @@ export interface ITimelineEventTeamCreated {
   seenCount: number
 
   /**
-   * The teamId this event is associated with
+   * The teamId this event is associated with. Null if not traceable to one team
    */
   teamId: string
 
   /**
    * The team that can see this event
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The specific type of event
@@ -7610,7 +7615,7 @@ export interface ITimelineEventCompletedRetroMeeting {
   /**
    * The team that can see this event
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The specific type of event
