@@ -12,7 +12,10 @@ type Props = {
 
 class ArchiveTeamForm extends Component<Props> {
   validate = (value) =>
-    value !== this.props.teamName ? 'The team name entered was incorrect.' : undefined
+    // ignore case & smart quotes
+    value.toLowerCase().replace('’', "'") !== this.props.teamName.toLowerCase().replace('’', "'")
+      ? 'The team name entered was incorrect.'
+      : undefined
 
   render () {
     const {handleFormSubmit, handleFormBlur, handleSubmit} = this.props
