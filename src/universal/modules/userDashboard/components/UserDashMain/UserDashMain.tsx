@@ -13,13 +13,14 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import makeDateString from 'universal/utils/makeDateString'
 import {PALETTE} from '../../../../styles/paletteV2'
-import DebugButton from './DebugButton'
+// import DebugButton from './DebugButton'
 
 const TabBody = styled('div')({
   backgroundColor: PALETTE.BACKGROUND.MAIN,
   display: 'flex',
   flex: 1,
-  flexDirection: 'column'
+  flexDirection: 'column',
+  height: '100%'
 })
 
 const HeaderCopy = styled('div')({
@@ -60,7 +61,7 @@ const UserDashMain = (props: Props) => {
           <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />
         </TopTabs>
         <HeaderCopy>
-          <DebugButton />
+          {/*<DebugButton />*/}
           {makeDateString(new Date(), {showDay: true})} *
           <RallyLink>
             {getRallyLink()}

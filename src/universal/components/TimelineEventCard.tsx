@@ -35,11 +35,14 @@ const CardHeader = styled('div')({
   position: 'relative'
 })
 const EventIcon = styled(Icon)({
+  // explicit alignSelf & height for multi-line titles
+  alignSelf: 'center',
   color: '#fff',
   background: PALETTE.TEXT.LIGHT,
   borderRadius: '100%',
   boxShadow: buttonShadow,
   fontSize: ICON_SIZE.MD24,
+  height: 40,
   padding: 8,
   userSelect: 'none'
 })
