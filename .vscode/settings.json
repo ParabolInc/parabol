@@ -23,4 +23,5 @@
 		"standard.usePackageJson": true,
 		"standard.autoFixOnSave": true
 	},
+	"git.ignoreLimitWarning": true,
 }
