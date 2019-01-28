@@ -7491,11 +7491,6 @@ from2@^2.1.0, from2@^2.1.1:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
 
-fromnow@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/fromnow/-/fromnow-3.0.0.tgz#012428c65e10fa59bb13463c89e023b6486930c5"
-  integrity sha512-TXln1lergWD3ytNe5lNn+6RDcAElITJRSNPt5yPcKFcDYh6a85jZCt0wrSCiKmBQGqp0TD39+Simkh14S8bunA==
-
 fs-constants@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
