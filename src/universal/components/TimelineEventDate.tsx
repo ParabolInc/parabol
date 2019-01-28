@@ -6,9 +6,10 @@ import relativeDate from '../utils/relativeDate'
 import TEXT = PALETTE.TEXT
 
 const StyledSpan = styled('span')({
-  fontColor: TEXT.LIGHT,
+  color: TEXT.LIGHT,
   fontSize: 11,
-  paddingTop: 8
+  lineHeight: '1rem',
+  paddingTop: 4
 })
 
 interface State {

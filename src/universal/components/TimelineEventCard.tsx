@@ -34,14 +34,18 @@ const CardHeader = styled('div')({
   margin: 16,
   position: 'relative'
 })
+
 const EventIcon = styled(Icon)({
-  color: '#fff',
   background: PALETTE.TEXT.LIGHT,
   borderRadius: '100%',
   boxShadow: buttonShadow,
+  color: '#fff',
+  display: 'block',
   fontSize: ICON_SIZE.MD24,
+  height: 40,
   padding: 8,
-  userSelect: 'none'
+  userSelect: 'none',
+  width: 40
 })
 
 // const MenuIcon = styled(Icon)({
