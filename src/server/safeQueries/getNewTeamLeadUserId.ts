@@ -1,6 +1,7 @@
 import getRethink from '../database/rethinkDriver'
 
-const getNewTeamLeadUserId = async (teamId) => {
+// returns the userId of the team lead if they have never received the initial starting suggested actions
+const getNewTeamLeadUserId = async (teamId: string) => {
   const r = getRethink()
   return r
     .table('TeamMember')
@@ -10,7 +11,6 @@ const getNewTeamLeadUserId = async (teamId) => {
     .default('')
     .do((userId) => {
       return r.branch(
-        userId,
         r
           .table('SuggestedAction')
           .getAll(userId, {index: 'userId'})

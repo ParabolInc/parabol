@@ -4480,6 +4480,11 @@ export interface IArchiveTeamPayload {
    */
   notification: INotifyTeamArchived | null
   removedTeamNotifications: Array<TeamNotification | null> | null
+
+  /**
+   * all the suggested actions that never happened
+   */
+  removedSuggestedActionIds: Array<string | null> | null
 }
 
 /**
@@ -5567,6 +5572,11 @@ export interface IEndMeetingPayload {
    */
   archivedTasks: Array<ITask | null> | null
   meeting: IMeeting | null
+
+  /**
+   * The ID of the suggestion to try an action meeting, if tried
+   */
+  removedSuggestedActionId: string | null
 }
 
 export interface IInactivateUserPayload {
@@ -6868,6 +6878,7 @@ export type NotificationSubscriptionPayload =
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
+  | IEndMeetingPayload
   | IEndNewMeetingPayload
   | IInviteTeamMembersPayload
   | IInviteToTeamPayload
