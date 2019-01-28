@@ -2,11 +2,11 @@ import {MyDashboardTimeline_viewer} from '__generated__/MyDashboardTimeline_view
 import React, {Suspense} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import TimelineFeedList from 'universal/components/TimelineFeedList'
 import TimelineSuggestedAction from 'universal/components/TimelineSuggestedAction'
 import {PALETTE} from '../styles/paletteV2'
 import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import TimelineLoadingEvents from './TimelineLoadingEvents'
-import TimelineFeedList from 'universal/components/TimelineFeedList'
 
 interface Props {
   viewer: MyDashboardTimeline_viewer

@@ -9,8 +9,7 @@ import {DashLayout_viewer as Viewer} from '__generated__/DashLayout_viewer.graph
 const StyledDashLayout = styled('div')({
   backgroundColor: '#fff',
   display: 'flex !important',
-  flexDirection: 'column',
-  height: '100vh'
+  flexDirection: 'column'
   // TODO: @TA Please verify that safari fixed the bug that required a large minWidth here, min width containers are causing horizontal scrollbars
   // minWidth: ui.dashMinWidth
 })

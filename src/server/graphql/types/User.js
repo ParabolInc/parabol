@@ -154,7 +154,7 @@ const User = new GraphQLObjectType({
           pageInfo: {
             startCursor: firstEdge ? firstEdge.cursor : null,
             endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
-            hasNextPage: false
+            hasNextPage: events.length > edges.length
           }
         }
       }
