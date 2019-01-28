@@ -15,14 +15,18 @@ interface Opts {
   and?: boolean
   suffix?: boolean
   now?: string | Date
+  smallDiff: string
 }
 
-const relativeDate = (date: string | Date, opts: Opts = {max: 1, suffix: true}) => {
+const relativeDate = (
+  date: string | Date,
+  opts: Opts = {max: 1, suffix: true, smallDiff: 'Just now'}
+) => {
   const now = opts.now ? new Date(opts.now) : new Date()
   const del = new Date(date).getTime() - now.getTime()
   const abs = Math.abs(del)
 
-  if (abs < MIN) return 'Just now'
+  if (abs < MIN) return opts.smallDiff
 
   const periods = {
     year: abs / YEAR,

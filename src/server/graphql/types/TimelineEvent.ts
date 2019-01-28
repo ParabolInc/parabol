@@ -1,18 +1,11 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLInterfaceType} from 'graphql'
+import {GraphQLID, GraphQLInt, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import Organization from 'server/graphql/types/Organization'
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 import Team from 'server/graphql/types/Team'
-import TimelineEventTypeEnum, {
-  COMPLETED_RETRO_MEETING,
-  CREATED_TEAM,
-  JOINED_PARABOL
-} from 'server/graphql/types/TimelineEventTypeEnum'
+import TimelineEventTypeEnum from 'server/graphql/types/TimelineEventTypeEnum'
 import User from 'server/graphql/types/User'
-import TimelineEventCompletedRetroMeeting from './TimelineEventCompletedRetroMeeting'
-import TimelineEventJoinedParabol from './TimelineEventJoinedParabol'
-import TimelineEventTeamCreated from './TimelineEventTeamCreated'
 
 export const timelineEventInterfaceFields = () => ({
   id: {
@@ -58,7 +51,7 @@ export const timelineEventInterfaceFields = () => ({
       return dataLoader.get('teams').load(teamId)
     }
   },
-  eventType: {
+  type: {
     type: new GraphQLNonNull(TimelineEventTypeEnum),
     description: 'The specific type of event'
   },
@@ -78,15 +71,7 @@ export const timelineEventInterfaceFields = () => ({
 const TimelineEvent = new GraphQLInterfaceType({
   name: 'TimelineEvent',
   description: 'A past event that is important to the viewer',
-  fields: timelineEventInterfaceFields,
-  resolveType: (value) => {
-    const resolveTypeLookup = {
-      [COMPLETED_RETRO_MEETING]: TimelineEventCompletedRetroMeeting,
-      [JOINED_PARABOL]: TimelineEventJoinedParabol,
-      [CREATED_TEAM]: TimelineEventTeamCreated
-    }
-    return resolveTypeLookup[value.type]
-  }
+  fields: timelineEventInterfaceFields
 })
 
 const {connectionType, edgeType} = connectionDefinitions({

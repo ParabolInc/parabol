@@ -11,7 +11,7 @@ import withAtmosphere, {
 import {cacheConfig} from 'universal/utils/constants'
 
 const query = graphql`
-  query MyDashboardTimelineRootQuery {
+  query MyDashboardTimelineRootQuery($first: Int!, $after: DateTime) {
     viewer {
       ...MyDashboardTimeline_viewer
     }
@@ -27,6 +27,7 @@ const MyDashboardTimelineRoot = ({atmosphere}: Props) => {
       dataFrom={'NETWORK_ONLY'}
       cacheConfig={cacheConfig}
       environment={atmosphere}
+      variables={{first: 10}}
       query={query}
       render={(readyState) => (
         <RelayTransitionGroup

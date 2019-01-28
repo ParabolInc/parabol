@@ -1,4 +1,4 @@
-import {TimelineEventCompletedRetroMeeting_timelineEvent} from '__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
+import {TimelineEventCompletedActionMeeting_timelineEvent} from '__generated__/TimelineEventCompletedActionMeeting_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
@@ -9,10 +9,10 @@ import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
 
 interface Props extends RouteComponentProps<{}> {
-  timelineEvent: TimelineEventCompletedRetroMeeting_timelineEvent
+  timelineEvent: TimelineEventCompletedActionMeeting_timelineEvent
 }
 
-class TimelineEventCompletedRetroMeeting extends Component<Props> {
+class TimelineEventCompletedActionMeeting extends Component<Props> {
   render () {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
@@ -26,18 +26,18 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
     })
     return (
       <TimelineEventCard
-        iconName='history'
+        iconName='change_history'
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle
-          >{`You completed Retrospective #${meetingNumber} with ${teamName}`}</TimelineEventTitle>
+          >{`Action Meeting #${meetingNumber} for team ${teamName} complete!`}</TimelineEventTitle>
         }
       >
         <TimelineEventBody>
           {`It lasted ${meetingDuration} and generated ${taskCount} tasks.`}
           <br />
           {'See the '}
-          <StyledLink to={`/new-summary/${meetingId}`}>Full Summary</StyledLink>
+          <StyledLink to={`/summary/${meetingId}`}>Full Summary</StyledLink>
           {'.'}
         </TimelineEventBody>
       </TimelineEventCard>
@@ -46,9 +46,9 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
 }
 
 export default createFragmentContainer(
-  TimelineEventCompletedRetroMeeting,
+  TimelineEventCompletedActionMeeting,
   graphql`
-    fragment TimelineEventCompletedRetroMeeting_timelineEvent on TimelineEventCompletedRetroMeeting {
+    fragment TimelineEventCompletedActionMeeting_timelineEvent on TimelineEventCompletedActionMeeting {
       ...TimelineEventCard_timelineEvent
       id
       meeting {

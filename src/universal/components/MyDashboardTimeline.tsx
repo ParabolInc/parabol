@@ -80,6 +80,7 @@ export default createFragmentContainer(
     fragment MyDashboardTimeline_viewer on User {
       id
       ...TimelineSuggestedAction_viewer
+      ...TimelineFeedList_viewer
     }
   `
 )

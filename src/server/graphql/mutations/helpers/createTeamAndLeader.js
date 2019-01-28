@@ -28,7 +28,7 @@ import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 export default async function createTeamAndLeader (userId, newTeam) {
   const r = getRethink()
   const now = new Date()
-  const {id: teamId, orgId, isOnboardTeam} = newTeam
+  const {id: teamId, orgId} = newTeam
   const organization = await r.table('Organization').get(orgId)
   const {tier} = organization
   const verifiedTeam = {
@@ -86,11 +86,10 @@ export default async function createTeamAndLeader (userId, newTeam) {
       createdAt: new Date(Date.now() + 5),
       interactionCount: 0,
       seenCount: 0,
-      eventType: CREATED_TEAM,
+      type: CREATED_TEAM,
       userId,
       teamId,
-      orgId,
-      isOnboardTeam
+      orgId
     }),
     // add teamId to user tms array
     user: addTeamIdToTMS(userId, teamId),

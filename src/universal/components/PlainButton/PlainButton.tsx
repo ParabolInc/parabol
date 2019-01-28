@@ -20,7 +20,7 @@ interface Props {
   waiting?: boolean
 }
 
-const PlainButton = styled('button')(
+const PlainButton = styled('button')<Props>(
   {
     appearance: 'none',
     background: 'inherit',
@@ -34,8 +34,8 @@ const PlainButton = styled('button')(
     padding: 0,
     textAlign: 'inherit'
   },
-  ({disabled, waiting}: Props) => (disabled || waiting ? disabledStyles : undefined),
-  ({waiting}: Props) => ({cursor: waiting ? 'wait' : undefined})
+  ({disabled, waiting}) => (disabled || waiting ? disabledStyles : undefined),
+  ({waiting}) => ({cursor: waiting ? 'wait' : undefined})
 )
 
-export default withInnerRef(PlainButton as any)
+export default withInnerRef(PlainButton)

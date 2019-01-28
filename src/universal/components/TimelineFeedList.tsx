@@ -19,7 +19,7 @@ const TimelineFeedList = (props: Props) => {
   )
 }
 
-export default createPaginationContainer<Props>(
+export default createPaginationContainer(
   TimelineFeedList,
   graphql`
     fragment TimelineFeedList_viewer on User {
@@ -27,6 +27,7 @@ export default createPaginationContainer<Props>(
         edges {
           cursor
           node {
+            ...TimelineEvent_timelineEvent
             __typename
             id
           }
