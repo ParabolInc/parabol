@@ -7508,11 +7508,6 @@ export interface ITimelineEventTeamCreated {
    * The user than can see this event
    */
   user: IUser
-
-  /**
-   * true if this is the first team auto-created for a user (does not apply to users who joined via invitation)
-   */
-  isOnboardTeam: boolean
 }
 
 /**

@@ -15,9 +15,10 @@ const TabStyle = styled(PlainButton)<{isActive: boolean; isClickable: boolean}>(
     color: isActive ? PALETTE.PRIMARY.MAIN : PALETTE.TEXT.LIGHT,
     cursor: isClickable ? 'pointer' : 'default',
     display: 'flex',
-    fontSize: 18,
+    fontSize: '.875rem',
     outline: 0,
-    padding: '1rem 1.5rem',
+    lineHeight: '1.25rem',
+    padding: '.875rem 1rem',
     userSelect: 'none'
   })
 )
