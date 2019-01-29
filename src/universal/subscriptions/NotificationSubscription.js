@@ -87,10 +87,9 @@ const subscription = graphql`
 
       # New Feature Broadcasts
       ... on AddNewFeaturePayload {
-        user {
-          newFeature {
-            copy
-          }
+        newFeature {
+          id
+          copy
         }
       }
     }
@@ -146,6 +145,12 @@ const stripeFailPaymentNotificationUpdater = (payload, store, viewerId) => {
   handleAddNotifications(notification, store, viewerId)
 }
 
+const addNewFeatureNotificationUpdater = (payload, {store}) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const newFeature = payload.getLinkedRecord('newFeature')
+  viewer.setLinkedRecord(newFeature, 'newFeature')
+}
+
 const onNextHandlers = {
   ApproveToOrgPayload: approveToOrgNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
@@ -169,6 +174,9 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
           acceptTeamInvitationNotificationUpdater(payload, {store, atmosphere})
           break
         case 'AddFeatureFlagPayload':
+          break
+        case 'AddNewFeaturePayload':
+          addNewFeatureNotificationUpdater(payload, {store})
           break
         case 'AddOrgPayload':
           addOrgMutationNotificationUpdater(payload, {store})

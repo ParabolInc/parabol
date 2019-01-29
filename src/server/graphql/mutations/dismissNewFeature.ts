@@ -20,6 +20,6 @@ export default {
         newFeatureId: null
       })
 
-    return {id: viewerId, newFeatureId: null}
+    return {}
   }
 }

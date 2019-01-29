@@ -1,6 +1,6 @@
-import {GraphQLObject, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLObjectType, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 
-const NewFeatureBroadcast = new GraphQLObject({
+const NewFeatureBroadcast = new GraphQLObjectType({
   name: 'NewFeatureBroadcast',
   description: 'The latest features released by Parabol',
   fields: () => ({

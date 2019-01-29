@@ -1,6 +1,6 @@
 import {GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {getUserId, requireSU} from 'server/utils/authorization'
+import {requireSU} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {NOTIFICATION} from 'universal/utils/constants'
@@ -42,10 +42,9 @@ const addNewFeature = {
         .ge(1)
     )('id')
     onlineUserIds.forEach((userId) => {
-      publish(NOTIFICATION, userId, AddNewFeaturePayload, {id: userId, newFeature}, subOptions)
+      publish(NOTIFICATION, userId, AddNewFeaturePayload, {newFeature}, subOptions)
     })
-    const viewerId = getUserId(authToken)
-    return {id: viewerId, newFeature}
+    return {newFeature}
   }
 }
 

@@ -131,6 +131,16 @@ export interface IUser {
   updatedAt: any | null
 
   /**
+   * the ID of the newest feature, null if the user has dismissed it
+   */
+  newFeatureId: string | null
+
+  /**
+   * The new feature released by Parabol. null if the user already hid it
+   */
+  newFeature: INewFeatureBroadcast | null
+
+  /**
    * The last time the user connected via websocket
    */
   lastSeenAt: any | null
@@ -2190,6 +2200,19 @@ export const enum TimelineEventEnum {
 }
 
 /**
+ * The latest features released by Parabol
+ */
+export interface INewFeatureBroadcast {
+  __typename: 'NewFeatureBroadcast'
+  id: string
+
+  /**
+   * The description of the new features
+   */
+  copy: string
+}
+
+/**
  * An integration that connects github issues & PRs to Parabol tasks
  */
 export interface IGitHubIntegration {
@@ -2979,6 +3002,11 @@ export interface IMutation {
    * a server-side mutation called when a client disconnects
    */
   disconnectSocket: IDisconnectSocketPayload | null
+
+  /**
+   * Redeem an invitation token for a logged in user
+   */
+  dismissNewFeature: IDismissNewFeaturePayload
 
   /**
    * Dismiss a suggested action
@@ -5362,6 +5390,11 @@ export interface IDisconnectSocketPayload {
   user: IUser | null
 }
 
+export interface IDismissNewFeaturePayload {
+  __typename: 'DismissNewFeaturePayload'
+  error: IStandardMutationError | null
+}
+
 export interface IDismissSuggestedActionPayload {
   __typename: 'DismissSuggestedActionPayload'
   error: IStandardMutationError | null
@@ -6856,6 +6889,7 @@ export type InvitationSubscriptionPayload =
 export type NotificationSubscriptionPayload =
   | IAcceptTeamInvitationPayload
   | IAddFeatureFlagPayload
+  | IAddNewFeaturePayload
   | IAddOrgPayload
   | IAddTeamPayload
   | IApproveToOrgPayload
@@ -6873,6 +6907,15 @@ export type NotificationSubscriptionPayload =
   | IStripeFailPaymentPayload
   | IUser
   | IUpdateUserProfilePayload
+
+export interface IAddNewFeaturePayload {
+  __typename: 'AddNewFeaturePayload'
+
+  /**
+   * the new feature broadcast
+   */
+  newFeature: INewFeatureBroadcast | null
+}
 
 export type OrgApprovalSubscriptionPayload =
   | IApproveToOrgPayload
