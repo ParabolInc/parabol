@@ -93,6 +93,7 @@ import renameReflectTemplate from 'server/graphql/mutations/renameReflectTemplat
 import renameReflectTemplatePrompt from 'server/graphql/mutations/renameReflectTemplatePrompt'
 import inviteToTeam from 'server/graphql/mutations/inviteToTeam'
 import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
+import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAction'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -123,6 +124,7 @@ export default new GraphQLObjectType({
     createUserPicturePutUrl,
     deleteTask,
     disconnectSocket,
+    dismissSuggestedAction,
     downgradeToPersonal,
     dragDiscussionTopic,
     endDraggingReflection,

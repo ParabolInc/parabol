@@ -2,6 +2,7 @@ import {commitMutation} from 'react-relay'
 import {SUMMARY} from 'universal/utils/constants'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
+import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment EndMeetingMutation_team on EndMeetingPayload {
@@ -31,6 +32,12 @@ graphql`
   }
 `
 
+graphql`
+  fragment EndMeetingMutation_notification on EndMeetingPayload {
+    removedSuggestedActionId
+  }
+`
+
 const mutation = graphql`
   mutation EndMeetingMutation($teamId: ID!) {
     endMeeting(teamId: $teamId) {
@@ -56,6 +63,11 @@ export const endMeetingTaskUpdater = (payload, store, viewerId) => {
   handleUpsertTasks(archivedTasks, store, viewerId)
 }
 
+export const endMeetingNotificationUpdater = (payload, {store}) => {
+  const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
+  handleRemoveSuggestedActions(removedSuggestedActionId, store)
+}
+
 const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) => {
   const {viewerId} = environment
   return commitMutation(environment, {
@@ -66,6 +78,7 @@ const EndMeetingMutation = (environment, teamId, history, onError, onCompleted) 
       if (!payload) return
       endMeetingTeamUpdater(payload, {history})
       endMeetingTaskUpdater(payload, store, viewerId)
+      endMeetingNotificationUpdater(payload, {store})
     },
     optimisticUpdater: (store) => {
       const team = store.get(teamId)

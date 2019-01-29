@@ -2,10 +2,9 @@ import React from 'react'
 import styled from 'react-emotion'
 import StyledError from 'universal/components/StyledError'
 import {PALETTE} from '../../styles/paletteV2'
-import {TYPOGRAPHY} from '../../styles/typographyV2'
+import {FONT_FAMILY} from '../../styles/typographyV2'
 import BORDER = PALETTE.BORDER
 import TEXT = PALETTE.TEXT
-import SANS_SERIF = TYPOGRAPHY.SANS_SERIF
 
 const Input = styled('input')({
   appearance: 'none',
@@ -15,7 +14,7 @@ const Input = styled('input')({
   boxShadow: 'none',
   color: TEXT.MAIN,
   display: 'block',
-  fontFamily: SANS_SERIF,
+  fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: '.875rem',
   lineHeight: '1.375rem',
   margin: 0,

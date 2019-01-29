@@ -163,3 +163,12 @@ export const sendMeetingMemberNotCheckedInError = (authToken, meetingMemberId, r
   }
   return sendAuthRaven(authToken, 'Meeting member not checked in', breadcrumb, returnValue)
 }
+
+export const sendSuggestedActionNotFoundError = (authToken, suggestedActionId, returnValue) => {
+  const breadcrumb = {
+    message: 'Suggested action not found',
+    category: 'Not found',
+    data: {suggestedActionId}
+  }
+  return sendAuthRaven(authToken, 'Suggested action not found', breadcrumb, returnValue)
+}

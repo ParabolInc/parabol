@@ -1,18 +1,26 @@
-import PropTypes from 'prop-types'
+import {DashSidebar_viewer} from '__generated__/DashSidebar_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {NavLink} from 'react-router-dom'
-import LogoBlock from 'universal/components/LogoBlock/LogoBlock'
+import styled, {css} from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {NavLink, RouteComponentProps} from 'react-router-dom'
 import tinycolor from 'tinycolor2'
 import DashNavList from 'universal/components/DashNavList/DashNavList'
+import Icon from 'universal/components/Icon'
+import LogoBlock from 'universal/components/LogoBlock/LogoBlock'
 import StandardHub from 'universal/components/StandardHub/StandardHub'
 import makeHoverFocus from 'universal/styles/helpers/makeHoverFocus'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import DashNavItem from './DashNavItem'
-import styled, {css} from 'react-emotion'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+
+export const enum DASH_SIDEBAR {
+  WIDTH = 240
+}
+
+interface Props extends RouteComponentProps<{}> {
+  viewer: DashSidebar_viewer
+}
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString()
 const linkBaseStyles = {
@@ -25,8 +33,8 @@ const DashSidebarStyles = styled('div')({
   color: textColor,
   display: 'flex',
   flexDirection: 'column',
-  maxWidth: ui.dashSidebarWidth,
-  minWidth: ui.dashSidebarWidth
+  maxWidth: DASH_SIDEBAR.WIDTH,
+  minWidth: DASH_SIDEBAR.WIDTH
 })
 
 const MyDashboard = styled('div')({
@@ -106,7 +114,7 @@ const AddTeamLabel = styled('div')({
   lineHeight: ui.navMenuLineHeight
 })
 
-const DashSidebar = (props) => {
+const DashSidebar = (props: Props) => {
   const {location, viewer} = props
   return (
     <DashSidebarStyles>
@@ -137,12 +145,6 @@ const DashSidebar = (props) => {
       <LogoBlock variant='white' />
     </DashSidebarStyles>
   )
-}
-
-DashSidebar.propTypes = {
-  // required to update highlighting
-  location: PropTypes.object.isRequired,
-  viewer: PropTypes.object
 }
 
 export default createFragmentContainer(

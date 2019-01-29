@@ -1,8 +1,7 @@
 import {commitMutation} from 'react-relay'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
-import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast'
+import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
@@ -27,23 +26,13 @@ graphql`
 
 graphql`
   fragment AddOrgMutation_notification on AddOrgPayload {
-    teamInviteNotification {
-      type
-      inviter {
-        preferredName
-      }
-      team {
-        name
-      }
-      id
-      ...TeamInvite_notification @relay(mask: false)
-    }
+    removedSuggestedActionId
   }
 `
 
 const mutation = graphql`
-  mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
-    addOrg(newTeam: $newTeam, invitees: $invitees, orgName: $orgName) {
+  mutation AddOrgMutation($newTeam: NewTeamInput!, $orgName: String!) {
+    addOrg(newTeam: $newTeam, orgName: $orgName) {
       error {
         message
       }
@@ -70,13 +59,9 @@ export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
   handleAddTeams(team, store, viewerId)
 }
 
-export const addOrgMutationNotificationOnNext = (payload, {atmosphere, history}) => {
-  popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere, history})
-}
-
-export const addOrgMutationNotificationUpdater = (payload, store, viewerId) => {
-  const notification = payload.getLinkedRecord('teamInviteNotification')
-  handleAddNotifications(notification, store, viewerId)
+export const addOrgMutationNotificationUpdater = (payload, {store}) => {
+  const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
+  handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
 const AddOrgMutation = (atmosphere, variables, {history}, onError, onCompleted) => {

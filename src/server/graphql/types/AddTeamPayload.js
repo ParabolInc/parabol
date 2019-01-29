@@ -1,12 +1,5 @@
-import {GraphQLObjectType, GraphQLList} from 'graphql'
-import {
-  makeResolveNotificationForViewer,
-  resolveInvitations,
-  resolveTeam,
-  resolveTeamMember
-} from 'server/graphql/resolvers'
-import Invitation from 'server/graphql/types/Invitation'
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite'
+import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {resolveTeam, resolveTeamMember} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
 import TeamMember from 'server/graphql/types/TeamMember'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
@@ -24,14 +17,9 @@ export const addTeamFields = {
     description: 'The teamMember that just created the new team, if this is a creation',
     resolve: resolveTeamMember
   },
-  invitations: {
-    type: new GraphQLList(Invitation),
-    resolve: resolveInvitations
-  },
-  teamInviteNotification: {
-    type: NotifyTeamInvite,
-    description: 'The invitation sent when an team was being created',
-    resolve: makeResolveNotificationForViewer('-', 'teamInviteNotifications')
+  removedSuggestedActionId: {
+    type: GraphQLID,
+    description: 'The ID of the suggestion to create a new team'
   }
 }
 

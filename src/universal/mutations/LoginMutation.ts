@@ -2,13 +2,19 @@ import {LoginMutation, LoginMutationVariables} from '__generated__/LoginMutation
 import {commitMutation, graphql} from 'react-relay'
 import SendClientSegmentEventMutation from 'universal/mutations/SendClientSegmentEventMutation'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import {Omit} from 'types/generics'
 import {LocalHandlers} from '../types/relayMutations'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 
 const mutation = graphql`
-  mutation LoginMutation($auth0Token: String!, $invitationToken: ID, $segmentId: ID) {
-    login(auth0Token: $auth0Token, segmentId: $segmentId) {
+  mutation LoginMutation(
+    $auth0Token: String!
+    $invitationToken: ID
+    $segmentId: ID
+    $isOrganic: Boolean!
+  ) {
+    login(auth0Token: $auth0Token, segmentId: $segmentId, isOrganic: $isOrganic) {
       error {
         message
       }
@@ -32,13 +38,13 @@ const mutation = graphql`
 `
 const LoginMutation = (
   atmosphere: any,
-  variables: LoginMutationVariables,
+  variables: Omit<LoginMutationVariables, 'isOrganic'>,
   {onCompleted, history}: LocalHandlers
 ) => {
   atmosphere.setAuthToken(variables.auth0Token)
   return commitMutation<LoginMutation>(atmosphere, {
     mutation,
-    variables,
+    variables: {...variables, isOrganic: !variables.invitationToken},
     onCompleted: (res, errors) => {
       onCompleted && onCompleted(res, errors)
       const serverError = getGraphQLError(res, errors)
@@ -62,9 +68,8 @@ const LoginMutation = (
       }
 
       // standard redirect logic
-      const {tms} = atmosphere.authObj
       const redirectTo = new URLSearchParams(location.search).get('redirectTo')
-      const nextUrl = redirectTo || (tms ? '/me' : '/welcome')
+      const nextUrl = redirectTo || '/me'
       history.push(nextUrl)
     },
     onError: (err) => {

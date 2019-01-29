@@ -9,8 +9,8 @@ const organizations = () =>
   import(/* webpackChunkName: 'OrganizationsRoot' */ 'universal/modules/userDashboard/containers/Organizations/OrganizationsRoot')
 const organization = () =>
   import(/* webpackChunkName: 'OrganizationRoot' */ 'universal/modules/userDashboard/containers/Organization/OrganizationRoot')
-const userDashRoot = () =>
-  import(/* webpackChunkName: 'UserDashRoot' */ 'universal/modules/userDashboard/components/UserDashRoot')
+const userDashMain = () =>
+  import(/* webpackChunkName: 'UserDashMain' */ 'universal/modules/userDashboard/components/UserDashMain/UserDashMain')
 const userSettings = () =>
   import(/* webpackChunkName: 'UserSettingsRoot' */ 'universal/modules/userDashboard/components/UserSettingsRoot')
 const notificationsMod = () =>
@@ -20,15 +20,19 @@ const UserDashboard = (props) => {
   const {match, notifications} = props
   return (
     <Switch>
-      <AsyncRoute exact path={match.url} mod={userDashRoot} />
       <AsyncRoute path={`${match.url}/settings`} mod={userSettings} />
       <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
-      <AsyncRoute path={`${match.url}/organizations/:orgId`} mod={organization} />
+      <AsyncRoute
+        path={`${match.url}/organization
+      s/:orgId`}
+        mod={organization}
+      />
       <AsyncRoute
         path={`${match.url}/notifications`}
         mod={notificationsMod}
         extraProps={{notifications}}
       />
+      <AsyncRoute path={match.url} mod={userDashMain} />
     </Switch>
   )
 }

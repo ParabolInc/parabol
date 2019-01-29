@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
 import {
   makeResolveNotificationsForViewer,
   resolveNotificationForViewer,
@@ -28,6 +28,10 @@ const ArchiveTeamPayload = new GraphQLObjectType({
       type: new GraphQLList(TeamNotification),
       descriptions: 'All the notifications pertaining to the team that are no longer relevant',
       resolve: makeResolveNotificationsForViewer('-', 'removedTeamNotifications')
+    },
+    removedSuggestedActionIds: {
+      type: new GraphQLList(GraphQLID),
+      description: 'all the suggested actions that never happened'
     }
   })
 })

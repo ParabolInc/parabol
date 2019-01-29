@@ -22,17 +22,20 @@ import makeRetroTemplates from 'server/graphql/mutations/helpers/makeRetroTempla
 import adjustUserCount from 'server/billing/helpers/adjustUserCount'
 import {ADD_USER} from 'server/utils/serverConstants'
 import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
+import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 
 // used for addorg, addTeam, createFirstTeam
 export default async function createTeamAndLeader (userId, newTeam) {
   const r = getRethink()
-
-  const {id: teamId, orgId} = newTeam
+  const now = new Date()
+  const {id: teamId, orgId, isOnboardTeam} = newTeam
   const organization = await r.table('Organization').get(orgId)
   const {tier} = organization
   const verifiedTeam = {
     ...newTeam,
     activeFacilitator: null,
+    createdAt: now,
+    createdBy: userId,
     facilitatorPhase: LOBBY,
     facilitatorPhaseItem: null,
     isArchived: false,
@@ -43,7 +46,6 @@ export default async function createTeamAndLeader (userId, newTeam) {
     tier
   }
   const {phaseItems, templates} = makeRetroTemplates(teamId)
-
   const meetingSettings = [
     {
       id: shortid.generate(),
@@ -77,6 +79,18 @@ export default async function createTeamAndLeader (userId, newTeam) {
     teamLead: insertNewTeamMember(userId, teamId, {
       isLead: true,
       checkInOrder: 0
+    }),
+    event: r.table('TimelineEvent').insert({
+      id: shortid.generate(),
+      // + 5 to make sure it comes after parabol joined event
+      createdAt: new Date(Date.now() + 5),
+      interactionCount: 0,
+      seenCount: 0,
+      eventType: CREATED_TEAM,
+      userId,
+      teamId,
+      orgId,
+      isOnboardTeam
     }),
     // add teamId to user tms array
     user: addTeamIdToTMS(userId, teamId),

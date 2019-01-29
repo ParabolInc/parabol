@@ -1,6 +1,6 @@
 import shortid from 'shortid'
 import getRethink from 'server/database/rethinkDriver'
-import {ACTIVE, FUTURE} from 'server/../universal/utils/constants'
+import {ACTIVE} from 'server/../universal/utils/constants'
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
 import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
@@ -9,34 +9,9 @@ const SEED_TASKS = [
   {
     status: ACTIVE,
     sortOrder: 0,
-    content: convertToTaskContent(`
-      Invite missing team members: choose your team from the left navigation
-      and tap on ‘Team Settings’
-    `)
-  },
-  {
-    status: ACTIVE,
-    sortOrder: 1,
-    content: convertToTaskContent(`
-      Try a test run of a meeting: from your team’s dashboard
-      tap on ‘Start Meeting’ from the dashboard header above #private
-    `)
-  },
-  {
-    status: FUTURE,
-    sortOrder: 0,
-    content: convertToTaskContent(`
-      Make good teaming a habit! Schedule a weekly Action Meeting with your
-      team. Pro-tip: include a link to the meeting lobby
-    `)
-  },
-  {
-    status: FUTURE,
-    sortOrder: 1,
-    content: convertToTaskContent(`
-      Add integrations (like Slack, GitHub…) for your team.
-      See the Integrations tab under Team Settings
-    `)
+    content: convertToTaskContent(
+      `This is a task card. They can be created here, in a meeting, or via an integration`
+    )
   }
 ]
 

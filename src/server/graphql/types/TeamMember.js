@@ -58,8 +58,12 @@ const TeamMember = new GraphQLObjectType({
           return source.isConnected
         }
         const {userId} = source
-        const {connectedSockets} = await dataLoader.get('users').load(userId)
-        return Array.isArray(connectedSockets) && connectedSockets.length > 0
+        if (userId) {
+          const {connectedSockets} = await dataLoader.get('users').load(userId)
+          return Array.isArray(connectedSockets) && connectedSockets.length > 0
+        }
+        // should only hit this in dev
+        return false
       }
     },
     isCheckedIn: {

@@ -1,6 +1,5 @@
 import * as React from 'react'
 import MeetingDashAlert from 'universal/components/MeetingDashAlert/MeetingDashAlert'
-import ui from 'universal/styles/ui'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import {ACTION} from 'universal/utils/constants'
 import {createFragmentContainer} from 'react-relay'
@@ -11,8 +10,9 @@ const StyledDashLayout = styled('div')({
   backgroundColor: '#fff',
   display: 'flex !important',
   flexDirection: 'column',
-  height: '100vh',
-  minWidth: ui.dashMinWidth
+  height: '100vh'
+  // TODO: @TA Please verify that safari fixed the bug that required a large minWidth here, min width containers are causing horizontal scrollbars
+  // minWidth: ui.dashMinWidth
 })
 
 const ChildrenWrapper = styled('div')({
