@@ -30,14 +30,13 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle
-          >{`Action Meeting #${meetingNumber} for team ${teamName} complete!`}</TimelineEventTitle>
+          >{`Action Meeting #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>
         }
       >
         <TimelineEventBody>
           {`It lasted ${meetingDuration} and generated ${taskCount} tasks.`}
           <br />
-          {'See the '}
-          <StyledLink to={`/summary/${meetingId}`}>Full Summary</StyledLink>
+          <StyledLink to={`/summary/${meetingId}`}>See the Full Summary</StyledLink>
           {'.'}
         </TimelineEventBody>
       </TimelineEventCard>

@@ -30,14 +30,13 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle
-          >{`You completed Retrospective #${meetingNumber} with ${teamName}`}</TimelineEventTitle>
+          >{`Retro #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>
         }
       >
         <TimelineEventBody>
           {`It lasted ${meetingDuration} and generated ${taskCount} tasks.`}
           <br />
-          {'See the '}
-          <StyledLink to={`/new-summary/${meetingId}`}>Full Summary</StyledLink>
+          <StyledLink to={`/new-summary/${meetingId}`}>See the Full Summary</StyledLink>
           {'.'}
         </TimelineEventBody>
       </TimelineEventCard>
