@@ -10,7 +10,6 @@ import Tabs from 'universal/components/Tabs/Tabs'
 
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import makeDateString from 'universal/utils/makeDateString'
 import {PALETTE} from '../../../../styles/paletteV2'
 // import DebugButton from './DebugButton'
@@ -24,7 +23,7 @@ const TabBody = styled('div')({
 })
 
 const HeaderCopy = styled('div')({
-  color: ui.colorText,
+  color: PALETTE.TEXT.LIGHT,
   flex: 1,
   fontSize: appTheme.typography.s2,
   fontWeight: 600,
@@ -62,7 +61,8 @@ const UserDashMain = (props: Props) => {
         </TopTabs>
         <HeaderCopy>
           {/*<DebugButton />*/}
-          {makeDateString(new Date(), {showDay: true})} *
+          {makeDateString(new Date(), {showDay: true})}
+          {' • '}
           <RallyLink>
             {getRallyLink()}
             {'!'}
