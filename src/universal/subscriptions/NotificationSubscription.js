@@ -84,6 +84,15 @@ const subscription = graphql`
           }
         }
       }
+
+      # New Feature Broadcasts
+      ... on AddNewFeaturePayload {
+        user {
+          newFeature {
+            copy
+          }
+        }
+      }
     }
   }
 `

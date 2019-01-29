@@ -37,6 +37,7 @@ import {TimelineEventConnection} from 'server/graphql/types/TimelineEvent'
 import getRethink from 'server/database/rethinkDriver'
 import OrganizationUser from 'server/graphql/types/OrganizationUser'
 import SuggestedAction from 'server/graphql/types/SuggestedAction'
+import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -171,19 +172,17 @@ const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp the user was last updated'
     },
-    /* User Profile */
-    // hideFeatureNumber: {
-    //   type: GraphQLInt,
-    //   description: 'The number of the most recent feature that the user has hidden'
-    // },
-    // newFeature: {
-    //   type: NewFeatureBroadcast,
-    //   description: 'The new feature released by Parabol. null if the user already hid it',
-    //   resolve: async ({hideFeatureNumber}) => {
-    //     const newFeature = await r.table('NewFeature').max('number')
-    //     return newFeature.number === hideFeatureNumber ? null : newFeature
-    //   }
-    // },
+    newFeatureId: {
+      type: GraphQLID,
+      description: 'the ID of the newest feature, null if the user has dismissed it'
+    },
+    newFeature: {
+      type: NewFeatureBroadcast,
+      description: 'The new feature released by Parabol. null if the user already hid it',
+      resolve: ({newFeatureId}, _args, {dataLoader}) => {
+        return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
+      }
+    },
     lastSeenAt: {
       type: GraphQLISO8601Type,
       description: 'The last time the user connected via websocket'
