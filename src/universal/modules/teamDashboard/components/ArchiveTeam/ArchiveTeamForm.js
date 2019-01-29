@@ -10,12 +10,14 @@ type Props = {
   teamName: string
 }
 
+const normalize = (str) => str && str.toLowerCase().replace('’', "'")
 class ArchiveTeamForm extends Component<Props> {
-  validate = (value) =>
+  validate = (value) => {
     // ignore case & smart quotes
-    value.toLowerCase().replace('’', "'") !== this.props.teamName.toLowerCase().replace('’', "'")
+    return normalize(value) !== normalize(this.props.teamName)
       ? 'The team name entered was incorrect.'
       : undefined
+  }
 
   render () {
     const {handleFormSubmit, handleFormBlur, handleSubmit} = this.props
