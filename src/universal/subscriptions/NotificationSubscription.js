@@ -90,6 +90,7 @@ const subscription = graphql`
         newFeature {
           id
           copy
+          url
         }
       }
     }

@@ -13,9 +13,13 @@ const addNewFeature = {
     copy: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The text body of the new feature'
+    },
+    url: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'the permalink to the blog post'
     }
   },
-  resolve: async (_source, {copy}, {authToken, dataLoader}) => {
+  resolve: async (_source, {copy, url}, {authToken, dataLoader}) => {
     const r = getRethink()
 
     // AUTH
@@ -27,7 +31,8 @@ const addNewFeature = {
     const newFeatureId = shortid.generate()
     const newFeature = {
       id: newFeatureId,
-      copy
+      copy,
+      url
     }
     await r({
       newFeature: r.table('NewFeature').insert(newFeature),

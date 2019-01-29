@@ -2210,6 +2210,11 @@ export interface INewFeatureBroadcast {
    * The description of the new features
    */
   copy: string
+
+  /**
+   * The permalink to the blog post describing the new features
+   */
+  url: string
 }
 
 /**

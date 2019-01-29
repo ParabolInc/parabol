@@ -10,6 +10,10 @@ const NewFeatureBroadcast = new GraphQLObjectType({
     copy: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The description of the new features'
+    },
+    url: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The permalink to the blog post describing the new features'
     }
   })
 })
