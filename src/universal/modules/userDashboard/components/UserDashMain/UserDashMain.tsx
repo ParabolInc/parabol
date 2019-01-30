@@ -58,7 +58,8 @@ const UserDashMain = (props: Props) => {
         </TopTabs>
         {/*<HeaderCopy>*/}
         {/*/!*<DebugButton />*!/*/}
-        {/*{makeDateString(new Date(), {showDay: true})} **/}
+        {/*{makeDateString(new Date(), {showDay: true})}*/}
+        {/*{' • '}*/}
         {/*<RallyLink>*/}
         {/*{getRallyLink()}*/}
         {/*{'!'}*/}

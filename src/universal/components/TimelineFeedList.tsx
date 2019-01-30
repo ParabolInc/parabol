@@ -28,7 +28,8 @@ class TimelineFeedList extends Component<Props> {
       relay: {hasMore, isLoading, loadMore}
     } = this.props
     if (!hasMore() || isLoading()) return
-    loadMore(20)
+    // can remove pending https://github.com/DefinitelyTyped/DefinitelyTyped/pull/32609
+    loadMore(20, undefined as any)
   }
 
   render () {
@@ -66,7 +67,7 @@ export default createPaginationContainer(
   `,
   {
     direction: 'forward',
-    getConnectionFromProps (props) {
+    getConnectionFromProps (props: any) {
       const {viewer} = props
       return viewer && viewer.timeline
     },
