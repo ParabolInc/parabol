@@ -11,7 +11,7 @@ class DemoMeeting extends Component {
           <Helmet>
             <meta
               property='description'
-              content='See how Parabol makes for effective sprint retrospectives in 3 minutes or less, no account needed. Simulated colleagues illustrate Parabol’s powerful features including multi-user grouping, rich text editing, and gorgeous meeting summaries.'
+              content='Parabol offers effective sprint retrospectives for free. Try a 2-minute demo, no account needed. Simulated colleagues illustrate Parabol’s powerful features including multi-user grouping, rich text editing, and gorgeous meeting summaries.'
             />
           </Helmet>
           <RetroRoot />
