@@ -1,5 +1,6 @@
 import {TimelineSuggestedAction_viewer} from '__generated__/TimelineSuggestedAction_viewer.graphql'
 import React, {lazy} from 'react'
+import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DelayUnmount from 'universal/components/DelayUnmount'
 
@@ -25,6 +26,10 @@ const lookup = {
   )
 }
 
+const Wrapper = styled('div')({
+  paddingBottom: 16
+})
+
 function TimelineSuggestedAction (props: Props) {
   const {viewer} = props
   const {suggestedActions} = viewer
@@ -35,9 +40,11 @@ function TimelineSuggestedAction (props: Props) {
     AsyncComponent = lookup[__typename]
   }
   return (
-    <DelayUnmount unmountAfter={500}>
-      {AsyncComponent ? <AsyncComponent suggestedAction={suggestedAction} /> : null}
-    </DelayUnmount>
+    <Wrapper>
+      <DelayUnmount unmountAfter={500}>
+        {AsyncComponent ? <AsyncComponent suggestedAction={suggestedAction} /> : null}
+      </DelayUnmount>
+    </Wrapper>
   )
 }
 
