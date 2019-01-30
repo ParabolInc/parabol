@@ -74,7 +74,7 @@ class OrgAvatarInput extends Component<Props> {
         id: orgId,
         picture: pictureUrl
       }
-      UpdateOrgMutation(atmosphere, updatedOrg, {onError, onCompleted})
+      UpdateOrgMutation(atmosphere, {updatedOrg}, {onError, onCompleted})
     }
     CreateOrgPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
   }

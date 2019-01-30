@@ -1,5 +1,10 @@
-import {commitMutation} from 'react-relay'
-
+import {commitMutation, graphql} from 'react-relay'
+import Atmosphere from '../Atmosphere'
+import {
+  UpdateOrgMutation,
+  UpdateOrgMutationVariables
+} from '__generated__/UpdateOrgMutation.graphql'
+import {LocalHandlers} from '../types/relayMutations'
 graphql`
   fragment UpdateOrgMutation_organization on UpdateOrgPayload {
     organization {
@@ -20,11 +25,16 @@ const mutation = graphql`
   }
 `
 
-const UpdateOrgMutation = (environment, updatedOrg, {onCompleted, onError}) => {
-  return commitMutation(environment, {
+const UpdateOrgMutation = (
+  atmosphere: Atmosphere,
+  variables: UpdateOrgMutationVariables,
+  {onCompleted, onError}: LocalHandlers
+) => {
+  return commitMutation<UpdateOrgMutation>(atmosphere, {
     mutation,
-    variables: {updatedOrg},
+    variables,
     optimisticUpdater: (store) => {
+      const {updatedOrg} = variables
       const {id, picture, name} = updatedOrg
       const organization = store.get(id)
       if (!organization) return
