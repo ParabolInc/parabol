@@ -2,6 +2,8 @@ import {TimelineRightDrawer_viewer} from '__generated__/TimelineRightDrawer_view
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
+import TimelinePriorityTasks from 'universal/components/TimelinePriorityTasks'
 import {PALETTE} from '../styles/paletteV2'
 import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
 import {DASH_TIMELINE} from './MyDashboardTimeline'
@@ -32,7 +34,12 @@ const TimelineRightDrawer = (props: Props) => {
   const {viewer} = props
   return (
     <RightDrawer>
-      <TimelineNewFeature viewer={viewer} />
+      <ErrorBoundary>
+        <>
+          <TimelineNewFeature viewer={viewer} />
+          <TimelinePriorityTasks viewer={viewer} />
+        </>
+      </ErrorBoundary>
     </RightDrawer>
   )
 }
@@ -42,6 +49,7 @@ export default createFragmentContainer(
   graphql`
     fragment TimelineRightDrawer_viewer on User {
       ...TimelineNewFeature_viewer
+      ...TimelinePriorityTasks_viewer
     }
   `
 )
