@@ -6,7 +6,6 @@ import DashFilterToggle from 'universal/components/DashFilterToggle/DashFilterTo
 import LoadableMenu from 'universal/components/LoadableMenu'
 import LoadableUserDashTeamMenu from 'universal/components/LoadableUserDashTeamMenu'
 import DashSectionHeader from 'universal/components/Dashboard/DashSectionHeader'
-import DashHeading from 'universal/components/Dashboard/DashHeading'
 import DashSectionControls from 'universal/components/Dashboard/DashSectionControls'
 import DashSectionControl from 'universal/components/Dashboard/DashSectionControl'
 
@@ -25,7 +24,6 @@ const UserTasksHeader = (props) => {
   // TODO refactor so we can pull teams from the relay cache instead of feeding it down a long tree
   return (
     <DashSectionHeader>
-      <DashHeading>{'My Dashboard'}</DashHeading>
       <DashSectionControls>
         <DashSectionControl>
           <DashFilterLabel>

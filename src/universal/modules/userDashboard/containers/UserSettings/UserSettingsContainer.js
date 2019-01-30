@@ -1,34 +1,15 @@
 import PropTypes from 'prop-types'
 import raven from 'raven-js'
 import React, {Component} from 'react'
-import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import {initialize, reduxForm} from 'redux-form'
-import withReducer from 'universal/decorators/withReducer/withReducer'
 import UserSettings from 'universal/modules/userDashboard/components/UserSettings/UserSettings'
-import userSettingsReducer, {
-  ACTIVITY_WELCOME,
-  clearActivity
-} from 'universal/modules/userDashboard/ducks/settingsDuck'
 import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation'
 import makeUpdatedUserSchema from 'universal/validation/makeUpdatedUserSchema'
 import shouldValidate from 'universal/validation/shouldValidate'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {withRouter} from 'react-router-dom'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
-
-const updateSuccess = {
-  title: 'Settings saved!',
-  message: 'We won’t forget who you are.',
-  level: 'success'
-}
-
-const mapStateToProps = (state) => {
-  return {
-    activity: state.userDashboardSettings.activity,
-    nextPage: state.userDashboardSettings.nextPage
-  }
-}
+import {connect} from 'react-redux'
 
 const validate = (values) => {
   const schema = makeUpdatedUserSchema()
@@ -37,11 +18,8 @@ const validate = (values) => {
 
 class UserSettingsContainer extends Component {
   static propTypes = {
-    activity: PropTypes.string,
     atmosphere: PropTypes.object.isRequired,
     dispatch: PropTypes.func,
-    nextPage: PropTypes.string,
-    history: PropTypes.object,
     untouch: PropTypes.func,
     viewer: PropTypes.object.isRequired
   }
@@ -51,12 +29,9 @@ class UserSettingsContainer extends Component {
   }
 
   onSubmit = async (submissionData) => {
-    const {activity, dispatch, untouch, atmosphere, nextPage, viewer, history} = this.props
+    const {untouch, atmosphere, viewer} = this.props
     const {preferredName} = submissionData
     if (preferredName === viewer.preferredName) {
-      if (nextPage) {
-        history.push(nextPage)
-      }
       return undefined
     }
     return new Promise((resolve, reject) => {
@@ -69,13 +44,6 @@ class UserSettingsContainer extends Component {
         if (serverError) {
           onError(serverError.message)
           return
-        }
-        atmosphere.eventEmitter.emit('addToast', updateSuccess)
-        if (activity === ACTIVITY_WELCOME) {
-          dispatch(clearActivity())
-        }
-        if (nextPage) {
-          history.push(nextPage)
         }
         untouch('preferredName')
         resolve()
@@ -100,11 +68,7 @@ class UserSettingsContainer extends Component {
 
 export default createFragmentContainer(
   withAtmosphere(
-    withReducer({userDashboardSettings: userSettingsReducer})(
-      reduxForm({form: 'userSettings', shouldValidate, validate})(
-        connect(mapStateToProps)(withRouter(UserSettingsContainer))
-      )
-    )
+    connect()(reduxForm({form: 'userSettings', shouldValidate, validate})(UserSettingsContainer))
   ),
   graphql`
     fragment UserSettingsContainer_viewer on User {

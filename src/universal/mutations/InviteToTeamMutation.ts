@@ -5,6 +5,7 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import {IInviteToTeamOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
 import AcceptTeamInvitationMutation from './AcceptTeamInvitationMutation'
+import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment InviteToTeamMutation_notification on InviteToTeamPayload {
@@ -31,6 +32,7 @@ const mutation = graphql`
         message
       }
       invitees
+      removedSuggestedActionId
       ...InviteToTeamMutation_notification @relay(mask: false)
     }
   }
@@ -84,6 +86,12 @@ const InviteToTeamMutation = (
   return commitMutation<InviteToTeamMutation>(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('inviteToTeam')
+      if (!payload) return
+      const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
+      handleRemoveSuggestedActions(removedSuggestedActionId, store)
+    },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)

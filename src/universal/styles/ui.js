@@ -306,7 +306,7 @@ const ui = {
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
 
-  dashMinWidth: '79rem',
+  // dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashAlertsHeight: '5.25rem',
 
@@ -315,6 +315,7 @@ const ui = {
   dashControlHeight: '1.25rem',
 
   dashSidebarBackgroundColor: appTheme.palette.mid,
+  // TODO replace with DIMS.DASH_SIDEBAR_WIDTH
   dashSidebarWidth: '15rem',
   dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
   draftModalMargin: 32,

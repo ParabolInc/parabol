@@ -1,9 +1,8 @@
 import {commitMutation} from 'react-relay'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
-import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {
@@ -15,23 +14,13 @@ graphql`
 
 graphql`
   fragment AddTeamMutation_notification on AddTeamPayload {
-    teamInviteNotification {
-      type
-      inviter {
-        preferredName
-      }
-      team {
-        name
-      }
-      id
-      ...TeamInvite_notification @relay(mask: false)
-    }
+    removedSuggestedActionId
   }
 `
 
 const mutation = graphql`
-  mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Invitee!]) {
-    addTeam(newTeam: $newTeam, invitees: $invitees) {
+  mutation AddTeamMutation($newTeam: NewTeamInput!) {
+    addTeam(newTeam: $newTeam) {
       error {
         message
       }
@@ -55,13 +44,9 @@ export const addTeamTeamUpdater = (payload, store, viewerId) => {
   handleAddTeams(team, store, viewerId)
 }
 
-export const addTeamMutationNotificationUpdater = (payload, store, viewerId) => {
-  const notification = payload.getLinkedRecord('teamInviteNotification')
-  handleAddNotifications(notification, store, viewerId)
-}
-
-export const addTeamMutationNotificationOnNext = (payload, {atmosphere, history}) => {
-  popTeamInviteNotificationToast(payload.teamInviteNotification, {atmosphere, history})
+export const addTeamMutationNotificationUpdater = (payload, {store}) => {
+  const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
+  handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
 const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) => {

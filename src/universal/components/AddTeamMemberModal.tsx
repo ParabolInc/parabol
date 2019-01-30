@@ -43,6 +43,7 @@ const ErrorMessage = styled(StyledError)({
 })
 
 class AddTeamMemberModal extends Component<Props, State> {
+  _mounted = true
   state = {
     successfulInvitations: null,
     rawInvitees: '',
@@ -81,12 +82,18 @@ class AddTeamMemberModal extends Component<Props, State> {
       onCompleted()
       if (res) {
         const {inviteToTeam} = res
-        this.setState({
-          successfulInvitations: inviteToTeam.invitees
-        })
+        if (this._mounted) {
+          this.setState({
+            successfulInvitations: inviteToTeam.invitees
+          })
+        }
       }
     }
     InviteToTeamMutation(atmosphere, {teamId, invitees}, {onError, onCompleted: handleCompleted})
+  }
+
+  componentWillUnmount () {
+    this._mounted = false
   }
 
   render () {

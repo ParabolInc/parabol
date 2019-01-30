@@ -60,7 +60,6 @@ import upgradeToPro from 'server/graphql/mutations/upgradeToPro'
 import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg'
 import addTeam from 'server/graphql/mutations/addTeam'
 import updateTeamName from 'server/graphql/mutations/updateTeamName'
-import createFirstTeam from 'server/graphql/mutations/createFirstTeam'
 import removeOrgUser from 'server/graphql/mutations/removeOrgUser'
 import createOrgPicturePutUrl from 'server/graphql/mutations/createOrgPicturePutUrl'
 import addFeatureFlag from 'server/graphql/mutations/addFeatureFlag'
@@ -93,6 +92,8 @@ import renameReflectTemplate from 'server/graphql/mutations/renameReflectTemplat
 import renameReflectTemplatePrompt from 'server/graphql/mutations/renameReflectTemplatePrompt'
 import inviteToTeam from 'server/graphql/mutations/inviteToTeam'
 import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
+import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAction'
+import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -114,7 +115,6 @@ export default new GraphQLObjectType({
     clearNotification,
     connectSocket,
     createImposterToken,
-    createFirstTeam,
     createGitHubIssue,
     createOrgPicturePutUrl,
     createReflection,
@@ -123,6 +123,8 @@ export default new GraphQLObjectType({
     createUserPicturePutUrl,
     deleteTask,
     disconnectSocket,
+    dismissNewFeature,
+    dismissSuggestedAction,
     downgradeToPersonal,
     dragDiscussionTopic,
     endDraggingReflection,

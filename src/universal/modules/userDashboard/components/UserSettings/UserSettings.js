@@ -9,10 +9,8 @@ import InputField from 'universal/components/InputField/InputField'
 import Panel from 'universal/components/Panel/Panel'
 import Helmet from 'react-helmet'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
-import {ACTIVITY_WELCOME} from 'universal/modules/userDashboard/ducks/settingsDuck'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
-import {randomPreferredName} from 'universal/utils/makeRandomPlaceholder'
 import styled from 'react-emotion'
 import LoadableModal from 'universal/components/LoadableModal'
 
@@ -26,10 +24,6 @@ const SettingsForm = styled('form')({
   display: 'flex',
   padding: ui.panelGutter,
   width: '100%'
-})
-
-const ActivityBlock = styled('div')({
-  margin: '0 0 1.5rem'
 })
 
 const InfoBlock = styled('div')({
@@ -55,26 +49,12 @@ const StyledButton = styled(RaisedButton)({
   width: '7rem'
 })
 
-const renderActivity = (activity) => {
-  if (activity === ACTIVITY_WELCOME) {
-    return (
-      <div>
-        {
-          'Hey, welcome aboard! In order for your team to recognize who you are, do you mind telling us your name?'
-        }
-      </div>
-    )
-  }
-  return null
-}
-
 const UserAvatarInput = lazy(() =>
   import(/* webpackChunkName: 'UserAvatarInput' */ 'universal/components/UserAvatarInput')
 )
 
 const UserSettings = (props) => {
   const {
-    activity,
     handleSubmit,
     onSubmit,
     viewer: {picture}
@@ -100,7 +80,6 @@ const UserSettings = (props) => {
               toggle={toggle}
             />
             <InfoBlock>
-              {activity && <ActivityBlock>{renderActivity(activity)}</ActivityBlock>}
               <FieldLabel
                 customStyles={{paddingBottom: ui.fieldLabelGutter}}
                 label='Name'
@@ -116,7 +95,7 @@ const UserSettings = (props) => {
                     component={InputField}
                     fieldSize={controlSize}
                     name='preferredName'
-                    placeholder={randomPreferredName}
+                    placeholder='My name'
                     type='text'
                   />
                 </FieldBlock>
@@ -133,10 +112,8 @@ const UserSettings = (props) => {
 }
 
 UserSettings.propTypes = {
-  activity: PropTypes.string, // from settingsDuck
   dispatch: PropTypes.func,
   handleSubmit: PropTypes.func,
-  nextPage: PropTypes.string, // from settingsDuck
   onSubmit: PropTypes.func,
   userId: PropTypes.string,
   viewer: PropTypes.object.isRequired

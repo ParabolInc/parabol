@@ -19,7 +19,7 @@ import DashNavControl from 'universal/components/DashNavControl/DashNavControl'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import TagBlock from 'universal/components/Tag/TagBlock'
 import TagPro from 'universal/components/Tag/TagPro'
-import LoadableModal from 'universal/modules/userDashboard/components/UserSettings/UserSettings'
+import LoadableModal from 'universal/components/LoadableModal'
 
 const orgSqueeze = () =>
   import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
@@ -78,6 +78,7 @@ const OrgAvatarInput = lazy(() =>
 )
 
 const Organization = (props) => {
+  console.log('root2')
   const {
     history,
     match,

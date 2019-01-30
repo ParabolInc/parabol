@@ -58,6 +58,8 @@ const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'UpdateCreditCardPayload':
           break
+        case 'UpdateOrgPayload':
+          break
         default:
           console.error('OrganizationSubscription case fail', type)
       }

@@ -1569,10 +1569,10 @@
     "@types/react" "*"
     redux "^4.0.0"
 
-"@types/react-relay@^1.3.9":
-  version "1.3.9"
-  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-1.3.9.tgz#8875e11c763f75488b8be4876ca2fb7e181f2f98"
-  integrity sha512-DFhFrEiDUYxR6VWpkf14CnzS7vtpWaVku0EmnxT2X4U45rOUP75nnOEnRCixZyyxIgr7ULpg5Zc1G9VJpQF7GQ==
+"@types/react-relay@^1.3.10":
+  version "1.3.10"
+  resolved "https://registry.yarnpkg.com/@types/react-relay/-/react-relay-1.3.10.tgz#3f0197b3e3a1205cfbf53162592f307fd631aeb0"
+  integrity sha512-6jiN1XXCIY03VMXGcymNxNN1FrjK47NH75y7vqMUNuJvTaZurmTIgqTQ02RtAeK1i/uRxy4fZIjnTsZLrsDrDw==
   dependencies:
     "@types/react" "*"
     "@types/relay-runtime" "*"
@@ -1609,10 +1609,15 @@
   dependencies:
     redux "*"
 
-"@types/relay-runtime@*", "@types/relay-runtime@^1.3.6":
+"@types/relay-runtime@*":
   version "1.3.6"
   resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-1.3.6.tgz#839610054c1747217e814c8993fa642e902d0de0"
   integrity sha512-NobpY0XFh0O9FTRkFJsN5ZNd+M+4eac8ZgM5LP3C0tLd1JkfrwuGkyBUMTuDDGYf+T5zl6vTO6EGgXKD+0QpGA==
+
+"@types/relay-runtime@^1.3.8":
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-1.3.8.tgz#75f554d8aa57a8a76e304ec858a7c7a32322bef0"
+  integrity sha512-v5uoUkn1rTjmg1A/1qOFqdWR30aRAOnGw3dn80gnMEPIavqq49V9N/3EMk80AB2337OhGgV65oTG6cteGWEndA==
 
 "@types/segment-analytics@^0.0.28":
   version "0.0.28"

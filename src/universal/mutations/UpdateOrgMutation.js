@@ -20,7 +20,7 @@ const mutation = graphql`
   }
 `
 
-const UpdateOrgMutation = (environment, updatedOrg, onCompleted, onError) => {
+const UpdateOrgMutation = (environment, updatedOrg, {onCompleted, onError}) => {
   return commitMutation(environment, {
     mutation,
     variables: {updatedOrg},

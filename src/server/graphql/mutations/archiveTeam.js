@@ -32,7 +32,7 @@ export default {
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', viewerId, {teamId})
-    const {team, users, removedTeamNotifications} = await r({
+    const {team, users, removedTeamNotifications, removedSuggestedActionIds} = await r({
       team: r
         .table('Team')
         .get(teamId)
@@ -64,6 +64,19 @@ export default {
         // TODO index
         .filter({teamId})
         .delete({returnChanges: true})('changes')('new_val')
+        .default([]),
+      removedSuggestedActionIds: r
+        .table('SuggestedAction')
+        // NOTE: this isn't 100% correct because the person removing the team may not be the
+        // person who has the suggested actions, but it saves us from needing an extra index
+        .getAll(viewerId, {index: 'userId'})
+        .filter({teamId})
+        .update(
+          {
+            removedAt: now
+          },
+          {returnChanges: true}
+        )('changes')('new_val')('id')
         .default([])
     })
 
@@ -88,7 +101,8 @@ export default {
     const data = {
       teamId,
       notificationIds: notifications.map(({id}) => id),
-      removedTeamNotifications
+      removedTeamNotifications,
+      removedSuggestedActionIds
     }
     publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions)
 

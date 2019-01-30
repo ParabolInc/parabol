@@ -44,6 +44,10 @@ const Team = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team was created'
     },
+    createdBy: {
+      type: GraphQLID,
+      description: 'The userId that created the team. Non-null at v2.22.0+'
+    },
     // isActive: {
     //   type: GraphQLBoolean,
     //   description: 'true if the team is active, false if it is in the archive'

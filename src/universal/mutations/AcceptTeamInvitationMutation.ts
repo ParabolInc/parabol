@@ -26,12 +26,18 @@ graphql`
     }
   }
 `
-
 graphql`
   fragment AcceptTeamInvitationMutation_notification on AcceptTeamInvitationPayload {
+    # this is just for the user that accepted the invitation
     removedNotificationIds
     team {
       ...CompleteTeamFrag @relay(mask: false)
+    }
+    # this is just for the team lead
+    teamLead {
+      suggestedActions {
+        ...TimelineSuggestedAction_suggestedAction @relay(mask: false)
+      }
     }
   }
 `

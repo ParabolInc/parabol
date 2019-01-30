@@ -33,7 +33,11 @@ import MeetingMember from 'server/graphql/types/MeetingMember'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
 import Organization from 'server/graphql/types/Organization'
+import {TimelineEventConnection} from 'server/graphql/types/TimelineEvent'
+import getRethink from 'server/database/rethinkDriver'
 import OrganizationUser from 'server/graphql/types/OrganizationUser'
+import SuggestedAction from 'server/graphql/types/SuggestedAction'
+import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -104,6 +108,58 @@ const User = new GraphQLObjectType({
       type: GraphQLString,
       description: 'Name associated with the user'
     },
+    suggestedActions: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(SuggestedAction))),
+      description: 'the most important actions for the user to perform',
+      resolve: async ({id: userId}, _args, {dataLoader, authToken}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId) return null
+        const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
+        suggestedActions.sort((a, b) => (a.priority < b.priority ? -1 : 1))
+        return suggestedActions
+      }
+    },
+    timeline: {
+      type: new GraphQLNonNull(TimelineEventConnection),
+      description: 'The timeline of important events for the viewer',
+      args: {
+        after: {
+          type: GraphQLISO8601Type,
+          description: 'the datetime cursor'
+        },
+        first: {
+          type: new GraphQLNonNull(GraphQLInt),
+          description: 'the number of timeline events to return'
+        }
+      },
+      resolve: async ({id}, {after, first}, {dataLoader, authToken}) => {
+        const r = getRethink()
+        const viewerId = getUserId(authToken)
+        if (viewerId !== id) return null
+        const dbAfter = after ? new Date(after) : r.maxval
+        const events = await r
+          .table('TimelineEvent')
+          .between([viewerId, r.minval], [viewerId, dbAfter], {
+            index: 'userIdCreatedAt'
+          })
+          .orderBy(r.desc('createdAt'))
+          .limit(first + 1)
+          .coerceTo('array')
+        const edges = events.slice(0, first).map((node) => ({
+          cursor: node.createdAt,
+          node
+        }))
+        const [firstEdge] = edges
+        return {
+          edges,
+          pageInfo: {
+            startCursor: firstEdge ? firstEdge.cursor : null,
+            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
+            hasNextPage: events.length > edges.length
+          }
+        }
+      }
+    },
     nickname: {
       type: GraphQLString,
       description: 'Nickname associated with the user'
@@ -116,10 +172,16 @@ const User = new GraphQLObjectType({
       type: GraphQLISO8601Type,
       description: 'The timestamp the user was last updated'
     },
-    /* User Profile */
-    broadcastFlags: {
-      type: GraphQLInt,
-      description: 'flag to determine which broadcasts to show'
+    newFeatureId: {
+      type: GraphQLID,
+      description: 'the ID of the newest feature, null if the user has dismissed it'
+    },
+    newFeature: {
+      type: NewFeatureBroadcast,
+      description: 'The new feature released by Parabol. null if the user already hid it',
+      resolve: ({newFeatureId}, _args, {dataLoader}) => {
+        return newFeatureId ? dataLoader.get('newFeatures').load(newFeatureId) : null
+      }
     },
     lastSeenAt: {
       type: GraphQLISO8601Type,

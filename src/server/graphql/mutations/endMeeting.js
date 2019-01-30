@@ -8,10 +8,13 @@ import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
 import {isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
-import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants'
+import {DONE, LOBBY, NOTIFICATION, TASK, TEAM} from 'universal/utils/constants'
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy'
 import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import sendAuthRaven from 'server/utils/sendAuthRaven'
+import shortid from 'shortid'
+import {COMPLETED_ACTION_MEETING} from 'server/graphql/types/TimelineEventTypeEnum'
+import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
 
 export default {
   type: EndMeetingPayload,
@@ -200,7 +203,39 @@ export default {
       meetingId
     }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const events = teamMembers.map((teamMember) => ({
+      id: shortid.generate(),
+      createdAt: now,
+      interactionCount: 0,
+      seenCount: 0,
+      type: COMPLETED_ACTION_MEETING,
+      userId: teamMember.userId,
+      teamId,
+      orgId: team.orgId,
+      meetingId
+    }))
+    await r.table('TimelineEvent').insert(events)
+    if (team.isOnboardTeam) {
+      const teamLeadUserId = await r
+        .table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isLead: true})
+        .nth(0)('userId')
 
+      const removedSuggestedActionId = await removeSuggestedAction(
+        teamLeadUserId,
+        'tryActionMeeting'
+      )
+      if (removedSuggestedActionId) {
+        publish(
+          NOTIFICATION,
+          teamLeadUserId,
+          EndMeetingPayload,
+          {removedSuggestedActionId},
+          subOptions
+        )
+      }
+    }
     publish(TEAM, teamId, EndMeetingPayload, data, subOptions)
     teamMembers.forEach(({userId}) => {
       publish(TASK, userId, EndMeetingPayload, data, subOptions)

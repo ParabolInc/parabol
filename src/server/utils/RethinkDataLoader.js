@@ -183,6 +183,17 @@ export default class RethinkDataLoader {
         return softTeamMembers.filter((softTeamMember) => softTeamMember.teamId === teamId)
       })
     }, this.dataloaderOptions)
+    this.suggestedActionsByUserId = makeCustomLoader(async (userIds) => {
+      const r = getRethink()
+      const suggestedActions = await r
+        .table('SuggestedAction')
+        .getAll(r.args(userIds), {index: 'userId'})
+        .filter({removedAt: null})
+      primeStandardLoader(this.suggestedActions, suggestedActions)
+      return userIds.map((userId) => {
+        return suggestedActions.filter((suggestedAction) => suggestedAction.userId === userId)
+      })
+    }, this.dataloaderOptions)
     this.tasksByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink()
       const userId = getUserId(this.authToken)
@@ -294,6 +305,7 @@ export default class RethinkDataLoader {
   meetingSettings = this.makeStandardLoader('MeetingSettings')
   meetingMembers = this.makeStandardLoader('MeetingMember')
   newMeetings = this.makeStandardLoader('NewMeeting')
+  newFeatures = this.makeStandardLoader('NewFeature')
   notifications = this.makeStandardLoader('Notification')
   orgApprovals = this.makeStandardLoader('OrgApproval')
   organizations = this.makeStandardLoader('Organization')
@@ -302,6 +314,7 @@ export default class RethinkDataLoader {
   retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup')
   retroReflections = this.makeStandardLoader('RetroReflection')
   softTeamMembers = this.makeStandardLoader('SoftTeamMember')
+  suggestedActions = this.makeStandardLoader('SuggestedAction')
   tasks = this.makeStandardLoader('Task')
   teamMembers = this.makeStandardLoader('TeamMember')
   teamInvitations = this.makeStandardLoader('TeamInvitation')

@@ -13,8 +13,6 @@ const meetingSummary = () =>
   import(/* webpackChunkName: 'MeetingSummary' */ 'universal/modules/summary/components/MeetingSummaryRoot')
 const newMeetingSummary = () =>
   import(/* webpackChunkName: 'NewMeetingSummaryRoot' */ 'universal/modules/summary/components/NewMeetingSummaryRoot')
-const welcome = () =>
-  import(/* webpackChunkName: 'WelcomeRoot' */ 'universal/modules/welcome/components/WelcomeRoot')
 const graphql = () =>
   import(/* webpackChunkName: 'GraphqlContainer' */ 'universal/modules/admin/containers/Graphql/GraphqlContainer')
 const impersonate = () =>
@@ -86,7 +84,6 @@ const Action = () => {
         <AsyncRoute isPrivate path='/invoice/:invoiceId' mod={invoice} />
         <AsyncRoute isPrivate path='/summary/:meetingId' mod={meetingSummary} />
         <AsyncRoute isPrivate path='/new-summary/:meetingId/:urlAction?' mod={newMeetingSummary} />
-        <AsyncRoute isPrivate path='/welcome' mod={welcome} />
         <AsyncRoute path='/admin/graphql' mod={graphql} />
         <AsyncRoute path='/admin/impersonate/:newUserId' mod={impersonate} />
         <AsyncRoute path='/invitation/:inviteToken' mod={invitation} />

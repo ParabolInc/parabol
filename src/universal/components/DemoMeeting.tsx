@@ -10,8 +10,8 @@ class DemoMeeting extends Component {
         <React.Fragment>
           <Helmet>
             <meta
-              name='description'
-              content='Try Parabol without creating an account; a free online retrospective tool featuring custom templates, powerful analytics, multi-user grouping, rich text editing, integrations, and gorgeous meeting summaries. Tasks are assigned and tracked so your team can continuously improve.'
+              property='description'
+              content='Parabol offers effective sprint retrospectives for free. Try a 2-minute demo, no account needed. Simulated colleagues illustrate Parabol’s powerful features including multi-user grouping, rich text editing, and gorgeous meeting summaries.'
             />
           </Helmet>
           <RetroRoot />

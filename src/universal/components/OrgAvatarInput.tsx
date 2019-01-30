@@ -62,11 +62,12 @@ class OrgAvatarInput extends Component<Props> {
     submitMutation()
     const variables = {
       contentType: file.type,
-      contentLength: file.size
+      contentLength: file.size,
+      orgId
     }
     const handleCompleted = async (res) => {
       const {
-        createUserPicturePutUrl: {url}
+        createOrgPicturePutUrl: {url}
       } = res
       const pictureUrl = await sendAssetToS3(file, url)
       const updatedOrg = {
@@ -79,6 +80,7 @@ class OrgAvatarInput extends Component<Props> {
   }
 
   render () {
+    console.log('RED"')
     const {picture, dirty, error} = this.props
     return (
       <ModalBoundary>

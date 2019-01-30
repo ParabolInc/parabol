@@ -64,9 +64,8 @@ class UserColumnsContainer extends Component {
 
   render () {
     const {
-      teams,
       userId,
-      viewer: {tasks: allTasks}
+      viewer: {teams, tasks: allTasks}
     } = this.props
     const {tasks} = this.state
     return (
@@ -83,7 +82,6 @@ class UserColumnsContainer extends Component {
 
 UserColumnsContainer.propTypes = {
   tasks: PropTypes.object,
-  teams: PropTypes.array,
   teamFilterId: PropTypes.string,
   userId: PropTypes.string,
   viewer: PropTypes.object
@@ -93,6 +91,11 @@ export default createFragmentContainer(
   connect(mapStateToProps)(UserColumnsContainer),
   graphql`
     fragment UserColumnsContainer_viewer on User {
+      teams {
+        id
+        name
+        meetingId
+      }
       contentFilter
       tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
         edges {
