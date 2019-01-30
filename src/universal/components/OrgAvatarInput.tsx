@@ -80,7 +80,6 @@ class OrgAvatarInput extends Component<Props> {
   }
 
   render () {
-    console.log('RED"')
     const {picture, dirty, error} = this.props
     return (
       <ModalBoundary>

@@ -36,8 +36,7 @@ class AvatarInput extends Component<Props> {
     const {files} = e.currentTarget
     const imageToUpload = files ? files[0] : null
     if (!imageToUpload) return
-    // TODO see if we still need the setTimeout
-    setTimeout(() => onSubmit(imageToUpload))
+    onSubmit(imageToUpload)
   }
 
   render () {

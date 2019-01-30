@@ -78,7 +78,6 @@ const OrgAvatarInput = lazy(() =>
 )
 
 const Organization = (props) => {
-  console.log('root2')
   const {
     history,
     match,

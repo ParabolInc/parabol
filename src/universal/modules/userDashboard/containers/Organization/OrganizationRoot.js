@@ -26,7 +26,6 @@ const OrganizationRoot = (props: Props) => {
   const {
     params: {orgId}
   } = match
-  console.log('roo')
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
