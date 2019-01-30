@@ -3,7 +3,7 @@ import withInnerRef from 'universal/decorators/withInnerRef'
 
 const disabledStyles = {
   cursor: 'not-allowed',
-  opacity: '.5',
+  opacity: 0.5,
   ':hover,:focus,:active,:disabled': {
     boxShadow: 'none'
   },
@@ -15,7 +15,12 @@ const disabledStyles = {
   }
 }
 
-const PlainButton = styled('button')(
+interface Props {
+  disabled?: boolean
+  waiting?: boolean
+}
+
+const PlainButton = styled('button')<Props>(
   {
     appearance: 'none',
     background: 'inherit',
@@ -29,8 +34,8 @@ const PlainButton = styled('button')(
     padding: 0,
     textAlign: 'inherit'
   },
-  ({disabled, waiting}) => (disabled || waiting) && disabledStyles,
-  ({waiting}) => ({cursor: waiting && 'wait'})
+  ({disabled, waiting}) => (disabled || waiting ? disabledStyles : undefined),
+  ({waiting}) => ({cursor: waiting ? 'wait' : undefined})
 )
 
 export default withInnerRef(PlainButton)

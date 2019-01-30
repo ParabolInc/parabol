@@ -60,7 +60,6 @@ import upgradeToPro from 'server/graphql/mutations/upgradeToPro'
 import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg'
 import addTeam from 'server/graphql/mutations/addTeam'
 import updateTeamName from 'server/graphql/mutations/updateTeamName'
-import createFirstTeam from 'server/graphql/mutations/createFirstTeam'
 import removeOrgUser from 'server/graphql/mutations/removeOrgUser'
 import createOrgPicturePutUrl from 'server/graphql/mutations/createOrgPicturePutUrl'
 import addFeatureFlag from 'server/graphql/mutations/addFeatureFlag'
@@ -115,7 +114,6 @@ export default new GraphQLObjectType({
     clearNotification,
     connectSocket,
     createImposterToken,
-    createFirstTeam,
     createGitHubIssue,
     createOrgPicturePutUrl,
     createReflection,

@@ -2,6 +2,7 @@ import {MyDashboardTimeline_viewer} from '__generated__/MyDashboardTimeline_view
 import React, {Suspense} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import TimelineFeedList from 'universal/components/TimelineFeedList'
 import TimelineSuggestedAction from 'universal/components/TimelineSuggestedAction'
 import {PALETTE} from '../styles/paletteV2'
 import {DASH_SIDEBAR} from './Dashboard/DashSidebar'
@@ -28,7 +29,7 @@ const TimelineFeed = styled('div')({
   paddingTop: 24
 })
 
-const TimelineFeedItems = styled('div')({
+export const TimelineFeedItems = styled('div')({
   maxWidth: DASH_TIMELINE.FEED_MAX_WIDTH,
   minWidth: DASH_TIMELINE.FEED_MIN_WIDTH,
   width: '100%'
@@ -64,6 +65,7 @@ const MyDashboardTimeline = (props: Props) => {
         <TimelineFeedItems>
           <Suspense fallback={<TimelineLoadingEvents />}>
             <TimelineSuggestedAction viewer={viewer} />
+            <TimelineFeedList viewer={viewer} />
           </Suspense>
         </TimelineFeedItems>
       </TimelineFeed>
@@ -78,6 +80,7 @@ export default createFragmentContainer(
     fragment MyDashboardTimeline_viewer on User {
       id
       ...TimelineSuggestedAction_viewer
+      ...TimelineFeedList_viewer
     }
   `
 )

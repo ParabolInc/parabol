@@ -113,7 +113,7 @@ export interface IUser {
   /**
    * The timeline of important events for the viewer
    */
-  timeline: ITimelineEventConnection | null
+  timeline: ITimelineEventConnection
 
   /**
    * Nickname associated with the user
@@ -570,6 +570,7 @@ export type TimelineEvent =
   | ITimelineEventTeamCreated
   | ITimelineEventJoinedParabol
   | ITimelineEventCompletedRetroMeeting
+  | ITimelineEventCompletedActionMeeting
 
 /**
  * A past event that is important to the viewer
@@ -620,7 +621,7 @@ export interface ITimelineEvent {
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -2583,6 +2584,11 @@ export interface IMeeting {
   tasks: Array<IMeetingTask | null> | null
 
   /**
+   * the number of tasks generated in the meeting
+   */
+  taskCount: number
+
+  /**
    * The start time used to create the diff (all taskDiffs occurred between this time and the endTime
    */
   sinceTime: any | null
@@ -2937,11 +2943,6 @@ export interface IMutation {
    * for troubleshooting by admins, create a JWT for a given userId
    */
   createImposterToken: ICreateImposterTokenPayload | null
-
-  /**
-   * Create a new team and add the first team member. Called from the welcome wizard
-   */
-  createFirstTeam: ICreateFirstTeamPayload | null
   createGitHubIssue: ICreateGitHubIssuePayload | null
 
   /**
@@ -3449,13 +3450,6 @@ export interface ICreateImposterTokenOnMutationArguments {
    * The target userId to impersonate
    */
   userId: string
-}
-
-export interface ICreateFirstTeamOnMutationArguments {
-  /**
-   * The new team object with exactly 1 team member
-   */
-  newTeam: INewTeamInput
 }
 
 export interface ICreateGitHubIssueOnMutationArguments {
@@ -4660,6 +4654,11 @@ export interface IRetrospectiveMeeting {
   settings: IRetrospectiveMeetingSettings
 
   /**
+   * The number of tasks generated in the meeting
+   */
+  taskCount: number
+
+  /**
    * The tasks created within the meeting
    */
   tasks: Array<ITask>
@@ -5235,19 +5234,6 @@ export interface ICreateImposterTokenPayload {
   /**
    * The user you have assumed
    */
-  user: IUser | null
-}
-
-export interface ICreateFirstTeamPayload {
-  __typename: 'CreateFirstTeamPayload'
-  error: IStandardMutationError | null
-  team: ITeam | null
-  teamLead: ITeamMember | null
-
-  /**
-   * The new JWT after adding the team
-   */
-  jwt: string | null
   user: IUser | null
 }
 
@@ -7499,19 +7485,19 @@ export interface ITimelineEventTeamCreated {
   seenCount: number
 
   /**
-   * The teamId this event is associated with
+   * The teamId this event is associated with. Null if not traceable to one team
    */
   teamId: string
 
   /**
    * The team that can see this event
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -7522,11 +7508,6 @@ export interface ITimelineEventTeamCreated {
    * The user than can see this event
    */
   user: IUser
-
-  /**
-   * true if this is the first team auto-created for a user (does not apply to users who joined via invitation)
-   */
-  isOnboardTeam: boolean
 }
 
 /**
@@ -7578,7 +7559,7 @@ export interface ITimelineEventJoinedParabol {
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -7635,12 +7616,12 @@ export interface ITimelineEventCompletedRetroMeeting {
   /**
    * The team that can see this event
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -7656,6 +7637,78 @@ export interface ITimelineEventCompletedRetroMeeting {
    * The meeting that was completed
    */
   meeting: IRetrospectiveMeeting
+
+  /**
+   * The meetingId that was completed
+   */
+  meetingId: string
+}
+
+/**
+ * An event for a completed action meeting
+ */
+export interface ITimelineEventCompletedActionMeeting {
+  __typename: 'TimelineEventCompletedActionMeeting'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IMeeting
 
   /**
    * The meetingId that was completed

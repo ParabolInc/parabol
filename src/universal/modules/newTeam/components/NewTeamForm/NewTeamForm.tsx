@@ -14,7 +14,6 @@ import NewTeamOrgPicker from 'universal/modules/team/components/NewTeamOrgPicker
 import AddOrgMutation from 'universal/mutations/AddOrgMutation'
 import AddTeamMutation from 'universal/mutations/AddTeamMutation'
 import ui from 'universal/styles/ui'
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Legitity from 'universal/validation/Legitity'
 import teamNameValidation from 'universal/validation/teamNameValidation'
@@ -278,7 +277,7 @@ class NewTeamForm extends Component<Props, State> {
               orgName={fields.orgName.value}
               dirty={fields.orgName.dirty}
               error={fields.orgName.error}
-              placeholder={randomPlaceholderTheme.orgName}
+              placeholder='My new organization'
               onBlur={this.handleBlur}
             />
             <NewTeamFormTeamName

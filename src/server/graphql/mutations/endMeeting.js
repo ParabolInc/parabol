@@ -208,7 +208,7 @@ export default {
       createdAt: now,
       interactionCount: 0,
       seenCount: 0,
-      eventType: COMPLETED_ACTION_MEETING,
+      type: COMPLETED_ACTION_MEETING,
       userId: teamMember.userId,
       teamId,
       orgId: team.orgId,
