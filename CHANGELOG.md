@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.2.0 2019-Jan-24
+
+### Changed
+
+* Switching between sign-up/sign-in forms now preserves entered email
+* Add anonymous segmentId to login payload, aliasing to authenticated user
+* Eased friction adding free users to organizations
+
 ## v3.1.0 2019-Jan-09
 
 ### Changed

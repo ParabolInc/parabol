@@ -3,13 +3,6 @@ import {Children, Component} from 'react'
 import Atmosphere from 'universal/Atmosphere'
 import LocalAtmosphere from 'universal/modules/demo/LocalAtmosphere'
 
-let atmosphere
-
-export const resetAtmosphere = () => {
-  atmosphere.close()
-  atmosphere = new Atmosphere()
-}
-
 class AtmosphereProvider extends Component {
   static childContextTypes = {
     atmosphere: PropTypes.object
@@ -22,17 +15,15 @@ class AtmosphereProvider extends Component {
 
   constructor (props) {
     super(props)
-    atmosphere = props.isDemo ? new LocalAtmosphere() : new Atmosphere()
-    if (typeof __CLIENT__ !== 'undefined' && __CLIENT__) {
-      if (atmosphere.getAuthToken) {
-        atmosphere.getAuthToken(window)
-      }
+    this.atmosphere = props.isDemo ? new LocalAtmosphere() : new Atmosphere()
+    if (this.atmosphere.getAuthToken) {
+      this.atmosphere.getAuthToken(window)
     }
   }
 
   getChildContext () {
     return {
-      atmosphere
+      atmosphere: this.atmosphere
     }
   }
 

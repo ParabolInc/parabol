@@ -71,12 +71,12 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       const meetingSlug = meetingTypeToSlug[meetingType]
       if (!newMeeting && teamId) {
         // goto lobby
-        history.push(`/${meetingSlug}/${teamId}`)
+        history.replace(`/${meetingSlug}/${teamId}`)
         return
       }
       const {phases} = newMeeting
       const nextUrl = fromStageIdToUrl(localStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
     }
     if (!this.state.safeRoute) {
       this.setState({safeRoute: true})
@@ -102,7 +102,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     } = this.props
     if (!viewer) {
       // server error
-      history.push('/')
+      history.replace('/')
       return false
     }
     const {
@@ -118,7 +118,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
 
     // i'm trying to go to the middle of a meeting that hasn't started
     if (!newMeeting) {
-      history.push(`/${meetingSlug}/${teamId}`)
+      history.replace(`/${meetingSlug}/${teamId}`)
       return false
     }
 
@@ -128,7 +128,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     if (localStage && !localPhaseSlug) {
       const {id: localStageId} = localStage
       const nextUrl = fromStageIdToUrl(localStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
       return false
     }
 
@@ -139,7 +139,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     if (!phase) {
       // typo in url, send to the facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
       updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       return false
     }
@@ -161,7 +161,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
       updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       return false
     }
