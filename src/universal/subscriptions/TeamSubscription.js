@@ -1,8 +1,5 @@
 import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
-import {
-  addTeamMutationNotificationUpdater,
-  addTeamTeamUpdater
-} from 'universal/mutations/AddTeamMutation'
+import {addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation'
 import {
   archiveTeamTeamOnNext,
   archiveTeamTeamUpdater
@@ -135,9 +132,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'AddReflectTemplatePromptPayload':
           addReflectTemplatePromptTeamUpdater(payload, {store})
-          break
-        case 'AddTeamCreatorPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId)
           break
         case 'AutoGroupReflectionsPayload':
           autoGroupReflectionsTeamUpdater(payload, {atmosphere: environment, store})

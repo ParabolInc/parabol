@@ -1,40 +1,88 @@
-/* global fetch */
+import GQLTrebuchetClient, {
+  GQLHTTPClient,
+  OperationPayload
+} from '@mattkrick/graphql-trebuchet-client'
+import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
+import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
 import {requestSubscription} from 'react-relay'
-import {Environment, getRequest, Network, RecordSource, Store} from 'relay-runtime'
-import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
+import {
+  CacheConfig,
+  Environment,
+  // @ts-ignore
+  getRequest,
+  GraphQLSubscriptionConfig,
+  Network,
+  RecordSource,
+  Store,
+  Variables
+} from 'relay-runtime'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
-import EventEmitter from 'eventemitter3'
+import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
-import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
-import GQLTrebuchetClient, {GQLHTTPClient} from '@mattkrick/graphql-trebuchet-client'
+import {IAuthToken} from './types/graphql'
 // import sleep from 'universal/utils/sleep'
 
-const defaultErrorHandler = (err) => {
+const defaultErrorHandler = (err: any) => {
   console.error('Captured error:', err)
 }
 
+interface QuerySubscription {
+  subKey: string
+  queryKey: string
+  queryFetcher: QueryFetcher
+}
+
+interface Subscriptions {
+  [subKey: string]: ReturnType<GQLTrebuchetClient['subscribe']>
+}
+
+interface Operation {
+  name: string
+  text: string
+}
+
+interface QueryFetcher {
+  readyToGC: () => boolean
+  dispose: () => void
+  flagForGC: () => void
+}
+
+type SubCreator = (
+  atmosphere: Atmosphere,
+  queryVariables: Variables | undefined,
+  subParams
+) => GraphQLSubscriptionConfig
+
+const noop = (): any => {
+  /* noop */
+}
+
 export default class Atmosphere extends Environment {
-  static getKey = (name, variables) => {
+  static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
   }
+  _network: Network
+  _store!: Store
 
+  transport!: GQLHTTPClient | GQLTrebuchetClient
+  authToken: string | null = null
+  authObj: IAuthToken | null = null
+  querySubscriptions: Array<QuerySubscription> = []
+  subscriptions: Subscriptions = {}
+  eventEmitter = new EventEmitter()
+  upgradeTransportPromise: Promise<void> | null = null
+  viewerId: string | null = null
+  userId: string | null = null // DEPRECATED
   constructor () {
-    // deal with Environment
-    const store = new Store(new RecordSource())
-    super({store, handlerProvider})
+    super({store: new Store(new RecordSource()), handlerProvider, network: Network.create(noop)})
+
+    // @ts-ignore we should update the relay-runtime typings, this.handleSubscribe should be able to return a promise
     this._network = Network.create(this.handleFetch, this.handleSubscribe)
     this.transport = new GQLHTTPClient(this.fetchHTTP)
-    // now atmosphere
-    this.authToken = undefined
-    this.authObj = undefined
-    this.querySubscriptions = []
-    this.querySubscriptions = []
-    this.subscriptions = {}
-    this.eventEmitter = new EventEmitter()
   }
 
-  fetchPing = async (connectionId) => {
+  fetchPing = async (connectionId?: string) => {
     return fetch('/sse-ping', {
       headers: {
         Authorization: `Bearer ${this.authToken}`,
@@ -43,7 +91,7 @@ export default class Atmosphere extends Environment {
     })
   }
 
-  fetchHTTP = async (body, connectionId) => {
+  fetchHTTP = async (body: string, connectionId?: string) => {
     const res = await fetch('/graphql', {
       method: 'POST',
       headers: {
@@ -53,18 +101,18 @@ export default class Atmosphere extends Environment {
       },
       body
     })
-    if (
-      res.headers
-        .get('content-type')
-        .toLowerCase()
-        .startsWith('application/json')
-    ) {
-      return res.json()
-    }
-    return null
+    const contentTypeHeader = res.headers.get('content-type') || ''
+    const contentType = contentTypeHeader.toLowerCase()
+    return contentType.startsWith('application/json') ? res.json() : null
   }
 
-  registerQuery = async (queryKey, subscriptions, subParams, queryVariables, queryFetcher) => {
+  registerQuery = async (
+    queryKey: string,
+    subscriptions: Array<SubCreator>,
+    subParams: any,
+    queryVariables: Variables | undefined,
+    queryFetcher: QueryFetcher
+  ) => {
     const subConfigs = subscriptions.map((subCreator) =>
       subCreator(this, queryVariables, subParams)
     )
@@ -86,12 +134,19 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.push(...newQuerySubs)
   }
 
-  handleSubscribe = async (operation, variables, cacheConfig, observer) => {
+  handleSubscribe = async (
+    operation: Operation,
+    variables: OperationPayload['variables'] | undefined,
+    _cacheConfig: CacheConfig,
+    observer: any
+  ) => {
     const {name, text} = operation
     const subKey = Atmosphere.getKey(name, variables)
     await this.upgradeTransport()
-    const disposable = this.transport.subscribe({query: text, variables}, observer)
-    this.subscriptions[subKey] = disposable
+    this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
+      {query: text, variables},
+      observer
+    )
     return this.makeDisposable(subKey)
   }
 
@@ -126,33 +181,36 @@ export default class Atmosphere extends Environment {
   addAuthTokenSubscriber () {
     if (!this.authToken) throw new Error('No Auth Token provided!')
     const {text: query} = getRequest(NewAuthTokenSubscription().subscription)
-    this.transport.operations[NEW_AUTH_TOKEN] = {
+    const transport = this.transport as GQLTrebuchetClient
+    transport.operations[NEW_AUTH_TOKEN] = {
+      id: NEW_AUTH_TOKEN,
       payload: {query},
       observer: {
         onNext: (payload) => {
           this.setAuthToken(payload.authToken)
         },
-        onCompleted: () => {},
-        onError: () => {}
+        onCompleted: noop,
+        onError: noop
       }
     }
   }
 
-  handleFetch = async (operation, variables) => {
+  handleFetch = async (operation: Operation, variables?: Variables) => {
     // await sleep(100)
     return this.transport.fetch({query: operation.text, variables})
   }
 
-  getAuthToken = (global) => {
+  getAuthToken = (global: Window) => {
     if (!global) return
     const authToken = global.localStorage.getItem(APP_TOKEN_KEY)
     this.setAuthToken(authToken)
   }
 
-  setAuthToken = (authToken) => {
+  setAuthToken = (authToken: string | null) => {
     this.authToken = authToken
     if (!authToken) return
     this.authObj = jwtDecode(authToken)
+    if (!this.authObj) return
     const {exp, sub: viewerId} = this.authObj
     if (exp < Date.now() / 1000) {
       this.authToken = null
@@ -178,7 +236,7 @@ export default class Atmosphere extends Environment {
    * Subscription 3 does because no other component depends on it.
    * Subscription 4 does not because it is a k > 1 nearest neighbor
    */
-  makeDisposable = (subKeyToRemove) => {
+  makeDisposable = (subKeyToRemove: string) => {
     return {
       dispose: () => {
         // get every query that is powered by this subscription
@@ -186,7 +244,7 @@ export default class Atmosphere extends Environment {
           ({subKey}) => subKey === subKeyToRemove
         )
         // these queries are no longer supported, so drop them
-        associatedQueries.forEach(({queryFetcher}) => {
+        associatedQueries.forEach(({queryFetcher}: {queryFetcher: QueryFetcher}) => {
           if (queryFetcher.readyToGC()) {
             queryFetcher.dispose()
           } else {
@@ -199,7 +257,7 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  unregisterQuery = (maybeQueryKeys) => {
+  unregisterQuery = (maybeQueryKeys: string | Array<string>) => {
     const queryKeys = Array.isArray(maybeQueryKeys) ? maybeQueryKeys : [maybeQueryKeys]
 
     // for each query that is no longer 100% supported, find the subs that power them
@@ -225,8 +283,20 @@ export default class Atmosphere extends Environment {
   }
 
   close () {
-    // race condition when logging out & the autoLogin
+    // remove all records
+    this.getStore()
+      .getSource()
+      .clear()
+    this.upgradeTransportPromise = null
     this.authObj = null
-    this.transport.close && this.transport.close()
+    this.authToken = null
+    this.transport = new GQLHTTPClient(this.fetchHTTP)
+    this.querySubscriptions = []
+    this.subscriptions = {}
+    this.viewerId = null
+    this.userId = null // DEPRECATED
+    if (this.transport instanceof GQLTrebuchetClient) {
+      this.transport.close()
+    }
   }
 }

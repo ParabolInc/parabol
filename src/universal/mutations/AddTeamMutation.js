@@ -44,7 +44,7 @@ export const addTeamTeamUpdater = (payload, store, viewerId) => {
   handleAddTeams(team, store, viewerId)
 }
 
-export const addTeamMutationNotificationUpdater = (payload, store, viewerId) => {
+export const addTeamMutationNotificationUpdater = (payload, {store}) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
