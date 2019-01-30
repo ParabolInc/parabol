@@ -1,21 +1,21 @@
 import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import RetrospectiveMeeting from 'server/graphql/types/RetrospectiveMeeting'
-import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
+import Meeting from 'server/graphql/types/Meeting'
 import Team from './Team'
-import {COMPLETED_RETRO_MEETING} from './TimelineEventTypeEnum'
+import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
+import {COMPLETED_ACTION_MEETING} from './TimelineEventTypeEnum'
 
-const TimelineEventCompletedRetroMeeting = new GraphQLObjectType({
-  name: 'TimelineEventCompletedRetroMeeting',
-  description: 'An event for a completed retro meeting',
+const TimelineEventCompletedActionMeeting = new GraphQLObjectType({
+  name: 'TimelineEventCompletedActionMeeting',
+  description: 'An event for a completed action meeting',
   interfaces: () => [TimelineEvent],
-  isTypeOf: ({type}) => type === COMPLETED_RETRO_MEETING,
+  isTypeOf: ({type}) => type === COMPLETED_ACTION_MEETING,
   fields: () => ({
     ...timelineEventInterfaceFields(),
     meeting: {
-      type: new GraphQLNonNull(RetrospectiveMeeting),
+      type: new GraphQLNonNull(Meeting),
       description: 'The meeting that was completed',
       resolve: ({meetingId}, _args, {dataLoader}) => {
-        return dataLoader.get('newMeetings').load(meetingId)
+        return dataLoader.get('meetings').load(meetingId)
       }
     },
     meetingId: {
@@ -40,4 +40,4 @@ const TimelineEventCompletedRetroMeeting = new GraphQLObjectType({
   })
 })
 
-export default TimelineEventCompletedRetroMeeting
+export default TimelineEventCompletedActionMeeting

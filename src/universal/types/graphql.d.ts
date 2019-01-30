@@ -113,7 +113,7 @@ export interface IUser {
   /**
    * The timeline of important events for the viewer
    */
-  timeline: ITimelineEventConnection | null
+  timeline: ITimelineEventConnection
 
   /**
    * Nickname associated with the user
@@ -570,6 +570,7 @@ export type TimelineEvent =
   | ITimelineEventTeamCreated
   | ITimelineEventJoinedParabol
   | ITimelineEventCompletedRetroMeeting
+  | ITimelineEventCompletedActionMeeting
 
 /**
  * A past event that is important to the viewer
@@ -620,7 +621,7 @@ export interface ITimelineEvent {
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -2581,6 +2582,11 @@ export interface IMeeting {
    * A list of immutable tasks, as they were created in the meeting
    */
   tasks: Array<IMeetingTask | null> | null
+
+  /**
+   * the number of tasks generated in the meeting
+   */
+  taskCount: number
 
   /**
    * The start time used to create the diff (all taskDiffs occurred between this time and the endTime
@@ -4646,6 +4652,11 @@ export interface IRetrospectiveMeeting {
    * The settings that govern the retrospective meeting
    */
   settings: IRetrospectiveMeetingSettings
+
+  /**
+   * The number of tasks generated in the meeting
+   */
+  taskCount: number
 
   /**
    * The tasks created within the meeting
@@ -7474,19 +7485,19 @@ export interface ITimelineEventTeamCreated {
   seenCount: number
 
   /**
-   * The teamId this event is associated with
+   * The teamId this event is associated with. Null if not traceable to one team
    */
   teamId: string
 
   /**
    * The team that can see this event
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -7497,11 +7508,6 @@ export interface ITimelineEventTeamCreated {
    * The user than can see this event
    */
   user: IUser
-
-  /**
-   * true if this is the first team auto-created for a user (does not apply to users who joined via invitation)
-   */
-  isOnboardTeam: boolean
 }
 
 /**
@@ -7553,7 +7559,7 @@ export interface ITimelineEventJoinedParabol {
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -7610,12 +7616,12 @@ export interface ITimelineEventCompletedRetroMeeting {
   /**
    * The team that can see this event
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The specific type of event
    */
-  eventType: TimelineEventEnum
+  type: TimelineEventEnum
 
   /**
    * * The userId that can see this event
@@ -7631,6 +7637,78 @@ export interface ITimelineEventCompletedRetroMeeting {
    * The meeting that was completed
    */
   meeting: IRetrospectiveMeeting
+
+  /**
+   * The meetingId that was completed
+   */
+  meetingId: string
+}
+
+/**
+ * An event for a completed action meeting
+ */
+export interface ITimelineEventCompletedActionMeeting {
+  __typename: 'TimelineEventCompletedActionMeeting'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * * The timestamp the event was created at
+   */
+  createdAt: any
+
+  /**
+   * the number of times the user has interacted with (ie clicked) this event
+   */
+  interactionCount: number
+
+  /**
+   * The orgId this event is associated with
+   */
+  orgId: string
+
+  /**
+   * The organization this event is associated with
+   */
+  organization: IOrganization | null
+
+  /**
+   * the number of times the user has seen this event
+   */
+  seenCount: number
+
+  /**
+   * The teamId this event is associated with
+   */
+  teamId: string
+
+  /**
+   * The team that can see this event
+   */
+  team: ITeam
+
+  /**
+   * The specific type of event
+   */
+  type: TimelineEventEnum
+
+  /**
+   * * The userId that can see this event
+   */
+  userId: string
+
+  /**
+   * The user than can see this event
+   */
+  user: IUser
+
+  /**
+   * The meeting that was completed
+   */
+  meeting: IMeeting
 
   /**
    * The meetingId that was completed

@@ -22,6 +22,7 @@ import SuggestedActionTryRetroMeeting from 'server/graphql/types/SuggestedAction
 import TimelineEventTeamCreated from 'server/graphql/types/TimelineEventTeamCreated'
 import TimelineEventJoinedParabol from 'server/graphql/types/TimelineEventJoinedParabol'
 import TimelineEventCompletedRetroMeeting from 'server/graphql/types/TimelineEventCompletedRetroMeeting'
+import TimelineEventCompletedActionMeeting from 'server/graphql/types/TimelineEventCompletedActionMeeting'
 
 export default new GraphQLSchema({
   query,
@@ -46,6 +47,7 @@ export default new GraphQLSchema({
     TimelineEventTeamCreated,
     TimelineEventJoinedParabol,
     TimelineEventCompletedRetroMeeting,
+    TimelineEventCompletedActionMeeting,
     ActionMeetingSettings,
     AuthToken
   ]

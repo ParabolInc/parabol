@@ -1,10 +1,13 @@
-import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import Team from './Team'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
+import {CREATED_TEAM} from './TimelineEventTypeEnum'
 
 const TimelineEventTeamCreated = new GraphQLObjectType({
   name: 'TimelineEventTeamCreated',
   description: 'An event triggered whenever a team is created',
   interfaces: () => [TimelineEvent],
+  isTypeOf: ({type}) => type === CREATED_TEAM,
   fields: () => ({
     ...timelineEventInterfaceFields(),
     orgId: {
@@ -13,12 +16,14 @@ const TimelineEventTeamCreated = new GraphQLObjectType({
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The teamId this event is associated with'
+      description: 'The teamId this event is associated with. Null if not traceable to one team'
     },
-    isOnboardTeam: {
-      type: new GraphQLNonNull(GraphQLBoolean),
-      description:
-        'true if this is the first team auto-created for a user (does not apply to users who joined via invitation)'
+    team: {
+      type: new GraphQLNonNull(Team),
+      description: 'The team that can see this event',
+      resolve: ({teamId}, _args, {dataLoader}) => {
+        return dataLoader.get('teams').load(teamId)
+      }
     }
   })
 })

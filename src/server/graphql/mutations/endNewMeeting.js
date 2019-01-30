@@ -90,7 +90,7 @@ export default {
         createdAt: now,
         interactionCount: 0,
         seenCount: 0,
-        eventType: COMPLETED_RETRO_MEETING,
+        type: COMPLETED_RETRO_MEETING,
         userId: meetingMember.userId,
         teamId,
         orgId: team.orgId,

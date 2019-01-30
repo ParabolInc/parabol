@@ -119,7 +119,7 @@ const User = new GraphQLObjectType({
       }
     },
     timeline: {
-      type: TimelineEventConnection,
+      type: new GraphQLNonNull(TimelineEventConnection),
       description: 'The timeline of important events for the viewer',
       args: {
         after: {
@@ -154,7 +154,7 @@ const User = new GraphQLObjectType({
           pageInfo: {
             startCursor: firstEdge ? firstEdge.cursor : null,
             endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
-            hasNextPage: false
+            hasNextPage: events.length > edges.length
           }
         }
       }

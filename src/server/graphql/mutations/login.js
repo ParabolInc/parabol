@@ -125,7 +125,7 @@ const login = {
         createdAt: newUser.createdAt,
         interactionCount: 0,
         seenCount: 0,
-        eventType: JOINED_PARABOL,
+        type: JOINED_PARABOL,
         userId: newUser.id
       })
     })

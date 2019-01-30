@@ -28,13 +28,21 @@ const linkBaseStyles = {
   textDecoration: 'none'
 }
 
+const ScrollWrapper = styled('div')({
+  maxWidth: DASH_SIDEBAR.WIDTH,
+  minWidth: DASH_SIDEBAR.WIDTH
+})
+
 const DashSidebarStyles = styled('div')({
   backgroundColor: ui.dashSidebarBackgroundColor,
   color: textColor,
   display: 'flex',
   flexDirection: 'column',
   maxWidth: DASH_SIDEBAR.WIDTH,
-  minWidth: DASH_SIDEBAR.WIDTH
+  minWidth: DASH_SIDEBAR.WIDTH,
+  position: 'fixed',
+  overflow: 'hidden',
+  height: '100vh'
 })
 
 const MyDashboard = styled('div')({
@@ -117,33 +125,35 @@ const AddTeamLabel = styled('div')({
 const DashSidebar = (props: Props) => {
   const {location, viewer} = props
   return (
-    <DashSidebarStyles>
-      <StandardHub location={location} viewer={viewer} />
-      <NavBlock>
-        <Nav>
-          {/* use div for flex layout */}
-          <div>
-            <MyDashboard>
-              <DashNavItem location={location} href='/me' icon='dashboard' label='My Dashboard' />
-            </MyDashboard>
-            <NavLabel>{'My Teams'}</NavLabel>
-          </div>
-          <NavMain>
-            <DashNavList location={location} viewer={viewer} />
-          </NavMain>
-          <NavLink
-            className={addTeamStyles}
-            activeClassName={disabledAddTeamStyles}
-            title='Add New Team'
-            to='/newteam/1'
-          >
-            <AddTeamIcon>add_circle</AddTeamIcon>
-            <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
-          </NavLink>
-        </Nav>
-      </NavBlock>
-      <LogoBlock variant='white' />
-    </DashSidebarStyles>
+    <ScrollWrapper>
+      <DashSidebarStyles>
+        <StandardHub location={location} viewer={viewer} />
+        <NavBlock>
+          <Nav>
+            {/* use div for flex layout */}
+            <div>
+              <MyDashboard>
+                <DashNavItem location={location} href='/me' icon='dashboard' label='My Dashboard' />
+              </MyDashboard>
+              <NavLabel>{'My Teams'}</NavLabel>
+            </div>
+            <NavMain>
+              <DashNavList location={location} viewer={viewer} />
+            </NavMain>
+            <NavLink
+              className={addTeamStyles}
+              activeClassName={disabledAddTeamStyles}
+              title='Add New Team'
+              to='/newteam/1'
+            >
+              <AddTeamIcon>add_circle</AddTeamIcon>
+              <AddTeamLabel>{'Add New Team'}</AddTeamLabel>
+            </NavLink>
+          </Nav>
+        </NavBlock>
+        <LogoBlock variant='white' />
+      </DashSidebarStyles>
+    </ScrollWrapper>
   )
 }
 
