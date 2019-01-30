@@ -13,6 +13,7 @@ import {ICON_SIZE} from '../styles/typographyV2'
 import {ITask} from '../types/graphql'
 import getTaskById from '../utils/getTaskById'
 import Icon from 'universal/components/Icon'
+import TimelineNoTasks from './TimelineNoTasks'
 
 interface Props extends WithAtmosphereProps {
   viewer: TimelinePriorityTasks_viewer
@@ -28,6 +29,10 @@ const PriorityTasksHeader = styled('div')({
 const ActiveIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
   verticalAlign: 'bottom'
+})
+
+const TaskList = styled('div')({
+  paddingTop: 32
 })
 
 class TimelinePriorityTasks extends Component<Props> {
@@ -78,8 +83,9 @@ class TimelinePriorityTasks extends Component<Props> {
     const {viewer} = this.props
     const {tasks} = viewer
     const activeTasks = this.getActiveTasks(tasks)
+    if (activeTasks.length === 0) return <TimelineNoTasks />
     return (
-      <div>
+      <TaskList>
         <PriorityTasksHeader>
           <ActiveIcon>whatshot</ActiveIcon>
           Active Tasks
@@ -93,7 +99,7 @@ class TimelinePriorityTasks extends Component<Props> {
             insert={(draggedTask, before) => this.insertTask(draggedTask, task, before)}
           />
         ))}
-      </div>
+      </TaskList>
     )
   }
 }
