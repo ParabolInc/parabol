@@ -8,7 +8,8 @@ const TimelineEventJoinedParabol = new GraphQLObjectType({
   interfaces: () => [TimelineEvent],
   isTypeOf: ({type}) => type === JOINED_PARABOL,
   fields: () => ({
-    ...timelineEventInterfaceFields()
+    // no idea why i have to cast as any here...
+    ...(timelineEventInterfaceFields() as any)
   })
 })
 

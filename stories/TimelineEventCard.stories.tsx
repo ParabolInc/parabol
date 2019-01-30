@@ -22,14 +22,16 @@ storiesOf('Timeline Event Card', module)
   .add('joined parabol', () => (
     <StoryProvider>
       <TimelineFeedItems>
-        <TimelineEventJoinedParabol timelineEvent={baseEvent} />
+        <TimelineEventJoinedParabol timelineEvent={baseEvent as any} />
       </TimelineFeedItems>
     </StoryProvider>
   ))
   .add('team created', () => (
     <StoryProvider>
       <TimelineFeedItems>
-        <TimelineEventTeamCreated timelineEvent={{...baseEvent, team: teamFrag, teamId: 'team1'}} />
+        <TimelineEventTeamCreated
+          timelineEvent={{...baseEvent, team: teamFrag, teamId: 'team1'} as any}
+        />
       </TimelineFeedItems>
     </StoryProvider>
   ))
@@ -37,7 +39,9 @@ storiesOf('Timeline Event Card', module)
     <StoryProvider>
       <TimelineFeedItems>
         <TimelineEventCompletedRetroMeeting
-          timelineEvent={{...baseEvent, team: teamFrag, meeting: meetingFrag, teamId: 'team1'}}
+          timelineEvent={
+            {...baseEvent, team: teamFrag, meeting: meetingFrag, teamId: 'team1'} as any
+          }
         />
       </TimelineFeedItems>
     </StoryProvider>

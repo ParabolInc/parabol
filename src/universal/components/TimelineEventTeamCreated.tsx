@@ -1,13 +1,12 @@
 import {TimelineEventTeamCreated_timelineEvent} from '__generated__/TimelineEventTeamCreated_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps} from 'react-router'
 import StyledLink from 'universal/components/StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   timelineEvent: TimelineEventTeamCreated_timelineEvent
 }
 
