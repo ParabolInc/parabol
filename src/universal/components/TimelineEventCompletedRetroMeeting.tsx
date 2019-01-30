@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps} from 'react-router'
 import StyledLink from 'universal/components/StyledLink'
+import plural from 'universal/utils/plural'
 import relativeDate from '../utils/relativeDate'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
@@ -34,7 +35,7 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
         }
       >
         <TimelineEventBody>
-          {`It lasted ${meetingDuration} and generated ${taskCount} tasks.`}
+          {`It lasted ${meetingDuration} and generated ${taskCount} ${plural(taskCount, 'task')}.`}
           <br />
           <StyledLink to={`/new-summary/${meetingId}`}>See the Full Summary</StyledLink>
           {'.'}
