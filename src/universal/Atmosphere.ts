@@ -9,6 +9,7 @@ import {requestSubscription} from 'react-relay'
 import {
   CacheConfig,
   Environment,
+  FetchFunction,
   // @ts-ignore
   getRequest,
   GraphQLSubscriptionConfig,
@@ -63,7 +64,6 @@ export default class Atmosphere extends Environment {
     return JSON.stringify({name, variables})
   }
   _network: Network
-  _store!: Store
 
   transport!: GQLHTTPClient | GQLTrebuchetClient
   authToken: string | null = null
@@ -76,7 +76,6 @@ export default class Atmosphere extends Environment {
   userId: string | null = null // DEPRECATED
   constructor () {
     super({store: new Store(new RecordSource()), handlerProvider, network: Network.create(noop)})
-
     // @ts-ignore we should update the relay-runtime typings, this.handleSubscribe should be able to return a promise
     this._network = Network.create(this.handleFetch, this.handleSubscribe)
     this.transport = new GQLHTTPClient(this.fetchHTTP)
@@ -195,7 +194,7 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  handleFetch = async (operation: Operation, variables?: Variables) => {
+  handleFetch: FetchFunction = async (operation, variables) => {
     // await sleep(100)
     return this.transport.fetch({query: operation.text, variables})
   }

@@ -13,7 +13,7 @@ const viewer = {
 storiesOf('New Feature Card', module).add('new feature', () => (
   <StoryProvider>
     <RightDrawer>
-      <TimelineNewFeature viewer={viewer} />
+      <TimelineNewFeature viewer={viewer as any} />
     </RightDrawer>
   </StoryProvider>
 ))

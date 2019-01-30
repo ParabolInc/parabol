@@ -1,13 +1,12 @@
 import {TimelineEventJoinedParabol_timelineEvent} from '__generated__/TimelineEventJoinedParabol_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps} from 'react-router'
+import StyledLink from 'universal/components/StyledLink'
 import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
-import StyledLink from 'universal/components/StyledLink'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   timelineEvent: TimelineEventJoinedParabol_timelineEvent
 }
 

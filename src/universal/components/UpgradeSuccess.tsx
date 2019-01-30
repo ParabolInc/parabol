@@ -1,11 +1,9 @@
-// @flow
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import {PRO_LABEL} from 'universal/utils/constants'
-import Confetti from 'react-dom-confetti'
-import appTheme from 'universal/styles/theme/appTheme'
 import RaisedButton from 'universal/components/RaisedButton'
+import Confetti from './Confetti'
 
 const flexBase = {
   alignItems: 'center',
@@ -50,31 +48,17 @@ const ModalButton = styled(RaisedButton)({
   width: '22.5rem'
 })
 
-const confettiConfig = {
-  angle: 90,
-  spread: 150,
-  startVelocity: 90,
-  elementCount: 250,
-  decay: 0.88,
-  colors: [
-    ...Object.values(appTheme.brand.secondary),
-    appTheme.brand.primary.purple,
-    appTheme.brand.primary.Lightened,
-    appTheme.brand.primary.purpleDarkened,
-    appTheme.brand.primary.orange,
-    appTheme.brand.primary.teal
-  ]
+type Props = {
+  handleClose: () => void
 }
 
-type Props = {|
-  handleClose: () => void
-|}
-
-type State = {|
+type State = {
   active: boolean
-|}
+}
 
 class UpgradeSuccess extends React.Component<Props, State> {
+  _mounted = true
+
   constructor (props: Props) {
     super(props)
     setTimeout(() => {
@@ -86,14 +70,8 @@ class UpgradeSuccess extends React.Component<Props, State> {
       }, 100)
     })
   }
-
-  _mounted: boolean
   state = {
     active: false
-  }
-
-  componentDidMount () {
-    this._mounted = true
   }
 
   componentWillUnmount () {
@@ -115,7 +93,7 @@ class UpgradeSuccess extends React.Component<Props, State> {
         <ModalButton size='large' onClick={handleClose}>
           {'Let’s Get Back to Business'}
         </ModalButton>
-        <Confetti active={active} config={confettiConfig} />
+        <Confetti active={active} />
       </CenteredModalBoundary>
     )
   }

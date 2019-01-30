@@ -22,11 +22,7 @@ const UserDashboard = (props) => {
     <Switch>
       <AsyncRoute path={`${match.url}/settings`} mod={userSettings} />
       <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
-      <AsyncRoute
-        path={`${match.url}/organization
-      s/:orgId`}
-        mod={organization}
-      />
+      <AsyncRoute path={`${match.url}/organizations/:orgId`} mod={organization} />
       <AsyncRoute
         path={`${match.url}/notifications`}
         mod={notificationsMod}

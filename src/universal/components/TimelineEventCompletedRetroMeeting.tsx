@@ -1,7 +1,6 @@
 import {TimelineEventCompletedRetroMeeting_timelineEvent} from '__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {RouteComponentProps} from 'react-router'
 import StyledLink from 'universal/components/StyledLink'
 import plural from 'universal/utils/plural'
 import relativeDate from '../utils/relativeDate'
@@ -9,7 +8,7 @@ import TimelineEventBody from './TimelineEventBody'
 import TimelineEventCard from './TimelineEventCard'
 import TimelineEventTitle from './TImelineEventTitle'
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
   timelineEvent: TimelineEventCompletedRetroMeeting_timelineEvent
 }
 
