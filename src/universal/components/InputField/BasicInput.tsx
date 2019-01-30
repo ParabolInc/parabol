@@ -22,6 +22,7 @@ interface Props {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
+  spellCheck?: boolean
   type?: string
   value: string
 }
@@ -36,6 +37,7 @@ const BasicInput = (props: Props) => {
     onBlur,
     onChange,
     placeholder,
+    spellCheck,
     type = 'text',
     value
   } = props
@@ -49,6 +51,7 @@ const BasicInput = (props: Props) => {
         placeholder={placeholder}
         onBlur={onBlur}
         onChange={onChange}
+        spellCheck={spellCheck}
         type={type}
         value={value}
       />

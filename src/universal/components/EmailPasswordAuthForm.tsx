@@ -7,33 +7,18 @@ import auth0CreateAccountWithEmail from 'universal/utils/auth0CreateAccountWithE
 import auth0LoginWithEmail from 'universal/utils/auth0LoginWithEmail'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from 'universal/utils/constants'
 import {emailRegex} from 'universal/validation/regex'
+import withForm, {WithFormProps} from '../utils/relay/withForm'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import Legitity from '../validation/Legitity'
 import EmailInputField from './EmailInputField'
 import PasswordInputField from './PasswordInputField'
 
-interface Props extends WithMutationProps {
+interface Props extends WithMutationProps, WithFormProps {
   email: string
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
   isSignin?: boolean
 }
-
-interface Field {
-  value: string
-  error?: string
-  dirty: boolean
-}
-
-interface State {
-  fields: {
-    email: Field
-    password: Field
-  }
-}
-
-type FieldName = 'email' | 'password'
-const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
 
 const FieldGroup = styled('div')({
   margin: '1rem 0 1rem'
@@ -50,93 +35,9 @@ const Form = styled('form')({
 })
 
 // exporting as a Base is a good indicator that a parent component is using this as a ref
-export class EmailPasswordAuthFormBase extends Component<Props, State> {
-  state = {
-    fields: {
-      email: {
-        ...DEFAULT_FIELD,
-        value: this.props.email
-      },
-      password: {...DEFAULT_FIELD}
-    }
-  }
-  validate = (name: FieldName) => {
-    const validators = {
-      email: this.validateEmail,
-      password: this.validatePassword
-    }
-    const res: Legitity = validators[name]()
-
-    const {fields} = this.state
-    const field = fields[name]
-    if (res.error !== field.error) {
-      this.setState({
-        fields: {
-          ...fields,
-          [name]: {
-            ...field,
-            error: res.error
-          }
-        }
-      })
-    }
-    return res
-  }
-
-  validateEmail = () => {
-    const {fields} = this.state
-    const rawEmail = fields.email.value
-    return new Legitity(rawEmail)
-      .trim()
-      .required('Please enter an email address')
-      .matches(emailRegex, 'Please enter a valid email address')
-  }
-
-  validatePassword = () => {
-    const {fields} = this.state
-    const rawPassword = fields.password.value
-    return new Legitity(rawPassword).required('Please enter a password')
-  }
-
+export class EmailPasswordAuthFormBase extends Component<Props> {
   handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    this.setDirty(e.target.name as FieldName)
-  }
-
-  setDirty = (name: FieldName) => {
-    const {fields} = this.state
-    const field = fields[name]
-    if (!field.dirty) {
-      this.setState({
-        fields: {
-          ...fields,
-          [name]: {
-            ...field,
-            dirty: true
-          }
-        }
-      })
-    }
-  }
-
-  handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {fields} = this.state
-    const {value} = e.target
-    const name = e.target.name as FieldName
-    const field = fields[name]
-    this.setState(
-      {
-        fields: {
-          ...fields,
-          [name]: {
-            ...field,
-            value
-          }
-        }
-      },
-      () => {
-        this.validate(name)
-      }
-    )
+    this.props.setDirtyField(e.target.name)
   }
 
   tryLogin = async (email: string, password: string, handleError?: () => void) => {
@@ -172,15 +73,12 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
   }
 
   onSubmit = async (e: React.FormEvent) => {
-    const {isSignin, submitMutation, submitting} = this.props
+    const {isSignin, submitMutation, submitting, validateField, setDirtyField} = this.props
     e.preventDefault()
     if (submitting) return
-    const fieldNames: Array<FieldName> = ['email', 'password']
-    fieldNames.forEach(this.setDirty)
-    const fieldRes = fieldNames.map(this.validate)
-    const hasError = fieldRes.reduce((err: boolean, val) => err || !!val.error, false)
-    if (hasError) return
-    const [emailRes, passwordRes] = fieldRes
+    setDirtyField()
+    const {email: emailRes, password: passwordRes} = validateField()
+    if (emailRes.error || passwordRes.error) return
     const email = emailRes.value as string
     const password = passwordRes.value as string
     submitMutation()
@@ -192,25 +90,20 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
   }
 
   render () {
-    const {fields} = this.state
-    const {error, isPrimary, isSignin, submitting} = this.props
+    const {error, fields, isPrimary, isSignin, submitting, onChange} = this.props
     const Button = isPrimary ? PrimaryButton : RaisedButton
     return (
       <Form onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
         <FieldGroup>
           <FieldBlock>
-            <EmailInputField
-              {...fields.email}
-              onChange={this.handleInputChange}
-              onBlur={this.handleBlur}
-            />
+            <EmailInputField {...fields.email} onChange={onChange} onBlur={this.handleBlur} />
           </FieldBlock>
           <FieldBlock>
             <PasswordInputField
               {...fields.password}
               autoFocus
-              onChange={this.handleInputChange}
+              onChange={onChange}
               onBlur={this.handleBlur}
             />
           </FieldBlock>
@@ -223,4 +116,20 @@ export class EmailPasswordAuthFormBase extends Component<Props, State> {
   }
 }
 
-export default withMutationProps(EmailPasswordAuthFormBase)
+const form = withForm({
+  email: {
+    getDefault: (props) => props.email,
+    validate: (value) => {
+      return new Legitity(value)
+        .trim()
+        .required('Please enter an email address')
+        .matches(emailRegex, 'Please enter a valid email address')
+    }
+  },
+  password: {
+    getDefault: () => '',
+    validate: (value) => new Legitity(value).required('Please enter a password')
+  }
+})
+
+export default withMutationProps(form(EmailPasswordAuthFormBase))
