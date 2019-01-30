@@ -1,0 +1,156 @@
+import React, {Component, lazy} from 'react'
+import styled from 'react-emotion'
+import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
+import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
+import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
+import BasicInput from 'universal/components/InputField/BasicInput'
+import LoadableModal from 'universal/components/LoadableModal'
+import Panel from 'universal/components/Panel/Panel'
+import RaisedButton from 'universal/components/RaisedButton'
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
+import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation'
+import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
+import ui from 'universal/styles/ui'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withForm, {WithFormProps} from 'universal/utils/relay/withForm'
+import Legitity from 'universal/validation/Legitity'
+import {UserSettings_viewer} from '__generated__/UserSettings_viewer.graphql'
+
+const SettingsBlock = styled('div')({
+  width: '100%'
+})
+
+const SettingsForm = styled('form')({
+  alignItems: 'center',
+  borderTop: `.0625rem solid ${ui.rowBorderColor}`,
+  display: 'flex',
+  padding: ui.panelGutter,
+  width: '100%'
+})
+
+const InfoBlock = styled('div')({
+  flex: 1,
+  paddingLeft: ui.panelGutter
+})
+
+const FieldBlock = styled('div')({
+  flex: 1,
+  minWidth: 0,
+  paddingRight: '1rem'
+})
+
+const ControlBlock = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  flexDirection: 'row',
+  flex: 1,
+  width: '100%'
+})
+
+const StyledButton = styled(RaisedButton)({
+  width: '7rem'
+})
+
+const UserAvatarInput = lazy(() =>
+  import(/* webpackChunkName: 'UserAvatarInput' */ 'universal/components/UserAvatarInput')
+)
+
+interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps {
+  viewer: UserSettings_viewer
+}
+
+class UserSettings extends Component<Props> {
+  onSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const {
+      atmosphere,
+      validateField,
+      viewer,
+      onError,
+      onCompleted,
+      submitMutation,
+      submitting
+    } = this.props
+    const preferredNameRes = validateField('preferredName')
+    const preferredName = preferredNameRes.value
+    if (preferredNameRes.error || preferredName === viewer.preferredName || submitting) return
+    submitMutation()
+    UpdateUserProfileMutation(atmosphere, {preferredName}, {onError, onCompleted})
+  }
+
+  render () {
+    const {fields, onChange, viewer} = this.props
+    const {picture} = viewer
+    const pictureOrDefault = picture || defaultUserAvatar
+    return (
+      <UserSettingsWrapper>
+        <Helmet title='My Settings | Parabol' />
+        <SettingsBlock>
+          <Panel label='My Information'>
+            <SettingsForm onSubmit={this.onSubmit}>
+              <LoadableModal
+                LoadableComponent={UserAvatarInput}
+                queryVars={{picture: pictureOrDefault}}
+                toggle={
+                  <div>
+                    <EditableAvatar picture={pictureOrDefault} size={96} />
+                  </div>
+                }
+              />
+              <InfoBlock>
+                <FieldLabel
+                  customStyles={{paddingBottom: ui.fieldLabelGutter}}
+                  label='Name'
+                  fieldSize='medium'
+                  indent
+                  htmlFor='preferredName'
+                />
+                <ControlBlock>
+                  <FieldBlock>
+                    {/* TODO: Make me Editable.js (TA) */}
+                    <BasicInput
+                      {...fields.preferredName}
+                      autoFocus
+                      onChange={onChange}
+                      name='preferredName'
+                      placeholder='My name'
+                    />
+                  </FieldBlock>
+                  <StyledButton size='medium' palette='mid'>
+                    {'Update'}
+                  </StyledButton>
+                </ControlBlock>
+              </InfoBlock>
+            </SettingsForm>
+          </Panel>
+        </SettingsBlock>
+      </UserSettingsWrapper>
+    )
+  }
+}
+
+const form = withForm({
+  preferredName: {
+    getDefault: (props) => props.viewer.preferredName,
+    validate: (value) =>
+      new Legitity(value)
+        .trim()
+        .required('That’s not much of a name, is it?')
+        .min(2, 'C’mon, you call that a name?')
+        .max(100, 'I want your name, not your life story')
+  }
+})
+
+export default createFragmentContainer(
+  withAtmosphere(withMutationProps(form(UserSettings))),
+  graphql`
+    fragment UserSettings_viewer on User {
+      preferredName
+      picture
+    }
+  `
+)

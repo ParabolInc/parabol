@@ -12,7 +12,6 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import styled, {css, injectGlobal} from 'react-emotion'
 import {Provider} from 'react-redux'
 import {combineReducers, createStore} from 'redux'
-import {reducer as formReducer} from 'redux-form'
 
 import appTheme from 'universal/styles/theme/appTheme'
 import globalStyles from 'universal/styles/theme/globalStyles'
@@ -34,9 +33,7 @@ const FullPageWrapper = styled('div')({
   width: '100vw'
 })
 
-const rootReducer = combineReducers({
-  form: formReducer
-})
+const rootReducer = combineReducers({})
 
 const store = createStore(rootReducer)
 
