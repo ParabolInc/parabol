@@ -31,6 +31,8 @@ const AvatarTag = styled(Tag)(({isLead}: {isLead: boolean}) => ({
 const DashboardAvatar = (props: Props) => {
   const {onClick, teamMember} = props
   const {isLead, picture} = teamMember
+  const {user} = teamMember
+  const {isConnected} = user
   return (
     <AvatarAndTag>
       <Avatar
@@ -38,7 +40,7 @@ const DashboardAvatar = (props: Props) => {
         picture={picture || defaultUserAvatar}
         hasBadge
         isCheckedIn={teamMember.isCheckedIn}
-        isConnected={teamMember.isConnected || teamMember.isSelf}
+        isConnected={isConnected}
         isClickable
         onClick={onClick}
         size='smaller'
@@ -53,10 +55,12 @@ export default createFragmentContainer(
   graphql`
     fragment DashboardAvatar_teamMember on TeamMember {
       isCheckedIn
-      isConnected
       isLead
       isSelf
       picture
+      user {
+        isConnected
+      }
     }
   `
 )

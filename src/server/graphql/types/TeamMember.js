@@ -101,14 +101,13 @@ const TeamMember = new GraphQLObjectType({
       type: GraphQLID,
       description: 'foreign key to User table'
     },
-    /* GraphQL sugar */
     team: {
       type: Team,
       description: 'The team this team member belongs to',
       resolve: resolveTeam
     },
     user: {
-      type: User,
+      type: new GraphQLNonNull(User),
       description: 'The user for the team member',
       resolve ({userId}, args, {dataLoader}) {
         return dataLoader.get('users').load(userId)
