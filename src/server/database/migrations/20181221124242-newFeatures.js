@@ -1,9 +1,6 @@
 exports.up = async (r) => {
   try {
-    await Promise.all([
-      r.tableCreate('SuggestedAction')
-      // r.tableCreate('NewFeature')
-    ])
+    await Promise.all([r.tableCreate('SuggestedAction'), r.tableCreate('NewFeature')])
   } catch (e) {}
   try {
     await Promise.all([
@@ -20,6 +17,6 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableDrop('SuggestedAction')])
+    await Promise.all([r.tableDrop('SuggestedAction'), r.tableDrop('NewFeature')])
   } catch (e) {}
 }
