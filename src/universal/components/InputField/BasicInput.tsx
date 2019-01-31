@@ -18,7 +18,7 @@ interface Props {
   disabled?: boolean
   error: string | undefined
   innerRef?: React.RefObject<HTMLInputElement>
-  name?: string
+  name: string
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
