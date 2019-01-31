@@ -1,7 +1,6 @@
 /* @flow */
 // Borrowed 90% from https://github.com/orta/react-storybooks-relay-container
 import React from 'react'
-import PropTypes from 'prop-types'
 
 // Emulates a Relay-compatible container, passing the data in directly.
 // It's hard to know how well this can work for complicated examples. However,
@@ -12,10 +11,12 @@ type Props = {
   variables?: Object
 }
 
+const StubContext = React.createContext(undefined)
+
 export default class RelayStub extends React.Component<Props> {
-  // Provide a stubbed context for child componentes
-  getChildContext () {
-    return {
+  constructor (props) {
+    super(props)
+    this.ctx = {
       relay: {
         environment: {
           '@@RelayModernEnvironment': true,
@@ -67,10 +68,9 @@ export default class RelayStub extends React.Component<Props> {
       useFakeData: true
     }
   }
-
   // Directly render the child, and add the data
   render () {
-    return React.Children.only(this.props.children)
+    return <StubContext.Provider value={this.ctx}>{this.props.children}</StubContext.Provider>
   }
 
   // Needed to pass the isRelayContainer validation step
@@ -80,8 +80,8 @@ export default class RelayStub extends React.Component<Props> {
   hasVariable () {}
 }
 
-RelayStub.childContextTypes = {
-  relay: PropTypes.object,
-  route: PropTypes.object,
-  useFakeData: PropTypes.bool
-}
+// RelayStub.childContextTypes = {
+//   relay: PropTypes.object,
+//   route: PropTypes.object,
+//   useFakeData: PropTypes.bool
+// }

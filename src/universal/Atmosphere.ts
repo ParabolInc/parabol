@@ -9,12 +9,14 @@ import {requestSubscription} from 'react-relay'
 import {
   CacheConfig,
   Environment,
-  FetchFunction,
   // @ts-ignore
   getRequest,
   GraphQLSubscriptionConfig,
   Network,
+  ObservableFromValue,
+  QueryPayload,
   RecordSource,
+  RequestNode,
   Store,
   Variables
 } from 'relay-runtime'
@@ -179,11 +181,11 @@ export default class Atmosphere extends Environment {
 
   addAuthTokenSubscriber () {
     if (!this.authToken) throw new Error('No Auth Token provided!')
-    const {text: query} = getRequest(NewAuthTokenSubscription().subscription)
+    const req = getRequest(NewAuthTokenSubscription().subscription)
     const transport = this.transport as GQLTrebuchetClient
     transport.operations[NEW_AUTH_TOKEN] = {
       id: NEW_AUTH_TOKEN,
-      payload: {query},
+      payload: {query: req.text as string},
       observer: {
         onNext: (payload) => {
           this.setAuthToken(payload.authToken)
@@ -194,9 +196,18 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  handleFetch: FetchFunction = async (operation, variables) => {
+  handleFetch = async (
+    operation: RequestNode,
+    variables: Variables,
+    _cacheConfig?: CacheConfig
+  ): Promise<ObservableFromValue<QueryPayload>> => {
     // await sleep(100)
-    return this.transport.fetch({query: operation.text, variables})
+    if ('text' in operation) {
+      return this.transport.fetch({query: operation.text as string, variables})
+    }
+    return operation.requests.map((request) =>
+      this.transport.fetch({query: request.text as string, variables})
+    )
   }
 
   getAuthToken = (global: Window) => {

@@ -28,6 +28,7 @@ import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnH
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
+import Atmosphere from '../Atmosphere'
 
 interface CollectedProps {
   connectDropTarget: ConnectDropTarget
@@ -38,7 +39,9 @@ interface PassedProps {
   meeting: PhaseItemMasonry_meeting
 }
 
-interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {}
+interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {
+  atmosphere: MasonryAtmosphere
+}
 
 const gridStyle = css({
   overflowX: 'auto',
@@ -54,6 +57,15 @@ interface ItemCache {
 
 export interface MasonryItemCache {
   [itemId: string]: ItemCache
+}
+
+interface MasonryAtmosphere extends Atmosphere {
+  getMasonry: () => {
+    itemCache: MasonryItemCache
+    childrenCache: MasonryChildrenCache
+    parentCache: MasonryParentCache
+  }
+  startDragQueue: Array<() => void>
 }
 
 interface ChildCache {
@@ -209,7 +221,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     }
     if (atmosphere.startDragQueue && atmosphere.startDragQueue.length) {
       // reply the startDrag event that fired before we received the end drag event
-      const queuedStart = atmosphere.startDragQueue.shift()
+      const queuedStart = atmosphere.startDragQueue.shift()!
       queuedStart()
     }
   }
