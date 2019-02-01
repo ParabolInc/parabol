@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.3.0 2019-Jan-31
+
+### Added
+
+* Timeline, Suggested Actions, What's New
+
+### Fixed
+* Stored XSS through SVGs
+* Meta tags
+
+### Removed
+
+* Welcome wizard
+
 ## v3.2.0 2019-Jan-24
 
 ### Changed
