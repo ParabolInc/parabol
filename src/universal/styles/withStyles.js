@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {StyleSheet} from 'aphrodite-local-styles/no-important'
 import getDisplayName from 'universal/utils/getDisplayName'
@@ -19,15 +18,11 @@ const propsTriggeredInvalidation = (invalidatingProps, props, nextProps) => {
 // if styles will be invalidated, an array of scalar prop names must be passed in eg ['color', 'style']
 const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) => {
   return class WithStyles extends Component {
-    static contextTypes = {
-      userTheme: PropTypes.object
-    }
-
     static displayName = `WithStyles(${getDisplayName(WrappedComponent)}`
 
     constructor (props, context) {
       super(props, context)
-      this.styles = StyleSheet.create(mapThemeToStyles(this.context.userTheme, props))
+      this.styles = StyleSheet.create(mapThemeToStyles({}, props))
       contextMap.set(mapThemeToStyles, {
         context: this.context.theme,
         cache: this.styles
@@ -38,7 +33,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
       // if the thunk looks for the props && we declare that the props should update styles
       if (mapThemeToStyles.length > 1 && Array.isArray(invalidatingProps)) {
         if (propsTriggeredInvalidation(invalidatingProps, this.props, nextProps)) {
-          StyleSheet.create(mapThemeToStyles(this.context.userTheme, nextProps))
+          StyleSheet.create(mapThemeToStyles({}, nextProps))
         }
       }
     }

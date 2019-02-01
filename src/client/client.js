@@ -8,7 +8,7 @@ import './scrollIntoViewIfNeeded'
 import '@babel/polyfill'
 
 const initialState = {}
-const store = makeStore(initialState)
+export const store = makeStore(initialState)
 render(<Root store={store} />, document.getElementById('root'))
 
 if (module.hot) {
