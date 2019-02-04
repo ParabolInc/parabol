@@ -11,6 +11,7 @@ import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
 import firstErrorMessage from 'universal/utils/relay/firstErrorMessage'
 
 const {GQL_COMPLETE, GQL_DATA, GQL_ERROR} = ClientMessageTypes
+
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}))
   const {
@@ -30,7 +31,11 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
   }
 }
 
-const handleSubscribe = async (connectionContext, parsedMessage, options = {}) => {
+interface Options {
+  isResub?: boolean
+}
+
+const handleSubscribe = async (connectionContext, parsedMessage, options: Options = {}) => {
   const {id: socketId, authToken, socket, sharedDataLoader} = connectionContext
   const {id: opId} = parsedMessage
   const {isResub} = options
@@ -84,13 +89,11 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
     // reinitialize the subscription
-    handleSubscribe(connectionContext, parsedMessage, {isResub: true})
+    handleSubscribe(connectionContext, parsedMessage, {isResub: true}).catch()
     connectionContext.availableResubs.splice(resubIdx, 1)
   } else {
     sendMessage(socket, GQL_COMPLETE, undefined, opId)
   }
 }
 
-export default function wsRelaySubscribeHandler (connectionContext, parsedMessage) {
-  handleSubscribe(connectionContext, parsedMessage)
-}
+export default handleSubscribe

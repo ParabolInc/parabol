@@ -18,6 +18,7 @@ const EmptyTeams = styled('div')({
 
 const DashNavList = (props) => {
   const {location, viewer} = props
+  console.log('view list', viewer)
   const {teams} = viewer || {}
   const hasTeams = teams && teams.length > 0
   if (!hasTeams) return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>

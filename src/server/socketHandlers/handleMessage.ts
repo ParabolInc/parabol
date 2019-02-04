@@ -1,17 +1,15 @@
-import {ServerMessageTypes, ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
+import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
+import {Data, Events} from '@mattkrick/trebuchet-client'
+import queryMap from 'server/graphql/queryMap.json'
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
 import sendMessage from 'server/socketHelpers/sendMessage'
-import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
-import wsRelaySubscribeHandler from 'server/socketHandlers/wsRelaySubscribeHandler'
-import relayUnsubscribe from 'server/utils/relayUnsubscribe'
-import isQueryProvided from 'server/graphql/isQueryProvided'
-import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
-import {Events} from '@mattkrick/trebuchet-client'
+import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
+import isQueryAllowed from '../graphql/isQueryAllowed'
+import ConnectionContext from '../socketHelpers/ConnectionContext'
 
-const {GQL_START, GQL_STOP} = ServerMessageTypes
-const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
-const handleMessage = (connectionContext) => async (message) => {
-  const {socket, subs} = connectionContext
+const {GQL_ERROR} = ClientMessageTypes
+const handleMessage = (connectionContext: ConnectionContext) => async (message: Data) => {
+  const {socket} = connectionContext
   // catch raw, non-graphql protocol messages here
   if (message === Events.KEEP_ALIVE) {
     connectionContext.isAlive = true
@@ -20,7 +18,7 @@ const handleMessage = (connectionContext) => async (message) => {
 
   let parsedMessage
   try {
-    parsedMessage = JSON.parse(message)
+    parsedMessage = JSON.parse(message as string)
   } catch (e) {
     /*
      * Invalid frame payload data
@@ -31,22 +29,17 @@ const handleMessage = (connectionContext) => async (message) => {
     return
   }
 
-  const {id: opId, type, payload} = parsedMessage
-  // this GQL_START logic will be simplified when we move to persisted queries
-  if (type === GQL_START) {
-    if (!isQueryProvided(payload)) {
-      sendMessage(socket, GQL_ERROR, {errors: [{message: 'No payload provided'}]}, opId)
-      return
+  try {
+    const response = await handleGraphQLTrebuchetRequest(parsedMessage, connectionContext, {
+      persistedQueries: queryMap,
+      isQueryAllowed
+    })
+    if (response) {
+      const {type, id: opId, payload} = response
+      sendMessage(socket, type, payload, opId)
     }
-    if (isSubscriptionPayload(payload)) {
-      wsRelaySubscribeHandler(connectionContext, parsedMessage)
-    } else {
-      const result = await wsGraphQLHandler(connectionContext, parsedMessage.payload)
-      const messageType = result.data ? GQL_DATA : GQL_ERROR
-      sendMessage(socket, messageType, result, opId)
-    }
-  } else if (type === GQL_STOP) {
-    relayUnsubscribe(subs, opId)
+  } catch (e) {
+    sendMessage(socket, GQL_ERROR, {errors: [e.message]})
   }
 }
 

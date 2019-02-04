@@ -41,8 +41,9 @@ interface Subscriptions {
 }
 
 interface Operation {
+  id?: string
   name: string
-  text: string
+  text?: string
 }
 
 interface QueryFetcher {
@@ -120,7 +121,9 @@ export default class Atmosphere extends Environment {
     await this.upgradeTransport()
     const newQuerySubs = subConfigs.map((config) => {
       const {subscription, variables = {}} = config
-      const {name} = getRequest(subscription)
+      const request = getRequest(subscription)
+      const name = request.params && request.params.name
+      if (!name) throw new Error(`No name found for request ${request}`)
       const subKey = JSON.stringify({name, variables})
       const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
       if (!isRequested) {
@@ -141,11 +144,11 @@ export default class Atmosphere extends Environment {
     _cacheConfig: CacheConfig,
     observer: any
   ) => {
-    const {name, text} = operation
+    const {name, id: documentId} = operation
     const subKey = Atmosphere.getKey(name, variables)
     await this.upgradeTransport()
     this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
-      {query: text, variables},
+      {documentId, variables},
       observer
     )
     return this.makeDisposable(subKey)
@@ -181,11 +184,13 @@ export default class Atmosphere extends Environment {
 
   addAuthTokenSubscriber () {
     if (!this.authToken) throw new Error('No Auth Token provided!')
-    const req = getRequest(NewAuthTokenSubscription().subscription)
+    const {params} = getRequest(NewAuthTokenSubscription().subscription)
+    const documentId = params && (params.id as string)
+    if (!documentId) throw new Error(`No documentId found for request params ${params}`)
     const transport = this.transport as GQLTrebuchetClient
     transport.operations[NEW_AUTH_TOKEN] = {
       id: NEW_AUTH_TOKEN,
-      payload: {query: req.text as string},
+      payload: {documentId},
       observer: {
         onNext: (payload) => {
           this.setAuthToken(payload.authToken)
@@ -203,10 +208,10 @@ export default class Atmosphere extends Environment {
   ): Promise<ObservableFromValue<QueryPayload>> => {
     // await sleep(100)
     if ('text' in operation) {
-      return this.transport.fetch({query: operation.text as string, variables})
+      return this.transport.fetch({documentId: operation.id as string, variables})
     }
     return operation.requests.map((request) =>
-      this.transport.fetch({query: request.text as string, variables})
+      this.transport.fetch({documentId: request.id as string, variables})
     )
   }
 
