@@ -14,7 +14,8 @@ const Wrapper = styled('div')({
 })
 
 const ThumbsUp = styled(Icon)({
-  fontSize: ICON_SIZE.MD48
+  fontSize: ICON_SIZE.MD48,
+  marginBottom: 16
 })
 
 const RallyLink = styled('span')({
