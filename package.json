@@ -117,7 +117,7 @@
     "prettier": "1.12.1",
     "react-addons-test-utils": "^15.6.0",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
-    "relay-compiler": "^2.0.0",
+    "relay-compiler": "https://github.com/mattkrick/relay/tarball/relay-compiler-v2.0.0-gitpkg",
     "relay-compiler-language-typescript": "^2.0.0",
     "script-ext-html-webpack-plugin": "^2.0.1",
     "selenium-webdriver": "^3.6.0",
