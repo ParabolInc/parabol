@@ -7,7 +7,7 @@ extend type RetrospectiveMeeting {
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
-  reflectionsInFlight: [RetroReflection!]!
+  reflectionsInFlight: [RetroReflection!]
 }
 
 extend type Team {

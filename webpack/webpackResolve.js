@@ -2,8 +2,7 @@ const path = require('path')
 
 module.exports = {
   alias: {
-    'react-dnd': '@mattkrick/react-dnd',
-    'react-dnd-html5-backend': '@mattkrick/react-dnd-html5-backend',
+    'react-dnd-scrollzone': 'frontend-collective-react-dnd-scrollzone',
     'react-relay': '@mattkrick/react-relay',
     'relay-runtime': '@mattkrick/relay-runtime'
   },

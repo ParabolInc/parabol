@@ -3,6 +3,7 @@ import React from 'react'
 import {
   ConnectDropTarget,
   DropTarget,
+  DropTargetCollector,
   DropTargetConnector,
   DropTargetMonitor,
   DropTargetSpec
@@ -244,6 +245,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   setItemRef: SetItemRef = (itemId, isModal) => (c) => {
+    console.log('set child')
     if (!c) {
       if (isModal) {
         this.itemCache[itemId].modalEl = undefined
@@ -256,6 +258,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   setChildRef: SetChildRef = (childId, itemId) => (c) => {
+    console.log('set child')
     if (!c) return
     this.childrenCache[childId] = this.childrenCache[childId] || {}
     const childCache = this.childrenCache[childId]
@@ -281,6 +284,7 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   setParentRef = (c: HTMLDivElement) => {
+    console.log('set parent')
     this.parentCache.el = c
   }
 
@@ -328,16 +332,19 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 }
 
-const reflectionDropSpec = {
-  canDrop (_props: Props, monitor: DropTargetMonitor) {
+const reflectionDropSpec: DropTargetSpec<Props> = {
+  canDrop (_props, monitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
   drop () {
     return {dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GRID}
   }
-} as DropTargetSpec<Props, {}, PhaseItemMasonry>
+}
 
-const reflectionDropCollect = (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
+const reflectionDropCollect: DropTargetCollector<CollectedProps> = (
+  connect: DropTargetConnector,
+  monitor: DropTargetMonitor
+) => ({
   connectDropTarget: connect.dropTarget(),
   canDrop: monitor.canDrop()
 })
@@ -346,7 +353,7 @@ export default createFragmentContainer<PassedProps>(
   withScrolling(
     withAtmosphere(
       withMutationProps(
-        DropTarget<Props, {}, PhaseItemMasonry, CollectedProps>(
+        DropTarget<Props, CollectedProps>(
           REFLECTION_CARD,
           reflectionDropSpec,
           reflectionDropCollect

@@ -42,7 +42,7 @@ const handleGraphQLTrebuchetRequest = async (
           }
         }
       } else {
-        query = persistedQueries ? persistedQueries[documentId] : null
+        query = persistedQueries ? persistedQueries[documentId!] : null
         if (!query) {
           throw new Error('Invalid document ID')
         }
