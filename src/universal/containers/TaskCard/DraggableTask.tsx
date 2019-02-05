@@ -19,7 +19,6 @@ interface Props {
   insert: (task: DraggableTask_task, before: boolean) => void
   isDragging: boolean
   isPreview: boolean
-  myUserId: string
   task: DraggableTask_task
 }
 
@@ -43,13 +42,13 @@ class DraggableTask extends Component<Props> {
   }
 
   render () {
-    const {area, connectDragSource, connectDropTarget, isDragging, myUserId, task} = this.props
+    const {area, connectDragSource, connectDropTarget, isDragging, task} = this.props
     return connectDropTarget(
       connectDragSource(
         <div style={{marginBottom: '.625rem'}}>
           {isDragging && <TaskDragLayer area={area} task={task} />}
           <div style={{opacity: isDragging ? 0.5 : 1}}>
-            <NullableTask area={area} task={task} myUserId={myUserId} isDragging={isDragging} />
+            <NullableTask area={area} task={task} isDragging={isDragging} />
           </div>
         </div>
       )
