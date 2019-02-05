@@ -2,7 +2,6 @@ const path = require('path')
 
 module.exports = {
   alias: {
-    'react-dnd-scrollzone': 'frontend-collective-react-dnd-scrollzone',
     'react-relay': '@mattkrick/react-relay',
     'relay-runtime': '@mattkrick/relay-runtime'
   },

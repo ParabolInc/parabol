@@ -245,7 +245,6 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   setItemRef: SetItemRef = (itemId, isModal) => (c) => {
-    console.log('set child')
     if (!c) {
       if (isModal) {
         this.itemCache[itemId].modalEl = undefined
@@ -258,7 +257,6 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   setChildRef: SetChildRef = (childId, itemId) => (c) => {
-    console.log('set child')
     if (!c) return
     this.childrenCache[childId] = this.childrenCache[childId] || {}
     const childCache = this.childrenCache[childId]
@@ -284,7 +282,6 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   setParentRef = (c: HTMLDivElement) => {
-    console.log('set parent')
     this.parentCache.el = c
   }
 
