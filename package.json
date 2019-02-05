@@ -146,7 +146,7 @@
     "@google-cloud/language": "^1.2.0",
     "@mattkrick/fast-rtc-peer": "^0.0.5",
     "@mattkrick/graphql-trebuchet-client": "^0.1.2",
-    "react-dnd": "https://github.com/mattkrick/react-dnd/tarball/react-dnd-v7.0.2-gitpkg",
+    "react-dnd": "https://github.com/mattkrick/react-dnd/tarball/2c22596327123a42702474374f6b0168c42f554b",
     "react-dnd-html5-backend": "https://github.com/mattkrick/react-dnd/tarball/react-dnd-html5-backend-v7.0.2-gitpkg",
     "@mattkrick/react-relay": "2.0.0",
     "@mattkrick/relay-runtime": "2.0.0",
