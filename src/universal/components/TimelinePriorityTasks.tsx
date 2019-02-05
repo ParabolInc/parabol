@@ -28,7 +28,8 @@ const PriorityTasksHeader = styled('div')({
 
 const ActiveIcon = styled(Icon)({
   fontSize: ICON_SIZE.MD18,
-  verticalAlign: 'bottom'
+  verticalAlign: 'bottom',
+  marginRight: 4
 })
 
 const TaskList = styled('div')({
