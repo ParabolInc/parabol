@@ -29,6 +29,7 @@ const linkBaseStyles = {
 }
 
 const ScrollWrapper = styled('div')({
+  backgroundColor: ui.dashSidebarBackgroundColor,
   maxWidth: DASH_SIDEBAR.WIDTH,
   minWidth: DASH_SIDEBAR.WIDTH
 })

@@ -204,8 +204,8 @@ export const removeOrgUserOrganizationOnNext = (payload, context) => {
   }
 }
 
-export const removeOrgUserNotificationOnNext = (payload, {atmosphere, history, location}) => {
-  popKickedOutToast(payload, {atmosphere, history, location})
+export const removeOrgUserNotificationOnNext = (payload, {atmosphere, history}) => {
+  popKickedOutToast(payload, {atmosphere, history})
 }
 
 const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onCompleted) => {
