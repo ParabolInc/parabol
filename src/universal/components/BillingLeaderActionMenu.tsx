@@ -7,7 +7,6 @@ import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal'
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
 import {BILLING_LEADER} from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -22,6 +21,10 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 
 const LeaveOrgModal = lazy(() =>
   import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
+)
+
+const RemoveFromOrgModal = lazy(() =>
+  import(/* webpackChunkName: 'RemoveFromOrgModal' */ 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal')
 )
 
 const BillingLeaderActionMenu = (props: Props) => {
@@ -70,10 +73,9 @@ const BillingLeaderActionMenu = (props: Props) => {
           />
         )}
       {viewerId !== userId && (
-        <RemoveFromOrgModal
-          orgId={orgId}
-          preferredName={preferredName}
-          userId={userId}
+        <LoadableModal
+          LoadableComponent={RemoveFromOrgModal}
+          queryVars={{orgId, userId, preferredName}}
           toggle={
             <MenuItemWithShortcuts
               label={
