@@ -1,23 +1,21 @@
-import PropTypes from 'prop-types'
-import React, {Component} from 'react'
-import {commitLocalUpdate, createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
-import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars'
-import EditableTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditableTeamName'
-import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
-import UnpaidTeamModalRoot from 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot'
-import ui from 'universal/styles/ui'
-import MeetingInProgressModal from '../MeetingInProgressModal/MeetingInProgressModal'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {ACTION} from 'universal/utils/constants'
+import {Team_team} from '__generated__/Team_team.graphql'
+import React, {Component, lazy, Suspense} from 'react'
 import styled from 'react-emotion'
-import DashMain from 'universal/components/Dashboard/DashMain'
+import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import DashContent from 'universal/components/Dashboard/DashContent'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashHeaderInfo from 'universal/components/Dashboard/DashHeaderInfo'
+import DashMain from 'universal/components/Dashboard/DashMain'
 import DashSearchControl from 'universal/components/Dashboard/DashSearchControl'
+import DashboardAvatars from 'universal/components/DashboardAvatars/DashboardAvatars'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
-import DashContent from 'universal/components/Dashboard/DashContent'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import EditableTeamName from 'universal/modules/teamDashboard/components/EditTeamName/EditableTeamName'
+import TeamCallsToAction from 'universal/modules/teamDashboard/components/TeamCallsToAction/TeamCallsToAction'
 
 const TeamViewNavBlock = styled('div')({
   display: 'flex',
@@ -29,7 +27,23 @@ const StyledButton = styled(FlatButton)({
   paddingRight: '1rem'
 })
 
-class Team extends Component {
+const RelativeDashMain = styled(DashMain)({
+  position: 'relative'
+})
+
+const MeetingInProgressModal = lazy(() =>
+  import(/* webpackChunkName: 'MeetingInProgressModal' */ '../MeetingInProgressModal/MeetingInProgressModal')
+)
+const UnpaidTeamModalRoot = lazy(() =>
+  import(/* webpackChunkName: 'UnpaidTeamModalRoot' */ 'universal/modules/teamDashboard/containers/UnpaidTeamModal/UnpaidTeamModalRoot')
+)
+
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+  team: Team_team
+  isSettings: boolean
+}
+
+class Team extends Component<Props> {
   componentWillReceiveProps (nextProps) {
     const {team: oldTeam} = this.props
     if (oldTeam && oldTeam.contentFilter) {
@@ -44,14 +58,15 @@ class Team extends Component {
       this.setContentFilter('')
     }
   }
+
   setContentFilter (nextValue) {
     const {
       atmosphere,
-      team: {teamId}
+      team: {id: teamId}
     } = this.props
     commitLocalUpdate(atmosphere, (store) => {
       const teamProxy = store.get(teamId)
-      teamProxy.setValue(nextValue, 'contentFilter')
+      teamProxy && teamProxy.setValue(nextValue, 'contentFilter')
     })
   }
 
@@ -61,43 +76,32 @@ class Team extends Component {
   goToTeamSettings = () => {
     const {
       history,
-      team: {teamId}
+      team: {id: teamId}
     } = this.props
     history.push(`/team/${teamId}/settings/`)
   }
   goToTeamDashboard = () => {
     const {
       history,
-      team: {teamId}
+      team: {id: teamId}
     } = this.props
     history.push(`/team/${teamId}/`)
   }
 
   render () {
-    const {children, hasMeetingAlert, isSettings, team} = this.props
+    const {children, isSettings, team} = this.props
     if (!team) return null
-    const {teamId, teamName, isPaid, meetingId, newMeeting} = team
+    const {id: teamId, isPaid, meetingId} = team
     const hasActiveMeeting = Boolean(meetingId)
     const hasOverlay = hasActiveMeeting || !isPaid
     const DashHeaderInfoTitle = isSettings ? <EditableTeamName team={team} /> : ''
-    const modalLayout = hasMeetingAlert ? ui.modalLayoutMainWithDashAlert : ui.modalLayoutMain
 
     return (
-      <DashMain>
-        <MeetingInProgressModal
-          isOpen={hasActiveMeeting}
-          meetingType={newMeeting ? newMeeting.meetingType : ACTION}
-          modalLayout={modalLayout}
-          teamId={teamId}
-          teamName={teamName}
-          key={`${teamId}MeetingModal`}
-        />
-        <UnpaidTeamModalRoot
-          isOpen={!isPaid}
-          teamId={teamId}
-          modalLayout={modalLayout}
-          key={`${teamId}UnpaidModal`}
-        />
+      <RelativeDashMain>
+        <Suspense fallback={''}>
+          {hasActiveMeeting && isPaid && <MeetingInProgressModal team={team} />}
+          {!isPaid && <UnpaidTeamModalRoot teamId={teamId} />}
+        </Suspense>
         <DashHeader
           area={isSettings ? 'teamSettings' : 'teamDash'}
           hasOverlay={hasOverlay}
@@ -132,18 +136,9 @@ class Team extends Component {
         <DashContent hasOverlay={hasOverlay} padding='0'>
           {children}
         </DashContent>
-      </DashMain>
+      </RelativeDashMain>
     )
   }
-}
-
-Team.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  children: PropTypes.any,
-  hasMeetingAlert: PropTypes.bool,
-  isSettings: PropTypes.bool.isRequired,
-  history: PropTypes.object,
-  team: PropTypes.object
 }
 
 export default createFragmentContainer(
@@ -151,14 +146,10 @@ export default createFragmentContainer(
   graphql`
     fragment Team_team on Team {
       contentFilter
-      teamId: id
-      teamName: name
+      id
       isPaid
       meetingId
-      newMeeting {
-        id
-        meetingType
-      }
+      ...MeetingInProgressModal_team
       ...DashboardAvatars_team
       ...EditableTeamName_team
     }

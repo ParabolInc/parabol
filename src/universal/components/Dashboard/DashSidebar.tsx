@@ -124,7 +124,6 @@ const AddTeamLabel = styled('div')({
 
 const DashSidebar = (props: Props) => {
   const {location, viewer} = props
-  console.log('viewer', viewer)
   return (
     <ScrollWrapper>
       <DashSidebarStyles>
