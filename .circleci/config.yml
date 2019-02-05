@@ -31,14 +31,14 @@ jobs:
             fi
       - checkout
       - restore_cache:
-          key: action2-{{ checksum "yarn.lock" }}
+          key: action-{{ checksum "yarn.lock" }}
       - run:
           name: Install dependencies
           command: |
             apt-get update && apt-get -yq install build-essential
-            yarn --skip-integrity-check
+            yarn --frozen-lockfile
       - save_cache:
-          key: action2-{{ checksum "yarn.lock" }}
+          key: action-{{ checksum "yarn.lock" }}
           paths:
           - ~/.cache/yarn
       - run:
