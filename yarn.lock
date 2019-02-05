@@ -5955,16 +5955,6 @@ discontinuous-range@1.0.0:
     lodash "^4.17.11"
     redux "^4.0.1"
 
-"dnd-core@https://github.com/mattkrick/react-dnd/tarball/dnd-core-v7.0.2-gitpkg":
-  version "7.0.2"
-  uid "91cba6fd756a2a684c179f2a1e8d25648a9ad7af"
-  resolved "https://github.com/mattkrick/react-dnd/tarball/dnd-core-v7.0.2-gitpkg#91cba6fd756a2a684c179f2a1e8d25648a9ad7af"
-  dependencies:
-    asap "^2.0.6"
-    invariant "^2.2.4"
-    lodash "^4.17.11"
-    redux "^4.0.1"
-
 dns-equal@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/dns-equal/-/dns-equal-1.0.0.tgz#b39e7f1da6eb0a75ba9c17324b34753c47e0654d"
@@ -13800,11 +13790,11 @@ react-display-name@^0.2.0:
   resolved "https://registry.yarnpkg.com/react-display-name/-/react-display-name-0.2.4.tgz#e2a670b81d79a2204335510c01246f4c92ff12cf"
   integrity sha512-zvU6iouW+SWwHTyThwxGICjJYCMZFk/6r/+jmOdC7ntQoPlS/Pqb81MkxaMf2bHTSq9TN3K3zX2/ayMW/jCtyA==
 
-"react-dnd-html5-backend@https://github.com/mattkrick/react-dnd/tarball/react-dnd-html5-backend-v7.0.2-gitpkg":
+"react-dnd-html5-backend@https://github.com/mattkrick/react-dnd/tarball/5812e3c00a1e1adace6e4be59bab7c02f0e85bb1":
   version "7.0.2"
-  resolved "https://github.com/mattkrick/react-dnd/tarball/react-dnd-html5-backend-v7.0.2-gitpkg#e8b5903fa9ff759007d19b17709c9a7ed248ff67"
+  resolved "https://github.com/mattkrick/react-dnd/tarball/5812e3c00a1e1adace6e4be59bab7c02f0e85bb1#a9db6cbb551c2315196b8d8f1fc6dfdc23e56cd6"
   dependencies:
-    dnd-core "https://github.com/mattkrick/react-dnd/tarball/dnd-core-v7.0.2-gitpkg"
+    dnd-core "https://github.com/mattkrick/react-dnd/tarball/ac917d16a85f29ed14c20b2d8c4f2f8dd094039c"
     lodash "^4.17.11"
 
 "react-dnd-scrollzone@https://github.com/mattkrick/react-dnd-scrollzone/tarball/749b0bdfbbb44e8e8ea167e640f1ddafbf863dff":
