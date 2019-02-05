@@ -14570,9 +14570,9 @@ relay-compiler-language-typescript@^2.0.0:
     immutable "^3.8.2"
     invariant "^2.2.2"
 
-"relay-compiler@https://github.com/mattkrick/relay/tarball/relay-compiler-v2.0.0-gitpkg":
+"relay-compiler@https://github.com/mattkrick/relay/tarball/96cecd5d166b7a05c9181373a8963ca2b221ccb9":
   version "2.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/relay-compiler-v2.0.0-gitpkg#8963369cda6c186e08c0b1ca3005e07415f24e97"
+  resolved "https://github.com/mattkrick/relay/tarball/96cecd5d166b7a05c9181373a8963ca2b221ccb9#8963369cda6c186e08c0b1ca3005e07415f24e97"
   dependencies:
     "@babel/generator" "^7.0.0"
     "@babel/parser" "^7.0.0"
