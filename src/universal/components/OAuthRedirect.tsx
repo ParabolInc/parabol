@@ -3,6 +3,7 @@ import {Component} from 'react'
 import {RouteComponentProps, withRouter} from 'react-router'
 import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import getAnonymousId from '../utils/getAnonymousId'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
@@ -29,7 +30,7 @@ class OAuthRedirect extends Component<Props> {
       const {idToken} = res
       const invitationToken = window.localStorage.getItem('invitationToken')
       window.localStorage.removeItem('invitationToken')
-      const segmentId = window.analytics ? window.analytics.user().anonymousId() : undefined
+      const segmentId = getAnonymousId()
       LoginMutation(atmosphere, {auth0Token: idToken, invitationToken, segmentId}, {history})
     }
   }
