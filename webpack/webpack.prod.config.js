@@ -23,6 +23,9 @@ const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
 getDotenv.default()
 
+// babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
+process.env.BABEL_ENV = 'production'
+
 const extraPlugins = []
 if (process.env.WEBPACK_DEPLOY) {
   extraPlugins.push(
