@@ -165,7 +165,7 @@ jobs:
       - run:
           name: Upload sentry artifacts
           command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
               curl -sL https://sentry.io/get-cli/ | bash
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               sentry-cli releases new "$ACTION_VERSION"

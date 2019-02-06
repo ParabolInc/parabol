@@ -132,7 +132,7 @@ module.exports = {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[chunkhash].js.map',
+      filename: '[name]_[hash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     ...extraPlugins
