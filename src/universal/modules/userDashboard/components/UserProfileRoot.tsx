@@ -15,9 +15,9 @@ import {connect} from 'react-redux'
 import UserProfile from './UserProfile'
 
 const query = graphql`
-  query UserSettingsRootQuery {
+  query UserProfileRootQuery {
     viewer {
-      ...UserSettings_viewer
+      ...UserProfile_viewer
     }
   }
 `
