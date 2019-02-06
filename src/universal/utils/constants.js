@@ -20,8 +20,7 @@ export const RETRO_VOTED_LABEL = 'Upvoted'
 
 /* Phases */
 export const LOBBY = 'lobby'
-export const RETRO_LOBBY_FREE = 'retroLobbyFree'
-export const RETRO_LOBBY_PAID = 'retroLobbyPaid'
+
 // lowercase here to match url
 export const CHECKIN = 'checkin'
 export const UPDATES = 'updates'
@@ -98,22 +97,12 @@ export const TASK_INVOLVES = 'TASK_INVOLVES'
 // sent on socket connection
 export const VERSION_INFO = 'VERSION_INFO'
 
-export const notificationTypes = [
-  PAYMENT_REJECTED,
-  PROMOTE_TO_BILLING_LEADER,
-  REQUEST_NEW_USER,
-  DENY_NEW_USER,
-  TEAM_ARCHIVED,
-  TEAM_INVITE
-]
-
 export const billingLeaderTypes = [PAYMENT_REJECTED, REQUEST_NEW_USER]
 
 /* User Settings */
-export const SETTINGS = 'settings'
+export const PROFILE = 'profile'
 export const ORGANIZATIONS = 'organizations'
 export const NOTIFICATIONS = 'notifications'
-export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS]
 
 /* Org Settings */
 export const BILLING_PAGE = 'billing'
@@ -207,15 +196,6 @@ export const ENTERPRISE = 'enterprise'
 export const ASSIGNEE = 'ASSIGNEE'
 export const MENTIONEE = 'MENTIONEE'
 
-/* Third-party authentication providers */
-export const GOOGLE_AUTH_PROVIDER = {
-  displayName: 'Google',
-  auth0Connection: 'google-oauth2',
-  iconName: 'google'
-}
-
-export const THIRD_PARTY_AUTH_PROVIDERS = [GOOGLE_AUTH_PROVIDER]
-
 /* Auth Labels, Slugs */
 export const SIGNIN_LABEL = 'Sign In'
 export const SIGNIN_SLUG = 'signin'
@@ -239,4 +219,3 @@ export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 /* Retro constants */
 export const RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5
 export const RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3
-export const RETROSPECTIVE_TRIAL_COUNT_DEFAULT = 3

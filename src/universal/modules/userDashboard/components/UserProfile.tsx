@@ -18,7 +18,7 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withForm, {WithFormProps} from 'universal/utils/relay/withForm'
 import Legitity from 'universal/validation/Legitity'
-import {UserSettings_viewer} from '__generated__/UserSettings_viewer.graphql'
+import {UserProfile_viewer} from '__generated__/UserProfile_viewer.graphql'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -60,10 +60,10 @@ const UserAvatarInput = lazy(() =>
 )
 
 interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps {
-  viewer: UserSettings_viewer
+  viewer: UserProfile_viewer
 }
 
-class UserSettings extends Component<Props> {
+class UserProfile extends Component<Props> {
   onSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const {
@@ -88,7 +88,7 @@ class UserSettings extends Component<Props> {
     const pictureOrDefault = picture || defaultUserAvatar
     return (
       <UserSettingsWrapper>
-        <Helmet title='My Settings | Parabol' />
+        <Helmet title='My Profile | Parabol' />
         <SettingsBlock>
           <Panel label='My Information'>
             <SettingsForm onSubmit={this.onSubmit}>
@@ -146,9 +146,9 @@ const form = withForm({
 })
 
 export default createFragmentContainer(
-  withAtmosphere(withMutationProps(form(UserSettings))),
+  withAtmosphere(withMutationProps(form(UserProfile))),
   graphql`
-    fragment UserSettings_viewer on User {
+    fragment UserProfile_viewer on User {
       preferredName
       picture
     }

@@ -31,7 +31,7 @@ const StandardHubUserMenu = (props: Props) => {
   } = props
 
   // nav menu routes
-  const goToSettings = () => history.push('/me/settings')
+  const goToProfile = () => history.push('/me/profile')
   const goToOrganizations = () => history.push('/me/organizations')
   const goToNotifications = () => history.push('/me/notifications')
   const signOut = () => history.push(`/${SIGNOUT_SLUG}`)
@@ -54,7 +54,7 @@ const StandardHubUserMenu = (props: Props) => {
   return (
     <MenuWithShortcuts ariaLabel={'Select your settings'} closePortal={closePortal}>
       <DropdownMenuLabel>{email}</DropdownMenuLabel>
-      <MenuItemWithShortcuts icon='account_box' label='Settings' onClick={goToSettings} />
+      <MenuItemWithShortcuts icon='account_box' label='Profile' onClick={goToProfile} />
       <MenuItemWithShortcuts
         icon='account_balance'
         label='Organizations'

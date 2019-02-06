@@ -1,4 +1,4 @@
-import {PRO, RETROSPECTIVE_TRIAL_COUNT_DEFAULT} from 'universal/utils/constants'
+import {PRO} from 'universal/utils/constants'
 
 exports.up = async (r) => {
   try {
@@ -10,8 +10,8 @@ exports.up = async (r) => {
           retroMeetingsRemaining: 0
         },
         {
-          retroMeetingsOffered: RETROSPECTIVE_TRIAL_COUNT_DEFAULT,
-          retroMeetingsRemaining: RETROSPECTIVE_TRIAL_COUNT_DEFAULT
+          retroMeetingsOffered: 3,
+          retroMeetingsRemaining: 3
         }
       )
     })

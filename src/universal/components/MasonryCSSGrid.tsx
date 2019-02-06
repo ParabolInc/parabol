@@ -1,6 +1,6 @@
 import React, {Component, ReactNode} from 'react'
 import styled from 'react-emotion'
-import ResizeObserver from 'resize-observer-polyfill'
+import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 interface GridProps {
   colWidth: number
@@ -27,6 +27,7 @@ interface ItemRefs {
   [id: string]: HTMLElement
 }
 
+const ResizeObserver = (window as any).ResizeObserver || ResizeObserverPolyfill
 class MasonryCSSGrid extends Component<Props> {
   itemRefs: ItemRefs = {}
   gridRef = React.createRef<HTMLDivElement>()
