@@ -30,7 +30,7 @@ const InvoiceRoot = ({
       render={({error, props: queryProps}) => {
         return (
           <TransitionGroup appear component={React.Fragment}>
-            {error && <ErrorComponent height={'14rem'} error={error} />}
+            {error && <ErrorComponent error={error} />}
             {queryProps && (
               <AnimatedFade key='1'>
                 <Invoice viewer={queryProps.viewer} />

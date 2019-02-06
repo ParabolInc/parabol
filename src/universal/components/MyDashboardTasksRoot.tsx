@@ -31,7 +31,7 @@ const MyDashboardTasksRoot = ({atmosphere}: Props) => {
       render={(readyState) => (
         <RelayTransitionGroup
           readyState={readyState}
-          error={<ErrorComponent height={'14rem'} />}
+          error={<ErrorComponent />}
           loading={<LoadingComponent />}
           // @ts-ignore
           ready={<MyDashboardTasks />}

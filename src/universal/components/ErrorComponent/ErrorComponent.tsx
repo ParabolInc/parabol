@@ -12,7 +12,8 @@ const ErrorBlock = styled('div')({
 })
 
 interface Props {
-  error: Error
+  // can make nonnull when RelayTransitionRoot explicitly defines an error on the ErrorComponent
+  error?: Error
 }
 
 const ErrorComponent = (props: Props) => {

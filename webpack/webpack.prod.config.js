@@ -25,6 +25,7 @@ const packageJSON = require('../package.json')
 const {version} = packageJSON
 
 const publicPath = getWebpackPublicPath.default()
+const buildPath = path.join(__dirname, '../build')
 getDotenv.default()
 
 const extraPlugins = []
@@ -40,11 +41,11 @@ if (process.env.WEBPACK_DEPLOY) {
         Bucket: process.env.AWS_S3_BUCKET
       },
       basePath: getS3BasePath(),
-      directory: path.join(__dirname, '../build')
+      directory: buildPath
     }),
     new SentryCliPlugin({
       release: version,
-      include: '../build'
+      include: buildPath
     })
   )
 }
@@ -80,12 +81,15 @@ const babelConfig = {
 }
 
 module.exports = {
+  stats: {
+    assets: false
+  },
   mode: 'production',
   entry: {
     app: [path.join(__dirname, '../src/client/client.js')]
   },
   output: {
-    path: path.join(__dirname, '../build/'),
+    path: buildPath,
     publicPath,
     filename: '[name]_[hash].js',
     chunkFilename: '[name]_[chunkhash].js'

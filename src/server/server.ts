@@ -20,6 +20,7 @@ import SharedDataLoader from 'shared-dataloader'
 import {WebSocketServer} from '@clusterws/cws'
 import http from 'http'
 // import startMemwatch from 'server/utils/startMemwatch'
+// @ts-ignore
 import packageJSON from '../../package.json'
 import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
 import RateLimiter from 'server/graphql/RateLimiter'

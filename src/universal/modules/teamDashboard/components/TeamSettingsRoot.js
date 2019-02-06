@@ -31,7 +31,7 @@ const TeamSettingsRoot = ({atmosphere, teamId}) => {
       render={(readyState) => (
         <RelayTransitionGroup
           readyState={readyState}
-          error={<ErrorComponent height={'14rem'} />}
+          error={<ErrorComponent />}
           loading={<LoadingView minHeight='50vh' />}
           ready={<TeamSettings />}
         />

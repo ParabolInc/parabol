@@ -39,7 +39,7 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       subParams={{teamId}}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />
+          return <ErrorComponent error={error} />
         } else if (props) {
           const {viewer} = props
           return (
