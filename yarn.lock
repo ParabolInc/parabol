@@ -962,10 +962,10 @@
     babel-runtime "^6.23.0"
     fbjs "0.8.17"
 
-"@mattkrick/sanitize-svg@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.2.0.tgz#9b4e25c3dbd9b849daa44d2a05bd4f4d5e5c10d6"
-  integrity sha512-OIPaAjLKxM7M80D3C4K0d+y6BEsBnpO1w2VOEygevkF7q9nj+pMKQ/u7rG602Eh47364e/r2fe4Dk3YuSmEylA==
+"@mattkrick/sanitize-svg@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.2.1.tgz#050e68e10e15d074e15945dfc2dd7245858db261"
+  integrity sha512-9T5xb8pq0GLNuKmKbXLvILOi1bQeu9FzAup+dB3zWRgzOVh40yE0YqWY/lrKzBrpj968ZaKTxegTwU1zyRtfBA==
 
 "@mattkrick/trebuchet-client@^0.1.2":
   version "0.1.3"
