@@ -20,8 +20,6 @@ import SharedDataLoader from 'shared-dataloader'
 import {WebSocketServer} from '@clusterws/cws'
 import http from 'http'
 // import startMemwatch from 'server/utils/startMemwatch'
-// @ts-ignore
-import packageJSON from '../../package.json'
 import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
 import RateLimiter from 'server/graphql/RateLimiter'
 import SSEConnectionHandler from 'server/sse/SSEConnectionHandler'
@@ -43,7 +41,7 @@ interface StripeRequest extends express.Request {
   rawBody: string
 }
 
-const {version} = packageJSON
+const APP_VERSION = process.env.npm_package_version
 // Import .env and expand variables:
 getDotenv()
 
@@ -101,7 +99,7 @@ if (!PROD) {
 } else {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    release: version,
+    release: APP_VERSION,
     integrations: [
       new Sentry.Integrations.RewriteFrames({
         root: global.__rootdir__

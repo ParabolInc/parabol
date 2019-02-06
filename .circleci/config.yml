@@ -131,9 +131,7 @@ jobs:
             fi
             if [ -n "${GITHUB_REMOTE}" ]; then
               npm run build:deploy &&
-              export ACTION_VERSION="\
-                $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
-                  echo ${BASH_REMATCH[1]})"
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
               git add .googlecloudkey.json build -f
@@ -169,10 +167,7 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "development" ]; then
               curl -sL https://sentry.io/get-cli/ | bash
-              export ACTION_VERSION="\
-                $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
-                  echo ${BASH_REMATCH[1]})"
-              echo "$ACTION_VERSION"
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               sentry-cli releases new "$ACTION_VERSION"
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
               sentry-cli releases finalize "$ACTION_VERSION"

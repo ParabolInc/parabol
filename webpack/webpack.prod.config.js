@@ -3,7 +3,6 @@ const resolve = require('./webpackResolve')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const npmPackage = require('../package.json')
 const getWebpackPublicPath = require('../src/server/utils/getWebpackPublicPath')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const S3Plugin = require('webpack-s3-plugin')
@@ -129,7 +128,7 @@ module.exports = {
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
-      __APP_VERSION__: JSON.stringify(npmPackage.version),
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.SourceMapDevToolPlugin({
