@@ -164,6 +164,15 @@ jobs:
       - store_artifacts:
           path: ~/action/build
           destination: build
+      - run:
+          name: Upload sentry artifacts
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              curl -sL https://sentry.io/get-cli/ | bash
+              sentry-cli releases new "$ACTION_VERSION"
+              sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
+              sentry-cli releases finalize "$ACTION_VERSION"
+            fi
       - store_test_results:
           path: ~/action/test-report
 workflows:

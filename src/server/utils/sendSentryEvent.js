@@ -1,7 +1,7 @@
 // @flow
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
-import Sentry from '@sentry/node'
+import * as Sentry from '@sentry/node'
 
 type DataloaderData = {
   key: string,

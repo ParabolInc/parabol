@@ -19,10 +19,10 @@ const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-sprea
 const pluginClassProps = require('@babel/plugin-proposal-class-properties')
 const pluginRelay = require('babel-plugin-relay')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
-const SentryCliPlugin = require('@sentry/webpack-plugin')
-const packageJSON = require('../package.json')
+// const SentryCliPlugin = require('@sentry/webpack-plugin')
+// const packageJSON = require('../package.json')
 
-const {version} = packageJSON
+// const {version} = packageJSON
 
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
@@ -42,11 +42,11 @@ if (process.env.WEBPACK_DEPLOY) {
       },
       basePath: getS3BasePath(),
       directory: buildPath
-    }),
-    new SentryCliPlugin({
-      release: version,
-      include: buildPath
     })
+    // new SentryCliPlugin({
+    //   release: version,
+    //   include: buildPath
+    // })
   )
 }
 
