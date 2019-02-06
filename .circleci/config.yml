@@ -169,6 +169,10 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "development" ]; then
               curl -sL https://sentry.io/get-cli/ | bash
+              export ACTION_VERSION="\
+                $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
+                  echo ${BASH_REMATCH[1]})"
+              echo "$ACTION_VERSION"
               sentry-cli releases new "$ACTION_VERSION"
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
               sentry-cli releases finalize "$ACTION_VERSION"

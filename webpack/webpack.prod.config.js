@@ -10,7 +10,6 @@ const S3Plugin = require('webpack-s3-plugin')
 const {getS3BasePath} = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const getDotenv = require('../src/universal/utils/dotenv')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import')
 const presetEnv = require('@babel/preset-env')
 const presetFlow = require('@babel/preset-flow')
@@ -19,10 +18,7 @@ const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-sprea
 const pluginClassProps = require('@babel/plugin-proposal-class-properties')
 const pluginRelay = require('babel-plugin-relay')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
-// const SentryCliPlugin = require('@sentry/webpack-plugin')
-// const packageJSON = require('../package.json')
-
-// const {version} = packageJSON
+const TerserPlugin = require('terser-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
@@ -43,10 +39,6 @@ if (process.env.WEBPACK_DEPLOY) {
       basePath: getS3BasePath(),
       directory: buildPath
     })
-    // new SentryCliPlugin({
-    //   release: version,
-    //   include: buildPath
-    // })
   )
 }
 
@@ -98,9 +90,20 @@ module.exports = {
   optimization: {
     minimize: Boolean(process.env.WEBPACK_DEPLOY),
     minimizer: [
-      new UglifyJsPlugin({
-        exclude: /codemirror/,
-        parallel: true
+      new TerserPlugin({
+        cache: true,
+        parallel: true,
+        sourceMap: true, // Must be set to true if using source-maps in production
+        terserOptions: {
+          output: {
+            comments: false,
+            ecma: 6
+          },
+          compress: {
+            ecma: 6
+          }
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+        }
       })
     ],
     splitChunks: {
