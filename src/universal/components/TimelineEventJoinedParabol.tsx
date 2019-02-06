@@ -21,7 +21,7 @@ class TimelineEventJoinedParabol extends Component<Props> {
       >
         <TimelineEventBody>
           {'Get started by updating your name and avatar in '}
-          <StyledLink to='/me/settings'>User Settings</StyledLink>
+          <StyledLink to='/me/profile'>User Profile</StyledLink>
           {'.'}
         </TimelineEventBody>
       </TimelineEventCard>

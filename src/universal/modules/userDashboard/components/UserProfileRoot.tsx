@@ -12,7 +12,7 @@ import withAtmosphere, {
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import {cacheConfig} from 'universal/utils/constants'
 import {connect} from 'react-redux'
-import UserSettings from './UserSettings/UserSettings'
+import UserProfile from './UserProfile'
 
 const query = graphql`
   query UserSettingsRootQuery {
@@ -29,7 +29,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string
   dispatch: Dispatch<any>
 }
 
-const UserSettingsRoot = (props: Props) => {
+const UserProfileRoot = (props: Props) => {
   const {
     atmosphere,
     dispatch,
@@ -53,11 +53,11 @@ const UserSettingsRoot = (props: Props) => {
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight='50vh' />}
           // @ts-ignore
-          ready={<UserSettings />}
+          ready={<UserProfile />}
         />
       )}
     />
   )
 }
 
-export default (connect() as any)(withRouter(withAtmosphere(UserSettingsRoot)))
+export default (connect() as any)(withRouter(withAtmosphere(UserProfileRoot)))
