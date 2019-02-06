@@ -1,7 +1,7 @@
 import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import ResizeObserver from 'resize-observer-polyfill'
+import ResizeObserverPolyfill from 'resize-observer-polyfill'
 import Modal from 'universal/components/Modal'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import FLIPGrid from 'universal/components/RetroReflectPhase/FLIPGrid'
@@ -32,6 +32,7 @@ const ModalReflectionWrapper = styled('div')({
   position: 'absolute'
 })
 
+const ResizeObserver = (window as any).ResizeObserver || ResizeObserverPolyfill
 class ExpandedReflectionStack extends Component<Props, State> {
   state = {
     isClosing: false
