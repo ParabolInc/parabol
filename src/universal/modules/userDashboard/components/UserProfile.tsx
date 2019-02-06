@@ -18,7 +18,7 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withForm, {WithFormProps} from 'universal/utils/relay/withForm'
 import Legitity from 'universal/validation/Legitity'
-import {UserSettings_viewer} from '__generated__/UserSettings_viewer.graphql'
+import {UserProfile_viewer} from '__generated__/UserProfile_viewer.graphql'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -60,7 +60,7 @@ const UserAvatarInput = lazy(() =>
 )
 
 interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps {
-  viewer: UserSettings_viewer
+  viewer: UserProfile_viewer
 }
 
 class UserProfile extends Component<Props> {
@@ -148,7 +148,7 @@ const form = withForm({
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(form(UserProfile))),
   graphql`
-    fragment UserSettings_viewer on User {
+    fragment UserProfile_viewer on User {
       preferredName
       picture
     }
