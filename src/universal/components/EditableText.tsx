@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
-import Legitity from '../../validation/Legitity'
+import Legitity from '../validation/Legitity'
 import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
@@ -57,6 +57,7 @@ const Form = styled('form')({
 })
 
 interface Props {
+  className?: string
   error: string | undefined
   validate: (value: string) => Legitity
   handleSubmit: (value: string) => void
@@ -170,10 +171,12 @@ class EditableText extends Component<Props, State> {
   }
 
   render () {
-    const {error} = this.props
+    const {className, error} = this.props
     const {isEditing} = this.state
     const showEditing = error || isEditing
-    return <div>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
+    return (
+      <div className={className}>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
+    )
   }
 }
 

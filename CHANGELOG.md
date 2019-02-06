@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+
+## vNEXT 
+
+### Removed
+* redux-form
+
 ## v3.3.0 2019-Jan-31
 
 ### Added
@@ -18,6 +24,7 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 ### Removed
 
 * Welcome wizard
+
 
 ## v3.2.0 2019-Jan-24
 

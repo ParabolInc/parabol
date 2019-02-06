@@ -4,8 +4,13 @@ import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifi
 import getInProxy from 'universal/utils/relay/getInProxy'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
 import onTeamRoute from 'universal/utils/onTeamRoute'
-import {ArchiveTeamMutationResponse} from '__generated__/ArchiveTeamMutation.graphql'
+import {
+  ArchiveTeamMutationResponse,
+  ArchiveTeamMutationVariables
+} from '__generated__/ArchiveTeamMutation.graphql'
 import {ArchiveTeamMutation_team} from '__generated__/ArchiveTeamMutation_team.graphql'
+import Atmosphere from '../Atmosphere'
+import {LocalHandlers} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
@@ -72,12 +77,15 @@ export const archiveTeamTeamOnNext = (payload: ArchiveTeamMutation_team, {atmosp
   popTeamArchivedToast(payload, {atmosphere, history})
 }
 
-const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted) => {
-  const {viewerId} = environment
-  const {history} = options
-  return commitMutation(environment, {
+const ArchiveTeamMutation = (
+  atmosphere: Atmosphere,
+  variables: ArchiveTeamMutationVariables,
+  {onError, onCompleted, history}: LocalHandlers
+) => {
+  const {viewerId} = atmosphere
+  return commitMutation(atmosphere, {
     mutation,
-    variables: {teamId},
+    variables,
     updater: (store) => {
       const payload = store.getRootField('archiveTeam')
       if (!payload) return
@@ -91,7 +99,7 @@ const ArchiveTeamMutation = (environment, teamId, options, onError, onCompleted)
       }
       const payload = res.archiveTeam
       if (payload) {
-        popTeamArchivedToast(payload as any, {atmosphere: environment, history})
+        popTeamArchivedToast(payload as any, {atmosphere, history})
       }
     },
     onError

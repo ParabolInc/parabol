@@ -32,7 +32,7 @@ export const formatError = (
   return firstError
 }
 
-// Serves as a lightweight alternative for redux-form when we just have a button or something
+// Serves as a lightweight alternative for a form library, best used for single-field forms
 const withMutationProps = <P extends WithMutationProps>(
   ComposedComponent: React.ComponentType<P>
 ) => {

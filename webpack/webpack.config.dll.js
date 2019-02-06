@@ -43,7 +43,6 @@ module.exports = {
       'react-transition-group',
       'react-virtualized',
       'redux',
-      'redux-form',
       'redux-raven-middleware',
       'redux-thunk',
       // 'relay-runtime',

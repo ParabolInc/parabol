@@ -77,7 +77,7 @@ class AuthenticationPage extends Component<Props> {
 
   onForgot = () => {
     const {history} = this.props
-    const email = this.authFormRef.current && this.authFormRef.current.state.fields.email.value
+    const email = this.authFormRef.current && this.authFormRef.current.props.fields.email.value
     history.push(`/reset-password?email=${email}`)
   }
 

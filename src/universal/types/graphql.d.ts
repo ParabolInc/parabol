@@ -6567,7 +6567,7 @@ export interface IUpdateOrgInput {
   /**
    * The unique action ID
    */
-  id?: string | null
+  id: string
 
   /**
    * The name of the org

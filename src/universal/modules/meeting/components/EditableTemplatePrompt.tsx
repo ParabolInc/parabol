@@ -1,7 +1,7 @@
 import {EditableTemplatePrompt_prompts} from '__generated__/EditableTemplatePrompt_prompts.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import EditableText from 'universal/components/Editable/EditableText'
+import EditableText from 'universal/components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'

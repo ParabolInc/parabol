@@ -9,15 +9,15 @@ import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import UserSettingsContainer from 'universal/modules/userDashboard/containers/UserSettings/UserSettingsContainer'
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import {cacheConfig} from 'universal/utils/constants'
 import {connect} from 'react-redux'
+import UserSettings from './UserSettings/UserSettings'
 
 const query = graphql`
   query UserSettingsRootQuery {
     viewer {
-      ...UserSettingsContainer_viewer
+      ...UserSettings_viewer
     }
   }
 `
@@ -52,7 +52,8 @@ const UserSettingsRoot = (props: Props) => {
           readyState={readyState}
           error={<ErrorComponent height={'14rem'} />}
           loading={<LoadingView minHeight='50vh' />}
-          ready={<UserSettingsContainer />}
+          // @ts-ignore
+          ready={<UserSettings />}
         />
       )}
     />

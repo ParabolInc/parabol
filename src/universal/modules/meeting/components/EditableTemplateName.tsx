@@ -1,6 +1,6 @@
 import {ReflectTemplateModal_retroMeetingSettings} from '__generated__/ReflectTemplateModal_retroMeetingSettings.graphql'
 import React, {Component} from 'react'
-import EditableText from 'universal/components/Editable/EditableText'
+import EditableText from 'universal/components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'

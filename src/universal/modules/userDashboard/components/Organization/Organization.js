@@ -6,7 +6,6 @@ import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
 import Helmet from 'react-helmet'
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle'
-import EditOrgName from 'universal/modules/userDashboard/components/EditOrgName/EditOrgName'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
 import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants'
@@ -20,6 +19,7 @@ import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import TagBlock from 'universal/components/Tag/TagBlock'
 import TagPro from 'universal/components/Tag/TagPro'
 import LoadableModal from 'universal/components/LoadableModal'
+import EditableOrgName from 'universal/components/EditableOrgName'
 
 const orgSqueeze = () =>
   import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
@@ -120,7 +120,7 @@ const Organization = (props) => {
           )}
           <OrgNameAndDetails>
             {isBillingLeader ? (
-              <EditOrgName initialValues={{orgName}} orgName={orgName} orgId={orgId} />
+              <EditableOrgName organization={organization} />
             ) : (
               <OrgNameBlock>{orgName}</OrgNameBlock>
             )}
@@ -172,6 +172,7 @@ export default createFragmentContainer(
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {
         ...OrgPlanSqueeze_organization
+        ...EditableOrgName_organization
         orgId: id
         isBillingLeader
         createdAt

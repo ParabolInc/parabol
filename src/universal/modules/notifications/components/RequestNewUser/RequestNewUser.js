@@ -7,7 +7,6 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ApproveToOrgMutation from 'universal/mutations/ApproveToOrgMutation'
 import ui from 'universal/styles/ui'
 import {MONTHLY_PRICE, PRO} from 'universal/utils/constants'
-import RejectOrgApprovalModal from '../RejectOrgApprovalModal/RejectOrgApprovalModal'
 import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
@@ -25,7 +24,6 @@ const RequestNewUser = (props) => {
     history
   } = props
   const {
-    notificationId,
     inviter: {inviterName},
     inviteeEmail,
     orgId,
@@ -36,8 +34,6 @@ const RequestNewUser = (props) => {
     submitMutation()
     ApproveToOrgMutation(atmosphere, inviteeEmail, orgId, onError, onCompleted)
   }
-
-  const rejectToggle = <StyledButton aria-label='Decline new user'>{'Decline'}</StyledButton>
 
   const goToTeam = () => history.push(`/team/${teamId}`)
 
@@ -67,14 +63,6 @@ const RequestNewUser = (props) => {
           >
             {'Accept'}
           </StyledButton>
-        </div>
-        <div className={css(defaultStyles.button)}>
-          <RejectOrgApprovalModal
-            notificationId={notificationId}
-            inviteeEmail={inviteeEmail}
-            inviterName={inviterName}
-            toggle={rejectToggle}
-          />
         </div>
       </div>
     </Row>

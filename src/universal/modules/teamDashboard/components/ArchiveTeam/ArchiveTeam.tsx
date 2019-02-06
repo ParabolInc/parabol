@@ -1,5 +1,3 @@
-// @flow
-
 import React from 'react'
 import LinkButton from 'universal/components/LinkButton'
 import IconLabel from 'universal/components/IconLabel'
@@ -8,19 +6,19 @@ import Type from 'universal/components/Type/Type'
 import ArchiveTeamForm from './ArchiveTeamForm'
 
 type Props = {
-  teamName: string,
-  handleFormBlur: () => any,
-  handleFormSubmit: () => any,
-  handleClick: () => any,
+  teamName: string
+  teamId: string
+  handleFormBlur: () => any
+  handleClick: () => any
   showConfirmationField: boolean
 }
 
 const ArchiveTeam = ({
   handleClick,
   handleFormBlur,
-  handleFormSubmit,
   showConfirmationField,
-  teamName
+  teamName,
+  teamId
 }: Props) => (
   <div>
     {!showConfirmationField ? (
@@ -37,11 +35,7 @@ const ArchiveTeam = ({
         </Type>
       </div>
     ) : (
-      <ArchiveTeamForm
-        handleFormBlur={handleFormBlur}
-        handleFormSubmit={handleFormSubmit}
-        teamName={teamName}
-      />
+      <ArchiveTeamForm handleFormBlur={handleFormBlur} teamName={teamName} teamId={teamId} />
     )}
   </div>
 )
