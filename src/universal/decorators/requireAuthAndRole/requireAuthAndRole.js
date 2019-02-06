@@ -45,7 +45,7 @@ export default ({
               atmosphere.eventEmitter.emit('addToast', unauthorized)
             })
           }
-          history.push(unauthRoute)
+          history.replace(unauthRoute)
           this.redir = true
         }
       } else {
@@ -54,7 +54,7 @@ export default ({
             atmosphere.eventEmitter.emit('addToast', unauthenticated)
           })
         }
-        history.push({
+        history.replace({
           pathname: unauthRoute,
           search: `?redirectTo=${encodeURIComponent(pathname)}`
         })
