@@ -1,5 +1,4 @@
 import PropTypes from 'prop-types'
-import raven from 'raven-js'
 import React, {Component} from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
@@ -163,9 +162,6 @@ class MeetingContainer extends Component {
           message:
             'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
         })
-        raven.captureMessage(
-          'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered'
-        )
       }
     } else {
       infiniteloopCounter = 0

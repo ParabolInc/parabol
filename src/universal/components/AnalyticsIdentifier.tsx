@@ -1,5 +1,5 @@
 import {AnalyticsIdentifierRootQueryResponse} from '__generated__/AnalyticsIdentifierRootQuery.graphql'
-import raven from 'raven-js'
+import * as Sentry from '@sentry/browser'
 import {Component} from 'react'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
 import makeHref from 'universal/utils/makeHref'
@@ -24,9 +24,11 @@ class AnalyticsIdentifier extends Component<Props, State> {
   static identify (viewer) {
     if (!viewer) return
     const {created, email, viewerId, avatar, name} = viewer
-    raven.setUserContext({
-      id: viewerId,
-      email
+    Sentry.configureScope((scope) => {
+      scope.setUser({
+        id: viewerId,
+        email
+      })
     })
     if (typeof window.analytics === 'undefined') {
       return

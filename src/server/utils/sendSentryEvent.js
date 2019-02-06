@@ -1,7 +1,7 @@
 // @flow
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
-import Raven from 'raven'
+import Sentry from '@sentry/node'
 
 type DataloaderData = {
   key: string,
@@ -49,20 +49,19 @@ const sendSentryEvent = async (authToken?: AuthToken, breadcrumb?: Breadcrumb, e
     user = await r
       .table('User')
       .get(userId)
-      .pluck('id', 'email', 'preferredName', 'picture')
+      .pluck('id', 'email', 'preferredName')
       .default(null)
   }
-  Raven.context(() => {
+  Sentry.configureScope((scope) => {
     if (user) {
-      Raven.setContext({user})
+      scope.setUser(user)
     }
-    if (breadcrumb) {
-      Raven.captureBreadcrumb(breadcrumb)
-    }
-    const event =
-      error || (breadcrumb && new Error(breadcrumb.message)) || new Error('Unknown Error')
-    Raven.captureException(event)
   })
+  if (breadcrumb) {
+    Sentry.addBreadcrumb(breadcrumb)
+  }
+  const event = error || (breadcrumb && new Error(breadcrumb.message)) || new Error('Unknown Error')
+  Sentry.captureException(event)
 }
 
 export default sendSentryEvent

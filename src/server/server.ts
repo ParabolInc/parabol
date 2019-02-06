@@ -5,7 +5,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import jwt from 'express-jwt'
 import favicon from 'serve-favicon'
-import Raven from 'raven'
+import Sentry from '@sentry/node'
 import createSSR from './createSSR'
 import emailSSR from './emailSSR'
 import {clientSecret as secretKey} from './utils/auth0Helpers'
@@ -21,7 +21,6 @@ import {WebSocketServer} from '@clusterws/cws'
 import http from 'http'
 // import startMemwatch from 'server/utils/startMemwatch'
 import packageJSON from '../../package.json'
-import jwtFields from 'universal/utils/jwtFields'
 import {SHARED_DATA_LOADER_TTL} from 'server/utils/serverConstants'
 import RateLimiter from 'server/graphql/RateLimiter'
 import SSEConnectionHandler from 'server/sse/SSEConnectionHandler'
@@ -30,6 +29,18 @@ import SSEPingHandler from 'server/sse/SSEPingHandler'
 import ms from 'ms'
 import rateLimit from 'express-rate-limit'
 import demoEntityHandler from 'server/demoEntityHandler'
+
+declare global {
+  namespace NodeJS {
+    interface Global {
+      __rootdir__: string
+    }
+  }
+}
+
+interface StripeRequest extends express.Request {
+  rawBody: string
+}
 
 const {version} = packageJSON
 // Import .env and expand variables:
@@ -87,21 +98,25 @@ if (!PROD) {
     })
   )
 } else {
-  Raven.config(process.env.SENTRY_DSN, {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
     release: version,
-    environment: process.env.NODE_ENV,
-    parseUser: jwtFields
-  }).install()
+    integrations: [
+      new Sentry.Integrations.RewriteFrames({
+        root: global.__rootdir__
+      })
+    ]
+  })
   // sentry.io request handler capture middleware, must be first:
-  app.use(Raven.requestHandler())
+  app.use(Sentry.Handlers.requestHandler())
 }
 
 // setup middleware
 app.use(
   bodyParser.json({
-    verify: (req, res, buf) => {
+    verify: (req: express.Request, _res: express.Response, buf) => {
       if (req.originalUrl.startsWith('/stripe')) {
-        req.rawBody = buf.toString()
+        (req as StripeRequest).rawBody = buf.toString()
       }
     }
   })
