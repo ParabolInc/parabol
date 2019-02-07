@@ -6,7 +6,6 @@ jobs:
       - image: rethinkdb:2.3.5
       - image: redis:3.2.8
       - image: selenium/standalone-chrome:3.6.0
-      - image: getsentry/sentry-cli
     environment:
       CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
@@ -39,11 +38,11 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update && apt-get -yq install build-essential
-            yarn
+            yarn --frozen-lockfile
       - save_cache:
           key: action-{{ checksum "yarn.lock" }}
           paths:
-          - ~/action/node_modules
+          - ~/.cache/yarn
       - run:
           name: Database migration (testing)
           command: |
@@ -166,7 +165,8 @@ jobs:
       - run:
           name: Upload sentry artifacts
           command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              curl -sL https://sentry.io/get-cli/ | bash
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               sentry-cli releases new "$ACTION_VERSION"
               sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
