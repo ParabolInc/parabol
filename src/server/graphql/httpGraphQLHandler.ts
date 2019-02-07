@@ -1,6 +1,7 @@
 import e from 'express'
 import queryMap from 'server/graphql/queryMap.json'
-import sendSentryEvent from 'server/utils/sendSentryEvent'
+import {getUserId} from '../utils/authorization'
+import sendToSentry from '../utils/sendToSentry'
 import handleGraphQLTrebuchetRequest from './handleGraphQLTrebuchetRequest'
 import isQueryAllowed from './isQueryAllowed'
 
@@ -14,16 +15,14 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (
     ? sseClients[connectionId as string]
     : {sharedDataLoader, rateLimiter, authToken}
   if (!connectionContext) {
-    // TODO send to sentry
+    const viewerId = getUserId(authToken)
+    sendToSentry(new Error('SSE response not found'), {userId: viewerId})
     res.send('SSE Response not found')
     return
   }
   if (connectionId && connectionContext.authToken.sub !== authToken.sub) {
-    sendSentryEvent(
-      connectionContext.authToken,
-      undefined,
-      new Error('Security: Spoofed SSE connectionId')
-    )
+    const viewerId = getUserId(authToken)
+    sendToSentry(new Error('Security: Spoofed SSE connectionId'), {userId: viewerId})
     // quietly fail for cheaters
     res.sendStatus(200)
   }
@@ -39,7 +38,8 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (
       res.sendStatus(200)
     }
   } catch (e) {
-    sendSentryEvent(connectionContext.authToken, undefined, e)
+    const viewerId = getUserId(authToken)
+    sendToSentry(e, {userId: viewerId})
     res.send(e.message)
     return
   }

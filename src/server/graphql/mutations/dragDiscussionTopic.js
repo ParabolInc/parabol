@@ -1,12 +1,10 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import DragDiscussionTopicPayload from 'server/graphql/types/DragDiscussionTopicPayload'
-import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendMeetingNotFoundError, sendStageNotFoundError} from 'server/utils/docNotFoundErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {DISCUSS, TEAM} from 'universal/utils/constants'
+import standardError from 'server/utils/standardError'
 
 export default {
   description: 'Changes the priority of the discussion topics',
@@ -30,23 +28,24 @@ export default {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const meeting = await r.table('NewMeeting').get(meetingId)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     const discussPhase = phases.find((phase) => phase.phaseType === DISCUSS)
     if (!discussPhase) {
-      return sendStageNotFoundError(authToken, stageId)
+      return standardError(new Error('Meeting stage not found'), {userId: viewerId})
     }
     const {stages} = discussPhase
     const draggedStage = stages.find((stage) => stage.id === stageId)
     if (!draggedStage) {
-      return sendStageNotFoundError(authToken, stageId)
+      return standardError(new Error('Meeting stage not found'), {userId: viewerId})
     }
 
     // RESOLUTION

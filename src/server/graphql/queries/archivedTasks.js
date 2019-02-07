@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import {TaskConnection} from 'server/graphql/types/Task'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: TaskConnection,
@@ -25,7 +25,8 @@ export default {
     // AUTH
     const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, null)
+      standardError(new Error('Not organization lead'), {userId})
+      return null
     }
 
     // RESOLUTION

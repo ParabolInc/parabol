@@ -1,19 +1,13 @@
 import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import publish from 'server/utils/publish'
 import {GROUP, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import AutoGroupReflectionsPayload from 'server/graphql/types/AutoGroupReflectionsPayload'
-import {sendGroupingThresholdValidationError} from 'server/utils/__tests__/validationErrors'
 import groupReflections from 'universal/utils/autogroup/groupReflections'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: AutoGroupReflectionsPayload,
@@ -37,25 +31,26 @@ export default {
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (isPhaseComplete(GROUP, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP)
+      return standardError(new Error('Meeting already completed'), {userId: viewerId})
     }
 
     // VALIDATION
     if (groupingThreshold <= 0 || groupingThreshold >= 1) {
-      return sendGroupingThresholdValidationError(authToken, meetingId, groupingThreshold)
+      return standardError(new Error('Invalid grouping threshold'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -110,7 +105,6 @@ export default {
     const reflectionIds = groupedReflections.map(({id}) => id)
     const data = {meetingId, reflectionGroupIds, reflectionIds, removedReflectionGroupIds}
     publish(TEAM, teamId, AutoGroupReflectionsPayload, data, subOptions)
-    const viewerId = getUserId(authToken)
     sendSegmentEvent('Autogroup', viewerId, {meetingId})
     return data
   }

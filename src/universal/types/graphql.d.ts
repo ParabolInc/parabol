@@ -1771,7 +1771,7 @@ export interface ITeamMember {
   /**
    * The user for the team member
    */
-  user: IUser | null
+  user: IUser
 
   /**
    * Tasks owned by the team member
@@ -4213,7 +4213,7 @@ export interface IStandardMutationError {
   /**
    * The title of the error
    */
-  title: string
+  title: string | null
 
   /**
    * The full error

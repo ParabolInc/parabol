@@ -14,10 +14,7 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import makeTaskSchema from 'universal/validation/makeTaskSchema'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendTaskNotFoundError, sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors'
-import {sendAlreadyUpdatedTaskError} from 'server/utils/alreadyMutatedErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import standardError from 'server/utils/standardError'
 
 const DEBOUNCE_TIME = ms('5m')
 
@@ -44,17 +41,17 @@ export default {
     const viewerId = getUserId(authToken)
     const {id: taskId} = updatedTask
     const task = await r.table('Task').get(taskId)
-    if (!task) return sendTaskNotFoundError(authToken, taskId)
+    if (!task) return standardError(new Error('Task not found'), {userId: viewerId})
     const {teamId} = task
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
     const schema = makeTaskSchema()
     const {errors, data: validUpdatedTask} = schema(updatedTask)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+      return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
     const {agendaId, content, status, assigneeId, sortOrder} = validUpdatedTask
     if (assigneeId) {
@@ -64,7 +61,7 @@ export default {
         .get(assigneeId)
         .default(null)
       if (!res) {
-        return sendTeamMemberNotFoundError(authToken, teamId, assigneeId)
+        return standardError(new Error('Team member not found'), {userId: viewerId})
       }
     }
 
@@ -136,7 +133,7 @@ export default {
         .coerceTo('array')
     })
     const usersToIgnore = getUsersToIgnore(area, teamMembers)
-    if (!newTask) return sendAlreadyUpdatedTaskError(authToken, taskId)
+    if (!newTask) return standardError(new Error('Already updated task'), {userId: viewerId})
 
     // send task updated messages
     const isPrivate = newTask.tags.includes('private')

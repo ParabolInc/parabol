@@ -11,8 +11,8 @@ const organization = () =>
   import(/* webpackChunkName: 'OrganizationRoot' */ 'universal/modules/userDashboard/containers/Organization/OrganizationRoot')
 const userDashMain = () =>
   import(/* webpackChunkName: 'UserDashMain' */ 'universal/modules/userDashboard/components/UserDashMain/UserDashMain')
-const userSettings = () =>
-  import(/* webpackChunkName: 'UserSettingsRoot' */ 'universal/modules/userDashboard/components/UserSettingsRoot')
+const userProfile = () =>
+  import(/* webpackChunkName: 'UserProfileRoot' */ 'universal/modules/userDashboard/components/UserProfileRoot')
 const notificationsMod = () =>
   import(/* webpackChunkName: 'NotificationsContainer' */ 'universal/modules/notifications/containers/Notifications/NotificationsContainer')
 
@@ -20,7 +20,7 @@ const UserDashboard = (props) => {
   const {match, notifications} = props
   return (
     <Switch>
-      <AsyncRoute path={`${match.url}/settings`} mod={userSettings} />
+      <AsyncRoute path={`${match.url}/profile`} mod={userProfile} />
       <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
       <AsyncRoute path={`${match.url}/organizations/:orgId`} mod={organization} />
       <AsyncRoute

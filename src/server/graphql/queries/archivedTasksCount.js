@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: GraphQLInt,
@@ -13,11 +13,13 @@ export default {
   },
   async resolve (source, {teamId}, {authToken}) {
     const r = getRethink()
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, 0)
+      standardError(new Error('Team not found'), {userId: viewerId})
+      return 0
     }
 
     // RESOLUTION

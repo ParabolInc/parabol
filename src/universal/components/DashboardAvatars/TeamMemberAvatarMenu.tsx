@@ -29,7 +29,8 @@ const LeaveTeamModal = lazy(() =>
 
 const TeamMemberAvatarMenu = (props: Props) => {
   const {atmosphere, isViewerLead, teamMember, closePortal} = props
-  const {isConnected, preferredName, userId} = teamMember
+  const {user, preferredName, userId} = teamMember
+  const {isConnected} = user
   const {viewerId} = atmosphere
   const isSelf = userId === viewerId
   const connected = isConnected ? 'connected' : 'disconnected'
@@ -80,11 +81,13 @@ export default createFragmentContainer(
   withAtmosphere(TeamMemberAvatarMenu),
   graphql`
     fragment TeamMemberAvatarMenu_teamMember on TeamMember {
-      isConnected
       isSelf
       preferredName
       userId
       isLead
+      user {
+        isConnected
+      }
       ...LeaveTeamModal_teamMember
       ...PromoteTeamMemberModal_teamMember
       ...RemoveTeamMemberModal_teamMember

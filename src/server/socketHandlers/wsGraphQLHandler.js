@@ -1,8 +1,9 @@
 import Schema from 'server/graphql/rootSchema'
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
-import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
 import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors'
 import rateLimitedGraphQL from 'server/graphql/graphql'
+import {getUserId} from 'server/utils/authorization'
+import sendToSentry from 'server/utils/sendToSentry'
 
 export default async function wsGraphQLHandler (connectionContext, payload) {
   const {query, variables} = payload
@@ -18,8 +19,8 @@ export default async function wsGraphQLHandler (connectionContext, payload) {
   dataLoader.dispose()
 
   if (result.errors) {
-    const errorType = !socketId ? 'HTTP' : connectionContext.socket.constructor.name
-    sendGraphQLErrorResult(errorType, result.errors[0], query, variables, authToken)
+    const viewerId = getUserId(authToken)
+    sendToSentry(result.errors[0], {tags: {query, variables}, userId: viewerId})
   }
   return sanitizeGraphQLErrors(result)
 }

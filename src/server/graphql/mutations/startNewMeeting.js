@@ -9,11 +9,9 @@ import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 import extendNewMeetingForType from 'server/graphql/mutations/helpers/extendNewMeetingForType'
 import createNewMeetingPhases from 'server/graphql/mutations/helpers/createNewMeetingPhases'
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyStartedMeetingError} from 'server/utils/alreadyMutatedErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
 import extendMeetingMembersForType from 'server/graphql/mutations/helpers/extendMeetingMembersForType'
 import createMeetingMember from 'server/graphql/mutations/helpers/createMeetingMember'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: StartNewMeetingPayload,
@@ -37,7 +35,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -51,7 +49,7 @@ export default {
     })
 
     if (team.meetingId) {
-      return sendAlreadyStartedMeetingError(authToken, teamId)
+      return standardError(new Error('Meeting already started'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -66,12 +64,7 @@ export default {
         dataLoader
       )
     } catch (e) {
-      const breadcrumb = {
-        message: e.message,
-        category: 'Start new meeting',
-        data: {teamId}
-      }
-      return sendAuthRaven(authToken, 'Something went wrong', breadcrumb)
+      return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
     const firstStage = phases[0] && phases[0].stages[0]
     const {id: facilitatorStageId} = firstStage

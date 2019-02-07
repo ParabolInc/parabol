@@ -1,5 +1,4 @@
 import {applyMiddleware, compose, createStore} from 'redux'
-import ravenMiddleware from 'redux-raven-middleware'
 import thunkMiddleware from 'redux-thunk'
 import makeReducer from 'universal/redux/makeReducer'
 import {APP_VERSION_KEY} from 'universal/utils/constants'
@@ -14,8 +13,6 @@ export default (initialState) => {
   const middlewares = [thunkMiddleware]
 
   if (__PRODUCTION__) {
-    // add Sentry error reporting:
-    middlewares.unshift(ravenMiddleware(window.__ACTION__.sentry))
     store = createStore(reducer, initialState, compose(applyMiddleware(...middlewares)))
   } else {
     const devtoolsExt =

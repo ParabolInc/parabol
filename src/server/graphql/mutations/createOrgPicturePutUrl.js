@@ -4,7 +4,7 @@ import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import getS3PutUrl from 'server/utils/getS3PutUrl'
 import validateAvatarUpload from 'server/utils/validateAvatarUpload'
 import shortid from 'shortid'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 const createOrgPicturePutUrl = {
   type: CreatePicturePutUrlPayload,
@@ -27,7 +27,7 @@ const createOrgPicturePutUrl = {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return sendOrgLeadAccessError(authToken, orgId)
+      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
     }
 
     // VALIDATION

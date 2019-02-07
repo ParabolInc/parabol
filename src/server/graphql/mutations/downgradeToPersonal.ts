@@ -2,12 +2,11 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import stripe from 'server/billing/stripe'
 import getRethink from 'server/database/rethinkDriver'
 import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonalPayload'
-import {sendAlreadyPersonalTierError} from 'server/utils/alreadyMutatedErrors'
 import {getUserId, isUserBillingLeader, isSuperUser} from 'server/utils/authorization'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
 import publish from 'server/utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import {ORGANIZATION, PERSONAL, TEAM} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 
 export default {
   type: DowngradeToPersonalPayload,
@@ -28,14 +27,16 @@ export default {
     const viewerId = getUserId(authToken)
     if (!isSuperUser(authToken)) {
       if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-        return sendOrgLeadAccessError(authToken, orgId)
+        return standardError(new Error('Not organization leader'), {userId: viewerId})
       }
     }
 
     // VALIDATION
     const {stripeSubscriptionId, tier} = await r.table('Organization').get(orgId)
 
-    if (tier === PERSONAL) return sendAlreadyPersonalTierError(authToken, orgId)
+    if (tier === PERSONAL) {
+      return standardError(new Error('Already on free tier'), {userId: viewerId})
+    }
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId

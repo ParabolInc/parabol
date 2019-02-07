@@ -10,9 +10,7 @@ import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import fetch from 'node-fetch'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import getIsSoftTeamMember from 'universal/utils/getIsSoftTeamMember'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
-import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 // const checkCreatorPermission = async (nameWithOwner, adminProvider, creatorProvider) => {
 //  if (!creatorProvider) return false;
@@ -29,6 +27,7 @@ import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
 const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner, authToken) => {
   const r = getRethink()
   const {errors, message} = res
+  const viewerId = getUserId(authToken)
   if (errors) {
     const {code, field} = errors[0]
     if (code === 'invalid') {
@@ -37,40 +36,32 @@ const makeAssigneeError = async (res, assigneeTeamMemberId, nameWithOwner, authT
           const assigneeName = await r.table('SoftTeamMember').get(assigneeTeamMemberId)(
             'preferredName'
           )
-          const breadcrumb = {
-            message: `Assignment failed! Ask ${assigneeName} to join Parabol and add GitHub in Team Settings`,
-            category: 'Create GitHub Issue'
-          }
-          return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+          return standardError(
+            new Error(
+              `Assignment failed! Ask ${assigneeName} to join Parabol and add GitHub in Team Settings`
+            ),
+            {userId: viewerId}
+          )
         }
         const assigneeName = await r.table('TeamMember').get(assigneeTeamMemberId)('preferredName')
-        const breadcrumb = {
-          message: `${assigneeName} cannot be assigned to ${nameWithOwner}. Make sure they have access`,
-          category: 'Create GitHub Issue'
-        }
-        return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+        return standardError(
+          new Error(
+            `${assigneeName} cannot be assigned to ${nameWithOwner}. Make sure they have access`
+          ),
+          {userId: viewerId}
+        )
       }
     } else if (code === 'missing_field') {
       if (field === 'title') {
-        const breadcrumb = {
-          message: 'The first line is the title. It can’t be empty',
-          category: 'Create GitHub Issue'
-        }
-        return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+        return standardError(new Error('The first line is the title. It can’t be empty'), {
+          userId: viewerId
+        })
       }
     }
-    const breadcrumb = {
-      message: `GitHub: ${message}. ${code}: ${field}`,
-      category: 'Create GitHub Issue'
-    }
-    return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+    return standardError(new Error(`GitHub: ${message}. ${code}: ${field}`), {userId: viewerId})
   } else if (message) {
     // this means it's our bad:
-    const breadcrumb = {
-      message,
-      category: 'Create GitHub Issue'
-    }
-    return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+    return standardError(new Error(message), {userId: viewerId})
   }
   return undefined
 }
@@ -97,35 +88,29 @@ export default {
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-
+    const viewerId = getUserId(authToken)
     // AUTH
     const task = await r.table('Task').get(taskId)
     if (!task) {
-      return sendTaskNotFoundError(authToken)
+      return standardError(new Error('Task not found'), {userId: viewerId})
     }
     const {teamId} = task
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
-    const viewerId = getUserId(authToken)
     if (task.integration && task.integration.service) {
-      const breadcrumb = {
-        message: `That task is already linked to ${task.integration.service}`,
-        category: 'Create GitHub Issue',
-        data: {taskId}
-      }
-      return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+      return standardError(
+        new Error(`That task is already linked to ${task.integration.service}`),
+        {userId: viewerId}
+      )
     }
     const [repoOwner, repoName] = nameWithOwner.split('/')
     if (!repoOwner || !repoName) {
-      const breadcrumb = {
-        message: `${nameWithOwner} is not a valid repository`,
-        category: 'Create GitHub Issue',
-        data: {nameWithOwner, taskId}
-      }
-      return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+      return standardError(new Error(`${nameWithOwner} is not a valid repository`), {
+        userId: viewerId
+      })
     }
     const adminUserId = await r
       .table(GITHUB)
@@ -135,12 +120,9 @@ export default {
       .default(null)
 
     if (!adminUserId) {
-      const breadcrumb = {
-        message: `No integration for ${nameWithOwner} exists for ${teamId}`,
-        category: 'Create GitHub Issue',
-        data: {nameWithOwner, taskId}
-      }
-      return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+      return standardError(new Error(`No integration for ${nameWithOwner} exists for ${teamId}`), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -154,34 +136,29 @@ export default {
     if (!assigneeProvider) {
       if (getIsSoftTeamMember(assigneeId)) {
         const assigneeName = await r.table('SoftTeamMember').get(assigneeId)('preferredName')
-        const breadcrumb = {
-          message: `Assignment failed! Ask ${assigneeName} to join Parabol and add GitHub in Team Settings`,
-          category: 'Create GitHub Issue',
-          data: {nameWithOwner, taskId}
-        }
-        return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+        return standardError(
+          new Error(
+            `Assignment failed! Ask ${assigneeName} to join Parabol and add GitHub in Team Settings`
+          ),
+          {userId: viewerId}
+        )
       }
     }
     const adminProvider = providers.find((provider) => provider.userId === adminUserId)
     if (!adminProvider) {
       // this should never happen
-      const breadcrumb = {
-        message: 'This repo does not have an admin! Please re-integrate the repo',
-        category: 'Create GitHub Issue',
-        data: {nameWithOwner, taskId}
-      }
-      return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+      return standardError(
+        new Error('This repo does not have an admin! Please re-integrate the repo'),
+        {userId: viewerId}
+      )
     }
 
     const creatorProvider = providers.find((provider) => provider.userId === viewerId)
 
     if (!rawContentStr) {
-      const breadcrumb = {
-        message: 'You must add some text before submitting a task to github',
-        category: 'Create GitHub Issue',
-        data: {nameWithOwner, taskId}
-      }
-      return sendAuthRaven(authToken, 'GitHub Task Creation', breadcrumb)
+      return standardError(new Error('You must add some text before submitting a task to github'), {
+        userId: viewerId
+      })
     }
     const rawContent = JSON.parse(rawContentStr)
     const {blocks} = rawContent

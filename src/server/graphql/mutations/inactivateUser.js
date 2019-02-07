@@ -1,14 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import adjustUserCount from 'server/billing/helpers/adjustUserCount'
 import getRethink from 'server/database/rethinkDriver'
-import {isOrgLeaderOfUser} from 'server/utils/authorization'
+import {getUserId, isOrgLeaderOfUser} from 'server/utils/authorization'
 import {toEpochSeconds} from 'server/utils/epochTime'
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants'
 import {PERSONAL} from 'universal/utils/constants'
-import {sendOrgLeadOfUserAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
-import {sendAlreadyInactivatedUserError} from 'server/utils/alreadyMutatedErrors'
 import InactivateUserPayload from 'server/graphql/types/InactivateUserPayload'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: InactivateUserPayload,
@@ -21,10 +19,10 @@ export default {
   },
   async resolve (source, {userId}, {authToken}) {
     const r = getRethink()
-
+    const viewerId = getUserId(authToken)
     // AUTH
     if (!(await isOrgLeaderOfUser(authToken, userId))) {
-      return sendOrgLeadOfUserAccessError(authToken, userId, false)
+      return standardError(new Error('Not organization leader of user'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -43,7 +41,7 @@ export default {
         })
     })
     if (user.inactive) {
-      return sendAlreadyInactivatedUserError(authToken, userId)
+      return standardError(new Error('User already inactivated'), {userId: viewerId})
     }
 
     const hookPromises = orgs.map((orgDoc) => {
@@ -67,12 +65,9 @@ export default {
     const pausesByOrg = await Promise.all(hookPromises)
     const triggeredPauses = Math.max(...pausesByOrg)
     if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-      const breadcrumb = {
-        message: 'Max monthly pauses exceeded for this user',
-        category: 'Pauses exceeded',
-        data: {userId}
-      }
-      return sendAuthRaven(authToken, 'Easy there', breadcrumb)
+      return standardError(new Error('Max monthly pauses excheeded for this user'), {
+        userId: viewerId
+      })
     }
 
     // TODO ping the user to see if they're currently online

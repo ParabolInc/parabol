@@ -2,18 +2,13 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import rateLimit from 'server/graphql/rateLimit'
 import {getUserId, isAuthenticated} from 'server/utils/authorization'
-import {
-  sendInvitationExpiredError,
-  sendNotAuthenticatedAccessError,
-  sendTeamAlreadyJoinedError
-} from 'server/utils/authorizationErrors'
-import {sendInvitationNotFoundError} from 'server/utils/docNotFoundErrors'
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
 import publish from 'server/utils/publish'
 import {NEW_AUTH_TOKEN, NOTIFICATION, TEAM, UPDATED} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import acceptTeamInvitation from '../../safeMutations/acceptTeamInvitation'
+import standardError from '../../utils/standardError'
 import AcceptTeamInvitationPayload from '../types/AcceptTeamInvitationPayload'
 
 export default {
@@ -46,13 +41,9 @@ export default {
 
       // AUTH
       const viewerId = getUserId(authToken)
-      if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError()
+      if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
       if (!invitationToken) {
-        return {
-          error: {
-            message: 'No invitation token provided'
-          }
-        }
+        return standardError(new Error('No invitation token provided'), {userId: viewerId})
       }
 
       // VALIDATION
@@ -62,7 +53,7 @@ export default {
         .nth(0)
         .default(null)
       if (!invitation) {
-        return sendInvitationNotFoundError(authToken, invitationToken)
+        return standardError(new Error('Invitation not found'), {userId: viewerId})
       }
       const {id: invitationId, acceptedAt, expiresAt, teamId} = invitation
       if (expiresAt < now) {
@@ -70,14 +61,14 @@ export default {
         if (notificationId) {
           const notification = await r.table('Notification').get(notificationId)
           if (!notification || notification.userIds[0] !== viewerId) {
-            return sendInvitationExpiredError(authToken, invitationToken)
+            return standardError(new Error('Invitation expired'), {userId: viewerId})
           }
         }
       }
 
       const viewer = await r.table('User').get(viewerId)
       if (acceptedAt || (viewer.tms && viewer.tms.includes(teamId))) {
-        return sendTeamAlreadyJoinedError(authToken, invitationToken)
+        return standardError(new Error('Team already joined'), {userId: viewerId})
       }
 
       // RESOLUTION

@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import UpdateCheckInQuestionPayload from 'server/graphql/types/UpdateCheckInQuestionPayload'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: UpdateCheckInQuestionPayload,
@@ -24,10 +24,11 @@ export default {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION

@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver'
 import Invoice from 'server/graphql/types/Invoice'
 import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import {UPCOMING_INVOICE_TIME_VALID} from 'server/utils/serverConstants'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: Invoice,
@@ -27,7 +27,8 @@ export default {
       .default(null)
     const orgId = (currentInvoice && currentInvoice.orgId) || invoiceId.substring(9) // remove 'upcoming_'
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return sendOrgLeadAccessError(authToken, orgId, null)
+      standardError(new Error('Not organization lead'), {userId: viewerId})
+      return null
     }
 
     // RESOLUTION

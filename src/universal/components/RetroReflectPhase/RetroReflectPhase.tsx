@@ -19,6 +19,7 @@ import Overflow from 'universal/components/Overflow'
 import isDemoRoute from 'universal/utils/isDemoRoute'
 import EndMeetingButton from '../EndMeetingButton'
 import DemoReflectHelpMenu from '../MeetingHelp/DemoReflectHelpMenu'
+import ms from 'ms'
 
 const minWidth = REFLECTION_WIDTH + 32
 
@@ -48,18 +49,44 @@ interface Props extends WithAtmosphereProps {
   team: RetroReflectPhase_team
 }
 
-class RetroReflectPhase extends Component<Props> {
+interface State {
+  minTimeComplete: boolean
+}
+
+class RetroReflectPhase extends Component<Props, State> {
   phaseRef = React.createRef<HTMLDivElement>()
+  state = {
+    minTimeComplete: false
+  }
+  activityTimeoutId = window.setTimeout(() => {
+    this.setState({
+      minTimeComplete: true
+    })
+  }, ms('2m'))
+
+  componentWillUnmount (): void {
+    window.clearTimeout(this.activityTimeoutId)
+  }
 
   render () {
     const {atmosphere, team, gotoNext, gotoNextRef, isDemoStageComplete} = this.props
     const {viewerId} = atmosphere
     const {newMeeting} = team
     if (!newMeeting) return
-    const {facilitatorUserId, localPhase, meetingId, reflectionGroups} = newMeeting
+    const {facilitatorUserId, localPhase, meetingId, reflectionGroups, localStage} = newMeeting
+    const isComplete = localStage ? localStage.isComplete : false
     const reflectPrompts = localPhase!.reflectPrompts!
     const isFacilitating = facilitatorUserId === viewerId
     const nextPhaseLabel = phaseLabelLookup[GROUP]
+    const isEmpty = !reflectionGroups || reflectionGroups.length === 0
+    const isReadyToGroup =
+      !isComplete &&
+      !isEmpty &&
+      this.state.minTimeComplete &&
+      reflectPrompts.reduce(
+        (sum, prompt) => sum + (prompt.editorIds ? prompt.editorIds.length : 0),
+        0
+      ) === 0
     return (
       <React.Fragment>
         <StyledOverflow>
@@ -81,8 +108,8 @@ class RetroReflectPhase extends Component<Props> {
           <StyledBottomBar>
             <BottomControlSpacer />
             <BottomNavControl
-              isBouncing={isDemoStageComplete}
-              disabled={!reflectionGroups || reflectionGroups.length === 0}
+              isBouncing={isDemoStageComplete || isReadyToGroup}
+              disabled={isEmpty}
               onClick={gotoNext}
               onKeyDown={handleRightArrow(gotoNext)}
               innerRef={gotoNextRef}
@@ -115,6 +142,9 @@ export default createFragmentContainer(
         meetingId: id
         facilitatorUserId
         ... on RetrospectiveMeeting {
+          localStage {
+            isComplete
+          }
           reflectionGroups {
             id
           }

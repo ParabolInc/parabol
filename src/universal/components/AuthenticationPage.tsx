@@ -23,6 +23,7 @@ import {
 } from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import auth0Authorize from '../utils/auth0Authorize'
+import getAnonymousId from '../utils/getAnonymousId'
 import makeWebAuth from '../utils/makeWebAuth'
 import AuthDialog from './AuthDialog'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
@@ -68,8 +69,7 @@ class AuthenticationPage extends Component<Props> {
     onCompleted()
     const {idToken} = res
     const isCreate = location.pathname.includes(CREATE_ACCOUNT_SLUG)
-    const segmentId =
-      isCreate && window.analytics ? window.analytics.user().anonymousId() : undefined
+    const segmentId = isCreate ? getAnonymousId() : undefined
     LoginMutation(atmosphere, {auth0Token: idToken, segmentId}, {history})
   }
 

@@ -8,8 +8,8 @@ import {INVITATION, NOTIFICATION, ORG_APPROVAL, TASK, TEAM_MEMBER} from 'univers
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds'
 import getRethink from 'server/database/rethinkDriver'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import rateLimit from 'server/graphql/rateLimit'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(InviteTeamMembersPayload),
@@ -38,7 +38,7 @@ export default {
           .get(teamId)('orgId')
           .default('')
         if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-          return sendTeamAccessError(authToken, teamId)
+          return standardError(new Error('Team not found'), {userId: viewerId})
         }
       }
 

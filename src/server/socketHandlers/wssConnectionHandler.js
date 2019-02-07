@@ -7,10 +7,9 @@ import {verify} from 'jsonwebtoken'
 import {WS_KEEP_ALIVE} from 'universal/utils/constants'
 import handleConnect from 'server/socketHandlers/handleConnect'
 import ConnectionContext from 'server/socketHelpers/ConnectionContext'
-import packageJSON from '../../../package.json'
 import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
 
-const APP_VERSION = packageJSON.version
+const APP_VERSION = process.env.npm_package_version
 export default function connectionHandler (sharedDataLoader, rateLimiter) {
   return async function socketConnectionHandler (socket, req) {
     const {headers} = req

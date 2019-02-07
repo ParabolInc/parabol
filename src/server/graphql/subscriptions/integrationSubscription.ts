@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter'
 import IntegrationSubscriptionPayload from 'server/graphql/types/IntegrationSubscriptionPayload'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {INTEGRATION} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 
 export default {
   type: new GraphQLNonNull(IntegrationSubscriptionPayload),
@@ -15,7 +15,8 @@ export default {
   subscribe: (_source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      const viewerId = getUserId(authToken)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

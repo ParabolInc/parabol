@@ -9,8 +9,7 @@ import publish from 'server/utils/publish'
 import sendSegmentEvent, {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import {PARABOL_PRO_MONTHLY} from 'server/utils/serverConstants'
 import {ORGANIZATION, PRO, TEAM} from 'universal/utils/constants'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyProTierError} from 'server/utils/alreadyMutatedErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: UpgradeToProPayload,
@@ -34,7 +33,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return sendOrgLeadAccessError(authToken, orgId)
+      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -49,7 +48,9 @@ export default {
           .count()
       }))
 
-    if (startingSubId) return sendAlreadyProTierError(authToken, orgId)
+    if (startingSubId) {
+      return standardError(new Error('Already a pro organization'), {userId: viewerId})
+    }
 
     // RESOLUTION
     // if they downgrade & are re-upgrading, they'll already have a stripeId

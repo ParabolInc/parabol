@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver'
 import ProviderMap from 'server/graphql/types/ProviderMap'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {CURRENT_PROVIDERS, SLACK} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 const getUserReduction = (service, reduction, userId) => {
   if (service === SLACK) {
@@ -27,7 +27,8 @@ export default {
     // AUTH
     const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, null)
+      standardError(new Error('Team not found'), {userId})
+      return null
     }
 
     // RESOLUTION

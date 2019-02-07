@@ -6,12 +6,12 @@ import sendEmailPromise from 'server/email/sendEmail'
 import rateLimit from 'server/graphql/rateLimit'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import makeAppLink from 'server/utils/makeAppLink'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {NOTIFICATION, TEAM_INVITATION} from 'universal/utils/constants'
 import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
+import standardError from '../../utils/standardError'
 import InviteToTeamPayload from '../types/InviteToTeamPayload'
 import {TEAM_INVITATION_LIFESPAN} from 'server/utils/serverConstants'
 
@@ -47,7 +47,7 @@ export default {
       // AUTH
       const viewerId = getUserId(authToken)
       if (!isTeamMember(authToken, teamId)) {
-        return sendTeamAccessError(authToken, teamId)
+        return standardError(new Error('Team not found'), {userId: viewerId})
       }
 
       // RESOLUTION

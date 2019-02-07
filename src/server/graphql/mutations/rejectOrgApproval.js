@@ -20,9 +20,7 @@ import promiseAllObj from 'universal/utils/promiseAllObj'
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds'
 import getActiveSoftTeamMembersByEmail from 'server/safeQueries/getActiveSoftTeamMembersByEmail'
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
-import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: RejectOrgApprovalPayload,
@@ -47,11 +45,11 @@ export default {
     const viewerId = getUserId(authToken)
     const rejectionNotification = await r.table('Notification').get(notificationId)
     if (!rejectionNotification) {
-      return sendNotificationAccessError(authToken, notificationId)
+      return standardError(new Error('Notification not found'), {userId: viewerId})
     }
     const {orgId, inviteeEmail} = rejectionNotification
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return sendOrgLeadAccessError(authToken, orgId)
+      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -60,7 +58,7 @@ export default {
       errors
     } = rejectOrgApprovalValidation()(args)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+      return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
 
     // RESOLUTION

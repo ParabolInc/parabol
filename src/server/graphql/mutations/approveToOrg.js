@@ -4,7 +4,7 @@ import approveToOrg from 'server/safeMutations/approveToOrg'
 import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {INVITATION, NOTIFICATION, ORG_APPROVAL, ORGANIZATION} from 'universal/utils/constants'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: ApproveToOrgPayload,
@@ -23,7 +23,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return sendOrgLeadAccessError(authToken, orgId)
+      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
     }
 
     // RESOLUTION
