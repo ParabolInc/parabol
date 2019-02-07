@@ -146,7 +146,7 @@ class ReflectionStack extends Component<Props, State> {
     }
     const duration = ANIMATION_DURATION - (Date.now() - this.animationStart)
     if (duration <= 0) {
-      return isTempId(newTop.id) ? {duration: ANIMATION_DURATION, easing: EASING} : null
+      return isTempId(newTop && newTop.id) ? {duration: ANIMATION_DURATION, easing: EASING} : null
     }
     // an animation is already in progress!
     return {

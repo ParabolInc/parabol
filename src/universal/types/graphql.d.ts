@@ -4213,7 +4213,7 @@ export interface IStandardMutationError {
   /**
    * The title of the error
    */
-  title: string
+  title: string | null
 
   /**
    * The full error
