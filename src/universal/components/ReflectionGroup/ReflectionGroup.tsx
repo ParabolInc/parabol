@@ -357,6 +357,11 @@ class ReflectionGroup extends Component<Props> {
   }
 }
 
+export interface MasonryDropResult {
+  dropTargetType: DragReflectionDropTargetTypeEnum
+  dropTargetId: string
+}
+
 const reflectionDropSpec: DropTargetSpec<Props> = {
   canDrop (props, monitor) {
     return (
@@ -372,7 +377,7 @@ const reflectionDropSpec: DropTargetSpec<Props> = {
     return {
       dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
       dropTargetId: targetReflectionGroupId
-    }
+    } as MasonryDropResult
   }
 }
 

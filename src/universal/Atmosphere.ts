@@ -73,6 +73,7 @@ interface Toast {
 
 interface AtmosphereEvents {
   addToast: Toast
+  removeToast: (toast: string | any) => void
   endDraggingReflection: MasonryDragEndPayload
   meetingSidebarCollapsed: boolean
   newSubscriptionClient: void

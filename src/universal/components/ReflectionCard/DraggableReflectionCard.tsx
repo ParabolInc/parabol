@@ -23,7 +23,8 @@ import {cardShadow} from 'universal/styles/elevation'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import clientTempId from 'universal/utils/relay/clientTempId'
-import {SetItemRef} from '../PhaseItemMasonry'
+import {MasonryDragEndPayload, SetItemRef} from '../PhaseItemMasonry'
+import {MasonryDropResult} from '../ReflectionGroup/ReflectionGroup'
 import ReflectionCard from './ReflectionCard'
 
 interface Props extends WithAtmosphereProps {
@@ -236,8 +237,9 @@ const reflectionDragSpec = {
     // endDrag is also called when the viewer loses a conflict
     if (!dragContext || !dragContext.isViewerDragging) return
     const dragId = dragContext.dragId as string
-    const dropResult = monitor.getDropResult()
-    const {dropTargetType = null, dropTargetId = null} = dropResult || {}
+    const dropResult = monitor.getDropResult() as MasonryDropResult | null
+    const dropTargetType = dropResult ? dropResult.dropTargetType : null
+    const dropTargetId = dropResult ? dropResult.dropTargetId : null
     // must come before the mutation so we can clear the itemCache
     if (closeGroupModal && dropTargetType) {
       closeGroupModal()
@@ -261,7 +263,7 @@ const reflectionDragSpec = {
       itemId: reflectionId,
       childId: dropTargetType ? newReflectionGroupId : undefined,
       sourceId: reflectionGroupId
-    })
+    } as MasonryDragEndPayload)
   }
 }
 
