@@ -7,8 +7,8 @@ import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll'
 import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import sendMessage from 'server/socketHelpers/sendMessage'
-import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
-import firstErrorMessage from 'universal/utils/relay/firstErrorMessage'
+import {getUserId} from 'server/utils/authorization'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const {GQL_COMPLETE, GQL_DATA, GQL_ERROR} = ClientMessageTypes
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
@@ -50,13 +50,8 @@ const handleSubscribe = async (connectionContext, parsedMessage, options = {}) =
   if (!asyncIterator) {
     if (errors) {
       const {query, variables} = parsedMessage.payload
-      sendGraphQLErrorResult(
-        'WebSocket-Subscription',
-        firstErrorMessage(errors),
-        query,
-        variables,
-        authToken
-      )
+      const viewerId = getUserId(authToken)
+      sendToSentry(errors[0], {tags: {query, variables}, userId: viewerId})
       sendMessage(socket, GQL_ERROR, {errors}, opId)
     }
     return

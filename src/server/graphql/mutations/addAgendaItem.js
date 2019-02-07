@@ -6,9 +6,8 @@ import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {AGENDA_ITEM} from 'universal/utils/constants'
 import makeAgendaItemSchema from 'universal/validation/makeAgendaItemSchema'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: AddAgendaItemPayload,
@@ -23,18 +22,18 @@ export default {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-
+    const viewerId = getUserId(authToken)
     // AUTH
     const {teamId} = newAgendaItem
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
     const schema = makeAgendaItemSchema()
     const {errors, data: validNewAgendaItem} = schema(newAgendaItem)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+      return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
 
     // RESOLUTION

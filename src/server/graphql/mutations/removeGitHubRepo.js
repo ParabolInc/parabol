@@ -4,9 +4,7 @@ import RemoveGitHubRepoPayload from 'server/graphql/types/RemoveGitHubRepoPayloa
 import {getUserId, isTeamLead, isTeamMember} from 'server/utils/authorization'
 import {GITHUB} from 'universal/utils/constants'
 import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubRepo'
-import {sendTeamAccessError, sendTeamLeadAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyRemovedIntegrationError} from 'server/utils/alreadyMutatedErrors'
-import {sendGitHubProviderNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   name: 'RemoveGitHubRepo',
@@ -25,23 +23,21 @@ export default {
     const viewerId = getUserId(authToken)
     const integration = await r.table(GITHUB).get(githubIntegrationId)
     if (!integration) {
-      return sendGitHubProviderNotFoundError(authToken, {
-        githubIntegrationId
-      })
+      return standardError(new Error('GitHub provider not found'), {userId: viewerId})
     }
     const {adminUserId, teamId, isActive, nameWithOwner} = integration
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
     if (!isActive) {
-      return sendAlreadyRemovedIntegrationError(authToken, githubIntegrationId)
+      return standardError(new Error('Integration already removed'), {userId: viewerId})
     }
 
     if (adminUserId !== viewerId) {
       if (!(await isTeamLead(viewerId, teamId))) {
-        return sendTeamLeadAccessError(authToken, teamId)
+        return standardError(new Error('Not team lead'), {userId: viewerId})
       }
     }
 

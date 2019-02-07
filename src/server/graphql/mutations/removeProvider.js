@@ -7,10 +7,8 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {GITHUB, INTEGRATION, SLACK} from 'universal/utils/constants'
 import archiveTasksForManyRepos from 'server/safeMutations/archiveTasksForManyRepos'
 import removeGitHubReposForUserId from 'server/safeMutations/removeGitHubReposForUserId'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendIntegrationNotFoundError} from 'server/utils/docNotFoundErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
 import publish from 'server/utils/publish'
+import standardError from 'server/utils/standardError'
 
 const getPayload = async (service, integrationChanges, teamId, userId) => {
   const deletedIntegrationIds = integrationChanges
@@ -48,10 +46,10 @@ export default {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
-
+    const viewerId = getUserId(authToken)
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -68,18 +66,15 @@ export default {
       )
 
     if (res.skipped === 1) {
-      return sendIntegrationNotFoundError(authToken, providerId)
+      return standardError(new Error('Integration not found'), {userId: viewerId})
     }
 
     // remove the user from every integration under the service
     const updatedProvider = res.changes[0]
     if (!updatedProvider) {
-      const breadcrumb = {
-        message: `Provider ${providerId} did not contain ${teamId}`,
-        category: 'Not found',
-        data: {providerId, teamId}
-      }
-      return sendAuthRaven(authToken, 'Oh no', breadcrumb)
+      return standardError(new Error(`Provider ${providerId} did not contain ${teamId}`), {
+        userId: viewerId
+      })
     }
     const {service} = updatedProvider.new_val
     const userId = getUserId(authToken)

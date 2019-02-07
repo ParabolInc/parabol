@@ -11,10 +11,9 @@ import {
   PROMOTE_TO_BILLING_LEADER,
   REQUEST_NEW_USER
 } from 'universal/utils/constants'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import approveToOrg from 'server/graphql/mutations/approveToOrg'
+import standardError from 'server/utils/standardError'
 
 const approveToOrgForUserId = async (orgId, userId, authToken, dataLoader) => {
   const r = getRethink()
@@ -66,17 +65,12 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader, {clearCache: true}))) {
-      return sendOrgLeadAccessError(authToken, orgId)
+      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
     }
 
     // VALIDATION
     if (role && role !== BILLING_LEADER) {
-      const breadcrumb = {
-        message: 'Invalid role',
-        category: 'Unauthorized Access',
-        data: {role, orgId, userId}
-      }
-      return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
+      return standardError(new Error('Invalid role'), {userId: viewerId})
     }
     // if someone is leaving, make sure there is someone else to take their place
     if (userId === viewerId) {
@@ -86,12 +80,9 @@ export default {
         .filter({removedAt: null, role: BILLING_LEADER})
         .count()
       if (leaderCount === 1) {
-        const breadcrumb = {
-          message: 'You’re the last leader, you can’t give that up',
-          category: 'Unauthorized Access',
-          data: {role, orgId, userId}
-        }
-        return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
+        return standardError(new Error('You’re the last leader, you can’t give that up'), {
+          userId: viewerId
+        })
       }
     }
 

@@ -10,12 +10,7 @@ import {GITHUB, GITHUB_ENDPOINT} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos'
 import fetch from 'node-fetch'
-import {
-  sendGitHubAdministratorError,
-  sendGitHubPassedThoughError,
-  sendTeamAccessError
-} from 'server/utils/authorizationErrors'
-import {sendGitHubProviderNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 const createRepoWebhook = async (accessToken, nameWithOwner, publicKey) => {
   const endpoint = `https://api.github.com/repos/${nameWithOwner}/hooks`
@@ -88,9 +83,11 @@ export default {
   resolve: async (source, {teamId, nameWithOwner}, {authToken, socketId: mutatorId}) => {
     const r = getRethink()
     const now = new Date()
+    const viewerId = getUserId(authToken)
+
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const userId = getUserId(authToken)
 
@@ -102,22 +99,19 @@ export default {
 
     const viewerProviderIdx = allTeamProviders.findIndex((provider) => provider.userId === userId)
     if (viewerProviderIdx === -1) {
-      return sendGitHubProviderNotFoundError(authToken, {
-        teamId,
-        nameWithOwner
-      })
+      return standardError(new Error('GitHub Provider not found'), {userId: viewerId})
     }
     // first check if the viewer has permission. then, check the rest
     const {accessToken} = allTeamProviders[viewerProviderIdx]
     const viewerPermissions = await tokenCanAccessRepo(accessToken, nameWithOwner)
     const {data, errors} = viewerPermissions
-    if (errors) return sendGitHubPassedThoughError(authToken, errors)
+    if (errors) return standardError(new Error('Unknown GitHub error'), {userId: viewerId})
 
     const {
       repository: {viewerCanAdminister, databaseId: ghRepoId}
     } = data
     if (!viewerCanAdminister) {
-      return sendGitHubAdministratorError(authToken, nameWithOwner)
+      return standardError(new Error('Not GitHub Administrator'), {userId: viewerId})
     }
 
     // RESOLUTION

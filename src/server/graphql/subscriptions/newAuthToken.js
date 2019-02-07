@@ -3,14 +3,15 @@ import makeSubscribeIter from 'server/graphql/makeSubscribeIter'
 import {getUserId, isAuthenticated} from 'server/utils/authorization'
 import tmsSignToken from 'server/utils/tmsSignToken'
 import {NEW_AUTH_TOKEN} from 'universal/utils/constants'
-import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: GraphQLString,
   subscribe: (source, args, {authToken, dataLoader}) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
-      return sendNotAuthenticatedAccessError(authToken, null)
+      standardError(new Error('Not authenticated'))
+      return null
     }
 
     // RESOLUTION

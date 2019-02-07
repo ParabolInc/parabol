@@ -61,7 +61,16 @@ const sharedDataLoader = new SharedDataLoader({
 const rateLimiter = new RateLimiter()
 // keep a hash table of connection contexts
 const sseClients = {}
-
+Sentry.init({
+  environment: process.env.NODE_ENV,
+  dsn: process.env.SENTRY_DSN,
+  release: APP_VERSION,
+  integrations: [
+    new Sentry.Integrations.RewriteFrames({
+      root: global.__rootdir__
+    })
+  ]
+})
 // HMR
 if (!PROD) {
   const config = require('../../webpack/webpack.dev.config')
@@ -97,15 +106,6 @@ if (!PROD) {
     })
   )
 } else {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    release: APP_VERSION,
-    integrations: [
-      new Sentry.Integrations.RewriteFrames({
-        root: global.__rootdir__
-      })
-    ]
-  })
   // sentry.io request handler capture middleware, must be first:
   app.use(Sentry.Handlers.requestHandler())
 }

@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter'
 import GitHubMemberRemovedPayload from 'server/graphql/types/GitHubMemberRemovedPayload'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(GitHubMemberRemovedPayload),
@@ -14,7 +14,8 @@ export default {
   subscribe: (source, {teamId}, {authToken, dataLoader}) => {
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      const viewerId = getUserId(authToken)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

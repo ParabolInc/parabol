@@ -7,11 +7,10 @@ import makeUserServerSchema from 'universal/validation/makeUserServerSchema'
 import publish from 'server/utils/publish'
 import {NOTIFICATION, TEAM_MEMBER} from 'universal/utils/constants'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
-import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import {JSDOM} from 'jsdom'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import fetch from 'node-fetch'
+import standardError from 'server/utils/standardError'
 
 const updateUserProfile = {
   type: UpdateUserProfilePayload,
@@ -28,14 +27,14 @@ const updateUserProfile = {
     const subOptions = {operationId, mutatorId}
 
     // AUTH
-    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError()
+    if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
     const userId = getUserId(authToken)
 
     // VALIDATION
     const schema = makeUserServerSchema()
     const {data: validUpdatedUser, errors} = schema(updatedUser)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+      return standardError(new Error('Failed input validation'), {userId})
     }
 
     if (validUpdatedUser.picture && validUpdatedUser.picture.endsWith('.svg')) {

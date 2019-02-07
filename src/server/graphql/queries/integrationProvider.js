@@ -4,7 +4,7 @@ import Provider from 'server/graphql/types/Provider'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {SLACK} from 'universal/utils/constants'
 import IntegrationService from 'server/graphql/types/IntegrationService'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: Provider,
@@ -25,7 +25,8 @@ export default {
     // AUTH
     const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, null)
+      standardError(new Error('Team not found'), {userId})
+      return null
     }
 
     // RESOLUTION

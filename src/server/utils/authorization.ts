@@ -2,8 +2,8 @@ import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
-export const getUserId = (authToken) => {
-  return authToken && typeof authToken === 'object' && authToken.sub
+export const getUserId = (authToken: any) => {
+  return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
 }
 
 export const isAuthenticated = (authToken) => Boolean(authToken)
@@ -34,7 +34,15 @@ export const requireSU = (authToken) => {
   }
 }
 
-export const isUserBillingLeader = async (userId, orgId, dataLoader, options) => {
+interface Options {
+  clearCache?: boolean
+}
+export const isUserBillingLeader = async (
+  userId: string,
+  orgId: string,
+  dataLoader: any,
+  options?: Options
+) => {
   const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
   const organizationUser = organizationUsers.find(
     (organizationUser) => organizationUser.orgId === orgId

@@ -1,22 +1,13 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendReflectionGroupNotFoundError} from 'server/utils/docNotFoundErrors'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import publish from 'server/utils/publish'
 import {GROUP, TEAM} from 'universal/utils/constants'
 import stringSimilarity from 'string-similarity'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
-import {
-  sendGroupTitleDuplicateError,
-  sendGroupTitleRequiredError
-} from 'server/utils/__tests__/validationErrors'
 import UpdateReflectionGroupTitlePayload from 'server/graphql/types/UpdateReflectionGroupTitlePayload'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: UpdateReflectionGroupTitlePayload,
@@ -40,23 +31,23 @@ export default {
     const viewerId = getUserId(authToken)
     const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
     if (!reflectionGroup) {
-      return sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
+      return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
     const {meetingId, smartTitle, title: oldTitle} = reflectionGroup
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete(GROUP, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP)
+      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
     // VALIDATION
     const normalizedTitle = title.trim()
     if (normalizedTitle.length < 1) {
-      return sendGroupTitleRequiredError(authToken, reflectionGroupId)
+      return standardError(new Error('Reflection group title required'), {userId: viewerId})
     }
     const allTitles = await r
       .table('RetroReflectionGroup')
@@ -64,7 +55,7 @@ export default {
       .filter({isActive: true})('title')
       .default([])
     if (allTitles.includes(normalizedTitle)) {
-      return sendGroupTitleDuplicateError(authToken, normalizedTitle)
+      return standardError(new Error('Group titles must be unique'), {userId: viewerId})
     }
 
     // RESOLUTION

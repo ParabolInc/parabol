@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import Team from 'server/graphql/types/Team'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(Team),
@@ -14,7 +14,9 @@ export default {
   },
   async resolve (source, {teamId}, {authToken, dataLoader}) {
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, null)
+      const viewerId = getUserId(authToken)
+      standardError(new Error('Team not found'), {userId: viewerId})
+      return null
     }
     return dataLoader.get('teams').load(teamId)
   }

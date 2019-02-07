@@ -6,8 +6,7 @@ import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {ORGANIZATION} from 'universal/utils/constants'
 import updateOrgValidation from './helpers/updateOrgValidation'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(UpdateOrgPayload),
@@ -27,7 +26,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isUserBillingLeader(viewerId, updatedOrg.id, dataLoader))) {
-      return sendOrgLeadAccessError(authToken, updatedOrg.id)
+      return standardError(new Error('Not organization lead'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -37,7 +36,7 @@ export default {
       data: {id: orgId, ...org}
     } = schema(updatedOrg)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+      return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
 
     // RESOLUTION

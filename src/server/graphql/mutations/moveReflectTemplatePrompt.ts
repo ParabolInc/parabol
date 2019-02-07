@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 import MoveReflectTemplatePromptPayload from '../types/MoveReflectTemplatePromptPayload'
 
 const moveReflectTemplate = {
@@ -23,10 +23,11 @@ const moveReflectTemplate = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const prompt = await r.table('CustomPhaseItem').get(promptId)
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!prompt || !isTeamMember(authToken, prompt.teamId) || !prompt.isActive) {
-      return sendTeamAccessError(authToken, prompt && prompt.teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

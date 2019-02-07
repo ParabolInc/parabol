@@ -11,9 +11,9 @@ import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import shortid from 'shortid'
 import {NEW_AUTH_TOKEN, NOTIFICATION, ORGANIZATION, UPDATED} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import rateLimit from 'server/graphql/rateLimit'
 import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: AddOrgPayload,
@@ -42,7 +42,7 @@ export default {
         errors
       } = addOrgValidation()(args)
       if (Object.keys(errors).length) {
-        return sendFailedInputValidation(authToken, errors)
+        return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
 
       // RESOLUTION

@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import CreateImposterTokenPayload from 'server/graphql/types/CreateImposterTokenPayload'
-import {requireSU} from 'server/utils/authorization'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
+import {getUserId, requireSU} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 const createImposterToken = {
   type: CreateImposterTokenPayload,
@@ -15,16 +15,11 @@ const createImposterToken = {
   async resolve (source, {userId}, {authToken, dataLoader}) {
     // AUTH
     requireSU(authToken)
-
+    const viewerId = getUserId(authToken)
     // VALIDATION
     const user = await dataLoader.get('users').load(userId)
     if (!user) {
-      const breadcrumb = {
-        message: `User ${userId} does not exist`,
-        category: 'Impersonate',
-        data: {userId}
-      }
-      return sendAuthRaven(authToken, 'Listen here guy', breadcrumb)
+      return standardError(new Error('Attempted to impersonate bad userId'), {userId: viewerId})
     }
 
     // RESOLUTION

@@ -1,12 +1,13 @@
-import {sendAlreadyRemovedVoteError} from 'server/utils/alreadyMutatedErrors'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import getRethink from 'server/database/rethinkDriver'
+import standardError from 'server/utils/standardError'
+import {getUserId} from 'server/utils/authorization'
 
 const safelyWithdrawVote = async (authToken, meetingId, userId, reflectionGroupId) => {
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   const r = getRethink()
   const now = new Date()
-
+  const viewerId = getUserId(authToken)
   const isVoteRemovedFromGroup = await r
     .table('RetroReflectionGroup')
     .get(reflectionGroupId)
@@ -29,7 +30,7 @@ const safelyWithdrawVote = async (authToken, meetingId, userId, reflectionGroupI
     })('replaced')
     .eq(1)
   if (!isVoteRemovedFromGroup) {
-    return sendAlreadyRemovedVoteError(authToken, reflectionGroupId)
+    return standardError(new Error('Already removed vote'), {userId: viewerId})
   }
   await r
     .table('MeetingMember')

@@ -1,18 +1,16 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {NOTIFICATION, TEAM} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
-import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
-import {sendAlreadyEndedMeetingError} from 'server/utils/alreadyMutatedErrors'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import sendNewMeetingSummary from 'server/graphql/mutations/helpers/endMeeting/sendNewMeetingSummary'
 import shortid from 'shortid'
 import {COMPLETED_RETRO_MEETING} from 'server/graphql/types/TimelineEventTypeEnum'
 import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: EndNewMeetingPayload,
@@ -28,18 +26,19 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
+    const viewerId = getUserId(authToken)
     // AUTH
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, meetingNumber, phases, teamId} = meeting
     // called by endOldMeetings, SU is OK
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
     // RESOLUTION
     const lastPhase = phases[phases.length - 1]

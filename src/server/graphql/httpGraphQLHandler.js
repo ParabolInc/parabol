@@ -4,7 +4,8 @@ import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import isQueryProvided from 'server/graphql/isQueryProvided'
 import isSubscriptionPayload from 'server/graphql/isSubscriptionPayload'
-import sendSentryEvent from 'server/utils/sendSentryEvent'
+import sendToSentry from 'server/utils/sendToSentry'
+import {getUserId} from 'server/utils/authorization'
 
 const {GQL_START, GQL_STOP} = ServerMessageTypes
 const {GQL_DATA, GQL_ERROR} = ClientMessageTypes
@@ -21,11 +22,8 @@ export default (sharedDataLoader, rateLimiter, sseClients) => async (req, res) =
     return
   }
   if (connectionId && connectionContext.authToken.sub !== authToken.sub) {
-    sendSentryEvent(
-      connectionContext.authToken,
-      undefined,
-      new Error('Security: Spoofed SSE connectionId')
-    )
+    const viewerId = getUserId(authToken)
+    sendToSentry(new Error('Security: Spoofed SSE connectionId'), {userId: viewerId})
     // quietly fail for cheaters
     res.sendStatus(200)
   }
