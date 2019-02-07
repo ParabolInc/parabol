@@ -912,25 +912,6 @@
   resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-0.1.2.tgz#f53f3c69344b985996a2e27387a1b1ca3dc24cd6"
   integrity sha512-I9pbh8QzWnEBBjkP2xkxOqBSl/J4bqVu4oGjDluQupwD+T2IbfLK+0KtBbo8hENLUhwiLX8YptaNEOcV+EmD6w==
 
-"@mattkrick/react-relay@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/react-relay/-/react-relay-2.0.0.tgz#a5959502ebd95a23c16930a533b973dae215f4eb"
-  integrity sha512-v3l2BwSsk1da18iegD1I0jnzOJhk+qERHIvbcFaU/CNG+9/iYtZXRpUvHiT1+dNAnMF83h1In5Xkw297EetTAw==
-  dependencies:
-    "@babel/runtime" "^7.0.0"
-    "@mattkrick/relay-runtime" "2.0.0"
-    fbjs "^1.0.0"
-    nullthrows "^1.1.0"
-    prop-types "^15.5.8"
-
-"@mattkrick/relay-runtime@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@mattkrick/relay-runtime/-/relay-runtime-2.0.0.tgz#bdac52890ad4d4959f2c4ba60a4e14b5c1357554"
-  integrity sha512-W1e7ykyDtP1oWDSbJ5NvIfqVq/WXefTDgy2BSmBH5Y1POzP8TFSzY0kJ2NkHuJMnOnQmBxmP5M+ffEydAWE55w==
-  dependencies:
-    "@babel/runtime" "^7.0.0"
-    fbjs "^1.0.0"
-
 "@mattkrick/sanitize-svg@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.2.1.tgz#050e68e10e15d074e15945dfc2dd7245858db261"
@@ -7112,7 +7093,7 @@ fbjs-css-vars@^1.0.0:
   resolved "https://registry.yarnpkg.com/fbjs-css-vars/-/fbjs-css-vars-1.0.2.tgz#216551136ae02fe255932c3ec8775f18e2c078b8"
   integrity sha512-b2XGFAFdWZWg0phtAWLHCk836A1Xann+I+Dgd3Gk64MHKZO44FfoD1KxyvbSh0qZsIoXQGGlVztIY+oitJPpRQ==
 
-fbjs@0.8.17, fbjs@^0.8.0, fbjs@^0.8.1, fbjs@^0.8.14, fbjs@^0.8.15, fbjs@^0.8.4, fbjs@^0.8.9:
+fbjs@^0.8.0, fbjs@^0.8.1, fbjs@^0.8.14, fbjs@^0.8.15, fbjs@^0.8.4, fbjs@^0.8.9:
   version "0.8.17"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.17.tgz#c4d598ead6949112653d6588b01a5cdcd9f90fdd"
   integrity sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
@@ -14019,15 +14000,16 @@ react-redux@^6.0.0:
     prop-types "^15.6.2"
     react-is "^16.6.3"
 
-react-relay@^1.6.2:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-1.7.0.tgz#6a21df4e6bb52c7a02374ad288ccbeb0172f095d"
-  integrity sha512-vZOs1iK6LxqeaAelwSuD5eVXnQux5eVIrik/kxKt6Y3j6ylrjrdTadmgO6sapGc0TG61VtFK5CKPOtW+XSNotg==
+react-relay@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-2.0.0.tgz#967eb66159202264cbf6daa9b1acfa78dfbd13e7"
+  integrity sha512-TLQdW9AVo7Zlu7z81MuNm2Y9Mp3im6rVSKs357uS3cEz6vr2x3ZEQr+HAXDQn8Hb4gFQ+9+iRRlv+hd2Rid/0Q==
   dependencies:
-    babel-runtime "^6.23.0"
-    fbjs "0.8.17"
+    "@babel/runtime" "^7.0.0"
+    fbjs "^1.0.0"
+    nullthrows "^1.1.0"
     prop-types "^15.5.8"
-    relay-runtime "1.7.0"
+    relay-runtime "2.0.0"
 
 react-router-dom@4.4.0-beta.6:
   version "4.4.0-beta.6"
@@ -14591,18 +14573,9 @@ relay-compiler-language-typescript@^2.0.0:
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
-relay-runtime@1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-1.7.0.tgz#59cfb5cab361ef630099464e1b364342466cd212"
-  integrity sha512-gvx01aRoLHdIMQoIjMQ79js4BR9JZVfF/SoSiLXvWOgDWEnD7RKb80zmCZTByCpka0GwFzkVwBWUy1gW6g0zlQ==
-  dependencies:
-    babel-runtime "^6.23.0"
-    fbjs "0.8.17"
-
-relay-runtime@2.0.0:
+relay-runtime@2.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45":
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/relay-runtime/-/relay-runtime-2.0.0.tgz#0e42df90365cc69f104f7e4b20fdcf975f5a9c0b"
-  integrity sha512-o/LPFHTI6+3FLJXM3Ec4N6hzkKYILVHYRJThNX0UQlMnqjTVPR6NO4qFE2QzzEiUS+lys+qfnvBzSmNbSh1zWQ==
+  resolved "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45#25f032e0acc547a343bc926512013460a8410532"
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
