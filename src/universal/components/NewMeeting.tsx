@@ -431,11 +431,13 @@ export default createFragmentContainer(
           preferredName
           picture
           checkInOrder
-          isConnected
           isFacilitator
           isLead
           isSelf
           userId
+          user {
+            isConnected
+          }
         }
         newMeeting {
           ...NewMeetingPhaseHeading_newMeeting

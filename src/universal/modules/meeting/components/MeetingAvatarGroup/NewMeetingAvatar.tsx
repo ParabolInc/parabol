@@ -107,14 +107,8 @@ const NewMeetingAvatar = (props: Props) => {
   const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES
-  const {
-    teamMemberId,
-    isConnected,
-    isSelf,
-    meetingMember,
-    picture = defaultUserAvatar,
-    userId
-  } = teamMember
+  const {teamMemberId, meetingMember, picture = defaultUserAvatar, userId, user} = teamMember
+  const {isConnected} = user
   const isCheckedIn = meetingMember ? meetingMember.isCheckedIn : null
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
@@ -145,7 +139,7 @@ const NewMeetingAvatar = (props: Props) => {
               hasBadge
               isClickable
               picture={picture}
-              isConnected={isConnected || isSelf}
+              isConnected={isConnected}
               isCheckedIn={isCheckedIn}
               size='fill'
             />
@@ -165,10 +159,11 @@ export default createFragmentContainer(
       meetingMember {
         isCheckedIn
       }
-      isConnected
-      isSelf
       picture
       userId
+      user {
+        isConnected
+      }
       ...NewMeetingAvatarMenu_teamMember
     }
 

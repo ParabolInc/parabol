@@ -172,7 +172,7 @@ const RetroVotePhase = (props: Props) => {
         <StyledBottomBar>
           <BottomControlSpacer />
           <BottomNavControl
-            isBouncing={isDemoStageComplete}
+            isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
             disabled={!discussStage.isNavigableByFacilitator}
             onClick={gotoNext}
             onKeyDown={handleRightArrow(gotoNext)}

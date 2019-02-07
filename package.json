@@ -147,8 +147,10 @@
     "@google-cloud/language": "^1.2.0",
     "@mattkrick/fast-rtc-peer": "^0.0.5",
     "@mattkrick/graphql-trebuchet-client": "^0.1.2",
-    "@mattkrick/react-relay": "2.0.0",
-    "@mattkrick/relay-runtime": "2.0.0",
+    "react-dnd": "https://github.com/mattkrick/react-dnd/tarball/2c22596327123a42702474374f6b0168c42f554b",
+    "react-dnd-html5-backend": "https://github.com/mattkrick/react-dnd/tarball/5812e3c00a1e1adace6e4be59bab7c02f0e85bb1",
+    "react-relay": "2.0.0",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45",
     "@mattkrick/sanitize-svg": "^0.2.1",
     "@mattkrick/trebuchet-client": "^0.1.2",
     "@segment/snippet": "^4.0.1",
@@ -226,7 +228,6 @@
     "react-notification-system": "^0.2.16",
     "react-portal-hoc": "^0.4.2",
     "react-redux": "^6.0.0",
-    "react-relay": "^1.6.2",
     "react-router": "https://github.com/mattkrick/react-router/tarball/react-router-v4.4.0-beta.6-gitpkg",
     "react-router-dom": "4.4.0-beta.6",
     "react-test-renderer": "^16.0.0",
@@ -276,7 +277,8 @@
     "setupTestFrameworkScriptFile": "./src/universal/__tests__/enzyme"
   },
   "resolutions": {
-    "@types/react": "16.7.13"
+    "@types/react": "16.7.13",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45"
   },
   "standard": {
     "parser": "babel-eslint",

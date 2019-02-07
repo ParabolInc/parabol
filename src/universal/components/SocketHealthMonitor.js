@@ -3,6 +3,7 @@ import {Component} from 'react'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import popUpgradeAppToast from 'universal/mutations/toasts/popUpgradeAppToast'
 import {APP_VERSION_KEY} from 'universal/utils/constants'
+import {commitLocalUpdate} from 'react-relay'
 
 class SocketHealthMonitor extends Component {
   static propTypes = {
@@ -18,6 +19,15 @@ class SocketHealthMonitor extends Component {
       trebuchet.on('reconnected', this.onReconnected, this)
       trebuchet.on('disconnected', this.onDisconnected, this)
       trebuchet.on('data', this.onData, this)
+      this.setConnectedStatus(true)
+    })
+  }
+
+  setConnectedStatus = (isConnected: boolean) => {
+    const {atmosphere} = this.props
+    commitLocalUpdate(atmosphere, (store) => {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      viewer.setValue(isConnected, 'isConnected')
     })
   }
 
@@ -32,6 +42,7 @@ class SocketHealthMonitor extends Component {
 
   onReconnected = () => {
     const {atmosphere} = this.props
+    this.setConnectedStatus(true)
     if (this.disconnectedToastTimer) {
       clearTimeout(this.disconnectedToastTimer)
     } else {
@@ -45,6 +56,7 @@ class SocketHealthMonitor extends Component {
   }
   onDisconnected = () => {
     const {atmosphere} = this.props
+    this.setConnectedStatus(false)
     this.disconnectedToastTimer = setTimeout(() => {
       this.disconnectedToastTimer = undefined
       atmosphere.eventEmitter.emit('addToast', {

@@ -26,6 +26,8 @@ import handlerProvider from 'universal/utils/relay/handlerProvider'
 import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
 import StrictEventEmitter from 'strict-event-emitter-types'
+import LinearPublishQueue from 'universal/LinearPublishQueue'
+
 // import sleep from 'universal/utils/sleep'
 
 const defaultErrorHandler = (err: any) => {
@@ -80,6 +82,7 @@ interface AtmosphereEvents {
   removeGitHubRepo: void
 }
 
+const store = new Store(new RecordSource())
 export default class Atmosphere extends Environment {
   static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
@@ -96,7 +99,13 @@ export default class Atmosphere extends Environment {
   viewerId: string | null = null
   userId: string | null = null // DEPRECATED
   constructor () {
-    super({store: new Store(new RecordSource()), handlerProvider, network: Network.create(noop)})
+    super({
+      store,
+      handlerProvider,
+      network: Network.create(noop),
+      // @ts-ignore
+      publishQueue: new LinearPublishQueue(store, handlerProvider)
+    })
     // @ts-ignore we should update the relay-runtime typings, this.handleSubscribe should be able to return a promise
     this._network = Network.create(this.handleFetch, this.handleSubscribe)
     this.transport = new GQLHTTPClient(this.fetchHTTP)

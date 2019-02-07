@@ -21,8 +21,9 @@
     "noUnusedParameters": true,
     "outDir": "dist/lib",
     "paths": {
-      "react-relay": ["node_modules/@mattkrick/react-relay"],
-      "relay-runtime": ["node_modules/@mattkrick/relay-runtime"],
+
+//      example of how to alias
+//      "relay-runtime": ["node_modules/@mattkrick/relay-runtime"],
        "*": [
          "src/*",
          "stories/*"

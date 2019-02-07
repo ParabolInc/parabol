@@ -10,5 +10,8 @@ graphql`
     preferredName
     teamId
     userId
+    user {
+      isConnected
+    }
   }
 `
