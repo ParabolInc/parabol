@@ -8,7 +8,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withAsync from 'react-async-hoc'
-import raven from 'raven-js'
+import * as Sentry from '@sentry/browser'
 import UpgradeToProMutation from 'universal/mutations/UpgradeToProMutation'
 import UpdateCreditCardMutation from 'universal/mutations/UpdateCreditCardMutation'
 import UpgradeCreditCardFormField from 'universal/components/UpgradeCreditCardFormField'
@@ -278,7 +278,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     if (error) {
       const fieldName = stripeFieldLookup[error.param]
       this.setError(fieldName)
-      raven.captureException(error.param)
+      Sentry.captureMessage(`Bad CC param: ${error.param}`)
     } else {
       this.sendStripeToken(stripeToken)
     }

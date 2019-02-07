@@ -5,16 +5,15 @@ import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEm
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import {DONE, LOBBY, NOTIFICATION, TASK, TEAM} from 'universal/utils/constants'
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
 import shortid from 'shortid'
 import {COMPLETED_ACTION_MEETING} from 'server/graphql/types/TimelineEventTypeEnum'
 import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: EndMeetingPayload,
@@ -29,11 +28,12 @@ export default {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     // called by endOldMeetings, so SU is OK
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const meeting = await r
       .table('Meeting')
@@ -43,12 +43,7 @@ export default {
       .nth(0)
       .default({endedAt: r.now()})
     if (meeting.endedAt) {
-      const breadcrumb = {
-        message: 'Meeting already ended!',
-        category: 'Meeting ended',
-        data: {teamId}
-      }
-      return sendAuthRaven(authToken, 'Meeting already ended', breadcrumb)
+      return standardError(new Error('Meeting already ended'), {userId: viewerId})
     }
 
     // RESOLUTION

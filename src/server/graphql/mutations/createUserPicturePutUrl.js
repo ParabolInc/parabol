@@ -4,7 +4,7 @@ import {getUserId, isAuthenticated} from 'server/utils/authorization'
 import getS3PutUrl from 'server/utils/getS3PutUrl'
 import validateAvatarUpload from 'server/utils/validateAvatarUpload'
 import shortid from 'shortid'
-import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 const createUserPicturePutUrl = {
   type: CreateUserPicturePutUrlPayload,
@@ -21,7 +21,7 @@ const createUserPicturePutUrl = {
   },
   resolve: async (source, {contentType, contentLength}, {authToken}) => {
     // AUTH
-    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError()
+    if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
     const userId = getUserId(authToken)
 
     // VALIDATION

@@ -1,8 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
-import {sendBadAuthTokenError} from 'server/utils/authorizationErrors'
-import {sendSuggestedActionNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from '../../utils/standardError'
 import DismissSuggestedActionPayload from '../types/DismissSuggestedActionPayload'
 
 export default {
@@ -17,15 +16,17 @@ export default {
   resolve: async (_source, {suggestedActionId}, {authToken, dataLoader}) => {
     const r = getRethink()
     const now = new Date()
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const suggestedAction = await dataLoader.get('suggestedActions').load(suggestedActionId)
     if (!suggestedAction) {
-      return sendSuggestedActionNotFoundError(authToken, suggestedActionId)
+      return standardError(new Error('Suggested action not found'), {userId: viewerId})
     }
     const {userId} = suggestedAction
-    const viewerId = getUserId(authToken)
-    if (userId !== viewerId) return sendBadAuthTokenError()
+    if (userId !== viewerId) {
+      return standardError(new Error('Not authenticated'), {userId: viewerId})
+    }
 
     // RESOLUTION
     await r

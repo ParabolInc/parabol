@@ -1,13 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
-import {
-  sendTeamAccessError,
-  sendTooManyTemplatesError,
-  sendAlreadyCreatedTemplateError
-} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 import AddReflectTemplatePayload from '../types/AddReflectTemplatePayload'
 import makeRetroTemplates from './helpers/makeRetroTemplates'
 
@@ -23,10 +19,11 @@ const addReflectTemplate = {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -36,10 +33,10 @@ const addReflectTemplate = {
       .filter({isActive: true})
 
     if (allTemplates.length >= 20) {
-      return sendTooManyTemplatesError(authToken, teamId)
+      return standardError(new Error('Too many templates'), {userId: viewerId})
     }
     if (allTemplates.find((template) => template.name === '*New Template')) {
-      return sendAlreadyCreatedTemplateError(authToken, teamId)
+      return standardError(new Error('Template already created'), {userId: viewerId})
     }
 
     // RESOLUTION

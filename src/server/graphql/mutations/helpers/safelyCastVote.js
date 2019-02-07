@@ -1,6 +1,7 @@
-import {sendMaxVotesPerGroupError, sendNoVotesLeftError} from 'server/utils/alreadyMutatedErrors'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import getRethink from 'server/database/rethinkDriver'
+import standardError from 'server/utils/standardError'
+import {getUserId} from 'server/utils/authorization'
 
 const safelyCastVote = async (
   authToken,
@@ -12,7 +13,7 @@ const safelyCastVote = async (
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   const r = getRethink()
   const now = new Date()
-
+  const viewerId = getUserId(authToken)
   const isVoteRemovedFromUser = await r
     .table('MeetingMember')
     .get(meetingMemberId)
@@ -29,7 +30,7 @@ const safelyCastVote = async (
     })('replaced')
     .eq(1)
   if (!isVoteRemovedFromUser) {
-    return sendNoVotesLeftError(authToken, reflectionGroupId, maxVotesPerGroup)
+    return standardError(new Error('No votes remaining'), {userId: viewerId})
   }
   const isVoteAddedToGroup = await r
     .table('RetroReflectionGroup')
@@ -54,7 +55,7 @@ const safelyCastVote = async (
       .update((member) => ({
         votesRemaining: member('votesRemaining').add(1)
       }))
-    return sendMaxVotesPerGroupError(authToken, reflectionGroupId, maxVotesPerGroup)
+    return standardError(new Error('Max votes per group exceeded'), {userId: viewerId})
   }
   return undefined
 }

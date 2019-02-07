@@ -12,8 +12,7 @@ import getTagsFromEntityMap from 'universal/utils/draftjs/getTagsFromEntityMap'
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import makeTaskSchema from 'universal/validation/makeTaskSchema'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: CreateTaskPayload,
@@ -39,11 +38,11 @@ export default {
     const schema = makeTaskSchema()
     const {errors, data: validNewTask} = schema({content: 1, ...newTask})
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+      return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
     const {teamId, userId, content} = validNewTask
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

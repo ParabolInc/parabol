@@ -4,10 +4,8 @@ import getRethink from 'server/database/rethinkDriver'
 import RemoveSlackChannelPayload from 'server/graphql/types/RemoveSlackChannelPayload'
 import getPubSub from 'server/utils/getPubSub'
 import {SLACK} from 'universal/utils/constants'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendSlackProviderNotFoundError} from 'server/utils/docNotFoundErrors'
-import {sendAlreadyRemovedIntegrationError} from 'server/utils/alreadyMutatedErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 export default {
   name: 'RemoveSlackChannel',
@@ -21,21 +19,20 @@ export default {
   resolve: async (source, {slackGlobalId}, {authToken, socketId: mutatorId}) => {
     const r = getRethink()
     const {id} = fromGlobalId(slackGlobalId)
+    const viewerId = getUserId(authToken)
     // AUTH
     const integration = await r.table(SLACK).get(id)
     if (!integration) {
-      return sendSlackProviderNotFoundError(authToken, {
-        globalId: slackGlobalId
-      })
+      return standardError(new Error('Slack provider not found'), {userId: viewerId})
     }
     const {teamId, isActive} = integration
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
     if (!isActive) {
-      return sendAlreadyRemovedIntegrationError(authToken, slackGlobalId)
+      return standardError(new Error('Integration already removed'), {userId: viewerId})
     }
     // RESOLUTION
 

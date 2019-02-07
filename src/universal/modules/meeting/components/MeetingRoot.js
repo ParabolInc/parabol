@@ -53,7 +53,7 @@ const MeetingRoot = ({atmosphere, dispatch, history, location, match}) => {
         const myTeamMemberId = `${userId}::${teamId}`
         return (
           <TransitionGroup appear component={React.Fragment}>
-            {error && <ErrorComponent height={'14rem'} error={error} />}
+            {error && <ErrorComponent error={error} />}
             {renderProps && (
               <AnimatedFade key='1'>
                 <MeetingContainer

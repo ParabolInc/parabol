@@ -6,7 +6,7 @@ import {getUserId, isTeamLead} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {NEW_AUTH_TOKEN, TASK, TEAM, TEAM_MEMBER, UPDATED} from 'universal/utils/constants'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
-import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: RemoveTeamMemberPayload,
@@ -27,7 +27,7 @@ export default {
     const isSelf = viewerId === userId
     if (!isSelf) {
       if (!(await isTeamLead(viewerId, teamId))) {
-        return sendTeamLeadAccessError(authToken, teamId)
+        return standardError(new Error('Not team lead'), {userId: viewerId})
       }
     }
 

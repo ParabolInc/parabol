@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import SelectRetroTemplatePayload from 'server/graphql/types/SelectRetroTemplatePayload'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError, sendTemplateAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {RETROSPECTIVE, TEAM} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 
 const selectRetroTemplate = {
   description: 'Set the selected template for the upcoming retro meeting',
@@ -25,16 +25,17 @@ const selectRetroTemplate = {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
     const template = await r.table('ReflectTemplate').get(selectedTemplateId)
     if (!template || template.teamId !== teamId) {
-      return sendTemplateAccessError(authToken, selectedTemplateId)
+      return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -53,7 +54,7 @@ const selectRetroTemplate = {
       .default(null)
 
     if (!meetingSettingsId) {
-      return sendTemplateAccessError(authToken, selectedTemplateId)
+      return standardError(new Error('Template not found'), {userId: viewerId})
     }
 
     const data = {meetingSettingsId}

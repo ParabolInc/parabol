@@ -1,5 +1,5 @@
-import {sendRateLimitReachedError} from 'server/utils/authorizationErrors'
 import {getUserId} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 const rateLimit = ({perMinute, perHour}) => (resolve) => (source, args, context, info) => {
   const {authToken, rateLimiter} = context
@@ -8,7 +8,7 @@ const rateLimit = ({perMinute, perHour}) => (resolve) => (source, args, context,
   // when we scale horizontally & stop using sticky servers, periodically push to redis
   const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
   if (lastMinute > perMinute || lastHour > perHour) {
-    const returnVal = sendRateLimitReachedError(authToken, fieldName, lastMinute, lastHour)
+    const returnVal = standardError(new Error('Rate limit reached'), {userId})
     // if (lastMinute > perMinute + 10) {
     // TODO Handle suspected bot by dynamically blacklisting in nginx
     // }

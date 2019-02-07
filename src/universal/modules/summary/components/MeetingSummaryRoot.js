@@ -29,7 +29,7 @@ const MeetingSummaryRoot = ({atmosphere, match}) => {
       render={({error, props: renderProps}) => {
         return (
           <TransitionGroup appear component={React.Fragment}>
-            {error && <ErrorComponent height={'14rem'} error={error} />}
+            {error && <ErrorComponent error={error} />}
             {renderProps && (
               <AnimatedFade key='1'>
                 <MeetingSummary viewer={renderProps.viewer} />

@@ -2,7 +2,7 @@ import schema from 'server/graphql/rootSchema'
 import graphql from 'server/graphql/graphql'
 import stripe from 'server/billing/stripe'
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
-import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const eventLookup = {
   invoice: {
@@ -104,7 +104,7 @@ const stripeWebhookHandler = (sharedDataLoader) => async (req, res) => {
   const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET, dataLoader}
   const result = await graphql(schema, query, {}, context, variables)
   if (result.errors) {
-    sendGraphQLErrorResult('Stripe', result.errors[0], query, variables)
+    sendToSentry(result.errors[0], {tags: {query, variables}})
   }
 }
 

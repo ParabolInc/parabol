@@ -6,8 +6,7 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
 import {AGENDA_ITEM, AGENDA_ITEMS, CHECKIN, TEAM} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: MoveMeetingPayload,
@@ -39,10 +38,11 @@ export default {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // BAILOUT
@@ -74,12 +74,7 @@ export default {
     const meetingPhaseInfo = actionMeeting[meetingPhase]
     if (nextPhase) {
       if (!nextPhaseInfo) {
-        const breadcrumb = {
-          message: `${nextPhase} is not a valid phase`,
-          category: 'Move meeting',
-          data: {teamId}
-        }
-        return sendAuthRaven(authToken, 'Oh dear', breadcrumb)
+        return standardError(new Error('Invalid phase'), {userId: viewerId})
       }
       if (nextPhaseInfo.items) {
         const {arrayName} = nextPhaseInfo.items
@@ -90,12 +85,7 @@ export default {
             .filter({isNotRemoved: true})
             .count()
           if (nextPhaseItem < 1 || nextPhaseItem > teamMembersCount) {
-            const breadcrumb = {
-              message: 'We don’t have that many team members!',
-              category: 'Move meeting',
-              data: {teamId}
-            }
-            return sendAuthRaven(authToken, 'Oh dear', breadcrumb)
+            return standardError(new Error('Invalid team member count'), {userId: viewerId})
           }
         } else if (arrayName === 'agendaItems') {
           const agendaItemCount = await r
@@ -104,50 +94,24 @@ export default {
             .filter({isActive: true})
             .count()
           if (nextPhaseItem < 1 || nextPhaseItem > agendaItemCount) {
-            const breadcrumb = {
-              message: 'We don’t have that many agenda items!',
-              category: 'Move meeting',
-              data: {teamId}
-            }
-            return sendAuthRaven(authToken, 'Oh dear', breadcrumb)
+            return standardError(new Error('Invalid agenda item'), {userId: viewerId})
           }
         }
         if (nextPhaseInfo.visitOnce && meetingPhaseInfo.index > nextPhaseInfo.index) {
-          const breadcrumb = {
-            message: 'You can’t visit first call twice!',
-            category: 'Move meeting',
-            data: {teamId}
-          }
-          return sendAuthRaven(authToken, 'Oh dear', breadcrumb)
+          return standardError(new Error('First call already visited'), {userId: viewerId})
         }
       } else if (nextPhaseItem) {
-        const breadcrumb = {
-          message: `${nextPhase} does not have phase items, but you said ${nextPhaseItem}`,
-          category: 'Move meeting',
-          data: {teamId}
-        }
-        return sendAuthRaven(authToken, 'Oh dear', breadcrumb)
+        return standardError(new Error('Invalid phase'), {userId: viewerId})
       }
     }
 
     if (!nextPhaseItem && (!nextPhase || nextPhaseInfo.items)) {
-      const breadcrumb = {
-        message: 'Did not receive a nextPhaseItem',
-        category: 'Move meeting',
-        data: {teamId}
-      }
-      return sendAuthRaven(authToken, 'Oh dear', breadcrumb)
+      return standardError(new Error('Next phase item not found'), {userId: viewerId})
     }
 
-    const userId = getUserId(authToken)
-    const teamMemberId = `${userId}::${teamId}`
+    const teamMemberId = `${viewerId}::${teamId}`
     if (activeFacilitator !== teamMemberId) {
-      const breadcrumb = {
-        message: 'Only the facilitator can advance the meeting',
-        category: 'Move meeting',
-        data: {teamId}
-      }
-      return sendAuthRaven(authToken, 'Oh dear', breadcrumb)
+      return standardError(new Error('Not facilitator'), {userId: viewerId})
     }
 
     // RESOLUTION

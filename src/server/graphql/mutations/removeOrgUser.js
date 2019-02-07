@@ -16,7 +16,7 @@ import {
   TEAM_MEMBER,
   UPDATED
 } from 'universal/utils/constants'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 const removeOrgUser = {
   type: RemoveOrgUserPayload,
@@ -41,7 +41,7 @@ const removeOrgUser = {
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) {
       if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-        return sendOrgLeadAccessError(authToken, orgId)
+        return standardError(new Error('Must be the organization leader'), {userId: viewerId})
       }
     }
 

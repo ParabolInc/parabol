@@ -3,7 +3,7 @@ import sendTeamInvitations from 'server/safeMutations/sendTeamInvitations'
 import {APPROVED, PENDING} from 'server/utils/serverConstants'
 import shortid from 'shortid'
 import {INVITEE_APPROVED, REQUEST_NEW_USER} from 'universal/utils/constants'
-import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 const approveToOrg = async (email, orgId, userId, dataLoader) => {
   const r = getRethink()
@@ -19,7 +19,9 @@ const approveToOrg = async (email, orgId, userId, dataLoader) => {
     })
     .delete({returnChanges: true})('changes')('old_val')
     .default([])
-  if (removedNotifications.length === 0) return sendNotificationAccessError()
+  if (removedNotifications.length === 0) {
+    return standardError(new Error('Notification not found'), {userId})
+  }
   // RESOLUTION
   // send 1 team invite per notification
   const inviterUserIds = Array.from(

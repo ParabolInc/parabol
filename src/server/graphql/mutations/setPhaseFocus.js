@@ -1,16 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
-import {sendNotMeetingFacilitatorError} from 'server/utils/authorizationErrors'
 import SetPhaseFocusPayload from 'server/graphql/types/SetPhaseFocusPayload'
-import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import publish from 'server/utils/publish'
 import {REFLECT, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
+import standardError from 'server/utils/standardError'
 
 const setPhaseFocus = {
   type: SetPhaseFocusPayload,
@@ -39,18 +34,18 @@ const setPhaseFocus = {
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, facilitatorUserId, phases, teamId} = meeting
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already completed'), {userId: viewerId})
     if (isPhaseComplete(REFLECT, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT)
+      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
     if (facilitatorUserId !== viewerId) {
-      return sendNotMeetingFacilitatorError(authToken, viewerId)
+      return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
     }
     const phase = meeting.phases.find((phase) => phase.phaseType === REFLECT)
     if (!phase) {
-      return sendMeetingNotFoundError(authToken, meetingId)
+      return standardError(new Error('Meeting not found'), {userId: viewerId})
     }
 
     // RESOLUTION

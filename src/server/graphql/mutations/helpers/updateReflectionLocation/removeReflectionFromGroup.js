@@ -1,14 +1,16 @@
 import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
 import getRethink from 'server/database/rethinkDriver'
-import {sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
 import makeReflectionGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/makeReflectionGroup'
 import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle'
+import {getUserId} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 const removeReflectionFromGroup = async (reflectionId, {authToken, dataLoader}) => {
   const r = getRethink()
   const now = new Date()
   const reflection = await r.table('RetroReflection').get(reflectionId)
-  if (!reflection) return sendReflectionNotFoundError(authToken, reflectionId)
+  const viewerId = getUserId(authToken)
+  if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
   const {reflectionGroupId: oldReflectionGroupId, meetingId, retroPhaseItemId} = reflection
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
 

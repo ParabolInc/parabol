@@ -18,23 +18,13 @@ import {
 } from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds'
-import {
-  sendInvitationExpiredError,
-  sendInvitationHashFailError,
-  sendNotAuthenticatedAccessError,
-  sendTeamAlreadyJoinedError
-} from 'server/utils/authorizationErrors'
-import {
-  sendInvitationNotFoundError,
-  sendNoInvitationProvidedError,
-  sendNotificationAccessError
-} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 const validateInviteToken = async (inviteToken, authToken) => {
   const r = getRethink()
   const now = new Date()
   const {id: inviteId, key: tokenKey} = parseInviteToken(inviteToken)
-
+  const viewerId = getUserId(authToken)
   // see if the invitation exists
   const invitation = await r
     .table('Invitation')
@@ -49,25 +39,25 @@ const validateInviteToken = async (inviteToken, authToken) => {
     .default(null)
 
   if (!invitation) {
-    return sendInvitationNotFoundError(authToken, inviteToken)
+    return standardError(new Error('Invitation not found'), {userId: viewerId})
   }
 
   const {tokenExpiration, hashedToken, teamId} = invitation
   // see if the invitation has expired
   if (tokenExpiration < now) {
-    return sendInvitationExpiredError(authToken, inviteToken)
+    return standardError(new Error('Invite expired'), {userId: viewerId})
   }
 
   // see if the invitation hash is valid
   const isCorrectToken = await validateInviteTokenKey(tokenKey, hashedToken)
   if (!isCorrectToken) {
-    return sendInvitationHashFailError(authToken, inviteToken)
+    return standardError(new Error('hash fail'), {userId: viewerId})
   }
   const oldtms = authToken.tms || []
   // Check if TeamMember already exists (i.e. user invited themselves):
   const teamMemberExists = oldtms.includes(teamId)
   if (teamMemberExists) {
-    return sendTeamAlreadyJoinedError(authToken, inviteToken)
+    return standardError(new Error('Team already joined'), {userId: viewerId})
   }
   return invitation
 }
@@ -98,7 +88,7 @@ export default {
 
     // AUTH
     const viewerId = getUserId(authToken)
-    if (!isAuthenticated(authToken)) return sendNotAuthenticatedAccessError()
+    if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
 
     // VALIDATION
     let inviteeEmail
@@ -111,12 +101,12 @@ export default {
     } else if (notificationId) {
       const notification = await r.table('Notification').get(notificationId)
       if (!notification || !notification.userIds.includes(viewerId)) {
-        return sendNotificationAccessError(authToken, notificationId)
+        return standardError(new Error('Notification not found'), {userId: viewerId})
       }
       inviteeEmail = notification.inviteeEmail
       teamId = notification.teamId
     } else {
-      return sendNoInvitationProvidedError(authToken)
+      return standardError(new Error('No invitation provided'), {userId: viewerId})
     }
 
     // RESOLUTION

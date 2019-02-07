@@ -11,7 +11,7 @@ const clientIds = {
   auth0Domain: process.env.AUTH0_DOMAIN,
   cdn: webpackPublicPath,
   github: process.env.GITHUB_CLIENT_ID,
-  sentry: process.env.SENTRY_DSN_PUBLIC,
+  sentry: process.env.SENTRY_DSN,
   slack: process.env.SLACK_CLIENT_ID,
   stripe: process.env.STRIPE_PUBLISHABLE_KEY
 }

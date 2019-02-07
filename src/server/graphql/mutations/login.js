@@ -10,7 +10,6 @@ import {
 import {getUserId} from 'server/utils/authorization'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
 import makeAuthTokenObj from 'server/utils/makeAuthTokenObj'
-import {sendAuth0Error, sendBadAuthTokenError} from 'server/utils/authorizationErrors'
 import encodeAuthTokenObj from 'server/utils/encodeAuthTokenObj'
 import ensureDate from 'universal/utils/ensureDate'
 import shortid from 'shortid'
@@ -20,6 +19,7 @@ import sleep from 'universal/utils/sleep'
 import createNewOrg from 'server/graphql/mutations/helpers/createNewOrg'
 import createTeamAndLeader from 'server/graphql/mutations/helpers/createTeamAndLeader'
 import addSeedTasks from 'server/graphql/mutations/helpers/addSeedTasks'
+import standardError from 'server/utils/standardError'
 
 const handleSegment = async (userId, previousId) => {
   if (previousId) {
@@ -60,7 +60,7 @@ const login = {
         audience: auth0ClientId
       })
     } catch (e) {
-      return sendBadAuthTokenError()
+      return standardError(new Error('Not authenticated'))
     }
     const viewerId = getUserId(authToken)
 
@@ -95,7 +95,7 @@ const login = {
         id: authToken.sub
       })
     } catch (e) {
-      return sendAuth0Error(authToken, e)
+      return standardError(new Error('Failed authentication'))
     }
 
     const preferredName =

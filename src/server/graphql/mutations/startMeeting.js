@@ -8,8 +8,8 @@ import shortid from 'shortid'
 import {CHECKIN, TEAM} from 'universal/utils/constants'
 import convertToTaskContent from 'universal/utils/draftjs/convertToTaskContent'
 import {makeCheckinGreeting, makeCheckinQuestion} from 'universal/utils/makeCheckinGreeting'
-import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: StartMeetingPayload,
@@ -28,14 +28,14 @@ export default {
     // AUTH
     const userId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId})
     }
 
     // RESOLUTION
     const facilitatorId = toTeamMemberId(teamId, userId)
     const facilitatorMembership = await r.table('TeamMember').get(facilitatorId)
     if (!facilitatorMembership || !facilitatorMembership.isNotRemoved) {
-      return sendTeamMemberNotOnTeamError(authToken, {teamId, userId})
+      return standardError(new Error('Team not found'), {userId})
     }
 
     const now = new Date()

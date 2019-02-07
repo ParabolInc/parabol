@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
-import sendSentryEvent from 'server/utils/sendSentryEvent'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const defaultCacheKeyFn = (key) => key
 
@@ -13,29 +13,21 @@ const indexResults = (results, indexField, cacheKeyFn = defaultCacheKeyFn) => {
   return indexedResults
 }
 
-const sendErrorToSentry = (authToken, key, keys, indexedResults) => {
-  const breadcrumb = {
-    message: 'Dataloader key not found',
-    category: 'dataloader',
-    data: {
-      key,
-      keys,
-      indexedResults
-    }
-  }
-  sendSentryEvent(authToken, breadcrumb)
-}
-
 const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (
   results,
-  authToken
+  authToken,
+  table
 ) => {
   const indexedResults = indexResults(results, indexField, cacheKeyFn)
   // return keys.map((val) => indexedResults.get(cacheKeyFn(val)) || new Error(`Key not found : ${val}`));
   return keys.map((val) => {
     const res = indexedResults.get(cacheKeyFn(val))
     if (!res) {
-      sendErrorToSentry(authToken, cacheKeyFn(val), keys, indexedResults)
+      const viewerId = getUserId(authToken)
+      sendToSentry(new Error(`dataloader not found for ${cacheKeyFn(val)}, on ${table}`), {
+        userId: viewerId
+      })
+      return null
     }
     return res
   })
@@ -288,12 +280,13 @@ export default class RethinkDataLoader {
   _share () {
     this.authToken = null
   }
+
   makeStandardLoader (table) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()
       const docs = await r.table(table).getAll(r.args(keys), {index: 'id'})
-      return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken)
+      return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken, table)
     }
     return new DataLoader(batchFn)
   }

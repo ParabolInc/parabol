@@ -28,7 +28,7 @@ const NewTeamRoot = ({
       render={(readyState) => (
         <RelayTransitionGroup
           readyState={readyState}
-          error={<ErrorComponent height={'14rem'} />}
+          error={<ErrorComponent />}
           loading={<LoadingView minHeight='50vh' />}
           ready={<NewTeam defaultOrgId={defaultOrgId} />}
         />

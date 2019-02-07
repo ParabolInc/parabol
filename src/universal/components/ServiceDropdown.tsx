@@ -1,8 +1,8 @@
 import React from 'react'
 import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import LoadingComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import DropdownMenuItemLabel from 'universal/components/DropdownMenuItemLabel'
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 
 interface Option {
   id: string

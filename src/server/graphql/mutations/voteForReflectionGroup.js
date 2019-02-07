@@ -1,16 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {
-  sendMeetingMemberNotCheckedInError,
-  sendMeetingMemberNotFoundError,
-  sendReflectionGroupNotFoundError
-} from 'server/utils/docNotFoundErrors'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import publish from 'server/utils/publish'
 import {DISCUSS, RETROSPECTIVE, TEAM, VOTE} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
@@ -18,6 +8,7 @@ import VoteForReflectionGroupPayload from 'server/graphql/types/VoteForReflectio
 import safelyCastVote from 'server/graphql/mutations/helpers/safelyCastVote'
 import safelyWithdrawVote from 'server/graphql/mutations/helpers/safelyWithdrawVote'
 import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: VoteForReflectionGroupPayload,
@@ -44,17 +35,17 @@ export default {
     const viewerId = getUserId(authToken)
     const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
     if (!reflectionGroup || !reflectionGroup.isActive) {
-      return sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
+      return standardError(new Error('Reflection group not found'), {userId: viewerId})
     }
     const {meetingId} = reflectionGroup
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete(VOTE, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, VOTE)
+      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -65,11 +56,11 @@ export default {
       .nth(0)
       .default(null)
     if (!meetingMember) {
-      return sendMeetingMemberNotFoundError(authToken, meetingId)
+      return standardError(new Error('Meeting member not found'), {userId: viewerId})
     }
     const {isCheckedIn} = meetingMember
     if (!isCheckedIn) {
-      return sendMeetingMemberNotCheckedInError(authToken, meetingMember.id)
+      return standardError(new Error('Meeting member not checked in'), {userId: viewerId})
     }
 
     // RESOLUTION
