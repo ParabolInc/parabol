@@ -1,22 +1,21 @@
-import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import getDisplayName from 'universal/utils/getDisplayName'
 import {Subtract} from 'types/generics'
+import Atmosphere from 'universal/Atmosphere'
+import {AtmosphereContext} from '../../components/AtmosphereProvider/AtmosphereProvider'
 
 export interface WithAtmosphereProps {
-  atmosphere: any
+  atmosphere: Atmosphere
 }
 
 export default <P extends WithAtmosphereProps>(ComposedComponent: React.ComponentType<P>) => {
   return class WithAtmosphere extends Component<Subtract<P, WithAtmosphereProps>> {
-    static contextTypes = {
-      atmosphere: PropTypes.object
-    }
     static displayName = `WithAtmosphere(${getDisplayName(ComposedComponent)})`
+    // noinspection JSUnusedGlobalSymbols
+    static contextType = AtmosphereContext
 
     render () {
-      const {atmosphere} = this.context
-      return <ComposedComponent atmosphere={atmosphere} {...this.props} />
+      return <ComposedComponent atmosphere={this.context} {...this.props} />
     }
   }
 }

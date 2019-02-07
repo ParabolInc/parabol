@@ -43,6 +43,8 @@ import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import Atmosphere from '../Atmosphere'
+import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 const {Component} = React
@@ -139,6 +141,7 @@ const MeetingAreaHeader = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutationProps {
+  atmosphere: Atmosphere & LocalAtmosphere
   bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void
   meetingType: MeetingTypeEnum
   viewer: NewMeeting_viewer
@@ -198,7 +201,7 @@ class NewMeeting extends Component<Props> {
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) return
     if (teamId === demoTeamId) {
-      await atmosphere.clientGraphQLServer.finishBotActions()
+      await (atmosphere as LocalAtmosphere).clientGraphQLServer.finishBotActions()
     }
     updateLocalStage(atmosphere, meetingId, stageId)
     if (isViewerFacilitator && isNavigableByFacilitator) {
@@ -313,7 +316,9 @@ class NewMeeting extends Component<Props> {
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true
     const localPhaseType = localPhase && localPhase.phaseType
     const isDemoStageComplete =
-      teamId === demoTeamId ? atmosphere.clientGraphQLServer.isBotFinished() : false
+      teamId === demoTeamId
+        ? (atmosphere as LocalAtmosphere).clientGraphQLServer.isBotFinished()
+        : false
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />

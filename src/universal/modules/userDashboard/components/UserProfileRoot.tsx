@@ -25,7 +25,6 @@ const query = graphql`
 const subscriptions = [NotificationSubscription]
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string}> {
-  atmosphere: Object
   dispatch: Dispatch<any>
 }
 

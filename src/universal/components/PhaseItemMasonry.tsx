@@ -3,6 +3,7 @@ import React from 'react'
 import {
   ConnectDropTarget,
   DropTarget,
+  DropTargetCollector,
   DropTargetConnector,
   DropTargetMonitor,
   DropTargetSpec
@@ -28,6 +29,7 @@ import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnH
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
+import Atmosphere from '../Atmosphere'
 
 interface CollectedProps {
   connectDropTarget: ConnectDropTarget
@@ -38,7 +40,9 @@ interface PassedProps {
   meeting: PhaseItemMasonry_meeting
 }
 
-interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {}
+interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {
+  atmosphere: MasonryAtmosphere
+}
 
 const gridStyle = css({
   overflowX: 'auto',
@@ -54,6 +58,15 @@ interface ItemCache {
 
 export interface MasonryItemCache {
   [itemId: string]: ItemCache
+}
+
+interface MasonryAtmosphere extends Atmosphere {
+  getMasonry: () => {
+    itemCache: MasonryItemCache
+    childrenCache: MasonryChildrenCache
+    parentCache: MasonryParentCache
+  }
+  startDragQueue: Array<() => void>
 }
 
 interface ChildCache {
@@ -209,7 +222,7 @@ class PhaseItemMasonry extends React.Component<Props> {
     }
     if (atmosphere.startDragQueue && atmosphere.startDragQueue.length) {
       // reply the startDrag event that fired before we received the end drag event
-      const queuedStart = atmosphere.startDragQueue.shift()
+      const queuedStart = atmosphere.startDragQueue.shift()!
       queuedStart()
     }
   }
@@ -316,16 +329,19 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 }
 
-const reflectionDropSpec = {
-  canDrop (_props: Props, monitor: DropTargetMonitor) {
+const reflectionDropSpec: DropTargetSpec<Props> = {
+  canDrop (_props, monitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
   drop () {
     return {dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GRID}
   }
-} as DropTargetSpec<Props, {}, PhaseItemMasonry>
+}
 
-const reflectionDropCollect = (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
+const reflectionDropCollect: DropTargetCollector<CollectedProps> = (
+  connect: DropTargetConnector,
+  monitor: DropTargetMonitor
+) => ({
   connectDropTarget: connect.dropTarget(),
   canDrop: monitor.canDrop()
 })
@@ -334,7 +350,7 @@ export default createFragmentContainer<PassedProps>(
   withScrolling(
     withAtmosphere(
       withMutationProps(
-        DropTarget<Props, {}, PhaseItemMasonry, CollectedProps>(
+        DropTarget<Props, CollectedProps>(
           REFLECTION_CARD,
           reflectionDropSpec,
           reflectionDropCollect

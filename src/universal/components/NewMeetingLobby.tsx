@@ -87,7 +87,6 @@ const UrlBlock = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
-  atmosphere: Object
   meetingType: MeetingTypeEnum
   team: NewMeetingLobby_team
 }

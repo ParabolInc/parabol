@@ -83,7 +83,7 @@ export const updateDragLocationTeamUpdater = (payload, {atmosphere, store}) => {
 
 const UpdateDragLocationMutation = (atmosphere, variables) => {
   const {_network: network} = atmosphere
-  network.execute(getRequest(mutation), variables, {force: true})
+  network.execute(getRequest(mutation).params, variables, {force: true})
 }
 
 export default UpdateDragLocationMutation

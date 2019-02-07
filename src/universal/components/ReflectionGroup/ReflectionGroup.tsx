@@ -357,7 +357,7 @@ class ReflectionGroup extends Component<Props> {
   }
 }
 
-const reflectionDropSpec: DropTargetSpec<Props, {}, ReflectionGroup> = {
+const reflectionDropSpec: DropTargetSpec<Props> = {
   canDrop (props, monitor) {
     return (
       monitor.isOver() &&

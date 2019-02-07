@@ -124,11 +124,13 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store, 
       title: 'Interception!',
       message: `${name} stole that reflection right from under your nose!`
     })
-    const {itemCache} = atmosphere.getMasonry()
-    // setTimeout required because otherwise it will call the endDrag handler before isViewerDragging is set to false
-    setTimeout(() => {
-      itemCache[reflectionId].el.dispatchEvent(new window.Event('dragend'))
-    })
+    if (atmosphere.getMasonry) {
+      const {itemCache} = atmosphere.getMasonry()
+      // setTimeout required because otherwise it will call the endDrag handler before isViewerDragging is set to false
+      setTimeout(() => {
+        itemCache[reflectionId].el.dispatchEvent(new window.Event('dragend'))
+      })
+    }
   }
   return acceptIncoming
 }

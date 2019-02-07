@@ -2,7 +2,7 @@ import sendToSentry, {SentryOptions} from './sendToSentry'
 
 const standardError = (error: Error, options: SentryOptions = {}) => {
   const {message} = error
-  sendToSentry(error, options).catch()
+  sendToSentry(error, options)
   return {error: {message}}
 }
 
