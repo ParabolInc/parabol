@@ -36,7 +36,7 @@ interface CollectedProps {
 
 interface PassedProps {
   meeting: PhaseItemMasonry_meeting
-  resetActivityTimeout: () => void
+  resetActivityTimeout?: () => void
 }
 
 interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {}
@@ -158,7 +158,7 @@ class PhaseItemMasonry extends React.Component<Props> {
 
   handleDragEnd = (payload: MasonryDragEndPayload) => {
     const {atmosphere, resetActivityTimeout} = this.props
-    resetActivityTimeout()
+    resetActivityTimeout && resetActivityTimeout()
     // const {dropTargetType, dropTargetId, childId, itemId, sourceId} = payload
     switch (payload.dropTargetType) {
       case DragReflectionDropTargetTypeEnum.REFLECTION_GRID:
