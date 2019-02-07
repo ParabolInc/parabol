@@ -1,20 +1,21 @@
-import type {CompletedHandler, ErrorHandler} from 'universal/types/relay'
-import {commitLocalUpdate, commitMutation} from 'react-relay'
+import {commitLocalUpdate, commitMutation, graphql} from 'react-relay'
+import {matchPath} from 'react-router-dom'
+import {RecordSourceProxy} from 'relay-runtime'
+import {RETROSPECTIVE} from 'universal/utils/constants'
+import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import addNodeToArray from 'universal/utils/relay/addNodeToArray'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import type {Coords2DInput} from 'universal/types/schema.flow'
-import addNodeToArray from 'universal/utils/relay/addNodeToArray'
-import {matchPath} from 'react-router-dom'
-import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
-import {RETROSPECTIVE} from 'universal/utils/constants'
-
-type Variables = {
-  reflectionId: string,
-  initialCoords: Coords2DInput
-}
+import {
+  StartDraggingReflectionMutation,
+  StartDraggingReflectionMutationVariables
+} from '../../__generated__/StartDraggingReflectionMutation.graphql'
+import {Coords} from '../../types/animations'
+import {MasonryAtmosphere} from '../components/PhaseItemMasonry'
+import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 
 type Context = {
-  initialCursorCoords: Coords2DInput,
+  initialCursorCoords: Coords
   meetingId: string
 }
 
@@ -46,10 +47,25 @@ const mutation = graphql`
   }
 `
 
-export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store, isLocal}) => {
+interface UpdaterOptions {
+  atmosphere: MasonryAtmosphere
+  store: RecordSourceProxy
+  isLocal?: boolean
+}
+
+const setInFlight = (store, meetingId, reflection) => {
+  const meeting = store.get(meetingId)
+  if (!meeting) return
+  addNodeToArray(reflection, meeting, 'reflectionsInFlight', 'id')
+}
+
+export const startDraggingReflectionTeamUpdater = (
+  payload,
+  {atmosphere, store, isLocal}: UpdaterOptions
+) => {
   const {pathname} = window.location
   const slug = meetingTypeToSlug[RETROSPECTIVE]
-  const meetingRoute = matchPath(pathname, {path: `/${slug}/:teamId`})
+  const meetingRoute = matchPath<{teamId: string}>(pathname, {path: `/${slug}/:teamId`})
   /*
    * Avoid adding reflectionsInFlight on clients that are not in the meeting because
    * we can't call the endDrag handler to remove them because
@@ -62,20 +78,24 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store, 
     return undefined
   }
   const {viewerId} = atmosphere
-  const reflectionId = payload.getValue('reflectionId')
+  const reflectionId = payload.getValue('reflectionId') as string
   const reflection = store.get(reflectionId)
   if (!reflection) return undefined
   const existingDragContext = reflection.getLinkedRecord('dragContext')
   const dragContext = payload.getLinkedRecord('dragContext')
   const dragUserId = dragContext.getValue('dragUserId')
+  const dragId = dragContext.getValue('id')
   const isViewerDragging = dragContext.getValue('isViewerDragging')
   const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
+  const existingDragId = getInProxy(existingDragContext, 'id')
 
   if (
+    // HERE THERE BE DRAGONS. need a smart way to handle start,end,start,end vs stant,start,end,end
     existingDragContext &&
     existingDragUserId === dragUserId &&
     // same user in 2 tabs, tab 1 drops on a card, picks it very quickly
     dragUserId !== viewerId &&
+    dragId !== existingDragId &&
     !isLocal
   ) {
     // special case when a team member picks up the card twice before dropping it once
@@ -98,6 +118,7 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store, 
   if (acceptIncoming) {
     reflection.setLinkedRecord(dragContext, 'dragContext')
     const nextDragContext = reflection.getLinkedRecord('dragContext')
+    if (!nextDragContext) return
     nextDragContext.setValue(isViewerDragging, 'isViewerDragging')
     nextDragContext.setValue(false, 'isClosing')
     nextDragContext.setValue(false, 'isPendingStartDrag')
@@ -128,13 +149,13 @@ export const startDraggingReflectionTeamUpdater = (payload, {atmosphere, store, 
       const {itemCache} = atmosphere.getMasonry()
       // setTimeout required because otherwise it will call the endDrag handler before isViewerDragging is set to false
       setTimeout(() => {
-        itemCache[reflectionId].el.dispatchEvent(new window.Event('dragend'))
+        const cachedItem = itemCache[reflectionId]
+        cachedItem && cachedItem.el && cachedItem.el.dispatchEvent(new Event('dragend'))
       })
     }
   }
   return acceptIncoming
 }
-
 const setInitialCoords = (store, dragContext, initialCoords, initialCursorCoords) => {
   const initialCursorCoordsProxy = createProxyRecord(store, 'Coords2D', initialCursorCoords)
   const initialComponentCoordsProxy = createProxyRecord(store, 'Coords2D', initialCoords)
@@ -142,20 +163,14 @@ const setInitialCoords = (store, dragContext, initialCoords, initialCursorCoords
   dragContext.setLinkedRecord(initialCursorCoordsProxy, 'initialCursorCoords')
 }
 
-const setInFlight = (store, meetingId, reflection) => {
-  const meeting = store.get(meetingId)
-  if (!meeting) return
-  addNodeToArray(reflection, meeting, 'reflectionsInFlight', 'id')
-}
-
 const StartDraggingReflectionMutation = (
-  atmosphere: Object,
-  variables: Variables,
+  atmosphere: MasonryAtmosphere,
+  variables: StartDraggingReflectionMutationVariables,
   context: Context,
   onError?: ErrorHandler,
   onCompleted?: CompletedHandler
 ) => {
-  commitMutation(atmosphere, {
+  commitMutation<StartDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,
@@ -164,14 +179,16 @@ const StartDraggingReflectionMutation = (
       const {initialCursorCoords} = context
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return
-      payload.getLinkedRecord('dragContext').setValue(true, 'isViewerDragging')
+      payload.getLinkedRecord('dragContext')!.setValue(true, 'isViewerDragging')
       const acceptIncoming = startDraggingReflectionTeamUpdater(payload, {
         atmosphere,
         store
       })
       if (!acceptIncoming) return
       const reflection = store.get(payload.getValue('reflectionId'))
+      if (!reflection) return
       const dragContext = reflection.getLinkedRecord('dragContext')
+      if (!dragContext) return
       setInitialCoords(store, dragContext, variables.initialCoords, initialCursorCoords)
       dragContext.setValue(null, 'dragCoords')
     },
@@ -180,13 +197,14 @@ const StartDraggingReflectionMutation = (
       const {reflectionId, initialCoords} = variables
       const {initialCursorCoords, meetingId} = context
       const reflection = store.get(reflectionId)
+      if (!reflection) return
       const dragContext = createProxyRecord(store, 'DragContext', {
         dragUserId: viewerId,
         isViewerDragging: true,
         isClosing: false,
         isPendingStartDrag: true
       })
-      dragContext.setLinkedRecord(store.get(viewerId), 'dragUser')
+      dragContext.setLinkedRecord(store.getRoot().getLinkedRecord('viewer'), 'dragUser')
       setInitialCoords(store, dragContext, initialCoords, initialCursorCoords)
       reflection.setLinkedRecord(dragContext, 'dragContext')
       setInFlight(store, meetingId, reflection)

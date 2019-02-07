@@ -60,7 +60,7 @@ export interface MasonryItemCache {
   [itemId: string]: ItemCache
 }
 
-interface MasonryAtmosphere extends Atmosphere {
+export interface MasonryAtmosphere extends Atmosphere {
   getMasonry: () => {
     itemCache: MasonryItemCache
     childrenCache: MasonryChildrenCache
