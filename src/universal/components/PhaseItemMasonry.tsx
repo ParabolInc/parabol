@@ -19,6 +19,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import appTheme from 'universal/styles/theme/appTheme'
+import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import handleDropOnGrid from 'universal/utils/multiplayerMasonry/handleDropOnGrid'
 import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
@@ -27,7 +28,6 @@ import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTr
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 
 interface CollectedProps {
   connectDropTarget: ConnectDropTarget
@@ -36,6 +36,7 @@ interface CollectedProps {
 
 interface PassedProps {
   meeting: PhaseItemMasonry_meeting
+  resetActivityTimeout?: () => void
 }
 
 interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {}
@@ -156,7 +157,8 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   handleDragEnd = (payload: MasonryDragEndPayload) => {
-    const {atmosphere} = this.props
+    const {atmosphere, resetActivityTimeout} = this.props
+    resetActivityTimeout && resetActivityTimeout()
     // const {dropTargetType, dropTargetId, childId, itemId, sourceId} = payload
     switch (payload.dropTargetType) {
       case DragReflectionDropTargetTypeEnum.REFLECTION_GRID:
