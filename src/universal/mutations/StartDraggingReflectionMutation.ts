@@ -1,4 +1,4 @@
-import {commitLocalUpdate, commitMutation, graphql} from 'react-relay'
+import {commitMutation, graphql} from 'react-relay'
 import {matchPath} from 'react-router-dom'
 import {RecordSourceProxy} from 'relay-runtime'
 import {RETROSPECTIVE} from 'universal/utils/constants'
@@ -50,7 +50,6 @@ const mutation = graphql`
 interface UpdaterOptions {
   atmosphere: MasonryAtmosphere
   store: RecordSourceProxy
-  isLocal?: boolean
 }
 
 const setInFlight = (store, meetingId, reflection) => {
@@ -61,7 +60,7 @@ const setInFlight = (store, meetingId, reflection) => {
 
 export const startDraggingReflectionTeamUpdater = (
   payload,
-  {atmosphere, store, isLocal}: UpdaterOptions
+  {atmosphere, store}: UpdaterOptions
 ) => {
   const {pathname} = window.location
   const slug = meetingTypeToSlug[RETROSPECTIVE]
@@ -84,33 +83,35 @@ export const startDraggingReflectionTeamUpdater = (
   const existingDragContext = reflection.getLinkedRecord('dragContext')
   const dragContext = payload.getLinkedRecord('dragContext')
   const dragUserId = dragContext.getValue('dragUserId')
-  const dragId = dragContext.getValue('id')
   const isViewerDragging = dragContext.getValue('isViewerDragging')
   const existingDragUserId = getInProxy(existingDragContext, 'dragUserId')
-  const existingDragId = getInProxy(existingDragContext, 'id')
 
-  if (
-    // HERE THERE BE DRAGONS. need a smart way to handle start,end,start,end vs stant,start,end,end
-    existingDragContext &&
-    existingDragUserId === dragUserId &&
-    // same user in 2 tabs, tab 1 drops on a card, picks it very quickly
-    dragUserId !== viewerId &&
-    dragId !== existingDragId &&
-    !isLocal
-  ) {
-    // special case when a team member picks up the card twice before dropping it once
-    // we'll want to reply this startDrag when the first endDrag returns
-    atmosphere.startDragQueue = atmosphere.startDragQueue || []
-    atmosphere.startDragQueue.push(() => {
-      commitLocalUpdate(atmosphere, (store) => {
-        startDraggingReflectionTeamUpdater(payload, {
-          atmosphere,
-          store,
-          isLocal: true
-        })
-      })
-    })
-  }
+  // REMOVED beccause this broke a quick start, end, start, end.
+  // could not reproduce the previous start, start, end, end bug, so I assume that this isn't necessary
+  // const dragId = dragContext.getValue('id')
+  // const existingDragId = getInProxy(existingDragContext, 'id')
+  // if (
+  //   // HERE THERE BE DRAGONS. need a smart way to handle start,end,start,end vs start,start,end,end
+  //   existingDragContext &&
+  //   existingDragUserId === dragUserId &&
+  //   // same user in 2 tabs, tab 1 drops on a card, picks it very quickly
+  //   dragUserId !== viewerId &&
+  //   dragId !== existingDragId &&
+  //   !isLocal
+  // ) {
+  //   // special case when a team member picks up the card twice before dropping it once
+  //   // we'll want to reply this startDrag when the first endDrag returns
+  //   atmosphere.startDragQueue = atmosphere.startDragQueue || []
+  //   atmosphere.startDragQueue.push(() => {
+  //     commitLocalUpdate(atmosphere, (store) => {
+  //       startDraggingReflectionTeamUpdater(payload, {
+  //         atmosphere,
+  //         store,
+  //         isLocal: true
+  //       })
+  //     })
+  //   })
+  // }
 
   // when conflicts arise, give the win to the person with the smaller userId
   const acceptIncoming = !existingDragUserId || existingDragUserId >= dragUserId

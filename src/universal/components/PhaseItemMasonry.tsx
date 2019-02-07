@@ -67,7 +67,6 @@ export interface MasonryAtmosphere extends Atmosphere {
     childrenCache: MasonryChildrenCache
     parentCache: MasonryParentCache
   }
-  startDragQueue: Array<() => void>
 }
 
 interface StaticWidthBBox {
@@ -227,11 +226,6 @@ class PhaseItemMasonry extends React.Component<Props> {
         const bbox = getBBox(bestEl)
         if (!bbox) return
         setClosingTransform(atmosphere, payload.itemId, {x: bbox.left, y: bbox.top})
-    }
-    if (atmosphere.startDragQueue && atmosphere.startDragQueue.length) {
-      // reply the startDrag event that fired before we received the end drag event
-      const queuedStart = atmosphere.startDragQueue.shift()!
-      queuedStart()
     }
   }
 
