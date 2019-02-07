@@ -69,11 +69,17 @@ interface MasonryAtmosphere extends Atmosphere {
   startDragQueue: Array<() => void>
 }
 
+interface StaticWidthBBox {
+  top: number
+  left: number
+  height: number
+}
+
 interface ChildCache {
   // reflection group element
   el: HTMLElement | null
   // boundingBox coords are relative to the parentCache!
-  boundingBox: BBox | null
+  boundingBox: StaticWidthBBox | null
   modalBoundingBox?: BBox
   headerHeight?: number
 }
@@ -90,7 +96,7 @@ export interface MasonryParentCache {
   // the location for a group that has not been created yet (caused by an ungrouping)
   incomingChildren: {
     [itemId: string]: {
-      boundingBox: BBox | null
+      boundingBox: StaticWidthBBox | null
       // the optimistic child that currently represents the group
       childId: string
     }

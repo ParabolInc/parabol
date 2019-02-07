@@ -23,7 +23,9 @@ import {
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
+import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
+import StrictEventEmitter from 'strict-event-emitter-types'
 // import sleep from 'universal/utils/sleep'
 
 const defaultErrorHandler = (err: any) => {
@@ -62,6 +64,21 @@ const noop = (): any => {
   /* noop */
 }
 
+interface Toast {
+  level: 'info' | 'warning' | 'error' | 'success'
+  autoDismiss?: number
+  title: string
+  message: string
+}
+
+interface AtmosphereEvents {
+  addToast: Toast
+  endDraggingReflection: MasonryDragEndPayload
+  meetingSidebarCollapsed: boolean
+  newSubscriptionClient: void
+  removeGitHubRepo: void
+}
+
 export default class Atmosphere extends Environment {
   static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
@@ -73,7 +90,7 @@ export default class Atmosphere extends Environment {
   authObj: IAuthToken | null = null
   querySubscriptions: Array<QuerySubscription> = []
   subscriptions: Subscriptions = {}
-  eventEmitter = new EventEmitter()
+  eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
   upgradeTransportPromise: Promise<void> | null = null
   viewerId: string | null = null
   userId: string | null = null // DEPRECATED
