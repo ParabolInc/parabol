@@ -27,10 +27,10 @@ import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
-import {isTeamMember, getUserId} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import TeamInvitation from 'server/graphql/types/TeamInvitation'
+import standardError from 'server/utils/standardError'
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -212,7 +212,8 @@ const Team = new GraphQLObjectType({
       description: 'All of the tasks for this team',
       async resolve ({id: teamId}, args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
-          return sendTeamAccessError(authToken, teamId, null)
+          standardError(new Error('Team not found'))
+          return null
         }
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return connectionFromTasks(tasks)

@@ -4,7 +4,7 @@ import ClearNotificationPayload from 'server/graphql/types/ClearNotificationPayl
 import {getUserId} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {NOTIFICATION} from 'universal/utils/constants'
-import {sendNotificationAccessError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: ClearNotificationPayload,
@@ -24,7 +24,7 @@ export default {
     const viewerId = getUserId(authToken)
     const notification = await r.table('Notification').get(notificationId)
     if (!notification || !notification.userIds.includes(viewerId)) {
-      return sendNotificationAccessError(authToken, notificationId)
+      return standardError(new Error('Notification not found'), {userId: viewerId})
     }
 
     // RESOLUTION

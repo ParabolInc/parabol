@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import CancelApprovalPayload from 'server/graphql/types/CancelApprovalPayload'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {
   NOTIFICATION,
@@ -14,7 +14,7 @@ import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
 import removeSoftTeamMember from 'server/safeMutations/removeSoftTeamMember'
 import getTasksByAssigneeId from 'server/safeQueries/getTasksByAssigneeIds'
 import getActiveTeamMembersByTeamIds from 'server/safeQueries/getActiveTeamMembersByTeamIds'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: CancelApprovalPayload,
@@ -29,12 +29,13 @@ export default {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const orgApprovalDoc = await r.table('OrgApproval').get(orgApprovalId)
     const {email, orgId, teamId} = orgApprovalDoc
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

@@ -4,8 +4,7 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyCurrentFacilitatorError} from 'server/utils/alreadyMutatedErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   name: 'RequestFacilitator',
@@ -23,14 +22,14 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
     const requestorId = toTeamMemberId(teamId, viewerId)
     const {activeFacilitator} = await dataLoader.get('teams').load(teamId)
     if (activeFacilitator === requestorId) {
-      return sendAlreadyCurrentFacilitatorError(authToken, requestorId)
+      return standardError(new Error('Already current facilitator'), {userId: viewerId})
     }
 
     // RESOLUTION

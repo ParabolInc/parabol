@@ -10,12 +10,11 @@ import shortid from 'shortid'
 import {NEW_AUTH_TOKEN, NOTIFICATION, PERSONAL, TEAM, UPDATED} from 'universal/utils/constants'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import addTeamValidation from './helpers/addTeamValidation'
-import {sendMaxFreeTeamsError, sendOrgAccessError} from 'server/utils/authorizationErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import rateLimit from 'server/graphql/rateLimit'
 import {MAX_FREE_TEAMS} from 'server/utils/serverConstants'
 import getRethink from 'server/database/rethinkDriver'
 import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: AddTeamPayload,
@@ -36,7 +35,7 @@ export default {
       const {orgId} = args.newTeam
       const viewerId = getUserId(authToken)
       if (!(await isUserInOrg(viewerId, orgId))) {
-        sendOrgAccessError(authToken, orgId)
+        return standardError(new Error('Organization not found'), {userId: viewerId})
       }
 
       // VALIDATION
@@ -62,13 +61,13 @@ export default {
             }
           }
         }
-        return sendFailedInputValidation(authToken, errors)
+        return standardError(new Error('Failed input validation'), {userId: viewerId})
       }
       if (orgTeams.length >= MAX_FREE_TEAMS) {
         const organization = await dataLoader.get('organizations').load(orgId)
         const {tier} = organization
         if (tier === PERSONAL) {
-          return sendMaxFreeTeamsError(authToken, orgId)
+          return standardError(new Error('Max free teams reached'), {userId: viewerId})
         }
       }
 

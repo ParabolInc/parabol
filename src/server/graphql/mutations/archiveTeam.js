@@ -7,8 +7,7 @@ import publish from 'server/utils/publish'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import shortid from 'shortid'
 import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants'
-import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyArchivedTeamError} from 'server/utils/alreadyMutatedErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: ArchiveTeamPayload,
@@ -27,7 +26,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isTeamLead(viewerId, teamId))) {
-      return sendTeamLeadAccessError(authToken, teamId)
+      return standardError(new Error('Not team lead'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -81,7 +80,7 @@ export default {
     })
 
     if (!team) {
-      return sendAlreadyArchivedTeamError(authToken, teamId)
+      return standardError(new Error('Already archived team'), {userId: viewerId})
     }
 
     const notifications = users

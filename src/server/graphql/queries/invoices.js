@@ -7,7 +7,7 @@ import {InvoiceConnection} from 'server/graphql/types/Invoice'
 import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import {UPCOMING} from 'universal/utils/constants'
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: InvoiceConnection,
@@ -28,7 +28,8 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return sendOrgLeadAccessError(authToken, orgId, null)
+      standardError(new Error('Not organization lead'), {userId: viewerId})
+      return null
     }
 
     // RESOLUTION

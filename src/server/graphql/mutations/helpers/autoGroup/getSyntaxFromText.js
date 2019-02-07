@@ -1,5 +1,5 @@
-import sendSentryEvent from 'server/utils/sendSentryEvent'
 import language from '@google-cloud/language/src/index'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const getEntitiesFromText = async (contextText) => {
   let client
@@ -7,7 +7,7 @@ const getEntitiesFromText = async (contextText) => {
   try {
     client = new language.LanguageServiceClient()
   } catch (e) {
-    sendSentryEvent(undefined, undefined, e)
+    sendToSentry(e)
     return null
   }
   const document = {
@@ -17,11 +17,7 @@ const getEntitiesFromText = async (contextText) => {
   try {
     return client.analyzeSyntax({document})
   } catch (e) {
-    const breadcrumb = {
-      message: e.message,
-      category: 'Google cloud language API fail'
-    }
-    sendSentryEvent(undefined, breadcrumb)
+    sendToSentry(e)
     return null
   }
 }

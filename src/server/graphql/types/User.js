@@ -27,8 +27,6 @@ import organization from 'server/graphql/queries/organization'
 import tasks from 'server/graphql/queries/tasks'
 import archivedTasks from 'server/graphql/queries/archivedTasks'
 import {getUserId, isSuperUser, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
 import MeetingMember from 'server/graphql/types/MeetingMember'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
@@ -38,6 +36,7 @@ import getRethink from 'server/database/rethinkDriver'
 import OrganizationUser from 'server/graphql/types/OrganizationUser'
 import SuggestedAction from 'server/graphql/types/SuggestedAction'
 import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
+import standardError from 'server/utils/standardError'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -216,11 +215,13 @@ const User = new GraphQLObjectType({
       },
       async resolve (source, {meetingId}, {authToken, dataLoader}) {
         const meeting = await dataLoader.get('meetings').load(meetingId)
+        const viewerId = getUserId(authToken)
         if (!meeting) {
-          return sendMeetingNotFoundError(authToken, meetingId)
+          return standardError(new Error('Meeting not found'), {userId: viewerId})
         }
         if (!isTeamMember(authToken, meeting.teamId)) {
-          return sendTeamAccessError(authToken, meeting.teamId, null)
+          standardError(new Error('Team not found'), {userId: viewerId})
+          return null
         }
         return meeting
       }
@@ -261,11 +262,13 @@ const User = new GraphQLObjectType({
         }
       },
       async resolve (source, {meetingId}, {authToken, dataLoader}) {
+        const viewerId = getUserId(authToken)
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+        if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
         const {teamId} = meeting
         if (!isTeamMember(authToken, teamId)) {
-          return sendTeamAccessError(authToken, teamId, null)
+          standardError(new Error('Team not found'), {userId: viewerId})
+          return null
         }
         return meeting
       }
@@ -369,7 +372,8 @@ const User = new GraphQLObjectType({
       resolve: (source, {teamId}, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         if (!isTeamMember(authToken, teamId)) {
-          return sendTeamAccessError(authToken, teamId, null)
+          standardError(new Error('Team not found'), {userId: viewerId})
+          return null
         }
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         return dataLoader.get('teamMembers').load(teamMemberId)

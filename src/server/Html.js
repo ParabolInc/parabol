@@ -8,7 +8,7 @@ import dehydrate from 'server/utils/dehydrate'
 import getWebpackPublicPath from 'server/utils/getWebpackPublicPath'
 import {StaticRouter} from 'react-router'
 import AtmosphereProvider from '../universal/components/AtmosphereProvider/AtmosphereProvider'
-import sendSentryEvent from 'server/utils/sendSentryEvent'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const webpackPublicPath = getWebpackPublicPath()
 const segKey = process.env.SEGMENT_WRITE_KEY
@@ -43,8 +43,7 @@ export default function Html ({store, assets, clientIds}) {
       )
     )
   } catch (e) {
-    sendSentryEvent(undefined, {message: e.message})
-    throw e
+    sendToSentry(e)
     // return `<div>Error during render! ${e}</div>`;
   }
   const dehydratedStyles = dehydrate('__EMOTION__', critical.ids)

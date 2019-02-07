@@ -4,7 +4,7 @@ const StandardMutationError = new GraphQLObjectType({
   name: 'StandardMutationError',
   fields: () => ({
     title: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: 'The title of the error'
     },
     message: {

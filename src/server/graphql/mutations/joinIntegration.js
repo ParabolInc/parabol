@@ -6,13 +6,7 @@ import maybeJoinRepos from 'server/safeMutations/maybeJoinRepos'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import getPubSub from 'server/utils/getPubSub'
 import {GITHUB} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {
-  sendIntegrationNotFoundError,
-  sendTeamMemberNotFoundError
-} from 'server/utils/docNotFoundErrors'
-import {sendAlreadyJoinedIntegrationError} from 'server/utils/alreadyMutatedErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(JoinIntegrationPayload),
@@ -31,20 +25,16 @@ export default {
     const {id: localId, type: service} = fromGlobalId(globalId)
     const integration = await r.table(service).get(localId)
     if (!integration) {
-      return sendIntegrationNotFoundError(authToken, localId)
+      return standardError(new Error('Integration not found'), {userId})
     }
     const {teamId, userIds} = integration
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId})
     }
 
     // VALIDATION
-    if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
-    }
-
     if (userIds.includes(userId)) {
-      return sendAlreadyJoinedIntegrationError(authToken, globalId)
+      return standardError(new Error('Integration already joined'), {userId})
     }
 
     const provider = await r
@@ -54,12 +44,9 @@ export default {
       .nth(0)
       .default(null)
     if (!provider) {
-      const breadcrumb = {
-        message: 'You must first connect your account to the integration',
-        category: 'Join Integration',
-        data: {service, teamId}
-      }
-      return sendAuthRaven(authToken, 'Oh no', breadcrumb)
+      return standardError(new Error('You must first connect your account to the integration'), {
+        userId
+      })
     }
 
     // RESOLUTION
@@ -68,19 +55,16 @@ export default {
       const usersAndIntegrations = await maybeJoinRepos([integration], [provider])
       const integrationIds = usersAndIntegrations[userId]
       if (integrationIds.length === 0) {
-        const breadcrumb = {
-          message: 'You must be an org member or collaborator to join',
-          category: 'Join Integration',
-          data: {service, teamId}
-        }
-        return sendAuthRaven(authToken, 'Oh no', breadcrumb)
+        return standardError(new Error('You must be an org member or collaborator to join'), {
+          userId
+        })
       }
     }
 
     const teamMemberId = `${userId}::${teamId}`
     const teamMember = await r.table('TeamMember').get(teamMemberId)
     if (!teamMember) {
-      return sendTeamMemberNotFoundError(authToken, teamId, userId)
+      return standardError(new Error('Team member not found'), {userId})
     }
 
     const integrationJoined = {

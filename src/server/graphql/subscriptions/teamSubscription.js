@@ -3,14 +3,14 @@ import makeSubscribeIter from 'server/graphql/makeSubscribeIter'
 import TeamSubscriptionPayload from 'server/graphql/types/TeamSubscriptionPayload'
 import {getUserId, isAuthenticated} from 'server/utils/authorization'
 import {TEAM} from 'universal/utils/constants'
-import {sendNotAuthenticatedAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(TeamSubscriptionPayload),
   subscribe: (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
     if (!isAuthenticated(authToken)) {
-      return sendNotAuthenticatedAccessError(authToken)
+      return standardError(new Error('Not authenticated'))
     }
 
     // RESOLUTION

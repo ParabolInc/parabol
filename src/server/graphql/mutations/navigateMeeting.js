@@ -3,17 +3,12 @@ import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
-import {sendNotMeetingFacilitatorError} from 'server/utils/authorizationErrors'
 import NavigateMeetingPayload from 'server/graphql/types/NavigateMeetingPayload'
-import {
-  sendMeetingNotFoundError,
-  sendStageNotFoundError,
-  sendStageNotUnlockedError
-} from 'server/utils/docNotFoundErrors'
 import findStageById from 'universal/utils/meetings/findStageById'
 import handleCompletedStage from 'server/graphql/mutations/helpers/handleCompletedStage'
 import unlockNextStages from 'universal/utils/unlockNextStages'
 import startStage_ from 'universal/utils/startStage_'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: NavigateMeetingPayload,
@@ -48,10 +43,10 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {facilitatorUserId, phases, teamId} = meeting
     if (viewerId !== facilitatorUserId) {
-      return sendNotMeetingFacilitatorError(authToken, viewerId)
+      return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -60,11 +55,11 @@ export default {
     if (completedStageId) {
       const completedStageRes = findStageById(phases, completedStageId)
       if (!completedStageRes) {
-        return sendStageNotFoundError(authToken, completedStageId)
+        return standardError(new Error('Meeting stage not found'), {userId: viewerId})
       }
       const {stage} = completedStageRes
       if (!stage.isNavigableByFacilitator) {
-        return sendStageNotUnlockedError(authToken, completedStageId)
+        return standardError(new Error('Stage has not started'), {userId: viewerId})
       }
       if (!stage.isComplete) {
         // MUTATIVE
@@ -77,11 +72,11 @@ export default {
     if (facilitatorStageId) {
       const facilitatorStageRes = findStageById(phases, facilitatorStageId)
       if (!facilitatorStageRes) {
-        return sendStageNotFoundError(authToken, facilitatorStageId)
+        return standardError(new Error('Stage not found'), {userId: viewerId})
       }
       const {stage: facilitatorStage} = facilitatorStageRes
       if (!facilitatorStage.isNavigableByFacilitator) {
-        return sendStageNotUnlockedError(authToken, facilitatorStageId)
+        return standardError(new Error('Stage has not started'), {userId: viewerId})
       }
 
       // mutative

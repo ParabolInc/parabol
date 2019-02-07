@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import makeSubscribeIter from 'server/graphql/makeSubscribeIter'
 import OrgApprovalSubscriptionPayload from 'server/graphql/types/OrgApprovalSubscriptionPayload'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {ORG_APPROVAL} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(OrgApprovalSubscriptionPayload),
@@ -15,7 +15,8 @@ export default {
   subscribe: (source, {teamId}, {authToken, dataLoader, socketId}) => {
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      const viewerId = getUserId(authToken)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

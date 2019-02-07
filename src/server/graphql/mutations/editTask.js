@@ -3,7 +3,7 @@ import EditTaskPayload from 'server/graphql/types/EditTaskPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TASK} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: EditTaskPayload,
@@ -27,7 +27,7 @@ export default {
     const viewerId = getUserId(authToken)
     const {tags, teamId, userId: taskUserId} = task
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

@@ -1,12 +1,11 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {CHECKIN, TEAM} from 'universal/utils/constants'
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
 import UpdateNewCheckInQuestionPayload from 'server/graphql/types/UpdateNewCheckInQuestionPayload'
-import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: UpdateNewCheckInQuestionPayload,
@@ -30,12 +29,14 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
+    const viewerId = getUserId(authToken)
+
     // AUTH
     const meeting = await r.table('NewMeeting').get(meetingId)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION

@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isSuperUser} from 'server/utils/authorization'
 import {ADD_USER, AUTO_PAUSE_USER} from 'server/utils/serverConstants'
 import {BILLING_LEADER} from 'universal/utils/constants'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: GraphQLString,
@@ -37,12 +37,7 @@ export default {
     })
     const isBillingLeaderForOrg = newOrganizationUser.role === BILLING_LEADER
     if (!isBillingLeaderForOrg && !su) {
-      const breadcrumb = {
-        message: 'You must be a billing leader for the organization you want to move the team to',
-        category: 'Move Team To Org',
-        data: {teamId, orgId}
-      }
-      return sendAuthRaven(authToken, 'Move failed', breadcrumb)
+      return standardError(new Error('Not organization leader'), {userId})
     }
     const {orgId: currentOrgId} = team
     const oldOrganizationUser = await r
@@ -52,21 +47,11 @@ export default {
       .nth(0)
     const isBillingLeaderForTeam = oldOrganizationUser.role === BILLING_LEADER
     if (!isBillingLeaderForTeam && !su) {
-      const breadcrumb = {
-        message: 'You must be a billing leader for the org that owns that team',
-        category: 'Move Team To Org',
-        data: {teamId, orgId}
-      }
-      return sendAuthRaven(authToken, 'Move failed', breadcrumb)
+      return standardError(new Error('Not organization leader'), {userId})
     }
 
     if (orgId === currentOrgId && !su) {
-      const breadcrumb = {
-        message: 'That team already belongs to the organization',
-        category: 'Move Team To Org',
-        data: {teamId, orgId}
-      }
-      return sendAuthRaven(authToken, 'Move failed', breadcrumb)
+      return standardError(new Error('Team already on organization'), {userId})
     }
 
     // RESOLUTION

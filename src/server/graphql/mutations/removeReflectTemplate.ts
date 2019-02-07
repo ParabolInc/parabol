@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendLastTemplateRemovalError, sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {RETROSPECTIVE, TEAM} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePayload from '../types/RemoveReflectTemplatePayload'
 
 const removeReflectTemplate = {
@@ -20,10 +20,11 @@ const removeReflectTemplate = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await r.table('ReflectTemplate').get(templateId)
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!template || !isTeamMember(authToken, template.teamId) || !template.isActive) {
-      return sendTeamAccessError(authToken, templateId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -43,7 +44,7 @@ const removeReflectTemplate = {
     })
 
     if (templates.length <= 1) {
-      return sendLastTemplateRemovalError(authToken, templateId)
+      return standardError(new Error('No templates'), {userId: viewerId})
     }
 
     // RESOLUTION
