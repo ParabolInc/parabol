@@ -49,6 +49,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     facilitatorUserId: id,
     facilitatorName: preferredName,
     inactive: false,
+    isConnected: true,
     lastLogin: now,
     lastSeenAt: now,
     // name: 'You',
@@ -269,7 +270,8 @@ const initDB = (botScript) => {
   const meetingMembers = users.map(initDemoMeetingMember)
   const teamMembers = users.map(initDemoTeamMember).map((teamMember, idx) => ({
     ...teamMember,
-    meetingMember: meetingMembers[idx]
+    meetingMember: meetingMembers[idx],
+    user: users[idx]
   }))
   const org = initDemoOrg()
   const newMeeting = initNewMeeting(teamMembers, meetingMembers)
