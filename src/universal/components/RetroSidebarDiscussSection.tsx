@@ -64,10 +64,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const {
     atmosphere,
     gotoStageId,
-    viewer: {
-      team: {newMeeting}
-    }
+    viewer: {team}
   } = props
+  const {newMeeting} = team!
   if (!newMeeting) return null
   const {localPhase, localStage, facilitatorStageId, meetingId} = newMeeting
   if (!localPhase || !localPhase.stages || !localStage) return null
@@ -109,10 +108,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const toggleSidebar = () => {
     const {
       atmosphere,
-      viewer: {
-        team: {teamId, isMeetingSidebarCollapsed}
-      }
+      viewer: {team}
     } = props
+    const {teamId, isMeetingSidebarCollapsed} = team!
     commitLocalUpdate(atmosphere, (store) => {
       const team = store.get(teamId)
       if (!team) return

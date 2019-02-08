@@ -56,9 +56,8 @@ interface Props {
 
 const NewMeetingSidebar = (props: Props) => {
   const {gotoStageId, meetingType, toggleSidebar, viewer} = props
-  const {
-    team: {teamId, teamName}
-  } = viewer
+  const {team} = viewer
+  const {teamId, teamName} = team!
   const meetingLabel = meetingTypeToLabel[meetingType]
   const teamLink = isDemoRoute() ? '/create-account' : `/team/${teamId}`
   return (

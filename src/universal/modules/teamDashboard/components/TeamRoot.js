@@ -5,6 +5,9 @@ import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import TeamContainer from 'universal/modules/teamDashboard/containers/Team/TeamContainer'
 import {cacheConfig} from 'universal/utils/constants'
+import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
+import LoadingView from 'universal/components/LoadingView/LoadingView'
+import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
 
 const query = graphql`
   query TeamRootQuery($teamId: ID!) {
@@ -24,15 +27,14 @@ const TeamRoot = ({atmosphere, location, match}) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      render={({props: renderProps}) => {
-        return (
-          <TeamContainer
-            viewer={renderProps && renderProps.viewer}
-            location={location}
-            match={match}
-          />
-        )
-      }}
+      render={(readyState) => (
+        <RelayTransitionGroup
+          readyState={readyState}
+          error={<ErrorComponent />}
+          loading={<LoadingView minHeight='50vh' />}
+          ready={<TeamContainer location={location} match={match} />}
+        />
+      )}
     />
   )
 }

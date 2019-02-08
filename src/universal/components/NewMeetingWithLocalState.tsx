@@ -1,17 +1,17 @@
+import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
+import NewMeeting from 'universal/components/NewMeeting'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {MeetingTypeEnum} from 'universal/types/graphql'
 import findKeyByValue from 'universal/utils/findKeyByValue'
 import findStageById from 'universal/utils/meetings/findStageById'
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
-import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
-import {MeetingTypeEnum} from 'universal/types/graphql'
-import NewMeeting from 'universal/components/NewMeeting'
 
 /*
  * Creates a 2-way sync between the URL and the local state
@@ -54,10 +54,9 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       }
     } = nextProps
     const {
-      viewer: {
-        team: {newMeeting: oldMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting: oldMeeting} = team!
     const localStageId = newMeeting && newMeeting.localStage && newMeeting.localStage.id
     const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id
     if (localStageId !== oldLocalStageId) {
@@ -105,9 +104,8 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       history.replace('/')
       return false
     }
-    const {
-      team: {newMeeting}
-    } = viewer
+    const {team} = viewer
+    const {newMeeting} = team!
     const meetingSlug = meetingTypeToSlug[meetingType]
     const {viewerId} = atmosphere
 

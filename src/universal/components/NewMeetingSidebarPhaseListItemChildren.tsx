@@ -18,7 +18,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 const NewMeetingSidebarPhaseListItemChildren = (props: Props) => {
   const {gotoStageId, phaseType, viewer} = props
   const {team} = viewer
-  const {newMeeting} = team
+  const {newMeeting} = team!
   if (!newMeeting || !newMeeting.localPhase || newMeeting.localPhase.phaseType !== phaseType) {
     return null
   }

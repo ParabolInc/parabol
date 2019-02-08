@@ -223,7 +223,7 @@ export interface IUser {
   /**
    * A query for a team
    */
-  team: ITeam
+  team: ITeam | null
 
   /**
    * all the teams the user is on that the viewer can see.

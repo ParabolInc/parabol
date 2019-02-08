@@ -8,9 +8,13 @@ export interface SentryOptions {
   }
 }
 
+const __PROD__ = process.env.NODE_ENV === 'production'
 // Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
 // @ts-ignore
 const sendToSentry = async (error: Error, options: SentryOptions = {}): void => {
+  if (!__PROD__) {
+    console.error(error)
+  }
   const r = getRethink()
   const {userId, tags} = options
   let user
