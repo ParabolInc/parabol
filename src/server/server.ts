@@ -127,6 +127,8 @@ app.use(favicon(`${__dirname}/../../static/favicon.ico`))
 app.use('/static', express.static('build'))
 if (PROD) {
   app.use(compression())
+} else {
+  app.use('/static', express.static('dll'))
 }
 
 // HTTP GraphQL endpoint
