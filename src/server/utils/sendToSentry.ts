@@ -8,7 +8,9 @@ export interface SentryOptions {
   }
 }
 
-const sendToSentry = async (error: Error, options: SentryOptions = {}) => {
+// Even though this is a promise we'll never need to await it, so we'll never need to worry about catching an error
+// @ts-ignore
+const sendToSentry = async (error: Error, options: SentryOptions = {}): void => {
   const r = getRethink()
   const {userId, tags} = options
   let user

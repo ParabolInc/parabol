@@ -9,19 +9,25 @@ import {requestSubscription} from 'react-relay'
 import {
   CacheConfig,
   Environment,
-  FetchFunction,
   // @ts-ignore
   getRequest,
   GraphQLSubscriptionConfig,
   Network,
+  ObservableFromValue,
+  QueryPayload,
   RecordSource,
+  RequestNode,
   Store,
   Variables
 } from 'relay-runtime'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
+import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
+import StrictEventEmitter from 'strict-event-emitter-types'
+import LinearPublishQueue from 'universal/LinearPublishQueue'
+
 // import sleep from 'universal/utils/sleep'
 
 const defaultErrorHandler = (err: any) => {
@@ -39,8 +45,9 @@ interface Subscriptions {
 }
 
 interface Operation {
+  id?: string
   name: string
-  text: string
+  text?: string
 }
 
 interface QueryFetcher {
@@ -59,6 +66,23 @@ const noop = (): any => {
   /* noop */
 }
 
+interface Toast {
+  level: 'info' | 'warning' | 'error' | 'success'
+  autoDismiss?: number
+  title: string
+  message: string
+}
+
+interface AtmosphereEvents {
+  addToast: Toast
+  removeToast: (toast: string | any) => void
+  endDraggingReflection: MasonryDragEndPayload
+  meetingSidebarCollapsed: boolean
+  newSubscriptionClient: void
+  removeGitHubRepo: void
+}
+
+const store = new Store(new RecordSource())
 export default class Atmosphere extends Environment {
   static getKey = (name: string, variables: Variables | undefined) => {
     return JSON.stringify({name, variables})
@@ -70,12 +94,18 @@ export default class Atmosphere extends Environment {
   authObj: IAuthToken | null = null
   querySubscriptions: Array<QuerySubscription> = []
   subscriptions: Subscriptions = {}
-  eventEmitter = new EventEmitter()
+  eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
   upgradeTransportPromise: Promise<void> | null = null
   viewerId: string | null = null
   userId: string | null = null // DEPRECATED
   constructor () {
-    super({store: new Store(new RecordSource()), handlerProvider, network: Network.create(noop)})
+    super({
+      store,
+      handlerProvider,
+      network: Network.create(noop),
+      // @ts-ignore
+      publishQueue: new LinearPublishQueue(store, handlerProvider)
+    })
     // @ts-ignore we should update the relay-runtime typings, this.handleSubscribe should be able to return a promise
     this._network = Network.create(this.handleFetch, this.handleSubscribe)
     this.transport = new GQLHTTPClient(this.fetchHTTP)
@@ -118,7 +148,9 @@ export default class Atmosphere extends Environment {
     await this.upgradeTransport()
     const newQuerySubs = subConfigs.map((config) => {
       const {subscription, variables = {}} = config
-      const {name} = getRequest(subscription)
+      const request = getRequest(subscription)
+      const name = request.params && request.params.name
+      if (!name) throw new Error(`No name found for request ${request}`)
       const subKey = JSON.stringify({name, variables})
       const isRequested = Boolean(this.querySubscriptions.find((qs) => qs.subKey === subKey))
       if (!isRequested) {
@@ -139,11 +171,11 @@ export default class Atmosphere extends Environment {
     _cacheConfig: CacheConfig,
     observer: any
   ) => {
-    const {name, text} = operation
+    const {name, id: documentId} = operation
     const subKey = Atmosphere.getKey(name, variables)
     await this.upgradeTransport()
     this.subscriptions[subKey] = (this.transport as GQLTrebuchetClient).subscribe(
-      {query: text, variables},
+      {documentId, variables},
       observer
     )
     return this.makeDisposable(subKey)
@@ -179,11 +211,13 @@ export default class Atmosphere extends Environment {
 
   addAuthTokenSubscriber () {
     if (!this.authToken) throw new Error('No Auth Token provided!')
-    const {text: query} = getRequest(NewAuthTokenSubscription().subscription)
+    const {params} = getRequest(NewAuthTokenSubscription().subscription)
+    const documentId = params && (params.id as string)
+    if (!documentId) throw new Error(`No documentId found for request params ${params}`)
     const transport = this.transport as GQLTrebuchetClient
     transport.operations[NEW_AUTH_TOKEN] = {
       id: NEW_AUTH_TOKEN,
-      payload: {query},
+      payload: {documentId},
       observer: {
         onNext: (payload) => {
           this.setAuthToken(payload.authToken)
@@ -194,9 +228,18 @@ export default class Atmosphere extends Environment {
     }
   }
 
-  handleFetch: FetchFunction = async (operation, variables) => {
+  handleFetch = async (
+    operation: RequestNode,
+    variables: Variables,
+    _cacheConfig?: CacheConfig
+  ): Promise<ObservableFromValue<QueryPayload>> => {
     // await sleep(100)
-    return this.transport.fetch({query: operation.text, variables})
+    if ('text' in operation) {
+      return this.transport.fetch({documentId: operation.id as string, variables})
+    }
+    return operation.requests.map((request) =>
+      this.transport.fetch({documentId: request.id as string, variables})
+    )
   }
 
   getAuthToken = (global: Window) => {

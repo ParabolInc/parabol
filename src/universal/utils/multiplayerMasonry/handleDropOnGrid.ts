@@ -2,14 +2,24 @@ import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTr
 import {CARD_PADDING} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import getLastCardPerColumn from 'universal/utils/multiplayerMasonry/getLastCardPerColumn'
 import isTempId from 'universal/utils/relay/isTempId'
+import Atmosphere from '../../Atmosphere'
+import {
+  MasonryChildrenCache,
+  MasonryItemCache,
+  MasonryParentCache
+} from '../../components/PhaseItemMasonry'
 
-const handleDropOnGrid = (atmosphere, itemCache, childrenCache, parentCache, childId, itemId) => {
-  const {
-    boundingBox: {top: parentTop, left: parentLeft},
-    cardsInFlight,
-    columnLefts,
-    incomingChildren
-  } = parentCache
+const handleDropOnGrid = (
+  atmosphere: Atmosphere,
+  itemCache: MasonryItemCache,
+  childrenCache: MasonryChildrenCache,
+  parentCache: MasonryParentCache,
+  childId: string,
+  itemId: string
+) => {
+  const {boundingBox: parentBBox, cardsInFlight, columnLefts, incomingChildren} = parentCache
+  if (!parentBBox) return
+  const {top: parentTop, left: parentLeft} = parentBBox
   const childCache = childrenCache[childId]
   const {x: dropX, y: dropY} = cardsInFlight[itemId]
   const droppedLeft = dropX - parentLeft
@@ -27,7 +37,9 @@ const handleDropOnGrid = (atmosphere, itemCache, childrenCache, parentCache, chi
   )
   const minDistanceIdx = distances.indexOf(Math.min(...distances))
   const {left: newLeft, top: newTop} = bottomCoords[minDistanceIdx]
-  const {height} = itemCache[itemId].boundingBox
+  const itemBBox = itemCache[itemId].boundingBox
+  if (!itemBBox) return
+  const {height} = itemBBox
   const x = newLeft + parentLeft + CARD_PADDING
   const y = newTop + parentTop + CARD_PADDING
   setClosingTransform(atmosphere, itemId, {x, y})
@@ -36,6 +48,7 @@ const handleDropOnGrid = (atmosphere, itemCache, childrenCache, parentCache, chi
     top: newTop,
     height: height + 2 * CARD_PADDING
   }
+  if (!childCache.el) return
   childCache.el.style.transform = `translate(${newLeft}px, ${newTop}px)`
   if (isTempId(childId)) {
     incomingChildren[itemId] = {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {lazy} from 'react'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
 import styled from 'react-emotion'
@@ -8,7 +8,6 @@ import Toggle from 'universal/components/Toggle/Toggle'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
-import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal'
 import {createFragmentContainer, graphql} from 'react-relay'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import withAtmosphere, {
@@ -26,6 +25,7 @@ import RowInfoLink from 'universal/components/Row/RowInfoLink'
 import RowActions from 'universal/components/Row/RowActions'
 import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
 import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
+import LoadableModal from '../../../../components/LoadableModal'
 
 const originAnchor = {
   vertical: 'top',
@@ -71,6 +71,9 @@ const MenuButton = (props) => (
   </StyledButton>
 )
 
+const LeaveOrgModal = lazy(() =>
+  import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
+)
 const OrgMemberRow = (props: Props) => {
   const {
     atmosphere,
@@ -136,9 +139,9 @@ const OrgMemberRow = (props: Props) => {
         <ActionsBlock>
           {!isBillingLeader &&
             viewerId === userId && (
-              <LeaveOrgModal
-                orgId={orgId}
-                userId={userId}
+              <LoadableModal
+                LoadableComponent={LeaveOrgModal}
+                queryVars={{orgId}}
                 toggle={<FlatButton>Leave Organization</FlatButton>}
               />
             )}

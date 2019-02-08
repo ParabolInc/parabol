@@ -4,11 +4,6 @@ import requireAuth from 'universal/decorators/requireAuth/requireAuth'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 
 class Bundle extends Component {
-  static contextTypes = {
-    analytics: PropTypes.object,
-    store: PropTypes.object
-  }
-
   static propTypes = {
     extraProps: PropTypes.object,
     history: PropTypes.object.isRequired,

@@ -1,8 +1,5 @@
-import PropTypes from 'prop-types'
 import React, {Fragment} from 'react'
-import {withRouter} from 'react-router-dom'
-import portal from 'react-portal-hoc'
-import ui from 'universal/styles/ui'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import {ACTION, RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import DashModal from 'universal/components/Dashboard/DashModal'
@@ -11,24 +8,26 @@ import DialogContent from 'universal/components/DialogContent'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {MeetingInProgressModal_team} from '__generated__/MeetingInProgressModal_team.graphql'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
-const MeetingInProgressModal = (props) => {
-  const {closeAfter, isClosing, meetingType, modalLayout, teamId, teamName, history} = props
+interface Props extends RouteComponentProps<{}> {
+  team: MeetingInProgressModal_team
+}
+const MeetingInProgressModal = (props: Props) => {
+  const {team, history} = props
+  const {id: teamId, name: teamName, newMeeting} = team
+  const meetingType = newMeeting ? newMeeting.meetingType : ACTION
   const handleClick = () => {
     const meetingSlug = meetingTypeToSlug[meetingType]
     history.push(`/${meetingSlug}/${teamId}`)
   }
   return (
-    <DashModal
-      position='absolute'
-      modalLayout={modalLayout}
-      isClosing={isClosing}
-      closeAfter={closeAfter}
-    >
+    <DashModal>
       <DialogHeading>{'Meeting in Progress…'}</DialogHeading>
       <DialogContent>
         {meetingType === ACTION && (
@@ -51,14 +50,15 @@ const MeetingInProgressModal = (props) => {
   )
 }
 
-MeetingInProgressModal.propTypes = {
-  closeAfter: PropTypes.number,
-  isClosing: PropTypes.bool,
-  meetingType: PropTypes.string.isRequired,
-  modalLayout: PropTypes.oneOf(ui.modalLayout),
-  history: PropTypes.object,
-  teamId: PropTypes.string,
-  teamName: PropTypes.string
-}
-
-export default portal({closeAfter: 100})(withRouter(MeetingInProgressModal))
+export default createFragmentContainer(
+  withRouter(MeetingInProgressModal),
+  graphql`
+    fragment MeetingInProgressModal_team on Team {
+      id
+      name
+      newMeeting {
+        meetingType
+      }
+    }
+  `
+)

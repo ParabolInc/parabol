@@ -30,7 +30,7 @@ class Graphiql extends Component<Props, State> {
   graphiql = React.createRef<GraphiQL>()
 
   fetcher = async ({query, variables}) => {
-    return this.props.atmosphere.handleFetch({text: query}, variables)
+    return this.props.atmosphere.handleFetch({text: query} as any, variables, {})
   }
 
   privateFetcher = async ({query, variables}) => {

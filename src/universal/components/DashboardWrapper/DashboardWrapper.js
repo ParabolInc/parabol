@@ -67,6 +67,7 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
         const notifications =
           renderProps && renderProps.viewer ? renderProps.viewer.notifications : undefined
         const viewer = renderProps ? renderProps.viewer : null
+        // console.log('viewer', viewer)
         return (
           <DashLayout viewer={viewer}>
             <DashSidebar viewer={viewer} location={location} />

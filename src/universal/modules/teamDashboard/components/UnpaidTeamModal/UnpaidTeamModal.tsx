@@ -1,22 +1,27 @@
-import PropTypes from 'prop-types'
+import {UnpaidTeamModal_viewer} from '__generated__/UnpaidTeamModal_viewer.graphql'
 import React from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {withRouter} from 'react-router-dom'
-import ui from 'universal/styles/ui'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import DashModal from 'universal/components/Dashboard/DashModal'
-import DialogHeading from 'universal/components/DialogHeading'
-import DialogContent from 'universal/components/DialogContent'
-import PrimaryButton from 'universal/components/PrimaryButton'
-import IconLabel from 'universal/components/IconLabel'
 import styled from 'react-emotion'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import DashModal from 'universal/components/Dashboard/DashModal'
+import DialogContent from 'universal/components/DialogContent'
+import DialogHeading from 'universal/components/DialogHeading'
+import IconLabel from 'universal/components/IconLabel'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 
 const StyledButton = styled(PrimaryButton)({
   margin: '1.5rem auto 0'
 })
 
-const UnpaidTeamModal = (props) => {
-  const {atmosphere, isClosing, closeAfter, history, modalLayout, viewer} = props
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
+  viewer: UnpaidTeamModal_viewer
+}
+
+const UnpaidTeamModal = (props: Props) => {
+  const {atmosphere, history, viewer} = props
   const {viewerId} = atmosphere
   const {
     team: {teamName, organization}
@@ -30,12 +35,7 @@ const UnpaidTeamModal = (props) => {
     ? `Head over to ${orgName} Settings to add a payment method`
     : `Try reaching out to ${billingLeaderName}`
   return (
-    <DashModal
-      position='absolute'
-      modalLayout={modalLayout}
-      isClosing={isClosing}
-      closeAfter={closeAfter}
-    >
+    <DashModal>
       <DialogHeading>{'Oh dear…'}</DialogHeading>
       <DialogContent>
         {problem}
@@ -49,16 +49,6 @@ const UnpaidTeamModal = (props) => {
       </DialogContent>
     </DashModal>
   )
-}
-
-UnpaidTeamModal.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  closeAfter: PropTypes.number,
-  closePortal: PropTypes.func,
-  history: PropTypes.object.isRequired,
-  isClosing: PropTypes.bool,
-  modalLayout: PropTypes.oneOf(ui.modalLayout),
-  viewer: PropTypes.object.isRequired
 }
 
 export default createFragmentContainer(

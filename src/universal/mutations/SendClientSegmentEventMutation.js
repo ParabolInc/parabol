@@ -8,7 +8,7 @@ const mutation = graphql`
 
 const SendClientSegmentEventMutation = (atmosphere, event, options) => {
   const {_network: network} = atmosphere
-  network.execute(getRequest(mutation), {event, options}, {force: true})
+  network.execute(getRequest(mutation).params, {event, options}, {force: true})
 }
 
 export default SendClientSegmentEventMutation

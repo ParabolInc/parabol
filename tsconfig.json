@@ -21,10 +21,9 @@
     "noUnusedParameters": true,
     "outDir": "dist/lib",
     "paths": {
-      "react-dnd-html5-backend": ["node_modules/@mattkrick/react-dnd-html5-backend"],
-      "react-dnd": ["node_modules/@mattkrick/react-dnd"],
-      "react-relay": ["node_modules/@mattkrick/react-relay"],
-      "relay-runtime": ["node_modules/@mattkrick/relay-runtime"],
+
+//      example of how to alias
+//      "relay-runtime": ["node_modules/@mattkrick/relay-runtime"],
        "*": [
          "src/*",
          "stories/*"

@@ -1,17 +1,16 @@
-import React from 'react'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import {BILLING_LEADER} from 'universal/utils/constants'
-import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
-import LeaveOrgModal from 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal'
-import RemoveFromOrgModal from 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal'
+import {BillingLeaderActionMenu_organization} from '__generated__/BillingLeaderActionMenu_organization.graphql'
+import {BillingLeaderActionMenu_organizationUser} from '__generated__/BillingLeaderActionMenu_organizationUser.graphql'
+import React, {lazy} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
+import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
+import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
+import {BILLING_LEADER} from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {BillingLeaderActionMenu_organizationUser} from '__generated__/BillingLeaderActionMenu_organizationUser.graphql'
-import {BillingLeaderActionMenu_organization} from '__generated__/BillingLeaderActionMenu_organization.graphql'
+import LoadableModal from './LoadableModal'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   closePortal: () => void
@@ -19,6 +18,14 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   organizationUser: BillingLeaderActionMenu_organizationUser
   organization: BillingLeaderActionMenu_organization
 }
+
+const LeaveOrgModal = lazy(() =>
+  import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
+)
+
+const RemoveFromOrgModal = lazy(() =>
+  import(/* webpackChunkName: 'RemoveFromOrgModal' */ 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal')
+)
 
 const BillingLeaderActionMenu = (props: Props) => {
   const {
@@ -59,17 +66,16 @@ const BillingLeaderActionMenu = (props: Props) => {
       )}
       {viewerId === userId &&
         !isViewerLastBillingLeader && (
-          <LeaveOrgModal
-            orgId={orgId}
-            userId={userId}
+          <LoadableModal
+            LoadableComponent={LeaveOrgModal}
+            queryVars={{orgId}}
             toggle={<MenuItemWithShortcuts label='Leave Organization' />}
           />
         )}
       {viewerId !== userId && (
-        <RemoveFromOrgModal
-          orgId={orgId}
-          preferredName={preferredName}
-          userId={userId}
+        <LoadableModal
+          LoadableComponent={RemoveFromOrgModal}
+          queryVars={{orgId, userId, preferredName}}
           toggle={
             <MenuItemWithShortcuts
               label={

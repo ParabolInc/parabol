@@ -107,6 +107,7 @@ const Organization = (props) => {
         <AvatarAndName>
           {isBillingLeader ? (
             <LoadableModal
+              isToggleNativeElement
               LoadableComponent={OrgAvatarInput}
               maxWidth={700}
               maxHeight={374}

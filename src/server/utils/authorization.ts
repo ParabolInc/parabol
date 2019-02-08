@@ -10,7 +10,7 @@ export const isAuthenticated = (authToken) => Boolean(authToken)
 
 export const isSuperUser = (authToken) => {
   const userId = getUserId(authToken)
-  return userId && authToken.rol === 'su'
+  return userId ? authToken.rol === 'su' : false
 }
 
 export const isTeamMember = (authToken, teamId) => {
