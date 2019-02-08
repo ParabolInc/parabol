@@ -4,7 +4,7 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import standardError from 'server/utils/standardError'
 
 export default {
-  type: new GraphQLNonNull(Team),
+  type: Team,
   description: 'A query for a team',
   args: {
     teamId: {

@@ -23,9 +23,9 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 const UnpaidTeamModal = (props: Props) => {
   const {atmosphere, history, viewer} = props
   const {viewerId} = atmosphere
-  const {
-    team: {teamName, organization}
-  } = viewer
+  const {team} = viewer
+  if (!team) return null
+  const {teamName, organization} = team
   const {orgId, billingLeaders, orgName} = organization
   const billingLeaderName = billingLeaders[0].preferredName
   const isALeader = billingLeaders.findIndex((leader) => leader.id === viewerId) !== -1

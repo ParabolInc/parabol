@@ -9,6 +9,7 @@ import Team from 'universal/modules/teamDashboard/components/Team/Team'
 import teamDashReducer from 'universal/modules/teamDashboard/ducks/teamDashDuck'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {Redirect} from 'react-router'
 
 const mapStateToProps = (state, props) => {
   const {
@@ -36,7 +37,8 @@ const TeamContainer = (props) => {
     teamMemberId,
     viewer
   } = props
-  const team = viewer && viewer.team
+  const {team} = viewer
+  if (!team) return <Redirect to='/me' />
   const isSettings = Boolean(
     matchPath(pathname, {
       path: '/team/:teamId/settings'

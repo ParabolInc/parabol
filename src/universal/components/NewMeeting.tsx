@@ -168,10 +168,9 @@ class NewMeeting extends Component<Props> {
     const {
       atmosphere,
       history,
-      viewer: {
-        team: {newMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting} = team!
     if (!newMeeting) return
     const {meetingId} = newMeeting
     EndNewMeetingMutation(atmosphere, {meetingId}, {history})
@@ -186,11 +185,10 @@ class NewMeeting extends Component<Props> {
     const {
       atmosphere,
       submitting,
-      viewer: {
-        team: {newMeeting, teamId}
-      }
+      viewer: {team}
     } = this.props
-    if (submitting) return
+    if (submitting || !team) return
+    const {newMeeting, teamId} = team
     if (!newMeeting) return
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting
     const {viewerId} = atmosphere
@@ -225,10 +223,9 @@ class NewMeeting extends Component<Props> {
     const {
       atmosphere,
       submitting,
-      viewer: {
-        team: {newMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting} = team!
     if (!newMeeting || submitting) return
     const {
       meetingId,
@@ -264,10 +261,9 @@ class NewMeeting extends Component<Props> {
 
   gotoPrev = () => {
     const {
-      viewer: {
-        team: {newMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting} = team!
     if (!newMeeting) return
     const {
       localStage: {localStageId},
@@ -284,10 +280,9 @@ class NewMeeting extends Component<Props> {
   toggleSidebar = () => {
     const {
       atmosphere,
-      viewer: {
-        team: {teamId, isMeetingSidebarCollapsed}
-      }
+      viewer: {team}
     } = this.props
+    const {teamId, isMeetingSidebarCollapsed} = team!
     commitLocalUpdate(atmosphere, (store) => {
       store.get(teamId)!.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
@@ -296,10 +291,9 @@ class NewMeeting extends Component<Props> {
   onSidebarTransitionEnd = (e) => {
     const {
       atmosphere: {eventEmitter},
-      viewer: {
-        team: {isMeetingSidebarCollapsed}
-      }
+      viewer: {team}
     } = this.props
+    const {isMeetingSidebarCollapsed} = team!
     if (e.target === this.sidebarRef.current && e.propertyName === 'transform') {
       eventEmitter.emit('meetingSidebarCollapsed', isMeetingSidebarCollapsed)
     }
@@ -308,6 +302,7 @@ class NewMeeting extends Component<Props> {
   render () {
     const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
+    if (!team) return null
     const {newMeeting, teamName, teamId} = team
     const isMeetingSidebarCollapsed = team.isMeetingSidebarCollapsed || false
     const meeting = newMeeting || UNSTARTED_MEETING

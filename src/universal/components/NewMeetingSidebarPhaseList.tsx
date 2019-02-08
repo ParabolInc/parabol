@@ -24,7 +24,7 @@ interface Props extends WithAtmosphereProps {
   viewer: NewMeetingSidebarPhaseList_viewer
 }
 
-type NewMeeting = NonNullable<Props['viewer']['team']['newMeeting']>
+type NewMeeting = NonNullable<NonNullable<Props['viewer']['team']>['newMeeting']>
 
 const getItemStage = (name: string, phases: NewMeeting['phases'], facilitatorStageId: string) => {
   const stageRes = findStageById(phases, facilitatorStageId)
@@ -39,13 +39,11 @@ const getItemStage = (name: string, phases: NewMeeting['phases'], facilitatorSta
 
 const NewMeetingSidebarPhaseList = (props: Props) => {
   const {gotoStageId, viewer} = props
+  const {viewerId, team} = viewer
   const {
-    viewerId,
-    team: {
-      meetingSettings: {phaseTypes},
-      newMeeting
-    }
-  } = viewer
+    meetingSettings: {phaseTypes},
+    newMeeting
+  } = team!
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorUserId, facilitatorStageId, localPhase, phases} = meeting
   const localGroup = phaseTypeToPhaseGroup[localPhase && localPhase.phaseType]
@@ -56,10 +54,9 @@ const NewMeetingSidebarPhaseList = (props: Props) => {
   const toggleSidebar = () => {
     const {
       atmosphere,
-      viewer: {
-        team: {teamId, isMeetingSidebarCollapsed}
-      }
+      viewer: {team}
     } = props
+    const {id: teamId, isMeetingSidebarCollapsed} = team!
     commitLocalUpdate(atmosphere, (store) => {
       const team = store.get(teamId)
       if (!team) return
@@ -108,7 +105,7 @@ export default createFragmentContainer(
       viewerId: id
       team(teamId: $teamId) {
         isMeetingSidebarCollapsed
-        teamId: id
+        id
         meetingSettings(meetingType: $meetingType) {
           phaseTypes
         }
