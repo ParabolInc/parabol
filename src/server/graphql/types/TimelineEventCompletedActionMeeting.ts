@@ -4,7 +4,7 @@ import Team from './Team'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 import {COMPLETED_ACTION_MEETING} from './TimelineEventTypeEnum'
 
-const TimelineEventCompletedActionMeeting = new GraphQLObjectType({
+const TimelineEventCompletedActionMeeting = new GraphQLObjectType<any>({
   name: 'TimelineEventCompletedActionMeeting',
   description: 'An event for a completed action meeting',
   interfaces: () => [TimelineEvent],

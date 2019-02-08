@@ -1,6 +1,7 @@
 import {PromoteFacilitatorMutationResponse} from '__generated__/PromoteFacilitatorMutation.graphql'
 import {PromoteFacilitatorMutation_team} from '__generated__/PromoteFacilitatorMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 
 graphql`
   fragment PromoteFacilitatorMutation_team on PromoteFacilitatorPayload {
@@ -56,7 +57,13 @@ export const promoteFacilitatorTeamOnNext = (payload, {atmosphere}) => {
   popFacilitatorDisconnectedToast(payload, {atmosphere})
 }
 
-const PromoteFacilitatorMutation = (atmosphere, variables, _context, onError, onCompleted) => {
+const PromoteFacilitatorMutation = (
+  atmosphere,
+  variables,
+  _context,
+  onError,
+  onCompleted
+): Disposable => {
   const {facilitatorId} = variables
   return commitMutation(atmosphere, {
     mutation,

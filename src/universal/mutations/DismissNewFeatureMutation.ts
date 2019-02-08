@@ -3,6 +3,7 @@ import {
   DismissNewFeatureMutationVariables
 } from '__generated__/DismissNewFeatureMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import {LocalHandlers} from '../types/relayMutations'
 
 const mutation = graphql`
@@ -19,7 +20,7 @@ const DismissNewFeatureMutation = (
   atmosphere,
   variables: DismissNewFeatureMutationVariables,
   {onCompleted, onError}: LocalHandlers
-) => {
+): Disposable => {
   return commitMutation<DismissNewFeatureMutation>(atmosphere, {
     mutation,
     variables,

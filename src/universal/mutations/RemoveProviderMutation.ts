@@ -1,5 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
-import {RecordProxy} from 'relay-runtime'
+import {Disposable, RecordProxy} from 'relay-runtime'
 import {GITHUB, SLACK} from 'universal/utils/constants'
 import getArrayWithoutIds from 'universal/utils/relay/getArrayWithoutIds'
 
@@ -129,7 +129,7 @@ const RemoveProviderMutation = (
   atmosphere,
   {providerId, teamId},
   {service, onError, onCompleted}
-) => {
+): Disposable => {
   const {viewerId} = atmosphere
   return commitMutation(atmosphere, {
     mutation,

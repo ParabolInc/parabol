@@ -255,8 +255,8 @@ class ReflectionGroup extends Component<Props> {
       localStage: {isComplete}
     } = meeting
     return (
+      // @ts-ignore
       <DraggableReflectionCard
-        // @ts-ignore
         closeGroupModal={isModal ? this.closeGroupModal : undefined}
         key={reflection.id}
         idx={reflections.length - idx - 1}

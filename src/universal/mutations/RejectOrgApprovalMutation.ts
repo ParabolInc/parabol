@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveOrgApprovals'
@@ -102,7 +103,7 @@ export const rejectOrgApprovalTaskUpdater = (payload, store, viewerId) => {
   handleUpsertTasks(archivedSoftTasks, store, viewerId)
 }
 
-const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted) => {
+const RejectOrgApprovalMutation = (environment, variables, onError, onCompleted): Disposable => {
   const {viewerId} = environment
   return commitMutation(environment, {
     mutation,

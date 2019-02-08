@@ -1,6 +1,6 @@
 import {commitMutation, graphql} from 'react-relay'
 import {matchPath} from 'react-router-dom'
-import {RecordSourceProxy} from 'relay-runtime'
+import {Disposable, RecordSourceProxy} from 'relay-runtime'
 import {RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
@@ -170,8 +170,8 @@ const StartDraggingReflectionMutation = (
   context: Context,
   onError?: ErrorHandler,
   onCompleted?: CompletedHandler
-) => {
-  commitMutation<StartDraggingReflectionMutation>(atmosphere, {
+): Disposable => {
+  return commitMutation<StartDraggingReflectionMutation>(atmosphere, {
     mutation,
     variables,
     onCompleted,

@@ -348,8 +348,8 @@ class NewMeeting extends Component<Props> {
             <ErrorBoundary>
               <React.Fragment>
                 {localPhaseType === CHECKIN && (
+                  // @ts-ignore
                   <NewMeetingCheckIn
-                    // @ts-ignore
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     meetingType={meetingType}
@@ -388,7 +388,10 @@ class NewMeeting extends Component<Props> {
                     isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
-                {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
+                {!localPhaseType && (
+                  // @ts-ignore
+                  <NewMeetingLobby meetingType={meetingType} team={team} />
+                )}
               </React.Fragment>
             </ErrorBoundary>
           </MeetingContent>

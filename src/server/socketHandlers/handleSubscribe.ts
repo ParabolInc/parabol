@@ -1,16 +1,22 @@
-import {parse, subscribe} from 'graphql'
+import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
+import {ExecutionResult, parse, subscribe} from 'graphql'
 import {forAwaitEach} from 'iterall'
 import Schema from 'server/graphql/rootSchema'
-import maybeSendNewAuthToken from 'server/utils/maybeSendNewAuthToken'
-import RethinkDataLoader from 'server/utils/RethinkDataLoader'
-import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll'
-import {ClientMessageTypes} from '@mattkrick/graphql-trebuchet-client'
-import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import sendMessage from 'server/socketHelpers/sendMessage'
 import {getUserId} from 'server/utils/authorization'
+import maybeSendNewAuthToken from 'server/utils/maybeSendNewAuthToken'
+import relayUnsubscribe from 'server/utils/relayUnsubscribe'
+import relayUnsubscribeAll from 'server/utils/relayUnsubscribeAll'
+import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 import sendToSentry from 'server/utils/sendToSentry'
 
 const {GQL_COMPLETE, GQL_DATA, GQL_ERROR} = ClientMessageTypes
+
+const isAsyncIterator = (
+  result: AsyncIterator<any> | ExecutionResult<any>
+): result is AsyncIterator<any> => {
+  return !('errors' in result)
+}
 
 const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader, isResub) => {
   const dataLoader = sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}))
@@ -21,7 +27,7 @@ const trySubscribe = async (authToken, parsedMessage, socketId, sharedDataLoader
   const document = parse(query)
   try {
     const result = await subscribe(Schema, document, {}, context, variables)
-    if (!result.errors) {
+    if (isAsyncIterator(result)) {
       return {asyncIterator: result}
     }
     // squelch errors for resub, we expect a few errors & the client doesn't need to know about them
@@ -56,7 +62,7 @@ const handleSubscribe = async (connectionContext, parsedMessage, options: Option
     if (errors) {
       const {query, variables} = parsedMessage.payload
       const viewerId = getUserId(authToken)
-      sendToSentry(errors[0], {tags: {query, variables}, userId: viewerId})
+      sendToSentry(new Error(errors[0].message), {tags: {query, variables}, userId: viewerId})
       sendMessage(socket, GQL_ERROR, {errors}, opId)
     }
     return
@@ -80,7 +86,7 @@ const handleSubscribe = async (connectionContext, parsedMessage, options: Option
   //  asyncIterator.return();
   //  console.log('sub ended', opId)
   // }, 5000)
-  await forAwaitEach(asyncIterator, iterableCb)
+  await forAwaitEach(asyncIterator as any, iterableCb)
   const resubIdx = connectionContext.availableResubs.indexOf(opId)
   if (resubIdx !== -1) {
     // reinitialize the subscription

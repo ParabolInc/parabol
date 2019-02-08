@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
@@ -32,7 +33,7 @@ const RemoveReflectTemplatePromptMutation = (
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

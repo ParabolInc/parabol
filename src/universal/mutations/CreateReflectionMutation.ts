@@ -3,6 +3,7 @@
  *
  */
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import {CompletedHandler, ErrorHandler} from 'universal/types/relayMutations'
 import handleAddReflectionGroups from 'universal/mutations/handlers/handleAddReflectionGroups'
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
@@ -53,7 +54,7 @@ const CreateReflectionMutation = (
   context: Context,
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

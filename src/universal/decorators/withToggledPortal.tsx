@@ -24,9 +24,12 @@ export interface WithTogglePortalState {
 
 export interface InternalProps {
   isToggleNativeElement?: boolean
+
   onClose? (): void
+
   toggle: ReactElement<any>
   LoadableComponent: any
+
   setOriginRef? (c: HTMLElement): void
 }
 
@@ -126,9 +129,12 @@ const withToggledPortal = <P extends WithToggledPortalProps>(
 
     render () {
       const {isClosing, isOpen} = this.state
+
       return (
         <React.Fragment>
           {this.smartToggle}
+          {/*
+          // @ts-ignore */}
           <ComposedComponent
             {...this.props}
             isOpen={isOpen}

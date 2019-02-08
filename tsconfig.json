@@ -30,6 +30,8 @@
        ]
     },
     "removeComments": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "target": "es2017",
     "strict": true,
     "sourceMap": true,

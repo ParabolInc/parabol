@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
 import {IMoveReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
@@ -38,7 +39,7 @@ const MoveReflectTemplatePromptMutation = (
   atmosphere: Atmosphere,
   variables: IMoveReflectTemplatePromptOnMutationArguments,
   context: Context
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

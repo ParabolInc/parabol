@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import getInProxy from 'universal/utils/relay/getInProxy'
@@ -81,7 +82,7 @@ const ArchiveTeamMutation = (
   atmosphere: Atmosphere,
   variables: ArchiveTeamMutationVariables,
   {onError, onCompleted, history}: LocalHandlers
-) => {
+): Disposable => {
   const {viewerId} = atmosphere
   return commitMutation(atmosphere, {
     mutation,

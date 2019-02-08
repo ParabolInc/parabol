@@ -152,7 +152,7 @@ const NewMeetingAvatar = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  connect()(withAtmosphere(NewMeetingAvatar)),
+  (connect as any)()(withAtmosphere(NewMeetingAvatar)),
   graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
       teamMemberId: id
