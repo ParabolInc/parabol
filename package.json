@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.com> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "3.3.0-alpha.1",
+  "version": "3.4.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/action"
@@ -213,8 +213,6 @@
     "react-copy-to-clipboard": "^5.0.0",
     "react-custom-scrollbars": "^4.2.1",
     "react-day-picker": "^7.1.6",
-    "react-dnd": "https://github.com/mattkrick/react-dnd/tarball/2c22596327123a42702474374f6b0168c42f554b",
-    "react-dnd-html5-backend": "https://github.com/mattkrick/react-dnd/tarball/5812e3c00a1e1adace6e4be59bab7c02f0e85bb1",
     "react-dnd-scrollzone": "https://github.com/mattkrick/react-dnd-scrollzone/tarball/749b0bdfbbb44e8e8ea167e640f1ddafbf863dff",
     "react-dom": "^16.6.0",
     "react-dom-confetti": "^0.0.10",
