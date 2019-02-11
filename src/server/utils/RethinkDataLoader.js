@@ -207,7 +207,7 @@ export default class RethinkDataLoader {
     this.tasksByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink()
       const userId = getUserId(this.authToken)
-      const {tms} = this.authToken
+      const tms = this.authToken.tms || []
       const tasks = await r
         .table('Task')
         .getAll(userId, {index: 'userId'})
