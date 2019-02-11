@@ -113,7 +113,7 @@ const login = {
       name: userInfo.name,
       preferredName,
       identities: userInfo.identities || [],
-      createdAt: ensureDate(userInfo.created_at),
+      createdAt: now,
       segmentId,
       tms: []
     }
@@ -122,7 +122,7 @@ const login = {
       user: r.table('User').insert(newUser),
       event: r.table('TimelineEvent').insert({
         id: shortid.generate(),
-        createdAt: newUser.createdAt,
+        createdAt: now,
         interactionCount: 0,
         seenCount: 0,
         type: JOINED_PARABOL,
