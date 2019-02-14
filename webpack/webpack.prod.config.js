@@ -90,7 +90,7 @@ module.exports = {
   },
   resolve,
   optimization: {
-    minimize: Boolean(process.env.WEBPACK_DEPLOY),
+    minimize: Boolean(process.env.WEBPACK_DEPLOY || process.env.WEBPACK_STATS),
     minimizer: [
       new TerserPlugin({
         cache: true,

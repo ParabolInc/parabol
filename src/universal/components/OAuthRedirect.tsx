@@ -14,7 +14,7 @@ class OAuthRedirect extends Component<Props> {
 
   callOpener = async () => {
     const {atmosphere, history} = this.props
-    const auth0 = await import('auth0-js/build/auth0')
+    const auth0 = await import(/* webpackChunkName: 'Auth0' */ 'auth0-js/build/auth0')
     const webAuth = new auth0.WebAuth({
       domain: window.__ACTION__.auth0Domain,
       clientID: window.__ACTION__.auth0,
