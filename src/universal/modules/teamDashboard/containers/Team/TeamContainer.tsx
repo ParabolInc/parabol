@@ -1,17 +1,18 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import {TeamContainer_viewer} from '__generated__/TeamContainer_viewer.graphql'
+import React, {lazy} from 'react'
 import {connect} from 'react-redux'
-import {createFragmentContainer} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {Redirect, Route} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
-import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withReducer from 'universal/decorators/withReducer/withReducer'
 import Team from 'universal/modules/teamDashboard/components/Team/Team'
 import teamDashReducer from 'universal/modules/teamDashboard/ducks/teamDashDuck'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {Redirect} from 'react-router'
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (_state, props) => {
   const {
     atmosphere: {viewerId},
     match: {
@@ -23,14 +24,24 @@ const mapStateToProps = (state, props) => {
   }
 }
 
-const agendaTasks = () =>
+const AgendaTasks = lazy(() =>
   import(/* webpackChunkName: 'AgendaAndTasksRoot' */ 'universal/modules/teamDashboard/components/AgendaAndTasksRoot')
-const teamSettings = () =>
+)
+const TeamSettings = lazy(() =>
   import(/* webpackChunkName: 'TeamSettingsWrapper' */ 'universal/modules/teamDashboard/components/TeamSettingsWrapper/TeamSettingsWrapper')
-const archivedTasks = () =>
+)
+const ArchivedTasks = lazy(() =>
   import(/* webpackChunkName: 'TeamArchiveRoot' */ 'universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot')
+)
 
-const TeamContainer = (props) => {
+interface Props extends WithAtmosphereProps {
+  location: any
+  match: any
+  teamMemberId: string
+  viewer: TeamContainer_viewer
+}
+
+const TeamContainer = (props: Props) => {
   const {
     location: {pathname},
     match,
@@ -48,25 +59,16 @@ const TeamContainer = (props) => {
     <Team isSettings={isSettings} team={team}>
       <Switch>
         {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
-        <AsyncRoute exact path={match.path} mod={agendaTasks} />
-        <AsyncRoute
+        <Route exact path={match.path} component={AgendaTasks} />
+        <Route
           path={`${match.path}/settings`}
-          mod={teamSettings}
-          extraProps={{teamMemberId}}
+          component={TeamSettings}
+          teamMemberId={teamMemberId}
         />
-        <AsyncRoute path={`${match.path}/archive`} extraProps={{team}} mod={archivedTasks} />
+        <Route path={`${match.path}/archive`} team={team} component={ArchivedTasks} />
       </Switch>
     </Team>
   )
-}
-
-TeamContainer.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired
-  }),
-  match: PropTypes.object.isRequired,
-  viewer: PropTypes.object,
-  teamMemberId: PropTypes.string.isRequired
 }
 
 export default createFragmentContainer(

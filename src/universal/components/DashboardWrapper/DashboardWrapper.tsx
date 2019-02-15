@@ -1,21 +1,22 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import {connect} from 'react-redux'
-import {withRouter} from 'react-router-dom'
+import React, {lazy} from 'react'
+import {DragDropContext as dragDropContext} from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
+import {graphql} from 'react-relay'
+import {Route} from 'react-router'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import DashLayout from 'universal/components/Dashboard/DashLayout'
 import DashSidebar from 'universal/components/Dashboard/DashSidebar'
-import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription'
 import TaskSubscription from 'universal/subscriptions/TaskSubscription'
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription'
 import TeamSubscription from 'universal/subscriptions/TeamSubscription'
 import {cacheConfig} from 'universal/utils/constants'
-import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
-import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
-import HTML5Backend from 'react-dnd-html5-backend'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import DashLayout from 'universal/components/Dashboard/DashLayout'
 
 const query = graphql`
   query DashboardWrapperQuery {
@@ -37,14 +38,16 @@ const query = graphql`
   }
 `
 
-const userDashboard = () =>
+const UserDashboard = lazy(() =>
   import(/* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard')
-const teamRoot = () =>
+)
+const TeamRoot = lazy(() =>
   import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
-const newTeam = () =>
+)
+const NewTeam = lazy(() =>
   import(/* webpackChunkName: 'NewTeamRoot' */ 'universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot')
+)
 
-// TODO remove dispatch when we completely remove redux (filters, etc. still need it)
 const subscriptions = [
   NewAuthTokenSubscription,
   NotificationSubscription,
@@ -54,26 +57,27 @@ const subscriptions = [
   OrganizationSubscription
 ]
 
-const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
+
+const DashboardWrapper = ({atmosphere, history, location}: Props) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{}}
-      subParams={{dispatch, history, location}}
+      subParams={{history, location}}
       subscriptions={subscriptions}
       render={({props: renderProps}) => {
         const notifications =
           renderProps && renderProps.viewer ? renderProps.viewer.notifications : undefined
         const viewer = renderProps ? renderProps.viewer : null
-        // console.log('viewer', viewer)
         return (
           <DashLayout viewer={viewer}>
             <DashSidebar viewer={viewer} location={location} />
-            <AsyncRoute path='/me' mod={userDashboard} extraProps={{notifications}} />
-            <AsyncRoute path='/team/:teamId' mod={teamRoot} />
-            <AsyncRoute path='/newteam/:defaultOrgId?' mod={newTeam} />
+            <Route path='/me' component={UserDashboard} notifications={notifications} />
+            <Route path='/team/:teamId' component={TeamRoot} />
+            <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
           </DashLayout>
         )
       }}
@@ -81,14 +85,4 @@ const DashboardWrapper = ({atmosphere, dispatch, history, location}) => {
   )
 }
 
-DashboardWrapper.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  history: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-  notifications: PropTypes.object
-}
-
-export default dragDropContext(HTML5Backend)(
-  connect()(withRouter(withAtmosphere(DashboardWrapper)))
-)
+export default dragDropContext(HTML5Backend)(withRouter(withAtmosphere(DashboardWrapper)))

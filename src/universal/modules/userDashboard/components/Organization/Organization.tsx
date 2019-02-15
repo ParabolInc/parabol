@@ -1,32 +1,35 @@
-import PropTypes from 'prop-types'
+import {Organization_viewer} from '__generated__/Organization_viewer.graphql'
 import React, {lazy} from 'react'
-import {createFragmentContainer} from 'react-relay'
-import {Redirect, Switch, withRouter} from 'react-router-dom'
-import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
-import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
-import Helmet from 'react-helmet'
-import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle'
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
-import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
-import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants'
-import makeDateString from 'universal/utils/makeDateString'
-import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
+import Helmet from 'react-helmet'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {Route} from 'react-router'
+import {Redirect, RouteComponentProps, Switch, withRouter} from 'react-router-dom'
 import Avatar from 'universal/components/Avatar/Avatar'
-import ui from 'universal/styles/ui'
 import DashNavControl from 'universal/components/DashNavControl/DashNavControl'
+import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
+import EditableOrgName from 'universal/components/EditableOrgName'
+import LoadableModal from 'universal/components/LoadableModal'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import TagBlock from 'universal/components/Tag/TagBlock'
 import TagPro from 'universal/components/Tag/TagPro'
-import LoadableModal from 'universal/components/LoadableModal'
-import EditableOrgName from 'universal/components/EditableOrgName'
+import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle'
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
+import appTheme from 'universal/styles/theme/appTheme'
+import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
+import ui from 'universal/styles/ui'
+import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants'
+import makeDateString from 'universal/utils/makeDateString'
 
-const orgSqueeze = () =>
+const OrgSqueeze = lazy(() =>
   import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
-const orgBilling = () =>
+)
+const OrgBilling = lazy(() =>
   import(/* webpackChunkName: 'OrgBillingRoot' */ 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot')
-const orgMembers = () =>
+)
+const OrgMembers = lazy(() =>
   import(/* webpackChunkName: 'OrgMembersRoot' */ 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot')
+)
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -77,7 +80,11 @@ const OrgAvatarInput = lazy(() =>
   import(/* webpackChunkName: 'OrgAvatarInput' */ 'universal/components/OrgAvatarInput')
 )
 
-const Organization = (props) => {
+interface Props extends RouteComponentProps<{}> {
+  viewer: Organization_viewer
+}
+
+const Organization = (props: Props) => {
   const {
     history,
     match,
@@ -96,7 +103,7 @@ const Organization = (props) => {
   )
   const goToOrgs = () => history.push('/me/organizations')
   const onlyShowMembers = !isBillingLeader && tier !== PERSONAL
-  const billingMod = isBillingLeader && tier !== PERSONAL ? orgBilling : orgSqueeze
+  const billingMod = isBillingLeader && tier !== PERSONAL ? OrgBilling : OrgSqueeze
   return (
     <UserSettingsWrapper>
       <Helmet title={`Organization Settings | ${orgName}`} />
@@ -109,8 +116,6 @@ const Organization = (props) => {
             <LoadableModal
               isToggleNativeElement
               LoadableComponent={OrgAvatarInput}
-              maxWidth={700}
-              maxHeight={374}
               queryVars={{picture: pictureOrDefault, orgId}}
               toggle={toggle}
             />
@@ -138,33 +143,27 @@ const Organization = (props) => {
           </OrgNameAndDetails>
         </AvatarAndName>
         {onlyShowMembers ? (
-          <AsyncRoute path={`${match.url}`} mod={orgMembers} extraProps={{orgId}} />
+          <OrgMembers orgId={orgId} />
         ) : (
           <Switch>
-            <AsyncRoute exact path={`${match.url}`} mod={billingMod} extraProps={{organization}} />
-            <AsyncRoute
+            <Route exact path={`${match.url}`} component={billingMod} organization={organization} />
+            <Route
               exact
               path={`${match.url}/${BILLING_PAGE}`}
-              mod={billingMod}
-              extraProps={{organization}}
+              component={billingMod}
+              organization={organization}
             />
-            <AsyncRoute
+            <Route
               exact
               path={`${match.url}/${MEMBERS_PAGE}`}
-              mod={orgMembers}
-              extraProps={{orgId}}
+              component={OrgMembers}
+              orgId={orgId}
             />
           </Switch>
         )}
       </SettingsWrapper>
     </UserSettingsWrapper>
   )
-}
-
-Organization.propTypes = {
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object,
-  viewer: PropTypes.object
 }
 
 export default createFragmentContainer(
