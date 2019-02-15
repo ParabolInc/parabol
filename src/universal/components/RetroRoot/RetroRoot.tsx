@@ -45,7 +45,7 @@ interface Props
 const meetingType = RETROSPECTIVE
 const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
   const {
-    params: {localPhase, teamId = 'demo'}
+    params: {localPhase, teamId = 'demoTeam'}
   } = match
   return (
     <QueryRenderer
