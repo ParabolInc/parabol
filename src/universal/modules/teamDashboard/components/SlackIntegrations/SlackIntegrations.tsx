@@ -11,7 +11,6 @@ import {SLACK} from 'universal/utils/constants'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import FlatButton from 'universal/components/FlatButton'
 import RaisedButton from 'universal/components/RaisedButton'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import Panel from 'universal/components/Panel/Panel'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
@@ -21,6 +20,7 @@ import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {SlackIntegrations_viewer} from '__generated__/SlackIntegrations_viewer.graphql'
+import SlackProviderLogo from '../../../../SlackProviderLogo'
 
 const ProviderDetails = styled(Row)({
   border: 0,
@@ -35,16 +35,6 @@ const ProviderAvatar = styled('div')({
 
 const ProviderName = styled('div')({
   ...ui.providerName
-})
-
-const ProviderIcon = styled(StyledFontAwesome)({
-  alignItems: 'center',
-  color: ui.palette.white,
-  display: 'flex !important',
-  fontSize: `${ui.iconSize2x} !important`,
-  height: ui.providerIconSize,
-  justifyContent: 'center',
-  width: ui.providerIconSize
 })
 
 const SubHeading = styled('div')({
@@ -98,7 +88,7 @@ const SlackIntegrations = (props: Props) => {
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <ProviderDetails>
         <ProviderAvatar>
-          <ProviderIcon name='slack' />
+          <SlackProviderLogo />
         </ProviderAvatar>
         <RowInfo>
           <ProviderName>{ui.providers.slack.providerName}</ProviderName>

@@ -565,7 +565,6 @@ const ui = {
     slack: {
       description: 'Notify channels when meetings begin and end',
       color: '#6ecadc',
-      icon: 'slack',
       providerName: 'Slack'
     }
   },
