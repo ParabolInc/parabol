@@ -34,7 +34,7 @@ const renderQuery = (ReadyComponent: ComponentType<any>, options: Options = {}) 
   }
   return (
     <TransitionGroup appear component={React.Fragment}>
-      <AnimatedFade key={key} exit={key !== 'Loading'} unmountOnExit={key === 'Loading'}>
+      <AnimatedFade key={key} exit={key !== 'Loading'} unmountOnExit={key === 'Loading'} slide={0}>
         {child}
       </AnimatedFade>
     </TransitionGroup>

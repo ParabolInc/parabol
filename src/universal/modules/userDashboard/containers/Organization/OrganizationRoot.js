@@ -1,12 +1,10 @@
 import React from 'react'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization'
 import {cacheConfig} from 'universal/utils/constants'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
-import LoadingView from 'universal/components/LoadingView/LoadingView'
 import type {Match} from 'react-router-dom'
+import renderQuery from 'universal/utils/relay/renderQuery'
 
 const query = graphql`
   query OrganizationRootQuery($orgId: ID!) {
@@ -33,15 +31,7 @@ const OrganizationRoot = (props: Props) => {
       query={query}
       variables={{orgId}}
       subParams={{orgId}}
-      render={(readyState) => (
-        <RelayTransitionGroup
-          readyState={readyState}
-          error={<ErrorComponent />}
-          loading={<LoadingView minHeight='50vh' />}
-          // pass in match to mitigate update blocker
-          ready={<Organization match={match} />}
-        />
-      )}
+      render={renderQuery(Organization, {props: {match}, Loader: <div />})}
     />
   )
 }

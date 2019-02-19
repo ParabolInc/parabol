@@ -1,14 +1,13 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import {withRouter} from 'react-router-dom'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import LoadingView from 'universal/components/LoadingView/LoadingView'
+import {graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import AgendaAndTasks from 'universal/modules/teamDashboard/components/AgendaAndTasks/AgendaAndTasks'
 import AgendaItemSubscription from 'universal/subscriptions/AgendaItemSubscription'
+import {LoaderSize} from 'universal/types/constEnums'
 import {cacheConfig} from 'universal/utils/constants'
+import renderQuery from 'universal/utils/relay/renderQuery'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 
 const query = graphql`
   query AgendaAndTasksRootQuery($teamId: ID!) {
@@ -20,13 +19,15 @@ const query = graphql`
 
 const subscriptions = [AgendaItemSubscription]
 
-const AgendaAndTasksRoot = (props) => {
+interface Props extends RouteComponentProps<{teamId: string}> {}
+
+const AgendaAndTasksRoot = (props: Props) => {
   const {
-    atmosphere,
     match: {
       params: {teamId}
     }
   } = props
+  const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
       // FIXME remove when relay merges PR https://github.com/facebook/relay/pull/2416
@@ -36,22 +37,9 @@ const AgendaAndTasksRoot = (props) => {
       query={query}
       variables={{teamId}}
       subscriptions={subscriptions}
-      render={(readyState) => (
-        <RelayTransitionGroup
-          readyState={readyState}
-          error={<ErrorComponent />}
-          loading={<LoadingView minHeight='50vh' />}
-          ready={<AgendaAndTasks />}
-        />
-      )}
+      render={renderQuery(AgendaAndTasks, {size: LoaderSize.PANEL})}
     />
   )
 }
 
-AgendaAndTasksRoot.propTypes = {
-  atmosphere: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  teams: PropTypes.array
-}
-
-export default withRouter(withAtmosphere(AgendaAndTasksRoot))
+export default withRouter(AgendaAndTasksRoot)

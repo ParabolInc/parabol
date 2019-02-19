@@ -1,8 +1,8 @@
 import {TeamContainer_viewer} from '__generated__/TeamContainer_viewer.graphql'
-import React, {lazy} from 'react'
+import React, {lazy, Suspense} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {Redirect, Route} from 'react-router'
+import {Redirect, Route, RouteComponentProps} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -34,7 +34,7 @@ const ArchivedTasks = lazy(() =>
   import(/* webpackChunkName: 'TeamArchiveRoot' */ 'universal/modules/teamDashboard/containers/TeamArchive/TeamArchiveRoot')
 )
 
-interface Props extends WithAtmosphereProps {
+interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
   location: any
   match: any
   teamMemberId: string
@@ -48,8 +48,8 @@ const TeamContainer = (props: Props) => {
     teamMemberId,
     viewer
   } = props
-  const {team} = viewer
-  if (!team) return <Redirect to='/me' />
+  if (viewer && !viewer.team) return <Redirect to='/me' />
+  const team = viewer && viewer.team
   const isSettings = Boolean(
     matchPath(pathname, {
       path: '/team/:teamId/settings'
@@ -57,23 +57,27 @@ const TeamContainer = (props: Props) => {
   )
   return (
     <Team isSettings={isSettings} team={team}>
-      <Switch>
-        {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
-        <Route exact path={match.path} component={AgendaTasks} />
-        <Route
-          path={`${match.path}/settings`}
-          component={TeamSettings}
-          teamMemberId={teamMemberId}
-        />
-        <Route path={`${match.path}/archive`} team={team} component={ArchivedTasks} />
-      </Switch>
+      <Suspense fallback={''}>
+        <Switch>
+          {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
+          <Route exact path={match.path} component={AgendaTasks} />
+          <Route
+            path={`${match.path}/settings`}
+            component={TeamSettings}
+            teamMemberId={teamMemberId}
+          />
+          <Route path={`${match.path}/archive`} team={team} component={ArchivedTasks} />
+        </Switch>
+      </Suspense>
     </Team>
   )
 }
 
 export default createFragmentContainer(
   withAtmosphere(
-    withReducer({teamDashboard: teamDashReducer})(connect(mapStateToProps)(TeamContainer))
+    (withReducer as any)({teamDashboard: teamDashReducer})(
+      (connect as any)(mapStateToProps)(TeamContainer)
+    )
   ),
   graphql`
     fragment TeamContainer_viewer on User {

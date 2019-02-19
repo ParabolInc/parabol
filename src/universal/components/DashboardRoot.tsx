@@ -59,7 +59,7 @@ const subscriptions = [
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
-const DashboardWrapper = ({atmosphere, history, location}: Props) => {
+const DashboardRoot = ({atmosphere, history, location}: Props) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -85,4 +85,4 @@ const DashboardWrapper = ({atmosphere, history, location}: Props) => {
   )
 }
 
-export default dragDropContext(HTML5Backend)(withRouter(withAtmosphere(DashboardWrapper)))
+export default dragDropContext(HTML5Backend)(withRouter(withAtmosphere(DashboardRoot)))

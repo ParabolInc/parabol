@@ -23,8 +23,8 @@ const Signout = lazy(() =>
 const NotFound = lazy(() =>
   import(/* webpackChunkName: 'NotFound' */ 'universal/components/NotFound/NotFound')
 )
-const DashWrapper = lazy(() =>
-  import(/* webpackChunkName: 'DashboardWrapper' */ 'universal/components/DashboardWrapper/DashboardWrapper')
+const DashboardRoot = lazy(() =>
+  import(/* webpackChunkName: 'DashboardRoot' */ 'universal/components/DashboardRoot')
 )
 const MeetingRoot = lazy(() =>
   import(/* webpackChunkName: 'MeetingRoot' */ 'universal/modules/meeting/components/MeetingRoot')
@@ -36,7 +36,7 @@ const RetroRoot = lazy(() =>
 const PrivateRoutes = () => {
   return (
     <Switch>
-      <Route isPrivate path='(/me|/newteam|/team)' component={DashWrapper} />
+      <Route isPrivate path='(/me|/newteam|/team)' component={DashboardRoot} />
       <Route
         isPrivate
         path='/meeting/:teamId/:localPhase?/:localPhaseItem?'
@@ -52,7 +52,7 @@ const PrivateRoutes = () => {
       <Route isPrivate path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />
       <Route path='/admin/impersonate/:newUserId' component={Impersonate} />
-      <Route component={Signout} />
+      <Route path='/signout' component={Signout} />
       <Route component={NotFound} />
     </Switch>
   )

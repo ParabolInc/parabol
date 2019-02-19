@@ -1,4 +1,4 @@
-import React, {lazy} from 'react'
+import React, {lazy, Suspense} from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {matchPath, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
@@ -6,8 +6,10 @@ import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashMain from 'universal/components/Dashboard/DashMain'
 import Tab from 'universal/components/Tab/Tab'
 import Tabs from 'universal/components/Tabs/Tabs'
+import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 
 import {PALETTE} from '../../../../styles/paletteV2'
+import {LoaderSize} from '../../../../types/constEnums'
 // import DebugButton from './DebugButton'
 
 const TabBody = styled('div')({
@@ -68,10 +70,12 @@ const UserDashMain = (props: Props) => {
         {/*</HeaderCopy>*/}
       </DashHeader>
       <TabBody>
-        <Switch>
-          <Route path={`${match.url}/tasks`} component={MyDashboardTasksRoot} />
-          <Route path={match.url} component={MyDashboardTimelineRoot} />
-        </Switch>
+        <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
+          <Switch>
+            <Route path={`${match.url}/tasks`} component={MyDashboardTasksRoot} />
+            <Route path={match.url} component={MyDashboardTimelineRoot} />
+          </Switch>
+        </Suspense>
       </TabBody>
     </DashMain>
   )

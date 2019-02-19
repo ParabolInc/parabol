@@ -154,6 +154,7 @@ class TeamArchive extends Component {
 
   render () {
     const {styles, team, teamId, viewer} = this.props
+    if (!team) return null
     const {teamName} = team
     const {archivedTasks} = viewer
     const {edges} = archivedTasks

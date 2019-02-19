@@ -11,15 +11,13 @@ import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
 import EditableOrgName from 'universal/components/EditableOrgName'
 import LoadableModal from 'universal/components/LoadableModal'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
-import TagBlock from 'universal/components/Tag/TagBlock'
-import TagPro from 'universal/components/Tag/TagPro'
 import BillingMembersToggle from 'universal/modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import appTheme from 'universal/styles/theme/appTheme'
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
 import ui from 'universal/styles/ui'
-import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL, PRO} from 'universal/utils/constants'
-import makeDateString from 'universal/utils/makeDateString'
+import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL} from 'universal/utils/constants'
+import OrganizationDetails from './OrganizationDetails'
 
 const OrgSqueeze = lazy(() =>
   import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
@@ -39,12 +37,6 @@ const AvatarAndName = styled('div')({
   width: '100%'
 })
 
-const OrgDetails = styled('div')({
-  fontSize: appTheme.typography.s3,
-  lineHeight: appTheme.typography.s7,
-  paddingBottom: '.75rem'
-})
-
 const OrgNameAndDetails = styled('div')({
   color: appTheme.palette.mid,
   display: 'flex',
@@ -56,11 +48,6 @@ const OrgNameAndDetails = styled('div')({
 
 const BackControlBlock = styled('div')({
   margin: '1rem 0'
-})
-
-const StyledTagBlock = styled(TagBlock)({
-  marginLeft: '.25rem',
-  marginTop: '-.375rem'
 })
 
 const AvatarBlock = styled('div')({
@@ -96,12 +83,6 @@ const Organization = (props: Props) => {
   }
   const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
-  const toggle = (
-    <div>
-      <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />
-    </div>
-  )
-  const goToOrgs = () => history.push('/me/organizations')
   const onlyShowMembers = !isBillingLeader && tier !== PERSONAL
   const billingMod = isBillingLeader && tier !== PERSONAL ? OrgBilling : OrgSqueeze
   return (
@@ -109,7 +90,11 @@ const Organization = (props: Props) => {
       <Helmet title={`Organization Settings | ${orgName}`} />
       <SettingsWrapper narrow>
         <BackControlBlock>
-          <DashNavControl icon='arrow_back' label='Back to Organizations' onClick={goToOrgs} />
+          <DashNavControl
+            icon='arrow_back'
+            label='Back to Organizations'
+            onClick={() => history.push('/me/organizations')}
+          />
         </BackControlBlock>
         <AvatarAndName>
           {isBillingLeader ? (
@@ -117,7 +102,11 @@ const Organization = (props: Props) => {
               isToggleNativeElement
               LoadableComponent={OrgAvatarInput}
               queryVars={{picture: pictureOrDefault, orgId}}
-              toggle={toggle}
+              toggle={
+                <div>
+                  <EditableAvatar hasPanel picture={pictureOrDefault} size={96} unstyled />
+                </div>
+              }
             />
           ) : (
             <AvatarBlock>
@@ -130,15 +119,7 @@ const Organization = (props: Props) => {
             ) : (
               <OrgNameBlock>{orgName}</OrgNameBlock>
             )}
-            <OrgDetails>
-              {'Created '}
-              {makeDateString(createdAt)}
-              {tier === PRO && (
-                <StyledTagBlock>
-                  <TagPro />
-                </StyledTagBlock>
-              )}
-            </OrgDetails>
+            <OrganizationDetails createdAt={createdAt} tier={tier} />
             {!onlyShowMembers && <BillingMembersToggle orgId={orgId} />}
           </OrgNameAndDetails>
         </AvatarAndName>

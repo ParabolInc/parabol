@@ -39,7 +39,7 @@ const UnpaidTeamModalRoot = lazy(() =>
 )
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  team: Team_team
+  team: Team_team | null
   isSettings: boolean
 }
 
@@ -60,10 +60,9 @@ class Team extends Component<Props> {
   }
 
   setContentFilter (nextValue) {
-    const {
-      atmosphere,
-      team: {id: teamId}
-    } = this.props
+    const {atmosphere, team} = this.props
+    if (!team) return
+    const {id: teamId} = team
     commitLocalUpdate(atmosphere, (store) => {
       const teamProxy = store.get(teamId)
       teamProxy && teamProxy.setValue(nextValue, 'contentFilter')
@@ -74,17 +73,15 @@ class Team extends Component<Props> {
     this.setContentFilter(e.target.value)
   }
   goToTeamSettings = () => {
-    const {
-      history,
-      team: {id: teamId}
-    } = this.props
+    const {history, team} = this.props
+    if (!team) return
+    const {id: teamId} = team
     history.push(`/team/${teamId}/settings/`)
   }
   goToTeamDashboard = () => {
-    const {
-      history,
-      team: {id: teamId}
-    } = this.props
+    const {history, team} = this.props
+    if (!team) return
+    const {id: teamId} = team
     history.push(`/team/${teamId}/`)
   }
 
