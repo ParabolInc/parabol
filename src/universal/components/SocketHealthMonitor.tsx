@@ -1,24 +1,25 @@
-import PropTypes from 'prop-types'
+import GQLTrebuchetClient from '@mattkrick/graphql-trebuchet-client'
 import {Component} from 'react'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import popUpgradeAppToast from 'universal/mutations/toasts/popUpgradeAppToast'
 import {APP_VERSION_KEY} from 'universal/utils/constants'
 import {commitLocalUpdate} from 'react-relay'
+import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 
-class SocketHealthMonitor extends Component {
-  static propTypes = {
-    atmosphere: PropTypes.object.isRequired
-  }
+interface Props extends WithAtmosphereProps {}
 
-  componentWillMount () {
+class SocketHealthMonitor extends Component<Props> {
+  disconnectedToastTimer: number | null = null
+  componentDidMount () {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
-      const {
-        transport: {trebuchet}
-      } = atmosphere
-      trebuchet.on('reconnected', this.onReconnected, this)
-      trebuchet.on('disconnected', this.onDisconnected, this)
-      trebuchet.on('data', this.onData, this)
+      const {transport} = atmosphere
+      const {trebuchet} = transport as GQLTrebuchetClient
+      trebuchet.on('reconnected' as any, this.onReconnected)
+      trebuchet.on('disconnected' as any, this.onDisconnected)
+      trebuchet.on('data' as any, this.onData)
       this.setConnectedStatus(true)
     })
   }
@@ -26,8 +27,14 @@ class SocketHealthMonitor extends Component {
   setConnectedStatus = (isConnected: boolean) => {
     const {atmosphere} = this.props
     commitLocalUpdate(atmosphere, (store) => {
-      const viewer = store.getRoot().getLinkedRecord('viewer')
-      viewer.setValue(isConnected, 'isConnected')
+      const root = store.getRoot()
+      const viewer = root.getLinkedRecord('viewer')
+      if (!viewer) {
+        const tempViewer = createProxyRecord(store, 'User', {id: atmosphere.viewerId, isConnected})
+        root.setLinkedRecord(tempViewer, 'viewer')
+      } else {
+        viewer.setValue(isConnected, 'isConnected')
+      }
     })
   }
 
@@ -57,8 +64,8 @@ class SocketHealthMonitor extends Component {
   onDisconnected = () => {
     const {atmosphere} = this.props
     this.setConnectedStatus(false)
-    this.disconnectedToastTimer = setTimeout(() => {
-      this.disconnectedToastTimer = undefined
+    this.disconnectedToastTimer = window.setTimeout(() => {
+      this.disconnectedToastTimer = null
       atmosphere.eventEmitter.emit('addToast', {
         level: 'warning',
         autoDismiss: 5,

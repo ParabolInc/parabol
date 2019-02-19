@@ -34,8 +34,7 @@ const UserDashboard = (props: Props) => {
       <Route path={`${match.url}/organizations/:orgId`} component={Organization} />
       <Route
         path={`${match.url}/notifications`}
-        component={NotificationsMod}
-        notifications={notifications}
+        render={(p) => <NotificationsMod {...p} notifications={notifications} />}
       />
       <Route path={match.url} component={UserDashMain} />
     </Switch>

@@ -1,10 +1,9 @@
 import {Organization_viewer} from '__generated__/Organization_viewer.graphql'
-import React, {lazy} from 'react'
+import React, {lazy, useEffect} from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {Route} from 'react-router'
-import {Redirect, RouteComponentProps, Switch, withRouter} from 'react-router-dom'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
 import Avatar from 'universal/components/Avatar/Avatar'
 import DashNavControl from 'universal/components/DashNavControl/DashNavControl'
 import EditableAvatar from 'universal/components/EditableAvatar/EditableAvatar'
@@ -16,18 +15,9 @@ import UserSettingsWrapper from 'universal/modules/userDashboard/components/User
 import appTheme from 'universal/styles/theme/appTheme'
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
 import ui from 'universal/styles/ui'
-import {BILLING_PAGE, MEMBERS_PAGE, PERSONAL} from 'universal/utils/constants'
+import {PERSONAL} from 'universal/utils/constants'
 import OrganizationDetails from './OrganizationDetails'
-
-const OrgSqueeze = lazy(() =>
-  import(/* webpackChunkName: 'OrgPlanSqueeze' */ 'universal/modules/userDashboard/components/OrgPlanSqueeze/OrgPlanSqueeze')
-)
-const OrgBilling = lazy(() =>
-  import(/* webpackChunkName: 'OrgBillingRoot' */ 'universal/modules/userDashboard/containers/OrgBilling/OrgBillingRoot')
-)
-const OrgMembers = lazy(() =>
-  import(/* webpackChunkName: 'OrgMembersRoot' */ 'universal/modules/userDashboard/containers/OrgMembers/OrgMembersRoot')
-)
+import OrganizationPage from './OrganizationPage'
 
 const AvatarAndName = styled('div')({
   alignItems: 'flex-start',
@@ -74,17 +64,19 @@ interface Props extends RouteComponentProps<{}> {
 const Organization = (props: Props) => {
   const {
     history,
-    match,
     viewer: {organization}
   } = props
-  if (!organization) {
-    // trying to be somewhere they shouldn't be
-    return <Redirect to='/me' />
-  }
+  // trying to be somewhere they shouldn't be, using a Redirect borks the loading animation
+  useEffect(() => {
+    if (!organization) {
+      history.replace('/me')
+    }
+  }, [organization])
+  if (!organization) return <div />
   const {orgId, createdAt, isBillingLeader, name: orgName, picture: orgAvatar, tier} = organization
   const pictureOrDefault = orgAvatar || defaultOrgAvatar
   const onlyShowMembers = !isBillingLeader && tier !== PERSONAL
-  const billingMod = isBillingLeader && tier !== PERSONAL ? OrgBilling : OrgSqueeze
+
   return (
     <UserSettingsWrapper>
       <Helmet title={`Organization Settings | ${orgName}`} />
@@ -123,25 +115,7 @@ const Organization = (props: Props) => {
             {!onlyShowMembers && <BillingMembersToggle orgId={orgId} />}
           </OrgNameAndDetails>
         </AvatarAndName>
-        {onlyShowMembers ? (
-          <OrgMembers orgId={orgId} />
-        ) : (
-          <Switch>
-            <Route exact path={`${match.url}`} component={billingMod} organization={organization} />
-            <Route
-              exact
-              path={`${match.url}/${BILLING_PAGE}`}
-              component={billingMod}
-              organization={organization}
-            />
-            <Route
-              exact
-              path={`${match.url}/${MEMBERS_PAGE}`}
-              component={OrgMembers}
-              orgId={orgId}
-            />
-          </Switch>
-        )}
+        <OrganizationPage organization={organization} />
       </SettingsWrapper>
     </UserSettingsWrapper>
   )
@@ -152,8 +126,8 @@ export default createFragmentContainer(
   graphql`
     fragment Organization_viewer on User {
       organization(orgId: $orgId) {
-        ...OrgPlanSqueeze_organization
         ...EditableOrgName_organization
+        ...OrganizationPage_organization
         orgId: id
         isBillingLeader
         createdAt

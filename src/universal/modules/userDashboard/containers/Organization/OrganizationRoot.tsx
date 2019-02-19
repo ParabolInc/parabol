@@ -1,10 +1,11 @@
 import React from 'react'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {graphql} from 'react-relay'
+import {RouteComponentProps} from 'react-router'
+import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import Organization from 'universal/modules/userDashboard/components/Organization/Organization'
 import {cacheConfig} from 'universal/utils/constants'
-import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import type {Match} from 'react-router-dom'
 import renderQuery from 'universal/utils/relay/renderQuery'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 
 const query = graphql`
   query OrganizationRootQuery($orgId: ID!) {
@@ -14,16 +15,14 @@ const query = graphql`
   }
 `
 
-type Props = {|
-  atmosphere: Object,
-  match: Match
-|}
+interface Props extends RouteComponentProps<{orgId: string}> {}
 
 const OrganizationRoot = (props: Props) => {
-  const {atmosphere, match} = props
+  const {match} = props
   const {
     params: {orgId}
   } = match
+  const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
@@ -36,4 +35,4 @@ const OrganizationRoot = (props: Props) => {
   )
 }
 
-export default withAtmosphere(OrganizationRoot)
+export default OrganizationRoot

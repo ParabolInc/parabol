@@ -36,20 +36,12 @@ const RetroRoot = lazy(() =>
 const PrivateRoutes = () => {
   return (
     <Switch>
-      <Route isPrivate path='(/me|/newteam|/team)' component={DashboardRoot} />
-      <Route
-        isPrivate
-        path='/meeting/:teamId/:localPhase?/:localPhaseItem?'
-        component={MeetingRoot}
-      />
-      <Route
-        isPrivate
-        path='/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?'
-        component={RetroRoot}
-      />
-      <Route isPrivate path='/invoice/:invoiceId' component={Invoice} />
-      <Route isPrivate path='/summary/:meetingId' component={MeetingSummary} />
-      <Route isPrivate path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
+      <Route path='(/me|/newteam|/team)' component={DashboardRoot} />
+      <Route path='/meeting/:teamId/:localPhase?/:localPhaseItem?' component={MeetingRoot} />
+      <Route path='/retro/:teamId/:localPhaseSlug?/:stageIdxSlug?' component={RetroRoot} />
+      <Route path='/invoice/:invoiceId' component={Invoice} />
+      <Route path='/summary/:meetingId' component={MeetingSummary} />
+      <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />
       <Route path='/admin/impersonate/:newUserId' component={Impersonate} />
       <Route path='/signout' component={Signout} />

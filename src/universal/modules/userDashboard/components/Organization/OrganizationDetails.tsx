@@ -12,7 +12,7 @@ const StyledTagBlock = styled(TagBlock)({
 
 const OrgDetails = styled('div')({
   fontSize: 14,
-  lineHeight: 34,
+  lineHeight: '34px',
   paddingBottom: 12
 })
 

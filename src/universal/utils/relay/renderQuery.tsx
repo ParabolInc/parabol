@@ -15,11 +15,6 @@ const renderQuery = (ReadyComponent: ComponentType<any>, options: Options = {}) 
   const Loader = options.Loader || <LoadingComponent spinnerSize={options.size} />
   const Error = options.Error || ErrorComponent
   const {error, props} = readyState
-  // if (!props && this.renderProps) {
-  //   return Children.only(loading)
-  // } else if (!this.renderProps && props) {
-  //   this.renderProps = true
-  // }
   let child
   let key
   if (error) {

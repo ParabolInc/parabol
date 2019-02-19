@@ -19,7 +19,7 @@ import TeamSubscription from 'universal/subscriptions/TeamSubscription'
 import {cacheConfig} from 'universal/utils/constants'
 
 const query = graphql`
-  query DashboardWrapperQuery {
+  query DashboardRootQuery {
     viewer {
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {
@@ -75,7 +75,10 @@ const DashboardRoot = ({atmosphere, history, location}: Props) => {
         return (
           <DashLayout viewer={viewer}>
             <DashSidebar viewer={viewer} location={location} />
-            <Route path='/me' component={UserDashboard} notifications={notifications} />
+            <Route
+              path='/me'
+              render={(p) => <UserDashboard {...p} notifications={notifications} />}
+            />
             <Route path='/team/:teamId' component={TeamRoot} />
             <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
           </DashLayout>

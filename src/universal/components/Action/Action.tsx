@@ -62,7 +62,6 @@ const Action = () => {
             <Route
               path='/retrospective-demo/:localPhaseSlug?/:stageIdxSlug?'
               component={DemoMeeting}
-              match={{params: {teamId: 'demoTeam'}}}
             />
             <Route path='/retrospective-demo-summary' component={DemoSummary} />
             <Route exact path='/reset-password' component={ResetPasswordPage} />

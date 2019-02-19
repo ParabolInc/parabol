@@ -18,7 +18,8 @@ interface Props {
   orgId: string
 }
 
-const OrgMembersRoot = ({orgId}: Props) => {
+const OrgMembersRoot = (props: Props) => {
+  const {orgId} = props
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer

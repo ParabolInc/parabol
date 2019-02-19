@@ -35,22 +35,22 @@ const TeamSettingsWrapper = (props: Props) => {
     <div style={{padding: `0 ${ui.settingsGutter}`}}>
       <TeamSettingsToggleNav activeKey={(areaMatch.params as any).area || ''} teamId={teamId} />
       <Switch>
-        <Route exact path={match.url} component={TeamSettings} teamId={teamId} />
+        <Route exact path={match.url} render={(p) => <TeamSettings {...p} teamId={teamId} />} />
         <Route
           path={`${match.url}/integrations/slack`}
-          component={SlackIntegrations}
-          teamMemberId={teamMemberId}
+          render={(p) => <SlackIntegrations {...p} teamMemberId={teamMemberId} />}
+        />
         />
         <Route
           path={`${match.url}/integrations/github`}
-          component={GithubIntegrations}
-          teamMemberId={teamMemberId}
+          render={(p) => <GithubIntegrations {...p} teamMemberId={teamMemberId} />}
+        />
         />
         <Route
           exact
           path={`${match.url}/integrations`}
-          component={Providers}
-          teamMemberId={teamMemberId}
+          render={(p) => <Providers {...p} teamMemberId={teamMemberId} />}
+        />
         />
       </Switch>
     </div>

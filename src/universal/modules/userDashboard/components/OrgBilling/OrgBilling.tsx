@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {createPaginationContainer} from 'react-relay'
+import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-relay'
 import RaisedButton from 'universal/components/RaisedButton'
 import Panel from 'universal/components/Panel/Panel'
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow'
@@ -11,6 +10,8 @@ import LoadableModal from 'universal/components/LoadableModal'
 import UpdateCreditCardLoadable from 'universal/components/UpdateCreditCardLoadable'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {OrgBilling_viewer} from '__generated__/OrgBilling_viewer.graphql'
+import {OrgBilling_organization} from '__generated__/OrgBilling_organization.graphql'
 
 const panelCell = {
   borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`,
@@ -88,20 +89,19 @@ const Unsubscribe = styled('div')({
   }
 })
 
-class OrgBilling extends Component {
-  static propTypes = {
-    invoices: PropTypes.array,
-    invoicesReady: PropTypes.bool,
-    organization: PropTypes.object,
-    relay: PropTypes.object.isRequired,
-    viewer: PropTypes.object
-  }
+interface Props {
+  viewer: OrgBilling_viewer
+  organization: OrgBilling_organization
+  relay: RelayPaginationProp
+}
 
+class OrgBilling extends Component<Props> {
   loadMore = () => {
     const {
       relay: {hasMore, isLoading, loadMore}
     } = this.props
     if (!hasMore() || isLoading()) return
+    // @ts-ignore
     loadMore(5)
   }
 
@@ -111,9 +111,10 @@ class OrgBilling extends Component {
       viewer: {invoices},
       relay: {hasMore}
     } = this.props
+    if (!invoices) return null
     const hasInvoices = invoices.edges.length > 0
-    const {creditCard = {}, orgId} = organization
-    const {brand = '???', last4 = '••••', expiry = '???'} = creditCard
+    const {creditCard, id: orgId} = organization
+    const {brand = '???', last4 = '••••', expiry = '???'} = creditCard || {}
     return (
       <div>
         <Panel label='Credit Card Information'>
@@ -130,8 +131,6 @@ class OrgBilling extends Component {
             </CreditCardInfo>
             <LoadableModal
               LoadableComponent={UpdateCreditCardLoadable}
-              maxWidth={350}
-              maxHeight={225}
               queryVars={{orgId}}
               toggle={<RaisedButton>{'Update'}</RaisedButton>}
             />
@@ -144,7 +143,7 @@ class OrgBilling extends Component {
                 <InvoiceRow
                   key={`invoiceRow${invoice.id}`}
                   invoice={invoice}
-                  hasCard={Boolean(creditCard.last4)}
+                  hasCard={Boolean(creditCard)}
                 />
               ))}
             {hasMore() && (
@@ -176,6 +175,14 @@ class OrgBilling extends Component {
 export default createPaginationContainer(
   OrgBilling,
   graphql`
+    fragment OrgBilling_organization on Organization {
+      id
+      creditCard {
+        brand
+        last4
+        expiry
+      }
+    }
     fragment OrgBilling_viewer on User {
       invoices(first: $first, orgId: $orgId, after: $after)
         @connection(key: "OrgBilling_invoices") {
@@ -199,6 +206,7 @@ export default createPaginationContainer(
   `,
   {
     direction: 'forward',
+    // @ts-ignore
     getConnectionFromProps (props) {
       return props.viewer && props.viewer.invoices
     },
@@ -208,7 +216,7 @@ export default createPaginationContainer(
         first: totalCount
       }
     },
-    getVariables (props, {count, cursor}, fragmentVariables) {
+    getVariables (_props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,
