@@ -75,6 +75,7 @@ export const makeResolveNotificationsForViewer = (idArray, docArray) => async (
 }
 
 export const resolveMeetingMember = ({meetingId, userId}, args, {dataLoader}) => {
+  if (!meetingId || !userId) return null
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   return dataLoader.get('meetingMembers').load(meetingMemberId)
 }
@@ -161,7 +162,7 @@ export const resolveTeamMembers = ({teamMemberIds, teamMembers}, args, {dataLoad
 }
 
 export const resolveUnlockedStages = async ({meetingId, unlockedStageIds}, args, {dataLoader}) => {
-  if (!unlockedStageIds || unlockedStageIds.length === 0) return undefined
+  if (!unlockedStageIds || unlockedStageIds.length === 0 || !meetingId) return undefined
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   return unlockedStageIds.map((stageId) => findStageById(meeting.phases, stageId).stage)
 }
