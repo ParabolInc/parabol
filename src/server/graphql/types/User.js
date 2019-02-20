@@ -293,7 +293,7 @@ const User = new GraphQLObjectType({
         const organizationUsersForOrgId = organizationUsers.find(
           (organizationUser) => organizationUser.orgId === orgId
         )
-        if (viewerId === userId) {
+        if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsersForOrgId
         }
         const viewerOrganizationUsers = await dataLoader
