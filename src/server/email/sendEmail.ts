@@ -1,22 +1,12 @@
-import mailcomposer from 'mailcomposer'
 import chunkArray from 'universal/utils/chunkArray'
-import templates from './templates'
-import mailgun from './mailgunDriver'
-import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig'
 import createEmbeddedImages from './createEmbeddedImages'
+import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig'
+import inlineImages from './inlineImages'
+import mailgun from './mailgunDriver'
+import templates from './templates'
 
 // See https://documentation.mailgun.com/en/latest/user_manual.html#batch-sending
 const MAILGUN_MAX_BATCH_SIZE = 1000
-
-const buildMail = (options) =>
-  new Promise((resolve, reject) => {
-    mailcomposer(options).build((error, message) => {
-      if (error) {
-        return reject(error)
-      }
-      return resolve(message)
-    })
-  })
 
 const getEmailFactory = (template) => {
   const emailFactory = templates[template]
@@ -26,7 +16,7 @@ const getEmailFactory = (template) => {
   return emailFactory
 }
 
-const makeMailgunApiData = (recipients, template, props) => {
+const makeMailgunApiData = (recipients: string | string[], template: string, props: any) => {
   const to = typeof recipients === 'string' ? recipients : recipients.join(',')
   const {from} = getMailgunOptions()
   const emailFactory = getEmailFactory(template)
@@ -40,15 +30,6 @@ const makeMailgunApiData = (recipients, template, props) => {
     html,
     attachments
   }
-}
-
-const maybeBuildMail = async (mailOptions) => {
-  try {
-    return await buildMail(mailOptions)
-  } catch (e) {
-    console.warn(`mailcomposer: unable to build message ${e}`)
-  }
-  return false
 }
 
 const maybeMailgun = (fn, mailgunApiData) => {
@@ -96,25 +77,30 @@ export function sendBatchEmail (recipients, template, props, recipientVariables)
   return maybeMailgun((mg) => mg.messages().send(mailgunApiData), mailgunApiData)
 }
 
-export default async function sendEmailPromise (to, template, props) {
+const mailgunFrom = process.env.MAILGUN_FROM || ''
+
+export default async function sendEmailPromise (to: unknown, template: string, props: any) {
   if (!to || typeof to !== 'string') {
-    throw new Error('Expected `to` to be a string of comma-seperated emails')
+    throw new Error('Expected `to` to be a string of comma-separated emails')
   }
-  const mailOptions = makeMailgunApiData(to, template, props)
-  const message = await maybeBuildMail(mailOptions)
-  if (!message) {
+  const emailFactory = templates[template]
+  if (!emailFactory) {
+    throw new Error(`Email template for ${template} does not exist!`)
+  }
+
+  const {subject, body, html: htmlWithoutImages} = emailFactory(props)
+  const {html, attachmentOptions} = await inlineImages(htmlWithoutImages)
+  try {
+    await mailgun.messages().send({
+      from: mailgunFrom,
+      to,
+      subject,
+      text: body,
+      html,
+      inline: attachmentOptions.map((options) => new mailgun.Attachment(options))
+    })
+  } catch (e) {
     return false
   }
-  const mimeData = {
-    to,
-    message: message.toString('ascii')
-  }
-  return maybeMailgun(
-    (mg) =>
-      mg
-        .messages()
-        .sendMime(mimeData)
-        .then(() => true),
-    mailOptions
-  )
+  return true
 }
