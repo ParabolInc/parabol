@@ -234,12 +234,9 @@ export default class Atmosphere extends Environment {
     _cacheConfig?: CacheConfig
   ): Promise<ObservableFromValue<QueryPayload>> => {
     // await sleep(100)
-    if ('text' in operation) {
-      return this.transport.fetch({documentId: operation.id as string, variables})
-    }
-    return operation.requests.map((request) =>
-      this.transport.fetch({documentId: request.id as string, variables})
-    )
+    const field = operation.id ? 'documentId' : 'query'
+    const data = operation.id || operation.text
+    return this.transport.fetch({[field]: data, variables})
   }
 
   getAuthToken = (global: Window) => {

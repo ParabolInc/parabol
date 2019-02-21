@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import {GITHUB} from 'universal/utils/constants'
 import getOptimisticTeamMember from 'universal/utils/relay/getOptimisticTeamMember'
 import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount'
@@ -39,7 +40,7 @@ const AddGitHubRepoMutation = (
   variables: IAddGitHubRepoOnMutationArguments,
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   const {viewerId} = atmosphere
   const {nameWithOwner, teamId} = variables
   return commitMutation(atmosphere, {

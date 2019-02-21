@@ -160,7 +160,7 @@ class NewMeetingLobby extends React.Component<Props> {
 }
 
 export default createFragmentContainer(
-  withRouter(withAtmosphere(withMutationProps(NewMeetingLobby))),
+  (withRouter as any)(withAtmosphere(withMutationProps(NewMeetingLobby))),
   graphql`
     fragment NewMeetingLobby_team on Team {
       teamId: id

@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import {IAddProviderOnMutationArguments} from '../types/graphql'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 
@@ -82,7 +83,7 @@ const AddProviderMutation = (
   _context,
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   const {teamId} = variables
   return commitMutation(atmosphere, {
     mutation,

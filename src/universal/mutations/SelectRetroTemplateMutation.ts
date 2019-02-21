@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import {CompletedHandler, ErrorHandler} from '../types/relayMutations'
 import {ISelectRetroTemplateOnMutationArguments} from 'universal/types/graphql'
@@ -27,7 +28,7 @@ const SelectRetroTemplateMutation = (
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

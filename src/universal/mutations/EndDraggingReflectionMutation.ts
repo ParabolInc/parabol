@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import handleAddReflectionToGroup from 'universal/mutations/handlers/handleAddReflectionToGroup'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
@@ -183,8 +184,8 @@ const EndDraggingReflectionMutation = (
   context: Context,
   onError?: ErrorHandler,
   onCompleted?: CompletedHandler
-) => {
-  commitMutation(atmosphere, {
+): Disposable => {
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     onCompleted,

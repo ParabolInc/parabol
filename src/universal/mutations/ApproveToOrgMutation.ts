@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import getNotificationsConn from 'universal/mutations/connections/getNotificationsConn'
 import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitations'
@@ -132,7 +133,7 @@ export const approveToOrgNotificationOnNext = (
   }
 }
 
-const ApproveToOrgMutation = (atmosphere, email, orgId, onError, onCompleted) => {
+const ApproveToOrgMutation = (atmosphere, email, orgId, onError, onCompleted): Disposable => {
   const {viewerId} = atmosphere
   return commitMutation(atmosphere, {
     mutation,

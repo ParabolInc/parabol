@@ -15,6 +15,7 @@ export default <P extends WithAtmosphereProps>(ComposedComponent: React.Componen
     static contextType = AtmosphereContext
 
     render () {
+      // @ts-ignore
       return <ComposedComponent atmosphere={this.context} {...this.props} />
     }
   }

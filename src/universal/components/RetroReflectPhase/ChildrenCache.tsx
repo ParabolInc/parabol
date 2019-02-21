@@ -83,7 +83,7 @@ class ChildrenCache {
       const {style: elStyle} = el
       setElementBBox(el, last)
       elStyle.transform = getTransform(point, last)
-      elStyle.transition = null
+      elStyle.transition = ''
       const delay = MOVE_DELAY + MIN_VAR_ITEM_DELAY * childrenToAnimate
       requestDoubleAnimationFrame(() => {
         elStyle.transition = `transform ${MOVE_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
@@ -166,7 +166,7 @@ class ChildrenCache {
       style.top = `${last.top - parent.top}px`
       style.left = `${last.left - parent.left}px`
       style.transform = `translate(${-dX}px,${-dY}px)`
-      style.transition = null
+      style.transition = ''
     })
 
     requestAnimationFrame(() => {

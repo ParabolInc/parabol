@@ -3,6 +3,7 @@ import {
   DismissSuggestedActionMutationVariables
 } from '__generated__/DismissSuggestedActionMutation.graphql'
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import {LocalHandlers} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
@@ -20,7 +21,7 @@ const DismissSuggestedActionMutation = (
   atmosphere,
   variables: DismissSuggestedActionMutationVariables,
   {onCompleted, onError}: LocalHandlers
-) => {
+): Disposable => {
   const {suggestedActionId} = variables
   return commitMutation<DismissSuggestedActionMutation>(atmosphere, {
     mutation,

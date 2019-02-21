@@ -1,6 +1,7 @@
 import {InviteToTeamMutation} from '__generated__/InviteToTeamMutation.graphql'
 import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import {IInviteToTeamOnMutationArguments} from '../types/graphql'
 import {LocalHandlers} from '../types/relayMutations'
@@ -82,7 +83,7 @@ const InviteToTeamMutation = (
   atmosphere: any,
   variables: IInviteToTeamOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
-) => {
+): Disposable => {
   return commitMutation<InviteToTeamMutation>(atmosphere, {
     mutation,
     variables,

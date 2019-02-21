@@ -12,11 +12,6 @@ export const timelineEventInterfaceFields = () => ({
     type: new GraphQLNonNull(GraphQLID),
     description: 'shortid'
   },
-  // actorId: {
-  //   type: GraphQLID,
-  //   description:
-  //     'The userId that performed an action that created the event. Null if not traceable to one user'
-  // },
   createdAt: {
     type: new GraphQLNonNull(GraphQLISO8601Type),
     description: '* The timestamp the event was created at'

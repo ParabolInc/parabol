@@ -3,6 +3,7 @@ import {InviteTeamMembersMutation_notification} from '__generated__/InviteTeamMe
 import {InviteTeamMembersMutation_orgApproval} from '__generated__/InviteTeamMembersMutation_orgApproval.graphql'
 import {InviteTeamMembersMutation_teamMember} from '__generated__/InviteTeamMembersMutation_teamMember.graphql'
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import handleAddInvitations from 'universal/mutations/handlers/handleAddInvitations'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
@@ -295,7 +296,13 @@ export const inviteTeamMembersTeamMemberOnNext = (payload, {atmosphere}) => {
   popTeamMemberReactivatedToast(payload, {atmosphere})
 }
 
-const InviteTeamMembersMutation = (atmosphere, variables, _context, onError, onCompleted) => {
+const InviteTeamMembersMutation = (
+  atmosphere,
+  variables,
+  _context,
+  onError,
+  onCompleted
+): Disposable => {
   const {viewerId} = atmosphere
   return commitMutation(atmosphere, {
     mutation,

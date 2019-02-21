@@ -1,5 +1,6 @@
 import {PromoteNewMeetingFacilitatorMutation_team} from '__generated__/PromoteNewMeetingFacilitatorMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 
 graphql`
   fragment PromoteNewMeetingFacilitatorMutation_team on PromoteNewMeetingFacilitatorPayload {
@@ -49,7 +50,7 @@ export const promoteNewMeetingFacilitatorTeamOnNext = (
   })
 }
 
-const PromoteNewMeetingFacilitatorMutation = (atmosphere, variables) => {
+const PromoteNewMeetingFacilitatorMutation = (atmosphere, variables): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

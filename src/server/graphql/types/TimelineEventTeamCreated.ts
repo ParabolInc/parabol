@@ -3,7 +3,7 @@ import Team from './Team'
 import TimelineEvent, {timelineEventInterfaceFields} from './TimelineEvent'
 import {CREATED_TEAM} from './TimelineEventTypeEnum'
 
-const TimelineEventTeamCreated = new GraphQLObjectType({
+const TimelineEventTeamCreated = new GraphQLObjectType<any>({
   name: 'TimelineEventTeamCreated',
   description: 'An event triggered whenever a team is created',
   interfaces: () => [TimelineEvent],

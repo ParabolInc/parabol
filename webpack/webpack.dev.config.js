@@ -7,6 +7,8 @@ const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').defau
 const pluginRelay = require('babel-plugin-relay')
 const presetFlow = require('@babel/preset-flow').default
 const presetReact = require('@babel/preset-react').default
+const vendors = require('../dll/vendors')
+// const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 const babelLoader = {
   loader: 'babel-loader',
@@ -37,16 +39,18 @@ module.exports = {
   },
   resolve,
   plugins: [
+    // reliably produces errors on rebuild, disabled for now
+    // new HardSourceWebpackPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('development')
+    }),
+    new webpack.DllReferencePlugin({
+      manifest: vendors
     })
-    // new webpack.DllReferencePlugin({
-    //   manifest: vendors
-    // })
   ],
   module: {
     rules: [
@@ -74,6 +78,8 @@ module.exports = {
           {
             loader: 'awesome-typescript-loader',
             options: {
+              useCache: true,
+              forceIsolatedModules: true,
               errorsAsWarnings: true
             }
           }

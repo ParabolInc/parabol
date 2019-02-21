@@ -1,4 +1,5 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import {GITHUB} from 'universal/utils/constants'
 import incrementIntegrationCount from 'universal/utils/relay/incrementIntegrationCount'
 import {IRemoveGitHubRepoOnMutationArguments} from '../types/graphql'
@@ -29,7 +30,7 @@ const RemoveGitHubRepoMutation = (
   context,
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   const {viewerId} = atmosphere
   const {githubIntegrationId} = variables
   const {teamId} = context
