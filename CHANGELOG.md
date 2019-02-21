@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.4.1 2019-Feb-21
+
+### Fixed
+* Meeting Summaries available for archived teams
 
 ## v3.4.0 2019-Feb-08
 
