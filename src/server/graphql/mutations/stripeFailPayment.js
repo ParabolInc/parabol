@@ -48,6 +48,11 @@ export default {
       .table('Organization')
       .get(orgId)
       .pluck('creditCard', 'stripeSubscriptionId')
+      .default(null)
+    if (!org) {
+      // org no longer exists, can fail silently (useful for all the staging server bugs)
+      return {error: {message: 'Org does not exist'}}
+    }
     const {creditCard, stripeSubscriptionId} = org
 
     if (paid || stripeSubscriptionId !== subscription) return {orgId}

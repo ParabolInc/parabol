@@ -113,7 +113,7 @@ const login = {
       name: userInfo.name,
       preferredName,
       identities: userInfo.identities || [],
-      createdAt: ensureDate(userInfo.created_at),
+      createdAt: now,
       segmentId,
       tms: []
     }
@@ -122,7 +122,7 @@ const login = {
       user: r.table('User').insert(newUser),
       event: r.table('TimelineEvent').insert({
         id: shortid.generate(),
-        createdAt: newUser.createdAt,
+        createdAt: now,
         interactionCount: 0,
         seenCount: 0,
         type: JOINED_PARABOL,
@@ -130,6 +130,7 @@ const login = {
       })
     })
 
+    let returnAuthToken
     if (isOrganic) {
       const orgId = shortid.generate()
       const teamId = shortid.generate()
@@ -154,7 +155,8 @@ const login = {
           userId: newUser.id
         })
       ])
-
+      // ensure the return auth token has the correct tms, if !isOrganic, acceptTeamInvite will return its own with the proper tms
+      returnAuthToken = encodeAuthTokenObj(makeAuthTokenObj({...authToken, tms: [teamId]}))
       // create invite your team SA
       // it goes away when someone joins that team or team is deleted
 
@@ -164,6 +166,7 @@ const login = {
       // run action goes away action action completes
       // the meetings goe away if team is deleted
     } else {
+      returnAuthToken = auth0Token
       await r.table('SuggestedAction').insert([
         {
           id: shortid.generate(),
@@ -190,7 +193,7 @@ const login = {
     handleSegment(newUser.id, segmentId)
 
     return {
-      authToken: auth0Token,
+      authToken: returnAuthToken,
       userId: viewerId
     }
   }

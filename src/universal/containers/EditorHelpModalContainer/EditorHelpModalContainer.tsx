@@ -36,14 +36,12 @@ class EditorHelpModalContainer extends Component<Props, State> {
   render () {
     return (
       <Suspense fallback={''}>
-        <div style={{height: '100%'}}>
-          <LoadableFreeModal
-            LoadableComponent={EditorHelpModal}
-            queryVars={{handleCloseModal: this.closeModal}}
-            isModalOpen={this.state.isOpen}
-            closeModal={this.closeModal}
-          />
-        </div>
+        <LoadableFreeModal
+          LoadableComponent={EditorHelpModal}
+          queryVars={{handleCloseModal: this.closeModal}}
+          isModalOpen={this.state.isOpen}
+          closeModal={this.closeModal}
+        />
       </Suspense>
     )
   }

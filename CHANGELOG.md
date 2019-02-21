@@ -6,10 +6,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 
-## vNEXT 
+## v3.4.0 2019-Feb-08
 
+### Fixed
+* Can delete last card in demo (#2633)
+* Bad teamId in url redirects to /me (#2635)
+* Stuck floating card during group phase (#2610)
+* Errors reported to sentry have a better stack trace (#2631)
+* Viewer connection state updates when offline (#2555)
+* Editing detection logic during Reflect phase (#2601)
+
+### Added
+* Source maps to app and sentry
+* Active tasks column to team timeline
+* Heuristics to detect phase completion (#2601)
+
+### Changed
+* User Settings renamed to User Profile
+* Upgraded to Relay v2.0.0
+* Use persisted queries instead of full query text
+ 
 ### Removed
 * redux-form
+* Usage of legacy React context
 
 ## v3.3.0 2019-Jan-31
 
