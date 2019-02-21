@@ -26,7 +26,12 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import organization from 'server/graphql/queries/organization'
 import tasks from 'server/graphql/queries/tasks'
 import archivedTasks from 'server/graphql/queries/archivedTasks'
-import {getUserId, isSuperUser, isTeamMember} from 'server/utils/authorization'
+import {
+  getUserId,
+  isPastOrPresentTeamMember,
+  isSuperUser,
+  isTeamMember
+} from 'server/utils/authorization'
 import MeetingMember from 'server/graphql/types/MeetingMember'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
@@ -219,9 +224,12 @@ const User = new GraphQLObjectType({
         if (!meeting) {
           return standardError(new Error('Meeting not found'), {userId: viewerId})
         }
-        if (!isTeamMember(authToken, meeting.teamId)) {
-          standardError(new Error('Team not found'), {userId: viewerId})
-          return null
+        const {teamId} = meeting
+        if (!isTeamMember(authToken, teamId)) {
+          if (!(await isPastOrPresentTeamMember(viewerId, teamId))) {
+            standardError(new Error('Team not found'), {userId: viewerId})
+            return null
+          }
         }
         return meeting
       }
@@ -267,8 +275,11 @@ const User = new GraphQLObjectType({
         if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
         const {teamId} = meeting
         if (!isTeamMember(authToken, teamId)) {
-          standardError(new Error('Team not found'), {userId: viewerId})
-          return null
+          // the team could be archived
+          if (!(await isPastOrPresentTeamMember(viewerId, teamId))) {
+            standardError(new Error('Team not found'), {userId: viewerId})
+            return null
+          }
         }
         return meeting
       }
