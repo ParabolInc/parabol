@@ -6827,10 +6827,8 @@ export interface ISubscription {
   integrationSubscription: IntegrationSubscriptionPayload
   integrationJoined: IJoinIntegrationPayload
   integrationLeft: ILeaveIntegrationPayload
-  invitationSubscription: InvitationSubscriptionPayload
   newAuthToken: string | null
   notificationSubscription: NotificationSubscriptionPayload
-  orgApprovalSubscription: OrgApprovalSubscriptionPayload
   organizationSubscription: OrganizationSubscriptionPayload
   taskSubscription: TaskSubscriptionPayload
   slackChannelAdded: IAddSlackChannelPayload
@@ -6869,14 +6867,6 @@ export interface IIntegrationLeftOnSubscriptionArguments {
   teamId: string
 }
 
-export interface IInvitationSubscriptionOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface IOrgApprovalSubscriptionOnSubscriptionArguments {
-  teamId: string
-}
-
 export interface ISlackChannelAddedOnSubscriptionArguments {
   teamId: string
 }
@@ -6897,11 +6887,6 @@ export interface IGitHubMemberRemovedPayload {
 }
 
 export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProviderPayload
-
-export type InvitationSubscriptionPayload =
-  | IAcceptTeamInvitePayload
-  | IApproveToOrgPayload
-  | IInviteTeamMembersPayload
 
 export type NotificationSubscriptionPayload =
   | IAcceptTeamInvitationPayload
@@ -6933,12 +6918,6 @@ export interface IAddNewFeaturePayload {
    */
   newFeature: INewFeatureBroadcast | null
 }
-
-export type OrgApprovalSubscriptionPayload =
-  | IApproveToOrgPayload
-  | ICancelApprovalPayload
-  | IInviteTeamMembersPayload
-  | IRejectOrgApprovalPayload
 
 export type OrganizationSubscriptionPayload =
   | IAddOrgPayload

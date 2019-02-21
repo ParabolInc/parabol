@@ -28,7 +28,6 @@ import tasks from 'server/graphql/queries/tasks'
 import archivedTasks from 'server/graphql/queries/archivedTasks'
 import {getUserId, isSuperUser, isTeamMember} from 'server/utils/authorization'
 import MeetingMember from 'server/graphql/types/MeetingMember'
-import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
 import Organization from 'server/graphql/types/Organization'
 import {TimelineEventConnection} from 'server/graphql/types/TimelineEvent'
@@ -38,6 +37,7 @@ import SuggestedAction from 'server/graphql/types/SuggestedAction'
 import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
 import standardError from 'server/utils/standardError'
 import TeamInvitation from 'server/graphql/types/TeamInvitation'
+import newMeeting from 'server/graphql/queries/newMeeting'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -253,27 +253,7 @@ const User = new GraphQLObjectType({
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
     },
-    newMeeting: {
-      type: new GraphQLNonNull(NewMeeting),
-      description: 'A previous meeting that the user was in (present or absent)',
-      args: {
-        meetingId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The meeting ID'
-        }
-      },
-      async resolve (source, {meetingId}, {authToken, dataLoader}) {
-        const viewerId = getUserId(authToken)
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-        const {teamId} = meeting
-        if (!isTeamMember(authToken, teamId)) {
-          standardError(new Error('Team not found'), {userId: viewerId})
-          return null
-        }
-        return meeting
-      }
-    },
+    newMeeting,
     notifications: require('../queries/notifications').default,
     providerMap,
     slackChannels,

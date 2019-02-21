@@ -2,8 +2,6 @@ import React from 'react'
 import {graphql} from 'react-relay'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import TeamSettings from 'universal/modules/teamDashboard/components/TeamSettings/TeamSettings'
-import InvitationSubscription from 'universal/subscriptions/InvitationSubscription'
-import OrgApprovalSubscription from 'universal/subscriptions/OrgApprovalSubscription'
 import {LoaderSize} from 'universal/types/constEnums'
 import {cacheConfig} from 'universal/utils/constants'
 import renderQuery from 'universal/utils/relay/renderQuery'
@@ -17,8 +15,6 @@ const query = graphql`
   }
 `
 
-const subscriptions = [InvitationSubscription, OrgApprovalSubscription]
-
 interface Props {
   teamId: string
 }
@@ -31,7 +27,6 @@ const TeamSettingsRoot = ({teamId}: Props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      subscriptions={subscriptions}
       render={renderQuery(TeamSettings, {size: LoaderSize.PANEL})}
     />
   )
