@@ -18,6 +18,16 @@ export const isTeamMember = (authToken, teamId) => {
   return Array.isArray(tms) && tms.includes(teamId)
 }
 
+export const isPastOrPresentTeamMember = async (viewerId, teamId) => {
+  const r = getRethink()
+  return r
+    .table('TeamMember')
+    .getAll(teamId, {index: 'teamId'})
+    .filter({userId: viewerId})
+    .count()
+    .ge(1)
+}
+
 export const isTeamLead = async (userId, teamId) => {
   const r = getRethink()
   const teamMemberId = toTeamMemberId(teamId, userId)
