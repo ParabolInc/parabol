@@ -85,7 +85,6 @@ module.exports = {
       'react-lifecycles-compat',
       'react-loadable',
       'react-notification-system',
-      'react-portal-hoc',
       'react-redux',
       'react-relay',
       'react-router',

@@ -1,13 +1,10 @@
-import PropTypes from 'prop-types'
+import UserAgent from 'fbjs/lib/UserAgent'
 import React from 'react'
-import portal from 'react-portal-hoc'
-import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
-import DashModal from 'universal/components/Dashboard/DashModal'
+import styled from 'react-emotion'
 import IconButton from 'universal/components/IconButton'
 import IconLabel from 'universal/components/IconLabel'
-import styled from 'react-emotion'
-import UserAgent from 'fbjs/lib/UserAgent'
+import appTheme from 'universal/styles/theme/appTheme'
+import ui from 'universal/styles/ui'
 
 const isOSX = UserAgent.isPlatform('Mac OS X')
 const modKey = isOSX ? '⌘' : 'ctrl'
@@ -18,7 +15,7 @@ const ModalHeader = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   lineHeight: 1.5,
-  padding: '0 0 .25rem',
+  padding: '16px 0 4px',
   position: 'relative'
 })
 
@@ -42,7 +39,7 @@ const CloseButton = styled(IconButton)({
   width: ui.iconSize2x
 })
 
-const HelpList = styled('div')(({listIndex}) => ({
+const HelpList = styled('div')(({listIndex}: {listIndex: number}) => ({
   border: `.0625rem solid ${appTheme.palette.mid30l}`,
   color: appTheme.palette.dark50d,
   fontSize: appTheme.typography.s2,
@@ -52,7 +49,7 @@ const HelpList = styled('div')(({listIndex}) => ({
   textAlign: 'left'
 }))
 
-const HelpRow = styled('div')(({shortcutIndex}) => ({
+const HelpRow = styled('div')(({shortcutIndex}: {shortcutIndex: number}) => ({
   alignItems: 'center',
   backgroundColor: shortcutIndex % 2 ? ui.palette.white : appTheme.palette.mid10l,
   display: 'flex',
@@ -179,17 +176,24 @@ const blockShortcuts = [
   }
 ]
 const shortcutLists = [typeShortcuts, mentionShortcuts, blockShortcuts]
-const EditorHelpModal = (props) => {
-  const {closeAfter, handleCloseModal, isClosing} = props
+
+const ModalBoundary = styled('div')({
+  background: ui.palette.white,
+  borderRadius: ui.modalBorderRadius,
+  display: 'flex',
+  flexDirection: 'column',
+  height: 480,
+  width: 564
+})
+
+interface Props {
+  handleCloseModal: () => void
+}
+
+const EditorHelpModal = (props: Props) => {
+  const {handleCloseModal} = props
   return (
-    <DashModal
-      closeAfter={closeAfter}
-      isClosing={isClosing}
-      modalLayout='viewport'
-      onBackdropClick={handleCloseModal}
-      position='absolute'
-      width='36.875rem'
-    >
+    <ModalBoundary>
       <ModalHeader>
         <ModalHeaderIcon>
           <IconLabel icon='keyboard' iconLarge />
@@ -225,16 +229,8 @@ const EditorHelpModal = (props) => {
           </HelpList>
         )
       })}
-    </DashModal>
+    </ModalBoundary>
   )
 }
 
-EditorHelpModal.propTypes = {
-  closeAfter: PropTypes.number,
-  handleCloseModal: PropTypes.func,
-  isClosing: PropTypes.bool,
-  isOpen: PropTypes.bool,
-  openPortal: PropTypes.func
-}
-
-export default portal({closeAfter: 100})(EditorHelpModal)
+export default EditorHelpModal
