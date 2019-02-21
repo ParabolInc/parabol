@@ -43,7 +43,11 @@ export default {
       const viewerId = getUserId(authToken)
       if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
       if (!invitationToken) {
-        return standardError(new Error('No invitation token provided'), {userId: viewerId})
+        return {
+          error: {
+            message: 'No invitation token provided'
+          }
+        }
       }
 
       // VALIDATION
