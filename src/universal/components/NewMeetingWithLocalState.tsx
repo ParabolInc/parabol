@@ -26,9 +26,13 @@ import updateLocalStage from 'universal/utils/relay/updateLocalStage'
  * tl;dr it gives the client a pretty URL for free and the dev doesn't have to muck around with history.push
  */
 
-interface Props
-  extends WithAtmosphereProps,
-    RouteComponentProps<{teamId: string; localPhaseSlug: string; stageIdxSlug?: string}> {
+interface Params {
+  teamId: string
+  localPhaseSlug: string
+  stageIdxSlug?: string
+}
+
+interface Props extends WithAtmosphereProps, RouteComponentProps<Params> {
   meetingType: MeetingTypeEnum
   viewer: NewMeetingWithLocalState_viewer
 }
@@ -39,7 +43,7 @@ type State = {
 }
 
 class NewMeetingWithLocalState extends Component<Props, State> {
-  constructor (props) {
+  constructor (props: Props) {
     super(props)
     const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
@@ -82,7 +86,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  updateRelayFromURL (params) {
+  updateRelayFromURL (params: Params) {
     /*
      * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
      * the additional logic here has 2 benefits:
@@ -105,7 +109,14 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       return false
     }
     const {team} = viewer
-    const {newMeeting} = team!
+    if (!team) {
+      history.replace({
+        pathname: `/invitation-required/${teamId}`,
+        search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
+      })
+      return false
+    }
+    const {newMeeting} = team
     const meetingSlug = meetingTypeToSlug[meetingType]
     const {viewerId} = atmosphere
 

@@ -30,7 +30,7 @@ const TeamRoot = ({location, match}: Props) => {
       render={({props: renderProps}) => {
         const viewer = renderProps ? renderProps.viewer : null
         // @ts-ignore
-        return <TeamContainer location={location} match={match} viewer={viewer} />
+        return <TeamContainer location={location} match={match} viewer={viewer} teamId={teamId} />
       }}
     />
   )

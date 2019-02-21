@@ -37,6 +37,7 @@ import OrganizationUser from 'server/graphql/types/OrganizationUser'
 import SuggestedAction from 'server/graphql/types/SuggestedAction'
 import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
 import standardError from 'server/utils/standardError'
+import TeamInvitation from 'server/graphql/types/TeamInvitation'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -345,6 +346,24 @@ const User = new GraphQLObjectType({
     },
     tasks,
     team: require('../queries/team').default,
+    teamInvitation: {
+      type: TeamInvitation,
+      description: 'The invitation sent to the user, even if it was sent before they were a user',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The teamId to check for the invitation'
+        }
+      },
+      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId && !isSuperUser(authToken)) return null
+        const user = await dataLoader.get('users').load(userId)
+        const {email} = user
+        const teamInvitations = await dataLoader.get('teamInvitationsByTeamId').load(teamId)
+        return teamInvitations.find((invitation) => invitation.email === email)
+      }
+    },
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the user is on that the viewer can see.',

@@ -226,6 +226,11 @@ export interface IUser {
   team: ITeam | null
 
   /**
+   * The invitation sent to the user, even if it was sent before they were a user
+   */
+  teamInvitation: ITeamInvitation | null
+
+  /**
    * all the teams the user is on that the viewer can see.
    */
   teams: Array<ITeam>
@@ -387,6 +392,13 @@ export interface ITasksOnUserArguments {
 export interface ITeamOnUserArguments {
   /**
    * The team ID for the desired team
+   */
+  teamId: string
+}
+
+export interface ITeamInvitationOnUserArguments {
+  /**
+   * The teamId to check for the invitation
    */
   teamId: string
 }
