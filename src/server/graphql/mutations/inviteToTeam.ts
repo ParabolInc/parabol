@@ -120,7 +120,6 @@ export default {
       )
 
       const successfulInvitees = newInvitees.filter((_email, idx) => emailResults[idx])
-      console.log('email results', emailResults)
       const data = {
         removedSuggestedActionId,
         teamId,

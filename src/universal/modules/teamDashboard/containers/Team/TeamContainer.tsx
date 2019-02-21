@@ -2,7 +2,7 @@ import {TeamContainer_viewer} from '__generated__/TeamContainer_viewer.graphql'
 import React, {lazy, Suspense, useEffect} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {Route, RouteComponentProps} from 'react-router'
+import {Route, RouteComponentProps, withRouter} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -35,8 +35,6 @@ const ArchivedTasks = lazy(() =>
 )
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  location: any
-  match: any
   teamId: string
   teamMemberId: string
   viewer: TeamContainer_viewer
@@ -89,7 +87,7 @@ const TeamContainer = (props: Props) => {
 export default createFragmentContainer(
   withAtmosphere(
     (withReducer as any)({teamDashboard: teamDashReducer})(
-      (connect as any)(mapStateToProps)(TeamContainer)
+      (connect as any)(mapStateToProps)(withRouter(TeamContainer))
     )
   ),
   graphql`

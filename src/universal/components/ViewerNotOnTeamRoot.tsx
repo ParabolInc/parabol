@@ -6,6 +6,7 @@ import {LoaderSize} from 'universal/types/constEnums'
 import renderQuery from 'universal/utils/relay/renderQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import ViewerNotOnTeam from './ViewerNotOnTeam'
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 
 const query = graphql`
   query ViewerNotOnTeamRootQuery($teamId: ID!) {
@@ -17,6 +18,7 @@ const query = graphql`
 
 interface Props extends RouteComponentProps<{teamId: string}> {}
 
+const subscriptions = [NotificationSubscription]
 const InvoiceRoot = ({
   match: {
     params: {teamId}
@@ -32,6 +34,7 @@ const InvoiceRoot = ({
       environment={atmosphere}
       query={query}
       variables={{teamId}}
+      subscriptions={subscriptions}
       render={renderQuery(ViewerNotOnTeam, {size: LoaderSize.WHOLE_PAGE})}
     />
   )

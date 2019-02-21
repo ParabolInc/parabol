@@ -1,12 +1,11 @@
 import {ViewerNotOnTeam_viewer} from '__generated__/ViewerNotOnTeam_viewer.graphql'
 import React, {useEffect} from 'react'
 import Helmet from 'react-helmet'
-import {createFragmentContainer, graphql, requestSubscription} from 'react-relay'
+import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router'
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
-import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import useAtmosphere from '../hooks/useAtmosphere'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialog from './InvitationDialog'
@@ -29,11 +28,6 @@ const ViewerNotOnTeam = (props: Props) => {
       AcceptTeamInvitationMutation(atmosphere, {invitationToken: teamInvitation.token}, {history})
     }
   })
-  useEffect(() => {
-    if (teamInvitation) return
-    const disposable = requestSubscription(atmosphere, NotificationSubscription(atmosphere))
-    return () => disposable.dispose()
-  }, [])
 
   useEffect(() => {
     if (teamInvitation) return
