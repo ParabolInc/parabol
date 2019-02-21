@@ -2,7 +2,7 @@ import {DashSidebar_viewer} from '__generated__/DashSidebar_viewer.graphql'
 import React from 'react'
 import styled, {css} from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {NavLink, RouteComponentProps} from 'react-router-dom'
+import {NavLink} from 'react-router-dom'
 import tinycolor from 'tinycolor2'
 import DashNavList from 'universal/components/DashNavList/DashNavList'
 import Icon from 'universal/components/Icon'
@@ -18,7 +18,8 @@ export const enum DASH_SIDEBAR {
   WIDTH = 240
 }
 
-interface Props extends RouteComponentProps<{}> {
+interface Props {
+  location: any
   viewer: DashSidebar_viewer
 }
 

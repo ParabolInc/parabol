@@ -1,14 +1,15 @@
-import React from 'react'
+import React, {lazy, Suspense} from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
-import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router'
-import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
+import {matchPath, Route, RouteComponentProps, Switch, withRouter} from 'react-router'
 import DashHeader from 'universal/components/Dashboard/DashHeader'
 import DashMain from 'universal/components/Dashboard/DashMain'
 import Tab from 'universal/components/Tab/Tab'
 import Tabs from 'universal/components/Tabs/Tabs'
+import LoadingComponent from '../../../../components/LoadingComponent/LoadingComponent'
 
 import {PALETTE} from '../../../../styles/paletteV2'
+import {LoaderSize} from '../../../../types/constEnums'
 // import DebugButton from './DebugButton'
 
 const TabBody = styled('div')({
@@ -40,10 +41,12 @@ const TopTabs = styled(Tabs)({
 
 interface Props extends RouteComponentProps<{}> {}
 
-const myDashboardTasksRoot = () =>
+const MyDashboardTasksRoot = lazy(() =>
   import(/* webpackChunkName: MyDashboardTasksRoot */ 'universal/components/MyDashboardTasksRoot')
-const myDashboardTimelineRoot = () =>
+)
+const MyDashboardTimelineRoot = lazy(() =>
   import(/* webpackChunkName: MyDashboardTimelineRoot */ 'universal/components/MyDashboardTimelineRoot')
+)
 
 const UserDashMain = (props: Props) => {
   const {history, match} = props
@@ -67,10 +70,12 @@ const UserDashMain = (props: Props) => {
         {/*</HeaderCopy>*/}
       </DashHeader>
       <TabBody>
-        <Switch>
-          <AsyncRoute path={`${match.url}/tasks`} mod={myDashboardTasksRoot} />
-          <AsyncRoute path={match.url} mod={myDashboardTimelineRoot} />
-        </Switch>
+        <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
+          <Switch>
+            <Route path={`${match.url}/tasks`} component={MyDashboardTasksRoot} />
+            <Route path={match.url} component={MyDashboardTimelineRoot} />
+          </Switch>
+        </Suspense>
       </TabBody>
     </DashMain>
   )

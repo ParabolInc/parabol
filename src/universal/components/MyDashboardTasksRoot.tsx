@@ -1,14 +1,13 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import MyDashboardTasks from 'universal/components/MyDashboardTasks'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {cacheConfig} from 'universal/utils/constants'
-import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
+import {LoaderSize} from '../types/constEnums'
+import renderQuery from '../utils/relay/renderQuery'
 
 const query = graphql`
   query MyDashboardTasksRootQuery {
@@ -28,15 +27,7 @@ const MyDashboardTasksRoot = ({atmosphere}: Props) => {
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
-      render={(readyState) => (
-        <RelayTransitionGroup
-          readyState={readyState}
-          error={<ErrorComponent />}
-          loading={<LoadingComponent />}
-          // @ts-ignore
-          ready={<MyDashboardTasks />}
-        />
-      )}
+      render={renderQuery(MyDashboardTasks, {size: LoaderSize.PANEL})}
     />
   )
 }

@@ -1,41 +1,44 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {lazy} from 'react'
+import {Route} from 'react-router'
 import {Switch} from 'react-router-dom'
-import AsyncRoute from 'universal/components/AsyncRoute/AsyncRoute'
 import userDashReducer from 'universal/modules/userDashboard/ducks/userDashDuck'
 import withReducer from '../../../../decorators/withReducer/withReducer'
 
-const organizations = () =>
+const Organizations = lazy(() =>
   import(/* webpackChunkName: 'OrganizationsRoot' */ 'universal/modules/userDashboard/containers/Organizations/OrganizationsRoot')
-const organization = () =>
+)
+const Organization = lazy(() =>
   import(/* webpackChunkName: 'OrganizationRoot' */ 'universal/modules/userDashboard/containers/Organization/OrganizationRoot')
-const userDashMain = () =>
+)
+const UserDashMain = lazy(() =>
   import(/* webpackChunkName: 'UserDashMain' */ 'universal/modules/userDashboard/components/UserDashMain/UserDashMain')
-const userProfile = () =>
+)
+const UserProfile = lazy(() =>
   import(/* webpackChunkName: 'UserProfileRoot' */ 'universal/modules/userDashboard/components/UserProfileRoot')
-const notificationsMod = () =>
+)
+const NotificationsMod = lazy(() =>
   import(/* webpackChunkName: 'NotificationsContainer' */ 'universal/modules/notifications/containers/Notifications/NotificationsContainer')
+)
 
-const UserDashboard = (props) => {
+interface Props {
+  match: any
+  notifications: any
+}
+
+const UserDashboard = (props: Props) => {
   const {match, notifications} = props
   return (
     <Switch>
-      <AsyncRoute path={`${match.url}/profile`} mod={userProfile} />
-      <AsyncRoute exact path={`${match.url}/organizations`} mod={organizations} />
-      <AsyncRoute path={`${match.url}/organizations/:orgId`} mod={organization} />
-      <AsyncRoute
+      <Route path={`${match.url}/profile`} component={UserProfile} />
+      <Route exact path={`${match.url}/organizations`} component={Organizations} />
+      <Route path={`${match.url}/organizations/:orgId`} component={Organization} />
+      <Route
         path={`${match.url}/notifications`}
-        mod={notificationsMod}
-        extraProps={{notifications}}
+        render={(p) => <NotificationsMod {...p} notifications={notifications} />}
       />
-      <AsyncRoute path={match.url} mod={userDashMain} />
+      <Route path={match.url} component={UserDashMain} />
     </Switch>
   )
-}
-
-UserDashboard.propTypes = {
-  match: PropTypes.object.isRequired,
-  notifications: PropTypes.object
 }
 
 export default withReducer({userDashboard: userDashReducer})(UserDashboard)

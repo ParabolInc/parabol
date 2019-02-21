@@ -233,7 +233,7 @@ export default class Atmosphere extends Environment {
     variables: Variables,
     _cacheConfig?: CacheConfig
   ): Promise<ObservableFromValue<QueryPayload>> => {
-    // await sleep(100)
+    // await sleep(500)
     const field = operation.id ? 'documentId' : 'query'
     const data = operation.id || operation.text
     return this.transport.fetch({[field]: data, variables})

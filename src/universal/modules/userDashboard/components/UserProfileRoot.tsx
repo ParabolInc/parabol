@@ -1,17 +1,14 @@
 import React from 'react'
 import {graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {Dispatch} from 'redux'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import LoadingView from 'universal/components/LoadingView/LoadingView'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import {cacheConfig} from 'universal/utils/constants'
-import {connect} from 'react-redux'
+import {LoaderSize} from '../../../types/constEnums'
+import renderQuery from '../../../utils/relay/renderQuery'
 import UserProfile from './UserProfile'
 
 const query = graphql`
@@ -24,14 +21,11 @@ const query = graphql`
 
 const subscriptions = [NotificationSubscription]
 
-interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string}> {
-  dispatch: Dispatch<any>
-}
+interface Props extends WithAtmosphereProps, RouteComponentProps<{teamId: string}> {}
 
 const UserProfileRoot = (props: Props) => {
   const {
     atmosphere,
-    dispatch,
     history,
     location,
     match: {
@@ -45,18 +39,10 @@ const UserProfileRoot = (props: Props) => {
       query={query}
       variables={{teamId}}
       subscriptions={subscriptions}
-      subParams={{dispatch, history, location}}
-      render={(readyState) => (
-        <RelayTransitionGroup
-          readyState={readyState}
-          error={<ErrorComponent />}
-          loading={<LoadingView minHeight='50vh' />}
-          // @ts-ignore
-          ready={<UserProfile />}
-        />
-      )}
+      subParams={{history, location}}
+      render={renderQuery(UserProfile, {size: LoaderSize.PANEL})}
     />
   )
 }
 
-export default (connect() as any)(withRouter(withAtmosphere(UserProfileRoot)))
+export default withRouter(withAtmosphere(UserProfileRoot))
