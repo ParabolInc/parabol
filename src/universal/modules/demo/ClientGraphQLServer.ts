@@ -841,7 +841,9 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
         isSoftTask: false,
         userId: null
       }
-      const task = this.db.tasks.find((task) => task.id === updatedTask.id)!
+      const task = this.db.tasks.find((task) => task.id === updatedTask.id)
+      // if the human deleted the task, exit fast
+      if (!task) return null
       if (assigneeId) {
         const isSoftTask = getIsSoftTeamMember(assigneeId)
         taskUpdates.isSoftTask = isSoftTask
