@@ -4,8 +4,14 @@
  * This does that, and does it quickly, assuming that the first promise in the array will resolve first
  */
 
-const promiseAllPartial = async (promiseArr, catchValue = null) => {
-  const arr = []
+import {NotVoid} from '../../types/generics'
+
+type CatchHandler = (e: Error) => NotVoid
+
+const defaultCatchHandler: CatchHandler = (_e: Error) => null
+
+const promiseAllPartial = async (promiseArr, catchHandler: CatchHandler = defaultCatchHandler) => {
+  const arr: any[] = []
   for (let ii = 0; ii < promiseArr.length; ii++) {
     const promise = promiseArr[ii]
     try {
@@ -13,6 +19,7 @@ const promiseAllPartial = async (promiseArr, catchValue = null) => {
       const res = await promise
       arr.push(res)
     } catch (e) {
+      const catchValue = catchHandler(e)
       arr.push(catchValue)
     }
   }
