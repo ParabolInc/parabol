@@ -10,6 +10,9 @@ const CreateUserPicturePutUrlPayload = new GraphQLObjectType({
     },
     url: {
       type: GraphQLURLType
+    },
+    pngUrl: {
+      type: GraphQLURLType
     }
   })
 })

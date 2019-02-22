@@ -1,12 +1,16 @@
 import {commitMutation} from 'react-relay'
 
 const mutation = graphql`
-  mutation CreateUserPicturePutUrlMutation($contentType: String!, $contentLength: Int!) {
-    createUserPicturePutUrl(contentType: $contentType, contentLength: $contentLength) {
+  mutation CreateUserPicturePutUrlMutation(
+    $image: ImageMetadataInput!
+    $pngVersion: ImageMetadataInput
+  ) {
+    createUserPicturePutUrl(image: $image, pngVersion: $pngVersion) {
       error {
         message
       }
       url
+      pngUrl
     }
   }
 `
