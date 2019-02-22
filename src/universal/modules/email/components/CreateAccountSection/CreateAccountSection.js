@@ -2,6 +2,7 @@ import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import appTheme from 'universal/styles/theme/appTheme'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from 'universal/styles/email'
+import emailDir from 'universal/modules/email/emailDir'
 
 const tableStyle = {
   ...emailTableBase,
@@ -76,7 +77,7 @@ const primaryActionLabel = 'Create a Free Account'
 const primaryActionLink = '/create-account?from=demo'
 
 const makeFeatureRow = (featureIconFile, featureCopy, idx) => {
-  const src = `/static/images/email/icons/${featureIconFile}`
+  const src = `${emailDir}${featureIconFile}`
   return (
     <tr key={`feature${idx}`}>
       <td style={featureIconCellStyle} width={iconSize}>
@@ -99,7 +100,8 @@ const CreateAccountSection = () => {
             <td style={blockStyle}>
               <div style={headingStyle}>Thanks for playing!</div>
               <div style={copyStyle}>
-                In just a few seconds you’ll have access<br />
+                In just a few seconds you’ll have access
+                <br />
                 to run <b>unlimited retrospectives</b> with your team.
               </div>
               <div>

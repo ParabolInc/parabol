@@ -3553,14 +3553,14 @@ export interface ICreateTaskOnMutationArguments {
 
 export interface ICreateUserPicturePutUrlOnMutationArguments {
   /**
-   * user-supplied MIME content type
+   * user supplied image metadata
    */
-  contentType?: string | null
+  image: IImageMetadataInput
 
   /**
-   * user-supplied file size
+   * a png version of the above image
    */
-  contentLength: number
+  pngVersion?: IImageMetadataInput | null
 }
 
 export interface IDeleteTaskOnMutationArguments {
@@ -5377,10 +5377,23 @@ export interface ICreateTaskPayload {
   involvementNotification: INotifyTaskInvolves | null
 }
 
+export interface IImageMetadataInput {
+  /**
+   * user-supplied MIME content type
+   */
+  contentType: string
+
+  /**
+   * user-supplied file size
+   */
+  contentLength: number
+}
+
 export interface ICreateUserPicturePutUrlPayload {
   __typename: 'CreateUserPicturePutUrlPayload'
   error: IStandardMutationError | null
   url: any | null
+  pngUrl: any | null
 }
 
 export interface IDeleteTaskPayload {
