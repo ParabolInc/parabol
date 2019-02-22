@@ -8,11 +8,11 @@ import {
   ITask
 } from '../../types/graphql'
 import getDemoAvatar from 'universal/utils/getDemoAvatar'
+import demoUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 
 export const demoMeetingId = 'demoMeeting'
 export const demoViewerId = 'demoUser'
 export const demoTeamId = 'demoTeam'
-export const demoUserAvatar = '/static/images/avatars/avatar-user@3x.png'
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
 

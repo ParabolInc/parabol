@@ -14,6 +14,7 @@ import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogTitle from './InvitationDialogTitle'
 import StyledError from './StyledError'
 import {AddTeamMemberModal_teamMembers} from '__generated__/AddTeamMemberModal_teamMembers.graphql'
+import plural from 'universal/utils/plural'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   closePortal: () => void
@@ -23,6 +24,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 interface State {
   invitees: Array<string>
+  pendingSuccessfulInvitations: Array<string>
   successfulInvitations: null | Array<string>
   rawInvitees: string
 }
@@ -45,6 +47,7 @@ const ErrorMessage = styled(StyledError)({
 class AddTeamMemberModal extends Component<Props, State> {
   _mounted = true
   state = {
+    pendingSuccessfulInvitations: [] as Array<string>,
     successfulInvitations: null,
     rawInvitees: '',
     invitees: [] as Array<string>
@@ -74,7 +77,7 @@ class AddTeamMemberModal extends Component<Props, State> {
   sendInvitations = () => {
     const {atmosphere, onError, onCompleted, submitMutation, setDirty, team} = this.props
     const {id: teamId} = team
-    const {invitees} = this.state
+    const {invitees, pendingSuccessfulInvitations} = this.state
     if (invitees.length === 0) return
     setDirty()
     submitMutation()
@@ -83,9 +86,29 @@ class AddTeamMemberModal extends Component<Props, State> {
       if (res) {
         const {inviteToTeam} = res
         if (this._mounted) {
-          this.setState({
-            successfulInvitations: inviteToTeam.invitees
-          })
+          if (inviteToTeam.invitees.length === invitees.length) {
+            this.setState({
+              successfulInvitations: pendingSuccessfulInvitations.concat(inviteToTeam.invitees)
+            })
+          } else {
+            // there was a problem with at least 1 email
+            const goodInvitees = invitees.filter((invitee) =>
+              inviteToTeam.invitees.includes(invitee)
+            )
+
+            const badInvitees = invitees.filter(
+              (invitee) => !inviteToTeam.invitees.includes(invitee)
+            )
+            onError(
+              `Could not send an invitation to the above ${plural(badInvitees.length, 'email')}`
+            )
+            this.setState({
+              invitees: badInvitees,
+              rawInvitees: badInvitees.join(', '),
+              // store the successes in a list so the user gets a confirmation that all emails were sent
+              pendingSuccessfulInvitations: pendingSuccessfulInvitations.concat(goodInvitees)
+            })
+          }
         }
       }
     }

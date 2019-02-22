@@ -21,6 +21,7 @@ import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constant
 import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
+import SlackProviderLogo from '../../../../SlackProviderLogo'
 
 const StyledButton = styled(RaisedButton)({
   paddingLeft: 0,
@@ -162,7 +163,8 @@ const ProviderRow = (props: Props) => {
     <StyledRow>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
         <ProviderAvatar backgroundColor={color}>
-          <ProviderIcon name={icon} />
+          {name === IntegrationService.SlackIntegration && <SlackProviderLogo />}
+          {icon && <ProviderIcon name={icon} />}
         </ProviderAvatar>
       </ConditionalLink>
       <RowInfo>

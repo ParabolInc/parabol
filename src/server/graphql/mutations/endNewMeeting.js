@@ -83,7 +83,7 @@ export default {
         teamId,
         meetingNumber
       })
-      await sendNewMeetingSummary(completedMeeting, dataLoader)
+      sendNewMeetingSummary(completedMeeting, dataLoader)
       const events = meetingMembers.map((meetingMember) => ({
         id: shortid.generate(),
         createdAt: now,

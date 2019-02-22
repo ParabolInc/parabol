@@ -7,6 +7,7 @@ import EmptySpace from '../../components/EmptySpace/EmptySpace'
 import Header from '../../components/Header/Header'
 import EmailFooter from '../../components/EmailFooter/EmailFooter'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from 'universal/styles/email'
+import emailDir from 'universal/modules/email/emailDir'
 
 const innerMaxWidth = 480
 
@@ -29,7 +30,7 @@ const videoGraphicStyle = {
   width: '100%'
 }
 
-const videoGraphicSrc = '/static/images/email/graphics/retro-video-still.png'
+const videoGraphicSrc = `${emailDir}retro-video-still.png`
 
 const TeamInvite = (props) => {
   const {inviterName, inviterEmail, inviteeEmail, inviteeName, teamName, inviteLink} = props

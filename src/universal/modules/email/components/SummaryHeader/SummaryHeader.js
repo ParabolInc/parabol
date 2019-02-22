@@ -4,6 +4,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import {emailBodyColor, emailFontFamily} from 'universal/styles/email'
 import makeDateString from 'universal/utils/makeDateString'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import emailDir from 'universal/modules/email/emailDir'
 
 const SummaryHeader = (props) => {
   const {createdAt, isDemo, meetingNumber, meetingType, teamName} = props
@@ -61,7 +62,8 @@ const SummaryHeader = (props) => {
           <tr>
             <td style={blockStyle}>
               <img
-                src='/static/images/brand/mark-purple@3x.png'
+                alt='Parabol Logo'
+                src={`${emailDir}mark-purple@3x.png`}
                 style={logoStyle}
                 height='28'
                 width='31'

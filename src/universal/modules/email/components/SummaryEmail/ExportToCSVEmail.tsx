@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import EmptySpace from 'universal/modules/email/components/EmptySpace/EmptySpace'
+import emailDir from 'universal/modules/email/emailDir'
 
 interface Props {
   emailCSVLUrl: string
@@ -35,8 +36,9 @@ class ExportToCSVEmail extends Component<Props> {
         <EmptySpace height={16} />
         <a href={emailCSVLUrl} style={exportStyle} title={label}>
           <img
+            alt='Download CSV'
             style={iconLinkIcon}
-            src='/static/images/icons/cloud_download.png'
+            src={`${emailDir}cloud_download.png`}
             height={18}
             width={iconSize}
           />

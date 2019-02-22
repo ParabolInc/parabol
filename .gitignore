@@ -19,3 +19,4 @@ test-report.xml
 webdrivers/
 webpack-assets.json
 **/__generated__/
+.awcache/

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
 import {emailBodyColor, emailFontFamily, emailTableBase} from 'universal/styles/email'
+import emailDir from 'universal/modules/email/emailDir'
 
 const Footer = (props) => {
   const tableStyle = {
@@ -49,7 +50,7 @@ const Footer = (props) => {
                 <tr>
                   <td style={cellStyles}>
                     <EmptySpace height={10} />
-                    <img src='/static/images/brand/mark-color@3x.png' height='28' width='31' />
+                    <img src={`${emailDir}mark-color@3x.png`} height='28' width='31' />
                     <EmptySpace height={10} />
                     Crafted with care by the folks at Parabol
                     <EmptySpace height={10} />
