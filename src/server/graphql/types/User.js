@@ -33,7 +33,6 @@ import {
   isTeamMember
 } from 'server/utils/authorization'
 import MeetingMember from 'server/graphql/types/MeetingMember'
-import NewMeeting from 'server/graphql/types/NewMeeting'
 import UserFeatureFlags from 'server/graphql/types/UserFeatureFlags'
 import Organization from 'server/graphql/types/Organization'
 import {TimelineEventConnection} from 'server/graphql/types/TimelineEvent'
@@ -42,6 +41,8 @@ import OrganizationUser from 'server/graphql/types/OrganizationUser'
 import SuggestedAction from 'server/graphql/types/SuggestedAction'
 import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
 import standardError from 'server/utils/standardError'
+import TeamInvitation from 'server/graphql/types/TeamInvitation'
+import newMeeting from 'server/graphql/queries/newMeeting'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -260,30 +261,7 @@ const User = new GraphQLObjectType({
         return meetingId ? dataLoader.get('meetingMembers').load(meetingMemberId) : undefined
       }
     },
-    newMeeting: {
-      type: new GraphQLNonNull(NewMeeting),
-      description: 'A previous meeting that the user was in (present or absent)',
-      args: {
-        meetingId: {
-          type: new GraphQLNonNull(GraphQLID),
-          description: 'The meeting ID'
-        }
-      },
-      async resolve (source, {meetingId}, {authToken, dataLoader}) {
-        const viewerId = getUserId(authToken)
-        const meeting = await dataLoader.get('newMeetings').load(meetingId)
-        if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-        const {teamId} = meeting
-        if (!isTeamMember(authToken, teamId)) {
-          // the team could be archived
-          if (!(await isPastOrPresentTeamMember(viewerId, teamId))) {
-            standardError(new Error('Team not found'), {userId: viewerId})
-            return null
-          }
-        }
-        return meeting
-      }
-    },
+    newMeeting,
     notifications: require('../queries/notifications').default,
     providerMap,
     slackChannels,
@@ -304,7 +282,7 @@ const User = new GraphQLObjectType({
         const organizationUsersForOrgId = organizationUsers.find(
           (organizationUser) => organizationUser.orgId === orgId
         )
-        if (viewerId === userId) {
+        if (viewerId === userId || isSuperUser(authToken)) {
           return organizationUsersForOrgId
         }
         const viewerOrganizationUsers = await dataLoader
@@ -356,6 +334,24 @@ const User = new GraphQLObjectType({
     },
     tasks,
     team: require('../queries/team').default,
+    teamInvitation: {
+      type: TeamInvitation,
+      description: 'The invitation sent to the user, even if it was sent before they were a user',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The teamId to check for the invitation'
+        }
+      },
+      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        if (viewerId !== userId && !isSuperUser(authToken)) return null
+        const user = await dataLoader.get('users').load(userId)
+        const {email} = user
+        const teamInvitations = await dataLoader.get('teamInvitationsByTeamId').load(teamId)
+        return teamInvitations.find((invitation) => invitation.email === email)
+      }
+    },
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the user is on that the viewer can see.',

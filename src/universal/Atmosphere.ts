@@ -27,6 +27,7 @@ import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import LinearPublishQueue from 'universal/LinearPublishQueue'
+import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
 
 // import sleep from 'universal/utils/sleep'
 
@@ -77,6 +78,7 @@ interface AtmosphereEvents {
   addToast: Toast
   removeToast: (toast: string | any) => void
   endDraggingReflection: MasonryDragEndPayload
+  inviteToTeam: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>
   meetingSidebarCollapsed: boolean
   newSubscriptionClient: void
   removeGitHubRepo: void

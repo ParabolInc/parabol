@@ -119,7 +119,9 @@ const AcceptTeamInvitationMutation = (
         message: `You’ve been added to team ${teamName}`,
         action: {label: 'Great!'}
       })
-      history && history.push(`/team/${teamId}`)
+      const redirectTo = new URLSearchParams(location.search).get('redirectTo')
+      const nextRoute = redirectTo || `/team/${teamId}`
+      history && history.push(nextRoute)
     }
   })
 }

@@ -77,6 +77,7 @@ export function sendBatchEmail (recipients, template, props, recipientVariables)
 }
 
 const mailgunFrom = process.env.MAILGUN_FROM || ''
+const mailgunKey = process.env.MAILGUN_API_KEY
 
 export default async function sendEmailPromise (to: unknown, template: string, props: any) {
   if (!to || typeof to !== 'string') {
@@ -88,6 +89,10 @@ export default async function sendEmailPromise (to: unknown, template: string, p
   }
 
   const {subject, body, html} = emailFactory(props)
+  if (!mailgunKey) {
+    console.log('No mailgun key. Logging email: ', to, '\n', subject, '\n', body)
+    return true
+  }
   try {
     await mailgun.messages().send({
       from: mailgunFrom,
