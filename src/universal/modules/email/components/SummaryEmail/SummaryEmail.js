@@ -24,6 +24,7 @@ import {Link} from 'react-router-dom'
 import {makeSuccessExpression} from 'universal/utils/makeSuccessCopy'
 import {MEETING_NAME, AGENDA_ITEM_LABEL, DONE, ACTION} from 'universal/utils/constants'
 import {sheetShadow} from 'universal/styles/elevation'
+import emailDir from 'universal/modules/email/emailDir'
 
 const sheetStyle = {
   boxShadow: sheetShadow,
@@ -274,7 +275,7 @@ const SummaryEmail = (props) => {
                           >
                             <img
                               style={iconLinkIcon}
-                              src='/static/images/icons/google@5x.png'
+                              src={`${emailDir}google@5x.png`}
                               height={iconSize}
                               width={iconSize}
                             />
@@ -290,7 +291,7 @@ const SummaryEmail = (props) => {
                           >
                             <img
                               style={iconLinkIcon}
-                              src='/static/images/icons/calendar-plus-o@5x.png'
+                              src={`${emailDir}calendar-plus-o@5x.png`}
                               height={iconSize}
                               width={iconSize}
                             />

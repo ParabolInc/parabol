@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/browser'
 import {TeamInvitationGoogleSignin_verifiedInvitation} from '__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
 import {WebAuth} from 'auth0-js'
 import React, {Component} from 'react'
@@ -62,6 +63,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
       res = await auth0Authorize(this.webAuth, email)
     } catch (e) {
       onError(e)
+      Sentry.captureException(e)
       return
     }
     onCompleted()

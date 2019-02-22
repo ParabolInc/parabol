@@ -1,7 +1,6 @@
 import chunkArray from 'universal/utils/chunkArray'
 import createEmbeddedImages from './createEmbeddedImages'
 import {getMailgunApiConfig, getMailgunOptions} from './getMailgunConfig'
-import inlineImages from './inlineImages'
 import mailgun from './mailgunDriver'
 import templates from './templates'
 
@@ -89,20 +88,18 @@ export default async function sendEmailPromise (to: unknown, template: string, p
     throw new Error(`Email template for ${template} does not exist!`)
   }
 
-  const {subject, body, html: htmlWithoutImages} = emailFactory(props)
+  const {subject, body, html} = emailFactory(props)
   if (!mailgunKey) {
     console.log('No mailgun key. Logging email: ', to, '\n', subject, '\n', body)
     return true
   }
-  const {html, attachmentOptions} = await inlineImages(htmlWithoutImages)
   try {
     await mailgun.messages().send({
       from: mailgunFrom,
       to,
       subject,
       text: body,
-      html,
-      inline: attachmentOptions.map((options) => new mailgun.Attachment(options))
+      html
     })
   } catch (e) {
     return false

@@ -28,6 +28,7 @@ import makeWebAuth from '../utils/makeWebAuth'
 import AuthDialog from './AuthDialog'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
+import * as Sentry from '@sentry/browser'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps, WithMutationProps {}
 
@@ -64,6 +65,7 @@ class AuthenticationPage extends Component<Props> {
       res = await auth0Authorize(this.webAuth)
     } catch (e) {
       onError(e)
+      Sentry.captureException(e)
       return
     }
     onCompleted()
