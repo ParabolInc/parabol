@@ -5,22 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNEXT
+## v3.5.0 2019-Feb-25
 
 ### Added
-* Sentry captures for OAuth failures
+* Sentry captures for OAuth failures (#2682)
+* invitation-required fallback for visiting team-only view (#2667)
 
 ### Fixed
-* Missing agendaId in demo (#2663)
-* dataloader cache miss for missing NewMeeting (#2670)
+* Missing agendaId in demo (#2678)
+* dataloader cache miss for missing NewMeeting (#2679)
+* Sort ordering of template prompts (#2677)
+* Squelch unsupported language errors from Google NLP (#2680)
 
 ### Changed
-* Upgraded plenty of dependencies, notably Typescript
-* Re-implemented DLLs for faster development
-* Refactored all routes to use React.lazy
+* Upgraded plenty of dependencies, notably Typescript (#2637)
+* Re-implemented DLLs for faster development (#2637)
+* Refactored all routes to use React.lazy (#2646)
 
 ### Removed
-* react-portal-hoc
+* react-portal-hoc (#2659)
 
 ## v3.4.1 2019-Feb-21
 
