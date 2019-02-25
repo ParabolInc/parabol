@@ -19,7 +19,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation MoveReflectTemplatePromptMutation($promptId: ID!, $sortOrder: String!) {
+  mutation MoveReflectTemplatePromptMutation($promptId: ID!, $sortOrder: Float!) {
     moveReflectTemplatePrompt(promptId: $promptId, sortOrder: $sortOrder) {
       error {
         message

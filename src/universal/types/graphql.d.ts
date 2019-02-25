@@ -4157,7 +4157,7 @@ export interface IAddReflectTemplatePromptOnMutationArguments {
 
 export interface IMoveReflectTemplatePromptOnMutationArguments {
   promptId: string
-  sortOrder: string
+  sortOrder: number
 }
 
 export interface IRemoveReflectTemplateOnMutationArguments {
