@@ -92,9 +92,9 @@ const CreateReflectionMutation = (
         sortOrder: input.sortOrder,
         updatedAt: nowISO
       }
-      const meeting = store.get(meetingId)
+      const meeting = store.get(meetingId)!
       const reflectionNode = createProxyRecord(store, 'RetroReflection', optimisticReflection)
-      const phaseItem = store.get(input.retroPhaseItemId)
+      const phaseItem = store.get(input.retroPhaseItemId)!
       reflectionNode.setLinkedRecord(meeting, 'meeting')
       reflectionNode.setLinkedRecord(phaseItem, 'phaseItem')
       const reflectionGroupNode = createProxyRecord(store, 'RetroReflectionGroup', optimisticGroup)

@@ -16,7 +16,7 @@ import handleRemoveOrgApprovals from 'universal/mutations/handlers/handleRemoveO
 import handleUpsertTasks from 'universal/mutations/handlers/handleUpsertTasks'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import getInProxy from 'universal/utils/relay/getInProxy'
-import {InviteTeamMembersMutationResponse} from '__generated__/InviteTeamMembersMutation.graphql'
+import {InviteTeamMembersMutation} from '__generated__/InviteTeamMembersMutation.graphql'
 import popTeamInviteNotificationToast from './toasts/popTeamInviteNotificationToast'
 
 graphql`
@@ -304,7 +304,7 @@ const InviteTeamMembersMutation = (
   onCompleted
 ): Disposable => {
   const {viewerId} = atmosphere
-  return commitMutation(atmosphere, {
+  return commitMutation<InviteTeamMembersMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -336,7 +336,7 @@ const InviteTeamMembersMutation = (
       const nextSoftTeamMembers = softTeamMembers.concat(newSoftTeamMembers)
       team.setLinkedRecords(nextSoftTeamMembers, 'softTeamMembers')
     },
-    onCompleted: (res: InviteTeamMembersMutationResponse, errors) => {
+    onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }

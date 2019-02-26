@@ -1,3 +1,4 @@
+import {ExportToCSVQuery} from '__generated__/ExportToCSVQuery.graphql'
 import Json2csv from 'json2csv'
 import React, {Component} from 'react'
 import {fetchQuery, graphql} from 'react-relay'
@@ -57,23 +58,23 @@ class ExportToCSV extends Component<Props> {
     const {atmosphere, meetingId, submitMutation, submitting, onCompleted} = this.props
     if (submitting) return
     submitMutation()
-    const data = await fetchQuery(atmosphere, query, {meetingId})
+    const data = await fetchQuery<ExportToCSVQuery>(atmosphere, query, {meetingId})
     onCompleted()
+    const {viewer} = data
+    if (!viewer) return
+    const {newMeeting} = viewer
     const {
-      viewer: {
-        newMeeting: {
-          reflectionGroups,
-          endedAt,
-          team: {name: teamName}
-        }
-      }
-    } = data
+      reflectionGroups,
+      endedAt,
+      team: {name: teamName}
+    } = newMeeting
+
     const rows = [] as Array<CSVRow>
-    reflectionGroups.forEach((group) => {
+    reflectionGroups!.forEach((group) => {
       const {reflections, tasks, title, voteCount: votes} = group
       tasks.forEach((task) => {
         rows.push({
-          title,
+          title: title!,
           votes,
           type: 'Task',
           content: extractTextFromDraftString(task.content)
@@ -81,7 +82,7 @@ class ExportToCSV extends Component<Props> {
       })
       reflections.forEach((reflection) => {
         rows.push({
-          title,
+          title: title!,
           votes,
           type: 'Reflection',
           content: extractTextFromDraftString(reflection.content)

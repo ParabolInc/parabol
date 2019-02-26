@@ -1,15 +1,15 @@
+import {
+  ArchiveTeamMutation,
+  ArchiveTeamMutationVariables
+} from '__generated__/ArchiveTeamMutation.graphql'
+import {ArchiveTeamMutation_team} from '__generated__/ArchiveTeamMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
+import onTeamRoute from 'universal/utils/onTeamRoute'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import safeRemoveNodeFromArray from 'universal/utils/relay/safeRemoveNodeFromArray'
-import onTeamRoute from 'universal/utils/onTeamRoute'
-import {
-  ArchiveTeamMutationResponse,
-  ArchiveTeamMutationVariables
-} from '__generated__/ArchiveTeamMutation.graphql'
-import {ArchiveTeamMutation_team} from '__generated__/ArchiveTeamMutation_team.graphql'
 import Atmosphere from '../Atmosphere'
 import {LocalHandlers} from '../types/relayMutations'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
@@ -84,7 +84,7 @@ const ArchiveTeamMutation = (
   {onError, onCompleted, history}: LocalHandlers
 ): Disposable => {
   const {viewerId} = atmosphere
-  return commitMutation(atmosphere, {
+  return commitMutation<ArchiveTeamMutation>(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -94,7 +94,7 @@ const ArchiveTeamMutation = (
       const removedSuggestedActionIds = payload.getValue('removedSuggestedActionIds')
       handleRemoveSuggestedActions(removedSuggestedActionIds, store)
     },
-    onCompleted: (res: ArchiveTeamMutationResponse, errors) => {
+    onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }

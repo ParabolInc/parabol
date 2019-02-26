@@ -4,7 +4,7 @@ import MockDB from 'server/__tests__/setup/MockDB'
 import fetchAndSerialize from 'server/__tests__/utils/fetchAndSerialize'
 import stripe from 'server/billing/stripe'
 import stripeWebhookHandler from 'server/billing/stripeWebhookHandler'
-import SharedDataLoader from 'shared-dataloader'
+import DataLoaderWarehouse from 'dataloader-warehouse'
 import getRethink from 'server/database/rethinkDriver'
 import invoicePaymentSucceededEvent from 'server/graphql/mutations/__tests__/mockStripeEvents/invoicePaymentSucceededEvent'
 import shortid from 'shortid'
@@ -36,7 +36,7 @@ describe('stripeSucceedPayment', () => {
     })
 
     // TEST
-    const sharedDataLoader = new SharedDataLoader({
+    const sharedDataLoader = new DataLoaderWarehouse({
       ttl: 1000,
       onShare: '_share'
     })

@@ -1,8 +1,8 @@
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
-import SharedDataLoader from 'shared-dataloader'
+import DataLoaderWarehouse from 'dataloader-warehouse'
 
 const makeDataLoader = (authToken) => {
-  const sharedDataLoader = new SharedDataLoader({ttl: 1000, onShare: '_share'})
+  const sharedDataLoader = new DataLoaderWarehouse({ttl: 1000, onShare: '_share'})
   return sharedDataLoader.add(new RethinkDataLoader(authToken, {cache: false}))
 }
 

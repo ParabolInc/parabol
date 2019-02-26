@@ -6,6 +6,8 @@ import sendMessage from 'server/socketHelpers/sendMessage'
 import handleGraphQLTrebuchetRequest from '../graphql/handleGraphQLTrebuchetRequest'
 import isQueryAllowed from '../graphql/isQueryAllowed'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
+import {getUserId} from '../utils/authorization'
+import sendToSentry from '../utils/sendToSentry'
 
 const {GQL_ERROR} = ClientMessageTypes
 const handleMessage = (connectionContext: ConnectionContext) => async (message: Data) => {
@@ -39,6 +41,8 @@ const handleMessage = (connectionContext: ConnectionContext) => async (message: 
       sendMessage(socket, type, payload, opId)
     }
   } catch (e) {
+    const userId = getUserId(connectionContext.authToken)
+    sendToSentry(e, {userId})
     sendMessage(socket, GQL_ERROR, {errors: [e.message]})
   }
 }

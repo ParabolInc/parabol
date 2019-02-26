@@ -29,6 +29,10 @@ class PhaseItemEditor extends Component<Props, State> {
     isEditing: false
   }
 
+  componentWillUnmount (): void {
+    window.clearTimeout(this.idleTimerId)
+  }
+
   handleSubmit () {
     const {
       atmosphere,

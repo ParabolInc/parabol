@@ -7,18 +7,17 @@ import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
 import {requestSubscription} from 'react-relay'
 import {
-  CacheConfig,
-  Environment,
-  // @ts-ignore
-  getRequest,
   GraphQLSubscriptionConfig,
-  Network,
-  ObservableFromValue,
-  QueryPayload,
-  RecordSource,
-  RequestNode,
   Store,
-  Variables
+  RecordSource,
+  Variables,
+  Network,
+  Environment,
+  getRequest,
+  ObservableFromValue,
+  RequestParameters,
+  GraphQLResponse,
+  CacheConfig
 } from 'relay-runtime'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
@@ -27,7 +26,6 @@ import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import LinearPublishQueue from 'universal/LinearPublishQueue'
-
 // import sleep from 'universal/utils/sleep'
 
 const defaultErrorHandler = (err: any) => {
@@ -60,7 +58,7 @@ type SubCreator = (
   atmosphere: Atmosphere,
   queryVariables: Variables | undefined,
   subParams
-) => GraphQLSubscriptionConfig
+) => GraphQLSubscriptionConfig<unknown>
 
 const noop = (): any => {
   /* noop */
@@ -212,7 +210,7 @@ export default class Atmosphere extends Environment {
   addAuthTokenSubscriber () {
     if (!this.authToken) throw new Error('No Auth Token provided!')
     const {params} = getRequest(NewAuthTokenSubscription().subscription)
-    const documentId = params && (params.id as string)
+    const documentId = params && (params.id)
     if (!documentId) throw new Error(`No documentId found for request params ${params}`)
     const transport = this.transport as GQLTrebuchetClient
     transport.operations[NEW_AUTH_TOKEN] = {
@@ -229,13 +227,14 @@ export default class Atmosphere extends Environment {
   }
 
   handleFetch = async (
-    operation: RequestNode,
+    request: RequestParameters,
     variables: Variables,
     _cacheConfig?: CacheConfig
-  ): Promise<ObservableFromValue<QueryPayload>> => {
+  ): Promise<ObservableFromValue<GraphQLResponse>> => {
     // await sleep(500)
-    const field = operation.id ? 'documentId' : 'query'
-    const data = operation.id || operation.text
+    const field = request.id ? 'documentId' : 'query'
+    const data = request.id || request.text
+    // @ts-ignore
     return this.transport.fetch({[field]: data, variables})
   }
 

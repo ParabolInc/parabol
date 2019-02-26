@@ -3118,7 +3118,7 @@ export interface IMutation {
   /**
    * update a meeting by marking an item complete and setting the facilitator location
    */
-  navigateMeeting: INavigateMeetingPayload | null
+  navigateMeeting: INavigateMeetingPayload
 
   /**
    * Check a member in as present or absent
@@ -4827,7 +4827,7 @@ export interface IRetroReflectionGroup {
   /**
    * The number of votes this group has received
    */
-  voteCount: number | null
+  voteCount: number
 
   /**
    * The number of votes the viewer has given this group

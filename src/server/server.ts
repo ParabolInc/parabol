@@ -16,7 +16,7 @@ import getDotenv from '../universal/utils/dotenv'
 import sendICS from './sendICS'
 import './polyfills'
 import handleGitHubWebhooks from 'server/integrations/handleGitHubWebhooks'
-import SharedDataLoader from 'shared-dataloader'
+import DataLoaderWarehouse from 'dataloader-warehouse'
 import {WebSocketServer} from '@clusterws/cws'
 import http from 'http'
 // import startMemwatch from 'server/utils/startMemwatch'
@@ -53,8 +53,7 @@ const server = http.createServer(app)
 const wss = new WebSocketServer({server})
 server.listen(PORT)
 // This houses a per-mutation dataloader. When GraphQL is its own microservice, we can move this there.
-const sharedDataLoader = new SharedDataLoader({
-  PROD,
+const sharedDataLoader = new DataLoaderWarehouse({
   onShare: '_share',
   ttl: SHARED_DATA_LOADER_TTL
 })
