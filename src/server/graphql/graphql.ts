@@ -26,7 +26,7 @@ const graphql = async (
   source: string,
   rootValue: any,
   contextValue: Context,
-  variableValues: {[key: string]: any},
+  variableValues?: {[key: string]: any} | undefined,
   operationName?: string,
   fieldResolver?: Maybe<GraphQLFieldResolver<any, any>>
 ) => {

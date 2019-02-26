@@ -8,7 +8,7 @@ import ConnectionContext from 'server/socketHelpers/ConnectionContext'
 
 interface Payload {
   query: string
-  variables: {[key: string]: any}
+  variables: {[key: string]: any} | undefined
 }
 
 export default async function wsGraphQLHandler (
