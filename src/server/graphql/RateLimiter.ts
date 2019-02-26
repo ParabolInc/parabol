@@ -4,15 +4,16 @@ const HOUR = ms('1h')
 const MINUTE = ms('1m')
 
 class RateLimiter {
+  private _records = {}
+  private _lastCall = {}
+
   constructor () {
-    this._records = {}
-    this._lastCall = {}
     setInterval(() => {
       this.gc()
     }, HOUR)
   }
 
-  log (userId, fieldName, isExtendedLog) {
+  log (userId: string, fieldName: string, isExtendedLog: boolean) {
     const now = Date.now()
     this._lastCall[userId] = now
     if (!this._records[userId]) {

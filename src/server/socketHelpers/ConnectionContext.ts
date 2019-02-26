@@ -1,5 +1,6 @@
 import shortid from 'shortid'
 import {IAuthToken} from '../../universal/types/graphql'
+import RateLimiter from '../graphql/RateLimiter'
 
 class ConnectionContext {
   authToken: IAuthToken
@@ -7,7 +8,7 @@ class ConnectionContext {
   cancelKeepAlive: NodeJS.Timeout | null = null
   id = shortid.generate()
   isAlive = true
-  rateLimiter: any
+  rateLimiter: RateLimiter
   socket: WebSocket
   sharedDataLoader: any
   subs: any = {}

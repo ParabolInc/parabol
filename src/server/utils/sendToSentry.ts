@@ -4,7 +4,7 @@ import getRethink from '../database/rethinkDriver'
 export interface SentryOptions {
   userId?: string
   tags?: {
-    [tag: string]: string
+    [tag: string]: any
   }
 }
 
