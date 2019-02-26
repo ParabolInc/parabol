@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLFloat, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
@@ -14,7 +14,7 @@ const moveReflectTemplate = {
       type: new GraphQLNonNull(GraphQLID)
     },
     sortOrder: {
-      type: new GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLFloat)
     }
   },
   async resolve (_source, {promptId, sortOrder}, {authToken, dataLoader, socketId: mutatorId}) {

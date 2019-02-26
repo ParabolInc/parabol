@@ -24,3 +24,14 @@ export type DeepNullable<T> = {
 //         : T[P]
 // };
 export type Opaque<K, T> = T & {__TYPE__: K}
+
+// there's rumor of a negated operator coming to TS soon...
+export type NotVoid =
+  | {[key: string]: NotVoid}
+  | object
+  | string
+  | boolean
+  | symbol
+  | number
+  | null
+  | undefined

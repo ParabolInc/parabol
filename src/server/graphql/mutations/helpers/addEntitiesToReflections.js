@@ -6,6 +6,15 @@ import sanitizeAnalyzedEntitiesResponse from 'server/graphql/mutations/helpers/a
 import promiseAllObj from 'universal/utils/promiseAllObj'
 import getSyntaxFromText from 'server/graphql/mutations/helpers/autoGroup/getSyntaxFromText'
 import addLemmaToEntities from 'server/graphql/mutations/helpers/autoGroup/addLemmaToEntities'
+import sendToSentry from 'server/utils/sendToSentry'
+
+const catchHandler = (e: Error): undefined => {
+  const re = /the language \S+ is not supported/
+  if (!re.test(e.message)) {
+    sendToSentry(new Error(`Grouping Error: Google NLP: ${e.message}`))
+  }
+  return null
+}
 
 const addEntitiesToReflections = async (meetingId) => {
   const r = getRethink()
@@ -23,8 +32,8 @@ const addEntitiesToReflections = async (meetingId) => {
 
   // intelligently extract the entities from the body of the text
   const {reflectionResponses, reflectionSyntax} = await promiseAllObj({
-    reflectionResponses: promiseAllPartial(contentTexts.map(getEntitiesFromText)),
-    reflectionSyntax: promiseAllPartial(contentTexts.map(getSyntaxFromText))
+    reflectionResponses: promiseAllPartial(contentTexts.map(getEntitiesFromText), catchHandler),
+    reflectionSyntax: promiseAllPartial(contentTexts.map(getSyntaxFromText), catchHandler)
   })
 
   // for each entity, look in the tokens array to first the first word of the entity

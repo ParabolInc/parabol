@@ -26,6 +26,8 @@ import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
 import StrictEventEmitter from 'strict-event-emitter-types'
 import LinearPublishQueue from 'universal/LinearPublishQueue'
+import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
+
 // import sleep from 'universal/utils/sleep'
 
 const defaultErrorHandler = (err: any) => {
@@ -75,6 +77,7 @@ interface AtmosphereEvents {
   addToast: Toast
   removeToast: (toast: string | any) => void
   endDraggingReflection: MasonryDragEndPayload
+  inviteToTeam: NonNullable<InviteToTeamMutation_notification['teamInvitationNotification']>
   meetingSidebarCollapsed: boolean
   newSubscriptionClient: void
   removeGitHubRepo: void
@@ -210,7 +213,7 @@ export default class Atmosphere extends Environment {
   addAuthTokenSubscriber () {
     if (!this.authToken) throw new Error('No Auth Token provided!')
     const {params} = getRequest(NewAuthTokenSubscription().subscription)
-    const documentId = params && (params.id)
+    const documentId = params && params.id
     if (!documentId) throw new Error(`No documentId found for request params ${params}`)
     const transport = this.transport as GQLTrebuchetClient
     transport.operations[NEW_AUTH_TOKEN] = {

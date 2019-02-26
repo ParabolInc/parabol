@@ -226,6 +226,11 @@ export interface IUser {
   team: ITeam | null
 
   /**
+   * The invitation sent to the user, even if it was sent before they were a user
+   */
+  teamInvitation: ITeamInvitation | null
+
+  /**
    * all the teams the user is on that the viewer can see.
    */
   teams: Array<ITeam>
@@ -387,6 +392,13 @@ export interface ITasksOnUserArguments {
 export interface ITeamOnUserArguments {
   /**
    * The team ID for the desired team
+   */
+  teamId: string
+}
+
+export interface ITeamInvitationOnUserArguments {
+  /**
+   * The teamId to check for the invitation
    */
   teamId: string
 }
@@ -3541,14 +3553,14 @@ export interface ICreateTaskOnMutationArguments {
 
 export interface ICreateUserPicturePutUrlOnMutationArguments {
   /**
-   * user-supplied MIME content type
+   * user supplied image metadata
    */
-  contentType?: string | null
+  image: IImageMetadataInput
 
   /**
-   * user-supplied file size
+   * a png version of the above image
    */
-  contentLength: number
+  pngVersion?: IImageMetadataInput | null
 }
 
 export interface IDeleteTaskOnMutationArguments {
@@ -4145,7 +4157,7 @@ export interface IAddReflectTemplatePromptOnMutationArguments {
 
 export interface IMoveReflectTemplatePromptOnMutationArguments {
   promptId: string
-  sortOrder: string
+  sortOrder: number
 }
 
 export interface IRemoveReflectTemplateOnMutationArguments {
@@ -5365,10 +5377,23 @@ export interface ICreateTaskPayload {
   involvementNotification: INotifyTaskInvolves | null
 }
 
+export interface IImageMetadataInput {
+  /**
+   * user-supplied MIME content type
+   */
+  contentType: string
+
+  /**
+   * user-supplied file size
+   */
+  contentLength: number
+}
+
 export interface ICreateUserPicturePutUrlPayload {
   __typename: 'CreateUserPicturePutUrlPayload'
   error: IStandardMutationError | null
   url: any | null
+  pngUrl: any | null
 }
 
 export interface IDeleteTaskPayload {
@@ -6815,10 +6840,8 @@ export interface ISubscription {
   integrationSubscription: IntegrationSubscriptionPayload
   integrationJoined: IJoinIntegrationPayload
   integrationLeft: ILeaveIntegrationPayload
-  invitationSubscription: InvitationSubscriptionPayload
   newAuthToken: string | null
   notificationSubscription: NotificationSubscriptionPayload
-  orgApprovalSubscription: OrgApprovalSubscriptionPayload
   organizationSubscription: OrganizationSubscriptionPayload
   taskSubscription: TaskSubscriptionPayload
   slackChannelAdded: IAddSlackChannelPayload
@@ -6857,14 +6880,6 @@ export interface IIntegrationLeftOnSubscriptionArguments {
   teamId: string
 }
 
-export interface IInvitationSubscriptionOnSubscriptionArguments {
-  teamId: string
-}
-
-export interface IOrgApprovalSubscriptionOnSubscriptionArguments {
-  teamId: string
-}
-
 export interface ISlackChannelAddedOnSubscriptionArguments {
   teamId: string
 }
@@ -6885,11 +6900,6 @@ export interface IGitHubMemberRemovedPayload {
 }
 
 export type IntegrationSubscriptionPayload = IAddProviderPayload | IRemoveProviderPayload
-
-export type InvitationSubscriptionPayload =
-  | IAcceptTeamInvitePayload
-  | IApproveToOrgPayload
-  | IInviteTeamMembersPayload
 
 export type NotificationSubscriptionPayload =
   | IAcceptTeamInvitationPayload
@@ -6921,12 +6931,6 @@ export interface IAddNewFeaturePayload {
    */
   newFeature: INewFeatureBroadcast | null
 }
-
-export type OrgApprovalSubscriptionPayload =
-  | IApproveToOrgPayload
-  | ICancelApprovalPayload
-  | IInviteTeamMembersPayload
-  | IRejectOrgApprovalPayload
 
 export type OrganizationSubscriptionPayload =
   | IAddOrgPayload

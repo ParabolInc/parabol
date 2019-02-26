@@ -1,20 +1,34 @@
+import {DocumentNode, GraphQLFieldResolver, GraphQLSchema} from 'graphql'
 import {parse} from 'graphql/language/parser'
 import {execute} from 'graphql/execution/execute'
+import Maybe from 'graphql/tsutils/Maybe'
 import {validateSchema} from 'graphql/type/validate'
 import {validate} from 'graphql/validation/validate'
+import {IAuthToken} from '../../universal/types/graphql'
+import RateLimiter from './RateLimiter'
 
 // Avoid needless parsing & validating for the 300 hottest operations
-let documentCache = {}
+interface DocumentCache {
+  [key: string]: DocumentNode
+}
+
+let documentCache: DocumentCache = {}
 const MAX_CACHE_SIZE = 300
 
+interface Context {
+  authToken: IAuthToken
+  socketId?: string
+  dataLoader: any
+  rateLimiter: RateLimiter
+}
 const graphql = async (
-  schema,
-  source,
-  rootValue,
-  contextValue,
-  variableValues,
-  operationName,
-  fieldResolver
+  schema: GraphQLSchema,
+  source: string,
+  rootValue: any,
+  contextValue: Context,
+  variableValues?: {[key: string]: any} | undefined,
+  operationName?: string,
+  fieldResolver?: Maybe<GraphQLFieldResolver<any, any>>
 ) => {
   const schemaValidationErrors = validateSchema(schema)
   if (schemaValidationErrors.length > 0) {

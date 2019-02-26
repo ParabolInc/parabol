@@ -32,6 +32,9 @@ const MeetingRoot = lazy(() =>
 const RetroRoot = lazy(() =>
   import(/* webpackChunkName: 'RetroRoot' */ 'universal/components/RetroRoot/RetroRoot')
 )
+const ViewerNotOnTeamRoot = lazy(() =>
+  import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ 'universal/components/ViewerNotOnTeamRoot')
+)
 
 const PrivateRoutes = () => {
   return (
@@ -44,6 +47,7 @@ const PrivateRoutes = () => {
       <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
       <Route path='/admin/graphql' component={Graphql} />
       <Route path='/admin/impersonate/:newUserId' component={Impersonate} />
+      <Route path='/invitation-required/:teamId' component={ViewerNotOnTeamRoot} />
       <Route path='/signout' component={Signout} />
       <Route component={NotFound} />
     </Switch>

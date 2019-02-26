@@ -5,6 +5,7 @@ import ui from 'universal/styles/ui'
 import arrayToRows from '../../helpers/arrayToRows'
 import ReflectionEditorWrapperForEmail from 'universal/components/ReflectionEditorWrapperForEmail'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import emailDir from 'universal/modules/email/emailDir'
 
 const fontFamily = ui.emailFontFamily
 
@@ -86,7 +87,7 @@ const RetroDiscussionTopic = (props: Props) => {
   const {reflections, title, voteCount} = topic
   const rows = arrayToRows(reflections)
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
-  const src = `/static/images/icons/${icon}`
+  const src = `${emailDir}${icon}`
   return (
     <table style={tableStyle} width='100%'>
       <tbody>

@@ -26,7 +26,7 @@ export default function NotificationSummaryEmail () {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <Header imgProvider='hubspot' />
+        <Header />
         <p style={copyStyle}>
           {'Hi '}%recipient.name%{','}
         </p>

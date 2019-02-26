@@ -1,8 +1,8 @@
 import {TeamContainer_viewer} from '__generated__/TeamContainer_viewer.graphql'
-import React, {lazy, Suspense} from 'react'
+import React, {lazy, Suspense, useEffect} from 'react'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {Redirect, Route, RouteComponentProps} from 'react-router'
+import {Route, RouteComponentProps, withRouter} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -35,20 +35,29 @@ const ArchivedTasks = lazy(() =>
 )
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
-  location: any
-  match: any
+  teamId: string
   teamMemberId: string
   viewer: TeamContainer_viewer
 }
 
 const TeamContainer = (props: Props) => {
   const {
+    history,
     location: {pathname},
     match,
+    teamId,
     teamMemberId,
     viewer
   } = props
-  if (viewer && !viewer.team) return <Redirect to='/me' />
+  useEffect(() => {
+    if (viewer && !viewer.team) {
+      history.replace({
+        pathname: `/invitation-required/${teamId}`,
+        search: `?redirectTo=${encodeURIComponent(pathname)}`
+      })
+    }
+  })
+  if (viewer && !viewer.team) return null
   const team = viewer && viewer.team
   const isSettings = Boolean(
     matchPath(pathname, {
@@ -78,7 +87,7 @@ const TeamContainer = (props: Props) => {
 export default createFragmentContainer(
   withAtmosphere(
     (withReducer as any)({teamDashboard: teamDashReducer})(
-      (connect as any)(mapStateToProps)(TeamContainer)
+      (connect as any)(mapStateToProps)(withRouter(TeamContainer))
     )
   ),
   graphql`

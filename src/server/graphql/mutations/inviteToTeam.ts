@@ -54,7 +54,7 @@ export default {
       const subOptions = {mutatorId, operationId}
       const users = await r.table('User').getAll(r.args(invitees), {index: 'email'})
 
-      const uniqueInvitees = Array.from(new Set(invitees))
+      const uniqueInvitees = Array.from(new Set(invitees as string[]))
       // filter out emails already on team
       const newInvitees = uniqueInvitees.filter((email) => {
         const user = users.find((user) => user.email === email)
@@ -105,7 +105,7 @@ export default {
       }
 
       // send emails
-      await Promise.all(
+      const emailResults = await Promise.all(
         teamInvitationsToInsert.map((invitation) => {
           const user = users.find((user) => user.email === invitation.email)
           return sendEmailPromise(invitation.email, 'teamInvite', {
@@ -119,10 +119,11 @@ export default {
         })
       )
 
+      const successfulInvitees = newInvitees.filter((_email, idx) => emailResults[idx])
       const data = {
         removedSuggestedActionId,
         teamId,
-        invitees: newInvitees
+        invitees: successfulInvitees
       }
 
       // Tell each invitee
