@@ -29,9 +29,11 @@ export default async function wsGraphQLHandler (
 
   if (result.errors) {
     const viewerId = getUserId(authToken)
-    // used for debugging staging @v3.5.0
-    console.error(result.errors)
-    sendToSentry(result.errors[0], {tags: {query, variables}, userId: viewerId})
+    const error = prepareErrorForSentry(result.errors[0])
+    sendToSentry(error, {
+      tags: {query, variables, path: error.path, locations: error.locations},
+      userId: viewerId
+    })
   }
   return sanitizeGraphQLErrors(result)
 }
