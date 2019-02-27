@@ -43,7 +43,7 @@
     "tslint": "tslint -c tslint.json --project tsconfig.json --fix './src/**/*.{ts,tsx}' './webpack/*.{ts,tsx}' './.storybook/*.{ts,tsx}' './stories/**/*.{ts,tsx}'",
     "test": "jest --bail --coverage --ci --runInBand && codecov",
     "test:dev": "jest --runInBand --watch",
-    "test:e2e": "node ./e2e/scripts/runTests.babel.js",
+    "test:e2e": "start-server-and-test start http://localhost:3000 cy:run",
     "test:e2e-deps": "node ./e2e/scripts/ensureDrivers.babel.js",
     "lint": "yarn standard",
     "relay": "yarn build:relay --watch --watchman true",
@@ -51,7 +51,8 @@
     "postversion": "git push --follow-tags",
     "tsgen": "gql2ts ./build/schema.json -e $(pwd)/src/universal/types/config.js -o ./src/universal/types/graphql.d.ts && prettier --write 'src/universal/types/graphql.d.ts'",
     "storybook": "start-storybook -p 6006 -c .storybook",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "cy:run": "cypress run"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -63,6 +64,8 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.0.0",
     "@babel/register": "^7.0.0",
+    "@cypress/browserify-preprocessor": "^2.0.0",
+    "@cypress/webpack-preprocessor": "^4.0.3",
     "@mattkrick/relay-runtime-strict-types": "^2.0.0",
     "@playlyfe/gql": "^2.6.0",
     "@sentry/webpack-plugin": "^1.6.2",
@@ -99,6 +102,7 @@
     "commander": "^2.11.0",
     "cross-env": "^5.1.6",
     "css-loader": "^0.28.2",
+    "cypress": "^3.1.5",
     "dynamic-serializer": "^0.2.1",
     "file-loader": "^1.1.11",
     "flow-bin": "^0.73.0",
@@ -126,6 +130,7 @@
     "selenium-webdriver": "^3.6.0",
     "snazzy": "^8.0.0",
     "standard": "^11.0.1",
+    "start-server-and-test": "^1.7.11",
     "strict-event-emitter-types": "^2.0.0",
     "style-loader": "^0.21.0",
     "terser-webpack-plugin": "^1.2.2",

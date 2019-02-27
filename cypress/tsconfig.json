@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "include": [
+    "integration/*.ts",
+    "support/*.ts",
+    "../node_modules/cypress"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": "../node_modules",
+    "target": "es5",
+    "lib": ["es5", "dom"],
+    "types": ["cypress"]
+  }
+}
