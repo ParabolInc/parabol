@@ -14,6 +14,9 @@ const auth0Authorize = async (webAuth: WebAuth, loginHint?: string) => {
         connection: 'google-oauth2',
         redirectUri: makeHref('/oauth-redirect'),
         responseType: 'token',
+        state: Math.random()
+          .toString(36)
+          .substring(5),
         // @ts-ignore
         login_hint: loginHint
       },
