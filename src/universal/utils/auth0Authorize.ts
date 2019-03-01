@@ -34,17 +34,17 @@ const auth0Authorize = async (loginHint?: string) => {
     const popup = window.open(authUrl, 'OAuth', getPopupFeatures())
 
     const handler = (event) => {
+      // an extension posted to the opener
+      if (typeof event.data !== 'object' || event.data.state !== upState) return
+      const {code} = event.data
       window.clearInterval(closeCheckerId)
-      if (typeof event.data !== 'object' || event.origin !== window.location.origin) {
+      if (event.origin !== window.location.origin || typeof code !== 'string') {
         reject(`Bad response: ${event.data}, ${event.origin}`)
         return
       }
-      const {code, state} = event.data
-      if (state !== upState || typeof code !== 'string') {
-        reject(`Bad payload: ${state}, ${code}`)
-        return
-      }
+
       popup && popup.close()
+      window.removeEventListener('message', handler)
       resolve({idToken: code})
     }
 
@@ -55,7 +55,7 @@ const auth0Authorize = async (loginHint?: string) => {
         window.removeEventListener('message', handler)
       }
     }, 100)
-    window.addEventListener('message', handler, {once: true})
+    window.addEventListener('message', handler)
   })
 }
 
