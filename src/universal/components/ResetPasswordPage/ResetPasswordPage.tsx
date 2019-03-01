@@ -9,7 +9,6 @@ import AuthDialog from 'universal/components/AuthDialog'
 import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
 import EmailInputField from 'universal/components/EmailInputField'
-import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -137,7 +136,6 @@ class ResetPasswordPage extends Component<Props, State> {
             actionCopy={isSent ? '' : 'Remember it?'}
           />
           <Container>
-            {error && <ErrorAlert message={error} />}
             {isSent ? (
               <Fragment>
                 <P>{'We’ve sent you an email with password recovery instructions.'}</P>
