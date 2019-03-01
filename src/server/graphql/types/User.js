@@ -140,7 +140,7 @@ const User = new GraphQLObjectType({
       resolve: async ({id}, {after, first}, {dataLoader, authToken}) => {
         const r = getRethink()
         const viewerId = getUserId(authToken)
-        if (viewerId !== id) return null
+        if (viewerId !== id && !isSuperUser(authToken)) return null
         const dbAfter = after ? new Date(after) : r.maxval
         const events = await r
           .table('TimelineEvent')

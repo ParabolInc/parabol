@@ -15,7 +15,7 @@ const signout = (atmosphere, dispatch, history) => {
   if (history) {
     history.replace('/')
   }
-  dispatch(resetAppState())
+  dispatch && dispatch(resetAppState())
   atmosphere.eventEmitter.emit('addToast', signoutSuccess)
   atmosphere.close()
 }
