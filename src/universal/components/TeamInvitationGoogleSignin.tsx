@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/browser'
 import {TeamInvitationGoogleSignin_verifiedInvitation} from '__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
-import {WebAuth} from 'auth0-js'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
@@ -10,7 +9,6 @@ import GoogleOAuthButtonBlock from 'universal/components/GoogleOAuthButtonBlock'
 import LoginMutation from 'universal/mutations/LoginMutation'
 import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
 import auth0Authorize from '../utils/auth0Authorize'
-import makeWebAuth from '../utils/makeWebAuth'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialog from './InvitationDialog'
@@ -31,16 +29,6 @@ const TeamName = styled('span')({
 })
 
 class TeamInvitationGoogleSignin extends Component<Props> {
-  webAuth?: WebAuth
-
-  componentDidMount () {
-    makeWebAuth()
-      .then((webAuth) => {
-        this.webAuth = webAuth
-      })
-      .catch()
-  }
-
   onOAuth = async () => {
     const {
       atmosphere,
@@ -53,14 +41,13 @@ class TeamInvitationGoogleSignin extends Component<Props> {
       submitMutation,
       verifiedInvitation
     } = this.props
-    if (!this.webAuth) return
     const {user} = verifiedInvitation
     if (!user) return
     const {email} = user
     submitMutation()
     let res
     try {
-      res = await auth0Authorize(this.webAuth, email)
+      res = await auth0Authorize(email)
     } catch (e) {
       onError(e)
       Sentry.captureException(e)

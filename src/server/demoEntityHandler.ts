@@ -7,7 +7,7 @@ import promiseAllPartial from 'universal/utils/promiseAllPartial'
 import sendToSentry from './utils/sendToSentry'
 
 const catchHandler = (e: Error) => {
-  const re = /the language \S+ is not supported/
+  const re = /language \S+ is not supported/
   if (!re.test(e.message)) {
     sendToSentry(new Error(`Demo Error: Google NLP: ${e.message}`))
   }

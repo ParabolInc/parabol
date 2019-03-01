@@ -9,7 +9,6 @@ import AuthDialog from 'universal/components/AuthDialog'
 import AuthHeader from 'universal/components/AuthHeader/AuthHeader'
 import AuthPage from 'universal/components/AuthPage/AuthPage'
 import EmailInputField from 'universal/components/EmailInputField'
-import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -98,7 +97,8 @@ class ResetPasswordPage extends Component<Props, State> {
     }
   }
 
-  onSubmit = async () => {
+  onSubmit = async (e) => {
+    e.preventDefault()
     const {submitMutation, submitting, onError, onCompleted} = this.props
     const {email} = this.state
     if (submitting) return
@@ -130,16 +130,14 @@ class ResetPasswordPage extends Component<Props, State> {
       <AuthPage title='Reset Password | Parabol'>
         <StyledDialog>
           <AuthHeader
-            heading='Forgot your password?'
+            heading={isSent ? 'You’re all set!' : 'Forgot your password?'}
             relativeUrl={`/${SIGNIN_SLUG}`}
-            displayName={'Sign in with password'}
-            actionCopy={'Remember it?'}
+            displayName={isSent ? '' : 'Sign in with password'}
+            actionCopy={isSent ? '' : 'Remember it?'}
           />
           <Container>
-            {error && <ErrorAlert message={error} />}
             {isSent ? (
               <Fragment>
-                <P>{'You’re all set!'}</P>
                 <P>{'We’ve sent you an email with password recovery instructions.'}</P>
                 <P>
                   {'Didn’t get it? Check your spam folder, or '}

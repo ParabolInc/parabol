@@ -1,5 +1,3 @@
-import {WebAuth} from 'auth0-js'
-import promisify from 'es6-promisify'
 import makeHref from 'universal/utils/makeHref'
 
 /*
@@ -8,13 +6,56 @@ import makeHref from 'universal/utils/makeHref'
  * But doing asynchronous things within the click handler can cause a false positive
  */
 
-const auth0Authorize = async (webAuth: WebAuth, loginHint?: string) => {
-  const authorize = promisify(webAuth.popup.authorize, webAuth.popup)
-  return authorize({
-    connection: 'google-oauth2',
-    redirectUri: makeHref('/oauth-redirect'),
-    responseType: 'token',
-    login_hint: loginHint
+const getPopupFeatures = () => {
+  const width = 385
+  const height = 550
+  const {outerWidth, innerWidth, outerHeight, innerHeight, screenX, screenY} = window
+  const startX = screenX + (outerWidth - innerWidth) / 2
+  const startY = screenY + (outerHeight - innerHeight) / 2
+  const left = startX + (innerWidth - width) / 2
+  // 64 is the Parabol header
+  const top = startY + (innerHeight - height) / 2 + 64
+  return `width=${width},height=${height},left=${left},top=${top}`
+}
+
+const auth0Authorize = async (loginHint?: string) => {
+  return new Promise<{idToken: string} | null>((resolve, reject) => {
+    let closeCheckerId
+    const upState = Math.random()
+      .toString(36)
+      .substring(5)
+    // Auth0 has a super nasty bug where it doesn't play well
+    const hint = loginHint ? `&login_hint=${loginHint}` : ''
+    const authUrl = `https://${window.__ACTION__.auth0Domain}/authorize?client_id=${
+      window.__ACTION__.auth0
+    }&scope=openid rol tms bet&connection=google-oauth2&redirect_uri=${makeHref(
+      '/oauth-redirect'
+    )}&response_type=token&state=${upState}${hint}`
+    const popup = window.open(authUrl, 'OAuth', getPopupFeatures())
+
+    const handler = (event) => {
+      // an extension posted to the opener
+      if (typeof event.data !== 'object' || event.data.state !== upState) return
+      const {code} = event.data
+      window.clearInterval(closeCheckerId)
+      if (event.origin !== window.location.origin || typeof code !== 'string') {
+        reject(`Bad response: ${event.data}, ${event.origin}`)
+        return
+      }
+
+      popup && popup.close()
+      window.removeEventListener('message', handler)
+      resolve({idToken: code})
+    }
+
+    closeCheckerId = window.setInterval(() => {
+      if (popup && popup.closed) {
+        resolve(null)
+        window.clearInterval(closeCheckerId)
+        window.removeEventListener('message', handler)
+      }
+    }, 100)
+    window.addEventListener('message', handler)
   })
 }
 
