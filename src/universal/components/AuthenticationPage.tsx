@@ -1,4 +1,4 @@
-import {WebAuth} from 'auth0-js'
+import * as Sentry from '@sentry/browser'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {RouteComponentProps, withRouter} from 'react-router'
@@ -24,11 +24,9 @@ import {
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import auth0Authorize from '../utils/auth0Authorize'
 import getAnonymousId from '../utils/getAnonymousId'
-import makeWebAuth from '../utils/makeWebAuth'
 import AuthDialog from './AuthDialog'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
-import * as Sentry from '@sentry/browser'
 
 interface Props extends WithAtmosphereProps, RouteComponentProps, WithMutationProps {}
 
@@ -46,29 +44,19 @@ const ForgotPasswordLink = styled(PlainButton)({
 })
 
 class AuthenticationPage extends Component<Props> {
-  webAuth?: WebAuth
-
-  componentDidMount () {
-    makeWebAuth()
-      .then((webAuth) => {
-        this.webAuth = webAuth
-      })
-      .catch()
-  }
-
   onOAuth = async () => {
     const {atmosphere, history, onCompleted, onError, submitMutation} = this.props
-    if (!this.webAuth) return
     submitMutation()
     let res
     try {
-      res = await auth0Authorize(this.webAuth)
+      res = await auth0Authorize()
     } catch (e) {
       onError(e)
       Sentry.captureException(e)
       return
     }
     onCompleted()
+    if (!res) return
     const {idToken} = res
     const isCreate = location.pathname.includes(CREATE_ACCOUNT_SLUG)
     const segmentId = isCreate ? getAnonymousId() : undefined

@@ -20,9 +20,15 @@ class OAuthRedirect extends Component<Props> {
       clientID: window.__ACTION__.auth0,
       scope: 'openid rol tms bet'
     })
+    // if handled in a popup window ie google
     if (window.opener) {
-      // if handled in a popup window ie google
-      webAuth.popup.callback()
+      // Auth0 sends params in a hash, not a search
+      const search = window.location.hash.slice(1)
+      const params = new URLSearchParams(search)
+      const state = params.get('state')
+      const code = params.get('id_token')
+      if (!window.opener) return
+      window.opener.postMessage({state, code})
     } else {
       // if handled on same page ie email/pass
       const parseHash = promisify(webAuth.parseHash, webAuth)
