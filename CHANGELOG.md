@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+* Squelch Google NLP unsupported languages (again)
+
 ## v3.5.1 2019-Feb-28
 
 ## Fixed
