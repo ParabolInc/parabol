@@ -47,9 +47,11 @@ const BrandedLink = styled(Link)({
 const AuthHeader = (props: Props) => (
   <Fragment>
     <H1>{props.heading}</H1>
-    <H2>
-      {props.actionCopy} <BrandedLink to={props.relativeUrl}>{props.displayName}</BrandedLink>
-    </H2>
+    {props.actionCopy && (
+      <H2>
+        {props.actionCopy} <BrandedLink to={props.relativeUrl}>{props.displayName}</BrandedLink>
+      </H2>
+    )}
   </Fragment>
 )
 
