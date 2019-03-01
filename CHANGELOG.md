@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.5.1 2019-Feb-28
+
+## Fixed
+* OAuth Login problems
+* Reset password problem
+
 ## v3.5.0 2019-Feb-25
 
 ### Added
