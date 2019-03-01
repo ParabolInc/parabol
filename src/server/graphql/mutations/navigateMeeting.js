@@ -11,7 +11,7 @@ import startStage_ from 'universal/utils/startStage_'
 import standardError from 'server/utils/standardError'
 
 export default {
-  type: NavigateMeetingPayload,
+  type: new GraphQLNonNull(NavigateMeetingPayload),
   description: 'update a meeting by marking an item complete and setting the facilitator location',
   args: {
     completedStageId: {

@@ -10,9 +10,20 @@
 //  return 'setLinkedRecord';
 // };
 
+import {RecordProxy, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import clientTempId from 'universal/utils/relay/clientTempId'
 
-const createProxyRecord = (store, type, record) => {
+// interface PRecord {
+//   // id?: string,
+//   [key: string]: any
+// }
+
+const createProxyRecord = <T = unknown>(
+  store: RecordSourceSelectorProxy<any> | RecordSourceProxy,
+  type: string,
+  record: T
+): T extends unknown ? RecordProxy<any> : RecordProxy<T> => {
+  // @ts-ignore
   const id = record.id || clientTempId()
   const newRecord = store.create(id, type)
   // default to this
@@ -24,6 +35,7 @@ const createProxyRecord = (store, type, record) => {
     // const setMethod = getSetMethod(val);
     newRecord.setValue(val, key)
   }
+  // @ts-ignore
   return newRecord
 }
 

@@ -111,7 +111,7 @@ const RetroReflectionGroup = new GraphQLObjectType({
       resolve: resolveForSU('voterIds')
     },
     voteCount: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
       description: 'The number of votes this group has received',
       resolve: ({voterIds}) => {
         return voterIds ? voterIds.length : 0

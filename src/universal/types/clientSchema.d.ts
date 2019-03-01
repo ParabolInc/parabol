@@ -2,6 +2,7 @@ import {
   ICoords2D,
   IDragContext,
   INewMeeting,
+  IRetroPhaseItem,
   IRetroReflection,
   IRetrospectiveMeeting,
   NewMeetingPhase,
@@ -26,4 +27,8 @@ export interface ClientDragContext extends IDragContext {
   isViewerDragging: Boolean
   initialCursorCoords: ICoords2D
   initialComponentCoords: ICoords2D
+}
+
+export interface ClientRetroPhaseItem extends IRetroPhaseItem {
+  editorIds: string[]
 }

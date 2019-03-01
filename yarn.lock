@@ -1152,6 +1152,11 @@
   resolved "https://registry.yarnpkg.com/@mattkrick/graphql-trebuchet-client/-/graphql-trebuchet-client-0.1.3.tgz#da605e492501a047dedba7ac88f3745843542381"
   integrity sha512-gpiY1pF9TTbCzyecSql9toekjjYUvTpZgsQ3PGBSNp3/OL2CZ2gwh/XZoDLCdxsfToOZ/jtrBBYyRCX2a231fg==
 
+"@mattkrick/relay-runtime-strict-types@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@mattkrick/relay-runtime-strict-types/-/relay-runtime-strict-types-2.0.0.tgz#d86790453e86c2811652f12ba244637bdf63fcfc"
+  integrity sha512-SUoe22DhZ5afCLy3LoXyRqKcErThkb6KHLNNMbMJOc5uSuQu6g8ZxZjjWb996UYfP5ZolgiDAqz7gQ92YnvzEw==
+
 "@mattkrick/sanitize-svg@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@mattkrick/sanitize-svg/-/sanitize-svg-0.2.1.tgz#050e68e10e15d074e15945dfc2dd7245858db261"
@@ -1991,10 +1996,9 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/relay-runtime@*", "@types/relay-runtime@^1.3.8":
-  version "1.3.8"
-  resolved "https://registry.yarnpkg.com/@types/relay-runtime/-/relay-runtime-1.3.8.tgz#75f554d8aa57a8a76e304ec858a7c7a32322bef0"
-  integrity sha512-v5uoUkn1rTjmg1A/1qOFqdWR30aRAOnGw3dn80gnMEPIavqq49V9N/3EMk80AB2337OhGgV65oTG6cteGWEndA==
+"@types/relay-runtime@*", "@types/relay-runtime@https://github.com/mattkrick/relay-runtime-strict-types/tarball/2b79845de58b8f26a37a5b5886e0b66534ffa23d":
+  version "2.0.1"
+  resolved "https://github.com/mattkrick/relay-runtime-strict-types/tarball/2b79845de58b8f26a37a5b5886e0b66534ffa23d#2e32a30219edc08753095e29c60a3d6551e17923"
 
 "@types/segment-analytics@^0.0.30":
   version "0.0.30"
@@ -5689,6 +5693,11 @@ data-urls@^1.0.0:
     abab "^2.0.0"
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
+
+dataloader-warehouse@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/dataloader-warehouse/-/dataloader-warehouse-0.4.0.tgz#69deb18dd7ea5bcb1f14446a67df0ca5079c4b83"
+  integrity sha512-rUAXWLvrus/SIOlHMDNEV8MEW7B+mpEil5LHqh260e285W+Bt+onK6XJ0LQS5/UaJ3OoJWKF8aMoYJgorZZnWg==
 
 dataloader@^1.4.0:
   version "1.4.0"
@@ -14219,10 +14228,9 @@ relateurl@0.2.x:
   resolved "https://registry.yarnpkg.com/relateurl/-/relateurl-0.2.7.tgz#54dbf377e51440aca90a4cd274600d3ff2d888a9"
   integrity sha1-VNvzd+UUQKypCkzSdGANP/LYiKk=
 
-relay-compiler-language-typescript@^2.0.0:
+"relay-compiler-language-typescript@https://github.com/mattkrick/relay-compiler-language-typescript/tarball/40770db90f769a59e31999ca0c14d1bd2517ae01":
   version "2.0.0"
-  resolved "https://registry.yarnpkg.com/relay-compiler-language-typescript/-/relay-compiler-language-typescript-2.0.0.tgz#87e53f023170923d0941022f91a09ffad0ed7b14"
-  integrity sha512-azUH4LE4vVHHFdCPwZ+6no0oUqczUuuZ+Z5VyKhJDx1/rlwFYz0iQLo9unECW2Bh+nhva41yzqnAY3rtZ4iPcg==
+  resolved "https://github.com/mattkrick/relay-compiler-language-typescript/tarball/40770db90f769a59e31999ca0c14d1bd2517ae01#67599e7476c65cf7b49852bc06ae5a7320b6af0a"
   dependencies:
     immutable "^3.8.2"
     invariant "^2.2.2"
@@ -14870,11 +14878,6 @@ shallowequal@^1.0.1, shallowequal@^1.0.2, shallowequal@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/shallowequal/-/shallowequal-1.1.0.tgz#188d521de95b9087404fd4dcb68b13df0ae4e7f8"
   integrity sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==
-
-shared-dataloader@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/shared-dataloader/-/shared-dataloader-0.2.0.tgz#c2b53459c8140447fe97ee1d9e54c709dcd4c296"
-  integrity sha512-lPJkCrM/RYmDylcPZwQvWEvQGCIy3d0hZGcM1JE6mTrz/OIFCijkWHvEyjsVXmwafCjsxjx7AAtselbH4ktzqA==
 
 shebang-command@^1.2.0:
   version "1.2.0"

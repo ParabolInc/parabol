@@ -1,6 +1,6 @@
 import {commitMutation, graphql} from 'react-relay'
 import {matchPath} from 'react-router-dom'
-import {Disposable, RecordSourceProxy} from 'relay-runtime'
+import {Disposable, RecordSourceProxy, RecordSourceSelectorProxy} from 'relay-runtime'
 import {RETROSPECTIVE} from 'universal/utils/constants'
 import {meetingTypeToSlug} from 'universal/utils/meetings/lookups'
 import addNodeToArray from 'universal/utils/relay/addNodeToArray'
@@ -176,7 +176,7 @@ const StartDraggingReflectionMutation = (
     variables,
     onCompleted,
     onError,
-    updater: (store) => {
+    updater: (store: RecordSourceSelectorProxy<any>) => {
       const {initialCursorCoords} = context
       const payload = store.getRootField('startDraggingReflection')
       if (!payload) return

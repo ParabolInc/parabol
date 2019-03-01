@@ -56,7 +56,7 @@ const mutation = graphql`
 `
 
 export const acceptTeamInvitationNotificationUpdater = (
-  payload: RecordProxy,
+  payload: RecordProxy<any>,
   {atmosphere, store}
 ) => {
   const {viewerId} = atmosphere

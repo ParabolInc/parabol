@@ -17,7 +17,7 @@ class DebugButton extends Component<Props> {
         type: 'SuggestedActionTryRetroMeeting',
         teamId
       })
-      const team = store.get(teamId)
+      const team = store.get(teamId)!
       suggestedAction.setLinkedRecord(team, 'team')
       viewer.setLinkedRecords([suggestedAction], 'suggestedActions')
     })

@@ -1,4 +1,4 @@
-import {PromoteFacilitatorMutationResponse} from '__generated__/PromoteFacilitatorMutation.graphql'
+import {PromoteFacilitatorMutation} from '__generated__/PromoteFacilitatorMutation.graphql'
 import {PromoteFacilitatorMutation_team} from '__generated__/PromoteFacilitatorMutation_team.graphql'
 import {commitMutation, graphql} from 'react-relay'
 import {Disposable} from 'relay-runtime'
@@ -65,7 +65,7 @@ const PromoteFacilitatorMutation = (
   onCompleted
 ): Disposable => {
   const {facilitatorId} = variables
-  return commitMutation(atmosphere, {
+  return commitMutation<PromoteFacilitatorMutation>(atmosphere, {
     mutation,
     variables,
     optimisticUpdater: (store) => {
@@ -74,7 +74,7 @@ const PromoteFacilitatorMutation = (
       if (!team) return
       team.setValue(facilitatorId, 'activeFacilitator')
     },
-    onCompleted: (res: PromoteFacilitatorMutationResponse, errors) => {
+    onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }
