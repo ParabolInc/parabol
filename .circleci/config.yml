@@ -65,7 +65,10 @@ jobs:
       - run:
           name: Init DB for Cypress
           command: |
-            docker run --rm --link action-rethink -v $(pwd):/backup petecoop/rethinkdb-driver rethinkdb-restore -c 172.17.0.2:28015 --force /backup/cypress/fixtures/rdb_test.tar.gz
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+            python get-pip.py
+            sudo pip install rethinkdb==2.3.0
+            rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
       - run:
           name: Cypress Tests
           command: |
