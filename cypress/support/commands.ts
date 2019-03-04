@@ -24,29 +24,40 @@
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      login: typeof login
-    }
-    type cy = any
-  }
-}
-
-import makeAuthTokenObj from '../../src/server/utils/makeAuthTokenObj'
-import encodeAuthTokenObj from '../../src/server/utils/encodeAuthTokenObj'
 import {APP_TOKEN_KEY} from '../../src/universal/utils/constants'
+import {toEpochSeconds} from '../../src/server/utils/epochTime'
+import {JWT_LIFESPAN} from '../../src/server/utils/serverConstants'
+import {sign} from 'jsonwebtoken'
 
-const login = (overrides = {}) => {
+const login = (_overrides = {}) => {
   Cypress.log({
     name: 'login'
   })
-  const authToken = encodeAuthTokenObj(
-    makeAuthTokenObj({sub: 'auth0|5c75e3a068d77f71b39513a9', tms: []})
-  )
+  const now = Date.now()
+  const exp = toEpochSeconds(now + JWT_LIFESPAN)
+  const iat = toEpochSeconds(now)
+  console.log('sec, process.', Cypress.env('AUTH0_CLIENT_ID'))
+  const tokenObj = {
+    sub: 'auth0|5c79ca45df6d5c2e9a5290f3',
+    aud: Cypress.env('AUTH0_CLIENT_ID'),
+    iss: window.location.origin,
+    exp,
+    iat,
+    tms: []
+  }
+  const secret = Buffer.from(Cypress.env('AUTH0_CLIENT_SECRET'), 'base64')
+  const authToken = sign(tokenObj, secret)
   window.localStorage.setItem(APP_TOKEN_KEY, authToken)
   cy.visit('/')
   cy.location('pathname').should('eq', '/me')
 }
 
 Cypress.Commands.add('login', login)
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login: typeof login
+    }
+  }
+}

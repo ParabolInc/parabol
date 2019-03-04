@@ -11,3 +11,5 @@ const prepareErrorForSentry = (error: any) => {
   }
   return error
 }
+
+export default prepareErrorForSentry

@@ -1,3 +1,4 @@
+// @ts-ignore
 import rethinkdbdash from 'rethinkdbdash'
 import getRethinkConfig from './getRethinkConfig'
 

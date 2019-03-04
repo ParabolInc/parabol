@@ -1,15 +1,17 @@
 {
-  "extends": "../tsconfig.json",
-  "include": [
-    "integration/*.ts",
-    "support/*.ts",
-    "../node_modules/cypress"
-  ],
   "compilerOptions": {
+    "allowJs": true,
+    "noEmitOnError": false,
+    "skipLibCheck": true,
     "strict": true,
     "baseUrl": "../node_modules",
-    "target": "es5",
-    "lib": ["es5", "dom"],
-    "types": ["cypress"]
-  }
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es6",
+    "lib": ["es2018", "dom"],
+    "types": ["node","cypress"]
+  },
+  "include": [
+    "**/*.ts"
+  ]
 }
