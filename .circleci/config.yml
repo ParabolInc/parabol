@@ -47,7 +47,7 @@ jobs:
       - save_cache:
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-          - ~/.cache
+          - ~/.cache/yarn
       - run:
           name: Database migration (testing)
           command: |
