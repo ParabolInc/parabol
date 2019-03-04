@@ -63,17 +63,6 @@ jobs:
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
             )
       - run:
-          name: Init DB for Cypress
-          command: |
-            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-            sudo python get-pip.py
-            sudo pip install rethinkdb==2.3.0
-            rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
-      - run:
-          name: Cypress Tests
-          command: |
-            yarn test:cypress
-      - run:
           name: E2E test build
           command: |
             if [ "${CIRCLE_BRANCH}" == "development" ]; then
@@ -142,6 +131,14 @@ jobs:
               git add .googlecloudkey.json build -f
               git commit -m "build $ACTION_VERSION"
             fi
+      - deploy:
+          name: Cypress Tests
+          command: |
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+            sudo python get-pip.py
+            sudo pip install rethinkdb==2.3.0
+            rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
+            yarn test:cypress
       - deploy:
           name: Possible (production backup) and deployment
           command: |
