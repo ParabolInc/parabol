@@ -5,7 +5,7 @@ jobs:
       - image: circleci/node:10.15.0
       - image: rethinkdb:2.3.6
       - image: redis:3.2.8
-      - image: cypress/base:8
+      - image: cypress/base:10
         environment:
           TERM: xterm
     environment:
@@ -36,13 +36,16 @@ jobs:
             fi
       - checkout
       - restore_cache:
-          key: action-{{ checksum "yarn.lock" }}
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
       - run:
           name: Install dependencies
           command: |
             yarn --frozen-lockfile
       - save_cache:
-          key: action-{{ checksum "yarn.lock" }}
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
           - ~/.cache/yarn
       - run:
