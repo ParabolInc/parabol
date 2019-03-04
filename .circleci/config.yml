@@ -2,8 +2,8 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: node:10.15.0
-      - image: rethinkdb:2.3.5
+      - image: circleci/node:10.15.0
+      - image: rethinkdb:2.3.6
       - image: redis:3.2.8
       - image: selenium/standalone-chrome:3.6.0
       - image: cypress/base:8
