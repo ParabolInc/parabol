@@ -51,7 +51,7 @@
     "tsgen": "gql2ts ./build/schema.json -e $(pwd)/src/universal/types/config.js -o ./src/universal/types/graphql.d.ts && prettier --write 'src/universal/types/graphql.d.ts'",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run --record --key 0fe52216-8fe2-4f23-9647-0ea4c55521e5"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
