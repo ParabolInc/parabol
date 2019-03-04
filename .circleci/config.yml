@@ -5,7 +5,6 @@ jobs:
       - image: circleci/node:10.15.0
       - image: rethinkdb:2.3.6
       - image: redis:3.2.8
-      - image: selenium/standalone-chrome:3.6.0
       - image: cypress/base:8
     environment:
       CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
@@ -63,24 +62,6 @@ jobs:
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
             )
       - run:
-          name: E2E test build
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-              echo "info: development server deploy, skipping"
-            else
-              cp $DEVOPS_WORKDIR/environments/e2e ./.env
-              npm run db:migrate
-              npm run build
-            fi
-      - run:
-          name: NPM lint
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-              echo "info: development server deploy, skipping"
-            else
-              npm run lint
-            fi
-      - run:
           name: NPM run test
           command: |
             if [ "${CIRCLE_BRANCH}" == "development" ]; then
@@ -88,16 +69,6 @@ jobs:
             # else
             #            npm run test
             #            mkdir test-report ; mv test-report.xml test-report
-            fi
-
-      - run:
-          name: E2E test run
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-              echo "info: development server deploy, skipping"
-            else
-              export SELENIUM_REMOTE_URL='http://localhost:4444/wd/hub'
-              npm run test:e2e
             fi
       - run:
           name: Pre-build environment configuration
@@ -134,6 +105,7 @@ jobs:
       - deploy:
           name: Cypress Tests
           command: |
+            yarn build
             curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
             sudo python get-pip.py
             sudo pip install rethinkdb==2.3.0
