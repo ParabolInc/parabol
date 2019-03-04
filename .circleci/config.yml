@@ -90,7 +90,7 @@ jobs:
       - run:
           name: Cypress Tests
           command: |
-            apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
+            sudo apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
             yarn build
             curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
             sudo python get-pip.py
