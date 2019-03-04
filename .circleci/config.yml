@@ -6,6 +6,8 @@ jobs:
       - image: rethinkdb:2.3.6
       - image: redis:3.2.8
       - image: cypress/base:8
+        environment:
+          TERM: xterm
     environment:
       CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
@@ -16,7 +18,6 @@ jobs:
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
-      TERM: xterm
     working_directory: ~/action
     steps:
       - setup_remote_docker
@@ -39,7 +40,6 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apt-get update && apt-get -yq install build-essential
             yarn --frozen-lockfile
       - save_cache:
           key: action-{{ checksum "yarn.lock" }}
@@ -84,6 +84,15 @@ jobs:
             fi
             cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
             cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
+      - run:
+          name: Cypress Tests
+          command: |
+            yarn build
+            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+            sudo python get-pip.py
+            sudo pip install rethinkdb==2.3.0
+            rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
+            yarn test:cypress
       - deploy:
           name: Possible deployment build
           command: |
@@ -102,15 +111,6 @@ jobs:
               git add .googlecloudkey.json build -f
               git commit -m "build $ACTION_VERSION"
             fi
-      - deploy:
-          name: Cypress Tests
-          command: |
-            yarn build
-            curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-            sudo python get-pip.py
-            sudo pip install rethinkdb==2.3.0
-            rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
-            yarn test:cypress
       - deploy:
           name: Possible (production backup) and deployment
           command: |
