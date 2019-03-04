@@ -5,7 +5,7 @@ describe('login', () => {
       cy.get('input[name="email"]').type(`cypress@parabol.co`)
       cy.get('input[name="password"]').type('cypress')
       cy.root().submit()
-      cy.location('pathname').should('eq', '/me')
+      cy.location('pathname', {timeout: 5000}).should('eq', '/me')
     })
   })
   it('redirects when a login token is present', () => {

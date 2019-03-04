@@ -36,7 +36,6 @@ const login = (_overrides = {}) => {
   const now = Date.now()
   const exp = toEpochSeconds(now + JWT_LIFESPAN)
   const iat = toEpochSeconds(now)
-  console.log('sec, process.', Cypress.env('AUTH0_CLIENT_ID'))
   const tokenObj = {
     sub: 'auth0|5c79ca45df6d5c2e9a5290f3',
     aud: Cypress.env('AUTH0_CLIENT_ID'),

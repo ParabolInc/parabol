@@ -6,6 +6,7 @@ jobs:
       - image: rethinkdb:2.3.5
       - image: redis:3.2.8
       - image: selenium/standalone-chrome:3.6.0
+      - image: cypress/base:8
     environment:
       CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
@@ -16,6 +17,7 @@ jobs:
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
       SENTRY_ORG: "parabol"
       SENTRY_PROJECT: "action-production"
+      TERM: xterm
     working_directory: ~/action
     steps:
       - add_ssh_keys:
@@ -60,14 +62,13 @@ jobs:
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
             )
       - run:
-          name: E2E test dependencies
+          name: Init DB for Cypress
           command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-            echo "info: development server deploy, skipping"
-            else
-            apt-get update && apt-get -yq install unzip libnss3 libgconf-2-4
-            npm run test:e2e-deps
-            fi
+            docker run --rm --link action-rethink -v $(pwd):/backup petecoop/rethinkdb-driver rethinkdb-restore -c 172.17.0.2:28015 --force /backup/cypress/fixtures/rdb_test.tar.gz
+      - run:
+          name: Cypress Tests
+          command: |
+            yarn test:cypress
       - run:
           name: E2E test build
           command: |
