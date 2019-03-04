@@ -20,6 +20,7 @@ jobs:
       TERM: xterm
     working_directory: ~/action
     steps:
+      - setup_remote_docker
       - add_ssh_keys:
           fingerprints:
             - "53:a8:37:35:c3:7e:54:f5:19:f6:8e:a1:e0:78:52:da"
