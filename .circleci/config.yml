@@ -85,11 +85,12 @@ jobs:
             else
               export DEPLOY_ENV="local"
             fi
-            cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+            # cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
             cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
       - run:
           name: Cypress Tests
           command: |
+            cp $DEVOPS_WORKDIR/environments/cypress ./.env
             sudo apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
             yarn build
             curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
