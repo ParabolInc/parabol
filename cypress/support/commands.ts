@@ -38,16 +38,13 @@ const login = (_overrides = {}) => {
   const iat = toEpochSeconds(now)
   const tokenObj = {
     sub: 'auth0|5c79ca45df6d5c2e9a5290f3',
-    aud: Cypress.env('AUTH0_CLIENT_ID') || 'CYPRESS_AUTH0_CLIENT_ID',
+    aud: Cypress.env('AUTH0_CLIENT_ID'),
     iss: window.location.origin,
     exp,
     iat,
     tms: []
   }
-  const secret = Buffer.from(
-    Cypress.env('AUTH0_CLIENT_SECRET') || 'CYPRESS_AUTH0_CLIENT_SECRET',
-    'base64'
-  )
+  const secret = Buffer.from(Cypress.env('AUTH0_CLIENT_SECRET'), 'base64')
   const authToken = sign(tokenObj, secret)
   window.localStorage.setItem(APP_TOKEN_KEY, authToken)
   cy.visit('/')

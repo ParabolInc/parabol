@@ -51,7 +51,7 @@
     "tsgen": "gql2ts ./build/schema.json -e $(pwd)/src/universal/types/config.js -o ./src/universal/types/graphql.d.ts && prettier --write 'src/universal/types/graphql.d.ts'",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
-    "cy:run": "cypress run --record --key 0fe52216-8fe2-4f23-9647-0ea4c55521e5"
+    "cy:run": "cypress run --record --key $CYPRESS_SECRET"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -133,7 +133,6 @@
     "strict-event-emitter-types": "^2.0.0",
     "style-loader": "^0.21.0",
     "terser-webpack-plugin": "^1.2.2",
-    "ts-loader": "^5.3.3",
     "tslint": "^5.11.0",
     "tslint-config-standard": "^7.1.0",
     "typescript": "^3.3.3",
