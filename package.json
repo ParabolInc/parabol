@@ -301,7 +301,9 @@
       "HTMLElement",
       "System",
       "Node",
-      "DragEvent"
+      "DragEvent",
+      "cy",
+      "Cypress"
     ],
     "ignore": [
       "schema.flow.js",
