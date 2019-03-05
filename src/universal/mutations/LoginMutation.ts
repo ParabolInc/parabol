@@ -74,7 +74,9 @@ const LoginMutation = (
       history.push(nextUrl)
     },
     onError: (err) => {
-      console.error('Error logging in', JSON.stringify(err))
+      Object.keys(err).forEach((errKey) => {
+        console.error(errKey, JSON.stringify(err[errKey]))
+      })
     }
   })
 }
