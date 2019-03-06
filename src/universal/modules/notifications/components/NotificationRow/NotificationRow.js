@@ -51,16 +51,11 @@ export default createFragmentContainer(
   graphql`
     fragment NotificationRow_notification on Notification {
       type
-      ...AddedToTeam_notification
-      ...DenyNewUser_notification
-      ...InviteeApproved_notification
       ...KickedOut_notification
       ...PaymentRejected_notification
       ...TaskInvolves_notification
       ...PromoteToBillingLeader_notification
-      ...RequestNewUser_notification
       ...TeamArchived_notification
-      ...TeamInvite_notification
       ...TeamInvitation_notification
     }
   `

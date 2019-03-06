@@ -6,7 +6,6 @@ const fieldsToSerialize = {
   newAuthToken: ['channelId', 'message.data.tms'],
   notification: [...dataFieldsToSerialize],
   organization: [...dataFieldsToSerialize],
-  orgApproval: [...dataFieldsToSerialize],
   task: [...dataFieldsToSerialize],
   team: [...dataFieldsToSerialize],
   teamMember: [...dataFieldsToSerialize]

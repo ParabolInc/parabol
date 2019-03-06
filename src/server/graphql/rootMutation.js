@@ -1,13 +1,10 @@
 import {GraphQLObjectType} from 'graphql'
-import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite'
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem'
 import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo'
 import addOrg from 'server/graphql/mutations/addOrg'
 import addProvider from 'server/graphql/mutations/addProvider'
 import addSlackChannel from 'server/graphql/mutations/addSlackChannel'
-import approveToOrg from 'server/graphql/mutations/approveToOrg'
 import archiveTeam from 'server/graphql/mutations/archiveTeam'
-import cancelApproval from 'server/graphql/mutations/cancelApproval'
 import clearNotification from 'server/graphql/mutations/clearNotification'
 import changeTaskTeam from 'server/graphql/mutations/changeTaskTeam'
 import connectSocket from 'server/graphql/mutations/connectSocket'
@@ -22,7 +19,6 @@ import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee'
 import githubAddMember from 'server/graphql/mutations/githubAddMember'
 import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember'
 import inactivateUser from 'server/graphql/mutations/inactivateUser'
-import inviteTeamMembers from 'server/graphql/mutations/inviteTeamMembers'
 import joinIntegration from 'server/graphql/mutations/joinIntegration'
 import killMeeting from 'server/graphql/mutations/killMeeting'
 import leaveIntegration from 'server/graphql/mutations/leaveIntegration'
@@ -32,7 +28,6 @@ import navigateMeeting from 'server/graphql/mutations/navigateMeeting'
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator'
 import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead'
-import rejectOrgApproval from 'server/graphql/mutations/rejectOrgApproval'
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem'
 import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo'
 import removeProvider from 'server/graphql/mutations/removeProvider'
@@ -98,7 +93,6 @@ import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    acceptTeamInvite,
     acceptTeamInvitation,
     addAgendaItem,
     addFeatureFlag,
@@ -107,10 +101,8 @@ export default new GraphQLObjectType({
     addProvider,
     addSlackChannel,
     addTeam,
-    approveToOrg,
     archiveTeam,
     autoGroupReflections,
-    cancelApproval,
     changeTaskTeam,
     clearNotification,
     connectSocket,
@@ -135,7 +127,6 @@ export default new GraphQLObjectType({
     githubAddMember,
     githubRemoveMember,
     inactivateUser,
-    inviteTeamMembers,
     inviteToTeam,
     joinIntegration,
     killMeeting,
@@ -149,7 +140,6 @@ export default new GraphQLObjectType({
     promoteFacilitator,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
-    rejectOrgApproval,
     removeAgendaItem,
     removeProvider,
     removeSlackChannel,

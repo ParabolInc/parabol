@@ -1,5 +1,4 @@
 import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation'
-import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation'
 import {
   setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater,
@@ -15,7 +14,6 @@ const subscription = graphql`
     organizationSubscription {
       __typename
       ...AddOrgMutation_organization @relay(mask: false)
-      ...ApproveToOrgMutation_organization @relay(mask: false)
       ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
       ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
       ...UpdateCreditCardMutation_organization @relay(mask: false)
@@ -43,9 +41,6 @@ const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
       switch (type) {
         case 'AddOrgPayload':
           addOrgMutationOrganizationUpdater(payload, store, viewerId)
-          break
-        case 'ApproveToOrgPayload':
-          approveToOrgOrganizationUpdater(payload, store, viewerId)
           break
         case 'SetOrgUserRoleAddedPayload':
           setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId)

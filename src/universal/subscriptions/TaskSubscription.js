@@ -1,31 +1,22 @@
 import {createTaskTaskUpdater} from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from 'universal/mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from 'universal/mutations/EditTaskMutation'
-import {removeTeamMemberTasksUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from 'universal/mutations/UpdateTaskMutation'
 import {endMeetingTaskUpdater} from 'universal/mutations/EndMeetingMutation'
 import {removeOrgUserTaskUpdater} from 'universal/mutations/RemoveOrgUserMutation'
-import {cancelApprovalTaskUpdater} from 'universal/mutations/CancelApprovalMutation'
-import {rejectOrgApprovalTaskUpdater} from 'universal/mutations/RejectOrgApprovalMutation'
-import {inviteTeamMembersTaskUpdater} from 'universal/mutations/InviteTeamMembersMutation'
-import {acceptTeamInviteTaskUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
 import {changeTaskTeamTaskUpdater} from 'universal/mutations/ChangeTaskTeamMutation'
 
 const subscription = graphql`
   subscription TaskSubscription {
     taskSubscription {
       __typename
-      ...AcceptTeamInviteMutation_task @relay(mask: false)
       ...RemoveTeamMemberMutation_task @relay(mask: false)
-      ...CancelApprovalMutation_task @relay(mask: false)
       ...ChangeTaskTeamMutation_task @relay(mask: false)
       ...CreateGitHubIssueMutation_task @relay(mask: false)
       ...CreateTaskMutation_task @relay(mask: false)
       ...DeleteTaskMutation_task @relay(mask: false)
       ...EditTaskMutation_task @relay(mask: false)
       ...EndMeetingMutation_task @relay(mask: false)
-      ...InviteTeamMembersMutation_task @relay(mask: false)
-      ...RejectOrgApprovalMutation_task @relay(mask: false)
       ...RemoveOrgUserMutation_task @relay(mask: false)
       ...UpdateTaskMutation_task @relay(mask: false)
       ...UpdateTaskDueDateMutation_task @relay(mask: false)
@@ -47,15 +38,6 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
-        case 'AcceptTeamInvitePayload':
-          acceptTeamInviteTaskUpdater(payload, store, viewerId)
-          break
-        case 'RemoveTeamMemberOtherPayload':
-          removeTeamMemberTasksUpdater(payload, store, viewerId)
-          break
-        case 'CancelApprovalPayload':
-          cancelApprovalTaskUpdater(payload, store, viewerId)
-          break
         case 'CreateGitHubIssuePayload':
           break
         case 'ChangeTaskTeamPayload':
@@ -72,12 +54,6 @@ const TaskSubscription = (atmosphere, queryVariables, subParams) => {
           break
         case 'EndMeetingPayload':
           endMeetingTaskUpdater(payload, store, viewerId)
-          break
-        case 'InviteTeamMembersPayload':
-          inviteTeamMembersTaskUpdater(payload, store, viewerId)
-          break
-        case 'RejectOrgApprovalPayload':
-          rejectOrgApprovalTaskUpdater(payload, store, viewerId)
           break
         case 'RemoveOrgUserPayload':
           removeOrgUserTaskUpdater(payload, store, viewerId)

@@ -16,7 +16,6 @@ import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload'
 import UpgradeToProPayload from 'server/graphql/types/UpgradeToProPayload'
 import RemoveOrgUserPayload from 'server/graphql/types/RemoveOrgUserPayload'
 import UpdateCreditCardPayload from 'server/graphql/types/UpdateCreditCardPayload'
-import AcceptTeamInvitePayload from 'server/graphql/types/AcceptTeamInvitePayload'
 import EndNewMeetingPayload from 'server/graphql/types/EndNewMeetingPayload'
 import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload'
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload'
@@ -47,7 +46,6 @@ import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayl
 
 const types = [
   AcceptTeamInvitationPayload,
-  AcceptTeamInvitePayload,
   AddTeamPayload,
   ArchiveTeamPayload,
   AutoGroupReflectionsPayload,

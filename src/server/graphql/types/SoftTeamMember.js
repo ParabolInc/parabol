@@ -5,7 +5,6 @@ import {resolveTeam} from 'server/graphql/resolvers'
 import Assignee, {assigneeInterfaceFields} from 'server/graphql/types/Assignee'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember'
 import {TaskConnection} from 'server/graphql/types/Task'
 import Team from 'server/graphql/types/Team'
 import {getUserId} from 'server/utils/authorization'
@@ -13,7 +12,7 @@ import {getUserId} from 'server/utils/authorization'
 const SoftTeamMember = new GraphQLObjectType({
   name: 'SoftTeamMember',
   description: 'A member of a team',
-  interfaces: () => [PossibleTeamMember, Assignee],
+  interfaces: () => [Assignee],
   fields: () => ({
     ...assigneeInterfaceFields(),
     createdAt: {

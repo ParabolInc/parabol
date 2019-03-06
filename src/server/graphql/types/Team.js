@@ -8,19 +8,15 @@ import {
   GraphQLString
 } from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
-import getRethink from 'server/database/rethinkDriver'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum'
 import AgendaItem from 'server/graphql/types/AgendaItem'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import Invitation from 'server/graphql/types/Invitation'
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting'
 import Organization from 'server/graphql/types/Organization'
-import OrgApproval from 'server/graphql/types/OrgApproval'
 import {TaskConnection} from 'server/graphql/types/Task'
 import TeamMember from 'server/graphql/types/TeamMember'
 import TierEnum from 'server/graphql/types/TierEnum'
-import {PENDING} from 'server/utils/serverConstants'
 import {resolveOrganization} from 'server/graphql/resolvers'
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
@@ -117,21 +113,6 @@ const Team = new GraphQLObjectType({
         return dataLoader.get('teamInvitationsByTeamId').load(teamId)
       }
     },
-    invitations: {
-      deprecatedReason: 'Use teamInvitations instead for invites created after Dec 2018',
-      type: new GraphQLList(Invitation),
-      description: 'The outstanding invitations to join the team',
-      resolve: ({id: teamId}) => {
-        const r = getRethink()
-        const now = new Date()
-        return r
-          .table('Invitation')
-          .getAll(teamId, {index: 'teamId'})
-          .filter(r.row('tokenExpiration').ge(now))
-          .orderBy('createdAt')
-          .run()
-      }
-    },
     isLead: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
@@ -178,19 +159,6 @@ const Team = new GraphQLObjectType({
     tier: {
       type: TierEnum,
       description: 'The level of access to features on the parabol site'
-    },
-    orgApprovals: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrgApproval))),
-      description: 'The outstanding invitations to join the team',
-      resolve: ({id: teamId}) => {
-        const r = getRethink()
-        return r
-          .table('OrgApproval')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({status: PENDING, isActive: true})
-          .orderBy('email')
-          .run()
-      }
     },
     organization: {
       type: new GraphQLNonNull(Organization),

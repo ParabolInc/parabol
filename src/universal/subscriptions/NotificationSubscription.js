@@ -1,10 +1,5 @@
 import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation'
-import {
-  approveToOrgNotificationOnNext,
-  approveToOrgNotificationUpdater
-} from 'universal/mutations/ApproveToOrgMutation'
-import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
 import {
   createTaskNotificationOnNext,
@@ -12,14 +7,6 @@ import {
 } from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import {
-  inviteTeamMembersNotificationOnNext,
-  inviteTeamMembersNotificationUpdater
-} from 'universal/mutations/InviteTeamMembersMutation'
-import {
-  rejectOrgApprovalNotificationOnNext,
-  rejectOrgApprovalNotificationUpdater
-} from 'universal/mutations/RejectOrgApprovalMutation'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import {
   removeOrgUserNotificationOnNext,
@@ -37,20 +24,15 @@ const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       __typename
-      ...AcceptTeamInvitationMutation_notification @relay(mask: false)
       ...AddOrgMutation_notification @relay(mask: false)
       ...AddTeamMutation_notification @relay(mask: false)
-      ...ApproveToOrgMutation_notification @relay(mask: false)
-      ...CancelApprovalMutation_notification @relay(mask: false)
       ...ClearNotificationMutation_notification @relay(mask: false)
       ...CreateTaskMutation_notification @relay(mask: false)
       ...DeleteTaskMutation_notification @relay(mask: false)
       ...EndMeetingMutation_notification @relay(mask: false)
       ...EndNewMeetingMutation_notification @relay(mask: false)
-      ...InviteTeamMembersMutation_notification @relay(mask: false)
       ...InviteToTeamMutation_notification @relay(mask: false)
       ...RemoveOrgUserMutation_notification @relay(mask: false)
-      ...RejectOrgApprovalMutation_notification @relay(mask: false)
       ...UpdateUserProfileMutation_notification @relay(mask: false)
 
       # ConnectSocket
@@ -153,11 +135,8 @@ const addNewFeatureNotificationUpdater = (payload, {store}) => {
 }
 
 const onNextHandlers = {
-  ApproveToOrgPayload: approveToOrgNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
-  InviteTeamMembersPayload: inviteTeamMembersNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
-  RejectOrgApprovalPayload: rejectOrgApprovalNotificationOnNext,
   RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
   StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext
 }
@@ -185,12 +164,6 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
         case 'AddTeamPayload':
           addTeamMutationNotificationUpdater(payload, {store})
           break
-        case 'ApproveToOrgPayload':
-          approveToOrgNotificationUpdater(payload, store, viewerId)
-          break
-        case 'CancelApprovalPayload':
-          cancelApprovalNotificationUpdater(payload, store, viewerId)
-          break
         case 'ClearNotificationPayload':
           clearNotificationNotificationUpdater(payload, store, viewerId)
           break
@@ -209,14 +182,8 @@ const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
         case 'EndNewMeetingPayload':
           endNewMeetingNotificationUpdater(payload, {store})
           break
-        case 'InviteTeamMembersPayload':
-          inviteTeamMembersNotificationUpdater(payload, store, viewerId)
-          break
         case 'InviteToTeamPayload':
           inviteToTeamNotificationUpdater(payload, {atmosphere, store})
-          break
-        case 'RejectOrgApprovalPayload':
-          rejectOrgApprovalNotificationUpdater(payload, store, viewerId)
           break
         case 'User':
           connectSocketUserUpdater(payload, store)

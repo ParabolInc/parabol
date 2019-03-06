@@ -1,4 +1,3 @@
-import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
 import {addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation'
 import {
   archiveTeamTeamOnNext,
@@ -6,7 +5,6 @@ import {
 } from 'universal/mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation'
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation'
-import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation'
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation'
 import {promoteFacilitatorTeamOnNext} from 'universal/mutations/PromoteFacilitatorMutation'
 import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation'
@@ -50,7 +48,6 @@ const subscription = graphql`
     teamSubscription {
       __typename
       ...AcceptTeamInvitationMutation_team @relay(mask: false)
-      ...AcceptTeamInviteMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
@@ -124,9 +121,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'AcceptTeamInvitationPayload':
           acceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
           break
-        case 'AcceptTeamInvitePayload':
-          acceptTeamInviteTeamUpdater(payload, store, viewerId)
-          break
         case 'AddReflectTemplatePayload':
           addReflectTemplateTeamUpdater(payload, {store})
           break
@@ -162,9 +156,6 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           endMeetingTeamUpdater(payload, {atmosphere: environment, history})
           break
         case 'EndNewMeetingPayload':
-          break
-        case 'InviteTeamMembersPayload':
-          inviteTeamMembersTeamUpdater(payload, store, viewerId)
           break
         case 'KillMeetingPayload':
           killMeetingTeamUpdater()

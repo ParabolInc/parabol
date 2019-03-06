@@ -13,7 +13,6 @@ graphql`
       type
       ...PromoteToBillingLeader_notification @relay(mask: false)
       ...PaymentRejected_notification @relay(mask: false)
-      ...RequestNewUser_notification @relay(mask: false)
     }
     updatedOrgMember {
       user {

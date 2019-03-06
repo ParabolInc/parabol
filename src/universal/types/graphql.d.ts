@@ -871,11 +871,6 @@ export interface ITeam {
   teamInvitations: Array<ITeamInvitation> | null
 
   /**
-   * The outstanding invitations to join the team
-   */
-  invitations: Array<IInvitation | null> | null
-
-  /**
    * true if the viewer is the team lead, else false
    */
   isLead: boolean
@@ -904,11 +899,6 @@ export interface ITeam {
    * The level of access to features on the parabol site
    */
   tier: TierEnum | null
-
-  /**
-   * The outstanding invitations to join the team
-   */
-  orgApprovals: Array<IOrgApproval>
   organization: IOrganization
 
   /**
@@ -1081,79 +1071,6 @@ export interface ITeamInvitation {
    * 48-byte hex encoded random string
    */
   token: string
-}
-
-/**
- * An invitation to become a team member
- */
-export interface IInvitation {
-  __typename: 'Invitation'
-
-  /**
-   * The unique invitation Id
-   */
-  id: string
-
-  /**
-   * The datetime the invitation was accepted
-   */
-  acceptedAt: any | null
-
-  /**
-   * The datetime the invitation was created
-   */
-  createdAt: any
-
-  /**
-   * The email of the invitee
-   */
-  email: any | null
-
-  /**
-   * The name of the invitee, derived from the email address
-   */
-  fullName: string | null
-
-  /**
-   * The teamMemberId of the person that sent the invitation
-   */
-  invitedBy: string | null
-
-  /**
-   * How many invites have been sent to this email address?
-   */
-  inviteCount: number | null
-
-  /**
-   * The team invited to
-   */
-  teamId: string
-
-  /**
-   * The datestamp of when the invitation will expire
-   */
-  tokenExpiration: any | null
-
-  /**
-   * The datetime the invitation was last updated
-   */
-  updatedAt: any | null
-}
-
-export type PossibleTeamMember = IInvitation | IOrgApproval | ITeamMember | ISoftTeamMember
-
-export interface IPossibleTeamMember {
-  __typename: 'PossibleTeamMember'
-
-  /**
-   * A shortid for the possible team member
-   */
-  id: string | null
-
-  /**
-   * The email invited (if Invitee or OrgApproval) or used
-   */
-  email: any | null
 }
 
 /**
@@ -1418,223 +1335,6 @@ export const enum TierEnum {
   personal = 'personal',
   pro = 'pro',
   enterprise = 'enterprise'
-}
-
-/**
- * The state of approving an email address to join a team and org
- */
-export interface IOrgApproval {
-  __typename: 'OrgApproval'
-
-  /**
-   * The unique approval ID
-   */
-  id: string
-
-  /**
-   * The userId of the billing leader that approved the invitee
-   */
-  approvedBy: string | null
-
-  /**
-   * The datetime the organization was created
-   */
-  createdAt: any
-
-  /**
-   * The userId of the billing leader that denied the invitee
-   */
-  deniedBy: string | null
-
-  /**
-   * *The email seeking approval
-   */
-  email: any | null
-
-  /**
-   * true if it applies to a user that was not removed from the org, else false
-   */
-  isActive: boolean | null
-
-  /**
-   * The notification sent to the viewer / billing leader(s) requesting approval
-   */
-  notification: INotifyRequestNewUser | null
-
-  /**
-   * The orgId the email want to join
-   */
-  orgId: string
-
-  /**
-   * *The team seeking approval. Used to populate in the team settings page
-   */
-  teamId: string
-  status: OrgApprovalStatusEnum | null
-
-  /**
-   * The datetime the approval was last updated
-   */
-  updatedAt: any | null
-}
-
-/**
- * A notification sent to a user concerning an invitation (request, joined)
- */
-export interface INotifyRequestNewUser {
-  __typename: 'NotifyRequestNewUser'
-
-  /**
-   * The userId of the person that invited the email
-   */
-  inviterUserId: string
-
-  /**
-   * The email of the person being invited
-   */
-  inviteeEmail: string
-
-  /**
-   * The teamId the inviteeEmail is being invited to
-   */
-  teamId: string
-
-  /**
-   * The team name the inviteeEmail is being invited to
-   */
-  teamName: string
-
-  /**
-   * The user that triggered the invitation
-   */
-  inviter: IUser
-  team: ITeam
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
-}
-
-export type Notification =
-  | INotifyRequestNewUser
-  | INotifyTeamInvite
-  | INotifyInviteeApproved
-  | INotifyTeamArchived
-  | INotifyTaskInvolves
-  | INotifyAddedToTeam
-  | INotificationTeamInvitation
-  | INotifyDenial
-  | INotifyKickedOut
-  | INotifyPaymentRejected
-  | INotifyPromoteToOrgLeader
-
-export interface INotification {
-  __typename: 'Notification'
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
-}
-
-/**
- * The kind of notification
- */
-export const enum NotificationEnum {
-  ADD_TO_TEAM = 'ADD_TO_TEAM',
-  DENY_NEW_USER = 'DENY_NEW_USER',
-  FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED',
-  undefined = 'undefined',
-  INVITEE_APPROVED = 'INVITEE_APPROVED',
-  JOIN_TEAM = 'JOIN_TEAM',
-  KICKED_OUT = 'KICKED_OUT',
-  PAYMENT_REJECTED = 'PAYMENT_REJECTED',
-  TASK_INVOLVES = 'TASK_INVOLVES',
-  REJOIN_TEAM = 'REJOIN_TEAM',
-  REQUEST_NEW_USER = 'REQUEST_NEW_USER',
-  TEAM_INVITE = 'TEAM_INVITE',
-  TEAM_INVITATION = 'TEAM_INVITATION',
-  TEAM_ARCHIVED = 'TEAM_ARCHIVED',
-  VERSION_INFO = 'VERSION_INFO',
-  PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
-}
-
-export type OrganizationNotification =
-  | INotifyRequestNewUser
-  | INotifyPaymentRejected
-  | INotifyPromoteToOrgLeader
-
-export interface IOrganizationNotification {
-  __typename: 'OrganizationNotification'
-  id: string | null
-  type: NotificationEnum | null
-}
-
-export type TeamNotification =
-  | INotifyRequestNewUser
-  | INotifyTeamInvite
-  | INotifyInviteeApproved
-  | INotifyTaskInvolves
-  | INotifyAddedToTeam
-  | INotificationTeamInvitation
-  | INotifyDenial
-
-export interface ITeamNotification {
-  __typename: 'TeamNotification'
-  id: string | null
-  type: NotificationEnum | null
-}
-
-/**
- * The approval status for a user joining the org
- */
-export const enum OrgApprovalStatusEnum {
-  APPROVED = 'APPROVED',
-  PENDING = 'PENDING',
-  DENIED = 'DENIED'
 }
 
 /**
@@ -2763,6 +2463,58 @@ export interface INotificationEdge {
   cursor: any | null
 }
 
+export type Notification =
+  | INotifyTeamArchived
+  | INotifyTaskInvolves
+  | INotificationTeamInvitation
+  | INotifyKickedOut
+  | INotifyPaymentRejected
+  | INotifyPromoteToOrgLeader
+
+export interface INotification {
+  __typename: 'Notification'
+
+  /**
+   * A shortid for the notification
+   */
+  id: string
+
+  /**
+   * true if the notification has been archived, else false (or null)
+   */
+  isArchived: boolean | null
+
+  /**
+   * *The unique organization ID for this notification. Can be blank for targeted notifications
+   */
+  orgId: string | null
+
+  /**
+   * The datetime to activate the notification & send it to the client
+   */
+  startAt: any | null
+  type: NotificationEnum | null
+
+  /**
+   * *The userId that should see this notification
+   */
+  userIds: Array<string> | null
+}
+
+/**
+ * The kind of notification
+ */
+export const enum NotificationEnum {
+  FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED',
+  KICKED_OUT = 'KICKED_OUT',
+  PAYMENT_REJECTED = 'PAYMENT_REJECTED',
+  TASK_INVOLVES = 'TASK_INVOLVES',
+  TEAM_INVITATION = 'TEAM_INVITATION',
+  TEAM_ARCHIVED = 'TEAM_ARCHIVED',
+  VERSION_INFO = 'VERSION_INFO',
+  PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
+}
+
 /**
  * A token for a user to be used on 1 or more teams
  */
@@ -2914,13 +2666,6 @@ export interface IMutation {
   __typename: 'Mutation'
 
   /**
-   * Add a user to a Team given an invitationToken or the notification id of the invitation.
-   *     If the invitationToken is valid, returns the auth token with the new team added to tms.
-   *     Side effect: deletes all other outstanding invitations for user.
-   */
-  acceptTeamInvite: IAcceptTeamInvitePayload
-
-  /**
    * Redeem an invitation token for a logged in user
    */
   acceptTeamInvitation: IAcceptTeamInvitationPayload
@@ -2947,22 +2692,12 @@ export interface IMutation {
    * Create a new team and add the first team member
    */
   addTeam: IAddTeamPayload | null
-
-  /**
-   * Approve an outsider to join the organization
-   */
-  approveToOrg: IApproveToOrgPayload | null
   archiveTeam: IArchiveTeamPayload | null
 
   /**
    * Automatically group reflections
    */
   autoGroupReflections: IAutoGroupReflectionsPayload | null
-
-  /**
-   * Cancel a pending request for an invitee to join the org
-   */
-  cancelApproval: ICancelApprovalPayload | null
 
   /**
    * Change the team a task is associated with
@@ -3081,13 +2816,6 @@ export interface IMutation {
   inactivateUser: IInactivateUserPayload | null
 
   /**
-   * If in the org,
-   *      Send invitation emails to a list of email addresses, add them to the invitation table.
-   *      Else, send a request to the org leader to get them approval and put them in the OrgApproval table.
-   */
-  inviteTeamMembers: IInviteTeamMembersPayload
-
-  /**
    * Send a team invitation to an email address
    */
   inviteToTeam: IInviteToTeamPayload
@@ -3151,11 +2879,6 @@ export interface IMutation {
    * Promote another team member to be the leader
    */
   promoteToTeamLead: IPromoteToTeamLeadPayload | null
-
-  /**
-   * Reject an invitee from joining any team under your organization
-   */
-  rejectOrgApproval: IRejectOrgApprovalPayload | null
 
   /**
    * Remove an agenda item
@@ -3365,18 +3088,6 @@ export interface IMutation {
   renameReflectTemplatePrompt: IRenameReflectTemplatePromptPayload | null
 }
 
-export interface IAcceptTeamInviteOnMutationArguments {
-  /**
-   * The invitation token (first 6 bytes are the id, next 8 are the pre-hash)
-   */
-  inviteToken?: string | null
-
-  /**
-   * The notification id of the team invite
-   */
-  notificationId?: string | null
-}
-
 export interface IAcceptTeamInvitationOnMutationArguments {
   /**
    * The 48-byte hex encoded invitation token
@@ -3443,11 +3154,6 @@ export interface IAddTeamOnMutationArguments {
   newTeam: INewTeamInput
 }
 
-export interface IApproveToOrgOnMutationArguments {
-  email: string
-  orgId: string
-}
-
 export interface IArchiveTeamOnMutationArguments {
   /**
    * The teamId to archive (or delete, if team is unused)
@@ -3462,13 +3168,6 @@ export interface IAutoGroupReflectionsOnMutationArguments {
    * A number from 0 to 1 to determine how tightly to pack the groups. Higher means fewer groups
    */
   groupingThreshold: number
-}
-
-export interface ICancelApprovalOnMutationArguments {
-  /**
-   * org approval id to cancel
-   */
-  orgApprovalId: string
 }
 
 export interface IChangeTaskTeamOnMutationArguments {
@@ -3685,14 +3384,6 @@ export interface IInactivateUserOnMutationArguments {
   userId: string
 }
 
-export interface IInviteTeamMembersOnMutationArguments {
-  /**
-   * The id of the inviting team
-   */
-  teamId: string
-  invitees: Array<IInvitee>
-}
-
 export interface IInviteToTeamOnMutationArguments {
   /**
    * The id of the inviting team
@@ -3834,14 +3525,6 @@ export interface IPromoteToTeamLeadOnMutationArguments {
    * the new team member that will be the leader
    */
   teamMemberId: string
-}
-
-export interface IRejectOrgApprovalOnMutationArguments {
-  /**
-   * The notification to which the Billing Leader is responding
-   */
-  notificationId: string
-  reason?: string | null
 }
 
 export interface IRemoveAgendaItemOnMutationArguments {
@@ -4178,100 +3861,6 @@ export interface IRenameReflectTemplatePromptOnMutationArguments {
   question: string
 }
 
-export interface IAcceptTeamInvitePayload {
-  __typename: 'AcceptTeamInvitePayload'
-
-  /**
-   * The new JWT
-   */
-  authToken: string | null
-  error: IStandardMutationError | null
-
-  /**
-   * The team that the invitee will be joining
-   */
-  team: ITeam | null
-
-  /**
-   * The new team member on the team
-   */
-  teamMember: ITeamMember | null
-
-  /**
-   * The invite notification removed once accepted
-   */
-  removedNotification: INotifyTeamInvite | null
-
-  /**
-   * The invitation the viewer just accepted
-   */
-  removedInvitation: IInvitation | null
-  user: IUser | null
-
-  /**
-   * The soft team member that got promoted to a real team member
-   */
-  removedSoftTeamMember: ISoftTeamMember | null
-
-  /**
-   * The tasks that got reassigned from the soft team member to the real team member
-   */
-  hardenedTasks: Array<ITask | null> | null
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError'
-
-  /**
-   * The title of the error
-   */
-  title: string | null
-
-  /**
-   * The full error
-   */
-  message: string
-}
-
-/**
- * A notification sent to a user that was invited to a new team
- */
-export interface INotifyTeamInvite {
-  __typename: 'NotifyTeamInvite'
-
-  /**
-   * The user that triggered the invitation
-   */
-  inviter: IUser
-  team: ITeam
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
-}
-
 export interface IAcceptTeamInvitationPayload {
   __typename: 'AcceptTeamInvitationPayload'
   error: IStandardMutationError | null
@@ -4300,6 +3889,20 @@ export interface IAcceptTeamInvitationPayload {
    * For payloads going to the team leader that got new suggested actions
    */
   teamLead: IUser | null
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError'
+
+  /**
+   * The title of the error
+   */
+  title: string | null
+
+  /**
+   * The full error
+   */
+  message: string
 }
 
 export interface ICreateAgendaItemInput {
@@ -4435,80 +4038,6 @@ export interface IAddTeamPayload {
   removedSuggestedActionId: string | null
 }
 
-export interface IApproveToOrgPayload {
-  __typename: 'ApproveToOrgPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * If the viewer is an org leader, the notifications removed after approving to the organization
-   */
-  removedRequestNotifications: Array<INotifyRequestNewUser> | null
-
-  /**
-   * If the viegnwer is a team member, the org approvals that were removed in place of team members
-   */
-  removedOrgApprovals: Array<IOrgApproval> | null
-
-  /**
-   * If the viewer is a team member, the list of team members added as a result of the approval
-   */
-  newInvitations: Array<IInvitation> | null
-
-  /**
-   * If the viewer invited the invitee, the notifications to say they have been approved
-   */
-  inviteeApprovedNotifications: Array<INotifyInviteeApproved> | null
-
-  /**
-   * If the viewer is the invitee, the notifications to invite them to teams
-   */
-  teamInviteNotifications: Array<INotifyTeamInvite> | null
-}
-
-/**
- * A notification sent to a user when the person they invited got approved by the org leader
- */
-export interface INotifyInviteeApproved {
-  __typename: 'NotifyInviteeApproved'
-
-  /**
-   * The email of the person being invited
-   */
-  inviteeEmail: string
-
-  /**
-   * The user that triggered the invitation
-   */
-  inviter: IUser | null
-  team: ITeam
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
-}
-
 export interface IArchiveTeamPayload {
   __typename: 'ArchiveTeamPayload'
   error: IStandardMutationError | null
@@ -4590,6 +4119,14 @@ export interface ITeamRemovedNotification {
    * *The userId that should see this notification
    */
   userIds: Array<string> | null
+}
+
+export type TeamNotification = INotifyTaskInvolves | INotificationTeamInvitation
+
+export interface ITeamNotification {
+  __typename: 'TeamNotification'
+  id: string | null
+  type: NotificationEnum | null
 }
 
 export interface IAutoGroupReflectionsPayload {
@@ -5148,31 +4685,6 @@ export interface IRetrospectiveMeetingSettings {
   reflectTemplates: Array<IReflectTemplate>
 }
 
-export interface ICancelApprovalPayload {
-  __typename: 'CancelApprovalPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The inactivated org approval
-   */
-  orgApproval: IOrgApproval | null
-
-  /**
-   * The notification requesting org approval to the org leader
-   */
-  removedRequestNotification: INotifyRequestNewUser | null
-
-  /**
-   * The soft team members that are no longer tentatively on the team
-   */
-  removedSoftTeamMember: ISoftTeamMember | null
-
-  /**
-   * The tasks that belonged to the soft team member
-   */
-  archivedSoftTasks: Array<ITask | null> | null
-}
-
 export interface IChangeTaskTeamPayload {
   __typename: 'ChangeTaskTeamPayload'
   error: IStandardMutationError | null
@@ -5638,142 +5150,6 @@ export interface IInactivateUserPayload {
   user: IUser | null
 }
 
-/**
- * The email and task of an invited team member
- */
-export interface IInvitee {
-  /**
-   * The email address of the invitee
-   */
-  email: any
-
-  /**
-   * The name derived from an RFC5322 email string
-   */
-  fullName?: string | null
-
-  /**
-   * The current task the invitee is working on
-   */
-  task?: string | null
-}
-
-/**
- * A list of all the possible outcomes when trying to invite a team member
- */
-export interface IInviteTeamMembersPayload {
-  __typename: 'InviteTeamMembersPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The team the inviter is inviting the invitee to
-   */
-  team: ITeam | null
-
-  /**
-   * The notification sent to the invitee if they were previously on the team
-   */
-  reactivationNotification: INotifyAddedToTeam | null
-
-  /**
-   * The notification sent to the invitee
-   */
-  teamInviteNotification: INotifyTeamInvite | null
-
-  /**
-   * A removed request notification if the org leader invited the invitee instead of approving
-   */
-  removedRequestNotification: INotifyRequestNewUser | null
-
-  /**
-   * The notification sent to the org billing leader requesting to be approved
-   */
-  requestNotification: INotifyRequestNewUser | null
-
-  /**
-   * The list of emails that turned out to be reactivated team members
-   */
-  reactivatedTeamMembers: Array<ITeamMember> | null
-
-  /**
-   * The list of invitations successfully sent out
-   */
-  invitationsSent: Array<IInvitation> | null
-
-  /**
-   * The list of orgApprovals sent to the org leader
-   */
-  orgApprovalsSent: Array<IOrgApproval> | null
-
-  /**
-   * The list of orgApprovals removed. Triggered if An org leader invites someone with a pending approval
-   */
-  orgApprovalsRemoved: Array<IOrgApproval> | null
-
-  /**
-   * The new invitees who have yet to accept the invite or get approved to receive an invite
-   */
-  newSoftTeamMembers: Array<ISoftTeamMember> | null
-
-  /**
-   * Any tasks that were recently assigned to a reactivated soft team member
-   */
-  unarchivedSoftTasks: Array<ITask> | null
-}
-
-/**
- * A notification sent to someone who was just added to a team
- */
-export interface INotifyAddedToTeam {
-  __typename: 'NotifyAddedToTeam'
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
-
-  /**
-   * The new auth token for the user.
-   */
-  authToken: string | null
-
-  /**
-   * The team the invitee is being invited to
-   */
-  team: ITeam
-
-  /**
-   * The name of the team the user is joining
-   */
-  teamName: string
-
-  /**
-   * The teamId the user is joining
-   */
-  teamId: string
-}
-
 export interface IInviteToTeamPayload {
   __typename: 'InviteToTeamPayload'
   error: IStandardMutationError | null
@@ -6049,84 +5425,6 @@ export interface IPromoteToTeamLeadPayload {
   team: ITeam | null
   oldLeader: ITeamMember | null
   newLeader: ITeamMember | null
-}
-
-export interface IRejectOrgApprovalPayload {
-  __typename: 'RejectOrgApprovalPayload'
-  error: IStandardMutationError | null
-
-  /**
-   * The list of org approvals to remove. There may be multiple if many inviters requested the same email
-   */
-  removedOrgApprovals: Array<IOrgApproval> | null
-
-  /**
-   * The notification going to the inviter saying their invitee has been denied
-   */
-  deniedNotifications: Array<INotifyDenial> | null
-
-  /**
-   * The list of notifications to remove. There may be multiple if many inviters requested the same email
-   */
-  removedRequestNotifications: Array<INotifyRequestNewUser> | null
-
-  /**
-   * The soft team members that have not yet been invited
-   */
-  removedSoftTeamMembers: Array<ISoftTeamMember> | null
-
-  /**
-   * The tasks that belonged to the soft team member
-   */
-  archivedSoftTasks: Array<ITask> | null
-}
-
-/**
- * A notification alerting the user that their request was denied by the org billing leader
- */
-export interface INotifyDenial {
-  __typename: 'NotifyDenial'
-
-  /**
-   * The reason, supplied by the org leader, that the request has been denied
-   */
-  reason: string
-
-  /**
-   * The name of the billing leader that denied the request
-   */
-  deniedByName: string | null
-
-  /**
-   * The email of the person being invited
-   */
-  inviteeEmail: string
-
-  /**
-   * A shortid for the notification
-   */
-  id: string
-
-  /**
-   * true if the notification has been archived, else false (or null)
-   */
-  isArchived: boolean | null
-
-  /**
-   * *The unique organization ID for this notification. Can be blank for targeted notifications
-   */
-  orgId: string | null
-
-  /**
-   * The datetime to activate the notification & send it to the client
-   */
-  startAt: any | null
-  type: NotificationEnum | null
-
-  /**
-   * *The userId that should see this notification
-   */
-  userIds: Array<string> | null
 }
 
 export interface IRemoveAgendaItemPayload {
@@ -6540,6 +5838,14 @@ export interface INotifyPaymentRejected {
   userIds: Array<string> | null
 }
 
+export type OrganizationNotification = INotifyPaymentRejected | INotifyPromoteToOrgLeader
+
+export interface IOrganizationNotification {
+  __typename: 'OrganizationNotification'
+  id: string | null
+  type: NotificationEnum | null
+}
+
 export interface IUpdateAgendaItemInput {
   /**
    * The unique agenda item ID, composed of a teamId::shortid
@@ -6907,17 +6213,13 @@ export type NotificationSubscriptionPayload =
   | IAddNewFeaturePayload
   | IAddOrgPayload
   | IAddTeamPayload
-  | IApproveToOrgPayload
-  | ICancelApprovalPayload
   | IClearNotificationPayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IDisconnectSocketPayload
   | IEndMeetingPayload
   | IEndNewMeetingPayload
-  | IInviteTeamMembersPayload
   | IInviteToTeamPayload
-  | IRejectOrgApprovalPayload
   | IRemoveOrgUserPayload
   | IStripeFailPaymentPayload
   | IUser
@@ -6934,7 +6236,6 @@ export interface IAddNewFeaturePayload {
 
 export type OrganizationSubscriptionPayload =
   | IAddOrgPayload
-  | IApproveToOrgPayload
   | IDowngradeToPersonalPayload
   | IRemoveOrgUserPayload
   | ISetOrgUserRoleAddedPayload
@@ -6968,16 +6269,12 @@ export interface ISetOrgUserRoleRemovedPayload {
 }
 
 export type TaskSubscriptionPayload =
-  | IAcceptTeamInvitePayload
-  | ICancelApprovalPayload
   | IChangeTaskTeamPayload
   | ICreateGitHubIssuePayload
   | ICreateTaskPayload
   | IDeleteTaskPayload
   | IEditTaskPayload
   | IEndMeetingPayload
-  | IInviteTeamMembersPayload
-  | IRejectOrgApprovalPayload
   | IRemoveOrgUserPayload
   | IRemoveTeamMemberPayload
   | IUpdateTaskPayload
@@ -6985,7 +6282,6 @@ export type TaskSubscriptionPayload =
 
 export type TeamSubscriptionPayload =
   | IAcceptTeamInvitationPayload
-  | IAcceptTeamInvitePayload
   | IAddTeamPayload
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
@@ -7054,12 +6350,8 @@ export interface IUpdateDragLocationPayload {
 }
 
 export type TeamMemberSubscriptionPayload =
-  | IAcceptTeamInvitePayload
-  | ICancelApprovalPayload
   | IRemoveTeamMemberPayload
-  | IInviteTeamMembersPayload
   | IMeetingCheckInPayload
-  | IRejectOrgApprovalPayload
   | IRemoveOrgUserPayload
   | IUpdateUserProfilePayload
 
