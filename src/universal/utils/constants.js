@@ -142,16 +142,6 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 /* JavaScript specifics */
 export const MAX_INT = 2147483647
 
-// InvitationResultTypes
-// the invitation has been sent
-export const SUCCESS = 'SUCCESS'
-// the approval request has been sent to the billing leader
-export const PENDING_APPROVAL = 'PENDING_APPROVAL'
-// that email has already been invited
-export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM'
-// that email used to be on the team, and now they are again
-export const REACTIVATED = 'REACTIVATED'
-
 /* Relay Subscription Channels */
 export const NEW_AUTH_TOKEN = 'newAuthToken'
 export const NOTIFICATION = 'notification'
