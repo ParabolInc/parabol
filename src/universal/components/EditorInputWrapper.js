@@ -119,6 +119,7 @@ class EditorInputWrapper extends Component {
     const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props
     return (
       <Editor
+        spellCheck
         ariaLabel={ariaLabel}
         blockStyleFn={this.blockStyleFn}
         editorState={editorState}
