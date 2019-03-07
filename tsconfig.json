@@ -43,7 +43,8 @@
   },
   "include": [
     "src",
-    "stories"
+    "stories",
+    "cypress"
   ],
   "awesomeTypescriptLoaderOptions": {
     "reportFiles": [

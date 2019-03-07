@@ -1,4 +1,4 @@
-import url from 'url'
+import {parse} from 'url'
 import readCert from './readCert'
 import flag from 'node-env-flag'
 import getDotenv from '../../universal/utils/dotenv'
@@ -8,7 +8,7 @@ getDotenv()
 
 export default function getRethinkConfig () {
   const urlString = process.env.RETHINKDB_URL || 'rethinkdb://localhost:28015/actionDevelopment'
-  const u = url.parse(urlString)
+  const u = parse(urlString)
 
   const config = {
     host: u.hostname,
