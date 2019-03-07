@@ -2,7 +2,7 @@ import React, {lazy} from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import {graphql} from 'react-relay'
-import {Route} from 'react-router'
+import {Route, Switch} from 'react-router'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import DashLayout from 'universal/components/Dashboard/DashLayout'
 import DashSidebar from 'universal/components/Dashboard/DashSidebar'
@@ -75,12 +75,14 @@ const DashboardRoot = ({atmosphere, history, location}: Props) => {
         return (
           <DashLayout viewer={viewer}>
             <DashSidebar viewer={viewer} location={location} />
-            <Route
-              path='/me'
-              render={(p) => <UserDashboard {...p} notifications={notifications} />}
-            />
-            <Route path='/team/:teamId' component={TeamRoot} />
-            <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+            <Switch>
+              <Route
+                path='/me'
+                render={(p) => <UserDashboard {...p} notifications={notifications} />}
+              />
+              <Route path='/team/:teamId' component={TeamRoot} />
+              <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+            </Switch>
           </DashLayout>
         )
       }}

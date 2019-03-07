@@ -3,30 +3,30 @@ import GQLTrebuchetClient, {
   OperationPayload
 } from '@mattkrick/graphql-trebuchet-client'
 import getTrebuchet, {SocketTrebuchet, SSETrebuchet} from '@mattkrick/trebuchet-client'
+import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
 import EventEmitter from 'eventemitter3'
 import jwtDecode from 'jwt-decode'
 import {requestSubscription} from 'react-relay'
 import {
-  GraphQLSubscriptionConfig,
-  Store,
-  RecordSource,
-  Variables,
-  Network,
+  CacheConfig,
   Environment,
   getRequest,
-  ObservableFromValue,
-  RequestParameters,
   GraphQLResponse,
-  CacheConfig
+  GraphQLSubscriptionConfig,
+  Network,
+  ObservableFromValue,
+  RecordSource,
+  RequestParameters,
+  Store,
+  Variables
 } from 'relay-runtime'
+import StrictEventEmitter from 'strict-event-emitter-types'
+import LinearPublishQueue from 'universal/LinearPublishQueue'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
 import {APP_TOKEN_KEY, NEW_AUTH_TOKEN} from 'universal/utils/constants'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
 import {MasonryDragEndPayload} from './components/PhaseItemMasonry'
 import {IAuthToken} from './types/graphql'
-import StrictEventEmitter from 'strict-event-emitter-types'
-import LinearPublishQueue from 'universal/LinearPublishQueue'
-import {InviteToTeamMutation_notification} from '__generated__/InviteToTeamMutation_notification.graphql'
 
 // import sleep from 'universal/utils/sleep'
 
@@ -35,7 +35,8 @@ const defaultErrorHandler = (err: any) => {
 }
 
 interface QuerySubscription {
-  subKey: string
+  // subKey is undefined is there are no subscriptions but we have a ttl in the cacheConfig
+  subKey?: string
   queryKey: string
   queryFetcher: QueryFetcher
 }
@@ -51,9 +52,7 @@ interface Operation {
 }
 
 interface QueryFetcher {
-  readyToGC: () => boolean
   dispose: () => void
-  flagForGC: () => void
 }
 
 type SubCreator = (
@@ -94,6 +93,9 @@ export default class Atmosphere extends Environment {
   authToken: string | null = null
   authObj: IAuthToken | null = null
   querySubscriptions: Array<QuerySubscription> = []
+  queryTimeouts: {
+    [queryKey: string]: number
+  } = {}
   subscriptions: Subscriptions = {}
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
   upgradeTransportPromise: Promise<void> | null = null
@@ -138,15 +140,24 @@ export default class Atmosphere extends Environment {
 
   registerQuery = async (
     queryKey: string,
-    subscriptions: Array<SubCreator>,
-    subParams: any,
-    queryVariables: Variables | undefined,
-    queryFetcher: QueryFetcher
+    queryFetcher: QueryFetcher,
+    options: {
+      subscriptions?: Array<SubCreator>
+      subParams?: any
+      queryVariables?: Variables | undefined
+    } = {}
   ) => {
+    window.clearTimeout(this.queryTimeouts[queryKey])
+    delete this.queryTimeouts[queryKey]
+    if (!options.subscriptions) {
+      this.querySubscriptions.push({queryKey, queryFetcher})
+      return
+    }
+    await this.upgradeTransport()
+    const {subscriptions, queryVariables, subParams} = options
     const subConfigs = subscriptions.map((subCreator) =>
       subCreator(this, queryVariables, subParams)
     )
-    await this.upgradeTransport()
     const newQuerySubs = subConfigs.map((config) => {
       const {subscription, variables = {}} = config
       const request = getRequest(subscription)
@@ -281,39 +292,49 @@ export default class Atmosphere extends Environment {
     return {
       dispose: () => {
         // get every query that is powered by this subscription
-        const associatedQueries = this.querySubscriptions.filter(
-          ({subKey}) => subKey === subKeyToRemove
-        )
-        // these queries are no longer supported, so drop them
-        associatedQueries.forEach(({queryFetcher}: {queryFetcher: QueryFetcher}) => {
-          if (queryFetcher.readyToGC()) {
-            queryFetcher.dispose()
-          } else {
-            queryFetcher.flagForGC()
-          }
-        })
-        const queryKeys = associatedQueries.map(({queryKey}) => queryKey)
+        const queryKeys = this.querySubscriptions
+          .filter(({subKey}) => subKey === subKeyToRemove)
+          .map(({queryKey}) => queryKey)
         this.unregisterQuery(queryKeys)
       }
     }
   }
 
-  unregisterQuery = (maybeQueryKeys: string | Array<string>) => {
+  unregisterQuery (maybeQueryKeys: string | Array<string>, delay?: number) {
+    if (delay && delay > 0) {
+      if (typeof maybeQueryKeys !== 'string') throw new Error('must not use arr')
+      this.queryTimeouts[maybeQueryKeys] = window.setTimeout(() => {
+        this.unregisterQuery(maybeQueryKeys)
+      }, delay)
+      return
+    }
+
+    if (typeof maybeQueryKeys === 'string' && this.queryTimeouts[maybeQueryKeys]) {
+      window.clearTimeout(this.queryTimeouts[maybeQueryKeys])
+      delete this.queryTimeouts[maybeQueryKeys]
+    }
+
     const queryKeys = Array.isArray(maybeQueryKeys) ? maybeQueryKeys : [maybeQueryKeys]
 
     // for each query that is no longer 100% supported, find the subs that power them
     const peerSubs = this.querySubscriptions.filter(({queryKey}) => queryKeys.includes(queryKey))
 
+    peerSubs.forEach(({queryFetcher}) => {
+      queryFetcher.dispose()
+    })
+
     // get a unique list of the subs to release & maybe unsub
     const peerSubKeys = Array.from(new Set(peerSubs.map(({subKey}) => subKey)))
 
     peerSubKeys.forEach((subKey) => {
+      if (!subKey) return
       // for each peerSubKey, see if there exists a query that is not affected.
       const unaffectedQuery = this.querySubscriptions.find(
         (qs) => qs.subKey === subKey && !queryKeys.includes(qs.queryKey)
       )
       if (!unaffectedQuery) {
         const disposable = this.subscriptions[subKey]
+        // tell the server to unsub
         disposable && disposable.unsubscribe()
       }
     })
@@ -324,6 +345,9 @@ export default class Atmosphere extends Environment {
   }
 
   close () {
+    this.querySubscriptions.forEach((querySub) => {
+      this.unregisterQuery(querySub.queryKey)
+    })
     // remove all records
     this.getStore()
       .getSource()

@@ -237,7 +237,7 @@
     "react-virtualized": "^9.18.5",
     "redux": "^4.0.1",
     "redux-thunk": "2.2.0",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/f198dc30b76ce97076f17da0e92f155437fbe82c",
     "resize-observer-polyfill": "^1.5.0",
     "rethinkdbdash": "^2.3.31",
     "secure-compare": "^3.0.1",
@@ -283,7 +283,7 @@
     "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/2b79845de58b8f26a37a5b5886e0b66534ffa23d",
     "@types/react": "16.8.2",
     "@types/react-dom": "16.8.0",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45"
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/f198dc30b76ce97076f17da0e92f155437fbe82c"
   },
   "standard": {
     "parser": "babel-eslint",

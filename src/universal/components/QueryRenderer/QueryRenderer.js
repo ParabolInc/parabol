@@ -93,12 +93,6 @@ type State = {
  * - Subscribes for updates to the root data and re-renders with any changes.
  */
 class ReactRelayQueryRenderer extends React.Component<Props, State> {
-  static timeouts = {}
-
-  static renewTTL(queryKey: string) {
-    window.clearTimeout(ReactRelayQueryRenderer.timeouts[queryKey])
-    delete ReactRelayQueryRenderer.timeouts[queryKey]
-  }
   constructor(props: Props) {
     super(props)
 
@@ -149,7 +143,16 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
     ) {
       const {query} = nextProps
       const prevSelectionReferences = prevState.queryFetcher.getSelectionReferences()
-      prevState.queryFetcher.disposeRequest()
+      const cachedQuery =
+        nextProps.cacheConfig && nextProps.cacheConfig.ttl && nextProps.environment.unregisterQuery
+      if (cachedQuery) {
+        const {getRequest} = nextProps.environment.unstable_internal
+        const request = getRequest(query)
+        const queryKey = getRequestCacheKey(request.params, prevState.prevPropsVariables)
+        nextProps.environment.unregisterQuery(queryKey, nextProps.cacheConfig.ttl)
+      } else {
+        prevState.queryFetcher.disposeRequest()
+      }
 
       let queryFetcher
       if (query) {
@@ -241,32 +244,24 @@ class ReactRelayQueryRenderer extends React.Component<Props, State> {
   }
 
   componentWillUnmount(): void {
-    this._requestRelease()
+    const {environment, cacheConfig, query, variables} = this.props
+    const {ttl = 0} = cacheConfig || {}
+    const {queryFetcher} = this.state
+    const cachedQuery = Boolean(query && environment.unregisterQuery && ttl)
+    if (cachedQuery) {
+      const {getRequest} = environment.unstable_internal
+      const request = getRequest(query)
+      const queryKey = getRequestCacheKey(request.params, variables)
+      environment.unregisterQuery(queryKey, ttl)
+    } else {
+      queryFetcher.dispose()
+    }
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     return (
       nextProps.render !== this.props.render || nextState.renderProps !== this.state.renderProps
     )
-  }
-
-  _requestRelease(): void {
-    const {environment, cacheConfig, query, variables} = this.props
-    const {ttl} = cacheConfig || {}
-    const {queryFetcher} = this.state
-    if (query && ttl && environment.unregisterQuery) {
-      const {timeouts} = ReactRelayQueryRenderer
-      const {getRequest} = environment.unstable_internal
-      const request = getRequest(query)
-      const queryKey = getRequestCacheKey(request.params, variables)
-      timeouts[queryKey] = setTimeout(() => {
-        queryFetcher.dispose()
-        environment.unregisterQuery(queryKey)
-        delete timeouts[queryKey]
-      }, ttl)
-    } else {
-      queryFetcher.dispose()
-    }
   }
 
   render() {
@@ -353,15 +348,15 @@ function fetchQueryAndComputeStateFromProps(
     const operation = createOperationDescriptor(request, variables)
     const relayContext = getContext(genericEnvironment, operation.variables)
     const queryKey = getRequestCacheKey(request.params, props.variables)
-    ReactRelayQueryRenderer.renewTTL(queryKey)
-    if (props.subscriptions && environment.registerQuery) {
-      environment.registerQuery(
-        queryKey,
-        props.subscriptions,
-        props.subParams,
-        operation.variables,
-        queryFetcher
-      )
+    const cacheQuery = Boolean(
+      environment.registerQuery && props.cacheConfig && props.cacheConfig.ttl
+    )
+    if (cacheQuery) {
+      environment.registerQuery(queryKey, queryFetcher, {
+        subscriptions: props.subscriptions,
+        subParams: props.subParams,
+        queryVariables: operation.variables
+      })
     }
     if (typeof requestCacheKey === 'string' && requestCache[requestCacheKey]) {
       // This same request is already in flight.
@@ -389,17 +384,30 @@ function fetchQueryAndComputeStateFromProps(
     }
 
     try {
+      const ttl = props.cacheConfig && props.cacheConfig.ttl
       const storeSnapshot =
-        props.dataFrom === STORE_THEN_NETWORK
+        props.dataFrom === STORE_THEN_NETWORK || !!ttl
           ? queryFetcher.lookupInStore(genericEnvironment, operation)
           : null
-      const querySnapshot = queryFetcher.fetch({
-        cacheConfig: props.cacheConfig,
-        dataFrom: props.dataFrom,
-        environment: genericEnvironment,
-        onDataChange: retryCallbacks.handleDataChange,
-        operation
-      })
+
+      const skipFetch = storeSnapshot && ttl
+      if (skipFetch) {
+        queryFetcher._fetchOptions = {
+          cacheConfig: props.cacheConfig,
+          environment: props.environment,
+          onDataChange: retryCallbacks.handleDataChange,
+          operation
+        }
+      }
+      const querySnapshot =
+        !skipFetch &&
+        queryFetcher.fetch({
+          cacheConfig: props.cacheConfig,
+          dataFrom: props.dataFrom,
+          environment: genericEnvironment,
+          onDataChange: retryCallbacks.handleDataChange,
+          operation
+        })
 
       // Use network data first, since it may be fresher
       const snapshot = querySnapshot || storeSnapshot

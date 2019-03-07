@@ -21,7 +21,10 @@ class MeetingDashAlert extends Component {
     const {atmosphere} = this.props
     const {viewerId} = atmosphere
     commitLocalUpdate(atmosphere, (store) => {
-      store.get(viewerId).setValue(false, 'hasMeetingAlert')
+      const viewer = store.get(viewerId)
+      if (viewer) {
+        viewer.setValue(false, 'hasMeetingAlert')
+      }
     })
   }
 
