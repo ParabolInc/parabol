@@ -17,7 +17,6 @@ extend type Team {
 
 extend type User {
   contentFilter: String
-  hasMeetingAlert: Boolean
 }
 
 extend type Task {
