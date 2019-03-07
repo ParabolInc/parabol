@@ -3606,10 +3606,10 @@ babel-plugin-react-docgen@^2.0.0:
     react-docgen "^3.0.0"
     recast "^0.14.7"
 
-babel-plugin-relay@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-relay/-/babel-plugin-relay-2.0.0.tgz#f5c408f81427f3e97b65ea3f6bccf6821f1615b9"
-  integrity sha512-NFQ+TzQtr4Wh1/FEpjeZqghS1Orpn0gAvksrBOgn606bMf2vd1YYed8z4gMAyAPkwSgWzsNtsLzq84pMJi6agQ==
+babel-plugin-relay@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-relay/-/babel-plugin-relay-3.0.0.tgz#dc5b66c94c8565f2e52edf8fbe86aadff6e7966d"
+  integrity sha512-lI+PR4/H8XytNVUtz8cYYM7sR2unFMeTsBbnKFvuU/mnxxmDO3JA7OHxtTdctLjlRSYrcCVmvIEL2JDehMxlTg==
   dependencies:
     babel-plugin-macros "^2.0.0"
 
@@ -14334,16 +14334,16 @@ react-redux@^6.0.0:
     prop-types "^15.6.2"
     react-is "^16.6.3"
 
-react-relay@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-2.0.0.tgz#967eb66159202264cbf6daa9b1acfa78dfbd13e7"
-  integrity sha512-TLQdW9AVo7Zlu7z81MuNm2Y9Mp3im6rVSKs357uS3cEz6vr2x3ZEQr+HAXDQn8Hb4gFQ+9+iRRlv+hd2Rid/0Q==
+react-relay@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-relay/-/react-relay-3.0.0.tgz#b3fe7931f812a6700e2420a853adb74156e162b9"
+  integrity sha512-HZQ1CXhF2EBt6f5XG2nWoT5FZIn9zdoHeo8+u5rqQ3fCRBr4qmvLihfehWlCcYCcx57pnAiqsjUdJmwxGUmbsg==
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
     nullthrows "^1.1.0"
     prop-types "^15.5.8"
-    relay-runtime "2.0.0"
+    relay-runtime "3.0.0"
 
 react-router-dom@4.4.0-beta.6:
   version "4.4.0-beta.6"
@@ -14903,9 +14903,9 @@ relateurl@0.2.x:
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
-relay-runtime@2.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/f198dc30b76ce97076f17da0e92f155437fbe82c":
+relay-runtime@2.0.0, relay-runtime@3.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1":
   version "3.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/f198dc30b76ce97076f17da0e92f155437fbe82c#6d46b5ac0bf0d8850b9c5f54de19f34a075c0b71"
+  resolved "https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1#c4ed078045fb23690ee0e475017beadcf6442391"
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
