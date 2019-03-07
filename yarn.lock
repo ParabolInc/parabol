@@ -14903,9 +14903,9 @@ relateurl@0.2.x:
     signedsource "^1.0.0"
     yargs "^9.0.0"
 
-relay-runtime@2.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45":
-  version "2.0.0"
-  resolved "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45#25f032e0acc547a343bc926512013460a8410532"
+relay-runtime@2.0.0, "relay-runtime@https://github.com/mattkrick/relay/tarball/f198dc30b76ce97076f17da0e92f155437fbe82c":
+  version "3.0.0"
+  resolved "https://github.com/mattkrick/relay/tarball/f198dc30b76ce97076f17da0e92f155437fbe82c#6d46b5ac0bf0d8850b9c5f54de19f34a075c0b71"
   dependencies:
     "@babel/runtime" "^7.0.0"
     fbjs "^1.0.0"
@@ -15430,7 +15430,7 @@ semver-diff@^2.0.0:
   dependencies:
     semver "^5.0.3"
 
-"semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.0.3, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0:
+"semver@2 || 3 || 4 || 5", semver@^5.0.3, semver@^5.1.0, semver@^5.3.0, semver@^5.4.1, semver@^5.5.0, semver@^5.5.1, semver@^5.6.0:
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.6.0.tgz#7e74256fbaa49c75aa7c7a205cc22799cac80004"
   integrity sha512-RS9R6R35NYgQn++fkDWaOmqGoj4Ek9gGs+DPxNUZKuwE183xjJroKvyo1IzVFeXvUrvmALy6FWD5xrdJT25gMg==
@@ -16833,17 +16833,6 @@ ts-fs-promise@^1.0.4:
   dependencies:
     es6-promise "^2.0.1"
     fs-extra "^0.16.5"
-
-ts-loader@^5.3.3:
-  version "5.3.3"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-5.3.3.tgz#8b4af042e773132d86b3c99ef0acf3b4d325f473"
-  integrity sha512-KwF1SplmOJepnoZ4eRIloH/zXL195F51skt7reEsS6jvDqzgc/YSbz9b8E07GxIUwLXdcD4ssrJu6v8CwaTafA==
-  dependencies:
-    chalk "^2.3.0"
-    enhanced-resolve "^4.0.0"
-    loader-utils "^1.0.2"
-    micromatch "^3.1.4"
-    semver "^5.0.1"
 
 ts-node@^7.0.1:
   version "7.0.1"
