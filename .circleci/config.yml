@@ -65,20 +65,6 @@ jobs:
             #            mkdir test-report ; mv test-report.xml test-report
             fi
       - run:
-          name: Pre-build environment configuration
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "production" ]; then
-              export DEPLOY_ENV="production"
-            elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
-              export DEPLOY_ENV="staging"
-            elif [ "${CIRCLE_BRANCH}" == "development" ]; then
-              export DEPLOY_ENV="development"
-            else
-              export DEPLOY_ENV="local"
-            fi
-            # cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
-            cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
-      - run:
           name: Cypress Tests
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
@@ -97,12 +83,19 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "production" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_PRODUCTION}"
+              export DEPLOY_ENV="production"
             elif [ "${CIRCLE_BRANCH}" == "staging" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_STAGING}"
+              export DEPLOY_ENV="staging"
             elif [ "${CIRCLE_BRANCH}" == "development" ]; then
               export GITHUB_REMOTE="${GITHUB_REMOTE_DEVELOPMENT}"
+              export DEPLOY_ENV="development"
+            else
+              export DEPLOY_ENV="local"
             fi
             if [ -n "${GITHUB_REMOTE}" ]; then
+              cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+              cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
               npm run build:deploy &&
               export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
