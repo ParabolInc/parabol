@@ -77,7 +77,7 @@ class Tooltip extends Component {
 
   componentWillReceiveProps (nextProps) {
     const {isOpen, setOriginRef} = nextProps
-    if (this.props.isOpen !== isOpen) {
+    if (!!this.props.isOpen !== !!isOpen) {
       if (isOpen) {
         setOriginRef(this.childRef)
       } else {
