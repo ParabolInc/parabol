@@ -25,13 +25,17 @@ export default {
     // VALIDATION
     const {customer: customerId} = await stripe.invoices.retrieve(invoiceId)
     const {
+      livemode,
       metadata: {orgId}
     } = await stripe.customers.retrieve(customerId)
     const org = await r.table('Organization').get(orgId)
     if (!org) {
-      throw new Error(
-        `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`
-      )
+      if (livemode) {
+        throw new Error(
+          `Payment cannot succeed. Org ${orgId} does not exist for invoice ${invoiceId}`
+        )
+      }
+      return false
     }
     const {creditCard} = org
 

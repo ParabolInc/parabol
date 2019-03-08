@@ -1,10 +1,10 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError, sendTooManyPromptsError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
 import dndNoise from 'universal/utils/dndNoise'
+import standardError from '../../utils/standardError'
 import AddReflectTemplatePromptPayload from '../types/AddReflectTemplatePromptPayload'
 import {Prompt} from './helpers/makeRetroTemplates'
 
@@ -21,10 +21,11 @@ const addReflectTemplatePrompt = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await r.table('ReflectTemplate').get(templateId)
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!template || !isTeamMember(authToken, template.teamId) || !template.isActive) {
-      return sendTeamAccessError(authToken, templateId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -37,7 +38,7 @@ const addReflectTemplatePrompt = {
         isActive: true
       })
     if (activePrompts.length >= 5) {
-      return sendTooManyPromptsError(authToken, templateId)
+      return standardError(new Error('Too many prompts'), {userId: viewerId})
     }
 
     // RESOLUTION

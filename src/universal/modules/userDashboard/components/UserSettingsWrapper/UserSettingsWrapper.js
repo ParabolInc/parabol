@@ -20,10 +20,10 @@ const UserSettingsWrapper = (props) => {
   const {children} = props
   return (
     <DashMain>
-      <DashHeader area='userSettings'>
+      <DashHeader>
         <SettingsHeader />
       </DashHeader>
-      <DashContent padding='0 0 0 1rem'>
+      <DashContent padding="0 0 0 1rem">
         <SettingsContentBlock>{children}</SettingsContentBlock>
       </DashContent>
     </DashMain>

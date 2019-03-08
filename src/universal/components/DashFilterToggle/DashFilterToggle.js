@@ -9,10 +9,10 @@ const DashFilterToggle = (props) => {
     <LinkButton
       aria-label={`Filter by ${label}`}
       onClick={onClick}
-      palette='midGray'
+      palette="midGray"
       ref={innerRef}
     >
-      <IconLabel icon='chevron-down' iconAfter label={label} />
+      <IconLabel icon="expand_more" iconAfter label={label} />
     </LinkButton>
   )
 }

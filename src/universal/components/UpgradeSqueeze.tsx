@@ -2,13 +2,14 @@ import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import InlineEstimatedCost from 'universal/components/InlineEstimatedCost'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import UpgradeBenefits from 'universal/components/UpgradeBenefits'
 import ui from 'universal/styles/ui'
 import {BILLING_LEADER_LABEL, PRO_LABEL} from 'universal/utils/constants'
 import {PRICING_LINK} from 'universal/utils/externalLinks'
 import {UpgradeSqueeze_organization} from '__generated__/UpgradeSqueeze_organization.graphql'
 import UpgradeCreditCardForm from 'universal/modules/userDashboard/components/CreditCardModal/UpgradeCreditCardForm'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface Props {
   onSuccess: () => void
@@ -19,12 +20,6 @@ const flexBase = {
   alignItems: 'center',
   display: 'flex',
   justifyContent: 'center'
-}
-
-const modalCopyBase = {
-  fontSize: '.9375rem',
-  lineHeight: '2rem',
-  margin: 0
 }
 
 const ModalBoundary = styled('div')({
@@ -66,16 +61,19 @@ const ModalHeading = styled('h2')({
   margin: '0 0 .5rem'
 })
 
-const StyledIcon = styled(StyledFontAwesome)({
+const StyledIcon = styled(Icon)({
   color: ui.linkColor,
-  fontSize: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   marginRight: '.5rem',
-  opacity: 0.5,
-  width: '1.125rem'
+  opacity: 0.5
 })
 
 const ModalLink = styled('a')({
-  ...modalCopyBase,
+  alignItems: 'center',
+  display: 'flex',
+  fontSize: '.9375rem',
+  lineHeight: '2rem',
+  margin: 0,
   color: ui.palette.mid,
   ':hover,:focus': {
     textDecoration: 'underline'
@@ -149,11 +147,11 @@ const UpgradeSqueeze = (props: Props) => {
           <InlineEstimatedCost activeUserCount={activeUserCount} />
           <ModalLink
             href={PRICING_LINK}
-            rel='noopener noreferrer'
-            target='_blank'
+            rel="noopener noreferrer"
+            target="_blank"
             title={pricingLinkCopy}
           >
-            <StyledIcon name={ui.iconExternalLink} />
+            <StyledIcon>{ui.iconExternalLink}</StyledIcon>
             {pricingLinkCopy}
           </ModalLink>
         </ModalContent>

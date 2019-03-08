@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import generateUpcomingInvoice from 'server/billing/helpers/generateUpcomingInvoice'
 import getRethink from 'server/database/rethinkDriver'
 import Invoice from 'server/graphql/types/Invoice'
-import {getUserId, getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import {UPCOMING_INVOICE_TIME_VALID} from 'server/utils/serverConstants'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: Invoice,
@@ -14,22 +14,21 @@ export default {
       description: 'The id of the invoice'
     }
   },
-  async resolve (source, {invoiceId}, {authToken}) {
+  async resolve(source, {invoiceId}, {authToken, dataLoader}) {
     const r = getRethink()
     const now = new Date()
 
     // AUTH
-    const userId = getUserId(authToken)
-    const [type, maybeOrgId] = invoiceId.split('_')
-    const isUpcoming = type === 'upcoming'
+    const viewerId = getUserId(authToken)
+    const isUpcoming = invoiceId.startsWith('upcoming_')
     const currentInvoice = await r
       .table('Invoice')
       .get(invoiceId)
       .default(null)
-    const orgId = (currentInvoice && currentInvoice.orgId) || maybeOrgId
-    const userOrgDoc = await getUserOrgDoc(userId, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc, null)
+    const orgId = (currentInvoice && currentInvoice.orgId) || invoiceId.substring(9) // remove 'upcoming_'
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+      standardError(new Error('Not organization lead'), {userId: viewerId})
+      return null
     }
 
     // RESOLUTION

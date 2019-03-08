@@ -1,7 +1,7 @@
 import React, {ComponentType, forwardRef, Ref} from 'react'
 
-interface WithInnerRefProps<T> {
-  innerRef: Ref<T>
+export interface WithInnerRefProps<T> {
+  innerRef?: Ref<T>
 }
 
 // all this says is that we're gonna stick an innerRef prop on the component if one doesn't already exist

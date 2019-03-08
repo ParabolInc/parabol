@@ -13,11 +13,11 @@ const mapStateToProps = (state) => {
 }
 
 class UserColumnsContainer extends Component {
-  componentWillMount () {
+  componentWillMount() {
     this.filterTasks(this.props)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       teamFilterId: oldFilter,
       viewer: {contentFilter: oldContentFilter, tasks: oldTasks}
@@ -31,7 +31,7 @@ class UserColumnsContainer extends Component {
     }
   }
 
-  filterTasks (props) {
+  filterTasks(props) {
     const {
       teamFilterId,
       viewer: {contentFilter, tasks}
@@ -39,9 +39,9 @@ class UserColumnsContainer extends Component {
     const contentFilterRegex = new RegExp(contentFilter, 'i')
     const contentFilteredEdges = contentFilter
       ? tasks.edges.filter(({node}) => {
-        const {contentText} = node
-        return contentText && node.contentText.match(contentFilterRegex)
-      })
+          const {contentText} = node
+          return contentText && node.contentText.match(contentFilterRegex)
+        })
       : tasks.edges
     const teamFilteredEdges = teamFilterId
       ? contentFilteredEdges.filter(({node}) => node.team.id === teamFilterId)
@@ -62,11 +62,10 @@ class UserColumnsContainer extends Component {
     })
   }
 
-  render () {
+  render() {
     const {
-      teams,
       userId,
-      viewer: {tasks: allTasks}
+      viewer: {teams, tasks: allTasks}
     } = this.props
     const {tasks} = this.state
     return (
@@ -83,7 +82,6 @@ class UserColumnsContainer extends Component {
 
 UserColumnsContainer.propTypes = {
   tasks: PropTypes.object,
-  teams: PropTypes.array,
   teamFilterId: PropTypes.string,
   userId: PropTypes.string,
   viewer: PropTypes.object
@@ -93,6 +91,11 @@ export default createFragmentContainer(
   connect(mapStateToProps)(UserColumnsContainer),
   graphql`
     fragment UserColumnsContainer_viewer on User {
+      teams {
+        id
+        name
+        meetingId
+      }
       contentFilter
       tasks(first: 1000) @connection(key: "UserColumnsContainer_tasks") {
         edges {

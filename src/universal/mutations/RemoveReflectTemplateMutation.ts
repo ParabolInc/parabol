@@ -1,9 +1,10 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import getInProxy from 'universal/utils/relay/getInProxy'
 import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
 import handleRemoveReflectTemplate from './handlers/handleRemoveReflectTemplate'
-import IRemoveReflectTemplateOnMutationArguments = GQL.IRemoveReflectTemplateOnMutationArguments
+import {IRemoveReflectTemplateOnMutationArguments} from 'universal/types/graphql'
 
 graphql`
   fragment RemoveReflectTemplateMutation_team on RemoveReflectTemplatePayload {
@@ -35,7 +36,7 @@ const RemoveReflectTemplateMutation = (
   _context: {},
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

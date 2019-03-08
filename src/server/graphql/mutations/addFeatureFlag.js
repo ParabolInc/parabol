@@ -1,11 +1,11 @@
 import getRethink from 'server/database/rethinkDriver'
 import {GraphQLNonNull, GraphQLString} from 'graphql'
-import {requireSU} from 'server/utils/authorization'
+import {getUserId, requireSU} from 'server/utils/authorization'
 import UserFlagEnum from 'server/graphql/types/UserFlagEnum'
 import {NOTIFICATION} from 'universal/utils/constants'
 import publish from 'server/utils/publish'
 import AddFeatureFlagPayload from 'server/graphql/types/AddFeatureFlagPayload'
-import {sendTeamMemberNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: AddFeatureFlagPayload,
@@ -21,10 +21,12 @@ export default {
       description: 'the flag that you want to give to the user'
     }
   },
-  async resolve (source, {email, flag}, {authToken, dataLoader}) {
+  async resolve(source, {email, flag}, {authToken, dataLoader}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId}
+    const viewerId = getUserId(authToken)
+
     // AUTH
     requireSU(authToken)
 
@@ -34,7 +36,7 @@ export default {
       .filter((doc) => doc('email').match(email))('id')
       .default([])
     if (userIds.length === 0) {
-      return sendTeamMemberNotFoundError(authToken)
+      return standardError(new Error('Team member not found'), {userId: viewerId})
     }
 
     await r

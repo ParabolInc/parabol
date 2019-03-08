@@ -1,3 +1,4 @@
+import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
 import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import React from 'react'
@@ -6,10 +7,8 @@ import HTML5Backend from 'react-dnd-html5-backend'
 import styled from 'react-emotion'
 import {Helmet} from 'react-helmet'
 import withHotkey from 'react-hotkey-hoc'
-import {connect} from 'react-redux'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {Dispatch} from 'redux'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import NewMeetingCheckIn from 'universal/components/NewMeetingCheckIn'
 import NewMeetingLobby from 'universal/components/NewMeetingLobby'
@@ -22,6 +21,7 @@ import RetroVotePhase from 'universal/components/RetroVotePhase'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {demoTeamId} from 'universal/modules/demo/initDB'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
 import EndNewMeetingMutation from 'universal/mutations/EndNewMeetingMutation'
@@ -35,6 +35,7 @@ import {
   meetingSidebarWidth
 } from 'universal/styles/meeting'
 import ui from 'universal/styles/ui'
+import {INavigateMeetingOnMutationArguments, MeetingTypeEnum} from 'universal/types/graphql'
 import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from 'universal/utils/constants'
 import findStageAfterId from 'universal/utils/meetings/findStageAfterId'
 import findStageBeforeId from 'universal/utils/meetings/findStageBeforeId'
@@ -44,9 +45,9 @@ import isForwardProgress from 'universal/utils/meetings/isForwardProgress'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import Atmosphere from '../Atmosphere'
+import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
-import INavigateMeetingOnMutationArguments = GQL.INavigateMeetingOnMutationArguments
-import MeetingTypeEnum = GQL.MeetingTypeEnum
 
 const {Component} = React
 
@@ -142,8 +143,8 @@ const MeetingAreaHeader = styled('div')({
 })
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutationProps {
+  atmosphere: Atmosphere & LocalAtmosphere
   bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void
-  dispatch: Dispatch<any>
   meetingType: MeetingTypeEnum
   viewer: NewMeeting_viewer
 }
@@ -161,7 +162,7 @@ class NewMeeting extends Component<Props, State> {
     viewerStreamLookup: {}
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     const {atmosphere, bindHotkey} = props
     bindHotkey('right', handleHotkey(this.maybeGotoNext))
@@ -172,6 +173,12 @@ class NewMeeting extends Component<Props, State> {
     } else {
       atmosphere.eventEmitter.once('newSubscriptionClient', () => {
         this.createSwarm().catch()
+      })
+    }
+    if (atmosphere.clientGraphQLServer) {
+      atmosphere.clientGraphQLServer.on('botsFinished', () => {
+        // for the demo, we're essentially using the isBotFinished() prop as state
+        this.forceUpdate()
       })
     }
   }
@@ -247,18 +254,16 @@ class NewMeeting extends Component<Props, State> {
   endMeeting = () => {
     const {
       atmosphere,
-      dispatch,
       history,
-      viewer: {
-        team: {newMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting} = team!
     if (!newMeeting) return
     const {meetingId} = newMeeting
-    EndNewMeetingMutation(atmosphere, {meetingId}, {dispatch, history})
+    EndNewMeetingMutation(atmosphere, {meetingId}, {history})
   }
 
-  gotoStageId = (
+  gotoStageId = async (
     stageId: string,
     _submitMutation?: WithMutationProps['submitMutation'],
     onError?: WithMutationProps['onError'],
@@ -267,11 +272,10 @@ class NewMeeting extends Component<Props, State> {
     const {
       atmosphere,
       submitting,
-      viewer: {
-        team: {newMeeting}
-      }
+      viewer: {team}
     } = this.props
-    if (submitting) return
+    if (submitting || !team) return
+    const {newMeeting, teamId} = team
     if (!newMeeting) return
     const {facilitatorStageId, facilitatorUserId, meetingId, phases} = newMeeting
     const {viewerId} = atmosphere
@@ -281,6 +285,9 @@ class NewMeeting extends Component<Props, State> {
     } = findStageById(phases, stageId)
     const canNavigate = isViewerFacilitator ? isNavigableByFacilitator : isNavigable
     if (!canNavigate) return
+    if (teamId === demoTeamId) {
+      await (atmosphere as LocalAtmosphere).clientGraphQLServer.finishBotActions()
+    }
     updateLocalStage(atmosphere, meetingId, stageId)
     if (isViewerFacilitator && isNavigableByFacilitator) {
       const {
@@ -293,7 +300,6 @@ class NewMeeting extends Component<Props, State> {
       if (!isComplete && isForwardProgress(phases, facilitatorStageId, stageId)) {
         variables.completedStageId = facilitatorStageId
       }
-      // submitMutation();
       NavigateMeetingMutation(atmosphere, variables, onError, onCompleted)
     }
   }
@@ -304,10 +310,9 @@ class NewMeeting extends Component<Props, State> {
     const {
       atmosphere,
       submitting,
-      viewer: {
-        team: {newMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting} = team!
     if (!newMeeting || submitting) return
     const {
       meetingId,
@@ -335,7 +340,7 @@ class NewMeeting extends Component<Props, State> {
     } = nextStageRes
     const gotoNextDiv = this.gotoNextRef.current
     if (!options.isHotkey || currentStageRes.stage.isComplete) {
-      this.gotoStageId(nextStageId)
+      this.gotoStageId(nextStageId).catch()
     } else if (options.isHotkey) {
       gotoNextDiv && gotoNextDiv.focus()
     }
@@ -343,10 +348,9 @@ class NewMeeting extends Component<Props, State> {
 
   gotoPrev = () => {
     const {
-      viewer: {
-        team: {newMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting} = team!
     if (!newMeeting) return
     const {
       localStage: {localStageId},
@@ -357,16 +361,15 @@ class NewMeeting extends Component<Props, State> {
     const {
       stage: {id: nextStageId}
     } = nextStageRes
-    this.gotoStageId(nextStageId)
+    this.gotoStageId(nextStageId).catch()
   }
 
   toggleSidebar = () => {
     const {
       atmosphere,
-      viewer: {
-        team: {teamId, isMeetingSidebarCollapsed}
-      }
+      viewer: {team}
     } = this.props
+    const {teamId, isMeetingSidebarCollapsed} = team!
     commitLocalUpdate(atmosphere, (store) => {
       store.get(teamId)!.setValue(!isMeetingSidebarCollapsed, 'isMeetingSidebarCollapsed')
     })
@@ -375,26 +378,30 @@ class NewMeeting extends Component<Props, State> {
   onSidebarTransitionEnd = (e) => {
     const {
       atmosphere: {eventEmitter},
-      viewer: {
-        team: {isMeetingSidebarCollapsed}
-      }
+      viewer: {team}
     } = this.props
+    const {isMeetingSidebarCollapsed} = team!
     if (e.target === this.sidebarRef.current && e.propertyName === 'transform') {
       eventEmitter.emit('meetingSidebarCollapsed', isMeetingSidebarCollapsed)
     }
   }
 
-  render () {
+  render() {
     const {viewerStreamLookup} = this.state
-    const {meetingType, viewer} = this.props
+    const {atmosphere, meetingType, viewer} = this.props
     const {team} = viewer
-    const {newMeeting, teamName} = team
+    if (!team) return null
+    const {newMeeting, teamName, teamId} = team
     const isMeetingSidebarCollapsed = team.isMeetingSidebarCollapsed || false
     const meeting = newMeeting || UNSTARTED_MEETING
     const {facilitatorStageId, localPhase, localStage} = meeting
     const meetingLabel = meetingTypeToLabel[meetingType]
     const inSync = localStage ? localStage.localStageId === facilitatorStageId : true
     const localPhaseType = localPhase && localPhase.phaseType
+    const isDemoStageComplete =
+      teamId === demoTeamId
+        ? (atmosphere as LocalAtmosphere).clientGraphQLServer.isBotFinished()
+        : false
     return (
       <MeetingContainer>
         <Helmet title={`${meetingLabel} Meeting | ${teamName}`} />
@@ -433,8 +440,8 @@ class NewMeeting extends Component<Props, State> {
             <ErrorBoundary>
               <React.Fragment>
                 {localPhaseType === CHECKIN && (
+                  // @ts-ignore
                   <NewMeetingCheckIn
-                    // @ts-ignore
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     meetingType={meetingType}
@@ -446,6 +453,7 @@ class NewMeeting extends Component<Props, State> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
                 {localPhaseType === GROUP && (
@@ -453,6 +461,7 @@ class NewMeeting extends Component<Props, State> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
                 {localPhaseType === VOTE && (
@@ -460,6 +469,7 @@ class NewMeeting extends Component<Props, State> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
                 {localPhaseType === DISCUSS && (
@@ -467,9 +477,13 @@ class NewMeeting extends Component<Props, State> {
                     gotoNext={this.gotoNext}
                     gotoNextRef={this.gotoNextRef}
                     team={team}
+                    isDemoStageComplete={isDemoStageComplete}
                   />
                 )}
-                {!localPhaseType && <NewMeetingLobby meetingType={meetingType} team={team} />}
+                {!localPhaseType && (
+                  // @ts-ignore
+                  <NewMeetingLobby meetingType={meetingType} team={team} />
+                )}
               </React.Fragment>
             </ErrorBoundary>
           </MeetingContent>
@@ -484,7 +498,7 @@ class NewMeeting extends Component<Props, State> {
 
 export default createFragmentContainer(
   dragDropContext(HTML5Backend)(
-    (connect() as any)(withHotkey(withAtmosphere(withMutationProps(withRouter(NewMeeting)))))
+    withHotkey(withAtmosphere(withMutationProps(withRouter(NewMeeting))))
   ),
   graphql`
     fragment NewMeeting_viewer on User {
@@ -497,11 +511,6 @@ export default createFragmentContainer(
         ...RetroGroupPhase_team
         ...RetroVotePhase_team
         ...RetroDiscussPhase_team
-        checkInGreeting {
-          content
-          language
-        }
-        checkInQuestion
         teamId: id
         teamName: name
         meetingId
@@ -512,11 +521,13 @@ export default createFragmentContainer(
           preferredName
           picture
           checkInOrder
-          isConnected
           isFacilitator
           isLead
           isSelf
           userId
+          user {
+            isConnected
+          }
         }
         newMeeting {
           ...NewMeetingPhaseHeading_newMeeting

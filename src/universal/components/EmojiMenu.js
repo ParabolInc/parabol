@@ -28,7 +28,7 @@ type State = {
 }
 
 class EmojiMenu extends Component<Props, State> {
-  static filterByQuery (query: string) {
+  static filterByQuery(query: string) {
     if (!query) {
       return emojiArray.slice(2, 8)
     }
@@ -45,16 +45,21 @@ class EmojiMenu extends Component<Props, State> {
     )
   }
 
-  static getDerivedStateFromProps (nextProps: Props, prevState: State): $Shape<State> | null {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): $Shape<State> | null {
     const {editorState, query} = nextProps
     if (query && query === prevState.query) return null
+    const suggestedEmojis = EmojiMenu.filterByQuery(query)
+    if (suggestedEmojis.length === 0) {
+      nextProps.closePortal()
+      return null
+    }
     return {
       // clicking on a menu will cause the editorStateSelection to lose focus, so we persist the last state before that point
       focusedEditorState: editorState.getSelection().getHasFocus()
         ? editorState
         : prevState.focusedEditorState,
       query,
-      suggestedEmojis: EmojiMenu.filterByQuery(query)
+      suggestedEmojis
     }
   }
 
@@ -64,7 +69,7 @@ class EmojiMenu extends Component<Props, State> {
     query: ''
   }
 
-  render () {
+  render() {
     const {closePortal, menuRef, menuItemClickFactory} = this.props
     const {focusedEditorState} = this.state
     const {suggestedEmojis} = this.state

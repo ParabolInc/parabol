@@ -36,7 +36,7 @@ storiesOf('Misc. UI Components', module)
             <RaisedButton onClick={handleDemoClick}>{'Raised Button'}</RaisedButton>
             <br />
             <RaisedButton onClick={handleDemoClick}>
-              <IconLabel icon='check-circle' label='Button with IconLabel' />
+              <IconLabel icon="check_circle" label="Button with IconLabel" />
             </RaisedButton>
           </div>
         )}

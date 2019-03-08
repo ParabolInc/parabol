@@ -1,10 +1,8 @@
 import {NewTeamForm_organizations} from '__generated__/NewTeamForm_organizations.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {Dispatch} from 'redux'
 import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
 import Panel from 'universal/components/Panel/Panel'
 import PrimaryButton from 'universal/components/PrimaryButton'
@@ -12,20 +10,17 @@ import Radio from 'universal/components/Radio/Radio'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import NewTeamOrgPicker from 'universal/modules/team/components/NewTeamOrgPicker'
 import AddOrgMutation from 'universal/mutations/AddOrgMutation'
 import AddTeamMutation from 'universal/mutations/AddTeamMutation'
 import ui from 'universal/styles/ui'
-import {randomPlaceholderTheme} from 'universal/utils/makeRandomPlaceholder'
-import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Legitity from 'universal/validation/Legitity'
-import {inviteesRawTest} from 'universal/validation/templates'
 import teamNameValidation from 'universal/validation/teamNameValidation'
-import NewTeamOrgPicker from 'universal/modules/team/components/NewTeamOrgPicker'
 import NewTeamFormBlock from './NewTeamFormBlock'
-import NewTeamFormInvitees from './NewTeamFormInvitees'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
+import StyledError from 'universal/components/StyledError'
 
 const StyledForm = styled('form')({
   margin: 0,
@@ -57,7 +52,6 @@ const StyledButton = styled(PrimaryButton)({
 const controlSize = 'medium'
 
 interface Props extends WithMutationProps, WithAtmosphereProps, RouteComponentProps<{}> {
-  dispatch: Dispatch<any>
   isNewOrganization: boolean
   organizations: NewTeamForm_organizations
 }
@@ -75,29 +69,18 @@ interface Field {
 }
 
 interface Fields {
-  rawInvitees: Field
   orgName: Field
   teamName: Field
 }
 
-type FieldName = 'rawInvitees' | 'orgName' | 'teamName'
+type FieldName = 'orgName' | 'teamName'
 const DEFAULT_FIELD = {value: '', error: undefined, dirty: false}
-
-const makeInvitees = (invitees) => {
-  return invitees
-    ? invitees.map((email) => ({
-      email: email.address,
-      fullName: email.fullName
-    }))
-    : []
-}
 
 class NewTeamForm extends Component<Props, State> {
   state = {
     isNewOrg: this.props.isNewOrganization,
     orgId: '',
     fields: {
-      rawInvitees: {...DEFAULT_FIELD},
       orgName: {...DEFAULT_FIELD},
       teamName: {...DEFAULT_FIELD}
     }
@@ -117,8 +100,7 @@ class NewTeamForm extends Component<Props, State> {
   validate = (name: FieldName) => {
     const validators = {
       teamName: this.validateTeamName,
-      orgName: this.validateOrgName,
-      rawInvitees: this.validateInvitees
+      orgName: this.validateOrgName
     }
     const res: Legitity = validators[name]()
 
@@ -150,12 +132,6 @@ class NewTeamForm extends Component<Props, State> {
       }
     }
     return teamNameValidation(rawTeamName, teamNames)
-  }
-
-  validateInvitees = () => {
-    const {fields} = this.state
-    const rawInvitees = fields.rawInvitees.value
-    return new Legitity(rawInvitees).test(inviteesRawTest)
   }
 
   validateOrgName = () => {
@@ -235,26 +211,16 @@ class NewTeamForm extends Component<Props, State> {
   }
 
   onSubmit = (e: React.FormEvent) => {
-    const {
-      atmosphere,
-      dispatch,
-      history,
-      onError,
-      onCompleted,
-      submitMutation,
-      submitting
-    } = this.props
+    const {atmosphere, history, onError, onCompleted, submitMutation, submitting} = this.props
     e.preventDefault()
     if (submitting) return
     const {isNewOrg, orgId} = this.state
-    const fieldNames: Array<FieldName> = ['teamName', 'rawInvitees']
+    const fieldNames: Array<FieldName> = ['teamName']
     fieldNames.forEach(this.setDirty)
     const fieldRes = fieldNames.map(this.validate)
     const hasError = fieldRes.reduce((err: boolean, val) => err || !!val.error, false)
     if (hasError) return
-    const [teamRes, rawInviteesRes] = fieldRes
-    const parsedInvitees = parseEmailAddressList(rawInviteesRes.value)
-    const invitees = makeInvitees(parsedInvitees)
+    const [teamRes] = fieldRes
     if (isNewOrg) {
       this.setDirty('orgName')
       const {error, value: orgName} = this.validate('orgName')
@@ -262,22 +228,22 @@ class NewTeamForm extends Component<Props, State> {
       const newTeam = {
         name: teamRes.value
       }
-      const variables = {newTeam, invitees, orgName}
+      const variables = {newTeam, orgName}
       submitMutation()
-      AddOrgMutation(atmosphere, variables, {dispatch, history}, onError, onCompleted)
+      AddOrgMutation(atmosphere, variables, {history}, onError, onCompleted)
     } else {
       const newTeam = {
         name: teamRes.value,
         orgId
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam, invitees}, {dispatch, history}, onError, onCompleted)
+      AddTeamMutation(atmosphere, {newTeam}, {history}, onError, onCompleted)
     }
   }
 
-  render () {
+  render() {
     const {fields, isNewOrg, orgId} = this.state
-    const {submitting, organizations} = this.props
+    const {error, submitting, organizations} = this.props
 
     return (
       <StyledForm onSubmit={this.onSubmit}>
@@ -285,14 +251,14 @@ class NewTeamForm extends Component<Props, State> {
           <FormInner>
             <FormHeading>{'Create a New Team'}</FormHeading>
             <NewTeamFormBlock>
-              <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
+              <FieldLabel fieldSize={controlSize} indent label="Add Team to…" />
             </NewTeamFormBlock>
             <NewTeamFormBlock>
               <Radio
                 checked={!isNewOrg}
-                name='isNewOrganization'
-                value='false'
-                label='an existing organization:'
+                name="isNewOrganization"
+                value="false"
+                label="an existing organization:"
                 onChange={this.handleIsNewOrgChange}
               />
               <NewTeamFieldBlock>
@@ -311,7 +277,7 @@ class NewTeamForm extends Component<Props, State> {
               orgName={fields.orgName.value}
               dirty={fields.orgName.dirty}
               error={fields.orgName.error}
-              placeholder={randomPlaceholderTheme.orgName}
+              placeholder="My new organization"
               onBlur={this.handleBlur}
             />
             <NewTeamFormTeamName
@@ -321,18 +287,11 @@ class NewTeamForm extends Component<Props, State> {
               teamName={fields.teamName.value}
               onBlur={this.handleBlur}
             />
-            <NewTeamFormInvitees
-              placeholder={randomPlaceholderTheme.emailMulti}
-              dirty={fields.rawInvitees.dirty}
-              error={fields.rawInvitees.error}
-              onChange={this.handleInputChange}
-              rawInvitees={fields.rawInvitees.value}
-              onBlur={this.handleBlur}
-            />
 
-            <StyledButton size='large' depth={1} waiting={submitting}>
+            <StyledButton size="large" waiting={submitting}>
               {isNewOrg ? 'Create Team & Org' : 'Create Team'}
             </StyledButton>
+            {error && <StyledError>{error}</StyledError>}
           </FormInner>
         </Panel>
       </StyledForm>
@@ -341,7 +300,7 @@ class NewTeamForm extends Component<Props, State> {
 }
 
 export default createFragmentContainer(
-  (connect() as any)(withAtmosphere(withRouter(withMutationProps(NewTeamForm)))),
+  withAtmosphere(withRouter(withMutationProps(NewTeamForm))),
   graphql`
     fragment NewTeamForm_organizations on Organization @relay(plural: true) {
       ...NewTeamOrgPicker_organizations

@@ -1,11 +1,13 @@
 import IconLabel from 'universal/components/IconLabel'
 import React from 'react'
 import styled from 'react-emotion'
-import RaisedButton from 'universal/components/RaisedButton'
+import FloatingActionButton from 'universal/components/FloatingActionButton'
 import {meetingHelpWithBottomBar} from 'universal/styles/meeting'
+import withInnerRef from 'universal/decorators/withInnerRef'
 
-const StyledButton = styled(RaisedButton)(({floatAboveBottomBar}) => ({
+const StyledButton = styled(FloatingActionButton)(({floatAboveBottomBar}) => ({
   bottom: floatAboveBottomBar ? meetingHelpWithBottomBar : '1.25rem',
+  height: '2rem',
   paddingLeft: 0,
   paddingRight: 0,
   position: 'fixed',
@@ -14,10 +16,12 @@ const StyledButton = styled(RaisedButton)(({floatAboveBottomBar}) => ({
   zIndex: 200
 }))
 
-const HelpMenuToggle = (props) => (
-  <StyledButton palette='white' depth={2} {...props}>
-    <IconLabel icon='question' />
-  </StyledButton>
-)
+const HelpMenuToggle = (props) => {
+  return (
+    <StyledButton palette="white" {...props} innerRef={props.toggleRef}>
+      <IconLabel icon="help_outline" />
+    </StyledButton>
+  )
+}
 
-export default HelpMenuToggle
+export default withInnerRef(HelpMenuToggle)

@@ -4,7 +4,6 @@ import {createFragmentContainer} from 'react-relay'
 import {css} from 'aphrodite-local-styles/no-important'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
-import AddSoftTeamMember from 'universal/modules/outcomeCard/components/AddSoftTeamMember'
 import appTheme from 'universal/styles/theme/appTheme'
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
@@ -18,11 +17,11 @@ class OutcomeCardAssignMenu extends Component {
     assignees: []
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.setAssignees(this.props)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       viewer: {
         team: {teamMembers, softTeamMembers}
@@ -38,7 +37,7 @@ class OutcomeCardAssignMenu extends Component {
     }
   }
 
-  setAssignees (props) {
+  setAssignees(props) {
     const {
       viewer: {
         team: {teamMembers, softTeamMembers}
@@ -77,14 +76,8 @@ class OutcomeCardAssignMenu extends Component {
     this.handleTaskUpdate(assignee.id)
   }
 
-  render () {
-    const {
-      area,
-      closePortal,
-      styles,
-      task: {taskId},
-      viewer: {team}
-    } = this.props
+  render() {
+    const {closePortal, styles} = this.props
     const {assignees} = this.state
 
     return (
@@ -100,9 +93,6 @@ class OutcomeCardAssignMenu extends Component {
             />
           )
         })}
-        <MenuItemWithShortcuts noCloseOnClick>
-          <AddSoftTeamMember area={area} closePortal={closePortal} taskId={taskId} team={team} />
-        </MenuItemWithShortcuts>
       </MenuWithShortcuts>
     )
   }
@@ -145,7 +135,6 @@ export default createFragmentContainer(
           id
           preferredName
         }
-        ...AddSoftTeamMember_team
       }
     }
 

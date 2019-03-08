@@ -30,7 +30,7 @@ class Graphiql extends Component<Props, State> {
   graphiql = React.createRef<GraphiQL>()
 
   fetcher = async ({query, variables}) => {
-    return this.props.atmosphere.handleFetch({text: query}, variables)
+    return this.props.atmosphere.handleFetch({text: query} as any, variables, {})
   }
 
   privateFetcher = async ({query, variables}) => {
@@ -52,7 +52,7 @@ class Graphiql extends Component<Props, State> {
     })
   }
 
-  render () {
+  render() {
     const {currentSchema} = this.state
     const fetcher = currentSchema === 'Public' ? this.fetcher : this.privateFetcher
 
@@ -60,30 +60,30 @@ class Graphiql extends Component<Props, State> {
       <GQL>
         <GraphiQL fetcher={fetcher} ref={this.graphiql}>
           <GraphiQL.Logo>
-            <img alt='Parabol' src={logoMarkPrimary} />
+            <img alt="Parabol" src={logoMarkPrimary} />
           </GraphiQL.Logo>
           <GraphiQL.Toolbar>
             <GraphiQL.ToolbarButton
               onClick={() => this.graphiql.current.handlePrettifyQuery()}
-              title='Prettify Query (Shift-Ctrl-P)'
-              label='Prettify'
+              title="Prettify Query (Shift-Ctrl-P)"
+              label="Prettify"
             />
             <GraphiQL.ToolbarButton
               onClick={() => this.graphiql.current.handleToggleHistory()}
-              title='Show History'
-              label='History'
+              title="Show History"
+              label="History"
             />
             <GraphiQL.Group>
               <span>Schema: </span>
-              <GraphiQL.Select title='Schema' label='Schema' onSelect={this.selectSchema}>
+              <GraphiQL.Select title="Schema" label="Schema" onSelect={this.selectSchema}>
                 <GraphiQL.SelectOption
-                  label='Public'
-                  value='Public'
+                  label="Public"
+                  value="Public"
                   selected={currentSchema === 'Public'}
                 />
                 <GraphiQL.SelectOption
-                  label='Private'
-                  value='Private'
+                  label="Private"
+                  value="Private"
                   selected={currentSchema === 'Private'}
                 />
               </GraphiQL.Select>

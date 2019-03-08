@@ -15,7 +15,7 @@ import makeAppLink from 'server/utils/makeAppLink'
 const makeAuthTokenObj = (tokenProps = {}) => {
   const {sub, tms} = tokenProps
   if (!sub || !tms) {
-    throw new Error('Must provide valid auth token with `sub` or `tms`')
+    throw new Error('Must provide valid auth token with `sub` or `tms`', sub, tms)
   }
   // new token will expire in 30 days
   // JWT timestamps chop off milliseconds

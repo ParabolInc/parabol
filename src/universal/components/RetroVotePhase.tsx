@@ -2,53 +2,51 @@ import {RetroVotePhase_team} from '__generated__/RetroVotePhase_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import Icon from 'universal/components/Icon'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import VoteHelpMenu from 'universal/components/MeetingHelp/VoteHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import ScrollableBlock from 'universal/components/ScrollableBlock'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingControlBar from 'universal/modules/meeting/components/MeetingControlBar/MeetingControlBar'
 import {minWidthMediaQueries} from 'universal/styles/breakpoints'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {meetingVoteIcon} from 'universal/styles/meeting'
+import {PALETTE} from 'universal/styles/paletteV2'
 import {fontFamily, typeScale} from 'universal/styles/theme/typography'
 import ui from 'universal/styles/ui'
+import {IDiscussPhase} from 'universal/types/graphql'
 import {DISCUSS} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import handleRightArrow from '../utils/handleRightArrow'
+import isDemoRoute from '../utils/isDemoRoute'
+import EndMeetingButton from './EndMeetingButton'
+import DemoVoteHelpMenu from './MeetingHelp/DemoVoteHelpMenu'
 import PhaseItemMasonry from './PhaseItemMasonry'
-import IDiscussPhase = GQL.IDiscussPhase
 
 interface Props extends WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroVotePhase_team
 }
 
 const votePhaseBreakpoint = minWidthMediaQueries[1]
 
-const ControlBarInner = styled('div')(
-  ({isFacilitating}: {isFacilitating: boolean | null | undefined}) => ({
-    alignItems: 'center',
-    display: 'flex',
-    // ts tells me 0 isn't valid
-    // flexWrap: 0,
-    justifyContent: isFacilitating ? 'space-between' : 'center',
-    width: '100%',
-    [votePhaseBreakpoint]: {
-      justifyContent: 'center'
-    }
-  })
-)
-
 const VoteMeta = styled('div')({
+  alignItems: 'center',
+  borderBottom: `.0625rem solid ${PALETTE.BORDER.LIGHT}`,
+  display: 'flex',
+  justifyContent: 'center',
+  margin: '0 auto 1rem',
+  padding: '.5rem .5rem',
+  width: '100%',
   [votePhaseBreakpoint]: {
-    alignItems: 'center',
-    display: 'flex',
-    marginRight: 0
+    padding: '0 0 .5rem'
   }
 })
 
@@ -56,30 +54,33 @@ const MetaBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   flexWrap: 'nowrap',
+  userSelect: 'none'
+})
+
+const StyledMetaBlock = styled(MetaBlock)({
+  marginRight: '1.5rem',
   [votePhaseBreakpoint]: {
     marginRight: '2rem'
   }
 })
 
-const Label = styled('div')({
-  color: ui.labelHeadingColor,
-  fontSize: typeScale[1],
-  fontWeight: 600,
-  lineHeight: typeScale[6],
-  marginRight: '.75rem',
+const Label = styled(LabelHeading)({
+  fontSize: typeScale[0],
+  marginRight: '.5rem',
   whiteSpace: 'nowrap',
   [votePhaseBreakpoint]: {
-    fontSize: typeScale[2]
+    fontSize: typeScale[1],
+    marginRight: '.75rem',
+    paddingTop: '.125rem'
   }
 })
 
-const CheckIcon = styled(StyledFontAwesome)(({isDark}: {isDark: boolean | undefined | null}) => ({
+const CheckIcon = styled(Icon)(({isDark}: {isDark: boolean | undefined | null}) => ({
   color: ui.palette.warm,
   display: 'block',
-  height: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   opacity: isDark ? 1 : 0.2,
-  marginRight: '.25rem',
-  width: ui.iconSize
+  marginRight: '.25rem'
 }))
 
 const CheckMarkRow = styled('div')({
@@ -108,19 +109,34 @@ const MyVotesCountLabel = styled(VoteCountLabel)({
   }
 })
 
+const TeamVotesCountLabel = styled(VoteCountLabel)({
+  // most likely will start out with 2 digits
+  // min-width reduces change in layout
+  minWidth: '1.25rem'
+})
+
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+})
+
 const RetroVotePhase = (props: Props) => {
   const {
     atmosphere: {viewerId},
     gotoNext,
     gotoNextRef,
-    team
+    team,
+    isDemoStageComplete
   } = props
   const {
     meetingSettings: {totalVotes = 0},
     newMeeting
   } = team
   if (!newMeeting) return null
-  const {facilitatorUserId, phases, viewerMeetingMember} = newMeeting
+  const {facilitatorUserId, meetingId, phases, viewerMeetingMember} = newMeeting
   const teamVotesRemaining = newMeeting.teamVotesRemaining || 0
   const myVotesRemaining = viewerMeetingMember.myVotesRemaining || 0
   const isFacilitating = facilitatorUserId === viewerId
@@ -130,49 +146,48 @@ const RetroVotePhase = (props: Props) => {
   const checkMarks = [...Array(totalVotes).keys()]
   return (
     <React.Fragment>
+      <VoteMeta>
+        <StyledMetaBlock>
+          <Label>{'My Votes Remaining'}</Label>
+          <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
+          <CheckMarkRow>
+            {checkMarks.map((idx) => (
+              <CheckIcon key={idx} isDark={idx < myVotesRemaining}>
+                {meetingVoteIcon}
+              </CheckIcon>
+            ))}
+          </CheckMarkRow>
+        </StyledMetaBlock>
+        <MetaBlock>
+          <Label>{'Team Votes Remaining'}</Label>
+          <TeamVotesCountLabel>{teamVotesRemaining}</TeamVotesCountLabel>
+        </MetaBlock>
+      </VoteMeta>
       <ScrollableBlock>
         <MeetingPhaseWrapper>
           <PhaseItemMasonry meeting={newMeeting} />
         </MeetingPhaseWrapper>
       </ScrollableBlock>
-      <MeetingControlBar>
-        <ControlBarInner isFacilitating={isFacilitating}>
-          <VoteMeta>
-            <MetaBlock>
-              <Label>{'My Votes Remaining'}</Label>
-              <MyVotesCountLabel>{myVotesRemaining}</MyVotesCountLabel>
-              <CheckMarkRow>
-                {checkMarks.map((idx) => (
-                  <CheckIcon key={idx} name={meetingVoteIcon} isDark={idx < myVotesRemaining} />
-                ))}
-              </CheckMarkRow>
-            </MetaBlock>
-            <MetaBlock>
-              <Label>{'Team Votes Remaining'}</Label>
-              <VoteCountLabel>{teamVotesRemaining}</VoteCountLabel>
-            </MetaBlock>
-          </VoteMeta>
-          {isFacilitating && (
-            <FlatButton
-              size='medium'
-              disabled={!discussStage.isNavigableByFacilitator}
-              onClick={gotoNext}
-              onKeyDown={handleRightArrow(gotoNext)}
-              innerRef={gotoNextRef}
-            >
-              <IconLabel
-                icon='arrow-circle-right'
-                iconAfter
-                iconColor='warm'
-                iconLarge
-                label={`Done! Let’s ${nextPhaseLabel}`}
-              />
-            </FlatButton>
-          )}
-        </ControlBarInner>
-      </MeetingControlBar>
-      {/* Set floatAboveBottomBar to true because the bottom bar is always present in this view */}
-      <VoteHelpMenu floatAboveBottomBar />
+      {isFacilitating && (
+        <StyledBottomBar>
+          <BottomControlSpacer />
+          <BottomNavControl
+            isBouncing={isDemoStageComplete || teamVotesRemaining === 0}
+            disabled={!discussStage.isNavigableByFacilitator}
+            onClick={gotoNext}
+            onKeyDown={handleRightArrow(gotoNext)}
+            innerRef={gotoNextRef}
+          >
+            <BottomNavIconLabel
+              icon="arrow_forward"
+              iconColor="warm"
+              label={`Next: ${nextPhaseLabel}`}
+            />
+          </BottomNavControl>
+          <EndMeetingButton meetingId={meetingId} />
+        </StyledBottomBar>
+      )}
+      {isDemoRoute() ? <DemoVoteHelpMenu /> : <VoteHelpMenu floatAboveBottomBar={isFacilitating} />}
     </React.Fragment>
   )
 }

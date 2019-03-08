@@ -3,12 +3,12 @@ import React from 'react'
 import withStyles from 'universal/styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 import {withRouter} from 'react-router-dom'
-import {SETTINGS, ORGANIZATIONS, NOTIFICATIONS} from 'universal/utils/constants'
+import {PROFILE, ORGANIZATIONS, NOTIFICATIONS} from 'universal/utils/constants'
 import ui from 'universal/styles/ui'
 
 const heading = {
-  [SETTINGS]: {
-    label: 'Settings'
+  [PROFILE]: {
+    label: 'Profile'
   },
   [ORGANIZATIONS]: {
     label: 'Organizations'

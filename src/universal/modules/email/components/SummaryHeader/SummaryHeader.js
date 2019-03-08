@@ -1,62 +1,82 @@
 import PropTypes from 'prop-types'
-import React from 'react'
-import EmptySpace from '../EmptySpace/EmptySpace'
+import React, {Fragment} from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import {emailBodyColor, emailFontFamily} from 'universal/styles/email'
 import makeDateString from 'universal/utils/makeDateString'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import emailDir from 'universal/modules/email/emailDir'
 
 const SummaryHeader = (props) => {
-  const {createdAt, meetingNumber, meetingType, teamName} = props
+  const {createdAt, isDemo, meetingNumber, meetingType, teamName} = props
   const meetingLabel = meetingTypeToLabel[meetingType]
   const blockStyle = {
-    backgroundColor: '#fff',
+    backgroundColor: emailBodyColor,
     color: appTheme.palette.dark,
-    fontFamily: ui.emailFontFamily,
-    fontSize: `${props.fontSize}px`,
-    lineHeight: `${props.lineHeight}`,
-    padding: `${props.padding}px`,
+    fontFamily: emailFontFamily,
+    fontSize: '24px',
+    lineHeight: 1.5,
+    padding: '24px',
     textAlign: 'center'
   }
 
   const textStyle = {
-    fontFamily: ui.emailFontFamily
+    fontFamily: emailFontFamily
   }
 
   const meetingDateStyle = {
     ...textStyle,
-    fontSize: '18px',
-    fontWeight: 400
+    color: appTheme.brand.primary.midGray,
+    fontSize: '15px',
+    fontWeight: 400,
+    lineHeight: '22px'
   }
 
   const teamNameStyle = {
     ...textStyle,
     fontSize: '36px',
-    fontWeight: 600
+    fontWeight: 600,
+    lineHeight: '44px',
+    margin: '0px 0px 4px'
   }
   const meetingDate = makeDateString(createdAt, {showDay: true})
 
   const labelStyles = {
     color: appTheme.palette.dark70l,
-    fontSize: '13px',
+    fontSize: '12px',
     fontWeight: 600,
-    padding: '0 0 16px',
+    lineHeight: '16px',
+    padding: '12px 0px 10px',
     textAlign: 'center',
     textTransform: 'uppercase'
   }
 
+  const logoStyle = {
+    display: 'block',
+    margin: '0 auto'
+  }
+
   return (
-    <div style={{padding: '0 16px'}}>
-      <EmptySpace height={props.vSpacing} />
-      <table width={props.width}>
+    <div style={{padding: '0px 16px'}}>
+      <table width="100%">
         <tbody>
           <tr>
             <td style={blockStyle}>
+              <img
+                alt="Parabol Logo"
+                src={`${emailDir}mark-purple@3x.png`}
+                style={logoStyle}
+                height="28"
+                width="31"
+              />
               <div style={labelStyles}>{'Meeting Summary'}</div>
               <div style={teamNameStyle}>{teamName}</div>
               <div style={meetingDateStyle}>
-                {`${meetingLabel} Meeting #${meetingNumber}`}
-                {' • '}
+                {!isDemo && (
+                  <Fragment>
+                    {`${meetingLabel} Meeting #${meetingNumber}`}
+                    {' • '}
+                  </Fragment>
+                )}
                 {meetingDate}
               </div>
             </td>
@@ -74,22 +94,10 @@ SummaryHeader.propTypes = {
     // this comes from SSR
     PropTypes.instanceOf(Date)
   ]),
-  fontSize: PropTypes.number,
-  lineHeight: PropTypes.number,
+  isDemo: PropTypes.bool,
   meetingNumber: PropTypes.number,
   meetingType: PropTypes.string,
-  padding: PropTypes.number,
-  teamName: PropTypes.string,
-  vSpacing: PropTypes.number,
-  width: PropTypes.string
-}
-
-SummaryHeader.defaultProps = {
-  fontSize: 24,
-  lineHeight: 1.5,
-  padding: 24,
-  vSpacing: 16,
-  width: '100%'
+  teamName: PropTypes.string
 }
 
 export default SummaryHeader

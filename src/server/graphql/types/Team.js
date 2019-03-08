@@ -8,28 +8,25 @@ import {
   GraphQLString
 } from 'graphql'
 import {forwardConnectionArgs} from 'graphql-relay'
-import getRethink from 'server/database/rethinkDriver'
 import connectionFromTasks from 'server/graphql/queries/helpers/connectionFromTasks'
 import ActionMeetingPhaseEnum from 'server/graphql/types/ActionMeetingPhaseEnum'
 import AgendaItem from 'server/graphql/types/AgendaItem'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import Invitation from 'server/graphql/types/Invitation'
 import MeetingGreeting from 'server/graphql/types/MeetingGreeting'
 import Organization from 'server/graphql/types/Organization'
-import OrgApproval from 'server/graphql/types/OrgApproval'
 import {TaskConnection} from 'server/graphql/types/Task'
 import TeamMember from 'server/graphql/types/TeamMember'
 import TierEnum from 'server/graphql/types/TierEnum'
-import {PENDING} from 'server/utils/serverConstants'
-import {resolveNewMeeting, resolveOrganization} from 'server/graphql/resolvers'
+import {resolveOrganization} from 'server/graphql/resolvers'
 import SoftTeamMember from 'server/graphql/types/SoftTeamMember'
 import CustomPhaseItem from 'server/graphql/types/CustomPhaseItem'
 import NewMeeting from 'server/graphql/types/NewMeeting'
 import TeamMeetingSettings from 'server/graphql/types/TeamMeetingSettings'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
-import {isTeamMember, getUserId} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import TeamInvitation from 'server/graphql/types/TeamInvitation'
+import standardError from 'server/utils/standardError'
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -42,6 +39,10 @@ const Team = new GraphQLObjectType({
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The datetime the team was created'
+    },
+    createdBy: {
+      type: GraphQLID,
+      description: 'The userId that created the team. Non-null at v2.22.0+'
     },
     // isActive: {
     //   type: GraphQLBoolean,
@@ -105,28 +106,21 @@ const Team = new GraphQLObjectType({
       type: GraphQLInt,
       description: 'The current item number for the current phase for the facilitator, 1-indexed'
     },
-    invitations: {
-      type: new GraphQLList(Invitation),
+    teamInvitations: {
+      type: new GraphQLList(new GraphQLNonNull(TeamInvitation)),
       description: 'The outstanding invitations to join the team',
-      resolve: ({id: teamId}) => {
-        const r = getRethink()
-        const now = new Date()
-        return r
-          .table('Invitation')
-          .getAll(teamId, {index: 'teamId'})
-          .filter(r.row('tokenExpiration').ge(now))
-          .orderBy('createdAt')
-          .run()
+      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+        return dataLoader.get('teamInvitationsByTeamId').load(teamId)
       }
     },
     isLead: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the team lead, else false',
       resolve: async ({id: teamId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-        return teamMember.isLead
+        return !!teamMember.isLead
       }
     },
     meetingPhase: {
@@ -155,33 +149,25 @@ const Team = new GraphQLObjectType({
     newMeeting: {
       type: NewMeeting,
       description: 'The new meeting in progress, if any',
-      resolve: resolveNewMeeting
+      resolve: ({meetingId, activeFacilitator}, args, {dataLoader}) => {
+        if (meetingId && !activeFacilitator) {
+          return dataLoader.get('newMeetings').load(meetingId)
+        }
+        return null
+      }
     },
     tier: {
       type: TierEnum,
       description: 'The level of access to features on the parabol site'
-    },
-    orgApprovals: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(OrgApproval))),
-      description: 'The outstanding invitations to join the team',
-      resolve: ({id: teamId}) => {
-        const r = getRethink()
-        return r
-          .table('OrgApproval')
-          .getAll(teamId, {index: 'teamId'})
-          .filter({status: PENDING, isActive: true})
-          .orderBy('email')
-          .run()
-      }
     },
     organization: {
       type: new GraphQLNonNull(Organization),
       resolve: resolveOrganization
     },
     agendaItems: {
-      type: new GraphQLList(AgendaItem),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve ({id: teamId}, args, {dataLoader}) {
+      async resolve({id: teamId}, args, {dataLoader}) {
         const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
         agendaItems.sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1))
         return agendaItems
@@ -197,9 +183,10 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All of the tasks for this team',
-      async resolve ({id: teamId}, args, {authToken, dataLoader}) {
+      async resolve({id: teamId}, args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
-          return sendTeamAccessError(authToken, teamId, null)
+          standardError(new Error('Team not found'))
+          return null
         }
         const tasks = await dataLoader.get('tasksByTeamId').load(teamId)
         return connectionFromTasks(tasks)
@@ -208,7 +195,7 @@ const Team = new GraphQLObjectType({
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),
       description: 'All the soft team members actively associated with the team',
-      async resolve ({id: teamId}, args, {dataLoader}) {
+      async resolve({id: teamId}, args, {dataLoader}) {
         const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId)
         softTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
         return softTeamMembers
@@ -223,7 +210,7 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve ({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
+      async resolve({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
         return teamMembers

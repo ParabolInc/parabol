@@ -1,3 +1,4 @@
+import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import memoize from 'micro-memoize'
 /**
  * Renders a column for a particular "type" of reflection
@@ -6,11 +7,10 @@ import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Tooltip from 'universal/components/Tooltip/Tooltip'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -18,8 +18,10 @@ import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
 import {DECELERATE} from 'universal/styles/animation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -59,8 +61,9 @@ const TypeDescription = styled('div')({
   fontWeight: 600
 })
 
-const FocusArrow = styled(StyledFontAwesome)(({isFocused}: {isFocused: boolean}) => ({
+const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
   color: ui.palette.yellow,
+  fontSize: MD_ICONS_SIZE_18,
   opacity: isFocused ? 1 : 0,
   paddingRight: isFocused ? '0.5rem' : 0,
   transition: `all 150ms ${DECELERATE}`,
@@ -86,6 +89,16 @@ const ChitSection = styled('div')({
   flex: 0.3
 })
 
+const originAnchor = {
+  vertical: 'top',
+  horizontal: 'center'
+}
+
+const targetAnchor = {
+  vertical: 'bottom',
+  horizontal: 'center'
+}
+
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
   editorIds: ReadonlyArray<string> | null
@@ -96,6 +109,7 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 }
 
 class PhaseItemColumn extends Component<Props> {
+  hasFocused: boolean = false
   phaseEditorRef = React.createRef<HTMLDivElement>()
   makeColumnStack = memoize(
     (reflectionGroups: PhaseItemColumn_meeting['reflectionGroups'], retroPhaseItemId: string) =>
@@ -130,7 +144,7 @@ class PhaseItemColumn extends Component<Props> {
 
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
-  render () {
+  render() {
     const {
       atmosphere: {viewerId},
       editorIds,
@@ -147,6 +161,7 @@ class PhaseItemColumn extends Component<Props> {
       localStage: {isComplete},
       reflectionGroups
     } = meeting
+    this.hasFocused = this.hasFocused || !!focusedPhaseItemId
     const isFocused = focusedPhaseItemId === retroPhaseItemId
     const columnStack = this.makeColumnStack(reflectionGroups, retroPhaseItemId)
     const reflectionStack = this.makeViewerStack(columnStack)
@@ -156,10 +171,25 @@ class PhaseItemColumn extends Component<Props> {
         <ColumnHighlight isFocused={isFocused}>
           <ColumnContent>
             <HeaderAndEditor>
-              <TypeHeader isClickable={isViewerFacilitator} onClick={this.setColumnFocus}>
+              <TypeHeader
+                isClickable={isViewerFacilitator && !isComplete}
+                onClick={this.setColumnFocus}
+              >
                 <TypeDescription>
-                  <FocusArrow name='arrow-right' isFocused={isFocused} />
-                  {question}
+                  <FocusArrow isFocused={isFocused}>forward</FocusArrow>
+                  <Tooltip
+                    delay={200}
+                    maxHeight={40}
+                    maxWidth={500}
+                    originAnchor={originAnchor}
+                    targetAnchor={targetAnchor}
+                    tip={<div>Tap to highlight prompt for everybody</div>}
+                    isDisabled={
+                      this.hasFocused || isFocused || !isViewerFacilitator || !!isComplete
+                    }
+                  >
+                    <span>{question}</span>
+                  </Tooltip>
                 </TypeDescription>
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={!!isComplete}>
@@ -173,6 +203,7 @@ class PhaseItemColumn extends Component<Props> {
             </HeaderAndEditor>
             <ReflectionStack
               reflectionStack={reflectionStack}
+              readOnly={!!isComplete}
               idx={idx}
               phaseEditorRef={this.phaseEditorRef}
               phaseItemId={retroPhaseItemId}

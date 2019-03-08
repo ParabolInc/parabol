@@ -1,41 +1,34 @@
-import {GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
+import {GraphQLBoolean, GraphQLID, GraphQLInterfaceType, GraphQLList, GraphQLNonNull} from 'graphql'
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import NotificationEnum from 'server/graphql/types/NotificationEnum'
-import NotifyAddedToTeam from 'server/graphql/types/NotifyAddedToTeam'
-import NotifyDenial from 'server/graphql/types/NotifyDenial'
 import NotifyFacilitatorDisconnected from 'server/graphql/types/NotifyFacilitatorDisconnected'
-import NotifyInviteeApproved from 'server/graphql/types/NotifyInviteeApproved'
 import NotifyKickedOut from 'server/graphql/types/NotifyKickedOut'
-import NotifyNewTeamMember from 'server/graphql/types/NotifyNewTeamMember'
 import NotifyPaymentRejected from 'server/graphql/types/NotifyPaymentRejected'
 import NotifyTaskInvolves from 'server/graphql/types/NotifyTaskInvolves'
 import NotifyPromoteToOrgLeader from 'server/graphql/types/NotifyPromoteToOrgLeader'
-import NotifyRequestNewUser from 'server/graphql/types/NotifyRequestNewUser'
 import NotifyTeamArchived from 'server/graphql/types/NotifyTeamArchived'
-import NotifyTeamInvite from 'server/graphql/types/NotifyTeamInvite'
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 
 import {
-  ADD_TO_TEAM,
-  DENY_NEW_USER,
   FACILITATOR_DISCONNECTED,
-  INVITEE_APPROVED,
-  JOIN_TEAM,
   KICKED_OUT,
   PAYMENT_REJECTED,
-  TASK_INVOLVES,
   PROMOTE_TO_BILLING_LEADER,
-  REJOIN_TEAM,
-  REQUEST_NEW_USER,
+  TASK_INVOLVES,
   TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_INVITATION
 } from 'universal/utils/constants'
+import NotificationTeamInvitation from 'server/graphql/types/NotificationTeamInvitation'
 
 export const notificationInterfaceFields = {
   id: {
-    type: GraphQLID,
+    type: new GraphQLNonNull(GraphQLID),
     description: 'A shortid for the notification'
+  },
+  isArchived: {
+    type: GraphQLBoolean,
+    description: 'true if the notification has been archived, else false (or null)'
   },
   orgId: {
     type: GraphQLID,
@@ -58,23 +51,17 @@ export const notificationInterfaceFields = {
 const Notification = new GraphQLInterfaceType({
   name: 'Notification',
   fields: () => notificationInterfaceFields,
-  resolveType (value) {
+  resolveType(value) {
     // type lookup needs to be resolved in a thunk since there is a circular reference when loading
     // alternative to treating it like a DB driver if GCing is an issue
     const resolveTypeLookup = {
-      [ADD_TO_TEAM]: NotifyAddedToTeam,
-      [DENY_NEW_USER]: NotifyDenial,
       [FACILITATOR_DISCONNECTED]: NotifyFacilitatorDisconnected,
-      [INVITEE_APPROVED]: NotifyInviteeApproved,
-      [JOIN_TEAM]: NotifyNewTeamMember,
       [KICKED_OUT]: NotifyKickedOut,
       [PAYMENT_REJECTED]: NotifyPaymentRejected,
       [TASK_INVOLVES]: NotifyTaskInvolves,
-      [REJOIN_TEAM]: NotifyNewTeamMember,
-      [REQUEST_NEW_USER]: NotifyRequestNewUser,
-      [TEAM_INVITE]: NotifyTeamInvite,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader,
-      [TEAM_ARCHIVED]: NotifyTeamArchived
+      [TEAM_ARCHIVED]: NotifyTeamArchived,
+      [TEAM_INVITATION]: NotificationTeamInvitation
     }
 
     return resolveTypeLookup[value.type]

@@ -1,13 +1,8 @@
 import {GraphQLBoolean, GraphQLNonNull, GraphQLString} from 'graphql'
 import SegmentEventTrackOptions from 'server/graphql/types/SegmentEventTrackOptions'
-import {
-  getUserId,
-  getUserOrgDoc,
-  isOrgBillingLeader,
-  isTeamMember
-} from 'server/utils/authorization'
+import {getUserId, isTeamMember, isUserBillingLeader} from 'server/utils/authorization'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
-import {sendOrgLeadAccessError, sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   name: 'SegmentEventTrack',
@@ -21,25 +16,26 @@ export default {
       type: SegmentEventTrackOptions
     }
   },
-  resolve: async (source, {event, options = {}}, {authToken}) => {
+  resolve: async (source, {event, options = {}}, {authToken, dataLoader}) => {
     // AUTH
-    const userId = getUserId(authToken)
+    const viewerId = getUserId(authToken)
     const {teamId, orgId} = options
     if (teamId) {
       // fail silently. they're being sneaky
       if (!isTeamMember(authToken, teamId)) {
-        sendTeamAccessError(authToken, teamId, true)
+        standardError(new Error('Failed input validation'), {userId: viewerId})
+        return false
       }
     }
     if (orgId) {
-      const userOrgDoc = await getUserOrgDoc(userId, orgId)
-      if (!isOrgBillingLeader(userOrgDoc)) {
-        return sendOrgLeadAccessError(authToken, userOrgDoc, true)
+      if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
+        standardError(new Error('Failed input validation'), {userId: viewerId})
+        return false
       }
     }
 
     // RESOLUTION
-    sendSegmentEvent(event, userId, options)
+    sendSegmentEvent(event, viewerId, options)
     return true
   }
 }

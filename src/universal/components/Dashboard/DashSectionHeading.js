@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
-import FontAwesome from 'react-fontawesome'
 import Type from 'universal/components/Type/Type'
 import styled from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const RootBlock = styled('div')(({margin}) => ({
   alignItems: 'center',
@@ -12,9 +13,9 @@ const RootBlock = styled('div')(({margin}) => ({
   whiteSpace: 'nowrap'
 }))
 
-const StyledIcon = styled(FontAwesome)({
+const StyledIcon = styled(Icon)({
   color: ui.colorText,
-  fontSize: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   marginRight: '.5rem'
 })
 
@@ -22,8 +23,8 @@ const DashSectionHeading = (props) => {
   const {icon, label, margin} = props
   return (
     <RootBlock margin={margin}>
-      {icon && <StyledIcon name={icon} />}
-      <Type lineHeight='2rem' scale='s4' colorPalette='dark'>
+      {icon && <StyledIcon>{icon}</StyledIcon>}
+      <Type lineHeight="2rem" scale="s4" colorPalette="dark">
         {label}
       </Type>
     </RootBlock>

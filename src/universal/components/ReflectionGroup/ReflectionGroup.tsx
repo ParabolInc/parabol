@@ -36,7 +36,8 @@ import {
   SetChildRef,
   SetItemRef
 } from '../PhaseItemMasonry'
-import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
+import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
+import {cardStackPerspectiveY} from 'universal/styles/cards'
 
 interface PassedProps {
   meeting: ReflectionGroup_meeting
@@ -58,10 +59,11 @@ interface Props extends WithAtmosphereProps, WithMutationProps, PassedProps, Col
 const reflectionsStyle = (
   canDrop: boolean | undefined,
   isDraggable: boolean | undefined,
-  canExpand: boolean | undefined
+  canExpand: boolean | undefined,
+  isComplete: boolean | null
 ) =>
   css({
-    cursor: isDraggable || canExpand ? 'pointer' : 'default',
+    cursor: !isComplete && (isDraggable || canExpand) ? 'pointer' : 'default',
     opacity: canDrop ? 0.6 : 1,
     position: 'relative'
   })
@@ -78,19 +80,24 @@ const Background = styled('div')({
 interface GroupProps {
   isModal?: boolean | null
   isHidden?: boolean | null
+  gutterN?: number | null
 }
 
 const GroupStyle = styled('div')(
   {
     padding: CARD_PADDING,
     position: 'absolute',
-    display: 'inline-block',
-    // necessary for smooth updating column heights
+    // display was 'inline-block' which causes layout issues (TA)
+    display: 'block',
     transition: 'transform 200ms'
   },
+  ({gutterN}: GroupProps) =>
+    gutterN && {
+      paddingBottom: CARD_PADDING + gutterN * cardStackPerspectiveY
+    },
   ({isModal}: GroupProps) =>
     isModal && {
-      borderRadius: 6,
+      borderRadius: 8,
       padding: MODAL_PADDING,
       position: 'absolute',
       transition: 'unset',
@@ -244,20 +251,21 @@ class ReflectionGroup extends Component<Props> {
   ) => {
     const {setItemRef, meeting, reflectionGroup} = this.props
     const {reflections} = reflectionGroup
-    const {isViewerDragInProgress} = meeting
+    const {
+      localStage: {isComplete}
+    } = meeting
     return (
+      // @ts-ignore
       <DraggableReflectionCard
-        // @ts-ignore
         closeGroupModal={isModal ? this.closeGroupModal : undefined}
         key={reflection.id}
         idx={reflections.length - idx - 1}
-        isDraggable={isDraggable}
+        isDraggable={isDraggable && !isComplete}
         isModal={isModal}
         meeting={meeting}
         reflection={reflection}
         setItemRef={setItemRef}
         isSingleCardGroup={reflections.length === 1}
-        isViewerDragInProgress={isViewerDragInProgress}
       />
     )
   }
@@ -300,11 +308,15 @@ class ReflectionGroup extends Component<Props> {
     const isDraggable = phaseType === GROUP && !isComplete
     const showHeader = reflections.length > 1 || phaseType !== GROUP
     // always render the in-grid group so we can get a read on the size if the title is removed
+    let gutterN = 0
+    if (reflections.length === 2) gutterN = 1
+    if (reflections.length >= 3) gutterN = 2
     return (
       <React.Fragment>
         <GroupStyle
           innerRef={setChildRef(reflectionGroupId, firstReflection.id)}
           isHidden={isExpanded}
+          gutterN={gutterN}
         >
           {showHeader && (
             <ReflectionGroupHeader
@@ -315,7 +327,7 @@ class ReflectionGroup extends Component<Props> {
           )}
           {connectDropTarget(
             <div
-              className={reflectionsStyle(canDrop, isDraggable, canExpand)}
+              className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}
               onClick={canExpand ? this.expandGroup : undefined}
             >
               {reflections.map((reflection, idx) =>
@@ -333,7 +345,7 @@ class ReflectionGroup extends Component<Props> {
               meeting={meeting}
               reflectionGroup={reflectionGroup}
             />
-            <div className={reflectionsStyle(canDrop, isDraggable, canExpand)}>
+            <div className={reflectionsStyle(canDrop, isDraggable, canExpand, isComplete)}>
               {reflections.map((reflection, idx) =>
                 this.renderReflection(reflection, idx, {isModal: true, isDraggable})
               )}
@@ -345,7 +357,12 @@ class ReflectionGroup extends Component<Props> {
   }
 }
 
-const reflectionDropSpec: DropTargetSpec<Props, {}, ReflectionGroup> = {
+export interface MasonryDropResult {
+  dropTargetType: DragReflectionDropTargetTypeEnum
+  dropTargetId: string
+}
+
+const reflectionDropSpec: DropTargetSpec<Props> = {
   canDrop (props, monitor) {
     return (
       monitor.isOver() &&
@@ -360,7 +377,7 @@ const reflectionDropSpec: DropTargetSpec<Props, {}, ReflectionGroup> = {
     return {
       dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GROUP,
       dropTargetId: targetReflectionGroupId
-    }
+    } as MasonryDropResult
   }
 }
 

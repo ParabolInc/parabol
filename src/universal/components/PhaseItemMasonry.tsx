@@ -3,6 +3,7 @@ import React from 'react'
 import {
   ConnectDropTarget,
   DropTarget,
+  DropTargetCollector,
   DropTargetConnector,
   DropTargetMonitor,
   DropTargetSpec
@@ -19,6 +20,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import appTheme from 'universal/styles/theme/appTheme'
+import {DragReflectionDropTargetTypeEnum} from 'universal/types/graphql'
 import {REFLECTION_CARD} from 'universal/utils/constants'
 import handleDropOnGrid from 'universal/utils/multiplayerMasonry/handleDropOnGrid'
 import initializeGrid from 'universal/utils/multiplayerMasonry/initializeGrid'
@@ -27,7 +29,7 @@ import setClosingTransform from 'universal/utils/multiplayerMasonry/setClosingTr
 import updateColumnHeight from 'universal/utils/multiplayerMasonry/updateColumnHeight'
 import isTempId from 'universal/utils/relay/isTempId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import DragReflectionDropTargetTypeEnum = GQL.DragReflectionDropTargetTypeEnum
+import Atmosphere from '../Atmosphere'
 
 interface CollectedProps {
   connectDropTarget: ConnectDropTarget
@@ -36,9 +38,12 @@ interface CollectedProps {
 
 interface PassedProps {
   meeting: PhaseItemMasonry_meeting
+  resetActivityTimeout?: () => void
 }
 
-interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {}
+interface Props extends WithAtmosphereProps, WithMutationProps, CollectedProps, PassedProps {
+  atmosphere: MasonryAtmosphere
+}
 
 const gridStyle = css({
   overflowX: 'auto',
@@ -56,11 +61,25 @@ export interface MasonryItemCache {
   [itemId: string]: ItemCache
 }
 
+export interface MasonryAtmosphere extends Atmosphere {
+  getMasonry: () => {
+    itemCache: MasonryItemCache
+    childrenCache: MasonryChildrenCache
+    parentCache: MasonryParentCache
+  }
+}
+
+interface StaticWidthBBox {
+  top: number
+  left: number
+  height: number
+}
+
 interface ChildCache {
   // reflection group element
   el: HTMLElement | null
   // boundingBox coords are relative to the parentCache!
-  boundingBox: BBox | null
+  boundingBox: StaticWidthBBox | null
   modalBoundingBox?: BBox
   headerHeight?: number
 }
@@ -77,7 +96,7 @@ export interface MasonryParentCache {
   // the location for a group that has not been created yet (caused by an ungrouping)
   incomingChildren: {
     [itemId: string]: {
-      boundingBox: BBox | null
+      boundingBox: StaticWidthBBox | null
       // the optimistic child that currently represents the group
       childId: string
     }
@@ -156,7 +175,8 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 
   handleDragEnd = (payload: MasonryDragEndPayload) => {
-    const {atmosphere} = this.props
+    const {atmosphere, resetActivityTimeout} = this.props
+    resetActivityTimeout && resetActivityTimeout()
     // const {dropTargetType, dropTargetId, childId, itemId, sourceId} = payload
     switch (payload.dropTargetType) {
       case DragReflectionDropTargetTypeEnum.REFLECTION_GRID:
@@ -206,11 +226,6 @@ class PhaseItemMasonry extends React.Component<Props> {
         const bbox = getBBox(bestEl)
         if (!bbox) return
         setClosingTransform(atmosphere, payload.itemId, {x: bbox.left, y: bbox.top})
-    }
-    if (atmosphere.startDragQueue && atmosphere.startDragQueue.length) {
-      // reply the startDrag event that fired before we received the end drag event
-      const queuedStart = atmosphere.startDragQueue.shift()
-      queuedStart()
     }
   }
 
@@ -316,16 +331,19 @@ class PhaseItemMasonry extends React.Component<Props> {
   }
 }
 
-const reflectionDropSpec = {
-  canDrop (_props: Props, monitor: DropTargetMonitor) {
+const reflectionDropSpec: DropTargetSpec<Props> = {
+  canDrop (_props, monitor) {
     return monitor.isOver({shallow: true}) && !monitor.getItem().isSingleCardGroup
   },
   drop () {
     return {dropTargetType: DragReflectionDropTargetTypeEnum.REFLECTION_GRID}
   }
-} as DropTargetSpec<Props, {}, PhaseItemMasonry>
+}
 
-const reflectionDropCollect = (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
+const reflectionDropCollect: DropTargetCollector<CollectedProps> = (
+  connect: DropTargetConnector,
+  monitor: DropTargetMonitor
+) => ({
   connectDropTarget: connect.dropTarget(),
   canDrop: monitor.canDrop()
 })
@@ -334,7 +352,7 @@ export default createFragmentContainer<PassedProps>(
   withScrolling(
     withAtmosphere(
       withMutationProps(
-        DropTarget<Props, {}, PhaseItemMasonry, CollectedProps>(
+        DropTarget<Props, CollectedProps>(
           REFLECTION_CARD,
           reflectionDropSpec,
           reflectionDropCollect

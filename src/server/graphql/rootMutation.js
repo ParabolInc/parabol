@@ -1,14 +1,10 @@
 import {GraphQLObjectType} from 'graphql'
-import acceptTeamInvite from 'server/graphql/mutations/acceptTeamInvite'
 import addAgendaItem from 'server/graphql/mutations/addAgendaItem'
 import addGitHubRepo from 'server/graphql/mutations/addGitHubRepo'
 import addOrg from 'server/graphql/mutations/addOrg'
 import addProvider from 'server/graphql/mutations/addProvider'
 import addSlackChannel from 'server/graphql/mutations/addSlackChannel'
-import approveToOrg from 'server/graphql/mutations/approveToOrg'
 import archiveTeam from 'server/graphql/mutations/archiveTeam'
-import cancelApproval from 'server/graphql/mutations/cancelApproval'
-import cancelTeamInvite from 'server/graphql/mutations/cancelTeamInvite'
 import clearNotification from 'server/graphql/mutations/clearNotification'
 import changeTaskTeam from 'server/graphql/mutations/changeTaskTeam'
 import connectSocket from 'server/graphql/mutations/connectSocket'
@@ -16,13 +12,13 @@ import createGitHubIssue from 'server/graphql/mutations/createGitHubIssue'
 import createTask from 'server/graphql/mutations/createTask'
 import deleteTask from 'server/graphql/mutations/deleteTask'
 import disconnectSocket from 'server/graphql/mutations/disconnectSocket'
+import downgradeToPersonal from 'server/graphql/mutations/downgradeToPersonal'
 import editTask from 'server/graphql/mutations/editTask'
 import endMeeting from 'server/graphql/mutations/endMeeting'
 import githubAddAssignee from 'server/graphql/mutations/githubAddAssignee'
 import githubAddMember from 'server/graphql/mutations/githubAddMember'
 import githubRemoveMember from 'server/graphql/mutations/githubRemoveMember'
 import inactivateUser from 'server/graphql/mutations/inactivateUser'
-import inviteTeamMembers from 'server/graphql/mutations/inviteTeamMembers'
 import joinIntegration from 'server/graphql/mutations/joinIntegration'
 import killMeeting from 'server/graphql/mutations/killMeeting'
 import leaveIntegration from 'server/graphql/mutations/leaveIntegration'
@@ -32,14 +28,12 @@ import navigateMeeting from 'server/graphql/mutations/navigateMeeting'
 import promoteFacilitator from 'server/graphql/mutations/promoteFacilitator'
 import promoteNewMeetingFacilitator from 'server/graphql/mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from 'server/graphql/mutations/promoteToTeamLead'
-import rejectOrgApproval from 'server/graphql/mutations/rejectOrgApproval'
 import removeAgendaItem from 'server/graphql/mutations/removeAgendaItem'
 import removeGitHubRepo from 'server/graphql/mutations/removeGitHubRepo'
 import removeProvider from 'server/graphql/mutations/removeProvider'
 import removeSlackChannel from 'server/graphql/mutations/removeSlackChannel'
 import removeTeamMember from 'server/graphql/mutations/removeTeamMember'
 import requestFacilitator from 'server/graphql/mutations/requestFacilitator'
-import resendTeamInvite from 'server/graphql/mutations/resendTeamInvite'
 import segmentEventTrack from 'server/graphql/mutations/segmentEventTrack'
 import setOrgUserRole from 'server/graphql/mutations/setOrgUserRole'
 import startMeeting from 'server/graphql/mutations/startMeeting'
@@ -61,7 +55,6 @@ import upgradeToPro from 'server/graphql/mutations/upgradeToPro'
 import moveTeamToOrg from 'server/graphql/mutations/moveTeamToOrg'
 import addTeam from 'server/graphql/mutations/addTeam'
 import updateTeamName from 'server/graphql/mutations/updateTeamName'
-import createFirstTeam from 'server/graphql/mutations/createFirstTeam'
 import removeOrgUser from 'server/graphql/mutations/removeOrgUser'
 import createOrgPicturePutUrl from 'server/graphql/mutations/createOrgPicturePutUrl'
 import addFeatureFlag from 'server/graphql/mutations/addFeatureFlag'
@@ -92,11 +85,15 @@ import removeReflectTemplate from 'server/graphql/mutations/removeReflectTemplat
 import removeReflectTemplatePrompt from 'server/graphql/mutations/removeReflectTemplatePrompt'
 import renameReflectTemplate from 'server/graphql/mutations/renameReflectTemplate'
 import renameReflectTemplatePrompt from 'server/graphql/mutations/renameReflectTemplatePrompt'
+import inviteToTeam from 'server/graphql/mutations/inviteToTeam'
+import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
+import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAction'
+import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
-    acceptTeamInvite,
+    acceptTeamInvitation,
     addAgendaItem,
     addFeatureFlag,
     addGitHubRepo,
@@ -104,16 +101,12 @@ export default new GraphQLObjectType({
     addProvider,
     addSlackChannel,
     addTeam,
-    approveToOrg,
     archiveTeam,
     autoGroupReflections,
-    cancelApproval,
-    cancelTeamInvite,
     changeTaskTeam,
     clearNotification,
     connectSocket,
     createImposterToken,
-    createFirstTeam,
     createGitHubIssue,
     createOrgPicturePutUrl,
     createReflection,
@@ -122,6 +115,9 @@ export default new GraphQLObjectType({
     createUserPicturePutUrl,
     deleteTask,
     disconnectSocket,
+    dismissNewFeature,
+    dismissSuggestedAction,
+    downgradeToPersonal,
     dragDiscussionTopic,
     endDraggingReflection,
     editReflection,
@@ -131,7 +127,7 @@ export default new GraphQLObjectType({
     githubAddMember,
     githubRemoveMember,
     inactivateUser,
-    inviteTeamMembers,
+    inviteToTeam,
     joinIntegration,
     killMeeting,
     endNewMeeting,
@@ -144,7 +140,6 @@ export default new GraphQLObjectType({
     promoteFacilitator,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
-    rejectOrgApproval,
     removeAgendaItem,
     removeProvider,
     removeSlackChannel,
@@ -153,7 +148,6 @@ export default new GraphQLObjectType({
     removeReflection,
     removeTeamMember,
     requestFacilitator,
-    resendTeamInvite,
     segmentEventTrack,
     selectRetroTemplate,
     setOrgUserRole,

@@ -1,28 +1,5 @@
 const fieldsToSerialize = {
-  ApproveToOrgPayload: [
-    'invitationIds',
-    'removedOrgApprovals.approvedBy',
-    'removedOrgApprovals.email',
-    'removedOrgApprovals.id',
-    'removedOrgApprovals.orgId',
-    'removedOrgApprovals.teamId',
-    'removedRequestNotifications.id',
-    'removedRequestNotifications.inviteeEmail',
-    'removedRequestNotifications.inviterUserId',
-    'removedRequestNotifications.orgId',
-    'removedRequestNotifications.teamId',
-    'removedRequestNotifications.userIds'
-  ],
-  NotificationsClearedPayload: ['deletedIds'],
-  RejectOrgApprovalPayload: [
-    'notifications.id',
-    'notifications.inviteeEmail',
-    'notifications.inviterUserId',
-    'notifications.orgId',
-    'notifications.teamId',
-    'notifications.userIds',
-    'orgApprovals.deniedBy'
-  ]
+  NotificationsClearedPayload: ['deletedIds']
 }
 
 const serializeGraphQLType = (actualResult, type, dynamicSerializer) => {

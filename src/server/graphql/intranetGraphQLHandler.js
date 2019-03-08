@@ -1,8 +1,9 @@
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 import graphql from 'server/graphql/graphql'
 import IntranetSchema from 'server/graphql/intranetSchema/intranetSchema'
-import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
 import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors'
+import sendToSentry from 'server/utils/sendToSentry'
+import {getUserId} from 'server/utils/authorization'
 
 const intranetHttpGraphQLHandler = (sharedDataLoader) => async (req, res) => {
   const {query, variables} = req.body
@@ -12,7 +13,8 @@ const intranetHttpGraphQLHandler = (sharedDataLoader) => async (req, res) => {
   const result = await graphql(IntranetSchema, query, {}, context, variables)
   dataLoader.dispose()
   if (result.errors) {
-    sendGraphQLErrorResult('HTTP-Intranet', result.errors[0], query, variables, authToken)
+    const viewerId = getUserId(authToken)
+    sendToSentry(result.errors[0], {tags: {query, variables}, userId: viewerId})
   }
   const sanitizedResult = sanitizeGraphQLErrors(result)
   res.send(sanitizedResult)

@@ -5,6 +5,7 @@ import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
 import makeAppLink from 'server/utils/makeAppLink'
 import {meetingTypeToLabel, meetingTypeToSlug} from 'universal/utils/meetings/lookups'
+import {headCSS} from 'universal/styles/email'
 
 const newMeetingSummaryEmailCreator = (props) => {
   const {meeting} = props
@@ -21,18 +22,21 @@ const newMeetingSummaryEmailCreator = (props) => {
   const referrerUrl = makeAppLink(`new-summary/${meetingId}`)
   const meetingUrl = makeAppLink(`${meetingSlug}/${teamId}`)
   const teamDashUrl = makeAppLink(`team/${teamId}`)
+  const emailCSVLUrl = makeAppLink(`new-summary/${meetingId}/csv`)
   return {
     subject,
     body: `Hello, ${teamName}. Here is your ${meetingLabel} meeting summary`,
     html: Oy.renderTemplate(
       <NewMeetingSummaryEmail
+        emailCSVLUrl={emailCSVLUrl}
         meeting={meeting}
         meetingUrl={meetingUrl}
-        referrer='email'
+        referrer="email"
         referrerUrl={referrerUrl}
         teamDashUrl={teamDashUrl}
       />,
       {
+        headCSS,
         title: subject,
         previewText: subject
       }

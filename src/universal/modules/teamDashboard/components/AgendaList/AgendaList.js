@@ -1,25 +1,21 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import {DropTarget as dropTarget} from 'react-dnd'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import handleAgendaHover from 'universal/dnd/handleAgendaHover'
-import handleDrop from 'universal/dnd/handleDrop'
-import withDragState from 'universal/dnd/withDragState'
 import AgendaItem from 'universal/modules/teamDashboard/components/AgendaItem/AgendaItem'
 import RemoveAgendaItemMutation from 'universal/mutations/RemoveAgendaItemMutation'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {meetingSidebarGutter} from 'universal/styles/meeting'
-import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
+import {AGENDA_ITEM, AGENDA_ITEMS, phaseArray, SORT_STEP} from 'universal/utils/constants'
 // import SexyScrollbar from 'universal/components/Dashboard/SexyScrollbar'
-import ScrollableBlock from 'universal/components/ScrollableBlock'
 import styled, {css} from 'react-emotion'
-
-const columnTarget = {
-  drop: handleDrop,
-  hover: handleAgendaHover
-}
+import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd'
+import {navItemRaised} from 'universal/styles/elevation'
+import UpdateAgendaItemMutation from 'universal/mutations/UpdateAgendaItemMutation'
+import dndNoise from 'universal/utils/dndNoise'
+import actionMeeting from 'universal/modules/meeting/helpers/actionMeeting'
+import ScrollableBlock from 'universal/components/ScrollableBlock'
 
 const agendaListRoot = {
   display: 'flex',
@@ -81,15 +77,23 @@ const AgendaItemLoading = styled('div')({
   }
 })
 
+const DraggableAgendaItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
+  boxShadow: isDragging ? navItemRaised : undefined
+}))
+
+const getFirstDraggableIdx = (facilitatorPhase, agendaItems) => {
+  const agendaPhaseHit =
+    facilitatorPhase && actionMeeting[facilitatorPhase].index >= actionMeeting[AGENDA_ITEMS].index
+  return agendaPhaseHit ? agendaItems.findIndex((i) => i.isComplete === false) + 1 : 0
+}
+
 class AgendaList extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     agendaPhaseItem: PropTypes.number,
     canNavigate: PropTypes.bool,
-    connectDropTarget: PropTypes.func.isRequired,
     context: PropTypes.string,
     disabled: PropTypes.bool,
-    dragState: PropTypes.object.isRequired,
     facilitatorPhase: PropTypes.oneOf(phaseArray),
     facilitatorPhaseItem: PropTypes.number,
     gotoAgendaItem: PropTypes.func,
@@ -106,11 +110,11 @@ class AgendaList extends Component {
     filteredAgendaItems: []
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.setFilteredAgendaItems(this.props)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       team: {agendaItems, contentFilter}
     } = nextProps
@@ -133,7 +137,7 @@ class AgendaList extends Component {
     })
   }
 
-  makeLoadingState () {
+  makeLoadingState() {
     const loadingItem = <AgendaItemLoading />
     return (
       <AgendaItemsLoadingBlock>
@@ -144,7 +148,7 @@ class AgendaList extends Component {
     )
   }
 
-  makeEmptyState () {
+  makeEmptyState() {
     const {context} = this.props
     const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting'
     return (
@@ -166,13 +170,47 @@ class AgendaList extends Component {
     RemoveAgendaItemMutation(atmosphere, agendaId)
   }
 
-  render () {
+  onDragEnd = (result) => {
+    const {source, destination} = result
+
+    if (
+      !destination ||
+      destination.droppableId !== AGENDA_ITEM ||
+      source.droppableId !== AGENDA_ITEM ||
+      destination.index === source.index
+    ) {
+      return
+    }
+    const {atmosphere, facilitatorPhase} = this.props
+    const {filteredAgendaItems} = this.state
+    const firstDraggableItemIdx = getFirstDraggableIdx(facilitatorPhase, filteredAgendaItems)
+    const draggableItems = filteredAgendaItems.slice(firstDraggableItemIdx)
+    const sourceItem = draggableItems[source.index]
+    const destinationItem = draggableItems[destination.index]
+    let sortOrder
+    if (destination.index + firstDraggableItemIdx === 0) {
+      sortOrder = destinationItem.sortOrder - SORT_STEP + dndNoise()
+    } else if (destination.index + firstDraggableItemIdx === filteredAgendaItems.length - 1) {
+      sortOrder = destinationItem.sortOrder + SORT_STEP + dndNoise()
+    } else {
+      const offset = source.index > destination.index ? -1 : 1
+      sortOrder =
+        (filteredAgendaItems[destination.index + firstDraggableItemIdx + offset].sortOrder +
+          destinationItem.sortOrder) /
+          2 +
+        dndNoise()
+    }
+
+    const {id} = sourceItem
+    const updatedAgendaItem = {id, sortOrder}
+    UpdateAgendaItemMutation(atmosphere, updatedAgendaItem)
+  }
+
+  render() {
     const {
       agendaPhaseItem,
       canNavigate,
-      connectDropTarget,
       disabled,
-      dragState,
       facilitatorPhase,
       facilitatorPhaseItem,
       gotoAgendaItem,
@@ -185,43 +223,89 @@ class AgendaList extends Component {
     const {filteredAgendaItems} = this.state
     const {agendaItems} = team
     const canNavigateItems = canNavigate && !disabled
-    dragState.clear()
     // TODO handle isLoading
     const isLoading = false
     if (filteredAgendaItems.length === 0) {
       return isLoading ? this.makeLoadingState() : this.makeEmptyState()
     }
 
-    return connectDropTarget(
-      <div className={css(agendaListRoot)}>
-        <ScrollableBlock>
-          {filteredAgendaItems.map((item, idx) => (
-            <AgendaItem
-              key={`agendaItem${item.id}`}
-              agendaItem={item}
-              agendaLength={filteredAgendaItems.length}
-              agendaPhaseItem={agendaPhaseItem}
-              canNavigate={canNavigateItems}
-              disabled={disabled}
-              ensureVisible={visibleAgendaItemId === item.id}
-              facilitatorPhase={facilitatorPhase}
-              gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
-              handleRemove={this.removeItemFactory(item.id)}
-              idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
-              inSync={inSync}
-              isCurrent={idx + 1 === agendaPhaseItem}
-              isFacilitator={idx + 1 === facilitatorPhaseItem}
-              localPhase={localPhase}
-              localPhaseItem={localPhaseItem}
-              ref={(c) => {
-                if (c) {
-                  dragState.components.push(c)
-                }
+    const firstDraggableItemIdx = getFirstDraggableIdx(facilitatorPhase, agendaItems)
+    return (
+      <DragDropContext onDragEnd={this.onDragEnd}>
+        <div className={css(agendaListRoot)}>
+          <ScrollableBlock>
+            {filteredAgendaItems.slice(0, firstDraggableItemIdx).map((item, idx) => {
+              return (
+                <AgendaItem
+                  key={`agendaItem${item.id}`}
+                  agendaItem={item}
+                  agendaLength={filteredAgendaItems.length}
+                  agendaPhaseItem={agendaPhaseItem}
+                  canNavigate={canNavigateItems}
+                  disabled={disabled}
+                  ensureVisible={visibleAgendaItemId === item.id}
+                  facilitatorPhase={facilitatorPhase}
+                  gotoAgendaItem={gotoAgendaItem && gotoAgendaItem(idx)}
+                  handleRemove={this.removeItemFactory(item.id)}
+                  idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                  inSync={inSync}
+                  isCurrent={idx + 1 === agendaPhaseItem}
+                  isFacilitator={idx + 1 === facilitatorPhaseItem}
+                  localPhase={localPhase}
+                  localPhaseItem={localPhaseItem}
+                />
+              )
+            })}
+            <Droppable droppableId={AGENDA_ITEM}>
+              {(provided) => {
+                return (
+                  <div ref={provided.innerRef}>
+                    {filteredAgendaItems.slice(firstDraggableItemIdx).map((item, idx) => {
+                      return (
+                        <Draggable key={item.id} draggableId={item.id} index={idx}>
+                          {(dragProvided, dragSnapshot) => {
+                            return (
+                              <DraggableAgendaItem
+                                isDragging={dragSnapshot.isDragging}
+                                innerRef={dragProvided.innerRef}
+                                {...dragProvided.draggableProps}
+                                {...dragProvided.dragHandleProps}
+                              >
+                                <AgendaItem
+                                  key={`agendaItem${item.id}`}
+                                  agendaItem={item}
+                                  agendaLength={filteredAgendaItems.length}
+                                  agendaPhaseItem={agendaPhaseItem}
+                                  canNavigate={canNavigateItems}
+                                  disabled={disabled}
+                                  ensureVisible={visibleAgendaItemId === item.id}
+                                  facilitatorPhase={facilitatorPhase}
+                                  gotoAgendaItem={
+                                    gotoAgendaItem && gotoAgendaItem(idx + firstDraggableItemIdx)
+                                  }
+                                  handleRemove={this.removeItemFactory(item.id)}
+                                  idx={agendaItems.findIndex((agendaItem) => agendaItem === item)}
+                                  inSync={inSync}
+                                  isCurrent={idx + 1 + firstDraggableItemIdx === agendaPhaseItem}
+                                  isFacilitator={
+                                    idx + 1 + firstDraggableItemIdx === facilitatorPhaseItem
+                                  }
+                                  localPhase={localPhase}
+                                  localPhaseItem={localPhaseItem}
+                                />
+                              </DraggableAgendaItem>
+                            )
+                          }}
+                        </Draggable>
+                      )
+                    })}
+                  </div>
+                )
               }}
-            />
-          ))}
-        </ScrollableBlock>
-      </div>
+            </Droppable>
+          </ScrollableBlock>
+        </div>
+      </DragDropContext>
     )
   }
 }
@@ -236,12 +320,8 @@ class AgendaList extends Component {
 //  }}
 // </SexyScrollbar>
 
-const dropTargetCb = (connectTarget) => ({
-  connectDropTarget: connectTarget.dropTarget()
-})
-
 export default createFragmentContainer(
-  withAtmosphere(withDragState(dropTarget(AGENDA_ITEM, columnTarget, dropTargetCb)(AgendaList))),
+  withAtmosphere(AgendaList),
   graphql`
     fragment AgendaList_team on Team {
       contentFilter

@@ -14,7 +14,7 @@ import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import Panel from 'universal/components/Panel/Panel'
-import {PAYMENT_REJECTED, REQUEST_NEW_USER, TEAM_INVITE} from 'universal/utils/constants'
+import {PAYMENT_REJECTED} from 'universal/utils/constants'
 
 const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',
@@ -41,24 +41,12 @@ const NotificationsEmptyBlock = styled('div')({
   width: '100%'
 })
 
-const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
-  PAYMENT_REJECTED,
-  REQUEST_NEW_USER,
-  TEAM_INVITE
-])
+const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([PAYMENT_REJECTED])
 
 const requiresAction = (type): boolean => NOTIFICATION_TYPES_REQUIRING_ACTION.has(type)
 
 const Notifications = (props) => {
-  const {
-    atmosphere,
-    dispatch,
-    notifications,
-    submitMutation,
-    onCompleted,
-    onError,
-    submitting
-  } = props
+  const {atmosphere, notifications, submitMutation, onCompleted, onError, submitting} = props
 
   const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node.type))
   const clearAllNotifications = () => {
@@ -69,18 +57,18 @@ const Notifications = (props) => {
   }
 
   const clearAllButton = () => (
-    <ClearAllButton aria-label='Clear all notifications' onClick={clearAllNotifications}>
-      <IconLabel icon='check' iconAfter label='Clear All' />
+    <ClearAllButton aria-label="Clear all notifications" onClick={clearAllNotifications}>
+      <IconLabel icon="check" iconAfter label="Clear All" />
     </ClearAllButton>
   )
 
   return (
     <UserSettingsWrapper>
-      <Helmet title='My Notifications | Parabol' />
+      <Helmet title="My Notifications | Parabol" />
       <SettingsWrapper>
         <Panel
           compact
-          label='Notifications'
+          label="Notifications"
           controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}
         >
           {notifications && notifications.edges.length ? (
@@ -88,11 +76,7 @@ const Notifications = (props) => {
               {notifications.edges
                 .filter(({node}) => Boolean(node))
                 .map(({node}) => (
-                  <NotificationRow
-                    dispatch={dispatch}
-                    key={`notification${node.id}`}
-                    notification={node}
-                  />
+                  <NotificationRow key={`notification${node.id}`} notification={node} />
                 ))}
             </NotificationListBlock>
           ) : (
@@ -108,7 +92,6 @@ const Notifications = (props) => {
 
 Notifications.propTypes = {
   atmosphere: PropTypes.instanceOf(Atmosphere),
-  dispatch: PropTypes.func.isRequired,
   notifications: PropTypes.object,
   onCompleted: PropTypes.func.isRequired,
   onError: PropTypes.func.isRequired,

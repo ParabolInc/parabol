@@ -9,10 +9,10 @@ export default {
   subscribe: async (source, args, {authToken, dataLoader, socketId}) => {
     // AUTH
     const viewerId = getUserId(authToken)
-    const viewer = await dataLoader.get('users').load(viewerId)
-    const orgIds = viewer.userOrgs
-      .filter((userOrg) => userOrg.role === BILLING_LEADER)
-      .map(({id}) => id)
+    const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
+    const orgIds = organizationUsers
+      .filter((organizationUser) => organizationUser.role === BILLING_LEADER)
+      .map(({orgId}) => orgId)
 
     // RESOLUTION
     const channelNames = orgIds.concat(viewerId).map((id) => `${ORGANIZATION}.${id}`)

@@ -4,16 +4,14 @@ import StartNewMeetingPayload from 'server/graphql/types/StartNewMeetingPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
-import {TEAM, RETROSPECTIVE, PERSONAL} from 'universal/utils/constants'
+import {TEAM} from 'universal/utils/constants'
 import MeetingTypeEnum from 'server/graphql/types/MeetingTypeEnum'
 import extendNewMeetingForType from 'server/graphql/mutations/helpers/extendNewMeetingForType'
 import createNewMeetingPhases from 'server/graphql/mutations/helpers/createNewMeetingPhases'
 import {startSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyStartedMeetingError, outOfMeetingsError} from 'server/utils/alreadyMutatedErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
 import extendMeetingMembersForType from 'server/graphql/mutations/helpers/extendMeetingMembersForType'
 import createMeetingMember from 'server/graphql/mutations/helpers/createMeetingMember'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: StartNewMeetingPayload,
@@ -28,7 +26,7 @@ export default {
       description: 'The base type of the meeting (action, retro, etc)'
     }
   },
-  async resolve (source, {teamId, meetingType}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve(source, {teamId, meetingType}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -37,7 +35,7 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -50,22 +48,8 @@ export default {
         .default(0)
     })
 
-    if (meetingType === RETROSPECTIVE && team.tier === PERSONAL) {
-      const meetingsRemaining = await r
-        .table('Organization')
-        .get(team.orgId)
-        .update(
-          (org) => ({
-            retroMeetingsRemaining: r.max([0, org('retroMeetingsRemaining').sub(1)]).default(0)
-          }),
-          {returnChanges: true}
-        )('changes')(0)('old_val')('retroMeetingsRemaining')
-        .default(0)
-      if (meetingsRemaining < 1) return outOfMeetingsError(authToken, teamId)
-    }
-
     if (team.meetingId) {
-      return sendAlreadyStartedMeetingError(authToken, teamId)
+      return standardError(new Error('Meeting already started'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -80,12 +64,7 @@ export default {
         dataLoader
       )
     } catch (e) {
-      const breadcrumb = {
-        message: e.message,
-        category: 'Start new meeting',
-        data: {teamId}
-      }
-      return sendAuthRaven(authToken, 'Something went wrong', breadcrumb)
+      return standardError(new Error('Could not start meeting'), {userId: viewerId})
     }
     const firstStage = phases[0] && phases[0].stages[0]
     const {id: facilitatorStageId} = firstStage

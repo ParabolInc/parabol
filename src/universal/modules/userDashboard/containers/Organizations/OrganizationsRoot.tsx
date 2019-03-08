@@ -1,14 +1,13 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import LoadingView from 'universal/components/LoadingView/LoadingView'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import Organizations from 'universal/modules/userDashboard/components/Organizations/Organizations'
 import {cacheConfig} from 'universal/utils/constants'
+import {LoaderSize} from '../../../../types/constEnums'
+import renderQuery from '../../../../utils/relay/renderQuery'
+import Organizations from 'universal/modules/userDashboard/components/Organizations/Organizations'
 
 const query = graphql`
   query OrganizationsRootQuery {
@@ -28,14 +27,7 @@ const OrganizationsRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       variables={{}}
-      render={(readyState) => (
-        <RelayTransitionGroup
-          readyState={readyState}
-          error={<ErrorComponent height={'14rem'} />}
-          loading={<LoadingView minHeight='50vh' />}
-          ready={<Organizations />}
-        />
-      )}
+      render={renderQuery(Organizations, {size: LoaderSize.PANEL})}
     />
   )
 }

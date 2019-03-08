@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import defaultOrgAvatar from 'universal/styles/theme/images/avatar-organization.svg'
 import {PERSONAL, PRO, PRO_LABEL} from 'universal/utils/constants'
-import withRouter from 'react-router-dom/es/withRouter'
+import {withRouter} from 'react-router-dom'
 import plural from 'universal/utils/plural'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
@@ -56,7 +56,7 @@ const OrganizationRow = (props) => {
   return (
     <Row>
       <OrgAvatar onClick={onRowClick}>
-        <Avatar size='fill' picture={orgAvatar} />
+        <Avatar size="fill" picture={orgAvatar} />
       </OrgAvatar>
       <RowInfo>
         <RowInfoHeader>
@@ -80,7 +80,7 @@ const OrganizationRow = (props) => {
           </FlatButton>
         )}
         <FlatButton onClick={onRowClick}>
-          <IconLabel icon='cog' label='Settings' />
+          <IconLabel icon="settings" label="Settings" />
         </FlatButton>
       </RowActions>
     </Row>

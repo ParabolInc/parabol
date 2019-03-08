@@ -1,6 +1,6 @@
 import {addOrgMutationOrganizationUpdater} from 'universal/mutations/AddOrgMutation'
-import {approveToOrgOrganizationUpdater} from 'universal/mutations/ApproveToOrgMutation'
 import {
+  setOrgUserRoleAddedOrganizationOnNext,
   setOrgUserRoleAddedOrganizationUpdater,
   setOrgUserRoleRemovedOrganizationUpdater
 } from 'universal/mutations/SetOrgUserRoleMutation'
@@ -13,24 +13,23 @@ const subscription = graphql`
   subscription OrganizationSubscription {
     organizationSubscription {
       __typename
-      ...AddOrgMutation_organization
-      ...ApproveToOrgMutation_organization
-      ...SetOrgUserRoleMutationAdded_organization
-      ...SetOrgUserRoleMutationRemoved_organization
-      ...UpdateCreditCardMutation_organization
-      ...UpdateOrgMutation_organization
-      ...UpgradeToProMutation_organization
-      ...RemoveOrgUserMutation_organization
+      ...AddOrgMutation_organization @relay(mask: false)
+      ...SetOrgUserRoleMutationAdded_organization @relay(mask: false)
+      ...SetOrgUserRoleMutationRemoved_organization @relay(mask: false)
+      ...UpdateCreditCardMutation_organization @relay(mask: false)
+      ...UpdateOrgMutation_organization @relay(mask: false)
+      ...UpgradeToProMutation_organization @relay(mask: false)
+      ...RemoveOrgUserMutation_organization @relay(mask: false)
     }
   }
 `
 
 const onNextHandlers = {
-  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext
+  RemoveOrgUserPayload: removeOrgUserOrganizationOnNext,
+  SetOrgUserRoleAddedPayload: setOrgUserRoleAddedOrganizationOnNext
 }
 
 const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
-  const {dispatch, history} = subParams
   const {viewerId} = atmosphere
   return {
     subscription,
@@ -39,16 +38,12 @@ const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
       const payload = store.getRootField('organizationSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
-      const options = {dispatch, history}
       switch (type) {
         case 'AddOrgPayload':
           addOrgMutationOrganizationUpdater(payload, store, viewerId)
           break
-        case 'ApproveToOrgPayload':
-          approveToOrgOrganizationUpdater(payload, store, viewerId)
-          break
         case 'SetOrgUserRoleAddedPayload':
-          setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId, options)
+          setOrgUserRoleAddedOrganizationUpdater(payload, store, viewerId)
           break
         case 'SetOrgUserRoleRemovedPayload':
           setOrgUserRoleRemovedOrganizationUpdater(payload, store, viewerId)
@@ -57,6 +52,8 @@ const OrganizationSubscription = (atmosphere, queryVariables, subParams) => {
           removeOrgUserOrganizationUpdater(payload, store, viewerId)
           break
         case 'UpdateCreditCardPayload':
+          break
+        case 'UpdateOrgPayload':
           break
         default:
           console.error('OrganizationSubscription case fail', type)

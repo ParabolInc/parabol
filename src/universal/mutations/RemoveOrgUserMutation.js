@@ -1,5 +1,4 @@
 import {commitLocalUpdate, commitMutation} from 'react-relay'
-import {showWarning} from 'universal/modules/toast/ducks/toastDuck'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
 import handleRemoveOrganization from 'universal/mutations/handlers/handleRemoveOrganization'
@@ -22,6 +21,7 @@ graphql`
     user {
       id
     }
+    organizationUserId
   }
 `
 
@@ -95,22 +95,20 @@ const mutation = graphql`
   }
 `
 
-const popKickedOutToast = (payload, {dispatch, history, location}) => {
-  const organization = payload.getLinkedRecord('organization')
-  const orgName = getInProxy(organization, 'name')
-  if (!orgName) return
-  const notifications = payload.getLinkedRecords('kickOutNotifications')
-  const teamIds = getInProxy(notifications, 'team', 'id')
-  if (!teamIds) return
-  dispatch(
-    showWarning({
-      autoDismiss: 10,
-      title: 'So long!',
-      message: `You have been removed from ${orgName} and all its teams`
-    })
-  )
+const popKickedOutToast = (payload, {atmosphere, history}) => {
+  if (!payload) return
+  const {organization, kickOutNotifications} = payload
+  if (!organization || !kickOutNotifications) return
+  const {name: orgName} = organization
+  const teamIds = kickOutNotifications.map((notification) => notification.team.id)
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'warning',
+    autoDismiss: 10,
+    title: 'So long!',
+    message: `You have been removed from ${orgName} and all its teams`
+  })
 
-  const {pathname} = location
+  const {pathname} = history.location
   for (let ii = 0; ii < teamIds.length; ii++) {
     const teamId = teamIds[ii]
     if (onTeamRoute(pathname, teamId)) {
@@ -122,15 +120,16 @@ const popKickedOutToast = (payload, {dispatch, history, location}) => {
 
 export const removeOrgUserOrganizationUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'user', 'id')
+  const removedOrgUserId = getInProxy(payload, 'organizationUserId')
   const orgId = getInProxy(payload, 'organization', 'id')
   if (removedUserId === viewerId) {
     handleRemoveOrganization(orgId, store, viewerId)
   } else {
-    handleRemoveOrgMembers(orgId, removedUserId, store)
+    handleRemoveOrgMembers(orgId, removedOrgUserId, store)
   }
 }
 
-export const removeOrgUserNotificationUpdater = (payload, store, viewerId, options) => {
+export const removeOrgUserNotificationUpdater = (payload, store, viewerId) => {
   const removedTeamNotifications = payload.getLinkedRecords('removedTeamNotifications')
   const teamNotificationIds = getInProxy(removedTeamNotifications, 'id')
   handleRemoveNotifications(teamNotificationIds, store, viewerId)
@@ -141,8 +140,6 @@ export const removeOrgUserNotificationUpdater = (payload, store, viewerId, optio
 
   const kickOutNotifications = payload.getLinkedRecords('kickOutNotifications')
   handleAddNotifications(kickOutNotifications, store, viewerId)
-
-  popKickedOutToast(payload, options)
 }
 
 export const removeOrgUserTeamUpdater = (payload, store, viewerId) => {
@@ -195,10 +192,9 @@ export const removeOrgUserOrganizationOnNext = (payload, context) => {
   // FIXME currently, the server doesn't send this to the user in other tabs, so they don't get redirected in their other tabs
   const {
     atmosphere: {viewerId},
-    history,
-    location
+    history
   } = context
-  const {pathname} = location
+  const {pathname} = history.location
   const {
     user: {id: userId},
     organization: {id: orgId}
@@ -206,6 +202,10 @@ export const removeOrgUserOrganizationOnNext = (payload, context) => {
   if (userId === viewerId && onExOrgRoute(pathname, orgId)) {
     history.push('/me')
   }
+}
+
+export const removeOrgUserNotificationOnNext = (payload, {atmosphere, history}) => {
+  popKickedOutToast(payload, {atmosphere, history})
 }
 
 const RemoveOrgUserMutation = (atmosphere, variables, context, onError, onCompleted) => {

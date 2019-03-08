@@ -23,6 +23,8 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 import BaseButton from 'universal/components/BaseButton'
 import CardButton from 'universal/components/CardButton'
 import IconLabel from 'universal/components/IconLabel'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import {ICON_SIZE_FA_1X} from 'universal/styles/icons'
 import styled from 'react-emotion'
 
 const height = ui.cardButtonHeight
@@ -131,10 +133,19 @@ const ButtonSpacer = styled('div')({
   width: height
 })
 
+const StyledIcon = styled(StyledFontAwesome)({
+  color: 'inherit',
+  display: 'block',
+  fontSize: ICON_SIZE_FA_1X,
+  height: ICON_SIZE_FA_1X,
+  lineHeight: ICON_SIZE_FA_1X,
+  width: ICON_SIZE_FA_1X
+})
+
 const LoadableAssignMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
-      'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'),
+    'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -145,7 +156,7 @@ const LoadableAssignMenu = Loadable({
 const LoadableAssignTeamMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
-      'universal/modules/outcomeCard/components/OutcomeCardAssignTeamMenuRoot'),
+    'universal/modules/outcomeCard/components/OutcomeCardAssignTeamMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -156,7 +167,7 @@ const LoadableAssignTeamMenu = Loadable({
 const LoadableStatusMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'OutcomeCardStatusMenu' */
-      'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'),
+    'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -167,7 +178,7 @@ const LoadableStatusMenu = Loadable({
 const LoadableGitHubMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'GitHubReposMenuRoot' */
-      'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'),
+    'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -196,7 +207,7 @@ const assignTargetAnchor = {
 }
 
 class OutcomeCardFooter extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.setError = setError.bind(this)
     this.clearError = clearError.bind(this)
@@ -220,7 +231,7 @@ class OutcomeCardFooter extends Component {
     UpdateTaskMutation(atmosphere, updatedTask, area)
   }
 
-  render () {
+  render() {
     const {
       area,
       cardIsActive,
@@ -239,13 +250,13 @@ class OutcomeCardFooter extends Component {
     const {error} = this.state
     const ownerAvatarOrTeamName = showTeam ? (
       <TeamToggleButton
-        aria-label='Assign this task to another team'
+        aria-label="Assign this task to another team"
         onClick={this.selectAllQuestion}
       >
         {teamName}
       </TeamToggleButton>
     ) : (
-      <AvatarButton aria-label='Assign this task to a teammate'>
+      <AvatarButton aria-label="Assign this task to a teammate">
         <Avatar cardIsActive={cardIsActive}>
           <AvatarImage
             alt={assignee.preferredName}
@@ -264,47 +275,45 @@ class OutcomeCardFooter extends Component {
         <Footer>
           <AvatarBlock>
             {!canAssign && ownerAvatarOrTeamName}
-            {canAssign &&
-              showTeam && (
-                <LoadableMenu
-                  LoadableComponent={LoadableAssignTeamMenu}
-                  maxWidth={350}
-                  maxHeight={225}
-                  originAnchor={assignOriginAnchor}
-                  queryVars={{
-                    area,
-                    task
-                  }}
-                  targetAnchor={assignTargetAnchor}
-                  toggle={ownerAvatarOrTeamName}
-                  onOpen={toggleMenuState}
-                  onClose={toggleMenuState}
-                />
-              )}
-            {canAssign &&
-              !showTeam && (
-                <LoadableMenu
-                  LoadableComponent={LoadableAssignMenu}
-                  isToggleNativeElement
-                  maxWidth={350}
-                  maxHeight={225}
-                  originAnchor={assignOriginAnchor}
-                  queryVars={{
-                    area,
-                    task,
-                    teamId
-                  }}
-                  targetAnchor={assignTargetAnchor}
-                  toggle={ownerAvatarOrTeamName}
-                  onOpen={toggleMenuState}
-                  onClose={toggleMenuState}
-                />
-              )}
+            {canAssign && showTeam && (
+              <LoadableMenu
+                LoadableComponent={LoadableAssignTeamMenu}
+                maxWidth={350}
+                maxHeight={225}
+                originAnchor={assignOriginAnchor}
+                queryVars={{
+                  area,
+                  task
+                }}
+                targetAnchor={assignTargetAnchor}
+                toggle={ownerAvatarOrTeamName}
+                onOpen={toggleMenuState}
+                onClose={toggleMenuState}
+              />
+            )}
+            {canAssign && !showTeam && (
+              <LoadableMenu
+                LoadableComponent={LoadableAssignMenu}
+                isToggleNativeElement
+                maxWidth={350}
+                maxHeight={225}
+                originAnchor={assignOriginAnchor}
+                queryVars={{
+                  area,
+                  task,
+                  teamId
+                }}
+                targetAnchor={assignTargetAnchor}
+                toggle={ownerAvatarOrTeamName}
+                onOpen={toggleMenuState}
+                onClose={toggleMenuState}
+              />
+            )}
           </AvatarBlock>
           <ButtonGroup cardIsActive={cardIsActive}>
             {isArchived ? (
               <CardButton onClick={this.removeContentTag('archived')}>
-                <IconLabel icon='reply' />
+                <IconLabel icon="reply" />
               </CardButton>
             ) : (
               <React.Fragment>
@@ -326,7 +335,7 @@ class OutcomeCardFooter extends Component {
                     targetAnchor={targetAnchor}
                     toggle={
                       <CardButton>
-                        <IconLabel icon='github' />
+                        <StyledIcon name="github" />
                       </CardButton>
                     }
                     onOpen={toggleMenuState}
@@ -351,7 +360,7 @@ class OutcomeCardFooter extends Component {
                   targetAnchor={targetAnchor}
                   toggle={
                     <CardButton>
-                      <IconLabel icon='ellipsis-v' />
+                      <IconLabel icon="more_vert" />
                     </CardButton>
                   }
                   onOpen={toggleMenuState}

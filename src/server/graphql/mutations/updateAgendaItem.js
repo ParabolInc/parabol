@@ -2,12 +2,11 @@ import {GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import UpdateAgendaItemInput from 'server/graphql/types/UpdateAgendaItemInput'
 import UpdateAgendaItemPayload from 'server/graphql/types/UpdateAgendaItemPayload'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {AGENDA_ITEM} from 'universal/utils/constants'
 import makeUpdateAgendaItemSchema from 'universal/validation/makeUpdateAgendaItemSchema'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: UpdateAgendaItemPayload,
@@ -18,17 +17,18 @@ export default {
       description: 'The updated item including an id, content, status, sortOrder'
     }
   },
-  async resolve (source, {updatedAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {updatedAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const now = new Date()
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const {id: agendaItemId} = updatedAgendaItem
     const [teamId] = agendaItemId.split('::')
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -38,7 +38,7 @@ export default {
       data: {id, ...doc}
     } = schema(updatedAgendaItem)
     if (Object.keys(errors).length) {
-      return sendFailedInputValidation(authToken, errors)
+      return standardError(new Error('Failed input validation'), {userId: viewerId})
     }
 
     // RESOLUTION

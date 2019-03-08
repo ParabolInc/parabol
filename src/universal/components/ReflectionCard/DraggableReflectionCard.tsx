@@ -1,25 +1,30 @@
-import {DragSource as dragSource} from 'react-dnd'
-import {getEmptyImage} from 'react-dnd-html5-backend'
 import {DraggableReflectionCard_reflection} from '__generated__/DraggableReflectionCard_reflection.graphql'
 /**
  * A drag-and-drop enabled reflection card.
  *
  */
 import React, {Component, ReactElement} from 'react'
+import {DragSource as dragSource} from 'react-dnd'
+import {getEmptyImage} from 'react-dnd-html5-backend'
 import {css} from 'react-emotion'
-import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import {Dispatch} from 'redux'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import EndDraggingReflectionMutation from 'universal/mutations/EndDraggingReflectionMutation'
 import StartDraggingReflectionMutation from 'universal/mutations/StartDraggingReflectionMutation'
+import {
+  cardBackgroundColor,
+  cardBorderRadius,
+  cardStackPerspectiveX,
+  cardStackPerspectiveY
+} from 'universal/styles/cards'
 import {cardShadow} from 'universal/styles/elevation'
-import ui from 'universal/styles/ui'
 import {REFLECTION_CARD} from 'universal/utils/constants'
+import {REFLECTION_CARD_WIDTH} from 'universal/utils/multiplayerMasonry/masonryConstants'
 import clientTempId from 'universal/utils/relay/clientTempId'
-import {SetItemRef} from '../PhaseItemMasonry'
+import {MasonryAtmosphere, MasonryDragEndPayload, SetItemRef} from '../PhaseItemMasonry'
+import {MasonryDropResult} from '../ReflectionGroup/ReflectionGroup'
 import ReflectionCard from './ReflectionCard'
 
 interface Props extends WithAtmosphereProps {
@@ -29,7 +34,6 @@ interface Props extends WithAtmosphereProps {
 
   connectDragSource (reactEl: ReactElement<{}>): ReactElement<{}>
 
-  dispatch: Dispatch<{}>
   reflection: DraggableReflectionCard_reflection
 
   setItemRef: SetItemRef
@@ -38,7 +42,6 @@ interface Props extends WithAtmosphereProps {
   idx: number
   isDraggable: boolean
   isModal: boolean
-  isViewerDragInProgress: boolean
   isSingleCardGroup: boolean
 }
 
@@ -64,26 +67,7 @@ const modalStyle = css({
   zIndex: 1
 })
 
-const topCardStyle = css({
-  position: 'relative',
-  zIndex: 1
-})
-
-const secondCardStyle = css({
-  backgroundColor: 'white',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  overflow: 'hidden',
-  position: 'absolute',
-  pointerEvents: 'none',
-  left: 6,
-  top: 6,
-  right: -6,
-  bottom: -2,
-  width: ui.retroCardWidth
-})
-
-const thirdPlusCardStyle = css({
+const hiddenCardStyle = css({
   overflow: 'hidden',
   opacity: 0,
   position: 'absolute',
@@ -92,12 +76,78 @@ const thirdPlusCardStyle = css({
   top: 6,
   right: -6,
   bottom: -2,
-  width: ui.retroCardWidth
+  width: REFLECTION_CARD_WIDTH
 })
+
+const HIDE_LINES_HACK_STYLES = {
+  background: cardBackgroundColor,
+  content: '""',
+  height: 12,
+  left: 0,
+  position: 'absolute' as 'absolute',
+  right: 0,
+  zIndex: 200
+}
+
+const CARD_IN_STACK = {
+  backgroundColor: cardBackgroundColor,
+  borderRadius: cardBorderRadius,
+  boxShadow: cardShadow,
+  cursor: 'pointer',
+  overflow: 'hidden',
+  position: 'absolute' as 'absolute',
+  pointerEvents: 'none' as 'none',
+  zIndex: 1,
+  // hides partially overflown top lines of text
+  '&::before': {
+    ...HIDE_LINES_HACK_STYLES,
+    top: 0
+  },
+  // hides partially overflown bottom lines of text
+  '&::after': {
+    ...HIDE_LINES_HACK_STYLES,
+    bottom: 0
+  },
+  '& > div': {
+    bottom: 0,
+    boxShadow: 'none',
+    left: 0,
+    position: 'absolute' as 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 100
+  }
+}
+
+const topCardStyle = css({
+  cursor: 'pointer',
+  position: 'relative',
+  zIndex: 2
+})
+
+const secondCardStyle = css({
+  ...CARD_IN_STACK,
+  bottom: -cardStackPerspectiveY,
+  left: cardStackPerspectiveX,
+  right: cardStackPerspectiveX,
+  top: cardStackPerspectiveY,
+  '& > div > div': {
+    transform: 'scale(.95)',
+    transformOrigin: 'left',
+    width: REFLECTION_CARD_WIDTH
+  }
+} as any)
+
+const thirdCardStyle = css({
+  ...CARD_IN_STACK,
+  bottom: -(cardStackPerspectiveY * 2),
+  left: cardStackPerspectiveX * 2,
+  right: cardStackPerspectiveX * 2,
+  top: cardStackPerspectiveY * 2
+} as any)
 
 const getClassName = (idx, dragContext, isModal) => {
   const isTopCard = idx === 0
-  const isSecondCard = idx === 1
   const isDragging = Boolean(dragContext)
   if (isDragging) {
     /*
@@ -115,9 +165,16 @@ const getClassName = (idx, dragContext, isModal) => {
      */
     return isTopCard ? modalTopStyle : modalStyle
   }
-  if (isTopCard) return topCardStyle
-  if (isSecondCard) return secondCardStyle
-  return thirdPlusCardStyle
+  switch (idx) {
+    case 0:
+      return topCardStyle
+    case 1:
+      return secondCardStyle
+    case 2:
+      return thirdCardStyle
+    default:
+      return hiddenCardStyle
+  }
 }
 
 class DraggableReflectionCard extends Component<Props> {
@@ -127,14 +184,14 @@ class DraggableReflectionCard extends Component<Props> {
   }
 
   render () {
-    const {connectDragSource, reflection, setItemRef, idx, isDraggable, isModal} = this.props
+    const {connectDragSource, reflection, setItemRef, idx, isModal} = this.props
     const {dragContext, reflectionId} = reflection
     const className = getClassName(idx, dragContext, isModal)
 
     return connectDragSource(
       // the `id` is in the case when the ref callback isn't called in time
       <div className={className} ref={setItemRef(reflectionId, isModal)} id={reflectionId}>
-        <ReflectionCard reflection={reflection} isDraggable={isDraggable} showOriginFooter />
+        <ReflectionCard readOnly userSelect='none' reflection={reflection} showOriginFooter />
       </div>
     )
   }
@@ -144,9 +201,9 @@ const reflectionDragSpec = {
   canDrag (props: Props) {
     // make sure no one is trying to drag invisible cards
     const {
+      meeting: {isViewerDragInProgress},
       reflection: {dragContext},
-      isDraggable,
-      isViewerDragInProgress
+      isDraggable
     } = props
     return !dragContext && !isViewerDragInProgress && isDraggable
   },
@@ -154,16 +211,15 @@ const reflectionDragSpec = {
   beginDrag (props: Props, monitor) {
     const {
       atmosphere,
-      dispatch,
       reflection: {meetingId, reflectionId, reflectionGroupId},
       isSingleCardGroup
     } = props
     const initialCoords = monitor.getInitialSourceClientOffset()
     const initialCursorCoords = monitor.getInitialClientOffset()
     StartDraggingReflectionMutation(
-      atmosphere,
+      atmosphere as MasonryAtmosphere,
       {reflectionId, initialCoords},
-      {dispatch, initialCursorCoords, meetingId}
+      {initialCursorCoords, meetingId}
     )
     return {
       reflectionId,
@@ -180,8 +236,8 @@ const reflectionDragSpec = {
     } = props
     // endDrag is also called when the viewer loses a conflict
     if (!dragContext || !dragContext.isViewerDragging) return
-    const {dragId} = dragContext
-    const dropResult = monitor.getDropResult()
+    const dragId = dragContext.dragId as string
+    const dropResult = monitor.getDropResult() as MasonryDropResult | null
     const {dropTargetType = null, dropTargetId = null} = dropResult || {}
     // must come before the mutation so we can clear the itemCache
     if (closeGroupModal && dropTargetType) {
@@ -206,7 +262,7 @@ const reflectionDragSpec = {
       itemId: reflectionId,
       childId: dropTargetType ? newReflectionGroupId : undefined,
       sourceId: reflectionGroupId
-    })
+    } as MasonryDragEndPayload)
   }
 }
 
@@ -216,11 +272,9 @@ const reflectionDragCollect = (connectSource) => ({
 })
 
 export default createFragmentContainer(
-  (connect as any)()(
-    withAtmosphere(
-      dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect)(
-        DraggableReflectionCard
-      )
+  withAtmosphere(
+    (dragSource(REFLECTION_CARD, reflectionDragSpec, reflectionDragCollect) as any)(
+      DraggableReflectionCard
     )
   ),
   graphql`

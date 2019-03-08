@@ -21,6 +21,11 @@ export default {
       .table('Notification')
       .getAll(userId, {index: 'userIds'})
       .filter((row) => row('startAt').le(r.now()))
+      .filter((row) =>
+        row('isArchived')
+          .default(false)
+          .ne(true)
+      )
       .orderBy(r.desc('startAt'))
     const edges = nodes.map((node) => ({
       cursor: node.startAt,

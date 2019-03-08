@@ -1,25 +1,24 @@
-import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle'
+import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
 import getRethink from 'server/database/rethinkDriver'
-import {
-  sendReflectionGroupNotFoundError,
-  sendReflectionNotFoundError
-} from 'server/utils/docNotFoundErrors'
 import updateGroupTitle from 'server/graphql/mutations/helpers/updateReflectionLocation/updateGroupTitle'
 import dndNoise from 'universal/utils/dndNoise'
+import standardError from 'server/utils/standardError'
+import {getUserId} from 'server/utils/authorization'
 
 const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken, dataLoader}) => {
   const r = getRethink()
   const now = new Date()
+  const viewerId = getUserId(authToken)
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
-  if (!reflection) return sendReflectionNotFoundError(authToken, reflectionId)
+  if (!reflection) return standardError(new Error('Reflection not found'), {userId: viewerId})
   const {reflectionGroupId: oldReflectionGroupId, meetingId: reflectionMeetingId} = reflection
   const reflectionGroup = await r.table('RetroReflectionGroup').get(reflectionGroupId)
   if (!reflectionGroup || !reflectionGroup.isActive) {
-    return sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
+    return standardError(new Error('Reflection group not found'), {userId: viewerId})
   }
   const {meetingId} = reflectionGroup
   if (reflectionMeetingId !== meetingId) {
-    sendReflectionGroupNotFoundError(authToken, reflectionGroupId)
+    return standardError(new Error('Reflection group not found'), {userId: viewerId})
   }
   const maxSortOrder = await r
     .table('RetroReflection')
@@ -56,14 +55,12 @@ const addReflectionToGroup = async (reflectionId, reflectionGroupId, {authToken,
     })
 
     const {smartTitle: nextGroupSmartTitle, title: nextGroupTitle} = makeRetroGroupTitle(
-      meetingId,
       nextReflections
     )
     await updateGroupTitle(reflectionGroupId, nextGroupSmartTitle, nextGroupTitle)
 
     if (oldReflections.length > 0) {
       const {smartTitle: oldGroupSmartTitle, title: oldGroupTitle} = makeRetroGroupTitle(
-        meetingId,
         oldReflections
       )
       await updateGroupTitle(oldReflectionGroupId, oldGroupSmartTitle, oldGroupTitle)

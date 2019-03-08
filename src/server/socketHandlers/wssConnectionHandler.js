@@ -7,13 +7,12 @@ import {verify} from 'jsonwebtoken'
 import {WS_KEEP_ALIVE} from 'universal/utils/constants'
 import handleConnect from 'server/socketHandlers/handleConnect'
 import ConnectionContext from 'server/socketHelpers/ConnectionContext'
-import packageJSON from '../../../package.json'
 import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
 
-const APP_VERSION = packageJSON.version
-export default function connectionHandler (sharedDataLoader, rateLimiter, wss) {
-  return async function socketConnectionHandler (socket) {
-    const req = socket.upgradeReq
+const APP_VERSION = process.env.npm_package_version
+const clients = []
+export default function connectionHandler(sharedDataLoader, rateLimiter) {
+  return async function socketConnectionHandler(socket, req) {
     const {headers} = req
     const protocol = headers['sec-websocket-protocol']
     if (protocol !== TREBUCHET_WS) {
@@ -40,7 +39,8 @@ export default function connectionHandler (sharedDataLoader, rateLimiter, wss) {
     socket.send(JSON.stringify({version: APP_VERSION}))
     handleConnect(connectionContext)
     keepAlive(connectionContext, WS_KEEP_ALIVE)
-    socket.on('message', handleMessage(connectionContext, wss))
+    clients.push(socket)
+    socket.on('message', handleMessage(connectionContext, clients))
     socket.on('close', handleDisconnect(connectionContext))
   }
 }

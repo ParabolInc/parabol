@@ -1,7 +1,7 @@
 import {commitMutation} from 'react-relay'
-import {showInfo} from 'universal/modules/toast/ducks/toastDuck'
 import getMeetingPathParams from 'universal/utils/meetings/getMeetingPathParams'
 import handleMutationError from 'universal/mutations/handlers/handleMutationError'
+import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment EndNewMeetingMutation_team on EndNewMeetingPayload {
@@ -19,6 +19,12 @@ graphql`
   }
 `
 
+graphql`
+  fragment EndNewMeetingMutation_notification on EndNewMeetingPayload {
+    removedSuggestedActionId
+  }
+`
+
 const mutation = graphql`
   mutation EndNewMeetingMutation($meetingId: ID!) {
     endNewMeeting(meetingId: $meetingId) {
@@ -30,42 +36,61 @@ const mutation = graphql`
   }
 `
 
-export const popEndNewMeetingToast = (dispatch) => {
-  dispatch(
-    showInfo({
-      autoDismiss: 10,
-      title: 'It’s dead!',
-      message: `You killed the meeting. 
+export const popEndNewMeetingToast = (atmosphere) => {
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'info',
+    autoDismiss: 10,
+    title: 'It’s dead!',
+    message: `You killed the meeting.
     Just like your goldfish.`,
-      action: {label: 'Good.'}
-    })
-  )
+    action: {label: 'Good.'}
+  })
 }
 
 export const endNewMeetingTeamOnNext = (payload, context) => {
   const {error, isKill, meeting} = payload
-  const {history, dispatch} = context
+  const {atmosphere, history} = context
   handleMutationError(error, context)
   if (!meeting) return
   const {id: meetingId} = meeting
   if (isKill) {
     const {meetingSlug, teamId} = getMeetingPathParams()
-    history.push(`/${meetingSlug}/${teamId}`)
-    popEndNewMeetingToast(dispatch)
+    if (teamId === 'demo') {
+      window.localStorage.removeItem('retroDemo')
+      history.push('/create-account')
+    } else {
+      history.push(`/${meetingSlug}/${teamId}`)
+      popEndNewMeetingToast(atmosphere)
+    }
   } else {
-    history.push(`/new-summary/${meetingId}`)
+    if (meetingId === 'demoMeeting') {
+      history.push('/retrospective-demo-summary')
+    } else {
+      history.push(`/new-summary/${meetingId}`)
+    }
   }
 }
 
-const EndNewMeetingMutation = (environment, variables, context, onError, onCompleted) => {
-  return commitMutation(environment, {
+export const endNewMeetingNotificationUpdater = (payload, {store}) => {
+  const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
+  handleRemoveSuggestedActions(removedSuggestedActionId, store)
+}
+
+const EndNewMeetingMutation = (atmosphere, variables, context, onError, onCompleted) => {
+  const {history} = context
+  return commitMutation(atmosphere, {
     mutation,
     variables,
+    updater: (store) => {
+      const payload = store.getRootField('endNewMeeting')
+      if (!payload) return
+      endNewMeetingNotificationUpdater(payload, {store})
+    },
     onCompleted: (res, errors) => {
       if (onCompleted) {
         onCompleted(res, errors)
       }
-      endNewMeetingTeamOnNext(res.endNewMeeting, context)
+      endNewMeetingTeamOnNext(res.endNewMeeting, {atmosphere, history})
     },
     onError
   })

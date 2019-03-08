@@ -1,4 +1,4 @@
-import {GraphQLBoolean, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLBoolean, GraphQLObjectType} from 'graphql'
 import {resolveNewMeeting, resolveTeam} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
@@ -21,6 +21,10 @@ const EndNewMeetingPayload = new GraphQLObjectType({
     meeting: {
       type: NewMeeting,
       resolve: resolveNewMeeting
+    },
+    removedSuggestedActionId: {
+      type: GraphQLID,
+      description: 'The ID of the suggestion to try a retro meeting, if tried'
     }
   })
 })

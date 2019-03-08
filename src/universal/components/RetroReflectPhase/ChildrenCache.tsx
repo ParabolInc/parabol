@@ -1,13 +1,11 @@
 import {BBox, Dims, Point} from 'types/animations'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import getStaggerDelay from 'universal/components/RetroReflectPhase/getStaggerDelay'
 import getTransform from 'universal/components/RetroReflectPhase/getTransform'
 import requestDoubleAnimationFrame from 'universal/components/RetroReflectPhase/requestDoubleAnimationFrame'
 import setElementBBox from 'universal/components/RetroReflectPhase/setElementBBox'
-import {STANDARD_CURVE} from 'universal/styles/animation'
+import {DECELERATE, STANDARD_CURVE} from 'universal/styles/animation'
 import {
   ITEM_DURATION,
-  MIN_ITEM_DELAY,
   MIN_VAR_ITEM_DELAY,
   MOVE_DELAY,
   MOVE_DURATION
@@ -28,11 +26,11 @@ class ChildrenCache {
   maxWidth: number = 0
   maxHeight: number = 0
 
-  private get (key) {
+  private get(key) {
     return this.cache.find((cachedChild) => cachedChild.key === key)
   }
 
-  private getGridTuples () {
+  private getGridTuples() {
     const fullColumnWidth = this.childWidth + this.childPadding
     const maxCols = Math.floor(this.maxWidth / fullColumnWidth)
     let bestPerimeter = 1e6
@@ -75,7 +73,7 @@ class ChildrenCache {
     return result
   }
 
-  updateChildren () {
+  updateChildren() {
     let childrenToAnimate = 0
     const {children, height, width} = this.getGridTuples()
     children.forEach((last, idx) => {
@@ -85,7 +83,7 @@ class ChildrenCache {
       const {style: elStyle} = el
       setElementBBox(el, last)
       elStyle.transform = getTransform(point, last)
-      elStyle.transition = null
+      elStyle.transition = ''
       const delay = MOVE_DELAY + MIN_VAR_ITEM_DELAY * childrenToAnimate
       requestDoubleAnimationFrame(() => {
         elStyle.transition = `transform ${MOVE_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
@@ -97,7 +95,7 @@ class ChildrenCache {
     return {height, width}
   }
 
-  setEl (key: string, el: HTMLElement) {
+  setEl(key: string, el: HTMLElement) {
     const cachedChild = this.get(key)
     if (!cachedChild) {
       const cachedDims = getBBox(el)
@@ -108,7 +106,7 @@ class ChildrenCache {
     }
   }
 
-  setGrid (
+  setGrid(
     maxWidth: number,
     maxHeight: number,
     childPadding: number,
@@ -127,7 +125,7 @@ class ChildrenCache {
     return {height, width}
   }
 
-  animateIn (first: BBox, parent: BBox) {
+  animateIn(first: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
       const {
         point,
@@ -145,19 +143,17 @@ class ChildrenCache {
     })
 
     requestAnimationFrame(() => {
-      const staggerDelay = getStaggerDelay(this.cache.length)
-      this.cache.forEach((cachedChild, idx) => {
+      this.cache.forEach((cachedChild) => {
         const {
           el: {style}
         } = cachedChild
-        const delay = MIN_ITEM_DELAY + staggerDelay * (this.cache.length - idx - 1)
-        style.transition = `transform ${ITEM_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
+        style.transition = `transform ${ITEM_DURATION}ms ${DECELERATE}`
         style.transform = null
       })
     })
   }
 
-  animateOut (last: BBox, parent: BBox) {
+  animateOut(last: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
       const {
         point,
@@ -170,17 +166,15 @@ class ChildrenCache {
       style.top = `${last.top - parent.top}px`
       style.left = `${last.left - parent.left}px`
       style.transform = `translate(${-dX}px,${-dY}px)`
-      style.transition = null
+      style.transition = ''
     })
 
     requestAnimationFrame(() => {
-      const staggerDelay = getStaggerDelay(this.cache.length)
-      this.cache.forEach((cachedChild, idx) => {
+      this.cache.forEach((cachedChild) => {
         const {
           el: {style}
         } = cachedChild
-        const delay = MIN_ITEM_DELAY + staggerDelay * idx
-        style.transition = `transform ${ITEM_DURATION}ms ${delay}ms ${STANDARD_CURVE}`
+        style.transition = `transform ${ITEM_DURATION}ms ${DECELERATE}`
         style.transform = null
       })
     })
@@ -196,7 +190,7 @@ class ChildrenCache {
     return this.updateChildren()
   }
 
-  removeKeys (keys: Array<string>) {
+  removeKeys(keys: Array<string>) {
     keys.forEach((key) => {
       const cachedChild = this.get(key)
       if (!cachedChild) return

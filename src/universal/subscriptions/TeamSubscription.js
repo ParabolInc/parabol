@@ -1,18 +1,18 @@
-import {acceptTeamInviteTeamUpdater} from 'universal/mutations/AcceptTeamInviteMutation'
-import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
+import {addTeamTeamUpdater} from 'universal/mutations/AddTeamMutation'
 import {
-  addTeamMutationNotificationUpdater,
-  addTeamTeamUpdater
-} from 'universal/mutations/AddTeamMutation'
-import {archiveTeamTeamUpdater} from 'universal/mutations/ArchiveTeamMutation'
+  archiveTeamTeamOnNext,
+  archiveTeamTeamUpdater
+} from 'universal/mutations/ArchiveTeamMutation'
 import {createReflectionTeamUpdater} from 'universal/mutations/CreateReflectionMutation'
 import {endMeetingTeamUpdater} from 'universal/mutations/EndMeetingMutation'
-import {inviteTeamMembersTeamUpdater} from 'universal/mutations/InviteTeamMembersMutation'
 import {killMeetingTeamUpdater} from 'universal/mutations/KillMeetingMutation'
-import {promoteFacilitatorTeamUpdater} from 'universal/mutations/PromoteFacilitatorMutation'
+import {promoteFacilitatorTeamOnNext} from 'universal/mutations/PromoteFacilitatorMutation'
 import {removeReflectionTeamUpdater} from 'universal/mutations/RemoveReflectionMutation'
-import {removeTeamMemberTeamUpdater} from 'universal/mutations/RemoveTeamMemberMutation'
-import {requestFacilitatorTeamUpdater} from 'universal/mutations/RequestFacilitatorMutation'
+import {
+  removeTeamMemberTeamOnNext,
+  removeTeamMemberTeamUpdater
+} from 'universal/mutations/RemoveTeamMemberMutation'
+import {requestFacilitatorTeamOnNext} from 'universal/mutations/RequestFacilitatorMutation'
 import {
   removeOrgUserTeamOnNext,
   removeOrgUserTeamUpdater
@@ -38,15 +38,18 @@ import {removeReflectTemplateTeamUpdater} from 'universal/mutations/RemoveReflec
 import {addReflectTemplatePromptTeamUpdater} from 'universal/mutations/AddReflectTemplatePromptMutation'
 import {removeReflectTemplatePromptTeamUpdater} from 'universal/mutations/RemoveReflectTemplatePromptMutation'
 import {moveReflectTemplatePromptTeamUpdater} from 'universal/mutations/MoveReflectTemplatePromptMutation'
+import {
+  acceptTeamInvitationTeamOnNext,
+  acceptTeamInvitationTeamUpdater
+} from 'universal/mutations/AcceptTeamInvitationMutation'
 
 const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       __typename
-      ...AcceptTeamInviteMutation_team @relay(mask: false)
+      ...AcceptTeamInvitationMutation_team @relay(mask: false)
       ...AddReflectTemplateMutation_team @relay(mask: false)
       ...AddReflectTemplatePromptMutation_team @relay(mask: false)
-      ...AddTeamMutation_team @relay(mask: false)
       ...AddTeamMutation_team @relay(mask: false)
       ...ArchiveTeamMutation_team @relay(mask: false)
       ...AutoGroupReflectionsMutation_team @relay(mask: false)
@@ -63,6 +66,7 @@ const subscription = graphql`
       ...NewMeetingCheckInMutation_team @relay(mask: false)
       ...PromoteFacilitatorMutation_team @relay(mask: false)
       ...PromoteNewMeetingFacilitatorMutation_team @relay(mask: false)
+      ...PromoteToTeamLeadMutation_team @relay(mask: false)
       ...RemoveReflectionMutation_team @relay(mask: false)
       ...RemoveReflectTemplateMutation_team @relay(mask: false)
       ...RemoveReflectTemplatePromptMutation_team @relay(mask: false)
@@ -77,6 +81,7 @@ const subscription = graphql`
       ...StartMeetingMutation_team @relay(mask: false)
       ...StartNewMeetingMutation_team @relay(mask: false)
       ...UpdateCheckInQuestionMutation_team @relay(mask: false)
+      ...UpdateNewCheckInQuestionMutation_team @relay(mask: false)
       ...UpdateCreditCardMutation_team @relay(mask: false)
       ...UpdateDragLocationMutation_team @relay(mask: false)
       ...UpdateReflectionContentMutation_team @relay(mask: false)
@@ -89,16 +94,21 @@ const subscription = graphql`
 `
 
 const onNextHandlers = {
+  AcceptTeamInvitationPayload: acceptTeamInvitationTeamOnNext,
   AutoGroupReflectionsPayload: autoGroupReflectionsTeamOnNext,
+  ArchiveTeamPayload: archiveTeamTeamOnNext,
   EndNewMeetingPayload: endNewMeetingTeamOnNext,
   StartNewMeetingPayload: startNewMeetingTeamOnNext,
+  PromoteFacilitatorPayload: promoteFacilitatorTeamOnNext,
   PromoteNewMeetingFacilitatorPayload: promoteNewMeetingFacilitatorTeamOnNext,
   RemoveOrgUserPayload: removeOrgUserTeamOnNext,
-  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext
+  EndDraggingReflectionPayload: endDraggingReflectionTeamOnNext,
+  RemoveTeamMemberPayload: removeTeamMemberTeamOnNext,
+  RequestFacilitatorPayload: requestFacilitatorTeamOnNext
 }
 
 const TeamSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams
+  const {history} = subParams
   const {viewerId} = environment
   return {
     subscription,
@@ -107,22 +117,15 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
       const payload = store.getRootField('teamSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
-      const options = {store, environment, dispatch, history, location}
       switch (type) {
-        case 'AcceptTeamInvitePayload':
-          acceptTeamInviteTeamUpdater(payload, store, viewerId)
-          break
-        case 'AddOrgCreatorPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId, options)
+        case 'AcceptTeamInvitationPayload':
+          acceptTeamInvitationTeamUpdater(payload, {store, atmosphere: environment})
           break
         case 'AddReflectTemplatePayload':
           addReflectTemplateTeamUpdater(payload, {store})
           break
         case 'AddReflectTemplatePromptPayload':
           addReflectTemplatePromptTeamUpdater(payload, {store})
-          break
-        case 'AddTeamCreatorPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId, options)
           break
         case 'AutoGroupReflectionsPayload':
           autoGroupReflectionsTeamUpdater(payload, {atmosphere: environment, store})
@@ -138,28 +141,21 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'DragDiscussionTopicPayload':
           dragDiscussionTopicTeamUpdater(payload, {store})
           break
-        case 'RemoveTeamMemberSelfPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
-          break
         case 'RequestFacilitatorPayload':
-          requestFacilitatorTeamUpdater(payload, options)
           break
         case 'AddTeamMutationPayload':
           addTeamTeamUpdater(payload, store, viewerId)
           break
         case 'ArchiveTeamPayload':
-          archiveTeamTeamUpdater(payload, store, viewerId, options)
+          archiveTeamTeamUpdater(payload, store, viewerId)
           break
         case 'EditReflectionPayload':
           editReflectionTeamUpdater(payload, store)
           break
         case 'EndMeetingPayload':
-          endMeetingTeamUpdater(payload, options)
+          endMeetingTeamUpdater(payload, {atmosphere: environment, history})
           break
         case 'EndNewMeetingPayload':
-          break
-        case 'InviteTeamMembersPayload':
-          inviteTeamMembersTeamUpdater(payload, store, viewerId)
           break
         case 'KillMeetingPayload':
           killMeetingTeamUpdater()
@@ -177,7 +173,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
         case 'NewMeetingCheckInPayload':
           break
         case 'PromoteFacilitatorPayload':
-          promoteFacilitatorTeamUpdater(payload, viewerId, dispatch)
+          break
+        case 'PromoteToTeamLeadPayload':
           break
         case 'PromoteNewMeetingFacilitatorPayload':
           break
@@ -194,21 +191,18 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           removeReflectionTeamUpdater(payload, store)
           break
         case 'RemoveTeamMemberPayload':
-          removeTeamMemberTeamUpdater(payload, store, viewerId, options)
+          removeTeamMemberTeamUpdater(payload, store, viewerId)
           break
         case 'RenameReflectTemplatePayload':
           break
         case 'RenameReflectTemplatePromptPayload':
-          break
-        case 'RequestFaciltatorPayload':
-          requestFacilitatorTeamUpdater(payload, options)
           break
         case 'SelectRetroTemplatePayload':
           break
         case 'SetPhaseFocusPayload':
           break
         case 'StartDraggingReflectionPayload':
-          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, dispatch, store})
+          startDraggingReflectionTeamUpdater(payload, {atmosphere: environment, store})
           break
         case 'StartMeetingPayload':
           break
@@ -220,6 +214,8 @@ const TeamSubscription = (environment, queryVariables, subParams) => {
           break
         case 'UpdateDragLocationPayload':
           updateDragLocationTeamUpdater(payload, {atmosphere: environment, store})
+          break
+        case 'UpdateNewCheckInQuestionPayload':
           break
         case 'UpdateReflectionContentPayload':
           break

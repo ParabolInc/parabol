@@ -43,7 +43,7 @@ const TeamCallToAction = (props: Props) => {
 
   const buttonToggle = (
     <PrimaryButton style={{width: '100%'}}>
-      <IconLabel icon='chevron-down' iconAfter label='Start Meeting' />
+      <IconLabel icon="expand_more" iconAfter label="Start Meeting" />
     </PrimaryButton>
   )
 

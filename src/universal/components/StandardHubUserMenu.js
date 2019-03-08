@@ -15,7 +15,7 @@ const UpgradeCTA = styled('span')({
   color: ui.upgradeColor,
   fontSize: ui.menuItemFontSize,
   lineHeight: ui.menuItemHeight,
-  marginRight: '0.5rem'
+  marginRight: '2rem'
 })
 
 type Props = {|
@@ -31,7 +31,7 @@ const StandardHubUserMenu = (props: Props) => {
   } = props
 
   // nav menu routes
-  const goToSettings = () => history.push('/me/settings')
+  const goToProfile = () => history.push('/me/profile')
   const goToOrganizations = () => history.push('/me/organizations')
   const goToNotifications = () => history.push('/me/notifications')
   const signOut = () => history.push(`/${SIGNOUT_SLUG}`)
@@ -54,19 +54,27 @@ const StandardHubUserMenu = (props: Props) => {
   return (
     <MenuWithShortcuts ariaLabel={'Select your settings'} closePortal={closePortal}>
       <DropdownMenuLabel>{email}</DropdownMenuLabel>
-      <MenuItemWithShortcuts icon='address-card' label='Settings' onClick={goToSettings} />
-      <MenuItemWithShortcuts icon='building' label='Organizations' onClick={goToOrganizations} />
-      <MenuItemWithShortcuts icon='bell' label='Notifications' onClick={goToNotifications} />
-      {showUpgradeCTA && <MenuItemHR key='HR0' notMenuItem />}
+      <MenuItemWithShortcuts icon="account_box" label="Profile" onClick={goToProfile} />
+      <MenuItemWithShortcuts
+        icon="account_balance"
+        label="Organizations"
+        onClick={goToOrganizations}
+      />
+      <MenuItemWithShortcuts
+        icon="notifications"
+        label="Notifications"
+        onClick={goToNotifications}
+      />
+      {showUpgradeCTA && <MenuItemHR key="HR0" notMenuItem />}
       {showUpgradeCTA && (
         <MenuItemWithShortcuts
-          icon='star'
+          icon="star"
           label={makeUpgradeMenuLabel}
           onClick={handleUpgradeClick}
         />
       )}
-      <MenuItemHR key='HR1' notMenuItem />
-      <MenuItemWithShortcuts icon='sign-out' label={SIGNOUT_LABEL} onClick={signOut} />
+      <MenuItemHR key="HR1" notMenuItem />
+      <MenuItemWithShortcuts icon="exit_to_app" label={SIGNOUT_LABEL} onClick={signOut} />
     </MenuWithShortcuts>
   )
 }

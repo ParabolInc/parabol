@@ -1,7 +1,6 @@
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer} from 'react-relay'
 import EditorInputWrapper from 'universal/components/EditorInputWrapper'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
@@ -11,20 +10,26 @@ import Tooltip from 'universal/components/Tooltip/Tooltip'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import UpdateCheckInQuestionMutation from 'universal/mutations/UpdateCheckInQuestionMutation'
 import ui from 'universal/styles/ui'
-import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion'
 import styled from 'react-emotion'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const iconStyle = {
+const StyledIcon = styled(Icon)({
   color: ui.colorText,
   display: 'block',
   height: '1.5rem',
-  fontSize: '1rem',
+  fontSize: MD_ICONS_SIZE_18,
   verticalAlign: 'middle',
   marginLeft: '0.5rem',
   paddingTop: '.1875rem',
   textAlign: 'center',
   width: '1.25rem'
-}
+})
+
+const StyledButtonIcon = styled(StyledIcon)(({isEditing}) => ({
+  cursor: 'pointer',
+  visibility: isEditing ? 'hidden' : 'visible'
+}))
 
 const buttonStyle = {
   color: ui.colorText,
@@ -51,7 +56,7 @@ class CheckInQuestion extends Component {
     team: PropTypes.object.isRequired
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     const {
       team: {checkInQuestion}
@@ -65,7 +70,7 @@ class CheckInQuestion extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       team: {checkInQuestion}
     } = nextProps
@@ -116,57 +121,34 @@ class CheckInQuestion extends Component {
     this.setEditorState(nextEditorState)
   }
 
-  render () {
-    const {
-      isFacilitating,
-      team: {tier}
-    } = this.props
+  render() {
     const {editorState} = this.state
-    const canEdit = tierSupportsUpdateCheckInQuestion(tier)
     const isEditing = editorState.getSelection().getHasFocus()
-
-    const buttonIconStyle = {
-      ...iconStyle,
-      cursor: 'pointer',
-      visibility: isEditing ? 'hidden' : 'visible'
-    }
-
-    const tip = canEdit
-      ? 'Tap to customize the Social Check-in question.'
-      : 'Upgrade to a Pro Account to customize the Social Check-in question.'
-
+    const tip = 'Tap to customize the Social Check-in question.'
     return (
       <Tooltip
+        delay={300}
         tip={<div>{tip}</div>}
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
         maxHeight={40}
-        isOpen={isFacilitating && !isEditing ? undefined : false}
+        isOpen={isEditing ? false : undefined}
       >
         <QuestionBlock>
           <EditorBlock>
             <EditorInputWrapper
               editorState={editorState}
               setEditorState={this.setEditorState}
-              placehodler='e.g. How are you?'
-              readOnly={!canEdit}
+              placehodler="e.g. How are you?"
               innerRef={(c) => {
                 this.editorRef = c
               }}
             />
           </EditorBlock>
-          {isFacilitating && (
-            <div>
-              {canEdit ? (
-                <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
-                  <FontAwesome name='cog' style={buttonIconStyle} />
-                </PlainButton>
-              ) : (
-                <FontAwesome name='cog' style={iconStyle} />
-              )}
-            </div>
-          )}
+          <PlainButton aria-label={tip} onClick={this.selectAllQuestion} style={buttonStyle}>
+            <StyledButtonIcon isEditing={isEditing}>settings</StyledButtonIcon>
+          </PlainButton>
         </QuestionBlock>
       </Tooltip>
     )
@@ -179,7 +161,6 @@ export default createFragmentContainer(
     fragment CheckInQuestion_team on Team {
       id
       checkInQuestion
-      tier
     }
   `
 )

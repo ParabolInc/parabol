@@ -20,8 +20,7 @@ export const RETRO_VOTED_LABEL = 'Upvoted'
 
 /* Phases */
 export const LOBBY = 'lobby'
-export const RETRO_LOBBY_FREE = 'retroLobbyFree'
-export const RETRO_LOBBY_PAID = 'retroLobbyPaid'
+
 // lowercase here to match url
 export const CHECKIN = 'checkin'
 export const UPDATES = 'updates'
@@ -65,30 +64,16 @@ export const PERSONAL_LABEL = 'Personal'
 export const PRO_LABEL = 'Pro'
 
 /* NotificationRow Types */
-// Send to folks that got reactivated on a team
-// annoucements to the rest of the team
-
-export const ADD_TO_TEAM = 'ADD_TO_TEAM'
-// Sent to the orgMember that generated the new user request
-export const DENY_NEW_USER = 'DENY_NEW_USER'
 // Sent to meeting participants when the facilitator disconnects
 export const FACILITATOR_DISCONNECTED = 'FACILITATOR_DISCONNECTED'
-// Sent when a billing leader approves an invitee to the org
-export const INVITEE_APPROVED = 'INVITEE_APPROVED'
-// sent to the rest of the team when someone has just joined
-export const JOIN_TEAM = 'JOIN_TEAM'
 // sent to someone just kicked out of a team
 export const KICKED_OUT = 'KICKED_OUT'
 // Sent to Billing Leaders when a reoccuring payment gets rejected
 export const PAYMENT_REJECTED = 'PAYMENT_REJECTED'
 // sent to the orgMember that just got promoted, goes away if they get demoted before acknowledging it
 export const PROMOTE_TO_BILLING_LEADER = 'PROMOTE_TO_BILLING_LEADER'
-// sent to the rest of the team when someone just rejoined
-export const REJOIN_TEAM = 'REJOIN_TEAM'
-// Sent to Billing Leaders when an orgMember attempts to add a non-orgMember to a team
-export const REQUEST_NEW_USER = 'REQUEST_NEW_USER'
-// Sent along with an email to someone invited to join the team
-export const TEAM_INVITE = 'TEAM_INVITE'
+// new version of TEAM_INVITE
+export const TEAM_INVITATION = 'TEAM_INVITATION'
 // sent to members of team that was archived
 export const TEAM_ARCHIVED = 'TEAM_ARCHIVED'
 // sent to members when a task is assigned to them or mentions them
@@ -96,22 +81,12 @@ export const TASK_INVOLVES = 'TASK_INVOLVES'
 // sent on socket connection
 export const VERSION_INFO = 'VERSION_INFO'
 
-export const notificationTypes = [
-  PAYMENT_REJECTED,
-  PROMOTE_TO_BILLING_LEADER,
-  REQUEST_NEW_USER,
-  DENY_NEW_USER,
-  TEAM_ARCHIVED,
-  TEAM_INVITE
-]
-
-export const billingLeaderTypes = [PAYMENT_REJECTED, REQUEST_NEW_USER]
+export const billingLeaderTypes = [PAYMENT_REJECTED]
 
 /* User Settings */
-export const SETTINGS = 'settings'
+export const PROFILE = 'profile'
 export const ORGANIZATIONS = 'organizations'
 export const NOTIFICATIONS = 'notifications'
-export const settingsOrder = [SETTINGS, ORGANIZATIONS, NOTIFICATIONS]
 
 /* Org Settings */
 export const BILLING_PAGE = 'billing'
@@ -123,7 +98,7 @@ export const BILLING_LEADER_LABEL = 'Billing Leader'
 
 /* Stripe */
 // changing this does NOT change it in stripe, it just changes the UI
-export const MONTHLY_PRICE = 5
+export const MONTHLY_PRICE = 12
 export const ADDED_USERS = 'ADDED_USERS'
 export const REMOVED_USERS = 'REMOVED_USERS'
 export const INACTIVITY_ADJUSTMENTS = 'INACTIVITY_ADJUSTMENTS'
@@ -167,22 +142,11 @@ export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 /* JavaScript specifics */
 export const MAX_INT = 2147483647
 
-// InvitationResultTypes
-// the invitation has been sent
-export const SUCCESS = 'SUCCESS'
-// the approval request has been sent to the billing leader
-export const PENDING_APPROVAL = 'PENDING_APPROVAL'
-// that email has already been invited
-export const ALREADY_ON_TEAM = 'ALREADY_ON_TEAM'
-// that email used to be on the team, and now they are again
-export const REACTIVATED = 'REACTIVATED'
-
 /* Relay Subscription Channels */
-export const INVITATION = 'invitation'
 export const NEW_AUTH_TOKEN = 'newAuthToken'
 export const NOTIFICATION = 'notification'
 export const ORGANIZATION = 'organization'
-export const ORG_APPROVAL = 'orgApproval'
+export const INTEGRATION = 'integration'
 // export const TASK = 'task'; // TODO refactor so it doesn't conflict with DnD
 // export const MEETING = 'meeting'; // conflicts with area
 // export const AGENDA_ITEM = 'agendaItem'; // conflict
@@ -203,15 +167,6 @@ export const ENTERPRISE = 'enterprise'
 /* Task Involvement Types */
 export const ASSIGNEE = 'ASSIGNEE'
 export const MENTIONEE = 'MENTIONEE'
-
-/* Third-party authentication providers */
-export const THIRD_PARTY_AUTH_PROVIDERS = [
-  {
-    displayName: 'Google',
-    auth0Connection: 'google-oauth2',
-    iconName: 'google'
-  }
-]
 
 /* Auth Labels, Slugs */
 export const SIGNIN_LABEL = 'Sign In'
@@ -236,4 +191,3 @@ export const DISCUSSION_TOPIC = 'DISCUSSION_TOPIC'
 /* Retro constants */
 export const RETROSPECTIVE_TOTAL_VOTES_DEFAULT = 5
 export const RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT = 3
-export const RETROSPECTIVE_TRIAL_COUNT_DEFAULT = 3

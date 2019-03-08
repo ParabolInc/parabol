@@ -19,15 +19,21 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 
 interface State {
   editorState?: EditorState
+  isEditing: boolean
 }
 
 class PhaseItemEditor extends Component<Props, State> {
-  editTimerId: number | undefined
+  idleTimerId: number | undefined
   state = {
-    editorState: EditorState.createEmpty()
+    editorState: EditorState.createEmpty(),
+    isEditing: false
   }
 
-  handleSubmit () {
+  componentWillUnmount(): void {
+    window.clearTimeout(this.idleTimerId)
+  }
+
+  handleSubmit() {
     const {
       atmosphere,
       onError,
@@ -53,27 +59,46 @@ class PhaseItemEditor extends Component<Props, State> {
     })
   }
 
-  handleEditorBlur = () => {
+  ensureNotEditing = () => {
     const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
-    const {editorState} = this.state
-    const isDirty = editorState.getCurrentContent().hasText()
-    // if they have text there, they'll probably come back to it in 10 seconds
-    const delay = isDirty ? 5000 : 0
-    clearTimeout(this.editTimerId)
-    this.editTimerId = window.setTimeout(() => {
-      this.editTimerId = undefined
+    const {isEditing} = this.state
+    if (!isEditing) return
+    window.clearTimeout(this.idleTimerId)
+    this.idleTimerId = undefined
+    EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
+    this.setState({
+      isEditing: false
+    })
+  }
+
+  ensureEditing = () => {
+    const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
+    const {isEditing} = this.state
+    if (!isEditing) {
+      EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
+      this.setState({
+        isEditing: true
+      })
+    }
+    window.clearTimeout(this.idleTimerId)
+    this.idleTimerId = window.setTimeout(() => {
       EditReflectionMutation(atmosphere, {isEditing: false, phaseItemId})
-    }, delay)
+      this.setState({
+        isEditing: false
+      })
+    }, 5000)
+  }
+
+  handleEditorBlur = () => {
+    this.ensureNotEditing()
+  }
+
+  keyBindingFn = () => {
+    this.ensureEditing()
   }
 
   handleEditorFocus = () => {
-    const {atmosphere, retroPhaseItemId: phaseItemId} = this.props
-    if (this.editTimerId) {
-      clearTimeout(this.editTimerId)
-      this.editTimerId = undefined
-    } else {
-      EditReflectionMutation(atmosphere, {isEditing: true, phaseItemId})
-    }
+    this.ensureEditing()
   }
 
   handleReturn = (e: React.KeyboardEvent) => {
@@ -86,18 +111,19 @@ class PhaseItemEditor extends Component<Props, State> {
     this.setState({editorState})
   }
 
-  render () {
+  render() {
     const {editorState} = this.state
     const {phaseEditorRef} = this.props
     return (
       <ReflectionCardRoot innerRef={phaseEditorRef}>
         <ReflectionEditorWrapper
-          ariaLabel='Edit this reflection'
+          ariaLabel="Edit this reflection"
           editorState={editorState}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleReturn={this.handleReturn}
-          placeholder='My reflection thought…'
+          keyBindingFn={this.keyBindingFn}
+          placeholder="My reflection… (press enter to add)"
           setEditorState={this.setEditorState}
         />
       </ReflectionCardRoot>

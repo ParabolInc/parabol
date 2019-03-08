@@ -5,6 +5,216 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## vNEXT
+* Squelch Google NLP unsupported languages (again)
+
+## v3.5.1 2019-Feb-28
+
+## Fixed
+* OAuth Login problems
+* Reset password problem
+
+## v3.5.0 2019-Feb-25
+
+### Added
+* Sentry captures for OAuth failures (#2682)
+* invitation-required fallback for visiting team-only view (#2667)
+
+### Fixed
+* Missing agendaId in demo (#2678)
+* dataloader cache miss for missing NewMeeting (#2679)
+* Sort ordering of template prompts (#2677)
+* Squelch unsupported language errors from Google NLP (#2680)
+
+### Changed
+* Upgraded plenty of dependencies, notably Typescript (#2637)
+* Re-implemented DLLs for faster development (#2637)
+* Refactored all routes to use React.lazy (#2646)
+
+### Removed
+* react-portal-hoc (#2659)
+
+## v3.4.1 2019-Feb-21
+
+### Fixed
+* Meeting Summaries available for archived teams
+
+## v3.4.0 2019-Feb-08
+
+### Fixed
+* Can delete last card in demo (#2633)
+* Bad teamId in url redirects to /me (#2635)
+* Stuck floating card during group phase (#2610)
+* Errors reported to sentry have a better stack trace (#2631)
+* Viewer connection state updates when offline (#2555)
+* Editing detection logic during Reflect phase (#2601)
+
+### Added
+* Source maps to app and sentry
+* Active tasks column to team timeline
+* Heuristics to detect phase completion (#2601)
+
+### Changed
+* User Settings renamed to User Profile
+* Upgraded to Relay v2.0.0
+* Use persisted queries instead of full query text
+ 
+### Removed
+* redux-form
+* Usage of legacy React context
+
+## v3.3.0 2019-Jan-31
+
+### Added
+
+* Timeline, Suggested Actions, What's New
+
+### Fixed
+* Stored XSS through SVGs
+* Meta tags
+
+### Removed
+
+* Welcome wizard
+
+
+## v3.2.0 2019-Jan-24
+
+### Changed
+
+* Switching between sign-up/sign-in forms now preserves entered email
+* Add anonymous segmentId to login payload, aliasing to authenticated user
+* Eased friction adding free users to organizations
+
+## v3.1.0 2019-Jan-09
+
+### Changed
+
+* New invitation UX (see PRs #2550, #2556 and issues #2537, #2538, #2539, #2540)
+* Refactored the relationship between organizations and their users (see PR #2560 and issue #2547)
+
+### Fixed
+
+* Check-in prompt editing UX #2548
+* Organization help card styles #1968
+
+## v3.0.0 2018-Dec-19
+
+### Changed
+* FREE! The whole thing is free!
+* New Pro accounts cost $12/user/mo
+
+### Fixed
+* Fixed due date color for past-due items
+* Fixed check in question updates
+
+## v2.21.0 2018-Dec-05
+
+### Added
+* Improvements to completed retro phases (PR #2518)
+* Support page events for non-users (PR #2520)
+
+### Changed
+* Refactor redux out of toasts (PR #2501)
+
+### Fixed
+* Fixed remove provider (PR #2517)
+* Fixed agenda input behavior issue for Safari (Issue #2521)
+
+## v2.20.3 2018-Nov-27
+
+### Fixed
+* Can add GitHub repos #2347
+
+## v2.20.2 2018-Nov-18
+
+### Fixed
+* When su permissions given: can run downgrade mutation & request certain
+  nested team & org fields
+
+## v2.20.0 2018-Nov-14
+
+### Added
+* Animations to demo help menu
+* Downgrade mutation on the backend
+* Click-to-expand ellipsis in the meeting summaries for reflections and tasks #2497
+
+### Changed
+* Team invite & notification emails look better
+
+### Fixed
+* Fix #2397 team name now updates without refresh
+* Fix #2454 Use OS-specific keys in help modal
+* Retro card groups now match the reflection group style
+* Org Approvals are now visible to everyone on the team
+* Minification bug caused export to CSV to fail
+* Agenda list migrated to react-beautiful-dnd
+* All components using react-beautiful-dnd now accurately update when dragging top to bottom
+
+## v2.19.0 2018-Nov-07
+
+### Added
+* Added CSV download link to retrospective meeting summary email
+
+### Fixed
+* Fix #1956 bug: remove user from org fails
+* Fix #2400 completed reflect phase is read only
+* Fix #2432 resize grid when tasks update
+* Fix #2468 retrospective demo bug on quick DnD/grouping
+* Fix #2469 Support mentions in demo tasks
+* Fix #2482 Delete Task not always working
+* Many retrospective meeting demo copy updates
+
+## v2.18.0 2018-Oct-31
+
+### Added
+* The Retro Demo, ready to try in marketing funnel
+* A new Check-In question (#1531)
+
+### Fixed
+* Fixed invoice pagination for organizations
+
+## v2.17.0 2018-Oct-25
+
+### Added
+* Demo (first pass, not advertised)
+* End Meeting button to all phases
+* Export to CSV button for retros
+
+### Changed
+* Bottom nav buttons in meeting
+* Moved vote details to top of phase
+
+## v2.16.0
+
+### Added
+* Completed switched to Material Design icons
+
+### Removed
+* Completely removed Font Awesome icons
+
+## v2.15.0 2018-Oct-10
+
+### Added
+* Introduces Material Design icons (PR #2434)
+
+### Fixed
+* Fixed sidebar toggle in retro lobby (PR #2431)
+
+### Removed
+* Yanked serif typeface (PR #2433)
+
+## v2.14.0 2018-Sep-26
+
+### Added
+* facilitator tooltip for focusing a reflection column
+
+### Fixed
+* button elevation
+* reflection spacing inside grouping modal
+* removed emoji popover when no results are found
+* resize handling when editing reflections during reflect phase
+
 ## v2.13.1 2018-Sep-20
 
 ### Added

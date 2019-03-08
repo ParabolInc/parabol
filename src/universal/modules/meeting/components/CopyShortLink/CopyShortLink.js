@@ -1,17 +1,17 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
-import FontAwesome from 'react-fontawesome'
 import CopyLink from 'universal/components/CopyLink'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const CopyIcon = styled(FontAwesome)({
+const CopyIcon = styled(Icon)({
   color: 'inherit',
   display: 'block',
-  fontSize: ui.iconSize,
-  height: ui.iconSize,
-  marginTop: '-.4375rem',
+  fontSize: MD_ICONS_SIZE_18,
+  marginTop: '-.5625rem',
   marginRight: '.5rem',
   position: 'absolute',
   top: '50%',
@@ -41,7 +41,7 @@ const CopyShortLink = (props) => {
   return (
     <CopyLink url={url} title={title} tooltip={tooltip}>
       <CopyBlock>
-        <CopyIcon name={theIcon} />
+        <CopyIcon>{theIcon}</CopyIcon>
         <CopyLabel>{theLabel}</CopyLabel>
       </CopyBlock>
     </CopyLink>

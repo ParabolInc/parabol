@@ -7,7 +7,7 @@ const archiveTasksByGitHubRepo = async (teamId, nameWithOwner, dataLoader) => {
     .table('Task')
     .getAll(teamId, {index: 'teamId'})
     .filter((doc) => doc('integration')('nameWithOwner').eq(nameWithOwner))
-  const archivedTasks = archiveTasksForDB(tasksToArchive, dataLoader)
+  const archivedTasks = await archiveTasksForDB(tasksToArchive, dataLoader)
   return archivedTasks.map(({id}) => id)
 }
 

@@ -9,7 +9,6 @@ import styled from 'react-emotion'
 import reactLifecyclesCompat from 'react-lifecycles-compat'
 import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import StyledError from 'universal/components/StyledError'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -18,6 +17,9 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {RETRO_TOPIC_LABEL} from 'universal/utils/constants'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {retroGroupTitleWidth} from 'universal/styles/meeting'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -37,15 +39,19 @@ const underlineStyles = {
   boxShadow: 'none !important'
 }
 
-const PencilIcon = styled(StyledFontAwesome)(({isExpanded}: {isExpanded?: boolean}) => ({
+const InputWithIconWrap = styled('div')({
+  alignItems: 'center',
+  display: 'flex'
+})
+
+const PencilIcon = styled(Icon)(({isExpanded}: {isExpanded?: boolean}) => ({
   color: isExpanded ? '#fff' : ui.hintColor,
-  height: ui.iconSize,
-  lineHeight,
+  display: 'block',
+  fontSize: MD_ICONS_SIZE_18,
   opacity: 0.5,
-  paddingLeft: '0.25rem',
+  marginLeft: '0.25rem',
   textAlign: 'center',
-  top: '-.0625rem',
-  width: ui.iconSize
+  top: '-.0625rem'
 }))
 
 const RootBlock = styled('div')({
@@ -79,9 +85,9 @@ const NameInput = styled('input')(
     lineHeight,
     padding: 0,
     // need to use a content editable if we wanna animate this since input el forces width
-    textAlign: !isExpanded && 'center',
     // card width is set at REFLECTION_WIDTH, so this can be a PX, too
-    width: 200,
+    textAlign: 'left',
+    width: retroGroupTitleWidth,
     transition: 'all 200ms'
   })
 )
@@ -104,7 +110,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
   initialTitle: string
   inputRef = React.createRef<HTMLInputElement>()
 
-  constructor (props: Props) {
+  constructor(props: Props) {
     super(props)
     this.initialTitle = props.reflectionGroup.title || ''
   }
@@ -180,7 +186,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
     )
   }
 
-  render () {
+  render() {
     const {
       isExpanded,
       error,
@@ -188,7 +194,7 @@ class ReflectionGroupTitleEditor extends Component<Props> {
       reflectionGroup: {title}
     } = this.props
     return (
-      <React.Fragment>
+      <InputWithIconWrap>
         <RootBlock>
           <FormBlock onSubmit={this.onSubmit}>
             <NameInput
@@ -199,14 +205,18 @@ class ReflectionGroupTitleEditor extends Component<Props> {
               readOnly={readOnly}
               innerRef={this.inputRef}
               size={20}
-              type='text'
+              type="text"
               value={title || ''}
             />
           </FormBlock>
           {error && <StyledError>{error}</StyledError>}
         </RootBlock>
-        {!readOnly && <PencilIcon isExpanded={isExpanded} name='pencil' onClick={this.onClick} />}
-      </React.Fragment>
+        {!readOnly && (
+          <PencilIcon isExpanded={isExpanded} onClick={this.onClick}>
+            edit
+          </PencilIcon>
+        )}
+      </InputWithIconWrap>
     )
   }
 }

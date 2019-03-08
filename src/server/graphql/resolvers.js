@@ -1,21 +1,10 @@
-import {getUserId, isSuperUser} from 'server/utils/authorization'
+import {getUserId, isSuperUser, isUserBillingLeader} from 'server/utils/authorization'
 import nullIfEmpty from 'universal/utils/nullIfEmpty'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import findStageById from 'universal/utils/meetings/findStageById'
-import {BILLING_LEADER} from 'universal/utils/constants'
 
 export const resolveAgendaItem = ({agendaItemId, agendaItem}, args, {dataLoader}) => {
   return agendaItemId ? dataLoader.get('agendaItems').load(agendaItemId) : agendaItem
-}
-
-export const resolveInvitation = ({invitationId, invitation}, args, {dataLoader}) => {
-  return invitationId ? dataLoader.get('invitations').load(invitationId) : invitation
-}
-
-export const resolveInvitations = ({invitationIds, invitations}, args, {dataLoader}) => {
-  return invitationIds && invitationIds.length > 0
-    ? dataLoader.get('invitations').loadMany(invitationIds)
-    : invitations
 }
 
 export const resolveMeeting = ({meeting, meetingId}, args, {dataLoader}) => {
@@ -76,22 +65,13 @@ export const makeResolveNotificationsForViewer = (idArray, docArray) => async (
 }
 
 export const resolveMeetingMember = ({meetingId, userId}, args, {dataLoader}) => {
+  if (!meetingId || !userId) return null
   const meetingMemberId = toTeamMemberId(meetingId, userId)
   return dataLoader.get('meetingMembers').load(meetingMemberId)
 }
 
-export const resolveNotifications = ({notificationIds, notifications}, args, {dataLoader}) => {
-  return notificationIds && notificationIds.length > 0
-    ? dataLoader.get('notifications').loadMany(notificationIds)
-    : notifications
-}
-
 export const resolveOrganization = ({orgId, organization}, args, {dataLoader}) => {
   return orgId ? dataLoader.get('organizations').load(orgId) : organization
-}
-
-export const resolveOrgApproval = ({orgApprovalId, orgApproval}, args, {dataLoader}) => {
-  return orgApprovalId ? dataLoader.get('orgApprovals').load(orgApprovalId) : orgApproval
 }
 
 export const resolveTask = async ({task, taskId}, args, {authToken, dataLoader}) => {
@@ -109,30 +89,6 @@ export const resolveTasks = async ({taskIds}, args, {authToken, dataLoader}) => 
   const isViewer = userId === getUserId(authToken)
   const teamTasks = tasks.filter(({teamId}) => authToken.tms.includes(teamId))
   return isViewer ? teamTasks : nullIfEmpty(teamTasks.filter((p) => !p.tags.includes('private')))
-}
-
-export const resolveSoftTeamMember = async (
-  {softTeamMemberId, softTeamMember},
-  args,
-  {authToken, dataLoader}
-) => {
-  const teamMember = softTeamMemberId
-    ? await dataLoader.get('softTeamMembers').load(softTeamMemberId)
-    : softTeamMember
-  return authToken.tms.includes(teamMember.teamId) ? teamMember : undefined
-}
-
-export const resolveSoftTeamMembers = async (
-  {softTeamMemberIds, softTeamMembers},
-  args,
-  {authToken, dataLoader}
-) => {
-  const {tms} = authToken
-  const teamMembers = softTeamMemberIds
-    ? await dataLoader.get('softTeamMembers').loadMany(softTeamMemberIds)
-    : softTeamMembers
-  if (!teamMembers || teamMembers.length === 0) return null
-  return teamMembers.filter((teamMember) => tms.includes(teamMember.teamId))
 }
 
 export const resolveTeam = ({team, teamId}, args, {dataLoader}) => {
@@ -162,7 +118,7 @@ export const resolveTeamMembers = ({teamMemberIds, teamMembers}, args, {dataLoad
 }
 
 export const resolveUnlockedStages = async ({meetingId, unlockedStageIds}, args, {dataLoader}) => {
-  if (!unlockedStageIds || unlockedStageIds.length === 0) return undefined
+  if (!unlockedStageIds || unlockedStageIds.length === 0 || !meetingId) return undefined
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   return unlockedStageIds.map((stageId) => findStageById(meeting.phases, stageId).stage)
 }
@@ -187,14 +143,6 @@ export const makeResolve = (idName, docName, dataLoaderName, isMany) => (
   return idValue ? dataLoader.get(dataLoaderName)[method](idValue) : source[docName]
 }
 
-export const resolveIfViewer = (ifViewerField, defaultValue) => (source, args, {authToken}) => {
-  return source.userId === getUserId(authToken) ? source[ifViewerField] : defaultValue
-}
-
-export const resolveTypeForViewer = (selfPayload, otherPayload) => ({userId}, {authToken}) => {
-  return userId === getUserId(authToken) ? selfPayload : otherPayload
-}
-
 export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args, context) => {
   const {teamIdFilter} = source
   const resolvedArray = await resolver(source, args, context)
@@ -203,21 +151,13 @@ export const resolveFilterByTeam = (resolver, getTeamId) => async (source, args,
     : resolvedArray
 }
 
-export const resolveArchivedSoftTasks = async (
-  {archivedSoftTaskIds},
+export const resolveForBillingLeaders = (fieldName) => async (
+  source,
   args,
   {authToken, dataLoader}
 ) => {
-  const {tms} = authToken
-  const softTasks = await dataLoader.get('tasks').loadMany(archivedSoftTaskIds)
-  return softTasks.filter(({teamId}) => tms.includes(teamId))
-}
-
-export const resolveForBillingLeaders = (fieldName) => async (source, args, {authToken}) => {
+  const {id: orgId} = source
   const viewerId = getUserId(authToken)
-  const {orgUsers} = source
-  const isBillingLeader = Boolean(
-    orgUsers.find((user) => user.id === viewerId && user.role === BILLING_LEADER)
-  )
+  const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
   return isBillingLeader ? source[fieldName] : undefined
 }

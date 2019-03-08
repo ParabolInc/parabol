@@ -19,19 +19,18 @@ interface Props {
   insert: (task: DraggableTask_task, before: boolean) => void
   isDragging: boolean
   isPreview: boolean
-  myUserId: string
   task: DraggableTask_task
 }
 
 class DraggableTask extends Component<Props> {
-  componentDidMount () {
+  componentDidMount() {
     const {connectDragPreview, isPreview} = this.props
     if (!isPreview) {
       connectDragPreview(getEmptyImage())
     }
   }
 
-  shouldComponentUpdate (nextProps) {
+  shouldComponentUpdate(nextProps) {
     const {isDragging} = nextProps
     for (let i = 0; i < importantTaskProps.length; i++) {
       const key = importantTaskProps[i]
@@ -42,14 +41,14 @@ class DraggableTask extends Component<Props> {
     return isDragging !== this.props.isDragging
   }
 
-  render () {
-    const {area, connectDragSource, connectDropTarget, isDragging, myUserId, task} = this.props
+  render() {
+    const {area, connectDragSource, connectDropTarget, isDragging, task} = this.props
     return connectDropTarget(
       connectDragSource(
         <div style={{marginBottom: '.625rem'}}>
           {isDragging && <TaskDragLayer area={area} task={task} />}
           <div style={{opacity: isDragging ? 0.5 : 1}}>
-            <NullableTask area={area} task={task} myUserId={myUserId} isDragging={isDragging} />
+            <NullableTask area={area} task={task} isDragging={isDragging} />
           </div>
         </div>
       )
@@ -58,10 +57,10 @@ class DraggableTask extends Component<Props> {
 }
 
 const taskDragSpec = {
-  beginDrag (props) {
+  beginDrag(props) {
     return {taskId: props.task.id}
   },
-  isDragging (props, monitor) {
+  isDragging(props, monitor) {
     return props.task.id === monitor.getItem().taskId
   }
 }

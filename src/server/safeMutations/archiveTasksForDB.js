@@ -19,18 +19,20 @@ const archiveTasksForDB = async (tasks, dataLoader) => {
       id: task.id
     }
   })
-  const updatedTasks = await r(tasksToArchive).forEach((task) => {
-    return r
-      .table('Task')
-      .get(task('id'))
-      .update(
-        {
-          content: task('content'),
-          tags: task('tags')
-        },
-        {returnChanges: true}
-      )
-  })('changes')('new_val')
+  const updatedTasks = await r(tasksToArchive)
+    .forEach((task) => {
+      return r
+        .table('Task')
+        .get(task('id'))
+        .update(
+          {
+            content: task('content'),
+            tags: task('tags')
+          },
+          {returnChanges: true}
+        )
+    })('changes')('new_val')
+    .default([])
 
   if (dataLoader) {
     primeStandardLoader(dataLoader.get('tasks'), updatedTasks)

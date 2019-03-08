@@ -4,36 +4,32 @@ import {DragSource as dragSource} from 'react-dnd'
 import {createFragmentContainer} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import inAgendaGroup from 'universal/modules/meeting/helpers/inAgendaGroup'
-import ui from 'universal/styles/ui'
 import {meetingSidebarGutter} from 'universal/styles/meeting'
 import {AGENDA_ITEM, phaseArray} from 'universal/utils/constants'
 import {requestIdleCallback} from 'universal/utils/requestIdleCallback'
 import styled, {css} from 'react-emotion'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
 import IconButton from 'universal/components/IconButton'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const taskSource = {
-  beginDrag (props) {
+  beginDrag(props) {
     return {
       id: props.agendaItem.id
     }
   }
 }
 
-const lineHeight = ui.navTopicLineHeight
-
 const DeleteIconButton = styled(IconButton)(({agendaLength, disabled}) => ({
   display: 'block',
-  height: '1.5rem',
   // we can make the position of the del (x) more centered when there’s a low number of agenda items
   left: agendaLength < 10 ? '.8125rem' : meetingSidebarGutter,
-  lineHeight,
+  lineHeight: MD_ICONS_SIZE_18,
   opacity: 0,
   position: 'absolute',
-  top: '.5625rem',
+  top: '.6875rem',
   transition: 'opacity .1s ease-in',
-  visibility: disabled && 'hidden',
-  width: ui.iconSize
+  visibility: disabled && 'hidden'
 }))
 
 const AvatarBlock = styled('div')({
@@ -70,7 +66,7 @@ class AgendaItem extends Component {
     teamMember: PropTypes.object
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.props.ensureVisible) {
       requestIdleCallback(() => {
         // does not force centering; no animation for initial load
@@ -79,7 +75,7 @@ class AgendaItem extends Component {
     }
   }
 
-  componentDidUpdate (prevProps) {
+  componentDidUpdate(prevProps) {
     if (!prevProps.ensureVisible && this.props.ensureVisible) {
       // without RIC only gets called ~20% of the time in Chrome64 on Ubuntu 16.04 if behavior: smooth
       requestIdleCallback(() => {
@@ -90,7 +86,7 @@ class AgendaItem extends Component {
 
   el = null
 
-  render () {
+  render() {
     const {
       agendaItem,
       agendaLength,
@@ -121,7 +117,7 @@ class AgendaItem extends Component {
     }
     const avatar = (
       <AvatarBlock>
-        <Avatar hasBadge={false} picture={teamMember.picture} size='smallest' />
+        <Avatar hasBadge={false} picture={teamMember.picture} size="smallest" />
       </AvatarBlock>
     )
     const deleteLabel = 'Remove this agenda topic'
@@ -140,17 +136,16 @@ class AgendaItem extends Component {
           orderLabel={`${idx + 1}.`}
           {...navItemState}
         />
-        {canDelete &&
-          !isUnsyncedFacilitatorStage && (
-            <DeleteIconButton
-              aria-label={deleteLabel}
-              agendaLength={agendaLength}
-              disabled={disabled}
-              icon='times-circle'
-              onClick={handleRemove}
-              palette='warm'
-            />
-          )}
+        {canDelete && !isUnsyncedFacilitatorStage && (
+          <DeleteIconButton
+            aria-label={deleteLabel}
+            agendaLength={agendaLength}
+            disabled={disabled}
+            icon="cancel"
+            onClick={handleRemove}
+            palette="warm"
+          />
+        )}
       </div>
     )
   }

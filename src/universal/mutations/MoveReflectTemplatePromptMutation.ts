@@ -1,7 +1,8 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import handleMoveTemplatePrompt from './handlers/handleMoveTemplatePrompt'
-import IMoveReflectTemplatePromptOnMutationArguments = GQL.IMoveReflectTemplatePromptOnMutationArguments
+import {IMoveReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
 import getInProxy from 'universal/utils/relay/getInProxy'
 
 interface Context {
@@ -18,7 +19,7 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation MoveReflectTemplatePromptMutation($promptId: ID!, $sortOrder: String!) {
+  mutation MoveReflectTemplatePromptMutation($promptId: ID!, $sortOrder: Float!) {
     moveReflectTemplatePrompt(promptId: $promptId, sortOrder: $sortOrder) {
       error {
         message
@@ -38,7 +39,7 @@ const MoveReflectTemplatePromptMutation = (
   atmosphere: Atmosphere,
   variables: IMoveReflectTemplatePromptOnMutationArguments,
   context: Context
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

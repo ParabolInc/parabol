@@ -1,7 +1,6 @@
 import {NewMeetingAvatarMenu_newMeeting} from '__generated__/NewMeetingAvatarMenu_newMeeting.graphql'
 import {NewMeetingAvatarMenu_teamMember} from '__generated__/NewMeetingAvatarMenu_teamMember.graphql'
 import React from 'react'
-import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
 import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
@@ -13,10 +12,8 @@ import PromoteNewMeetingFacilitatorMutation from 'universal/mutations/PromoteNew
 import {LOBBY} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import {Dispatch} from 'redux'
 
 interface Props extends WithAtmosphereProps {
-  dispatch: Dispatch<any>
   newMeeting: NewMeetingAvatarMenu_newMeeting
   teamMember: NewMeetingAvatarMenu_teamMember
   closePortal: () => void
@@ -24,7 +21,7 @@ interface Props extends WithAtmosphereProps {
 }
 
 const NewMeetingAvatarMenu = (props: Props) => {
-  const {atmosphere, dispatch, newMeeting, teamMember, closePortal, handleNavigate} = props
+  const {atmosphere, newMeeting, teamMember, closePortal, handleNavigate} = props
   const meeting = newMeeting || UNSTARTED_MEETING
   const {localPhase, facilitatorUserId, meetingId} = meeting
   const {meetingMember, isConnected, isSelf, preferredName, userId} = teamMember
@@ -33,11 +30,7 @@ const NewMeetingAvatarMenu = (props: Props) => {
   const checkedIn = isCheckedIn ? ' and checked in' : ''
   const headerLabel = `${isSelf ? 'You are' : `${preferredName} is`} ${connected} ${checkedIn}`
   const promoteToFacilitator = () => {
-    PromoteNewMeetingFacilitatorMutation(
-      atmosphere,
-      {facilitatorUserId: userId, meetingId},
-      {dispatch}
-    )
+    PromoteNewMeetingFacilitatorMutation(atmosphere, {facilitatorUserId: userId, meetingId})
   }
   const avatarIsFacilitating = teamMember.userId === facilitatorUserId
   const handlePromote = isConnected ? promoteToFacilitator : undefined
@@ -51,14 +44,14 @@ const NewMeetingAvatarMenu = (props: Props) => {
       <DropdownMenuLabel>{headerLabel}</DropdownMenuLabel>
       {handleNavigate && (
         <MenuItemWithShortcuts
-          key='handleNavigate'
+          key="handleNavigate"
           label={`See ${owner} ${phaseLabel}`}
           onClick={handleNavigate}
         />
       )}
-      {!avatarIsFacilitating && (
+      {!avatarIsFacilitating && !window.location.pathname.startsWith('/retrospective-demo') && (
         <MenuItemWithShortcuts
-          key='promoteToFacilitator'
+          key="promoteToFacilitator"
           label={`Promote ${isSelf ? 'yourself' : preferredName} to Facilitator`}
           onClick={handlePromote}
         />
@@ -68,7 +61,7 @@ const NewMeetingAvatarMenu = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  (connect as any)()(withAtmosphere(NewMeetingAvatarMenu)),
+  withAtmosphere(NewMeetingAvatarMenu),
   graphql`
     fragment NewMeetingAvatarMenu_newMeeting on NewMeeting {
       meetingId: id

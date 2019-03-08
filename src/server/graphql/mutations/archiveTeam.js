@@ -7,8 +7,7 @@ import publish from 'server/utils/publish'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import shortid from 'shortid'
 import {NEW_AUTH_TOKEN, TEAM, TEAM_ARCHIVED, UPDATED} from 'universal/utils/constants'
-import {sendTeamLeadAccessError} from 'server/utils/authorizationErrors'
-import {sendAlreadyArchivedTeamError} from 'server/utils/alreadyMutatedErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: ArchiveTeamPayload,
@@ -18,7 +17,7 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -27,12 +26,12 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!(await isTeamLead(viewerId, teamId))) {
-      return sendTeamLeadAccessError(authToken, teamId)
+      return standardError(new Error('Not team lead'), {userId: viewerId})
     }
 
     // RESOLUTION
     sendSegmentEvent('Archive Team', viewerId, {teamId})
-    const {team, users, removedTeamNotifications} = await r({
+    const {team, users, removedTeamNotifications, removedSuggestedActionIds} = await r({
       team: r
         .table('Team')
         .get(teamId)
@@ -52,16 +51,36 @@ export default {
             })('changes')('new_val')
             .default([])
         }),
+      invitations: r
+        .table('TeamInvitation')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({acceptedAt: null})
+        .update((invitation) => ({
+          expiresAt: r.min([invitation('expiresAt'), now])
+        })),
       removedTeamNotifications: r
         .table('Notification')
         // TODO index
         .filter({teamId})
         .delete({returnChanges: true})('changes')('new_val')
+        .default([]),
+      removedSuggestedActionIds: r
+        .table('SuggestedAction')
+        // NOTE: this isn't 100% correct because the person removing the team may not be the
+        // person who has the suggested actions, but it saves us from needing an extra index
+        .getAll(viewerId, {index: 'userId'})
+        .filter({teamId})
+        .update(
+          {
+            removedAt: now
+          },
+          {returnChanges: true}
+        )('changes')('new_val')('id')
         .default([])
     })
 
     if (!team) {
-      return sendAlreadyArchivedTeamError(authToken, teamId)
+      return standardError(new Error('Already archived team'), {userId: viewerId})
     }
 
     const notifications = users
@@ -81,7 +100,8 @@ export default {
     const data = {
       teamId,
       notificationIds: notifications.map(({id}) => id),
-      removedTeamNotifications
+      removedTeamNotifications,
+      removedSuggestedActionIds
     }
     publish(TEAM, teamId, ArchiveTeamPayload, data, subOptions)
 

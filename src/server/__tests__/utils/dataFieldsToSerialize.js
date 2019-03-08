@@ -7,11 +7,6 @@ const dataFieldsToSerialize = [
   'message.data.userId',
   'message.data.invitationIds',
   'message.data.inviteeApprovedNotificationIds',
-  'message.data.removedOrgApprovals.approvedBy',
-  'message.data.removedOrgApprovals.email',
-  'message.data.removedOrgApprovals.id',
-  'message.data.removedOrgApprovals.orgId',
-  'message.data.removedOrgApprovals.teamId',
   'message.data.removedRequestNotifications.id',
   'message.data.removedRequestNotifications.inviteeEmail',
   'message.data.removedRequestNotifications.inviterUserId',
@@ -20,10 +15,7 @@ const dataFieldsToSerialize = [
   'message.data.removedRequestNotifications.userIds',
   'message.data.teamIdFilter',
   'message.data.teamInviteNotificationIds',
-  'message.data.removedOrgApprovals.createdAt',
-  'message.data.removedOrgApprovals.teamId',
   'message.data.deniedNotificationIds',
-  'message.data.removedOrgApprovalIds',
   'message.data.notificationIds'
 ]
 

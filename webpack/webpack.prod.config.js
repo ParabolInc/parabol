@@ -3,14 +3,12 @@ const resolve = require('./webpackResolve')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
-const npmPackage = require('../package.json')
 const getWebpackPublicPath = require('../src/server/utils/getWebpackPublicPath')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const S3Plugin = require('webpack-s3-plugin')
 const {getS3BasePath} = require('./utils/getS3BasePath')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const getDotenv = require('../src/universal/utils/dotenv')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import')
 const presetEnv = require('@babel/preset-env')
 const presetFlow = require('@babel/preset-flow')
@@ -19,9 +17,14 @@ const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-sprea
 const pluginClassProps = require('@babel/plugin-proposal-class-properties')
 const pluginRelay = require('babel-plugin-relay')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 const publicPath = getWebpackPublicPath.default()
+const buildPath = path.join(__dirname, '../build')
 getDotenv.default()
+
+// babel-plugin-relay requires a prod BABEL_ENV to remove hash checking logic. Probably a bug in the package.
+process.env.BABEL_ENV = 'production'
 
 const extraPlugins = []
 if (process.env.WEBPACK_DEPLOY) {
@@ -36,7 +39,7 @@ if (process.env.WEBPACK_DEPLOY) {
         Bucket: process.env.AWS_S3_BUCKET
       },
       basePath: getS3BasePath(),
-      directory: path.join(__dirname, '../build')
+      directory: buildPath
     })
   )
 }
@@ -72,23 +75,37 @@ const babelConfig = {
 }
 
 module.exports = {
+  stats: {
+    assets: false
+  },
   mode: 'production',
   entry: {
     app: [path.join(__dirname, '../src/client/client.js')]
   },
   output: {
-    path: path.join(__dirname, '../build/'),
+    path: buildPath,
     publicPath,
     filename: '[name]_[hash].js',
     chunkFilename: '[name]_[chunkhash].js'
   },
   resolve,
   optimization: {
-    minimize: Boolean(process.env.WEBPACK_DEPLOY),
+    minimize: Boolean(process.env.WEBPACK_DEPLOY || process.env.WEBPACK_STATS),
     minimizer: [
-      new UglifyJsPlugin({
-        exclude: /codemirror/,
-        parallel: true
+      new TerserPlugin({
+        cache: true,
+        parallel: true,
+        sourceMap: true, // Must be set to true if using source-maps in production
+        terserOptions: {
+          output: {
+            comments: false,
+            ecma: 6
+          },
+          compress: {
+            ecma: 6
+          }
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+        }
       })
     ],
     splitChunks: {
@@ -114,11 +131,11 @@ module.exports = {
     new webpack.DefinePlugin({
       __CLIENT__: true,
       __PRODUCTION__: true,
-      __APP_VERSION__: JSON.stringify(npmPackage.version),
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new webpack.SourceMapDevToolPlugin({
-      filename: '[name]_[chunkhash].js.map',
+      filename: '[name]_[hash].js.map',
       append: `\n//# sourceMappingURL=${publicPath}[url]`
     }),
     ...extraPlugins

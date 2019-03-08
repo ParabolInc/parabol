@@ -1,16 +1,11 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import EditReflectionPayload from 'server/graphql/types/EditReflectionPayload'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendMeetingNotFoundError, sendPhaseItemNotFoundError} from 'server/utils/docNotFoundErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {REFLECT, TEAM} from 'universal/utils/constants'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
+import standardError from 'server/utils/standardError'
 
 export default {
   description: 'Changes the editing state of a user for a phase item',
@@ -24,30 +19,31 @@ export default {
       type: new GraphQLNonNull(GraphQLBoolean)
     }
   },
-  async resolve (source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const phaseItem = await r.table('CustomPhaseItem').get(phaseItemId)
     if (!phaseItem || !phaseItem.isActive) {
-      return sendPhaseItemNotFoundError(authToken, phaseItemId)
+      return standardError(new Error('Category not found'), {userId: viewerId})
     }
     const {teamId} = phaseItem
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     const team = await r.table('Team').get(teamId)
     const {meetingId} = team
-    if (!meetingId) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (!meetingId) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete(REFLECT, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT)
+      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
     // RESOLUTION

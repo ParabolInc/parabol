@@ -3,9 +3,8 @@ import getRethink from 'server/database/rethinkDriver'
 import RemoveAgendaItemPayload from 'server/graphql/types/RemoveAgendaItemPayload'
 import publish from 'server/utils/publish'
 import {AGENDA_ITEM} from 'universal/utils/constants'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendAgendaItemNotFoundError} from 'server/utils/docNotFoundErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: RemoveAgendaItemPayload,
@@ -16,16 +15,17 @@ export default {
       description: 'The agenda item unique id'
     }
   },
-  async resolve (source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     // id is of format 'teamId::shortid'
     const [teamId] = agendaItemId.split('::')
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -35,7 +35,7 @@ export default {
       .delete({returnChanges: true})('changes')(0)('old_val')
       .default(null)
     if (!agendaItem) {
-      return sendAgendaItemNotFoundError(authToken, agendaItemId)
+      return standardError(new Error('Agenda item not found'), {userId: viewerId})
     }
     const data = {agendaItem}
     publish(AGENDA_ITEM, teamId, RemoveAgendaItemPayload, data, subOptions)

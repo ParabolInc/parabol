@@ -6,7 +6,6 @@ import {commitLocalUpdate, createFragmentContainer, graphql} from 'react-relay'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import MeetingSidebarLabelBlock from 'universal/components/MeetingSidebarLabelBlock'
 import MeetingSubnavItem from 'universal/components/MeetingSubnavItem'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -23,6 +22,8 @@ import {
 import dndNoise from 'universal/utils/dndNoise'
 import sidebarCanAutoCollapse from 'universal/utils/meetings/sidebarCanAutoCollapse'
 import plural from 'universal/utils/plural'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface Props extends WithAtmosphereProps {
   gotoStageId: (stageId: string) => void
@@ -36,31 +37,36 @@ const SidebarPhaseItemChild = styled('div')({
 
 const VoteTally = styled('div')(
   ({isUnsyncedFacilitatorStage}: {isUnsyncedFacilitatorStage: boolean | null}) => ({
+    alignItems: 'center',
     color: isUnsyncedFacilitatorStage ? ui.palette.warm : ui.palette.midGray,
+    display: 'flex',
     fontSize: ui.iconSize,
     fontWeight: 600,
+    height: ui.navTopicLineHeight,
     lineHeight: ui.navTopicLineHeight,
     marginRight: '0.5rem'
   })
 )
 
-const VoteIcon = styled(StyledFontAwesome)({
+const VoteIcon = styled(Icon)({
   color: 'inherit',
+  fontSize: MD_ICONS_SIZE_18,
+  height: ui.navTopicLineHeight,
+  lineHeight: ui.navTopicLineHeight,
   marginRight: '.125rem'
 })
 
 const DraggableMeetingSubnavItem = styled('div')(({isDragging}: {isDragging: boolean}) => ({
-  boxShadow: isDragging && navItemRaised
+  boxShadow: isDragging ? navItemRaised : undefined
 }))
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const {
     atmosphere,
     gotoStageId,
-    viewer: {
-      team: {newMeeting}
-    }
+    viewer: {team}
   } = props
+  const {newMeeting} = team!
   if (!newMeeting) return null
   const {localPhase, localStage, facilitatorStageId, meetingId} = newMeeting
   if (!localPhase || !localPhase.stages || !localStage) return null
@@ -74,7 +80,8 @@ const RetroSidebarDiscussSection = (props: Props) => {
     if (
       !destination ||
       destination.droppableId !== DISCUSSION_TOPIC ||
-      source.droppableId !== DISCUSSION_TOPIC
+      source.droppableId !== DISCUSSION_TOPIC ||
+      destination.index === source.index
     ) {
       return
     }
@@ -88,8 +95,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
     } else if (destination.index === stages.length - 1) {
       sortOrder = destinationTopic.sortOrder + SORT_STEP + dndNoise()
     } else {
+      const offset = source.index > destination.index ? -1 : 1
       sortOrder =
-        (stages[destination.index - 1].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
+        (stages[destination.index + offset].sortOrder + destinationTopic.sortOrder) / 2 + dndNoise()
     }
 
     const {id: stageId} = sourceTopic
@@ -100,10 +108,9 @@ const RetroSidebarDiscussSection = (props: Props) => {
   const toggleSidebar = () => {
     const {
       atmosphere,
-      viewer: {
-        team: {teamId, isMeetingSidebarCollapsed}
-      }
+      viewer: {team}
     } = props
+    const {teamId, isMeetingSidebarCollapsed} = team!
     commitLocalUpdate(atmosphere, (store) => {
       const team = store.get(teamId)
       if (!team) return
@@ -141,7 +148,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                   }
                   const voteMeta = (
                     <VoteTally isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}>
-                      <VoteIcon name={meetingVoteIcon} />
+                      <VoteIcon>{meetingVoteIcon}</VoteIcon>
                       {voteCount}
                     </VoteTally>
                   )

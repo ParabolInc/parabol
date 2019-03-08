@@ -2,10 +2,12 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: node:9.11.1
-      - image: rethinkdb:2.3.5
+      - image: circleci/node:10.15.0
+      - image: rethinkdb:2.3.6
       - image: redis:3.2.8
-      - image: selenium/standalone-chrome:3.6.0
+      - image: cypress/base:10
+        environment:
+          TERM: xterm
     environment:
       CODECOV_TOKEN: "ebdd735e-579a-4afd-85fc-f53907544c31"
       DEVOPS_REPO: "git@github.com:ParabolInc/action-devops.git"
@@ -14,6 +16,8 @@ jobs:
       GITHUB_REMOTE_PRODUCTION: "dokku@action-production.parabol.co:web"
       GITHUB_REMOTE_STAGING: "dokku@action-staging.parabol.co:web"
       PRODUCTION_BACKUP_VOLUME: "/mnt/volume-nyc1-01/action-production"
+      SENTRY_ORG: "parabol"
+      SENTRY_PROJECT: "action-production"
     working_directory: ~/action
     steps:
       - add_ssh_keys:
@@ -31,24 +35,18 @@ jobs:
             fi
       - checkout
       - restore_cache:
-          key: action-{{ checksum "yarn.lock" }}
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
       - run:
           name: Install dependencies
           command: |
-            apt-get update && apt-get -yq install build-essential
-            yarn
+            yarn --frozen-lockfile
       - save_cache:
-          key: action-{{ checksum "yarn.lock" }}
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
-          - ~/action/node_modules
-      - run:
-          name: Database migration (testing)
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-              echo "info: development server deploy, skipping"
-            else
-              npm run db:migrate-testing
-            fi
+          - ~/.cache/yarn
       - run:
           name: DevOps checkout
           command: |
@@ -58,33 +56,6 @@ jobs:
             git clone $DEVOPS_REPO $DEVOPS_WORKDIR
             )
       - run:
-          name: E2E test dependencies
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-            echo "info: development server deploy, skipping"
-            else
-            apt-get update && apt-get -yq install unzip libnss3 libgconf-2-4
-            npm run test:e2e-deps
-            fi
-      - run:
-          name: E2E test build
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-              echo "info: development server deploy, skipping"
-            else
-              cp $DEVOPS_WORKDIR/environments/e2e ./.env
-              npm run db:migrate
-              npm run build
-            fi
-      - run:
-          name: NPM lint
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-              echo "info: development server deploy, skipping"
-            else
-              npm run lint
-            fi
-      - run:
           name: NPM run test
           command: |
             if [ "${CIRCLE_BRANCH}" == "development" ]; then
@@ -92,16 +63,6 @@ jobs:
             # else
             #            npm run test
             #            mkdir test-report ; mv test-report.xml test-report
-            fi
-
-      - run:
-          name: E2E test run
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "development" ]; then
-              echo "info: development server deploy, skipping"
-            else
-              export SELENIUM_REMOTE_URL='http://localhost:4444/wd/hub'
-              npm run test:e2e
             fi
       - run:
           name: Pre-build environment configuration
@@ -115,8 +76,22 @@ jobs:
             else
               export DEPLOY_ENV="local"
             fi
-            cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
+            # cp $DEVOPS_WORKDIR/environments/$DEPLOY_ENV ./.env
             cp $DEVOPS_WORKDIR/keys/.googlecloudkey.$DEPLOY_ENV.json ./.googlecloudkey.json
+      - run:
+          name: Cypress Tests
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
+              cp $DEVOPS_WORKDIR/environments/cypress ./.env
+              # cypress docker image has a bug, sideloading these mitigates it
+              sudo apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
+              yarn build
+              curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+              sudo python get-pip.py
+              sudo pip install rethinkdb==2.3.0
+              rethinkdb-restore --force cypress/fixtures/rdb_test.tar.gz
+              yarn test:cypress
+            fi
       - deploy:
           name: Possible deployment build
           command: |
@@ -129,9 +104,7 @@ jobs:
             fi
             if [ -n "${GITHUB_REMOTE}" ]; then
               npm run build:deploy &&
-              export ACTION_VERSION="\
-                $([[ $(grep version package.json) =~ (([0-9]+\.?){3}) ]] && \
-                  echo ${BASH_REMATCH[1]})"
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
               git config --global user.name "Parabol CircleCI"
               git config --global user.email "admin+circleci@parabol.co"
               git add .googlecloudkey.json build -f
@@ -162,6 +135,16 @@ jobs:
       - store_artifacts:
           path: ~/action/build
           destination: build
+      - run:
+          name: Upload sentry artifacts
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "production" ]; then
+              curl -sL https://sentry.io/get-cli/ | bash
+              export ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
+              sentry-cli releases new "$ACTION_VERSION"
+              sentry-cli releases files "$ACTION_VERSION" upload-sourcemaps ~/action/build
+              sentry-cli releases finalize "$ACTION_VERSION"
+            fi
       - store_test_results:
           path: ~/action/test-report
 workflows:

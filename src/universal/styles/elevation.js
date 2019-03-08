@@ -52,6 +52,8 @@ export const navDrawerShadow = elevation[16]
 export const panelShadow = elevation[1]
 export const panelRaisedShadow = elevation[8]
 export const searchBarShadow = elevation[1]
+export const sheetShadow = elevation[16]
+export const snackbarShadow = elevation[6]
 export const switchShadow = elevation[1]
 export const textButtonShadow = elevation[0]
 

@@ -11,18 +11,16 @@ const DiscussHelpMenu = ({closePortal}) => (
   <HelpMenuContent closePortal={closePortal}>
     <HelpMenuHeader>{phaseLabelLookup[DISCUSS]}</HelpMenuHeader>
     <HelpMenuCopy>
-      {
-        'The goal of this phase is to identify next steps and capture them as task cards assigned to an owner.'
-      }
+      The goal of this phase is to identify next steps and capture them as task cards assigned to an
+      owner.
     </HelpMenuCopy>
     <HelpMenuCopy>
-      {
-        'Sometimes the next task is to schedule a time to discuss a topic more in depth at a later time.'
-      }
+      Sometimes the next task is to schedule a time to discuss a topic more in depth at a later
+      time.
     </HelpMenuCopy>
     <HelpMenuLink
-      copy='Learn More'
-      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss'
+      copy="Learn More"
+      href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss"
     />
   </HelpMenuContent>
 )

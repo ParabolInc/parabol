@@ -47,6 +47,13 @@ const Meeting = new GraphQLObjectType({
       type: new GraphQLList(MeetingTask),
       description: 'A list of immutable tasks, as they were created in the meeting'
     },
+    taskCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'the number of tasks generated in the meeting',
+      resolve: ({tasks}) => {
+        return Array.isArray(tasks) ? tasks.length : 0
+      }
+    },
     sinceTime: {
       type: GraphQLISO8601Type,
       description:
@@ -76,7 +83,7 @@ const Meeting = new GraphQLObjectType({
     teamMembers: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
-      resolve ({teamId}) {
+      resolve({teamId}) {
         const r = getRethink()
         return r
           .table('TeamMember')

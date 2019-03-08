@@ -15,8 +15,8 @@ const StyledButton = styled(RaisedButton)({
 const AddTaskButton = (props) => {
   const {label, onClick} = props
   return (
-    <StyledButton aria-label={`Add a Task set to ${label}`} onClick={onClick} palette='white'>
-      <IconLabel name='plus' />
+    <StyledButton aria-label={`Add a Task set to ${label}`} onClick={onClick} palette="white">
+      <IconLabel icon="add" />
     </StyledButton>
   )
 }

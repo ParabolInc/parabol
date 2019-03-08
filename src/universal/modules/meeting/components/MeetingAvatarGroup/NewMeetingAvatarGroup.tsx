@@ -10,6 +10,7 @@ import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatar
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import {ViewerStreamLookup} from 'universal/components/NewMeeting'
+import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',
@@ -33,11 +34,8 @@ interface Props extends WithAtmosphereProps {
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {
-  const {
-    gotoStageId,
-    team: {newMeeting, teamMembers},
-    viewerStreamLookup
-  } = props
+  const {gotoStageId, team, viewerStreamLookup} = props
+  const {newMeeting, teamMembers} = team
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorStageId, phases, localPhase} = meeting
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -47,6 +45,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
       <MeetingAvatarGroupInner>
         {teamMembers.map((teamMember) => {
           return (
+            // @ts-ignore
             <NewMeetingAvatar
               key={teamMember.id}
               gotoStage={() => {
@@ -63,6 +62,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
             />
           )
         })}
+        <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
       </MeetingAvatarGroupInner>
     </MeetingAvatarGroupRoot>
   )
@@ -73,7 +73,9 @@ export default createFragmentContainer(
   graphql`
     fragment NewMeetingAvatarGroup_team on Team {
       teamId: id
+      ...AddTeamMemberAvatarButton_team
       teamMembers(sortBy: "checkInOrder") {
+        ...AddTeamMemberAvatarButton_teamMembers
         id
         userId
         ...NewMeetingAvatar_teamMember

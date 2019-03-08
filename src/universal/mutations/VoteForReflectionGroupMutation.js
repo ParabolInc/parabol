@@ -3,6 +3,10 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 graphql`
   fragment VoteForReflectionGroupMutation_team on VoteForReflectionGroupPayload {
+    error {
+      message
+      title
+    }
     meeting {
       votesRemaining
     }

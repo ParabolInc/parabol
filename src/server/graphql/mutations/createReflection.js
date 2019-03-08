@@ -2,19 +2,14 @@ import {GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import shortid from 'shortid'
-import {sendPhaseItemNotActiveError, sendTeamAccessError} from 'server/utils/authorizationErrors'
 import CreateReflectionPayload from 'server/graphql/types/CreateReflectionPayload'
-import {sendMeetingNotFoundError, sendPhaseItemNotFoundError} from 'server/utils/docNotFoundErrors'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import normalizeRawDraftJS from 'universal/validation/normalizeRawDraftJS'
 import publish from 'server/utils/publish'
 import {GROUP, REFLECT, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import CreateReflectionInput from 'server/graphql/types/CreateReflectionInput'
-import unlockAllStagesForPhase from 'server/graphql/mutations/helpers/unlockAllStagesForPhase'
+import unlockAllStagesForPhase from 'universal/utils/unlockAllStagesForPhase'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: CreateReflectionPayload,
@@ -24,7 +19,7 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve (
+  async resolve(
     source,
     {
       input: {content, retroPhaseItemId, sortOrder}
@@ -40,14 +35,14 @@ export default {
     const viewerId = getUserId(authToken)
     const phaseItem = await dataLoader.get('customPhaseItems').load(retroPhaseItemId)
     if (!phaseItem) {
-      return sendPhaseItemNotFoundError(authToken, retroPhaseItemId)
+      return standardError(new Error('Category not found'), {userId: viewerId})
     }
     if (!phaseItem.isActive) {
-      return sendPhaseItemNotActiveError(authToken, retroPhaseItemId)
+      return standardError(new Error('Category not active'), {userId: viewerId})
     }
     const {teamId} = phaseItem
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const team = await dataLoader.get('teams').load(teamId)
     const {meetingId} = team
@@ -55,11 +50,11 @@ export default {
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases} = meeting
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete(REFLECT, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, REFLECT)
+      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
     // VALIDATION

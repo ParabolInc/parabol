@@ -11,14 +11,13 @@ const GroupHelpMenu = ({closePortal}) => (
   <HelpMenuContent closePortal={closePortal}>
     <HelpMenuHeader>{phaseLabelLookup[GROUP]}</HelpMenuHeader>
     <HelpMenuCopy>
-      {'The goal of this phase is to identify common themes and group them for discussion.'}
+      The goal of this phase is to identify common themes and group them for discussion.
     </HelpMenuCopy>
-    <HelpMenuCopy>
-      {'To group, simply drag and drop a card onto another card or group.'}
-    </HelpMenuCopy>
+    <HelpMenuCopy>To group, drag and drop a card onto another card or group.</HelpMenuCopy>
+    <HelpMenuCopy>Tap group headings to edit.</HelpMenuCopy>
     <HelpMenuLink
-      copy='Learn More'
-      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#group'
+      copy="Learn More"
+      href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101#group"
     />
   </HelpMenuContent>
 )

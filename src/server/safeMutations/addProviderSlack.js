@@ -99,6 +99,7 @@ const addProviderSlack = async (code, teamId, userId) => {
     }
     getPubSub().publish(`slackChannelAdded.${teamId}`, {slackChannelAdded})
   }
+  return providerAdded
 }
 
 export default addProviderSlack

@@ -20,6 +20,7 @@ const NavigateMeetingPayload = new GraphQLObjectType({
       type: NewMeetingStage,
       description: 'The stage that the facilitator is now on',
       resolve: async ({meetingId, facilitatorStageId}, args, {dataLoader}) => {
+        if (!meetingId) return null
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const stageRes = findStageById(meeting.phases, facilitatorStageId)
         return stageRes && stageRes.stage
@@ -29,6 +30,7 @@ const NavigateMeetingPayload = new GraphQLObjectType({
       type: NewMeetingStage,
       description: 'The stage that the facilitator left',
       resolve: async ({meetingId, oldFacilitatorStageId}, args, {dataLoader}) => {
+        if (!meetingId) return null
         const meeting = await dataLoader.get('newMeetings').load(meetingId)
         const stageRes = findStageById(meeting.phases, oldFacilitatorStageId)
         return stageRes && stageRes.stage

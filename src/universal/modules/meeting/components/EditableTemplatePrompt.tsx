@@ -1,7 +1,7 @@
 import {EditableTemplatePrompt_prompts} from '__generated__/EditableTemplatePrompt_prompts.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import EditableText from 'universal/components/Editable/EditableText'
+import EditableText from 'universal/components/EditableText'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -35,7 +35,7 @@ class EditableTemplatePrompt extends Component<Props> {
     RenameReflectTemplatePromptMutation(atmosphere, {promptId, question}, {}, onError, onCompleted)
   }
 
-  legitify (value: string) {
+  legitify(value: string) {
     const {promptId, prompts} = this.props
     return new Legitity(value)
       .trim()
@@ -60,7 +60,7 @@ class EditableTemplatePrompt extends Component<Props> {
     return res
   }
 
-  render () {
+  render() {
     const {error, isHover, question} = this.props
     return (
       <EditableText

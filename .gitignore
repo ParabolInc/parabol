@@ -19,3 +19,6 @@ test-report.xml
 webdrivers/
 webpack-assets.json
 **/__generated__/
+.awcache/
+cypress/videos/
+cypress/screenshots/

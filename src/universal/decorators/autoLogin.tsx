@@ -8,6 +8,7 @@ export interface AutoLoginPropsProps extends WithAtmosphereProps, RouteComponent
 
 const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
   class AutoLogin extends Component<AutoLoginPropsProps> {
+    redir: boolean = false
     constructor (props: AutoLoginPropsProps) {
       super(props)
       const {
@@ -17,21 +18,12 @@ const autoLogin = (ComposedComponent: React.ComponentType<any>) => {
       } = props
       const {search} = location
       if (authObj) {
-        const isNew = !authObj.tms
-        if (isNew) {
-          if (window.location.pathname !== '/welcome') {
-            history.push('/welcome')
-            this.redir = true
-          }
-        } else {
-          const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me'
-          history.push(nextUrl)
-          this.redir = true
-        }
+        const nextUrl = new URLSearchParams(search).get('redirectTo') || '/me'
+        // always replace otherwise they could get stuck in a back-button loop
+        history.replace(nextUrl)
+        this.redir = true
       }
     }
-
-    redir: boolean = false
 
     render () {
       if (this.redir) return null

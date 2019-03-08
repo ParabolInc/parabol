@@ -3,6 +3,7 @@ import {DragDropContextProvider} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import styled, {injectGlobal} from 'react-emotion'
 import globalStyles from 'universal/styles/theme/globalStyles'
+import {BrowserRouter as Router} from 'react-router-dom'
 
 import '../../static/css/font-awesome.css'
 import RelayStub from './RelayStub'
@@ -24,19 +25,21 @@ interface Props {
 }
 
 export default class StoryContainer extends Component<Props> {
-  componentWillMount () {
+  componentWillMount() {
     injectGlobal(globalStyles)
   }
 
-  render () {
+  render() {
     return (
-      <DragDropContextProvider backend={HTML5Backend}>
-        <AtmosphereProvider>
-          <RelayStub>
-            <FullPageWrapper>{this.props.children}</FullPageWrapper>
-          </RelayStub>
-        </AtmosphereProvider>
-      </DragDropContextProvider>
+      <Router>
+        <DragDropContextProvider backend={HTML5Backend}>
+          <AtmosphereProvider>
+            <RelayStub>
+              <FullPageWrapper>{this.props.children}</FullPageWrapper>
+            </RelayStub>
+          </AtmosphereProvider>
+        </DragDropContextProvider>
+      </Router>
     )
   }
 }

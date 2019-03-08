@@ -15,8 +15,6 @@ Object {
           "role": "billingLeader",
         },
       ],
-      "retroMeetingsOffered": 3,
-      "retroMeetingsRemaining": 3,
       "tier": "personal",
       "updatedAt": 2017-01-01T08:00:00.000Z,
     },

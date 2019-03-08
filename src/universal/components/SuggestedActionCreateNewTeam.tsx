@@ -1,0 +1,47 @@
+import {SuggestedActionCreateNewTeam_suggestedAction} from '__generated__/SuggestedActionCreateNewTeam_suggestedAction.graphql'
+import React, {Component} from 'react'
+import {createFragmentContainer, graphql} from 'react-relay'
+import {RouteComponentProps, withRouter} from 'react-router'
+import withAtmosphere, {WithAtmosphereProps} from '../decorators/withAtmosphere/withAtmosphere'
+import {PALETTE} from '../styles/paletteV2'
+import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
+import SuggestedActionButton from './SuggestedActionButton'
+import SuggestedActionCard from './SuggestedActionCard'
+import SuggestedActionCopy from './SuggestedActionCopy'
+
+interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
+  suggestedAction: SuggestedActionCreateNewTeam_suggestedAction
+}
+
+class SuggestedActionCreateNewTeam extends Component<Props> {
+  onClick = () => {
+    const {history} = this.props
+    history.push('/newteam')
+  }
+
+  render() {
+    const {suggestedAction} = this.props
+    const {id: suggestedActionId} = suggestedAction
+    return (
+      <SuggestedActionCard
+        backgroundColor={PALETTE.BACKGROUND.GREEN}
+        iconName="group_add"
+        suggestedActionId={suggestedActionId}
+      >
+        <SuggestedActionCopy>
+          Create a new team to collaborate with other groups
+        </SuggestedActionCopy>
+        <SuggestedActionButton onClick={this.onClick}>Create New Team</SuggestedActionButton>
+      </SuggestedActionCard>
+    )
+  }
+}
+
+export default createFragmentContainer(
+  withAtmosphere(withMutationProps(withRouter(SuggestedActionCreateNewTeam))),
+  graphql`
+    fragment SuggestedActionCreateNewTeam_suggestedAction on SuggestedActionCreateNewTeam {
+      id
+    }
+  `
+)

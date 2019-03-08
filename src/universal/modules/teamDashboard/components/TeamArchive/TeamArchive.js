@@ -1,23 +1,16 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import FontAwesome from 'react-fontawesome'
 import {createPaginationContainer} from 'react-relay'
 import {AutoSizer, CellMeasurer, CellMeasurerCache, Grid, InfiniteLoader} from 'react-virtualized'
 import NullableTask from 'universal/components/NullableTask/NullableTask'
 import Helmet from 'react-helmet'
 import TeamArchiveHeader from 'universal/modules/teamDashboard/components/TeamArchiveHeader/TeamArchiveHeader'
-import TeamArchiveSqueezeRoot from 'universal/modules/teamDashboard/containers/TeamArchiveSqueezeRoot'
 import getRallyLink from 'universal/modules/userDashboard/helpers/getRallyLink'
 import appTheme from 'universal/styles/theme/theme'
 import ui from 'universal/styles/ui'
 import withStyles from 'universal/styles/withStyles'
-import {MAX_INT, PERSONAL, TEAM_DASH} from 'universal/utils/constants'
-
-const iconStyle = {
-  fontSize: ui.iconSize,
-  marginRight: '.25rem'
-}
+import {MAX_INT, TEAM_DASH} from 'universal/utils/constants'
 
 const CARD_WIDTH = 256
 const GRID_PADDING = 16
@@ -30,12 +23,12 @@ const getColumnCount = () => {
 }
 
 class TeamArchive extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.columnCount = getColumnCount()
   }
 
-  componentWillUpdate (nextProps) {
+  componentWillUpdate(nextProps) {
     const {
       viewer: {
         archivedTasks: {edges: oldEdges}
@@ -49,13 +42,13 @@ class TeamArchive extends Component {
     this.invalidateOnAddRemove(oldEdges, edges)
   }
 
-  getGridIndex (index) {
+  getGridIndex(index) {
     const rowIndex = Math.floor(index / this.columnCount)
     const columnIndex = index % this.columnCount
     return {rowIndex, columnIndex}
   }
 
-  getIndex (columnIndex, rowIndex) {
+  getIndex(columnIndex, rowIndex) {
     return this.columnCount * rowIndex + columnIndex
   }
 
@@ -82,7 +75,7 @@ class TeamArchive extends Component {
     fixedWidth: true
   })
 
-  invalidateOnAddRemove (oldEdges, edges) {
+  invalidateOnAddRemove(oldEdges, edges) {
     if (
       edges !== oldEdges &&
       edges.length !== oldEdges.length &&
@@ -159,20 +152,12 @@ class TeamArchive extends Component {
     })
   }
 
-  render () {
-    const {
-      relay: {hasMore},
-      styles,
-      team,
-      teamId,
-      viewer
-    } = this.props
-    const {teamName, tier, orgId} = team
+  render() {
+    const {styles, team, teamId, viewer} = this.props
+    if (!team) return null
+    const {teamName} = team
     const {archivedTasks} = viewer
     const {edges} = archivedTasks
-    // Archive squeeze
-    const showArchiveSqueeze = Boolean(tier === PERSONAL && !hasMore())
-
     return (
       <div className={css(styles.root)}>
         <Helmet title={`Team Archive | ${teamName}`} />
@@ -225,21 +210,12 @@ class TeamArchive extends Component {
             </div>
           ) : (
             <div className={css(styles.emptyMsg)}>
-              <FontAwesome name='smile-o' style={iconStyle} />
               <span>
-                {'Hi there! There are zero archived tasks. '}
+                {'🤓'}
+                {' Hi there! There are zero archived tasks. '}
                 {'Nothing to see here. How about a fun rally video? '}
                 <span className={css(styles.link)}>{getRallyLink()}!</span>
               </span>
-            </div>
-          )}
-          {showArchiveSqueeze && (
-            <div className={css(styles.archiveSqueezeBlock)}>
-              <TeamArchiveSqueezeRoot
-                tasksAvailableCount={edges.length}
-                orgId={orgId}
-                teamId={teamId}
-              />
             </div>
           )}
         </div>
@@ -307,7 +283,7 @@ const styleThunk = () => ({
     backgroundColor: '#fff',
     border: `.0625rem solid ${appTheme.palette.mid30l}`,
     borderRadius: '.25rem',
-    fontSize: appTheme.typography.s2,
+    fontSize: appTheme.typography.s3,
     display: 'inline-block',
     margin: ui.dashGutterSmall,
     padding: '1rem',
@@ -350,21 +326,20 @@ export default createPaginationContainer(
     fragment TeamArchive_team on Team {
       teamName: name
       orgId
-      tier
     }
   `,
   {
     direction: 'forward',
-    getConnectionFromProps (props) {
+    getConnectionFromProps(props) {
       return props.viewer && props.viewer.archivedTasks
     },
-    getFragmentVariables (prevVars, totalCount) {
+    getFragmentVariables(prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       }
     },
-    getVariables (props, {count, cursor}, fragmentVariables) {
+    getVariables(props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

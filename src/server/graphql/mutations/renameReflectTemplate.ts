@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError, sendDuplciateNameTemplateError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 import RenameReflectTemplatePayload from '../types/RenameReflectTemplatePayload'
 
 const renameReflectTemplatePrompt = {
@@ -23,10 +23,11 @@ const renameReflectTemplatePrompt = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const template = await r.table('ReflectTemplate').get(templateId)
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!template || !isTeamMember(authToken, template.teamId) || !template.isActive) {
-      return sendTeamAccessError(authToken, templateId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -38,7 +39,7 @@ const renameReflectTemplatePrompt = {
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
     if (allTemplates.find((template) => template.name === normalizedName)) {
-      return sendDuplciateNameTemplateError(authToken, templateId)
+      return standardError(new Error('Duplicate template name'), {userId: viewerId})
     }
 
     // RESOLUTION

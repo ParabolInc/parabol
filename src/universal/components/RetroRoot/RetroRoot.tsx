@@ -1,23 +1,19 @@
 import React from 'react'
 import {graphql} from 'react-relay'
-import {Dispatch} from 'redux'
-import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import LoadingView from 'universal/components/LoadingView/LoadingView'
+import {RouteComponentProps, withRouter} from 'react-router-dom'
+import NewMeetingWithLocalState from 'universal/components/NewMeetingWithLocalState'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
-import RelayTransitionGroup from 'universal/components/RelayTransitionGroup'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import {cacheConfig, RETROSPECTIVE} from 'universal/utils/constants'
-import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription'
 import NewAuthTokenSubscription from 'universal/subscriptions/NewAuthTokenSubscription'
+import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
+import OrganizationSubscription from 'universal/subscriptions/OrganizationSubscription'
 import TaskSubscription from 'universal/subscriptions/TaskSubscription'
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription'
-import NotificationSubscription from 'universal/subscriptions/NotificationSubscription'
 import TeamSubscription from 'universal/subscriptions/TeamSubscription'
-import {RouteComponentProps, withRouter} from 'react-router-dom'
-import {connect} from 'react-redux'
-import NewMeetingWithLocalState from 'universal/components/NewMeetingWithLocalState'
+import {cacheConfig, RETROSPECTIVE} from 'universal/utils/constants'
+import renderQuery from '../../utils/relay/renderQuery'
 
 const query = graphql`
   query RetroRootQuery($teamId: ID!, $meetingType: MeetingTypeEnum!) {
@@ -38,14 +34,12 @@ const subscriptions = [
 
 interface Props
   extends WithAtmosphereProps,
-    RouteComponentProps<{localPhase: string; teamId: string}> {
-  dispatch: Dispatch<any>
-}
+    RouteComponentProps<{localPhase: string; teamId: string}> {}
 
 const meetingType = RETROSPECTIVE
-const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
+const RetroRoot = ({atmosphere, history, location, match}: Props) => {
   const {
-    params: {localPhase, teamId}
+    params: {localPhase, teamId = 'demoTeam'}
   } = match
   return (
     <QueryRenderer
@@ -54,24 +48,10 @@ const RetroRoot = ({atmosphere, dispatch, history, location, match}: Props) => {
       query={query}
       variables={{teamId, meetingType}}
       subscriptions={subscriptions}
-      subParams={{dispatch, history, location}}
-      render={(readyState) => (
-        <RelayTransitionGroup
-          readyState={readyState}
-          error={<ErrorComponent height={'14rem'} />}
-          loading={<LoadingView minHeight='50vh' />}
-          ready={
-            // @ts-ignore
-            <NewMeetingWithLocalState
-              localPhase={localPhase}
-              match={match}
-              meetingType={meetingType}
-            />
-          }
-        />
-      )}
+      subParams={{history, location}}
+      render={renderQuery(NewMeetingWithLocalState, {props: {localPhase, match, meetingType}})}
     />
   )
 }
 
-export default (connect() as any)(withAtmosphere(withRouter(RetroRoot)))
+export default withAtmosphere(withRouter(RetroRoot))

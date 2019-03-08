@@ -4,6 +4,7 @@ import React, {Component} from 'react'
 import NullCard from 'universal/components/NullCard/NullCard'
 import OutcomeCardContainer from 'universal/modules/outcomeCard/containers/OutcomeCard/OutcomeCardContainer'
 import {createFragmentContainer} from 'react-relay'
+import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 
 class NullableTask extends Component {
   static propTypes = {
@@ -15,7 +16,6 @@ class NullableTask extends Component {
     isPreview: PropTypes.bool,
     // used by react-virtualized for archived cards. can remove when we remove aphrodite
     measure: PropTypes.func,
-    myUserId: PropTypes.string,
     task: PropTypes.object
   }
 
@@ -23,7 +23,7 @@ class NullableTask extends Component {
     contentState: convertFromRaw(JSON.parse(this.props.task.content))
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this._mounted = true
     if (this.props.measure) {
       setTimeout(() => {
@@ -34,7 +34,7 @@ class NullableTask extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.task.content !== this.props.task.content) {
       this.setState({
         contentState: convertFromRaw(JSON.parse(nextProps.task.content))
@@ -42,7 +42,7 @@ class NullableTask extends Component {
     }
   }
 
-  shouldComponentUpdate (nextProps) {
+  shouldComponentUpdate(nextProps) {
     return Boolean(
       !nextProps.isPreview ||
         nextProps.task.status !== this.props.task.status ||
@@ -50,17 +50,17 @@ class NullableTask extends Component {
     )
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this._mounted = false
   }
-  render () {
-    const {area, handleAddTask, hasDragStyles, isAgenda, myUserId, task, isDragging} = this.props
+  render() {
+    const {area, atmosphere, handleAddTask, hasDragStyles, isAgenda, task, isDragging} = this.props
     const {contentState} = this.state
     const {
       createdBy,
       assignee: {preferredName}
     } = task
-    const showOutcome = contentState.hasText() || createdBy === myUserId
+    const showOutcome = contentState.hasText() || createdBy === atmosphere.viewerId
     return showOutcome ? (
       <OutcomeCardContainer
         area={area}
@@ -70,7 +70,6 @@ class NullableTask extends Component {
         isDragging={isDragging}
         isAgenda={isAgenda}
         task={task}
-        myUserId={myUserId}
       />
     ) : (
       <NullCard preferredName={preferredName} />
@@ -79,7 +78,7 @@ class NullableTask extends Component {
 }
 
 export default createFragmentContainer(
-  NullableTask,
+  withAtmosphere(NullableTask),
   graphql`
     fragment NullableTask_task on Task {
       content

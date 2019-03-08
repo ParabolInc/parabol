@@ -10,20 +10,20 @@ const TeamSettingsToggleNav = (props) => {
     return area === activeKey
       ? undefined
       : () => {
-        history.push(`/team/${teamId}/settings/${area}`)
-      }
+          history.push(`/team/${teamId}/settings/${area}`)
+        }
   }
 
   const items = [
     {
       label: 'Team',
-      icon: 'users',
+      icon: 'group',
       isActive: activeKey === '',
       onClick: makeOnClick()
     },
     {
       label: 'Integrations',
-      icon: 'puzzle-piece',
+      icon: 'extension',
       isActive: activeKey === 'integrations',
       onClick: makeOnClick('integrations')
     }

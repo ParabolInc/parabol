@@ -32,13 +32,13 @@ class MenuWithShortcuts extends Component {
     active: null
   }
 
-  componentWillMount () {
+  componentWillMount() {
     const {children, defaultActiveIdx} = this.props
     const childArr = Children.toArray(children)
     this.state.active = defaultActiveIdx || childArr.findIndex((child) => isValidMenuItem(child))
   }
 
-  componentDidMount () {
+  componentDidMount() {
     if (!this.props.keepParentFocus) {
       this.menuRef.focus()
     }
@@ -89,9 +89,10 @@ class MenuWithShortcuts extends Component {
     })
   }
 
-  makeSmartChildren (children, active) {
+  makeSmartChildren(children, active) {
     const {closePortal} = this.props
-    return Children.map(children, (child, idx) => {
+    // toArray removes bools whereas map does not
+    return Children.toArray(children).map((child, idx) => {
       if (isValidMenuItem(child)) {
         const activate = () => this.setActiveIndex(idx)
         return cloneElement(child, {
@@ -133,12 +134,12 @@ class MenuWithShortcuts extends Component {
     return handled
   }
 
-  render () {
+  render() {
     const {ariaLabel, children} = this.props
     const {active} = this.state
     return (
       <MenuStyles
-        role='menu'
+        role="menu"
         aria-label={ariaLabel}
         tabIndex={-1}
         onMouseDown={this.handleMouseDown}

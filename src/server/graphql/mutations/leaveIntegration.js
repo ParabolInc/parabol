@@ -6,10 +6,7 @@ import archiveTasksByGitHubRepo from 'server/safeMutations/archiveTasksByGitHubR
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import getPubSub from 'server/utils/getPubSub'
 import {GITHUB} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendIntegrationNotFoundError} from 'server/utils/docNotFoundErrors'
-import {sendAlreadyUpdatedIntegrationError} from 'server/utils/alreadyMutatedErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: new GraphQLNonNull(LeaveIntegrationPayload),
@@ -20,7 +17,7 @@ export default {
       description: 'the id of the integration to remove'
     }
   },
-  async resolve (source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve(source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink()
     const {id: localId, type: service} = fromGlobalId(globalId)
 
@@ -28,34 +25,20 @@ export default {
     const userId = getUserId(authToken)
     const integration = await r.table(service).get(localId)
     if (!integration) {
-      return sendIntegrationNotFoundError(globalId)
+      return standardError(new Error('Integration not found'), {userId})
     }
     const {adminUserId, teamId, userIds} = integration
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId})
     }
 
     // VALIDATION
-    if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
-    }
-
     if (!userIds.includes(userId)) {
-      const breadcrumb = {
-        message: 'You are not a part of this integration',
-        category: 'Already mutated',
-        data: {globalId}
-      }
-      return sendAuthRaven(authToken, 'Easy there', breadcrumb)
+      return standardError(new Error('You are not a part of this integration'), {userId})
     }
 
     if (userId === adminUserId) {
-      const breadcrumb = {
-        message: 'The repo admin cannot leave the repo',
-        category: 'Leave integration',
-        data: {globalId}
-      }
-      return sendAuthRaven(authToken, 'Hold up', breadcrumb)
+      return standardError(new Error('The repo admin cannot leave the repo'), {userId})
     }
 
     // RESOLUTION
@@ -74,7 +57,7 @@ export default {
       .default(null)
 
     if (!updatedIntegration) {
-      return sendAlreadyUpdatedIntegrationError(authToken, globalId)
+      return standardError(new Error('Integration already updated'), {userId})
     }
 
     const {isActive, nameWithOwner} = updatedIntegration

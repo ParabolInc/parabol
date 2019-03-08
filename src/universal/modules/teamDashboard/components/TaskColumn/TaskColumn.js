@@ -21,10 +21,6 @@ import overflowTouch from 'universal/styles/helpers/overflowTouch'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import LoadableSelectTeamDropdown from 'universal/components/LoadableSelectTeamDropdown'
 
-// The `ScrollZone` component manages an overflowed block-level element,
-// scrolling its contents when another element is dragged close to its edges.
-const ScrollZone = withScrolling('div')
-
 const originAnchor = {
   vertical: 'bottom',
   horizontal: 'right'
@@ -71,7 +67,7 @@ const ColumnBody = styled('div')({
   position: 'relative'
 })
 
-const columnInner = {
+const ColumnInner = styled('div')({
   ...overflowTouch,
   display: 'flex',
   flexDirection: 'column',
@@ -86,7 +82,11 @@ const columnInner = {
   '&::-webkit-scrollbar-thumb': {
     // Define
   }
-}
+})
+
+// The `ScrollZone` component manages an overflowed block-level element,
+// scrolling its contents when another element is dragged close to its edges.
+const ScrollZone = withScrolling(ColumnInner)
 
 const statusLabelBlock = {
   alignItems: 'center',
@@ -205,7 +205,7 @@ class TaskColumn extends Component {
     UpdateTaskMutation(atmosphere, updatedTask, area)
   }
 
-  render () {
+  render() {
     const {
       area,
       atmosphere,
@@ -230,7 +230,7 @@ class TaskColumn extends Component {
           </div>
         </ColumnHeader>
         <ColumnBody>
-          <ScrollZone className={css(columnInner)}>
+          <ScrollZone>
             {tasks.map((task) => (
               <DraggableTask
                 key={`teamCard${task.id}`}

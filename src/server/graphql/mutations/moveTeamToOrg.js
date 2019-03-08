@@ -2,9 +2,9 @@ import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import adjustUserCount from 'server/billing/helpers/adjustUserCount'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId, isSuperUser} from 'server/utils/authorization'
-import {ADD_USER} from 'server/utils/serverConstants'
+import {ADD_USER, AUTO_PAUSE_USER} from 'server/utils/serverConstants'
 import {BILLING_LEADER} from 'universal/utils/constants'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: GraphQLString,
@@ -19,51 +19,39 @@ export default {
       description: 'The ID of the organization you want to move the team to'
     }
   },
-  async resolve (source, {teamId, orgId}, {authToken}) {
+  async resolve(source, {teamId, orgId}, {authToken}) {
     const r = getRethink()
     // AUTH
     const userId = getUserId(authToken)
     const su = isSuperUser(authToken)
 
     // VALIDATION
-    const {user, team, org} = await r({
-      user: r.table('User').get(userId),
+    const {team, org, newOrganizationUser} = await r({
       team: r.table('Team').get(teamId),
-      org: r.table('Organization').get(orgId)
+      org: r.table('Organization').get(orgId),
+      newOrganizationUser: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({orgId, removedAt: null})
+        .nth(0)
     })
-
-    const {userOrgs} = user
-    const isBillingLeaderForOrg = userOrgs.find(
-      (userOrg) => userOrg.id === orgId && userOrg.role === BILLING_LEADER
-    )
+    const isBillingLeaderForOrg = newOrganizationUser.role === BILLING_LEADER
     if (!isBillingLeaderForOrg && !su) {
-      const breadcrumb = {
-        message: 'You must be a billing leader for the organization you want to move the team to',
-        category: 'Move Team To Org',
-        data: {teamId, orgId}
-      }
-      return sendAuthRaven(authToken, 'Move failed', breadcrumb)
+      return standardError(new Error('Not organization leader'), {userId})
     }
     const {orgId: currentOrgId} = team
-    const isBillingLeaderForTeam = userOrgs.find(
-      (userOrg) => userOrg.id === currentOrgId && userOrg.role === BILLING_LEADER
-    )
+    const oldOrganizationUser = await r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({orgId: currentOrgId, removedAt: null})
+      .nth(0)
+    const isBillingLeaderForTeam = oldOrganizationUser.role === BILLING_LEADER
     if (!isBillingLeaderForTeam && !su) {
-      const breadcrumb = {
-        message: 'You must be a billing leader for the org that owns that team',
-        category: 'Move Team To Org',
-        data: {teamId, orgId}
-      }
-      return sendAuthRaven(authToken, 'Move failed', breadcrumb)
+      return standardError(new Error('Not organization leader'), {userId})
     }
 
     if (orgId === currentOrgId && !su) {
-      const breadcrumb = {
-        message: 'That team already belongs to the organization',
-        category: 'Move Team To Org',
-        data: {teamId, orgId}
-      }
-      return sendAuthRaven(authToken, 'Move failed', breadcrumb)
+      return standardError(new Error('Team already on organization'), {userId})
     }
 
     // RESOLUTION
@@ -72,10 +60,6 @@ export default {
         .table('Notification')
         .getAll(currentOrgId, {index: 'orgId'})
         .filter({teamId})
-        .update({orgId}),
-      orgApprovals: r
-        .table('OrgApproval')
-        .getAll(teamId, {index: 'teamId'})
         .update({orgId}),
       team: r
         .table('Team')
@@ -87,53 +71,33 @@ export default {
         }),
       newToOrgUserIds: r
         .table('TeamMember')
-        .getAll(teamId, {index: 'teamId'})('userId')
-        .coerceTo('array')
-        .do((userIds) => {
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isNotRemoved: true})
+        .filter((teamMember) => {
           return r
-            .table('User')
-            .getAll(r.args(userIds), {index: 'id'})
-            .filter((newUser) =>
-              newUser('userOrgs')
-                .contains((userOrg) => userOrg('id').eq(orgId))
-                .not()
-                .default(true)
-            )('id')
-        })
+            .table('OrganizationUser')
+            .getAll(teamMember('userId'), {index: 'userId'})
+            .filter({orgId, removedAt: null})
+            .count()
+            .eq(0)
+        })('userId')
         .coerceTo('array')
     })
 
-    // This part is untested. We should probably test this before we give it to users
-    const inactiveNewToOrgUserIds = newToOrgUserIds.filter((t) => t.inactive)
-    const activeNewToOrgUserIds = newToOrgUserIds.filter((t) => !t.inactive)
-    await Promise.all(
-      activeNewToOrgUserIds.map((newUserId) => {
-        return adjustUserCount(newUserId, orgId, ADD_USER)
-      })
-    )
-
-    await r(inactiveNewToOrgUserIds).forEach((newUserId) => {
-      return r({
-        user: r
-          .table('User')
-          .get(newUserId)
-          .update((userRow) => ({
-            userOrgs: userRow('userOrgs').add({id: orgId, role: null})
-          })),
-        org: r
-          .table('Organization')
-          .get(orgId)
-          .update((orgRow) => ({
-            orgUsers: orgRow('orgUsers').append({
-              id: newUserId,
-              inactive: true
-            }),
-            updatedAt: new Date()
-          }))
-      })
+    newToOrgUserIds.map((newUserId) => {
+      return adjustUserCount(newUserId, orgId, ADD_USER)
     })
-    const inactiveAdded = inactiveNewToOrgUserIds.length
-    const activeAdded = activeNewToOrgUserIds.length
+    const inactiveUserIds = await r
+      .table('User')
+      .getAll(newToOrgUserIds, {index: 'id'})
+      .filter({inactive: true})('id')
+
+    inactiveUserIds.map((newInactiveUserId) => {
+      return adjustUserCount(newInactiveUserId, orgId, AUTO_PAUSE_USER)
+    })
+
+    const inactiveAdded = inactiveUserIds.length
+    const activeAdded = newToOrgUserIds.length - inactiveAdded
     return `${inactiveAdded} inactive users and ${activeAdded} active users added to org ${orgId}`
   }
 }

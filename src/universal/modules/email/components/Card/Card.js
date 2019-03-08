@@ -1,4 +1,4 @@
-import {Editor, EditorState} from 'draft-js'
+import {convertFromRaw, Editor, EditorState} from 'draft-js'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import editorDecorators from 'universal/components/TaskEditor/decorators'
@@ -10,19 +10,27 @@ import isTaskPrivate from 'universal/utils/isTaskPrivate'
 import EmptySpace from '../EmptySpace/EmptySpace'
 
 class Card extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     const {content} = props
     const contentState = truncateCard(content)
     this.editorState = EditorState.createWithContent(
       contentState,
-      editorDecorators(this.getEditorState)
+      editorDecorators(this.getEditorState, this.setEditorState)
     )
   }
 
   getEditorState = () => this.editorState
+  setEditorState = (content) => {
+    const contentState = convertFromRaw(JSON.parse(content))
+    this.editorState = EditorState.createWithContent(
+      contentState,
+      editorDecorators(this.getEditorState, this.setEditorState)
+    )
+    this.forceUpdate()
+  }
 
-  render () {
+  render() {
     const {status, tags} = this.props
     const isPrivate = isTaskPrivate(tags)
     const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF'
@@ -56,7 +64,7 @@ class Card extends Component {
     }
 
     return (
-      <table style={ui.emailTableBase} width='100%'>
+      <table style={ui.emailTableBase} width="100%">
         <tbody>
           <tr>
             <td style={cellStyle}>

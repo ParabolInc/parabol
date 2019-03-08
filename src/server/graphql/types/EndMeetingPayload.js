@@ -1,4 +1,4 @@
-import {GraphQLList, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
 import {resolveMeeting, resolveTeam} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
 import Task from 'server/graphql/types/Task'
@@ -22,6 +22,10 @@ const EndMeetingPayload = new GraphQLObjectType({
     meeting: {
       type: Meeting,
       resolve: resolveMeeting
+    },
+    removedSuggestedActionId: {
+      type: GraphQLID,
+      description: 'The ID of the suggestion to try an action meeting, if tried'
     }
   })
 })

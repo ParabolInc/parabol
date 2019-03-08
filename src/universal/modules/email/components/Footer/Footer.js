@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import EmptySpace from '../EmptySpace/EmptySpace'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
+import {emailBodyColor, emailFontFamily, emailTableBase} from 'universal/styles/email'
+import emailDir from 'universal/modules/email/emailDir'
 
 const Footer = (props) => {
   const tableStyle = {
-    ...ui.emailTableBase,
-    backgroundColor: ui.emailBodyColor,
+    ...emailTableBase,
+    backgroundColor: emailBodyColor,
     color: props.color
   }
 
@@ -17,51 +17,42 @@ const Footer = (props) => {
   }
 
   const cellStyles = {
-    backgroundColor: ui.emailBodyColor,
+    backgroundColor: emailBodyColor,
     color: props.color,
-    fontFamily: ui.emailFontFamily,
+    fontFamily: emailFontFamily,
+    fontSize: 13,
     textAlign: 'center'
   }
 
   return (
-    <table width='100%' style={tableStyle}>
+    <table width="100%" style={tableStyle}>
       <tbody>
         <tr>
           <td>
-            <EmptySpace height={20} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={20} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={20} />
+            <EmptySpace height={48} />
           </td>
         </tr>
 
         <tr>
-          <td height='1' width='20' style={spaceStyle}>
+          <td height="1" width="20" style={spaceStyle}>
             &nbsp;
           </td>
 
           <td>
-            <table width='560'>
+            <table width="560">
               <tbody>
                 <tr>
                   <td style={cellStyles}>
                     <EmptySpace height={10} />
-                    <img src='/static/images/brand/mark-color@3x.png' height='28' width='31' />
+                    <img src={`${emailDir}mark-color@3x.png`} height="28" width="31" />
                     <EmptySpace height={10} />
-                    Crafted with care by the folks at{' '}
-                    <a
-                      style={{
-                        color: appTheme.palette.warm,
-                        textDecoration: 'none'
-                      }}
-                      href='http://www.parabol.co/'
-                    >
-                      {' '}
-                      Parabol
-                    </a>.
+                    Crafted with care by the folks at Parabol
                     <EmptySpace height={10} />
                   </td>
                 </tr>
@@ -69,20 +60,20 @@ const Footer = (props) => {
             </table>
           </td>
 
-          <td height='1' width='20' style={spaceStyle}>
+          <td height="1" width="20" style={spaceStyle}>
             &nbsp;
           </td>
         </tr>
 
         <tr>
           <td>
-            <EmptySpace height={32} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={32} />
+            <EmptySpace height={48} />
           </td>
           <td>
-            <EmptySpace height={32} />
+            <EmptySpace height={48} />
           </td>
         </tr>
       </tbody>

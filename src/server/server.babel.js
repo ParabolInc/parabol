@@ -1,4 +1,8 @@
 require('./babelRegister')
+
+// for sentry
+global.__rootdir__ = __dirname || process.cwd()
+
 const ignorePatterns = [
   '\\/\\.',
   '~$',

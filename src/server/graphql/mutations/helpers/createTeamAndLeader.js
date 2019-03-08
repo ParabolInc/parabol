@@ -3,7 +3,6 @@ import {auth0ManagementClient} from 'server/utils/auth0Helpers'
 import {
   ACTION,
   AGENDA_ITEMS,
-  BILLING_LEADER,
   CHECKIN,
   DISCUSS,
   FIRST_CALL,
@@ -18,20 +17,25 @@ import {
   VOTE
 } from 'universal/utils/constants'
 import insertNewTeamMember from 'server/safeMutations/insertNewTeamMember'
-import addUserToTMSUserOrg from 'server/safeMutations/addUserToTMSUserOrg'
 import shortid from 'shortid'
 import makeRetroTemplates from 'server/graphql/mutations/helpers/makeRetroTemplates'
+import adjustUserCount from 'server/billing/helpers/adjustUserCount'
+import {ADD_USER} from 'server/utils/serverConstants'
+import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
+import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 
-// used for addorg, addTeam, createFirstTeam
-export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
+// used for addorg, addTeam
+export default async function createTeamAndLeader(userId, newTeam) {
   const r = getRethink()
-
+  const now = new Date()
   const {id: teamId, orgId} = newTeam
   const organization = await r.table('Organization').get(orgId)
   const {tier} = organization
   const verifiedTeam = {
     ...newTeam,
     activeFacilitator: null,
+    createdAt: now,
+    createdBy: userId,
     facilitatorPhase: LOBBY,
     facilitatorPhaseItem: null,
     isArchived: false,
@@ -41,12 +45,7 @@ export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
     meetingPhaseItem: null,
     tier
   }
-  const options = {
-    returnChanges: true,
-    role: isNewOrg ? BILLING_LEADER : null
-  }
   const {phaseItems, templates} = makeRetroTemplates(teamId)
-
   const meetingSettings = [
     {
       id: shortid.generate(),
@@ -81,14 +80,32 @@ export default async function createTeamAndLeader (userId, newTeam, isNewOrg) {
       isLead: true,
       checkInOrder: 0
     }),
+    event: r.table('TimelineEvent').insert({
+      id: shortid.generate(),
+      // + 5 to make sure it comes after parabol joined event
+      createdAt: new Date(Date.now() + 5),
+      interactionCount: 0,
+      seenCount: 0,
+      type: CREATED_TEAM,
+      userId,
+      teamId,
+      orgId
+    }),
     // add teamId to user tms array
-    tms: addUserToTMSUserOrg(userId, teamId, orgId, options)('changes')(0)('new_val')('tms')
+    user: addTeamIdToTMS(userId, teamId),
+    organizationUser: r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({removedAt: null, orgId})
+      .nth(0)
+      .default(null)
   })
 
-  const {tms} = res
+  const {organizationUser} = res
+  if (!organizationUser) {
+    await adjustUserCount(userId, orgId, ADD_USER)
+  }
 
-  // no need to wait for auth0
+  const tms = await r.table('User').get(userId)('tms')
   auth0ManagementClient.users.updateAppMetadata({id: userId}, {tms})
-
-  return res
 }

@@ -2,18 +2,21 @@ import {NewMeetingSummary_viewer} from '__generated__/NewMeetingSummary_viewer.g
 import React from 'react'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
-import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
 import ui from 'universal/styles/ui'
 import {MEETING_SUMMARY_LABEL} from 'universal/utils/constants'
 import makeHref from 'universal/utils/makeHref'
 import {meetingTypeToLabel} from 'universal/utils/meetings/lookups'
+import {demoTeamId} from 'universal/modules/demo/initDB'
+import NewMeetingSummaryEmail from 'universal/modules/email/components/SummaryEmail/NewMeetingSummaryEmail'
 
 interface Props {
   viewer: NewMeetingSummary_viewer
+  urlAction?: 'csv' | undefined
 }
 
 const NewMeetingSummary = (props: Props) => {
   const {
+    urlAction,
     viewer: {newMeeting}
   } = props
   const {
@@ -29,8 +32,10 @@ const NewMeetingSummary = (props: Props) => {
     <div style={{backgroundColor: ui.emailBackgroundColor, minHeight: '100vh'}}>
       <Helmet title={title} />
       <NewMeetingSummaryEmail
+        urlAction={urlAction}
+        isDemo={teamId === demoTeamId}
         meeting={newMeeting}
-        referrer='meeting'
+        referrer="meeting"
         meetingUrl={meetingUrl}
         teamDashUrl={teamDashUrl}
       />
@@ -77,6 +82,9 @@ export default createFragmentContainer(
               id
               content
               sortOrder
+              phaseItem {
+                question
+              }
             }
           }
         }

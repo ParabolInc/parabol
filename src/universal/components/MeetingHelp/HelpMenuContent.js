@@ -1,26 +1,25 @@
 import styled from 'react-emotion'
 import appTheme from 'universal/styles/theme/appTheme'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import ui from 'universal/styles/ui'
 import React from 'react'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const Content = styled('div')({
   fontSize: appTheme.typography.s2,
   lineHeight: '1.5',
   position: 'relative',
-  padding: '.75rem 1.25rem',
-  width: '15rem'
+  padding: '.75rem 1rem',
+  width: '17rem'
 })
 
-const MenuClose = styled(StyledFontAwesome)({
-  color: ui.palette.warm,
+const MenuClose = styled(Icon)({
+  color: ui.palette.midGray,
   cursor: 'pointer',
-  height: ui.iconSize,
-  fontSize: ui.iconSize,
+  fontSize: MD_ICONS_SIZE_18,
   position: 'absolute',
   right: '.25rem',
   top: '-.25rem',
-  width: ui.iconSize,
   '&:hover': {
     opacity: '.5'
   }
@@ -30,7 +29,9 @@ const HelpMenuContent = (props) => {
   const {children, closePortal} = props
   return (
     <Content>
-      <MenuClose name='times-circle' onClick={closePortal} title='Close help menu' />
+      <MenuClose onClick={closePortal} title="Close help menu">
+        close
+      </MenuClose>
       {children}
     </Content>
   )

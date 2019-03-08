@@ -1,44 +1,17 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import SetOrgUserRolePayload from 'server/graphql/types/SetOrgUserRolePayload'
-import {getUserOrgDoc, isOrgBillingLeader} from 'server/utils/authorization'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import shortid from 'shortid'
 import {
   BILLING_LEADER,
   billingLeaderTypes,
   ORGANIZATION,
-  PROMOTE_TO_BILLING_LEADER,
-  REQUEST_NEW_USER
+  PROMOTE_TO_BILLING_LEADER
 } from 'universal/utils/constants'
-import {sendOrgLeadAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
 import {sendSegmentIdentify} from 'server/utils/sendSegmentEvent'
-import approveToOrg from 'server/graphql/mutations/approveToOrg'
-
-const approveToOrgForUserId = async (orgId, userId, authToken, dataLoader) => {
-  const r = getRethink()
-  const outstandingNotifications = await r
-    .table('Notification')
-    .getAll(orgId, {index: 'orgId'})
-    .filter({
-      type: REQUEST_NEW_USER,
-      inviterUserId: userId
-    })
-    .default([])
-  return Promise.all(
-    outstandingNotifications.map((notification) => {
-      // a quick & dirty way to accomplish all the approvals.
-      // the person that promoted someone to billing leader is the same person that approves the invitees
-      // the updates are sent via socket, not mutation response
-      return approveToOrg.resolve(
-        {},
-        {email: notification.inviteeEmail, orgId},
-        {authToken, dataLoader}
-      )
-    })
-  )
-}
+import standardError from 'server/utils/standardError'
 
 export default {
   type: SetOrgUserRolePayload,
@@ -57,87 +30,50 @@ export default {
       description: 'the user’s new role'
     }
   },
-  async resolve (source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {orgId, userId, role}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+
     // AUTH
-    const userOrgDoc = await getUserOrgDoc(authToken.sub, orgId)
-    if (!isOrgBillingLeader(userOrgDoc)) {
-      return sendOrgLeadAccessError(authToken, userOrgDoc)
+    const viewerId = getUserId(authToken)
+    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader, {clearCache: true}))) {
+      return standardError(new Error('Must be the organization leader'), {userId: viewerId})
     }
 
     // VALIDATION
     if (role && role !== BILLING_LEADER) {
-      const breadcrumb = {
-        message: 'Invalid role',
-        category: 'Unauthorized Access',
-        data: {role, orgId, userId}
-      }
-      return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
+      return standardError(new Error('Invalid role'), {userId: viewerId})
     }
     // if someone is leaving, make sure there is someone else to take their place
-    if (userId === authToken.sub) {
+    if (userId === viewerId) {
       const leaderCount = await r
-        .table('Organization')
-        .get(orgId)('orgUsers')
-        .filter({
-          role: BILLING_LEADER
-        })
+        .table('OrganizationUser')
+        .getAll(orgId, {index: 'orgId'})
+        .filter({removedAt: null, role: BILLING_LEADER})
         .count()
       if (leaderCount === 1) {
-        const breadcrumb = {
-          message: 'You’re the last leader, you can’t give that up',
-          category: 'Unauthorized Access',
-          data: {role, orgId, userId}
-        }
-        return sendAuthRaven(authToken, 'Set org user role', breadcrumb)
+        return standardError(new Error('You’re the last leader, you can’t give that up'), {
+          userId: viewerId
+        })
       }
     }
 
+    // no change required
+    const organizationUser = await r
+      .table('OrganizationUser')
+      .getAll(userId, {index: 'userId'})
+      .filter({orgId, removedAt: null})
+      .nth(0)
+    if (organizationUser.role === role) return null
+    const {id: organizationUserId} = organizationUser
     // RESOLUTION
-    const {organizationChanges} = await r({
-      userOrgsUpdate: r
-        .table('User')
-        .get(userId)
-        .update((user) => ({
-          userOrgs: user('userOrgs').map((userOrg) => {
-            return r.branch(
-              userOrg('id').eq(orgId),
-              userOrg.merge({
-                role
-              }),
-              userOrg
-            )
-          }),
-          updatedAt: now
-        })),
-      organizationChanges: r
-        .table('Organization')
-        .get(orgId)
-        .update(
-          (org) => ({
-            orgUsers: org('orgUsers').map((orgUser) => {
-              return r.branch(
-                orgUser('id').eq(userId),
-                orgUser.merge({
-                  role
-                }),
-                orgUser
-              )
-            }),
-            updatedAt: now
-          }),
-          {returnChanges: true}
-        )('changes')(0)
-    })
-    const {old_val: oldOrg, new_val: organization} = organizationChanges
-    const oldUser = oldOrg.orgUsers.find((orgUser) => orgUser.id === userId)
-    const newUser = organization.orgUsers.find((orgUser) => orgUser.id === userId)
-    if (oldUser.role === newUser.role) {
-      return null
-    }
+    await r
+      .table('OrganizationUser')
+      .get(organizationUserId)
+      .update({role})
+
     if (role === BILLING_LEADER) {
       const promotionNotificationId = shortid.generate()
       const promotionNotification = {
@@ -147,7 +83,6 @@ export default {
         orgId,
         userIds: [userId]
       }
-      await approveToOrgForUserId(orgId, userId, authToken, dataLoader)
       const {existingNotificationIds} = await r({
         insert: r.table('Notification').insert(promotionNotification),
         existingNotificationIds: r
@@ -164,7 +99,7 @@ export default {
       })
       const notificationIdsAdded = existingNotificationIds.concat(promotionNotificationId)
       // add the org to the list of owned orgs
-      const data = {orgId, userId, notificationIdsAdded}
+      const data = {orgId, userId, organizationUserId, notificationIdsAdded}
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
       await sendSegmentIdentify(userId)
@@ -194,7 +129,7 @@ export default {
           .default([])
       })
       const notificationsRemoved = removedNotifications.concat(oldPromotion)
-      const data = {orgId, userId, notificationsRemoved}
+      const data = {orgId, userId, organizationUserId, notificationsRemoved}
       publish(ORGANIZATION, userId, SetOrgUserRolePayload, data, subOptions)
       publish(ORGANIZATION, orgId, SetOrgUserRolePayload, data, subOptions)
       await sendSegmentIdentify(userId)

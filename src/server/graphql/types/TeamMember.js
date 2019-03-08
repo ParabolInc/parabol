@@ -6,7 +6,6 @@ import Assignee, {assigneeInterfaceFields} from 'server/graphql/types/Assignee'
 import GraphQLEmailType from 'server/graphql/types/GraphQLEmailType'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
-import PossibleTeamMember from 'server/graphql/types/PossibleTeamMember'
 import {TaskConnection} from 'server/graphql/types/Task'
 import Team from 'server/graphql/types/Team'
 import User from 'server/graphql/types/User'
@@ -16,7 +15,7 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 const TeamMember = new GraphQLObjectType({
   name: 'TeamMember',
   description: 'A member of a team',
-  interfaces: () => [PossibleTeamMember, Assignee],
+  interfaces: () => [Assignee],
   fields: () => ({
     ...assigneeInterfaceFields(),
     id: {
@@ -58,8 +57,12 @@ const TeamMember = new GraphQLObjectType({
           return source.isConnected
         }
         const {userId} = source
-        const {connectedSockets} = await dataLoader.get('users').load(userId)
-        return Array.isArray(connectedSockets) && connectedSockets.length > 0
+        if (userId) {
+          const {connectedSockets} = await dataLoader.get('users').load(userId)
+          return Array.isArray(connectedSockets) && connectedSockets.length > 0
+        }
+        // should only hit this in dev
+        return false
       }
     },
     isCheckedIn: {
@@ -97,16 +100,15 @@ const TeamMember = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'foreign key to User table'
     },
-    /* GraphQL sugar */
     team: {
       type: Team,
       description: 'The team this team member belongs to',
       resolve: resolveTeam
     },
     user: {
-      type: User,
+      type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve ({userId}, args, {dataLoader}) {
+      resolve({userId}, args, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },

@@ -1,17 +1,17 @@
+import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
+import NewMeeting from 'universal/components/NewMeeting'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {MeetingTypeEnum} from 'universal/types/graphql'
 import findKeyByValue from 'universal/utils/findKeyByValue'
 import findStageById from 'universal/utils/meetings/findStageById'
 import fromStageIdToUrl from 'universal/utils/meetings/fromStageIdToUrl'
 import {meetingTypeToSlug, phaseTypeToSlug} from 'universal/utils/meetings/lookups'
 import updateLocalStage from 'universal/utils/relay/updateLocalStage'
-import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocalState_viewer.graphql'
-import MeetingTypeEnum = GQL.MeetingTypeEnum
-import NewMeeting from 'universal/components/NewMeeting'
 
 /*
  * Creates a 2-way sync between the URL and the local state
@@ -26,9 +26,13 @@ import NewMeeting from 'universal/components/NewMeeting'
  * tl;dr it gives the client a pretty URL for free and the dev doesn't have to muck around with history.push
  */
 
-interface Props
-  extends WithAtmosphereProps,
-    RouteComponentProps<{teamId: string; localPhaseSlug: string; stageIdxSlug?: number}> {
+interface Params {
+  teamId: string
+  localPhaseSlug: string
+  stageIdxSlug?: string
+}
+
+interface Props extends WithAtmosphereProps, RouteComponentProps<Params> {
   meetingType: MeetingTypeEnum
   viewer: NewMeetingWithLocalState_viewer
 }
@@ -39,7 +43,7 @@ type State = {
 }
 
 class NewMeetingWithLocalState extends Component<Props, State> {
-  constructor (props) {
+  constructor(props: Props) {
     super(props)
     const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
@@ -47,17 +51,16 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       viewer: {
         team: {newMeeting}
       }
     } = nextProps
     const {
-      viewer: {
-        team: {newMeeting: oldMeeting}
-      }
+      viewer: {team}
     } = this.props
+    const {newMeeting: oldMeeting} = team!
     const localStageId = newMeeting && newMeeting.localStage && newMeeting.localStage.id
     const oldLocalStageId = oldMeeting && oldMeeting.localStage && oldMeeting.localStage.id
     if (localStageId !== oldLocalStageId) {
@@ -71,19 +74,19 @@ class NewMeetingWithLocalState extends Component<Props, State> {
       const meetingSlug = meetingTypeToSlug[meetingType]
       if (!newMeeting && teamId) {
         // goto lobby
-        history.push(`/${meetingSlug}/${teamId}`)
+        history.replace(`/${meetingSlug}/${teamId}`)
         return
       }
       const {phases} = newMeeting
       const nextUrl = fromStageIdToUrl(localStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
     }
     if (!this.state.safeRoute) {
       this.setState({safeRoute: true})
     }
   }
 
-  updateRelayFromURL (params) {
+  updateRelayFromURL(params: Params) {
     /*
      * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
      * the additional logic here has 2 benefits:
@@ -102,12 +105,18 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     } = this.props
     if (!viewer) {
       // server error
-      history.push('/')
+      history.replace('/')
       return false
     }
-    const {
-      team: {newMeeting}
-    } = viewer
+    const {team} = viewer
+    if (!team) {
+      history.replace({
+        pathname: `/invitation-required/${teamId}`,
+        search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
+      })
+      return false
+    }
+    const {newMeeting} = team
     const meetingSlug = meetingTypeToSlug[meetingType]
     const {viewerId} = atmosphere
 
@@ -118,7 +127,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
 
     // i'm trying to go to the middle of a meeting that hasn't started
     if (!newMeeting) {
-      history.push(`/${meetingSlug}/${teamId}`)
+      history.replace(`/${meetingSlug}/${teamId}`)
       return false
     }
 
@@ -128,7 +137,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     if (localStage && !localPhaseSlug) {
       const {id: localStageId} = localStage
       const nextUrl = fromStageIdToUrl(localStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
       return false
     }
 
@@ -139,7 +148,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     if (!phase) {
       // typo in url, send to the facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
       updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       return false
     }
@@ -147,7 +156,13 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     const stageId = stage && stage.id
     const isViewerFacilitator = viewerId === facilitatorUserId
     const itemStage = findStageById(phases, stageId)
-    if (!itemStage) return false
+    if (!itemStage) {
+      // useful for e.g. /discuss/2, especially on the demo
+      const nextUrl = teamId ? `/${meetingSlug}/${teamId}` : '/retrospective-demo/reflect'
+      updateLocalStage(atmosphere, meetingId, facilitatorStageId)
+      history.replace(nextUrl)
+      return false
+    }
     const {
       stage: {isNavigable, isNavigableByFacilitator}
     } = itemStage
@@ -155,7 +170,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, phases)
-      history.push(nextUrl)
+      history.replace(nextUrl)
       updateLocalStage(atmosphere, meetingId, facilitatorStageId)
       return false
     }
@@ -165,7 +180,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     return true
   }
 
-  render () {
+  render() {
     return this.state.safeRoute ? <NewMeeting {...this.props} /> : null
   }
 }

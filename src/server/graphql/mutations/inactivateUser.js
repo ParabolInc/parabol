@@ -1,14 +1,12 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import adjustUserCount from 'server/billing/helpers/adjustUserCount'
 import getRethink from 'server/database/rethinkDriver'
-import {isOrgLeaderOfUser} from 'server/utils/authorization'
+import {getUserId, isOrgLeaderOfUser} from 'server/utils/authorization'
 import {toEpochSeconds} from 'server/utils/epochTime'
 import {MAX_MONTHLY_PAUSES, PAUSE_USER} from 'server/utils/serverConstants'
 import {PERSONAL} from 'universal/utils/constants'
-import {sendOrgLeadOfUserAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
-import {sendAlreadyInactivatedUserError} from 'server/utils/alreadyMutatedErrors'
 import InactivateUserPayload from 'server/graphql/types/InactivateUserPayload'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: InactivateUserPayload,
@@ -19,24 +17,34 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve (source, {userId}, {authToken}) {
+  async resolve(source, {userId}, {authToken}) {
     const r = getRethink()
-
+    const viewerId = getUserId(authToken)
     // AUTH
     if (!(await isOrgLeaderOfUser(authToken, userId))) {
-      return sendOrgLeadOfUserAccessError(authToken, userId, false)
+      return standardError(new Error('Not organization leader of user'), {userId: viewerId})
     }
 
-    const orgDocs = await r
-      .table('Organization')
-      .getAll(userId, {index: 'orgUsers'})
-      .pluck('id', 'orgUsers', 'periodStart', 'periodEnd', 'stripeSubscriptionId', 'tier')
-    const firstOrgUser = orgDocs[0].orgUsers.find((orgUser) => orgUser.id === userId)
-    if (!firstOrgUser) {
-      // no userOrgs means there were no changes, which means inactive was already true
-      return sendAlreadyInactivatedUserError(authToken, userId)
+    // VALIDATION
+    const {user, orgs} = await r({
+      user: r.table('User').get(userId),
+      orgs: r
+        .table('OrganizationUser')
+        .getAll(userId, {index: 'userId'})
+        .filter({removedAt: null})('orgId')
+        .coerceTo('array')
+        .do((orgIds) => {
+          return r
+            .table('Organization')
+            .getAll(r.args(orgIds), {index: 'id'})
+            .coerceTo('array')
+        })
+    })
+    if (user.inactive) {
+      return standardError(new Error('User already inactivated'), {userId: viewerId})
     }
-    const hookPromises = orgDocs.map((orgDoc) => {
+
+    const hookPromises = orgs.map((orgDoc) => {
       const {periodStart, periodEnd, stripeSubscriptionId, tier} = orgDoc
       if (tier === PERSONAL) return undefined
       const periodStartInSeconds = toEpochSeconds(periodStart)
@@ -57,43 +65,18 @@ export default {
     const pausesByOrg = await Promise.all(hookPromises)
     const triggeredPauses = Math.max(...pausesByOrg)
     if (triggeredPauses >= MAX_MONTHLY_PAUSES) {
-      const breadcrumb = {
-        message: 'Max monthly pauses exceeded for this user',
-        category: 'Pauses exceeded',
-        data: {userId}
-      }
-      return sendAuthRaven(authToken, 'Easy there', breadcrumb)
+      return standardError(new Error('Max monthly pauses excheeded for this user'), {
+        userId: viewerId
+      })
     }
 
     // TODO ping the user to see if they're currently online
 
     // RESOLUTION
-    await r({
-      orgUpdate: r
-        .table('Organization')
-        .getAll(userId, {index: 'orgUsers'})
-        .update((org) => ({
-          orgUsers: org('orgUsers').map((orgUser) => {
-            return r.branch(
-              orgUser('id').eq(userId),
-              orgUser.merge({
-                inactive: true
-              }),
-              orgUser
-            )
-          })
-        })),
-      userUpdate: r
-        .table('User')
-        .get(userId)
-        .update({
-          inactive: true
-        })
-    })
-    const orgIds = orgDocs.map((doc) => doc.id)
+    const orgIds = orgs.map((org) => org.id)
     await adjustUserCount(userId, orgIds, PAUSE_USER)
 
-    // TOOD wire up subscription
+    // TODO wire up subscription
     return {userId}
   }
 }

@@ -3,6 +3,7 @@ import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import EmptySpace from '../../components/EmptySpace/EmptySpace'
+import {emailLabelColorPresent, emailLabelColorAbsent} from 'universal/styles/email'
 
 const UserNoNewOutcomes = (props) => {
   const {members} = props
@@ -52,12 +53,12 @@ const UserNoNewOutcomes = (props) => {
 
   const presentStyles = {
     ...attendingStyles,
-    color: appTheme.palette.cool
+    color: emailLabelColorPresent
   }
 
   const absentStyles = {
     ...attendingStyles,
-    color: appTheme.palette.cool10g
+    color: emailLabelColorAbsent
   }
 
   const getMemberRows = (arr) => {
@@ -90,7 +91,7 @@ const UserNoNewOutcomes = (props) => {
   const makeMemberCells = (arr) => {
     const cells = () =>
       arr.map((member) => (
-        <td align='center' style={cellStyle} width={cellWidth} key={member.id}>
+        <td align="center" style={cellStyle} width={cellWidth} key={member.id}>
           <img height={avatarSize} src={member.picture} style={avatarStyles} width={avatarSize} />
           <div style={nameStyle}>{member.preferredName}</div>
           {member.present ? (
@@ -105,7 +106,7 @@ const UserNoNewOutcomes = (props) => {
 
   /* eslint-disable react/no-array-index-key */
   return (
-    <table align='center' style={ui.emailTableBase} width='100%'>
+    <table align="center" style={ui.emailTableBase} width="100%">
       <tbody>
         <tr>
           <td style={topBorderStyle}>
@@ -122,8 +123,8 @@ const UserNoNewOutcomes = (props) => {
         </tr>
         {members.length && (
           <tr>
-            <td align='center'>
-              <table align='center' style={ui.emailTableBase}>
+            <td align="center">
+              <table align="center" style={ui.emailTableBase}>
                 <tbody>
                   {memberCells.map((row, idx) => (
                     <tr key={`memberCell${idx}`}>{makeMemberCells(row)}</tr>

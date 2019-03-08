@@ -6,19 +6,21 @@ import LoadableDueDatePicker from 'universal/components/LoadableDueDatePicker'
 import {createFragmentContainer} from 'react-relay'
 import {shortMonths} from 'universal/utils/makeDateString'
 import ui from 'universal/styles/ui'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import CardButton from 'universal/components/CardButton'
 import ms from 'ms'
 import tinycolor from 'tinycolor2'
 
-const lighten = (color, amount) =>
+const darken = (color, amount) =>
   tinycolor(color)
-    .lighten(amount)
+    .darken(amount)
     .toString()
 
 const Toggle = styled(CardButton)(
   {
     alignItems: 'center',
+    borderRadius: '4em',
     display: 'flex',
     justifyContent: 'center',
     opacity: 0
@@ -26,7 +28,7 @@ const Toggle = styled(CardButton)(
   ({cardIsActive}) => ({
     opacity: cardIsActive && 0.5,
     ':hover, :focus': {
-      borderColor: ui.cardButtonBorderColor,
+      backgroundColor: ui.palette.gray,
       opacity: cardIsActive && 1
     }
   }),
@@ -35,12 +37,13 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDateBg,
       color: ui.dueDateColor,
       fontSize: 'inherit',
-      height: '1.125rem',
+      height: '1.375rem',
       lineHeight: '1rem',
       opacity: 1,
-      padding: '0 .1875rem',
+      padding: '0 .25rem 0 .0625rem',
       ':hover,:focus': {
-        borderColor: lighten(ui.dueDateColor, 30)
+        backgroundColor: darken(ui.dueDateBg, 6),
+        color: darken(ui.dueDateColor, 6)
       }
     },
   ({isDueSoon}) =>
@@ -48,7 +51,8 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDateSoonBg,
       color: ui.dueDateSoonColor,
       ':hover,:focus': {
-        borderColor: lighten(ui.dueDateSoonColor, 20)
+        backgroundColor: darken(ui.dueDateSoonBg, 9),
+        color: darken(ui.dueDateSoonColor, 9)
       }
     },
   ({isPastDue}) =>
@@ -56,17 +60,18 @@ const Toggle = styled(CardButton)(
       backgroundColor: ui.dueDatePastBg,
       color: ui.dueDatePastColor,
       ':hover,:focus': {
-        borderColor: lighten(ui.dueDatePastColor, 20)
+        backgroundColor: darken(ui.dueDatePastBg, 9),
+        color: darken(ui.dueDatePastColor, 9)
       }
     }
 )
 
-const DueDateIcon = styled(StyledFontAwesome)({
-  fontSize: ui.iconSize
+const DueDateIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18
 })
 
 const DateString = styled('span')({
-  marginLeft: '0.25rem'
+  marginLeft: '0.125rem'
 })
 
 const originAnchor = {
@@ -100,7 +105,7 @@ const getDateInfo = (dueDate) => {
   const now = new Date()
   const timeDiff = date - now
   const diffDays = Math.ceil(timeDiff / ms('1d'))
-  if (diffDays < 0) return {title: `Past due, ${action}`, isPastDue: true}
+  if (diffDays <= 0) return {title: `Past due, ${action}`, isPastDue: true}
   if (diffDays < 3) return {title: `Due soon, ${action}`, isDueSoon: true}
   const dateString = formatDueDate(dueDate)
   return {title: `Due ${dateString}, ${action}`}
@@ -111,7 +116,7 @@ const DueDateToggle = (props: Props) => {
   const {dueDate} = task
   const toggle = (
     <Toggle cardIsActive={!dueDate && cardIsActive} dueDate={dueDate} {...getDateInfo(dueDate)}>
-      <DueDateIcon name='clock-o' />
+      <DueDateIcon>access_time</DueDateIcon>
       {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
     </Toggle>
   )

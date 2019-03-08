@@ -12,7 +12,25 @@ const getRetroMeeting = (meetingId) => {
         .table('MeetingMember')
         .getAll(meetingId, {index: 'meetingId'})
         .merge((meetingMember) => ({
-          user: r.table('User').get(meetingMember('userId')),
+          user: r
+            .table('User')
+            .get(meetingMember('userId'))
+            // email clients don't typically display SVGs, so when a user uploads an SVG, we upload a PNG with it
+            // when we email the client, we use the png version
+            .merge((row) => ({
+              ext: row('picture')
+                .match('svg$')('start')
+                .default(null)
+            }))
+            .merge((row) => ({
+              picture: r.branch(
+                row('ext'),
+                row('picture')
+                  .slice(0, row('ext'))
+                  .add('png'),
+                row('picture')
+              )
+            })),
           tasks: r
             .table('Task')
             .getAll(meeting('teamId'), {index: 'teamId'})
@@ -38,6 +56,9 @@ const getRetroMeeting = (meetingId) => {
             .table('RetroReflection')
             .getAll(reflectionGroup('id'), {index: 'reflectionGroupId'})
             .filter({isActive: true})
+            .merge((reflection) => ({
+              phaseItem: r.table('CustomPhaseItem').get(reflection('retroPhaseItemId'))
+            }))
             .coerceTo('array'),
           voteCount: reflectionGroup('voterIds')
             .count()
@@ -53,7 +74,7 @@ const meetingGetters = {
   [RETROSPECTIVE]: getRetroMeeting
 }
 
-export default async function sendNewMeetingSummary (newMeeting) {
+export default async function sendNewMeetingSummary(newMeeting) {
   const {id: meetingId, meetingType, summarySentAt} = newMeeting
   const r = getRethink()
   if (summarySentAt) return

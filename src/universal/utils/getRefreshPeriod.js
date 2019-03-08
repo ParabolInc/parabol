@@ -1,9 +1,18 @@
-import {thresholds} from 'universal/utils/fromNow'
 import {MAX_INT} from 'universal/utils/constants'
 import ensureDate from 'universal/utils/ensureDate'
 
+const thresholds = {
+  second: 1000,
+  minute: 60000,
+  hour: 3600000,
+  day: 86400000,
+  week: 604800000,
+  month: 2592000000,
+  year: 31536000000,
+  inf: Infinity
+}
 // For 2m20s returns 40s, for 4h15m returns 45m etc.
-export default function getRefreshPeriod (maybeTime) {
+export default function getRefreshPeriod(maybeTime) {
   const time = ensureDate(maybeTime)
   const msElapsed = Date.now() - time || 0
   const threshKeys = Object.keys(thresholds)
@@ -12,7 +21,7 @@ export default function getRefreshPeriod (maybeTime) {
     if (msElapsed < thresh) {
       const largestUnit = thresholds[threshKeys[i - 1]]
       const minimum = 30 * thresholds.second
-      const minVal = Math.max(largestUnit - msElapsed % largestUnit, minimum)
+      const minVal = Math.max(largestUnit - (msElapsed % largestUnit), minimum)
       return Math.min(minVal, MAX_INT)
     }
   }

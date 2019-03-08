@@ -1,7 +1,7 @@
 import {PhaseItemColumn_meeting} from '__generated__/PhaseItemColumn_meeting.graphql'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import ResizeObserver from 'resize-observer-polyfill'
+import ResizeObserverPolyfill from 'resize-observer-polyfill'
 import Modal from 'universal/components/Modal'
 import ReflectionCard from 'universal/components/ReflectionCard/ReflectionCard'
 import FLIPGrid from 'universal/components/RetroReflectPhase/FLIPGrid'
@@ -10,7 +10,7 @@ import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import {cardShadow} from 'universal/styles/elevation'
 
 interface Props {
-  collapse (): void
+  collapse(): void
 
   isExpanded: boolean
   phaseRef: React.RefObject<HTMLDivElement>
@@ -19,6 +19,7 @@ interface Props {
   reflectionStack: ReadonlyArray<PhaseItemColumn_meeting['reflectionGroups'][0]['reflections'][0]>
   meetingId: string
   phaseItemId: string
+  readOnly: boolean
 }
 
 interface State {
@@ -31,6 +32,7 @@ const ModalReflectionWrapper = styled('div')({
   position: 'absolute'
 })
 
+const ResizeObserver = (window as any).ResizeObserver || ResizeObserverPolyfill
 class ExpandedReflectionStack extends Component<Props, State> {
   state = {
     isClosing: false
@@ -46,7 +48,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
   getParentBBox = () => getBBox(this.props.phaseRef.current)
   getChildrenFirst = () => getBBox(this.props.firstReflectionRef.current)
 
-  componentDidMount () {
+  componentDidMount() {
     window.addEventListener('resize', this.handleWindowResize)
   }
 
@@ -73,7 +75,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
     this.props.collapse()
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.collapse()
     window.removeEventListener('resize', this.handleWindowResize)
     this.resizeObserver.disconnect()
@@ -85,8 +87,8 @@ class ExpandedReflectionStack extends Component<Props, State> {
     }
   }
 
-  render () {
-    const {isExpanded, reflectionStack, meetingId, phaseItemId} = this.props
+  render() {
+    const {isExpanded, reflectionStack, meetingId, phaseItemId, readOnly} = this.props
     const {isClosing} = this.state
     return (
       <Modal clickToClose escToClose isOpen={isExpanded} onClose={this.handleClose}>
@@ -117,6 +119,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
                       meetingId={meetingId}
                       reflection={reflection}
                       phaseItemId={phaseItemId}
+                      readOnly={isClosing || readOnly}
                     />
                   </ModalReflectionWrapper>
                 )

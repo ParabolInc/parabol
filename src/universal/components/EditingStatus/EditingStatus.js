@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
-import fromNow from 'universal/utils/fromNow'
 import Ellipsis from 'universal/components/Ellipsis/Ellipsis'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import DueDateToggle from 'universal/components/DueDateToggle'
 import styled from 'react-emotion'
+import relativeDate from 'universal/utils/relativeDate'
 
 const StatusHeader = styled('div')({
   alignItems: 'center',
@@ -37,7 +37,7 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
         <Ellipsis />
       </span>
     ) : (
-      <span>{`${timestampLabel}${fromNow(timestamp)}`}</span>
+      <span>{`${timestampLabel}${relativeDate(timestamp, {smallDiff: 'just now'})}`}</span>
     )
   } else {
     const editorNames = editors.map((editor) => editor.preferredName)
@@ -55,7 +55,8 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
     } else if (editors.length === 2) {
       editingStatus = isEditing ? (
         <span>
-          several are editing<Ellipsis />
+          several are editing
+          <Ellipsis />
         </span>
       ) : (
         <span>
@@ -77,7 +78,7 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
 
 const EditingStatus = (props) => {
   const {
-    atmosphere: {userId: myUserId},
+    atmosphere: {viewerId},
     cardIsActive,
     handleClick,
     task,
@@ -86,7 +87,7 @@ const EditingStatus = (props) => {
     toggleMenuState
   } = props
   const {editors} = task
-  const otherEditors = editors.filter((editor) => editor.userId !== myUserId)
+  const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
   const title = isEditing ? 'Editing…' : 'Tap to toggle Created/Updated'
   return (

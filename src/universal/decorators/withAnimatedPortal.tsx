@@ -69,6 +69,7 @@ const withAnimatedPortal = <P extends WithAnimatedPortalProps>(
     render () {
       const {isClosing, isOpen} = this.state
       return (
+        // @ts-ignore
         <ComposedComponent
           {...this.props}
           isOpen={isOpen}

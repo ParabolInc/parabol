@@ -10,7 +10,7 @@ import shortid from 'shortid'
 import {PRO} from 'universal/utils/constants'
 import MockRes from 'server/__mocks__/MockRes'
 import MockReq from 'server/__mocks__/MockReq'
-import SharedDataLoader from 'shared-dataloader'
+import DataLoaderWarehouse from 'dataloader-warehouse'
 
 console.error = jest.fn()
 
@@ -25,7 +25,7 @@ describe('stripeCreateInvoice', () => {
     const mockDB = new MockDB()
     const {organization} = await mockDB.init({plan: PRO})
     const org = organization[0]
-    const sharedDataLoader = new SharedDataLoader({
+    const sharedDataLoader = new DataLoaderWarehouse({
       ttl: 1000,
       onShare: '_share'
     })

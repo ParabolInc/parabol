@@ -4,8 +4,6 @@
  */
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import FontAwesome from 'react-fontawesome'
-
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -13,6 +11,8 @@ import withAtmosphere, {
 import RemoveReflectionMutation from 'universal/mutations/RemoveReflectionMutation'
 import ui from 'universal/styles/ui'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   meetingId: string
@@ -22,33 +22,32 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
 const DeleteButton = styled(PlainButton)({
   backgroundColor: 'transparent',
   border: 0,
-  height: ui.iconSize,
-  lineHeight: ui.iconSize,
+  height: MD_ICONS_SIZE_18,
+  lineHeight: MD_ICONS_SIZE_18,
   padding: 0,
   position: 'absolute',
-  right: '-.4375rem',
-  top: '-.4375rem',
-  width: ui.iconSize
+  right: '-.5625rem',
+  top: '-.5625rem',
+  width: MD_ICONS_SIZE_18
 })
 
 const Background = styled('div')({
   backgroundColor: ui.palette.white,
   borderRadius: '100%',
   height: '.625rem',
-  left: '.125rem',
+  left: '.25rem',
   position: 'absolute',
-  top: '.125rem',
+  top: '.25rem',
   width: '.625rem',
   zIndex: 100
 })
 
-const Icon = styled(FontAwesome)({
+const StyledIcon = styled(Icon)({
   color: ui.palette.warm,
-  height: ui.iconSize,
-  lineHeight: ui.iconSize,
+  display: 'block',
+  fontSize: MD_ICONS_SIZE_18,
   position: 'relative',
   textAlign: 'center',
-  width: ui.iconSize,
   zIndex: 200
 })
 
@@ -74,7 +73,7 @@ class ReflectionCardDeleteButton extends Component<Props> {
     if (submitting) return null
     return (
       <DeleteButton aria-label={userLabel} onClick={this.handleDelete} title={userLabel}>
-        <Icon name='times-circle' />
+        <StyledIcon>cancel</StyledIcon>
         <Background />
       </DeleteButton>
     )

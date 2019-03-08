@@ -31,14 +31,14 @@ storiesOf('Reflect Phase', module)
   .addDecorator(withKnobs)
   .add('placeholder', () => (
     <StoryProvider>
-      <ReflectionStackPlaceholder idx={0} />
+      <ReflectionStackPlaceholder idx={0} innerRef={undefined as any} />
     </StoryProvider>
   ))
   .add('editor', () => (
     <StoryProvider>
       <PhaseItemEditor
-        meetingId='123'
-        retroPhaseItemId='124'
+        meetingId="123"
+        retroPhaseItemId="124"
         nextSortOrder={() => 2}
         phaseEditorRef={undefined as any}
       />
@@ -59,10 +59,11 @@ storiesOf('Reflect Phase', module)
       <ReflectionStack
         idx={1}
         reflectionStack={reflectionStack as any}
-        meetingId='meet1'
-        phaseItemId='pi1'
+        meetingId="meet1"
+        phaseItemId="pi1"
         phaseRef={undefined as any}
         phaseEditorRef={undefined as any}
+        readOnly={false}
       />
     </StoryProvider>
   ))
@@ -71,10 +72,10 @@ storiesOf('Reflect Phase', module)
       <PhaseItemColumn
         idx={0}
         editorIds={[]}
-        retroPhaseItemId='123'
+        retroPhaseItemId="123"
         meeting={meeting as any}
         phaseRef={undefined as any}
-        question='What do'
+        question="What do"
       />
     </StoryProvider>
   ))

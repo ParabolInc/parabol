@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import EditorHelpModalContainer from 'universal/containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import MeetingAgendaCards from 'universal/modules/meeting/components/MeetingAgendaCards/MeetingAgendaCards'
@@ -46,22 +46,22 @@ const TaskCardBlock = styled('div')({
   width: '100%'
 })
 
-const ControlButtonBlock = styled('div')({
-  width: '12rem'
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
 })
 
-const SpacedMeetingControlBar = styled(MeetingControlBar)({
+const StyledBottomBar = styled(MeetingControlBar)({
   justifyContent: 'space-between'
 })
 
 class MeetingAgendaItems extends Component {
   state = {agendaTasks: []}
 
-  componentWillMount () {
+  componentWillMount() {
     this.makeAgendaTasks(this.props)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       viewer: {tasks: oldTasks},
       localPhaseItem: oldLocalPhaseItem
@@ -75,7 +75,7 @@ class MeetingAgendaItems extends Component {
     }
   }
 
-  makeAgendaTasks (props) {
+  makeAgendaTasks(props) {
     const {
       localPhaseItem,
       viewer: {
@@ -94,7 +94,7 @@ class MeetingAgendaItems extends Component {
     })
   }
 
-  render () {
+  render() {
     const {
       atmosphere,
       history,
@@ -152,30 +152,17 @@ class MeetingAgendaItems extends Component {
           </MeetingSection>
         </MeetingSection>
         {showMoveMeetingControls && (
-          <SpacedMeetingControlBar>
-            <ControlButtonBlock />
-            <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
-              <FlatButton size='medium' key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
-                <IconLabel
-                  icon='arrow-circle-right'
-                  iconAfter
-                  iconColor='warm'
-                  iconLarge
-                  label='Done! Next…'
-                />
-              </FlatButton>
+          <StyledBottomBar>
+            <BottomControlSpacer />
+            <BounceBlock animationDelay="120s" key={`agendaItem${localPhaseItem}buttonAnimation`}>
+              <BottomNavControl key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
+                <BottomNavIconLabel icon="arrow_forward" iconColor="warm" label="Next Topic" />
+              </BottomNavControl>
             </BounceBlock>
-            <ControlButtonBlock>
-              <FlatButton size='medium' onClick={endMeeting}>
-                <IconLabel
-                  icon='flag-checkered'
-                  iconColor='midGray'
-                  iconLarge
-                  label={'End Meeting'}
-                />
-              </FlatButton>
-            </ControlButtonBlock>
-          </SpacedMeetingControlBar>
+            <BottomNavControl onClick={endMeeting}>
+              <BottomNavIconLabel icon="flag" iconColor="blue" label={'End Meeting'} />
+            </BottomNavControl>
+          </StyledBottomBar>
         )}
       </MeetingMain>
     )

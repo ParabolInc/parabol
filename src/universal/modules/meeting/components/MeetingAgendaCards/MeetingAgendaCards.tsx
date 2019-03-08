@@ -18,7 +18,7 @@ const makePlaceholders = (
   maxCols: number,
   setItemRef: MasonryCSSGrid['setItemRef']
 ) => {
-  const emptyCardCount = maxCols - (length % maxCols + 1)
+  const emptyCardCount = maxCols - ((length % maxCols) + 1)
   return new Array(emptyCardCount).fill(undefined).map((_, idx) => (
     <div key={`CreateCardPlaceholder${idx}`} ref={setItemRef(String(idx))}>
       <CreateCard />
@@ -38,7 +38,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 }
 
 class MeetingAgendaCards extends Component<Props> {
-  componentWillMount () {
+  componentWillMount() {
     const {bindHotkey} = this.props
     bindHotkey('t', this.handleAddTask())
   }
@@ -46,9 +46,9 @@ class MeetingAgendaCards extends Component<Props> {
   handleAddTask = (content?: string) => () => {
     const {agendaId, atmosphere, meetingId, reflectionGroupId, teamId} = this.props
     const tasks = this.props.tasks || []
-    const {userId} = atmosphere
+    const {viewerId} = atmosphere
     const maybeLastTask = tasks[tasks.length - 1]
-    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false)
+    const sortOrder = sortOrderBetween(maybeLastTask, null, null, false) || 0
     const newTask = {
       content,
       status: ACTIVE,
@@ -56,21 +56,21 @@ class MeetingAgendaCards extends Component<Props> {
       agendaId,
       meetingId,
       reflectionGroupId,
-      userId,
+      userId: viewerId,
       teamId
     }
     CreateTaskMutation(atmosphere, newTask, MEETING)
   }
 
-  render () {
+  render() {
     const {
-      atmosphere: {userId},
+      atmosphere: {viewerId},
       maxCols,
       showPlaceholders
     } = this.props
     const tasks = this.props.tasks || []
     return (
-      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols}>
+      <MasonryCSSGrid gap={16} colWidth={meetingGridMinWidth} maxCols={maxCols} items={tasks}>
         {(setItemRef) => {
           return (
             <React.Fragment>
@@ -81,7 +81,7 @@ class MeetingAgendaCards extends Component<Props> {
                       area={MEETING}
                       handleAddTask={this.handleAddTask}
                       isAgenda
-                      myUserId={userId}
+                      myUserId={viewerId}
                       task={task}
                     />
                   </div>

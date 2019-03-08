@@ -18,16 +18,29 @@ interface Props {
   disabled?: boolean
   error: string | undefined
   innerRef?: React.RefObject<HTMLInputElement>
-  name?: string
+  name: string
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
+  spellCheck?: boolean
+  type?: string
   value: string
 }
 
 const BasicInput = (props: Props) => {
-  const {autoFocus, disabled, error, innerRef, name, onBlur, onChange, placeholder, value} = props
-
+  const {
+    autoFocus,
+    disabled,
+    error,
+    innerRef,
+    name,
+    onBlur,
+    onChange,
+    placeholder,
+    spellCheck,
+    type = 'text',
+    value
+  } = props
   return (
     <React.Fragment>
       <Input
@@ -38,7 +51,8 @@ const BasicInput = (props: Props) => {
         placeholder={placeholder}
         onBlur={onBlur}
         onChange={onChange}
-        type='text'
+        spellCheck={spellCheck}
+        type={type}
         value={value}
       />
       {error && <StyledError>{error}</StyledError>}

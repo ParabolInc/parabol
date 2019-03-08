@@ -8,9 +8,8 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription'
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription'
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
 const slackChannelQuery = graphql`
   query SlackIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
@@ -23,8 +22,7 @@ const slackChannelQuery = graphql`
 const subscriptions = [
   SlackChannelAddedSubscription,
   SlackChannelRemovedSubscription,
-  ProviderRemovedSubscription,
-  ProviderAddedSubscription
+  IntegrationSubscription
 ]
 
 const cacheConfig = {ttl: DEFAULT_TTL}
@@ -38,9 +36,10 @@ const SlackIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       query={slackChannelQuery}
       variables={{teamId, service: SLACK}}
       subscriptions={subscriptions}
+      subParams={{teamId}}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />
+          return <ErrorComponent error={error} />
         } else if (props) {
           const {viewer} = props
           return (

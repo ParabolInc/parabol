@@ -1,10 +1,7 @@
 import {commitMutation} from 'react-relay'
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddOrganization from 'universal/mutations/handlers/handleAddOrganization'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
-import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast'
-import getInProxy from 'universal/utils/relay/getInProxy'
+import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment AddOrgMutation_organization on AddOrgPayload {
@@ -20,6 +17,8 @@ graphql`
       tier
     }
     team {
+      id
+      name
       ...CompleteTeamFragWithMembers @relay(mask: false)
     }
   }
@@ -27,16 +26,13 @@ graphql`
 
 graphql`
   fragment AddOrgMutation_notification on AddOrgPayload {
-    teamInviteNotification {
-      type
-      ...TeamInvite_notification @relay(mask: false)
-    }
+    removedSuggestedActionId
   }
 `
 
 const mutation = graphql`
-  mutation AddOrgMutation($newTeam: NewTeamInput!, $invitees: [Invitee!], $orgName: String!) {
-    addOrg(newTeam: $newTeam, invitees: $invitees, orgName: $orgName) {
+  mutation AddOrgMutation($newTeam: NewTeamInput!, $orgName: String!) {
+    addOrg(newTeam: $newTeam, orgName: $orgName) {
       error {
         message
       }
@@ -45,49 +41,50 @@ const mutation = graphql`
   }
 `
 
-const popOrganizationCreatedToast = (payload, {dispatch, history}) => {
-  const teamId = getInProxy(payload, 'team', 'id')
-  if (!teamId) return
-  const teamName = getInProxy(payload, 'team', 'name')
-  dispatch(
-    showSuccess({
-      title: 'Organization successfully created!',
-      message: `Here's your new team dashboard for ${teamName}`
-    })
-  )
-  history.push(`/team/${teamId}`)
+const popOrganizationCreatedToast = (payload, {atmosphere}) => {
+  const teamName = payload.team.name
+  if (!teamName) return
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'success',
+    title: 'Organization successfully created!',
+    message: `Here's your new team dashboard for ${teamName}`
+  })
 }
 
-export const addOrgMutationOrganizationUpdater = (payload, store, viewerId, options) => {
+export const addOrgMutationOrganizationUpdater = (payload, store, viewerId) => {
   const organization = payload.getLinkedRecord('organization')
   handleAddOrganization(organization, store, viewerId)
 
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store, viewerId)
-  popOrganizationCreatedToast(payload, options)
 }
 
-export const addOrgMutationNotificationUpdater = (payload, store, viewerId, options) => {
-  const notification = payload.getLinkedRecord('teamInviteNotification')
-  handleAddNotifications(notification, store, viewerId)
-  popTeamInviteNotificationToast(notification, options)
+export const addOrgMutationNotificationUpdater = (payload, {store}) => {
+  const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
+  handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-const AddOrgMutation = (environment, variables, options, onError, onCompleted) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const AddOrgMutation = (atmosphere, variables, {history}, onError, onCompleted) => {
+  const {viewerId} = atmosphere
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
       const payload = store.getRootField('addOrg')
       if (!payload) return
-      addOrgMutationOrganizationUpdater(payload, store, viewerId, {
-        ...options,
-        store,
-        environment
-      })
+      addOrgMutationOrganizationUpdater(payload, store, viewerId)
     },
-    onCompleted,
+    onCompleted: (res, errors) => {
+      if (onCompleted) {
+        onCompleted(res, errors)
+      }
+      if (!errors) {
+        const payload = res.addOrg
+        popOrganizationCreatedToast(payload, {history, atmosphere})
+        const teamId = payload.team && payload.team.id
+        history.push(`/team/${teamId}`)
+      }
+    },
     onError
   })
 }

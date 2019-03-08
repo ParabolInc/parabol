@@ -6,10 +6,8 @@ import shortid from 'shortid'
 import removeEntityKeepText from 'universal/utils/draftjs/removeEntityKeepText'
 import {TASK, TASK_INVOLVES} from 'universal/utils/constants'
 import publish from 'server/utils/publish'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
-import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: ChangeTaskTeamPayload,
@@ -24,7 +22,7 @@ export default {
       description: 'The new team to assign the task to'
     }
   },
-  async resolve (source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {taskId, teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -33,22 +31,20 @@ export default {
     // AUTH
     const viewerId = getUserId(authToken)
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const task = await r.table('Task').get(taskId)
     if (!task) {
-      return sendTaskNotFoundError(authToken, taskId)
+      return standardError(new Error('Task not found'), {userId: viewerId})
     }
     const {content, tags, teamId: oldTeamId} = task
     if (!isTeamMember(authToken, oldTeamId)) {
-      return sendTeamAccessError(authToken, oldTeamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (task.userId !== viewerId) {
-      const breadcrumb = {
-        message: 'Cannot change team for a task assigned to someone else',
-        category: 'Unauthorized access'
-      }
-      return sendAuthRaven(authToken, 'Oops', breadcrumb)
+      return standardError(new Error('Cannot change team for a task assigned to someone else'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -104,15 +100,15 @@ export default {
       mentioneeUserIdsToRemove.length === 0
         ? []
         : await r
-          .table('Notification')
-          .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
-          .filter({
-            taskId,
-            type: TASK_INVOLVES
-          })
-          .delete({returnChanges: true})('changes')('old_val')
-          .pluck('id', 'userIds')
-          .default([])
+            .table('Notification')
+            .getAll(r.args(mentioneeUserIdsToRemove), {index: 'userIds'})
+            .filter({
+              taskId,
+              type: TASK_INVOLVES
+            })
+            .delete({returnChanges: true})('changes')('old_val')
+            .pluck('id', 'userIds')
+            .default([])
 
     const isPrivate = tags.includes('private')
     const data = {taskId, notificationsToRemove}

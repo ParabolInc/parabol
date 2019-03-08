@@ -12,8 +12,8 @@ const ItemRoot = styled('div')(
     backgroundColor: isActive
       ? ui.navMenuLightBackgroundColorActive
       : isDragging
-        ? appTheme.palette.light50l
-        : '#fff',
+      ? appTheme.palette.light50l
+      : '#fff',
     boxShadow: isActive && `inset ${ui.navMenuLeftBorderWidth} 0 0 ${ui.palette.mid}`,
     color: onClick ? ui.colorLink : ui.colorText,
     display: 'flex',
@@ -70,6 +70,9 @@ const ItemLabel = styled('div')(({isComplete}) => ({
 }))
 
 const ItemMeta = styled('div')({
+  alignContent: 'center',
+  display: 'flex',
+  height: lineHeight,
   paddingLeft: '.25rem'
 })
 

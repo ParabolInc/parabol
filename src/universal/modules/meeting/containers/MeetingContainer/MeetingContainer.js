@@ -1,10 +1,8 @@
 import PropTypes from 'prop-types'
-import raven from 'raven-js'
 import React, {Component} from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 import withHotkey from 'react-hotkey-hoc'
-import {connect} from 'react-redux'
 import {createFragmentContainer} from 'react-relay'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import MeetingAgendaFirstCall from 'universal/modules/meeting/components/MeetingAgendaFirstCall/MeetingAgendaFirstCall'
@@ -26,7 +24,6 @@ import getFacilitatorName from 'universal/modules/meeting/helpers/getFacilitator
 import handleRedirects from 'universal/modules/meeting/helpers/handleRedirects'
 import isLastItemOfPhase from 'universal/modules/meeting/helpers/isLastItemOfPhase'
 import makePushURL from 'universal/modules/meeting/helpers/makePushURL'
-import {showError} from 'universal/modules/toast/ducks/toastDuck'
 import EndMeetingMutation from 'universal/mutations/EndMeetingMutation'
 import KillMeetingMutation from 'universal/mutations/KillMeetingMutation'
 import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation'
@@ -55,7 +52,6 @@ class MeetingContainer extends Component {
   static propTypes = {
     atmosphere: PropTypes.object.isRequired,
     bindHotkey: PropTypes.func.isRequired,
-    dispatch: PropTypes.func.isRequired,
     localPhase: PropTypes.string,
     localPhaseItem: PropTypes.number,
     match: PropTypes.shape({
@@ -80,7 +76,7 @@ class MeetingContainer extends Component {
 
   state = {updateUserHasTasks: null}
 
-  componentWillMount () {
+  componentWillMount() {
     const {atmosphere, bindHotkey, history, teamId, submitting} = this.props
     this.unsafeRoute = !handleRedirects({}, this.props)
     bindHotkey('right', handleHotkey(this.gotoNext, submitting))
@@ -96,7 +92,7 @@ class MeetingContainer extends Component {
     }, 5000)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       viewer: {team},
       localPhase,
@@ -128,7 +124,7 @@ class MeetingContainer extends Component {
     }
   }
 
-  shouldComponentUpdate (nextProps) {
+  shouldComponentUpdate(nextProps) {
     this.unsafeRoute = !handleRedirects(this.props, nextProps)
     if (!this.unsafeRoute) {
       return true
@@ -137,7 +133,6 @@ class MeetingContainer extends Component {
     if (this.unsafeRoute === false && Date.now() - infiniteLoopTimer < 1000) {
       if (++infiniteloopCounter >= 10) {
         const {
-          dispatch,
           teamId,
           myTeamMemberId,
           viewer: {
@@ -161,16 +156,12 @@ class MeetingContainer extends Component {
           }
         }
         this.gotoItem(1, CHECKIN)
-        dispatch(
-          showError({
-            title: 'Awh shoot',
-            message:
-              'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
-          })
-        )
-        raven.captureMessage(
-          'MeetingContainer::shouldComponentUpdate(): infiniteLoop watchdog triggered'
-        )
+        nextProps.atmosphere.eventEmitter.emit('addToast', {
+          level: 'error',
+          title: 'Awh shoot',
+          message:
+            'You found a glitch! We saved your work, but forgot where you were. We sent the bug to our team.'
+        })
       }
     } else {
       infiniteloopCounter = 0
@@ -179,7 +170,7 @@ class MeetingContainer extends Component {
     return false
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     clearTimeout(this.electionTimer)
   }
 
@@ -193,10 +184,9 @@ class MeetingContainer extends Component {
     }
   }
 
-  electFacilitatorIfNone () {
+  electFacilitatorIfNone() {
     const {
       atmosphere,
-      dispatch,
       viewer: {
         team: {activeFacilitator, teamMembers}
       }
@@ -215,7 +205,7 @@ class MeetingContainer extends Component {
             facilitatorId: nextFacilitator.id,
             disconnectedFacilitatorId: facilitator.id
           },
-          dispatch
+          {}
         )
       }
     }
@@ -295,7 +285,7 @@ class MeetingContainer extends Component {
     history.push(pushURL)
   }
 
-  render () {
+  render() {
     if (this.unsafeRoute) return <div />
 
     const {localPhase, localPhaseItem, myTeamMemberId, viewer} = this.props
@@ -409,10 +399,8 @@ class MeetingContainer extends Component {
 }
 
 export default createFragmentContainer(
-  connect()(
-    dragDropContext(HTML5Backend)(
-      withHotkey(withAtmosphere(withMutationProps(withRouter(MeetingContainer))))
-    )
+  dragDropContext(HTML5Backend)(
+    withHotkey(withAtmosphere(withMutationProps(withRouter(MeetingContainer))))
   ),
   graphql`
     fragment MeetingContainer_viewer on User {

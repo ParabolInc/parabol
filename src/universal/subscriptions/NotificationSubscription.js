@@ -1,35 +1,39 @@
-import {showWarning} from 'universal/modules/toast/ducks/toastDuck'
 import {addOrgMutationNotificationUpdater} from 'universal/mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from 'universal/mutations/AddTeamMutation'
-import {approveToOrgNotificationUpdater} from 'universal/mutations/ApproveToOrgMutation'
-import {cancelApprovalNotificationUpdater} from 'universal/mutations/CancelApprovalMutation'
-import {cancelTeamInviteNotificationUpdater} from 'universal/mutations/CancelTeamInviteMutation'
 import {clearNotificationNotificationUpdater} from 'universal/mutations/ClearNotificationMutation'
-import {createTaskNotificationUpdater} from 'universal/mutations/CreateTaskMutation'
+import {
+  createTaskNotificationOnNext,
+  createTaskNotificationUpdater
+} from 'universal/mutations/CreateTaskMutation'
 import {deleteTaskNotificationUpdater} from 'universal/mutations/DeleteTaskMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
-import {inviteTeamMembersNotificationUpdater} from 'universal/mutations/InviteTeamMembersMutation'
-import {rejectOrgApprovalNotificationUpdater} from 'universal/mutations/RejectOrgApprovalMutation'
-import getInProxy from 'universal/utils/relay/getInProxy'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
-import {removeOrgUserNotificationUpdater} from 'universal/mutations/RemoveOrgUserMutation'
+import {
+  removeOrgUserNotificationOnNext,
+  removeOrgUserNotificationUpdater
+} from 'universal/mutations/RemoveOrgUserMutation'
+import {
+  inviteToTeamNotificationOnNext,
+  inviteToTeamNotificationUpdater
+} from 'universal/mutations/InviteToTeamMutation'
+import {acceptTeamInvitationNotificationUpdater} from 'universal/mutations/AcceptTeamInvitationMutation'
+import {endNewMeetingNotificationUpdater} from 'universal/mutations/EndNewMeetingMutation'
+import {endMeetingNotificationUpdater} from 'universal/mutations/EndMeetingMutation'
 
 const subscription = graphql`
   subscription NotificationSubscription {
     notificationSubscription {
       __typename
-      ...AddOrgMutation_notification
-      ...AddTeamMutation_notification
-      ...ApproveToOrgMutation_notification
-      ...CancelApprovalMutation_notification
-      ...CancelTeamInviteMutation_notification
-      ...ClearNotificationMutation_notification
-      ...CreateTaskMutation_notification
-      ...DeleteTaskMutation_notification
-      ...InviteTeamMembersMutation_notification
-      ...RemoveOrgUserMutation_notification
-      ...RejectOrgApprovalMutation_notification
-      ...UpdateUserProfileMutation_notification
+      ...AddOrgMutation_notification @relay(mask: false)
+      ...AddTeamMutation_notification @relay(mask: false)
+      ...ClearNotificationMutation_notification @relay(mask: false)
+      ...CreateTaskMutation_notification @relay(mask: false)
+      ...DeleteTaskMutation_notification @relay(mask: false)
+      ...EndMeetingMutation_notification @relay(mask: false)
+      ...EndNewMeetingMutation_notification @relay(mask: false)
+      ...InviteToTeamMutation_notification @relay(mask: false)
+      ...RemoveOrgUserMutation_notification @relay(mask: false)
+      ...UpdateUserProfileMutation_notification @relay(mask: false)
 
       # ConnectSocket
       ... on User {
@@ -62,6 +66,15 @@ const subscription = graphql`
           }
         }
       }
+
+      # New Feature Broadcasts
+      ... on AddNewFeaturePayload {
+        newFeature {
+          id
+          copy
+          url
+        }
+      }
     }
   }
 `
@@ -92,66 +105,70 @@ const disconnectSocketNotificationUpdater = (payload, store) => {
   })
 }
 
-const popPaymentFailedToast = (payload, {dispatch, history}) => {
-  const orgId = getInProxy(payload, 'organization', 'id')
-  const orgName = getInProxy(payload, 'organization', 'name')
-  // TODO add brand and last 4
-  dispatch(
-    showWarning({
-      autoDismiss: 10,
-      title: 'Oh no!',
-      message: `Your credit card for ${orgName} was rejected.`,
-      action: {
-        label: 'Fix it!',
-        callback: () => {
-          history.push(`/me/organizations/${orgId}`)
-        }
+const stripeFailPaymentNotificationOnNext = (payload, {atmosphere, history}) => {
+  if (!payload) return
+  const {organization} = payload
+  if (!organization) return
+  const {id: orgId, name: orgName} = organization
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'warning',
+    autoDismiss: 10,
+    title: 'Oh no!',
+    message: `Your credit card for ${orgName} was rejected.`,
+    action: {
+      label: 'Fix it!',
+      callback: () => {
+        history.push(`/me/organizations/${orgId}`)
       }
-    })
-  )
+    }
+  })
 }
-
-const stripeFailPaymentNotificationUpdater = (payload, store, viewerId, options) => {
+const stripeFailPaymentNotificationUpdater = (payload, store, viewerId) => {
   const notification = payload.getLinkedRecord('notification')
   handleAddNotifications(notification, store, viewerId)
-  popPaymentFailedToast(payload, options)
 }
 
-const onNextHandlers = {}
+const addNewFeatureNotificationUpdater = (payload, {store}) => {
+  const viewer = store.getRoot().getLinkedRecord('viewer')
+  const newFeature = payload.getLinkedRecord('newFeature')
+  viewer.setLinkedRecord(newFeature, 'newFeature')
+}
 
-const NotificationSubscription = (environment, queryVariables, subParams) => {
-  const {dispatch, history, location} = subParams
-  const {viewerId} = environment
+const onNextHandlers = {
+  CreateTaskPayload: createTaskNotificationOnNext,
+  InviteToTeamPayload: inviteToTeamNotificationOnNext,
+  RemoveOrgUserPayload: removeOrgUserNotificationOnNext,
+  StripeFailPaymentPayload: stripeFailPaymentNotificationOnNext
+}
+
+const NotificationSubscription = (atmosphere, queryVariables, subParams) => {
+  const {viewerId} = atmosphere
   return {
     subscription,
     updater: (store) => {
-      const options = {dispatch, environment, history, location, store}
       const payload = store.getRootField('notificationSubscription')
       if (!payload) return
       const type = payload.getValue('__typename')
       switch (type) {
+        case 'AcceptTeamInvitationPayload':
+          acceptTeamInvitationNotificationUpdater(payload, {store, atmosphere})
+          break
         case 'AddFeatureFlagPayload':
           break
+        case 'AddNewFeaturePayload':
+          addNewFeatureNotificationUpdater(payload, {store})
+          break
         case 'AddOrgPayload':
-          addOrgMutationNotificationUpdater(payload, store, viewerId, options)
+          addOrgMutationNotificationUpdater(payload, {store})
           break
         case 'AddTeamPayload':
-          addTeamMutationNotificationUpdater(payload, store, viewerId, options)
-          break
-        case 'ApproveToOrgPayload':
-          approveToOrgNotificationUpdater(payload, store, viewerId, options)
-          break
-        case 'CancelApprovalPayload':
-          cancelApprovalNotificationUpdater(payload, store, viewerId)
-          break
-        case 'CancelTeamInvitePayload':
-          cancelTeamInviteNotificationUpdater(payload, store, viewerId)
+          addTeamMutationNotificationUpdater(payload, {store})
           break
         case 'ClearNotificationPayload':
           clearNotificationNotificationUpdater(payload, store, viewerId)
           break
         case 'CreateTaskPayload':
-          createTaskNotificationUpdater(payload, store, viewerId, options)
+          createTaskNotificationUpdater(payload, store, viewerId)
           break
         case 'DeleteTaskPayload':
           deleteTaskNotificationUpdater(payload, store, viewerId)
@@ -159,20 +176,23 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
         case 'DisconnectSocketPayload':
           disconnectSocketNotificationUpdater(payload, store)
           break
-        case 'InviteTeamMembersPayload':
-          inviteTeamMembersNotificationUpdater(payload, store, viewerId, options)
+        case 'EndMeetingPayload':
+          endMeetingNotificationUpdater(payload, {store})
           break
-        case 'RejectOrgApprovalPayload':
-          rejectOrgApprovalNotificationUpdater(payload, store, viewerId, options)
+        case 'EndNewMeetingPayload':
+          endNewMeetingNotificationUpdater(payload, {store})
+          break
+        case 'InviteToTeamPayload':
+          inviteToTeamNotificationUpdater(payload, {atmosphere, store})
           break
         case 'User':
           connectSocketUserUpdater(payload, store)
           break
         case 'RemoveOrgUserPayload':
-          removeOrgUserNotificationUpdater(payload, store, viewerId, options)
+          removeOrgUserNotificationUpdater(payload, store, viewerId)
           break
         case 'StripeFailPaymentPayload':
-          stripeFailPaymentNotificationUpdater(payload, store, viewerId, options)
+          stripeFailPaymentNotificationUpdater(payload, store, viewerId)
           break
         case 'UpdateUserProfilePayload':
           break
@@ -184,7 +204,7 @@ const NotificationSubscription = (environment, queryVariables, subParams) => {
       const {__typename: type} = notificationSubscription
       const handler = onNextHandlers[type]
       if (handler) {
-        handler(notificationSubscription, {...subParams, environment})
+        handler(notificationSubscription, {...subParams, atmosphere})
       }
     }
   }

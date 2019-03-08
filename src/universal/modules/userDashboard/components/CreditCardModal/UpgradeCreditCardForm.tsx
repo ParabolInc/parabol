@@ -1,7 +1,6 @@
 import React from 'react'
 import formError from 'universal/styles/helpers/formError'
 import {normalizeExpiry, normalizeNumeric} from './normalizers'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -9,7 +8,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import withAsync from 'react-async-hoc'
-import raven from 'raven-js'
+import * as Sentry from '@sentry/browser'
 import UpgradeToProMutation from 'universal/mutations/UpgradeToProMutation'
 import UpdateCreditCardMutation from 'universal/mutations/UpdateCreditCardMutation'
 import UpgradeCreditCardFormField from 'universal/components/UpgradeCreditCardFormField'
@@ -22,14 +21,17 @@ import withMutationProps, {
   ErrorObject,
   WithMutationProps
 } from 'universal/utils/relay/withMutationProps'
-import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
-import Type from 'universal/components/Type/Type'
 import PrimaryButton from 'universal/components/PrimaryButton'
+import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Icon from 'universal/components/Icon'
+import {ICON_SIZE_FA_2X, MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {typeScale} from 'universal/styles/theme/typography'
 
 const inputBorder = '.0625rem solid transparent'
 const borderBottom = '.125rem solid transparent'
 
-const LockIcon = styled(StyledFontAwesome)({
+const LockIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   lineHeight: appTheme.typography.s5,
   marginRight: '.2em'
 })
@@ -42,8 +44,33 @@ const ModalBody = styled('div')({
   width: '100%'
 })
 
-const StyledIconAvatar = styled(IconAvatar)({
-  margin: '0 0 .5rem'
+const Heading = styled('div')({
+  fontSize: typeScale[7],
+  lineHeight: '1.875rem',
+  marginBottom: '.25rem',
+  textAlign: 'center'
+})
+
+const Subheading = styled('div')({
+  alignItems: 'center',
+  display: 'flex',
+  fontSize: typeScale[3],
+  justifyContent: 'center',
+  lineHeight: typeScale[6]
+})
+
+const CreditCardIcon = styled(StyledFontAwesome)({
+  alignItems: 'center',
+  backgroundColor: appTheme.palette.mid70l,
+  borderRadius: '100%',
+  color: ui.palette.white,
+  display: 'flex',
+  fontSize: ICON_SIZE_FA_2X,
+  height: '4rem',
+  justifyContent: 'center',
+  margin: '0 0 .5rem',
+  textAlign: 'center',
+  width: '4rem'
 })
 
 const CardInputs = styled('div')({
@@ -251,7 +278,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     if (error) {
       const fieldName = stripeFieldLookup[error.param]
       this.setError(fieldName)
-      raven.captureException(error.param)
+      Sentry.captureMessage(`Bad CC param: ${error.param}`)
     } else {
       this.sendStripeToken(stripeToken)
     }
@@ -272,70 +299,64 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     }
   }
 
-  render () {
+  render() {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
     return (
       <ModalBody>
-        <StyledIconAvatar icon={cardTypeIcon} size='large' />
-        <Type
-          align='center'
-          colorPalette='dark'
-          lineHeight='1.875rem'
-          marginBottom='.25rem'
-          scale='s6'
-        >
-          {actionLabel}
-        </Type>
-        <Type align='center' colorPalette='dark' lineHeight={appTheme.typography.s5} scale='s3'>
-          <LockIcon name='lock' />
-          {' Secured by '}
-          <b>{'Stripe'}</b>
-        </Type>
+        <CreditCardIcon name={cardTypeIcon} />
+        <Heading>{actionLabel}</Heading>
+        <Subheading>
+          <LockIcon>lock</LockIcon>
+          <div>
+            {' Secured by '}
+            <b>{'Stripe'}</b>
+          </div>
+        </Subheading>
         {dirty && error && <ErrorMsg>{Object.values(error)[0]}</ErrorMsg>}
         <form onSubmit={this.handleSubmit}>
           <CardInputs>
             <CreditCardNumber>
               <UpgradeCreditCardFormField
-                autoComplete='cc-number'
+                autoComplete="cc-number"
                 autoFocus
                 hasError={Boolean(error && error.creditCardNumber)}
-                iconName='credit-card'
-                maxLength='20'
+                iconName="credit_card"
+                maxLength="20"
                 onChange={this.handleNumberChange}
-                placeholder='Card number'
+                placeholder="Card number"
                 value={creditCardNumber}
               />
             </CreditCardNumber>
             <CardDetails>
               <CardExpiry>
                 <UpgradeCreditCardFormField
-                  autoComplete='cc-exp'
+                  autoComplete="cc-exp"
                   hasError={Boolean(error && error.expiry)}
-                  iconName='calendar'
-                  maxLength='5'
+                  iconName="date_range"
+                  maxLength="5"
                   onChange={this.handleExpiryChange}
-                  placeholder='MM/YY'
+                  placeholder="MM/YY"
                   value={expiry}
                 />
               </CardExpiry>
               <CardCvc>
                 <UpgradeCreditCardFormField
-                  autoComplete='cc-csc'
+                  autoComplete="cc-csc"
                   hasError={Boolean(error && error.cvc)}
-                  iconName='lock'
-                  maxLength='4'
-                  name='cvc'
+                  iconName="lock"
+                  maxLength="4"
+                  name="cvc"
                   onChange={this.handleCVCChange}
-                  placeholder='CVC'
+                  placeholder="CVC"
                   value={cvc}
                 />
               </CardCvc>
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButton size='medium' depth={1} onClick={this.handleSubmit} waiting={submitting}>
+            <UpdateButton size="medium" onClick={this.handleSubmit} waiting={submitting}>
               {actionLabel}
             </UpdateButton>
           </ButtonGroup>

@@ -1,7 +1,7 @@
 import DataLoader from 'dataloader'
 import getRethink from 'server/database/rethinkDriver'
 import {getUserId} from 'server/utils/authorization'
-import sendSentryEvent from 'server/utils/sendSentryEvent'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const defaultCacheKeyFn = (key) => key
 
@@ -13,29 +13,21 @@ const indexResults = (results, indexField, cacheKeyFn = defaultCacheKeyFn) => {
   return indexedResults
 }
 
-const sendErrorToSentry = (authToken, key, keys, indexedResults) => {
-  const breadcrumb = {
-    message: 'Dataloader key not found',
-    category: 'dataloader',
-    data: {
-      key,
-      keys,
-      indexedResults
-    }
-  }
-  sendSentryEvent(authToken, breadcrumb)
-}
-
 const normalizeRethinkDbResults = (keys, indexField, cacheKeyFn = defaultCacheKeyFn) => (
   results,
-  authToken
+  authToken,
+  table
 ) => {
   const indexedResults = indexResults(results, indexField, cacheKeyFn)
   // return keys.map((val) => indexedResults.get(cacheKeyFn(val)) || new Error(`Key not found : ${val}`));
   return keys.map((val) => {
     const res = indexedResults.get(cacheKeyFn(val))
     if (!res) {
-      sendErrorToSentry(authToken, cacheKeyFn(val), keys, indexedResults)
+      const viewerId = getUserId(authToken)
+      sendToSentry(new Error(`dataloader not found for ${cacheKeyFn(val)}, on ${table}`), {
+        userId: viewerId
+      })
+      return null
     }
     return res
   })
@@ -66,7 +58,7 @@ export const primeStandardLoader = (loader, items) => {
 }
 
 export default class RethinkDataLoader {
-  constructor (authToken, dataloaderOptions = {}) {
+  constructor(authToken, dataloaderOptions = {}) {
     this.authToken = authToken
     this.dataloaderOptions = dataloaderOptions
     this.customPhaseItemsByTeamId = makeCustomLoader(async (teamIds) => {
@@ -104,16 +96,37 @@ export default class RethinkDataLoader {
     this.notificationsByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink()
       const viewerId = getUserId(this.authToken)
-      const notifications = await r.table('Notification').getAll(viewerId, {index: 'userIds'})
+      const notifications = await r
+        .table('Notification')
+        .getAll(viewerId, {index: 'userIds'})
+        .filter((notification) =>
+          notification('isArchived')
+            .default(false)
+            .ne(true)
+        )
       primeStandardLoader(this.notifications, notifications)
       return userIds.map(() => notifications)
     }, this.dataloaderOptions)
-    this.orgsByUserId = makeCustomLoader(async (userIds) => {
+    this.organizationUsersByOrgId = makeCustomLoader(async (orgIds) => {
       const r = getRethink()
-      const orgs = await r.table('Organization').getAll(r.args(userIds), {index: 'orgUsers'})
-      primeStandardLoader(this.organizations, orgs)
+      const organizationUsers = await r
+        .table('OrganizationUser')
+        .getAll(r.args(orgIds), {index: 'orgId'})
+        .filter({removedAt: null})
+      primeStandardLoader(this.organizationUsers, organizationUsers)
+      return orgIds.map((orgId) => {
+        return organizationUsers.filter((organizationUser) => organizationUser.orgId === orgId)
+      })
+    }, this.dataloaderOptions)
+    this.organizationUsersByUserId = makeCustomLoader(async (userIds) => {
+      const r = getRethink()
+      const organizationUsers = await r
+        .table('OrganizationUser')
+        .getAll(r.args(userIds), {index: 'userId'})
+        .filter({removedAt: null})
+      primeStandardLoader(this.organizationUsers, organizationUsers)
       return userIds.map((userId) => {
-        return orgs.filter((org) => Boolean(org.orgUsers.find((orgUser) => orgUser.id === userId)))
+        return organizationUsers.filter((organizationUser) => organizationUser.userId === userId)
       })
     }, this.dataloaderOptions)
     this.retroReflectionGroupsByMeetingId = makeCustomLoader(async (meetingIds) => {
@@ -162,6 +175,17 @@ export default class RethinkDataLoader {
         return softTeamMembers.filter((softTeamMember) => softTeamMember.teamId === teamId)
       })
     }, this.dataloaderOptions)
+    this.suggestedActionsByUserId = makeCustomLoader(async (userIds) => {
+      const r = getRethink()
+      const suggestedActions = await r
+        .table('SuggestedAction')
+        .getAll(r.args(userIds), {index: 'userId'})
+        .filter({removedAt: null})
+      primeStandardLoader(this.suggestedActions, suggestedActions)
+      return userIds.map((userId) => {
+        return suggestedActions.filter((suggestedAction) => suggestedAction.userId === userId)
+      })
+    }, this.dataloaderOptions)
     this.tasksByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink()
       const userId = getUserId(this.authToken)
@@ -183,7 +207,7 @@ export default class RethinkDataLoader {
     this.tasksByUserId = makeCustomLoader(async (userIds) => {
       const r = getRethink()
       const userId = getUserId(this.authToken)
-      const {tms} = this.authToken
+      const tms = this.authToken.tms || []
       const tasks = await r
         .table('Task')
         .getAll(userId, {index: 'userId'})
@@ -216,6 +240,19 @@ export default class RethinkDataLoader {
         return teams.filter((team) => team.orgId === orgId)
       })
     }, this.dataloaderOptions)
+    this.teamInvitationsByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink()
+      const now = new Date()
+      const teamInvitations = await r
+        .table('TeamInvitation')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({acceptedAt: null})
+        .filter((row) => row('expiresAt').ge(now))
+      primeStandardLoader(this.teamInvitations, teamInvitations)
+      return teamIds.map((teamId) => {
+        return teamInvitations.filter((teamInvitation) => teamInvitation.teamId === teamId)
+      })
+    }, this.dataloaderOptions)
     this.teamMembersByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink()
       const teamMembers = await r
@@ -240,35 +277,38 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions)
   }
 
-  _share () {
+  _share() {
     this.authToken = null
   }
-  makeStandardLoader (table) {
+
+  makeStandardLoader(table) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()
       const docs = await r.table(table).getAll(r.args(keys), {index: 'id'})
-      return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken)
+      return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken, table)
     }
     return new DataLoader(batchFn)
   }
 
   agendaItems = this.makeStandardLoader('AgendaItem')
   customPhaseItems = this.makeStandardLoader('CustomPhaseItem')
-  invitations = this.makeStandardLoader('Invitation')
   meetings = this.makeStandardLoader('Meeting')
   meetingSettings = this.makeStandardLoader('MeetingSettings')
   meetingMembers = this.makeStandardLoader('MeetingMember')
   newMeetings = this.makeStandardLoader('NewMeeting')
+  newFeatures = this.makeStandardLoader('NewFeature')
   notifications = this.makeStandardLoader('Notification')
-  orgApprovals = this.makeStandardLoader('OrgApproval')
   organizations = this.makeStandardLoader('Organization')
+  organizationUsers = this.makeStandardLoader('OrganizationUser')
   reflectTemplates = this.makeStandardLoader('ReflectTemplate')
   retroReflectionGroups = this.makeStandardLoader('RetroReflectionGroup')
   retroReflections = this.makeStandardLoader('RetroReflection')
   softTeamMembers = this.makeStandardLoader('SoftTeamMember')
+  suggestedActions = this.makeStandardLoader('SuggestedAction')
   tasks = this.makeStandardLoader('Task')
   teamMembers = this.makeStandardLoader('TeamMember')
+  teamInvitations = this.makeStandardLoader('TeamInvitation')
   teams = this.makeStandardLoader('Team')
   users = this.makeStandardLoader('User')
 }

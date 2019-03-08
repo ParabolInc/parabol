@@ -1,9 +1,14 @@
+import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 /**
  * Renders the UI for the reflection phase of the retrospective meeting
  *
  */
-import React from 'react'
+import React, {Component} from 'react'
+import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
+import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
 import MeetingPhaseWrapper from 'universal/components/MeetingPhaseWrapper'
 import StyledError from 'universal/components/StyledError'
 import withAtmosphere, {
@@ -14,76 +19,135 @@ import AutoGroupReflectionsMutation from 'universal/mutations/AutoGroupReflectio
 import {VOTE} from 'universal/utils/constants'
 import {phaseLabelLookup} from 'universal/utils/meetings/lookups'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
-import GroupHelpMenu from 'universal/components/MeetingHelp/GroupHelpMenu'
-import {RetroGroupPhase_team} from '__generated__/RetroGroupPhase_team.graphql'
 import handleRightArrow from '../utils/handleRightArrow'
+import isDemoRoute from '../utils/isDemoRoute'
+import EndMeetingButton from './EndMeetingButton'
+import DemoGroupHelpMenu from './MeetingHelp/DemoGroupHelpMenu'
 import PhaseItemMasonry from './PhaseItemMasonry'
+import ms from 'ms'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   gotoNext: () => void
   gotoNextRef: React.RefObject<HTMLDivElement>
+  isDemoStageComplete: boolean
   team: RetroGroupPhase_team
 }
 
-const RetroGroupPhase = (props: Props) => {
-  const {
-    atmosphere,
-    error,
-    gotoNext,
-    gotoNextRef,
-    onError,
-    onCompleted,
-    submitting,
-    submitMutation,
-    team
-  } = props
-  const {viewerId} = atmosphere
-  const {newMeeting} = team
-  if (!newMeeting) return null
-  const {nextAutoGroupThreshold, facilitatorUserId, meetingId} = newMeeting
-  const isFacilitating = facilitatorUserId === viewerId
-  const nextPhaseLabel = phaseLabelLookup[VOTE]
-  const autoGroup = () => {
-    if (submitting) return
-    submitMutation()
-    const groupingThreshold = nextAutoGroupThreshold || 0.5
-    AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
+const BottomControlSpacer = styled('div')({
+  minWidth: '6rem'
+})
+
+const StyledBottomBar = styled(MeetingControlBar)({
+  justifyContent: 'space-between'
+})
+
+const CenteredControlBlock = styled('div')({
+  display: 'flex'
+})
+
+interface State {
+  isReadyToVote: boolean
+}
+class RetroGroupPhase extends Component<Props, State> {
+  state = {
+    isReadyToVote: false
   }
-  const canAutoGroup = !nextAutoGroupThreshold || nextAutoGroupThreshold < 1
-  return (
-    <React.Fragment>
-      {error && <StyledError>{error}</StyledError>}
-      <MeetingPhaseWrapper>
-        <PhaseItemMasonry meeting={newMeeting} />
-      </MeetingPhaseWrapper>
-      {isFacilitating && (
-        <MeetingControlBar>
-          <FlatButton
-            size='medium'
-            onClick={gotoNext}
-            onKeyDown={handleRightArrow(gotoNext)}
-            innerRef={gotoNextRef}
-          >
-            <IconLabel
-              icon='arrow-circle-right'
-              iconAfter
-              iconColor='warm'
-              iconLarge
-              label={`Done! Let’s ${nextPhaseLabel}`}
-            />
-          </FlatButton>
-          {canAutoGroup && (
-            <FlatButton size='medium' onClick={autoGroup} waiting={submitting}>
-              <IconLabel icon='magic' iconColor='midGray' iconLarge label={'Auto Group'} />
-            </FlatButton>
-          )}
-        </MeetingControlBar>
-      )}
-      <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
-    </React.Fragment>
-  )
+  activityTimeoutId = window.setTimeout(() => {
+    this.setState({
+      isReadyToVote: true
+    })
+  }, ms('1m'))
+
+  componentWillUnmount(): void {
+    window.clearTimeout(this.activityTimeoutId)
+  }
+
+  resetActivityTimeout = () => {
+    window.clearTimeout(this.activityTimeoutId)
+    if (this.state.isReadyToVote) {
+      this.setState({
+        isReadyToVote: false
+      })
+    }
+    this.activityTimeoutId = window.setTimeout(() => {
+      this.setState({
+        isReadyToVote: true
+      })
+    }, ms('30s'))
+  }
+
+  render() {
+    const {
+      atmosphere,
+      error,
+      gotoNext,
+      gotoNextRef,
+      onError,
+      onCompleted,
+      submitting,
+      submitMutation,
+      team,
+      isDemoStageComplete
+    } = this.props
+    const {isReadyToVote} = this.state
+    const {viewerId} = atmosphere
+    const {newMeeting} = team
+    if (!newMeeting) return null
+    const {nextAutoGroupThreshold, facilitatorUserId, meetingId, localStage} = newMeeting
+    const isComplete = localStage ? localStage.isComplete : false
+    const isFacilitating = facilitatorUserId === viewerId
+    const nextPhaseLabel = phaseLabelLookup[VOTE]
+    const autoGroup = () => {
+      if (submitting) return
+      submitMutation()
+      const groupingThreshold = nextAutoGroupThreshold || 0.5
+      AutoGroupReflectionsMutation(atmosphere, {meetingId, groupingThreshold}, onError, onCompleted)
+    }
+    const canAutoGroup = !isDemoRoute() && (!nextAutoGroupThreshold || nextAutoGroupThreshold < 1)
+    return (
+      <React.Fragment>
+        {error && <StyledError>{error}</StyledError>}
+        <MeetingPhaseWrapper>
+          <PhaseItemMasonry meeting={newMeeting} resetActivityTimeout={this.resetActivityTimeout} />
+        </MeetingPhaseWrapper>
+        {isFacilitating && (
+          <StyledBottomBar>
+            {/* ControlBlock and div for layout spacing */}
+            <BottomControlSpacer />
+            <CenteredControlBlock>
+              <BottomNavControl
+                isBouncing={isDemoStageComplete || (!isComplete && isReadyToVote)}
+                onClick={gotoNext}
+                onKeyDown={handleRightArrow(gotoNext)}
+                innerRef={gotoNextRef}
+              >
+                <BottomNavIconLabel
+                  icon="arrow_forward"
+                  iconColor="warm"
+                  label={`Next: ${nextPhaseLabel}`}
+                />
+              </BottomNavControl>
+              {canAutoGroup && (
+                <BottomNavControl onClick={autoGroup} waiting={submitting}>
+                  <BottomNavIconLabel
+                    icon="photo_filter"
+                    iconColor="midGray"
+                    label={'Auto Group'}
+                  />
+                </BottomNavControl>
+              )}
+            </CenteredControlBlock>
+            <EndMeetingButton meetingId={meetingId} />
+          </StyledBottomBar>
+        )}
+        {isDemoRoute() ? (
+          <DemoGroupHelpMenu />
+        ) : (
+          <GroupHelpMenu floatAboveBottomBar={isFacilitating} />
+        )}
+      </React.Fragment>
+    )
+  }
 }
 
 export default createFragmentContainer(
@@ -96,6 +160,9 @@ export default createFragmentContainer(
         ...PhaseItemColumn_meeting
         ... on RetrospectiveMeeting {
           ...PhaseItemMasonry_meeting
+          localStage {
+            isComplete
+          }
           nextAutoGroupThreshold
           reflectionGroups {
             id

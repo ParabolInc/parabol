@@ -1,9 +1,10 @@
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import Atmosphere from 'universal/Atmosphere'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import {CompletedHandler, ErrorHandler, TeamUpdater} from '../types/relayMutations'
 import handleAddReflectTemplatePrompt from './handlers/handleAddReflectTemplatePrompt'
-import IAddReflectTemplatePromptOnMutationArguments = GQL.IAddReflectTemplatePromptOnMutationArguments
+import {IAddReflectTemplatePromptOnMutationArguments} from 'universal/types/graphql'
 
 interface Context {
   promptCount: number
@@ -41,7 +42,7 @@ const AddReflectTemplatePromptMutation = (
   context: Context,
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,

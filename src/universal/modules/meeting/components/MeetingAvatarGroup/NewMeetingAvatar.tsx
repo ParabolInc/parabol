@@ -14,7 +14,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import NewMeetingTeamMemberStage = GQL.NewMeetingTeamMemberStage
+import {NewMeetingTeamMemberStage} from 'universal/types/graphql'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -107,7 +107,9 @@ const NewMeetingAvatar = (props: Props) => {
   const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES
-  const {teamMemberId, userId} = teamMember
+  const {teamMemberId, meetingMember, picture = defaultUserAvatar, userId, user} = teamMember
+  const {isConnected} = user
+  const isCheckedIn = meetingMember ? meetingMember.isCheckedIn : null
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
   return (
@@ -123,7 +125,7 @@ const NewMeetingAvatar = (props: Props) => {
       >
         <LoadableMenu
           LoadableComponent={LoadableNewMeetingAvatarMenu}
-          maxWidth={350}
+          maxWidth={400}
           maxHeight={225}
           originAnchor={originAnchor}
           queryVars={{
@@ -141,11 +143,18 @@ const NewMeetingAvatar = (props: Props) => {
 }
 
 export default createFragmentContainer(
-  connect()(withAtmosphere(NewMeetingAvatar)),
+  (connect as any)()(withAtmosphere(NewMeetingAvatar)),
   graphql`
     fragment NewMeetingAvatar_teamMember on TeamMember {
       teamMemberId: id
+      meetingMember {
+        isCheckedIn
+      }
+      picture
       userId
+      user {
+        isConnected
+      }
       ...NewMeetingAvatarMenu_teamMember
       ...VideoAvatar_teamMember
     }

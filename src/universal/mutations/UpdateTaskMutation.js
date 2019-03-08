@@ -22,6 +22,9 @@ graphql`
     }
     addedNotification {
       type
+      changeAuthor {
+        preferredName
+      }
       ...TaskInvolves_notification @relay(mask: false)
     }
     removedNotification {
@@ -42,7 +45,12 @@ const mutation = graphql`
   }
 `
 
-export const updateTaskTaskUpdater = (payload, store, viewerId, options) => {
+export const updateTaskTaskOnNext = (payload, {atmosphere, history}) => {
+  if (!payload) return
+  popInvolvementToast(payload.addedNotification, {atmosphere, history})
+}
+
+export const updateTaskTaskUpdater = (payload, store, viewerId) => {
   const task = payload.getLinkedRecord('task')
   handleUpsertTasks(task, store, viewerId)
 
@@ -54,11 +62,6 @@ export const updateTaskTaskUpdater = (payload, store, viewerId, options) => {
       fieldKey: 'content'
     })
   }
-
-  if (options) {
-    popInvolvementToast(addedNotification, options)
-  }
-
   const removedNotificationId = getInProxy(payload, 'removedNotification', 'id')
   handleRemoveNotifications(removedNotificationId, store, viewerId)
 

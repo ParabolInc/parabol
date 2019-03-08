@@ -14,6 +14,7 @@ import InvoiceLineItem from 'universal/modules/invoice/components/InvoiceLineIte
 import plural from 'universal/utils/plural'
 import invoiceLineFormat from 'universal/modules/invoice/helpers/invoiceLineFormat'
 import Tag from 'universal/components/Tag/Tag'
+import {sheetShadow} from 'universal/styles/elevation'
 
 import {
   PAID,
@@ -97,12 +98,12 @@ const Invoice = (props) => {
         {status === FAILED && <div className={css(styles.failedStamp)}>{'Payment Failed'}</div>}
         {status === UPCOMING && (
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette='light' label='Current Estimation' />
+            <Tag colorPalette="light" label="Current Estimation" />
           </div>
         )}
         {status === PENDING && (
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette='gray' label='Payment Processing' />
+            <Tag colorPalette="gray" label="Payment Processing" />
           </div>
         )}
         <div className={css(styles.label)}>{'Invoice'}</div>
@@ -177,7 +178,7 @@ const panelGutterLarge = ui.invoicePanelGutterLarge
 const styleThunk = () => ({
   invoice: {
     backgroundColor: ui.backgroundColor,
-    boxShadow: '0 .125rem .25rem 0 rgba(0, 0, 0, .5)',
+    boxShadow: sheetShadow,
     color: appTheme.palette.dark,
     margin: '0 auto',
     maxWidth: '37.5rem',

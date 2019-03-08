@@ -3,17 +3,19 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import styled from 'react-emotion'
 import {ReflectionGroupVoting_meeting} from '__generated__/ReflectionGroupVoting_meeting.graphql'
 import {ReflectionGroupVoting_reflectionGroup} from '__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import VoteForReflectionGroupMutation from 'universal/mutations/VoteForReflectionGroupMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import ui from 'universal/styles/ui'
-import {meetingVoteIcon} from 'universal/styles/meeting'
-import StyledError from 'universal/components/StyledError'
+import {meetingVoteIcon, retroMeetingVotingWidth} from 'universal/styles/meeting'
 import NewMeetingCheckInMutation from 'universal/mutations/NewMeetingCheckInMutation'
 import appTheme from 'universal/styles/theme/appTheme'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import handleOnCompletedToastError from 'universal/mutations/handlers/handleOnCompletedToastError'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   isExpanded: boolean
@@ -26,18 +28,19 @@ const UpvoteRow = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const UpvoteIcon = styled(StyledFontAwesome)(({color}: {color: string}) => ({
+const UpvoteIcon = styled(Icon)(({color}: {color: string}) => ({
   color,
   cursor: 'pointer',
-  marginRight: '.25rem',
-  width: ui.iconSize
+  fontSize: MD_ICONS_SIZE_18,
+  marginLeft: '.25rem',
+  userSelect: 'none'
 }))
 
-const CheckColumn = styled('div')({
+const UpvoteColumn = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  width: ui.votingCheckmarksWidth
+  width: retroMeetingVotingWidth
 })
 
 class ReflectionGroupVoting extends Component<Props> {
@@ -50,13 +53,18 @@ class ReflectionGroupVoting extends Component<Props> {
     } = meeting
     const {reflectionGroupId} = reflectionGroup
     submitMutation()
+    const handleCompleted = (res, errors) => {
+      onCompleted()
+      const error = getGraphQLError(res, errors)
+      error && handleOnCompletedToastError(error, atmosphere)
+    }
     const sendVote = () =>
       VoteForReflectionGroupMutation(
         atmosphere,
         {reflectionGroupId},
         {meetingId},
         onError,
-        onCompleted
+        handleCompleted
       )
     if (!isCheckedIn) {
       const {viewerId: userId} = atmosphere
@@ -75,18 +83,23 @@ class ReflectionGroupVoting extends Component<Props> {
     const {atmosphere, meeting, onError, onCompleted, reflectionGroup, submitMutation} = this.props
     const {meetingId} = meeting
     const {reflectionGroupId} = reflectionGroup
+    const handleCompleted = (res, errors) => {
+      onCompleted()
+      const error = getGraphQLError(res, errors)
+      error && handleOnCompletedToastError(error, atmosphere)
+    }
     submitMutation()
     VoteForReflectionGroupMutation(
       atmosphere,
       {isUnvote: true, reflectionGroupId},
       {meetingId},
       onError,
-      onCompleted
+      handleCompleted
     )
   }
 
-  render () {
-    const {error, meeting, reflectionGroup, isExpanded} = this.props
+  render() {
+    const {meeting, reflectionGroup, isExpanded} = this.props
     const viewerVoteCount = reflectionGroup.viewerVoteCount || 0
     const {settings, viewerMeetingMember} = meeting
     const {maxVotesPerGroup} = settings
@@ -94,26 +107,23 @@ class ReflectionGroupVoting extends Component<Props> {
     const upvotes = [...Array(viewerVoteCount).keys()]
     const canVote = viewerVoteCount < maxVotesPerGroup && votesRemaining > 0
     return (
-      <CheckColumn>
+      <UpvoteColumn>
         <UpvoteRow>
           {upvotes.map((idx) => (
-            <UpvoteIcon
-              key={idx}
-              name={meetingVoteIcon}
-              color={ui.palette.warm}
-              onClick={this.unvote}
-            />
+            <UpvoteIcon key={idx} color={ui.palette.warm} onClick={this.unvote}>
+              {meetingVoteIcon}
+            </UpvoteIcon>
           ))}
           {canVote && (
             <UpvoteIcon
-              name={meetingVoteIcon}
               color={isExpanded ? ui.palette.dark : appTheme.brand.primary.midGray}
               onClick={this.vote}
-            />
+            >
+              {meetingVoteIcon}
+            </UpvoteIcon>
           )}
         </UpvoteRow>
-        {error && <StyledError>{error}</StyledError>}
-      </CheckColumn>
+      </UpvoteColumn>
     )
   }
 }

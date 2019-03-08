@@ -10,19 +10,23 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import AddReflectTemplatePromptMutation from 'universal/mutations/AddReflectTemplatePromptMutation'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const AddPromptLink = styled(LinkButton)({
+  alignItems: 'center',
   display: 'flex',
   fontSize: typeScale[5],
   margin: '.75rem 0',
   outline: 'none'
 })
 
-const AddPromptLinkPlus = styled('span')({
+const AddPromptLinkPlus = styled(Icon)({
   display: 'block',
-  margin: '0 .5rem 0 1.5rem',
-  textAlign: 'center',
-  width: '1rem'
+  fontSize: MD_ICONS_SIZE_18,
+  lineHeight: MD_ICONS_SIZE_18,
+  margin: '0 .5rem 0 1.375rem',
+  width: MD_ICONS_SIZE_18
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
@@ -55,12 +59,12 @@ class AddTemplatePrompt extends Component<Props> {
     )
   }
 
-  render () {
+  render() {
     const {prompts, submitting} = this.props
     if (prompts.length >= 5) return null
     return (
-      <AddPromptLink palette='blue' onClick={this.addPrompt} waiting={submitting}>
-        <AddPromptLinkPlus>+</AddPromptLinkPlus>
+      <AddPromptLink palette="blue" onClick={this.addPrompt} waiting={submitting}>
+        <AddPromptLinkPlus>add</AddPromptLinkPlus>
         <div>Add another prompt</div>
       </AddPromptLink>
     )

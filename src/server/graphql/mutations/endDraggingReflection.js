@@ -1,14 +1,8 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import EndDraggingReflectionPayload from 'server/graphql/types/EndDraggingReflectionPayload'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
 import publish from 'server/utils/publish'
 import {GROUP, TEAM} from 'universal/utils/constants'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import DragReflectionDropTargetTypeEnum, {
   REFLECTION_GRID,
@@ -16,6 +10,7 @@ import DragReflectionDropTargetTypeEnum, {
 } from 'server/graphql/mutations/DragReflectionDropTargetTypeEnum'
 import addReflectionToGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/addReflectionToGroup'
 import removeReflectionFromGroup from 'server/graphql/mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
+import standardError from 'server/utils/standardError'
 
 export default {
   description: 'Broadcast that the viewer stopped dragging a reflection',
@@ -39,7 +34,7 @@ export default {
       type: GraphQLID
     }
   },
-  async resolve (source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
+  async resolve(source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -48,20 +43,21 @@ export default {
     const viewerId = getUserId(authToken)
     const reflection = await dataLoader.get('retroReflections').load(reflectionId)
     if (!reflection) {
-      return sendReflectionNotFoundError(authToken, reflectionId)
+      return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
     const {meetingId, reflectionGroupId: oldReflectionGroupId} = reflection
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (isPhaseComplete(GROUP, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP)
+      return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
     }
 
+    // RESOLUTION
     let newReflectionGroupId
     if (dropTargetType === REFLECTION_GRID) {
       // ungroup
@@ -71,11 +67,6 @@ export default {
       newReflectionGroupId = await addReflectionToGroup(reflectionId, dropTargetId, context)
     }
 
-    if (typeof newReflectionGroupId === 'object') {
-      publish(TEAM, teamId, EndDraggingReflectionPayload, newReflectionGroupId, subOptions)
-    }
-
-    // RESOLUTION
     const data = {
       meetingId,
       reflectionId,

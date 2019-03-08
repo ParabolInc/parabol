@@ -5,13 +5,15 @@ import sendEmailSummary from 'server/graphql/mutations/helpers/endMeeting/sendEm
 import {endSlackMeeting} from 'server/graphql/mutations/helpers/notifySlack'
 import EndMeetingPayload from 'server/graphql/types/EndMeetingPayload'
 import archiveTasksForDB from 'server/safeMutations/archiveTasksForDB'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
-import {DONE, LOBBY, TASK, TEAM} from 'universal/utils/constants'
+import {DONE, LOBBY, NOTIFICATION, TASK, TEAM} from 'universal/utils/constants'
 import {makeSuccessExpression, makeSuccessStatement} from 'universal/utils/makeSuccessCopy'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendAuthRaven from 'server/utils/sendAuthRaven'
+import shortid from 'shortid'
+import {COMPLETED_ACTION_MEETING} from 'server/graphql/types/TimelineEventTypeEnum'
+import removeSuggestedAction from 'server/safeMutations/removeSuggestedAction'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: EndMeetingPayload,
@@ -22,15 +24,16 @@ export default {
       description: 'The team that will be having the meeting'
     }
   },
-  async resolve (source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     // called by endOldMeetings, so SU is OK
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     const meeting = await r
       .table('Meeting')
@@ -40,12 +43,7 @@ export default {
       .nth(0)
       .default({endedAt: r.now()})
     if (meeting.endedAt) {
-      const breadcrumb = {
-        message: 'Meeting already ended!',
-        category: 'Meeting ended',
-        data: {teamId}
-      }
-      return sendAuthRaven(authToken, 'Meeting already ended', breadcrumb)
+      return standardError(new Error('Meeting already ended'), {userId: viewerId})
     }
 
     // RESOLUTION
@@ -200,7 +198,39 @@ export default {
       meetingId
     }
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+    const events = teamMembers.map((teamMember) => ({
+      id: shortid.generate(),
+      createdAt: now,
+      interactionCount: 0,
+      seenCount: 0,
+      type: COMPLETED_ACTION_MEETING,
+      userId: teamMember.userId,
+      teamId,
+      orgId: team.orgId,
+      meetingId
+    }))
+    await r.table('TimelineEvent').insert(events)
+    if (team.isOnboardTeam) {
+      const teamLeadUserId = await r
+        .table('TeamMember')
+        .getAll(teamId, {index: 'teamId'})
+        .filter({isLead: true})
+        .nth(0)('userId')
 
+      const removedSuggestedActionId = await removeSuggestedAction(
+        teamLeadUserId,
+        'tryActionMeeting'
+      )
+      if (removedSuggestedActionId) {
+        publish(
+          NOTIFICATION,
+          teamLeadUserId,
+          EndMeetingPayload,
+          {removedSuggestedActionId},
+          subOptions
+        )
+      }
+    }
     publish(TEAM, teamId, EndMeetingPayload, data, subOptions)
     teamMembers.forEach(({userId}) => {
       publish(TASK, userId, EndMeetingPayload, data, subOptions)

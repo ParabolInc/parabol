@@ -3,12 +3,13 @@
  *
  */
 import {commitMutation, graphql} from 'react-relay'
+import {Disposable} from 'relay-runtime'
 import {CompletedHandler, ErrorHandler} from 'universal/types/relayMutations'
 import handleAddReflectionGroups from 'universal/mutations/handlers/handleAddReflectionGroups'
 import makeEmptyStr from 'universal/utils/draftjs/makeEmptyStr'
 import clientTempId from 'universal/utils/relay/clientTempId'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
-import ICreateReflectionOnMutationArguments = GQL.ICreateReflectionOnMutationArguments
+import {ICreateReflectionOnMutationArguments} from 'universal/types/graphql'
 
 interface Context {
   meetingId: string
@@ -53,7 +54,7 @@ const CreateReflectionMutation = (
   context: Context,
   onError: ErrorHandler,
   onCompleted: CompletedHandler
-) => {
+): Disposable => {
   return commitMutation(atmosphere, {
     mutation,
     variables,
@@ -91,9 +92,9 @@ const CreateReflectionMutation = (
         sortOrder: input.sortOrder,
         updatedAt: nowISO
       }
-      const meeting = store.get(meetingId)
+      const meeting = store.get(meetingId)!
       const reflectionNode = createProxyRecord(store, 'RetroReflection', optimisticReflection)
-      const phaseItem = store.get(input.retroPhaseItemId)
+      const phaseItem = store.get(input.retroPhaseItemId)!
       reflectionNode.setLinkedRecord(meeting, 'meeting')
       reflectionNode.setLinkedRecord(phaseItem, 'phaseItem')
       const reflectionGroupNode = createProxyRecord(store, 'RetroReflectionGroup', optimisticGroup)

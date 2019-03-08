@@ -1,7 +1,6 @@
 import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React from 'react'
-import {connect} from 'react-redux'
 import Avatar from 'universal/components/Avatar/Avatar'
 import Tag from 'universal/components/Tag/Tag'
 import appTheme from 'universal/styles/theme/appTheme'
@@ -21,11 +20,12 @@ import {createFragmentContainer} from 'react-relay'
 import Loadable from 'react-loadable'
 import LoadableLoading from 'universal/components/LoadableLoading'
 import LoadableMenu from 'universal/components/LoadableMenu'
+import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
 
 const LoadableMeetingAvatarMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'MeetingAvatarMenu' */
-      'universal/modules/meeting/components/MeetingAvatarMenu'),
+    'universal/modules/meeting/components/MeetingAvatarMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -44,16 +44,8 @@ const targetAnchor = {
 }
 
 const MeetingAvatarGroup = (props) => {
-  const {
-    atmosphere,
-    dispatch,
-    gotoItem,
-    isFacilitating,
-    localPhase,
-    localPhaseItem,
-    styles,
-    team: {activeFacilitator, teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers}
-  } = props
+  const {atmosphere, gotoItem, isFacilitating, localPhase, localPhaseItem, styles, team} = props
+  const {activeFacilitator, teamId, facilitatorPhase, facilitatorPhaseItem, teamMembers} = team
   const onFacilitatorPhase = facilitatorPhase === localPhase
   const canNavigate = localPhase === CHECKIN || localPhase === UPDATES
   return (
@@ -75,7 +67,7 @@ const MeetingAvatarGroup = (props) => {
             gotoItem(count)
           }
           const promoteToFacilitator = () => {
-            PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, dispatch)
+            PromoteFacilitatorMutation(atmosphere, {facilitatorId: avatar.id}, {})
           }
           const requestFacilitator = () => {
             RequestFacilitatorMutation(atmosphere, teamId)
@@ -108,19 +100,20 @@ const MeetingAvatarGroup = (props) => {
                       picture={picture}
                       isConnected={avatar.isConnected || avatar.isSelf}
                       isCheckedIn={avatar.isCheckedIn}
-                      size='fill'
+                      size="fill"
                     />
                   }
                 />
               </div>
               {avatarIsFacilitating && (
                 <div className={tagBlockStyles}>
-                  <Tag colorPalette='gray' label='Facilitator' />
+                  <Tag colorPalette="gray" label="Facilitator" />
                 </div>
               )}
             </div>
           )
         })}
+        <AddTeamMemberAvatarButton isMeeting team={team} teamMembers={teamMembers} />
       </div>
     </div>
   )
@@ -128,7 +121,6 @@ const MeetingAvatarGroup = (props) => {
 
 MeetingAvatarGroup.propTypes = {
   atmosphere: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
   gotoItem: PropTypes.func.isRequired,
   isFacilitating: PropTypes.bool,
   localPhase: PropTypes.oneOf(phaseArray),
@@ -217,14 +209,16 @@ const styleThunk = () => ({
 })
 
 export default createFragmentContainer(
-  connect()(withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup))),
+  withAtmosphere(withStyles(styleThunk)(MeetingAvatarGroup)),
   graphql`
     fragment MeetingAvatarGroup_team on Team {
       teamId: id
       activeFacilitator
       facilitatorPhase
       facilitatorPhaseItem
+      ...AddTeamMemberAvatarButton_team
       teamMembers(sortBy: "checkInOrder") {
+        ...AddTeamMemberAvatarButton_teamMembers
         id
         isCheckedIn
         isConnected

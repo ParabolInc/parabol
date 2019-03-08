@@ -4,7 +4,8 @@ import withStyles from 'universal/styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
 import ui from 'universal/styles/ui'
 import appTheme from 'universal/styles/theme/appTheme'
-import FontAwesome from 'react-fontawesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const OutcomeCardMessage = (props) => {
   const {onClose, message, styles} = props
@@ -16,8 +17,8 @@ const OutcomeCardMessage = (props) => {
       <div className={messageInnerStyles}>
         {message}
         {onClose && (
-          <div className={css(styles.messageClose)} onClick={onClose} tabIndex='0'>
-            <FontAwesome className={css(styles.messageCloseIcon)} name='times-circle' />
+          <div className={css(styles.messageClose)} onClick={onClose} tabIndex="0">
+            <Icon className={css(styles.messageCloseIcon)}>close</Icon>
           </div>
         )}
       </div>
@@ -76,10 +77,7 @@ const styleThunk = (theme, {colorPalette}) => ({
 
   messageCloseIcon: {
     color: '#fff',
-    fontSize: `${ui.iconSize} !important`,
-    height: `${ui.iconSize} !important`,
-    lineHeight: `${ui.iconSize} !important`,
-    width: `${ui.iconSize} !important`
+    fontSize: `${MD_ICONS_SIZE_18} !important`
   }
 })
 

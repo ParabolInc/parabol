@@ -7,19 +7,18 @@ import globalStyles from 'universal/styles/theme/globalStyles'
 
 class ActionContainer extends Component {
   static propTypes = {
-    dispatch: PropTypes.func,
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired
     }).isRequired,
     params: PropTypes.object
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     injectGlobal(globalStyles)
   }
 
-  render () {
+  render() {
     return <Action {...this.props} />
   }
 }

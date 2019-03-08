@@ -58,7 +58,7 @@ class TaskEditor extends Component {
 
   state = {}
 
-  componentDidMount () {
+  componentDidMount() {
     const {editorState} = this.props
     if (!editorState.getCurrentContent().hasText()) {
       setTimeout(() => {
@@ -169,7 +169,7 @@ class TaskEditor extends Component {
     return 'not-handled'
   }
 
-  render () {
+  render() {
     const {editorState, readOnly, renderModal, setEditorRef} = this.props
     // console.log('es', Editor.getClipboard())
     const noText = !editorState.getCurrentContent().hasText()
@@ -177,6 +177,7 @@ class TaskEditor extends Component {
     return (
       <RootEditor noText={noText}>
         <Editor
+          spellCheck
           blockStyleFn={this.blockStyleFn}
           editorState={editorState}
           handleBeforeInput={this.handleBeforeInput}

@@ -1,9 +1,9 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendLastPromptRemovalError, sendTeamAccessError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
+import standardError from '../../utils/standardError'
 import RemoveReflectTemplatePromptPayload from '../types/RemoveReflectTemplatePromptPayload'
 
 const removeReflectTemplatePrompt = {
@@ -20,10 +20,11 @@ const removeReflectTemplatePrompt = {
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
     const prompt = await r.table('CustomPhaseItem').get(promptId)
+    const viewerId = getUserId(authToken)
 
     // AUTH
     if (!prompt || !isTeamMember(authToken, prompt.teamId) || !prompt.isActive) {
-      return sendTeamAccessError(authToken, prompt && prompt.teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -39,7 +40,7 @@ const removeReflectTemplatePrompt = {
       .default(0)
 
     if (promptCount.length <= 1) {
-      return sendLastPromptRemovalError(authToken, promptId)
+      return standardError(new Error('No prompts remain'), {userId: viewerId})
     }
 
     // RESOLUTION

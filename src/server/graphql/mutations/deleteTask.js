@@ -1,12 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import DeleteTaskPayload from 'server/graphql/types/DeleteTaskPayload'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {NOTIFICATION, TASK, TASK_INVOLVES} from 'universal/utils/constants'
 import getTypeFromEntityMap from 'universal/utils/draftjs/getTypeFromEntityMap'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: DeleteTaskPayload,
@@ -17,19 +16,20 @@ export default {
       description: 'The taskId to delete'
     }
   },
-  async resolve (source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const task = await r.table('Task').get(taskId)
     if (!task) {
-      return sendTaskNotFoundError(authToken, taskId)
+      return standardError(new Error('Task not found'), {userId: viewerId})
     }
     const {teamId} = task
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

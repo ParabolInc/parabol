@@ -1,11 +1,11 @@
-import {GraphQLList, GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 
 const RemoveGitHubRepoPayload = new GraphQLObjectType({
   name: 'RemoveGitHubRepoPayload',
   fields: () => ({
     deletedId: {
-      type: new GraphQLNonNull(GraphQLID)
+      type: GraphQLID
     },
     error: {
       type: StandardMutationError

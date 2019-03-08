@@ -1,19 +1,13 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import shortid from 'shortid'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import {sendMeetingNotFoundError, sendReflectionNotFoundError} from 'server/utils/docNotFoundErrors'
-import {
-  sendAlreadyCompletedMeetingPhaseError,
-  sendAlreadyEndedMeetingError
-} from 'server/utils/alreadyMutatedErrors'
 import publish from 'server/utils/publish'
 import {GROUP, TEAM} from 'universal/utils/constants'
 import isPhaseComplete from 'universal/utils/meetings/isPhaseComplete'
 import CreateReflectionGroupPayload from 'server/graphql/types/CreateReflectionGroupPayload'
-import makeRetroGroupTitle from 'server/graphql/mutations/helpers/makeRetroGroupTitle'
-import {sendTooManyReflectionsError} from 'server/utils/__tests__/validationErrors'
+import makeRetroGroupTitle from 'universal/utils/autogroup/makeRetroGroupTitle'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: CreateReflectionGroupPayload,
@@ -28,39 +22,40 @@ export default {
         'An array of 1 or 2 reflections that make up the group. The first card in the array will be used to determine sort order'
     }
   },
-  async resolve (source, {meetingId, reflectionIds}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {meetingId, reflectionIds}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()
     const subOptions = {operationId, mutatorId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, phases, teamId} = meeting
-    if (endedAt) return sendAlreadyEndedMeetingError(authToken, meetingId)
+    if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (isPhaseComplete(GROUP, phases)) {
-      return sendAlreadyCompletedMeetingPhaseError(authToken, GROUP)
+      return standardError(new Error('Meeting phase already complete'), {userId: viewerId})
     }
 
     // VALIDATION
     if (reflectionIds.length > 2) {
-      return sendTooManyReflectionsError(authToken, reflectionIds)
+      return standardError(new Error('Too many reflections'), {userId: viewerId})
     }
     const reflections = await dataLoader.get('retroReflections').loadMany(reflectionIds)
     if (reflections.some((reflection) => !reflection || !reflection.isActive)) {
-      return sendReflectionNotFoundError(authToken, reflectionIds)
+      return standardError(new Error('Reflection not found'), {userId: viewerId})
     }
 
     // RESOLUTION
     const reflectionGroupId = shortid.generate()
-    const {title, smartTitle} = makeRetroGroupTitle(meetingId, reflections)
+    const {title, smartTitle} = makeRetroGroupTitle(reflections)
 
     const reflectionGroup = {
       id: reflectionGroupId,

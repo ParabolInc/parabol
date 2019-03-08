@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
+import {APP_BAR_HEIGHT} from 'universal/styles/appbars'
 
 const RootBlock = styled('div')(({hasOverlay}) => ({
   alignItems: 'center',
@@ -16,7 +17,7 @@ const InnerBlock = styled('div')({
   alignItems: 'center',
   display: 'flex',
   margin: '0 auto',
-  minHeight: ui.dashHeaderMinHeight,
+  minHeight: APP_BAR_HEIGHT,
   padding: `0 ${ui.dashGutterSmall}`,
   width: '100%',
 

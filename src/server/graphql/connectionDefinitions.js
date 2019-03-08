@@ -2,11 +2,11 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import PageInfo from 'server/graphql/types/PageInfo'
 
-function resolveMaybeThunk (thingOrThunk) {
+function resolveMaybeThunk(thingOrThunk) {
   return typeof thingOrThunk === 'function' ? thingOrThunk() : thingOrThunk
 }
 
-export default function connectionDefinitions (config) {
+export default function connectionDefinitions(config) {
   const {nodeType} = config
   const name = config.name || nodeType.name
   const edgeFields = config.edgeFields || {}
@@ -18,7 +18,8 @@ export default function connectionDefinitions (config) {
     description: 'An edge in a connection.',
     fields: () => ({
       node: {
-        type: nodeType,
+        // breaks away from the relay practice. our backend should guarantee nonnull nodes!
+        type: new GraphQLNonNull(nodeType),
         resolve: resolveNode,
         description: 'The item at the end of the edge'
       },

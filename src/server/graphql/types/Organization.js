@@ -11,14 +11,14 @@ import {forwardConnectionArgs} from 'graphql-relay'
 import CreditCard from 'server/graphql/types/CreditCard'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import GraphQLURLType from 'server/graphql/types/GraphQLURLType'
-import {OrganizationMemberConnection} from 'server/graphql/types/OrganizationMember'
 import OrgUserCount from 'server/graphql/types/OrgUserCount'
 import TierEnum from 'server/graphql/types/TierEnum'
 import User from 'server/graphql/types/User'
-import {getUserId} from 'server/utils/authorization'
 import {BILLING_LEADER} from 'universal/utils/constants'
 import {resolveForBillingLeaders} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
+import {OrganizationUserConnection} from 'server/graphql/types/OrganizationUser'
+import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -35,21 +35,11 @@ const Organization = new GraphQLObjectType({
       resolve: resolveForBillingLeaders('creditCard')
     },
     isBillingLeader: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the viewer is the billing leader for the org',
-      resolve ({orgUsers}, args, {authToken}) {
+      resolve: async ({id: orgId}, args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        return Boolean(
-          orgUsers.find((user) => user.id === viewerId && user.role === BILLING_LEADER)
-        )
-      }
-    },
-    mainBillingLeader: {
-      type: User,
-      description: 'The billing leader of the organization (or the first, if more than 1)',
-      resolve: ({orgUsers}, args, {dataLoader}) => {
-        const firstBillingLeader = orgUsers.find((user) => user.role === BILLING_LEADER)
-        return firstBillingLeader ? dataLoader.get('users').load(firstBillingLeader.id) : undefined
+        return isUserBillingLeader(viewerId, orgId, dataLoader)
       }
     },
     name: {
@@ -82,10 +72,12 @@ const Organization = new GraphQLObjectType({
       resolve: resolveForBillingLeaders('periodStart')
     },
     retroMeetingsOffered: {
+      deprecationReason: 'Unlimited retros for all!',
       type: new GraphQLNonNull(GraphQLInt),
       description: 'The total number of retroMeetings given to the team'
     },
     retroMeetingsRemaining: {
+      deprecationReason: 'Unlimited retros for all!',
       type: new GraphQLNonNull(GraphQLInt),
       description: 'Number of retro meetings that can be run (if not pro)'
     },
@@ -99,39 +91,32 @@ const Organization = new GraphQLObjectType({
       description: 'The subscriptionId from stripe',
       resolve: resolveForBillingLeaders('stripeSubscriptionId')
     },
+    upcomingInvoiceEmailSentAt: {
+      type: GraphQLISO8601Type,
+      description: 'The last upcoming invoice email that was sent, null if never sent'
+    },
     updatedAt: {
       type: GraphQLISO8601Type,
       description: 'The datetime the organization was last updated'
     },
-    orgMembers: {
+    organizationUsers: {
       args: {
         ...forwardConnectionArgs
       },
-      type: OrganizationMemberConnection,
-      async resolve ({id: orgId, orgUsers}, {first}, {dataLoader}) {
-        if (!Array.isArray(orgUsers)) return null
-
-        // RESOLUTION
-        const limitedOrgUsers = orgUsers.slice(0, first)
-
-        const userIds = limitedOrgUsers.map(({id}) => id)
-        const users = await dataLoader.get('users').loadMany(userIds)
-        users.sort(
-          (a, b) => (a.preferredName.toLowerCase() > b.preferredName.toLowerCase() ? 1 : -1)
-        )
-        const edges = users.map((user) => ({
-          cursor: user.preferredName.toLowerCase(),
-          node: {
-            userId: user.id,
-            orgId
-          }
+      type: new GraphQLNonNull(OrganizationUserConnection),
+      resolve: async ({id: orgId}, {first}, {dataLoader}) => {
+        const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+        organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
+        const edges = organizationUsers.map((node) => ({
+          cursor: node.id,
+          node
         }))
-
+        // TODO implement pagination
         const firstEdge = edges[0]
         return {
           edges,
           pageInfo: {
-            endCursor: firstEdge && edges[edges.length - 1].cursor,
+            endCursor: firstEdge ? edges[edges.length - 1].cursor : null,
             hasNextPage: false
           }
         }
@@ -140,23 +125,23 @@ const Organization = new GraphQLObjectType({
     orgUserCount: {
       type: new GraphQLNonNull(OrgUserCount),
       description: 'The count of active & inactive users',
-      resolve: async (source) => {
-        const {orgUsers} = source
-        if (!Array.isArray(orgUsers)) throw new Error('No orgUsers supplied!')
-        const inactiveUserCount = orgUsers.filter((orgUser) => orgUser.inactive).length
+      resolve: async ({id: orgId}, _args, {dataLoader}) => {
+        const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+        const inactiveUserCount = organizationUsers.filter(({inactive}) => inactive).length
         return {
           inactiveUserCount,
-          activeUserCount: orgUsers.length - inactiveUserCount
+          activeUserCount: organizationUsers.length - inactiveUserCount
         }
       }
     },
     billingLeaders: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(User))),
       description: 'The leaders of the org',
-      resolve: async ({orgUsers}, args, {dataLoader}) => {
-        const billingLeaderUserIds = orgUsers
-          .filter((orgUser) => orgUser.role === BILLING_LEADER)
-          .map(({id}) => id)
+      resolve: async ({id: orgId}, args, {dataLoader}) => {
+        const organizationUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+        const billingLeaderUserIds = organizationUsers
+          .filter((organizationUser) => organizationUser.role === BILLING_LEADER)
+          .map(({userId}) => userId)
         return dataLoader.get('users').loadMany(billingLeaderUserIds)
       }
     }

@@ -2,10 +2,9 @@ import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
-import {isTeamMember} from 'server/utils/authorization'
-import {sendTeamAccessError, sendTeamMemberNotOnTeamError} from 'server/utils/authorizationErrors'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import PromoteNewMeetingFacilitatorPayload from 'server/graphql/types/PromoteNewMeetingFacilitatorPayload'
-import {sendMeetingNotFoundError} from 'server/utils/docNotFoundErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: PromoteNewMeetingFacilitatorPayload,
@@ -19,7 +18,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve (
+  async resolve(
     source,
     {facilitatorUserId, meetingId},
     {authToken, dataLoader, socketId: mutatorId}
@@ -28,25 +27,23 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const now = new Date()
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const meeting = await r
       .table('NewMeeting')
       .get(meetingId)
       .default(null)
-    if (!meeting) return sendMeetingNotFoundError(authToken, meetingId)
+    if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {facilitatorUserId: oldFacilitatorUserId, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
     const newFacilitator = await dataLoader.get('users').load(facilitatorUserId)
     if (!newFacilitator.tms.includes(teamId)) {
-      return sendTeamMemberNotOnTeamError(authToken, {
-        teamId,
-        userId: facilitatorUserId
-      })
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // RESOLUTION

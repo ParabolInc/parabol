@@ -2,12 +2,11 @@ import {GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import UpdatedTeamInput from 'server/graphql/types/UpdatedTeamInput'
 import UpdateTeamNamePayload from 'server/graphql/types/UpdateTeamNamePayload'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import {TEAM} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
-import sendFailedInputValidation from 'server/utils/sendFailedInputValidation'
 import teamNameValidation from 'universal/validation/teamNameValidation'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: UpdateTeamNamePayload,
@@ -17,16 +16,17 @@ export default {
       description: 'The input object containing the teamId and any modified fields'
     }
   },
-  async resolve (source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
+    const viewerId = getUserId(authToken)
 
     // AUTH
     const teamId = updatedTeam.id
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId)
+      return standardError(new Error('Team not found'), {userId: viewerId})
     }
 
     // VALIDATION
@@ -35,10 +35,13 @@ export default {
     const orgTeamNames = orgTeams.filter((team) => team.id !== teamId).map((team) => team.name)
     const {error, value: name} = teamNameValidation(updatedTeam.name, orgTeamNames)
     if (error) {
-      return sendFailedInputValidation(authToken, error)
+      return standardError(new Error('Failed validation'), {userId: viewerId})
     }
 
     // RESOLUTION
+    // update the dataLoader cache
+    const cachedTeam = orgTeams.find((team) => team.id === teamId)
+    cachedTeam.name = name
     const dbUpdate = {
       name,
       updatedAt: now

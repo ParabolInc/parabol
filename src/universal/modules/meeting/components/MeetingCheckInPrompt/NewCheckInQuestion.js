@@ -7,26 +7,25 @@ import 'universal/components/TaskEditor/Draft.css'
 import Tooltip from 'universal/components/Tooltip/Tooltip'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ui from 'universal/styles/ui'
-import {tierSupportsUpdateCheckInQuestion} from 'universal/utils/tierSupportsUpdateCheckInQuestion'
 import styled from 'react-emotion'
 import UpdateNewCheckInQuestionMutation from 'universal/mutations/UpdateNewCheckInQuestionMutation'
 import {convertFromRaw, convertToRaw, EditorState} from 'draft-js'
-
 import type {NewCheckInQuestion_team as Team} from '__generated__/NewCheckInQuestion_team.graphql'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
-const CogIcon = styled(StyledFontAwesome)(({canEdit, isEditing}) => ({
+const CogIcon = styled(Icon)(({isEditing}) => ({
   color: ui.colorText,
   display: 'block',
   height: '1.5rem',
-  fontSize: '1rem',
+  fontSize: MD_ICONS_SIZE_18,
   verticalAlign: 'middle',
   marginLeft: '0.5rem',
   paddingTop: '.1875rem',
   textAlign: 'center',
   width: '1.25rem',
   visibility: isEditing ? 'hidden' : 'visible',
-  cursor: canEdit && 'pointer'
+  cursor: 'pointer'
 }))
 
 const QuestionBlock = styled('div')({
@@ -60,7 +59,7 @@ type State = {
 }
 
 class NewCheckInQuestion extends Component<Props, State> {
-  constructor (props) {
+  constructor(props) {
     super(props)
     const checkInQuestion = getCheckInQuestion(props)
     const contentState = convertFromRaw(JSON.parse(checkInQuestion))
@@ -72,7 +71,7 @@ class NewCheckInQuestion extends Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const checkInQuestion = getCheckInQuestion(nextProps)
     const oldCheckInQuestion = getCheckInQuestion(this.props)
     if (checkInQuestion !== oldCheckInQuestion) {
@@ -126,54 +125,39 @@ class NewCheckInQuestion extends Component<Props, State> {
     this.setEditorState(nextEditorState)
   }
 
-  render () {
+  render() {
     const {
-      atmosphere,
-      team: {newMeeting, tier}
+      team: {newMeeting}
     } = this.props
     if (!newMeeting) return null
-    const {facilitatorUserId} = newMeeting
     const {editorState} = this.state
-    const canEdit = tierSupportsUpdateCheckInQuestion(tier)
     const isEditing = editorState.getSelection().getHasFocus()
-    const {viewerId} = atmosphere
-    const isFacilitating = facilitatorUserId === viewerId
 
-    const tip = canEdit
-      ? 'Tap to customize the Social Check-in question.'
-      : 'Upgrade to a Pro Account to customize the Social Check-in question.'
-
+    const tip = 'Tap to customize the Social Check-in question.'
     return (
       <Tooltip
+        delay={300}
         tip={<div>{tip}</div>}
         originAnchor={{vertical: 'bottom', horizontal: 'center'}}
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
         maxHeight={40}
+        isOpen={isEditing ? false : undefined}
       >
         <QuestionBlock>
           <EditorBlock>
             <EditorInputWrapper
               editorState={editorState}
               setEditorState={this.setEditorState}
-              placehodler='e.g. How are you?'
-              readOnly={!canEdit}
+              placehodler="e.g. How are you?"
               innerRef={(c) => {
                 this.editorRef = c
               }}
             />
           </EditorBlock>
-          {isFacilitating && (
-            <div>
-              {canEdit ? (
-                <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
-                  <CogIcon name='cog' canEdit={canEdit} isEditing={isEditing} />
-                </PlainButton>
-              ) : (
-                <CogIcon name='cog' canEdit={canEdit} isEditing={isEditing} />
-              )}
-            </div>
-          )}
+          <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
+            <CogIcon isEditing={isEditing}>settings</CogIcon>
+          </PlainButton>
         </QuestionBlock>
       </Tooltip>
     )
@@ -200,7 +184,6 @@ export default createFragmentContainer(
           }
         }
       }
-      tier
     }
   `
 )

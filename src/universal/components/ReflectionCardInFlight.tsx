@@ -59,15 +59,19 @@ const makeTransition = (isClosing, isViewerDragging) => {
 }
 
 class ReflectionCardInFlight extends React.Component<Props, State> {
+  editorState: EditorState
+  isBroadcasting = false
+  innerWidth = window.innerWidth
+  innerHeight = window.innerHeight
+  scrollX = window.scrollX
+  cachedTargetId: string | undefined
+  cursorOffset: Coords | undefined
   constructor (props) {
     super(props)
     const {
       reflection: {content, dragContext}
     } = props
     const {initialComponentCoords, initialCursorCoords} = dragContext
-    this.innerWidth = window.innerWidth
-    this.innerHeight = window.innerHeight
-    this.scrollX = window.scrollX
     this.editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(content)))
     // synonymous to isClientDragging
     if (initialComponentCoords) {
@@ -182,14 +186,6 @@ class ReflectionCardInFlight extends React.Component<Props, State> {
       }, 10)
     }
   }
-
-  editorState: EditorState
-  isBroadcasting: boolean = false
-  innerWidth: number = 0
-  innerHeight: number = 0
-  scrollX: number = 0
-  cachedTargetId: string | undefined
-  cursorOffset: Coords | undefined
 
   render () {
     const {

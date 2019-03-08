@@ -11,19 +11,17 @@ const VoteHelpMenu = ({closePortal}) => (
   <HelpMenuContent closePortal={closePortal}>
     <HelpMenuHeader>{phaseLabelLookup[VOTE]}</HelpMenuHeader>
     <HelpMenuCopy>
-      {
-        'The goal of this phase is to find signal on what topics are the most important to the team.'
-      }
+      The goal of this phase is to find signal on what topics are the most important to the team.
     </HelpMenuCopy>
     <HelpMenuCopy>
-      {'Each teammate has 5 total votes, and can vote on a single theme up to 3 times.'}
+      Each teammate has 5 total votes, and can vote on a single group up to 3 times.
     </HelpMenuCopy>
     <HelpMenuCopy>
-      {'To vote, simply tap on the check icon above the card. Toggle votes to remove.'}
+      To vote, simply tap on the thumb-up icon above a group. Toggle votes to remove.
     </HelpMenuCopy>
     <HelpMenuLink
-      copy='Learn More'
-      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#vote'
+      copy="Learn More"
+      href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101#vote"
     />
   </HelpMenuContent>
 )

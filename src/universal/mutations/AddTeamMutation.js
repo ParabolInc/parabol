@@ -1,9 +1,8 @@
 import {commitMutation} from 'react-relay'
-import {showSuccess} from 'universal/modules/toast/ducks/toastDuck'
-import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleAddTeams from 'universal/mutations/handlers/handleAddTeams'
-import popTeamInviteNotificationToast from 'universal/mutations/toasts/popTeamInviteNotificationToast'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
+import getGraphQLError from 'universal/utils/relay/getGraphQLError'
+import handleRemoveSuggestedActions from 'universal/mutations/handlers/handleRemoveSuggestedActions'
 
 graphql`
   fragment AddTeamMutation_team on AddTeamPayload {
@@ -15,16 +14,13 @@ graphql`
 
 graphql`
   fragment AddTeamMutation_notification on AddTeamPayload {
-    teamInviteNotification {
-      type
-      ...TeamInvite_notification @relay(mask: false)
-    }
+    removedSuggestedActionId
   }
 `
 
 const mutation = graphql`
-  mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Invitee!]) {
-    addTeam(newTeam: $newTeam, invitees: $invitees) {
+  mutation AddTeamMutation($newTeam: NewTeamInput!) {
+    addTeam(newTeam: $newTeam) {
       error {
         message
       }
@@ -33,14 +29,13 @@ const mutation = graphql`
   }
 `
 
-const popTeamCreatedToast = (res, {dispatch, history}) => {
-  const {id: teamId, name: teamName} = res.addTeam.team
-  dispatch(
-    showSuccess({
-      title: 'Team successfully created!',
-      message: `Here's your new team dashboard for ${teamName}`
-    })
-  )
+const popTeamCreatedToast = (payload, {atmosphere, history}) => {
+  const {id: teamId, name: teamName} = payload.team
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'success',
+    title: 'Team successfully created!',
+    message: `Here's your new team dashboard for ${teamName}`
+  })
   history.push(`/team/${teamId}`)
 }
 
@@ -49,15 +44,14 @@ export const addTeamTeamUpdater = (payload, store, viewerId) => {
   handleAddTeams(team, store, viewerId)
 }
 
-export const addTeamMutationNotificationUpdater = (payload, store, viewerId, options) => {
-  const notification = payload.getLinkedRecord('teamInviteNotification')
-  handleAddNotifications(notification, store, viewerId)
-  popTeamInviteNotificationToast(notification, options)
+export const addTeamMutationNotificationUpdater = (payload, {store}) => {
+  const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
+  handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-const AddTeamMutation = (environment, variables, options, onError, onCompleted) => {
-  const {viewerId} = environment
-  return commitMutation(environment, {
+const AddTeamMutation = (atmosphere, variables, options, onError, onCompleted) => {
+  const {viewerId} = atmosphere
+  return commitMutation(atmosphere, {
     mutation,
     variables,
     updater: (store) => {
@@ -75,7 +69,11 @@ const AddTeamMutation = (environment, variables, options, onError, onCompleted) 
     },
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
-      popTeamCreatedToast(res, options)
+      const error = getGraphQLError(res, errors)
+      if (!error) {
+        const payload = res.addTeam
+        popTeamCreatedToast(payload, {atmosphere, ...options})
+      }
     },
     onError
   })

@@ -8,12 +8,11 @@ import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import GitHubRepoAddedSubscription from 'universal/subscriptions/GitHubRepoAddedSubscription'
 import GitHubRepoRemovedSubscription from 'universal/subscriptions/GitHubRepoRemovedSubscription'
-import ProviderRemovedSubscription from 'universal/subscriptions/ProviderRemovedSubscription'
-import ProviderAddedSubscription from 'universal/subscriptions/ProviderAddedSubscription'
 import IntegrationJoinedSubscription from 'universal/subscriptions/IntegrationJoinedSubscription'
 import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeftSubscription'
 import GitHubMemberRemovedSubscription from 'universal/subscriptions/GitHubMemberRemovedSubscription'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
+import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
 const githubRepoQuery = graphql`
   query GitHubIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
@@ -27,8 +26,7 @@ const subscriptions = [
   GitHubMemberRemovedSubscription,
   GitHubRepoAddedSubscription,
   GitHubRepoRemovedSubscription,
-  ProviderRemovedSubscription,
-  ProviderAddedSubscription,
+  IntegrationSubscription,
   IntegrationJoinedSubscription(GITHUB),
   IntegrationLeftSubscription(GITHUB)
 ]
@@ -44,9 +42,10 @@ const GitHubIntegrationsRoot = ({atmosphere, teamMemberId}) => {
       query={githubRepoQuery}
       variables={{teamId, service: GITHUB}}
       subscriptions={subscriptions}
+      subParams={{teamId}}
       render={({error, props}) => {
         if (error) {
-          return <ErrorComponent height={'14rem'} error={error} />
+          return <ErrorComponent error={error} />
         } else if (props) {
           const {viewer} = props
           return <GitHubIntegrations jwt={atmosphere.authToken} viewer={viewer} teamId={teamId} />

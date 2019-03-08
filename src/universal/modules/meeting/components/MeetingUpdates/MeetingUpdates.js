@@ -2,8 +2,8 @@ import {css} from 'aphrodite-local-styles/no-important'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import {createFragmentContainer} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
-import IconLabel from 'universal/components/IconLabel'
+import BottomNavControl from 'universal/components/BottomNavControl'
+import BottomNavIconLabel from 'universal/components/BottomNavIconLabel'
 import BounceBlock from 'universal/components/BounceBlock/BounceBlock'
 import TaskColumns from 'universal/components/TaskColumns/TaskColumns'
 import MeetingMain from 'universal/modules/meeting/components/MeetingMain/MeetingMain'
@@ -18,11 +18,11 @@ import isTaskPrivate from 'universal/utils/isTaskPrivate'
 class MeetingUpdates extends Component {
   state = {tasks: {}}
 
-  componentWillMount () {
+  componentWillMount() {
     this.filterTasks(this.props)
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const {
       viewer: {tasks: oldTasks},
       localPhaseItem: oldLocalPhaseItem
@@ -36,7 +36,7 @@ class MeetingUpdates extends Component {
     }
   }
 
-  filterTasks (props) {
+  filterTasks(props) {
     const {
       localPhaseItem,
       setUpdateUserHasTasks,
@@ -55,7 +55,7 @@ class MeetingUpdates extends Component {
     setUpdateUserHasTasks(Boolean(edges.length))
   }
 
-  render () {
+  render() {
     const {
       gotoNext,
       localPhaseItem,
@@ -89,20 +89,18 @@ class MeetingUpdates extends Component {
         </MeetingSection>
         {showMoveMeetingControls && (
           <MeetingControlBar>
-            <BounceBlock animationDelay='120s' key={`update${localPhaseItem}buttonAnimation`}>
-              <FlatButton size='medium' key={`update${localPhaseItem}`} onClick={gotoNext}>
-                <IconLabel
-                  icon='arrow-circle-right'
-                  iconAfter
-                  iconColor='warm'
-                  iconLarge
+            <BounceBlock animationDelay="120s" key={`update${localPhaseItem}buttonAnimation`}>
+              <BottomNavControl key={`update${localPhaseItem}`} onClick={gotoNext}>
+                <BottomNavIconLabel
+                  icon="arrow_forward"
+                  iconColor="warm"
                   label={
                     isLastMember
-                      ? `Advance to the ${nextPhaseName}`
+                      ? `Next: ${nextPhaseName}`
                       : `Move to ${nextTeamMember.preferredName}`
                   }
                 />
-              </FlatButton>
+              </BottomNavControl>
             </BounceBlock>
           </MeetingControlBar>
         )}

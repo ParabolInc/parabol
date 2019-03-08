@@ -139,7 +139,7 @@ const iconSize = '14px' // FontAwesome base
 const iconSizeAvatar = '21px' // FontAwesome 1.5x
 const iconSize2x = '28px' // FontAwesome 2x
 const iconSize3x = '42px' // FontAwesome 3x
-const iconExternalLink = 'external-link-square'
+const iconExternalLink = 'open_in_new'
 
 // Modals
 const MODAL_LAYOUT_MAIN = 'main'
@@ -252,7 +252,7 @@ const ui = {
   cardBorderColor: appTheme.palette.mid30l,
   cardBorderRadius: borderRadiusMedium,
   cardButtonHeight: '1.5rem',
-  cardButtonBorderColor: appTheme.palette.mid50l,
+  cardButtonBorderColor: appTheme.palette.mid30l,
   cardContentFontSize: '.875rem',
   cardContentLineHeight: '1.25rem',
   cardPaddingBase: '.9375rem',
@@ -293,10 +293,8 @@ const ui = {
   dashBreakpoint: BREAKPOINT_WIDER,
   dashGutterSmall: '1.25rem',
   dashGutterLarge: '2rem',
-  dashHeaderMinHeight: '4rem',
   dashHeaderTitleStyles: {
     color: COLOR_TEXT,
-    fontFamily: appTheme.typography.serif,
     fontSize: '1.5rem',
     fontWeight: 600,
     lineHeight: '1.5'
@@ -308,7 +306,7 @@ const ui = {
   // Note: property 'dashMinWidth' prevents layout from collapsing in Safari
   //       in a better future we may be more adaptive/responsive (TA)
 
-  dashMinWidth: '79rem',
+  // dashMinWidth: '79rem',
   dashAlertHeight: '2.625rem',
   dashAlertsHeight: '5.25rem',
 
@@ -317,6 +315,7 @@ const ui = {
   dashControlHeight: '1.25rem',
 
   dashSidebarBackgroundColor: appTheme.palette.mid,
+  // TODO replace with DIMS.DASH_SIDEBAR_WIDTH
   dashSidebarWidth: '15rem',
   dashTeamBreakpointUp: '@media (min-width: 123.25rem)',
   draftModalMargin: 32,
@@ -566,7 +565,6 @@ const ui = {
     slack: {
       description: 'Notify channels when meetings begin and end',
       color: '#6ecadc',
-      icon: 'slack',
       providerName: 'Slack'
     }
   },
@@ -631,10 +629,6 @@ const ui = {
   upgradeColor: blue,
   upgradeColorOption: 'blue',
 
-  // Voting
-  // ---------------------------------------------------------------------------
-  votingCheckmarksWidth: '3.375rem',
-
   // Generic zIndex scale
   // ---------------------------------------------------------------------------
   zi1: zIndexScale(1),
@@ -653,13 +647,7 @@ const ui = {
   ziMenu: zIndexScale(4),
   ziCardDragLayer: zIndexScale(6),
   ziRejoinFacilitatorButton: zIndexScale(4),
-  ziTooltip: zIndexScale(4),
-
-  // Retro cards
-  // ---------------------------------------------------------------------------
-  retroCardCollapsedHeightRem: '3', // height, in rem, of reflection cards with truncated height
-  retroCardMinHeight: '3rem',
-  retroCardWidth: '20rem' // width for reflection cards and reflection groups
+  ziTooltip: zIndexScale(4)
 }
 
 export default ui

@@ -1,5 +1,4 @@
 import {commitMutation} from 'react-relay'
-import {showWarning} from 'universal/modules/toast/ducks/toastDuck'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import handleAddNotifications from 'universal/mutations/handlers/handleAddNotifications'
 import handleRemoveNotifications from 'universal/mutations/handlers/handleRemoveNotifications'
@@ -78,29 +77,35 @@ const mutation = graphql`
   }
 `
 
-const popKickedOutNotification = (payload, {dispatch, environment, history}) => {
-  const kickOutNotification = payload.getLinkedRecord('kickOutNotification')
-  const teamId = getInProxy(kickOutNotification, 'team', 'id')
+const popKickedOutNotification = (payload, {atmosphere, history}) => {
+  if (!payload) return
+  const {kickOutNotification} = payload
+  if (!kickOutNotification) return
+  const {
+    team: {id: teamId, name: teamName},
+    id: notificationId
+  } = kickOutNotification
   if (!teamId) return
-  const teamName = getInProxy(kickOutNotification, 'team', 'name')
-  dispatch(
-    showWarning({
-      autoDismiss: 10,
-      title: 'So long!',
-      message: `You have been removed from ${teamName}`,
-      action: {
-        label: 'OK',
-        callback: () => {
-          const notificationId = kickOutNotification.getValue('id')
-          ClearNotificationMutation(environment, notificationId)
-        }
+  atmosphere.eventEmitter.emit('addToast', {
+    level: 'warning',
+    autoDismiss: 10,
+    title: 'So long!',
+    message: `You have been removed from ${teamName}`,
+    action: {
+      label: 'OK',
+      callback: () => {
+        ClearNotificationMutation(atmosphere, notificationId)
       }
-    })
-  )
+    }
+  })
   const {pathname} = history.location
   if (onTeamRoute(pathname, teamId)) {
     history.push('/me')
   }
+}
+
+export const removeTeamMemberTeamOnNext = (payload, {atmosphere, history}) => {
+  popKickedOutNotification(payload, {atmosphere, history})
 }
 
 export const removeTeamMemberTasksUpdater = (payload, store, viewerId) => {
@@ -113,7 +118,7 @@ export const removeTeamMemberTeamMemberUpdater = (payload, store) => {
   handleRemoveTeamMembers(teamMemberId, store)
 }
 
-export const removeTeamMemberTeamUpdater = (payload, store, viewerId, options) => {
+export const removeTeamMemberTeamUpdater = (payload, store, viewerId) => {
   const removedUserId = getInProxy(payload, 'teamMember', 'userId')
   if (removedUserId !== viewerId) return
   const removedNotifications = payload.getLinkedRecords('removedNotifications')
@@ -125,20 +130,19 @@ export const removeTeamMemberTeamUpdater = (payload, store, viewerId, options) =
 
   const notification = payload.getLinkedRecord('kickOutNotification')
   handleAddNotifications(notification, store, viewerId)
-  popKickedOutNotification(payload, options)
 
   const removedTasks = payload.getLinkedRecords('updatedTasks')
   const taskIds = getInProxy(removedTasks, 'id')
   handleRemoveTasks(taskIds, store, viewerId)
 }
 
-export const removeTeamMemberUpdater = (payload, store, viewerId, options) => {
+export const removeTeamMemberUpdater = (payload, store, viewerId) => {
   removeTeamMemberTeamMemberUpdater(payload, store)
   removeTeamMemberTasksUpdater(payload, store, viewerId)
-  removeTeamMemberTeamUpdater(payload, store, viewerId, options)
+  removeTeamMemberTeamUpdater(payload, store, viewerId)
 }
 
-const RemoveTeamMemberMutation = (environment, teamMemberId, options) => {
+const RemoveTeamMemberMutation = (environment, teamMemberId) => {
   const {viewerId} = environment
   return commitMutation(environment, {
     mutation,
@@ -146,11 +150,7 @@ const RemoveTeamMemberMutation = (environment, teamMemberId, options) => {
     updater: (store) => {
       const payload = store.getRootField('removeTeamMember')
       if (!payload) return
-      removeTeamMemberUpdater(payload, store, viewerId, {
-        environment,
-        store,
-        ...options
-      })
+      removeTeamMemberUpdater(payload, store, viewerId)
     }
   })
 }

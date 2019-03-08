@@ -5,10 +5,9 @@ import {clientSecret as auth0ClientSecret} from 'server/utils/auth0Helpers'
 import ConnectionContext from 'server/socketHelpers/ConnectionContext'
 import handleConnect from 'server/socketHandlers/handleConnect'
 import handleDisconnect from 'server/socketHandlers/handleDisconnect'
-import packageJSON from '../../../package.json'
 import keepAlive from 'server/socketHelpers/keepAlive'
 
-const APP_VERSION = packageJSON.version
+const APP_VERSION = process.env.npm_package_version
 const SSEConnectionHandler = (sharedDataLoader, rateLimiter, sseClients) => (req, res) => {
   const {query} = url.parse(req.url, true)
   let authToken

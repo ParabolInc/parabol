@@ -1,12 +1,12 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import GitHubIntegration from 'server/graphql/types/GitHubIntegration'
-import {isTeamMember} from 'server/utils/authorization'
+import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {GITHUB} from 'universal/utils/constants'
-import {sendTeamAccessError} from 'server/utils/authorizationErrors'
+import standardError from 'server/utils/standardError'
 
 export default {
-  type: new GraphQLList(GitHubIntegration),
+  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GitHubIntegration))),
   description: 'list of git hub repos available to the viewer',
   args: {
     teamId: {
@@ -19,7 +19,9 @@ export default {
 
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
-      return sendTeamAccessError(authToken, teamId, [])
+      const viewerId = getUserId(authToken)
+      standardError(new Error('Team not found'), {userId: viewerId})
+      return []
     }
 
     // RESOLUTION
@@ -28,5 +30,6 @@ export default {
       .getAll(teamId, {index: 'teamId'})
       .filter({isActive: true})
       .orderBy('nameWithOwner')
+      .default([])
   }
 }

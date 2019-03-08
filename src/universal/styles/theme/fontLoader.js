@@ -1,5 +1,6 @@
 // releases: https://github.com/IBM/plex/releases
 // currently using: Web.zip from https://github.com/IBM/plex/releases/tag/v1.0.1
+// Material Design Icons font: https://google.github.io/material-design-icons/#icon-font-for-the-web
 
 import plexMonoRegularWoff2 from 'universal/styles/theme/fonts/IBMPlexMono-Regular.woff2'
 import plexMonoSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexMono-SemiBold.woff2'
@@ -7,8 +8,7 @@ import plexSansItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Italic
 import plexSansRegularWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-Regular.woff2'
 import plexSansSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBold.woff2'
 import plexSansSemiBoldItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSans-SemiBoldItalic.woff2'
-import plexSerifSemiBoldWoff2 from 'universal/styles/theme/fonts/IBMPlexSerif-SemiBold.woff2'
-import plexSerifSemiBoldItalicWoff2 from 'universal/styles/theme/fonts/IBMPlexSerif-SemiBoldItalic.woff2'
+import materialIconsRegularWoff2 from 'universal/styles/theme/fonts/MaterialIcons-Regular.woff2'
 
 const fontStylesRegular = {
   fontWeight: 400,
@@ -49,12 +49,12 @@ const plexSansSemiBoldItalic = makeFont(
   fontStylesSemiBoldItalic
 )
 
-const plexSerifSemiBold = makeFont('IBM Plex Serif', plexSerifSemiBoldWoff2, fontStylesSemiBold)
-const plexSerifSemiBoldItalic = makeFont(
-  'IBM Plex Serif',
-  plexSerifSemiBoldItalicWoff2,
-  fontStylesSemiBoldItalic
-)
+const materialIconsRegular = {
+  fontFamily: 'Material Icons',
+  fontStyle: 'normal',
+  fontWeight: '400',
+  src: `local('Material Icons'), local('MaterialIcons-Regular'), url(${materialIconsRegularWoff2}) format('woff2')`
+}
 
 export default [
   plexMonoRegular,
@@ -63,6 +63,5 @@ export default [
   plexSansRegular,
   plexSansSemiBold,
   plexSansSemiBoldItalic,
-  plexSerifSemiBold,
-  plexSerifSemiBoldItalic
+  materialIconsRegular
 ]

@@ -2,7 +2,7 @@ import graphql from 'server/graphql/graphql'
 import secureCompare from 'secure-compare'
 import schema from 'server/graphql/rootSchema'
 import signPayload from 'server/utils/signPayload'
-import sendGraphQLErrorResult from 'server/utils/sendGraphQLErrorResult'
+import sendToSentry from 'server/utils/sendToSentry'
 
 const getPublicKey = ({repository: {id}}) => String(id)
 
@@ -86,6 +86,6 @@ export default async (req, res) => {
   const context = {serverSecret: process.env.AUTH0_CLIENT_SECRET}
   const result = await graphql(schema, query, {}, context, variables)
   if (result.errors) {
-    sendGraphQLErrorResult('GitHub', result.errors[0], query, variables)
+    sendToSentry(result.errors[0], {tags: {query, variables}})
   }
 }

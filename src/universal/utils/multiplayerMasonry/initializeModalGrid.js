@@ -11,6 +11,7 @@ import {STANDARD_CURVE} from 'universal/styles/animation'
 import getScaledModalBackground from 'universal/utils/multiplayerMasonry/getScaledModalBackground'
 import hideBodyScroll from 'universal/utils/hideBodyScroll'
 import {cardShadow, modalShadow} from 'universal/styles/elevation'
+import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 
 const makeResetHandler = (reflections, itemCache, modalRef, resetBodyStyles) => {
   const resetQueue = reflections.map((reflection) => {
@@ -58,6 +59,13 @@ const initializeModalGrid = (
   const modalColumnLefts = currentColumnHeights.map((_, idx) => REFLECTION_WIDTH * idx)
   childCache.headerHeight = headerRef.getBoundingClientRect().height
 
+  // the height is only as tall as the top card when the group is collapsed, we need to remeasure to get their full height
+  Object.keys(itemCache).forEach((itemId) => {
+    const bbox = getBBox(itemCache[itemId].modalEl)
+    if (bbox) {
+      itemCache[itemId].boundingBox.height = bbox.height
+    }
+  })
   const heights = reflections.map(({id}) => itemCache[id].boundingBox.height)
 
   // make cards animate in one at a time, but finish when the expansion does (unless there are a TON)

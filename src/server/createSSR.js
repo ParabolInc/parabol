@@ -11,7 +11,7 @@ const clientIds = {
   auth0Domain: process.env.AUTH0_DOMAIN,
   cdn: webpackPublicPath,
   github: process.env.GITHUB_CLIENT_ID,
-  sentry: process.env.SENTRY_DSN_PUBLIC,
+  sentry: process.env.SENTRY_DSN,
   slack: process.env.SLACK_CLIENT_ID,
   stripe: process.env.STRIPE_PUBLISHABLE_KEY
 }
@@ -37,12 +37,13 @@ const extraHead = `
 const devBody = prod
   ? ''
   : '<script src="/static/vendors.dll.js"></script><script src="/static/app.js"></script>'
+// : '<script src="/static/app.js"></script>'
 const extraBody = `<script>${segmentSnippet}</script>${devBody}`
 
 const finalHTML = html
   .replace('</head>', `${extraHead}</head>`)
   .replace('</body>', `${extraBody}</body>`)
 
-export default function createSSR (req, res) {
+export default function createSSR(req, res) {
   res.send(finalHTML)
 }

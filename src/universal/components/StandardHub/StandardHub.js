@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import {createFragmentContainer} from 'react-relay'
 import {NavLink} from 'react-router-dom'
 import Avatar from 'universal/components/Avatar/Avatar'
@@ -12,6 +11,9 @@ import styled, {css} from 'react-emotion'
 import LoadableStandardHubUserMenu from 'universal/components/LoadableStandardHubUserMenu'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import textOverflow from 'universal/styles/helpers/textOverflow'
+import Icon from 'universal/components/Icon'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {APP_BAR_HEIGHT} from 'universal/styles/appbars'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -27,7 +29,7 @@ const StandardHubRoot = styled('div')({
   alignItems: 'center',
   borderBottom: ui.dashMenuBorder,
   display: 'flex',
-  minHeight: ui.dashHeaderMinHeight,
+  minHeight: APP_BAR_HEIGHT + 1, // add border
   padding: '.5625rem 1rem',
   width: '100%'
 })
@@ -96,7 +98,8 @@ const BadgeBlock = styled('div')({
   right: '-.375rem'
 })
 
-const NotificationIcon = styled(StyledFontAwesome)({
+const NotificationIcon = styled(Icon)({
+  fontSize: MD_ICONS_SIZE_18,
   lineHeight: 'inherit',
   color: 'white'
 })
@@ -113,7 +116,7 @@ const StandardHub = (props) => {
   return (
     <StandardHubRoot>
       <User>
-        <Avatar hasBadge={false} picture={userAvatar} size='smaller' />
+        <Avatar hasBadge={false} picture={userAvatar} size="smaller" />
         <PreferredName>
           <span>{preferredName}</span>
         </PreferredName>
@@ -132,9 +135,9 @@ const StandardHub = (props) => {
       <NavLink
         activeClassName={css(notificationsActive)}
         className={navLinkStyles}
-        to='/me/notifications'
+        to="/me/notifications"
       >
-        <NotificationIcon name='bell' />
+        <NotificationIcon>notifications</NotificationIcon>
         {notificationsCount > 0 && (
           <BadgeBlock>
             <Badge value={notificationsCount} />

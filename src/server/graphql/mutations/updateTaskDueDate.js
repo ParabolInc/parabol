@@ -4,9 +4,9 @@ import publish from 'server/utils/publish'
 import {TASK} from 'universal/utils/constants'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import isValidDate from 'universal/utils/isValidDate'
-import {sendTaskNotFoundError} from 'server/utils/docNotFoundErrors'
 import getRethink from 'server/database/rethinkDriver'
 import UpdateTaskDueDatePayload from 'server/graphql/types/UpdateTaskDueDatePayload'
+import standardError from 'server/utils/standardError'
 
 export default {
   type: UpdateTaskDueDatePayload,
@@ -21,7 +21,7 @@ export default {
       description: 'the new due date. if not a valid date, it will unset the due date'
     }
   },
-  async resolve (source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve(source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
@@ -34,7 +34,7 @@ export default {
     const nextDueDate = isValidDate(formattedDueDate) ? formattedDueDate : null
     const task = await r.table('Task').get(taskId)
     if (!task || !isTeamMember(authToken, task.teamId)) {
-      return sendTaskNotFoundError(authToken, taskId)
+      return standardError(new Error('Task not found'), {userId: viewerId})
     }
 
     // RESOLUTION
