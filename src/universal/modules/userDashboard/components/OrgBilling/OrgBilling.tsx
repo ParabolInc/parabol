@@ -105,7 +105,7 @@ class OrgBilling extends Component<Props> {
     loadMore(5)
   }
 
-  render() {
+  render () {
     const {
       organization,
       viewer: {invoices},
@@ -207,16 +207,16 @@ export default createPaginationContainer(
   {
     direction: 'forward',
     // @ts-ignore
-    getConnectionFromProps(props) {
+    getConnectionFromProps (props) {
       return props.viewer && props.viewer.invoices
     },
-    getFragmentVariables(prevVars, totalCount) {
+    getFragmentVariables (prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       }
     },
-    getVariables(_props, {count, cursor}, fragmentVariables) {
+    getVariables (_props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

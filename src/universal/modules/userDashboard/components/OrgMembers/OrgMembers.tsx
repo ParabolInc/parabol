@@ -20,7 +20,7 @@ const OrgMembers = (props: Props) => {
     0
   )
   return (
-    <Panel label="Organization Members">
+    <Panel label='Organization Members'>
       {organizationUsers.edges.map(({node: organizationUser}) => {
         return (
           <OrgMemberRow
@@ -61,17 +61,17 @@ export default createPaginationContainer<Props>(
   `,
   {
     direction: 'forward',
-    getConnectionFromProps(props) {
+    getConnectionFromProps (props) {
       const {viewer} = props
       return viewer && viewer.organization && viewer.organization.organizationUsers
     },
-    getFragmentVariables(prevVars, totalCount) {
+    getFragmentVariables (prevVars, totalCount) {
       return {
         ...prevVars,
         first: totalCount
       }
     },
-    getVariables(_props, {count, cursor}, fragmentVariables) {
+    getVariables (_props, {count, cursor}, fragmentVariables) {
       return {
         ...fragmentVariables,
         first: count,

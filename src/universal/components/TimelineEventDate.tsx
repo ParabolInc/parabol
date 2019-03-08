@@ -26,7 +26,7 @@ class TimelineEventDate extends Component<Props, State> {
   }
   intervalId?: number
 
-  componentDidMount() {
+  componentDidMount () {
     this.intervalId = window.setInterval(() => {
       const fromNow = relativeDate(this.props.createdAt)
       if (fromNow !== this.state.fromNow) {
@@ -37,11 +37,11 @@ class TimelineEventDate extends Component<Props, State> {
     }, ms('1m'))
   }
 
-  componentWillUnmount(): void {
+  componentWillUnmount (): void {
     clearInterval(this.intervalId)
   }
 
-  render() {
+  render () {
     const {fromNow} = this.state
     return <StyledSpan>{fromNow}</StyledSpan>
   }

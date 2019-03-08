@@ -66,7 +66,7 @@ class Tabs extends Component<Props> {
     })
   }
 
-  render() {
+  render () {
     const {activeIdx, children, className} = this.props
     const {transform} = this.state
     const properChildren = Children.map(children, (child, idx) => {

@@ -67,7 +67,7 @@ const StyledButton = styled(FlatButton)({
 
 const MenuButton = (props) => (
   <StyledButton {...props} disabled={props.disabled}>
-    <IconLabel icon="more_vert" />
+    <IconLabel icon='more_vert' />
   </StyledButton>
 )
 
@@ -119,19 +119,19 @@ const OrgMemberRow = (props: Props) => {
     <Row>
       <div>
         {picture ? (
-          <Avatar hasBadge={false} picture={picture} size="small" />
+          <Avatar hasBadge={false} picture={picture} size='small' />
         ) : (
-          <img alt="" src={defaultUserAvatar} />
+          <img alt='' src={defaultUserAvatar} />
         )}
       </div>
       <RowInfo>
         <RowInfoHeader>
           <RowInfoHeading>{preferredName}</RowInfoHeading>
-          {isBillingLeader && <Tag colorPalette="blue" label="Billing Leader" />}
-          {inactive && !isViewerBillingLeader && <Tag colorPalette="midGray" label="Inactive" />}
-          {new Date(newUserUntil) > new Date() && <Tag colorPalette="yellow" label="New" />}
+          {isBillingLeader && <Tag colorPalette='blue' label='Billing Leader' />}
+          {inactive && !isViewerBillingLeader && <Tag colorPalette='midGray' label='Inactive' />}
+          {new Date(newUserUntil) > new Date() && <Tag colorPalette='yellow' label='New' />}
         </RowInfoHeader>
-        <RowInfoLink href={`mailto:${email}`} title="Send an email">
+        <RowInfoLink href={`mailto:${email}`} title='Send an email'>
           {email}
         </RowInfoLink>
       </RowInfo>

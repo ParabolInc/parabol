@@ -83,8 +83,8 @@ const Organization = (props: Props) => {
       <SettingsWrapper narrow>
         <BackControlBlock>
           <DashNavControl
-            icon="arrow_back"
-            label="Back to Organizations"
+            icon='arrow_back'
+            label='Back to Organizations'
             onClick={() => history.push('/me/organizations')}
           />
         </BackControlBlock>
@@ -102,7 +102,7 @@ const Organization = (props: Props) => {
             />
           ) : (
             <AvatarBlock>
-              <Avatar picture={pictureOrDefault} size="fill" sansRadius sansShadow />
+              <Avatar picture={pictureOrDefault} size='fill' sansRadius sansShadow />
             </AvatarBlock>
           )}
           <OrgNameAndDetails>

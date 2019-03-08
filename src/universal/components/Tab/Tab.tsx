@@ -35,7 +35,7 @@ class Tab extends Component<Props> {
     return el.getBoundingClientRect()
   }
 
-  render() {
+  render () {
     const {isActive, label, onClick} = this.props
     return (
       <TabStyle isActive={!!isActive} isClickable={!isActive} onClick={onClick} innerRef={this.ref}>

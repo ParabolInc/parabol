@@ -11,17 +11,17 @@ interface Props {
 }
 
 class TimelineEventJoinedParabol extends Component<Props> {
-  render() {
+  render () {
     const {timelineEvent} = this.props
     return (
       <TimelineEventCard
-        iconName="account_circle"
+        iconName='account_circle'
         timelineEvent={timelineEvent}
         title={<TimelineEventTitle>You joined Parabol</TimelineEventTitle>}
       >
         <TimelineEventBody>
           {'Get started by updating your name and avatar in '}
-          <StyledLink to="/me/profile">User Profile</StyledLink>
+          <StyledLink to='/me/profile'>User Profile</StyledLink>
           {'.'}
         </TimelineEventBody>
       </TimelineEventCard>

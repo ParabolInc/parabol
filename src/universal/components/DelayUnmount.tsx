@@ -30,7 +30,7 @@ class DelayUnmount extends Component<Props, State> {
     transitionState: TransitionState.Entered
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): Partial<State> | null {
+  static getDerivedStateFromProps (nextProps: Props, prevState: State): Partial<State> | null {
     const {children} = nextProps
     if (children !== null) {
       return {
@@ -45,7 +45,7 @@ class DelayUnmount extends Component<Props, State> {
     return null
   }
 
-  componentDidUpdate(_prevProps, prevState) {
+  componentDidUpdate (_prevProps, prevState) {
     if (
       prevState.transitionState !== TransitionState.Exiting &&
       this.state.transitionState === TransitionState.Exiting
@@ -59,11 +59,11 @@ class DelayUnmount extends Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearTimeout(this.exitTimerId)
   }
 
-  render() {
+  render () {
     const {Animator = DelayUnmountShrinkAndScale, children, unmountAfter} = this.props
     const {exitingChildren, transitionState} = this.state
     if (transitionState === TransitionState.Exited) return null
