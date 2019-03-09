@@ -1,9 +1,8 @@
 import {__anHourAgo} from 'server/__tests__/setup/mockTimes'
 import testUsers from 'server/__tests__/setup/testUsers'
-import newInvitee from 'server/__tests__/utils/newInvitee'
 import notificationTemplate from 'server/__tests__/utils/notificationTemplate'
 import getRethink from 'server/database/rethinkDriver'
-import {ADD_USER, INVITATION_LIFESPAN, PENDING} from 'server/utils/serverConstants'
+import {ADD_USER} from 'server/utils/serverConstants'
 import shortid from 'shortid'
 import {
   ACTIVE,
@@ -31,13 +30,11 @@ class MockDB {
   constructor () {
     this.db = {
       agendaItem: [],
-      invitation: [],
       invoice: [],
       invoiceItemHook: [],
       meeting: [],
       notification: [],
       organization: [],
-      orgApproval: [],
       task: [],
       taskHistory: [],
       softTeamMember: [],
@@ -129,25 +126,6 @@ class MockDB {
     })
   }
 
-  newInvitation (overrides = {}) {
-    const invitee = newInvitee()
-    const table = this.db.invitation
-    return this.closeout('invitation', {
-      id: shortid.generate(),
-      // acceptedAt: null,
-      createdAt: new Date(__anHourAgo + table.length),
-      email: invitee.email,
-      // fullName: overrides.email || invitee.email,
-      hashedToken: shortid.generate(),
-      invitedBy: this.context.teamMember.id,
-      inviteCount: 1,
-      teamId: this.context.team.id,
-      tokenExpiration: new Date(__anHourAgo + table.length + INVITATION_LIFESPAN),
-      updatedAt: new Date(__anHourAgo + table.length),
-      ...overrides
-    })
-  }
-
   newInvoice (overrides = {}) {
     const {id: orgId, name: orgName, picture} = this.context.organization
     const addedUsersLineId = shortid.generate()
@@ -189,7 +167,7 @@ class MockDB {
       picture,
       startAt: new Date(__anHourAgo - 102),
       startingBalance: 0,
-      status: PENDING,
+      status: 'PENDING',
       ...overrides
     })
   }
@@ -265,13 +243,15 @@ class MockDB {
         facilitator: this.context.team.activeFacilitator,
         successExpression: makeSuccessExpression(),
         successStatement: makeSuccessStatement(),
-        invitees: this.db.teamMember.filter((tm) => tm.teamId === teamId).map((teamMember) => ({
-          id: teamMember.id,
-          picture: teamMember.picture,
-          preferredName: teamMember.preferredName,
-          present: true,
-          tasks: tasks.filter((a) => a.assigneeId === teamMember.id)
-        })),
+        invitees: this.db.teamMember
+          .filter((tm) => tm.teamId === teamId)
+          .map((teamMember) => ({
+            id: teamMember.id,
+            picture: teamMember.picture,
+            preferredName: teamMember.preferredName,
+            present: true,
+            tasks: tasks.filter((a) => a.assigneeId === teamMember.id)
+          })),
         tasks
       })
     }
@@ -326,20 +306,6 @@ class MockDB {
     })
   }
 
-  newOrgApproval (overrides = {}) {
-    const anHourAgo = new Date(__anHourAgo)
-    return this.closeout('orgApproval', {
-      id: shortid.generate(),
-      createdAt: new Date(anHourAgo.getTime() + this.db.orgApproval.length),
-      email: newInvitee().email,
-      isActive: true,
-      orgId: this.context.organization.id,
-      status: PENDING,
-      teamId: this.context.team.id,
-      ...overrides
-    })
-  }
-
   newTask (overrides = {}) {
     const teamMemberId = this.context.teamMember.id
     const [userId] = teamMemberId.split('::')
@@ -380,7 +346,6 @@ class MockDB {
     const table = this.db.softTeamMember
     return this.closeout('softTeamMember', {
       id: shortid.generate(),
-      email: this.context.invitation.email || this.context.orgApproval.email,
       createdAt: new Date(__anHourAgo + table.length),
       isActive: true,
       preferredName: 'newSoft',

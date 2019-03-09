@@ -61,10 +61,6 @@ export default {
         .getAll(currentOrgId, {index: 'orgId'})
         .filter({teamId})
         .update({orgId}),
-      orgApprovals: r
-        .table('OrgApproval')
-        .getAll(teamId, {index: 'teamId'})
-        .update({orgId}),
       team: r
         .table('Team')
         .get(teamId)

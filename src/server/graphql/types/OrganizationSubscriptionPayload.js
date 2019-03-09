@@ -1,6 +1,5 @@
 import graphQLSubscriptionType from 'server/graphql/graphQLSubscriptionType'
 import AddOrgPayload from 'server/graphql/types/AddOrgPayload'
-import ApproveToOrgPayload from 'server/graphql/types/ApproveToOrgPayload'
 import SetOrgUserRoleAddedPayload from 'server/graphql/types/SetOrgUserRoleAddedPayload'
 import SetOrgUserRoleRemovedPayload from 'server/graphql/types/SetOrgUserRoleRemovedPayload'
 import UpdateOrgPayload from 'server/graphql/types/UpdateOrgPayload'
@@ -11,7 +10,6 @@ import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonal
 
 const types = [
   AddOrgPayload,
-  ApproveToOrgPayload,
   DowngradeToPersonalPayload,
   RemoveOrgUserPayload,
   SetOrgUserRoleAddedPayload,

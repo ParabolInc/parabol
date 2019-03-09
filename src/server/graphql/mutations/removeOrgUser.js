@@ -109,18 +109,6 @@ const removeOrgUser = {
               )
               .delete()
           }
-        }),
-      inactivatedApprovals: r
-        .table('User')
-        .get(userId)('email')
-        .do((email) => {
-          return r
-            .table('OrgApproval')
-            .getAll(email, {index: 'email'})
-            .filter({orgId})
-            .update({
-              isActive: false
-            })
         })
     })
 

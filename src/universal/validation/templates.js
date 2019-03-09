@@ -1,7 +1,5 @@
 import {APP_MAX_AVATAR_FILE_SIZE, TASK_MAX_CHARS} from 'universal/utils/constants'
-import linkify from 'universal/utils/linkify'
 import {compositeIdRegex, emailRegex, idRegex, urlRegex} from 'universal/validation/regex'
-import parseEmailAddressList from 'universal/utils/parseEmailAddressList'
 
 export const avatar = {
   size: (value) =>
@@ -16,54 +14,9 @@ export const avatar = {
 
 export const compositeId = (value) => value.matches(compositeIdRegex)
 
-export const fullName = (value) =>
-  value
-    .trim()
-    .min(1, 'It looks like you wanted to include a name')
-    .max(TASK_MAX_CHARS, 'That name looks too long!')
-
-const lastIndexOfDelim = (str, delims = [';', ',']) => {
-  let highscore = -1
-  for (let i = 0; i < delims.length; i++) {
-    const delim = delims[i]
-    const lastIdx = str.lastIndexOf(delim)
-    if (lastIdx > highscore) {
-      highscore = lastIdx
-    }
-  }
-  return highscore
-}
-
-export const inviteesRawTest = (raw) => {
-  if (!raw) return undefined
-  const parsedAddresses = parseEmailAddressList(raw)
-  if (!parsedAddresses) {
-    let i = lastIndexOfDelim(raw)
-    while (i > 0) {
-      const lastGoodString = raw.substr(0, i)
-      const parseable = parseEmailAddressList(lastGoodString)
-      if (parseable) {
-        const startingIdx = lastIndexOfDelim(lastGoodString) + 1
-        return `The email after ${lastGoodString.substr(startingIdx)} doesn’t look quite right`
-      }
-      i = lastIndexOfDelim(lastGoodString)
-    }
-    return 'That first email doesn’t look right'
-  }
-  return undefined
-}
-
-export const inviteesRaw = (value) => value.test(inviteesRawTest)
-
 export const id = (value) => value.matches(idRegex)
 
 export const requiredId = (value) => value.required().matches(idRegex)
-
-export const requiredEmail = (value) =>
-  value
-    .trim()
-    .required('You should enter an email here.')
-    .matches(emailRegex, 'That doesn’t look like an email address.')
 
 export const makeInviteeTemplate = (inviteEmails, teamMemberEmails, pendingApprovalEmails = []) => {
   return (value) =>
@@ -90,13 +43,6 @@ export const orgName = (value) =>
     .required('Your new org needs a name!')
     .min(2, 'C’mon, you call that an organization?')
     .max(100, 'Maybe just the legal name?')
-
-export const orgRejectionReason = (value) =>
-  value
-    .trim()
-    .required()
-    .min(2, 'Maybe a couple more words?')
-    .max(TASK_MAX_CHARS, 'That seems like a good enough reason')
 
 export const preferredName = (value) =>
   value
@@ -127,17 +73,3 @@ export const makeTeamNameSchema = (teamNames) => (value) =>
     .test((val) => teamNames.includes(val) && 'That name is already taken')
 
 export const url = (value) => value.matches(urlRegex)
-
-export const linkText = (value) =>
-  value
-    .trim()
-    .required()
-    .min(1, 'Maybe give it a name?')
-    .max(100, 'That name is looking pretty long')
-
-export const linkifiedUrl = (value) =>
-  value.test((maybeUrl) => {
-    if (!maybeUrl) return 'No link provided'
-    const links = linkify.match(maybeUrl)
-    return !links && 'Not looking too linky'
-  })

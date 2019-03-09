@@ -1,15 +1,10 @@
 import MockDate from 'mockdate'
 import {__now} from 'server/__tests__/setup/mockTimes'
-import newInvitee from 'server/__tests__/utils/newInvitee'
 import {
-  ADD_TO_TEAM,
   BILLING_LEADER,
-  DENY_NEW_USER,
   PAYMENT_REJECTED,
   PROMOTE_TO_BILLING_LEADER,
-  REQUEST_NEW_USER,
-  TEAM_ARCHIVED,
-  TEAM_INVITE
+  TEAM_ARCHIVED
 } from 'universal/utils/constants'
 
 MockDate.set(__now)
@@ -28,52 +23,15 @@ const billingLeadersOnly = (users, orgId) =>
 
 export default function notificationTemplate (template) {
   const {type} = template
-  if (type === ADD_TO_TEAM) {
-    return {
-      type,
-      inviterName: this.context.user.preferredName,
-      teamName: this.context.team.name,
-      teamId: this.context.team.id
-    }
-  }
-  if (type === DENY_NEW_USER) {
-    return {
-      type,
-      reason: 'Do not like them',
-      deniedByName: this.context.user.preferredName,
-      inviteeEmail: template.email || newInvitee().email
-    }
-  }
   if (type === PROMOTE_TO_BILLING_LEADER) {
     return {
       type,
       organization: this.context.organization
     }
   }
-  if (type === REQUEST_NEW_USER) {
-    const inviter = this.context.user
-    return {
-      type,
-      inviterUserId: inviter.id,
-      inviteeEmail: template.email || newInvitee().email,
-      teamId: this.context.team.id,
-      teamName: this.context.team.name,
-      userIds: billingLeadersOnly(this.db.user, this.context.organization.id)
-    }
-  }
   if (type === TEAM_ARCHIVED) {
     return {
       type,
-      teamName: this.context.team.name
-    }
-  }
-  if (type === TEAM_INVITE) {
-    return {
-      type,
-      inviterUserId: this.context.user.id,
-      inviterName: this.context.user.preferredName,
-      inviteeEmail: template.email || newInvitee().email,
-      teamId: this.context.team.id,
       teamName: this.context.team.name
     }
   }

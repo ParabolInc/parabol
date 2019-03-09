@@ -14,7 +14,6 @@ export default {
     'tasks.assigneeId',
     'teamId'
   ],
-  invitation: ['id', 'email', 'hashedToken', 'invitedBy', 'teamId'],
   invoice: ['id', 'lines.id', 'lines.details.id', 'lines.details.parentId', 'orgId'],
   invoiceItemHook: ['id', 'stripeSubscriptionId', 'userId'],
   notification: [
@@ -27,7 +26,6 @@ export default {
     'userIds'
   ],
   organization: ['id', 'stripeId', 'stripeSubscriptionId', 'orgUsers.id'],
-  orgApproval: ['id', 'approvedBy', 'deniedBy', 'email', 'orgId', 'teamId'],
   task: ['id', 'agendaId', 'createdBy', 'teamId', 'assigneeId', 'userId'],
   taskHistory: ['id', 'taskId', 'assigneeId'],
   team: ['id', 'activeFacilitator', 'meetingId', 'orgId'],

@@ -11,9 +11,6 @@ import ErrorBoundary from '../ErrorBoundary'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 
-const Invitation = lazy(() =>
-  import(/* webpackChunkName: 'InvitationContainer' */ 'universal/modules/invitation/containers/Invitation/InvitationContainer')
-)
 const ResetPasswordPage = lazy(() =>
   import(/* webpackChunkName: 'ResetPasswordPage' */ 'universal/components/ResetPasswordPage/ResetPasswordPage')
 )
@@ -65,7 +62,8 @@ const Action = () => {
             />
             <Route path='/retrospective-demo-summary' component={DemoSummary} />
             <Route exact path='/reset-password' component={ResetPasswordPage} />
-            <Route path='/invitation/:inviteToken' component={Invitation} />
+            {/*Legacy route, still referenced by old invite emails*/}
+            <Route path='/invitation/:inviteToken' component={TeamInvitation} />
             <Route path='/team-invitation/:token' component={TeamInvitation} />
             <Route component={PrivateRoutes} />
           </Switch>

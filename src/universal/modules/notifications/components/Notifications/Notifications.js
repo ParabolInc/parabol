@@ -14,7 +14,7 @@ import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import Panel from 'universal/components/Panel/Panel'
-import {PAYMENT_REJECTED, REQUEST_NEW_USER, TEAM_INVITE} from 'universal/utils/constants'
+import {PAYMENT_REJECTED} from 'universal/utils/constants'
 
 const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',
@@ -41,11 +41,7 @@ const NotificationsEmptyBlock = styled('div')({
   width: '100%'
 })
 
-const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([
-  PAYMENT_REJECTED,
-  REQUEST_NEW_USER,
-  TEAM_INVITE
-])
+const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([PAYMENT_REJECTED])
 
 const requiresAction = (type): boolean => NOTIFICATION_TYPES_REQUIRING_ACTION.has(type)
 
