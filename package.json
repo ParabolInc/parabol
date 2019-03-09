@@ -94,7 +94,7 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-module-resolver": "^3.1.3",
-    "babel-plugin-relay": "^2.0.0",
+    "babel-plugin-relay": "3.0.0",
     "chance": "^1.0.6",
     "clean-webpack-plugin": "^0.1.19",
     "codecov": "^2.3.0",
@@ -229,7 +229,7 @@
     "react-loadable": "^5.3.1",
     "react-notification-system": "^0.2.16",
     "react-redux": "^6.0.0",
-    "react-relay": "2.0.0",
+    "react-relay": "3.0.0",
     "react-router": "4.4.0-beta.6",
     "react-router-dom": "4.4.0-beta.6",
     "react-test-renderer": "^16.0.0",
@@ -237,7 +237,7 @@
     "react-virtualized": "^9.18.5",
     "redux": "^4.0.1",
     "redux-thunk": "2.2.0",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45",
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1",
     "resize-observer-polyfill": "^1.5.0",
     "rethinkdbdash": "^2.3.31",
     "secure-compare": "^3.0.1",
@@ -283,7 +283,7 @@
     "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/2b79845de58b8f26a37a5b5886e0b66534ffa23d",
     "@types/react": "16.8.2",
     "@types/react-dom": "16.8.0",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/e9ed4923b44978ab4363dd20f2f96d5416d5aa45"
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1"
   },
   "standard": {
     "parser": "babel-eslint",
