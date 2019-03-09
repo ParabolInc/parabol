@@ -22,8 +22,6 @@ interface Props extends WithAtmosphereProps {}
 const MyDashboardTasksRoot = ({atmosphere}: Props) => {
   return (
     <QueryRenderer
-      // FIXME remove when relay merges PR https://github.com/facebook/relay/pull/2416
-      dataFrom={'NETWORK_ONLY'}
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
