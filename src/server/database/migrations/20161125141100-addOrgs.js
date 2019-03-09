@@ -92,7 +92,7 @@ exports.up = async (r) => {
       return stripe.subscriptions.create({
         customer: customer.id,
         metadata: customer.metadata,
-        plan: 'action-monthly',
+        plan: 'parabol-pro-monthly',
         quantity: Object.keys(orgs[customer.metadata.orgId].orgUserMap).length,
         trial_period_days: TRIAL_PERIOD_DAYS
       })
