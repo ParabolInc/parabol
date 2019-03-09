@@ -177,6 +177,7 @@ class TaskEditor extends Component {
     return (
       <RootEditor noText={noText}>
         <Editor
+          spellCheck
           blockStyleFn={this.blockStyleFn}
           editorState={editorState}
           handleBeforeInput={this.handleBeforeInput}

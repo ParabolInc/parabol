@@ -182,6 +182,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     return (
       <EditorStyles userSelect={userSelect}>
         <Editor
+          spellCheck
           ariaLabel={ariaLabel}
           blockStyleFn={this.blockStyleFn}
           editorState={editorState}
