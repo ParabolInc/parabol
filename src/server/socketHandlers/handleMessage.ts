@@ -8,11 +8,11 @@ import isQueryAllowed from '../graphql/isQueryAllowed'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {getUserId} from '../utils/authorization'
 import sendToSentry from '../utils/sendToSentry'
-
+import handleSignal, {UWebSocket} from '../wrtc/signalServer/handleSignal'
+import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 const {GQL_ERROR} = ClientMessageTypes
-const handleMessage = (connectionContext: ConnectionContext, clients: any[]) => async (
-  message: Data
-) => {
+
+const handleMessage = (connectionContext: ConnectionContext) => async (message: Data) => {
   const {socket} = connectionContext
   // catch raw, non-graphql protocol messages here
   if (message === Events.KEEP_ALIVE) {
@@ -33,11 +33,20 @@ const handleMessage = (connectionContext: ConnectionContext, clients: any[]) => 
     return
   }
 
+  if (parsedMessage.type === 'WRTC_SIGNAL') {
+    const {socket} = connectionContext
+    const {signal} = parsedMessage
+    if (!socket.context) {
+      if (signal.type !== 'init') return
+      socket.context = new WebSocketContext(connectionContext.authToken.tms as string[])
+    }
+    handleSignal(connectionContext.socket as UWebSocket, signal)
+    return
+  }
   try {
     const response = await handleGraphQLTrebuchetRequest(parsedMessage, connectionContext, {
       persistedQueries: queryMap,
-      isQueryAllowed,
-      clients
+      isQueryAllowed
     })
     if (response) {
       const {type, id: opId, payload} = response

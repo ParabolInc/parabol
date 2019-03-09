@@ -180,6 +180,5 @@ app.post('/get-demo-entities', demoEntityLimiter, demoEntityHandler)
 // return web app
 app.get('*', createSSR)
 
-console.log('wss', wss)
 // handle sockets
-wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter, wss))
+wss.on('connection', connectionHandler(sharedDataLoader, rateLimiter))

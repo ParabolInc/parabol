@@ -7,14 +7,12 @@ import wsGraphQLHandler from 'server/socketHandlers/wsGraphQLHandler'
 import handleSubscribe from 'server/socketHandlers/handleSubscribe'
 import relayUnsubscribe from 'server/utils/relayUnsubscribe'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
-import handleWRTCSignal from '@mattkrick/fast-rtc-swarm/server'
 
 interface Options {
   persistedQueries?: {
     [key: string]: string
   }
   isQueryAllowed? (query: string, connectionContext: ConnectionContext): boolean
-  clients?: any[]
 }
 
 const {GQL_START, GQL_STOP} = ServerMessageTypes
@@ -26,7 +24,7 @@ const handleGraphQLTrebuchetRequest = async (
   options: Options = {}
 ) => {
   const {id: opId} = data
-  switch (data.type as any) {
+  switch (data.type) {
     case GQL_START:
       const {payload} = data
       if (!payload) {
@@ -61,11 +59,6 @@ const handleGraphQLTrebuchetRequest = async (
       }
     case GQL_STOP:
       relayUnsubscribe(connectionContext.subs, opId)
-      return
-    case 'WRTC_SIGNAL':
-      if (options.clients) {
-        handleWRTCSignal(options.clients, connectionContext.socket, data.signal)
-      }
       return
     default:
       throw new Error('No type provided')

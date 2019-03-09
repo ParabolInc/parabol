@@ -3,7 +3,7 @@ import {RedisPubSub} from 'graphql-redis-subscriptions'
 
 getDotenv()
 
-let pubsub
+let pubsub: RedisPubSub | undefined
 const getPubSub = () => {
   if (!pubsub) {
     pubsub = new RedisPubSub({
