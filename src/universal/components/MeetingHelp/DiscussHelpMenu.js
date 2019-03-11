@@ -19,8 +19,8 @@ const DiscussHelpMenu = ({closePortal}) => (
       time.
     </HelpMenuCopy>
     <HelpMenuLink
-      copy="Learn More"
-      href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss"
+      copy='Learn More'
+      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#discuss'
     />
   </HelpMenuContent>
 )

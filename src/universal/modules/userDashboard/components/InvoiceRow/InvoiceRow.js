@@ -96,7 +96,7 @@ const InvoiceRow = (props) => {
         <InfoRow>
           <div>
             <InvoiceTitle>{makeMonthString(endAt)}</InvoiceTitle>
-            {isEstimate && <Tag colorPalette="blue" label="Current Estimate" />}
+            {isEstimate && <Tag colorPalette='blue' label='Current Estimate' />}
           </div>
           <InfoRowRight>
             <InvoiceAmount>{invoiceLineFormat(amountDue)}</InvoiceAmount>
@@ -106,8 +106,8 @@ const InvoiceRow = (props) => {
           <div>
             <Link
               className={styledInfoLink}
-              rel="noopener noreferrer"
-              target="_blank"
+              rel='noopener noreferrer'
+              target='_blank'
               to={`/invoice/${invoiceId}`}
             >
               {'See Details'}

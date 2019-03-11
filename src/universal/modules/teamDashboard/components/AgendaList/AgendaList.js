@@ -110,11 +110,11 @@ class AgendaList extends Component {
     filteredAgendaItems: []
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.setFilteredAgendaItems(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       team: {agendaItems, contentFilter}
     } = nextProps
@@ -137,7 +137,7 @@ class AgendaList extends Component {
     })
   }
 
-  makeLoadingState() {
+  makeLoadingState () {
     const loadingItem = <AgendaItemLoading />
     return (
       <AgendaItemsLoadingBlock>
@@ -148,7 +148,7 @@ class AgendaList extends Component {
     )
   }
 
-  makeEmptyState() {
+  makeEmptyState () {
     const {context} = this.props
     const meetingContext = context === 'dashboard' ? 'next meeting' : 'meeting'
     return (
@@ -206,7 +206,7 @@ class AgendaList extends Component {
     UpdateAgendaItemMutation(atmosphere, updatedAgendaItem)
   }
 
-  render() {
+  render () {
     const {
       agendaPhaseItem,
       canNavigate,

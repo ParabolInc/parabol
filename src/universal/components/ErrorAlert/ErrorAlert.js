@@ -38,7 +38,7 @@ const SpacedIcon = styled(Icon)({
 
 const ErrorAlert = ({message}: Props) => {
   return (
-    <ErrorAlertWrapper role="alert">
+    <ErrorAlertWrapper role='alert'>
       <SpacedIcon>warning</SpacedIcon>
       <span>{message}</span>
     </ErrorAlertWrapper>

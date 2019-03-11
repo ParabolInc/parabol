@@ -81,7 +81,7 @@ const typeLookup = {
   [UNPAUSE_USER]: changePause(false)
 }
 
-export default async function adjustUserCount(userId, orgInput, type, options = {}) {
+export default async function adjustUserCount (userId, orgInput, type, options = {}) {
   const r = getRethink()
   const now = new Date()
 

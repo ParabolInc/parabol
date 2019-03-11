@@ -19,7 +19,7 @@ const setPhaseFocus = {
       description: 'The currently focused phase item'
     }
   },
-  async resolve(
+  async resolve (
     source,
     {meetingId, focusedPhaseItemId},
     {authToken, dataLoader, socketId: mutatorId}

@@ -19,7 +19,7 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(source, {teamId}, {authToken, dataLoader}) {
+  async resolve (source, {teamId}, {authToken, dataLoader}) {
     // AUTH
     const userId = getUserId(authToken)
     let tasks

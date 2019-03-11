@@ -17,7 +17,7 @@ export default {
       description: 'The teamId to archive (or delete, if team is unused)'
     }
   },
-  async resolve(source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {teamId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

@@ -1,4 +1,4 @@
-export default function makePlaceholderStyles(color) {
+export default function makePlaceholderStyles (color) {
   return {
     // can just use pseudo selector for target
     // https://caniuse.com/#feat=css-placeholder

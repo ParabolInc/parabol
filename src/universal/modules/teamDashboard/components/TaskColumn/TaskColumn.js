@@ -205,7 +205,7 @@ class TaskColumn extends Component {
     UpdateTaskMutation(atmosphere, updatedTask, area)
   }
 
-  render() {
+  render () {
     const {
       area,
       atmosphere,

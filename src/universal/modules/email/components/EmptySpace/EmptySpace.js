@@ -14,14 +14,14 @@ const EmptySpace = (props) => {
   }
 
   return (
-    <table style={emailTableBase} width="100%">
+    <table style={emailTableBase} width='100%'>
       <tbody>
         <tr>
           <td
             dangerouslySetInnerHTML={{__html: '&nbsp;'}} // eslint-disable-line react/no-danger
             height={`${props.height}px`}
             style={cellStyle}
-            width="100%"
+            width='100%'
           />
         </tr>
       </tbody>

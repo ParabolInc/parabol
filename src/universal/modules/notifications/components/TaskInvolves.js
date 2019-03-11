@@ -43,7 +43,7 @@ const StyledButton = styled(RaisedButton)({
 })
 
 class TaskInvolves extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const {
       notification: {
@@ -59,7 +59,7 @@ class TaskInvolves extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       notification: {
         task: {content: oldContent}
@@ -100,7 +100,7 @@ class TaskInvolves extends Component {
     history.push(`/team/${teamId}${archiveSuffix}`)
   }
 
-  render() {
+  render () {
     const {editorState} = this.state
     const {notification, submitting} = this.props
     const {
@@ -116,7 +116,7 @@ class TaskInvolves extends Component {
       <Row compact>
         <IconAvatar
           icon={involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}
-          size="small"
+          size='small'
         />
         <div className={css(defaultStyles.message)}>
           <div className={css(defaultStyles.messageText)}>
@@ -139,14 +139,14 @@ class TaskInvolves extends Component {
           <div className={css(localStyles.taskListView)}>
             <div className={css(localStyles.indicatorsBlock)}>
               <OutcomeCardStatusIndicator status={status} />
-              {tags.includes('private') && <OutcomeCardStatusIndicator status="private" />}
-              {tags.includes('archived') && <OutcomeCardStatusIndicator status="archived" />}
+              {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
+              {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
             </div>
             <Editor readOnly editorState={editorState} />
             {assignee && (
               <div className={css(defaultStyles.owner)}>
                 <img
-                  alt="Avatar"
+                  alt='Avatar'
                   className={css(defaultStyles.ownerAvatar)}
                   src={assignee.picture}
                 />
@@ -158,8 +158,8 @@ class TaskInvolves extends Component {
         <div className={css(defaultStyles.buttonGroup)}>
           <div className={css(defaultStyles.widerButton)}>
             <StyledButton
-              aria-label="Go to this board"
-              palette="warm"
+              aria-label='Go to this board'
+              palette='warm'
               size={ui.notificationButtonSize}
               onClick={this.gotoBoard}
               waiting={submitting}

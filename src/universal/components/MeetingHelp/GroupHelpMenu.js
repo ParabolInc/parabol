@@ -16,8 +16,8 @@ const GroupHelpMenu = ({closePortal}) => (
     <HelpMenuCopy>To group, drag and drop a card onto another card or group.</HelpMenuCopy>
     <HelpMenuCopy>Tap group headings to edit.</HelpMenuCopy>
     <HelpMenuLink
-      copy="Learn More"
-      href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101#group"
+      copy='Learn More'
+      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#group'
     />
   </HelpMenuContent>
 )

@@ -2,7 +2,7 @@ import getRethink from 'server/database/rethinkDriver'
 import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import shortid from 'shortid'
 
-export default async function createNewOrg(orgId, orgName, leaderUserId) {
+export default async function createNewOrg (orgId, orgName, leaderUserId) {
   const r = getRethink()
   const now = new Date()
   return r({

@@ -1,6 +1,4 @@
 import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
-import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
-import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import React from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
@@ -47,6 +45,7 @@ import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Atmosphere from '../Atmosphere'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
+import {StreamDict} from 'universal/hooks/useSwarm'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
 
 const {Component} = React
@@ -146,35 +145,17 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
   atmosphere: Atmosphere & LocalAtmosphere
   bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void
   meetingType: MeetingTypeEnum
+  streams: StreamDict
   viewer: NewMeeting_viewer
 }
 
-export interface ViewerStreamLookup {
-  [viewerId: string]: Array<MediaStream>
-}
-
-interface State {
-  viewerStreamLookup: ViewerStreamLookup
-}
-
-class NewMeeting extends Component<Props, State> {
-  state = {
-    viewerStreamLookup: {}
-  }
-
-  constructor(props) {
+class NewMeeting extends Component<Props> {
+  constructor (props) {
     super(props)
     const {atmosphere, bindHotkey} = props
     bindHotkey('right', handleHotkey(this.maybeGotoNext))
     bindHotkey('left', handleHotkey(this.gotoPrev))
     bindHotkey('i c a n t h a c k i t', handleHotkey(this.endMeeting))
-    if (atmosphere.transport.trebuchet) {
-      this.createSwarm().catch()
-    } else {
-      atmosphere.eventEmitter.once('newSubscriptionClient', () => {
-        this.createSwarm().catch()
-      })
-    }
     if (atmosphere.clientGraphQLServer) {
       atmosphere.clientGraphQLServer.on('botsFinished', () => {
         // for the demo, we're essentially using the isBotFinished() prop as state
@@ -185,71 +166,6 @@ class NewMeeting extends Component<Props, State> {
 
   sidebarRef = React.createRef()
   gotoNextRef = React.createRef<HTMLDivElement>()
-  swarm!: FastRTCSwarm
-
-  createSwarm = async () => {
-    const {atmosphere} = this.props
-    const {
-      viewerId,
-      transport: {trebuchet}
-    } = atmosphere
-    const {viewerStreamLookup} = this.state
-    let streams
-    try {
-      streams = [await navigator.mediaDevices.getUserMedia({video: true, audio: true})]
-    } catch (e) {
-      streams = []
-    }
-    const audio = {streams}
-    const video = {streams}
-    const swarm = new FastRTCSwarm({sdpSemantics: 'unified-plan', video, audio} as any)
-    trebuchet.on('data', (data) => {
-      const payload = JSON.parse(data)
-      swarm.dispatch(payload)
-    })
-
-    swarm.on('signal', (signal) => {
-      trebuchet.send(JSON.stringify({type: 'WRTC_SIGNAL', signal}))
-    })
-    swarm.on('dataOpen', (peer) => {
-      peer.send(JSON.stringify({type: 'init', viewerId}))
-    })
-
-    const initQueue: {[peerId: string]: Array<() => void>} = {}
-    const addStream = (stream, peer) => {
-      const {viewerId} = peer
-      const streams = (viewerStreamLookup[viewerId] = viewerStreamLookup[viewerId] || [])
-      if (!streams.includes(stream)) {
-        streams.push(stream)
-        this.setState({
-          // low-effort immutability
-          viewerStreamLookup: {...viewerStreamLookup}
-        })
-      }
-    }
-
-    swarm.on('data', (data, peer) => {
-      const payload = JSON.parse(data)
-      if (payload.type === 'init') {
-        peer.viewerId = payload.viewerId
-        const queue = initQueue[peer.id]
-        if (queue) {
-          queue.forEach((thunk) => thunk())
-          delete initQueue[peer.id]
-        }
-      }
-    })
-
-    swarm.on('stream', (stream, peer) => {
-      const {viewerId} = peer
-      if (viewerId) {
-        addStream(stream, peer)
-      } else {
-        initQueue[peer.id] = initQueue[peer.id] || []
-        initQueue[peer.id].push(() => addStream(stream, peer))
-      }
-    })
-  }
 
   endMeeting = () => {
     const {
@@ -386,9 +302,8 @@ class NewMeeting extends Component<Props, State> {
     }
   }
 
-  render() {
-    const {viewerStreamLookup} = this.state
-    const {atmosphere, meetingType, viewer} = this.props
+  render () {
+    const {atmosphere, meetingType, streams, viewer} = this.props
     const {team} = viewer
     if (!team) return null
     const {newMeeting, teamName, teamId} = team
@@ -434,7 +349,7 @@ class NewMeeting extends Component<Props, State> {
               <NewMeetingAvatarGroup
                 gotoStageId={this.gotoStageId}
                 team={team}
-                viewerStreamLookup={viewerStreamLookup}
+                viewerStreamLookup={streams}
               />
             </MeetingAreaHeader>
             <ErrorBoundary>

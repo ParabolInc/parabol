@@ -19,7 +19,7 @@ export default {
       type: new GraphQLNonNull(CreateReflectionInput)
     }
   },
-  async resolve(
+  async resolve (
     source,
     {
       input: {content, retroPhaseItemId, sortOrder}

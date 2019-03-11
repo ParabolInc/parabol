@@ -33,7 +33,7 @@ class AgendaListAndInput extends Component {
     team: PropTypes.object.isRequired
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     const {
       facilitatorPhaseItem,
@@ -45,13 +45,13 @@ class AgendaListAndInput extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (meetingOnAgendaItem(this.props)) {
       this.scrollToFacilitatedAgendaItem(this.props)
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       team: {agendaItems}
     } = this.props
@@ -87,7 +87,7 @@ class AgendaListAndInput extends Component {
     this.setState({visibleAgendaItemId})
   }
 
-  render() {
+  render () {
     const {
       agendaPhaseItem,
       canNavigate,

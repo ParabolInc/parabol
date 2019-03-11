@@ -25,7 +25,7 @@ import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarB
 const LoadableMeetingAvatarMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'MeetingAvatarMenu' */
-    'universal/modules/meeting/components/MeetingAvatarMenu'),
+      'universal/modules/meeting/components/MeetingAvatarMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -100,14 +100,14 @@ const MeetingAvatarGroup = (props) => {
                       picture={picture}
                       isConnected={avatar.isConnected || avatar.isSelf}
                       isCheckedIn={avatar.isCheckedIn}
-                      size="fill"
+                      size='fill'
                     />
                   }
                 />
               </div>
               {avatarIsFacilitating && (
                 <div className={tagBlockStyles}>
-                  <Tag colorPalette="gray" label="Facilitator" />
+                  <Tag colorPalette='gray' label='Facilitator' />
                 </div>
               )}
             </div>

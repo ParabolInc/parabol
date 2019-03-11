@@ -21,8 +21,8 @@ const MeetingAgendaFirstCall = (props) => {
   const phaseName = actionMeeting.agendaitems.name
   return (
     <MeetingMain hasHelpFor={FIRST_CALL}>
-      <MeetingSection flexToFill paddingBottom="2rem">
-        <MeetingSection paddingBottom="2rem">
+      <MeetingSection flexToFill paddingBottom='2rem'>
+        <MeetingSection paddingBottom='2rem'>
           <div className={css(styles.main)}>
             <MeetingPhaseHeading>{'Now, what do you need?'}</MeetingPhaseHeading>
 
@@ -32,10 +32,10 @@ const MeetingAgendaFirstCall = (props) => {
 
             <div className={css(styles.controlBlock)}>
               {!hideMoveMeetingControls ? (
-                <BounceBlock animationDelay="30s">
-                  <PrimaryButton size="large" onClick={gotoNext}>
+                <BounceBlock animationDelay='30s'>
+                  <PrimaryButton size='large' onClick={gotoNext}>
                     <IconLabel
-                      icon="arrow_forward"
+                      icon='arrow_forward'
                       iconAfter
                       iconLarge
                       label={`Let’s begin: ${phaseName}`}

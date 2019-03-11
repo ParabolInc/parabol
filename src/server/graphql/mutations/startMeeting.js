@@ -20,7 +20,7 @@ export default {
       description: 'The team starting the meeting'
     }
   },
-  async resolve(source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {teamId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

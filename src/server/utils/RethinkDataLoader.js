@@ -58,7 +58,7 @@ export const primeStandardLoader = (loader, items) => {
 }
 
 export default class RethinkDataLoader {
-  constructor(authToken, dataloaderOptions = {}) {
+  constructor (authToken, dataloaderOptions = {}) {
     this.authToken = authToken
     this.dataloaderOptions = dataloaderOptions
     this.customPhaseItemsByTeamId = makeCustomLoader(async (teamIds) => {
@@ -277,11 +277,11 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions)
   }
 
-  _share() {
+  _share () {
     this.authToken = null
   }
 
-  makeStandardLoader(table) {
+  makeStandardLoader (table) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()

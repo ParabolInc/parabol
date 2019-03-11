@@ -20,7 +20,7 @@ const Button = (props) => {
     <table style={{...emailTableBase, width}} width={width}>
       <tbody>
         <tr>
-          <td align="center" style={cellStyle}>
+          <td align='center' style={cellStyle}>
             <a href={url} style={linkStyle}>
               {props.children}
             </a>

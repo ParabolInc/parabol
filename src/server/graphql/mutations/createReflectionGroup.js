@@ -22,7 +22,7 @@ export default {
         'An array of 1 or 2 reflections that make up the group. The first card in the array will be used to determine sort order'
     }
   },
-  async resolve(source, {meetingId, reflectionIds}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {meetingId, reflectionIds}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

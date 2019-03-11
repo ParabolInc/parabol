@@ -23,7 +23,7 @@ export default {
       description: 'which tier of org shall we count?'
     }
   },
-  async resolve(source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
+  async resolve (source, {ignoreEmailRegex, includeInactive, tier}, {authToken}) {
     const r = getRethink()
 
     // AUTH

@@ -14,7 +14,7 @@ const OrganizationNotification = new GraphQLInterfaceType({
       type: NotificationEnum
     }
   },
-  resolveType({type}) {
+  resolveType ({type}) {
     const resolveTypeLookup = {
       [PAYMENT_REJECTED]: NotifyPaymentRejected,
       [PROMOTE_TO_BILLING_LEADER]: NotifyPromoteToOrgLeader

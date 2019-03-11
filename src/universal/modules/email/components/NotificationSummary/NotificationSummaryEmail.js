@@ -22,7 +22,7 @@ const linkStyle = {
 
 const notificationPageUrl = makeAppLink('me/notifications')
 
-export default function NotificationSummaryEmail() {
+export default function NotificationSummaryEmail () {
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
@@ -47,7 +47,7 @@ export default function NotificationSummaryEmail() {
         </p>
         <p style={copyStyle}>
           {'Email us at '}
-          <a style={linkStyle} href="mailto:love@parabol.co">
+          <a style={linkStyle} href='mailto:love@parabol.co'>
             {'love@parabol.co'}
           </a>
           {' with any feedback or questions you may have about our software.'}
@@ -55,7 +55,7 @@ export default function NotificationSummaryEmail() {
         <p style={copyStyle}>
           {'Or, schedule a video chat with our product team: '}
           <br />
-          <a style={linkStyle} href="https://calendly.com/parabol/product/">
+          <a style={linkStyle} href='https://calendly.com/parabol/product/'>
             {'https://calendly.com/parabol/product/'}
           </a>
         </p>

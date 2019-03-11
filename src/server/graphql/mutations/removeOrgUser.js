@@ -31,7 +31,7 @@ const removeOrgUser = {
       description: 'the org that does not want them anymore'
     }
   },
-  async resolve(source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {orgId, userId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

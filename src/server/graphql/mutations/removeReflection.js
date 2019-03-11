@@ -17,7 +17,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(source, {reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {reflectionId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

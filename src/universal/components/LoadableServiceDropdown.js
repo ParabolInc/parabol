@@ -11,7 +11,7 @@ import LoadableLoading from 'universal/components/LoadableLoading'
 const LoadableServiceDropdown = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'ServiceDropdown' */
-    'universal/components/ServiceDropdown'),
+      'universal/components/ServiceDropdown'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

@@ -14,7 +14,7 @@ type Props = {
 const StubContext = React.createContext(undefined)
 
 export default class RelayStub extends React.Component<Props> {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.ctx = {
       relay: {
@@ -69,15 +69,15 @@ export default class RelayStub extends React.Component<Props> {
     }
   }
   // Directly render the child, and add the data
-  render() {
+  render () {
     return <StubContext.Provider value={this.ctx}>{this.props.children}</StubContext.Provider>
   }
 
   // Needed to pass the isRelayContainer validation step
-  getFragmentNames() {}
-  getFragment() {}
-  hasFragment() {}
-  hasVariable() {}
+  getFragmentNames () {}
+  getFragment () {}
+  hasFragment () {}
+  hasVariable () {}
 }
 
 // RelayStub.childContextTypes = {

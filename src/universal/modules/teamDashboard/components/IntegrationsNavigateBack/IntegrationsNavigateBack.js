@@ -12,7 +12,7 @@ const IntegrationsNavigateBack = ({history, teamId}) => {
   const goToIntegrations = () => history.push(`/team/${teamId}/settings/integrations`)
   return (
     <RootBlock>
-      <DashNavControl icon="arrow_back" label="Back to Integrations" onClick={goToIntegrations} />
+      <DashNavControl icon='arrow_back' label='Back to Integrations' onClick={goToIntegrations} />
     </RootBlock>
   )
 }

@@ -25,7 +25,7 @@ const year = new Date().getFullYear()
 
 const EmailFooter = () => {
   return (
-    <table align="left" width="100%" style={emailTableBase}>
+    <table align='left' width='100%' style={emailTableBase}>
       <tbody>
         <tr>
           <td>
@@ -35,7 +35,7 @@ const EmailFooter = () => {
               <br />
               <span style={boldCopyStyle}>{'Get in touch'}</span>
               {': '}
-              <a href="mailto:love@parabol.co" title="Get in touch" style={linkStyle}>
+              <a href='mailto:love@parabol.co' title='Get in touch' style={linkStyle}>
                 {'love@parabol.co'}
               </a>
             </div>

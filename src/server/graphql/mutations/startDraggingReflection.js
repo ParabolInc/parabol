@@ -19,7 +19,7 @@ export default {
       type: new GraphQLNonNull(Coords2DInput)
     }
   },
-  async resolve(
+  async resolve (
     source,
     {initialCoords, reflectionId},
     {authToken, dataLoader, socketId: mutatorId}

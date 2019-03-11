@@ -24,7 +24,7 @@ export default {
       description: 'true if the member is present, false if absent, null if undecided'
     }
   },
-  async resolve(
+  async resolve (
     source,
     {userId, meetingId, isCheckedIn},
     {authToken, dataLoader, socketId: mutatorId}

@@ -30,7 +30,7 @@ export default {
       description: 'If true, execute the mutation without regard for meeting flow'
     }
   },
-  async resolve(
+  async resolve (
     source,
     {force, teamId, nextPhase, nextPhaseItem},
     {authToken, dataLoader, socketId: mutatorId}

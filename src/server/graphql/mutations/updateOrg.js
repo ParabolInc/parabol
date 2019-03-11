@@ -17,7 +17,7 @@ export default {
       description: 'the updated org including the id, and at least one other field'
     }
   },
-  async resolve(source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {updatedOrg}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

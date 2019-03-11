@@ -50,7 +50,7 @@ const ServiceDropdownInput = (props) => {
   return (
     <DropdownBlock>
       <FieldBlock>
-        <InputBlock tabIndex="1">
+        <InputBlock tabIndex='1'>
           <span>{dropdownText}</span>
           <LoadableDropdownMenu
             LoadableComponent={LoadableServiceDropdown}

@@ -34,7 +34,7 @@ export default {
       type: GraphQLID
     }
   },
-  async resolve(source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
+  async resolve (source, {reflectionId, dropTargetType, dropTargetId, dragId}, context) {
     const {authToken, dataLoader, socketId: mutatorId} = context
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}

@@ -23,7 +23,7 @@ const Body = (props) => {
   }
 
   return (
-    <table align={align} style={emailTableBase} width="100%">
+    <table align={align} style={emailTableBase} width='100%'>
       <tbody>
         <tr>
           <td align={align} style={cellStyle}>

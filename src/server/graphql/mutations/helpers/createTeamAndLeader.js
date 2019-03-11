@@ -25,7 +25,7 @@ import addTeamIdToTMS from 'server/safeMutations/addTeamIdToTMS'
 import {CREATED_TEAM} from 'server/graphql/types/TimelineEventTypeEnum'
 
 // used for addorg, addTeam
-export default async function createTeamAndLeader(userId, newTeam) {
+export default async function createTeamAndLeader (userId, newTeam) {
   const r = getRethink()
   const now = new Date()
   const {id: teamId, orgId} = newTeam

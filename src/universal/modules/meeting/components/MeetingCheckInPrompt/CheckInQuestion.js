@@ -56,7 +56,7 @@ class CheckInQuestion extends Component {
     team: PropTypes.object.isRequired
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     const {
       team: {checkInQuestion}
@@ -70,7 +70,7 @@ class CheckInQuestion extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       team: {checkInQuestion}
     } = nextProps
@@ -121,7 +121,7 @@ class CheckInQuestion extends Component {
     this.setEditorState(nextEditorState)
   }
 
-  render() {
+  render () {
     const {editorState} = this.state
     const isEditing = editorState.getSelection().getHasFocus()
     const tip = 'Tap to customize the Social Check-in question.'
@@ -140,7 +140,7 @@ class CheckInQuestion extends Component {
             <EditorInputWrapper
               editorState={editorState}
               setEditorState={this.setEditorState}
-              placehodler="e.g. How are you?"
+              placehodler='e.g. How are you?'
               innerRef={(c) => {
                 this.editorRef = c
               }}

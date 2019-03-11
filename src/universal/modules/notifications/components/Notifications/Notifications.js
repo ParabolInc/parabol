@@ -57,18 +57,18 @@ const Notifications = (props) => {
   }
 
   const clearAllButton = () => (
-    <ClearAllButton aria-label="Clear all notifications" onClick={clearAllNotifications}>
-      <IconLabel icon="check" iconAfter label="Clear All" />
+    <ClearAllButton aria-label='Clear all notifications' onClick={clearAllNotifications}>
+      <IconLabel icon='check' iconAfter label='Clear All' />
     </ClearAllButton>
   )
 
   return (
     <UserSettingsWrapper>
-      <Helmet title="My Notifications | Parabol" />
+      <Helmet title='My Notifications | Parabol' />
       <SettingsWrapper>
         <Panel
           compact
-          label="Notifications"
+          label='Notifications'
           controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}
         >
           {notifications && notifications.edges.length ? (

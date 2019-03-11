@@ -25,11 +25,11 @@ interface Props {
 }
 
 export default class StoryContainer extends Component<Props> {
-  componentWillMount() {
+  componentWillMount () {
     injectGlobal(globalStyles)
   }
 
-  render() {
+  render () {
     return (
       <Router>
         <DragDropContextProvider backend={HTML5Backend}>

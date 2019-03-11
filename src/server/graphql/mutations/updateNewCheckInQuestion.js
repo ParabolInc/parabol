@@ -20,7 +20,7 @@ export default {
       description: "The Team's new Check-in question"
     }
   },
-  async resolve(
+  async resolve (
     source,
     {meetingId, checkInQuestion},
     {authToken, dataLoader, socketId: mutatorId}

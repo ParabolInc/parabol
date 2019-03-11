@@ -38,7 +38,7 @@ const rootReducer = combineReducers({})
 const store = createStore(rootReducer)
 
 export default class StoryContainer extends Component<Props> {
-  componentWillMount() {
+  componentWillMount () {
     injectGlobal(globalStyles)
   }
 
@@ -54,7 +54,7 @@ export default class StoryContainer extends Component<Props> {
     return Boolean(description) && <div className={css(style)}>{description}</div>
   }
 
-  render() {
+  render () {
     return (
       <Provider store={store}>
         <RelayStub>

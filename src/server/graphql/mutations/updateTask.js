@@ -31,7 +31,7 @@ export default {
       description: 'the updated task including the id, and at least one other field'
     }
   },
-  async resolve(source, {area, updatedTask}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {area, updatedTask}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

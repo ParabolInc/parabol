@@ -17,11 +17,11 @@ class OutcomeCardAssignMenu extends Component {
     assignees: []
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.setAssignees(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       viewer: {
         team: {teamMembers, softTeamMembers}
@@ -37,7 +37,7 @@ class OutcomeCardAssignMenu extends Component {
     }
   }
 
-  setAssignees(props) {
+  setAssignees (props) {
     const {
       viewer: {
         team: {teamMembers, softTeamMembers}
@@ -76,7 +76,7 @@ class OutcomeCardAssignMenu extends Component {
     this.handleTaskUpdate(assignee.id)
   }
 
-  render() {
+  render () {
     const {closePortal, styles} = this.props
     const {assignees} = this.state
 

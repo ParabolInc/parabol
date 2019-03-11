@@ -22,7 +22,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(
+  async resolve (
     source,
     {isUnvote, reflectionGroupId},
     {authToken, dataLoader, socketId: mutatorId}

@@ -63,7 +63,7 @@ class BaseButton extends Component {
     waiting: PropTypes.bool
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       pressedDown: null
@@ -97,7 +97,7 @@ class BaseButton extends Component {
     }
   }
 
-  render() {
+  render () {
     const {
       'aria-label': ariaLabel,
       size = 'small',

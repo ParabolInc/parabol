@@ -42,7 +42,7 @@ class InlineEstimatedCost extends Component<Props> {
     })
   }
 
-  render() {
+  render () {
     const {activeUserCount} = this.props
     const {showCost} = this.state
     const estimatedCost = activeUserCount * MONTHLY_PRICE

@@ -21,7 +21,7 @@ export default {
       description: 'The new title for the group'
     }
   },
-  async resolve(source, {reflectionGroupId, title}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {reflectionGroupId, title}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

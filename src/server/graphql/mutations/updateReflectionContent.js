@@ -20,7 +20,7 @@ export default {
       description: 'A stringified draft-js document containing thoughts'
     }
   },
-  async resolve(source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {reflectionId, content}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

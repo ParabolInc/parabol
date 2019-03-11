@@ -17,7 +17,7 @@ export default {
       description: 'the user to pause'
     }
   },
-  async resolve(source, {userId}, {authToken}) {
+  async resolve (source, {userId}, {authToken}) {
     const r = getRethink()
     const viewerId = getUserId(authToken)
     // AUTH

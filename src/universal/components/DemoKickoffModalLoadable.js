@@ -11,7 +11,7 @@ import React from 'react'
 const DemoKickoffModalLoadable = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'DemoKickoffModal' */
-    'universal/components/DemoKickoffModal'),
+      'universal/components/DemoKickoffModal'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),

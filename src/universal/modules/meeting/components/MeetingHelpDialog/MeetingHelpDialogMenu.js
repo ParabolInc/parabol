@@ -51,7 +51,7 @@ const MeetingHelpDialogMenu = (props: Props) => {
 
   return (
     <DialogContent>
-      <DialogClose onClick={closePortal} title="Close help menu">
+      <DialogClose onClick={closePortal} title='Close help menu'>
         close
       </DialogClose>
       {phaseLabel && <h3>{phaseLabel}</h3>}

@@ -29,7 +29,7 @@ export default ({
       location: PropTypes.object.isRequired
     }
 
-    constructor(props) {
+    constructor (props) {
       super(props)
       const {
         atmosphere,
@@ -62,7 +62,7 @@ export default ({
       }
     }
 
-    render() {
+    render () {
       if (this.redir) return null
       return <ComposedComponent {...this.props} />
     }

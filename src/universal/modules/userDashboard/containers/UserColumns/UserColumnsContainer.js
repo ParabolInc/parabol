@@ -13,11 +13,11 @@ const mapStateToProps = (state) => {
 }
 
 class UserColumnsContainer extends Component {
-  componentWillMount() {
+  componentWillMount () {
     this.filterTasks(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       teamFilterId: oldFilter,
       viewer: {contentFilter: oldContentFilter, tasks: oldTasks}
@@ -31,7 +31,7 @@ class UserColumnsContainer extends Component {
     }
   }
 
-  filterTasks(props) {
+  filterTasks (props) {
     const {
       teamFilterId,
       viewer: {contentFilter, tasks}
@@ -39,9 +39,9 @@ class UserColumnsContainer extends Component {
     const contentFilterRegex = new RegExp(contentFilter, 'i')
     const contentFilteredEdges = contentFilter
       ? tasks.edges.filter(({node}) => {
-          const {contentText} = node
-          return contentText && node.contentText.match(contentFilterRegex)
-        })
+        const {contentText} = node
+        return contentText && node.contentText.match(contentFilterRegex)
+      })
       : tasks.edges
     const teamFilteredEdges = teamFilterId
       ? contentFilteredEdges.filter(({node}) => node.team.id === teamFilterId)
@@ -62,7 +62,7 @@ class UserColumnsContainer extends Component {
     })
   }
 
-  render() {
+  render () {
     const {
       userId,
       viewer: {teams, tasks: allTasks}

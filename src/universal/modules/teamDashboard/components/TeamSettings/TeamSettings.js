@@ -37,7 +37,7 @@ class TeamSettings extends Component {
     viewer: PropTypes.object.isRequired
   }
 
-  render() {
+  render () {
     const {
       history,
       viewer: {team}
@@ -62,7 +62,7 @@ class TeamSettings extends Component {
             </Panel>
           )}
           {viewerIsLead && (
-            <Panel label="Danger Zone">
+            <Panel label='Danger Zone'>
               <PanelRow>
                 <ArchiveTeamContainer team={team} />
               </PanelRow>

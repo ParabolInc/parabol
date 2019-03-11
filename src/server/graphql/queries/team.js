@@ -15,7 +15,7 @@ export default {
       description: 'The team ID for the desired team'
     }
   },
-  async resolve(source, {teamId}, {authToken, dataLoader}, info) {
+  async resolve (source, {teamId}, {authToken, dataLoader}, info) {
     if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
       const viewerId = getUserId(authToken)
       if (!HANDLED_OPS.includes(info.operation.name.value)) {

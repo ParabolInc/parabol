@@ -20,7 +20,7 @@ export default {
       type: new GraphQLNonNull(GraphQLFloat)
     }
   },
-  async resolve(
+  async resolve (
     source,
     {meetingId, stageId, sortOrder},
     {authToken, dataLoader, socketId: mutatorId}

@@ -54,27 +54,27 @@ const StandardHubUserMenu = (props: Props) => {
   return (
     <MenuWithShortcuts ariaLabel={'Select your settings'} closePortal={closePortal}>
       <DropdownMenuLabel>{email}</DropdownMenuLabel>
-      <MenuItemWithShortcuts icon="account_box" label="Profile" onClick={goToProfile} />
+      <MenuItemWithShortcuts icon='account_box' label='Profile' onClick={goToProfile} />
       <MenuItemWithShortcuts
-        icon="account_balance"
-        label="Organizations"
+        icon='account_balance'
+        label='Organizations'
         onClick={goToOrganizations}
       />
       <MenuItemWithShortcuts
-        icon="notifications"
-        label="Notifications"
+        icon='notifications'
+        label='Notifications'
         onClick={goToNotifications}
       />
-      {showUpgradeCTA && <MenuItemHR key="HR0" notMenuItem />}
+      {showUpgradeCTA && <MenuItemHR key='HR0' notMenuItem />}
       {showUpgradeCTA && (
         <MenuItemWithShortcuts
-          icon="star"
+          icon='star'
           label={makeUpgradeMenuLabel}
           onClick={handleUpgradeClick}
         />
       )}
-      <MenuItemHR key="HR1" notMenuItem />
-      <MenuItemWithShortcuts icon="exit_to_app" label={SIGNOUT_LABEL} onClick={signOut} />
+      <MenuItemHR key='HR1' notMenuItem />
+      <MenuItemWithShortcuts icon='exit_to_app' label={SIGNOUT_LABEL} onClick={signOut} />
     </MenuWithShortcuts>
   )
 }

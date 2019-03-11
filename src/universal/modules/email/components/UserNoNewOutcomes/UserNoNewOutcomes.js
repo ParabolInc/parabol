@@ -91,7 +91,7 @@ const UserNoNewOutcomes = (props) => {
   const makeMemberCells = (arr) => {
     const cells = () =>
       arr.map((member) => (
-        <td align="center" style={cellStyle} width={cellWidth} key={member.id}>
+        <td align='center' style={cellStyle} width={cellWidth} key={member.id}>
           <img height={avatarSize} src={member.picture} style={avatarStyles} width={avatarSize} />
           <div style={nameStyle}>{member.preferredName}</div>
           {member.present ? (
@@ -106,7 +106,7 @@ const UserNoNewOutcomes = (props) => {
 
   /* eslint-disable react/no-array-index-key */
   return (
-    <table align="center" style={ui.emailTableBase} width="100%">
+    <table align='center' style={ui.emailTableBase} width='100%'>
       <tbody>
         <tr>
           <td style={topBorderStyle}>
@@ -123,8 +123,8 @@ const UserNoNewOutcomes = (props) => {
         </tr>
         {members.length && (
           <tr>
-            <td align="center">
-              <table align="center" style={ui.emailTableBase}>
+            <td align='center'>
+              <table align='center' style={ui.emailTableBase}>
                 <tbody>
                   {memberCells.map((row, idx) => (
                     <tr key={`memberCell${idx}`}>{makeMemberCells(row)}</tr>

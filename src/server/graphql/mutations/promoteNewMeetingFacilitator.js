@@ -18,7 +18,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  async resolve(
+  async resolve (
     source,
     {facilitatorUserId, meetingId},
     {authToken, dataLoader, socketId: mutatorId}

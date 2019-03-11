@@ -74,7 +74,7 @@ const meetingGetters = {
   [RETROSPECTIVE]: getRetroMeeting
 }
 
-export default async function sendNewMeetingSummary(newMeeting) {
+export default async function sendNewMeetingSummary (newMeeting) {
   const {id: meetingId, meetingType, summarySentAt} = newMeeting
   const r = getRethink()
   if (summarySentAt) return

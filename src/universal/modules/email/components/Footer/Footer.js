@@ -25,7 +25,7 @@ const Footer = (props) => {
   }
 
   return (
-    <table width="100%" style={tableStyle}>
+    <table width='100%' style={tableStyle}>
       <tbody>
         <tr>
           <td>
@@ -40,17 +40,17 @@ const Footer = (props) => {
         </tr>
 
         <tr>
-          <td height="1" width="20" style={spaceStyle}>
+          <td height='1' width='20' style={spaceStyle}>
             &nbsp;
           </td>
 
           <td>
-            <table width="560">
+            <table width='560'>
               <tbody>
                 <tr>
                   <td style={cellStyles}>
                     <EmptySpace height={10} />
-                    <img src={`${emailDir}mark-color@3x.png`} height="28" width="31" />
+                    <img src={`${emailDir}mark-color@3x.png`} height='28' width='31' />
                     <EmptySpace height={10} />
                     Crafted with care by the folks at Parabol
                     <EmptySpace height={10} />
@@ -60,7 +60,7 @@ const Footer = (props) => {
             </table>
           </td>
 
-          <td height="1" width="20" style={spaceStyle}>
+          <td height='1' width='20' style={spaceStyle}>
             &nbsp;
           </td>
         </tr>

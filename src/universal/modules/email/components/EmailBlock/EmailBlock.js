@@ -31,7 +31,7 @@ const EmailBlock = (props) => {
   const backgroundColor = hasBackgroundColor ? emailBackgroundColor : emailBodyColor
   const maxWidth = innerMaxWidth || emailInnerMaxWidth
   return (
-    <table align={align} style={{...emailTableBase, backgroundColor}} width="100%">
+    <table align={align} style={{...emailTableBase, backgroundColor}} width='100%'>
       <tbody>
         <tr>
           <td align={align} style={cellStyle}>

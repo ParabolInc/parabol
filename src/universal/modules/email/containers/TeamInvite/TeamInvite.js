@@ -68,28 +68,28 @@ const TeamInvite = (props) => {
           }
         </p>
         <a
-          href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101"
+          href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
           style={videoLinkStyle}
-          title="Retro 101"
+          title='Retro 101'
         >
-          <img alt="" src={videoGraphicSrc} style={videoGraphicStyle} />
+          <img alt='' src={videoGraphicSrc} style={videoGraphicStyle} />
         </a>
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>
           {'Learn more about Parabol meetings:'}
           <br />
           <a
-            href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101"
+            href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
             style={emailLinkStyle}
-            title="Getting Started: Retro 101"
+            title='Getting Started: Retro 101'
           >
             {'Getting Started: Retro 101'}
           </a>
           <br />
           <a
-            href="https://www.parabol.co/getting-started-guide/action-meetings-101"
+            href='https://www.parabol.co/getting-started-guide/action-meetings-101'
             style={emailLinkStyle}
-            title="Leveling Up: Action 101"
+            title='Leveling Up: Action 101'
           >
             {'Leveling Up: Action 101'}
           </a>
@@ -99,7 +99,7 @@ const TeamInvite = (props) => {
           <br />
           {emailProductTeamSignature}
           <br />
-          <a href="mailto:love@parabol.co" style={emailLinkStyle} title="love@parabol.co">
+          <a href='mailto:love@parabol.co' style={emailLinkStyle} title='love@parabol.co'>
             {'love@parabol.co'}
           </a>
         </p>

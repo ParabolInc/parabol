@@ -17,7 +17,7 @@ export default {
       description: 'The teamMemberId of the person who is being removed'
     }
   },
-  async resolve(source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {teamMemberId}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 

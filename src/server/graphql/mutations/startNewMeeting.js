@@ -26,7 +26,7 @@ export default {
       description: 'The base type of the meeting (action, retro, etc)'
     }
   },
-  async resolve(source, {teamId, meetingType}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {teamId, meetingType}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

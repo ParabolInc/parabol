@@ -21,7 +21,7 @@ const billingLeadersOnly = (users, orgId) =>
     return list
   }, [])
 
-export default function notificationTemplate(template) {
+export default function notificationTemplate (template) {
   const {type} = template
   if (type === PROMOTE_TO_BILLING_LEADER) {
     return {

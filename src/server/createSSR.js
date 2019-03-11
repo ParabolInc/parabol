@@ -44,6 +44,6 @@ const finalHTML = html
   .replace('</head>', `${extraHead}</head>`)
   .replace('</body>', `${extraBody}</body>`)
 
-export default function createSSR(req, res) {
+export default function createSSR (req, res) {
   res.send(finalHTML)
 }

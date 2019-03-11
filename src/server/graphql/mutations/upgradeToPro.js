@@ -24,7 +24,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()
@@ -57,11 +57,11 @@ export default {
     const customer = stripeId
       ? await stripe.customers.update(stripeId, {source: stripeToken})
       : await stripe.customers.create({
-          source: stripeToken,
-          metadata: {
-            orgId
-          }
-        })
+        source: stripeToken,
+        metadata: {
+          orgId
+        }
+      })
 
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,

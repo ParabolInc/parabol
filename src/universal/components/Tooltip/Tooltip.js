@@ -59,7 +59,7 @@ class Tooltip extends Component {
     setOriginRef: PropTypes.func.isRequired
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.delayOpen = null
   }
@@ -71,11 +71,11 @@ class Tooltip extends Component {
     canClose: false
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.props.setOriginRef(this.childRef)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {isOpen, setOriginRef} = nextProps
     if (this.props.isOpen !== isOpen) {
       if (isOpen) {
@@ -88,7 +88,7 @@ class Tooltip extends Component {
     }
   }
 
-  makeSmartChildren() {
+  makeSmartChildren () {
     const {delay, setOriginRef, children, hideOnFocus} = this.props
     const child = Children.only(children)
     if (typeof this.props.isOpen === 'boolean') return child
@@ -158,7 +158,7 @@ class Tooltip extends Component {
   }
 
   // this is useful if the tooltip is positioned over the toggle due to small screens, etc.
-  makeSmartTip() {
+  makeSmartTip () {
     const {tip} = this.props
     const {isClosing} = this.state
     return cloneElement(tip, {
@@ -207,7 +207,7 @@ class Tooltip extends Component {
     this.modalRef = c
   }
 
-  render() {
+  render () {
     const {coords, isDisabled} = this.props
     const {inTip, inToggle, isClosing} = this.state
     const isOpen = inTip || inToggle || isClosing || this.props.isOpen

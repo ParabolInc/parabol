@@ -13,7 +13,7 @@ export default {
       description: 'should organizations without active users be included?'
     }
   },
-  async resolve(source, {includeInactive}, {authToken}) {
+  async resolve (source, {includeInactive}, {authToken}) {
     const r = getRethink()
 
     // AUTH

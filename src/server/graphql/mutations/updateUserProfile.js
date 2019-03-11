@@ -20,7 +20,7 @@ const updateUserProfile = {
       description: 'The input object containing the user profile fields that can be changed'
     }
   },
-  async resolve(source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {updatedUser}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

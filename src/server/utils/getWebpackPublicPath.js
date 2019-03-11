@@ -8,7 +8,7 @@ getDotenv()
 
 const APP_VERSION = process.env.npm_package_version
 
-export default function getWebpackPublicPath() {
+export default function getWebpackPublicPath () {
   if (
     typeof process !== 'undefined' &&
     process.env.CDN_BASE_URL &&

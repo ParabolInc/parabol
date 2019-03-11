@@ -11,7 +11,7 @@ export default {
       description: 'The unique team ID'
     }
   },
-  async resolve(source, {teamId}, {authToken}) {
+  async resolve (source, {teamId}, {authToken}) {
     const r = getRethink()
     const viewerId = getUserId(authToken)
 

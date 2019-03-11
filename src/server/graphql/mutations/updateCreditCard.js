@@ -21,7 +21,7 @@ export default {
       description: 'The token that came back from stripe'
     }
   },
-  async resolve(source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {orgId, stripeToken}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const r = getRethink()

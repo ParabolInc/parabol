@@ -14,12 +14,12 @@ const cellStyle = {
 
 const Header = () => {
   return (
-    <table style={emailTableBase} width="100%">
+    <table style={emailTableBase} width='100%'>
       <tbody>
         <tr>
-          <td align="left" style={cellStyle}>
+          <td align='left' style={cellStyle}>
             <img
-              alt="Parabol, Inc. Logo"
+              alt='Parabol, Inc. Logo'
               height={40}
               src={`${emailDir}email-header-branding-color@3x.png`}
               style={imageStyle}

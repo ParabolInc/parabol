@@ -70,7 +70,7 @@ const UserTasks = (props) => {
   const makeTaskGroup = (taskArr, label, space) => (
     <tr>
       <td>
-        <table style={emailTableBase} align="center" width="100%">
+        <table style={emailTableBase} align='center' width='100%'>
           <tbody>
             <tr>
               <td style={userStats}>
@@ -78,7 +78,7 @@ const UserTasks = (props) => {
               </td>
             </tr>
             <tr>
-              <td align="center" style={cardsCell}>
+              <td align='center' style={cardsCell}>
                 <TasksTable tasks={taskArr} />
                 <EmptySpace height={space} />
               </td>
@@ -90,12 +90,12 @@ const UserTasks = (props) => {
   )
 
   return (
-    <table style={emailTableBase} align="center" width="100%">
+    <table style={emailTableBase} align='center' width='100%'>
       <tbody>
         <tr>
           <td style={topBorderStyle}>
             <EmptySpace height={24} />
-            <img height="80" src={picture} style={avatarStyles} width="80" />
+            <img height='80' src={picture} style={avatarStyles} width='80' />
             <div style={nameStyle}>{preferredName}</div>
             <div style={presentLabelStyles}>{presentLabel}</div>
             <EmptySpace height={8} />

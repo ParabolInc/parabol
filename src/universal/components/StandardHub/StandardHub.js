@@ -116,7 +116,7 @@ const StandardHub = (props) => {
   return (
     <StandardHubRoot>
       <User>
-        <Avatar hasBadge={false} picture={userAvatar} size="smaller" />
+        <Avatar hasBadge={false} picture={userAvatar} size='smaller' />
         <PreferredName>
           <span>{preferredName}</span>
         </PreferredName>
@@ -135,7 +135,7 @@ const StandardHub = (props) => {
       <NavLink
         activeClassName={css(notificationsActive)}
         className={navLinkStyles}
-        to="/me/notifications"
+        to='/me/notifications'
       >
         <NotificationIcon>notifications</NotificationIcon>
         {notificationsCount > 0 && (

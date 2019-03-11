@@ -2,7 +2,7 @@ import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocal
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import NewMeeting from 'universal/components/NewMeeting'
+import NewMeetingWithSwarm from 'universal/components/NewMeetingWithSwarm'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -43,7 +43,7 @@ type State = {
 }
 
 class NewMeetingWithLocalState extends Component<Props, State> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props)
     const safeRoute = this.updateRelayFromURL(props.match.params)
     this.state = {
@@ -51,7 +51,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       viewer: {
         team: {newMeeting}
@@ -86,7 +86,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     }
   }
 
-  updateRelayFromURL(params: Params) {
+  updateRelayFromURL (params: Params) {
     /*
      * Computing location depends on 3 binary variables: going to lobby, local stage exists (exit/reenter), meeting is active
      * the additional logic here has 2 benefits:
@@ -180,8 +180,8 @@ class NewMeetingWithLocalState extends Component<Props, State> {
     return true
   }
 
-  render() {
-    return this.state.safeRoute ? <NewMeeting {...this.props} /> : null
+  render () {
+    return this.state.safeRoute ? <NewMeetingWithSwarm {...this.props} /> : null
   }
 }
 

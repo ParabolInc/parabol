@@ -89,7 +89,7 @@ const RetroDiscussionTopic = (props: Props) => {
   const icon = imageSource === 'local' ? 'thumb_up_18.svg' : 'thumb_up_18@3x.png'
   const src = `${emailDir}${icon}`
   return (
-    <table style={tableStyle} width="100%">
+    <table style={tableStyle} width='100%'>
       <tbody>
         <tr>
           <td>
@@ -99,7 +99,7 @@ const RetroDiscussionTopic = (props: Props) => {
         </tr>
         <tr>
           <td style={votesBlock}>
-            <img height="18" src={src} style={voteIcon} width="18" />
+            <img height='18' src={src} style={voteIcon} width='18' />
             <div style={voteCountLabel}>{voteCount}</div>
           </td>
         </tr>

@@ -157,7 +157,7 @@ const SummaryEmail = (props) => {
   return (
     <Layout>
       {referrer === 'email' && (
-        <table style={emailTableBase} width="100%">
+        <table style={emailTableBase} width='100%'>
           <tbody>
             <tr>
               <td style={bannerStyle}>
@@ -177,10 +177,10 @@ const SummaryEmail = (props) => {
       )}
       <div style={referrer !== 'email' ? sheetStyle : undefined}>
         <Body>
-          <table align="center" style={emailTableBase} width="100%">
+          <table align='center' style={emailTableBase} width='100%'>
             <tbody>
               <tr>
-                <td align="center" style={{padding: 0}}>
+                <td align='center' style={{padding: 0}}>
                   {/* Summary Header */}
                   <SummaryHeader
                     createdAt={createdAt}
@@ -193,7 +193,7 @@ const SummaryEmail = (props) => {
                 </td>
               </tr>
               <tr>
-                <td align="center" style={quickStatsBlock}>
+                <td align='center' style={quickStatsBlock}>
                   {/* Quick Stats */}
                   <QuickStats
                     agendaItems={agendaItemsCompleted}
@@ -228,10 +228,10 @@ const SummaryEmail = (props) => {
           <EmptySpace height={0} />
           {/* Show this tip for the first 3 summaries. */}
           {meetingNumber < 4 && (
-            <table align="center" style={emailTableBase} width="100%">
+            <table align='center' style={emailTableBase} width='100%'>
               <tbody>
                 <tr>
-                  <td align="center" style={{padding: 0}}>
+                  <td align='center' style={{padding: 0}}>
                     <hr style={ruleStyle} />
                     <EmptySpace height={32} />
                     <div style={tipStyle}>
@@ -252,10 +252,10 @@ const SummaryEmail = (props) => {
           <EmptySpace height={48} />
           {/* First-time prompt to schedule recurring meeting */}
           {meetingNumber === 1 ? (
-            <table align="center" style={emailTableBase} width="100%">
+            <table align='center' style={emailTableBase} width='100%'>
               <tbody>
                 <tr>
-                  <td align="center" style={{padding: 0}}>
+                  <td align='center' style={{padding: 0}}>
                     <div style={message}>
                       <div style={greetingStyles}>{makeSuccessExpression()}!</div>
                       {`Way to go on your first ${MEETING_NAME}!
@@ -269,9 +269,9 @@ const SummaryEmail = (props) => {
                         <div style={iconLinkBlock}>
                           <a
                             href={createGoogleCalendarInviteURL(createdAt, meetingUrl, teamName)}
-                            rel="noopener noreferrer"
+                            rel='noopener noreferrer'
                             style={iconLink}
-                            target="_blank"
+                            target='_blank'
                           >
                             <img
                               style={iconLinkIcon}
@@ -285,9 +285,9 @@ const SummaryEmail = (props) => {
                         <div style={iconLinkBlock}>
                           <a
                             href={makeIcsUrl(createdAt, meetingUrl, teamName)}
-                            rel="noopener noreferrer"
+                            rel='noopener noreferrer'
                             style={iconLink}
-                            target="_blank"
+                            target='_blank'
                           >
                             <img
                               style={iconLinkIcon}
@@ -301,10 +301,10 @@ const SummaryEmail = (props) => {
                       </div>
                       {'Or, make your own and include this link as the location:'}
                       <EmptySpace height={8} />
-                      <table align="center" style={meetingLinkTable} width="80%">
+                      <table align='center' style={meetingLinkTable} width='80%'>
                         <tbody>
                           <tr>
-                            <td align="center" style={meetingLinkBlock}>
+                            <td align='center' style={meetingLinkBlock}>
                               <a href={meetingUrl} style={meetingLink}>
                                 {meetingUrl}
                               </a>
@@ -327,9 +327,9 @@ const SummaryEmail = (props) => {
                     Did our software give you trouble?
                     Let us know: `}
                   <a
-                    href="mailto:love@parabol.co"
+                    href='mailto:love@parabol.co'
                     style={linkStyles}
-                    title="Email us at: love@parabol.co"
+                    title='Email us at: love@parabol.co'
                   >
                     love@parabol.co
                   </a>
@@ -340,7 +340,7 @@ const SummaryEmail = (props) => {
                   hasLearningLink
                   lineHeight={1.5}
                   prompt={`How’d your ${MEETING_NAME} go?`}
-                  tagline="We’re eager for your feedback!"
+                  tagline='We’re eager for your feedback!'
                   vSpacing={0}
                 />
               )}

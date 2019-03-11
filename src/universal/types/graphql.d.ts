@@ -7137,7 +7137,7 @@ export interface IAuthToken {
   /**
    * teams. a list of teamIds where the user is active
    */
-  tms: Array<string | null> | null
+  tms: Array<string> | null
 }
 
 /**

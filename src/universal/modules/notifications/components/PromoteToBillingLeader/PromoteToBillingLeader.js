@@ -40,7 +40,7 @@ const PromoteToBillingLeader = (props) => {
 
   return (
     <Row compact>
-      <IconAvatar icon="account_balance" size="small" />
+      <IconAvatar icon='account_balance' size='small' />
       <div className={css(defaultStyles.message)}>
         {'You are now a '}
         <b>
@@ -54,10 +54,10 @@ const PromoteToBillingLeader = (props) => {
       </div>
       <div className={css(defaultStyles.widerButton)}>
         <StyledButton
-          aria-label="Go to the Organization page"
+          aria-label='Go to the Organization page'
           size={ui.notificationButtonSize}
           onClick={goToOrg}
-          palette="warm"
+          palette='warm'
           waiting={submitting}
         >
           {'See Organization'}

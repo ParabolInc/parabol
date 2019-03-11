@@ -19,7 +19,7 @@ export default {
       type: new GraphQLNonNull(GraphQLBoolean)
     }
   },
-  async resolve(source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {phaseItemId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}

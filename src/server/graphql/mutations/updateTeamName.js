@@ -16,7 +16,7 @@ export default {
       description: 'The input object containing the teamId and any modified fields'
     }
   },
-  async resolve(source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {updatedTeam}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const now = new Date()
     const operationId = dataLoader.share()

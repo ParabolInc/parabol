@@ -59,7 +59,7 @@ type State = {
 }
 
 class NewCheckInQuestion extends Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const checkInQuestion = getCheckInQuestion(props)
     const contentState = convertFromRaw(JSON.parse(checkInQuestion))
@@ -71,7 +71,7 @@ class NewCheckInQuestion extends Component<Props, State> {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const checkInQuestion = getCheckInQuestion(nextProps)
     const oldCheckInQuestion = getCheckInQuestion(this.props)
     if (checkInQuestion !== oldCheckInQuestion) {
@@ -125,7 +125,7 @@ class NewCheckInQuestion extends Component<Props, State> {
     this.setEditorState(nextEditorState)
   }
 
-  render() {
+  render () {
     const {
       team: {newMeeting}
     } = this.props
@@ -149,7 +149,7 @@ class NewCheckInQuestion extends Component<Props, State> {
             <EditorInputWrapper
               editorState={editorState}
               setEditorState={this.setEditorState}
-              placehodler="e.g. How are you?"
+              placehodler='e.g. How are you?'
               innerRef={(c) => {
                 this.editorRef = c
               }}

@@ -16,7 +16,7 @@ export default {
       description: 'The taskId to delete'
     }
   },
-  async resolve(source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {taskId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

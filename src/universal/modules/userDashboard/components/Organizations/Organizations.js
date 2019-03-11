@@ -18,17 +18,17 @@ const Organizations = (props) => {
     history.push('/newteam')
   }
   const addNewOrg = () => (
-    <LinkButton aria-label="Tap to create a new organzation" onClick={gotoNewTeam}>
-      <IconLabel icon="add_circle" label="Add New Organization" />
+    <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam}>
+      <IconLabel icon='add_circle' label='Add New Organization' />
     </LinkButton>
   )
 
   return (
     <UserSettingsWrapper>
-      <Helmet title="My Organizations | Parabol" />
+      <Helmet title='My Organizations | Parabol' />
       <SettingsWrapper>
         {organizations.length ? (
-          <Panel label="Organizations" controls={addNewOrg()}>
+          <Panel label='Organizations' controls={addNewOrg()}>
             {organizations.map((organization) => (
               <OrganizationRow key={`orgRow${organization.id}`} organization={organization} />
             ))}

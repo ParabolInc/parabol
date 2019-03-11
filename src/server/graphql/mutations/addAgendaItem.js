@@ -18,7 +18,7 @@ export default {
       description: 'The new task including an id, teamMemberId, and content'
     }
   },
-  async resolve(source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {newAgendaItem}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

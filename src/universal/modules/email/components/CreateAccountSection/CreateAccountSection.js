@@ -94,7 +94,7 @@ const CreateAccountSection = () => {
   return (
     <div style={{padding: '0 16px'}}>
       <EmptySpace height={32} />
-      <table style={tableStyle} width="100%">
+      <table style={tableStyle} width='100%'>
         <tbody>
           <tr>
             <td style={blockStyle}>

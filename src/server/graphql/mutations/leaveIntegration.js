@@ -17,7 +17,7 @@ export default {
       description: 'the id of the integration to remove'
     }
   },
-  async resolve(source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {globalId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink()
     const {id: localId, type: service} = fromGlobalId(globalId)
 

@@ -40,14 +40,14 @@ class MenuItemWithShortcuts extends Component {
     title: PropTypes.string
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {isActive} = this.props
     if (isActive && this.itemRef) {
       this.itemRef.scrollIntoViewIfNeeded()
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {isActive} = nextProps
     if (isActive && !this.props.isActive && this.itemRef) {
       this.itemRef.scrollIntoViewIfNeeded()
@@ -66,7 +66,7 @@ class MenuItemWithShortcuts extends Component {
     }
   }
 
-  render() {
+  render () {
     const {
       avatar,
       children,
@@ -92,7 +92,7 @@ class MenuItemWithShortcuts extends Component {
     return (
       <MenuItem
         isActive={isActive}
-        role="menuitem"
+        role='menuitem'
         title={titleStr}
         innerRef={(c) => {
           this.itemRef = c

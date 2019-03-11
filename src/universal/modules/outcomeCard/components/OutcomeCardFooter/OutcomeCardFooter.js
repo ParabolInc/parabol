@@ -145,7 +145,7 @@ const StyledIcon = styled(StyledFontAwesome)({
 const LoadableAssignMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
-    'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'),
+      'universal/modules/outcomeCard/components/OutcomeCardAssignMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -156,7 +156,7 @@ const LoadableAssignMenu = Loadable({
 const LoadableAssignTeamMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'OutcomeCardAssignMenuRoot' */
-    'universal/modules/outcomeCard/components/OutcomeCardAssignTeamMenuRoot'),
+      'universal/modules/outcomeCard/components/OutcomeCardAssignTeamMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -167,7 +167,7 @@ const LoadableAssignTeamMenu = Loadable({
 const LoadableStatusMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'OutcomeCardStatusMenu' */
-    'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'),
+      'universal/modules/outcomeCard/components/OutcomeCardStatusMenu/OutcomeCardStatusMenu'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -178,7 +178,7 @@ const LoadableStatusMenu = Loadable({
 const LoadableGitHubMenu = Loadable({
   loader: () =>
     import(/* webpackChunkName: 'GitHubReposMenuRoot' */
-    'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'),
+      'universal/containers/GitHubReposMenuRoot/GitHubReposMenuRoot'),
   loading: (props) => (
     <LoadableLoading {...props} height={DEFAULT_MENU_HEIGHT} width={DEFAULT_MENU_WIDTH} />
   ),
@@ -207,7 +207,7 @@ const assignTargetAnchor = {
 }
 
 class OutcomeCardFooter extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.setError = setError.bind(this)
     this.clearError = clearError.bind(this)
@@ -231,7 +231,7 @@ class OutcomeCardFooter extends Component {
     UpdateTaskMutation(atmosphere, updatedTask, area)
   }
 
-  render() {
+  render () {
     const {
       area,
       cardIsActive,
@@ -250,13 +250,13 @@ class OutcomeCardFooter extends Component {
     const {error} = this.state
     const ownerAvatarOrTeamName = showTeam ? (
       <TeamToggleButton
-        aria-label="Assign this task to another team"
+        aria-label='Assign this task to another team'
         onClick={this.selectAllQuestion}
       >
         {teamName}
       </TeamToggleButton>
     ) : (
-      <AvatarButton aria-label="Assign this task to a teammate">
+      <AvatarButton aria-label='Assign this task to a teammate'>
         <Avatar cardIsActive={cardIsActive}>
           <AvatarImage
             alt={assignee.preferredName}
@@ -313,7 +313,7 @@ class OutcomeCardFooter extends Component {
           <ButtonGroup cardIsActive={cardIsActive}>
             {isArchived ? (
               <CardButton onClick={this.removeContentTag('archived')}>
-                <IconLabel icon="reply" />
+                <IconLabel icon='reply' />
               </CardButton>
             ) : (
               <React.Fragment>
@@ -335,7 +335,7 @@ class OutcomeCardFooter extends Component {
                     targetAnchor={targetAnchor}
                     toggle={
                       <CardButton>
-                        <StyledIcon name="github" />
+                        <StyledIcon name='github' />
                       </CardButton>
                     }
                     onOpen={toggleMenuState}
@@ -360,7 +360,7 @@ class OutcomeCardFooter extends Component {
                   targetAnchor={targetAnchor}
                   toggle={
                     <CardButton>
-                      <IconLabel icon="more_vert" />
+                      <IconLabel icon='more_vert' />
                     </CardButton>
                   }
                   onOpen={toggleMenuState}

@@ -108,7 +108,7 @@ const TeamMember = new GraphQLObjectType({
     user: {
       type: new GraphQLNonNull(User),
       description: 'The user for the team member',
-      resolve({userId}, args, {dataLoader}) {
+      resolve ({userId}, args, {dataLoader}) {
         return dataLoader.get('users').load(userId)
       }
     },

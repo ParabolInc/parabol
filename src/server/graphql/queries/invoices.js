@@ -22,7 +22,7 @@ export default {
       description: 'The id of the organization'
     }
   },
-  async resolve(source, {orgId, first, after}, {authToken, dataLoader}) {
+  async resolve (source, {orgId, first, after}, {authToken, dataLoader}) {
     const r = getRethink()
 
     // AUTH

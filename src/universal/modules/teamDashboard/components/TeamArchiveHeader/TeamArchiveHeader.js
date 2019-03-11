@@ -17,8 +17,8 @@ const TeamArchiveHeader = (props) => {
   const goToTeamDash = () => history.push(`/team/${teamId}/`)
   return (
     <RootBlock>
-      <DashSectionHeading icon="archive" label="Archived Tasks" margin="0 2rem 0 0" />
-      <DashNavControl icon="arrow_back" label="Back to Team Tasks" onClick={goToTeamDash} />
+      <DashSectionHeading icon='archive' label='Archived Tasks' margin='0 2rem 0 0' />
+      <DashNavControl icon='arrow_back' label='Back to Team Tasks' onClick={goToTeamDash} />
     </RootBlock>
   )
 }

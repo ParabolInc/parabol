@@ -57,11 +57,11 @@ const StyledBottomBar = styled(MeetingControlBar)({
 class MeetingAgendaItems extends Component {
   state = {agendaTasks: []}
 
-  componentWillMount() {
+  componentWillMount () {
     this.makeAgendaTasks(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       viewer: {tasks: oldTasks},
       localPhaseItem: oldLocalPhaseItem
@@ -75,7 +75,7 @@ class MeetingAgendaItems extends Component {
     }
   }
 
-  makeAgendaTasks(props) {
+  makeAgendaTasks (props) {
     const {
       localPhaseItem,
       viewer: {
@@ -94,7 +94,7 @@ class MeetingAgendaItems extends Component {
     })
   }
 
-  render() {
+  render () {
     const {
       atmosphere,
       history,
@@ -154,13 +154,13 @@ class MeetingAgendaItems extends Component {
         {showMoveMeetingControls && (
           <StyledBottomBar>
             <BottomControlSpacer />
-            <BounceBlock animationDelay="120s" key={`agendaItem${localPhaseItem}buttonAnimation`}>
+            <BounceBlock animationDelay='120s' key={`agendaItem${localPhaseItem}buttonAnimation`}>
               <BottomNavControl key={`agendaItem${localPhaseItem}`} onClick={gotoNext}>
-                <BottomNavIconLabel icon="arrow_forward" iconColor="warm" label="Next Topic" />
+                <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label='Next Topic' />
               </BottomNavControl>
             </BounceBlock>
             <BottomNavControl onClick={endMeeting}>
-              <BottomNavIconLabel icon="flag" iconColor="blue" label={'End Meeting'} />
+              <BottomNavIconLabel icon='flag' iconColor='blue' label={'End Meeting'} />
             </BottomNavControl>
           </StyledBottomBar>
         )}

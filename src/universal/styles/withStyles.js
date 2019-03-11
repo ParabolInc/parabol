@@ -20,7 +20,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
   return class WithStyles extends Component {
     static displayName = `WithStyles(${getDisplayName(WrappedComponent)}`
 
-    constructor(props, context) {
+    constructor (props, context) {
       super(props, context)
       this.styles = StyleSheet.create(mapThemeToStyles({}, props))
       contextMap.set(mapThemeToStyles, {
@@ -29,7 +29,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
       })
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps (nextProps) {
       // if the thunk looks for the props && we declare that the props should update styles
       if (mapThemeToStyles.length > 1 && Array.isArray(invalidatingProps)) {
         if (propsTriggeredInvalidation(invalidatingProps, this.props, nextProps)) {
@@ -38,7 +38,7 @@ const withStyles = (mapThemeToStyles, invalidatingProps) => (WrappedComponent) =
       }
     }
 
-    render() {
+    render () {
       const entry = contextMap.get(mapThemeToStyles)
       const oldContext = entry && entry.context
       if (oldContext !== this.context.theme) {

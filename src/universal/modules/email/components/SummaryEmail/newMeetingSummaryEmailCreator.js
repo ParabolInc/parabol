@@ -31,7 +31,7 @@ const newMeetingSummaryEmailCreator = (props) => {
         emailCSVLUrl={emailCSVLUrl}
         meeting={meeting}
         meetingUrl={meetingUrl}
-        referrer="email"
+        referrer='email'
         referrerUrl={referrerUrl}
         teamDashUrl={teamDashUrl}
       />,

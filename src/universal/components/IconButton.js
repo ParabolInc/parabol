@@ -16,7 +16,7 @@ const StyledIcon = styled(Icon)(({iconLarge}) => ({
 const IconButton = (props) => {
   const {icon, iconLarge} = props
   return (
-    <StyledButton {...props} type="button">
+    <StyledButton {...props} type='button'>
       <StyledIcon iconLarge={iconLarge}>{icon}</StyledIcon>
     </StyledButton>
   )

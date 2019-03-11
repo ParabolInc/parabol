@@ -17,7 +17,7 @@ const OutcomeCardMessage = (props) => {
       <div className={messageInnerStyles}>
         {message}
         {onClose && (
-          <div className={css(styles.messageClose)} onClick={onClose} tabIndex="0">
+          <div className={css(styles.messageClose)} onClick={onClose} tabIndex='0'>
             <Icon className={css(styles.messageCloseIcon)}>close</Icon>
           </div>
         )}

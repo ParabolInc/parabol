@@ -20,7 +20,7 @@ const segmentSnippet =
   })
 
 // Injects the server rendered state and app into a basic html template
-export default function Html({store, assets, clientIds}) {
+export default function Html ({store, assets, clientIds}) {
   // const ActionContainer = require('../../build/prerender');
   const {default: ActionContainer, Atmosphere, EmotionServer} = require('../../build/prerender')
   const {manifest, app, vendor} = assets
@@ -54,13 +54,13 @@ export default function Html({store, assets, clientIds}) {
     <html>
       <head>
         <style dangerouslySetInnerHTML={{__html: critical.css}} />
-        <link rel="stylesheet" type="text/css" href={fontAwesomeUrl} />
+        <link rel='stylesheet' type='text/css' href={fontAwesomeUrl} />
         {/* segment.io analytics */}
-        <script type="text/javascript" dangerouslySetInnerHTML={{__html: segmentSnippet}} />
+        <script type='text/javascript' dangerouslySetInnerHTML={{__html: segmentSnippet}} />
         <script dangerouslySetInnerHTML={{__html: dehydratedClientIds}} />
       </head>
       <body>
-        <div id="root" dangerouslySetInnerHTML={{__html: critical.html}} />
+        <div id='root' dangerouslySetInnerHTML={{__html: critical.html}} />
         <script dangerouslySetInnerHTML={{__html: dehydratedStyles}} />
         <script dangerouslySetInnerHTML={{__html: manifest.text}} />
         <script src={`${webpackPublicPath}${vendor.js}`} />

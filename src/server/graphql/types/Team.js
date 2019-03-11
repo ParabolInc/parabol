@@ -167,7 +167,7 @@ const Team = new GraphQLObjectType({
     agendaItems: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
       description: 'The agenda items for the upcoming or current meeting',
-      async resolve({id: teamId}, args, {dataLoader}) {
+      async resolve ({id: teamId}, args, {dataLoader}) {
         const agendaItems = await dataLoader.get('agendaItemsByTeamId').load(teamId)
         agendaItems.sort((a, b) => (a.sortOrder > b.sortOrder ? 1 : -1))
         return agendaItems
@@ -183,7 +183,7 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All of the tasks for this team',
-      async resolve({id: teamId}, args, {authToken, dataLoader}) {
+      async resolve ({id: teamId}, args, {authToken, dataLoader}) {
         if (!isTeamMember(authToken, teamId)) {
           standardError(new Error('Team not found'))
           return null
@@ -195,7 +195,7 @@ const Team = new GraphQLObjectType({
     softTeamMembers: {
       type: new GraphQLList(SoftTeamMember),
       description: 'All the soft team members actively associated with the team',
-      async resolve({id: teamId}, args, {dataLoader}) {
+      async resolve ({id: teamId}, args, {dataLoader}) {
         const softTeamMembers = await dataLoader.get('softTeamMembersByTeamId').load(teamId)
         softTeamMembers.sort((a, b) => (a.preferredName > b.preferredName ? 1 : -1))
         return softTeamMembers
@@ -210,7 +210,7 @@ const Team = new GraphQLObjectType({
         }
       },
       description: 'All the team members actively associated with the team',
-      async resolve({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
+      async resolve ({id: teamId}, {sortBy = 'preferredName'}, {dataLoader}) {
         const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
         teamMembers.sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1))
         return teamMembers

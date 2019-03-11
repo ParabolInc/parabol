@@ -15,8 +15,8 @@ const RejoinButton = styled(FloatingActionButton)({
 const RejoinFacilitatorButton = (props) => {
   const {onClickHandler} = props
   return (
-    <RejoinButton onClick={onClickHandler} palette="warm">
-      <IconLabel icon="person_pin_circle" label="Rejoin Facilitator" />
+    <RejoinButton onClick={onClickHandler} palette='warm'>
+      <IconLabel icon='person_pin_circle' label='Rejoin Facilitator' />
     </RejoinButton>
   )
 }

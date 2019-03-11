@@ -24,7 +24,7 @@ const PaymentRejected = (props) => {
   }
   return (
     <Row compact>
-      <IconAvatar icon="credit_card" size="small" />
+      <IconAvatar icon='credit_card' size='small' />
       <div className={css(defaultStyles.message)}>
         {'Your '}
         <b>{brand}</b>
@@ -36,10 +36,10 @@ const PaymentRejected = (props) => {
       </div>
       <div className={css(defaultStyles.widestButton)}>
         <StyledButton
-          aria-label="Go to the billing page to update billing information"
+          aria-label='Go to the billing page to update billing information'
           size={ui.notificationButtonSize}
           onClick={addBilling}
-          palette="warm"
+          palette='warm'
         >
           {'See Billing'}
         </StyledButton>

@@ -12,10 +12,10 @@ const StyledButton = styled(IconButton)({
 const SidebarToggle = (props) => (
   <StyledButton
     {...props}
-    aria-label="Toggle the sidebar"
-    icon="menu"
+    aria-label='Toggle the sidebar'
+    icon='menu'
     iconLarge
-    palette="midGray"
+    palette='midGray'
   />
 )
 

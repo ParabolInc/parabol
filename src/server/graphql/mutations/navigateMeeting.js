@@ -27,7 +27,7 @@ export default {
       description: 'The meeting ID'
     }
   },
-  async resolve(
+  async resolve (
     source,
     {completedStageId, facilitatorStageId, meetingId},
     {authToken, socketId: mutatorId, dataLoader}

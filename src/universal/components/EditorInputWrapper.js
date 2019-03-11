@@ -115,7 +115,7 @@ class EditorInputWrapper extends Component {
     return 'not-handled'
   }
 
-  render() {
+  render () {
     const {ariaLabel, editorState, onBlur, placeholder, readOnly, innerRef} = this.props
     return (
       <Editor

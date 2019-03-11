@@ -98,12 +98,12 @@ const Invoice = (props) => {
         {status === FAILED && <div className={css(styles.failedStamp)}>{'Payment Failed'}</div>}
         {status === UPCOMING && (
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette="light" label="Current Estimation" />
+            <Tag colorPalette='light' label='Current Estimation' />
           </div>
         )}
         {status === PENDING && (
           <div className={css(styles.tagBlock)}>
-            <Tag colorPalette="gray" label="Payment Processing" />
+            <Tag colorPalette='gray' label='Payment Processing' />
           </div>
         )}
         <div className={css(styles.label)}>{'Invoice'}</div>

@@ -219,7 +219,7 @@ const User = new GraphQLObjectType({
           description: 'The meeting ID'
         }
       },
-      async resolve(source, {meetingId}, {authToken, dataLoader}) {
+      async resolve (source, {meetingId}, {authToken, dataLoader}) {
         const meeting = await dataLoader.get('meetings').load(meetingId)
         const viewerId = getUserId(authToken)
         if (!meeting) {
@@ -316,7 +316,7 @@ const User = new GraphQLObjectType({
     organizations: {
       description: 'Get the list of all organizations a user belongs to',
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Organization))),
-      async resolve({id: userId}, args, {authToken, dataLoader}) {
+      async resolve ({id: userId}, args, {authToken, dataLoader}) {
         const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
         const orgIds = organizationUsers.map(({orgId}) => orgId)
         const organizations = await dataLoader.get('organizations').loadMany(orgIds)

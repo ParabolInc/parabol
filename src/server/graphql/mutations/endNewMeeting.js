@@ -21,7 +21,7 @@ export default {
       description: 'The meeting to end'
     }
   },
-  async resolve(source, {meetingId}, {authToken, socketId: mutatorId, dataLoader}) {
+  async resolve (source, {meetingId}, {authToken, socketId: mutatorId, dataLoader}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

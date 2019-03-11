@@ -32,7 +32,7 @@ const CheckInControls = (props) => {
   // TODO: theme-able? (button colors)
   return (
     <ButtonBlock>
-      <BounceBlock animationDelay="30s" key={`checkIn${localPhaseItem}buttonAnimation`}>
+      <BounceBlock animationDelay='30s' key={`checkIn${localPhaseItem}buttonAnimation`}>
         <BottomNavControl
           aria-label={`Mark ${currentMemberName} as “here” and move on`}
           key={`checkIn${localPhaseItem}nextButton`}
@@ -40,16 +40,16 @@ const CheckInControls = (props) => {
           onKeyDown={handleRightArrow(handleOnClickPresent)}
           innerRef={gotoNextRef}
         >
-          <BottomNavIconLabel icon="check_circle" iconColor="green" label={nextLabel} />
+          <BottomNavIconLabel icon='check_circle' iconColor='green' label={nextLabel} />
         </BottomNavControl>
       </BounceBlock>
       <BottomNavControl
         aria-label={`Mark ${currentMemberName} as “not here” and move on`}
-        size="medium"
+        size='medium'
         key={`checkIn${localPhaseItem}skipButton`}
         onClick={handleOnClickAbsent}
       >
-        <BottomNavIconLabel icon="remove_circle" iconColor="red" label={skipLabel} />
+        <BottomNavIconLabel icon='remove_circle' iconColor='red' label={skipLabel} />
       </BottomNavControl>
     </ButtonBlock>
   )

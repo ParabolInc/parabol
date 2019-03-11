@@ -16,7 +16,7 @@ const TeamNotification = new GraphQLInterfaceType({
       type: NotificationEnum
     }
   },
-  resolveType({type}) {
+  resolveType ({type}) {
     const resolveTypeLookup = {
       [KICKED_OUT]: NotifyKickedOut,
       [TASK_INVOLVES]: NotifyTaskInvolves,

@@ -86,7 +86,7 @@ const UpgradeCreditCardFormField = (props: Props) => {
         maxLength={maxLength}
         placeholder={placeholder}
         onKeyPress={requireNumeric}
-        type="text"
+        type='text'
         value={value}
       />
     </FieldBlock>

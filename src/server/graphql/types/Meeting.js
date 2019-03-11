@@ -83,7 +83,7 @@ const Meeting = new GraphQLObjectType({
     teamMembers: {
       type: new GraphQLList(TeamMember),
       description: 'All the team members associated who can join this team',
-      resolve({teamId}) {
+      resolve ({teamId}) {
         const r = getRethink()
         return r
           .table('TeamMember')

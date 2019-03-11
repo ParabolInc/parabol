@@ -27,7 +27,7 @@ export default {
       description: 'The part of the site where the creation occurred'
     }
   },
-  async resolve(source, {newTask, area}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {newTask, area}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const now = new Date()

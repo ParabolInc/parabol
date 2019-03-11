@@ -19,8 +19,8 @@ const ReflectHelpMenu = ({closePortal}) => (
       visible, but remain anonymous.
     </HelpMenuCopy>
     <HelpMenuLink
-      copy="Learn More"
-      href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101#reflect"
+      copy='Learn More'
+      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#reflect'
     />
   </HelpMenuContent>
 )

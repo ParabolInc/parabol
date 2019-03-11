@@ -17,7 +17,7 @@ export default {
       description: 'The global id of the integration to join'
     }
   },
-  async resolve(source, {globalId}, {authToken, socketId: mutatorId}) {
+  async resolve (source, {globalId}, {authToken, socketId: mutatorId}) {
     const r = getRethink()
 
     // AUTH

@@ -18,7 +18,7 @@ export default {
       description: 'true if the editing is starting, false if it is stopping'
     }
   },
-  async resolve(source, {taskId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {taskId, isEditing}, {authToken, dataLoader, socketId: mutatorId}) {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
 

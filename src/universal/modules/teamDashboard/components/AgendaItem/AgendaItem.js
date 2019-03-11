@@ -13,7 +13,7 @@ import IconButton from 'universal/components/IconButton'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 
 const taskSource = {
-  beginDrag(props) {
+  beginDrag (props) {
     return {
       id: props.agendaItem.id
     }
@@ -66,7 +66,7 @@ class AgendaItem extends Component {
     teamMember: PropTypes.object
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.ensureVisible) {
       requestIdleCallback(() => {
         // does not force centering; no animation for initial load
@@ -75,7 +75,7 @@ class AgendaItem extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate (prevProps) {
     if (!prevProps.ensureVisible && this.props.ensureVisible) {
       // without RIC only gets called ~20% of the time in Chrome64 on Ubuntu 16.04 if behavior: smooth
       requestIdleCallback(() => {
@@ -86,7 +86,7 @@ class AgendaItem extends Component {
 
   el = null
 
-  render() {
+  render () {
     const {
       agendaItem,
       agendaLength,
@@ -117,7 +117,7 @@ class AgendaItem extends Component {
     }
     const avatar = (
       <AvatarBlock>
-        <Avatar hasBadge={false} picture={teamMember.picture} size="smallest" />
+        <Avatar hasBadge={false} picture={teamMember.picture} size='smallest' />
       </AvatarBlock>
     )
     const deleteLabel = 'Remove this agenda topic'
@@ -141,9 +141,9 @@ class AgendaItem extends Component {
             aria-label={deleteLabel}
             agendaLength={agendaLength}
             disabled={disabled}
-            icon="cancel"
+            icon='cancel'
             onClick={handleRemove}
-            palette="warm"
+            palette='warm'
           />
         )}
       </div>

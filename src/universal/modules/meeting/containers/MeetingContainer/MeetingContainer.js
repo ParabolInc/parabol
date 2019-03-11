@@ -76,7 +76,7 @@ class MeetingContainer extends Component {
 
   state = {updateUserHasTasks: null}
 
-  componentWillMount() {
+  componentWillMount () {
     const {atmosphere, bindHotkey, history, teamId, submitting} = this.props
     this.unsafeRoute = !handleRedirects({}, this.props)
     bindHotkey('right', handleHotkey(this.gotoNext, submitting))
@@ -92,7 +92,7 @@ class MeetingContainer extends Component {
     }, 5000)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       viewer: {team},
       localPhase,
@@ -124,7 +124,7 @@ class MeetingContainer extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate (nextProps) {
     this.unsafeRoute = !handleRedirects(this.props, nextProps)
     if (!this.unsafeRoute) {
       return true
@@ -170,7 +170,7 @@ class MeetingContainer extends Component {
     return false
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearTimeout(this.electionTimer)
   }
 
@@ -184,7 +184,7 @@ class MeetingContainer extends Component {
     }
   }
 
-  electFacilitatorIfNone() {
+  electFacilitatorIfNone () {
     const {
       atmosphere,
       viewer: {
@@ -285,7 +285,7 @@ class MeetingContainer extends Component {
     history.push(pushURL)
   }
 
-  render() {
+  render () {
     if (this.unsafeRoute) return <div />
 
     const {localPhase, localPhaseItem, myTeamMemberId, viewer} = this.props

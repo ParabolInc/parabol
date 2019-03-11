@@ -31,12 +31,12 @@ const replacePath = (str, docArr, newVal) => {
 }
 
 export default class MockPubSub {
-  constructor() {
+  constructor () {
     getPubSub.default = () => this
     this.db = {}
   }
 
-  __serialize(dynamicSerializer) {
+  __serialize (dynamicSerializer) {
     const channels = Object.keys(this.db).sort()
     const snapshot = {}
     for (let i = 0; i < channels.length; i++) {
@@ -57,7 +57,7 @@ export default class MockPubSub {
     return snapshot
   }
 
-  publish(channel, message) {
+  publish (channel, message) {
     const [channelName, channelId] = channel.split('.')
     this.db[channelName] = this.db[channelName] || []
     this.db[channelName].push({channelId, message})

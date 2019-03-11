@@ -10,8 +10,8 @@ const TeamSettingsToggleNav = (props) => {
     return area === activeKey
       ? undefined
       : () => {
-          history.push(`/team/${teamId}/settings/${area}`)
-        }
+        history.push(`/team/${teamId}/settings/${area}`)
+      }
   }
 
   const items = [

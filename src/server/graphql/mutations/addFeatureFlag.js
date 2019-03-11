@@ -21,7 +21,7 @@ export default {
       description: 'the flag that you want to give to the user'
     }
   },
-  async resolve(source, {email, flag}, {authToken, dataLoader}) {
+  async resolve (source, {email, flag}, {authToken, dataLoader}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {operationId}

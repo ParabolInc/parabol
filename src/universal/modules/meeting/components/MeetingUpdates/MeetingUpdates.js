@@ -18,11 +18,11 @@ import isTaskPrivate from 'universal/utils/isTaskPrivate'
 class MeetingUpdates extends Component {
   state = {tasks: {}}
 
-  componentWillMount() {
+  componentWillMount () {
     this.filterTasks(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {
       viewer: {tasks: oldTasks},
       localPhaseItem: oldLocalPhaseItem
@@ -36,7 +36,7 @@ class MeetingUpdates extends Component {
     }
   }
 
-  filterTasks(props) {
+  filterTasks (props) {
     const {
       localPhaseItem,
       setUpdateUserHasTasks,
@@ -55,7 +55,7 @@ class MeetingUpdates extends Component {
     setUpdateUserHasTasks(Boolean(edges.length))
   }
 
-  render() {
+  render () {
     const {
       gotoNext,
       localPhaseItem,
@@ -89,11 +89,11 @@ class MeetingUpdates extends Component {
         </MeetingSection>
         {showMoveMeetingControls && (
           <MeetingControlBar>
-            <BounceBlock animationDelay="120s" key={`update${localPhaseItem}buttonAnimation`}>
+            <BounceBlock animationDelay='120s' key={`update${localPhaseItem}buttonAnimation`}>
               <BottomNavControl key={`update${localPhaseItem}`} onClick={gotoNext}>
                 <BottomNavIconLabel
-                  icon="arrow_forward"
-                  iconColor="warm"
+                  icon='arrow_forward'
+                  iconColor='warm'
                   label={
                     isLastMember
                       ? `Next: ${nextPhaseName}`

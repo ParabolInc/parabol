@@ -20,8 +20,8 @@ const VoteHelpMenu = ({closePortal}) => (
       To vote, simply tap on the thumb-up icon above a group. Toggle votes to remove.
     </HelpMenuCopy>
     <HelpMenuLink
-      copy="Learn More"
-      href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101#vote"
+      copy='Learn More'
+      href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101#vote'
     />
   </HelpMenuContent>
 )

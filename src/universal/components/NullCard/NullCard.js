@@ -20,7 +20,7 @@ const NullCard = (props) => {
   const {preferredName} = props
   return (
     <CardBlock>
-      <AddingHint align="center" scale="s3" colorPalette="dark">
+      <AddingHint align='center' scale='s3' colorPalette='dark'>
         {preferredName}
         {' is adding a Task'}
         <Ellipsis />

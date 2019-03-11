@@ -21,8 +21,8 @@ const NotificationRow = (props) => {
     <div>
       <AsyncComponent
         atmosphere={atmosphere}
-        loadingWidth="inherit"
-        loadingHeight="5rem"
+        loadingWidth='inherit'
+        loadingHeight='5rem'
         fetchMod={fetchMod}
         notification={notification}
         submitting={submitting}

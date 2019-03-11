@@ -29,7 +29,7 @@ class ReflectionEditorWrapperForEmail extends Component<Props> {
     )
   }
 
-  render() {
+  render () {
     const {editorState} = this.state
     const userSelect = 'text'
     return (

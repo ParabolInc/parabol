@@ -15,7 +15,7 @@ export default {
       description: 'The agenda item unique id'
     }
   },
-  async resolve(source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {agendaItemId}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

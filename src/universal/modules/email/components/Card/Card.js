@@ -10,7 +10,7 @@ import isTaskPrivate from 'universal/utils/isTaskPrivate'
 import EmptySpace from '../EmptySpace/EmptySpace'
 
 class Card extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const {content} = props
     const contentState = truncateCard(content)
@@ -30,7 +30,7 @@ class Card extends Component {
     this.forceUpdate()
   }
 
-  render() {
+  render () {
     const {status, tags} = this.props
     const isPrivate = isTaskPrivate(tags)
     const backgroundColor = isPrivate ? ui.privateCardBgColor : '#FFFFFF'
@@ -64,7 +64,7 @@ class Card extends Component {
     }
 
     return (
-      <table style={ui.emailTableBase} width="100%">
+      <table style={ui.emailTableBase} width='100%'>
         <tbody>
           <tr>
             <td style={cellStyle}>

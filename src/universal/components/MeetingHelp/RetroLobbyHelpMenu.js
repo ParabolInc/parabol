@@ -16,8 +16,8 @@ const RetroLobbyHelpMenu = (props) => {
       <div>
         {'See our '}
         <HelpMenuLink
-          copy="Getting Started Guide"
-          href="https://www.parabol.co/getting-started-guide/retrospective-meetings-101"
+          copy='Getting Started Guide'
+          href='https://www.parabol.co/getting-started-guide/retrospective-meetings-101'
         />
         {' for running a Retrospective Meeting.'}
       </div>

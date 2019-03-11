@@ -51,7 +51,7 @@ export const notificationInterfaceFields = {
 const Notification = new GraphQLInterfaceType({
   name: 'Notification',
   fields: () => notificationInterfaceFields,
-  resolveType(value) {
+  resolveType (value) {
     // type lookup needs to be resolved in a thunk since there is a circular reference when loading
     // alternative to treating it like a DB driver if GCing is an issue
     const resolveTypeLookup = {

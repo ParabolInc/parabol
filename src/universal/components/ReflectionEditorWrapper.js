@@ -168,7 +168,7 @@ class ReflectionEditorWrapper extends PureComponent<Props> {
     }
   }
 
-  render() {
+  render () {
     const {
       ariaLabel,
       editorState,

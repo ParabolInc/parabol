@@ -21,7 +21,7 @@ export default {
       description: 'the new due date. if not a valid date, it will unset the due date'
     }
   },
-  async resolve(source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
+  async resolve (source, {taskId, dueDate}, {authToken, dataLoader, socketId: mutatorId}) {
     const r = getRethink()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}

@@ -20,7 +20,7 @@ export default {
       description: 'teamMemberId of the new facilitator for this meeting'
     }
   },
-  resolve: async function(
+  resolve: async function (
     source,
     {disconnectedFacilitatorId, facilitatorId},
     {authToken, dataLoader, socketId: mutatorId}

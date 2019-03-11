@@ -35,12 +35,12 @@ const maxWidthContainer = {
 const Layout = (props) => {
   const {children, maxWidth} = props
   return (
-    <table align="center" className="body" style={containerStyle} width="100%">
+    <table align='center' className='body' style={containerStyle} width='100%'>
       <tbody>
         <tr>
-          <td align="center" style={cellStyle}>
+          <td align='center' style={cellStyle}>
             <div style={{...maxWidthContainer, maxWidth}}>
-              <table align="center" className="maxWidthContainer" style={innerStyle} width="100%">
+              <table align='center' className='maxWidthContainer' style={innerStyle} width='100%'>
                 <tbody>
                   <tr>
                     <td>{children}</td>

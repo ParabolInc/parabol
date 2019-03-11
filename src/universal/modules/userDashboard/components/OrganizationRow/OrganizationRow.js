@@ -56,7 +56,7 @@ const OrganizationRow = (props) => {
   return (
     <Row>
       <OrgAvatar onClick={onRowClick}>
-        <Avatar size="fill" picture={orgAvatar} />
+        <Avatar size='fill' picture={orgAvatar} />
       </OrgAvatar>
       <RowInfo>
         <RowInfoHeader>
@@ -80,7 +80,7 @@ const OrganizationRow = (props) => {
           </FlatButton>
         )}
         <FlatButton onClick={onRowClick}>
-          <IconLabel icon="settings" label="Settings" />
+          <IconLabel icon='settings' label='Settings' />
         </FlatButton>
       </RowActions>
     </Row>

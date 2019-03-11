@@ -57,16 +57,16 @@ const SummaryHeader = (props) => {
 
   return (
     <div style={{padding: '0px 16px'}}>
-      <table width="100%">
+      <table width='100%'>
         <tbody>
           <tr>
             <td style={blockStyle}>
               <img
-                alt="Parabol Logo"
+                alt='Parabol Logo'
                 src={`${emailDir}mark-purple@3x.png`}
                 style={logoStyle}
-                height="28"
-                width="31"
+                height='28'
+                width='31'
               />
               <div style={labelStyles}>{'Meeting Summary'}</div>
               <div style={teamNameStyle}>{teamName}</div>
