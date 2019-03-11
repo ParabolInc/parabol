@@ -60,7 +60,7 @@ const SubmitButton = styled(PrimaryButton)({
 })
 
 class ResetPasswordPage extends Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props)
     const params = new URLSearchParams(window.location.search)
     const email = params.get('email')
@@ -123,11 +123,11 @@ class ResetPasswordPage extends Component<Props, State> {
     })
   }
 
-  render() {
+  render () {
     const {dirty, error, submitting} = this.props
     const {isSent, email} = this.state
     return (
-      <AuthPage title="Reset Password | Parabol">
+      <AuthPage title='Reset Password | Parabol'>
         <StyledDialog>
           <AuthHeader
             heading={isSent ? 'You’re all set!' : 'Forgot your password?'}
@@ -160,7 +160,7 @@ class ResetPasswordPage extends Component<Props, State> {
                     onChange={this.onChange}
                     onBlur={this.onBlur}
                   />
-                  <SubmitButton size="medium" waiting={submitting}>
+                  <SubmitButton size='medium' waiting={submitting}>
                     {'Send Email'}
                   </SubmitButton>
                 </Form>

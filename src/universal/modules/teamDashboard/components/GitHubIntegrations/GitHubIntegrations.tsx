@@ -81,7 +81,7 @@ const GitHubIntegrations = (props: Props) => {
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
       <ProviderDetails>
         <ProviderAvatar>
-          <ProviderIcon name="github" />
+          <ProviderIcon name='github' />
         </ProviderAvatar>
         <RowInfo>
           <ProviderName>{ui.providers.github.providerName}</ProviderName>
@@ -100,23 +100,23 @@ const GitHubIntegrations = (props: Props) => {
                   {service: GITHUB, onError, onCompleted}
                 )
               }
-              palette="mid"
+              palette='mid'
             >
               {'Remove GitHub'}
             </FlatButton>
-            <FlatButton onClick={openOAuth} palette="mid">
+            <FlatButton onClick={openOAuth} palette='mid'>
               {`Refresh Token for ${providerUserName}`}
             </FlatButton>
           </RowActions>
         )}
       </ProviderDetails>
-      <Panel label="Repositories">
+      <Panel label='Repositories'>
         {accessToken ? (
           <Row>
             <AddGitHubRepo accessToken={accessToken} teamId={teamId} subbedRepos={githubRepos} />
           </Row>
         ) : (
-          <AddGitHubButton size="medium" onClick={openOAuth} palette="warm">
+          <AddGitHubButton size='medium' onClick={openOAuth} palette='warm'>
             {'Authorize GitHub to Add a Repo'}
           </AddGitHubButton>
         )}

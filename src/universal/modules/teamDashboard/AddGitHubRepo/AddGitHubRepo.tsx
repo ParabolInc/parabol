@@ -140,7 +140,7 @@ class AddGitHubRepo extends Component<Props, State> {
     showHint: undefined as undefined | boolean
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {accessToken, atmosphere} = this.props
     this.fetchOptions(accessToken).catch()
     atmosphere.eventEmitter.on('removeGitHubRepo', () => {
@@ -148,7 +148,7 @@ class AddGitHubRepo extends Component<Props, State> {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {accessToken} = nextProps
     if (this.props.accessToken !== accessToken) {
       this.fetchOptions(accessToken).catch()
@@ -156,7 +156,7 @@ class AddGitHubRepo extends Component<Props, State> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._mounted = false
   }
 
@@ -247,7 +247,7 @@ class AddGitHubRepo extends Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {
       isLoaded,
       options,
@@ -270,7 +270,7 @@ class AddGitHubRepo extends Component<Props, State> {
           />
           <FooterBlock>{footerMessage}</FooterBlock>
         </DropdownAndError>
-        <StyledButton size="medium" palette="warm" onClick={this.handleAddRepo}>
+        <StyledButton size='medium' palette='warm' onClick={this.handleAddRepo}>
           {'Add Repo'}
         </StyledButton>
       </StyledRow>

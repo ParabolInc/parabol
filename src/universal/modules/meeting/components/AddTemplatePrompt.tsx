@@ -59,11 +59,11 @@ class AddTemplatePrompt extends Component<Props> {
     )
   }
 
-  render() {
+  render () {
     const {prompts, submitting} = this.props
     if (prompts.length >= 5) return null
     return (
-      <AddPromptLink palette="blue" onClick={this.addPrompt} waiting={submitting}>
+      <AddPromptLink palette='blue' onClick={this.addPrompt} waiting={submitting}>
         <AddPromptLinkPlus>add</AddPromptLinkPlus>
         <div>Add another prompt</div>
       </AddPromptLink>

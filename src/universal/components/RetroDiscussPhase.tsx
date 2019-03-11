@@ -197,7 +197,7 @@ const RetroDiscussPhase = (props: Props) => {
                 innerRef={gotoNextRef}
                 onKeyDown={handleRightArrow(gotoNext)}
               >
-                <BottomNavIconLabel icon="arrow_forward" iconColor="warm" label={'Next Topic'} />
+                <BottomNavIconLabel icon='arrow_forward' iconColor='warm' label={'Next Topic'} />
               </BottomNavControl>
             </React.Fragment>
           )}

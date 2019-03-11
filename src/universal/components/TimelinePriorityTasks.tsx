@@ -80,7 +80,7 @@ class TimelinePriorityTasks extends Component<Props> {
     UpdateTaskMutation(atmosphere, updatedTask, USER_DASH)
   }
 
-  render() {
+  render () {
     const {viewer} = this.props
     const {tasks} = viewer
     const activeTasks = this.getActiveTasks(tasks)

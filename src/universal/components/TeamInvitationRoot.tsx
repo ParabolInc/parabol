@@ -16,7 +16,7 @@ const query = graphql`
 `
 
 class TeamInvitationRoot extends Component<Props> {
-  render() {
+  render () {
     const {
       atmosphere,
       match: {

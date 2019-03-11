@@ -98,7 +98,7 @@ class ReflectionGroupVoting extends Component<Props> {
     )
   }
 
-  render() {
+  render () {
     const {meeting, reflectionGroup, isExpanded} = this.props
     const viewerVoteCount = reflectionGroup.viewerVoteCount || 0
     const {settings, viewerMeetingMember} = meeting

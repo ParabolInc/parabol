@@ -165,7 +165,7 @@ export const navigateMeetingTeamUpdater = (
     const prompts = reflectPhase.getLinkedRecords('reflectPrompts')
     if (!prompts) return
     prompts.forEach((phaseItem) => {
-      ;((phaseItem as any) as RecordProxy<ClientRetroPhaseItem>).setValue([], 'editorIds')
+      ((phaseItem as any) as RecordProxy<ClientRetroPhaseItem>).setValue([], 'editorIds')
     })
   }
 }

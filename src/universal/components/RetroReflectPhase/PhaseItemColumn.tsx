@@ -144,7 +144,7 @@ class PhaseItemColumn extends Component<Props> {
 
   nextSortOrder = () => getNextSortOrder(this.props.meeting.reflectionGroups)
 
-  render() {
+  render () {
     const {
       atmosphere: {viewerId},
       editorIds,

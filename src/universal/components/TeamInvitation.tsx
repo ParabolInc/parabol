@@ -6,7 +6,7 @@ interface Props {
   verifiedInvitation: any
 }
 
-function TeamInvitation(props: Props) {
+function TeamInvitation (props: Props) {
   const {verifiedInvitation} = props
   return (
     <TeamInvitationWrapper>

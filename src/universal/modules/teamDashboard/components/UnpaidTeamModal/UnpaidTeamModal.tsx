@@ -42,8 +42,8 @@ const UnpaidTeamModal = (props: Props) => {
         <br />
         {solution}
         {isALeader && (
-          <StyledButton size="medium" onClick={handleClick}>
-            <IconLabel icon="arrow_forward" iconAfter label="Take me there" />
+          <StyledButton size='medium' onClick={handleClick}>
+            <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
           </StyledButton>
         )}
       </DialogContent>

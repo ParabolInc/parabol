@@ -29,11 +29,11 @@ class PhaseItemEditor extends Component<Props, State> {
     isEditing: false
   }
 
-  componentWillUnmount(): void {
+  componentWillUnmount (): void {
     window.clearTimeout(this.idleTimerId)
   }
 
-  handleSubmit() {
+  handleSubmit () {
     const {
       atmosphere,
       onError,
@@ -111,19 +111,19 @@ class PhaseItemEditor extends Component<Props, State> {
     this.setState({editorState})
   }
 
-  render() {
+  render () {
     const {editorState} = this.state
     const {phaseEditorRef} = this.props
     return (
       <ReflectionCardRoot innerRef={phaseEditorRef}>
         <ReflectionEditorWrapper
-          ariaLabel="Edit this reflection"
+          ariaLabel='Edit this reflection'
           editorState={editorState}
           onBlur={this.handleEditorBlur}
           onFocus={this.handleEditorFocus}
           handleReturn={this.handleReturn}
           keyBindingFn={this.keyBindingFn}
-          placeholder="My reflection… (press enter to add)"
+          placeholder='My reflection… (press enter to add)'
           setEditorState={this.setEditorState}
         />
       </ReflectionCardRoot>

@@ -82,15 +82,15 @@ class UserProfile extends Component<Props> {
     UpdateUserProfileMutation(atmosphere, {preferredName}, {onError, onCompleted})
   }
 
-  render() {
+  render () {
     const {fields, onChange, viewer} = this.props
     const {picture} = viewer
     const pictureOrDefault = picture || defaultUserAvatar
     return (
       <UserSettingsWrapper>
-        <Helmet title="My Profile | Parabol" />
+        <Helmet title='My Profile | Parabol' />
         <SettingsBlock>
-          <Panel label="My Information">
+          <Panel label='My Information'>
             <SettingsForm onSubmit={this.onSubmit}>
               <LoadableModal
                 LoadableComponent={UserAvatarInput}
@@ -104,10 +104,10 @@ class UserProfile extends Component<Props> {
               <InfoBlock>
                 <FieldLabel
                   customStyles={{paddingBottom: ui.fieldLabelGutter}}
-                  label="Name"
-                  fieldSize="medium"
+                  label='Name'
+                  fieldSize='medium'
                   indent
-                  htmlFor="preferredName"
+                  htmlFor='preferredName'
                 />
                 <ControlBlock>
                   <FieldBlock>
@@ -116,11 +116,11 @@ class UserProfile extends Component<Props> {
                       {...fields.preferredName}
                       autoFocus
                       onChange={onChange}
-                      name="preferredName"
-                      placeholder="My name"
+                      name='preferredName'
+                      placeholder='My name'
                     />
                   </FieldBlock>
-                  <StyledButton size="medium" palette="mid">
+                  <StyledButton size='medium' palette='mid'>
                     {'Update'}
                   </StyledButton>
                 </ControlBlock>

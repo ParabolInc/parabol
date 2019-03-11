@@ -16,7 +16,7 @@ const TruncatedEllipsis = (setEditorState) =>
       setEditorState(value)
     }
 
-    render() {
+    render () {
       const {offsetkey, children} = this.props
       return (
         <span data-offset-key={offsetkey} style={{cursor: 'pointer'}} onClick={this.onClick}>

@@ -41,13 +41,13 @@ const Dashboard = (props: Props) => {
         <MeetingDashAlert viewer={viewer} />
         <Switch>
           <Route
-            path="/me"
+            path='/me'
             render={(p) => (
               <UserDashboard {...p} notifications={viewer ? viewer.notifications : []} />
             )}
           />
-          <Route path="/team/:teamId" component={TeamRoot} />
-          <Route path="/newteam/:defaultOrgId?" component={NewTeam} />
+          <Route path='/team/:teamId' component={TeamRoot} />
+          <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
         </Switch>
       </DashPanel>
     </DashLayout>

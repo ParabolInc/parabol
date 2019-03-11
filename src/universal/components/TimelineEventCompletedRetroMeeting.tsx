@@ -13,7 +13,7 @@ interface Props {
 }
 
 class TimelineEventCompletedRetroMeeting extends Component<Props> {
-  render() {
+  render () {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
     const {id: meetingId, meetingNumber, createdAt, endedAt, taskCount} = meeting
@@ -26,7 +26,7 @@ class TimelineEventCompletedRetroMeeting extends Component<Props> {
     })
     return (
       <TimelineEventCard
-        iconName="history"
+        iconName='history'
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle>{`Retro #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>

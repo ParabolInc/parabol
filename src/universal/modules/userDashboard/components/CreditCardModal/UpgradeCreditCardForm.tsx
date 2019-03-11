@@ -299,7 +299,7 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {isUpdate, dirty, error, submitting} = this.props
     const {cardTypeIcon, creditCardNumber, expiry, cvc} = this.state
     const actionLabel = isUpdate ? 'Update Credit Card' : 'Upgrade to Pro'
@@ -319,44 +319,44 @@ class UpgradeCreditCardForm extends React.Component<Props, State> {
           <CardInputs>
             <CreditCardNumber>
               <UpgradeCreditCardFormField
-                autoComplete="cc-number"
+                autoComplete='cc-number'
                 autoFocus
                 hasError={Boolean(error && error.creditCardNumber)}
-                iconName="credit_card"
-                maxLength="20"
+                iconName='credit_card'
+                maxLength='20'
                 onChange={this.handleNumberChange}
-                placeholder="Card number"
+                placeholder='Card number'
                 value={creditCardNumber}
               />
             </CreditCardNumber>
             <CardDetails>
               <CardExpiry>
                 <UpgradeCreditCardFormField
-                  autoComplete="cc-exp"
+                  autoComplete='cc-exp'
                   hasError={Boolean(error && error.expiry)}
-                  iconName="date_range"
-                  maxLength="5"
+                  iconName='date_range'
+                  maxLength='5'
                   onChange={this.handleExpiryChange}
-                  placeholder="MM/YY"
+                  placeholder='MM/YY'
                   value={expiry}
                 />
               </CardExpiry>
               <CardCvc>
                 <UpgradeCreditCardFormField
-                  autoComplete="cc-csc"
+                  autoComplete='cc-csc'
                   hasError={Boolean(error && error.cvc)}
-                  iconName="lock"
-                  maxLength="4"
-                  name="cvc"
+                  iconName='lock'
+                  maxLength='4'
+                  name='cvc'
                   onChange={this.handleCVCChange}
-                  placeholder="CVC"
+                  placeholder='CVC'
                   value={cvc}
                 />
               </CardCvc>
             </CardDetails>
           </CardInputs>
           <ButtonGroup>
-            <UpdateButton size="medium" onClick={this.handleSubmit} waiting={submitting}>
+            <UpdateButton size='medium' onClick={this.handleSubmit} waiting={submitting}>
               {actionLabel}
             </UpdateButton>
           </ButtonGroup>

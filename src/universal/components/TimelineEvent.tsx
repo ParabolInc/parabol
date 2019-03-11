@@ -21,7 +21,7 @@ const lookup = {
     import(/* webpackChunkName: 'TimelineEventCompletedActionMeeting' */ 'universal/components/TimelineEventCompletedActionMeeting')
   )
 }
-function TimelineEvent(props: Props) {
+function TimelineEvent (props: Props) {
   const {timelineEvent} = props
   let AsyncComponent
   if (timelineEvent) {

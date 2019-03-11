@@ -105,7 +105,7 @@ const SummaryEmail = (props: Props) => {
           <table style={emailTableBase}>
             <tbody>
               <tr>
-                <td align="center" style={{padding: 0}}>
+                <td align='center' style={{padding: 0}}>
                   {/* Summary Header */}
                   <SummaryHeader
                     createdAt={createdAt}
@@ -119,7 +119,7 @@ const SummaryEmail = (props: Props) => {
                 </td>
               </tr>
               <tr>
-                <td align="center" style={quickStatsBlock as React.CSSProperties}>
+                <td align='center' style={quickStatsBlock as React.CSSProperties}>
                   {/* Quick Stats */}
                   {meetingType === RETROSPECTIVE && <RetroQuickStats meeting={meeting} />}
                 </td>
@@ -162,7 +162,7 @@ const SummaryEmail = (props: Props) => {
                   hasLearningLink={meetingType === ACTION}
                   lineHeight={1.5}
                   prompt={`How’d your ${meetingLabel} meeting go?`}
-                  tagline="We’re eager for your feedback!"
+                  tagline='We’re eager for your feedback!'
                   vSpacing={0}
                 />
               </Fragment>

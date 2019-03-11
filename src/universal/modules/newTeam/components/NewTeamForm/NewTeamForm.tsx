@@ -241,7 +241,7 @@ class NewTeamForm extends Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {fields, isNewOrg, orgId} = this.state
     const {error, submitting, organizations} = this.props
 
@@ -251,14 +251,14 @@ class NewTeamForm extends Component<Props, State> {
           <FormInner>
             <FormHeading>{'Create a New Team'}</FormHeading>
             <NewTeamFormBlock>
-              <FieldLabel fieldSize={controlSize} indent label="Add Team to…" />
+              <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
             </NewTeamFormBlock>
             <NewTeamFormBlock>
               <Radio
                 checked={!isNewOrg}
-                name="isNewOrganization"
-                value="false"
-                label="an existing organization:"
+                name='isNewOrganization'
+                value='false'
+                label='an existing organization:'
                 onChange={this.handleIsNewOrgChange}
               />
               <NewTeamFieldBlock>
@@ -277,7 +277,7 @@ class NewTeamForm extends Component<Props, State> {
               orgName={fields.orgName.value}
               dirty={fields.orgName.dirty}
               error={fields.orgName.error}
-              placeholder="My new organization"
+              placeholder='My new organization'
               onBlur={this.handleBlur}
             />
             <NewTeamFormTeamName
@@ -288,7 +288,7 @@ class NewTeamForm extends Component<Props, State> {
               onBlur={this.handleBlur}
             />
 
-            <StyledButton size="large" waiting={submitting}>
+            <StyledButton size='large' waiting={submitting}>
               {isNewOrg ? 'Create Team & Org' : 'Create Team'}
             </StyledButton>
             {error && <StyledError>{error}</StyledError>}

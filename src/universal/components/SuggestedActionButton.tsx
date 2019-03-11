@@ -16,7 +16,7 @@ interface Props {
 const SuggestedActionButton = (props: Props) => {
   const {children, onClick} = props
   return (
-    <ActionButton aria-label={children} size="medium" onClick={onClick}>
+    <ActionButton aria-label={children} size='medium' onClick={onClick}>
       {children}
     </ActionButton>
   )

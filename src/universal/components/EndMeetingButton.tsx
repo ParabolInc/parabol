@@ -17,12 +17,12 @@ class EndMeetingButton extends Component<Props> {
     EndNewMeetingMutation(atmosphere, {meetingId}, {history})
   }
 
-  render() {
+  render () {
     const {submitting} = this.props
     const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
     return (
       <BottomNavControl onClick={this.endMeeting} waiting={submitting}>
-        <BottomNavIconLabel icon="flag" iconColor="blue" label={label} />
+        <BottomNavIconLabel icon='flag' iconColor='blue' label={label} />
       </BottomNavControl>
     )
   }

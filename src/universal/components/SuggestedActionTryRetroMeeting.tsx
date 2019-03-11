@@ -19,14 +19,14 @@ class SuggestedActionTryRetroMeeting extends Component<Props> {
     history.push(`/retro/${teamId}`)
   }
 
-  render() {
+  render () {
     const {suggestedAction} = this.props
     const {id: suggestedActionId, team} = suggestedAction
     const {name: teamName} = team
     return (
       <SuggestedActionCard
         backgroundColor={PALETTE.BACKGROUND.RED}
-        iconName="history"
+        iconName='history'
         suggestedActionId={suggestedActionId}
       >
         <SuggestedActionCopy>Hold your first Retro Meeting with {teamName}</SuggestedActionCopy>

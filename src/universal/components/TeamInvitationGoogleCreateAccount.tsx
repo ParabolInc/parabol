@@ -96,7 +96,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     })
   }
 
-  render() {
+  render () {
     const {error, submitting, verifiedInvitation} = this.props
     const {isEmailFallback} = this.state
     const {teamInvitation, teamName} = verifiedInvitation
@@ -117,13 +117,13 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
           </CopyMargins>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
-              label="Sign up using Google"
+              label='Sign up using Google'
               onClick={this.onOAuth}
               isError={!!error}
               submitting={!!submitting}
             />
             {isEmailFallback ? (
-              <HorizontalSeparator margin="1rem 0 0" text="or" />
+              <HorizontalSeparator margin='1rem 0 0' text='or' />
             ) : (
               <UseEmailFallback onClick={this.useEmail}>Sign up without Google</UseEmailFallback>
             )}

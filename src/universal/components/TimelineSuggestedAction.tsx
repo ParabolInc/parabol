@@ -30,7 +30,7 @@ const Wrapper = styled('div')({
   paddingBottom: 16
 })
 
-function TimelineSuggestedAction(props: Props) {
+function TimelineSuggestedAction (props: Props) {
   const {viewer} = props
   const {suggestedActions} = viewer
   const [suggestedAction] = suggestedActions

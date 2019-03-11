@@ -19,7 +19,7 @@ class EditorHelpModalContainer extends Component<Props, State> {
     isOpen: false
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {bindHotkey} = this.props
     bindHotkey('?', this.toggleModal)
     bindHotkey('escape', this.closeModal)
@@ -33,7 +33,7 @@ class EditorHelpModalContainer extends Component<Props, State> {
     this.setState({isOpen: false})
   }
 
-  render() {
+  render () {
     return (
       <Suspense fallback={''}>
         <LoadableFreeModal

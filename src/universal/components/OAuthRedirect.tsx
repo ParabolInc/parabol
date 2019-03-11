@@ -8,7 +8,7 @@ import getAnonymousId from '../utils/getAnonymousId'
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
 class OAuthRedirect extends Component<Props> {
-  componentDidMount() {
+  componentDidMount () {
     this.callOpener().catch()
   }
 
@@ -41,7 +41,7 @@ class OAuthRedirect extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     return null
   }
 }

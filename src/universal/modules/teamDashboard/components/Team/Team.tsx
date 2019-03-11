@@ -44,7 +44,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {
 }
 
 class Team extends Component<Props> {
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const {team: oldTeam} = this.props
     if (oldTeam && oldTeam.contentFilter) {
       if (!nextProps.team || nextProps.team.id !== oldTeam.id) {
@@ -53,13 +53,13 @@ class Team extends Component<Props> {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     if (this.props.team && this.props.team.contentFilter) {
       this.setContentFilter('')
     }
   }
 
-  setContentFilter(nextValue) {
+  setContentFilter (nextValue) {
     const {atmosphere, team} = this.props
     if (!team) return
     const {id: teamId} = team
@@ -85,7 +85,7 @@ class Team extends Component<Props> {
     history.push(`/team/${teamId}/`)
   }
 
-  render() {
+  render () {
     const {children, isSettings, team} = this.props
     if (!team) return null
     const {id: teamId, isPaid, meetingId} = team
@@ -108,29 +108,29 @@ class Team extends Component<Props> {
             {!isSettings && (
               <DashSearchControl
                 onChange={this.updateFilter}
-                placeholder="Search Team Tasks & Agenda"
+                placeholder='Search Team Tasks & Agenda'
               />
             )}
           </DashHeaderInfo>
           <TeamViewNavBlock>
             {isSettings ? (
               <StyledButton
-                aria-label="Back to Team Dashboard"
-                key="1"
+                aria-label='Back to Team Dashboard'
+                key='1'
                 onClick={this.goToTeamDashboard}
               >
-                <IconLabel icon="arrow_back" label="Back to Team Dashboard" />
+                <IconLabel icon='arrow_back' label='Back to Team Dashboard' />
               </StyledButton>
             ) : (
-              <StyledButton aria-label="Team Settings" key="2" onClick={this.goToTeamSettings}>
-                <IconLabel icon="settings" label="Team Settings" />
+              <StyledButton aria-label='Team Settings' key='2' onClick={this.goToTeamSettings}>
+                <IconLabel icon='settings' label='Team Settings' />
               </StyledButton>
             )}
             <DashboardAvatars team={team} />
             {!isSettings && <TeamCallsToAction teamId={teamId} />}
           </TeamViewNavBlock>
         </DashHeader>
-        <DashContent hasOverlay={hasOverlay} padding="0">
+        <DashContent hasOverlay={hasOverlay} padding='0'>
           {children}
         </DashContent>
       </RelativeDashMain>

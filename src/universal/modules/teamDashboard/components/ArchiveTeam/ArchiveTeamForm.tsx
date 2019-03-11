@@ -43,7 +43,7 @@ class ArchiveTeamForm extends Component<Props> {
     ArchiveTeamMutation(atmosphere, {teamId}, {history, onError, onCompleted})
   }
 
-  render() {
+  render () {
     const {
       handleFormBlur,
       onChange,
@@ -53,11 +53,11 @@ class ArchiveTeamForm extends Component<Props> {
     return (
       <form onSubmit={this.onSubmit}>
         <FieldLabel
-          fieldSize="medium"
-          htmlFor="archivedTeamName"
+          fieldSize='medium'
+          htmlFor='archivedTeamName'
           indent
           inline
-          label="Enter your team name to delete it."
+          label='Enter your team name to delete it.'
         />
         <BasicInput
           value={value}
@@ -65,7 +65,7 @@ class ArchiveTeamForm extends Component<Props> {
           onChange={onChange}
           autoFocus
           onBlur={handleFormBlur}
-          name="archivedTeamName"
+          name='archivedTeamName'
           placeholder='E.g. "My Team"'
         />
       </form>

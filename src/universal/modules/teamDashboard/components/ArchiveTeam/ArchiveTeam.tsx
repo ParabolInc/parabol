@@ -24,13 +24,13 @@ const ArchiveTeam = ({
     {!showConfirmationField ? (
       <div>
         <LinkButton
-          aria-label="Click to permanently delete this team."
-          palette="red"
+          aria-label='Click to permanently delete this team.'
+          palette='red'
           onClick={handleClick}
         >
-          <IconLabel icon="remove_circle" label="Delete Team" />
+          <IconLabel icon='remove_circle' label='Delete Team' />
         </LinkButton>
-        <Type width="auto" marginTop=".5rem" scale="s2">
+        <Type width='auto' marginTop='.5rem' scale='s2'>
           <b>Note</b>: {'This can’t be undone.'}
         </Type>
       </div>

@@ -105,7 +105,7 @@ const TemplatePickerBlock = styled('div')({
 })
 
 class NewMeetingLobby extends React.Component<Props> {
-  render() {
+  render () {
     const {
       atmosphere,
       history,
@@ -139,7 +139,7 @@ class NewMeetingLobby extends React.Component<Props> {
             <StyledButton
               aria-label={buttonLabel}
               onClick={onStartMeetingClick}
-              size="large"
+              size='large'
               waiting={submitting}
             >
               {buttonLabel}

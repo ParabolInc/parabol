@@ -27,7 +27,7 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
   return (
     <SuggestedActionCard
       backgroundColor={PALETTE.BACKGROUND.BLUE}
-      iconName="person_add"
+      iconName='person_add'
       suggestedActionId={suggestedActionId}
     >
       <SuggestedActionCopy>

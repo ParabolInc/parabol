@@ -11,13 +11,13 @@ interface Props {
 }
 
 class TimelineEventTeamCreated extends Component<Props> {
-  render() {
+  render () {
     const {timelineEvent} = this.props
     const {team} = timelineEvent
     const {id: teamId, name: teamName, isArchived} = team
     return (
       <TimelineEventCard
-        iconName="group_add"
+        iconName='group_add'
         timelineEvent={timelineEvent}
         title={<TimelineEventTitle>{`You created ${teamName}`}</TimelineEventTitle>}
       >

@@ -50,13 +50,13 @@ const styles = {
 class Toast extends Component<Props> {
   el: any
 
-  componentDidMount() {
+  componentDidMount () {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.on('addToast', this.addToast)
     atmosphere.eventEmitter.on('removeToast', this.removeToast)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.off('addToast', this.addToast)
     atmosphere.eventEmitter.off('removeToast', this.removeToast)
@@ -74,7 +74,7 @@ class Toast extends Component<Props> {
     this.el.removeNotification(toast)
   }
 
-  render() {
+  render () {
     return (
       <ToastSystem
         ref={(c) => {

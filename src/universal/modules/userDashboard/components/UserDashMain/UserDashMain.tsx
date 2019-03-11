@@ -53,11 +53,11 @@ const UserDashMain = (props: Props) => {
   const isTasks = !!matchPath(location.pathname, {path: `${match.url}/tasks`})
   return (
     <DashMain>
-      <Helmet title="My Dashboard | Parabol" />
-      <DashHeader area="userDash">
+      <Helmet title='My Dashboard | Parabol' />
+      <DashHeader area='userDash'>
         <TopTabs activeIdx={isTasks ? 1 : 0}>
-          <Tab label="TIMELINE" onClick={() => history.push('/me')} />
-          <Tab label="TASKS" onClick={() => history.push('/me/tasks')} />
+          <Tab label='TIMELINE' onClick={() => history.push('/me')} />
+          <Tab label='TASKS' onClick={() => history.push('/me/tasks')} />
         </TopTabs>
         {/*<HeaderCopy>*/}
         {/*/!*<DebugButton />*!/*/}

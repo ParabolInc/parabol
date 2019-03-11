@@ -109,7 +109,7 @@ class GitHubRepoRow extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     const {accessToken, atmosphere, error, submitting, repo, teamId} = this.props
     const {id, adminUserId, nameWithOwner, teamMembers} = repo
     const {viewerId} = atmosphere
@@ -124,19 +124,19 @@ class GitHubRepoRow extends Component<Props> {
           <RepoInfo>
             <NameWithOwner
               href={`https://github.com/${nameWithOwner}`}
-              rel="noopener noreferrer"
-              target="_blank"
+              rel='noopener noreferrer'
+              target='_blank'
               title={nameWithOwner || ''}
             >
               {nameWithOwner}
               <StyledIcon>{ui.iconExternalLink}</StyledIcon>
-              {isCreator && <Tag colorPalette="light" label="Creator" />}
+              {isCreator && <Tag colorPalette='light' label='Creator' />}
             </NameWithOwner>
           </RepoInfo>
           <AvatarGroup>
             {teamMembers.map((user) => (
               <AvatarBlock key={user.id}>
-                <Avatar {...user} size="smallest" />
+                <Avatar {...user} size='smallest' />
               </AvatarBlock>
             ))}
           </AvatarGroup>

@@ -29,15 +29,14 @@ class NewTeamOrgPicker extends Component<Props> {
   sortOrgs = memoize((organizations: NewTeamOrgPicker_organizations) => {
     const orgs = organizations.slice()
     const tierVal = (org) => (org.tier === PRO ? -1 : 1)
-    orgs.sort(
-      (a, b) =>
-        tierVal(a) < tierVal(b)
-          ? -1
-          : tierVal(a) > tierVal(b)
-            ? 1
-            : a.name.toLowerCase() < b.name.toLowerCase()
-              ? -1
-              : 1
+    orgs.sort((a, b) =>
+      tierVal(a) < tierVal(b)
+        ? -1
+        : tierVal(a) > tierVal(b)
+        ? 1
+        : a.name.toLowerCase() < b.name.toLowerCase()
+        ? -1
+        : 1
     )
     return orgs
   })

@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 const withStaggerShow = (ComposedComponent) => {
   return class WithStaggerShow extends Component<{}, {show: number}> {
     timeout: number
-    constructor(props) {
+    constructor (props) {
       super(props)
       this.state = {show: 0}
       this.timeout = window.setInterval(() => {
@@ -13,10 +13,10 @@ const withStaggerShow = (ComposedComponent) => {
         })
       }, 2000)
     }
-    componentWillUnmount() {
+    componentWillUnmount () {
       clearInterval(this.timeout)
     }
-    render() {
+    render () {
       return <ComposedComponent staggerShow={this.state.show} {...this.props} />
     }
   }

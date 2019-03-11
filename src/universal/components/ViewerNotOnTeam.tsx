@@ -56,7 +56,7 @@ const ViewerNotOnTeam = (props: Props) => {
           <InvitationDialogCopy>Just ask a team member for an invitation.</InvitationDialogCopy>
           <InvitationDialogCopy>This page will redirect automatically.</InvitationDialogCopy>
           <InvitationCenteredCopy>
-            <PrimaryButton size="medium" waiting>
+            <PrimaryButton size='medium' waiting>
               <span>Waiting for Invitation</span>
               <Ellipsis />
             </PrimaryButton>

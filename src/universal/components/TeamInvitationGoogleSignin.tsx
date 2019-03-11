@@ -58,7 +58,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
     LoginMutation(atmosphere, {auth0Token: idToken, invitationToken}, {history})
   }
 
-  render() {
+  render () {
     const {error, submitting, verifiedInvitation} = this.props
     const {user, teamName} = verifiedInvitation
     if (!user) return null
@@ -74,7 +74,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
           </InvitationDialogCopy>
           <InvitationCenteredCopy>
             <GoogleOAuthButtonBlock
-              label="Sign in using Google"
+              label='Sign in using Google'
               onClick={this.onOAuth}
               isError={!!error}
               submitting={!!submitting}

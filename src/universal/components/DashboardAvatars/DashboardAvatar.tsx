@@ -43,9 +43,9 @@ const DashboardAvatar = (props: Props) => {
         isConnected={isConnected}
         isClickable
         onClick={onClick}
-        size="smaller"
+        size='smaller'
       />
-      <AvatarTag colorPalette="blue" label="Team Lead" isLead={isLead} />
+      <AvatarTag colorPalette='blue' label='Team Lead' isLead={isLead} />
     </AvatarAndTag>
   )
 }

@@ -96,18 +96,18 @@ class AgendaInput extends Component<Props, State> {
     value: ''
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const {disabled, bindHotkey} = this.props
     if (!disabled) {
       bindHotkey('+', this.focusOnInput)
     }
   }
 
-  componentWillUpdate() {
+  componentWillUpdate () {
     this.maybeSaveFocus()
   }
 
-  componentDidUpdate() {
+  componentDidUpdate () {
     this.maybeRefocus()
   }
 
@@ -175,15 +175,15 @@ class AgendaInput extends Component<Props, State> {
     return (
       <InputForm disabled={disabled} onSubmit={this.handleSubmit}>
         <InputField
-          autoCapitalize="off"
-          autoComplete="off"
+          autoCapitalize='off'
+          autoComplete='off'
           disabled={disabled}
           maxLength={63}
           onChange={this.onChange}
           onKeyDown={this.maybeBlur}
-          placeholder="Add Agenda Topic…"
+          placeholder='Add Agenda Topic…'
           innerRef={this.innerRef}
-          type="text"
+          type='text'
           value={value}
         />
         <StyledIcon>add_circle</StyledIcon>
@@ -218,7 +218,7 @@ class AgendaInput extends Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {
       disabled,
       team: {agendaItems}

@@ -95,7 +95,7 @@ class TimelineNewFeature extends Component<Props> {
     submitMutation()
     DismissNewFeatureMutation(atmosphere, {}, {onCompleted, onError})
   }
-  render() {
+  render () {
     const {viewer} = this.props
     const {newFeature} = viewer
     if (!newFeature) return null
@@ -110,9 +110,9 @@ class TimelineNewFeature extends Component<Props> {
           {copy}
           <LearnMore
             href={url}
-            rel="noopener noreferrer"
-            target="_blank"
-            title="Latest Features Blog"
+            rel='noopener noreferrer'
+            target='_blank'
+            title='Latest Features Blog'
           >
             Learn more
           </LearnMore>

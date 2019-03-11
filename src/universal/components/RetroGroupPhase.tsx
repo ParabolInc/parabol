@@ -58,7 +58,7 @@ class RetroGroupPhase extends Component<Props, State> {
     })
   }, ms('1m'))
 
-  componentWillUnmount(): void {
+  componentWillUnmount (): void {
     window.clearTimeout(this.activityTimeoutId)
   }
 
@@ -76,7 +76,7 @@ class RetroGroupPhase extends Component<Props, State> {
     }, ms('30s'))
   }
 
-  render() {
+  render () {
     const {
       atmosphere,
       error,
@@ -122,16 +122,16 @@ class RetroGroupPhase extends Component<Props, State> {
                 innerRef={gotoNextRef}
               >
                 <BottomNavIconLabel
-                  icon="arrow_forward"
-                  iconColor="warm"
+                  icon='arrow_forward'
+                  iconColor='warm'
                   label={`Next: ${nextPhaseLabel}`}
                 />
               </BottomNavControl>
               {canAutoGroup && (
                 <BottomNavControl onClick={autoGroup} waiting={submitting}>
                   <BottomNavIconLabel
-                    icon="photo_filter"
-                    iconColor="midGray"
+                    icon='photo_filter'
+                    iconColor='midGray'
                     label={'Auto Group'}
                   />
                 </BottomNavControl>

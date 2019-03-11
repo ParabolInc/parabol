@@ -104,17 +104,17 @@ const SlackIntegrations = (props: Props) => {
                   {service: SLACK, onError, onCompleted}
                 )
               }
-              palette="mid"
+              palette='mid'
             >
               {'Remove Slack'}
             </FlatButton>
-            <FlatButton onClick={openOAuth} palette="mid">
+            <FlatButton onClick={openOAuth} palette='mid'>
               {'Refresh Token'}
             </FlatButton>
           </RowActions>
         )}
       </ProviderDetails>
-      <Panel label="Channels">
+      <Panel label='Channels'>
         {accessToken ? (
           <Row>
             <AddSlackChannel
@@ -125,7 +125,7 @@ const SlackIntegrations = (props: Props) => {
             />
           </Row>
         ) : (
-          <AddSlackButton size="medium" onClick={openOAuth} palette="warm">
+          <AddSlackButton size='medium' onClick={openOAuth} palette='warm'>
             {'Authorize Slack to Add a Channel'}
           </AddSlackButton>
         )}

@@ -19,13 +19,13 @@ class SuggestedActionCreateNewTeam extends Component<Props> {
     history.push('/newteam')
   }
 
-  render() {
+  render () {
     const {suggestedAction} = this.props
     const {id: suggestedActionId} = suggestedAction
     return (
       <SuggestedActionCard
         backgroundColor={PALETTE.BACKGROUND.GREEN}
-        iconName="group_add"
+        iconName='group_add'
         suggestedActionId={suggestedActionId}
       >
         <SuggestedActionCopy>

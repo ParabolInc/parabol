@@ -107,9 +107,7 @@ const NewMeetingAvatar = (props: Props) => {
   const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES
-  const {teamMemberId, meetingMember, picture = defaultUserAvatar, userId, user} = teamMember
-  const {isConnected} = user
-  const isCheckedIn = meetingMember ? meetingMember.isCheckedIn : null
+  const {teamMemberId, userId} = teamMember
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
   return (

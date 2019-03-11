@@ -42,8 +42,8 @@ const MeetingInProgressModal = (props: Props) => {
             meeting.
           </Fragment>
         )}
-        <StyledButton size="medium" onClick={handleClick}>
-          <IconLabel icon="arrow_forward" iconAfter label="Join Meeting" />
+        <StyledButton size='medium' onClick={handleClick}>
+          <IconLabel icon='arrow_forward' iconAfter label='Join Meeting' />
         </StyledButton>
       </DialogContent>
     </DashModal>

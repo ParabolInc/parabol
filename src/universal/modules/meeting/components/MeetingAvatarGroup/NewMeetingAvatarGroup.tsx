@@ -9,8 +9,8 @@ import withAtmosphere, {
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import {ViewerStreamLookup} from 'universal/components/NewMeeting'
 import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
+import {StreamDict} from '../../../../hooks/useSwarm'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',
@@ -30,7 +30,7 @@ const MeetingAvatarGroupInner = styled('div')({
 interface Props extends WithAtmosphereProps {
   gotoStageId: (stageId: string) => void
   team: NewMeetingAvatarGroup_team
-  viewerStreamLookup: ViewerStreamLookup
+  viewerStreamLookup: StreamDict
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {

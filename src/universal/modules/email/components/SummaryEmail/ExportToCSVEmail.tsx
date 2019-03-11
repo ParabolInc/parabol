@@ -29,14 +29,14 @@ const iconLinkLabel = {
 }
 
 class ExportToCSVEmail extends Component<Props> {
-  render() {
+  render () {
     const {emailCSVLUrl} = this.props
     return (
       <React.Fragment>
         <EmptySpace height={16} />
         <a href={emailCSVLUrl} style={exportStyle} title={label}>
           <img
-            alt="Download CSV"
+            alt='Download CSV'
             style={iconLinkIcon}
             src={`${emailDir}cloud_download.png`}
             height={18}

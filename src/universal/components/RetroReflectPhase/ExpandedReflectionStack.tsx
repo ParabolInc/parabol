@@ -10,7 +10,7 @@ import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import {cardShadow} from 'universal/styles/elevation'
 
 interface Props {
-  collapse(): void
+  collapse (): void
 
   isExpanded: boolean
   phaseRef: React.RefObject<HTMLDivElement>
@@ -48,7 +48,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
   getParentBBox = () => getBBox(this.props.phaseRef.current)
   getChildrenFirst = () => getBBox(this.props.firstReflectionRef.current)
 
-  componentDidMount() {
+  componentDidMount () {
     window.addEventListener('resize', this.handleWindowResize)
   }
 
@@ -75,7 +75,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
     this.props.collapse()
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.props.collapse()
     window.removeEventListener('resize', this.handleWindowResize)
     this.resizeObserver.disconnect()
@@ -87,7 +87,7 @@ class ExpandedReflectionStack extends Component<Props, State> {
     }
   }
 
-  render() {
+  render () {
     const {isExpanded, reflectionStack, meetingId, phaseItemId, readOnly} = this.props
     const {isClosing} = this.state
     return (

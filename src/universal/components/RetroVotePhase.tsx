@@ -179,8 +179,8 @@ const RetroVotePhase = (props: Props) => {
             innerRef={gotoNextRef}
           >
             <BottomNavIconLabel
-              icon="arrow_forward"
-              iconColor="warm"
+              icon='arrow_forward'
+              iconColor='warm'
               label={`Next: ${nextPhaseLabel}`}
             />
           </BottomNavControl>

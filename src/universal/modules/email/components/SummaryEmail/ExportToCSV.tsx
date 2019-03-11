@@ -48,7 +48,7 @@ interface CSVRow {
 }
 
 class ExportToCSV extends Component<Props> {
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.urlAction === 'csv') {
       this.exportToCSV().catch()
     }
@@ -105,17 +105,17 @@ class ExportToCSV extends Component<Props> {
     return
   }
 
-  render() {
+  render () {
     const {submitting} = this.props
     return (
       <FlatButton
         aria-label={`Export to CSV`}
-        size="small"
+        size='small'
         onClick={this.exportToCSV}
         waiting={submitting}
         style={{margin: '16px auto 0'}}
       >
-        <IconLabel icon="cloud_download" iconColor="green" iconLarge label={'Export to CSV'} />
+        <IconLabel icon='cloud_download' iconColor='green' iconLarge label={'Export to CSV'} />
       </FlatButton>
     )
   }

@@ -64,11 +64,11 @@ class RetroReflectPhase extends Component<Props, State> {
     })
   }, ms('2m'))
 
-  componentWillUnmount(): void {
+  componentWillUnmount (): void {
     window.clearTimeout(this.activityTimeoutId)
   }
 
-  render() {
+  render () {
     const {atmosphere, team, gotoNext, gotoNextRef, isDemoStageComplete} = this.props
     const {viewerId} = atmosphere
     const {newMeeting} = team
@@ -115,8 +115,8 @@ class RetroReflectPhase extends Component<Props, State> {
               innerRef={gotoNextRef}
             >
               <BottomNavIconLabel
-                icon="arrow_forward"
-                iconColor="warm"
+                icon='arrow_forward'
+                iconColor='warm'
                 label={`Next: ${nextPhaseLabel}`}
               />
             </BottomNavControl>

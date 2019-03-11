@@ -11,7 +11,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{token: string}
 }
 
 class TeamInvitation extends Component<Props> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props)
     const {
       atmosphere,
@@ -29,7 +29,7 @@ class TeamInvitation extends Component<Props> {
     AcceptTeamInvitationMutation(atmosphere, {invitationToken: token}, {history, onCompleted})
   }
 
-  render() {
+  render () {
     return null
   }
 }

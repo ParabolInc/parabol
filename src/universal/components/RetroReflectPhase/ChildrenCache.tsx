@@ -26,11 +26,11 @@ class ChildrenCache {
   maxWidth: number = 0
   maxHeight: number = 0
 
-  private get(key) {
+  private get (key) {
     return this.cache.find((cachedChild) => cachedChild.key === key)
   }
 
-  private getGridTuples() {
+  private getGridTuples () {
     const fullColumnWidth = this.childWidth + this.childPadding
     const maxCols = Math.floor(this.maxWidth / fullColumnWidth)
     let bestPerimeter = 1e6
@@ -73,7 +73,7 @@ class ChildrenCache {
     return result
   }
 
-  updateChildren() {
+  updateChildren () {
     let childrenToAnimate = 0
     const {children, height, width} = this.getGridTuples()
     children.forEach((last, idx) => {
@@ -95,7 +95,7 @@ class ChildrenCache {
     return {height, width}
   }
 
-  setEl(key: string, el: HTMLElement) {
+  setEl (key: string, el: HTMLElement) {
     const cachedChild = this.get(key)
     if (!cachedChild) {
       const cachedDims = getBBox(el)
@@ -106,7 +106,7 @@ class ChildrenCache {
     }
   }
 
-  setGrid(
+  setGrid (
     maxWidth: number,
     maxHeight: number,
     childPadding: number,
@@ -125,7 +125,7 @@ class ChildrenCache {
     return {height, width}
   }
 
-  animateIn(first: BBox, parent: BBox) {
+  animateIn (first: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
       const {
         point,
@@ -153,7 +153,7 @@ class ChildrenCache {
     })
   }
 
-  animateOut(last: BBox, parent: BBox) {
+  animateOut (last: BBox, parent: BBox) {
     this.cache.forEach((cachedChild) => {
       const {
         point,
@@ -190,7 +190,7 @@ class ChildrenCache {
     return this.updateChildren()
   }
 
-  removeKeys(keys: Array<string>) {
+  removeKeys (keys: Array<string>) {
     keys.forEach((key) => {
       const cachedChild = this.get(key)
       if (!cachedChild) return

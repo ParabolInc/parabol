@@ -17,15 +17,15 @@ interface Props extends WithFormProps {
 
   link: string | null
 
-  removeModal(allowFocus: boolean): void
+  removeModal (allowFocus: boolean): void
 
   selectionState: SelectionState
 
-  setEditorState(editorState: EditorState): void
+  setEditorState (editorState: EditorState): void
 
   text: string | null
 
-  trackEditingComponent(componentName: string, isTracking: boolean): void
+  trackEditingComponent (componentName: string, isTracking: boolean): void
 }
 
 const ModalBoundary = styled('div')({
@@ -56,14 +56,14 @@ const ButtonBlock = styled('div')({
 })
 
 class EditorLinkChanger extends Component<Props> {
-  componentWillMount() {
+  componentWillMount () {
     const {trackEditingComponent} = this.props
     if (trackEditingComponent) {
       trackEditingComponent('editor-link-changer', true)
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const {trackEditingComponent} = this.props
     if (trackEditingComponent) {
       trackEditingComponent('editor-link-changer', false)
@@ -110,7 +110,7 @@ class EditorLinkChanger extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     const {link, fields, innerRef, onChange, text} = this.props
     const hasError = !!(fields.text.error || fields.link.error)
     const label = text ? 'Update' : 'Add'
@@ -125,7 +125,7 @@ class EditorLinkChanger extends Component<Props> {
           {text !== null && (
             <TextBlock>
               <InputLabel>{'Text'}</InputLabel>
-              <BasicInput {...fields.text} onChange={onChange} autoFocus name="text" />
+              <BasicInput {...fields.text} onChange={onChange} autoFocus name='text' />
             </TextBlock>
           )}
           <TextBlock>
@@ -134,12 +134,12 @@ class EditorLinkChanger extends Component<Props> {
               {...fields.link}
               autoFocus={link === null && text !== ''}
               onChange={onChange}
-              name="link"
+              name='link'
               spellCheck={false}
             />
           </TextBlock>
           <ButtonBlock>
-            <RaisedButton disabled={hasError} onClick={this.onSubmit} palette="mid">
+            <RaisedButton disabled={hasError} onClick={this.onSubmit} palette='mid'>
               {label}
             </RaisedButton>
           </ButtonBlock>

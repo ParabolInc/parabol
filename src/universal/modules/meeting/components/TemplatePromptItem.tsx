@@ -90,7 +90,7 @@ class TemplatePromptItem extends Component<Props, State> {
     RemoveReflectTemplatePromptMutation(atmosphere, {promptId: prompt.id}, {}, onError, onCompleted)
   }
 
-  render() {
+  render () {
     const {canRemove, dragProvided, isDragging, prompt, prompts} = this.props
     const {id: promptId, question} = prompt
     const {isHover} = this.state

@@ -35,7 +35,7 @@ const NewMeetingSummary = (props: Props) => {
         urlAction={urlAction}
         isDemo={teamId === demoTeamId}
         meeting={newMeeting}
-        referrer="meeting"
+        referrer='meeting'
         meetingUrl={meetingUrl}
         teamDashUrl={teamDashUrl}
       />

@@ -50,13 +50,13 @@ class RemoveTemplate extends Component<Props> {
     RemoveReflectTemplateMutation(atmosphere, {templateId}, {}, onError, onCompleted)
   }
 
-  render() {
+  render () {
     const {submitting, templateCount} = this.props
     return (
       <Button
         canDelete={templateCount > 1}
         onClick={this.removeTemplate}
-        size="small"
+        size='small'
         waiting={submitting}
       >
         <DeleteIcon>delete</DeleteIcon>

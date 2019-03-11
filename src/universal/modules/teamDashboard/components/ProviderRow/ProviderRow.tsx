@@ -175,7 +175,7 @@ const ProviderRow = (props: Props) => {
               {hasActivity && (
                 <ProviderMeta>
                   <ProviderMetaItem>
-                    <FontAwesome name="user-circle" style={metaIconStyle} /> {userCount}
+                    <FontAwesome name='user-circle' style={metaIconStyle} /> {userCount}
                   </ProviderMetaItem>
                   <ProviderMetaItem>
                     <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
@@ -193,11 +193,11 @@ const ProviderRow = (props: Props) => {
       {!comingSoon && (
         <ProviderActions>
           {accessToken ? (
-            <StyledButton key="teamSettings" onClick={() => history.push(to)}>
+            <StyledButton key='teamSettings' onClick={() => history.push(to)}>
               {'Team Settings'}
             </StyledButton>
           ) : (
-            <StyledButton key="linkAccount" onClick={openOAuth} palette="warm" waiting={submitting}>
+            <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>
               {'Link My Account'}
             </StyledButton>
           )}

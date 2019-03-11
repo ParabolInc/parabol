@@ -85,15 +85,15 @@ class UserAvatarInput extends Component<Props> {
     CreateUserPicturePutUrlMutation(atmosphere, variables, onError, handleCompleted)
   }
 
-  render() {
+  render () {
     const {picture, dirty, error} = this.props
     return (
       <ModalBoundary>
-        <Type align="center" bold scale="s6" colorPalette="mid">
+        <Type align='center' bold scale='s6' colorPalette='mid'>
           {'Upload a New Photo'}
         </Type>
         <AvatarBlock>
-          <Avatar picture={picture} size="fill" />
+          <Avatar picture={picture} size='fill' />
         </AvatarBlock>
         <AvatarInput error={dirty ? (error as string) : undefined} onSubmit={this.onSubmit} />
       </ModalBoundary>

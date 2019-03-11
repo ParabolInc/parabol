@@ -17,7 +17,7 @@ class ErrorBoundary extends Component<Props, State> {
     errorInfo: undefined
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch (error: Error, errorInfo: ErrorInfo) {
     // Catch errors in any components below and re-render with error message
     this.setState({
       error,
@@ -31,7 +31,7 @@ class ErrorBoundary extends Component<Props, State> {
     })
   }
 
-  render() {
+  render () {
     const {error} = this.state
     if (error) {
       return <ErrorComponent error={error!} />

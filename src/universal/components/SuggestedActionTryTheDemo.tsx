@@ -32,13 +32,13 @@ class SuggestedActionTryTheDemo extends Component<Props> {
     history.push('/retrospective-demo')
   }
 
-  render() {
+  render () {
     const {suggestedAction} = this.props
     const {id: suggestedActionId} = suggestedAction
     return (
       <SuggestedActionCard
         backgroundColor={PALETTE.BACKGROUND.YELLOW}
-        iconName="group_work"
+        iconName='group_work'
         suggestedActionId={suggestedActionId}
       >
         <SuggestedActionCopy>

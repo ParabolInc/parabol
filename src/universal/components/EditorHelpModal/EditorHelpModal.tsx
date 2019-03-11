@@ -196,10 +196,10 @@ const EditorHelpModal = (props: Props) => {
     <ModalBoundary>
       <ModalHeader>
         <ModalHeaderIcon>
-          <IconLabel icon="keyboard" iconLarge />
+          <IconLabel icon='keyboard' iconLarge />
         </ModalHeaderIcon>
         <ModalHeaderTitle>{'Task Card Formatting'}</ModalHeaderTitle>
-        <CloseButton icon="close" iconLarge onClick={handleCloseModal} palette="midGray" />
+        <CloseButton icon='close' iconLarge onClick={handleCloseModal} palette='midGray' />
       </ModalHeader>
       <HeaderLabelBlock>
         <HeaderLabel>{'Keyboard'}</HeaderLabel>

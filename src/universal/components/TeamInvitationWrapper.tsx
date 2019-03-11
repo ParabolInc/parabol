@@ -30,7 +30,7 @@ interface Props {
   children: ReactNode
 }
 
-function TeamInvitationWrapper(props: Props) {
+function TeamInvitationWrapper (props: Props) {
   const {children} = props
   return (
     <PageContainer>

@@ -14,7 +14,7 @@ interface Props extends RouteComponentProps<{}> {
 }
 
 class TimelineEventCompletedActionMeeting extends Component<Props> {
-  render() {
+  render () {
     const {timelineEvent} = this.props
     const {meeting, team} = timelineEvent
     const {id: meetingId, meetingNumber, createdAt, endedAt, taskCount} = meeting
@@ -27,7 +27,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
     })
     return (
       <TimelineEventCard
-        iconName="change_history"
+        iconName='change_history'
         timelineEvent={timelineEvent}
         title={
           <TimelineEventTitle>{`Action Meeting #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>

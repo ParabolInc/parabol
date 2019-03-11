@@ -50,7 +50,7 @@ const TeamInvitation = (props: Props) => {
 
   return (
     <Row compact>
-      <IconAvatar icon="group" size="small" />
+      <IconAvatar icon='group' size='small' />
       <NotificationMessage>
         {'You have been invited by '}
         <b>{inviterName}</b>
@@ -60,10 +60,10 @@ const TeamInvitation = (props: Props) => {
       </NotificationMessage>
       <NotificationButton>
         <StyledButton
-          aria-label="Accept team invitation"
+          aria-label='Accept team invitation'
           size={ui.notificationButtonSize}
           onClick={accept}
-          palette="warm"
+          palette='warm'
           waiting={submitting}
         >
           {'Accept'}

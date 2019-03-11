@@ -12,7 +12,7 @@ interface Props extends WithAtmosphereProps {}
 
 class SocketHealthMonitor extends Component<Props> {
   disconnectedToastTimer: number | null = null
-  componentDidMount() {
+  componentDidMount () {
     const {atmosphere} = this.props
     atmosphere.eventEmitter.once('newSubscriptionClient', () => {
       const {transport} = atmosphere
@@ -75,7 +75,7 @@ class SocketHealthMonitor extends Component<Props> {
     }, 1000)
   }
 
-  render() {
+  render () {
     return null
   }
 }

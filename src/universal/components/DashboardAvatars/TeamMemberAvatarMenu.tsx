@@ -44,7 +44,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
         isSelf ? 'You are' : `${preferredName} is`
       } ${connected}`}</DropdownMenuLabel>
       {isViewerLead && !isSelf && (
-        <MenuItemWithShortcuts key="promote" noCloseOnClick>
+        <MenuItemWithShortcuts key='promote' noCloseOnClick>
           <LoadableModal
             LoadableComponent={PromoteTeamMemberModal}
             queryVars={{teamMember}}
@@ -53,7 +53,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
         </MenuItemWithShortcuts>
       )}
       {isViewerLead && !isSelf && (
-        <MenuItemWithShortcuts key="remove" noCloseOnClick>
+        <MenuItemWithShortcuts key='remove' noCloseOnClick>
           <LoadableModal
             LoadableComponent={RemoveTeamMemberModal}
             queryVars={{teamMember}}
@@ -62,7 +62,7 @@ const TeamMemberAvatarMenu = (props: Props) => {
         </MenuItemWithShortcuts>
       )}
       {!isViewerLead && isSelf && (
-        <MenuItemWithShortcuts key="leave" noCloseOnClick>
+        <MenuItemWithShortcuts key='leave' noCloseOnClick>
           <LoadableModal
             LoadableComponent={LeaveTeamModal}
             queryVars={{teamMember}}

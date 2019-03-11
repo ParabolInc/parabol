@@ -13,7 +13,7 @@ interface Props {
 
 let permShow = 0
 
-function ReflectHelpMenu(props: Props) {
+function ReflectHelpMenu (props: Props) {
   const {closePortal, staggerShow} = props
   if (staggerShow > permShow) permShow = staggerShow
   return (

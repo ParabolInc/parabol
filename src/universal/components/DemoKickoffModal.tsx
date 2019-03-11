@@ -48,17 +48,17 @@ const StyledLinkButton = styled(LinkButton)({
 })
 
 class DemoKickoffModal extends React.Component<Props> {
-  render() {
+  render () {
     const {closePortal} = this.props
     return (
       <ModalBox>
         <Heading>Hi there!</Heading>
         <Subheading>Welcome to the Parabol Retro Demo</Subheading>
         <Copy>Join our scripted Demo Team to try it for yourself.</Copy>
-        <StyledPrimaryButton onClick={closePortal} size="large">
+        <StyledPrimaryButton onClick={closePortal} size='large'>
           Okay, let’s start!
         </StyledPrimaryButton>
-        <StyledLinkButton size="medium" palette="blue">
+        <StyledLinkButton size='medium' palette='blue'>
           Skip the Demo — Create a Free Account
         </StyledLinkButton>
       </ModalBox>

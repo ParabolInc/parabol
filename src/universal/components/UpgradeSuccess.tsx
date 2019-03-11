@@ -59,7 +59,7 @@ type State = {
 class UpgradeSuccess extends React.Component<Props, State> {
   _mounted = true
 
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props)
     setTimeout(() => {
       this.setState({active: true})
@@ -74,11 +74,11 @@ class UpgradeSuccess extends React.Component<Props, State> {
     active: false
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this._mounted = false
   }
 
-  render() {
+  render () {
     const {handleClose} = this.props
     const {active} = this.state
     return (
@@ -90,7 +90,7 @@ class UpgradeSuccess extends React.Component<Props, State> {
           <b>{PRO_LABEL}</b>
           {' tier.'}
         </ModalCopy>
-        <ModalButton size="large" onClick={handleClose}>
+        <ModalButton size='large' onClick={handleClose}>
           {'Let’s Get Back to Business'}
         </ModalButton>
         <Confetti active={active} />
