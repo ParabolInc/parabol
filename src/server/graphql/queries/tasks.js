@@ -26,7 +26,7 @@ export default {
     if (teamId) {
       if (!isTeamMember(authToken, teamId)) {
         standardError(new Error('Team not found'), {userId})
-        return null
+        tasks = []
       }
       tasks = await dataLoader.get('tasksByTeamId').load(teamId)
     } else {
