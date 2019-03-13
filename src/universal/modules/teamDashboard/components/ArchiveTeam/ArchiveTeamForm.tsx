@@ -66,7 +66,7 @@ class ArchiveTeamForm extends Component<Props> {
           autoFocus
           onBlur={handleFormBlur}
           name='archivedTeamName'
-          placeholder='E.g. &quot;My Team&quot;'
+          placeholder='E.g. "My Team"'
         />
       </form>
     )
@@ -79,9 +79,8 @@ const form = withForm({
     validate: (rawInput, {teamName}) => {
       return new Legitity(rawInput)
         .normalize(normalize, 'err')
-        .test(
-          (val) =>
-            val === normalize(teamName) ? undefined : 'The team name entered was incorrect.'
+        .test((val) =>
+          val === normalize(teamName) ? undefined : 'The team name entered was incorrect.'
         )
     }
   }

@@ -54,24 +54,22 @@ const BillingLeaderActionMenu = (props: Props) => {
 
   return (
     <MenuWithShortcuts ariaLabel={'Select your action'} closePortal={closePortal}>
-      {isBillingLeader &&
-        !isViewerLastBillingLeader && (
-          <MenuItemWithShortcuts label='Remove Billing Leader role' onClick={setRole(null)} />
-        )}
+      {isBillingLeader && !isViewerLastBillingLeader && (
+        <MenuItemWithShortcuts label='Remove Billing Leader role' onClick={setRole(null)} />
+      )}
       {!isBillingLeader && (
         <MenuItemWithShortcuts
           label='Promote to Billing Leader'
           onClick={setRole(BILLING_LEADER)}
         />
       )}
-      {viewerId === userId &&
-        !isViewerLastBillingLeader && (
-          <LoadableModal
-            LoadableComponent={LeaveOrgModal}
-            queryVars={{orgId}}
-            toggle={<MenuItemWithShortcuts label='Leave Organization' />}
-          />
-        )}
+      {viewerId === userId && !isViewerLastBillingLeader && (
+        <LoadableModal
+          LoadableComponent={LeaveOrgModal}
+          queryVars={{orgId}}
+          toggle={<MenuItemWithShortcuts label='Leave Organization' />}
+        />
+      )}
       {viewerId !== userId && (
         <LoadableModal
           LoadableComponent={RemoveFromOrgModal}

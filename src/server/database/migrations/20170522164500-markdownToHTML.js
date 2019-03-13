@@ -1,8 +1,8 @@
 /*
-* These packages relied on things that were part of react 15 but not react 16, so they are all broken
-* Since we no longer need them, it's easier to comment everything out so we can clean up our package.json #1386
-*
-*/
+ * These packages relied on things that were part of react 15 but not react 16, so they are all broken
+ * Since we no longer need them, it's easier to comment everything out so we can clean up our package.json #1386
+ *
+ */
 // import {convertFromHTML, ContentState, convertToRaw, convertFromRaw, SelectionState} from 'draft-js';
 // import MarkdownIt from 'markdown-it';
 // import emoji from 'markdown-it-emoji';

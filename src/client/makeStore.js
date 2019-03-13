@@ -20,7 +20,10 @@ export default (initialState) => {
     store = createStore(
       reducer,
       initialState,
-      compose(applyMiddleware(...middlewares), devtoolsExt || ((f) => f))
+      compose(
+        applyMiddleware(...middlewares),
+        devtoolsExt || ((f) => f)
+      )
     )
   }
   window.localStorage.setItem(APP_VERSION_KEY, __APP_VERSION__) // eslint-disable-line no-undef

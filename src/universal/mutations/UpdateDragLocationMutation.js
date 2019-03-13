@@ -67,15 +67,15 @@ export const updateDragLocationTeamUpdater = (payload, {atmosphere, store}) => {
         height: modalHeight,
         width: modalWidth
       } = targetChild.modalBoundingBox
-      localX = -offsetX / REFLECTION_WIDTH * modalWidth + modalLeft
-      localY = -offsetY / height * modalHeight + modalTop
+      localX = (-offsetX / REFLECTION_WIDTH) * modalWidth + modalLeft
+      localY = (-offsetY / height) * modalHeight + modalTop
     } else {
       localX = left - offsetX + parentLeft
       localY = top - offsetY + parentTop
     }
   } else {
-    localX = foreignX / clientWidth * window.innerWidth
-    localY = foreignY / clientHeight * window.innerHeight
+    localX = (foreignX / clientWidth) * window.innerWidth
+    localY = (foreignY / clientHeight) * window.innerHeight
   }
   const newCoords = createProxyRecord(store, 'Coords2D', {x: localX, y: localY})
   dragContext.setLinkedRecord(newCoords, 'dragCoords')

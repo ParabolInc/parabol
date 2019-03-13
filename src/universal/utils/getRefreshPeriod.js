@@ -21,7 +21,7 @@ export default function getRefreshPeriod (maybeTime) {
     if (msElapsed < thresh) {
       const largestUnit = thresholds[threshKeys[i - 1]]
       const minimum = 30 * thresholds.second
-      const minVal = Math.max(largestUnit - msElapsed % largestUnit, minimum)
+      const minVal = Math.max(largestUnit - (msElapsed % largestUnit), minimum)
       return Math.min(minVal, MAX_INT)
     }
   }

@@ -1,6 +1,6 @@
 import addons from '@storybook/addons'
 import Events from '@storybook/core-events'
-import React, {SFC} from 'react'
+import React from 'react'
 
 const style = {
   width: 30,
@@ -9,7 +9,7 @@ const style = {
 
 class Incrementor {
   num: number = this.min
-  Button: SFC
+  Button: any
 
   constructor (public min: number, public max: number) {
     this.Button = () => (

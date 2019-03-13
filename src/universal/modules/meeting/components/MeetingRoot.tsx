@@ -40,7 +40,7 @@ const MeetingRoot = ({history, location, match}: Props) => {
   const {
     params: {localPhase, localPhaseItem, teamId}
   } = match
-  const atmosphere = useAtmosphere()!
+  const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}

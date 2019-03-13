@@ -137,64 +137,60 @@ const OrgMemberRow = (props: Props) => {
       </RowInfo>
       <RowActions>
         <ActionsBlock>
-          {!isBillingLeader &&
-            viewerId === userId && (
-              <LoadableModal
-                LoadableComponent={LeaveOrgModal}
-                queryVars={{orgId}}
-                toggle={<FlatButton>Leave Organization</FlatButton>}
+          {!isBillingLeader && viewerId === userId && (
+            <LoadableModal
+              LoadableComponent={LeaveOrgModal}
+              queryVars={{orgId}}
+              toggle={<FlatButton>Leave Organization</FlatButton>}
+            />
+          )}
+          {!isPersonalTier && isViewerBillingLeader && (
+            <ToggleBlock>
+              <Toggle
+                active={!inactive}
+                block
+                disabled={isPersonalTier}
+                label={inactive ? 'Inactive' : 'Active'}
+                onClick={toggleHandler}
               />
-            )}
-          {!isPersonalTier &&
-            isViewerBillingLeader && (
-              <ToggleBlock>
-                <Toggle
-                  active={!inactive}
-                  block
-                  disabled={isPersonalTier}
-                  label={inactive ? 'Inactive' : 'Active'}
-                  onClick={toggleHandler}
-                />
-              </ToggleBlock>
-            )}
-          {isViewerLastBillingLeader &&
-            userId === viewerId && (
-              <Tooltip
-                tip={
-                  <div>
-                    {'You need to promote another Billing Leader'}
-                    <br />
-                    {'before you can leave this role or Organization.'}
-                  </div>
-                }
-                maxHeight={60}
-                maxWidth={200}
-                originAnchor={{vertical: 'top', horizontal: 'right'}}
-                targetAnchor={{vertical: 'bottom', horizontal: 'right'}}
-              >
-                <MenuToggleBlock>
-                  <MenuButton disabled />
-                </MenuToggleBlock>
-              </Tooltip>
-            )}
-          {isViewerBillingLeader &&
-            !(isViewerLastBillingLeader && userId === viewerId) && (
+            </ToggleBlock>
+          )}
+          {isViewerLastBillingLeader && userId === viewerId && (
+            <Tooltip
+              tip={
+                <div>
+                  {'You need to promote another Billing Leader'}
+                  <br />
+                  {'before you can leave this role or Organization.'}
+                </div>
+              }
+              maxHeight={60}
+              maxWidth={200}
+              originAnchor={{vertical: 'top', horizontal: 'right'}}
+              targetAnchor={{vertical: 'bottom', horizontal: 'right'}}
+            >
               <MenuToggleBlock>
-                <LoadableMenu
-                  LoadableComponent={LoadableBillingLeaderActionMenu}
-                  maxWidth={224}
-                  maxHeight={200}
-                  originAnchor={originAnchor}
-                  queryVars={{
-                    isViewerLastBillingLeader,
-                    organizationUser,
-                    organization
-                  }}
-                  targetAnchor={targetAnchor}
-                  toggle={<MenuButton />}
-                />
+                <MenuButton disabled />
               </MenuToggleBlock>
-            )}
+            </Tooltip>
+          )}
+          {isViewerBillingLeader && !(isViewerLastBillingLeader && userId === viewerId) && (
+            <MenuToggleBlock>
+              <LoadableMenu
+                LoadableComponent={LoadableBillingLeaderActionMenu}
+                maxWidth={224}
+                maxHeight={200}
+                originAnchor={originAnchor}
+                queryVars={{
+                  isViewerLastBillingLeader,
+                  organizationUser,
+                  organization
+                }}
+                targetAnchor={targetAnchor}
+                toggle={<MenuButton />}
+              />
+            </MenuToggleBlock>
+          )}
         </ActionsBlock>
       </RowActions>
     </Row>

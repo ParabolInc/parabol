@@ -20,7 +20,7 @@ interface Props extends RouteComponentProps<{teamId: string}> {
 }
 
 const TeamArchiveRoot = ({match, team}: Props) => {
-  const atmosphere = useAtmosphere()!
+  const atmosphere = useAtmosphere()
   const {
     params: {teamId}
   } = match

@@ -10,7 +10,7 @@ const BACKGROUND_WIDTH = DASH_TIMELINE.FEED_MAX_WIDTH
 // make the pattern large enough to fill the background
 // imagine fitting a rectangle into a larger rect that is rotated 15 degrees, how big is that bigger one?
 const getRotatedBBox = (rotationDegrees: number, width: number, height: number) => {
-  const radians = rotationDegrees * Math.PI / 180
+  const radians = (rotationDegrees * Math.PI) / 180
   const sinROT = Math.sin(radians)
   const cosROT = Math.cos(radians)
   const w1 = sinROT * height

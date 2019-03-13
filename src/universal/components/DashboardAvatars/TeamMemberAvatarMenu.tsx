@@ -43,36 +43,33 @@ const TeamMemberAvatarMenu = (props: Props) => {
       <DropdownMenuLabel notMenuItem isEmpty={!hasOptions}>{`${
         isSelf ? 'You are' : `${preferredName} is`
       } ${connected}`}</DropdownMenuLabel>
-      {isViewerLead &&
-        !isSelf && (
-          <MenuItemWithShortcuts key='promote' noCloseOnClick>
-            <LoadableModal
-              LoadableComponent={PromoteTeamMemberModal}
-              queryVars={{teamMember}}
-              toggle={<MenuItemLabel>Promote {preferredName} to Team Lead</MenuItemLabel>}
-            />
-          </MenuItemWithShortcuts>
-        )}
-      {isViewerLead &&
-        !isSelf && (
-          <MenuItemWithShortcuts key='remove' noCloseOnClick>
-            <LoadableModal
-              LoadableComponent={RemoveTeamMemberModal}
-              queryVars={{teamMember}}
-              toggle={<MenuItemLabel>Remove {preferredName} from Team</MenuItemLabel>}
-            />
-          </MenuItemWithShortcuts>
-        )}
-      {!isViewerLead &&
-        isSelf && (
-          <MenuItemWithShortcuts key='leave' noCloseOnClick>
-            <LoadableModal
-              LoadableComponent={LeaveTeamModal}
-              queryVars={{teamMember}}
-              toggle={<MenuItemLabel>Leave Team</MenuItemLabel>}
-            />
-          </MenuItemWithShortcuts>
-        )}
+      {isViewerLead && !isSelf && (
+        <MenuItemWithShortcuts key='promote' noCloseOnClick>
+          <LoadableModal
+            LoadableComponent={PromoteTeamMemberModal}
+            queryVars={{teamMember}}
+            toggle={<MenuItemLabel>Promote {preferredName} to Team Lead</MenuItemLabel>}
+          />
+        </MenuItemWithShortcuts>
+      )}
+      {isViewerLead && !isSelf && (
+        <MenuItemWithShortcuts key='remove' noCloseOnClick>
+          <LoadableModal
+            LoadableComponent={RemoveTeamMemberModal}
+            queryVars={{teamMember}}
+            toggle={<MenuItemLabel>Remove {preferredName} from Team</MenuItemLabel>}
+          />
+        </MenuItemWithShortcuts>
+      )}
+      {!isViewerLead && isSelf && (
+        <MenuItemWithShortcuts key='leave' noCloseOnClick>
+          <LoadableModal
+            LoadableComponent={LeaveTeamModal}
+            queryVars={{teamMember}}
+            toggle={<MenuItemLabel>Leave Team</MenuItemLabel>}
+          />
+        </MenuItemWithShortcuts>
+      )}
     </MenuWithShortcuts>
   )
 }

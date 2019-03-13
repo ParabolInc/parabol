@@ -55,7 +55,8 @@ const makeEditingStatus = (editors, isEditing, timestamp, timestampType) => {
     } else if (editors.length === 2) {
       editingStatus = isEditing ? (
         <span>
-          several are editing<Ellipsis />
+          several are editing
+          <Ellipsis />
         </span>
       ) : (
         <span>

@@ -105,7 +105,7 @@ const sendUpcomingInvoiceEmails = {
       await Promise.all(
         details.map((detail) => {
           const {emailStr, ...props} = detail
-          sendEmailPromise(emailStr, 'UpcomingInvoiceEmailTemplate', props)
+          sendEmailPromise(emailStr, 'UpcomingInvoiceEmailTemplate', props).catch()
         })
       )
       const orgIds = organizations.map(({id}) => id)

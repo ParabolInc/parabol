@@ -18,7 +18,7 @@ const makePlaceholders = (
   maxCols: number,
   setItemRef: MasonryCSSGrid['setItemRef']
 ) => {
-  const emptyCardCount = maxCols - (length % maxCols + 1)
+  const emptyCardCount = maxCols - ((length % maxCols) + 1)
   return new Array(emptyCardCount).fill(undefined).map((_, idx) => (
     <div key={`CreateCardPlaceholder${idx}`} ref={setItemRef(String(idx))}>
       <CreateCard />

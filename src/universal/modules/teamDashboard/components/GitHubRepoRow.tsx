@@ -140,18 +140,16 @@ class GitHubRepoRow extends Component<Props> {
               </AvatarBlock>
             ))}
           </AvatarGroup>
-          {accessToken &&
-            !isCreator && (
-              <StyledButton onClick={this.toggleIntegrationMembership(id)} waiting={submitting}>
-                {viewerInIntegration ? 'Unlink Me' : 'Link Me'}
-              </StyledButton>
-            )}
-          {accessToken &&
-            isCreator && (
-              <StyledButton onClick={this.removeRepo} waiting={submitting}>
-                {'Remove Repo'}
-              </StyledButton>
-            )}
+          {accessToken && !isCreator && (
+            <StyledButton onClick={this.toggleIntegrationMembership(id)} waiting={submitting}>
+              {viewerInIntegration ? 'Unlink Me' : 'Link Me'}
+            </StyledButton>
+          )}
+          {accessToken && isCreator && (
+            <StyledButton onClick={this.removeRepo} waiting={submitting}>
+              {'Remove Repo'}
+            </StyledButton>
+          )}
         </IntegrationRow>
         {error && <ErrorRow>{error}</ErrorRow>}
       </RowContainer>

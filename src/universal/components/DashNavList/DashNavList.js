@@ -23,7 +23,9 @@ const DashNavList = (props) => {
   if (!hasTeams) return <EmptyTeams>It appears you are not a member of any team!</EmptyTeams>
   return (
     <DashNavListStyles>
-      {teams.map((team) => <DashNavTeam key={team.id} location={location} team={team} />)}
+      {teams.map((team) => (
+        <DashNavTeam key={team.id} location={location} team={team} />
+      ))}
     </DashNavListStyles>
   )
 }

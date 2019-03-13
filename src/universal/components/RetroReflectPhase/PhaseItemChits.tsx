@@ -50,10 +50,10 @@ const shiftColor = (idx) => keyframes`
   0% {
     background-position: ${idx * OFFSET}px;
   }
-	${100 - idx * OFFSET / (PROGRESS_WIDTH / 100)}% {
+	${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100)}% {
 	  background-position: ${PROGRESS_WIDTH}px;
 	}
-	${100 - idx * OFFSET / (PROGRESS_WIDTH / 100) + 0.0001}% {
+	${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100) + 0.0001}% {
 	  background-position: 0px;
 	}
 	100% {
@@ -119,7 +119,9 @@ class PhaseItemChits extends Component<Props> {
       <div>
         <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
         <ChitArea>
-          {chits.map((idx) => <Chit key={idx} />)}
+          {chits.map((idx) => (
+            <Chit key={idx} />
+          ))}
 
           {activeChits.map((idx) => (
             <Chit key={idx}>
