@@ -2,6 +2,7 @@ import {TimelineFeedList_viewer} from '__generated__/TimelineFeedList_viewer.gra
 import React, {Component} from 'react'
 import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-relay'
 import TimelineEvent from './TimelineEvent'
+import 'intersection-observer'
 
 interface Props {
   viewer: TimelineFeedList_viewer
@@ -9,18 +10,20 @@ interface Props {
 }
 
 class TimelineFeedList extends Component<Props> {
-  componentDidMount () {
-    window.addEventListener('scroll', this.onScroll)
+  intersectionObserver!: IntersectionObserver
+  lastItemRef?: HTMLDivElement
+  constructor (props: Props) {
+    super(props)
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      const [entry] = entries
+      if (entry.intersectionRatio > 0) {
+        this.loadMore()
+      }
+    })
   }
 
   componentWillUnmount (): void {
-    window.removeEventListener('scroll', this.onScroll)
-  }
-
-  onScroll = () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-      this.loadMore()
-    }
+    this.intersectionObserver.disconnect()
   }
 
   loadMore = () => {
@@ -40,6 +43,16 @@ class TimelineFeedList extends Component<Props> {
         {timeline.edges.map(({node: timelineEvent}) => (
           <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />
         ))}
+        <div
+          ref={(c) => {
+            if (c) {
+              this.intersectionObserver.observe(c)
+              this.lastItemRef = c
+            } else {
+              this.intersectionObserver.unobserve(this.lastItemRef!)
+            }
+          }}
+        />
       </div>
     )
   }

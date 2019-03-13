@@ -20,7 +20,7 @@ export const enum DASH_SIDEBAR {
 
 interface Props {
   location: any
-  viewer: DashSidebar_viewer
+  viewer: DashSidebar_viewer | null
 }
 
 const textColor = tinycolor.mix(appTheme.palette.mid10l, '#fff', 50).toHexString()

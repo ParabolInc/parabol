@@ -1,11 +1,6 @@
-import React, {lazy} from 'react'
-import {DragDropContext as dragDropContext} from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
+import React from 'react'
 import {graphql} from 'react-relay'
-import {Route, Switch} from 'react-router'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import DashLayout from 'universal/components/Dashboard/DashLayout'
-import DashSidebar from 'universal/components/Dashboard/DashSidebar'
 import QueryRenderer from 'universal/components/QueryRenderer/QueryRenderer'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -17,36 +12,15 @@ import TaskSubscription from 'universal/subscriptions/TaskSubscription'
 import TeamMemberSubscription from 'universal/subscriptions/TeamMemberSubscription'
 import TeamSubscription from 'universal/subscriptions/TeamSubscription'
 import {cacheConfig} from 'universal/utils/constants'
+import Dashboard from './Dashboard'
 
 const query = graphql`
   query DashboardRootQuery {
     viewer {
-      notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
-        edges {
-          node {
-            id
-            orgId
-            startAt
-            type
-            ...NotificationRow_notification
-          }
-        }
-      }
-      ...DashSidebar_viewer
-      ...DashLayout_viewer
+      ...Dashboard_viewer
     }
   }
 `
-
-const UserDashboard = lazy(() =>
-  import(/* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard')
-)
-const TeamRoot = lazy(() =>
-  import(/* webpackChunkName: 'TeamRoot' */ 'universal/modules/teamDashboard/components/TeamRoot')
-)
-const NewTeam = lazy(() =>
-  import(/* webpackChunkName: 'NewTeamRoot' */ 'universal/modules/newTeam/containers/NewTeamForm/NewTeamRoot')
-)
 
 const subscriptions = [
   NewAuthTokenSubscription,
@@ -59,35 +33,20 @@ const subscriptions = [
 
 interface Props extends WithAtmosphereProps, RouteComponentProps<{}> {}
 
-const DashboardRoot = ({atmosphere, history, location}: Props) => {
+const DashboardRoot = ({atmosphere, history}: Props) => {
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
       environment={atmosphere}
       query={query}
       variables={{}}
-      subParams={{history, location}}
+      subParams={{history}}
       subscriptions={subscriptions}
-      render={({props: renderProps}) => {
-        const notifications =
-          renderProps && renderProps.viewer ? renderProps.viewer.notifications : undefined
-        const viewer = renderProps ? renderProps.viewer : null
-        return (
-          <DashLayout viewer={viewer}>
-            <DashSidebar viewer={viewer} location={location} />
-            <Switch>
-              <Route
-                path='/me'
-                render={(p) => <UserDashboard {...p} notifications={notifications} />}
-              />
-              <Route path='/team/:teamId' component={TeamRoot} />
-              <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-            </Switch>
-          </DashLayout>
-        )
+      render={({props}) => {
+        return <Dashboard viewer={props ? props.viewer : null} />
       }}
     />
   )
 }
 
-export default dragDropContext(HTML5Backend)(withRouter(withAtmosphere(DashboardRoot)))
+export default withRouter(withAtmosphere(DashboardRoot))

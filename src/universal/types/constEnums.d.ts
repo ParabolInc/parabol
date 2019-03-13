@@ -8,3 +8,9 @@ export const enum LoaderSize {
   WHOLE_PAGE = 400,
   PANEL = 200
 }
+
+// equal to utils/constants
+export const enum MeetingTypes {
+  ACTION = 'action',
+  RETROSPECTIVE = 'retrospective'
+}
