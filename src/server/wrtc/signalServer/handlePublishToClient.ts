@@ -5,8 +5,8 @@ interface PublishToClientPayload {
   payload: any
 }
 
-const handlePublishToClient = (ws: UWebSocket, payload: PublishToClientPayload) => {
-  ws.send(JSON.stringify(payload))
+const handlePublishToClient = (ws: UWebSocket, data: PublishToClientPayload) => {
+  ws.send(JSON.stringify(data.payload))
 }
 
 export default handlePublishToClient

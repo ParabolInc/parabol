@@ -8,6 +8,7 @@ import isQueryAllowed from '../graphql/isQueryAllowed'
 import ConnectionContext from '../socketHelpers/ConnectionContext'
 import {getUserId} from '../utils/authorization'
 import sendToSentry from '../utils/sendToSentry'
+import closeWRTC from '../wrtc/signalServer/closeWRTC'
 import handleSignal, {UWebSocket} from '../wrtc/signalServer/handleSignal'
 import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
 const {GQL_ERROR} = ClientMessageTypes
@@ -34,13 +35,22 @@ const handleMessage = (connectionContext: ConnectionContext) => async (message: 
   }
 
   if (parsedMessage.type === 'WRTC_SIGNAL') {
-    const {socket} = connectionContext
+    const {authToken, socket} = connectionContext
     const {signal} = parsedMessage
-    if (!socket.context) {
-      if (signal.type !== 'init') return
-      socket.context = new WebSocketContext(connectionContext.authToken.tms as string[])
+    if (signal.type === 'init') {
+      if (socket.context) {
+        await closeWRTC(socket as UWebSocket)
+      }
+      if (!authToken.tms!.includes(signal.roomId)) {
+        socket.send(JSON.stringify({type: 'signal_error', message: 'Invalid room ID'}))
+        return
+      }
+      socket.context = new WebSocketContext(signal.roomId)
+    } else if (!socket.context) {
+      socket.send(JSON.stringify({type: 'signal_error', message: 'Payload sent before init'}))
+      return
     }
-    handleSignal(connectionContext.socket as UWebSocket, signal)
+    handleSignal(socket as UWebSocket, signal)
     return
   }
   try {

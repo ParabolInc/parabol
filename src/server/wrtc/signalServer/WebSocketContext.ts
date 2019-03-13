@@ -5,14 +5,14 @@ type WebSocketId = string
 export default class WebSocketContext {
   id?: string
   createdAt: number
-  rooms: string[]
   // FIXME: on disconnect, tell everyone in the room to remove acceptedOffers with WebSocketId as a value
   acceptedOffers: {[connectionId: string]: WebSocketId} = {}
   pushQueue: ConnectionChunk[] = []
   pullQueue: string[] = []
-
-  constructor (rooms: string[]) {
-    this.rooms = rooms
+  subs: number[] = []
+  roomId: string
+  constructor (roomId: string) {
+    this.roomId = roomId
     this.createdAt = Date.now()
   }
 

@@ -17,14 +17,18 @@ const handleMessage = (ws) => (data: string) => {
 const handleInit = (ws: UWebSocket, payload: InitPayload) => {
   const {from, roomId} = payload
   // exit if a duplicate init payload is sent or not authorized
-  if (ws.context.id || !ws.context.rooms.includes(roomId)) return
+  if (ws.context.id) return
   ws.context.init(payload)
   // channel to receive comms from other websockets, will verify payload.from is a UUID in pubInit
   const ps = getPubSub()
   const onMessage = handleMessage(ws)
   ps.publish(`signal/room/${roomId}`, JSON.stringify({type: 'pubInit', from})).catch()
-  ps.subscribe(`signal/room/${roomId}`, onMessage).catch()
-  ps.subscribe(`signal/user/${from}`, onMessage).catch()
+  ps.subscribe(`signal/room/${roomId}`, onMessage)
+    .then((subId) => ws.context.subs.push(subId))
+    .catch()
+  ps.subscribe(`signal/user/${from}`, onMessage)
+    .then((subId) => ws.context.subs.push(subId))
+    .catch()
 }
 
 export default handleInit

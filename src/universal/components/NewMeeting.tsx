@@ -1,3 +1,4 @@
+import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
 import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import React from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
@@ -147,6 +148,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
   meetingType: MeetingTypeEnum
   streams: StreamDict
   viewer: NewMeeting_viewer
+  swarm: FastRTCSwarm | null
 }
 
 class NewMeeting extends Component<Props> {
@@ -303,7 +305,7 @@ class NewMeeting extends Component<Props> {
   }
 
   render () {
-    const {atmosphere, meetingType, streams, viewer} = this.props
+    const {atmosphere, meetingType, swarm, streams, viewer} = this.props
     const {team} = viewer
     if (!team) return null
     const {newMeeting, teamName, teamId} = team
@@ -347,6 +349,7 @@ class NewMeeting extends Component<Props> {
                 toggleSidebar={this.toggleSidebar}
               />
               <NewMeetingAvatarGroup
+                swarm={swarm}
                 gotoStageId={this.gotoStageId}
                 team={team}
                 viewerStreamLookup={streams}

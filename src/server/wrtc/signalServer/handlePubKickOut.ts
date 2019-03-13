@@ -7,6 +7,7 @@ export interface PubKickOutPayload {
 
 const handlePubKickOut = (ws: UWebSocket, payload: PubKickOutPayload) => {
   if (ws.context.createdAt === payload.createdAt) {
+    ws.send(JSON.stringify({type: 'signal_error', message: 'Duplicate id'}))
     ws.close(1006, 'Duplicate id')
   }
 }

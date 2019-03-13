@@ -11,7 +11,7 @@ export default (props: Props) => {
       params: {teamId}
     }
   } = props
-  const streams = useSwarm(teamId)
+  const {streams, swarm} = useSwarm(teamId)
   // @ts-ignore
-  return <NewMeeting {...props} streams={streams} />
+  return <NewMeeting {...props} streams={streams} swarm={swarm} />
 }

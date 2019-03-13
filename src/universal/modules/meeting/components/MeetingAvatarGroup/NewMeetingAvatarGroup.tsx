@@ -11,6 +11,7 @@ import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
 import {StreamDict} from '../../../../hooks/useSwarm'
+import OutlinedButton from 'universal/components/OutlinedButton'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'flex-end',
@@ -33,8 +34,16 @@ interface Props extends WithAtmosphereProps {
   viewerStreamLookup: StreamDict
 }
 
+const AddVideoButton = styled(OutlinedButton)({
+  fontSize: '1.5rem',
+  fontWeight: 400,
+  height: 32,
+  marginLeft: '1rem',
+  padding: 0,
+  width: 32
+})
 const NewMeetingAvatarGroup = (props: Props) => {
-  const {gotoStageId, team, viewerStreamLookup} = props
+  const {swarm, gotoStageId, team, viewerStreamLookup} = props
   const {newMeeting, teamMembers} = team
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorStageId, phases, localPhase} = meeting
@@ -43,6 +52,9 @@ const NewMeetingAvatarGroup = (props: Props) => {
   return (
     <MeetingAvatarGroupRoot>
       <MeetingAvatarGroupInner>
+        <AddVideoButton onClick={() => swarm.addMedia({audio: true, video: true})}>
+          Add Video
+        </AddVideoButton>
         {teamMembers.map((teamMember) => {
           return (
             // @ts-ignore

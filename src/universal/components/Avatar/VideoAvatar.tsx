@@ -66,8 +66,7 @@ class VideoAvatar extends Component<Props> {
     const {teamMember, viewerStreams, onClick} = this.props
     const {picture, isConnected, isSelf, meetingMember} = teamMember
     const isCheckedIn = meetingMember && meetingMember.isCheckedIn
-    const videoSrc = viewerStreams && viewerStreams[viewerStreams.length - 1]
-    console.log('videoSrc', videoSrc)
+    // const videoSrc = viewerStreams && viewerStreams[viewerStreams.length - 1]
     return (
       <AvatarStyle onClick={onClick}>
         <Picture src={picture} isHidden={!!viewerStreams} />
