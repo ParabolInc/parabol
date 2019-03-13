@@ -70,7 +70,7 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "production" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
               cp $DEVOPS_WORKDIR/environments/cypress ./.env
               # cypress docker image has a bug, sideloading these mitigates it
-              sudo apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
+              sudo apt-get update && apt-get install xvfb libgtk2.0-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
               yarn build
               curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
               sudo python get-pip.py
