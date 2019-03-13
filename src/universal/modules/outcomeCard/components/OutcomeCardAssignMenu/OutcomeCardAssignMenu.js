@@ -24,15 +24,15 @@ class OutcomeCardAssignMenu extends Component {
   componentWillReceiveProps (nextProps) {
     const {
       viewer: {
-        team: {teamMembers, softTeamMembers}
+        team: {teamMembers}
       }
     } = nextProps
     const {
       viewer: {
-        team: {teamMembers: oldTeamMembers, softTeamMembers: oldSoftTeamMembers}
+        team: {teamMembers: oldTeamMembers}
       }
     } = this.props
-    if (teamMembers !== oldTeamMembers || oldSoftTeamMembers !== softTeamMembers) {
+    if (teamMembers !== oldTeamMembers) {
       this.setAssignees(nextProps)
     }
   }
@@ -40,16 +40,14 @@ class OutcomeCardAssignMenu extends Component {
   setAssignees (props) {
     const {
       viewer: {
-        team: {teamMembers, softTeamMembers}
+        team: {teamMembers}
       },
       task: {
         assignee: {assigneeId}
       }
     } = props
     this.setState({
-      assignees: teamMembers
-        .concat(softTeamMembers)
-        .filter((teamMember) => teamMember.id !== assigneeId)
+      assignees: teamMembers.filter((teamMember) => teamMember.id !== assigneeId)
     })
   }
 
@@ -129,10 +127,6 @@ export default createFragmentContainer(
         teamMembers(sortBy: "preferredName") {
           id
           picture
-          preferredName
-        }
-        softTeamMembers {
-          id
           preferredName
         }
       }

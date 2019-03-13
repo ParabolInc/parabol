@@ -23,7 +23,8 @@ interface Props {
 }
 
 const DashLayout = styled('div')({
-  display: 'flex'
+  display: 'flex',
+  minHeight: '100vh'
 })
 
 const DashPanel = styled('div')({

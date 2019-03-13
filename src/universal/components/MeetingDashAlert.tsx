@@ -96,6 +96,7 @@ const MeetingDashAlert = (props: Props) => {
     window.addEventListener('scroll', handler, {passive: true})
     return () => window.removeEventListener('scroll', handler)
   })
+  if (activeMeetings.length === 0) return null
   return (
     <Alert
       isFixed={scrollY > ALERT_HEIGHT}

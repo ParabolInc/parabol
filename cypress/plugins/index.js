@@ -13,6 +13,8 @@ module.exports = (on, config) => {
   config.env = dotenv.config({silent: true, path})
   on('file:preprocessor', wp(options))
   const dbOptions = {source: 'cypress', target: 'test'}
+  // Execute code in Node.js via the task plugin event.
+  // https://docs.cypress.io/api/commands/task.html#Syntax
   on('task', {
     resetDb: resetDb.default(dbOptions)
   })

@@ -34,11 +34,17 @@ export default {
       .default(null)
     if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
     const {endedAt, meetingNumber, phases, teamId} = meeting
+
+    // VALIDATION
     // called by endOldMeetings, SU is OK
     if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
       return standardError(new Error('Team not found'), {userId: viewerId})
     }
     if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    const team = await r.table('Team').get(teamId)
+    if (!team.meetingId) {
+      return standardError(new Error('Meeting already ended'), {userId: viewerId})
+    }
 
     // RESOLUTION
     const lastPhase = phases[phases.length - 1]
@@ -49,16 +55,13 @@ export default {
       currentStage.endAt = now
     }
 
-    const {completedMeeting, team} = await r({
+    const {completedMeeting} = await r({
       team: r
         .table('Team')
         .get(teamId)
-        .update(
-          {
-            meetingId: null
-          },
-          {returnChanges: true}
-        )('changes')(0)('new_val'),
+        .update({
+          meetingId: null
+        }),
       completedMeeting: r
         .table('NewMeeting')
         .get(meetingId)
