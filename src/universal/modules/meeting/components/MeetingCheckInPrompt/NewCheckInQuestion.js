@@ -98,6 +98,8 @@ class NewCheckInQuestion extends Component<Props, State> {
         }
       } = this.props
       const checkInQuestion = JSON.stringify(convertToRaw(editorState.getCurrentContent()))
+      const oldValue = getCheckInQuestion(this.props)
+      if (oldValue === checkInQuestion) return
       UpdateNewCheckInQuestionMutation(atmosphere, {
         meetingId,
         checkInQuestion
@@ -127,12 +129,15 @@ class NewCheckInQuestion extends Component<Props, State> {
 
   render () {
     const {
+      atmosphere,
       team: {newMeeting}
     } = this.props
     if (!newMeeting) return null
+    const {facilitatorUserId} = newMeeting
     const {editorState} = this.state
     const isEditing = editorState.getSelection().getHasFocus()
-
+    const {viewerId} = atmosphere
+    const isFacilitating = facilitatorUserId === viewerId
     const tip = 'Tap to customize the Social Check-in question.'
     return (
       <Tooltip
@@ -142,22 +147,25 @@ class NewCheckInQuestion extends Component<Props, State> {
         targetAnchor={{vertical: 'top', horizontal: 'center'}}
         hideOnFocus
         maxHeight={40}
-        isOpen={isEditing ? false : undefined}
+        isOpen={isEditing || !isFacilitating ? false : undefined}
       >
         <QuestionBlock>
           <EditorBlock>
             <EditorInputWrapper
               editorState={editorState}
               setEditorState={this.setEditorState}
+              readOnly={!isFacilitating}
               placehodler='e.g. How are you?'
               innerRef={(c) => {
                 this.editorRef = c
               }}
             />
           </EditorBlock>
-          <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
-            <CogIcon isEditing={isEditing}>settings</CogIcon>
-          </PlainButton>
+          {isFacilitating && (
+            <PlainButton aria-label={tip} onClick={this.selectAllQuestion}>
+              <CogIcon isEditing={isEditing}>settings</CogIcon>
+            </PlainButton>
+          )}
         </QuestionBlock>
       </Tooltip>
     )
