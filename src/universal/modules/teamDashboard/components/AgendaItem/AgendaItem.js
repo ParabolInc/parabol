@@ -136,17 +136,16 @@ class AgendaItem extends Component {
           orderLabel={`${idx + 1}.`}
           {...navItemState}
         />
-        {canDelete &&
-          !isUnsyncedFacilitatorStage && (
-            <DeleteIconButton
-              aria-label={deleteLabel}
-              agendaLength={agendaLength}
-              disabled={disabled}
-              icon='cancel'
-              onClick={handleRemove}
-              palette='warm'
-            />
-          )}
+        {canDelete && !isUnsyncedFacilitatorStage && (
+          <DeleteIconButton
+            aria-label={deleteLabel}
+            agendaLength={agendaLength}
+            disabled={disabled}
+            icon='cancel'
+            onClick={handleRemove}
+            palette='warm'
+          />
+        )}
       </div>
     )
   }

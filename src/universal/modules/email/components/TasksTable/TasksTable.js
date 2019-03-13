@@ -34,7 +34,9 @@ const TasksTable = (props: TasksTableProps) => {
   return (
     <table align='center' style={ui.emailTableBase}>
       <tbody>
-        {taskRows.map((row, idx) => <tr key={`taskRow${idx}`}>{makeTaskCards(row)}</tr>)}
+        {taskRows.map((row, idx) => (
+          <tr key={`taskRow${idx}`}>{makeTaskCards(row)}</tr>
+        ))}
       </tbody>
     </table>
   )

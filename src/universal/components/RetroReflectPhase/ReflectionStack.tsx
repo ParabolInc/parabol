@@ -86,39 +86,41 @@ const CARD_IN_STACK = {
   }
 }
 
-const ReflectionWrapper = styled('div')(({count, idx}: {count: number; idx: number}): any => {
-  switch (count - idx) {
-    case 1:
-      return {
-        cursor: 'pointer',
-        position: 'relative',
-        zIndex: 2
-      }
-    case 2:
-      return {
-        ...CARD_IN_STACK,
-        bottom: -cardStackPerspectiveY,
-        left: cardStackPerspectiveX,
-        right: cardStackPerspectiveX,
-        top: cardStackPerspectiveY,
-        '& > div > div': {
-          transform: 'scale(.95)',
-          transformOrigin: 'left',
-          width: reflectionCardWidth
+const ReflectionWrapper = styled('div')(
+  ({count, idx}: {count: number; idx: number}): any => {
+    switch (count - idx) {
+      case 1:
+        return {
+          cursor: 'pointer',
+          position: 'relative',
+          zIndex: 2
         }
-      }
-    case 3:
-      return {
-        ...CARD_IN_STACK,
-        bottom: -(cardStackPerspectiveY * 2),
-        left: cardStackPerspectiveX * 2,
-        right: cardStackPerspectiveX * 2,
-        top: cardStackPerspectiveY * 2
-      }
-    default:
-      return {}
+      case 2:
+        return {
+          ...CARD_IN_STACK,
+          bottom: -cardStackPerspectiveY,
+          left: cardStackPerspectiveX,
+          right: cardStackPerspectiveX,
+          top: cardStackPerspectiveY,
+          '& > div > div': {
+            transform: 'scale(.95)',
+            transformOrigin: 'left',
+            width: reflectionCardWidth
+          }
+        }
+      case 3:
+        return {
+          ...CARD_IN_STACK,
+          bottom: -(cardStackPerspectiveY * 2),
+          left: cardStackPerspectiveX * 2,
+          right: cardStackPerspectiveX * 2,
+          top: cardStackPerspectiveY * 2
+        }
+      default:
+        return {}
+    }
   }
-})
+)
 
 const ANIMATION_DURATION = 300
 const EASING = STANDARD_CURVE

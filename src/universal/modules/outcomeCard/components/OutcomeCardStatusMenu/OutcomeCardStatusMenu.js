@@ -56,19 +56,21 @@ class OutcomeCardStatusMenu extends Component {
       styles,
       task: {taskStatus}
     } = this.props
-    const listItems = statusItems.filter((status) => status !== taskStatus).map((status) => {
-      const {color, label} = labels.taskStatus[status]
-      return (
-        <MenuItemWithShortcuts
-          hasDotIcon
-          iconColor={color}
-          key={status}
-          label={<div className={css(styles.label)}>{`Move to ${label}`}</div>}
-          onClick={this.handleTaskUpdateFactory(status)}
-          closePortal={closePortal}
-        />
-      )
-    })
+    const listItems = statusItems
+      .filter((status) => status !== taskStatus)
+      .map((status) => {
+        const {color, label} = labels.taskStatus[status]
+        return (
+          <MenuItemWithShortcuts
+            hasDotIcon
+            iconColor={color}
+            key={status}
+            label={<div className={css(styles.label)}>{`Move to ${label}`}</div>}
+            onClick={this.handleTaskUpdateFactory(status)}
+            closePortal={closePortal}
+          />
+        )
+      })
     listItems.push(<MenuItemHR key='HR1' />)
     listItems.push(
       isPrivate ? (

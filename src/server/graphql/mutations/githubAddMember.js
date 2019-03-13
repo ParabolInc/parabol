@@ -68,8 +68,7 @@ export default {
         }
         const {teamId} = integration
         const teamMemberId = `${userId}::${teamId}`
-        r
-          .table('TeamMember')
+        r.table('TeamMember')
           .get(teamMemberId)
           .then((teamMember) => {
             const channelName = `integrationJoined.${teamId}.${GITHUB}`

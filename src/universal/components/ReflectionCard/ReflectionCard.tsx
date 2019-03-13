@@ -181,10 +181,9 @@ class ReflectionCard extends Component<Props, State> {
         />
         {error && <StyledError>{error}</StyledError>}
         {showOriginFooter && <ReflectionFooter>{question}</ReflectionFooter>}
-        {!readOnly &&
-          meetingId && (
-            <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
-          )}
+        {!readOnly && meetingId && (
+          <ReflectionCardDeleteButton meetingId={meetingId} reflectionId={reflectionId} />
+        )}
       </ReflectionCardRoot>
     )
   }

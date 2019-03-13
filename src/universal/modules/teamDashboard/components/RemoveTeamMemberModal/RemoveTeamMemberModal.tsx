@@ -32,7 +32,8 @@ const RemoveTeamMemberModal = (props: Props) => {
     <TeamManagementModalBoundary>
       <DialogHeading>Are you sure?</DialogHeading>
       <DialogContent>
-        This will remove {preferredName} from the team.<br />
+        This will remove {preferredName} from the team.
+        <br />
         <StyledButton size='medium' onClick={handleClick}>
           <IconLabel icon='arrow_forward' iconAfter label={`Remove ${preferredName}`} />
         </StyledButton>

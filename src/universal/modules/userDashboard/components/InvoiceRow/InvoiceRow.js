@@ -127,13 +127,12 @@ const InvoiceRow = (props) => {
                 {makeDateString(paidAt)}
               </span>
             )}
-            {status !== PAID &&
-              status !== UPCOMING && (
-                <span className={status === PENDING ? styledPaid : styledUnpaid}>
-                  {'Status: '}
-                  {status}
-                </span>
-              )}
+            {status !== PAID && status !== UPCOMING && (
+              <span className={status === PENDING ? styledPaid : styledUnpaid}>
+                {'Status: '}
+                {status}
+              </span>
+            )}
           </InfoRowRight>
         </InfoRow>
       </InvoiceInfo>

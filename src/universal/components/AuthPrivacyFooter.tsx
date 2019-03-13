@@ -32,7 +32,8 @@ const AuthPrivacyFooter = () => (
       title='Privacy Policy'
     >
       {'Privacy Policy'}
-    </Link>.
+    </Link>
+    .
   </FooterCopy>
 )
 

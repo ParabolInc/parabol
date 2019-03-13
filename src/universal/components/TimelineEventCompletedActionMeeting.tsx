@@ -30,8 +30,7 @@ class TimelineEventCompletedActionMeeting extends Component<Props> {
         iconName='change_history'
         timelineEvent={timelineEvent}
         title={
-          <TimelineEventTitle
-          >{`Action Meeting #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>
+          <TimelineEventTitle>{`Action Meeting #${meetingNumber} with ${teamName} Complete`}</TimelineEventTitle>
         }
       >
         <TimelineEventBody>

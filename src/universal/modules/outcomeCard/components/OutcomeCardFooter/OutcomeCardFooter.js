@@ -275,42 +275,40 @@ class OutcomeCardFooter extends Component {
         <Footer>
           <AvatarBlock>
             {!canAssign && ownerAvatarOrTeamName}
-            {canAssign &&
-              showTeam && (
-                <LoadableMenu
-                  LoadableComponent={LoadableAssignTeamMenu}
-                  maxWidth={350}
-                  maxHeight={225}
-                  originAnchor={assignOriginAnchor}
-                  queryVars={{
-                    area,
-                    task
-                  }}
-                  targetAnchor={assignTargetAnchor}
-                  toggle={ownerAvatarOrTeamName}
-                  onOpen={toggleMenuState}
-                  onClose={toggleMenuState}
-                />
-              )}
-            {canAssign &&
-              !showTeam && (
-                <LoadableMenu
-                  LoadableComponent={LoadableAssignMenu}
-                  isToggleNativeElement
-                  maxWidth={350}
-                  maxHeight={225}
-                  originAnchor={assignOriginAnchor}
-                  queryVars={{
-                    area,
-                    task,
-                    teamId
-                  }}
-                  targetAnchor={assignTargetAnchor}
-                  toggle={ownerAvatarOrTeamName}
-                  onOpen={toggleMenuState}
-                  onClose={toggleMenuState}
-                />
-              )}
+            {canAssign && showTeam && (
+              <LoadableMenu
+                LoadableComponent={LoadableAssignTeamMenu}
+                maxWidth={350}
+                maxHeight={225}
+                originAnchor={assignOriginAnchor}
+                queryVars={{
+                  area,
+                  task
+                }}
+                targetAnchor={assignTargetAnchor}
+                toggle={ownerAvatarOrTeamName}
+                onOpen={toggleMenuState}
+                onClose={toggleMenuState}
+              />
+            )}
+            {canAssign && !showTeam && (
+              <LoadableMenu
+                LoadableComponent={LoadableAssignMenu}
+                isToggleNativeElement
+                maxWidth={350}
+                maxHeight={225}
+                originAnchor={assignOriginAnchor}
+                queryVars={{
+                  area,
+                  task,
+                  teamId
+                }}
+                targetAnchor={assignTargetAnchor}
+                toggle={ownerAvatarOrTeamName}
+                onOpen={toggleMenuState}
+                onClose={toggleMenuState}
+              />
+            )}
           </AvatarBlock>
           <ButtonGroup cardIsActive={cardIsActive}>
             {isArchived ? (
