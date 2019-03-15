@@ -1,4 +1,5 @@
 import {UWebSocket} from './handleSignal'
+import sendSignal from './sendSignal'
 
 interface PublishToClientPayload {
   type: 'pubToClient'
@@ -6,7 +7,7 @@ interface PublishToClientPayload {
 }
 
 const handlePublishToClient = (ws: UWebSocket, data: PublishToClientPayload) => {
-  ws.send(JSON.stringify(data.payload))
+  sendSignal(ws, data.payload)
 }
 
 export default handlePublishToClient

@@ -1,8 +1,9 @@
-import React, {Component} from 'react'
+import {VideoAvatar_teamMember} from '__generated__/VideoAvatar_teamMember.graphql'
+import React, {useEffect, useRef, useState} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
-import {VideoAvatar_teamMember} from '__generated__/VideoAvatar_teamMember.graphql'
+import {StreamUI} from '../../hooks/useSwarm'
 
 const AvatarStyle = styled('div')({
   cursor: 'pointer',
@@ -43,42 +44,35 @@ const Picture = styled('img')(({isHidden}: {isHidden: boolean}) => ({
 
 interface Props {
   teamMember: VideoAvatar_teamMember
-  viewerStreams: Array<MediaStream> | undefined
+  streamUI: StreamUI | undefined
   onClick?: () => void
 }
 
-class VideoAvatar extends Component<Props> {
-  videoRef = React.createRef<HTMLVideoElement>()
-  componentDidMount () {
-    this.setSrc()
-  }
-  componentDidUpdate () {
-    this.setSrc()
-  }
-
-  setSrc () {
-    const {viewerStreams} = this.props
-    const srcObject = viewerStreams ? viewerStreams[viewerStreams.length - 1] : null
-    this.videoRef.current!.srcObject = srcObject
-  }
-
-  render () {
-    const {teamMember, viewerStreams, onClick} = this.props
-    const {picture, isConnected, isSelf, meetingMember} = teamMember
-    const isCheckedIn = meetingMember && meetingMember.isCheckedIn
-    // const videoSrc = viewerStreams && viewerStreams[viewerStreams.length - 1]
-    return (
-      <AvatarStyle onClick={onClick}>
-        <Picture src={picture} isHidden={!!viewerStreams} />
-        <Video innerRef={this.videoRef} isHidden={!viewerStreams} width='64' height='64' autoPlay />
-        <BadgeBlock>
-          <BadgeBlockInner>
-            <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || isSelf} />
-          </BadgeBlockInner>
-        </BadgeBlock>
-      </AvatarStyle>
-    )
-  }
+const VideoAvatar = (props: Props) => {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const {streamUI} = props
+    if (!streamUI) return
+    const {stream, show} = streamUI
+    if (show) {
+      videoRef.current!.srcObject = stream
+    }
+  })
+  const {streamUI, teamMember, onClick} = props
+  const {picture, isConnected, isSelf, meetingMember} = teamMember
+  const isCheckedIn = meetingMember && meetingMember.isCheckedIn
+  const showVideo = streamUI ? streamUI.show : false
+  return (
+    <AvatarStyle onClick={onClick}>
+      <Picture src={picture} isHidden={showVideo} />
+      <Video innerRef={videoRef} isHidden={!showVideo} width='64' height='64' autoPlay />
+      <BadgeBlock>
+        <BadgeBlockInner>
+          <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || isSelf} />
+        </BadgeBlockInner>
+      </BadgeBlock>
+    </AvatarStyle>
+  )
 }
 
 export default createFragmentContainer(

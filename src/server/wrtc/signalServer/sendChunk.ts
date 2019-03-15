@@ -1,23 +1,19 @@
 import getPubSub from '../../utils/getPubSub'
 import ConnectionChunk from './ConnectionChunk'
 import {UWebSocket} from './handleSignal'
+import sendSignal from './sendSignal'
 
-const sendChunk = (ws: UWebSocket, connectionChunk: ConnectionChunk, requestor: string) => {
-  const {connectionId, signals} = connectionChunk
-  // tell the offerer that their offer was accepted by payload.from
-  ws.send(JSON.stringify({type: 'offerAccepted', connectionId, from: requestor}))
-  // give the requestor all the signals
+const sendChunk = (ws: UWebSocket, connectionChunk: ConnectionChunk, userId: string) => {
+  const {id, signals} = connectionChunk
+  sendSignal(ws, {type: 'offerAccepted', id, userId})
   getPubSub()
     .publish(
-      `signal/user/${requestor}`,
-      JSON.stringify({
-        type: 'pubToClient',
-        payload: {type: 'accept', signals, from: ws.context.id}
-      })
+      `signal/user/${userId}`,
+      JSON.stringify({type: 'accept', signals, id, userId: ws.context.userId})
     )
     .catch()
   // forward future connection requests to the peer
-  ws.context.acceptedOffers[connectionId] = requestor
+  ws.context.acceptedOffers[id] = userId
 }
 
 export default sendChunk

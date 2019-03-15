@@ -1,33 +1,34 @@
 import getPubSub from '../../utils/getPubSub'
 import {UWebSocket} from './handleSignal'
 import sendChunk from './sendChunk'
+import sendSignal from './sendSignal'
 
 export interface PubInitPayload {
   type: 'pubInit'
   createdAt: number
-  from: string
+  userId: string
 }
 
 const handlePubInit = (ws: UWebSocket, payload: PubInitPayload) => {
   const {context} = ws
-  const {from, createdAt} = payload
-  if (from === ws.context.id) {
+  const {userId, createdAt} = payload
+  if (userId === context.userId) {
     if (context.createdAt < createdAt) {
       // the publishing websocket used an id that was already taken, kick em out
       getPubSub()
-        .publish(`signal/user/${from}`, JSON.stringify({type: 'pubKickOut', createdAt: createdAt}))
+        .publish(`signal/user/${userId}`, JSON.stringify({type: 'pubKickOut', createdAt}))
         .catch()
     }
     return
   }
   const connectionChunk = context.pushQueue.pop()
   if (!connectionChunk) {
-    context.pullQueue.push(from)
+    context.pullQueue.push(userId)
   } else {
-    sendChunk(ws, connectionChunk, from)
-    // ask the offerer for another sdp
-    ws.send(JSON.stringify({type: 'offerRequest'}))
+    sendChunk(ws, connectionChunk, userId)
   }
+  // for every successful init, resupply the offer buffer
+  sendSignal(ws, {type: 'offerRequest'})
 }
 
 export default handlePubInit

@@ -8,9 +8,10 @@ import './scrollIntoViewIfNeeded'
 import '@babel/polyfill'
 import * as Sentry from '@sentry/browser'
 
-Sentry.init({
-  dsn: window.__ACTION__.sentry
-})
+const dsn = window.__ACTION__.sentry
+if (dsn) {
+  Sentry.init({dsn})
+}
 
 const initialState = {}
 export const store = makeStore(initialState)

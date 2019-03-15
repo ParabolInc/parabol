@@ -12,9 +12,11 @@ import withAtmosphere, {
 import LoadableNewMeetingAvatarMenu from 'universal/modules/meeting/components/LoadableNewMeetingAvatarMenu'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
+import {NewMeetingTeamMemberStage} from 'universal/types/graphql'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import {NewMeetingTeamMemberStage} from 'universal/types/graphql'
+import ErrorBoundary from '../../../../components/ErrorBoundary'
+import {StreamUI} from '../../../../hooks/useSwarm'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -98,11 +100,11 @@ interface Props extends WithAtmosphereProps {
   isFacilitatorStage: boolean
   newMeeting: NewMeetingAvatar_newMeeting | null
   teamMember: NewMeetingAvatar_teamMember
-  viewerStreams: Array<MediaStream> | undefined
+  streamUI: StreamUI | undefined
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {gotoStage, isFacilitatorStage, newMeeting, teamMember, viewerStreams} = props
+  const {gotoStage, isFacilitatorStage, newMeeting, teamMember, streamUI} = props
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
@@ -111,32 +113,34 @@ const NewMeetingAvatar = (props: Props) => {
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
   return (
-    <Item>
-      <AvatarBlock
-        isReadOnly={!canNavigate}
-        isLocalStage={
-          localStage
-            ? (localStage as NewMeetingTeamMemberStage).teamMemberId === teamMemberId
-            : false
-        }
-        isFacilitatorStage={!!isFacilitatorStage}
-      >
-        <LoadableMenu
-          LoadableComponent={LoadableNewMeetingAvatarMenu}
-          maxWidth={400}
-          maxHeight={225}
-          originAnchor={originAnchor}
-          queryVars={{
-            handleNavigate,
-            newMeeting,
-            teamMember
-          }}
-          targetAnchor={targetAnchor}
-          toggle={<VideoAvatar teamMember={teamMember} viewerStreams={viewerStreams} />}
-        />
-      </AvatarBlock>
-      {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
-    </Item>
+    <ErrorBoundary>
+      <Item>
+        <AvatarBlock
+          isReadOnly={!canNavigate}
+          isLocalStage={
+            localStage
+              ? (localStage as NewMeetingTeamMemberStage).teamMemberId === teamMemberId
+              : false
+          }
+          isFacilitatorStage={!!isFacilitatorStage}
+        >
+          <LoadableMenu
+            LoadableComponent={LoadableNewMeetingAvatarMenu}
+            maxWidth={400}
+            maxHeight={225}
+            originAnchor={originAnchor}
+            queryVars={{
+              handleNavigate,
+              newMeeting,
+              teamMember
+            }}
+            targetAnchor={targetAnchor}
+            toggle={<VideoAvatar teamMember={teamMember} streamUI={streamUI} />}
+          />
+        </AvatarBlock>
+        {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
+      </Item>
+    </ErrorBoundary>
   )
 }
 

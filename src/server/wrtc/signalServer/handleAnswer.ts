@@ -4,17 +4,17 @@ import {UWebSocket} from './handleSignal'
 interface AnswerPayload {
   type: 'answer'
   sdp: string
-  to: string
+  id: string
 }
 
 const handleAnswer = (ws: UWebSocket, payload: AnswerPayload) => {
-  const {sdp, to} = payload
+  const to = ws.context.acceptedOffers[payload.id]
   getPubSub()
     .publish(
       `signal/user/${to}`,
       JSON.stringify({
         type: 'pubToClient',
-        payload: {type: 'answer', from: ws.context.id, sdp}
+        payload
       })
     )
     .catch()

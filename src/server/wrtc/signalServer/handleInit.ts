@@ -1,12 +1,10 @@
 import getPubSub from '../../utils/getPubSub'
 import handleSignal, {UWebSocket} from './handleSignal'
 
-export interface InitPayload {
-  type: 'init'
-  sdp: string
-  connectionId: string
-  from: string
-  roomId: string
+interface InitSignal {
+  readonly type: 'init'
+  readonly userId: string
+  readonly roomId: string | number
 }
 
 // make the closure context as small as possible. there will be dozens of these. DOZENS
@@ -14,19 +12,22 @@ const handleMessage = (ws) => (data: string) => {
   handleSignal(ws, JSON.parse(data))
 }
 
-const handleInit = (ws: UWebSocket, payload: InitPayload) => {
-  const {from, roomId} = payload
+const handleInit = (ws: UWebSocket, payload: InitSignal) => {
+  const {userId, roomId} = payload
+
   // exit if a duplicate init payload is sent or not authorized
-  if (ws.context.id) return
-  ws.context.init(payload)
-  // channel to receive comms from other websockets, will verify payload.from is a UUID in pubInit
+  if (ws.context.userId) return
+  ws.context.userId = userId
   const ps = getPubSub()
   const onMessage = handleMessage(ws)
-  ps.publish(`signal/room/${roomId}`, JSON.stringify({type: 'pubInit', from})).catch()
+  ps.publish(
+    `signal/room/${roomId}`,
+    JSON.stringify({type: 'pubInit', userId, createdAt: ws.context.createdAt})
+  ).catch()
   ps.subscribe(`signal/room/${roomId}`, onMessage)
     .then((subId) => ws.context.subs.push(subId))
     .catch()
-  ps.subscribe(`signal/user/${from}`, onMessage)
+  ps.subscribe(`signal/user/${userId}`, onMessage)
     .then((subId) => ws.context.subs.push(subId))
     .catch()
 }

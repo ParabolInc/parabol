@@ -10,7 +10,6 @@ import ConnectionContext from 'server/socketHelpers/ConnectionContext'
 import {TREBUCHET_WS} from '@mattkrick/trebuchet-client'
 
 const APP_VERSION = process.env.npm_package_version
-const clients = []
 export default function connectionHandler (sharedDataLoader, rateLimiter) {
   return async function socketConnectionHandler (socket, req) {
     const {headers} = req
@@ -39,8 +38,7 @@ export default function connectionHandler (sharedDataLoader, rateLimiter) {
     socket.send(JSON.stringify({version: APP_VERSION}))
     handleConnect(connectionContext)
     keepAlive(connectionContext, WS_KEEP_ALIVE)
-    clients.push(socket)
-    socket.on('message', handleMessage(connectionContext, clients))
+    socket.on('message', handleMessage(connectionContext))
     socket.on('close', handleDisconnect(connectionContext))
   }
 }

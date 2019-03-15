@@ -4,7 +4,7 @@ import CandidateSignal from './CandidateSignal'
 export default class ConnectionChunk {
   signals: Array<OfferSignal | CandidateSignal>
 
-  constructor (public connectionId: string, sdp: string) {
+  constructor (public id: string, sdp: string) {
     this.signals = [new OfferSignal(sdp)]
   }
 }

@@ -2,25 +2,17 @@ import getPubSub from '../../utils/getPubSub'
 import CandidateSignal from './CandidateSignal'
 import {UWebSocket} from './handleSignal'
 
-export interface KnownCandidatePayload {
-  type: 'offer'
-  to: string
+interface CandidatePayloadToServer {
+  type: 'candidate'
+  id: string
   candidate: object | null
 }
 
-export interface UnknownCandidatePayload {
-  type: 'offer'
-  connectionId: string
-  candidate: object | null
-}
-
-type CandidatePayload = KnownCandidatePayload | UnknownCandidatePayload
-
-const handleCandidate = (ws: UWebSocket, payload: CandidatePayload) => {
-  const {candidate} = payload
+const handleCandidate = (ws: UWebSocket, payload: CandidatePayloadToServer) => {
+  const {candidate, id} = payload
   const {context} = ws
   if (!candidate) return
-  const to = 'to' in payload ? payload.to : context.acceptedOffers[payload.connectionId]
+  const to = context.acceptedOffers[id]
   if (to) {
     // the receiver is known
     getPubSub()
@@ -28,16 +20,13 @@ const handleCandidate = (ws: UWebSocket, payload: CandidatePayload) => {
         `signal/user/${to}`,
         JSON.stringify({
           type: 'pubToClient',
-          payload: {type: 'candidate', from: context.id, candidate}
+          payload: {type: 'candidate', id, candidate}
         })
       )
       .catch()
     return
   }
-  const {connectionId} = payload as UnknownCandidatePayload
-  const existingChunk = context.pushQueue.find(
-    (connectionSignal) => connectionSignal.connectionId === connectionId
-  )
+  const existingChunk = context.pushQueue.find((connectionChunk) => connectionChunk.id === id)
   if (existingChunk) {
     existingChunk.signals.push(new CandidateSignal(candidate))
   }

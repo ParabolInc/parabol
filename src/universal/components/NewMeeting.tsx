@@ -352,7 +352,7 @@ class NewMeeting extends Component<Props> {
                 swarm={swarm}
                 gotoStageId={this.gotoStageId}
                 team={team}
-                viewerStreamLookup={streams}
+                streams={streams}
               />
             </MeetingAreaHeader>
             <ErrorBoundary>

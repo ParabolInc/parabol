@@ -1,3 +1,4 @@
+import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
 import {NewMeetingAvatarGroup_team} from '__generated__/NewMeetingAvatarGroup_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
@@ -31,7 +32,8 @@ const MeetingAvatarGroupInner = styled('div')({
 interface Props extends WithAtmosphereProps {
   gotoStageId: (stageId: string) => void
   team: NewMeetingAvatarGroup_team
-  viewerStreamLookup: StreamDict
+  streams: StreamDict
+  swarm: FastRTCSwarm | null
 }
 
 const AddVideoButton = styled(OutlinedButton)({
@@ -43,7 +45,7 @@ const AddVideoButton = styled(OutlinedButton)({
   width: 32
 })
 const NewMeetingAvatarGroup = (props: Props) => {
-  const {swarm, gotoStageId, team, viewerStreamLookup} = props
+  const {swarm, gotoStageId, team, streams} = props
   const {newMeeting, teamMembers} = team
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorStageId, phases, localPhase} = meeting
@@ -52,7 +54,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
   return (
     <MeetingAvatarGroupRoot>
       <MeetingAvatarGroupInner>
-        <AddVideoButton onClick={() => swarm.addMedia({audio: true, video: true})}>
+        <AddVideoButton onClick={() => swarm && swarm.addMedia({audio: true, video: true})}>
           Add Video
         </AddVideoButton>
         {teamMembers.map((teamMember) => {
@@ -70,7 +72,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
               isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
               newMeeting={newMeeting}
               teamMember={teamMember}
-              viewerStreams={viewerStreamLookup[teamMember.userId]}
+              streamUI={streams[teamMember.userId]}
             />
           )
         })}

@@ -8,7 +8,7 @@ module.exports = {
       '@babel/polyfill',
       // '@clusterws/cws',
       // '@google-cloud/language',
-      '@mattkrick/fast-rtc-peer',
+      // '@mattkrick/fast-rtc-peer', can put back in after RTC branch is merged
       '@mattkrick/graphql-trebuchet-client',
       '@mattkrick/sanitize-svg',
       '@mattkrick/trebuchet-client',

@@ -1,12 +1,18 @@
 import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
 import GQLTrebuchetClient from '@mattkrick/graphql-trebuchet-client'
 import {Events} from '@mattkrick/trebuchet-client'
-import {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
+import {Dispatch, SetStateAction, useEffect, useState} from 'react'
+import {Disposable} from 'relay-runtime'
 import Atmosphere from '../Atmosphere'
 import useAtmosphere from './useAtmosphere'
 
+export interface StreamUI {
+  show: boolean
+  stream: MediaStream
+}
+
 export interface StreamDict {
-  [viewerId: string]: MediaStream[]
+  [viewerId: string]: StreamUI
 }
 
 const joinSwarm = async (
@@ -14,61 +20,81 @@ const joinSwarm = async (
   roomId: string,
   setSwarm: Dispatch<any>,
   streams: StreamDict,
-  setStreams: Dispatch<SetStateAction<StreamDict>>
+  setStreams: Dispatch<SetStateAction<StreamDict>>,
+  disposable: Disposable
 ) => {
   await atmosphere.upgradeTransport()
-  // @ts-ignore
   const swarm = new FastRTCSwarm({
-    id: atmosphere.viewerId,
-    sdpSemantics: 'unified-plan',
-    audio: {},
-    video: {},
-    roomId
+    userId: atmosphere.viewerId!,
+    // warm-up is disabled until chrome fixes their bug where it takes 3 seconds to determine the initial dummy track should be muted
+    // audio: {},
+    // video: {},
+    roomId,
+    peerBuffer: 0
   })
   const {trebuchet} = atmosphere.transport as GQLTrebuchetClient
-  trebuchet.on(Events.DATA, (data) => {
+  const handleSignal = (data) => {
     if (typeof data !== 'string') return
-    const payload = JSON.parse(data)
-    swarm.dispatch(payload)
-  })
+    try {
+      const payload = JSON.parse(data)
+      if (payload.type === 'WRTC_SIGNAL') {
+        swarm.dispatch(payload.signal)
+      }
+    } catch (e) {
+      /**/
+    }
+  }
+  trebuchet.on(Events.DATA, handleSignal)
   swarm.on('signal', (signal) => {
     trebuchet.send(JSON.stringify({type: 'WRTC_SIGNAL', signal}))
   })
   swarm.on('stream', (stream, peer) => {
-    const userStreams = streams[peer.id]
-    if (!userStreams) {
-      setStreams({...streams, [peer.id]: [stream]})
-    } else if (!streams[peer.id].includes(stream)) {
-      setStreams({...streams, [peer.id]: [...streams[peer.id], stream]})
+    const userId = peer.userId!
+    const track = stream.getTracks()[0]
+    const setStream = (show) => setStreams({...streams, [userId]: {show, stream}})
+    track.onmute = () => {
+      setStream(false)
     }
+    track.onunmute = () => {
+      setStream(true)
+    }
+    setStream(false)
   })
-  swarm.on('open', (peer) => {
-    console.log('data open', peer)
-  })
+  // swarm.on('open', (peer) => {
+  //   console.log('data open', peer)
+  // })
+  // swarm.on('data', (data) => {
+  //   console.log('data', data)
+  // })
   swarm.on('close', (peer) => {
-    console.log('data close', peer)
+    console.log('swarm close called', peer)
+    const nextStreams = {...streams}
+    delete nextStreams[peer.userId!]
+    setStreams(nextStreams)
   })
+  swarm.on('error', console.error)
+
   setSwarm(swarm)
+  disposable.dispose = () => {
+    swarm.off('close')
+    trebuchet.off(Events.DATA, handleSignal)
+    swarm.close()
+  }
 }
 
 const useSwarm = (roomId) => {
   const atmosphere = useAtmosphere()
   const [swarm, setSwarm] = useState<FastRTCSwarm | null>(null)
   const [streams, setStreams] = useState<StreamDict>({})
-  const latestSwarm = useRef<FastRTCSwarm | null>(null)
   useEffect(() => {
-    joinSwarm(atmosphere, roomId, setSwarm, streams, setStreams).catch()
-    return () => {
-      console.log('disposing of', latestSwarm.current)
-      latestSwarm.current && latestSwarm.current.close()
+    const disposable = {
+      dispose: () => {
+        /**/
+      }
     }
+    joinSwarm(atmosphere, roomId, setSwarm, streams, setStreams, disposable).catch()
+    return () => disposable.dispose()
   }, [roomId])
-  useEffect(() => {
-    latestSwarm.current = swarm
-    return () => {
-      latestSwarm.current = null
-    }
-  })
   return {streams, swarm}
 }
 
