@@ -49,16 +49,23 @@ interface AvatarBlockProps {
 const AvatarBlock = styled('div')(
   {
     borderRadius: '100%',
-    width: '2.25rem',
-
+    height: 36,
+    width: 36,
+    maxWidth: 36,
     [ui.breakpoint.wide]: {
-      width: '2.5rem'
+      height: 40,
+      width: 40,
+      maxWidth: 40
     },
     [ui.breakpoint.wider]: {
-      width: '3rem'
+      height: 48,
+      width: 48,
+      maxWidth: 48
     },
     [ui.breakpoint.widest]: {
-      width: '4rem'
+      height: 64,
+      width: 64,
+      maxWidth: 64
     },
 
     ':hover': {

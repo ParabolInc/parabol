@@ -1,5 +1,5 @@
 import {VideoAvatar_teamMember} from '__generated__/VideoAvatar_teamMember.graphql'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
@@ -9,8 +9,7 @@ const AvatarStyle = styled('div')({
   cursor: 'pointer',
   display: 'inline-block',
   position: 'relative',
-  verticalAlign: 'middle',
-  width: 64
+  verticalAlign: 'middle'
 })
 
 const BadgeBlock = styled('div')({
@@ -34,7 +33,8 @@ const Video = styled('video')(({isHidden}: {isHidden: boolean}) => ({
   display: isHidden ? 'none' : undefined,
   borderRadius: '100%',
   objectFit: 'cover',
-  transform: 'rotateY(180deg)'
+  transform: 'rotateY(180deg)',
+  width: '100%'
 }))
 
 const Picture = styled('img')(({isHidden}: {isHidden: boolean}) => ({
@@ -65,7 +65,7 @@ const VideoAvatar = (props: Props) => {
   return (
     <AvatarStyle onClick={onClick}>
       <Picture src={picture} isHidden={showVideo} />
-      <Video innerRef={videoRef} isHidden={!showVideo} width='64' height='64' autoPlay />
+      <Video innerRef={videoRef} isHidden={!showVideo} autoPlay />
       <BadgeBlock>
         <BadgeBlockInner>
           <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || isSelf} />

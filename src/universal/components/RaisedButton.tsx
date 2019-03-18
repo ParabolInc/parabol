@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
-import BaseButton from 'universal/components/BaseButton'
+import BaseButton, {BaseButtonProps} from 'universal/components/BaseButton'
 
-const StyledBaseButton = styled(BaseButton)(({palette = 'gray'}) => {
+const StyledBaseButton = styled(BaseButton)(({palette = 'gray'}: {palette?: string}) => {
   const backgroundColor = ui.palette[palette]
   const color = ui.buttonLightThemes.includes(palette) ? ui.palette.dark : ui.palette.white
   return {
@@ -15,7 +15,11 @@ const StyledBaseButton = styled(BaseButton)(({palette = 'gray'}) => {
   }
 })
 
-const RaisedButton = (props) => {
+export interface RaisedButtonProps extends BaseButtonProps {
+  palette?: string
+}
+
+const RaisedButton = (props: RaisedButtonProps) => {
   const {children, className, elevationHovered, elevationResting} = props
   return (
     <StyledBaseButton

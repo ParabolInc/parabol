@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types'
-import React, {Component} from 'react'
+import React, {Component, ReactNode, Ref} from 'react'
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
-import PlainButton from 'universal/components/PlainButton/PlainButton'
+import PlainButton, {PlainButtonProps} from 'universal/components/PlainButton/PlainButton'
 import withInnerRef from 'universal/decorators/withInnerRef'
 import elevation from 'universal/styles/elevation'
 
@@ -21,8 +20,16 @@ const getBoxShadow = (disabled, pressedDown, desiredElevation, otherElevation) =
   return elevation[desiredElevation]
 }
 
+interface Root {
+  disabled: boolean
+  elevationResting: number | undefined
+  elevationHovered: number | undefined
+  pressedDown: boolean
+  size: 'small' | 'medium' | 'large'
+}
+
 const ButtonRoot = styled(PlainButton)(
-  ({disabled, elevationResting, elevationHovered, pressedDown, size}) => {
+  ({disabled, elevationResting, elevationHovered, pressedDown, size}: Root) => {
     return {
       // size is easy to override, it adds: fontSize, lineHeight, padding
       ...ui.buttonSizeStyles[size],
@@ -44,30 +51,27 @@ const ButtonRoot = styled(PlainButton)(
   }
 )
 
-class BaseButton extends Component {
-  static propTypes = {
-    'aria-label': PropTypes.string,
-    size: PropTypes.oneOf(ui.buttonSizeOptions),
-    children: PropTypes.any,
-    // handling className allows usage of emotion’s styled handler
-    className: PropTypes.string,
-    disabled: PropTypes.bool,
-    // elevation values 0 - 24
-    elevationHovered: PropTypes.number,
-    elevationResting: PropTypes.number,
-    innerRef: PropTypes.any,
-    onClick: PropTypes.func,
-    onMouseEnter: PropTypes.func,
-    onMouseLeave: PropTypes.func,
-    style: PropTypes.object,
-    waiting: PropTypes.bool
-  }
+export interface BaseButtonProps extends PlainButtonProps {
+  'aria-label'?: string
+  size?: 'small' | 'medium' | 'large'
+  children?: ReactNode
+  className?: string
+  elevationHovered?: number
+  elevationResting?: number
+  innerRef?: Ref<any>
+  onClick?: React.MouseEventHandler
+  onMouseEnter?: React.MouseEventHandler
+  onMouseLeave?: React.MouseEventHandler
+  style?: object
+}
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      pressedDown: null
-    }
+interface State {
+  pressedDown: boolean
+}
+
+class BaseButton extends Component<BaseButtonProps, State> {
+  state: State = {
+    pressedDown: false
   }
 
   onMouseDown = (e) => {
@@ -114,7 +118,7 @@ class BaseButton extends Component {
     } = this.props
 
     const {pressedDown} = this.state
-    const hasDisabledStyles = disabled || waiting
+    const hasDisabledStyles = !!(disabled || waiting)
 
     // spread props to allow for html attributes like type when needed
     return (
