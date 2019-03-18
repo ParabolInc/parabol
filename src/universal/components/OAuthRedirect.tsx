@@ -28,7 +28,7 @@ class OAuthRedirect extends Component<Props> {
       const state = params.get('state')
       const code = params.get('id_token')
       if (!window.opener) return
-      window.opener.postMessage({state, code})
+      window.opener.postMessage({state, code}, window.location.origin)
     } else {
       // if handled on same page ie email/pass
       const parseHash = promisify(webAuth.parseHash, webAuth)

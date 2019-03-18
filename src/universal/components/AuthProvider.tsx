@@ -6,7 +6,7 @@ class AuthProvider extends Component<{}> {
     const state = params.get('state')
     const code = params.get('code')
     if (!window.opener) return
-    window.opener.postMessage({state, code})
+    window.opener.postMessage({state, code}, window.location.origin)
   }
 
   render () {
