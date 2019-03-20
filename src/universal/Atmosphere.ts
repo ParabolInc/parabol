@@ -99,7 +99,8 @@ export default class Atmosphere extends Environment {
   subscriptions: Subscriptions = {}
   eventEmitter: StrictEventEmitter<EventEmitter, AtmosphereEvents> = new EventEmitter()
   upgradeTransportPromise: Promise<void> | null = null
-  viewerId: string | null = null
+  // it's only null before login, so it's just a little white lie
+  viewerId: string = null!
   userId: string | null = null // DEPRECATED
   constructor () {
     super({
@@ -269,7 +270,7 @@ export default class Atmosphere extends Environment {
       this.authObj = null
       window.localStorage.removeItem(APP_TOKEN_KEY)
     } else {
-      this.viewerId = viewerId
+      this.viewerId = viewerId!
       window.localStorage.setItem(APP_TOKEN_KEY, authToken)
       // deprecated! will be removed soon
       this.userId = viewerId
@@ -358,7 +359,7 @@ export default class Atmosphere extends Environment {
     this.transport = new GQLHTTPClient(this.fetchHTTP)
     this.querySubscriptions = []
     this.subscriptions = {}
-    this.viewerId = null
+    this.viewerId = null!
     this.userId = null // DEPRECATED
     if (this.transport instanceof GQLTrebuchetClient) {
       this.transport.close()

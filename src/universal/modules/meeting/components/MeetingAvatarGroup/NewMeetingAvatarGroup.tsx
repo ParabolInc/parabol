@@ -3,15 +3,15 @@ import {NewMeetingAvatarGroup_team} from '__generated__/NewMeetingAvatarGroup_te
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import NewMeetingAvatar from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatar'
 import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import AddTeamMemberAvatarButton from 'universal/components/AddTeamMemberAvatarButton'
 import VideoControls from '../../../../components/VideoControls'
-import {StreamDict} from '../../../../hooks/useSwarm'
+import {StreamUserDict} from '../../../../hooks/useSwarm'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'center',
@@ -27,12 +27,12 @@ const MeetingAvatarGroupRoot = styled('div')({
 interface Props extends WithAtmosphereProps {
   gotoStageId: (stageId: string) => void
   team: NewMeetingAvatarGroup_team
-  streams: StreamDict
+  camStreams: StreamUserDict
   swarm: FastRTCSwarm | null
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {
-  const {atmosphere, swarm, gotoStageId, team, streams} = props
+  const {atmosphere, swarm, gotoStageId, team, camStreams} = props
   const {newMeeting, teamMembers} = team
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorStageId, phases, localPhase} = meeting
@@ -48,7 +48,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
 
   return (
     <MeetingAvatarGroupRoot>
-      <VideoControls swarm={swarm} localStreamUI={streams[atmosphere.viewerId!]} />
+      <VideoControls swarm={swarm} localStreamUI={camStreams[atmosphere.viewerId]} />
       {teamMembers.map((teamMember) => {
         return (
           // @ts-ignore
@@ -58,7 +58,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
             isFacilitatorStage={facilitatorStageTeamMemberId === teamMember.id}
             newMeeting={newMeeting}
             teamMember={teamMember}
-            streamUI={streams[teamMember.userId]}
+            streamUI={camStreams[teamMember.userId]}
           />
         )
       })}

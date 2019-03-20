@@ -4,7 +4,7 @@ type WebSocketId = string
 export default class WebSocketContext {
   userId?: string
   createdAt: number
-  // FIXME: on disconnect, tell everyone in the room to remove acceptedOffers with WebSocketId as a value
+  // FIXME: rename acceptedOffers since it's both offers + answers
   acceptedOffers: {[connectionId: string]: WebSocketId} = {}
   pushQueue: ConnectionChunk[] = []
   pullQueue: string[] = []
