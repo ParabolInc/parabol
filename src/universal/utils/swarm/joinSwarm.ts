@@ -118,8 +118,9 @@ const joinSwarm = async (
       isVideoBlocked: false,
       stream
     } as StreamUI
+    const videoStreamUI = {...streamUI, stream: new MediaStream(stream.getVideoTracks())}
     dispatch({type: 'setLocalStream', streamName, quality, streamUI})
-    dispatch({type: 'setStream', streamName, userId, streamUI})
+    dispatch({type: 'setStream', streamName, userId, streamUI: videoStreamUI})
   })
   swarm.on('close', (peer) => {
     console.log('peer closed', peer.userId)

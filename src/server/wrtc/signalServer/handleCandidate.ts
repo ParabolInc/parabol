@@ -11,7 +11,7 @@ interface CandidatePayloadToServer {
 const handleCandidate = (ws: UWebSocket, payload: CandidatePayloadToServer) => {
   const {candidate, id} = payload
   const {context} = ws
-  if (!candidate) return
+  // if (!candidate) return
   const to = context.acceptedOffers[id]
   if (to) {
     // the receiver is known

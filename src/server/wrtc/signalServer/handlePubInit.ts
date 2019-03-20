@@ -11,7 +11,6 @@ export interface PubInitPayload {
 
 const handlePubInit = (ws: UWebSocket, payload: PubInitPayload) => {
   const {context} = ws
-  if (!context) return
   const {userId, createdAt} = payload
   if (userId === context.userId) {
     if (context.createdAt < createdAt) {

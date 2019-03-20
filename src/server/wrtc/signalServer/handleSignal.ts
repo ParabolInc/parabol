@@ -33,7 +33,9 @@ const handleSignal = (ws: UWebSocket, payload: {type: string; [key: string]: any
   const {type} = payload
   const handler = handlers[type]
   if (!handler) return false
-  handler(ws, payload)
+  if (ws.context) {
+    handler(ws, payload)
+  }
   return true
 }
 
