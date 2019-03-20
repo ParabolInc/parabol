@@ -35,7 +35,10 @@ const joinSwarm = async (
     userId: atmosphere.viewerId,
     // warmup is disabled for now: https://stackoverflow.com/questions/55172865/webrtc-detecting-muted-track-faster-post-warm-up
     streams: {
-      cam
+      cam: {
+        audio: 'audio',
+        video: 'video'
+      }
     },
     roomId,
     // how many offers should be stored on the signaling server? more = faster connection, less = more memory on the server
@@ -86,14 +89,20 @@ const joinSwarm = async (
       // chrome workaround for not detecting empty tracks
       video.srcObject = new MediaStream([track])
       video.onloadedmetadata = () => {
-        setStreamState({[field]: true})
-      }
-      const handleUnavailable = () => {
-        console.log('UNAVAIL')
-        setStreamState({[field]: false})
+        console.log('METADATA LOADED (chrome unmuted workaround)')
+        if (track.readyState === 'live') {
+          setStreamState({[field]: true})
+        }
       }
 
-      track.onmute = track.onended = handleUnavailable
+      track.onended = () => {
+        console.log('ENDED')
+        setStreamState({[field]: false})
+      }
+      track.onmute = () => {
+        console.log('MUTED')
+        setStreamState({[field]: false})
+      }
       track.onunmute = () => {
         console.log('UNMUTE')
         setStreamState({[field]: true})
