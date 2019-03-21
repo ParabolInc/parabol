@@ -20,6 +20,7 @@ interface Config extends SwarmConfig {
 }
 
 const qualityConstraints = {
+  audioOnly: {audio: true, video: false},
   low: {audio: true, video: {width: 64, height: 64}},
   lowVideo: {audio: false, video: {width: 64, height: 64}}
 }
@@ -141,8 +142,8 @@ export default class MediaSwarm extends FastRTCSwarm {
       const streamUI = {
         hasAudio: true,
         hasVideo: true,
-        isAudioBlocked: true,
         // don't wanna hear ourselves!
+        isAudioBlocked: true,
         isVideoBlocked: false
       } as StreamUI
       this.dispatchState({type: 'setStream', streamName, userId: this.userId, streamUI})
@@ -159,11 +160,36 @@ export default class MediaSwarm extends FastRTCSwarm {
       }
       const streamUI = {
         hasVideo: true,
-        isBlockedBlocked: false
+        isVideoBlocked: false
       }
       this.dispatchState({type: 'setStream', streamName, userId: this.userId, streamUI})
       this.addStreams({cam: this.localStreams.cam.low})
+    } else if (quality === 'audioOnly') {
+      const existing = this.localStreams.cam.low
+      if (existing) {
+        existing.removeTrack(existing.getAudioTracks()[0])
+        existing.addTrack(cam.getAudioTracks()[0])
+      } else {
+        this.localStreams.cam.low = cam
+      }
+      const streamUI = {
+        hasAudio: true,
+        // don't wanna hear ourselves!
+        isAudioBlocked: true
+      }
+      this.dispatchState({type: 'setStream', streamName, userId: this.userId, streamUI})
+      this.addStreams({cam: this.localStreams.cam.low!})
     }
+  }
+
+  muteWebcamAudio = () => {
+    this.dispatchState({
+      type: 'setStream',
+      streamName: 'cam',
+      userId: this.userId,
+      streamUI: {hasAudio: false}
+    })
+    this.muteTrack('audio')
   }
 
   muteWebcamVideo = () => {

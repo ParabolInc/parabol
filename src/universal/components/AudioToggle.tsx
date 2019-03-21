@@ -28,7 +28,7 @@ const AudioToggle = (props: Props) => {
   }
   return (
     <Toggle onClick={onClick}>
-      <Icon>{hasAudio ? 'videocam' : 'videocam_off'}</Icon>
+      <Icon>{hasAudio ? 'mic' : 'mic_off'}</Icon>
     </Toggle>
   )
 }

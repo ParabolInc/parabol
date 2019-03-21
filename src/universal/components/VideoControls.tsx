@@ -3,6 +3,7 @@ import styled from 'react-emotion'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import {StreamUI} from '../hooks/useSwarm'
 import MediaSwarm from '../utils/swarm/MediaSwarm'
+import AudioToggle from './AudioToggle'
 import VideoToggle from './VideoToggle'
 
 interface Props {
@@ -44,7 +45,9 @@ const VideoControls = (props: Props) => {
       <ButtonWrapper>
         <VideoToggle localStreamUI={localStreamUI} swarm={swarm} />
       </ButtonWrapper>
-      <ButtonWrapper />
+      <ButtonWrapper>
+        <AudioToggle localStreamUI={localStreamUI} swarm={swarm} />
+      </ButtonWrapper>
     </ControlBlock>
   )
   return null
