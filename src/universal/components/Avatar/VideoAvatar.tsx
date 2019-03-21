@@ -4,6 +4,7 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AvatarBadge from 'universal/components/AvatarBadge/AvatarBadge'
 import {StreamUI} from '../../hooks/useSwarm'
+import MediaSwarm from '../../utils/swarm/MediaSwarm'
 
 const AvatarStyle = styled('div')({
   cursor: 'pointer',
@@ -47,17 +48,24 @@ const Picture = styled('img')(({isHidden}: {isHidden: boolean}) => ({
 interface Props {
   teamMember: VideoAvatar_teamMember
   streamUI: StreamUI | undefined
+  swarm: MediaSwarm
   onClick?: () => void
 }
 
 const VideoAvatar = (props: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
-    const {streamUI} = props
+    const {
+      streamUI,
+      teamMember: {isSelf, userId},
+      swarm
+    } = props
     if (!streamUI) return
-    const {stream, hasVideo} = streamUI
+    const {hasVideo} = streamUI
     if (hasVideo) {
       const el = videoRef.current!
+      const stream = isSelf ? swarm.localStreams.cam.low : swarm.getStream('cam', userId)
+      console.log('hasVideo', stream, hasVideo)
       if (el.srcObject !== stream) {
         // conditional is required to remove flickering video on update
         el.srcObject = stream
@@ -71,7 +79,7 @@ const VideoAvatar = (props: Props) => {
   return (
     <AvatarStyle onClick={onClick}>
       <Picture src={picture} isHidden={showVideo} />
-      <Video innerRef={videoRef} isHidden={!showVideo} autoPlay />
+      <Video innerRef={videoRef} isHidden={!showVideo} autoPlay muted={isSelf} />
       <BadgeBlock>
         <BadgeBlockInner>
           <AvatarBadge isCheckedIn={isCheckedIn} isConnected={isConnected || isSelf} />

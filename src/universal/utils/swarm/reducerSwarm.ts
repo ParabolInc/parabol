@@ -1,11 +1,10 @@
 import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
-import {LocalDict, StreamDict, StreamUI} from '../../hooks/useSwarm'
-import {StreamName, StreamQuality} from './joinSwarm'
+import {StreamDict, StreamUI} from '../../hooks/useSwarm'
+import {StreamName} from './joinSwarm'
 
 interface AddSwarm {
   type: 'addSwarm'
   swarm: FastRTCSwarm
-  dispose: () => void
 }
 
 interface SetStream {
@@ -15,42 +14,23 @@ interface SetStream {
   streamUI: Partial<StreamUI>
 }
 
-interface AddLocalStream {
-  type: 'setLocalStream'
-  streamUI: StreamUI
-  streamName: StreamName
-  quality: StreamQuality
-}
-
 interface RemoveStream {
   type: 'removeStream'
   userId: string
 }
 
-export type SwarmAction = SetStream | AddSwarm | RemoveStream | AddLocalStream
+export type SwarmAction = SetStream | AddSwarm | RemoveStream
 
 export interface SwarmState {
   dispose: () => void
   streams: StreamDict
-  localStreams: LocalDict
   swarm: FastRTCSwarm | null
 }
 
 const reducerSwarm = (state: SwarmState, action: SwarmAction) => {
   switch (action.type) {
     case 'addSwarm':
-      return {...state, swarm: action.swarm, dispose: action.dispose}
-    case 'setLocalStream':
-      return {
-        ...state,
-        localStreams: {
-          ...state.localStreams,
-          [action.streamName]: {
-            ...state.localStreams[action.streamName],
-            [action.quality]: action.streamUI
-          }
-        }
-      }
+      return {...state, swarm: action.swarm}
     case 'setStream':
       return {
         ...state,

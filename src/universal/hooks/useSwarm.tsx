@@ -8,17 +8,10 @@ export interface StreamUI {
   hasAudio: boolean
   isVideoBlocked: boolean
   isAudioBlocked: boolean
-  stream: MediaStream
 }
 
 export interface StreamUserDict {
   [userId: string]: StreamUI
-}
-
-export interface LocalQualityDict {
-  low?: MediaStream | null
-  med?: MediaStream | null
-  high?: MediaStream | null
 }
 
 export interface StreamDict {
@@ -26,24 +19,7 @@ export interface StreamDict {
   screen: StreamUserDict
 }
 
-export interface LocalDict {
-  cam: LocalQualityDict
-  screen: LocalQualityDict
-}
-
 const initState = {
-  localStreams: {
-    cam: {
-      low: null,
-      med: null,
-      high: null
-    },
-    screen: {
-      low: null,
-      med: null,
-      high: null
-    }
-  },
   streams: {
     cam: {},
     screen: {}

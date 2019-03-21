@@ -12,15 +12,15 @@ interface Props {
   swarm: MediaSwarm
 }
 
-const VideoToggle = (props: Props) => {
+const AudioToggle = (props: Props) => {
   const {swarm, localStreamUI} = props
-  const {hasVideo} = localStreamUI
+  const {hasAudio} = localStreamUI
   const onClick = async () => {
-    if (hasVideo) {
-      swarm.muteWebcamVideo()
+    if (hasAudio) {
+      swarm.muteWebcamAudio()
     } else {
       try {
-        await swarm.broadcastWebcam('lowVideo')
+        await swarm.broadcastWebcam('audioOnly')
       } catch (e) {
         /**/
       }
@@ -28,9 +28,9 @@ const VideoToggle = (props: Props) => {
   }
   return (
     <Toggle onClick={onClick}>
-      <Icon>{hasVideo ? 'videocam' : 'videocam_off'}</Icon>
+      <Icon>{hasAudio ? 'videocam' : 'videocam_off'}</Icon>
     </Toggle>
   )
 }
 
-export default VideoToggle
+export default AudioToggle

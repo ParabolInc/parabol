@@ -17,6 +17,7 @@ import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import {StreamUI} from '../../../../hooks/useSwarm'
+import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -108,10 +109,11 @@ interface Props extends WithAtmosphereProps {
   newMeeting: NewMeetingAvatar_newMeeting | null
   teamMember: NewMeetingAvatar_teamMember
   streamUI: StreamUI | undefined
+  swarm: MediaSwarm
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {gotoStage, isFacilitatorStage, newMeeting, teamMember, streamUI} = props
+  const {gotoStage, isFacilitatorStage, newMeeting, teamMember, streamUI, swarm} = props
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
@@ -142,7 +144,7 @@ const NewMeetingAvatar = (props: Props) => {
               teamMember
             }}
             targetAnchor={targetAnchor}
-            toggle={<VideoAvatar teamMember={teamMember} streamUI={streamUI} />}
+            toggle={<VideoAvatar teamMember={teamMember} streamUI={streamUI} swarm={swarm} />}
           />
         </AvatarBlock>
         {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}

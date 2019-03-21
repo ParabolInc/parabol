@@ -1,4 +1,3 @@
-import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
 import {NewMeetingAvatarGroup_team} from '__generated__/NewMeetingAvatarGroup_team.graphql'
 import React from 'react'
 import styled from 'react-emotion'
@@ -12,6 +11,7 @@ import findStageById from 'universal/utils/meetings/findStageById'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
 import VideoControls from '../../../../components/VideoControls'
 import {StreamUserDict} from '../../../../hooks/useSwarm'
+import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 
 const MeetingAvatarGroupRoot = styled('div')({
   alignItems: 'center',
@@ -28,7 +28,7 @@ interface Props extends WithAtmosphereProps {
   gotoStageId: (stageId: string) => void
   team: NewMeetingAvatarGroup_team
   camStreams: StreamUserDict
-  swarm: FastRTCSwarm | null
+  swarm: MediaSwarm | null
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {
@@ -59,6 +59,7 @@ const NewMeetingAvatarGroup = (props: Props) => {
             newMeeting={newMeeting}
             teamMember={teamMember}
             streamUI={camStreams[teamMember.userId]}
+            swarm={swarm}
           />
         )
       })}

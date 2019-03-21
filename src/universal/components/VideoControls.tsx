@@ -1,12 +1,12 @@
-import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
 import React from 'react'
 import styled from 'react-emotion'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import {StreamUI} from '../hooks/useSwarm'
+import MediaSwarm from '../utils/swarm/MediaSwarm'
 import VideoToggle from './VideoToggle'
 
 interface Props {
-  swarm: FastRTCSwarm | null
+  swarm: MediaSwarm | null
   localStreamUI: StreamUI | undefined
 }
 
@@ -28,19 +28,13 @@ const VideoControls = (props: Props) => {
   const addVideo = async () => {
     // TODO check for perms
 
-    let cam
     try {
-      cam = await window.navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: {width: 64, height: 64}
-      })
+      await swarm.broadcastWebcam()
     } catch (e) {
       // TODO set to user denied view
       return
     }
     window.sessionStorage.setItem('videoOnStart', 'true')
-    swarm.addStreams({cam})
-    swarm.emit('localStream', cam, 'cam', 'low')
   }
   if (!localStreamUI) {
     return <AddVideoButton onClick={addVideo}>Add Video</AddVideoButton>
@@ -48,7 +42,7 @@ const VideoControls = (props: Props) => {
   return (
     <ControlBlock>
       <ButtonWrapper>
-        <VideoToggle hasVideo={localStreamUI.hasVideo} swarm={swarm} />
+        <VideoToggle localStreamUI={localStreamUI} swarm={swarm} />
       </ButtonWrapper>
       <ButtonWrapper />
     </ControlBlock>

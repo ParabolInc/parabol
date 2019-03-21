@@ -1,4 +1,3 @@
-import FastRTCSwarm from '@mattkrick/fast-rtc-swarm'
 import {NewMeeting_viewer} from '__generated__/NewMeeting_viewer.graphql'
 import React from 'react'
 import {DragDropContext as dragDropContext} from 'react-dnd'
@@ -20,6 +19,7 @@ import RetroVotePhase from 'universal/components/RetroVotePhase'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {StreamDict} from 'universal/hooks/useSwarm'
 import {demoTeamId} from 'universal/modules/demo/initDB'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
@@ -46,8 +46,8 @@ import updateLocalStage from 'universal/utils/relay/updateLocalStage'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import Atmosphere from '../Atmosphere'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
-import {StreamDict} from 'universal/hooks/useSwarm'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
+import MediaSwarm from '../utils/swarm/MediaSwarm'
 
 const {Component} = React
 
@@ -148,7 +148,7 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
   meetingType: MeetingTypeEnum
   streams: StreamDict
   viewer: NewMeeting_viewer
-  swarm: FastRTCSwarm | null
+  swarm: MediaSwarm | null
 }
 
 class NewMeeting extends Component<Props> {
