@@ -306,7 +306,10 @@ class NewMeeting extends Component<Props> {
 
   render () {
     const {atmosphere, meetingType, swarm, streams, viewer} = this.props
-    const {team} = viewer
+    const {
+      team,
+      featureFlags: {video: allowVideo}
+    } = viewer
     if (!team) return null
     const {newMeeting, teamName, teamId} = team
     const isMeetingSidebarCollapsed = team.isMeetingSidebarCollapsed || false
@@ -349,6 +352,7 @@ class NewMeeting extends Component<Props> {
                 toggleSidebar={this.toggleSidebar}
               />
               <NewMeetingAvatarGroup
+                allowVideo={allowVideo}
                 swarm={swarm}
                 gotoStageId={this.gotoStageId}
                 team={team}
@@ -420,6 +424,9 @@ export default createFragmentContainer(
   ),
   graphql`
     fragment NewMeeting_viewer on User {
+      featureFlags {
+        video
+      }
       ...NewMeetingSidebar_viewer
       team(teamId: $teamId) {
         ...NewMeetingAvatarGroup_team

@@ -11,7 +11,8 @@ const AvatarStyle = styled('div')({
   display: 'inline-block',
   height: '100%', // needed to not pancake in firefox
   position: 'relative',
-  verticalAlign: 'middle'
+  verticalAlign: 'middle',
+  width: '100%'
 })
 
 const BadgeBlock = styled('div')({
@@ -34,6 +35,7 @@ const BadgeBlockInner = styled('div')({
 const Video = styled('video')(({isHidden}: {isHidden: boolean}) => ({
   display: isHidden ? 'none' : undefined,
   borderRadius: '100%',
+  height: '100%',
   objectFit: 'cover', // fill will squish it, cover cuts off the edges
   minHeight: '100%', // needed to not pancake in firefox
   transform: 'rotateY(180deg)',
@@ -42,7 +44,11 @@ const Video = styled('video')(({isHidden}: {isHidden: boolean}) => ({
 
 const Picture = styled('img')(({isHidden}: {isHidden: boolean}) => ({
   display: isHidden ? 'none' : undefined,
-  borderRadius: '100%'
+  borderRadius: '100%',
+  height: '100%',
+  objectFit: 'cover', // fill will squish it, cover cuts off the edges
+  minHeight: '100%', // needed to not pancake in firefox
+  width: '100%'
 }))
 
 interface Props {

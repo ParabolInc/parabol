@@ -29,10 +29,11 @@ interface Props extends WithAtmosphereProps {
   team: NewMeetingAvatarGroup_team
   camStreams: StreamUserDict
   swarm: MediaSwarm | null
+  allowVideo: boolean
 }
 
 const NewMeetingAvatarGroup = (props: Props) => {
-  const {atmosphere, swarm, gotoStageId, team, camStreams} = props
+  const {atmosphere, swarm, gotoStageId, team, camStreams, allowVideo} = props
   const {newMeeting, teamMembers} = team
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorStageId, phases, localPhase} = meeting
@@ -48,7 +49,11 @@ const NewMeetingAvatarGroup = (props: Props) => {
 
   return (
     <MeetingAvatarGroupRoot>
-      <VideoControls swarm={swarm} localStreamUI={camStreams[atmosphere.viewerId]} />
+      <VideoControls
+        allowVideo={allowVideo}
+        swarm={swarm}
+        localStreamUI={camStreams[atmosphere.viewerId]}
+      />
       {teamMembers.map((teamMember) => {
         return (
           // @ts-ignore

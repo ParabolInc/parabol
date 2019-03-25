@@ -82,7 +82,7 @@ export interface IUser {
   /**
    * Any super power given to the user via a super user
    */
-  featureFlags: IUserFeatureFlags | null
+  featureFlags: IUserFeatureFlags
 
   /**
    * An array of objects with information about the user's identities.
@@ -434,9 +434,9 @@ export interface IUserFeatureFlags {
   __typename: 'UserFeatureFlags'
 
   /**
-   * true if the user has access to retro meetings
+   * true if the user has access to retro meeting video
    */
-  retro: boolean | null
+  video: boolean | null
 }
 
 export interface IAuthIdentityType {
@@ -3933,7 +3933,7 @@ export interface IAddAgendaItemPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  retro = 'retro'
+  video = 'video'
 }
 
 export interface IAddFeatureFlagPayload {

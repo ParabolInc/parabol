@@ -25,13 +25,13 @@ const joinSwarm = async (
   const {trebuchet} = atmosphere.transport as GQLTrebuchetClient
   const swarm = new MediaSwarm({
     userId: atmosphere.viewerId,
-    // warmup is disabled for now: https://stackoverflow.com/questions/55172865/webrtc-detecting-muted-track-faster-post-warm-up
-    streams: {
-      cam: {
-        audio: 'audio',
-        video: 'video'
-      }
-    },
+    // disabling warmup while behind a feature flag
+    // streams: {
+    //   cam: {
+    //     audio: 'audio',
+    //     video: 'video'
+    //   }
+    // },
     roomId,
     // how many offers should be stored on the signaling server? more = faster connection, less = more memory on the server
     peerBuffer: 0,

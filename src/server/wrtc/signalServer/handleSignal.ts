@@ -29,14 +29,14 @@ const handlers = {
   close: closeWRTC
 } as {[key: string]: Handler}
 
-const handleSignal = (ws: UWebSocket, payload: {type: string; [key: string]: any}): boolean => {
+type Payload = {type: string; [key: string]: any}
+
+const handleSignal = (ws: UWebSocket, payload: Payload) => {
   const {type} = payload
   const handler = handlers[type]
-  if (!handler) return false
-  if (ws.context) {
+  if (handler && ws.context) {
     handler(ws, payload)
   }
-  return true
 }
 
 export default handleSignal
