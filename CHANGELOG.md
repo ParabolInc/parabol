@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.6.1
+
+## Fixed
+* Demo was broken by #2712
+
+Regression 
 ## v3.6.0
 
 ## Added
