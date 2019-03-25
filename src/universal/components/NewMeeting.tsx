@@ -352,7 +352,7 @@ class NewMeeting extends Component<Props> {
                 toggleSidebar={this.toggleSidebar}
               />
               <NewMeetingAvatarGroup
-                allowVideo={allowVideo}
+                allowVideo={!!allowVideo}
                 swarm={swarm}
                 gotoStageId={this.gotoStageId}
                 team={team}
