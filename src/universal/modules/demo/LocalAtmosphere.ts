@@ -4,6 +4,7 @@ import {requestSubscription} from 'react-relay'
 import {
   Environment,
   FetchFunction,
+  getRequest,
   Network,
   RecordSource,
   Store,
@@ -11,6 +12,7 @@ import {
 } from 'relay-runtime'
 import {TASK, TEAM} from 'universal/utils/constants'
 import handlerProvider from 'universal/utils/relay/handlerProvider'
+import Atmosphere from '../../Atmosphere'
 import ClientGraphQLServer from './ClientGraphQLServer'
 // import sleep from 'universal/utils/sleep'
 
@@ -26,9 +28,17 @@ export default class LocalAtmosphere extends Environment {
     this._network = Network.create(this.fetchLocal, this.subscribeLocal)
   }
 
-  registerQuery = async (_queryKey, subscriptions, subParams, queryVariables) => {
-    subscriptions.forEach((subCreator) => {
-      const config = subCreator(this, queryVariables, subParams)
+  registerQuery: Atmosphere['registerQuery'] = async (_queryKey, _queryFetcher, options = {}) => {
+    const {subscriptions, subParams, queryVariables} = options
+    if (!subscriptions) return
+    const subConfigs = subscriptions.map((subCreator) =>
+      subCreator(this as any, queryVariables, subParams)
+    )
+    subConfigs.map((config) => {
+      const {subscription} = config
+      const request = getRequest(subscription)
+      const name = request.params && request.params.name
+      if (!name) throw new Error(`No name found for request ${request}`)
       requestSubscription(this, {...config})
     })
   }
