@@ -61,6 +61,27 @@ export default class RethinkDataLoader {
   constructor (authToken, dataloaderOptions = {}) {
     this.authToken = authToken
     this.dataloaderOptions = dataloaderOptions
+    this.atlassianAuthByUserId = makeCustomLoader(async (userIds) => {
+      const r = getRethink()
+      const atlassianAuths = await r
+        .table('AtlassianAuth')
+        .getAll(r.args(userIds), {index: 'userId'})
+      primeStandardLoader(this.atlassianAuths, atlassianAuths)
+      return userIds.map((userId) => {
+        return atlassianAuths.filter((project) => project.userId === userId)
+      })
+    }, this.dataloaderOptions)
+    this.atlassianProjectsByTeamId = makeCustomLoader(async (teamIds) => {
+      const r = getRethink()
+      const atlassianProjects = await r
+        .table('AtlassianProject')
+        .getAll(r.args(teamIds), {index: 'teamId'})
+        .filter({isActive: true})
+      primeStandardLoader(this.atlassianProjects, atlassianProjects)
+      return teamIds.map((teamId) => {
+        return atlassianProjects.filter((project) => project.teamId === teamId)
+      })
+    }, this.dataloaderOptions)
     this.customPhaseItemsByTeamId = makeCustomLoader(async (teamIds) => {
       const r = getRethink()
       const customPhaseItems = await r
@@ -292,6 +313,8 @@ export default class RethinkDataLoader {
   }
 
   agendaItems = this.makeStandardLoader('AgendaItem')
+  atlassianAuths = this.makeStandardLoader('AtlassianAuth')
+  atlassianProjects = this.makeStandardLoader('AtlassianProject')
   customPhaseItems = this.makeStandardLoader('CustomPhaseItem')
   meetings = this.makeStandardLoader('Meeting')
   meetingSettings = this.makeStandardLoader('MeetingSettings')

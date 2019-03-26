@@ -13,7 +13,7 @@ const getUserReduction = (service, reduction, userId) => {
 }
 
 export default {
-  type: ProviderMap,
+  type: new GraphQLNonNull(ProviderMap),
   description: 'The list of providers as seen on the integrations page',
   args: {
     teamId: {

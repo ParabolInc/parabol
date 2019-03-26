@@ -137,6 +137,7 @@ export const SLACK = 'SlackIntegration'
 export const CURRENT_PROVIDERS = [GITHUB, SLACK]
 export const GITHUB_SCOPE = 'admin:org_hook,read:org,repo,user:email,write:repo_hook'
 export const SLACK_SCOPE = 'identify,incoming-webhook,channels:read,chat:write:bot'
+export const ATLASSIAN_SCOPE = 'read:jira-user%20read:jira-work%20write:jira-work'
 export const GITHUB_ENDPOINT = 'https://api.github.com/graphql'
 
 /* JavaScript specifics */

@@ -17,10 +17,10 @@ import withAtmosphere, {
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {IntegrationService} from 'universal/types/graphql'
-import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
+import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE, ATLASSIAN_SCOPE} from 'universal/utils/constants'
+import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import SlackProviderLogo from '../../../../SlackProviderLogo'
 
 const StyledButton = styled(RaisedButton)({
@@ -92,6 +92,14 @@ const ProviderActions = styled(RowActions)({
 })
 
 export const providerLookup = {
+  atlassian: {
+    makeUri: (state) =>
+      `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
+        window.__ACTION__.atlassian
+      }&scope=${ATLASSIAN_SCOPE}&redirect_uri=${makeHref(
+        '/auth/atlassian'
+      )}&state=${state}&response_type=code&prompt=consent`
+  },
   [GITHUB]: {
     ...ui.providers.github,
     route: 'github',
@@ -118,7 +126,7 @@ const defaultDetails = {
 }
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
-  comingSoon: boolean
+  comingSoon?: boolean
   name: IntegrationService
   providerDetails: ProviderRow_providerDetails
   teamId: string

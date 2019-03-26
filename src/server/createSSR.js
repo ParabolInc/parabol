@@ -7,6 +7,7 @@ import path from 'path'
 const webpackPublicPath = getWebpackPublicPath()
 
 const clientIds = {
+  atlassian: process.env.ATLASSIAN_CLIENT_ID,
   auth0: process.env.AUTH0_CLIENT_ID,
   auth0Domain: process.env.AUTH0_DOMAIN,
   cdn: webpackPublicPath,
