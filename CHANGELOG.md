@@ -5,8 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## vNEXT
+## v3.6.1
+
+## Fixed
+* Demo was broken by #2712
+
+Regression 
+## v3.6.0
+
+## Added
+* Spellcheck to cards (#2706)
+* Cypress.io tests
+* Aggressive sub-powered query caching (#2712)
+
+## Fixed
 * Squelch Google NLP unsupported languages (again)
+* Updated linter (#2725)
+* Fix infinite recursion when facilitatorPhaseItem is invalid (#2724) 
+* Fix buld:dll (#2719)
+* Lock check-in question editing to facilitator (#2718)
+* Fix DashAlert when page is scrollable (#2714)
+* Use Intersection Observer to detect when to load more (#2714)
+* Bug allowing endNewMeeting to be called twice (#2650)
+* Multiple logout bug (#2712)
+
+## Removed
+* Legacy invitation patterns & tables
 
 ## v3.5.1 2019-Feb-28
 

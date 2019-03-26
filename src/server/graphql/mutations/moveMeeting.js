@@ -65,7 +65,7 @@ export default {
     const nextPhaseInfo = actionMeeting[nextPhase]
     const currentTeam = await r.table('Team').get(teamId)
     const {
-      activeFacilitator,
+      // activeFacilitator,
       facilitatorPhase,
       meetingPhase,
       facilitatorPhaseItem,
@@ -109,10 +109,11 @@ export default {
       return standardError(new Error('Next phase item not found'), {userId: viewerId})
     }
 
-    const teamMemberId = `${viewerId}::${teamId}`
-    if (activeFacilitator !== teamMemberId) {
-      return standardError(new Error('Not facilitator'), {userId: viewerId})
-    }
+    // REMOVED TO ALLOW REDIRECT IF FACILITATOR PHASE ITEM IS INCORRECT
+    // const teamMemberId = `${viewerId}::${teamId}`
+    // if (activeFacilitator !== teamMemberId) {
+    //   return standardError(new Error('Not facilitator'), {userId: viewerId})
+    // }
 
     // RESOLUTION
     const goingForwardAPhase = nextPhase && nextPhaseInfo.index > meetingPhaseInfo.index
