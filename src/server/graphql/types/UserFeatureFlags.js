@@ -7,6 +7,10 @@ const UserFeatureFlags = new GraphQLObjectType({
     video: {
       type: GraphQLBoolean,
       description: 'true if the user has access to retro meeting video'
+    },
+    jira: {
+      type: GraphQLBoolean,
+      description: 'true if jira is allowed'
     }
   })
 })

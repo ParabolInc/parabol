@@ -437,6 +437,11 @@ export interface IUserFeatureFlags {
    * true if the user has access to retro meeting video
    */
   video: boolean | null
+
+  /**
+   * true if jira is allowed
+   */
+  jira: boolean | null
 }
 
 export interface IAuthIdentityType {
@@ -1794,9 +1799,9 @@ export interface IAtlassianAuth {
   atlassianUserId: string
 
   /**
-   * The atlassian cloud ID to identify the site
+   * The atlassian cloud IDs that the user has granted
    */
-  cloudId: string
+  cloudIds: Array<string>
 
   /**
    * The timestamp the provider was created
@@ -4063,7 +4068,8 @@ export interface IAddAgendaItemPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  video = 'video'
+  video = 'video',
+  jira = 'jira'
 }
 
 export interface IAddFeatureFlagPayload {

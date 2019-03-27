@@ -13,17 +13,23 @@ interface Props {
 }
 const ProviderList = (props: Props) => {
   const {viewer, teamId} = props
-  const {providerMap, team} = viewer
+  const {
+    providerMap,
+    team,
+    featureFlags: {jira}
+  } = viewer
   if (!team) return null
   const {atlassianAuth, atlassianProjects} = team
   return (
     <SettingsWrapper>
       <Panel hideFirstRowBorder>
-        <AtlassianProviderRow
-          teamId={teamId}
-          isAuthed={!!atlassianAuth}
-          projects={atlassianProjects}
-        />
+        {jira && (
+          <AtlassianProviderRow
+            teamId={teamId}
+            isAuthed={!!atlassianAuth}
+            projects={atlassianProjects}
+          />
+        )}
         <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} teamId={teamId} />
         <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} teamId={teamId} />
       </Panel>
@@ -35,6 +41,9 @@ export default createFragmentContainer(
   ProviderList,
   graphql`
     fragment ProviderList_viewer on User {
+      featureFlags {
+        jira
+      }
       providerMap(teamId: $teamId) {
         GitHubIntegration {
           ...ProviderRow_providerDetails
