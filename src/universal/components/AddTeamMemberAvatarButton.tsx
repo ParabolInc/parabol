@@ -17,10 +17,11 @@ interface Props extends WithAtmosphereProps {
 
 const AddButton = styled(OutlinedButton)(
   {
-    fontSize: '1.5rem',
+    fontSize: 24,
     fontWeight: 400,
     height: 32,
-    marginLeft: '1rem',
+    marginLeft: 16,
+    maxWidth: 32,
     padding: 0,
     width: 32
   },

@@ -61,7 +61,7 @@ const handleGraphQLTrebuchetRequest = async (
       relayUnsubscribe(connectionContext.subs, opId)
       return
     default:
-      throw new Error('No type provided')
+      throw new Error('No type provided to GraphQL Trebuchet Server')
   }
 }
 

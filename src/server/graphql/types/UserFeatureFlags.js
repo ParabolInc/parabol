@@ -4,9 +4,9 @@ const UserFeatureFlags = new GraphQLObjectType({
   name: 'UserFeatureFlags',
   description: 'The user account profile',
   fields: () => ({
-    retro: {
+    video: {
       type: GraphQLBoolean,
-      description: 'true if the user has access to retro meetings'
+      description: 'true if the user has access to retro meeting video'
     }
   })
 })

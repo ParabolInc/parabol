@@ -1,3 +1,4 @@
+import {ButtonHTMLAttributes} from 'react'
 import styled from 'react-emotion'
 import withInnerRef from 'universal/decorators/withInnerRef'
 
@@ -15,12 +16,12 @@ const disabledStyles = {
   }
 }
 
-interface Props {
+export interface PlainButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   disabled?: boolean
   waiting?: boolean
 }
 
-const PlainButton = styled('button')<Props>(
+const PlainButton = styled('button')<PlainButtonProps>(
   {
     appearance: 'none',
     background: 'inherit',

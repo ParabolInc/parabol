@@ -97,7 +97,7 @@ const TeamMember = new GraphQLObjectType({
     },
     /* Foreign keys */
     userId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'foreign key to User table'
     },
     team: {

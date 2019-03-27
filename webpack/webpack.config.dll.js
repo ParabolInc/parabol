@@ -8,7 +8,6 @@ module.exports = {
       '@babel/polyfill',
       // '@clusterws/cws',
       // '@google-cloud/language',
-      '@mattkrick/fast-rtc-peer',
       '@mattkrick/graphql-trebuchet-client',
       '@mattkrick/sanitize-svg',
       '@mattkrick/trebuchet-client',

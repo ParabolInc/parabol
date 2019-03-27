@@ -2,7 +2,7 @@ import {NewMeetingWithLocalState_viewer} from '__generated__/NewMeetingWithLocal
 import React, {Component} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
-import NewMeeting from 'universal/components/NewMeeting'
+import NewMeetingWithSwarm from 'universal/components/NewMeetingWithSwarm'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -181,7 +181,7 @@ class NewMeetingWithLocalState extends Component<Props, State> {
   }
 
   render () {
-    return this.state.safeRoute ? <NewMeeting {...this.props} /> : null
+    return this.state.safeRoute ? <NewMeetingWithSwarm {...this.props} /> : null
   }
 }
 

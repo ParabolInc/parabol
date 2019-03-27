@@ -62,7 +62,7 @@ const subscription = graphql`
         user {
           id
           featureFlags {
-            retro
+            video
           }
         }
       }

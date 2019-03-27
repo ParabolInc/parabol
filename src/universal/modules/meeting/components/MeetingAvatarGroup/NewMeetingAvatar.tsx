@@ -4,18 +4,20 @@ import React from 'react'
 import styled from 'react-emotion'
 import {connect} from 'react-redux'
 import {createFragmentContainer, graphql} from 'react-relay'
-import Avatar from 'universal/components/Avatar/Avatar'
+import VideoAvatar from 'universal/components/Avatar/VideoAvatar'
 import LoadableMenu from 'universal/components/LoadableMenu'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import LoadableNewMeetingAvatarMenu from 'universal/modules/meeting/components/LoadableNewMeetingAvatarMenu'
 import appTheme from 'universal/styles/theme/appTheme'
-import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
+import {NewMeetingTeamMemberStage} from 'universal/types/graphql'
 import {CHECKIN, UPDATES} from 'universal/utils/constants'
 import UNSTARTED_MEETING from 'universal/utils/meetings/unstartedMeeting'
-import {NewMeetingTeamMemberStage} from 'universal/types/graphql'
+import ErrorBoundary from '../../../../components/ErrorBoundary'
+import {StreamUI} from '../../../../hooks/useSwarm'
+import MediaSwarm from '../../../../utils/swarm/MediaSwarm'
 
 const originAnchor = {
   vertical: 'bottom',
@@ -48,16 +50,23 @@ interface AvatarBlockProps {
 const AvatarBlock = styled('div')(
   {
     borderRadius: '100%',
-    width: '2.25rem',
-
+    height: 36,
+    width: 36,
+    maxWidth: 36,
     [ui.breakpoint.wide]: {
-      width: '2.5rem'
+      height: 40,
+      width: 40,
+      maxWidth: 40
     },
     [ui.breakpoint.wider]: {
-      width: '3rem'
+      height: 48,
+      width: 48,
+      maxWidth: 48
     },
     [ui.breakpoint.widest]: {
-      width: '4rem'
+      height: 64,
+      width: 64,
+      maxWidth: 64
     },
 
     ':hover': {
@@ -99,55 +108,48 @@ interface Props extends WithAtmosphereProps {
   isFacilitatorStage: boolean
   newMeeting: NewMeetingAvatar_newMeeting | null
   teamMember: NewMeetingAvatar_teamMember
+  streamUI: StreamUI | undefined
+  swarm: MediaSwarm
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {gotoStage, isFacilitatorStage, newMeeting, teamMember} = props
+  const {gotoStage, isFacilitatorStage, newMeeting, teamMember, streamUI, swarm} = props
   const meeting = newMeeting || UNSTARTED_MEETING
   const {facilitatorUserId, localPhase, localStage} = meeting
   const localPhaseType = localPhase && localPhase.phaseType
   const canNavigate = localPhaseType === CHECKIN || localPhaseType === UPDATES
-  const {teamMemberId, meetingMember, picture = defaultUserAvatar, userId, user} = teamMember
-  const {isConnected} = user
-  const isCheckedIn = meetingMember ? meetingMember.isCheckedIn : null
+  const {teamMemberId, userId} = teamMember
   const avatarIsFacilitating = userId === facilitatorUserId
   const handleNavigate = canNavigate ? gotoStage : undefined
   return (
-    <Item>
-      <AvatarBlock
-        isReadOnly={!canNavigate}
-        isLocalStage={
-          localStage
-            ? (localStage as NewMeetingTeamMemberStage).teamMemberId === teamMemberId
-            : false
-        }
-        isFacilitatorStage={!!isFacilitatorStage}
-      >
-        <LoadableMenu
-          LoadableComponent={LoadableNewMeetingAvatarMenu}
-          maxWidth={400}
-          maxHeight={225}
-          originAnchor={originAnchor}
-          queryVars={{
-            handleNavigate,
-            newMeeting,
-            teamMember
-          }}
-          targetAnchor={targetAnchor}
-          toggle={
-            <Avatar
-              hasBadge
-              isClickable
-              picture={picture}
-              isConnected={isConnected}
-              isCheckedIn={isCheckedIn}
-              size='fill'
-            />
+    <ErrorBoundary>
+      <Item>
+        <AvatarBlock
+          isReadOnly={!canNavigate}
+          isLocalStage={
+            localStage
+              ? (localStage as NewMeetingTeamMemberStage).teamMemberId === teamMemberId
+              : false
           }
-        />
-      </AvatarBlock>
-      {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
-    </Item>
+          isFacilitatorStage={!!isFacilitatorStage}
+        >
+          <LoadableMenu
+            LoadableComponent={LoadableNewMeetingAvatarMenu}
+            maxWidth={400}
+            maxHeight={225}
+            originAnchor={originAnchor}
+            queryVars={{
+              handleNavigate,
+              newMeeting,
+              teamMember
+            }}
+            targetAnchor={targetAnchor}
+            toggle={<VideoAvatar teamMember={teamMember} streamUI={streamUI} swarm={swarm} />}
+          />
+        </AvatarBlock>
+        {avatarIsFacilitating && <FacilitatorTag>{'Facilitator'}</FacilitatorTag>}
+      </Item>
+    </ErrorBoundary>
   )
 }
 
@@ -165,6 +167,7 @@ export default createFragmentContainer(
         isConnected
       }
       ...NewMeetingAvatarMenu_teamMember
+      ...VideoAvatar_teamMember
     }
 
     fragment NewMeetingAvatar_newMeeting on NewMeeting {

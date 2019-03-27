@@ -1,6 +1,11 @@
 import shortid from 'shortid'
 import {IAuthToken} from '../../universal/types/graphql'
 import RateLimiter from '../graphql/RateLimiter'
+import WebSocketContext from '../wrtc/signalServer/WebSocketContext'
+
+export interface UserWebSocket extends WebSocket {
+  context?: WebSocketContext
+}
 
 class ConnectionContext {
   authToken: IAuthToken
@@ -9,7 +14,7 @@ class ConnectionContext {
   id = shortid.generate()
   isAlive = true
   rateLimiter: RateLimiter
-  socket: WebSocket
+  socket: UserWebSocket
   sharedDataLoader: any
   subs: any = {}
   constructor (socket, authToken, sharedDataLoader, rateLimiter) {

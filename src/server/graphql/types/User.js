@@ -81,7 +81,7 @@ const User = new GraphQLObjectType({
       description: 'true if email is verified, false otherwise'
     },
     featureFlags: {
-      type: UserFeatureFlags,
+      type: new GraphQLNonNull(UserFeatureFlags),
       description: 'Any super power given to the user via a super user',
       resolve: (source) => {
         const featureFlags = source.featureFlags || []

@@ -19,6 +19,7 @@ import RetroVotePhase from 'universal/components/RetroVotePhase'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {StreamDict} from 'universal/hooks/useSwarm'
 import {demoTeamId} from 'universal/modules/demo/initDB'
 import NewMeetingAvatarGroup from 'universal/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import RejoinFacilitatorButton from 'universal/modules/meeting/components/RejoinFacilitatorButton/RejoinFacilitatorButton'
@@ -46,6 +47,7 @@ import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMu
 import Atmosphere from '../Atmosphere'
 import LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import UNSTARTED_MEETING from '../utils/meetings/unstartedMeeting'
+import MediaSwarm from '../utils/swarm/MediaSwarm'
 
 const {Component} = React
 
@@ -144,7 +146,9 @@ interface Props extends WithAtmosphereProps, RouteComponentProps<{}>, WithMutati
   atmosphere: Atmosphere & LocalAtmosphere
   bindHotkey: (mousetrapKey: string | Array<string>, cb: () => void) => void
   meetingType: MeetingTypeEnum
+  streams: StreamDict
   viewer: NewMeeting_viewer
+  swarm: MediaSwarm | null
 }
 
 class NewMeeting extends Component<Props> {
@@ -164,6 +168,7 @@ class NewMeeting extends Component<Props> {
 
   sidebarRef = React.createRef()
   gotoNextRef = React.createRef<HTMLDivElement>()
+
   endMeeting = () => {
     const {
       atmosphere,
@@ -300,8 +305,11 @@ class NewMeeting extends Component<Props> {
   }
 
   render () {
-    const {atmosphere, meetingType, viewer} = this.props
-    const {team} = viewer
+    const {atmosphere, meetingType, swarm, streams, viewer} = this.props
+    const {
+      team,
+      featureFlags: {video: allowVideo}
+    } = viewer
     if (!team) return null
     const {newMeeting, teamName, teamId} = team
     const isMeetingSidebarCollapsed = team.isMeetingSidebarCollapsed || false
@@ -343,7 +351,13 @@ class NewMeeting extends Component<Props> {
                 isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}
                 toggleSidebar={this.toggleSidebar}
               />
-              <NewMeetingAvatarGroup gotoStageId={this.gotoStageId} team={team} />
+              <NewMeetingAvatarGroup
+                allowVideo={!!allowVideo}
+                swarm={swarm}
+                gotoStageId={this.gotoStageId}
+                team={team}
+                camStreams={streams.cam}
+              />
             </MeetingAreaHeader>
             <ErrorBoundary>
               <React.Fragment>
@@ -410,6 +424,9 @@ export default createFragmentContainer(
   ),
   graphql`
     fragment NewMeeting_viewer on User {
+      featureFlags {
+        video
+      }
       ...NewMeetingSidebar_viewer
       team(teamId: $teamId) {
         ...NewMeetingAvatarGroup_team

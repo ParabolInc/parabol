@@ -8,6 +8,7 @@ import withCoordsV2 from 'universal/decorators/withCoordsV2'
 import Modal from 'universal/components/Modal'
 import type {ToggledPortalProps} from 'universal/decorators/withToggledPortal'
 import withToggledPortal from 'universal/decorators/withToggledPortal'
+import ErrorBoundary from 'universal/components/ErrorBoundary'
 
 const MenuBlock = styled('div')({
   padding: '.25rem 0',
@@ -55,17 +56,19 @@ const LoadableMenu = (props: Props) => {
     onClose && onClose(e)
   }
   return (
-    <Modal clickToClose escToClose onClose={handleClose} isOpen={isOpen} onOpen={onOpen}>
-      <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>
-        <MenuBlock style={{...coords, maxWidth, minWidth}} innerRef={setModalRef}>
-          <MenuContents style={{maxHeight}}>
-            <Suspense fallback={''}>
-              <LoadableComponent {...queryVars} closePortal={handleClose} />
-            </Suspense>
-          </MenuContents>
-        </MenuBlock>
-      </AnimatedFade>
-    </Modal>
+    <ErrorBoundary>
+      <Modal clickToClose escToClose onClose={handleClose} isOpen={isOpen} onOpen={onOpen}>
+        <AnimatedFade appear duration={100} slide={32} in={!isClosing} onExited={terminatePortal}>
+          <MenuBlock style={{...coords, maxWidth, minWidth}} innerRef={setModalRef}>
+            <MenuContents style={{maxHeight}}>
+              <Suspense fallback={''}>
+                <LoadableComponent {...queryVars} closePortal={handleClose} />
+              </Suspense>
+            </MenuContents>
+          </MenuBlock>
+        </AnimatedFade>
+      </Modal>
+    </ErrorBoundary>
   )
 }
 
