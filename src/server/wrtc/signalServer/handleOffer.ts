@@ -12,7 +12,7 @@ interface OfferPayloadToServer {
 const handleOffer = (ws: UWebSocket, payload: OfferPayloadToServer) => {
   const {id, sdp} = payload
   const {context} = ws
-  const to = context.acceptedOffers[id]
+  const to = context.connectedPeers[id]
   if (to) {
     // the receiver is known
     getPubSub()

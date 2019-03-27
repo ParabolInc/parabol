@@ -12,7 +12,7 @@ const handleCandidate = (ws: UWebSocket, payload: CandidatePayloadToServer) => {
   const {candidate, id} = payload
   const {context} = ws
   // if (!candidate) return
-  const to = context.acceptedOffers[id]
+  const to = context.connectedPeers[id]
   if (to) {
     // the receiver is known
     getPubSub()
