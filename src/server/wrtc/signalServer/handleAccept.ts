@@ -10,7 +10,7 @@ interface AcceptPayload {
 }
 
 const handleAccept = (ws: UWebSocket, payload: AcceptPayload) => {
-  ws.context.acceptedOffers[payload.id] = payload.userId
+  ws.context.connectedPeers[payload.id] = payload.userId
   sendSignal(ws, payload)
 }
 

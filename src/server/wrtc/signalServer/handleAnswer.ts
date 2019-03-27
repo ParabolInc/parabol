@@ -8,7 +8,7 @@ interface AnswerPayload {
 }
 
 const handleAnswer = (ws: UWebSocket, payload: AnswerPayload) => {
-  const to = ws.context.acceptedOffers[payload.id]
+  const to = ws.context.connectedPeers[payload.id]
   getPubSub()
     .publish(
       `signal/user/${to}`,

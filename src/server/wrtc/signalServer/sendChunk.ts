@@ -13,7 +13,7 @@ const sendChunk = (ws: UWebSocket, connectionChunk: ConnectionChunk, userId: str
     )
     .catch()
   // forward future connection requests to the peer
-  ws.context.acceptedOffers[id] = userId
+  ws.context.connectedPeers[id] = userId
 }
 
 export default sendChunk
