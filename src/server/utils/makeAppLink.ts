@@ -5,10 +5,13 @@
  */
 import * as querystring from 'querystring'
 
-export default function makeAppLink (_location, options = {}) {
+interface Options {
+  qs?: {[key: string]: string}
+  isWebhook?: boolean
+}
+
+export default function makeAppLink (location: string, options: Options = {}) {
   const {qs, isWebhook} = options
-  // ugly workaround for uglify v2.7.4 https://github.com/mishoo/UglifyJS2/issues/1349
-  const location = _location || ''
   const proto = process.env.PROTO || 'http'
   const host = process.env.HOST || 'localhost'
   const port = process.env.PORT || '3000'

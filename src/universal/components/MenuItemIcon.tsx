@@ -1,16 +1,17 @@
 import React from 'react'
-import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import ui from 'universal/styles/ui'
+import {PALETTE} from '../styles/paletteV2'
 
 interface Props {
   iconColor?: string
   icon?: string
 }
 
-const StyledIcon = styled(Icon)(({iconColor}: {iconColor: string}) => ({
-  color: iconColor || ui.menuItemIconColor,
+const StyledIcon = styled(Icon)(({iconColor}: {iconColor?: string}) => ({
+  color: iconColor || PALETTE.TEXT.LIGHT,
   fontSize: `${MD_ICONS_SIZE_18} !important`,
   lineHeight: 'inherit',
   marginLeft: ui.menuGutterHorizontal,

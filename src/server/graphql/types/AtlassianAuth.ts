@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 
 const AtlassianAuth = new GraphQLObjectType({
@@ -17,6 +17,10 @@ const AtlassianAuth = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description:
         '*The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin'
+    },
+    cloudIds: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
+      description: 'The atlassian cloud IDs that the user has granted'
     },
     createdAt: {
       type: new GraphQLNonNull(GraphQLISO8601Type),

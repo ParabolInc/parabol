@@ -227,8 +227,8 @@ const Team = new GraphQLObjectType({
       description: 'The auth for the viewer',
       resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        const auths = dataLoader.get('atlassianAuthByUserId').load(viewerId)
-        return auths.filter((auth) => auth.teamId === teamId)
+        const auths = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
+        return auths.find((auth) => auth.teamId === teamId)
       }
     },
     atlassianProjects: {

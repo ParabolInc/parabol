@@ -1794,6 +1794,11 @@ export interface IAtlassianAuth {
   atlassianUserId: string
 
   /**
+   * The atlassian cloud ID to identify the site
+   */
+  cloudId: string
+
+  /**
    * The timestamp the provider was created
    */
   createdAt: any
@@ -2773,6 +2778,7 @@ export interface IMutation {
    * Redeem an invitation token for a logged in user
    */
   acceptTeamInvitation: IAcceptTeamInvitationPayload
+  addAtlassianAuth: IAddAtlassianAuthPayload
 
   /**
    * Create a new agenda item
@@ -3202,6 +3208,11 @@ export interface IAcceptTeamInvitationOnMutationArguments {
    * the notification clicked to accept, if any
    */
   notificationId?: string | null
+}
+
+export interface IAddAtlassianAuthOnMutationArguments {
+  code: string
+  teamId: string
 }
 
 export interface IAddAgendaItemOnMutationArguments {
@@ -4007,6 +4018,21 @@ export interface IStandardMutationError {
    * The full error
    */
   message: string
+}
+
+export interface IAddAtlassianAuthPayload {
+  __typename: 'AddAtlassianAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  atlassianAuth: IAtlassianAuth | null
+
+  /**
+   * projects that the new auth has joined
+   */
+  atlassianProjects: Array<IAtlassianProject> | null
 }
 
 export interface ICreateAgendaItemInput {

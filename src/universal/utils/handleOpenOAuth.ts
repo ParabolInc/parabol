@@ -1,5 +1,7 @@
+import AddAtlassianAuthMutation from 'universal/mutations/AddAtlassianAuthMutation'
 import {providerLookup} from '../modules/teamDashboard/components/ProviderRow/ProviderRow'
 import AddProviderMutation from '../mutations/AddProviderMutation'
+import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 const handleOpenOAuth = ({
   name,
@@ -15,16 +17,17 @@ const handleOpenOAuth = ({
     .toString(36)
     .substring(5)
   const uri = makeUri(providerState)
-  const popup = window.open(uri)
-  window.addEventListener(
-    'message',
-    (event) => {
-      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
-        return
-      }
-      const {code, state} = event.data
-      if (state !== providerState || typeof code !== 'string') return
-      submitMutation()
+  const popup = window.open(uri, 'OAuth', getOAuthPopupFeatures({width: 500, height: 750, top: 56}))
+  const handler = (event) => {
+    if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+      return
+    }
+    const {code, state} = event.data
+    if (state !== providerState || typeof code !== 'string') return
+    submitMutation()
+    if (name === 'atlassian') {
+      AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+    } else {
       AddProviderMutation(
         atmosphere,
         {
@@ -36,10 +39,12 @@ const handleOpenOAuth = ({
         onError,
         onCompleted
       )
-      popup && popup.close()
-    },
-    {once: true}
-  )
+    }
+    popup && popup.close()
+    window.removeEventListener('message', handler)
+  }
+
+  window.addEventListener('message', handler)
 }
 
 export default handleOpenOAuth

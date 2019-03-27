@@ -29,8 +29,8 @@ interface State {
 }
 
 interface StyledProps {
-  isDragging: boolean
-  isHover: boolean
+  isDragging?: boolean
+  isHover?: boolean
 }
 
 const lineHeight = '2.75rem'
