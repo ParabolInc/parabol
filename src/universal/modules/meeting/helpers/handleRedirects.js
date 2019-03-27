@@ -3,6 +3,7 @@ import MoveMeetingMutation from 'universal/mutations/MoveMeetingMutation'
 import {AGENDA_ITEMS} from 'universal/utils/constants'
 import makePushURL from './makePushURL'
 
+let redirCount = 0
 export default function handleRedirects (oldProps, nextProps) {
   const {isFacilitating, localPhaseItem, history, localPhase, viewer} = nextProps
   const {team} = viewer
@@ -47,6 +48,17 @@ export default function handleRedirects (oldProps, nextProps) {
         history.replace(pushURL)
         return false
       } else if (facilitatorPhase === localPhase || phaseItems.length <= 1) {
+        const nextPhaseItem = phaseItems.length
+        // hacky copy from above in case facilitatorPhaseItem is somehow > # of phase items
+        if (redirCount++ > 0) {
+          const variables = {
+            teamId,
+            nextPhaseItem
+          }
+          const {atmosphere, onError, onCompleted, submitMutation} = nextProps
+          submitMutation()
+          MoveMeetingMutation(atmosphere, variables, history, onError, onCompleted)
+        }
         // if they're in the same phase as the facilitator, or the phase they wanna go to has no items, go to their phase item
         const pushURL = makePushURL(teamId, facilitatorPhase, facilitatorPhaseItem)
         history.replace(pushURL)
