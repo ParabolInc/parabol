@@ -114,9 +114,13 @@ class TaskEditor extends Component {
   }
 
   handleReturn = (e) => {
-    const {handleReturn} = this.props
+    const {editorRef, handleReturn, renderModal} = this.props
     if (handleReturn) {
       return handleReturn(e)
+    }
+    if (!e.shiftKey && !renderModal) {
+      editorRef.blur()
+      return 'handled'
     }
     return 'not-handled'
   }
@@ -171,7 +175,6 @@ class TaskEditor extends Component {
 
   render () {
     const {editorState, readOnly, renderModal, setEditorRef} = this.props
-    // console.log('es', Editor.getClipboard())
     const noText = !editorState.getCurrentContent().hasText()
     const placeholder = 'Describe what “Done” looks like'
     return (
