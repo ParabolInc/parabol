@@ -37,7 +37,7 @@ const RetroPhaseItem = new GraphQLObjectType({
     description: {
       description:
         'The description to the question for further context. A long version of the question.',
-      type: new GraphQLNonNull(GraphQLString)
+      type: GraphQLString
     }
   })
 })
