@@ -10,7 +10,7 @@ import IntegrationLeftSubscription from 'universal/subscriptions/IntegrationLeft
 import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 import SlackChannelAddedSubscription from 'universal/subscriptions/SlackChannelAddedSubscription'
 import SlackChannelRemovedSubscription from 'universal/subscriptions/SlackChannelRemovedSubscription'
-import {DEFAULT_TTL, GITHUB} from 'universal/utils/constants'
+import {cacheConfig, GITHUB} from 'universal/utils/constants'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import renderQuery from 'universal/utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -34,8 +34,6 @@ const subscriptions = [
   // if they're the last ones to leave, it'll remove the repo
   IntegrationLeftSubscription(GITHUB)
 ]
-
-const cacheConfig = {ttl: DEFAULT_TTL}
 
 interface Props extends RouteComponentProps<{}> {
   teamMemberId: string

@@ -1,7 +1,6 @@
 import {ProviderRow_providerDetails} from '__generated__/ProviderRow_providerDetails.graphql'
 import React from 'react'
 import styled, {css} from 'react-emotion'
-import FontAwesome from 'react-fontawesome'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import ConditionalLink from 'universal/components/ConditionalLink/ConditionalLink'
@@ -14,14 +13,14 @@ import StyledFontAwesome from 'universal/components/StyledFontAwesome'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
-import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import {IntegrationService} from 'universal/types/graphql'
-import {GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
+import {ATLASSIAN_SCOPE, GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
+import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import SlackProviderLogo from '../../../../SlackProviderLogo'
+import ProviderRowName from './ProviderRowName'
 
 const StyledButton = styled(RaisedButton)({
   paddingLeft: 0,
@@ -56,35 +55,6 @@ const providerRowContent = {
   }
 }
 
-const NameAndMeta = styled('div')({
-  display: 'flex',
-  alignItems: 'center'
-})
-
-const ProviderMeta = styled('div')({
-  color: appTheme.palette.mid,
-  display: 'inline-block',
-  fontSize: 0,
-  height: '1rem',
-  lineHeight: appTheme.typography.s3,
-  padding: '0 0 .125rem 1.5rem',
-  verticalAlign: 'middle'
-})
-
-const ProviderMetaItem = styled('div')({
-  display: 'inline-block',
-  fontSize: appTheme.typography.s3,
-  fontWeight: 600,
-  marginRight: ui.rowGutter
-})
-
-const ProviderName = styled('div')({
-  ...ui.providerName,
-  display: 'inline-block',
-  marginRight: ui.rowGutter,
-  verticalAlign: 'middle'
-})
-
 const ProviderActions = styled(RowActions)({
   marginLeft: 'auto',
   paddingLeft: ui.rowGutter,
@@ -92,6 +62,14 @@ const ProviderActions = styled(RowActions)({
 })
 
 export const providerLookup = {
+  atlassian: {
+    makeUri: (state) =>
+      `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=${
+        window.__ACTION__.atlassian
+      }&scope=${encodeURI(ATLASSIAN_SCOPE)}&redirect_uri=${makeHref(
+        '/auth/atlassian'
+      )}&state=${state}&response_type=code&prompt=consent`
+  },
   [GITHUB]: {
     ...ui.providers.github,
     route: 'github',
@@ -118,8 +96,8 @@ const defaultDetails = {
 }
 
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
-  comingSoon: boolean
-  name: IntegrationService
+  comingSoon?: boolean
+  name: string
   providerDetails: ProviderRow_providerDetails
   teamId: string
 }
@@ -144,12 +122,6 @@ const ProviderRow = (props: Props) => {
     textDecoration: 'none'
   }
   const to = `/team/${teamId}/settings/integrations/${route}`
-  const metaIconStyle = {
-    display: 'inline-block',
-    fontSize: ui.iconSize,
-    fontWeight: 400
-  }
-  const hasActivity = userCount > 0 || integrationCount > 0
   const openOAuth = handleOpenOAuth({
     name,
     submitting,
@@ -169,21 +141,11 @@ const ProviderRow = (props: Props) => {
       </ConditionalLink>
       <RowInfo>
         <ConditionalLink isLink={!comingSoon} to={to} className={css(providerRowContent)}>
-          <NameAndMeta>
-            <ProviderName>
-              {providerName}
-              {hasActivity && (
-                <ProviderMeta>
-                  <ProviderMetaItem>
-                    <FontAwesome name='user-circle' style={metaIconStyle} /> {userCount}
-                  </ProviderMetaItem>
-                  <ProviderMetaItem>
-                    <FontAwesome name={icon} style={metaIconStyle} /> {integrationCount}
-                  </ProviderMetaItem>
-                </ProviderMeta>
-              )}
-            </ProviderName>
-          </NameAndMeta>
+          <ProviderRowName
+            name={providerName}
+            userCount={userCount}
+            integrationCount={integrationCount}
+          />
           <RowInfoCopy>
             {comingSoon && <b>{'Coming Soon! '}</b>}
             {description}

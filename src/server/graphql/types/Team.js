@@ -27,6 +27,8 @@ import {getUserId, isTeamMember} from 'server/utils/authorization'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import TeamInvitation from 'server/graphql/types/TeamInvitation'
 import standardError from 'server/utils/standardError'
+import AtlassianProject from 'server/graphql/types/AtlassianProject'
+import AtlassianAuth from 'server/graphql/types/AtlassianAuth'
 
 const Team = new GraphQLObjectType({
   name: 'Team',
@@ -219,6 +221,22 @@ const Team = new GraphQLObjectType({
     isArchived: {
       type: GraphQLBoolean,
       description: 'true if the team has been archived'
+    },
+    atlassianAuth: {
+      type: AtlassianAuth,
+      description: 'The auth for the viewer',
+      resolve: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const auths = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
+        return auths.find((auth) => auth.teamId === teamId)
+      }
+    },
+    atlassianProjects: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AtlassianProject))),
+      description: 'A list of projects integrated with the team',
+      resolve: ({id: teamId}, args, {dataLoader}) => {
+        return dataLoader.get('atlassianProjectsByTeamId').load(teamId)
+      }
     }
   })
 })

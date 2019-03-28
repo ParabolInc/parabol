@@ -192,7 +192,7 @@ export interface IUser {
   /**
    * The list of providers as seen on the integrations page
    */
-  providerMap: IProviderMap | null
+  providerMap: IProviderMap
 
   /**
    * paginated list of slackChannels
@@ -437,6 +437,11 @@ export interface IUserFeatureFlags {
    * true if the user has access to retro meeting video
    */
   video: boolean | null
+
+  /**
+   * true if jira is allowed
+   */
+  jira: boolean | null
 }
 
 export interface IAuthIdentityType {
@@ -925,6 +930,16 @@ export interface ITeam {
    * true if the team has been archived
    */
   isArchived: boolean | null
+
+  /**
+   * The auth for the viewer
+   */
+  atlassianAuth: IAtlassianAuth | null
+
+  /**
+   * A list of projects integrated with the team
+   */
+  atlassianProjects: Array<IAtlassianProject>
 }
 
 export interface IMeetingSettingsOnTeamArguments {
@@ -1760,6 +1775,105 @@ export interface ITasksOnSoftTeamMemberArguments {
    */
   after?: any | null
   first?: number | null
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IAtlassianAuth {
+  __typename: 'AtlassianAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * The access token to atlassian, null if no access token available
+   */
+  accessToken: string | null
+
+  /**
+   * *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin
+   */
+  atlassianUserId: string
+
+  /**
+   * The atlassian cloud IDs that the user has granted
+   */
+  cloudIds: Array<string>
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
+}
+
+/**
+ * An integration that connects Atlassian projects with parabol
+ */
+export interface IAtlassianProject {
+  __typename: 'AtlassianProject'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * *The project ID in atlassian
+   */
+  projectId: string
+
+  /**
+   * The parabol userId of the admin for this repo (usually the creator). This is used as a fallback if the user does not have an atlassian auth
+   */
+  adminUserId: string
+
+  /**
+   * The datetime the integration was created
+   */
+  createdAt: any
+
+  /**
+   * true if active, else false
+   */
+  isActive: boolean | null
+
+  /**
+   * *The team that is linked to this integration
+   */
+  teamId: string
+
+  /**
+   * The users that can CRUD this integration
+   */
+  teamMembers: Array<ITeamMember>
+
+  /**
+   * The datetime the integration was updated
+   */
+  updatedAt: any
+
+  /**
+   * *The userIds connected to the repo so they can CRUD things under their own name
+   */
+  userIds: Array<string | null> | null
 }
 
 /**
@@ -2669,6 +2783,7 @@ export interface IMutation {
    * Redeem an invitation token for a logged in user
    */
   acceptTeamInvitation: IAcceptTeamInvitationPayload
+  addAtlassianAuth: IAddAtlassianAuthPayload
 
   /**
    * Create a new agenda item
@@ -3098,6 +3213,11 @@ export interface IAcceptTeamInvitationOnMutationArguments {
    * the notification clicked to accept, if any
    */
   notificationId?: string | null
+}
+
+export interface IAddAtlassianAuthOnMutationArguments {
+  code: string
+  teamId: string
 }
 
 export interface IAddAgendaItemOnMutationArguments {
@@ -3905,6 +4025,21 @@ export interface IStandardMutationError {
   message: string
 }
 
+export interface IAddAtlassianAuthPayload {
+  __typename: 'AddAtlassianAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The newly created auth
+   */
+  atlassianAuth: IAtlassianAuth | null
+
+  /**
+   * projects that the new auth has joined
+   */
+  atlassianProjects: Array<IAtlassianProject> | null
+}
+
 export interface ICreateAgendaItemInput {
   /**
    * The content of the agenda item
@@ -3933,7 +4068,8 @@ export interface IAddAgendaItemPayload {
  * A flag to give an individual user super powers
  */
 export const enum UserFlagEnum {
-  video = 'video'
+  video = 'video',
+  jira = 'jira'
 }
 
 export interface IAddFeatureFlagPayload {

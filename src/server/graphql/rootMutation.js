@@ -89,11 +89,13 @@ import inviteToTeam from 'server/graphql/mutations/inviteToTeam'
 import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
 import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAction'
 import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
+import addAtlassianAuth from 'server/graphql/mutations/addAtlassianAuth'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     acceptTeamInvitation,
+    addAtlassianAuth,
     addAgendaItem,
     addFeatureFlag,
     addGitHubRepo,

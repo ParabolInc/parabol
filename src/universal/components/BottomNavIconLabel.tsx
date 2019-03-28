@@ -18,7 +18,7 @@ const Inner = styled('div')({
   padding: '.5rem .75rem .25rem'
 })
 
-const StyledIcon = styled(Icon)(({iconColor}: {iconColor: string}) => ({
+const StyledIcon = styled(Icon)(({iconColor}: {iconColor?: string}) => ({
   color: iconColor ? ui.palette[iconColor] : 'inherit'
 }))
 

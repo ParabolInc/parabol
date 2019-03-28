@@ -1,22 +1,11 @@
 import makeHref from 'universal/utils/makeHref'
+import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 /*
  * Requires sync webAuth to ensure it is not caught by a popup blocker.
  * Popup blockers usually ignore trusted user events (like clicks)
  * But doing asynchronous things within the click handler can cause a false positive
  */
-
-const getPopupFeatures = () => {
-  const width = 385
-  const height = 550
-  const {outerWidth, innerWidth, outerHeight, innerHeight, screenX, screenY} = window
-  const startX = screenX + (outerWidth - innerWidth) / 2
-  const startY = screenY + (outerHeight - innerHeight) / 2
-  const left = startX + (innerWidth - width) / 2
-  // 64 is the Parabol header
-  const top = startY + (innerHeight - height) / 2 + 64
-  return `width=${width},height=${height},left=${left},top=${top}`
-}
 
 const auth0Authorize = async (loginHint?: string) => {
   return new Promise<{idToken: string} | null>((resolve, reject) => {
@@ -31,7 +20,11 @@ const auth0Authorize = async (loginHint?: string) => {
     }&scope=openid rol tms bet&connection=google-oauth2&redirect_uri=${makeHref(
       '/oauth-redirect'
     )}&response_type=token&state=${upState}${hint}`
-    const popup = window.open(authUrl, 'OAuth', getPopupFeatures())
+    const popup = window.open(
+      authUrl,
+      'OAuth',
+      getOAuthPopupFeatures({width: 385, height: 550, top: 64})
+    )
 
     const handler = (event) => {
       // an extension posted to the opener
