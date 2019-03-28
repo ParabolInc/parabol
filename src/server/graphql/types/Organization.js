@@ -18,7 +18,7 @@ import {BILLING_LEADER} from 'universal/utils/constants'
 import {resolveForBillingLeaders} from 'server/graphql/resolvers'
 import Team from 'server/graphql/types/Team'
 import {OrganizationUserConnection} from 'server/graphql/types/OrganizationUser'
-import {getUserId, isUserBillingLeader} from 'server/utils/authorization'
+import {getUserId, isSuperUser, isUserBillingLeader} from 'server/utils/authorization'
 
 const Organization = new GraphQLObjectType({
   name: 'Organization',
@@ -53,8 +53,11 @@ const Organization = new GraphQLObjectType({
     teams: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Team))),
       description: 'all the teams the viewer is on in the organization',
-      resolve: async ({id: orgId}, args, {dataLoader}) => {
-        return dataLoader.get('teamsByOrgId').load(orgId)
+      resolve: async ({id: orgId}, args, {authToken, dataLoader}) => {
+        const allTeamsOnOrg = await dataLoader.get('teamsByOrgId').load(orgId)
+        return isSuperUser(authToken)
+          ? allTeamsOnOrg
+          : allTeamsOnOrg.filter((team) => authToken.tms.includes(team.id))
       }
     },
     tier: {
