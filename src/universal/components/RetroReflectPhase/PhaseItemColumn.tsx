@@ -7,6 +7,7 @@ import memoize from 'micro-memoize'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import Icon from 'universal/components/Icon'
 import PhaseItemChits from 'universal/components/RetroReflectPhase/PhaseItemChits'
 import PhaseItemEditor from 'universal/components/RetroReflectPhase/PhaseItemEditor'
 import ReflectionStack from 'universal/components/RetroReflectPhase/ReflectionStack'
@@ -16,12 +17,12 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import SetPhaseFocusMutation from 'universal/mutations/SetPhaseFocusMutation'
 import {DECELERATE} from 'universal/styles/animation'
+import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import getNextSortOrder from 'universal/utils/getNextSortOrder'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {PALETTE} from '../../styles/paletteV2'
 
 const ColumnWrapper = styled('div')({
   alignItems: 'center',
@@ -59,6 +60,15 @@ const TypeDescription = styled('div')({
   fontSize: '1.25rem',
   fontStyle: 'italic',
   fontWeight: 600
+})
+
+const Description = styled('div')({
+  color: PALETTE.TEXT.LIGHT,
+  fontSize: 14,
+  fontStyle: 'italic',
+  fontWeight: 400,
+  marginLeft: 18,
+  marginTop: 8
 })
 
 const FocusArrow = styled(Icon)(({isFocused}: {isFocused: boolean}) => ({
@@ -101,6 +111,7 @@ const targetAnchor = {
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
+  description: string
   editorIds: ReadonlyArray<string> | null
   meeting: PhaseItemColumn_meeting
   phaseRef: React.RefObject<HTMLDivElement>
@@ -147,6 +158,7 @@ class PhaseItemColumn extends Component<Props> {
   render () {
     const {
       atmosphere: {viewerId},
+      description,
       editorIds,
       idx,
       meeting,
@@ -190,6 +202,7 @@ class PhaseItemColumn extends Component<Props> {
                   >
                     <span>{question}</span>
                   </Tooltip>
+                  <Description>{description}</Description>
                 </TypeDescription>
               </TypeHeader>
               <EditorAndStatus isPhaseComplete={!!isComplete}>

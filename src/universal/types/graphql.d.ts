@@ -4577,6 +4577,11 @@ export interface IRetroPhaseItem {
    * The question to answer during the phase of the retrospective (eg What went well?)
    */
   question: string
+
+  /**
+   * The description to the question for further context. A long version of the question.
+   */
+  description: string
 }
 
 /**
