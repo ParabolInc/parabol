@@ -40,7 +40,7 @@ const addReflectTemplate = {
     }
 
     // RESOLUTION
-    const base = {'*New Template': [{question: 'New prompt'}]}
+    const base = {'*New Template': [{question: 'New prompt', description: 'Prompt description'}]}
     const {phaseItems, templates} = makeRetroTemplates(teamId, base)
 
     await r({
