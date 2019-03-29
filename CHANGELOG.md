@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.7.0
+
+## Fixed
+* New version toast (#2760)
+* Superuser access to teams via orgs (#2754)
+
+## Changed
+* Tasks are blurred on Enter (#2751)
+
+## Added
+* Atlassian Integration OAuth via feature flag (#2743)
+* Video alpha (#2726)
+
 ## v3.6.1
 
 ## Fixed
