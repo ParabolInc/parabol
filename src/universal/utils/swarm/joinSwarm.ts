@@ -1,8 +1,8 @@
 import GQLTrebuchetClient from '@mattkrick/graphql-trebuchet-client'
-import {Dispatch, ReducerAction} from 'react'
+import {Dispatch, MutableRefObject, ReducerAction} from 'react'
 import Atmosphere from '../../Atmosphere'
 import MediaSwarm from './MediaSwarm'
-import reducerSwarm, {SwarmState} from './reducerSwarm'
+import reducerSwarm from './reducerSwarm'
 
 export type StreamName = 'cam' | 'screen'
 export type StreamQuality = 'low' | 'med' | 'high'
@@ -11,7 +11,7 @@ const joinSwarm = async (
   atmosphere: Atmosphere,
   roomId: string,
   dispatchState: Dispatch<ReducerAction<typeof reducerSwarm>>,
-  oldState: SwarmState
+  disposable: MutableRefObject<(() => void) | undefined>
 ) => {
   await atmosphere.upgradeTransport()
   const {trebuchet} = atmosphere.transport as GQLTrebuchetClient
@@ -36,7 +36,7 @@ const joinSwarm = async (
     swarm
   })
 
-  oldState.dispose = swarm.dispose
+  disposable.current = swarm.dispose
 }
 
 export default joinSwarm

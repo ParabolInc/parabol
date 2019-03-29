@@ -54,8 +54,10 @@ export default class MediaSwarm extends FastRTCSwarm {
     })
   }
 
-  private handleClose = () => {
-    this.dispatchState({type: 'removeStream', userId: this.userId})
+  private handleClose: FastRTCSwarmEvents['close'] = (peer) => {
+    if (peer.userId) {
+      this.dispatchState({type: 'removeStream', userId: peer.userId})
+    }
   }
 
   private handleSignal = (data) => {
@@ -205,6 +207,9 @@ export default class MediaSwarm extends FastRTCSwarm {
   }
 
   dispose = () => {
+    this.dispatchState = () => {
+      /**/
+    }
     this.off('close')
     this.trebuchet.off(Events.DATA, this.handleSignal)
     this.close()
