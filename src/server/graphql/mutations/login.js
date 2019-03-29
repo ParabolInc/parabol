@@ -98,6 +98,15 @@ const login = {
       return standardError(new Error('Failed authentication'))
     }
 
+    // make sure we don't create 2 users with the same email!
+    const existingUser = await r
+      .table('User')
+      .getAll(userInfo.email, {index: 'email'})
+      .nth(0)
+      .default(null)
+    if (existingUser) {
+      return standardError(new Error(`user_exists_${existingUser.identities[0].provider}`))
+    }
     const preferredName =
       userInfo.nickname.length === 1 ? userInfo.nickname.repeat(2) : userInfo.nickname
     const newUser = {

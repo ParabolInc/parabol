@@ -43,7 +43,30 @@ const ForgotPasswordLink = styled(PlainButton)({
   }
 })
 
-class AuthenticationPage extends Component<Props> {
+interface State {
+  existingAccount: null | 'google' | 'email'
+}
+
+const existingAccounts = {
+  'user_exists_google-oauth2': 'google',
+  user_exists_auth0: 'email'
+}
+
+class AuthenticationPage extends Component<Props, State> {
+  state: State = {
+    existingAccount: null
+  }
+
+  componentDidMount () {
+    if (!window.location.search) return
+    const params = new URLSearchParams(window.location.search)
+    const errorCode = params.get('error')
+    const existingAccount = existingAccounts[errorCode!]
+    if (existingAccount) {
+      this.setState({existingAccount})
+    }
+  }
+
   onOAuth = async () => {
     const {atmosphere, history, onCompleted, onError, submitMutation} = this.props
     submitMutation()
@@ -72,6 +95,7 @@ class AuthenticationPage extends Component<Props> {
   }
 
   render () {
+    const {existingAccount} = this.state
     const {submitting, error} = this.props
     const isCreate = location.pathname.includes(CREATE_ACCOUNT_SLUG)
     const title = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
@@ -90,9 +114,15 @@ class AuthenticationPage extends Component<Props> {
             onClick={this.onOAuth}
             isError={!!error}
             submitting={!!submitting}
+            existingAccount={existingAccount === 'google'}
           />
           <HorizontalSeparator margin='1rem 0 0' text='or' />
-          <EmailPasswordAuthForm email='' isSignin={!isCreate} ref={this.authFormRef} />
+          <EmailPasswordAuthForm
+            email=''
+            isSignin={!isCreate}
+            ref={this.authFormRef}
+            existingAccount={existingAccount === 'email'}
+          />
           {isCreate ? (
             <AuthPrivacyFooter />
           ) : (

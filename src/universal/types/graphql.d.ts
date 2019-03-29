@@ -24,6 +24,7 @@ export interface IQuery {
   __typename: 'Query'
   viewer: IUser | null
   verifiedInvitation: IVerifiedInvitationPayload | null
+  authProviders: Array<string>
 }
 
 export interface IVerifiedInvitationOnQueryArguments {
@@ -31,6 +32,13 @@ export interface IVerifiedInvitationOnQueryArguments {
    * The invitation token
    */
   token: string
+}
+
+export interface IAuthProvidersOnQueryArguments {
+  /**
+   * the email to see if it exists as an oauth account
+   */
+  email: string
 }
 
 /**
@@ -4581,7 +4589,7 @@ export interface IRetroPhaseItem {
   /**
    * The description to the question for further context. A long version of the question.
    */
-  description: string
+  description: string | null
 }
 
 /**
