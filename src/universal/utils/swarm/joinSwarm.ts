@@ -14,14 +14,6 @@ const joinSwarm = async (
   oldState: SwarmState
 ) => {
   await atmosphere.upgradeTransport()
-
-  // let cam: MediaStream | undefined
-  // const videoOnStart = window.sessionStorage.getItem('videoOnStart')
-  // if (videoOnStart === 'true') {
-  //   try {
-  //     cam = await window.navigator.mediaDevices.getUserMedia({audio: true, video: {width: 64, height: 64}})
-  //   } catch(e) {/**/}
-  // }
   const {trebuchet} = atmosphere.transport as GQLTrebuchetClient
   const swarm = new MediaSwarm({
     userId: atmosphere.viewerId,

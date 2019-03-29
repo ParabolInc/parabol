@@ -81,7 +81,6 @@ const VideoControls = (props: Props) => {
       permissions.forEach((perm) => (perm.onchange = onChange))
       return
     }
-    window.sessionStorage.setItem('videoOnStart', 'true')
   }
 
   if (!showVideoButton) return null

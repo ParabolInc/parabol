@@ -147,7 +147,6 @@ export default class MediaSwarm extends FastRTCSwarm {
         isVideoBlocked: false
       } as StreamUI
       this.dispatchState({type: 'setStream', streamName, userId: this.userId, streamUI})
-      // TODO if we keep this here, we should rename the function to eg broadcast webcam
       this.addStreams({cam})
     } else if (quality === 'lowVideo') {
       const existing = this.localStreams.cam.low
