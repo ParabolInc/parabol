@@ -54,8 +54,10 @@ export default class MediaSwarm extends FastRTCSwarm {
     })
   }
 
-  private handleClose = () => {
-    this.dispatchState({type: 'removeStream', userId: this.userId})
+  private handleClose: FastRTCSwarmEvents['close'] = (peer) => {
+    if (peer.userId) {
+      this.dispatchState({type: 'removeStream', userId: peer.userId})
+    }
   }
 
   private handleSignal = (data) => {
@@ -147,7 +149,6 @@ export default class MediaSwarm extends FastRTCSwarm {
         isVideoBlocked: false
       } as StreamUI
       this.dispatchState({type: 'setStream', streamName, userId: this.userId, streamUI})
-      // TODO if we keep this here, we should rename the function to eg broadcast webcam
       this.addStreams({cam})
     } else if (quality === 'lowVideo') {
       const existing = this.localStreams.cam.low
@@ -206,6 +207,9 @@ export default class MediaSwarm extends FastRTCSwarm {
   }
 
   dispose = () => {
+    this.dispatchState = () => {
+      /**/
+    }
     this.off('close')
     this.trebuchet.off(Events.DATA, this.handleSignal)
     this.close()

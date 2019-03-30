@@ -18,7 +18,6 @@ import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 
 interface Props extends WithAtmosphereProps {
-  onSuccess: () => void
   retroMeetingSettings: ReflectTemplateModal_retroMeetingSettings
 }
 
