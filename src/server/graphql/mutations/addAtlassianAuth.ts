@@ -35,9 +35,15 @@ export default {
 
     const manager = await AtlassianManager.init(code)
     const sites = await manager.getAccessibleResources()
+    if (!Array.isArray(sites)) {
+      return standardError(new Error(sites.message), {userId: viewerId})
+    }
     const cloudIds = sites.map((cloud) => cloud.id)
     const self = await manager.getMyself(cloudIds[0])
-    const {accessToken} = manager
+    if (!('accountId' in self)) {
+      return standardError(new Error(self.message), {userId: viewerId})
+    }
+    const {accessToken, refreshToken} = manager
 
     let atlassianAuthId
     const existingAuth = await r
@@ -53,6 +59,7 @@ export default {
         .get(existingAuth.id)
         .update({
           accessToken,
+          refreshToken,
           updatedAt: now
         })
     } else {
@@ -60,12 +67,13 @@ export default {
       await r.table('AtlassianAuth').insert({
         id: atlassianAuthId,
         accessToken,
+        atlassianUserId: self.accountId,
         cloudIds,
         createdAt: now,
-        updatedAt: now,
+        refreshToken,
         teamId,
-        userId: viewerId,
-        atlassianUserId: self.accountId
+        updatedAt: now,
+        userId: viewerId
       })
     }
 

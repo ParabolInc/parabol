@@ -6,7 +6,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import ForgotPasswordOneClick from './ForgotPasswordOneClick'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InvitationDialog from './InvitationDialog'
+import BasicCard from './BasicCard'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
@@ -15,7 +15,7 @@ interface Props {
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation
 }
 
-const StyledDialog = styled(InvitationDialog)({
+const StyledDialog = styled(BasicCard)({
   maxWidth: 356
 })
 

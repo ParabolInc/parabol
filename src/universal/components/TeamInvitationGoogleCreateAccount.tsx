@@ -13,7 +13,7 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InvitationDialog from './InvitationDialog'
+import BasicCard from './BasicCard'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
@@ -33,7 +33,7 @@ interface State {
   isEmailFallback: boolean
 }
 
-const StyledDialog = styled(InvitationDialog)({
+const StyledDialog = styled(BasicCard)({
   maxWidth: 356
 })
 

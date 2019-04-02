@@ -8,8 +8,6 @@ interface LeavePayload {
 
 const handleLeave = (ws: UWebSocket, payload: LeavePayload) => {
   const {context} = ws
-  // not sure how this occurred locally, but it did
-  if (!context) return
   const {connectedPeers} = context
   const {userId} = payload
   const id = Object.keys(connectedPeers).find((id) => connectedPeers[id] === userId)

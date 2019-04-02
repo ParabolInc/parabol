@@ -1,4 +1,5 @@
 import React, {lazy} from 'react'
+import styled from 'react-emotion'
 import {Route} from 'react-router'
 import {matchPath, RouteComponentProps, Switch, withRouter} from 'react-router-dom'
 import TeamSettingsToggleNav from 'universal/modules/teamDashboard/components/TeamSettingsToggleNav/TeamSettingsToggleNav'
@@ -25,6 +26,12 @@ interface Props extends RouteComponentProps<{teamId: string}> {
   teamMemberId: string
 }
 
+const IntegrationPage = styled('div')({
+  alignItems: 'center',
+  padding: '0 16px',
+  display: 'flex',
+  flexDirection: 'column'
+})
 const TeamSettingsWrapper = (props: Props) => {
   const {
     location: {pathname},
@@ -36,7 +43,7 @@ const TeamSettingsWrapper = (props: Props) => {
   } = match
   const areaMatch = matchPath(pathname, {path: `${match.url}/:area?`}) || {params: {area: ''}}
   return (
-    <div style={{padding: `0 ${ui.settingsGutter}`}}>
+    <IntegrationPage>
       <TeamSettingsToggleNav activeKey={(areaMatch.params as any).area || ''} teamId={teamId} />
       <Switch>
         <Route exact path={match.url} render={(p) => <TeamSettings {...p} teamId={teamId} />} />
@@ -49,7 +56,7 @@ const TeamSettingsWrapper = (props: Props) => {
           path={`${match.url}/integrations/github`}
           render={(p) => <GithubIntegrations {...p} teamMemberId={teamMemberId} />}
         />
-        <Route path={`${match.url}/integrations/atlassian`} component={AtlassianIntegrations} />
+        <Route path={`${match.path}/integrations/atlassian`} component={AtlassianIntegrations} />
         <Route
           exact
           path={`${match.url}/integrations`}
@@ -57,7 +64,7 @@ const TeamSettingsWrapper = (props: Props) => {
         />
         />
       </Switch>
-    </div>
+    </IntegrationPage>
   )
 }
 

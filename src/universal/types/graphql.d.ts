@@ -3009,6 +3009,11 @@ export interface IMutation {
   removeAgendaItem: IRemoveAgendaItemPayload | null
 
   /**
+   * Disconnect a team member from atlassian
+   */
+  removeAtlassianAuth: IRemoveAtlassianAuthPayload
+
+  /**
    * Disconnect a team from a Provider token
    */
   removeProvider: IRemoveProviderPayload
@@ -3660,6 +3665,13 @@ export interface IRemoveAgendaItemOnMutationArguments {
    * The agenda item unique id
    */
   agendaItemId: string
+}
+
+export interface IRemoveAtlassianAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from the token
+   */
+  teamId: string
 }
 
 export interface IRemoveProviderOnMutationArguments {
@@ -5580,6 +5592,22 @@ export interface IRemoveAgendaItemPayload {
   __typename: 'RemoveAgendaItemPayload'
   error: IStandardMutationError | null
   agendaItem: IAgendaItem | null
+}
+
+export interface IRemoveAtlassianAuthPayload {
+  __typename: 'RemoveAtlassianAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The ID of the authorization removed
+   */
+  authId: string | null
+
+  /**
+   * all the projects that were either removed or unlinked from user
+   */
+  updatedProjects: Array<IAtlassianProject> | null
+  teamId: string | null
 }
 
 export interface IRemoveProviderPayload {

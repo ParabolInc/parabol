@@ -1,7 +1,7 @@
 import styled from 'react-emotion'
 import {cardShadow} from 'universal/styles/elevation'
 
-const InvitationDialog = styled('div')({
+const BasicCard = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   background: 'white',
@@ -9,4 +9,4 @@ const InvitationDialog = styled('div')({
   boxShadow: cardShadow
 })
 
-export default InvitationDialog
+export default BasicCard

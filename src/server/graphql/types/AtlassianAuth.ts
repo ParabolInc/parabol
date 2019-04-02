@@ -26,6 +26,11 @@ const AtlassianAuth = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLISO8601Type),
       description: 'The timestamp the provider was created'
     },
+    refreshToken: {
+      description:
+        'The refresh token to atlassian to receive a new 1-hour accessToken, null if no access token available',
+      type: GraphQLID
+    },
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The team that the token is linked to'

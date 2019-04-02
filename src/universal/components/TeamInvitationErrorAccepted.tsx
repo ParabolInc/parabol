@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
-import InvitationDialog from './InvitationDialog'
+import BasicCard from './BasicCard'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
@@ -23,7 +23,7 @@ const TeamInvitationErrorAccepted = (props: Props) => {
   if (!teamInvitation || teamName === null) return null
   const {teamId} = teamInvitation
   return (
-    <InvitationDialog>
+    <BasicCard>
       <Helmet title={`Token already accepted | Team Invitation`} />
       <InvitationDialogTitle>Invitation Already Accepted</InvitationDialogTitle>
       <InvitationDialogContent>
@@ -35,7 +35,7 @@ const TeamInvitationErrorAccepted = (props: Props) => {
           Team Dashboard
         </StyledLink>
       </InvitationDialogContent>
-    </InvitationDialog>
+    </BasicCard>
   )
 }
 

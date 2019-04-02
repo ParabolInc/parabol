@@ -8,7 +8,7 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InvitationDialog from './InvitationDialog'
+import BasicCard from './BasicCard'
 import InvitationDialogContent from './InvitationDialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InvitationDialogTitle from './InvitationDialogTitle'
@@ -48,7 +48,7 @@ const ViewerNotOnTeam = (props: Props) => {
   }
   return (
     <TeamInvitationWrapper>
-      <InvitationDialog>
+      <BasicCard>
         <Helmet title={`Invitation Required`} />
         <InvitationDialogTitle>Invitation Required</InvitationDialogTitle>
         <InvitationDialogContent>
@@ -62,7 +62,7 @@ const ViewerNotOnTeam = (props: Props) => {
             </PrimaryButton>
           </InvitationCenteredCopy>
         </InvitationDialogContent>
-      </InvitationDialog>
+      </BasicCard>
     </TeamInvitationWrapper>
   )
 }
