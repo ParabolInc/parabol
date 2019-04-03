@@ -27,14 +27,20 @@ const AtlassianIntegrations = (props: Props) => {
   )
 }
 
+graphql`
+  fragment AtlassianIntegrations_team on Team {
+    atlassianAuth {
+      accessToken
+    }
+  }
+`
+
 export default createFragmentContainer(
   AtlassianIntegrations,
   graphql`
     fragment AtlassianIntegrations_viewer on User {
       team(teamId: $teamId) {
-        atlassianAuth {
-          accessToken
-        }
+        ...AtlassianIntegrations_team @relay(mask: false)
       }
     }
   `

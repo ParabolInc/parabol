@@ -11,6 +11,7 @@ interface Props {
   viewer: ProviderList_viewer
   teamId: string
 }
+
 const ProviderList = (props: Props) => {
   const {viewer, teamId} = props
   const {
@@ -26,7 +27,7 @@ const ProviderList = (props: Props) => {
         {jira && (
           <AtlassianProviderRow
             teamId={teamId}
-            isAuthed={!!atlassianAuth}
+            isAuthed={atlassianAuth ? atlassianAuth.isActive : false}
             projects={atlassianProjects}
           />
         )}
@@ -36,6 +37,14 @@ const ProviderList = (props: Props) => {
     </SettingsWrapper>
   )
 }
+
+graphql`
+  fragment ProviderList_team on Team {
+    atlassianAuth {
+      isActive
+    }
+  }
+`
 
 export default createFragmentContainer(
   ProviderList,
@@ -53,9 +62,7 @@ export default createFragmentContainer(
         }
       }
       team(teamId: $teamId) {
-        atlassianAuth {
-          id
-        }
+        ...ProviderList_team @relay(mask: false)
         atlassianProjects {
           ...AtlassianProviderRow_projects
         }

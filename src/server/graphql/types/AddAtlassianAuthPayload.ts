@@ -1,8 +1,10 @@
 import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
+import Team from 'server/graphql/types/Team'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import AtlassianAuth from './AtlassianAuth'
 import AtlassianProject from './AtlassianProject'
+import {resolveTeam} from 'server/graphql/resolvers'
 
 const AddAtlassianAuthPayload = new GraphQLObjectType({
   name: 'AddAtlassianAuthPayload',
@@ -28,6 +30,11 @@ const AddAtlassianAuthPayload = new GraphQLObjectType({
       resolve: ({atlassianProjectIds}, _args, {dataLoader}) => {
         return dataLoader.get('atlassianProjects').loadMany(atlassianProjectIds)
       }
+    },
+    team: {
+      type: Team,
+      description: 'The team with the new auth',
+      resolve: resolveTeam
     }
   })
 })

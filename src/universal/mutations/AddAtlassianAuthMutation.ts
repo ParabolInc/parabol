@@ -6,8 +6,9 @@ import {LocalHandlers} from '../types/relayMutations'
 
 graphql`
   fragment AddAtlassianAuthMutation_team on AddAtlassianAuthPayload {
-    atlassianAuth {
-      accessToken
+    team {
+      ...AtlassianIntegrations_team
+      ...ProviderList_team
     }
   }
 `
@@ -28,18 +29,9 @@ const AddAtlassianAuthMutation = (
   variables: IAddAtlassianAuthOnMutationArguments,
   {onError, onCompleted}: LocalHandlers
 ): Disposable => {
-  const {teamId} = variables
   return commitMutation<AddAtlassianAuthMutation>(atmosphere, {
     mutation,
     variables,
-    updater: (store) => {
-      const payload = store.getRootField('addAtlassianAuth')
-      if (!payload) return
-      const team = store.get(teamId)
-      if (!team) return
-      const atlassianAuth = payload.getLinkedRecord('atlassianAuth')
-      team.setLinkedRecord(atlassianAuth, 'atlassianAuth')
-    },
     onCompleted,
     onError
   })

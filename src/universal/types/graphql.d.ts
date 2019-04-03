@@ -1797,7 +1797,12 @@ export interface IAtlassianAuth {
   id: string
 
   /**
-   * The access token to atlassian, null if no access token available
+   * true if the auth is valid, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
    */
   accessToken: string | null
 
@@ -1815,6 +1820,11 @@ export interface IAtlassianAuth {
    * The timestamp the provider was created
    */
   createdAt: any
+
+  /**
+   * The refresh token to atlassian to receive a new 1-hour accessToken, null if no access token available
+   */
+  refreshToken: string | null
 
   /**
    * *The team that the token is linked to
@@ -4058,6 +4068,11 @@ export interface IAddAtlassianAuthPayload {
    * projects that the new auth has joined
    */
   atlassianProjects: Array<IAtlassianProject> | null
+
+  /**
+   * The team with the new auth
+   */
+  team: ITeam | null
 }
 
 export interface ICreateAgendaItemInput {

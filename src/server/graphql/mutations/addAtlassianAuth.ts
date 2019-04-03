@@ -52,34 +52,34 @@ export default {
       .filter({teamId})
       .nth(0)
       .default(null)
+    const updateDoc = {
+      isActive: true,
+      accessToken,
+      atlassianUserId: self.accountId,
+      cloudIds,
+      refreshToken,
+      teamId,
+      updatedAt: now,
+      userId: viewerId
+    }
     if (existingAuth) {
       atlassianAuthId = existingAuth.id
       await r
         .table('AtlassianAuth')
         .get(existingAuth.id)
-        .update({
-          accessToken,
-          refreshToken,
-          updatedAt: now
-        })
+        .update(updateDoc)
     } else {
       atlassianAuthId = shortid.generate()
       await r.table('AtlassianAuth').insert({
+        ...updateDoc,
         id: atlassianAuthId,
-        accessToken,
-        atlassianUserId: self.accountId,
-        cloudIds,
-        createdAt: now,
-        refreshToken,
-        teamId,
-        updatedAt: now,
-        userId: viewerId
+        createdAt: now
       })
     }
 
     // TODO auto join existing projects
 
-    const data = {atlassianAuthId}
+    const data = {atlassianAuthId, teamId}
     publish(TEAM, teamId, AddAtlassianAuthPayload, data, subOptions)
     return data
   }

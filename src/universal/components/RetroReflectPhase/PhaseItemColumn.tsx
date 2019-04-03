@@ -111,7 +111,7 @@ const targetAnchor = {
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
   idx: number
-  description: string
+  description: string | null
   editorIds: ReadonlyArray<string> | null
   meeting: PhaseItemColumn_meeting
   phaseRef: React.RefObject<HTMLDivElement>

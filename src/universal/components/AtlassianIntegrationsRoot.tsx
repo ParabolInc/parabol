@@ -28,7 +28,7 @@ const AtlassianIntegrationsRoot = (props: Props) => {
       environment={atmosphere}
       query={query}
       variables={{teamId}}
-      render={renderQuery(AtlassianIntegrations, {size: LoaderSize.PANEL})}
+      render={renderQuery(AtlassianIntegrations, {size: LoaderSize.PANEL, props: {teamId}})}
     />
   )
 }

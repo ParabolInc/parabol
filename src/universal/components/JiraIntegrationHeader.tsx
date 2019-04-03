@@ -32,15 +32,6 @@ const Subtitle = styled('div')({
   lineHeight: '18px'
 })
 
-const MenuIcon = styled(Icon)({
-  color: PALETTE.PRIMARY.MAIN,
-  position: 'absolute',
-  fontSize: ICON_SIZE.MD18,
-  top: 16,
-  right: 16,
-  userSelect: 'none'
-})
-
 const Header = styled('div')({
   display: 'flex',
   padding: 16,
@@ -70,10 +61,20 @@ interface Props {
   teamId: string
 }
 
+const MenuButton = styled(PlainButton)({
+  color: PALETTE.PRIMARY.MAIN,
+  position: 'absolute',
+  fontSize: ICON_SIZE.MD18,
+  top: 16,
+  right: 16,
+  userSelect: 'none',
+  height: 24
+})
+
 const JiraIntegrationHeader = (props: Props) => {
   const {accessToken, teamId} = props
   const {sites, status} = useAtlassianSites(accessToken)
-  console.log('sites', sites, status)
+  console.log('sites', sites, status, teamId)
   return (
     <Header>
       <JiraLogo src={jiraLogo} />
@@ -82,11 +83,12 @@ const JiraIntegrationHeader = (props: Props) => {
         <Subtitle>Create issues from Parabol</Subtitle>
       </TitleBlock>
       <SiteList>
-        {status === 'loaded' &&
-          sites.map((site) => (
-            <SiteAvatar width={24} height={24} src={site.avatarUrl} title={site.name} />
-          ))}
-        {status === 'loading' && <LoadingComponent />}
+        <LoadingComponent spinnerSize={24} height={24} />
+        {/*{status === 'loaded' &&*/}
+        {/*  sites.map((site) => (*/}
+        {/*    <SiteAvatar width={24} height={24} src={site.avatarUrl} title={site.name} />*/}
+        {/*  ))}*/}
+        {/*{status === 'loading' && <LoadingComponent />}*/}
       </SiteList>
       <LoadableMenu
         LoadableComponent={JiraConfigMenu}
@@ -96,9 +98,9 @@ const JiraIntegrationHeader = (props: Props) => {
         queryVars={{teamId}}
         targetAnchor={targetAnchor}
         toggle={
-          <PlainButton>
-            <MenuIcon>more_vert</MenuIcon>
-          </PlainButton>
+          <MenuButton>
+            <Icon>more_vert</Icon>
+          </MenuButton>
         }
       />
     </Header>

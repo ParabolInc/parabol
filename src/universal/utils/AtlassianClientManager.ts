@@ -41,9 +41,7 @@ class AtlassianClientManager {
       Accept: 'application/json' as 'application/json'
     }
     this.fetch = async (url) => {
-      console.log('fetching', url)
       const res = await fetch(url, {headers})
-      console.log('got res', res)
       return res.json()
     }
   }
