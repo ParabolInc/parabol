@@ -17,6 +17,37 @@ export interface AccessibleResource {
   avatarUrl: string
 }
 
+export interface JiraProject {
+  self: string
+  id: string
+  key: string
+  name: string
+  avatarUrls: {
+    '48x48': string
+    '24x24': string
+    '16x16': string
+    '32x32': string
+  }
+  projectCategory: {
+    self: string
+    id: string
+    name: string
+    description: string
+  }
+  simplified: boolean
+  style: string
+}
+
+export interface JiraProjectResponse {
+  self: string
+  nextPage: string
+  maxResults: number
+  startAt: number
+  total: number
+  isLast: boolean
+  values: JiraProject[]
+}
+
 export interface AtlassianError {
   code: number
   message: string
@@ -26,6 +57,13 @@ interface Options {
   fetch?: Window['fetch']
   refreshToken?: string
 }
+
+interface GetProjectsResult {
+  cloudId: string
+  newProjects: JiraProject[]
+}
+
+type GetProjectsCallback = (error: AtlassianError | null, result: GetProjectsResult | null) => void
 
 class AtlassianClientManager {
   accessToken: string
@@ -37,6 +75,7 @@ class AtlassianClientManager {
     this.refreshToken = options.refreshToken
     const fetch = options.fetch || window.fetch
     const headers = {
+      // an Authorization requires a preflight request, ie reqs are slow
       Authorization: `Bearer ${accessToken}`,
       Accept: 'application/json' as 'application/json'
     }
@@ -56,6 +95,30 @@ class AtlassianClientManager {
     return this.fetch(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/myself`) as
       | JiraUser
       | AtlassianError
+  }
+
+  async getPaginatedProjects (cloudId: string, url: string, callback: GetProjectsCallback) {
+    const res = (await this.fetch(url)) as JiraProjectResponse | AtlassianError
+    if ('message' in res) {
+      callback(res, null)
+    } else {
+      callback(null, {cloudId, newProjects: res.values})
+      if (res.nextPage) {
+        await this.getPaginatedProjects(cloudId, res.nextPage, callback).catch(console.error)
+      }
+    }
+  }
+
+  async getProjects (cloudIds: string[], callback: GetProjectsCallback) {
+    return Promise.all(
+      cloudIds.map(async (cloudId) => {
+        return this.getPaginatedProjects(
+          cloudId,
+          `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/search?orderBy=name`,
+          callback
+        ).catch(console.error)
+      })
+    )
   }
 }
 

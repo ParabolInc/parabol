@@ -11,18 +11,17 @@ const Panel = styled(BasicCard)({
 })
 
 interface Props {
-  teamId: string
   viewer: AtlassianIntegrations_viewer
 }
 
 const AtlassianIntegrations = (props: Props) => {
-  const {viewer, teamId} = props
+  const {viewer} = props
   const {team} = viewer
   if (!team) return null
   const accessToken = (team.atlassianAuth && team.atlassianAuth.accessToken) || undefined
   return (
     <Panel>
-      <JiraIntegrationHeader accessToken={accessToken} teamId={teamId} />
+      <JiraIntegrationHeader team={team} accessToken={accessToken} />
     </Panel>
   )
 }
@@ -41,6 +40,7 @@ export default createFragmentContainer(
     fragment AtlassianIntegrations_viewer on User {
       team(teamId: $teamId) {
         ...AtlassianIntegrations_team @relay(mask: false)
+        ...JiraIntegrationHeader_team
       }
     }
   `
