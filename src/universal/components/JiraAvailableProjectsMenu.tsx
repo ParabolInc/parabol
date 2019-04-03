@@ -19,13 +19,14 @@ const JiraAvailableProjectsMenu = (props: Props) => {
   const {projects, status} = useJiraProjects(accessToken, sites)
   return (
     <MenuWithShortcuts ariaLabel={'Select a project'} closePortal={closePortal}>
-      {projects.map((project) => {
+      {projects.map((item) => {
         return (
           <MenuItemWithShortcuts
-            key={project.value.id}
-            label={project.label}
+            avatar={item.project.avatarUrls['24x24']}
+            key={item.project.id}
+            label={item.projectName}
             onClick={() => {
-              console.log('proj', project)
+              console.log('proj', item)
             }}
           />
         )

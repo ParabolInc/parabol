@@ -1,6 +1,8 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import JiraRemoteProject from 'server/graphql/types/JiraRemoteProject'
 import TeamMember from 'server/graphql/types/TeamMember'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
+import {getUserId} from 'server/utils/authorization'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 
 const AtlassianProject = new GraphQLObjectType({
@@ -11,9 +13,24 @@ const AtlassianProject = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'shortid'
     },
+    cloudId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The cloud ID that the project lives on'
+    },
     projectId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The project ID in atlassian'
+    },
+    remoteProject: {
+      type: new GraphQLNonNull(JiraRemoteProject),
+      description: 'The full project document fetched from Jira',
+      resolve: async ({cloudId, projectId, teamId}, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const accessToken = await dataLoader
+          .get('freshAtlassianAccessToken')
+          .load({teamId, userId: viewerId})
+        return dataLoader.get('jiraRemoteProject').load({accessToken, cloudId, projectId})
+      }
     },
     adminUserId: {
       type: new GraphQLNonNull(GraphQLID),

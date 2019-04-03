@@ -5,8 +5,8 @@ import AtlassianClientManager, {
 } from 'universal/utils/AtlassianClientManager'
 
 interface MenuItem {
-  label: string
-  value: JiraProject
+  projectName: string
+  project: JiraProject
 }
 
 // Dirty little hack to cache the results even after the component unmounts
@@ -14,6 +14,12 @@ const container = {
   projects: [] as MenuItem[],
   status: 'loading',
   clear: null as null | number
+}
+
+const getProjectName = (projectName, sites, cloudId) => {
+  if (sites.length === 1) return projectName
+  const site = sites.find((site) => site.id === cloudId)
+  return `${site.name}/${projectName}`
 }
 
 const useJiraProjects = (accessToken: string, sites: AccessibleResource[]) => {
@@ -33,12 +39,9 @@ const useJiraProjects = (accessToken: string, sites: AccessibleResource[]) => {
           setStatus('error')
         } else if (res) {
           const {cloudId, newProjects} = res
-          const site = sites.find((site) => site.id === cloudId)
-          if (!site) return
-          const siteName = site.name
           const newItems = newProjects.map((project) => ({
-            label: `${siteName}/${project.name}`,
-            value: project
+            projectName: getProjectName(project.name, sites, cloudId),
+            project
           }))
           container.projects.push(...newItems)
           setProjects(container.projects)

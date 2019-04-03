@@ -1,10 +1,6 @@
 import {GraphQLBoolean, GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
-import {decode} from 'jsonwebtoken'
-import getRethink from 'server/database/rethinkDriver'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import AtlassianManager from 'server/utils/AtlassianManager'
 import {getUserId} from 'server/utils/authorization'
-import {IAuthToken} from 'universal/types/graphql'
 
 const AtlassianAuth = new GraphQLObjectType({
   name: 'AtlassianAuth',
@@ -22,22 +18,9 @@ const AtlassianAuth = new GraphQLObjectType({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available',
       type: GraphQLID,
-      resolve: async (source, _args, {authToken}) => {
-        const r = getRethink()
-        const now = new Date()
-        const {accessToken: existingAccessToken, refreshToken, userId} = source
+      resolve: async ({teamId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
-        if (viewerId !== userId || !existingAccessToken || !refreshToken) return null
-        const decodedToken = decode(existingAccessToken) as IAuthToken
-        if (!decodedToken || decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
-          return existingAccessToken
-        }
-        // fetch a new one
-        const manager = await AtlassianManager.refresh(refreshToken)
-        const {accessToken} = manager
-        // not exactly a pure query, but a guaranteed useful token is too nice to pass up
-        await r.table('AtlassianAuth').update({accessToken, updatedAt: now})
-        return accessToken
+        return dataLoader.get('freshAtlassianAccessToken').load({teamId, userId: viewerId})
       }
     },
     atlassianUserId: {
@@ -55,11 +38,12 @@ const AtlassianAuth = new GraphQLObjectType({
     },
     refreshToken: {
       description:
-        'The refresh token to atlassian to receive a new 1-hour accessToken, null if no access token available',
+        'The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required',
       type: GraphQLID,
       // refreshTokens are useless without the secret
       resolve: () => null
     },
+    // better to have 1 doc per team so a user can create a new team to use a different jira user
     teamId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The team that the token is linked to'

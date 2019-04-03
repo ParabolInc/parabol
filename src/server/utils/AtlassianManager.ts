@@ -67,7 +67,11 @@ class AtlassianManager extends AtlassianClientManager {
     if (!matchingScope) {
       throw new Error(`bad scope: ${scope}`)
     }
-    return new AtlassianManager(accessToken, {fetch, refreshToken})
+    return new AtlassianManager(accessToken, refreshToken)
+  }
+
+  constructor (accessToken: string, refreshToken?: string) {
+    super(accessToken, {fetch, refreshToken})
   }
 }
 

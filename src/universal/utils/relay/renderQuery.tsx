@@ -14,7 +14,7 @@ interface Options {
 const renderQuery = (ReadyComponent: ComponentType<any>, options: Options = {}) => (readyState) => {
   const Loader = options.Loader || <LoadingComponent spinnerSize={options.size} />
   const Error = options.Error || ErrorComponent
-  const {error, props} = readyState
+  const {error, props, retry} = readyState
   let child
   let key
   if (error) {
@@ -22,7 +22,7 @@ const renderQuery = (ReadyComponent: ComponentType<any>, options: Options = {}) 
     child = <Error error={error} />
   } else if (props) {
     key = 'Ready'
-    child = <ReadyComponent {...options.props || {}} viewer={props.viewer} />
+    child = <ReadyComponent {...options.props || {}} viewer={props.viewer} retry={retry} />
   } else {
     key = 'Loading'
     child = Loader

@@ -53,7 +53,7 @@ export interface AtlassianError {
   message: string
 }
 
-interface Options {
+interface AtlassianClientManagerOptions {
   fetch?: Window['fetch']
   refreshToken?: string
 }
@@ -70,7 +70,7 @@ class AtlassianClientManager {
   refreshToken?: string
   fetch: (url) => any
 
-  constructor (accessToken: string, options: Options = {}) {
+  constructor (accessToken: string, options: AtlassianClientManagerOptions = {}) {
     this.accessToken = accessToken
     this.refreshToken = options.refreshToken
     const fetch = options.fetch || window.fetch
@@ -119,6 +119,12 @@ class AtlassianClientManager {
         ).catch(console.error)
       })
     )
+  }
+
+  async getProject (cloudId: string, projectId: string) {
+    return this.fetch(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectId}`
+    ) as JiraProject | AtlassianError
   }
 }
 
