@@ -1,4 +1,4 @@
-import {useEffect, useReducer} from 'react'
+import {useEffect, useReducer, useRef} from 'react'
 import joinSwarm from '../utils/swarm/joinSwarm'
 import reducerSwarm from '../utils/swarm/reducerSwarm'
 import useAtmosphere from './useAtmosphere'
@@ -24,18 +24,18 @@ const initState = {
     cam: {},
     screen: {}
   },
-  swarm: null,
-  dispose: () => {
-    /**/
-  }
+  swarm: null
 }
 
 const useSwarm = (roomId) => {
   const atmosphere = useAtmosphere()
   const [state, dispatch] = useReducer(reducerSwarm, initState)
+  const disposable = useRef<() => void>()
   useEffect(() => {
-    joinSwarm(atmosphere, roomId, dispatch, state).catch()
-    return () => state.dispose()
+    joinSwarm(atmosphere, roomId, dispatch, disposable).catch()
+    return () => {
+      disposable.current && disposable.current()
+    }
   }, [roomId])
   return state
 }

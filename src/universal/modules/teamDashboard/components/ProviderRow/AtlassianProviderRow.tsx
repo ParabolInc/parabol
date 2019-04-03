@@ -89,7 +89,7 @@ const AtlassianProviderRow = (props: Props) => {
             userCount={users.size}
             integrationCount={projects.length}
           />
-          <RowInfoCopy>{'Create JIRA issues from Parabol'}</RowInfoCopy>
+          <RowInfoCopy>{'Create Jira issues from Parabol'}</RowInfoCopy>
         </StyledLink>
       </RowInfo>
       <ProviderActions>

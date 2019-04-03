@@ -22,7 +22,6 @@ interface RemoveStream {
 export type SwarmAction = SetStream | AddSwarm | RemoveStream
 
 export interface SwarmState {
-  dispose: () => void
   streams: StreamDict
   swarm: FastRTCSwarm | null
 }
