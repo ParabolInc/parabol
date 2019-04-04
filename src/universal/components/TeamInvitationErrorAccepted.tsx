@@ -4,9 +4,9 @@ import styled from 'react-emotion'
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import BasicCard from './BasicCard'
-import InvitationDialogContent from './InvitationDialogContent'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 import StyledLink from './StyledLink'
 
 interface Props {
@@ -25,8 +25,8 @@ const TeamInvitationErrorAccepted = (props: Props) => {
   return (
     <BasicCard>
       <Helmet title={`Token already accepted | Team Invitation`} />
-      <InvitationDialogTitle>Invitation Already Accepted</InvitationDialogTitle>
-      <InvitationDialogContent>
+      <DialogTitle>Invitation Already Accepted</DialogTitle>
+      <DialogContent>
         <InvitationDialogCopy>
           The invitation to {teamName} has already been redeemed.
         </InvitationDialogCopy>
@@ -34,7 +34,7 @@ const TeamInvitationErrorAccepted = (props: Props) => {
         <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
           Team Dashboard
         </StyledLink>
-      </InvitationDialogContent>
+      </DialogContent>
     </BasicCard>
   )
 }

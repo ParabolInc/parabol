@@ -1,3 +1,4 @@
+/* DEPRECATED: see usePortal */
 import {Component, ReactNode} from 'react'
 import {createPortal} from 'react-dom'
 

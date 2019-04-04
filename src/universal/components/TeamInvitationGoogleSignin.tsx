@@ -12,9 +12,9 @@ import auth0Authorize from '../utils/auth0Authorize'
 import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationProps'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import BasicCard from './BasicCard'
-import InvitationDialogContent from './InvitationDialogContent'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 
 interface Props
   extends WithAtmosphereProps,
@@ -66,8 +66,8 @@ class TeamInvitationGoogleSignin extends Component<Props> {
     return (
       <BasicCard>
         <Helmet title={`Sign in with Google | Team Invitation`} />
-        <InvitationDialogTitle>Welcome back, {preferredName}!</InvitationDialogTitle>
-        <InvitationDialogContent>
+        <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
+        <DialogContent>
           <InvitationDialogCopy>You last signed in using Google. </InvitationDialogCopy>
           <InvitationDialogCopy>
             Tap below for immediate access to your team: <TeamName>{teamName}</TeamName>
@@ -80,7 +80,7 @@ class TeamInvitationGoogleSignin extends Component<Props> {
               submitting={!!submitting}
             />
           </InvitationCenteredCopy>
-        </InvitationDialogContent>
+        </DialogContent>
       </BasicCard>
     )
   }

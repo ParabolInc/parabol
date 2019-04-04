@@ -23,12 +23,18 @@ const LoadingWrapper = styled('div')(
 type Props = {
   height?: number | string
   width?: number | string
+  showAfter?: number
   spinnerSize?: number
 }
 
 const LoadingComponent = (props: Props) => {
-  const {height, width, spinnerSize = LoaderSize.MAIN} = props
-  const minDelay = useTimeout(Times.HUMAN_ADDICTION_THRESH)
+  const {
+    height,
+    width,
+    spinnerSize = LoaderSize.MAIN,
+    showAfter = Times.HUMAN_ADDICTION_THRESH
+  } = props
+  const minDelay = useTimeout(showAfter)
   const timedOut = useTimeout(Times.MAX_WAIT_TIME)
   if (!minDelay) return null
   return (

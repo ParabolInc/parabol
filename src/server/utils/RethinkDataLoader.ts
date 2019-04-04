@@ -10,7 +10,7 @@ import promiseAllPartial from 'universal/utils/promiseAllPartial'
 interface JiraRemoteProjectKey {
   accessToken: string
   cloudId: string
-  projectId: string
+  atlassianProjectId: string
 }
 
 const defaultCacheKeyFn = (key) => key
@@ -301,15 +301,15 @@ export default class RethinkDataLoader {
   jiraRemoteProject = new DataLoader(
     async (keys: JiraRemoteProjectKey[]) => {
       return promiseAllPartial(
-        keys.map(async ({accessToken, cloudId, projectId}) => {
+        keys.map(async ({accessToken, cloudId, atlassianProjectId}) => {
           const manager = new AtlassianManager(accessToken)
-          return manager.getProject(cloudId, projectId)
+          return manager.getProject(cloudId, atlassianProjectId)
         })
       )
     },
     {
       ...this.dataLoaderOptions,
-      cacheKeyFn: (key: JiraRemoteProjectKey) => `${key.projectId}:${key.cloudId}`
+      cacheKeyFn: (key: JiraRemoteProjectKey) => `${key.atlassianProjectId}:${key.cloudId}`
     }
   )
 }

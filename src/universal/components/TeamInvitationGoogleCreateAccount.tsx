@@ -14,9 +14,9 @@ import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import BasicCard from './BasicCard'
-import InvitationDialogContent from './InvitationDialogContent'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
@@ -37,7 +37,7 @@ const StyledDialog = styled(BasicCard)({
   maxWidth: 356
 })
 
-const StyledContent = styled(InvitationDialogContent)({
+const StyledContent = styled(DialogContent)({
   paddingLeft: 0,
   paddingRight: 0
 })
@@ -105,7 +105,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     return (
       <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
-        <InvitationDialogTitle>Welcome!</InvitationDialogTitle>
+        <DialogTitle>Welcome!</DialogTitle>
         <StyledContent>
           <CopyMargins>
             <InvitationDialogCopy>

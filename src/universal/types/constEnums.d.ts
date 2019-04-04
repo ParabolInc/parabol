@@ -9,6 +9,9 @@ export const enum LoaderSize {
   PANEL = 200
 }
 
+export const enum ZIndex {
+  MODAL = 24
+}
 // equal to utils/constants
 export const enum MeetingTypes {
   ACTION = 'action',

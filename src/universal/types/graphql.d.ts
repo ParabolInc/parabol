@@ -1822,7 +1822,7 @@ export interface IAtlassianAuth {
   createdAt: any
 
   /**
-   * The refresh token to atlassian to receive a new 1-hour accessToken, null if no access token available
+   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
    */
   refreshToken: string | null
 
@@ -1854,9 +1854,19 @@ export interface IAtlassianProject {
   id: string
 
   /**
+   * The cloud ID that the project lives on
+   */
+  cloudId: string
+
+  /**
    * *The project ID in atlassian
    */
-  projectId: string
+  atlassianProjectId: string
+
+  /**
+   * The full project document fetched from Jira
+   */
+  remoteProject: IJiraRemoteProject
 
   /**
    * The parabol userId of the admin for this repo (usually the creator). This is used as a fallback if the user does not have an atlassian auth
@@ -1892,6 +1902,43 @@ export interface IAtlassianProject {
    * *The userIds connected to the repo so they can CRUD things under their own name
    */
   userIds: Array<string | null> | null
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteProject {
+  __typename: 'JiraRemoteProject'
+  self: string
+  id: string
+  key: string
+  name: string
+  avatarUrls: IJiraRemoteAvatarUrls
+  projectCategory: IJiraRemoteProjectCategory
+  simplified: boolean
+  style: string
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteAvatarUrls {
+  __typename: 'JiraRemoteAvatarUrls'
+  x48: string
+  x24: string
+  x16: string
+  x32: string
+}
+
+/**
+ * A project category fetched from a JiraRemoteProject
+ */
+export interface IJiraRemoteProjectCategory {
+  __typename: 'JiraRemoteProjectCategory'
+  self: string
+  id: string
+  name: string
+  description: string
 }
 
 /**
@@ -2802,6 +2849,7 @@ export interface IMutation {
    */
   acceptTeamInvitation: IAcceptTeamInvitationPayload
   addAtlassianAuth: IAddAtlassianAuthPayload
+  addAtlassianProject: IAddAtlassianProjectPayload
 
   /**
    * Create a new agenda item
@@ -3240,6 +3288,12 @@ export interface IAcceptTeamInvitationOnMutationArguments {
 
 export interface IAddAtlassianAuthOnMutationArguments {
   code: string
+  teamId: string
+}
+
+export interface IAddAtlassianProjectOnMutationArguments {
+  cloudId: string
+  atlassianProjectId: string
   teamId: string
 }
 
@@ -4071,6 +4125,21 @@ export interface IAddAtlassianAuthPayload {
 
   /**
    * The team with the new auth
+   */
+  team: ITeam | null
+}
+
+export interface IAddAtlassianProjectPayload {
+  __typename: 'AddAtlassianProjectPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * new project added
+   */
+  atlassianProject: IAtlassianProject | null
+
+  /**
+   * The team with the new project
    */
   team: ITeam | null
 }
@@ -6475,6 +6544,7 @@ export type TaskSubscriptionPayload =
 export type TeamSubscriptionPayload =
   | IAcceptTeamInvitationPayload
   | IAddTeamPayload
+  | IAddAtlassianProjectPayload
   | IArchiveTeamPayload
   | IAutoGroupReflectionsPayload
   | ICreateReflectionPayload

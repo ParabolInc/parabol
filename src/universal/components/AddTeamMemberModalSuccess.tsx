@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import AddTeamMemberModalBoundary from './AddTeamMemberModalBoundary'
-import InvitationDialogContent from './InvitationDialogContent'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
 
 interface Props {
   closePortal: () => void
@@ -35,8 +35,8 @@ class AddTeamMemberModalSuccess extends Component<Props> {
     const {successfulInvitations} = this.props
     return (
       <AddTeamMemberModalBoundary>
-        <InvitationDialogTitle>Success!</InvitationDialogTitle>
-        <InvitationDialogContent>
+        <DialogTitle>Success!</DialogTitle>
+        <DialogContent>
           <span>An invitation has been sent to</span>
           {successfulInvitations.length === 1 ? <span> {successfulInvitations[0]}.</span> : ':'}
           {successfulInvitations.length > 1 && (
@@ -46,7 +46,7 @@ class AddTeamMemberModalSuccess extends Component<Props> {
               })}
             </UL>
           )}
-        </InvitationDialogContent>
+        </DialogContent>
       </AddTeamMemberModalBoundary>
     )
   }

@@ -1,7 +1,7 @@
-import React, {lazy} from 'react'
+import React from 'react'
 import styled, {keyframes} from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import FlatButton from 'universal/components/FlatButton'
+import AddJiraProject from 'universal/components/AddJiraProject'
 import Icon from 'universal/components/Icon'
 import JiraConfigMenu from 'universal/components/JiraConfigMenu'
 import LoadableMenu from 'universal/components/LoadableMenu'
@@ -12,7 +12,6 @@ import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import jiraLogo from 'universal/styles/theme/images/graphics/jira.svg'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import LoadableDropdownMenu from 'universal/components/LoadableDropdownMenu'
 import {JiraIntegrationHeader_team} from '__generated__/JiraIntegrationHeader_team.graphql'
 
 const JiraLogo = styled('img')({
@@ -102,34 +101,15 @@ const ListAndMenu = styled('div')({
   display: 'flex'
 })
 
-const AddProjectButton = styled(FlatButton)({
-  background: '#fff',
-  borderColor: PALETTE.BORDER.LIGHT,
-  borderWidth: 1,
-  display: 'flex',
-  fontSize: 14,
-  fontWeight: 600,
-  justifyContent: 'flex-end',
-  marginTop: 16
-})
-
 const SubAndButton = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   width: 'fit-content'
 })
 
-const DownArrow = styled(Icon)({
-  marginLeft: 16
-})
-
-const JiraAvailableProjectsMenu = lazy(() =>
-  import(/* webpackChunkName: 'JiraAvailableProjectsMenu' */ 'universal/components/JiraAvailableProjectsMenu')
-)
-
 const JiraIntegrationHeader = (props: Props) => {
   const {accessToken, team} = props
-  const {id: teamId, atlassianProjects} = team
+  const {id: teamId} = team
   const {sites, status} = useAtlassianSites(accessToken)
   return (
     <Header>
@@ -169,20 +149,7 @@ const JiraIntegrationHeader = (props: Props) => {
         </TitleRow>
         <SubAndButton>
           <Subtitle>Create issues from Parabol</Subtitle>
-          <LoadableDropdownMenu
-            LoadableComponent={JiraAvailableProjectsMenu}
-            maxHeight={150}
-            maxWidth={300}
-            originAnchor={originAnchor}
-            queryVars={{accessToken, sites, atlassianProjects}}
-            targetAnchor={targetAnchor}
-            toggle={
-              <AddProjectButton disabled={sites.length < 1}>
-                Add Project
-                <DownArrow>expand_more</DownArrow>
-              </AddProjectButton>
-            }
-          />
+          <AddJiraProject accessToken={accessToken!} team={team} sites={sites} />
         </SubAndButton>
       </Content>
     </Header>
@@ -194,9 +161,7 @@ export default createFragmentContainer(
   graphql`
     fragment JiraIntegrationHeader_team on Team {
       id
-      atlassianProjects {
-        ...JiraAvailableProjectsMenu_atlassianProjects
-      }
+      ...AddJiraProject_team
     }
   `
 )

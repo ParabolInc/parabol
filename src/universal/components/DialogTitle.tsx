@@ -2,11 +2,13 @@ import styled from 'react-emotion'
 import {PALETTE} from '../styles/paletteV2'
 import TEXT = PALETTE.TEXT
 
-const InvitationDialogContent = styled('div')({
+const DialogTitle = styled('h2')({
   color: TEXT.MAIN,
-  fontSize: '.875rem',
+  fontSize: 20,
+  fontWeight: 600,
   lineHeight: 1.5,
-  padding: '1rem 2rem 2rem'
+  margin: 0,
+  padding: '1.5rem 2rem 0'
 })
 
-export default InvitationDialogContent
+export default DialogTitle

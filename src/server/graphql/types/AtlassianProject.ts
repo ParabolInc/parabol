@@ -17,7 +17,7 @@ const AtlassianProject = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The cloud ID that the project lives on'
     },
-    projectId: {
+    atlassianProjectId: {
       type: new GraphQLNonNull(GraphQLID),
       description: '*The project ID in atlassian'
     },

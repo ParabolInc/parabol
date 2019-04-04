@@ -293,7 +293,7 @@ class NewMeeting extends Component<Props> {
     })
   }
 
-  onSidebarTransitionEnd = (e) => {
+  onSidebarTransitionEnd = (e: React.TransitionEvent) => {
     const {
       atmosphere: {eventEmitter},
       viewer: {team}

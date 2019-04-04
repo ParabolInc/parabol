@@ -5,6 +5,7 @@ import AtlassianClientManager, {
 } from 'universal/utils/AtlassianClientManager'
 
 interface MenuItem {
+  cloudId: string
   projectName: string
   project: JiraProject
 }
@@ -40,18 +41,20 @@ const useJiraProjects = (accessToken: string, sites: AccessibleResource[]) => {
         } else if (res) {
           const {cloudId, newProjects} = res
           const newItems = newProjects.map((project) => ({
+            cloudId,
             projectName: getProjectName(project.name, sites, cloudId),
             project
           }))
           container.projects.push(...newItems)
-          setProjects(container.projects)
+          // important! we only mutated the current object, we need a new one to trigger a rerender
+          setProjects([...container.projects])
         }
       })
       container.status = 'loaded'
       setStatus('loaded')
     }
 
-    if (isMounted && container.projects.length === 0) {
+    if (isMounted && container.projects.length === 0 && sites.length > 0) {
       fetchProjects().catch()
     }
     return () => {
@@ -62,7 +65,7 @@ const useJiraProjects = (accessToken: string, sites: AccessibleResource[]) => {
       }, 10000)
     }
   }, [accessToken, sites])
-  return {projects, status}
+  return {items: projects, status}
 }
 
 export default useJiraProjects

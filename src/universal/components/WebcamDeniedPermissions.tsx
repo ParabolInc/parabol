@@ -1,10 +1,10 @@
 import React from 'react'
 import styled from 'react-emotion'
-import InvitationDialogContent from 'universal/components/InvitationDialogContent'
+import DialogContent from 'universal/components/DialogContent'
 import InvitationDialogCopy from 'universal/components/InvitationDialogCopy'
-import InvitationDialogTitle from 'universal/components/InvitationDialogTitle'
+import DialogTitle from 'universal/components/DialogTitle'
 
-const OffsetTitle = styled(InvitationDialogTitle)({
+const OffsetTitle = styled(DialogTitle)({
   paddingLeft: '1.75rem'
 })
 
@@ -12,14 +12,14 @@ const WebcamDeniedPermissions = () => {
   return (
     <>
       <OffsetTitle>Share that face!</OffsetTitle>
-      <InvitationDialogContent>
+      <DialogContent>
         <InvitationDialogCopy>
           Parabol needs access to your camera and microphone so your team can see and hear you.
         </InvitationDialogCopy>
         <InvitationDialogCopy>
           To re-enable, adjust your browser preferences on the right side of the address bar.
         </InvitationDialogCopy>
-      </InvitationDialogContent>
+      </DialogContent>
     </>
   )
 }
