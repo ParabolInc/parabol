@@ -11,8 +11,7 @@ import {ZIndex} from 'universal/types/constEnums'
 import menuAnimations from 'universal/utils/menuAnimations'
 
 const MenuBlock = styled('div')({
-  marginTop: 8,
-  marginBottom: 8,
+  // no margins or paddings since they could force it too low & cause a scrollbar to appear
   position: 'absolute',
   zIndex: ZIndex.MODAL
 })

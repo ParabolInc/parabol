@@ -629,19 +629,6 @@ const ui = {
   upgradeColor: blue,
   upgradeColorOption: 'blue',
 
-  // Generic zIndex scale
-  // ---------------------------------------------------------------------------
-  zi1: zIndexScale(1),
-  zi2: zIndexScale(2),
-  zi3: zIndexScale(3),
-  zi4: zIndexScale(4),
-  zi5: zIndexScale(5),
-  zi6: zIndexScale(6),
-  zi7: zIndexScale(7),
-  zi8: zIndexScale(8),
-  zi9: zIndexScale(9),
-  zi10: zIndexScale(10),
-
   // …and then component-specific constants:
 
   ziMenu: zIndexScale(4),

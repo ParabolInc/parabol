@@ -50,6 +50,13 @@ graphql`
     atlassianAuth {
       accessToken
     }
+    atlassianProjects {
+      remoteProject {
+        name
+      }
+      atlassianProjectId
+      cloudId
+    }
   }
 `
 

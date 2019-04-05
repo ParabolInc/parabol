@@ -3,7 +3,7 @@ import React, {Component, ErrorInfo, ReactNode} from 'react'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
 
 interface Props {
-  fallback: (error: Error) => ReactNode
+  fallback?: (error: Error) => ReactNode
   children: ReactNode
 }
 

@@ -10,7 +10,7 @@ export const enum LoaderSize {
 }
 
 export const enum ZIndex {
-  MODAL = 24
+  MODAL = 400 /*should be 24, https://github.com/ParabolInc/action/issues/2772 */
 }
 // equal to utils/constants
 export const enum MeetingTypes {

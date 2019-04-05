@@ -16,15 +16,60 @@ export interface ModalAnchor {
   vertical: 'top' | 'center' | 'bottom'
 }
 
-const getNextCoords = (
-  targetBBox: BBox,
-  originBBox: BBox,
-  targetAnchor: ModalAnchor,
-  originAnchor: ModalAnchor
-) => {
+export enum MenuPosition {
+  UPPER_LEFT,
+  UPPER_RIGHT,
+  LOWER_LEFT,
+  LOWER_RIGHT
+}
+
+const anchorLookup = {
+  [MenuPosition.UPPER_LEFT]: {
+    targetAnchor: {
+      horizontal: 'left',
+      vertical: 'top'
+    },
+    originAnchor: {
+      horizontal: 'left',
+      vertical: 'bottom'
+    }
+  },
+  [MenuPosition.UPPER_RIGHT]: {
+    targetAnchor: {
+      horizontal: 'right',
+      vertical: 'top'
+    },
+    originAnchor: {
+      horizontal: 'right',
+      vertical: 'bottom'
+    }
+  },
+  [MenuPosition.LOWER_LEFT]: {
+    targetAnchor: {
+      horizontal: 'left',
+      vertical: 'bottom'
+    },
+    originAnchor: {
+      horizontal: 'left',
+      vertical: 'top'
+    }
+  },
+  [MenuPosition.LOWER_RIGHT]: {
+    targetAnchor: {
+      horizontal: 'right',
+      vertical: 'bottom'
+    },
+    originAnchor: {
+      horizontal: 'right',
+      vertical: 'top'
+    }
+  }
+}
+
+const getNextCoords = (targetBBox: BBox, originBBox: BBox, menuPosition: MenuPosition) => {
   const {height: modalHeight, width: modalWidth} = targetBBox
   const {height: originHeight, width: originWidth, left: originLeft, top: originTop} = originBBox
-
+  const {originAnchor, targetAnchor} = anchorLookup[menuPosition]
   const nextCoords = {} as any
 
   const originLeftOffset = getOffset(originAnchor.horizontal, originWidth)
@@ -60,7 +105,7 @@ const getNextCoords = (
   return nextCoords as UseCoordsValue
 }
 
-const useCoords = (originAnchor: ModalAnchor, targetAnchor: ModalAnchor) => {
+const useCoords = (menuPosition: MenuPosition) => {
   const [currentTargetRef, setTargetRef] = useState<HTMLDivElement | null>(null)
   const targetRef = useCallback((c) => {
     setTargetRef(c)
@@ -74,7 +119,7 @@ const useCoords = (originAnchor: ModalAnchor, targetAnchor: ModalAnchor) => {
     // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
     const targetBBox = currentTargetRef.getBoundingClientRect()
     const originBBox = originRef.current.getBoundingClientRect()
-    const nextCoords = getNextCoords(targetBBox, originBBox, targetAnchor, originAnchor)
+    const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
     // listen to window resize only if it's anchored on the right or bottom
     setCoords(nextCoords)
     window.addEventListener('resize', resizeWindow, {passive: true})
@@ -86,7 +131,7 @@ const useCoords = (originAnchor: ModalAnchor, targetAnchor: ModalAnchor) => {
   useResizeObserver(currentTargetRef, () => {
     const targetBBox = getBBox(currentTargetRef)!
     const originBBox = getBBox(originRef.current)!
-    const nextCoords = getNextCoords(targetBBox, originBBox, targetAnchor, originAnchor)
+    const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
     setCoords(nextCoords)
   })
 

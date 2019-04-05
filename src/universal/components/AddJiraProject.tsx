@@ -4,7 +4,7 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import FlatButton from 'universal/components/FlatButton'
 import Icon from 'universal/components/Icon'
-import {ModalAnchor} from 'universal/hooks/useCoords'
+import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {AccessibleResource} from 'universal/utils/AtlassianClientManager'
@@ -30,16 +30,6 @@ const AddProjectButton = styled(FlatButton)({
   marginTop: 16
 })
 
-const originAnchor: ModalAnchor = {
-  vertical: 'bottom',
-  horizontal: 'right'
-}
-
-const targetAnchor: ModalAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-}
-
 interface Props extends WithMutationProps {
   accessToken: string
   sites: AccessibleResource[]
@@ -56,7 +46,7 @@ const StyledError = styled('div')({
 
 const AddJiraProject = (props: Props) => {
   const {accessToken, sites, team, onError, onCompleted, submitMutation, error} = props
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(originAnchor, targetAnchor)
+  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     // the portal must be opened outside of the button otherwise react bubbles the event (like mousedown) up to the button
     <>
@@ -73,10 +63,12 @@ const AddJiraProject = (props: Props) => {
         />
       )}
       <AddProjectButton
-        onMouseDown={togglePortal}
+        onClick={(e) => {
+          error && onError(/* Remove any error*/)
+          togglePortal(e)
+        }}
         innerRef={originRef}
         disabled={sites.length < 1}
-        onClick={() => onError(/* Remove any error*/)}
         onMouseEnter={JiraAvailableProjectsMenu.preload}
       >
         Add Project

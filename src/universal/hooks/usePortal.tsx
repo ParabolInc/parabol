@@ -46,8 +46,12 @@ const usePortal = () => {
 
   const handleDocumentClick = useCallback((e: MouseEvent | TouchEvent) => {
     if (!portalRef.current) return
-    if (!portalRef.current.contains(e.target as Node)) {
-      closePortal()
+    const target = e.target as Node
+    if (!portalRef.current.contains(target)) {
+      // clicks on the toggle must be ignored, otherwise a long click where mouseup occurs after close will trigger a reopen
+      if (!originRef.current || !originRef.current.contains(target)) {
+        closePortal()
+      }
     }
   }, [])
 

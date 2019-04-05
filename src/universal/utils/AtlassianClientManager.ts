@@ -69,7 +69,9 @@ class AtlassianClientManager {
   accessToken: string
   refreshToken?: string
   fetch: (url) => any
-
+  // the any is for node until we can use tsc in nodeland
+  cache: {[key: string]: {result: any; expiration: number | any}} = {}
+  timeout = 5000
   constructor (accessToken: string, options: AtlassianClientManagerOptions = {}) {
     this.accessToken = accessToken
     this.refreshToken = options.refreshToken
@@ -80,8 +82,23 @@ class AtlassianClientManager {
       Accept: 'application/json' as 'application/json'
     }
     this.fetch = async (url) => {
-      const res = await fetch(url, {headers})
-      return res.json()
+      const record = this.cache[url]
+      if (!record) {
+        const res = await fetch(url, {headers})
+        const result = await res.json()
+        this.cache[url] = {
+          result,
+          expiration: setTimeout(() => {
+            delete this.cache[url]
+          }, this.timeout)
+        }
+      } else {
+        clearTimeout(record.expiration)
+        record.expiration = setTimeout(() => {
+          delete this.cache[url]
+        }, this.timeout)
+      }
+      return this.cache[url].result
     }
   }
 

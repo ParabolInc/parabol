@@ -1,18 +1,19 @@
+import {JiraIntegrationHeader_team} from '__generated__/JiraIntegrationHeader_team.graphql'
 import React from 'react'
 import styled, {keyframes} from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AddJiraProject from 'universal/components/AddJiraProject'
 import Icon from 'universal/components/Icon'
 import JiraConfigMenu from 'universal/components/JiraConfigMenu'
-import LoadableMenu from 'universal/components/LoadableMenu'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import useAtlassianSites from 'universal/hooks/useAtlassianSites'
+import {MenuPosition} from 'universal/hooks/useCoords'
+import useMenu from 'universal/hooks/useMenu'
 import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import jiraLogo from 'universal/styles/theme/images/graphics/jira.svg'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import {JiraIntegrationHeader_team} from '__generated__/JiraIntegrationHeader_team.graphql'
 
 const JiraLogo = styled('img')({
   width: 48,
@@ -64,16 +65,6 @@ const SiteAvatar = styled('img')(({idx}: {idx: number}) => ({
   opacity: 0
 }))
 
-const originAnchor = {
-  vertical: 'bottom',
-  horizontal: 'right'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'right'
-}
-
 interface Props {
   accessToken?: string
   team: JiraIntegrationHeader_team
@@ -111,6 +102,7 @@ const JiraIntegrationHeader = (props: Props) => {
   const {accessToken, team} = props
   const {id: teamId} = team
   const {sites, status} = useAtlassianSites(accessToken)
+  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
     <Header>
       <JiraLogo src={jiraLogo} />
@@ -132,19 +124,10 @@ const JiraIntegrationHeader = (props: Props) => {
                 ))}
               {status === 'loading' && <LoadingComponent spinnerSize={24} height={24} />}
             </SiteList>
-            <LoadableMenu
-              LoadableComponent={JiraConfigMenu}
-              maxWidth={400}
-              maxHeight={225}
-              originAnchor={originAnchor}
-              queryVars={{teamId}}
-              targetAnchor={targetAnchor}
-              toggle={
-                <MenuButton>
-                  <Icon>more_vert</Icon>
-                </MenuButton>
-              }
-            />
+            <MenuButton onClick={togglePortal} innerRef={originRef}>
+              <Icon>more_vert</Icon>
+            </MenuButton>
+            {menuPortal(<JiraConfigMenu closePortal={closePortal} teamId={teamId} />)}
           </ListAndMenu>
         </TitleRow>
         <SubAndButton>

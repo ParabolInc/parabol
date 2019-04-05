@@ -1657,12 +1657,12 @@ export interface ITask {
   /**
    * The team this task belongs to
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The team member (or soft team member) that owns this task
    */
-  assignee: Assignee | null
+  assignee: Assignee
 
   /**
    * The id of the team member (or soft team member) assigned to this task

@@ -86,14 +86,14 @@ const Task = new GraphQLObjectType({
       description: 'The id of the team (indexed). Needed for subscribing to archived tasks'
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       description: 'The team this task belongs to',
       resolve: ({teamId}, args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
     assignee: {
-      type: Assignee,
+      type: new GraphQLNonNull(Assignee),
       description: 'The team member (or soft team member) that owns this task',
       resolve: ({assigneeId, isSoftTask}, args, {dataLoader}) => {
         return isSoftTask
