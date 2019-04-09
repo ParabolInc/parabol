@@ -1,17 +1,12 @@
 import {TaskFooterTeamAssigneeMenu_task} from '__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
 import {TaskFooterTeamAssigneeMenu_viewer} from '__generated__/TaskFooterTeamAssigneeMenu_viewer.graphql'
 import React, {useMemo} from 'react'
-import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import ChangeTaskTeamMutation from 'universal/mutations/ChangeTaskTeamMutation'
-
-const Menu = styled('div')({
-  maxHeight: 200
-})
 
 interface Props {
   closePortal: () => void
@@ -34,19 +29,11 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   }
 
   return (
-    <Menu>
-      <MenuWithShortcuts ariaLabel={'Assign this task to another team'} closePortal={closePortal}>
-        <DropdownMenuLabel>Move to:</DropdownMenuLabel>
-        {assignableTeams.map((team) => {
-          return (
-            <MenuItemWithShortcuts
-              key={team.id}
-              label={team.name}
-              onClick={handleTaskUpdate(team)}
-            />
-          )
-        })}
-      </MenuWithShortcuts>
+    <Menu ariaLabel={'Assign this task to another team'} closePortal={closePortal}>
+      <DropdownMenuLabel>Move to:</DropdownMenuLabel>
+      {assignableTeams.map((team) => {
+        return <MenuItem key={team.id} label={team.name} onClick={handleTaskUpdate(team)} />
+      })}
     </Menu>
   )
 }

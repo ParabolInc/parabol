@@ -1,3 +1,4 @@
+/* Deprecated. See MenuItem */
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
 import ui from 'universal/styles/ui'

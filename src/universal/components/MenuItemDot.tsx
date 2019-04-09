@@ -1,13 +1,12 @@
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
 
-const MenuItemDot = styled('div')(({iconColor}: {iconColor: string}) => ({
-  backgroundColor: iconColor || 'inherit',
-  borderRadius: '.375rem',
-  height: '.375rem',
-  marginLeft: ui.menuGutterHorizontal,
-  marginRight: ui.menuGutterInner,
-  width: '.375rem'
+const MenuItemDot = styled('div')(({color}: {color: string}) => ({
+  backgroundColor: color,
+  borderRadius: 6,
+  display: 'inline-block',
+  height: 6,
+  marginRight: 12,
+  width: 6
 }))
 
 export default MenuItemDot

@@ -36,6 +36,7 @@ const TeamToggleButton = styled(CardButton)({
 interface Props {
   canAssign: boolean
   task: TaskFooterTeamAssignee_task
+  toggleMenuState: () => void
 }
 
 const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
@@ -43,10 +44,13 @@ const TaskFooterTeamAssigneeMenuRoot = lazyPreload(() =>
 )
 
 const TaskFooterTeamAssignee = (props: Props) => {
-  const {canAssign, task} = props
+  const {canAssign, task, toggleMenuState} = props
   const {team} = task
   const {name: teamName} = team
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT)
+  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT, {
+    onOpen: toggleMenuState,
+    onClose: toggleMenuState
+  })
   return (
     <>
       <TeamToggleButton

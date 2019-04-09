@@ -1,3 +1,4 @@
+/* Deprecated. See Menu */
 import PropTypes from 'prop-types'
 import React, {Children, cloneElement, Component} from 'react'
 import styled from 'react-emotion'

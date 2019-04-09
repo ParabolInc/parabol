@@ -1472,6 +1472,7 @@ export interface ITeamMember {
    * The place in line for checkIn, regenerated every meeting
    */
   checkInOrder: number | null
+  integrations: Array<TaskIntegration>
 
   /**
    * true if the user is connected
@@ -1547,6 +1548,21 @@ export interface IAssignee {
   teamId: string
 }
 
+export type TaskIntegration = IGitHubTask
+
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration'
+  service: IntegrationService | null
+}
+
+/**
+ * The list of services for integrations
+ */
+export const enum IntegrationService {
+  GitHubIntegration = 'GitHubIntegration',
+  SlackIntegration = 'SlackIntegration'
+}
+
 /**
  * A connection to a list of items.
  */
@@ -1596,7 +1612,7 @@ export interface ITask {
   /**
    * The body of the task. If null, it is a new task.
    */
-  content: string | null
+  content: string
 
   /**
    * The timestamp the task was created
@@ -1652,7 +1668,7 @@ export interface ITask {
   /**
    * The id of the team (indexed). Needed for subscribing to archived tasks
    */
-  teamId: string | null
+  teamId: string
 
   /**
    * The team this task belongs to
@@ -1703,21 +1719,6 @@ export interface IGitHubTask {
   service: IntegrationService
   nameWithOwner: string | null
   issueNumber: number | null
-}
-
-export type TaskIntegration = IGitHubTask
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration'
-  service: IntegrationService | null
-}
-
-/**
- * The list of services for integrations
- */
-export const enum IntegrationService {
-  GitHubIntegration = 'GitHubIntegration',
-  SlackIntegration = 'SlackIntegration'
 }
 
 /**

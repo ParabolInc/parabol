@@ -74,6 +74,7 @@ interface Props {
   canAssign: boolean
   cardIsActive: boolean
   task: TaskFooterUserAssignee_task
+  toggleMenuState: () => void
 }
 
 const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
@@ -81,9 +82,12 @@ const TaskFooterUserAssigneeMenuRoot = lazyPreload(() =>
 )
 
 const TaskFooterUserAssignee = (props: Props) => {
-  const {area, canAssign, cardIsActive, task} = props
+  const {area, canAssign, cardIsActive, task, toggleMenuState} = props
   const {assignee} = task
-  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT)
+  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT, {
+    onOpen: toggleMenuState,
+    onClose: toggleMenuState
+  })
   return (
     <>
       <AvatarButton

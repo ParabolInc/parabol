@@ -1,16 +1,16 @@
 /* Puts a preload method on every lazy component */
 import {ComponentType, lazy, LazyExoticComponent} from 'react'
 
-type ImportThunk = () => Promise<{default: React.ComponentType<any>}>
+type ImportThunk<T> = () => Promise<{default: T}>
 
 interface LazyExoticPreload<T extends ComponentType<any>> extends LazyExoticComponent<T> {
-  preload: ImportThunk
+  preload: ImportThunk<T>
 }
 
-const lazyPreload = (thunk: ImportThunk) => {
-  const lazyComponent = lazy(thunk)
-  ;(lazyComponent as any).preload = thunk
-  return lazyComponent as LazyExoticPreload<ComponentType<any>>
+const lazyPreload = <T extends ComponentType<any>>(thunk: ImportThunk<T>) => {
+  const lazyComponent = lazy(thunk) as LazyExoticPreload<T>
+  lazyComponent.preload = thunk
+  return lazyComponent
 }
 
 export default lazyPreload

@@ -9,7 +9,11 @@ export enum PortalState {
   Exited
 }
 
-const usePortal = () => {
+export interface UsePortalOptions {
+  onOpen?: (el: HTMLElement) => void
+  onClose?: () => void
+}
+const usePortal = (options: UsePortalOptions) => {
   const portalRef = useRef<HTMLDivElement>()
   const originRef = useRef<HTMLElement>()
   const [status, setStatus] = useState(PortalState.Exited)
@@ -18,6 +22,7 @@ const usePortal = () => {
     if (portalRef.current) {
       document.body.removeChild(portalRef.current)
       portalRef.current = undefined
+      options.onClose && options.onClose()
     }
   }, [])
 
@@ -71,6 +76,7 @@ const usePortal = () => {
     requestDoubleAnimationFrame(() => {
       setStatus(PortalState.Entered)
     })
+    options.onOpen && options.onOpen(portalRef.current)
   }, [])
 
   const togglePortal = useCallback((e: React.MouseEvent | React.TouchEvent) => {

@@ -1,10 +1,13 @@
 import useCoords, {MenuPosition} from 'universal/hooks/useCoords'
 import useMenuPortal from 'universal/hooks/useMenuPortal'
-import usePortal from 'universal/hooks/usePortal'
+import usePortal, {UsePortalOptions} from 'universal/hooks/usePortal'
 
-const useMenu = (menuPosition: MenuPosition) => {
+interface Options extends UsePortalOptions {}
+
+const useMenu = (menuPosition: MenuPosition, options: Options = {}) => {
+  const {onOpen, onClose} = options
   const {targetRef, originRef, coords} = useCoords(menuPosition)
-  const {portal, closePortal, togglePortal, status} = usePortal()
+  const {portal, closePortal, togglePortal, status} = usePortal({onOpen, onClose})
   const menuPortal = useMenuPortal(portal, targetRef, originRef, coords, status)
   return {togglePortal, originRef, menuPortal, closePortal}
 }

@@ -5,6 +5,8 @@ import ui from 'universal/styles/ui'
 const MenuItemLabel = styled('div')(
   ({hasIcon, disabled}: {hasIcon?: boolean; disabled?: boolean}) => ({
     ...textOverflow,
+    alignItems: 'center',
+    display: 'flex',
     flex: 1,
     fontSize: ui.menuItemFontSize,
     lineHeight: ui.menuItemHeight,

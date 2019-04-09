@@ -1,18 +1,15 @@
 import {TaskFooterUserAssigneeMenu_task} from '__generated__/TaskFooterUserAssigneeMenu_task.graphql'
 import {TaskFooterUserAssigneeMenu_viewer} from '__generated__/TaskFooterUserAssigneeMenu_viewer.graphql'
 import React, {useMemo} from 'react'
-import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import DropdownMenuLabel from 'universal/components/DropdownMenuLabel'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import Menu from 'universal/components/Menu'
+import MenuAvatar from 'universal/components/MenuAvatar'
+import MenuItem from 'universal/components/MenuItem'
+import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import UpdateTaskMutation from 'universal/mutations/UpdateTaskMutation'
 import avatarUser from 'universal/styles/theme/images/avatar-user.svg'
-
-const Menu = styled('div')({
-  maxHeight: 200
-})
 
 interface Props {
   area: string
@@ -41,20 +38,22 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
   }
 
   return (
-    <Menu>
-      <MenuWithShortcuts ariaLabel={'Assign this task to a teammate'} closePortal={closePortal}>
-        <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
-        {assignees.map((assignee) => {
-          return (
-            <MenuItemWithShortcuts
-              key={assignee.id}
-              avatar={assignee.picture || avatarUser}
-              label={assignee.preferredName}
-              onClick={handleTaskUpdate(assignee)}
-            />
-          )
-        })}
-      </MenuWithShortcuts>
+    <Menu ariaLabel={'Assign this task to a teammate'} closePortal={closePortal}>
+      <DropdownMenuLabel>Assign to:</DropdownMenuLabel>
+      {assignees.map((assignee) => {
+        return (
+          <MenuItem
+            key={assignee.id}
+            label={
+              <MenuItemLabel>
+                <MenuAvatar alt={assignee.preferredName} src={assignee.picture || avatarUser} />
+                {assignee.preferredName}
+              </MenuItemLabel>
+            }
+            onClick={handleTaskUpdate(assignee)}
+          />
+        )
+      })}
     </Menu>
   )
 }

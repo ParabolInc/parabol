@@ -29,7 +29,7 @@ const Task = new GraphQLObjectType({
       description: 'the agenda item that created this task, if any'
     },
     content: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The body of the task. If null, it is a new task.'
     },
     createdAt: {
@@ -82,7 +82,7 @@ const Task = new GraphQLObjectType({
       description: 'The tags associated with the task'
     },
     teamId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team (indexed). Needed for subscribing to archived tasks'
     },
     team: {
