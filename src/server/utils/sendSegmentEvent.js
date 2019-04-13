@@ -2,6 +2,7 @@ import getRethink from 'server/database/rethinkDriver'
 import segmentIo from 'server/utils/segmentIo'
 import resolvePromiseObj from 'universal/utils/resolvePromiseObj'
 import countTiersForUserId from 'server/graphql/queries/helpers/countTiersForUserId'
+import {ENTERPRISE, PERSONAL, PRO} from '../../universal/utils/constants'
 
 const getTraits = (userIds) => {
   const r = getRethink()
@@ -14,7 +15,54 @@ const getTraits = (userIds) => {
       email: r.row('email').default(''),
       id: r.row('id').default(''),
       name: r.row('preferredName').default(''),
-      parabolId: r.row('id').default('') // passed as a distinct trait name for HubSpot
+      parabolId: r.row('id').default(''), // passed as a distinct trait name for HubSpot
+      // # of orgs the user is on where teams is >= 3
+      salesOpOrgCount: r
+        .table('OrganizationUser')
+        .getAll(r.row('id'), {index: 'userId'})
+        .filter({removedAt: null})('orgId')
+        .default([])
+        .do((orgIds) => {
+          return r
+            .table('Organization')
+            .getAll(r.args(orgIds), {index: 'id'})
+            .merge((row) => ({
+              teamCount: r
+                .table('Team')
+                .getAll(row('id'), {index: 'orgId'})
+                .count()
+            }))
+            .filter((row) => row('teamCount').ge(3))
+            .count()
+        }),
+      salesOpMeetingCount: r
+        .table('MeetingMember')
+        .getAll(r.row('id'), {index: 'userId'})
+        .count(),
+      isAnyBillingLeader: r
+        .table('OrganizationUser')
+        .getAll(r.row('id'), {index: 'userId'})
+        .filter({removedAt: null, role: 'billingLeader'})
+        .count()
+        .ge(1),
+      highestTier: r
+        .table('OrganizationUser')
+        .getAll(r.row('id'), {index: 'userId'})
+        .filter({removedAt: null})('orgId')
+        .default([])
+        .do((orgIds) => {
+          return r
+            .table('Organization')
+            .getAll(r.args(orgIds), {index: 'id'})('tier')
+            .distinct()
+        })
+        .do((tiers) => {
+          return r.branch(
+            tiers.contains(ENTERPRISE),
+            ENTERPRISE,
+            r.branch(tiers.contains(PRO), PRO, PERSONAL)
+          )
+        })
     })
 }
 
