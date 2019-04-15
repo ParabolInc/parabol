@@ -46,6 +46,7 @@ const initDemoUser = ({preferredName, email, picture}: BaseUser, idx: number) =>
     connectedSockets: [`socket${idx}`],
     createdAt: now,
     email,
+    featureFlags: {},
     facilitatorUserId: id,
     facilitatorName: preferredName,
     inactive: false,

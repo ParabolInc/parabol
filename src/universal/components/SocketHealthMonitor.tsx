@@ -38,11 +38,13 @@ class SocketHealthMonitor extends Component<Props> {
     })
   }
 
-  onData = (payload) => {
-    if (!payload.version) return
+  onData = (payload: string) => {
+    // hacky but that way we don't have to double parse huge json payloads
+    if (!payload.startsWith('{"version":')) return
+    const obj = JSON.parse(payload)
     const {atmosphere} = this.props
     const versionInStorage = window.localStorage.getItem(APP_VERSION_KEY)
-    if (payload.version !== versionInStorage) {
+    if (obj.version !== versionInStorage) {
       popUpgradeAppToast({atmosphere})
     }
   }

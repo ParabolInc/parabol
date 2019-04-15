@@ -246,11 +246,9 @@ export default class RethinkDataLoader {
     }, this.dataloaderOptions)
     this.teamsByOrgId = makeCustomLoader(async (orgIds) => {
       const r = getRethink()
-      const tms = this.authToken.tms || []
       const teams = await r
         .table('Team')
-        .getAll(r.args(tms), {index: 'id'})
-        .filter((team) => r(orgIds).contains(team('orgId')))
+        .getAll(r.args(orgIds), {index: 'orgId'})
         .filter((team) =>
           team('isArchived')
             .default(false)
