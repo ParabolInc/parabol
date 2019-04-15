@@ -2996,6 +2996,11 @@ export interface IMutation {
   promoteToTeamLead: IPromoteToTeamLeadPayload | null
 
   /**
+   * Update the description of a reflection prompt
+   */
+  reflectTemplatePromptUpdateDescription: IReflectTemplatePromptUpdateDescriptionPayload | null
+
+  /**
    * Remove an agenda item
    */
   removeAgendaItem: IRemoveAgendaItemPayload | null
@@ -3645,6 +3650,11 @@ export interface IPromoteToTeamLeadOnMutationArguments {
    * the new team member that will be the leader
    */
   teamMemberId: string
+}
+
+export interface IReflectTemplatePromptUpdateDescriptionOnMutationArguments {
+  promptId: string
+  description: string
 }
 
 export interface IRemoveAgendaItemOnMutationArguments {
@@ -5568,6 +5578,12 @@ export interface IPromoteToTeamLeadPayload {
   newLeader: ITeamMember | null
 }
 
+export interface IReflectTemplatePromptUpdateDescriptionPayload {
+  __typename: 'ReflectTemplatePromptUpdateDescriptionPayload'
+  error: IStandardMutationError | null
+  prompt: IRetroPhaseItem | null
+}
+
 export interface IRemoveAgendaItemPayload {
   __typename: 'RemoveAgendaItemPayload'
   error: IStandardMutationError | null
@@ -6462,6 +6478,7 @@ export type TeamSubscriptionPayload =
   | IAddReflectTemplatePayload
   | IAddReflectTemplatePromptPayload
   | IMoveReflectTemplatePromptPayload
+  | IReflectTemplatePromptUpdateDescriptionPayload
   | IRemoveReflectTemplatePayload
   | IRemoveReflectTemplatePromptPayload
   | IRenameReflectTemplatePayload

@@ -82,7 +82,10 @@ const TemplateHeader = styled('div')({
 })
 
 const PromptEditor = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex',
   flex: 1,
+  flexDirection: 'column',
   width: '100%'
 })
 
