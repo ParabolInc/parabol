@@ -13,7 +13,8 @@ const getHubspotTraits = (userIds) => {
     salesOpOrgCount: r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})('orgId')
+      .filter({removedAt: null})
+      .coerceTo('array')('orgId')
       .default([])
       .do((orgIds) => {
         return r
@@ -41,12 +42,14 @@ const getHubspotTraits = (userIds) => {
     highestTier: r
       .table('OrganizationUser')
       .getAll(userId, {index: 'userId'})
-      .filter({removedAt: null})('orgId')
+      .filter({removedAt: null})
+      .coerceTo('array')('orgId')
       .default([])
       .do((orgIds) => {
         return r
           .table('Organization')
-          .getAll(r.args(orgIds), {index: 'id'})('tier')
+          .getAll(r.args(orgIds), {index: 'id'})
+          .coerceTo('array')('tier')
           .distinct()
       })
       .do((tiers) => {
@@ -91,7 +94,7 @@ export const sendSegmentIdentify = async (maybeUserIds) => {
   const [traitsArr, hubspotTraitsArr] = await Promise.all([
     getTraits(userIds),
     getHubspotTraits(userIds)
-  ])
+  ]).catch(console.error)
   traitsArr.forEach(async (traitsWithId, idx) => {
     const {id: userId, ...traits} = traitsWithId
     const tiersCountTraits = await countTiersForUserId(userId)
