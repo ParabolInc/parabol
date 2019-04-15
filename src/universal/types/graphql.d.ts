@@ -230,7 +230,7 @@ export interface IUser {
   /**
    * The integrations that the user would probably like to use
    */
-  suggestedIntegrations: Array<TaskIntegration>
+  suggestedIntegrations: Array<SuggestedIntegration>
   tasks: ITaskConnection
 
   /**
@@ -1710,16 +1710,16 @@ export type TaskIntegration = IGitHubTask
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration'
-  service: IntegrationServiceEnum | null
+  id: string
+  service: TaskServiceEnum
 }
 
 /**
- * The list of services for integrations
+ * The list of services for task integrations
  */
-export const enum IntegrationServiceEnum {
+export const enum TaskServiceEnum {
   GitHubIntegration = 'GitHubIntegration',
-  SlackIntegration = 'SlackIntegration',
-  atlassian = 'atlassian'
+  jira = 'jira'
 }
 
 /**
@@ -2160,6 +2160,15 @@ export interface IGitHubIntegration {
    * *The userIds connected to the repo so they can CRUD things under their own name
    */
   userIds: Array<string | null> | null
+}
+
+/**
+ * The list of services for integrations
+ */
+export const enum IntegrationServiceEnum {
+  GitHubIntegration = 'GitHubIntegration',
+  SlackIntegration = 'SlackIntegration',
+  atlassian = 'atlassian'
 }
 
 /**
@@ -2792,6 +2801,14 @@ export interface ISlackIntegration {
    * *The team that cares about these annoucements
    */
   teamId: string
+}
+
+export type SuggestedIntegration = ISuggestedIntegrationJira
+
+export interface ISuggestedIntegration {
+  __typename: 'SuggestedIntegration'
+  id: string
+  service: TaskServiceEnum
 }
 
 export interface IVerifiedInvitationPayload {
@@ -7416,10 +7433,34 @@ export const enum AuthTokenRole {
  */
 export interface IGitHubTask {
   __typename: 'GitHubTask'
-  integrationId: string
-  service: IntegrationServiceEnum
+  id: string
+  service: TaskServiceEnum
   nameWithOwner: string | null
   issueNumber: number | null
+}
+
+/**
+ * The details associated with a task integrated with Jira
+ */
+export interface ISuggestedIntegrationJira {
+  __typename: 'SuggestedIntegrationJira'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * The project key used by jira as a more human readable proxy for a projectId
+   */
+  projectKey: string
+
+  /**
+   * The name of the project as defined by jira
+   */
+  projectName: string
+
+  /**
+   * The cloud ID that the project lives on
+   */
+  cloudId: string
 }
 
 // tslint:enable
