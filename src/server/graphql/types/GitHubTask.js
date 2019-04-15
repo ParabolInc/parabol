@@ -1,18 +1,12 @@
-import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import IntegrationService from 'server/graphql/types/IntegrationService'
-import TaskIntegration from 'server/graphql/types/TaskIntegration'
+import {GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
+import TaskIntegration, {taskIntegrationFields} from 'server/graphql/types/TaskIntegration'
 
 const GitHubTask = new GraphQLObjectType({
   name: 'GitHubTask',
   description: 'The details associated with a task integrated with GitHub',
   interfaces: () => [TaskIntegration],
   fields: () => ({
-    integrationId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    service: {
-      type: new GraphQLNonNull(IntegrationService)
-    },
+    ...taskIntegrationFields(),
     nameWithOwner: {
       type: GraphQLString
     },

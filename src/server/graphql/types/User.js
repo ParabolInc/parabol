@@ -43,6 +43,7 @@ import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
 import standardError from 'server/utils/standardError'
 import TeamInvitation from 'server/graphql/types/TeamInvitation'
 import newMeeting from 'server/graphql/queries/newMeeting'
+import suggestedIntegrations from 'server/graphql/queries/suggestedIntegrations'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -332,6 +333,7 @@ const User = new GraphQLObjectType({
         return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
       }
     },
+    suggestedIntegrations,
     tasks,
     team: require('../queries/team').default,
     teamInvitation: {

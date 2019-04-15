@@ -226,6 +226,11 @@ export interface IUser {
    * Get the list of all organizations a user belongs to
    */
   organizations: Array<IOrganization>
+
+  /**
+   * The integrations that the user would probably like to use
+   */
+  suggestedIntegrations: Array<TaskIntegration>
   tasks: ITaskConnection
 
   /**
@@ -302,7 +307,7 @@ export interface IIntegrationProviderOnUserArguments {
   /**
    * The name of the service
    */
-  service: IntegrationService
+  service: IntegrationServiceEnum
 }
 
 export interface IInvoicesOnUserArguments {
@@ -382,6 +387,13 @@ export interface IOrganizationUserOnUserArguments {
    * the orgId
    */
   orgId: string
+}
+
+export interface ISuggestedIntegrationsOnUserArguments {
+  /**
+   * a teamId to use as a filter to provide more accurate suggestions
+   */
+  teamId?: string | null
 }
 
 export interface ITasksOnUserArguments {
@@ -1472,7 +1484,6 @@ export interface ITeamMember {
    * The place in line for checkIn, regenerated every meeting
    */
   checkInOrder: number | null
-  integrations: Array<TaskIntegration>
 
   /**
    * true if the user is connected
@@ -1548,21 +1559,6 @@ export interface IAssignee {
   teamId: string
 }
 
-export type TaskIntegration = IGitHubTask
-
-export interface ITaskIntegration {
-  __typename: 'TaskIntegration'
-  service: IntegrationService | null
-}
-
-/**
- * The list of services for integrations
- */
-export const enum IntegrationService {
-  GitHubIntegration = 'GitHubIntegration',
-  SlackIntegration = 'SlackIntegration'
-}
-
 /**
  * A connection to a list of items.
  */
@@ -1633,7 +1629,7 @@ export interface ITask {
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails | null> | null
-  integration: IGitHubTask | null
+  integration: TaskIntegration | null
 
   /**
    * true if this is assigned to a soft team member
@@ -1710,15 +1706,20 @@ export interface ITaskEditorDetails {
   preferredName: string
 }
 
+export type TaskIntegration = IGitHubTask
+
+export interface ITaskIntegration {
+  __typename: 'TaskIntegration'
+  service: IntegrationServiceEnum | null
+}
+
 /**
- * The details associated with a task integrated with GitHub
+ * The list of services for integrations
  */
-export interface IGitHubTask {
-  __typename: 'GitHubTask'
-  integrationId: string
-  service: IntegrationService
-  nameWithOwner: string | null
-  issueNumber: number | null
+export const enum IntegrationServiceEnum {
+  GitHubIntegration = 'GitHubIntegration',
+  SlackIntegration = 'SlackIntegration',
+  atlassian = 'atlassian'
 }
 
 /**
@@ -2200,7 +2201,7 @@ export interface IProvider {
   /**
    * The name of the service
    */
-  service: IntegrationService | null
+  service: IntegrationServiceEnum | null
 
   /**
    * *The team that the token is linked to
@@ -2752,7 +2753,7 @@ export interface IProviderRow {
   /**
    * The name of the service
    */
-  service: IntegrationService | null
+  service: IntegrationServiceEnum | null
   teamId: string | null
 }
 
@@ -3337,7 +3338,7 @@ export interface IAddOrgOnMutationArguments {
 
 export interface IAddProviderOnMutationArguments {
   code: string
-  service: IntegrationService
+  service: IntegrationServiceEnum
   teamId: string
 }
 
@@ -6439,12 +6440,12 @@ export interface IIntegrationSubscriptionOnSubscriptionArguments {
 }
 
 export interface IIntegrationJoinedOnSubscriptionArguments {
-  service: IntegrationService
+  service: IntegrationServiceEnum
   teamId: string
 }
 
 export interface IIntegrationLeftOnSubscriptionArguments {
-  service: IntegrationService
+  service: IntegrationServiceEnum
   teamId: string
 }
 
@@ -7408,6 +7409,17 @@ export interface IAuthToken {
  */
 export const enum AuthTokenRole {
   su = 'su'
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface IGitHubTask {
+  __typename: 'GitHubTask'
+  integrationId: string
+  service: IntegrationServiceEnum
+  nameWithOwner: string | null
+  issueNumber: number | null
 }
 
 // tslint:enable

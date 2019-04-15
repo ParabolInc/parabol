@@ -1,13 +1,14 @@
 import {GraphQLEnumType} from 'graphql'
 import {GITHUB, SLACK} from 'universal/utils/constants'
 
-const IntegrationService = new GraphQLEnumType({
-  name: 'IntegrationService',
+const IntegrationServiceEnum = new GraphQLEnumType({
+  name: 'IntegrationServiceEnum',
   description: 'The list of services for integrations',
   values: {
     [GITHUB]: {},
-    [SLACK]: {}
+    [SLACK]: {},
+    atlassian: {}
   }
 })
 
-export default IntegrationService
+export default IntegrationServiceEnum

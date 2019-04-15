@@ -2,6 +2,7 @@ import {TaskFooterIntegrateMenu_task} from '__generated__/TaskFooterIntegrateMen
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AddToGitHubMenuItem from 'universal/components/AddToGitHubMenuItem'
+import AddToJiraMenuItem from 'universal/components/AddToJiraMenuItem'
 import Menu from 'universal/components/Menu'
 
 interface Props {
@@ -15,6 +16,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   return (
     <Menu ariaLabel={'Export the task'} closePortal={closePortal}>
       <AddToGitHubMenuItem teamId={teamId} />
+      <AddToJiraMenuItem teamId={teamId} />
     </Menu>
   )
 }

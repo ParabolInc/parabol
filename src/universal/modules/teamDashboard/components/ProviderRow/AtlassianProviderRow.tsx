@@ -12,6 +12,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ui from 'universal/styles/ui'
+import {IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
@@ -67,7 +68,7 @@ const AtlassianProviderRow = (props: Props) => {
     project.teamMembers.forEach((teamMember) => users.add(teamMember.userId))
   )
   const openOAuth = handleOpenOAuth({
-    name: 'atlassian',
+    name: IntegrationServiceEnum.atlassian,
     submitting,
     submitMutation,
     atmosphere,

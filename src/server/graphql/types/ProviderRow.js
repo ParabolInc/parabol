@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
-import IntegrationService from 'server/graphql/types/IntegrationService'
+import IntegrationServiceEnum from 'server/graphql/types/IntegrationServiceEnum'
 
 const ProviderRow = new GraphQLObjectType({
   name: 'ProviderRow',
@@ -29,7 +29,7 @@ const ProviderRow = new GraphQLObjectType({
       description: 'The username according to the provider'
     },
     service: {
-      type: IntegrationService,
+      type: IntegrationServiceEnum,
       description: 'The name of the service'
     },
     teamId: {
