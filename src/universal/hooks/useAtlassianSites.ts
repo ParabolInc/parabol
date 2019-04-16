@@ -8,8 +8,9 @@ const useAtlassianSites = (accessToken?: string) => {
   let isMounted = true
   const manager = new AtlassianClientManager(accessToken || '')
   const [sites, setSites] = useState<AccessibleResource[]>([])
-  const [status, setStatus] = useState(accessToken ? 'loading' : null)
+  const [status, setStatus] = useState<null | 'loading' | 'loaded' | 'error'>(null)
   useEffect(() => {
+    console.log('using effect')
     const fetchSites = async () => {
       let res: AtlassianError | AccessibleResource[]
       try {
@@ -31,6 +32,7 @@ const useAtlassianSites = (accessToken?: string) => {
     }
 
     if (accessToken && isMounted) {
+      setStatus('loading')
       fetchSites().catch()
     }
     return () => {

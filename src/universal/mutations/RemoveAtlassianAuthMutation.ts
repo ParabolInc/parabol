@@ -8,7 +8,7 @@ import {LocalHandlers} from 'universal/types/relayMutations'
 graphql`
   fragment RemoveAtlassianAuthMutation_team on RemoveAtlassianAuthPayload {
     user {
-      ...ProviderListAuth @relay(mask: false)
+      ...AtlassianProviderRowViewer @relay(mask: false)
     }
   }
 `

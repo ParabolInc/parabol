@@ -29,7 +29,6 @@ export default {
     }
 
     // RESOLUTION
-
     const existingAuth = await r
       .table('AtlassianAuth')
       .getAll(viewerId, {index: 'userId'})
@@ -45,7 +44,7 @@ export default {
     await r
       .table('AtlassianAuth')
       .get(authId)
-      .update({accessToken: null, refreshToken: null, updatedAt: now})
+      .update({accessToken: null, refreshToken: null, isActive: false, updatedAt: now})
 
     const data = {authId, teamId}
     publish(TEAM, teamId, RemoveAtlassianAuthPayload, data, subOptions)

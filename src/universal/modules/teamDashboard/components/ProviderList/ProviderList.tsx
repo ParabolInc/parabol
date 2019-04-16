@@ -19,32 +19,16 @@ const ProviderList = (props: Props) => {
     providerMap,
     featureFlags: {jira}
   } = viewer
-  const {atlassianAuth} = viewer
   return (
     <SettingsWrapper>
       <Panel hideFirstRowBorder>
-        {jira && (
-          <AtlassianProviderRow
-            teamId={teamId}
-            isAuthed={atlassianAuth ? atlassianAuth.isActive : false}
-            retry={retry}
-            viewer={viewer}
-          />
-        )}
+        {jira && <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />}
         <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} teamId={teamId} />
         <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} teamId={teamId} />
       </Panel>
     </SettingsWrapper>
   )
 }
-
-graphql`
-  fragment ProviderListAuth on User {
-    atlassianAuth(teamId: $teamId) {
-      isActive
-    }
-  }
-`
 
 export default createFragmentContainer(
   ProviderList,
@@ -62,7 +46,6 @@ export default createFragmentContainer(
         }
       }
       ...AtlassianProviderRow_viewer
-      ...ProviderListAuth @relay(mask: false)
     }
   `
 )
