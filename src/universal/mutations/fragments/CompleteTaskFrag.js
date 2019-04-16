@@ -7,9 +7,11 @@ graphql`
     createdBy
     dueDate
     integration {
-      service
-      nameWithOwner
-      issueNumber
+      ... on GitHubTask {
+        service
+        nameWithOwner
+        issueNumber
+      }
     }
     meetingId
     reflectionGroupId

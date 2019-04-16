@@ -1,7 +1,7 @@
 import {joinIntegrationUpdater} from 'universal/mutations/JoinIntegrationMutation'
 
 const subscription = graphql`
-  subscription IntegrationJoinedSubscription($service: IntegrationService!, $teamId: ID!) {
+  subscription IntegrationJoinedSubscription($service: IntegrationServiceEnum!, $teamId: ID!) {
     integrationJoined(service: $service, teamId: $teamId) {
       globalId
       teamMember {

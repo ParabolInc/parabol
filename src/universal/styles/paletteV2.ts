@@ -41,4 +41,8 @@ export namespace PALETTE {
     ARCHIVED = '#A2A1AC',
     PRIVATE = '#FFCC63'
   }
+
+  export const enum SERVICES {
+    ATLASSIAN_BLUE = '#0052cc'
+  }
 }

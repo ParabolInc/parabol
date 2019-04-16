@@ -280,7 +280,7 @@ export default class RethinkDataLoader {
           const {accessToken: existingAccessToken, refreshToken} = teamAuth
           const decodedToken = decode(existingAccessToken) as IAuthToken
           const now = new Date()
-          if (!decodedToken || decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
+          if (decodedToken && decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
             return existingAccessToken
           }
           // fetch a new one

@@ -14,7 +14,7 @@ import {cacheConfig, GITHUB} from 'universal/utils/constants'
 import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import renderQuery from 'universal/utils/relay/renderQuery'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {LoaderSize} from '../../../../types/constEnums'
+import {LoaderSize} from 'universal/types/constEnums'
 
 const teamIntegrationsQuery = graphql`
   query TeamIntegrationsRootQuery($teamId: ID!) {

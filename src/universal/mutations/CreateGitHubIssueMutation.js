@@ -6,9 +6,11 @@ graphql`
   fragment CreateGitHubIssueMutation_task on CreateGitHubIssuePayload {
     task {
       integration {
-        issueNumber
-        service
-        nameWithOwner
+        ... on GitHubTask {
+          issueNumber
+          service
+          nameWithOwner
+        }
       }
       updatedAt
     }

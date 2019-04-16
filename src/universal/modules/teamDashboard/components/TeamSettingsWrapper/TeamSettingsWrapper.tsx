@@ -17,10 +17,6 @@ const GithubIntegrations = lazy(() =>
   import(/* webpackChunkName: 'GitHubIntegrationsRoot' */ 'universal/modules/teamDashboard/containers/GitHubIntegrationsRoot/GitHubIntegrationsRoot')
 )
 
-const AtlassianIntegrations = lazy(() =>
-  import(/* webpackChunkName: 'AtlassianIntegrationsRoot' */ 'universal/components/AtlassianIntegrationsRoot')
-)
-
 interface Props extends RouteComponentProps<{teamId: string}> {
   teamMemberId: string
 }
@@ -55,7 +51,6 @@ const TeamSettingsWrapper = (props: Props) => {
           path={`${match.url}/integrations/github`}
           render={(p) => <GithubIntegrations {...p} teamMemberId={teamMemberId} />}
         />
-        <Route path={`${match.path}/integrations/atlassian`} component={AtlassianIntegrations} />
         <Route
           exact
           path={`${match.url}/integrations`}

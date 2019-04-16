@@ -43,6 +43,8 @@ import NewFeatureBroadcast from 'server/graphql/types/NewFeatureBroadcast'
 import standardError from 'server/utils/standardError'
 import TeamInvitation from 'server/graphql/types/TeamInvitation'
 import newMeeting from 'server/graphql/queries/newMeeting'
+import suggestedIntegrations from 'server/graphql/queries/suggestedIntegrations'
+import AtlassianAuth from 'server/graphql/types/AtlassianAuth'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -51,6 +53,21 @@ const User = new GraphQLObjectType({
     id: {
       type: GraphQLID,
       description: 'The userId provided by auth0'
+    },
+    atlassianAuth: {
+      type: AtlassianAuth,
+      description: 'The auth for the viewer',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The teamId for the atlassian auth token'
+        }
+      },
+      resolve: async (_source, {teamId}, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        const auths = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
+        return auths.find((auth) => auth.teamId === teamId)
+      }
     },
     blockedFor: {
       type: new GraphQLList(BlockedUserType),
@@ -332,6 +349,7 @@ const User = new GraphQLObjectType({
         return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
       }
     },
+    suggestedIntegrations,
     tasks,
     team: require('../queries/team').default,
     teamInvitation: {

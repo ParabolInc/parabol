@@ -1,4 +1,10 @@
 {
-   "schemaPath": "build/schema_legacy.gql",
-   "includes": ["*.gql"]
+   "schemaPath": "./build/schema.graphql",
+   "name": "Parabol GraphQL Schema",
+   "includes": ["*"],
+   "extensions": {
+      "endpoints": {
+
+      }
+   }
 }

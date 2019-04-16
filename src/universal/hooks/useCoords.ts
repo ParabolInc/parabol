@@ -117,11 +117,12 @@ const useCoords = (menuPosition: MenuPosition) => {
     if (!currentTargetRef || !originRef.current) return
 
     // Bounding adjustments mimic native (flip from below to above for Y, but adjust pixel-by-pixel for X)
-    const targetBBox = currentTargetRef.getBoundingClientRect()
-    const originBBox = originRef.current.getBoundingClientRect()
-    const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
-    // listen to window resize only if it's anchored on the right or bottom
-    setCoords(nextCoords)
+    const targetBBox = getBBox(currentTargetRef)
+    const originBBox = getBBox(originRef.current)
+    if (targetBBox && originBBox) {
+      const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
+      setCoords(nextCoords)
+    }
     window.addEventListener('resize', resizeWindow, {passive: true})
     return () => {
       window.removeEventListener('resize', resizeWindow)
@@ -131,8 +132,10 @@ const useCoords = (menuPosition: MenuPosition) => {
   useResizeObserver(currentTargetRef, () => {
     const targetBBox = getBBox(currentTargetRef)!
     const originBBox = getBBox(originRef.current)!
-    const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
-    setCoords(nextCoords)
+    if (targetBBox && originBBox) {
+      const nextCoords = getNextCoords(targetBBox, originBBox, menuPosition)
+      setCoords(nextCoords)
+    }
   })
 
   const resizeWindow = () => {

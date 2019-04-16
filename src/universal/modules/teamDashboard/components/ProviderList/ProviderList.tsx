@@ -10,41 +10,25 @@ import {GITHUB, SLACK} from 'universal/utils/constants'
 interface Props {
   viewer: ProviderList_viewer
   teamId: string
+  retry: () => void
 }
 
 const ProviderList = (props: Props) => {
-  const {viewer, teamId} = props
+  const {viewer, retry, teamId} = props
   const {
     providerMap,
-    team,
     featureFlags: {jira}
   } = viewer
-  if (!team) return null
-  const {atlassianAuth, atlassianProjects} = team
   return (
     <SettingsWrapper>
       <Panel hideFirstRowBorder>
-        {jira && (
-          <AtlassianProviderRow
-            teamId={teamId}
-            isAuthed={atlassianAuth ? atlassianAuth.isActive : false}
-            projects={atlassianProjects}
-          />
-        )}
+        {jira && <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />}
         <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} teamId={teamId} />
         <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} teamId={teamId} />
       </Panel>
     </SettingsWrapper>
   )
 }
-
-graphql`
-  fragment ProviderList_team on Team {
-    atlassianAuth {
-      isActive
-    }
-  }
-`
 
 export default createFragmentContainer(
   ProviderList,
@@ -61,12 +45,7 @@ export default createFragmentContainer(
           ...ProviderRow_providerDetails
         }
       }
-      team(teamId: $teamId) {
-        ...ProviderList_team @relay(mask: false)
-        atlassianProjects {
-          ...AtlassianProviderRow_projects
-        }
-      }
+      ...AtlassianProviderRow_viewer
     }
   `
 )

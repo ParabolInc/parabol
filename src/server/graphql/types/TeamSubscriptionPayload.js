@@ -43,12 +43,10 @@ import RenameReflectTemplatePromptPayload from 'server/graphql/types/RenameRefle
 import DowngradeToPersonalPayload from 'server/graphql/types/DowngradeToPersonalPayload'
 import AcceptTeamInvitationPayload from 'server/graphql/types/AcceptTeamInvitationPayload'
 import PromoteToTeamLeadPayload from 'server/graphql/types/PromoteToTeamLeadPayload'
-import AddAtlassianProjectPayload from 'server/graphql/types/AddAtlassianProjectPayload'
 
 const types = [
   AcceptTeamInvitationPayload,
   AddTeamPayload,
-  AddAtlassianProjectPayload,
   ArchiveTeamPayload,
   AutoGroupReflectionsPayload,
   CreateReflectionPayload,

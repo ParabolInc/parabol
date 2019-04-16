@@ -4,7 +4,7 @@ import path from 'path'
 import schema from 'server/graphql/rootSchema'
 
 const buildDir = path.join(process.cwd(), 'build')
-const schemaPath = path.join(buildDir, 'schema.graphql')
+const schemaPath = './schema.graphql'
 const jsonPath = path.join(buildDir, 'schema.json')
 ;(async () => {
   const result = await graphql(schema, introspectionQuery)
@@ -12,10 +12,10 @@ const jsonPath = path.join(buildDir, 'schema.json')
     fs.mkdirSync(buildDir)
   }
   fs.writeFileSync(schemaPath, printSchema(schema))
-  fs.writeFileSync(
-    path.join(buildDir, 'schema_legacy.graphql'),
-    printSchema(schema, {commentDescriptions: true})
-  )
+  // fs.writeFileSync(
+  //   path.join(buildDir, 'schema_legacy.graphql'),
+  //   printSchema(schema, {commentDescriptions: true})
+  // )
   // use json for IDE plugins
   fs.writeFileSync(jsonPath, JSON.stringify(result, null, 2))
   console.log('Schema updated!')

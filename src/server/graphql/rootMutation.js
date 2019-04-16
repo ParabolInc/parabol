@@ -91,14 +91,12 @@ import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAct
 import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 import addAtlassianAuth from 'server/graphql/mutations/addAtlassianAuth'
 import removeAtlassianAuth from 'server/graphql/mutations/removeAtlassianAuth'
-import addAtlassianProject from 'server/graphql/mutations/addAtlassianProject'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     acceptTeamInvitation,
     addAtlassianAuth,
-    addAtlassianProject,
     addAgendaItem,
     addFeatureFlag,
     addGitHubRepo,

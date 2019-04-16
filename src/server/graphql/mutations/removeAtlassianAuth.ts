@@ -29,64 +29,24 @@ export default {
     }
 
     // RESOLUTION
-
-    const existingToken = await r
+    const existingAuth = await r
       .table('AtlassianAuth')
       .getAll(viewerId, {index: 'userId'})
       .filter({teamId})
       .nth(0)
       .default(null)
 
-    if (!existingToken) {
+    if (!existingAuth) {
       return standardError(new Error('Auth not found'), {userId: viewerId})
     }
 
-    const authId = existingToken.id
+    const authId = existingAuth.id
     await r
       .table('AtlassianAuth')
       .get(authId)
-      .update({accessToken: null, refreshToken: null, updatedAt: now})
+      .update({accessToken: null, refreshToken: null, isActive: false, updatedAt: now})
 
-    // TODO remove the user from every integration under the service
-    const projectIds = await r
-      .table('AtlassianProject')
-      .getAll(viewerId, {index: 'userIds'})
-      .filter({teamId})
-      .update(
-        (project) => ({
-          userIds: project('userIds').difference([viewerId])
-        }),
-        {returnChanges: true}
-      )('changes')('new_val')('id')
-      .default([])
-
-    if (projectIds.length) {
-      await r
-        .table('AtlassianProject')
-        .getAll(projectIds, {index: 'id'})
-        .update((project) => {
-          return r.branch(
-            // if they were the only person using the integration, archive it
-            project('userIds')
-              .count()
-              .eq(0),
-            {
-              isActive: false,
-              updatedAt: now
-            },
-            r.branch(
-              // if they were admin && there are linked people, promote the first linked person
-              project('adminUserId').eq(viewerId),
-              {
-                adminUserId: project('userIds').nth(0)
-              },
-              null
-            )
-          )
-        })
-    }
-
-    const data = {authId, projectIds, teamId}
+    const data = {authId, teamId}
     publish(TEAM, teamId, RemoveAtlassianAuthPayload, data, subOptions)
     return data
   }

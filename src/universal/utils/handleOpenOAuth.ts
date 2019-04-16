@@ -1,4 +1,5 @@
 import AddAtlassianAuthMutation from 'universal/mutations/AddAtlassianAuthMutation'
+import {IntegrationServiceEnum} from 'universal/types/graphql'
 import {providerLookup} from '../modules/teamDashboard/components/ProviderRow/ProviderRow'
 import AddProviderMutation from '../mutations/AddProviderMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
@@ -25,7 +26,7 @@ const handleOpenOAuth = ({
     const {code, state} = event.data
     if (state !== providerState || typeof code !== 'string') return
     submitMutation()
-    if (name === 'atlassian') {
+    if (name === IntegrationServiceEnum.atlassian) {
       AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
     } else {
       AddProviderMutation(

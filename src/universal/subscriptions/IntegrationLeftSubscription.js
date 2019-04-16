@@ -1,7 +1,7 @@
 import {leaveIntegrationUpdater} from 'universal/mutations/LeaveIntegrationMutation'
 
 const subscription = graphql`
-  subscription IntegrationLeftSubscription($service: IntegrationService!, $teamId: ID!) {
+  subscription IntegrationLeftSubscription($service: IntegrationServiceEnum!, $teamId: ID!) {
     integrationLeft(service: $service, teamId: $teamId) {
       globalId
       userId

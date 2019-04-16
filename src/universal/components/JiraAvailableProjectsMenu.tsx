@@ -8,7 +8,6 @@ import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useJiraProjects from 'universal/hooks/useJiraProjects'
-import AddAtlassianProjectMutation from 'universal/mutations/AddAtlassianProjectMutation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {AccessibleResource} from 'universal/utils/AtlassianClientManager'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -67,11 +66,6 @@ const JiraAvailableProjectsMenu = (props: Props) => {
             label={projectName}
             onClick={() => {
               submitMutation()
-              AddAtlassianProjectMutation(
-                atmosphere,
-                {teamId, cloudId, atlassianProjectId},
-                {onError, onCompleted}
-              )
             }}
           />
         )
@@ -96,9 +90,6 @@ export default createFragmentContainer(
   graphql`
     fragment JiraAvailableProjectsMenu_team on Team {
       id
-      atlassianProjects {
-        atlassianProjectId
-      }
     }
   `
 )

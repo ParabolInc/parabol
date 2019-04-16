@@ -2,6 +2,8 @@ import {TaskFooterIntegrateMenu_task} from '__generated__/TaskFooterIntegrateMen
 import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AddToGitHubMenuItem from 'universal/components/AddToGitHubMenuItem'
+import AddToJiraMenuItem from 'universal/components/AddToJiraMenuItem'
+import JiraAvailableProjectsMenu from 'universal/components/JiraAvailableProjectsMenu'
 import Menu from 'universal/components/Menu'
 import MenuItemHR from 'universal/components/MenuItemHR'
 
@@ -14,8 +16,12 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const {closePortal, task, viewer} = props
   const {teamId} = task
   const {suggestedIntegrations} = viewer
-  const hasJira = suggestedIntegrations.some((integration) => integration.service === IService.atlassian)
-  const hasGitHub = suggestedIntegrations.some((integration) => integration.service === IService.Github)
+  const hasJira = suggestedIntegrations.some(
+    (integration) => integration.service === IService.atlassian
+  )
+  const hasGitHub = suggestedIntegrations.some(
+    (integration) => integration.service === IService.Github
+  )
   const hasAllProviders = hasJira && hasGitHub
   // suggested integrations
   // add a new one
@@ -23,9 +29,21 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   // search results
   return (
     <Menu ariaLabel={'Export the task'} closePortal={closePortal}>
-      <TaskFooterIntegrateMenuSuggestions/>
+      <AddToGitHubMenuItem teamId={teamId} />
+      <AddToJiraMenuItem teamId={teamId} />
+      <JiraAvailableProjectsMenu
+        accessToken={accessToken}
+        sites={sites}
+        onError={onError}
+        onCompleted={onCompleted}
+        submitMutation={submitMutation}
+        team={team}
+        closePortal={closePortal}
+        originRef={originRef}
+      />
+      <TaskFooterIntegrateMenuSuggestions />
       {!hasGitHub && <AddToGitHubMenuItem teamId={teamId} />}
-      {!hasAllProviders && <MenuItemHR/>}
+      {!hasAllProviders && <MenuItemHR />}
     </Menu>
   )
 }

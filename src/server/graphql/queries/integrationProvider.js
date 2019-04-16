@@ -3,7 +3,7 @@ import getRethink from 'server/database/rethinkDriver'
 import Provider from 'server/graphql/types/Provider'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import {SLACK} from 'universal/utils/constants'
-import IntegrationService from 'server/graphql/types/IntegrationService'
+import IntegrationServiceEnum from 'server/graphql/types/IntegrationServiceEnum'
 import standardError from 'server/utils/standardError'
 
 export default {
@@ -15,7 +15,7 @@ export default {
       description: 'The unique team member Id'
     },
     service: {
-      type: new GraphQLNonNull(IntegrationService),
+      type: new GraphQLNonNull(IntegrationServiceEnum),
       description: 'The name of the service'
     }
   },

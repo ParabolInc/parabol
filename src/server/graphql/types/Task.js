@@ -8,13 +8,13 @@ import {
   GraphQLString
 } from 'graphql'
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
-import GitHubTask from 'server/graphql/types/GitHubTask'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 import TaskEditorDetails from 'server/graphql/types/TaskEditorDetails'
 import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 import Team from 'server/graphql/types/Team'
 import Assignee from 'server/graphql/types/Assignee'
+import TaskIntegration from 'server/graphql/types/TaskIntegration'
 
 const Task = new GraphQLObjectType({
   name: 'Task',
@@ -53,8 +53,7 @@ const Task = new GraphQLObjectType({
       }
     },
     integration: {
-      // TODO replace this with TaskIntegration
-      type: GitHubTask
+      type: TaskIntegration
     },
     isSoftTask: {
       type: GraphQLBoolean,

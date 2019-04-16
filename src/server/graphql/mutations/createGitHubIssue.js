@@ -212,7 +212,7 @@ export default {
       .get(taskId)
       .update({
         integration: {
-          integrationId,
+          id: integrationId,
           service: GITHUB,
           issueNumber,
           nameWithOwner
