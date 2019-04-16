@@ -55,7 +55,7 @@ export default {
     const updateDoc = {
       isActive: true,
       accessToken,
-      atlassianUserId: self.accountId,
+      accountId: self.accountId,
       cloudIds,
       refreshToken,
       teamId,

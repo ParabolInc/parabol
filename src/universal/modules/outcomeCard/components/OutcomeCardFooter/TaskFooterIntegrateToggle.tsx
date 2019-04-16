@@ -5,8 +5,8 @@ import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import lazyPreload from 'universal/utils/lazyPreload'
 
-const TaskFooterIntegrateMenu = lazyPreload(() =>
-  import(/* webpackChunkName: 'TaskFooterIntegrateMenu' */ 'universal/components/TaskFooterIntegrateMenu')
+const TaskFooterIntegrateMenuRoot = lazyPreload(() =>
+  import(/* webpackChunkName: 'TaskFooterIntegrateMenuRoot' */ 'universal/components/TaskFooterIntegrateMenuRoot')
 )
 
 interface Props {
@@ -25,11 +25,11 @@ const TaskFooterIntegrateToggle = (props: Props) => {
       <CardButton
         onClick={togglePortal}
         innerRef={originRef}
-        onMouseEnter={TaskFooterIntegrateMenu.preload}
+        onMouseEnter={TaskFooterIntegrateMenuRoot.preload}
       >
         <IconLabel icon='publish' />
       </CardButton>
-      {menuPortal(<TaskFooterIntegrateMenu closePortal={closePortal} task={task} />)}
+      {menuPortal(<TaskFooterIntegrateMenuRoot closePortal={closePortal} task={task} />)}
     </>
   )
 }

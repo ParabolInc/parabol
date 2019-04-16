@@ -23,10 +23,10 @@ const AtlassianAuth = new GraphQLObjectType({
         return dataLoader.get('freshAtlassianAccessToken').load({teamId, userId: viewerId})
       }
     },
-    atlassianUserId: {
+    accountId: {
       type: new GraphQLNonNull(GraphQLID),
       description:
-        '*The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin'
+        '*The atlassian account ID'
     },
     cloudIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),

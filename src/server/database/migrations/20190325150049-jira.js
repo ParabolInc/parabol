@@ -8,7 +8,7 @@ exports.up = async (r) => {
     await Promise.all([
       r.table('AtlassianAuth').indexCreate('userId'),
       r.table('AtlassianAuth').indexCreate('teamId'),
-      r.table('AtlassianAuth').indexCreate('atlassianUserId'),
+      r.table('AtlassianAuth').indexCreate('accountId'),
       r.table('AtlassianProject').indexCreate('userIds', {multi: true}),
       r.table('AtlassianProject').indexCreate('teamId'),
       r.table('AtlassianProject').indexCreate('projectId')
