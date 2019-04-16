@@ -91,6 +91,7 @@ import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAct
 import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 import addAtlassianAuth from 'server/graphql/mutations/addAtlassianAuth'
 import removeAtlassianAuth from 'server/graphql/mutations/removeAtlassianAuth'
+import createJiraIssue from 'server/graphql/mutations/createJiraIssue'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -111,6 +112,7 @@ export default new GraphQLObjectType({
     connectSocket,
     createImposterToken,
     createGitHubIssue,
+    createJiraIssue,
     createOrgPicturePutUrl,
     createReflection,
     createReflectionGroup,

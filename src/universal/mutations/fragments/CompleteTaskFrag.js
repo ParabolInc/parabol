@@ -7,7 +7,7 @@ graphql`
     createdBy
     dueDate
     integration {
-      ... on GitHubTask {
+      ... on TaskIntegrationGitHub {
         service
         nameWithOwner
         issueNumber

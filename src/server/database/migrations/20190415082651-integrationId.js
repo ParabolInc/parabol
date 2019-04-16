@@ -1,38 +1,58 @@
 exports.up = async (r) => {
   try {
-    r.table('Task')
+    // there are 2 old records from 2017 that have no integrationId attached, they should be removed
+    await r
+      .table('Task')
+      .filter(r.row('integration').ne(null))
+      .filter(
+        r
+          .row('integration')('id')
+          .eq(null)
+      )
+      .delete()
+  } catch (e) {
+    console.log(e)
+  }
+
+  try {
+    await r
+      .table('Task')
       .filter((task) =>
-        task('integration')('integrationId')
+        task('integration')
           .default(null)
           .ne(null)
       )
       .update((task) => ({
-        integration: task('integration')
-          .merge({
-            id: task('integration')('integrationId')
-          })
-          .without('integrationId')
+        integration: r.literal(
+          task('integration')
+            .merge({
+              id: task('integration')('integrationId'),
+              service: 'github'
+            })
+            .without('integrationId')
+        )
       }))
   } catch (e) {
-    /**/
+    console.log(e)
   }
 
   try {
-    r.table('Task').indexDrop('integrationId')
+    await r.table('Task').indexDrop('integrationId')
   } catch (e) {
-    /**/
+    console.log(e)
   }
 
   try {
-    r.table('Task').indexCreate('integrationId', (project) => project('integration')('id'))
+    await r.table('Task').indexCreate('integrationId', (project) => project('integration')('id'))
   } catch (e) {
-    /**/
+    console.log(e)
   }
 }
 
 exports.down = async (r) => {
   try {
-    r.table('Task')
+    await r
+      .table('Task')
       .filter((task) =>
         task('integration')('id')
           .default(null)
@@ -41,7 +61,8 @@ exports.down = async (r) => {
       .update((task) => ({
         integration: task('integration')
           .merge({
-            integrationId: task('integration')('id')
+            integrationId: task('integration')('id'),
+            service: 'GitHubIntegration'
           })
           .without('id')
       }))
@@ -50,15 +71,15 @@ exports.down = async (r) => {
   }
 
   try {
-    r.table('Task').indexDrop('integrationId')
+    await r.table('Task').indexDrop('integrationId')
   } catch (e) {
     /**/
   }
 
   try {
-    r.table('Task').indexCreate('integrationId', (project) =>
-      project('integration')('integrationId')
-    )
+    await r
+      .table('Task')
+      .indexCreate('integrationId', (project) => project('integration')('integrationId'))
   } catch (e) {
     /**/
   }

@@ -1,26 +1,26 @@
-import {SuggestedIntegrationJiraMenuItem_suggestedIntegration} from '__generated__/SuggestedIntegrationJiraMenuItem_suggestedIntegration.graphql'
+import {SuggestedIntegrationGitHubMenuItem_suggestedIntegration} from '__generated__/SuggestedIntegrationGitHubMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import JiraSVG from 'universal/components/JiraSVG'
+import GitHubSVG from 'universal/components/GitHubSVG'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
-import CreateJiraIssueMutation from 'universal/mutations/CreateJiraIssueMutation'
+import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props {
   closePortal: () => void
-  suggestedIntegration: SuggestedIntegrationJiraMenuItem_suggestedIntegration
+  suggestedIntegration: SuggestedIntegrationGitHubMenuItem_suggestedIntegration
   taskId: string
   submitMutation: WithMutationProps['submitMutation']
   onError: WithMutationProps['onError']
   onCompleted: WithMutationProps['onCompleted']
 }
 
-const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
+const SuggestedIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) => {
   const {suggestedIntegration, taskId, submitMutation, onError, onCompleted} = props
-  const {cloudId, projectKey, projectName} = suggestedIntegration
+  const {nameWithOwner} = suggestedIntegration
   const atmosphere = useAtmosphere()
   return (
     <MenuItem
@@ -28,27 +28,25 @@ const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => 
       label={
         <MenuItemLabel>
           <MenuItemComponentAvatar>
-            <JiraSVG />
+            <GitHubSVG />
           </MenuItemComponentAvatar>
-          {projectName}
+          {nameWithOwner}
         </MenuItemLabel>
       }
       onClick={() => {
-        const variables = {cloudId, projectKey, taskId}
+        const variables = {nameWithOwner, taskId}
         submitMutation()
-        CreateJiraIssueMutation(atmosphere, variables, {onError, onCompleted})
+        CreateGitHubIssueMutation(atmosphere, variables, {onError, onCompleted})
       }}
     />
   )
 })
 
 export default createFragmentContainer(
-  SuggestedIntegrationJiraMenuItem,
+  SuggestedIntegrationGitHubMenuItem,
   graphql`
-    fragment SuggestedIntegrationJiraMenuItem_suggestedIntegration on SuggestedIntegrationJira {
-      cloudId
-      projectKey
-      projectName
+    fragment SuggestedIntegrationGitHubMenuItem_suggestedIntegration on SuggestedIntegrationGitHub {
+      nameWithOwner
     }
   `
 )

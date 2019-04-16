@@ -5,6 +5,7 @@ import IconLabel from 'universal/components/IconLabel'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
 import lazyPreload from 'universal/utils/lazyPreload'
+import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props {
   area: string
@@ -12,6 +13,7 @@ interface Props {
   isAgenda: boolean
   task: any
   toggleMenuState: () => void
+  mutationProps: MenuMutationProps
 }
 
 const TaskFooterTagMenu = lazyPreload(() =>
@@ -19,7 +21,7 @@ const TaskFooterTagMenu = lazyPreload(() =>
 )
 
 const TaskFooterTagMenuToggle = (props: Props) => {
-  const {area, editorState, isAgenda, task, toggleMenuState} = props
+  const {area, editorState, isAgenda, mutationProps, task, toggleMenuState} = props
   const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT, {
     onOpen: toggleMenuState,
     onClose: toggleMenuState
@@ -41,6 +43,7 @@ const TaskFooterTagMenuToggle = (props: Props) => {
           isAgenda={isAgenda}
           closePortal={closePortal}
           task={task}
+          mutationProps={mutationProps}
         />
       )}
     </>

@@ -1,3 +1,4 @@
+import DataLoaderWarehouse from 'dataloader-warehouse'
 import shortid from 'shortid'
 import {IAuthToken} from '../../universal/types/graphql'
 import RateLimiter from '../graphql/RateLimiter'
@@ -15,7 +16,7 @@ class ConnectionContext {
   isAlive = true
   rateLimiter: RateLimiter
   socket: UserWebSocket
-  sharedDataLoader: any
+  sharedDataLoader: DataLoaderWarehouse
   subs: any = {}
   constructor (socket, authToken, sharedDataLoader, rateLimiter) {
     this.authToken = authToken

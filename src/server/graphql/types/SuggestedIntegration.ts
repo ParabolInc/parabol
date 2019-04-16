@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
+import SuggestedIntegrationGitHub from 'server/graphql/types/SuggestedIntegrationGitHub'
 import SuggestedIntegrationJira from 'server/graphql/types/SuggestedIntegrationJira'
 import TaskServiceEnum from 'server/graphql/types/TaskServiceEnum'
 
 export const suggestedIntegrationFields = () => ({
   id: {
-    type: new GraphQLNonNull(GraphQLID),
-    resolve: ({service}) => service
+    type: new GraphQLNonNull(GraphQLID)
   },
   service: {
     type: new GraphQLNonNull(TaskServiceEnum)
@@ -13,7 +13,7 @@ export const suggestedIntegrationFields = () => ({
 })
 
 const resolveTypeLookup = {
-  // [GITHUB]: SuggestedProviderGitHub,
+  github: SuggestedIntegrationGitHub,
   jira: SuggestedIntegrationJira
 }
 

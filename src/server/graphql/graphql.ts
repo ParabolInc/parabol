@@ -1,11 +1,12 @@
+import {WarehouseWorker} from 'dataloader-warehouse'
 import {DocumentNode, GraphQLFieldResolver, GraphQLSchema} from 'graphql'
-import {parse} from 'graphql/language/parser'
 import {execute} from 'graphql/execution/execute'
+import {parse} from 'graphql/language/parser'
 import Maybe from 'graphql/tsutils/Maybe'
 import {validateSchema} from 'graphql/type/validate'
 import {validate} from 'graphql/validation/validate'
-import {IAuthToken} from '../../universal/types/graphql'
-import RateLimiter from './RateLimiter'
+import ConnectionContext from 'server/socketHelpers/ConnectionContext'
+import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 
 // Avoid needless parsing & validating for the 300 hottest operations
 interface DocumentCache {
@@ -15,17 +16,17 @@ interface DocumentCache {
 let documentCache: DocumentCache = {}
 const MAX_CACHE_SIZE = 300
 
-interface Context {
-  authToken: IAuthToken
-  socketId?: string
-  dataLoader: any
-  rateLimiter: RateLimiter
+export type DataLoaderWorker = WarehouseWorker<RethinkDataLoader>
+export type GQLContext = Pick<ConnectionContext, 'authToken' | 'rateLimiter'> & {
+  socketId: string
+  dataLoader: DataLoaderWorker
 }
+
 const graphql = async (
   schema: GraphQLSchema,
   source: string,
   rootValue: any,
-  contextValue: Context,
+  contextValue: GQLContext,
   variableValues?: {[key: string]: any} | undefined,
   operationName?: string,
   fieldResolver?: Maybe<GraphQLFieldResolver<any, any>>

@@ -53,7 +53,19 @@ interface Props extends WithMutationProps {
 }
 
 const TaskFooter = (props: Props) => {
-  const {area, cardIsActive, editorState, error, isAgenda, onError, task, toggleMenuState} = props
+  const {
+    area,
+    cardIsActive,
+    editorState,
+    error,
+    isAgenda,
+    onCompleted,
+    onError,
+    submitMutation,
+    task,
+    toggleMenuState
+  } = props
+  const mutationProps = {onError, onCompleted, submitMutation}
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
   const {content, id: taskId, integration, tags} = task
@@ -83,7 +95,11 @@ const TaskFooter = (props: Props) => {
           {integration || isArchived ? (
             <ButtonSpacer />
           ) : (
-            <TaskFooterIntegrateToggle task={task} toggleMenuState={toggleMenuState} />
+            <TaskFooterIntegrateToggle
+              mutationProps={mutationProps}
+              task={task}
+              toggleMenuState={toggleMenuState}
+            />
           )}
           {isArchived ? (
             <CardButton
@@ -98,6 +114,7 @@ const TaskFooter = (props: Props) => {
               isAgenda={isAgenda}
               task={task}
               toggleMenuState={toggleMenuState}
+              mutationProps={mutationProps}
             />
           )}
         </ButtonGroup>
@@ -123,7 +140,7 @@ export default createFragmentContainer(
       ...TaskFooterTeamAssignee_task
       ...TaskFooterUserAssignee_task
       ...TaskFooterTagMenu_task
-      ...TaskFooterIntegrateMenu_task
+      ...TaskFooterIntegrateMenuRoot_task
     }
   `
 )

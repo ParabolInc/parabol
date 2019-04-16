@@ -4,7 +4,7 @@ import getRethink from 'server/database/rethinkDriver'
 import AtlassianManager from 'server/utils/AtlassianManager'
 import {getUserId} from 'server/utils/authorization'
 import sendToSentry from 'server/utils/sendToSentry'
-import {IAuthToken} from 'universal/types/graphql'
+import {IAtlassianAuth, IAuthToken} from 'universal/types/graphql'
 import promiseAllPartial from 'universal/utils/promiseAllPartial'
 
 interface JiraRemoteProjectKey {
@@ -52,12 +52,12 @@ export default class RethinkDataLoader {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  _share () {
+  private _share () {
     this.authToken = null
   }
 
-  fkLoader (
-    standardLoader: DataLoader<any, any>,
+  private fkLoader<T = any> (
+    standardLoader: DataLoader<string, T>,
     field: string,
     fetchFn: (ids: string[]) => any[] | Promise<any[]>
   ) {
@@ -68,10 +68,10 @@ export default class RethinkDataLoader {
       })
       return ids.map((id) => items.filter((item) => item[field] === id))
     }
-    return new DataLoader(batchFn, this.dataLoaderOptions)
+    return new DataLoader<string, T>(batchFn, this.dataLoaderOptions)
   }
 
-  pkLoader (table: string) {
+  private pkLoader (table: string) {
     // don't pass in a a filter here because they requested a specific ID, they know what they want
     const batchFn = async (keys) => {
       const r = getRethink()
@@ -81,13 +81,12 @@ export default class RethinkDataLoader {
     return new DataLoader(batchFn, this.dataLoaderOptions)
   }
 
-  customLoader (batchFn: (ids: string[]) => Promise<any[]>) {
+  private customLoader (batchFn: (ids: string[]) => Promise<any[]>) {
     return new DataLoader(batchFn, this.dataLoaderOptions)
   }
 
   agendaItems = this.pkLoader('AgendaItem')
   atlassianAuths = this.pkLoader('AtlassianAuth')
-  atlassianProjects = this.pkLoader('AtlassianProject')
   customPhaseItems = this.pkLoader('CustomPhaseItem')
   meetings = this.pkLoader('Meeting')
   meetingSettings = this.pkLoader('MeetingSettings')
@@ -116,18 +115,14 @@ export default class RethinkDataLoader {
       .filter({isActive: true})
   })
 
-  atlassianAuthByUserId = this.fkLoader(this.atlassianAuths, 'userId', (userIds) => {
-    const r = getRethink()
-    return r.table('AtlassianAuth').getAll(r.args(userIds), {index: 'userId'})
-  })
-
-  atlassianProjectsByTeamId = this.fkLoader(this.atlassianProjects, 'teamId', (teamIds) => {
-    const r = getRethink()
-    return r
-      .table('AtlassianProject')
-      .getAll(r.args(teamIds), {index: 'teamId'})
-      .filter({isActive: true})
-  })
+  atlassianAuthByUserId = this.fkLoader<IAtlassianAuth[]>(
+    this.atlassianAuths,
+    'userId',
+    (userIds) => {
+      const r = getRethink()
+      return r.table('AtlassianAuth').getAll(r.args(userIds), {index: 'userId'})
+    }
+  )
 
   customPhaseItemsByTeamId = this.fkLoader(this.customPhaseItems, 'teamId', (teamIds) => {
     const r = getRethink()

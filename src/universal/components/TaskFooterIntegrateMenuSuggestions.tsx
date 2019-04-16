@@ -1,45 +1,57 @@
-import React from 'react'
+import {TaskFooterIntegrateMenuSuggestions_viewer} from '__generated__/TaskFooterIntegrateMenuSuggestions_viewer.graphql'
+import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
+import SuggestedIntegrationGitHubMenuItem from 'universal/components/SuggestedIntegrationGitHubMenuItem'
+import SuggestedIntegrationJiraMenuItem from 'universal/components/SuggestedIntegrationJiraMenuItem'
+import {TaskServiceEnum} from 'universal/types/graphql'
+import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
 interface Props {
   closePortal: () => void
+  mutationProps: MenuMutationProps
   viewer: TaskFooterIntegrateMenuSuggestions_viewer
 }
 
-const serviceToMenuItemLookup = [
-  [IService.atlassian]: SuggestedIntegrationJiraMenuItem
-]
-const TaskFooterIntegrateMenuSuggestions = (props: Props) => {
-  const {closePortal, viewer} = props
+const serviceToMenuItemLookup = {
+  [TaskServiceEnum.jira]: SuggestedIntegrationJiraMenuItem,
+  [TaskServiceEnum.github]: SuggestedIntegrationGitHubMenuItem
+}
+
+const TaskFooterIntegrateMenuSuggestions = forwardRef((props: Props, ref: any) => {
+  const {closePortal, mutationProps, viewer} = props
   const {suggestedIntegrations} = viewer
 
-  // suggested integrations
-  // add a new one
-  // search
-  // search results
-  return suggestedIntegrations.map((suggestedIntegration) => {
-    const {service} = suggestedIntegration
-    const MenuItem = serviceToMenuItemLookup[service]
-    if (!MenuItem) return null
-    return <MenuItem suggestedIntegration={suggestedIntegration}/>
-  })
-}
+  return (
+    <>
+      {suggestedIntegrations.map((suggestedIntegration) => {
+        const {id, service} = suggestedIntegration
+        const MenuItem = serviceToMenuItemLookup[
+          service
+        ] as any /*ValueOf<typeof serviceToMenuItemLookup>*/
+        if (!MenuItem) return null
+        return (
+          <MenuItem
+            {...mutationProps}
+            key={id}
+            ref={ref}
+            closePortal={closePortal}
+            suggestedIntegration={suggestedIntegration as any}
+          />
+        )
+      })}
+    </>
+  )
+})
 
 export default createFragmentContainer(
   TaskFooterIntegrateMenuSuggestions,
   graphql`
     fragment TaskFooterIntegrateMenuSuggestions_viewer on User {
-      integrations(teamId: $teamId) {
+      suggestedIntegrations(teamId: $teamId) {
         id
         service
-        ... on GitHubIntegrationItem {
-          nameWithOwner
-        }
-        ... on JiraIntegrationItem {
-          cloudId
-          projectId
-          projectName
-        }
+        ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
+        ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
       }
     }
   `

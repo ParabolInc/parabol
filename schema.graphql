@@ -225,10 +225,8 @@ type AtlassianAuth {
   """
   accessToken: ID
 
-  """
-  *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin
-  """
-  atlassianUserId: ID!
+  """*The atlassian account ID"""
+  accountId: ID!
 
   """The atlassian cloud IDs that the user has granted"""
   cloudIds: [ID!]!
@@ -441,6 +439,11 @@ type CreateImposterTokenPayload {
 
   """The user you have assumed"""
   user: User
+}
+
+type CreateJiraIssuePayload {
+  error: StandardMutationError
+  task: Task
 }
 
 type CreatePicturePutUrlPayload {
@@ -783,14 +786,6 @@ type GitHubIntegration {
 
 type GitHubMemberRemovedPayload {
   leaveIntegration: [LeaveIntegrationPayload]
-}
-
-"""The details associated with a task integrated with GitHub"""
-type GitHubTask implements TaskIntegration {
-  id: ID!
-  service: TaskServiceEnum!
-  nameWithOwner: String
-  issueNumber: Int
 }
 
 type GoogleAnalyzedEntity {
@@ -1322,6 +1317,16 @@ type Mutation {
     """The owner/repo string"""
     nameWithOwner: String!
   ): CreateGitHubIssuePayload
+  createJiraIssue(
+    """The atlassian cloudId for the site"""
+    cloudId: ID!
+
+    """The atlassian key of the project to put the issue in"""
+    projectKey: ID!
+
+    """The id of the task to convert to a Jira issue"""
+    taskId: ID!
+  ): CreateJiraIssuePayload
 
   """Create a PUT URL on the CDN for an organization’s profile picture"""
   createOrgPicturePutUrl(
@@ -3439,6 +3444,15 @@ interface SuggestedIntegration {
   service: TaskServiceEnum!
 }
 
+"""The details associated with a task integrated with GitHub"""
+type SuggestedIntegrationGitHub implements SuggestedIntegration {
+  id: ID!
+  service: TaskServiceEnum!
+
+  """The name of the repo. Follows format of OWNER/NAME"""
+  nameWithOwner: ID!
+}
+
 """The details associated with a task integrated with Jira"""
 type SuggestedIntegrationJira implements SuggestedIntegration {
   id: ID!
@@ -3557,6 +3571,14 @@ interface TaskIntegration {
   service: TaskServiceEnum!
 }
 
+"""The details associated with a task integrated with GitHub"""
+type TaskIntegrationGitHub implements TaskIntegration {
+  id: ID!
+  service: TaskServiceEnum!
+  nameWithOwner: String
+  issueNumber: Int
+}
+
 """How a user is involved with a task (listed in hierarchical order)"""
 enum TaskInvolvementType {
   ASSIGNEE
@@ -3565,7 +3587,7 @@ enum TaskInvolvementType {
 
 """The list of services for task integrations"""
 enum TaskServiceEnum {
-  GitHubIntegration
+  github
   jira
 }
 

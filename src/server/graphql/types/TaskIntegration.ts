@@ -1,8 +1,7 @@
 import {GraphQLID, GraphQLInterfaceType, GraphQLNonNull} from 'graphql'
-import GitHubTask from 'server/graphql/types/GitHubTask'
+import TaskIntegrationGitHub from 'server/graphql/types/TaskIntegrationGitHub'
 import TaskIntegrationJira from 'server/graphql/types/TaskIntegrationJira'
 import TaskServiceEnum from 'server/graphql/types/TaskServiceEnum'
-import {GITHUB} from 'universal/utils/constants'
 
 export const taskIntegrationFields = () => ({
   id: {
@@ -14,7 +13,7 @@ export const taskIntegrationFields = () => ({
 })
 
 const resolveTypeLookup = {
-  [GITHUB]: GitHubTask,
+  github: TaskIntegrationGitHub,
   jira: TaskIntegrationJira
 }
 

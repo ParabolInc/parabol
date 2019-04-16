@@ -1,12 +1,12 @@
 import {ContentState, convertFromRaw} from 'draft-js'
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
 import CreateJiraIssuePayload from 'server/graphql/types/CreateJiraIssuePayload'
+import AtlassianManager from 'server/utils/AtlassianManager'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
-import {TASK} from 'universal/utils/constants'
 import standardError from 'server/utils/standardError'
-import AtlassianManager from 'server/utils/AtlassianManager'
+import {TASK} from 'universal/utils/constants'
 
 export default {
   name: 'CreateJiraIssue',
@@ -17,7 +17,7 @@ export default {
       description: 'The atlassian cloudId for the site'
     },
     projectKey: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The atlassian key of the project to put the issue in'
     },
     taskId: {
@@ -60,7 +60,9 @@ export default {
     ])
 
     if (!assigneeAuth || !assigneeAuth.isActive) {
-      return standardError(new Error('The assignee does not have access to Jira'), {userId: viewerId})
+      return standardError(new Error('The assignee does not have access to Jira'), {
+        userId: viewerId
+      })
     }
 
     // RESOLUTION
@@ -96,7 +98,9 @@ export default {
     }
 
     const tokenUserId = isViewerAllowed ? viewerId : userId
-    const accessToken = await dataLoader.get('freshAtlassianAccessToken').load({teamId, userId: tokenUserId})
+    const accessToken = await dataLoader
+      .get('freshAtlassianAccessToken')
+      .load({teamId, userId: tokenUserId})
     const manager = new AtlassianManager(accessToken)
     const res = await manager.createIssue(cloudId, projectKey, payload)
     if ('message' in res) {

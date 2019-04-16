@@ -1,8 +1,8 @@
 import {GraphQLInt, GraphQLObjectType, GraphQLString} from 'graphql'
 import TaskIntegration, {taskIntegrationFields} from 'server/graphql/types/TaskIntegration'
 
-const GitHubTask = new GraphQLObjectType({
-  name: 'GitHubTask',
+const TaskIntegrationGitHub = new GraphQLObjectType({
+  name: 'TaskIntegrationGitHub',
   description: 'The details associated with a task integrated with GitHub',
   interfaces: () => [TaskIntegration],
   fields: () => ({
@@ -16,4 +16,4 @@ const GitHubTask = new GraphQLObjectType({
   })
 })
 
-export default GitHubTask
+export default TaskIntegrationGitHub

@@ -1,14 +1,24 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
 import getRethink from 'server/database/rethinkDriver'
+import {GQLContext} from 'server/graphql/graphql'
 import SuggestedIntegration from 'server/graphql/types/SuggestedIntegration'
 import {getUserId} from 'server/utils/authorization'
+import {ISuggestedIntegrationsOnUserArguments} from 'universal/types/graphql'
 import {GITHUB} from 'universal/utils/constants'
+
+const idFieldLookup = {
+  github: 'nameWithOwner',
+  jira: 'projectName'
+}
 
 const createSuggestedIntegrations = (integrations: any[]) => {
   return integrations.map((integration) => {
     return {
-      service: integration.service
+      id: integration[idFieldLookup[integration.service]],
+      service: integration.service,
+      nameWithOwner: integration.nameWithOwner,
+      projectName: integration.projectName
     }
   })
 }
@@ -22,14 +32,17 @@ export default {
       description: 'a teamId to use as a filter to provide more accurate suggestions'
     }
   },
-  resolve: async (_source, {teamId}, {authToken, dataLoader}) => {
+  resolve: async (
+    _source: any,
+    {teamId}: ISuggestedIntegrationsOnUserArguments,
+    {authToken, dataLoader}: GQLContext
+  ) => {
     const r = getRethink()
     const viewerId = getUserId(authToken)
     if (teamId) {
       const teamIntegrationsByUserId = await r
         .table('Task')
         .getAll(teamId, {index: 'teamId'})
-        // .filter({userId: viewerId})
         .filter((row) =>
           row('integration')
             .ne(null)
@@ -89,7 +102,7 @@ export default {
 
       // we need to see which team integrations the user has access to
       const [atlassianAuths, githubAuthForTeam] = await Promise.all([
-        dataLoader.get('atlassianAuthsByUserId').load(viewerId),
+        dataLoader.get('atlassianAuthByUserId').load(viewerId),
         r
           .table('Provider')
           .getAll(teamId, {index: 'teamId'})
@@ -103,7 +116,7 @@ export default {
       ])
 
       const permLookup = {
-        atlassian: atlassianAuths.includes((auth) => auth.teamId === teamId) as boolean,
+        atlassian: !!atlassianAuths.find((auth) => auth.teamId === teamId),
         [GITHUB]: !!githubAuthForTeam
       }
 
@@ -113,10 +126,14 @@ export default {
       const teamIntegrationsWithUserPerms = teamIntegrationsByUserId.filter((integration) => {
         return integration.userId !== viewerId && permLookup[integration.service]
       })
-      return createSuggestedIntegrations([
+      const result = createSuggestedIntegrations([
         ...recentUserIntegrations,
         ...teamIntegrationsWithUserPerms
       ])
+      if (result.length === 0) {
+        // return fetchAllIntegrations(dataLoader)
+      }
+      return result
     }
   }
 }

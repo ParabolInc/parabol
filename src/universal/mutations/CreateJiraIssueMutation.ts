@@ -1,15 +1,14 @@
 import {commitMutation, graphql} from 'react-relay'
+import {TaskServiceEnum} from 'universal/types/graphql'
 import createProxyRecord from 'universal/utils/relay/createProxyRecord'
 import Atmosphere from 'universal/Atmosphere'
 import {LocalHandlers} from 'universal/types/relayMutations'
 
 graphql`
-  fragment CreateGitHubIssueMutation_task on CreateGitHubIssuePayload {
+  fragment CreateJiraIssueMutation_task on CreateJiraIssuePayload {
     task {
       integration {
-        issueNumber
         service
-        nameWithOwner
       }
       updatedAt
     }
@@ -17,17 +16,21 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation CreateGitHubIssueMutation($nameWithOwner: String!, $taskId: ID!) {
-    createGitHubIssue(nameWithOwner: $nameWithOwner, taskId: $taskId) {
+  mutation CreateJiraIssueMutation($cloudId: ID!, $taskId: ID!, $projectKey: ID!) {
+    createJiraIssue(cloudId: $cloudId, taskId: $taskId, projectKey: $projectKey) {
       error {
         message
       }
-      ...CreateGitHubIssueMutation_task @relay(mask: false)
+      ...CreateJiraIssueMutation_task @relay(mask: false)
     }
   }
 `
 
-const CreateGitHubIssueMutation = (atmosphere: Atmosphere, variables: any, {onCompleted, onError}: LocalHandlers) => {
+const CreateJiraIssueMutation = (
+  atmosphere: Atmosphere,
+  variables: any,
+  {onCompleted, onError}: LocalHandlers
+) => {
   return commitMutation(atmosphere, {
     mutation,
     variables,
@@ -37,7 +40,7 @@ const CreateGitHubIssueMutation = (atmosphere: Atmosphere, variables: any, {onCo
       const task = store.get(taskId)
       if (!task) return
       const optimisticIntegration = {
-        service: IService.atlassian,
+        service: TaskServiceEnum.jira,
         projectKey,
         cloudId,
         issueKey: '?',
@@ -51,4 +54,4 @@ const CreateGitHubIssueMutation = (atmosphere: Atmosphere, variables: any, {onCo
   })
 }
 
-export default CreateGitHubIssueMutation
+export default CreateJiraIssueMutation

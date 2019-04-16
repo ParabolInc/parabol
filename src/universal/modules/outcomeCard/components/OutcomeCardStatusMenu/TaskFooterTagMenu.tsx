@@ -15,6 +15,7 @@ import labels from 'universal/styles/theme/labels'
 import addContentTag from 'universal/utils/draftjs/addContentTag'
 import removeContentTag from 'universal/utils/draftjs/removeContentTag'
 import isTaskPrivate from 'universal/utils/isTaskPrivate'
+import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
 const statusItems = labels.taskStatus.slugs.slice()
 
@@ -24,6 +25,7 @@ interface Props {
   editorState: EditorState
   // TODO make area enum more fine grained to get rid of isAgenda
   isAgenda: boolean
+  mutationProps: MenuMutationProps
   task: TaskFooterTagMenu_task
 }
 

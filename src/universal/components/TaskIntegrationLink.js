@@ -40,7 +40,7 @@ TaskIntegrationLink.propTypes = {
 export default createFragmentContainer(
   TaskIntegrationLink,
   graphql`
-    fragment TaskIntegrationLink_integration on GitHubTask {
+    fragment TaskIntegrationLink_integration on TaskIntegrationGitHub {
       issueNumber
       nameWithOwner
     }

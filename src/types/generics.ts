@@ -35,3 +35,5 @@ export type NotVoid =
   | number
   | null
   | undefined
+
+export type ValueOf<T> = T[keyof T]

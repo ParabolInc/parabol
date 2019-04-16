@@ -464,9 +464,9 @@ export interface IAtlassianAuth {
   accessToken: string | null
 
   /**
-   * *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin
+   * *The atlassian account ID
    */
-  atlassianUserId: string
+  accountId: string
 
   /**
    * The atlassian cloud IDs that the user has granted
@@ -1765,7 +1765,7 @@ export interface ITaskEditorDetails {
   preferredName: string
 }
 
-export type TaskIntegration = IGitHubTask
+export type TaskIntegration = ITaskIntegrationGitHub
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration'
@@ -1777,7 +1777,7 @@ export interface ITaskIntegration {
  * The list of services for task integrations
  */
 export const enum TaskServiceEnum {
-  GitHubIntegration = 'GitHubIntegration',
+  github = 'github',
   jira = 'jira'
 }
 
@@ -2706,7 +2706,7 @@ export interface ISlackIntegration {
   teamId: string
 }
 
-export type SuggestedIntegration = ISuggestedIntegrationJira
+export type SuggestedIntegration = ISuggestedIntegrationGitHub | ISuggestedIntegrationJira
 
 export interface ISuggestedIntegration {
   __typename: 'SuggestedIntegration'
@@ -2821,6 +2821,7 @@ export interface IMutation {
    */
   createImposterToken: ICreateImposterTokenPayload | null
   createGitHubIssue: ICreateGitHubIssuePayload | null
+  createJiraIssue: ICreateJiraIssuePayload | null
 
   /**
    * Create a PUT URL on the CDN for an organization’s profile picture
@@ -3318,6 +3319,23 @@ export interface ICreateGitHubIssueOnMutationArguments {
    * The owner/repo string
    */
   nameWithOwner: string
+}
+
+export interface ICreateJiraIssueOnMutationArguments {
+  /**
+   * The atlassian cloudId for the site
+   */
+  cloudId: string
+
+  /**
+   * The atlassian key of the project to put the issue in
+   */
+  projectKey: string
+
+  /**
+   * The id of the task to convert to a Jira issue
+   */
+  taskId: string
 }
 
 export interface ICreateOrgPicturePutUrlOnMutationArguments {
@@ -4936,6 +4954,12 @@ export interface ICreateImposterTokenPayload {
 
 export interface ICreateGitHubIssuePayload {
   __typename: 'CreateGitHubIssuePayload'
+  error: IStandardMutationError | null
+  task: ITask | null
+}
+
+export interface ICreateJiraIssuePayload {
+  __typename: 'CreateJiraIssuePayload'
   error: IStandardMutationError | null
   task: ITask | null
 }
@@ -7306,12 +7330,26 @@ export const enum AuthTokenRole {
 /**
  * The details associated with a task integrated with GitHub
  */
-export interface IGitHubTask {
-  __typename: 'GitHubTask'
+export interface ITaskIntegrationGitHub {
+  __typename: 'TaskIntegrationGitHub'
   id: string
   service: TaskServiceEnum
   nameWithOwner: string | null
   issueNumber: number | null
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ISuggestedIntegrationGitHub {
+  __typename: 'SuggestedIntegrationGitHub'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * The name of the repo. Follows format of OWNER/NAME
+   */
+  nameWithOwner: string
 }
 
 /**

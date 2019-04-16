@@ -1,10 +1,10 @@
+import rateLimitedGraphQL from 'server/graphql/graphql'
 import Schema from 'server/graphql/rootSchema'
+import ConnectionContext from 'server/socketHelpers/ConnectionContext'
+import {getUserId} from 'server/utils/authorization'
 import RethinkDataLoader from 'server/utils/RethinkDataLoader'
 import sanitizeGraphQLErrors from 'server/utils/sanitizeGraphQLErrors'
-import rateLimitedGraphQL from 'server/graphql/graphql'
-import {getUserId} from 'server/utils/authorization'
 import sendToSentry from 'server/utils/sendToSentry'
-import ConnectionContext from 'server/socketHelpers/ConnectionContext'
 import prepareErrorForSentry from '../utils/prepareErrorForSentry'
 
 interface Payload {
