@@ -132,7 +132,6 @@ const JiraIntegrationHeader = (props: Props) => {
         </TitleRow>
         <SubAndButton>
           <Subtitle>Create issues from Parabol</Subtitle>
-          <AddJiraProject accessToken={accessToken!} team={team} sites={sites} />
         </SubAndButton>
       </Content>
     </Header>
@@ -142,9 +141,8 @@ const JiraIntegrationHeader = (props: Props) => {
 export default createFragmentContainer(
   JiraIntegrationHeader,
   graphql`
-    fragment JiraIntegrationHeader_team on Team {
+    fragment JiraIntegrationHeader_viewer on User {
       id
-      ...AddJiraProject_team
     }
   `
 )

@@ -1,9 +1,10 @@
 import {AtlassianProviderRow_projects} from '__generated__/AtlassianProviderRow_projects.graphql'
-import React from 'react'
+import {decode} from 'jsonwebtoken'
+import React, {useEffect} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {Link, RouteComponentProps, withRouter} from 'react-router-dom'
-import RaisedButton from 'universal/components/RaisedButton'
+import FlatButton from 'universal/components/FlatButton'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
@@ -11,14 +12,19 @@ import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import {PALETTE} from 'universal/styles/paletteV2'
 import ui from 'universal/styles/ui'
-import {IntegrationServiceEnum} from 'universal/types/graphql'
+import {IAuthToken, IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from '../../../../AtlassianProviderLogo'
 import ProviderRowName from './ProviderRowName'
 
-const StyledButton = styled(RaisedButton)({
+const StyledButton = styled(FlatButton)({
+  borderColor: PALETTE.BORDER.LIGHT,
+  color: PALETTE.TEXT.MAIN,
+  fontSize: 14,
+  fontWeight: 600,
   paddingLeft: 0,
   paddingRight: 0,
   width: '100%'
@@ -39,34 +45,34 @@ const ProviderActions = styled(RowActions)({
   maxWidth: '10rem'
 })
 
-const StyledLink = styled(Link)({
-  display: 'block',
-  textDecoration: 'none'
-})
-
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
-  projects: AtlassianProviderRow_projects
   isAuthed: boolean
   teamId: string
+  retry: () => void
+  viewer: AtlassianProviderRow_viewer
+}
+
+const useFreshToken = (accessToken: string | undefined, retry: () => void) => {
+  useEffect(() => {
+    if (!accessToken) return
+    const decodedToken = decode(accessToken) as IAuthToken | null
+    const delay = (decodedToken && decodedToken.exp * 1000 - Date.now()) || -1
+    if (delay <= 0) return
+    const cancel = window.setTimeout(() => {
+      retry()
+    }, delay)
+    return () => {
+      window.clearTimeout(cancel)
+    }
+  }, [accessToken])
 }
 
 const AtlassianProviderRow = (props: Props) => {
-  const {
-    atmosphere,
-    history,
-    teamId,
-    submitting,
-    submitMutation,
-    onError,
-    onCompleted,
-    projects,
-    isAuthed
-  } = props
-  const to = `/team/${teamId}/settings/integrations/atlassian`
-  const users = new Set()
-  projects.forEach((project) =>
-    project.teamMembers.forEach((teamMember) => users.add(teamMember.userId))
-  )
+  const {atmosphere, teamId, submitting, submitMutation, onError, onCompleted, isAuthed} = props
+  const {retry, viewer} = props
+  const {atlassianAuth} = viewer
+  const accessToken = (atlassianAuth && atlassianAuth.accessToken) || undefined
+  useFreshToken(accessToken, retry)
   const openOAuth = handleOpenOAuth({
     name: IntegrationServiceEnum.atlassian,
     submitting,
@@ -78,43 +84,35 @@ const AtlassianProviderRow = (props: Props) => {
   })
   return (
     <StyledRow>
-      <StyledLink to={to}>
-        <AtlassianAvatar>
-          <AtlassianProviderLogo />
-        </AtlassianAvatar>
-      </StyledLink>
+      <AtlassianAvatar>
+        <AtlassianProviderLogo />
+      </AtlassianAvatar>
       <RowInfo>
-        <StyledLink to={to}>
-          <ProviderRowName
-            name='Atlassian'
-            userCount={users.size}
-            integrationCount={projects.length}
-          />
-          <RowInfoCopy>{'Create Jira issues from Parabol'}</RowInfoCopy>
-        </StyledLink>
+        <ProviderRowName name='Atlassian' />
+        <RowInfoCopy>{'Create Jira issues from Parabol'}</RowInfoCopy>
       </RowInfo>
-      <ProviderActions>
-        {isAuthed ? (
-          <StyledButton key='teamSettings' onClick={() => history.push(to)}>
-            {'Team Settings'}
-          </StyledButton>
-        ) : (
+      {!isAuthed && (
+        <ProviderActions>
           <StyledButton key='linkAccount' onClick={openOAuth} palette='warm' waiting={submitting}>
-            {'Link My Account'}
+            {'Connect'}
           </StyledButton>
-        )}
-      </ProviderActions>
+        </ProviderActions>
+      )}
     </StyledRow>
   )
 }
 
+graphql`
+  fragment AtlassianProviderRowViewer on User {
+    ...JiraIntegrationHeader_viewer
+  }
+`
+
 export default createFragmentContainer(
   withAtmosphere(withMutationProps(withRouter(AtlassianProviderRow))),
   graphql`
-    fragment AtlassianProviderRow_projects on AtlassianProject @relay(plural: true) {
-      teamMembers {
-        userId
-      }
+    fragment AtlassianProviderRow_viewer on User {
+      ...AtlassianProviderRowViewer @relay(mask: false)
     }
   `
 )

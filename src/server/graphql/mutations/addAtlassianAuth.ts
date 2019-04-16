@@ -77,9 +77,7 @@ export default {
       })
     }
 
-    // TODO auto join existing projects
-
-    const data = {atlassianAuthId, teamId}
+    const data = {atlassianAuthId}
     publish(TEAM, teamId, AddAtlassianAuthPayload, data, subOptions)
     return data
   }

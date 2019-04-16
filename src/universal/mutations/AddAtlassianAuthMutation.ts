@@ -6,9 +6,9 @@ import {LocalHandlers} from '../types/relayMutations'
 
 graphql`
   fragment AddAtlassianAuthMutation_team on AddAtlassianAuthPayload {
-    team {
-      ...AtlassianIntegrations_team
-      ...ProviderList_team
+    user {
+      ...AtlassianProviderRow_viewer
+      ...ProviderList_viewer
     }
   }
 `

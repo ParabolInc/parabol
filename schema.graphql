@@ -56,21 +56,8 @@ type AddAtlassianAuthPayload {
   """The newly created auth"""
   atlassianAuth: AtlassianAuth
 
-  """projects that the new auth has joined"""
-  atlassianProjects: [AtlassianProject!]
-
-  """The team with the new auth"""
-  team: Team
-}
-
-type AddAtlassianProjectPayload {
-  error: StandardMutationError
-
-  """new project added"""
-  atlassianProject: AtlassianProject
-
-  """The team with the new project"""
-  team: Team
+  """The user with updated atlassianAuth"""
+  user: User
 }
 
 type AddFeatureFlagPayload {
@@ -262,47 +249,6 @@ type AtlassianAuth {
 
   """The user that the access token is attached to"""
   userId: ID!
-}
-
-"""An integration that connects Atlassian projects with parabol"""
-type AtlassianProject {
-  """shortid"""
-  id: ID!
-
-  """The cloud ID that the project lives on"""
-  cloudId: ID!
-
-  """*The project ID in atlassian"""
-  atlassianProjectId: ID!
-
-  """The full project document fetched from Jira"""
-  remoteProject: JiraRemoteProject!
-
-  """
-  The parabol userId of the admin for this repo (usually the creator). This is
-  used as a fallback if the user does not have an atlassian auth
-  """
-  adminUserId: ID!
-
-  """The datetime the integration was created"""
-  createdAt: DateTime!
-
-  """true if active, else false"""
-  isActive: Boolean
-
-  """*The team that is linked to this integration"""
-  teamId: ID!
-
-  """The users that can CRUD this integration"""
-  teamMembers: [TeamMember!]!
-
-  """The datetime the integration was updated"""
-  updatedAt: DateTime!
-
-  """
-  *The userIds connected to the repo so they can CRUD things under their own name
-  """
-  userIds: [ID]
 }
 
 type AuthIdentityType {
@@ -1295,7 +1241,6 @@ type Mutation {
     notificationId: ID
   ): AcceptTeamInvitationPayload!
   addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload!
-  addAtlassianProject(cloudId: ID!, atlassianProjectId: ID!, teamId: ID!): AddAtlassianProjectPayload!
 
   """Create a new agenda item"""
   addAgendaItem(
@@ -2660,10 +2605,10 @@ type RemoveAtlassianAuthPayload {
 
   """The ID of the authorization removed"""
   authId: ID
-
-  """all the projects that were either removed or unlinked from user"""
-  updatedProjects: [AtlassianProject!]
   teamId: ID
+
+  """The user with updated atlassianAuth"""
+  user: User
 }
 
 type RemoveGitHubRepoPayload {
@@ -3509,6 +3454,9 @@ type SuggestedIntegrationJira implements SuggestedIntegration {
 
   """The cloud ID that the project lives on"""
   cloudId: ID!
+
+  """The full project document fetched from Jira"""
+  remoteProject: JiraRemoteProject!
 }
 
 """A long-term task shared across the team, assigned to a single user """
@@ -3737,12 +3685,6 @@ type Team {
 
   """true if the team has been archived"""
   isArchived: Boolean
-
-  """The auth for the viewer"""
-  atlassianAuth: AtlassianAuth
-
-  """A list of projects integrated with the team"""
-  atlassianProjects: [AtlassianProject!]!
 }
 
 """An invitation to become a team member"""
@@ -3890,7 +3832,7 @@ interface TeamRemovedNotification {
   userIds: [ID!]
 }
 
-union TeamSubscriptionPayload = AcceptTeamInvitationPayload | AddTeamPayload | AddAtlassianProjectPayload | ArchiveTeamPayload | AutoGroupReflectionsPayload | CreateReflectionPayload | CreateReflectionGroupPayload | DowngradeToPersonalPayload | DragDiscussionTopicPayload | EndDraggingReflectionPayload | EditReflectionPayload | EndMeetingPayload | KillMeetingPayload | EndNewMeetingPayload | MoveMeetingPayload | NavigateMeetingPayload | NewMeetingCheckInPayload | PromoteFacilitatorPayload | PromoteNewMeetingFacilitatorPayload | PromoteToTeamLeadPayload | RequestFacilitatorPayload | RemoveOrgUserPayload | RemoveReflectionPayload | RemoveTeamMemberPayload | SelectRetroTemplatePayload | SetPhaseFocusPayload | StartDraggingReflectionPayload | StartMeetingPayload | StartNewMeetingPayload | UpdateCheckInQuestionPayload | UpdateCreditCardPayload | UpdateDragLocationPayload | UpdateNewCheckInQuestionPayload | UpdateReflectionContentPayload | UpdateReflectionGroupTitlePayload | UpdateTeamNamePayload | UpgradeToProPayload | VoteForReflectionGroupPayload | AddReflectTemplatePayload | AddReflectTemplatePromptPayload | MoveReflectTemplatePromptPayload | RemoveReflectTemplatePayload | RemoveReflectTemplatePromptPayload | RenameReflectTemplatePayload | RenameReflectTemplatePromptPayload
+union TeamSubscriptionPayload = AcceptTeamInvitationPayload | AddTeamPayload | ArchiveTeamPayload | AutoGroupReflectionsPayload | CreateReflectionPayload | CreateReflectionGroupPayload | DowngradeToPersonalPayload | DragDiscussionTopicPayload | EndDraggingReflectionPayload | EditReflectionPayload | EndMeetingPayload | KillMeetingPayload | EndNewMeetingPayload | MoveMeetingPayload | NavigateMeetingPayload | NewMeetingCheckInPayload | PromoteFacilitatorPayload | PromoteNewMeetingFacilitatorPayload | PromoteToTeamLeadPayload | RequestFacilitatorPayload | RemoveOrgUserPayload | RemoveReflectionPayload | RemoveTeamMemberPayload | SelectRetroTemplatePayload | SetPhaseFocusPayload | StartDraggingReflectionPayload | StartMeetingPayload | StartNewMeetingPayload | UpdateCheckInQuestionPayload | UpdateCreditCardPayload | UpdateDragLocationPayload | UpdateNewCheckInQuestionPayload | UpdateReflectionContentPayload | UpdateReflectionGroupTitlePayload | UpdateTeamNamePayload | UpgradeToProPayload | VoteForReflectionGroupPayload | AddReflectTemplatePayload | AddReflectTemplatePromptPayload | MoveReflectTemplatePromptPayload | RemoveReflectTemplatePayload | RemoveReflectTemplatePromptPayload | RenameReflectTemplatePayload | RenameReflectTemplatePromptPayload
 
 """The pay tier of the team"""
 enum TierEnum {
@@ -4318,6 +4260,12 @@ scalar URL
 type User {
   """The userId provided by auth0"""
   id: ID
+
+  """The auth for the viewer"""
+  atlassianAuth(
+    """The teamId for the atlassian auth token"""
+    teamId: ID!
+  ): AtlassianAuth
 
   """Array of identifier + ip pairs"""
   blockedFor: [BlockedUserType]

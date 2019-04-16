@@ -14,7 +14,7 @@ import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ui from 'universal/styles/ui'
-import {IntegrationService} from 'universal/types/graphql'
+import {IntegrationServiceEnum} from 'universal/types/graphql'
 import {ATLASSIAN_SCOPE, GITHUB, GITHUB_SCOPE, SLACK, SLACK_SCOPE} from 'universal/utils/constants'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import makeHref from 'universal/utils/makeHref'
@@ -135,7 +135,7 @@ const ProviderRow = (props: Props) => {
     <StyledRow>
       <ConditionalLink isLink={!comingSoon} to={to} style={linkStyle}>
         <ProviderAvatar backgroundColor={color}>
-          {name === IntegrationService.SlackIntegration && <SlackProviderLogo />}
+          {name === IntegrationServiceEnum.SlackIntegration && <SlackProviderLogo />}
           {icon && <ProviderIcon name={icon} />}
         </ProviderAvatar>
       </ConditionalLink>

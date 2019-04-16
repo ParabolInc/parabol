@@ -3,6 +3,7 @@ import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import AddToGitHubMenuItem from 'universal/components/AddToGitHubMenuItem'
 import AddToJiraMenuItem from 'universal/components/AddToJiraMenuItem'
+import JiraAvailableProjectsMenu from 'universal/components/JiraAvailableProjectsMenu'
 import Menu from 'universal/components/Menu'
 
 interface Props {
@@ -17,6 +18,16 @@ const TaskFooterIntegrateMenu = (props: Props) => {
     <Menu ariaLabel={'Export the task'} closePortal={closePortal}>
       <AddToGitHubMenuItem teamId={teamId} />
       <AddToJiraMenuItem teamId={teamId} />
+      <JiraAvailableProjectsMenu
+        accessToken={accessToken}
+        sites={sites}
+        onError={onError}
+        onCompleted={onCompleted}
+        submitMutation={submitMutation}
+        team={team}
+        closePortal={closePortal}
+        originRef={originRef}
+      />
     </Menu>
   )
 }
