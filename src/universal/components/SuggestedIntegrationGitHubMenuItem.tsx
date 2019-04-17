@@ -8,6 +8,7 @@ import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMutation'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import TypeAheadLabel from './TypeAheadLabel'
 
 interface Props {
   closePortal: () => void
@@ -16,10 +17,11 @@ interface Props {
   submitMutation: WithMutationProps['submitMutation']
   onError: WithMutationProps['onError']
   onCompleted: WithMutationProps['onCompleted']
+  query: string
 }
 
 const SuggestedIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) => {
-  const {suggestedIntegration, taskId, submitMutation, onError, onCompleted} = props
+  const {query, suggestedIntegration, taskId, submitMutation, onError, onCompleted} = props
   const {nameWithOwner} = suggestedIntegration
   const atmosphere = useAtmosphere()
   return (
@@ -30,7 +32,7 @@ const SuggestedIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) =
           <MenuItemComponentAvatar>
             <GitHubSVG />
           </MenuItemComponentAvatar>
-          {nameWithOwner}
+          <TypeAheadLabel query={query} label={nameWithOwner} />
         </MenuItemLabel>
       }
       onClick={() => {

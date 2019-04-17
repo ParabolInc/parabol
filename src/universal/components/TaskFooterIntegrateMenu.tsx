@@ -1,18 +1,19 @@
 import {TaskFooterIntegrateMenu_task} from '__generated__/TaskFooterIntegrateMenu_task.graphql'
 import {TaskFooterIntegrateMenu_viewer} from '__generated__/TaskFooterIntegrateMenu_viewer.graphql'
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
 import Menu from 'universal/components/Menu'
-import MenuItem from 'universal/components/MenuItem'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import SuggestedIntegrationGitHubMenuItem from 'universal/components/SuggestedIntegrationGitHubMenuItem'
 import SuggestedIntegrationJiraMenuItem from 'universal/components/SuggestedIntegrationJiraMenuItem'
 import TaskFooterIntegrateMenuSearch from 'universal/components/TaskFooterIntegrateMenuSearch'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {TaskServiceEnum} from 'universal/types/graphql'
+import useForm from 'universal/utils/relay/useForm'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
+import TypeAheadFilter from 'universal/utils/TypeAheadFilter'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
 interface Props {
@@ -27,15 +28,45 @@ const SearchIcon = styled(Icon)({
   fontSize: 20
 })
 
+const NoResults = styled(MenuItemLabel)({
+  paddingLeft: 44,
+  fontStyle: 'italic',
+  fontWeight: 600
+})
+
 const serviceToMenuItemLookup = {
   [TaskServiceEnum.jira]: SuggestedIntegrationJiraMenuItem,
   [TaskServiceEnum.github]: SuggestedIntegrationGitHubMenuItem
 }
 
+const typeAheadFilter = new TypeAheadFilter()
+
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {closePortal, mutationProps, viewer} = props
   // const {teamId} = task
   const {suggestedIntegrations} = viewer
+  const [filteredIntegrations, setFilteredIntegrations] = useState(suggestedIntegrations)
+  const {
+    fields: {
+      search: {value}
+    },
+    onChange
+  } = useForm({
+    search: {
+      getDefault: () => ''
+    }
+  })
+  const query = value.toLowerCase()
+
+  useEffect(() => {
+    if (!query) {
+      setFilteredIntegrations(suggestedIntegrations)
+    }
+    const res = typeAheadFilter.compare(query, suggestedIntegrations, (item) =>
+      (item.nameWithOwner || item.projectName).toLowerCase()
+    )
+    setFilteredIntegrations(res)
+  }, [query])
   // const hasJira = suggestedIntegrations.some(
   //   (integration) => integration.service === TaskServiceEnum.jira
   // )
@@ -48,19 +79,18 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   // search
   // search results
   return (
-    <Menu ariaLabel={'Export the task'} closePortal={closePortal}>
-      <MenuItem
-        noCloseOnClick
-        label={
-          <MenuItemLabel>
-            <MenuItemComponentAvatar>
-              <SearchIcon>search</SearchIcon>
-            </MenuItemComponentAvatar>
-            <TaskFooterIntegrateMenuSearch />
-          </MenuItemLabel>
-        }
-      />
-      {suggestedIntegrations.map((suggestedIntegration) => {
+    <Menu keepParentFocus ariaLabel={'Export the task'} closePortal={closePortal}>
+      <MenuItemLabel>
+        <MenuItemComponentAvatar>
+          <SearchIcon>search</SearchIcon>
+        </MenuItemComponentAvatar>
+        <TaskFooterIntegrateMenuSearch value={value} onChange={onChange} />
+      </MenuItemLabel>
+      {(query && filteredIntegrations.length === 0 && (
+        <NoResults key='no-results'>No integrations found!</NoResults>
+      )) ||
+        null}
+      {filteredIntegrations.map((suggestedIntegration) => {
         const {id, service} = suggestedIntegration
         const MenuItem = serviceToMenuItemLookup[
           service
@@ -71,6 +101,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
             {...mutationProps}
             key={id}
             closePortal={closePortal}
+            query={query}
             suggestedIntegration={suggestedIntegration as any}
           />
         )
@@ -100,6 +131,12 @@ export default createFragmentContainer(
       suggestedIntegrations(teamId: $teamId, userId: $userId) {
         id
         service
+        ... on SuggestedIntegrationJira {
+          projectName
+        }
+        ... on SuggestedIntegrationGitHub {
+          nameWithOwner
+        }
         ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
         ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
       }

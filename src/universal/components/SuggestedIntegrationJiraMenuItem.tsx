@@ -5,6 +5,7 @@ import JiraSVG from 'universal/components/JiraSVG'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
+import TypeAheadLabel from 'universal/components/TypeAheadLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import CreateJiraIssueMutation from 'universal/mutations/CreateJiraIssueMutation'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -30,7 +31,7 @@ const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => 
           <MenuItemComponentAvatar>
             <JiraSVG />
           </MenuItemComponentAvatar>
-          {projectName}
+          <TypeAheadLabel query={query} label={projectName} />
         </MenuItemLabel>
       }
       onClick={() => {

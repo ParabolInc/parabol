@@ -11,7 +11,12 @@ const fetchAllIntegrations = async (
     fetchAtlassianProjects(dataLoader, teamId, userId),
     fetchGitHubRepos(teamId, userId)
   ])
-  return [...atlassianProjects, ...githubRepos]
+  const allIntegrations = [...atlassianProjects, ...githubRepos]
+  const getValue = (item) => (item.nameWithOwner || item.projectName).toLowerCase()
+  allIntegrations.sort((a, b) => {
+    return getValue(a) < getValue(b) ? -1 : 1
+  })
+  return allIntegrations
 }
 
 export default fetchAllIntegrations

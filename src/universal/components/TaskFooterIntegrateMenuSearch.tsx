@@ -19,8 +19,22 @@ const Input = styled('input')({
   }
 })
 
-const TaskFooterIntegrateMenuSearch = (_props: Props) => {
-  return <Input placeholder={'Search integrations'} />
+interface Props {
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+const TaskFooterIntegrateMenuSearch = (props: Props) => {
+  const {onChange, value} = props
+  return (
+    <Input
+      autoFocus
+      name='search'
+      onChange={onChange}
+      placeholder={'Search integrations'}
+      value={value}
+    />
+  )
 }
 
 export default TaskFooterIntegrateMenuSearch
