@@ -2,7 +2,9 @@ import styled from 'react-emotion'
 import {PALETTE} from 'universal/styles/paletteV2'
 import React from 'react'
 
-interface Props {}
+interface Props {
+  placeholder: string
+}
 
 const Input = styled('input')({
   appearance: 'none',
@@ -25,15 +27,9 @@ interface Props {
 }
 
 const TaskFooterIntegrateMenuSearch = (props: Props) => {
-  const {onChange, value} = props
+  const {onChange, placeholder, value} = props
   return (
-    <Input
-      autoFocus
-      name='search'
-      onChange={onChange}
-      placeholder={'Search integrations'}
-      value={value}
-    />
+    <Input autoFocus name='search' onChange={onChange} placeholder={placeholder} value={value} />
   )
 }
 

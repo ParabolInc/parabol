@@ -172,7 +172,7 @@
     "compute-cosine-similarity": "^1.0.0",
     "cors": "^2.8.4",
     "dataloader": "^1.4.0",
-    "dataloader-warehouse": "^0.4.0",
+    "dataloader-warehouse": "^0.4.2",
     "dotenv": "2.0.0",
     "dotenv-expand": "^0.1.0",
     "draft-js": "https://github.com/mattkrick/draft-js/tarball/559a21968370c4944511657817d601a6c4ade0f6",

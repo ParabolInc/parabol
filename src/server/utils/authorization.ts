@@ -1,3 +1,4 @@
+import {IAuthToken} from 'universal/types/graphql'
 import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import getRethink from '../database/rethinkDriver'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
@@ -13,7 +14,7 @@ export const isSuperUser = (authToken) => {
   return userId ? authToken.rol === 'su' : false
 }
 
-export const isTeamMember = (authToken, teamId) => {
+export const isTeamMember = (authToken: IAuthToken, teamId: string) => {
   const {tms} = authToken
   return Array.isArray(tms) && tms.includes(teamId)
 }

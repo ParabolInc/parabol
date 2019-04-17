@@ -6,14 +6,16 @@ import MenuItemLabel from 'universal/components/MenuItemLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
-import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 
-interface Props extends WithMutationProps {
+interface Props {
   teamId: string
+  mutationProps: MenuMutationProps
 }
 
 const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
-  const {teamId, submitting, submitMutation, onError, onCompleted} = props
+  const {mutationProps, teamId} = props
+  const {submitMutation, onError, onCompleted} = mutationProps
   const atmosphere = useAtmosphere()
   return (
     <MenuItem
@@ -28,7 +30,6 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
       }
       onClick={handleOpenOAuth({
         name: IntegrationServiceEnum.atlassian,
-        submitting,
         submitMutation,
         atmosphere,
         onError,
@@ -39,4 +40,4 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
   )
 })
 
-export default withMutationProps(AddToJiraMenuItem)
+export default AddToJiraMenuItem

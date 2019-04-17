@@ -18,15 +18,15 @@ const AtlassianAuth = new GraphQLObjectType({
       description:
         'The access token to atlassian, useful for 1 hour. null if no access token available',
       type: GraphQLID,
-      resolve: async ({teamId}, _args, {authToken, dataLoader}) => {
+      resolve: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
         const viewerId = getUserId(authToken)
+        if (viewerId !== userId) return null
         return dataLoader.get('freshAtlassianAccessToken').load({teamId, userId: viewerId})
       }
     },
     accountId: {
       type: new GraphQLNonNull(GraphQLID),
-      description:
-        '*The atlassian account ID'
+      description: '*The atlassian account ID'
     },
     cloudIds: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),

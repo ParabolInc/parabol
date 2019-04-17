@@ -1,10 +1,9 @@
+import fetch from 'node-fetch'
 import getRethink from 'server/database/rethinkDriver'
-import {DataLoaderWorker} from 'server/graphql/graphql'
 import {Omit} from 'types/generics'
 import {ISuggestedIntegrationGitHub} from 'universal/types/graphql'
 import {GITHUB} from 'universal/utils/constants'
 import GitHubClientManager from 'universal/utils/GitHubClientManager'
-import fetch from 'node-fetch'
 
 interface Repo {
   nameWithOwner: string

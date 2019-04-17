@@ -52,10 +52,6 @@ export default class RethinkDataLoader {
     this.dataLoaderOptions = dataLoaderOptions
   }
 
-  private _share () {
-    this.authToken = null
-  }
-
   private fkLoader<T = any> (
     standardLoader: DataLoader<string, T>,
     field: string,
@@ -78,10 +74,6 @@ export default class RethinkDataLoader {
       const docs = await r.table(table).getAll(r.args(keys), {index: 'id'})
       return normalizeRethinkDbResults(keys, 'id')(docs, this.authToken, table)
     }
-    return new DataLoader(batchFn, this.dataLoaderOptions)
-  }
-
-  private customLoader (batchFn: (ids: string[]) => Promise<any[]>) {
     return new DataLoader(batchFn, this.dataLoaderOptions)
   }
 

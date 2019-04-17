@@ -45,27 +45,30 @@ import TeamInvitation from 'server/graphql/types/TeamInvitation'
 import newMeeting from 'server/graphql/queries/newMeeting'
 import suggestedIntegrations from 'server/graphql/queries/suggestedIntegrations'
 import AtlassianAuth from 'server/graphql/types/AtlassianAuth'
+import GitHubAuth from 'server/graphql/types/GitHubAuth'
+import {GITHUB} from 'universal/utils/constants'
 
 const User = new GraphQLObjectType({
   name: 'User',
   description: 'The user account profile',
   fields: () => ({
     id: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The userId provided by auth0'
     },
     atlassianAuth: {
       type: AtlassianAuth,
-      description: 'The auth for the viewer',
+      description:
+        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
       args: {
         teamId: {
           type: new GraphQLNonNull(GraphQLID),
           description: 'The teamId for the atlassian auth token'
         }
       },
-      resolve: async (_source, {teamId}, {authToken, dataLoader}) => {
-        const viewerId = getUserId(authToken)
-        const auths = await dataLoader.get('atlassianAuthByUserId').load(viewerId)
+      resolve: async ({id: userId}, {teamId}, {authToken, dataLoader}) => {
+        if (!isTeamMember(authToken, teamId)) return null
+        const auths = await dataLoader.get('atlassianAuthByUserId').load(userId)
         return auths.find((auth) => auth.teamId === teamId)
       }
     },
@@ -107,6 +110,27 @@ const User = new GraphQLObjectType({
           flagObj[flag] = true
         })
         return flagObj
+      }
+    },
+    githubAuth: {
+      type: GitHubAuth,
+      description:
+        'The auth for the user. access token is null if not viewer. Use isActive to check for presence',
+      args: {
+        teamId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The teamId for the auth object'
+        }
+      },
+      resolve: async ({id: userId}, {teamId}, {authToken}) => {
+        if (!isTeamMember(authToken, teamId)) return null
+        const r = getRethink()
+        return r
+          .table('Provider')
+          .getAll(teamId, {index: 'teamId'})
+          .filter({service: GITHUB, isActive: true, userId})
+          .nth(0)
+          .default(null)
       }
     },
     identities: {
@@ -412,6 +436,22 @@ const User = new GraphQLObjectType({
         return viewerId === source.id
           ? source.tms
           : source.tms.filter((teamId) => authToken.tms.includes(teamId))
+      }
+    },
+    userOnTeam: {
+      type: User,
+      args: {
+        userId: {
+          type: new GraphQLNonNull(GraphQLID),
+          description: 'The other user'
+        }
+      },
+      resolve: async (source, {userId}, {authToken, dataLoader}) => {
+        const userOnTeam = await dataLoader.get('users').load(userId)
+        // const teams = new Set(userOnTeam)
+        const {tms} = userOnTeam
+        if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
+        return userOnTeam
       }
     }
   })

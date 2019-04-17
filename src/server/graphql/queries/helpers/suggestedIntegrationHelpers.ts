@@ -1,7 +1,9 @@
+import ms from 'ms'
 import getRethink from 'server/database/rethinkDriver'
 import {DataLoaderWorker} from 'server/graphql/graphql'
 
 export interface IntegrationByUserId {
+  id: string
   userId: string
   service: 'github' | 'jira'
   nameWithOwner: string | null
@@ -13,6 +15,7 @@ export interface IntegrationByUserId {
   lastUsedAt: Date
 }
 
+const MAX_RECENT_INTEGRATIONS = 3
 export const useOnlyUserIntegrations = (
   teamIntegrationsByUserId: IntegrationByUserId[],
   userId: string
@@ -23,7 +26,10 @@ export const useOnlyUserIntegrations = (
   const aMonthAgo = new Date(Date.now() - ms('30d'))
 
   // the user has 3+ active integrations, use those
-  if (userIntegrationsForTeam.length >= 3 && userIntegrationsForTeam[2].lastUsedAt >= aMonthAgo) {
+  if (
+    userIntegrationsForTeam.length >= MAX_RECENT_INTEGRATIONS &&
+    userIntegrationsForTeam[MAX_RECENT_INTEGRATIONS - 1].lastUsedAt >= aMonthAgo
+  ) {
     return userIntegrationsForTeam
   }
 

@@ -123,7 +123,7 @@ const ProviderRow = (props: Props) => {
   }
   const to = `/team/${teamId}/settings/integrations/${route}`
   const openOAuth = handleOpenOAuth({
-    name,
+    name: name as IntegrationServiceEnum,
     submitting,
     submitMutation,
     atmosphere,

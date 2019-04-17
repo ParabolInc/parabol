@@ -752,6 +752,35 @@ type GenericMeetingStage implements NewMeetingStage {
   viewCount: Int
 }
 
+"""OAuth token for a team member"""
+type GitHubAuth {
+  """shortid"""
+  id: ID!
+
+  """true if an access token exists, else false"""
+  isActive: Boolean!
+
+  """
+  The access token to atlassian, useful for 1 hour. null if no access token available
+  """
+  accessToken: ID
+
+  """*The GitHub login used for queries"""
+  login: ID!
+
+  """The timestamp the provider was created"""
+  createdAt: DateTime!
+
+  """*The team that the token is linked to"""
+  teamId: ID!
+
+  """The timestamp the token was updated at"""
+  updatedAt: DateTime!
+
+  """The user that the access token is attached to"""
+  userId: ID!
+}
+
 """An integration that connects github issues & PRs to Parabol tasks"""
 type GitHubIntegration {
   """The ID of an object"""
@@ -3461,9 +3490,6 @@ type SuggestedIntegrationJira implements SuggestedIntegration {
   """URL to a 24x24 avatar icon"""
   avatar: ID!
 
-  """The immutable jira projectId"""
-  projectId: ID!
-
   """
   The project key used by jira as a more human readable proxy for a projectId
   """
@@ -3479,6 +3505,19 @@ type SuggestedIntegrationJira implements SuggestedIntegration {
 
   """The full project document fetched from Jira"""
   remoteProject: JiraRemoteProject!
+}
+
+"""The details associated with a task integrated with GitHub"""
+type SuggestedIntegrationQueryPayload {
+  error: StandardMutationError
+
+  """
+  true if the items returned are a subset of all the possible integration, else false (all possible integrations)
+  """
+  hasMore: Boolean!
+
+  """All the integrations that are likely to be integrated"""
+  items: [SuggestedIntegration!]!
 }
 
 """A long-term task shared across the team, assigned to a single user """
@@ -4289,9 +4328,11 @@ scalar URL
 """The user account profile"""
 type User {
   """The userId provided by auth0"""
-  id: ID
+  id: ID!
 
-  """The auth for the viewer"""
+  """
+  The auth for the user. access token is null if not viewer. Use isActive to check for presence
+  """
   atlassianAuth(
     """The teamId for the atlassian auth token"""
     teamId: ID!
@@ -4320,6 +4361,14 @@ type User {
 
   """Any super power given to the user via a super user"""
   featureFlags: UserFeatureFlags!
+
+  """
+  The auth for the user. access token is null if not viewer. Use isActive to check for presence
+  """
+  githubAuth(
+    """The teamId for the auth object"""
+    teamId: ID!
+  ): GitHubAuth
 
   """
   An array of objects with information about the user's identities.
@@ -4472,11 +4521,8 @@ type User {
   """The integrations that the user would probably like to use"""
   suggestedIntegrations(
     """a teamId to use as a filter to provide more accurate suggestions"""
-    teamId: ID
-
-    """The id for the user the task is for"""
-    userId: ID
-  ): [SuggestedIntegration!]!
+    teamId: ID!
+  ): SuggestedIntegrationQueryPayload!
   tasks(
     """the datetime cursor"""
     after: DateTime
@@ -4511,6 +4557,10 @@ type User {
 
   """all the teams the user is a part of that the viewer can see"""
   tms: [ID]
+  userOnTeam(
+    """The other user"""
+    userId: ID!
+  ): User
 }
 
 """The user account profile"""

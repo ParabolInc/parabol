@@ -50,10 +50,10 @@ export interface IUser {
   /**
    * The userId provided by auth0
    */
-  id: string | null
+  id: string
 
   /**
-   * The auth for the viewer
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
    */
   atlassianAuth: IAtlassianAuth | null
 
@@ -96,6 +96,11 @@ export interface IUser {
    * Any super power given to the user via a super user
    */
   featureFlags: IUserFeatureFlags
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  githubAuth: IGitHubAuth | null
 
   /**
    * An array of objects with information about the user's identities.
@@ -235,7 +240,7 @@ export interface IUser {
   /**
    * The integrations that the user would probably like to use
    */
-  suggestedIntegrations: Array<SuggestedIntegration>
+  suggestedIntegrations: ISuggestedIntegrationQueryPayload
   tasks: ITaskConnection
 
   /**
@@ -262,11 +267,19 @@ export interface IUser {
    * all the teams the user is a part of that the viewer can see
    */
   tms: Array<string | null> | null
+  userOnTeam: IUser | null
 }
 
 export interface IAtlassianAuthOnUserArguments {
   /**
    * The teamId for the atlassian auth token
+   */
+  teamId: string
+}
+
+export interface IGithubAuthOnUserArguments {
+  /**
+   * The teamId for the auth object
    */
   teamId: string
 }
@@ -405,12 +418,7 @@ export interface ISuggestedIntegrationsOnUserArguments {
   /**
    * a teamId to use as a filter to provide more accurate suggestions
    */
-  teamId?: string | null
-
-  /**
-   * The id for the user the task is for
-   */
-  userId?: string | null
+  teamId: string
 }
 
 export interface ITasksOnUserArguments {
@@ -445,6 +453,13 @@ export interface ITeamMemberOnUserArguments {
    * The team the user is on
    */
   teamId: string
+}
+
+export interface IUserOnTeamOnUserArguments {
+  /**
+   * The other user
+   */
+  userId: string
 }
 
 /**
@@ -536,6 +551,53 @@ export interface IUserFeatureFlags {
    * true if jira is allowed
    */
   jira: boolean | null
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IGitHubAuth {
+  __typename: 'GitHubAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null
+
+  /**
+   * *The GitHub login used for queries
+   */
+  login: string
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
 }
 
 export interface IAuthIdentityType {
@@ -2711,6 +2773,38 @@ export interface ISlackIntegration {
   teamId: string
 }
 
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ISuggestedIntegrationQueryPayload {
+  __typename: 'SuggestedIntegrationQueryPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
+   */
+  hasMore: boolean
+
+  /**
+   * All the integrations that are likely to be integrated
+   */
+  items: Array<SuggestedIntegration>
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError'
+
+  /**
+   * The title of the error
+   */
+  title: string | null
+
+  /**
+   * The full error
+   */
+  message: string
+}
+
 export type SuggestedIntegration = ISuggestedIntegrationGitHub | ISuggestedIntegrationJira
 
 export interface ISuggestedIntegration {
@@ -4031,20 +4125,6 @@ export interface IAcceptTeamInvitationPayload {
    * For payloads going to the team leader that got new suggested actions
    */
   teamLead: IUser | null
-}
-
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError'
-
-  /**
-   * The title of the error
-   */
-  title: string | null
-
-  /**
-   * The full error
-   */
-  message: string
 }
 
 export interface IAddAtlassianAuthPayload {
@@ -7369,11 +7449,6 @@ export interface ISuggestedIntegrationJira {
    * URL to a 24x24 avatar icon
    */
   avatar: string
-
-  /**
-   * The immutable jira projectId
-   */
-  projectId: string
 
   /**
    * The project key used by jira as a more human readable proxy for a projectId

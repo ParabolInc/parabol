@@ -1,3 +1,4 @@
+/* Deprecating... use GitHubAuth (slackAuth tbd...) */
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {connectionDefinitions, globalIdField} from 'graphql-relay'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'

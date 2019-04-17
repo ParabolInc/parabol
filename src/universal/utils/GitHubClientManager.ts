@@ -30,7 +30,7 @@ fragment repoFrag on RepositoryConnection {
 class GitHubClientManager {
   accessToken: string
   private readonly query: (query: string) => any
-  private readonly mutation: (query: string, payload: object) => any
+  // private readonly mutation: (query: string, payload: object) => any
 
   // the any is for node until we can use tsc in nodeland
   cache: {[key: string]: {result: any; expiration: number | any}} = {}

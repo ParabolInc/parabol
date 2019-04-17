@@ -17,10 +17,11 @@ interface Props {
   submitMutation: WithMutationProps['submitMutation']
   onError: WithMutationProps['onError']
   onCompleted: WithMutationProps['onCompleted']
+  query: string
 }
 
 const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
-  const {suggestedIntegration, taskId, submitMutation, onError, onCompleted} = props
+  const {suggestedIntegration, taskId, submitMutation, onError, onCompleted, query} = props
   const {cloudId, projectKey, projectName} = suggestedIntegration
   const atmosphere = useAtmosphere()
   return (

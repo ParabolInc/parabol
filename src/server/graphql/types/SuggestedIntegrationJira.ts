@@ -15,10 +15,6 @@ const SuggestedIntegrationJira = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'URL to a 24x24 avatar icon'
     },
-    projectId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The immutable jira projectId'
-    },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The project key used by jira as a more human readable proxy for a projectId'

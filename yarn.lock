@@ -6097,10 +6097,10 @@ data-urls@^1.0.0:
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
 
-dataloader-warehouse@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/dataloader-warehouse/-/dataloader-warehouse-0.4.0.tgz#69deb18dd7ea5bcb1f14446a67df0ca5079c4b83"
-  integrity sha512-rUAXWLvrus/SIOlHMDNEV8MEW7B+mpEil5LHqh260e285W+Bt+onK6XJ0LQS5/UaJ3OoJWKF8aMoYJgorZZnWg==
+dataloader-warehouse@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/dataloader-warehouse/-/dataloader-warehouse-0.4.2.tgz#3633963f0ef8507bd643a6089a4517165179cc0c"
+  integrity sha512-3mGpUs9ZkVsKYOIM7EMdnRweoArl8GvU22jJlokL3rIXFbRlWpRqzN855Hk+cMeF7Bid9vagmLDFsh8p/PqSmw==
 
 dataloader@^1.4.0:
   version "1.4.0"
