@@ -265,7 +265,7 @@ export default class RethinkDataLoader {
       .filter({isNotRemoved: true})
   })
 
-  freshAtlassianAccessToken = new DataLoader(
+  freshAtlassianAccessToken = new DataLoader<{teamId: string; userId: string}, string>(
     async (keys: {userId: string; teamId: string}[]) => {
       return promiseAllPartial(
         keys.map(async ({userId, teamId}) => {
@@ -273,7 +273,7 @@ export default class RethinkDataLoader {
           const teamAuth = userAuths.find((auth) => auth.teamId === teamId)
           if (!teamAuth || !teamAuth.refreshToken) return null
           const {accessToken: existingAccessToken, refreshToken} = teamAuth
-          const decodedToken = decode(existingAccessToken) as IAuthToken
+          const decodedToken = existingAccessToken && (decode(existingAccessToken) as IAuthToken)
           const now = new Date()
           if (decodedToken && decodedToken.exp >= Math.floor(now.getTime() / 1000)) {
             return existingAccessToken

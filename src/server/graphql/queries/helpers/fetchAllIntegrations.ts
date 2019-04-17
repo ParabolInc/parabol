@@ -1,29 +1,17 @@
-// const fetchAtlassianProjects = () => {
-//   const cloudIds = sites.map(({id}) => id)
-//   await manager.getProjects(cloudIds, (err, res) => {
-//     if (!isMounted) return
-//     if (err) {
-//       console.error(err)
-//       container.status = 'error'
-//       setStatus('error')
-//     } else if (res) {
-//       const {cloudId, newProjects} = res
-//       const newItems = newProjects.map((project) => ({
-//         cloudId,
-//         projectName: getProjectName(project.name, sites, cloudId),
-//         project
-//       }))
-//       container.projects.push(...newItems)
-//       // important! we only mutated the current object, we need a new one to trigger a rerender
-//       setProjects([...container.projects])
-//     }
-//   })
-// }
-
 import {DataLoaderWorker} from 'server/graphql/graphql'
+import fetchAtlassianProjects from 'server/graphql/queries/helpers/fetchAtlassianProjects'
+import fetchGitHubRepos from 'server/graphql/queries/helpers/fetchGitHubRepos'
 
-const fetchAllIntegrations = (_dataLoader: DataLoaderWorker) => {
-  // fetch all atlassian integrations
+const fetchAllIntegrations = async (
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string
+) => {
+  const [atlassianProjects, githubRepos] = await Promise.all([
+    fetchAtlassianProjects(dataLoader, teamId, userId),
+    fetchGitHubRepos(teamId, userId)
+  ])
+  return [...atlassianProjects, ...githubRepos]
 }
 
 export default fetchAllIntegrations

@@ -1,4 +1,4 @@
-import React, {ReactNode, ComponentType} from 'react'
+import React, {ComponentType, ReactNode} from 'react'
 import {TransitionGroup} from 'react-transition-group'
 import AnimatedFade from 'universal/components/AnimatedFade'
 import ErrorComponent from '../../components/ErrorComponent/ErrorComponent'
@@ -9,10 +9,21 @@ interface Options {
   Error?: ComponentType<{error: any}>
   props?: {[key: string]: any}
   size?: number
+  loadingDelay?: number
+  menuLoadingWidth?: number
 }
 
 const renderQuery = (ReadyComponent: ComponentType<any>, options: Options = {}) => (readyState) => {
-  const Loader = options.Loader || <LoadingComponent spinnerSize={options.size} />
+  const {menuLoadingWidth, loadingDelay, size} = options
+  const Loader = options.Loader || (
+    <LoadingComponent
+      delay={loadingDelay}
+      spinnerSize={size || 24}
+      height={menuLoadingWidth ? 24 : undefined}
+      width={menuLoadingWidth}
+      showAfter={menuLoadingWidth ? 0 : undefined}
+    />
+  )
   const Error = options.Error || ErrorComponent
   const {error, props, retry} = readyState
   let child

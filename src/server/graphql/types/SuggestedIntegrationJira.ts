@@ -11,13 +11,22 @@ const SuggestedIntegrationJira = new GraphQLObjectType({
   interfaces: () => [SuggestedIntegration],
   fields: () => ({
     ...suggestedIntegrationFields(),
+    avatar: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'URL to a 24x24 avatar icon'
+    },
+    projectId: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The immutable jira projectId'
+    },
     projectKey: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The project key used by jira as a more human readable proxy for a projectId'
     },
     projectName: {
       type: new GraphQLNonNull(GraphQLID),
-      description: 'The name of the project as defined by jira'
+      description:
+        'The name of the project, prefixed with the cloud name if more than 1 cloudId exists'
     },
     cloudId: {
       type: new GraphQLNonNull(GraphQLID),

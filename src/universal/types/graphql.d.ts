@@ -406,6 +406,11 @@ export interface ISuggestedIntegrationsOnUserArguments {
    * a teamId to use as a filter to provide more accurate suggestions
    */
   teamId?: string | null
+
+  /**
+   * The id for the user the task is for
+   */
+  userId?: string | null
 }
 
 export interface ITasksOnUserArguments {
@@ -7317,7 +7322,7 @@ export interface IAuthToken {
   /**
    * teams. a list of teamIds where the user is active
    */
-  tms: Array<string> | null
+  tms: Array<string>
 }
 
 /**
@@ -7361,12 +7366,22 @@ export interface ISuggestedIntegrationJira {
   service: TaskServiceEnum
 
   /**
+   * URL to a 24x24 avatar icon
+   */
+  avatar: string
+
+  /**
+   * The immutable jira projectId
+   */
+  projectId: string
+
+  /**
    * The project key used by jira as a more human readable proxy for a projectId
    */
   projectKey: string
 
   /**
-   * The name of the project as defined by jira
+   * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
    */
   projectName: string
 

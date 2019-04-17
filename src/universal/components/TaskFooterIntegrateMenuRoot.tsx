@@ -9,7 +9,7 @@ import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 import renderQuery from '../utils/relay/renderQuery'
 
 const query = graphql`
-  query TaskFooterIntegrateMenuRootQuery($teamId: ID!) {
+  query TaskFooterIntegrateMenuRootQuery($teamId: ID!, $userId: ID!) {
     viewer {
       ...TaskFooterIntegrateMenu_viewer
     }
@@ -18,20 +18,32 @@ const query = graphql`
 
 interface Props {
   closePortal: () => void
+  loadingDelay: number
+  loadingWidth: number
   mutationProps: MenuMutationProps
   task: TaskFooterIntegrateMenuRoot_task
 }
 
-const TaskFooterIntegrateMenuRoot = ({closePortal, mutationProps, task}: Props) => {
-  const {teamId} = task
+const TaskFooterIntegrateMenuRoot = ({
+  closePortal,
+  loadingDelay,
+  loadingWidth,
+  mutationProps,
+  task
+}: Props) => {
+  const {teamId, userId} = task
   const atmosphere = useAtmosphere()
   return (
     <QueryRenderer
       cacheConfig={cacheConfig}
-      variables={{teamId}}
+      variables={{teamId, userId}}
       environment={atmosphere}
       query={query}
-      render={renderQuery(TaskFooterIntegrateMenu, {props: {closePortal, mutationProps, task}})}
+      render={renderQuery(TaskFooterIntegrateMenu, {
+        loadingDelay,
+        menuLoadingWidth: loadingWidth,
+        props: {closePortal, mutationProps, task}
+      })}
     />
   )
 }
@@ -41,6 +53,7 @@ export default createFragmentContainer(
   graphql`
     fragment TaskFooterIntegrateMenuRoot_task on Task {
       teamId
+      userId
       ...TaskFooterIntegrateMenu_task
     }
   `

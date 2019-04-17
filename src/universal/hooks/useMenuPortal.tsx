@@ -1,11 +1,11 @@
-import React, {ReactElement, ReactPortal, RefObject, Suspense} from 'react'
+import React, {ReactElement, ReactPortal, Suspense} from 'react'
 import styled from 'react-emotion'
 import ErrorBoundary from 'universal/components/ErrorBoundary'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import MenuContents from 'universal/components/MenuContents'
 import ModalError from 'universal/components/ModalError'
-import getBBox from 'universal/components/RetroReflectPhase/getBBox'
 import {UseCoordsValue} from 'universal/hooks/useCoords'
+import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
 import {PortalState} from 'universal/hooks/usePortal'
 import {ZIndex} from 'universal/types/constEnums'
 import menuAnimations from 'universal/utils/menuAnimations'
@@ -19,13 +19,13 @@ const MenuBlock = styled('div')({
 const useMenuPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
   targetRef: (el: HTMLElement) => void,
-  originRef: RefObject<HTMLElement>,
+  loadingWidth: number,
   coords: UseCoordsValue,
-  status: PortalState
+  status: PortalState,
+  loadingDelayRef: LoadingDelayRef
 ) => {
   const className = menuAnimations[status]
   return (reactEl) => {
-    const bbox = getBBox(originRef.current)
     return portal(
       <MenuBlock innerRef={targetRef} style={{...coords}} className={className}>
         <ErrorBoundary fallback={(error) => <ModalError error={error} />}>
@@ -33,8 +33,9 @@ const useMenuPortal = (
             <Suspense
               fallback={
                 <LoadingComponent
+                  loadingDelayRef={loadingDelayRef}
                   spinnerSize={24}
-                  width={bbox ? bbox.width : 0}
+                  width={loadingWidth}
                   height={24}
                   showAfter={0}
                 />

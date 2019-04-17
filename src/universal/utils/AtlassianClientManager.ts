@@ -102,18 +102,20 @@ class AtlassianClientManager {
   cache: {[key: string]: {result: any; expiration: number | any}} = {}
   timeout = 5000
 
-  constructor(accessToken: string, options: AtlassianClientManagerOptions = {}) {
+  constructor (accessToken: string, options: AtlassianClientManagerOptions = {}) {
     this.accessToken = accessToken
     this.refreshToken = options.refreshToken
     const fetch = options.fetch || window.fetch
     const headers = {
       // an Authorization requires a preflight request, ie reqs are slow
       Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json' as 'application/json'
+      Accept: 'application/json' as 'application/json',
+      'Content-Type': 'application/json'
     }
     this.post = async (url, payload) => {
       const res = await fetch(url, {
-        headers: {...headers, method: 'POST', 'Content-Type': 'application/json'},
+        method: 'POST',
+        headers,
         body: JSON.stringify(payload)
       })
       return res.json()
@@ -140,19 +142,19 @@ class AtlassianClientManager {
     }
   }
 
-  async getAccessibleResources() {
+  async getAccessibleResources () {
     return this.get('https://api.atlassian.com/oauth/token/accessible-resources') as
       | AccessibleResource[]
       | AtlassianError
   }
 
-  async getMyself(cloudId: string) {
+  async getMyself (cloudId: string) {
     return this.get(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/myself`) as
       | JiraUser
       | AtlassianError
   }
 
-  async getPaginatedProjects(cloudId: string, url: string, callback: GetProjectsCallback) {
+  async getPaginatedProjects (cloudId: string, url: string, callback: GetProjectsCallback) {
     const res = (await this.get(url)) as JiraProjectResponse | AtlassianError
     if ('message' in res) {
       callback(res, null)
@@ -164,7 +166,7 @@ class AtlassianClientManager {
     }
   }
 
-  async getProjects(cloudIds: string[], callback: GetProjectsCallback) {
+  async getProjects (cloudIds: string[], callback: GetProjectsCallback) {
     return Promise.all(
       cloudIds.map(async (cloudId) => {
         return this.getPaginatedProjects(
@@ -176,13 +178,13 @@ class AtlassianClientManager {
     )
   }
 
-  async getProject(cloudId: string, projectId: string) {
+  async getProject (cloudId: string, projectId: string) {
     return this.get(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/project/${projectId}`
     ) as JiraProject | AtlassianError
   }
 
-  async createIssue(cloudId: string, projectKey: string, issueFields: CreateIssueFields) {
+  async createIssue (cloudId: string, projectKey: string, issueFields: CreateIssueFields) {
     const payload = {
       fields: {
         project: {
@@ -195,9 +197,9 @@ class AtlassianClientManager {
         ...issueFields
       } as CreateIssueFields
     }
-    return this.post(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue`, payload
-    ) as JiraCreateIssueResponse | AtlassianError
+    return this.post(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue`, payload) as
+      | JiraCreateIssueResponse
+      | AtlassianError
   }
 }
 

@@ -296,7 +296,7 @@ type AuthToken {
   rol: AuthTokenRole
 
   """teams. a list of teamIds where the user is active"""
-  tms: [ID!]
+  tms: [ID!]!
 }
 
 """A role describing super user privileges"""
@@ -3458,12 +3458,20 @@ type SuggestedIntegrationJira implements SuggestedIntegration {
   id: ID!
   service: TaskServiceEnum!
 
+  """URL to a 24x24 avatar icon"""
+  avatar: ID!
+
+  """The immutable jira projectId"""
+  projectId: ID!
+
   """
   The project key used by jira as a more human readable proxy for a projectId
   """
   projectKey: ID!
 
-  """The name of the project as defined by jira"""
+  """
+  The name of the project, prefixed with the cloud name if more than 1 cloudId exists
+  """
   projectName: ID!
 
   """The cloud ID that the project lives on"""
@@ -4465,6 +4473,9 @@ type User {
   suggestedIntegrations(
     """a teamId to use as a filter to provide more accurate suggestions"""
     teamId: ID
+
+    """The id for the user the task is for"""
+    userId: ID
   ): [SuggestedIntegration!]!
   tasks(
     """the datetime cursor"""

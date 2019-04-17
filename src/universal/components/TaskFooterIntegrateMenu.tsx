@@ -7,9 +7,11 @@ import Icon from 'universal/components/Icon'
 import Menu from 'universal/components/Menu'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
+import SuggestedIntegrationGitHubMenuItem from 'universal/components/SuggestedIntegrationGitHubMenuItem'
+import SuggestedIntegrationJiraMenuItem from 'universal/components/SuggestedIntegrationJiraMenuItem'
 import TaskFooterIntegrateMenuSearch from 'universal/components/TaskFooterIntegrateMenuSearch'
-import TaskFooterIntegrateMenuSuggestions from 'universal/components/TaskFooterIntegrateMenuSuggestions'
 import {PALETTE} from 'universal/styles/paletteV2'
+import {TaskServiceEnum} from 'universal/types/graphql'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
@@ -25,10 +27,15 @@ const SearchIcon = styled(Icon)({
   fontSize: 20
 })
 
+const serviceToMenuItemLookup = {
+  [TaskServiceEnum.jira]: SuggestedIntegrationJiraMenuItem,
+  [TaskServiceEnum.github]: SuggestedIntegrationGitHubMenuItem
+}
+
 const TaskFooterIntegrateMenu = (props: Props) => {
   const {closePortal, mutationProps, viewer} = props
   // const {teamId} = task
-  // const {suggestedIntegrations} = viewer
+  const {suggestedIntegrations} = viewer
   // const hasJira = suggestedIntegrations.some(
   //   (integration) => integration.service === TaskServiceEnum.jira
   // )
@@ -53,11 +60,21 @@ const TaskFooterIntegrateMenu = (props: Props) => {
           </MenuItemLabel>
         }
       />
-      <TaskFooterIntegrateMenuSuggestions
-        closePortal={closePortal}
-        mutationProps={mutationProps}
-        viewer={viewer}
-      />
+      {suggestedIntegrations.map((suggestedIntegration) => {
+        const {id, service} = suggestedIntegration
+        const MenuItem = serviceToMenuItemLookup[
+          service
+        ] as any /*ValueOf<typeof serviceToMenuItemLookup>*/
+        if (!MenuItem) return null
+        return (
+          <MenuItem
+            {...mutationProps}
+            key={id}
+            closePortal={closePortal}
+            suggestedIntegration={suggestedIntegration as any}
+          />
+        )
+      })}
       {/*{!hasGitHub && <AddToGitHubMenuItem teamId={teamId} />}*/}
       {/*{!hasAllProviders && <MenuItemHR />}*/}
       {/*<AddToGitHubMenuItem teamId={teamId} />*/}
@@ -80,14 +97,11 @@ export default createFragmentContainer(
   TaskFooterIntegrateMenu,
   graphql`
     fragment TaskFooterIntegrateMenu_viewer on User {
-      ...TaskFooterIntegrateMenuSuggestions_viewer
-      suggestedIntegrations(teamId: $teamId) {
+      suggestedIntegrations(teamId: $teamId, userId: $userId) {
+        id
         service
-        ... on SuggestedIntegrationJira {
-          cloudId
-          projectKey
-          projectName
-        }
+        ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
+        ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
       }
     }
     fragment TaskFooterIntegrateMenu_task on Task {
