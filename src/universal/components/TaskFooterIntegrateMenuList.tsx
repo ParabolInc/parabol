@@ -1,26 +1,30 @@
 import {TaskFooterIntegrateMenuList_suggestedIntegrations} from '__generated__/TaskFooterIntegrateMenuList_suggestedIntegrations.graphql'
-import React, {useEffect, useState} from 'react'
+import {TaskFooterIntegrateMenuList_task} from '__generated__/TaskFooterIntegrateMenuList_task.graphql'
+import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Icon from 'universal/components/Icon'
+import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import Menu from 'universal/components/Menu'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
 import SuggestedIntegrationGitHubMenuItem from 'universal/components/SuggestedIntegrationGitHubMenuItem'
 import SuggestedIntegrationJiraMenuItem from 'universal/components/SuggestedIntegrationJiraMenuItem'
 import TaskFooterIntegrateMenuSearch from 'universal/components/TaskFooterIntegrateMenuSearch'
+import useAllIntegrations from 'universal/hooks/useAllIntegrations'
+import useAtmosphere from 'universal/hooks/useAtmosphere'
+import useFilteredItems from 'universal/hooks/useFilteredItems'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {TaskServiceEnum} from 'universal/types/graphql'
 import useForm from 'universal/utils/relay/useForm'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
-import TypeAheadFilter from 'universal/utils/TypeAheadFilter'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
 interface Props {
   closePortal: () => void
   mutationProps: MenuMutationProps
   placeholder: string
-  taskId: string
   suggestedIntegrations: TaskFooterIntegrateMenuList_suggestedIntegrations
+  task: TaskFooterIntegrateMenuList_task
 }
 
 const SearchIcon = styled(Icon)({
@@ -46,13 +50,12 @@ const serviceToMenuItemLookup = {
   [TaskServiceEnum.github]: SuggestedIntegrationGitHubMenuItem
 }
 
-const typeAheadFilter = new TypeAheadFilter()
-
 const TaskFooterIntegrateMenu = (props: Props) => {
-  const {closePortal, mutationProps, placeholder, suggestedIntegrations} = props
-  const {items} = suggestedIntegrations
+  const {closePortal, mutationProps, placeholder, suggestedIntegrations, task} = props
+  const {hasMore} = suggestedIntegrations
+  const items = suggestedIntegrations.items || []
+  const {teamId, userId} = task
 
-  const [filteredIntegrations, setFilteredIntegrations] = useState(items)
   const {fields, onChange} = useForm({
     search: {
       getDefault: () => ''
@@ -61,18 +64,23 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const {search} = fields
   const {value} = search
   const query = value.toLowerCase()
-
-  useEffect(() => {
-    if (!query) {
-      setFilteredIntegrations(items)
-    }
-    const res = typeAheadFilter.compare(query, items, (item) =>
-      (item.nameWithOwner || item.projectName).toLowerCase()
-    )
-    setFilteredIntegrations(res)
-  }, [query])
+  const atmosphere = useAtmosphere()
+  const filteredIntegrations = useFilteredItems(query, items)
+  const {allItems, status} = useAllIntegrations(
+    atmosphere,
+    query,
+    filteredIntegrations,
+    !!hasMore,
+    teamId,
+    userId
+  )
   return (
-    <Menu keepParentFocus ariaLabel={'Export the task'} closePortal={closePortal}>
+    <Menu
+      keepParentFocus
+      ariaLabel={'Export the task'}
+      closePortal={closePortal}
+      resetActiveOnChanges={[allItems]}
+    >
       <SearchItem>
         <MenuItemComponentAvatar>
           <SearchIcon>search</SearchIcon>
@@ -83,11 +91,11 @@ const TaskFooterIntegrateMenu = (props: Props) => {
           onChange={onChange}
         />
       </SearchItem>
-      {(query && filteredIntegrations.length === 0 && (
+      {(query && allItems.length === 0 && status !== 'loading' && (
         <NoResults key='no-results'>No integrations found!</NoResults>
       )) ||
         null}
-      {filteredIntegrations.slice(0, 10).map((suggestedIntegration) => {
+      {allItems.slice(0, 10).map((suggestedIntegration) => {
         const {id, service} = suggestedIntegration
         const MenuItem = serviceToMenuItemLookup[
           service
@@ -99,13 +107,29 @@ const TaskFooterIntegrateMenu = (props: Props) => {
             key={id}
             closePortal={closePortal}
             query={query}
-            suggestedIntegration={suggestedIntegration as any}
+            suggestedIntegration={suggestedIntegration}
           />
         )
       })}
+      {status === 'loading' && <LoadingComponent spinnerSize={24} height={24} showAfter={0} />}
     </Menu>
   )
 }
+
+graphql`
+  fragment TaskFooterIntegrateMenuListItem on SuggestedIntegration {
+    id
+    service
+    ... on SuggestedIntegrationJira {
+      projectName
+    }
+    ... on SuggestedIntegrationGitHub {
+      nameWithOwner
+    }
+    ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
+    ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
+  }
+`
 
 export default createFragmentContainer(
   TaskFooterIntegrateMenu,
@@ -113,17 +137,13 @@ export default createFragmentContainer(
     fragment TaskFooterIntegrateMenuList_suggestedIntegrations on SuggestedIntegrationQueryPayload {
       hasMore
       items {
-        id
-        service
-        ... on SuggestedIntegrationJira {
-          projectName
-        }
-        ... on SuggestedIntegrationGitHub {
-          nameWithOwner
-        }
-        ...SuggestedIntegrationJiraMenuItem_suggestedIntegration
-        ...SuggestedIntegrationGitHubMenuItem_suggestedIntegration
+        ...TaskFooterIntegrateMenuListItem @relay(mask: false)
       }
+    }
+    fragment TaskFooterIntegrateMenuList_task on Task {
+      id
+      teamId
+      userId
     }
   `
 )

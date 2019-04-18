@@ -16,7 +16,9 @@ const TypeAheadLabel = (props: Props) => {
   const {query, label} = props
   return (
     <Span
-      dangerouslySetInnerHTML={{__html: query ? label.replace(query, `<b>${query}</b>`) : label}}
+      dangerouslySetInnerHTML={{
+        __html: query ? label.replace(new RegExp(query, 'gi'), `<b>$&</b>`) : label
+      }}
     />
   )
 }

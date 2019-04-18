@@ -25,7 +25,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const {closePortal, mutationProps, task, viewer} = props
   const {id: viewerId, userOnTeam} = viewer
   const {atlassianAuth, githubAuth, preferredName, suggestedIntegrations} = userOnTeam!
-  const {id: taskId, teamId, userId} = task
+  const {teamId, userId} = task
   const isViewerAssignee = viewerId === userId
   const hasAtlassian = !!(atlassianAuth && atlassianAuth.isActive)
   const hasGitHub = !!(githubAuth && githubAuth.isActive)
@@ -51,7 +51,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       mutationProps={mutationProps}
       placeholder={placeholder}
       suggestedIntegrations={suggestedIntegrations}
-      taskId={taskId}
+      task={task}
     />
   )
 }
@@ -75,7 +75,7 @@ export default createFragmentContainer(
       }
     }
     fragment TaskFooterIntegrateMenu_task on Task {
-      id
+      ...TaskFooterIntegrateMenuList_task
       teamId
       userId
     }

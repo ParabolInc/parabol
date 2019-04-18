@@ -21,6 +21,7 @@ const TaskFooterIntegrateToggle = (props: Props) => {
   const {togglePortal, originRef, menuPortal, closePortal, loadingWidth, loadingDelay} = useMenu(
     MenuPosition.UPPER_RIGHT,
     {
+      loadingWidth: 200,
       onOpen: toggleMenuState,
       onClose: toggleMenuState
     }

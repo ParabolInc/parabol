@@ -3514,10 +3514,10 @@ type SuggestedIntegrationQueryPayload {
   """
   true if the items returned are a subset of all the possible integration, else false (all possible integrations)
   """
-  hasMore: Boolean!
+  hasMore: Boolean
 
   """All the integrations that are likely to be integrated"""
-  items: [SuggestedIntegration!]!
+  items: [SuggestedIntegration!]
 }
 
 """A long-term task shared across the team, assigned to a single user """
@@ -3586,7 +3586,7 @@ type Task {
   """
   * The userId, index useful for server-side methods getting all tasks under a user
   """
-  userId: ID
+  userId: ID!
 }
 
 """A connection to a list of items."""
@@ -4329,6 +4329,12 @@ scalar URL
 type User {
   """The userId provided by auth0"""
   id: ID!
+
+  """All the integrations that the user could possibly use"""
+  allAvailableIntegrations(
+    """a teamId to use as a filter for the access tokens"""
+    teamId: ID!
+  ): [SuggestedIntegration!]!
 
   """
   The auth for the user. access token is null if not viewer. Use isActive to check for presence

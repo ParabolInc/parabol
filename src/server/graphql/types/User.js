@@ -47,6 +47,7 @@ import suggestedIntegrations from 'server/graphql/queries/suggestedIntegrations'
 import AtlassianAuth from 'server/graphql/types/AtlassianAuth'
 import GitHubAuth from 'server/graphql/types/GitHubAuth'
 import {GITHUB} from 'universal/utils/constants'
+import allAvailableIntegrations from 'server/graphql/queries/allAvailableIntegrations'
 
 const User = new GraphQLObjectType({
   name: 'User',
@@ -56,6 +57,7 @@ const User = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: 'The userId provided by auth0'
     },
+    allAvailableIntegrations,
     atlassianAuth: {
       type: AtlassianAuth,
       description:

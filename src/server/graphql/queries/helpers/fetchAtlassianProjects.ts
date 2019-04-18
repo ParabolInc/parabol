@@ -35,7 +35,8 @@ const fetchAtlassianProjects = async (dataLoader: DataLoaderWorker, teamId, user
     } else if (res) {
       const {cloudId, newProjects} = res
       const newItems = newProjects.map((project) => ({
-        id: project.id,
+        // projectId is not globally unique, but a cloudId is
+        id: `${cloudId}:${project.id}`,
         service: 'jira' as any, // TaskServiceEnum.jira
         cloudId,
         projectName: getProjectName(project.name, sites, cloudId),

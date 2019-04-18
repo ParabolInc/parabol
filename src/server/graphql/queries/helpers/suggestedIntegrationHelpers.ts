@@ -43,9 +43,21 @@ export const useOnlyUserIntegrations = (
     : undefined
 }
 
-export const getTeamIntegrationsByUserId = (teamId: string): Promise<IntegrationByUserId[]> => {
+const makeId = (item) => {
+  const {service} = item
+  switch (service) {
+    case 'github':
+      return item.nameWithOwner
+    case 'jira':
+      return `${item.cloudId}:${item.projectId}`
+  }
+}
+
+export const getTeamIntegrationsByUserId = async (
+  teamId: string
+): Promise<IntegrationByUserId[]> => {
   const r = getRethink()
-  return r
+  const res = await r
     .table('Task')
     .getAll(teamId, {index: 'teamId'})
     .filter((row) =>
@@ -89,13 +101,10 @@ export const getTeamIntegrationsByUserId = (teamId: string): Promise<Integration
       cloudId: row('group')(7),
       lastUsedAt: row('reduction')
     }))
-    .merge((row) => ({
-      id: r.or(
-        // create a unique ID across all provider interfaces
-        row('projectId').default(false),
-        row('nameWithOwner').default(false)
-      )
-    }))
+  return res.map((item) => ({
+    ...item,
+    id: makeId(item)
+  }))
 }
 
 export const getPermsByTaskService = async (

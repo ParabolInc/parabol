@@ -27,6 +27,7 @@ interface Props {
   closePortal: () => void
   defaultActiveIdx?: number
   keepParentFocus?: boolean
+  resetActiveOnChanges?: any[]
   tabReturns?: boolean
 }
 
@@ -38,6 +39,7 @@ const Menu = (props: Props) => {
     closePortal,
     defaultActiveIdx,
     keepParentFocus,
+    resetActiveOnChanges,
     tabReturns
   } = props
   const [activeIdx, setActiveIdx] = useState<number>(defaultActiveIdx || 0)
@@ -52,7 +54,7 @@ const Menu = (props: Props) => {
         menuRef.current && menuRef.current.focus()
       }
     }
-  }, [])
+  }, resetActiveOnChanges || [])
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -83,8 +85,11 @@ const Menu = (props: Props) => {
             nextIdx = ii
             break
           } else {
+            const {current} = menuRef
+            if (!current) return
+            const el = current.parentElement || current
             // if we're at the top & there's a header, put the header into view
-            menuRef.current && menuRef.current.scrollIntoView()
+            el.scrollTo(0, 0)
           }
         }
       }

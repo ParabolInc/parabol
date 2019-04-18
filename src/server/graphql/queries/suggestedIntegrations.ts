@@ -47,7 +47,6 @@ export default {
     }
     const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByUserId, userId)
     if (userIntegrationsForTeam) {
-      console.log('using only user integrations', userIntegrationsForTeam.map(({id}) => id))
       return {items: userIntegrationsForTeam, hasMore: true}
     }
 

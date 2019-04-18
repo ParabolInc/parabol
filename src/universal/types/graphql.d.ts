@@ -53,6 +53,11 @@ export interface IUser {
   id: string
 
   /**
+   * All the integrations that the user could possibly use
+   */
+  allAvailableIntegrations: Array<SuggestedIntegration>
+
+  /**
    * The auth for the user. access token is null if not viewer. Use isActive to check for presence
    */
   atlassianAuth: IAtlassianAuth | null
@@ -270,6 +275,13 @@ export interface IUser {
   userOnTeam: IUser | null
 }
 
+export interface IAllAvailableIntegrationsOnUserArguments {
+  /**
+   * a teamId to use as a filter for the access tokens
+   */
+  teamId: string
+}
+
 export interface IAtlassianAuthOnUserArguments {
   /**
    * The teamId for the atlassian auth token
@@ -460,6 +472,22 @@ export interface IUserOnTeamOnUserArguments {
    * The other user
    */
   userId: string
+}
+
+export type SuggestedIntegration = ISuggestedIntegrationGitHub | ISuggestedIntegrationJira
+
+export interface ISuggestedIntegration {
+  __typename: 'SuggestedIntegration'
+  id: string
+  service: TaskServiceEnum
+}
+
+/**
+ * The list of services for task integrations
+ */
+export const enum TaskServiceEnum {
+  github = 'github',
+  jira = 'jira'
 }
 
 /**
@@ -1815,7 +1843,7 @@ export interface ITask {
   /**
    * * The userId, index useful for server-side methods getting all tasks under a user
    */
-  userId: string | null
+  userId: string
 }
 
 export interface ITaskEditorDetails {
@@ -1838,14 +1866,6 @@ export interface ITaskIntegration {
   __typename: 'TaskIntegration'
   id: string
   service: TaskServiceEnum
-}
-
-/**
- * The list of services for task integrations
- */
-export const enum TaskServiceEnum {
-  github = 'github',
-  jira = 'jira'
 }
 
 /**
@@ -2783,12 +2803,12 @@ export interface ISuggestedIntegrationQueryPayload {
   /**
    * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
    */
-  hasMore: boolean
+  hasMore: boolean | null
 
   /**
    * All the integrations that are likely to be integrated
    */
-  items: Array<SuggestedIntegration>
+  items: Array<SuggestedIntegration> | null
 }
 
 export interface IStandardMutationError {
@@ -2803,14 +2823,6 @@ export interface IStandardMutationError {
    * The full error
    */
   message: string
-}
-
-export type SuggestedIntegration = ISuggestedIntegrationGitHub | ISuggestedIntegrationJira
-
-export interface ISuggestedIntegration {
-  __typename: 'SuggestedIntegration'
-  id: string
-  service: TaskServiceEnum
 }
 
 export interface IVerifiedInvitationPayload {

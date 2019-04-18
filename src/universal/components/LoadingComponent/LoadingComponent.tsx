@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {forwardRef, useEffect} from 'react'
 import styled from 'react-emotion'
 import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
 import Spinner from 'universal/modules/spinner/components/Spinner/Spinner'
@@ -31,7 +31,8 @@ type Props = {
   spinnerSize?: number
 }
 
-const LoadingComponent = (props: Props) => {
+// the ref isn't currenty used, but the Menu component likes to pass along a ref to figure out if the child is an item
+const LoadingComponent = forwardRef((props: Props, ref: any) => {
   const {
     delay,
     height,
@@ -55,7 +56,7 @@ const LoadingComponent = (props: Props) => {
   }, [])
   if (showAfter && !minDelay) return null
   return (
-    <LoadingWrapper height={height} width={width}>
+    <LoadingWrapper innerRef={ref} height={height} width={width}>
       <Spinner
         delay={delay}
         fill={timedOut ? PALETTE.ERROR.MAIN : PALETTE.BACKGROUND.TEAL}
@@ -63,6 +64,6 @@ const LoadingComponent = (props: Props) => {
       />
     </LoadingWrapper>
   )
-}
+})
 
 export default LoadingComponent

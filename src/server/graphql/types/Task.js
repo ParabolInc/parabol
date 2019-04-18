@@ -109,7 +109,7 @@ const Task = new GraphQLObjectType({
       description: 'The timestamp the task was updated'
     },
     userId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description:
         '* The userId, index useful for server-side methods getting all tasks under a user'
     }
