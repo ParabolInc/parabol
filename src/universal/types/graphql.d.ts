@@ -4252,6 +4252,11 @@ export interface IAddProviderPayload {
    */
   joinedIntegrationIds: Array<string> | null
   teamMember: ITeamMember | null
+
+  /**
+   * The user with updated githubAuth
+   */
+  user: IUser | null
 }
 
 export interface IAddSlackChannelInput {

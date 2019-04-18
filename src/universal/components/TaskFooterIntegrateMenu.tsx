@@ -65,6 +65,14 @@ graphql`
 `
 
 graphql`
+  fragment TaskFooterIntegrateMenuViewerGitHubAuth on User {
+    githubAuth(teamId: $teamId) {
+      isActive
+    }
+  }
+`
+
+graphql`
   fragment TaskFooterIntegrateMenuViewerSuggestedIntegrations on User {
     suggestedIntegrations(teamId: $teamId) {
       ...TaskFooterIntegrateMenuList_suggestedIntegrations
@@ -81,9 +89,7 @@ export default createFragmentContainer(
         preferredName
         ...TaskFooterIntegrateMenuViewerAtlassianAuth @relay(mask: false)
         ...TaskFooterIntegrateMenuViewerSuggestedIntegrations @relay(mask: false)
-        githubAuth(teamId: $teamId) {
-          isActive
-        }
+        ...TaskFooterIntegrateMenuViewerGitHubAuth @relay(mask: false)
       }
     }
     fragment TaskFooterIntegrateMenu_task on Task {

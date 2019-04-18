@@ -105,6 +105,9 @@ type AddProviderPayload {
   """All the integrationIds that the provider has successfully joined"""
   joinedIntegrationIds: [ID!]
   teamMember: TeamMember
+
+  """The user with updated githubAuth"""
+  user: User
 }
 
 type AddReflectTemplatePayload {

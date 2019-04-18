@@ -24,6 +24,11 @@ graphql`
       preferredName
       picture
     }
+    user {
+      ...TaskFooterIntegrateMenuViewerGitHubAuth
+      # after adding, check for new integrations (populates the menu)
+      ...TaskFooterIntegrateMenuViewerSuggestedIntegrations
+    }
   }
 `
 
