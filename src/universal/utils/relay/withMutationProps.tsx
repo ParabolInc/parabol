@@ -19,7 +19,7 @@ export interface WithMutationProps {
 
 export type MenuMutationProps = Pick<
   WithMutationProps,
-  'onCompleted' | 'onError' | 'submitMutation'
+  'onCompleted' | 'onError' | 'submitMutation' | 'submitting'
 >
 
 export interface MutationServerError {

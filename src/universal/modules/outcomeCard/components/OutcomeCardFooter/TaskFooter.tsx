@@ -62,10 +62,11 @@ const TaskFooter = (props: Props) => {
     onCompleted,
     onError,
     submitMutation,
+    submitting,
     task,
     toggleMenuState
   } = props
-  const mutationProps = {onError, onCompleted, submitMutation}
+  const mutationProps = {onError, onCompleted, submitMutation, submitting}
   const atmosphere = useAtmosphere()
   const showTeam = area === USER_DASH
   const {content, id: taskId, integration, tags} = task

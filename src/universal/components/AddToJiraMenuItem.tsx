@@ -15,10 +15,11 @@ interface Props {
 
 const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId} = props
-  const {submitMutation, onError, onCompleted} = mutationProps
+  const {submitMutation, submitting, onError, onCompleted} = mutationProps
   const atmosphere = useAtmosphere()
   return (
     <MenuItem
+      noCloseOnClick
       ref={ref}
       label={
         <MenuItemLabel>
@@ -30,6 +31,7 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
       }
       onClick={handleOpenOAuth({
         name: IntegrationServiceEnum.atlassian,
+        submitting,
         submitMutation,
         atmosphere,
         onError,

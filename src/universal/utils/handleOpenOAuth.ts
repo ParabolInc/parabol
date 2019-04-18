@@ -24,6 +24,7 @@ const handleOpenOAuth = ({
   onCompleted,
   teamId
 }: Config) => () => {
+  if (submitting) return
   const {makeUri} = providerLookup[name]
   const providerState = Math.random()
     .toString(36)

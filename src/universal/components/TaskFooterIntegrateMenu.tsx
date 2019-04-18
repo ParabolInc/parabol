@@ -56,6 +56,22 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   )
 }
 
+graphql`
+  fragment TaskFooterIntegrateMenuViewerAtlassianAuth on User {
+    atlassianAuth(teamId: $teamId) {
+      isActive
+    }
+  }
+`
+
+graphql`
+  fragment TaskFooterIntegrateMenuViewerSuggestedIntegrations on User {
+    suggestedIntegrations(teamId: $teamId) {
+      ...TaskFooterIntegrateMenuList_suggestedIntegrations
+    }
+  }
+`
+
 export default createFragmentContainer(
   TaskFooterIntegrateMenu,
   graphql`
@@ -63,14 +79,10 @@ export default createFragmentContainer(
       id
       userOnTeam(userId: $userId) {
         preferredName
-        atlassianAuth(teamId: $teamId) {
-          isActive
-        }
+        ...TaskFooterIntegrateMenuViewerAtlassianAuth @relay(mask: false)
+        ...TaskFooterIntegrateMenuViewerSuggestedIntegrations @relay(mask: false)
         githubAuth(teamId: $teamId) {
           isActive
-        }
-        suggestedIntegrations(teamId: $teamId) {
-          ...TaskFooterIntegrateMenuList_suggestedIntegrations
         }
       }
     }

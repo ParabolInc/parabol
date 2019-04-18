@@ -15,10 +15,11 @@ interface Props {
 
 const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId} = props
-  const {submitMutation, onError, onCompleted} = mutationProps
+  const {submitting, submitMutation, onError, onCompleted} = mutationProps
   const atmosphere = useAtmosphere()
   return (
     <MenuItem
+      noCloseOnClick
       ref={ref}
       label={
         <MenuItemLabel>
@@ -30,6 +31,7 @@ const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
       }
       onClick={handleOpenOAuth({
         name: GITHUB,
+        submitting,
         submitMutation,
         atmosphere,
         onError,

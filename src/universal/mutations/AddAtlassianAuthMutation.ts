@@ -8,7 +8,9 @@ graphql`
   fragment AddAtlassianAuthMutation_team on AddAtlassianAuthPayload {
     user {
       ...AtlassianProviderRow_viewer
-      ...ProviderList_viewer
+      ...TaskFooterIntegrateMenuViewerAtlassianAuth
+      # after adding, check for new integrations (populates the menu)
+      ...TaskFooterIntegrateMenuViewerSuggestedIntegrations
     }
   }
 `

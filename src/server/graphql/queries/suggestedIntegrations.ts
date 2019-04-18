@@ -42,7 +42,7 @@ export default {
 
     // if the team has no integrations, return every possible integration for the user
     if (!teamIntegrationsByUserId.length) {
-      const items = fetchAllIntegrations(dataLoader, teamId, userId)
+      const items = await fetchAllIntegrations(dataLoader, teamId, userId)
       return {items, hasMore: false}
     }
     const userIntegrationsForTeam = useOnlyUserIntegrations(teamIntegrationsByUserId, userId)
@@ -72,6 +72,13 @@ export default {
       dedupedTeamIntegrations.push(integration)
     }
 
-    return {hasMore: true, items: [...recentUserIntegrations, ...dedupedTeamIntegrations]}
+    const userAndTeamItems = [...recentUserIntegrations, ...dedupedTeamIntegrations]
+
+    // if other users have items that the viewer can't access, revert back to fetching everything
+    if (userAndTeamItems.length === 0) {
+      const items = await fetchAllIntegrations(dataLoader, teamId, userId)
+      return {items, hasMore: false}
+    }
+    return {hasMore: true, items: userAndTeamItems}
   }
 }
