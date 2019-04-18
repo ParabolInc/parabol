@@ -24,7 +24,8 @@
     "build:client": "webpack --config ./webpack/webpack.prod.config.js",
     "build:deploy": "export WEBPACK_DEPLOY=true && npm run build",
     "build:dll": "webpack --config ./webpack/webpack.config.dll.js",
-    "build:relay": "yarn update-schema && relay-compiler --src ./src --schema build/schema.json --extensions js ts tsx --artifactDirectory src/__generated__ --language typescript --client-schema src/client/clientSchema.graphql --persist-output src/server/graphql/queryMap.json --watchman false",
+    "build:relay": "yarn update-schema && yarn build:relay-only",
+    "build:relay-unsafe": "relay-compiler --src ./src --exclude '**/__generated__/**' --exclude '**/githubSchema.graphql' --schema build/schema.json --extensions js ts tsx --artifactDirectory src/__generated__ --language typescript --client-schema src/client/clientSchema.graphql --persist-output src/server/graphql/queryMap.json --watchman false",
     "build:stats": "export WEBPACK_STATS=true && npm run build:client",
     "db:migrate": "npm run db:migrate-up-all",
     "db:migrate-testing": "export NODE_ENV=test && npm run db:migrate && node ./src/server/__tests__/setup/softenDurability.babel.js",
@@ -49,6 +50,8 @@
     "update-schema": "node ./src/server/utils/updateSchema.babel.js && yarn tsgen",
     "postversion": "git push --follow-tags",
     "tsgen": "gql2ts ./build/schema.json -e $(pwd)/src/universal/types/config.js -o ./src/universal/types/graphql.d.ts && prettier --write 'src/universal/types/graphql.d.ts'",
+    "tsgen:gh": "gql2ts ./src/server/utils/githubSchema.json -e $(pwd)/src/universal/types/configGH.js -o ./src/universal/types/githubGraphql.d.ts && prettier --write 'src/universal/types/githubGraphql.d.ts'",
+    "tsgen:ghQuery": "graphql-typescript-definitions --schema-types-path . && prettier --write 'src/universal/utils/githubQueries/**/*.d.ts' ",
     "storybook": "start-storybook -p 6006 -c .storybook",
     "build-storybook": "build-storybook",
     "cy:run": "cypress run --record --key $CYPRESS_SECRET"
@@ -95,6 +98,7 @@
     "awesome-typescript-loader": "^5.2.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
+    "babel-plugin-inline-import": "^3.0.0",
     "babel-plugin-module-resolver": "^3.1.3",
     "babel-plugin-relay": "3.0.0",
     "chance": "^1.0.6",
@@ -109,6 +113,8 @@
     "flow-bin": "^0.73.0",
     "glob": "^7.1.2",
     "gql2ts": "^1.10.1",
+    "graphql-typed": "^0.4.1",
+    "graphql-typescript-definitions": "^0.17.1",
     "hard-source-webpack-plugin": "^0.13.1",
     "html-webpack-plugin": "^3.2.0",
     "husky": "^0.14.3",
@@ -285,7 +291,8 @@
     "@types/relay-runtime": "https://github.com/mattkrick/relay-runtime-strict-types/tarball/2b79845de58b8f26a37a5b5886e0b66534ffa23d",
     "@types/react": "16.8.10",
     "@types/react-dom": "16.8.3",
-    "relay-runtime": "https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1"
+    "relay-runtime": "https://github.com/mattkrick/relay/tarball/0a49c03689370fc471fe066fb0515b7992dd04b1",
+    "graphql": "14.1.1"
   },
   "standard": {
     "parser": "babel-eslint",

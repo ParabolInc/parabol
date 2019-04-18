@@ -7,6 +7,7 @@ const pluginDynamicImport = require('@babel/plugin-syntax-dynamic-import').defau
 const pluginRelay = require('babel-plugin-relay')
 const presetFlow = require('@babel/preset-flow').default
 const presetReact = require('@babel/preset-react').default
+const pluginInlineImport = require('babel-plugin-inline-import').default
 const vendors = require('../dll/vendors')
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
@@ -16,6 +17,7 @@ const babelLoader = {
     cacheDirectory: true,
     babelrc: false,
     plugins: [
+      pluginInlineImport,
       pluginObjectRestSpread,
       pluginClassProps,
       pluginDynamicImport,

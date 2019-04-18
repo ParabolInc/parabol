@@ -6,5 +6,5 @@ module.exports = {
     // 'relay-runtime': '@mattkrick/relay-runtime'
   },
   modules: [path.join(__dirname, '../src'), 'node_modules'],
-  extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx']
+  extensions: ['.wasm', '.mjs', '.js', '.json', '.ts', '.tsx', '.graphql']
 }

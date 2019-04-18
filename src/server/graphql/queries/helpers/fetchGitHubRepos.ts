@@ -1,32 +1,26 @@
-import fetch from 'node-fetch'
 import getRethink from 'server/database/rethinkDriver'
+import GitHubManager from 'server/utils/GitHubManager'
 import {Omit} from 'types/generics'
 import {ISuggestedIntegrationGitHub} from 'universal/types/graphql'
 import {GITHUB} from 'universal/utils/constants'
-import GitHubClientManager from 'universal/utils/GitHubClientManager'
+import {GetReposQueryData} from 'universal/utils/githubQueries/getRepos.graphql'
 
-interface Repo {
-  nameWithOwner: string
-  viewerCanAdminister: boolean
-  updatedAt: string
-}
-
-interface GitHubOrg {
-  repositories: {
-    nodes: Repo[]
-  }
-}
-
-const getUniqueRepos = (orgs: GitHubOrg[], personalRepos: Repo[]) => {
+const getUniqueRepos = (
+  orgs: (GetReposQueryData.ViewerOrganizationsNodes | null)[],
+  personalRepos: (GetReposQueryData.ViewerRepositoriesNodes | null)[]
+) => {
   const repoSet = new Set()
-  const repos = [] as Array<Repo>
+  const repos = [] as GetReposQueryData.ViewerRepositoriesNodes[]
 
   // add in the organization repos
   for (let i = 0; i < orgs.length; i++) {
     const organization = orgs[i]
+    if (!organization) continue
     const orgRepos = organization.repositories.nodes
+    if (!orgRepos) continue
     for (let j = 0; j < orgRepos.length; j++) {
       const repo = orgRepos[j]
+      if (!repo) continue
       repoSet.add(repo.nameWithOwner)
       repos.push(repo)
     }
@@ -34,6 +28,7 @@ const getUniqueRepos = (orgs: GitHubOrg[], personalRepos: Repo[]) => {
   // add in repos from personal & collaborations
   for (let i = 0; i < personalRepos.length; i++) {
     const repo = personalRepos[i]
+    if (!repo) continue
     if (!repoSet.has(repo.nameWithOwner)) {
       repos.push(repo)
     }
@@ -51,13 +46,13 @@ const fetchGitHubRepos = async (teamId: string, userId: string) => {
     .default(null)
   if (!auth) return []
   const {accessToken} = auth
-  const manager = new GitHubClientManager(accessToken, {fetch})
+  const manager = new GitHubManager(accessToken)
   const repos = await manager.getRepos()
   if ('message' in repos) {
     console.error(repos)
     return []
   }
-  if ('errors' in repos) {
+  if (Array.isArray(repos.errors)) {
     // TODO handle Oauth forbidden error
     console.error(repos.errors[0])
   }
@@ -65,8 +60,8 @@ const fetchGitHubRepos = async (teamId: string, userId: string) => {
   if (!data || !data.viewer) return []
   const {viewer} = data
   const {organizations, repositories} = viewer
-  const {nodes: orgs} = organizations
-  const {nodes: personalRepos} = repositories
+  const orgs = organizations.nodes || []
+  const personalRepos = repositories.nodes || []
   const uniqueRepos = getUniqueRepos(orgs, personalRepos)
   return uniqueRepos.map((repo) => ({
     id: repo.nameWithOwner,

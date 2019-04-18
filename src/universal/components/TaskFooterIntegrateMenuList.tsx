@@ -3,6 +3,7 @@ import {TaskFooterIntegrateMenuList_task} from '__generated__/TaskFooterIntegrat
 import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
+import {ValueOf} from 'types/generics'
 import Icon from 'universal/components/Icon'
 import LoadingComponent from 'universal/components/LoadingComponent/LoadingComponent'
 import Menu from 'universal/components/Menu'
@@ -54,7 +55,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
   const {closePortal, mutationProps, placeholder, suggestedIntegrations, task} = props
   const {hasMore} = suggestedIntegrations
   const items = suggestedIntegrations.items || []
-  const {teamId, userId} = task
+  const {id: taskId, teamId, userId} = task
 
   const {fields, onChange} = useForm({
     search: {
@@ -97,9 +98,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
         null}
       {allItems.slice(0, 10).map((suggestedIntegration) => {
         const {id, service} = suggestedIntegration
-        const MenuItem = serviceToMenuItemLookup[
-          service
-        ] as any /*ValueOf<typeof serviceToMenuItemLookup>*/
+        const MenuItem = serviceToMenuItemLookup[service] as ValueOf<typeof serviceToMenuItemLookup>
         if (!MenuItem) return null
         return (
           <MenuItem
@@ -108,6 +107,7 @@ const TaskFooterIntegrateMenu = (props: Props) => {
             closePortal={closePortal}
             query={query}
             suggestedIntegration={suggestedIntegration}
+            taskId={taskId}
           />
         )
       })}

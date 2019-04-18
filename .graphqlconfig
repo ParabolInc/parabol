@@ -1,10 +1,25 @@
 {
-   "schemaPath": "./build/schema.graphql",
-   "name": "Parabol GraphQL Schema",
-   "includes": ["*"],
-   "extensions": {
-      "endpoints": {
-
+  "projects": {
+    "Parabol": {
+      "schemaPath": "./build/schema.graphql",
+      "name": "Parabol GraphQL Schema",
+      "includes": [
+        "*"
+      ],
+      "excludes": [
+        "githubSchema.graphql",
+        "./src/universal/utils/githubQueries"
+      ]
+    },
+    "GitHub": {
+      "schemaPath": "./src/server/utils/githubSchema.graphql",
+      "name": "GitHub GraphQL Schema",
+      "includes": [
+        "./src/universal/utils/githubQueries/*.graphql"
+      ],
+      "extensions": {
+        "schemaTypesPath": "src/universal/utils/githubQueries/types"
       }
-   }
+    }
+  }
 }

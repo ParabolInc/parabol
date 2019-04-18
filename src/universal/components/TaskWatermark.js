@@ -1,12 +1,11 @@
 import React from 'react'
 import FontAwesome from 'react-fontawesome'
 import ui from 'universal/styles/ui'
-import {GITHUB} from 'universal/utils/constants'
 import PropTypes from 'prop-types'
 import styled from 'react-emotion'
 
 const iconLookup = {
-  [GITHUB]: 'github'
+  github: 'github'
 }
 
 const WatermarkBlock = styled('div')({
