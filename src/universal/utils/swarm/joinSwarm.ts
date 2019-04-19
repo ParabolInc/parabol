@@ -13,6 +13,7 @@ const joinSwarm = async (
   dispatchState: Dispatch<ReducerAction<typeof reducerSwarm>>,
   disposable: MutableRefObject<(() => void) | undefined>
 ) => {
+  if (!atmosphere.upgradeTransport) return
   await atmosphere.upgradeTransport()
   const {trebuchet} = atmosphere.transport as GQLTrebuchetClient
   const swarm = new MediaSwarm({
