@@ -15,14 +15,11 @@ interface Props {
 
 const ProviderList = (props: Props) => {
   const {viewer, retry, teamId} = props
-  const {
-    providerMap,
-    featureFlags: {jira}
-  } = viewer
+  const {providerMap} = viewer
   return (
     <SettingsWrapper>
       <Panel hideFirstRowBorder>
-        {jira && <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />}
+        <AtlassianProviderRow teamId={teamId} retry={retry} viewer={viewer} />
         <ProviderRow name={GITHUB} providerDetails={providerMap[GITHUB]} teamId={teamId} />
         <ProviderRow name={SLACK} providerDetails={providerMap[SLACK]} teamId={teamId} />
       </Panel>
@@ -34,9 +31,6 @@ export default createFragmentContainer(
   ProviderList,
   graphql`
     fragment ProviderList_viewer on User {
-      featureFlags {
-        jira
-      }
       providerMap(teamId: $teamId) {
         GitHubIntegration {
           ...ProviderRow_providerDetails
