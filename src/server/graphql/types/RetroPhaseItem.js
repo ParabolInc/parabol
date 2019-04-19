@@ -33,6 +33,12 @@ const RetroPhaseItem = new GraphQLObjectType({
       description:
         'The question to answer during the phase of the retrospective (eg What went well?)',
       type: new GraphQLNonNull(GraphQLString)
+    },
+    description: {
+      description:
+        'The description to the question for further context. A long version of the question.',
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({description}) => description || ''
     }
   })
 })

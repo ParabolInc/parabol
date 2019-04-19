@@ -73,7 +73,7 @@ class RetroReflectPhase extends Component<Props, State> {
     const {viewerId} = atmosphere
     const {newMeeting} = team
     if (!newMeeting) return
-    const {facilitatorUserId, localPhase, meetingId, reflectionGroups, localStage} = newMeeting
+    const {facilitatorUserId, localPhase, id: meetingId, reflectionGroups, localStage} = newMeeting
     const isComplete = localStage ? localStage.isComplete : false
     const reflectPrompts = localPhase!.reflectPrompts!
     const isFacilitating = facilitatorUserId === viewerId
@@ -93,11 +93,12 @@ class RetroReflectPhase extends Component<Props, State> {
           <StyledWrapper phaseItemCount={reflectPrompts.length} innerRef={this.phaseRef}>
             {reflectPrompts.map((prompt, idx) => (
               <PhaseItemColumn
-                key={prompt.retroPhaseItemId}
+                key={prompt.id}
                 meeting={newMeeting}
-                retroPhaseItemId={prompt.retroPhaseItemId}
+                retroPhaseItemId={prompt.id}
                 question={prompt.question}
                 editorIds={prompt.editorIds}
+                description={prompt.description}
                 idx={idx}
                 phaseRef={this.phaseRef}
               />
@@ -133,13 +134,24 @@ class RetroReflectPhase extends Component<Props, State> {
   }
 }
 
+graphql`
+  fragment RetroReflectPhase_phase on ReflectPhase {
+    reflectPrompts {
+      id
+      question
+      description
+      editorIds
+    }
+  }
+`
+
 export default createFragmentContainer(
   withAtmosphere(RetroReflectPhase),
   graphql`
     fragment RetroReflectPhase_team on Team {
       newMeeting {
         ...PhaseItemColumn_meeting
-        meetingId: id
+        id
         facilitatorUserId
         ... on RetrospectiveMeeting {
           localStage {
@@ -149,22 +161,10 @@ export default createFragmentContainer(
             id
           }
           localPhase {
-            ... on ReflectPhase {
-              reflectPrompts {
-                retroPhaseItemId: id
-                question
-                editorIds
-              }
-            }
+            ...RetroReflectPhase_phase @relay(mask: false)
           }
           phases {
-            ... on ReflectPhase {
-              reflectPrompts {
-                retroPhaseItemId: id
-                question
-                editorIds
-              }
-            }
+            ...RetroReflectPhase_phase @relay(mask: false)
           }
         }
       }

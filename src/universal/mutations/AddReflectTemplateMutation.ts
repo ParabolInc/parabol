@@ -14,6 +14,7 @@ graphql`
       name
       teamId
       prompts {
+        description
         question
         sortOrder
       }
@@ -76,6 +77,7 @@ const AddReflectTemplateMutation = (
       const templateId = proxyTemplate.getValue('id')
 
       const prompt = createProxyRecord(store, 'ReflectTemplatePrompt', {
+        description: '',
         question: 'New prompt',
         createdAt: nowISO,
         teamId,

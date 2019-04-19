@@ -4,6 +4,7 @@ import {RETRO_PHASE_ITEM} from 'universal/utils/constants'
 export class Prompt {
   id: string
   createdAt: Date
+  description: string
   isActive: boolean
   phaseItemType: string
   sortOrder: number
@@ -13,7 +14,13 @@ export class Prompt {
   title: string
   updatedAt: Date
 
-  constructor (template: Template, sortOrder: number, question: string, title: string = question) {
+  constructor (
+    template: Template,
+    sortOrder: number,
+    question: string,
+    description: string,
+    title: string = question
+  ) {
     const now = new Date()
     this.id = shortid.generate()
     this.createdAt = now
@@ -24,6 +31,7 @@ export class Prompt {
     this.updatedAt = now
     this.templateId = template.id
     this.question = question
+    this.description = description || ''
     this.title = title
   }
 }
@@ -49,21 +57,42 @@ class Template {
 
 const templateBase = {
   'Working & Stuck': [
-    {question: 'What’s working?', title: 'Positive'},
-    {question: 'Where did you get stuck?', title: 'Negative'}
+    {
+      description: 'What’s helping us make progress toward our goals?',
+      question: 'What’s working?',
+      title: 'Positive'
+    },
+    {
+      description: 'What’s blocking us from achieving our goals?',
+      question: 'Where did you get stuck?',
+      title: 'Negative'
+    }
   ],
-  'Glad, Sad, Mad': [{question: 'Glad'}, {question: 'Sad'}, {question: 'Mad'}],
+  'Glad, Sad, Mad': [
+    {description: 'What are you happy about?', question: 'Glad'},
+    {description: 'What could be improved?', question: 'Sad'},
+    {description: 'What are you angry or disappointed about?', question: 'Mad'}
+  ],
   'Liked, Learned, Lacked, Longed for': [
-    {question: 'Liked'},
-    {question: 'Learned'},
-    {question: 'Lacked'},
-    {question: 'Longed for'}
+    {description: 'What went well?', question: 'Liked'},
+    {description: 'What did you learn?', question: 'Learned'},
+    {description: 'What was missing?', question: 'Lacked'},
+    {description: 'What did you want to happen?', question: 'Longed for'}
   ],
-  'Start Stop Continue': [{question: 'Start'}, {question: 'Stop'}, {question: 'Continue'}],
-  Sailboat: [{question: 'Wind in the sails'}, {question: 'Anchors'}, {question: 'Risks'}]
+  'Start Stop Continue': [
+    {description: 'What new behaviors should we adopt?', question: 'Start'},
+    {description: 'What existing behaviors should we cease doing?', question: 'Stop'},
+    {description: 'What current behaviors should we keep doing?', question: 'Continue'}
+  ],
+  Sailboat: [
+    {description: 'What’s helping the team reach its goals?', question: 'Wind in the sails'},
+    {description: 'What’s slowing the team down in your journey?', question: 'Anchors'},
+    {description: 'What risks may the team encounter ahead?', question: 'Risks'}
+  ]
 }
 
 interface TemplatePrompt {
+  description: string
   question: string
   title?: string
 }
@@ -80,7 +109,7 @@ const makeRetroTemplates = (teamId: string, templateObj: TemplateObject = templa
     const promptBase = templateObj[templateName]
     const template = new Template(templateName, teamId)
     const prompts = promptBase.map(
-      (prompt, idx) => new Prompt(template, idx, prompt.question, prompt.title)
+      (prompt, idx) => new Prompt(template, idx, prompt.question, prompt.description, prompt.title)
     )
     templates.push(template)
     phaseItems.push(...prompts)
