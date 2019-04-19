@@ -10,6 +10,7 @@ import Legitity from 'universal/validation/Legitity'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
+  isEditingDescription: boolean
   isHover: boolean
   question: string
   promptId: string
@@ -61,11 +62,12 @@ class EditableTemplatePrompt extends Component<Props> {
   }
 
   render () {
-    const {error, isHover, question} = this.props
+    const {error, isHover, question, isEditingDescription} = this.props
     return (
       <EditableText
+        autoFocus={question.startsWith('New prompt #')}
         error={error as string}
-        hideIcon={!isHover}
+        hideIcon={isEditingDescription ? true : !isHover}
         handleSubmit={this.handleSubmit}
         initialValue={question}
         maxLength={100}

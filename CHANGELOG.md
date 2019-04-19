@@ -5,20 +5,42 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.7.2
+
+### Fixed
+* Borked demo from featureFlags
+
+## v3.7.1
+
+### Added
+* Improvements to beta video functionality (#2762)
+
+## v3.7.0
+
+### Fixed
+* New version toast (#2760)
+* Superuser access to teams via orgs (#2754)
+
+### Changed
+* Tasks are blurred on Enter (#2751)
+
+### Added
+* Atlassian Integration OAuth via feature flag (#2743)
+* Video alpha (#2726)
+
 ## v3.6.1
 
-## Fixed
+### Fixed
 * Demo was broken by #2712
 
-Regression 
 ## v3.6.0
 
-## Added
+### Added
 * Spellcheck to cards (#2706)
 * Cypress.io tests
 * Aggressive sub-powered query caching (#2712)
 
-## Fixed
+### Fixed
 * Squelch Google NLP unsupported languages (again)
 * Updated linter (#2725)
 * Fix infinite recursion when facilitatorPhaseItem is invalid (#2724) 
@@ -29,12 +51,12 @@ Regression
 * Bug allowing endNewMeeting to be called twice (#2650)
 * Multiple logout bug (#2712)
 
-## Removed
+### Removed
 * Legacy invitation patterns & tables
 
 ## v3.5.1 2019-Feb-28
 
-## Fixed
+### Fixed
 * OAuth Login problems
 * Reset password problem
 

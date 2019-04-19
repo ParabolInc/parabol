@@ -90,6 +90,7 @@ import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
 import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAction'
 import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 import addAtlassianAuth from 'server/graphql/mutations/addAtlassianAuth'
+import reflectTemplatePromptUpdateDescription from 'server/graphql/mutations/reflectTemplatePromptUpdateDescription'
 
 export default new GraphQLObjectType({
   name: 'Mutation',
@@ -142,6 +143,7 @@ export default new GraphQLObjectType({
     promoteFacilitator,
     promoteNewMeetingFacilitator,
     promoteToTeamLead,
+    reflectTemplatePromptUpdateDescription,
     removeAgendaItem,
     removeProvider,
     removeSlackChannel,

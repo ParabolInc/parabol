@@ -27,14 +27,15 @@ const ModalContents = styled('div')({
   position: 'relative'
 })
 
-const Backdrop = styled('div')({
-  background: ui.modalBackdropBackgroundColor,
+const Backdrop = styled('div')(({background}: {background: string}) => ({
+  background,
   height: '100%',
   position: 'fixed',
   width: '100%'
-})
+}))
 
 export interface LoadableModalAbstractProps extends WithAnimatedPortalProps {
+  background?: string
   LoadableComponent: ComponentType<any>
   queryVars?: any
 }
@@ -47,6 +48,7 @@ interface State {
 class LoadableModalAbstract extends Component<LoadableModalAbstractProps, State> {
   render () {
     const {
+      background,
       isClosing,
       isOpen,
       closePortal,
@@ -58,7 +60,10 @@ class LoadableModalAbstract extends Component<LoadableModalAbstractProps, State>
       <Modal clickToClose escToClose onClose={closePortal} isOpen={isOpen}>
         <ModalBlock>
           <AnimatedFade appear duration={200} slide={0} in={!isClosing} onExited={terminatePortal}>
-            <Backdrop onClick={closePortal} />
+            <Backdrop
+              onClick={closePortal}
+              background={background || ui.modalBackdropBackgroundColor}
+            />
           </AnimatedFade>
           <AnimatedFade appear duration={200} slide={32} in={!isClosing} onExited={terminatePortal}>
             <ModalContents>

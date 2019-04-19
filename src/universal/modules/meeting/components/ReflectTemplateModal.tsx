@@ -18,7 +18,6 @@ import RemoveTemplate from './RemoveTemplate'
 import TemplatePromptList from './TemplatePromptList'
 
 interface Props extends WithAtmosphereProps {
-  onSuccess: () => void
   retroMeetingSettings: ReflectTemplateModal_retroMeetingSettings
 }
 
@@ -83,7 +82,10 @@ const TemplateHeader = styled('div')({
 })
 
 const PromptEditor = styled('div')({
+  alignItems: 'flex-start',
+  display: 'flex',
   flex: 1,
+  flexDirection: 'column',
   width: '100%'
 })
 
