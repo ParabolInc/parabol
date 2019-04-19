@@ -1,11 +1,14 @@
 import {ContentState, convertFromRaw} from 'draft-js'
+import {stateToMarkdown} from 'draft-js-export-markdown'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import getRethink from 'server/database/rethinkDriver'
+import {GQLContext} from 'server/graphql/graphql'
 import CreateJiraIssuePayload from 'server/graphql/types/CreateJiraIssuePayload'
 import AtlassianManager from 'server/utils/AtlassianManager'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
 import publish from 'server/utils/publish'
 import standardError from 'server/utils/standardError'
+import {ICreateJiraIssueOnMutationArguments} from 'universal/types/graphql'
 import {TASK} from 'universal/utils/constants'
 
 export default {
@@ -26,9 +29,9 @@ export default {
     }
   },
   resolve: async (
-    _source,
-    {cloudId, projectKey, taskId},
-    {authToken, dataLoader, socketId: mutatorId}
+    _source: object,
+    {cloudId, projectKey, taskId}: ICreateJiraIssueOnMutationArguments,
+    {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) => {
     const r = getRethink()
     const now = new Date()
@@ -54,10 +57,13 @@ export default {
       )
     }
 
-    const [viewerAuth, assigneeAuth] = await Promise.all([
+    const userAuths = await Promise.all([
       dataLoader.get('atlassianAuthByUserId').load(viewerId),
       dataLoader.get('atlassianAuthByUserId').load(userId)
     ])
+    const [viewerAuth, assigneeAuth] = userAuths.map((auths) =>
+      auths.find((auth) => auth.teamId === teamId)
+    )
 
     if (!assigneeAuth || !assigneeAuth.isActive) {
       return standardError(new Error('The assignee does not have access to Jira'), {
@@ -78,23 +84,12 @@ export default {
 
     const contentState =
       blocks.length === 0 ? ContentState.createFromText('') : convertFromRaw(rawContent)
-    let description = contentState.getPlainText()
-    const isViewerAllowed = viewerAuth && viewerAuth.isActive
+    let markdown = stateToMarkdown(contentState)
+
+    const isViewerAllowed = viewerAuth ? viewerAuth.isActive : false
     if (!isViewerAllowed) {
       const creatorName = await r.table('User').get(viewerId)('preferredName')
-      description = `${description}\n\nAdded by ${creatorName}`
-    }
-
-    const payload = {
-      summary,
-      description,
-      reporter: {
-        id: isViewerAllowed ? viewerAuth.accountId : assigneeAuth.accountId
-      },
-      assignee: {
-        id: assigneeAuth.accountId
-      }
-      // labels: ['parabol']
+      markdown = `${markdown}\n\n_Added by ${creatorName}_`
     }
 
     const tokenUserId = isViewerAllowed ? viewerId : userId
@@ -102,11 +97,45 @@ export default {
       .get('freshAtlassianAccessToken')
       .load({teamId, userId: tokenUserId})
     const manager = new AtlassianManager(accessToken)
+
+    const [sites, issueMetaRes, description] = await Promise.all([
+      manager.getAccessibleResources(),
+      manager.getCreateMeta(cloudId, [projectKey]),
+      manager.convertMarkdownToADF(markdown)
+    ])
+    if ('message' in sites) {
+      return standardError(new Error(sites.message), {userId: viewerId})
+    }
+    if ('message' in issueMetaRes) {
+      return standardError(new Error(issueMetaRes.message), {userId: viewerId})
+    }
+    if ('errors' in issueMetaRes) {
+      return standardError(new Error(Object.values(issueMetaRes.errors)[0]), {userId: viewerId})
+    }
+    const {projects} = issueMetaRes
+    const [project] = projects
+    const {issuetypes, name: projectName} = project
+    const bestType = issuetypes.find((type) => type.name === 'Task') || issuetypes[0]
+    const payload = {
+      summary,
+      description,
+      // ERROR: Field 'reporter' cannot be set. It is not on the appropriate screen, or unknown.
+      assignee: {
+        id: assigneeAuth.accountId
+      },
+      issuetype: {
+        id: bestType.id
+      }
+    }
     const res = await manager.createIssue(cloudId, projectKey, payload)
     if ('message' in res) {
       return standardError(new Error(res.message), {userId: viewerId})
     }
+    if ('errors' in res) {
+      return standardError(new Error(Object.values(res.errors)[0]), {userId: viewerId})
+    }
 
+    const cloud = sites.find((site) => site.id === cloudId)!
     await r
       .table('Task')
       .get(taskId)
@@ -114,7 +143,11 @@ export default {
         integration: {
           id: res.id,
           service: 'jira',
-          key: res.key
+          projectKey,
+          projectName,
+          cloudId,
+          cloudName: cloud.name,
+          issueKey: res.key
         },
         updatedAt: now
       })

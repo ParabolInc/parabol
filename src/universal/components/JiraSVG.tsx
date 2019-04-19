@@ -5,7 +5,7 @@ const JiraSVG = React.memo(() => {
     <svg
       width='20px'
       height='20px'
-      viewBox='0 0 256 256'
+      viewBox='-12 -12 280 280'
       version='1.1'
       preserveAspectRatio='xMidYMid'
     >

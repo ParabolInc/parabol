@@ -46,7 +46,6 @@ class GitHubClientManager {
       headers: this.headers,
       body
     })
-    console.log('headers', this.headers.Authorization)
     return res.json()
   }
 

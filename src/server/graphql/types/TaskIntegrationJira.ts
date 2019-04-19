@@ -22,6 +22,10 @@ const TaskIntegrationJira = new GraphQLObjectType({
     issueKey: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'The issue key used by jira as a more human readable proxy for the id field'
+    },
+    cloudName: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'The psuedo-domain to use to generate a base url'
     }
   })
 })

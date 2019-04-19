@@ -274,7 +274,11 @@ export default class RethinkDataLoader {
           const manager = await AtlassianManager.refresh(refreshToken)
           const {accessToken} = manager
           const r = getRethink()
-          await r.table('AtlassianAuth').update({accessToken, updatedAt: now})
+          await r
+            .table('AtlassianAuth')
+            .getAll(userId, {index: 'userId'})
+            .filter({teamId})
+            .update({accessToken, updatedAt: now})
           return accessToken
         })
       )

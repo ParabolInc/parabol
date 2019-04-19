@@ -26,6 +26,7 @@ import TimelineEventCompletedActionMeeting from 'server/graphql/types/TimelineEv
 import TaskIntegrationGitHub from 'server/graphql/types/TaskIntegrationGitHub'
 import SuggestedIntegrationJira from 'server/graphql/types/SuggestedIntegrationJira'
 import SuggestedIntegrationGitHub from 'server/graphql/types/SuggestedIntegrationGitHub'
+import TaskIntegrationJira from 'server/graphql/types/TaskIntegrationJira'
 
 export default new GraphQLSchema({
   query,
@@ -54,6 +55,7 @@ export default new GraphQLSchema({
     ActionMeetingSettings,
     AuthToken,
     TaskIntegrationGitHub,
+    TaskIntegrationJira,
     SuggestedIntegrationGitHub,
     SuggestedIntegrationJira
   ]

@@ -49,8 +49,21 @@ export interface JiraProjectResponse {
 }
 
 export interface JiraIssueType {
+  self: string
   id: string
+  description: string
+  iconUrl: string
   name: string
+  subtask: boolean
+  fields?: {
+    issuetype: {
+      required: boolean
+      name: string
+      key: string
+      hasDefaultValue: false
+      operations: string[]
+    }
+  }
 }
 
 export interface AtlassianError {
@@ -79,10 +92,18 @@ interface Assignee {
 interface CreateIssueFields {
   assignee: Assignee
   summary: string
-  description?: string
-  reporter: Reporter
+  description?: object
+  reporter?: Reporter // probably can't use, it throws a lot of errors
   project?: Partial<JiraProject>
   issuetype?: Partial<JiraIssueType>
+}
+
+interface IssueCreateMetadata {
+  projects: Array<
+    Pick<JiraProject, 'self' | 'id' | 'key' | 'name' | 'avatarUrls'> & {
+      issuetypes: JiraIssueType[]
+    }
+  >
 }
 
 interface JiraCreateIssueResponse {
@@ -92,6 +113,13 @@ interface JiraCreateIssueResponse {
 }
 
 type GetProjectsCallback = (error: AtlassianError | null, result: GetProjectsResult | null) => void
+
+interface JiraError {
+  errorMessages: any[]
+  errors: {
+    [fieldName: string]: string
+  }
+}
 
 class AtlassianClientManager {
   accessToken: string
@@ -184,15 +212,30 @@ class AtlassianClientManager {
     ) as JiraProject | AtlassianError
   }
 
+  async convertMarkdownToADF (markdown: string) {
+    return this.post('https://api.atlassian.com/pf-editor-service/convert?from=markdown&to=adf', {
+      input: markdown
+    }) as object
+  }
+
+  async getCreateMeta (cloudId: string, projectKeys?: string[]) {
+    let args = ''
+    if (projectKeys) {
+      args += `projectKeys=${projectKeys.join(',')}`
+    }
+    if (args.length) {
+      args = '?' + args
+    }
+    return this.get(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/createmeta?${args}`
+    ) as IssueCreateMetadata | AtlassianError | JiraError
+  }
+
   async createIssue (cloudId: string, projectKey: string, issueFields: CreateIssueFields) {
     const payload = {
       fields: {
         project: {
           key: projectKey
-        },
-        issuetype: {
-          // defaults to the first kind of issue, probably wrong!
-          id: '1'
         },
         ...issueFields
       } as CreateIssueFields
@@ -200,6 +243,7 @@ class AtlassianClientManager {
     return this.post(`https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue`, payload) as
       | JiraCreateIssueResponse
       | AtlassianError
+      | JiraError
   }
 }
 

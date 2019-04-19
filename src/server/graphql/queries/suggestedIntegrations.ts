@@ -59,26 +59,24 @@ export default {
 
     const idSet = new Set()
     const dedupedTeamIntegrations = [] as IntegrationByUserId[]
-    for (let i = 0; i < teamIntegrationsByUserId.length; i++) {
-      const integration = teamIntegrationsByUserId[i]
-      if (
-        integration.userId === userId ||
-        !permLookup[integration.service] ||
-        idSet.has(integration.id)
-      ) {
+    const userAndTeamItems = [...recentUserIntegrations, ...teamIntegrationsByUserId]
+    // dedupes for perms, user vs team items, as well as possible name changes
+    for (let i = 0; i < userAndTeamItems.length; i++) {
+      const integration = userAndTeamItems[i]
+      if (!permLookup[integration.service] || idSet.has(integration.id)) {
+        console.log('ignoring', integration.id)
         continue
       }
       idSet.add(integration.id)
+      console.log('adding', integration.id)
       dedupedTeamIntegrations.push(integration)
     }
-
-    const userAndTeamItems = [...recentUserIntegrations, ...dedupedTeamIntegrations]
 
     // if other users have items that the viewer can't access, revert back to fetching everything
     if (userAndTeamItems.length === 0) {
       const items = await fetchAllIntegrations(dataLoader, teamId, userId)
       return {items, hasMore: false}
     }
-    return {hasMore: true, items: userAndTeamItems}
+    return {hasMore: true, items: dedupedTeamIntegrations}
   }
 }

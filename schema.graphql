@@ -3629,6 +3629,31 @@ type TaskIntegrationGitHub implements TaskIntegration {
   issueNumber: Int
 }
 
+"""The details associated with a task integrated with Jira"""
+type TaskIntegrationJira implements TaskIntegration {
+  id: ID!
+  service: TaskServiceEnum!
+
+  """
+  The project key used by jira as a more human readable proxy for a projectId
+  """
+  projectKey: ID!
+
+  """The name of the project as defined by jira"""
+  projectName: ID!
+
+  """The cloud ID that the project lives on"""
+  cloudId: ID!
+
+  """
+  The issue key used by jira as a more human readable proxy for the id field
+  """
+  issueKey: ID!
+
+  """The psuedo-domain to use to generate a base url"""
+  cloudName: ID!
+}
+
 """How a user is involved with a task (listed in hierarchical order)"""
 enum TaskInvolvementType {
   ASSIGNEE

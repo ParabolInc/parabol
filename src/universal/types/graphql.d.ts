@@ -1860,7 +1860,7 @@ export interface ITaskEditorDetails {
   preferredName: string
 }
 
-export type TaskIntegration = ITaskIntegrationGitHub
+export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration'
@@ -7438,6 +7438,40 @@ export interface ITaskIntegrationGitHub {
   service: TaskServiceEnum
   nameWithOwner: string | null
   issueNumber: number | null
+}
+
+/**
+ * The details associated with a task integrated with Jira
+ */
+export interface ITaskIntegrationJira {
+  __typename: 'TaskIntegrationJira'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * The project key used by jira as a more human readable proxy for a projectId
+   */
+  projectKey: string
+
+  /**
+   * The name of the project as defined by jira
+   */
+  projectName: string
+
+  /**
+   * The cloud ID that the project lives on
+   */
+  cloudId: string
+
+  /**
+   * The issue key used by jira as a more human readable proxy for the id field
+   */
+  issueKey: string
+
+  /**
+   * The psuedo-domain to use to generate a base url
+   */
+  cloudName: string
 }
 
 /**

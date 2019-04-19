@@ -9,6 +9,7 @@ graphql`
     task {
       integration {
         service
+        ...TaskIntegrationLinkIntegrationJira
       }
       updatedAt
     }
@@ -44,9 +45,10 @@ const CreateJiraIssueMutation = (
         projectKey,
         cloudId,
         issueKey: '?',
+        cloudName: '',
         updatedAt: now.toJSON()
       }
-      const integration = createProxyRecord(store, 'JiraTask', optimisticIntegration)
+      const integration = createProxyRecord(store, 'TaskIntegrationJira', optimisticIntegration)
       task.setLinkedRecord(integration, 'integration')
     },
     onCompleted,

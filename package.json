@@ -24,7 +24,7 @@
     "build:client": "webpack --config ./webpack/webpack.prod.config.js",
     "build:deploy": "export WEBPACK_DEPLOY=true && npm run build",
     "build:dll": "webpack --config ./webpack/webpack.config.dll.js",
-    "build:relay": "yarn update-schema && yarn build:relay-only",
+    "build:relay": "yarn update-schema && yarn build:relay-unsafe",
     "build:relay-unsafe": "relay-compiler --src ./src --exclude '**/__generated__/**' --exclude '**/githubSchema.graphql' --schema build/schema.json --extensions js ts tsx --artifactDirectory src/__generated__ --language typescript --client-schema src/client/clientSchema.graphql --persist-output src/server/graphql/queryMap.json --watchman false",
     "build:stats": "export WEBPACK_STATS=true && npm run build:client",
     "db:migrate": "npm run db:migrate-up-all",
