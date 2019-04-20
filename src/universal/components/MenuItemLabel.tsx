@@ -7,9 +7,9 @@ const MenuItemLabel = styled('div')(
     alignItems: 'center',
     display: 'flex',
     flex: 1,
-    fontSize: 15,
-    lineHeight: 2,
-    padding: `0 8px`,
+    fontSize: 14,
+    lineHeight: '24px',
+    padding: `4px 8px 4px 16px`,
     paddingLeft: hasIcon && 0,
     color: disabled && 'grey'
   })

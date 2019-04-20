@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import JiraSVG from 'universal/components/JiraSVG'
+import JiraSVG18 from 'universal/components/JiraSVG18'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
@@ -24,7 +24,7 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
       label={
         <MenuItemLabel>
           <MenuItemComponentAvatar>
-            <JiraSVG />
+            <JiraSVG18 />
           </MenuItemComponentAvatar>
           {'Add Jira integration'}
         </MenuItemLabel>

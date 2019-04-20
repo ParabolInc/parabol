@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import GitHubSVG from 'universal/components/GitHubSVG'
+import GitHubSVG18 from 'universal/components/GitHubSVG18'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
@@ -24,7 +24,7 @@ const AddToGitHubMenuItem = forwardRef((props: Props, ref) => {
       label={
         <MenuItemLabel>
           <MenuItemComponentAvatar>
-            <GitHubSVG />
+            <GitHubSVG18 />
           </MenuItemComponentAvatar>
           {'Add GitHub integration'}
         </MenuItemLabel>

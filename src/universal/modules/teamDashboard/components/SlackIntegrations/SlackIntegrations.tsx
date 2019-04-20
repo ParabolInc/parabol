@@ -5,50 +5,37 @@ import IntegrationRow from 'universal/modules/teamDashboard/components/Integrati
 import IntegrationsNavigateBack from 'universal/modules/teamDashboard/components/IntegrationsNavigateBack/IntegrationsNavigateBack'
 import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
 import RemoveSlackChannelMutation from 'universal/mutations/RemoveSlackChannelMutation'
-import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import {SLACK} from 'universal/utils/constants'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
 import FlatButton from 'universal/components/FlatButton'
-import RaisedButton from 'universal/components/RaisedButton'
+import SecondaryButton from 'universal/components/SecondaryButton'
 import Panel from 'universal/components/Panel/Panel'
 import Row from 'universal/components/Row/Row'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
+import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import styled from 'react-emotion'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import {WithAtmosphereProps} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {SlackIntegrations_viewer} from '__generated__/SlackIntegrations_viewer.graphql'
-import SlackProviderLogo from '../../../../SlackProviderLogo'
+import SlackProviderLogo from 'universal/SlackProviderLogo'
+import {SLACK_NAME, SLACK_DESC} from 'universal/styles/providers'
+import {ROW_GUTTER} from 'universal/styles/rows'
 
 const ProviderDetails = styled(Row)({
   border: 0,
-  justifyContent: 'flex-start',
-  paddingRight: 0
+  justifyContent: 'flex-start'
 })
 
-const ProviderAvatar = styled('div')({
-  backgroundColor: ui.providers.slack.color,
-  borderRadius: ui.providerIconBorderRadius
-})
-
-const ProviderName = styled('div')({
-  ...ui.providerName
-})
-
-const SubHeading = styled('div')({
-  ...ui.rowSubheading
-})
-
-const AddSlackButton = styled(RaisedButton)({
+const AddSlackButton = styled(SecondaryButton)({
   margin: '0 auto',
-  marginBottom: ui.rowGutter
+  marginBottom: ROW_GUTTER
 })
 
 const ChannelName = styled('div')({
-  fontSize: appTheme.typography.s3,
-  fontWeight: 600
+  fontSize: 14
 })
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
@@ -86,35 +73,30 @@ const SlackIntegrations = (props: Props) => {
     <SettingsWrapper>
       <IntegrationsNavigateBack teamId={teamId} />
       {/* TODO: see if we can share this with ProviderIntegrationRow even though it has a Link component */}
-      <ProviderDetails>
-        <ProviderAvatar>
+      <Panel>
+        <ProviderDetails>
           <SlackProviderLogo />
-        </ProviderAvatar>
-        <RowInfo>
-          <ProviderName>{ui.providers.slack.providerName}</ProviderName>
-          <SubHeading>{ui.providers.slack.description}</SubHeading>
-        </RowInfo>
-        {accessToken && (
-          <RowActions>
-            <FlatButton
-              onClick={() =>
-                RemoveProviderMutation(
-                  atmosphere,
-                  {providerId: integrationProvider && integrationProvider.id, teamId},
-                  {service: SLACK, onError, onCompleted}
-                )
-              }
-              palette='mid'
-            >
-              {'Remove Slack'}
-            </FlatButton>
-            <FlatButton onClick={openOAuth} palette='mid'>
-              {'Refresh Token'}
-            </FlatButton>
-          </RowActions>
-        )}
-      </ProviderDetails>
-      <Panel label='Channels'>
+          <RowInfo>
+            <RowInfoHeading>{SLACK_NAME}</RowInfoHeading>
+            <RowInfoCopy>{SLACK_DESC}</RowInfoCopy>
+          </RowInfo>
+          {accessToken && (
+            <RowActions>
+              <FlatButton
+                onClick={() =>
+                  RemoveProviderMutation(
+                    atmosphere,
+                    {providerId: integrationProvider && integrationProvider.id, teamId},
+                    {service: SLACK, onError, onCompleted}
+                  )
+                }
+              >
+                {'Remove Slack'}
+              </FlatButton>
+              <FlatButton onClick={openOAuth}>{'Refresh Token'}</FlatButton>
+            </RowActions>
+          )}
+        </ProviderDetails>
         {accessToken ? (
           <Row>
             <AddSlackChannel

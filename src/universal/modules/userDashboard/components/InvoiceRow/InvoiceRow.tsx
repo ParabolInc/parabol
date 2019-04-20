@@ -10,8 +10,13 @@ import {PAID, PENDING, UPCOMING} from 'universal/utils/constants'
 import styled, {css, cx} from 'react-emotion'
 import Row from 'universal/components/Row/Row'
 import RowInfo from 'universal/components/Row/RowInfo'
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 import Tag from 'universal/components/Tag/Tag'
 import Icon from 'universal/components/Icon'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {ROW_SUBHEADING_STYLES} from 'universal/styles/rows'
+
+const color = PALETTE.LINK.LIGHT
 
 const FileIcon = styled(Icon)({
   alignItems: 'center',
@@ -36,11 +41,8 @@ const InvoiceInfo = styled(RowInfo)({
   width: '100%'
 })
 
-const InvoiceTitle = styled('div')({
-  color: ui.rowHeadingColor,
+const InvoiceTitle = styled(RowInfoHeading)({
   display: 'inline-block',
-  fontSize: ui.rowHeadingFontSize,
-  lineHeight: '1.625rem',
   verticalAlign: 'middle'
 })
 
@@ -73,10 +75,10 @@ const styledUnpaid = css({
 })
 
 const styledInfoLink = css({
-  ...ui.rowSubheading,
-  color: appTheme.palette.mid,
-  ':hover, :focus': {
-    color: appTheme.palette.mid,
+  ...ROW_SUBHEADING_STYLES,
+  color,
+  ':hover, :focus, :active': {
+    color,
     textDecoration: 'underline'
   }
 })

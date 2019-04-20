@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'react-emotion'
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 import Icon from 'universal/components/Icon'
 import {PALETTE} from '../../../../styles/paletteV2'
 
@@ -26,15 +27,18 @@ const ProviderMetaItem = styled('div')({
 const MetaIcon = styled(Icon)({
   alignItems: 'center',
   display: 'flex',
-  fontSize: 16,
+  fontSize: 18,
   fontWeight: 400,
-  height: 24
+  height: 24,
+  marginRight: 2
 })
 
-const ProviderName = styled('div')({
-  color: PALETTE.TEXT.MAIN,
-  fontSize: 24,
-  lineHeight: '34px',
+const MetaNumber = styled('span')({
+  fontSize: 13,
+  lineHeight: '24px'
+})
+
+const ProviderName = styled(RowInfoHeading)({
   alignItems: 'center',
   display: 'flex',
   marginRight: 16,
@@ -50,10 +54,11 @@ const ProviderRowName = (props: Props) => {
         <ProviderMeta>
           <ProviderMetaItem>
             <MetaIcon>account_circle</MetaIcon>
-            {userCount}
+            <MetaNumber>{userCount}</MetaNumber>
           </ProviderMetaItem>
           <ProviderMetaItem>
-            <MetaIcon>extension</MetaIcon> {integrationCount}
+            <MetaIcon>extension</MetaIcon>
+            <MetaNumber>{integrationCount}</MetaNumber>
           </ProviderMetaItem>
         </ProviderMeta>
       )}

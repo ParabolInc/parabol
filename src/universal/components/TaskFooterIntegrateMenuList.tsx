@@ -29,8 +29,8 @@ interface Props {
 }
 
 const SearchIcon = styled(Icon)({
-  color: PALETTE.TEXT.MAIN,
-  fontSize: 20
+  color: PALETTE.TEXT.LIGHT,
+  fontSize: 18
 })
 
 const NoResults = styled(MenuItemLabel)({
@@ -40,10 +40,18 @@ const NoResults = styled(MenuItemLabel)({
 })
 
 const SearchItem = styled(MenuItemLabel)({
-  padding: 0,
   margin: '0 8px 8px',
-  borderRadius: 2,
-  boxShadow: `0px 0px 2px 2px ${PALETTE.BACKGROUND.BLUE}`
+  overflow: 'visible',
+  padding: 0,
+  position: 'relative'
+})
+
+const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
+  position: 'absolute',
+  left: 8,
+  margin: 0,
+  pointerEvents: 'none',
+  top: 4
 })
 
 const serviceToMenuItemLookup = {
@@ -83,9 +91,9 @@ const TaskFooterIntegrateMenu = (props: Props) => {
       resetActiveOnChanges={[allItems]}
     >
       <SearchItem>
-        <MenuItemComponentAvatar>
+        <StyledMenuItemIcon>
           <SearchIcon>search</SearchIcon>
-        </MenuItemComponentAvatar>
+        </StyledMenuItemIcon>
         <TaskFooterIntegrateMenuSearch
           placeholder={placeholder}
           value={value}

@@ -4,7 +4,6 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
 import FlatButton from 'universal/components/FlatButton'
-import Icon from 'universal/components/Icon'
 import Tag from 'universal/components/Tag/Tag'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -14,13 +13,12 @@ import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation'
 import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation'
 import formError from 'universal/styles/helpers/formError'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
-import appTheme from 'universal/styles/theme/appTheme'
 import ui from 'universal/styles/ui'
 import fromGlobalId from 'universal/utils/relay/fromGlobalId'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {GitHubRepoRow_repo} from '__generated__/GitHubRepoRow_repo.graphql'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const StyledButton = styled(FlatButton)({
   marginLeft: ui.rowGutter,
@@ -59,14 +57,13 @@ const RowContainer = styled('div')({
 
 const NameWithOwner = styled('a')({
   display: 'block',
+  color: PALETTE.LINK.BLUE,
   flex: 1,
-  fontSize: appTheme.typography.s3,
-  fontWeight: 600
-})
-
-const StyledIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18,
-  marginLeft: '.5rem'
+  fontSize: 14,
+  ':hover,:focus,:active': {
+    color: PALETTE.LINK.BLUE,
+    textDecoration: 'underline'
+  }
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
@@ -129,7 +126,6 @@ class GitHubRepoRow extends Component<Props> {
               title={nameWithOwner || ''}
             >
               {nameWithOwner}
-              <StyledIcon>{ui.iconExternalLink}</StyledIcon>
               {isCreator && <Tag colorPalette='light' label='Creator' />}
             </NameWithOwner>
           </RepoInfo>

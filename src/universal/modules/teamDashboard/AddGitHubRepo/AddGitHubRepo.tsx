@@ -2,7 +2,7 @@ import ms from 'ms'
 import React, {Component} from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
-import RaisedButton from 'universal/components/RaisedButton'
+import SecondaryButton from 'universal/components/SecondaryButton'
 import Row from 'universal/components/Row/Row'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -39,7 +39,7 @@ const Footer = styled('div')({
   textAlign: 'right'
 })
 
-const StyledButton = styled(RaisedButton)({
+const StyledButton = styled(SecondaryButton)({
   marginLeft: ui.rowGutter,
   minWidth: '11rem',
   paddingLeft: 0,
@@ -270,7 +270,7 @@ class AddGitHubRepo extends Component<Props, State> {
           />
           <FooterBlock>{footerMessage}</FooterBlock>
         </DropdownAndError>
-        <StyledButton size='medium' palette='warm' onClick={this.handleAddRepo}>
+        <StyledButton size='small' onClick={this.handleAddRepo}>
           {'Add Repo'}
         </StyledButton>
       </StyledRow>

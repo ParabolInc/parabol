@@ -1,7 +1,7 @@
 import {SuggestedIntegrationJiraMenuItem_suggestedIntegration} from '__generated__/SuggestedIntegrationJiraMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import JiraSVG from 'universal/components/JiraSVG'
+import JiraSVG18 from 'universal/components/JiraSVG18'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
@@ -9,6 +9,7 @@ import TypeAheadLabel from 'universal/components/TypeAheadLabel'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import CreateJiraIssueMutation from 'universal/mutations/CreateJiraIssueMutation'
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
+import styled from 'react-emotion'
 
 interface Props {
   closePortal: () => void
@@ -20,6 +21,12 @@ interface Props {
   query: string
 }
 
+const BlockSVG = styled('div')({
+  '& svg': {
+    display: 'block'
+  }
+})
+
 const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => {
   const {suggestedIntegration, taskId, submitMutation, onError, onCompleted, query} = props
   const {cloudId, projectKey, projectName} = suggestedIntegration
@@ -30,7 +37,9 @@ const SuggestedIntegrationJiraMenuItem = forwardRef((props: Props, ref: any) => 
       label={
         <MenuItemLabel>
           <MenuItemComponentAvatar>
-            <JiraSVG />
+            <BlockSVG>
+              <JiraSVG18 />
+            </BlockSVG>
           </MenuItemComponentAvatar>
           <TypeAheadLabel query={query} label={projectName} />
         </MenuItemLabel>

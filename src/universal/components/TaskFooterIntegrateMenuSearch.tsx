@@ -9,15 +9,18 @@ interface Props {
 const Input = styled('input')({
   appearance: 'none',
   background: 'inherit',
-  border: 0,
+  border: '1px solid gray',
+  borderRadius: 2,
   display: 'block',
-  fontSize: 15,
-  lineHeight: 2,
+  fontSize: 14,
+  lineHeight: '24px',
   outline: 'none',
-  padding: 0,
+  padding: '3px 0 3px 39px',
   width: '100%',
   '&:focus,:active': {
-    ':placeholder': PALETTE.TEXT.MAIN
+    border: `1px solid rgb(${PALETTE.BORDER.BLUE_RGB})`,
+    boxShadow: `0px 0px 1px 1px rgba(${PALETTE.BORDER.BLUE_RGB}, .5)`
+    // ':placeholder': PALETTE.TEXT.MAIN
   }
 })
 

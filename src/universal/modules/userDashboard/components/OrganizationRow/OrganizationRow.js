@@ -69,7 +69,7 @@ const OrganizationRow = (props) => {
             )}
           </Name>
         </RowInfoHeader>
-        <RowInfoCopy useHintCopy>
+        <RowInfoCopy>
           {`${totalUsers} ${plural(totalUsers, 'User')} (${activeUserCount} Active)`}
         </RowInfoCopy>
       </RowInfo>

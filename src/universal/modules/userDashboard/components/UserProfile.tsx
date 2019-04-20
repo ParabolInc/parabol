@@ -7,7 +7,7 @@ import FieldLabel from 'universal/components/FieldLabel/FieldLabel'
 import BasicInput from 'universal/components/InputField/BasicInput'
 import LoadableModal from 'universal/components/LoadableModal'
 import Panel from 'universal/components/Panel/Panel'
-import RaisedButton from 'universal/components/RaisedButton'
+import SecondaryButton from 'universal/components/SecondaryButton'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import UpdateUserProfileMutation from 'universal/mutations/UpdateUserProfileMutation'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
@@ -51,7 +51,7 @@ const ControlBlock = styled('div')({
   width: '100%'
 })
 
-const StyledButton = styled(RaisedButton)({
+const StyledButton = styled(SecondaryButton)({
   width: '7rem'
 })
 
@@ -120,9 +120,7 @@ class UserProfile extends Component<Props> {
                       placeholder='My name'
                     />
                   </FieldBlock>
-                  <StyledButton size='medium' palette='mid'>
-                    {'Update'}
-                  </StyledButton>
+                  <StyledButton size='medium'>{'Update'}</StyledButton>
                 </ControlBlock>
               </InfoBlock>
             </SettingsForm>

@@ -1,7 +1,7 @@
 import ms from 'ms'
 import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import RaisedButton from 'universal/components/RaisedButton'
+import SecondaryButton from 'universal/components/SecondaryButton'
 import Row from 'universal/components/Row/Row'
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput'
 import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation'
@@ -27,7 +27,7 @@ const Error = styled('div')({
   textAlign: 'right'
 })
 
-const StyledButton = styled(RaisedButton)({
+const StyledButton = styled(SecondaryButton)({
   marginLeft: ui.rowGutter,
   minWidth: '11rem',
   paddingLeft: 0,
@@ -132,9 +132,7 @@ class AddSlackChannel extends Component {
           />
           <Error>{error && error.message}</Error>
         </DropdownAndError>
-        <StyledButton size='medium' palette='warm' onClick={this.handleAddChannel}>
-          {'Add Channel'}
-        </StyledButton>
+        <StyledButton onClick={this.handleAddChannel}>{'Add Channel'}</StyledButton>
       </StyledRow>
     )
   }

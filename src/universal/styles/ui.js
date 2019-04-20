@@ -23,7 +23,7 @@ const CONTROL_SIZE_SMALL = 'small'
 const CONTROL_SIZE_MEDIUM = 'medium'
 const CONTROL_SIZE_LARGE = 'large'
 
-const CONTROL_SMALL_FONT_SIZE = '.8125rem'
+const CONTROL_SMALL_FONT_SIZE = '.875rem'
 const CONTROL_SMALL_LINE_HEIGHT = '1.25rem'
 const CONTROL_SMALL_PADDING_HORIZONTAL = '.4375rem'
 const CONTROL_SMALL_BLOCK_PADDING_HORIZONTAL = '.5rem'
@@ -553,43 +553,13 @@ const ui = {
   taskColumnsMaxWidth: '78.25rem',
   taskColumnsMinWidth: '48rem',
 
-  // Providers
-  // ---------------------------------------------------------------------------
-  providers: {
-    github: {
-      description: 'Create GitHub issues from Parabol',
-      color: '#333333',
-      icon: 'github',
-      providerName: 'GitHub'
-    },
-    slack: {
-      description: 'Notify channels when meetings begin and end',
-      color: '#6ecadc',
-      providerName: 'Slack'
-    }
-  },
-  providerIconBorderRadius: '.5rem', // 8px
-  providerIconSize: '3.5rem', // 56px,
-  providerName: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s6,
-    lineHeight: appTheme.typography.s7
-  },
-
   // Rows
   // ---------------------------------------------------------------------------
   rowBorderColor: panelInnerBorderColor,
-  rowHeadingColor: appTheme.palette.dark,
-  rowHeadingFontSize: appTheme.typography.s4,
   rowGutter: '1rem',
   rowCompactGutter: '.75rem',
-  rowHeading: {
-    color: appTheme.palette.dark,
-    fontSize: appTheme.typography.s4,
-    lineHeight: '1.625rem'
-  },
   rowSubheading: {
-    color: COLOR_TEXT,
+    color: COLOR_TEXT_LIGHT,
     fontSize: appTheme.typography.s2,
     lineHeight: appTheme.typography.s4
   },

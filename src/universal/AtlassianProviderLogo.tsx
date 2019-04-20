@@ -1,10 +1,10 @@
 import styled from 'react-emotion'
-import atlassianMark from './styles/theme/images/graphics/Atlassian-vertical-white-onecolor-rgb.svg'
+import atlassianMark from './styles/theme/images/graphics/atlassian-gradient.svg'
 
 const AtlassianProviderLogo = styled('div')({
   background: `url("${atlassianMark}")`,
-  height: 56,
-  width: 56
+  height: 48,
+  width: 48
 })
 
 export default AtlassianProviderLogo
