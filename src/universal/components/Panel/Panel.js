@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
 import {panelShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
 import Badge from 'universal/components/Badge/Badge'
+import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
 import {ROW_GUTTER, ROW_GUTTER_COMPACT} from 'universal/styles/rows'
 
 const PanelRoot = styled('div')({
@@ -24,12 +24,7 @@ const PanelHeader = styled('div')({
   width: '100%'
 })
 
-const PanelLabel = styled('div')(({compact}) => ({
-  color: ui.labelHeadingColor,
-  fontSize: ui.labelHeadingFontSize,
-  fontWeight: ui.labelHeadingFontWeight,
-  letterSpacing: ui.labelHeadingLetterSpacing,
-  lineHeight: ui.labelHeadingLineHeight,
+const PanelLabel = styled(LabelHeading)(({compact}) => ({
   padding: `12px ${compact ? ROW_GUTTER_COMPACT : ROW_GUTTER}px`,
   textTransform: 'uppercase'
 }))

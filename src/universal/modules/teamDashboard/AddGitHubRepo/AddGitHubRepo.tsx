@@ -270,9 +270,7 @@ class AddGitHubRepo extends Component<Props, State> {
           />
           <FooterBlock>{footerMessage}</FooterBlock>
         </DropdownAndError>
-        <StyledButton size='small' onClick={this.handleAddRepo}>
-          {'Add Repo'}
-        </StyledButton>
+        <StyledButton onClick={this.handleAddRepo}>{'Add Repo'}</StyledButton>
       </StyledRow>
     )
   }

@@ -147,9 +147,6 @@ const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert'
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts'
 const MODAL_LAYOUT_VIEWPORT = 'viewport'
 
-// Panels
-const innerBorderColor = '#DFDFE5' // brand mid-gray 25% over white
-
 // Transitions
 // NOTE: increases on a scale of 2x
 const transition = [
@@ -483,7 +480,7 @@ const ui = {
   // Menus
   // ---------------------------------------------------------------------------
   menuBackgroundColor: '#fff',
-  menuBorderColor: innerBorderColor,
+  menuBorderColor: '#DFDFE5',
   menuBorderRadius: borderRadiusSmall,
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
