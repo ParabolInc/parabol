@@ -5,7 +5,7 @@ import {createFragmentContainer} from 'react-relay'
 import {withRouter} from 'react-router-dom'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ui from 'universal/styles/ui'
-import Row from 'universal/components/Row/Row'
+import RowCompact from 'universal/components/Row/RowCompact'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 
@@ -23,7 +23,7 @@ const PaymentRejected = (props) => {
     history.push(`/me/organizations/${orgId}`)
   }
   return (
-    <Row compact>
+    <RowCompact>
       <IconAvatar icon='credit_card' size='small' />
       <div className={css(defaultStyles.message)}>
         {'Your '}
@@ -44,7 +44,7 @@ const PaymentRejected = (props) => {
           {'See Billing'}
         </StyledButton>
       </div>
-    </Row>
+    </RowCompact>
   )
 }
 

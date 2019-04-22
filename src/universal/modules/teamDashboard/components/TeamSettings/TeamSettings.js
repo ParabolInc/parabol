@@ -11,6 +11,7 @@ import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/Arc
 import ui from 'universal/styles/ui'
 import {PERSONAL, PRO_LABEL} from 'universal/utils/constants'
 import PrimaryButton from 'universal/components/PrimaryButton'
+import {ROW_BORDER_COLOR, ROW_GUTTER} from 'universal/styles/rows'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -26,8 +27,12 @@ const PanelsLayout = styled('div')({
 })
 
 const PanelRow = styled('div')({
-  borderTop: `.0625rem solid ${ui.rowBorderColor}`,
-  padding: `${ui.panelGutter}`
+  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
+  padding: ROW_GUTTER
+})
+
+const StyledRow = styled(Row)({
+  borderTop: 0
 })
 
 class TeamSettings extends Component {
@@ -53,12 +58,12 @@ class TeamSettings extends Component {
         <PanelsLayout>
           {tier === PERSONAL && (
             <Panel>
-              <Row>
+              <StyledRow>
                 <div>{'This team is currently on a personal plan.'}</div>
                 <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
                   {`Upgrade Team to ${PRO_LABEL}`}
                 </PrimaryButton>
-              </Row>
+              </StyledRow>
             </Panel>
           )}
           {viewerIsLead && (

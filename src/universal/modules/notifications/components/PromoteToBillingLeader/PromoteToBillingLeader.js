@@ -8,7 +8,7 @@ import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import ui from 'universal/styles/ui'
 import {clearNotificationLabel} from '../../helpers/constants'
-import Row from 'universal/components/Row/Row'
+import RowCompact from 'universal/components/Row/RowCompact'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 
@@ -39,7 +39,7 @@ const PromoteToBillingLeader = (props) => {
   }
 
   return (
-    <Row compact>
+    <RowCompact>
       <IconAvatar icon='account_balance' size='small' />
       <div className={css(defaultStyles.message)}>
         {'You are now a '}
@@ -68,7 +68,7 @@ const PromoteToBillingLeader = (props) => {
         onClick={acknowledge}
         waiting={submitting}
       />
-    </Row>
+    </RowCompact>
   )
 }
 

@@ -16,7 +16,7 @@ export namespace PALETTE {
   }
 
   export const enum BORDER {
-    // LIGHT = '#D1CBDB',
+    LIGHTER = '#DFDFE5',
     LIGHT = '#C1C0CD',
     DARK = '#b6adc7',
     MAIN = '#493272',

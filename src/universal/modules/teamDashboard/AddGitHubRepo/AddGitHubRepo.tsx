@@ -11,11 +11,11 @@ import ServiceDropdownInput from 'universal/modules/integrations/components/Serv
 import AddGitHubRepoMutation from 'universal/mutations/AddGitHubRepoMutation'
 import formError from 'universal/styles/helpers/formError'
 import appTheme from 'universal/styles/theme/theme'
-import ui from 'universal/styles/ui'
 import {GITHUB_ENDPOINT} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {AddGitHubRepo_subbedRepos} from '__generated__/AddGitHubRepo_subbedRepos.graphql'
+import {ROW_GUTTER} from 'universal/styles/rows'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -40,7 +40,7 @@ const Footer = styled('div')({
 })
 
 const StyledButton = styled(SecondaryButton)({
-  marginLeft: ui.rowGutter,
+  marginLeft: ROW_GUTTER,
   minWidth: '11rem',
   paddingLeft: 0,
   paddingRight: 0

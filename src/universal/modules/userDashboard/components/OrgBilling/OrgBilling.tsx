@@ -1,10 +1,9 @@
 import React, {Component} from 'react'
 import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-relay'
-import RaisedButton from 'universal/components/RaisedButton'
+import SecondaryButton from 'universal/components/SecondaryButton'
 import Panel from 'universal/components/Panel/Panel'
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
 import LoadableModal from 'universal/components/LoadableModal'
 import UpdateCreditCardLoadable from 'universal/components/UpdateCreditCardLoadable'
@@ -12,10 +11,11 @@ import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {OrgBilling_viewer} from '__generated__/OrgBilling_viewer.graphql'
 import {OrgBilling_organization} from '__generated__/OrgBilling_organization.graphql'
+import {ROW_BORDER_COLOR, ROW_GUTTER} from 'universal/styles/rows'
 
 const panelCell = {
-  borderTop: `.0625rem solid ${ui.panelInnerBorderColor}`,
-  padding: ui.panelGutter
+  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
+  padding: ROW_GUTTER
 }
 
 const CreditCardInfo = styled('div')({
@@ -58,10 +58,10 @@ const InfoAndUpdate = styled('div')({
 })
 
 const MoreGutter = styled('div')({
-  paddingBottom: ui.panelGutter
+  paddingBottom: ROW_GUTTER
 })
 
-const LoadMoreButton = styled(RaisedButton)({
+const LoadMoreButton = styled(SecondaryButton)({
   margin: '0 auto'
 })
 
@@ -132,7 +132,7 @@ class OrgBilling extends Component<Props> {
             <LoadableModal
               LoadableComponent={UpdateCreditCardLoadable}
               queryVars={{orgId}}
-              toggle={<RaisedButton>{'Update'}</RaisedButton>}
+              toggle={<SecondaryButton>{'Update'}</SecondaryButton>}
             />
           </InfoAndUpdate>
         </Panel>

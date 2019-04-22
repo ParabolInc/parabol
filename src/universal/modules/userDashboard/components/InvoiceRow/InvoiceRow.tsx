@@ -32,7 +32,7 @@ const InvoiceAmount = styled('span')({
   color: ui.palette.dark
 })
 
-const InvoiceAvatar = styled('div')(({isEstimate}) => ({
+const InvoiceAvatar = styled('div')(({isEstimate}: {isEstimate: boolean}) => ({
   backgroundColor: isEstimate ? appTheme.palette.mid : appTheme.palette.mid40l,
   borderRadius: '.5rem'
 }))
@@ -63,7 +63,7 @@ const styledDate = css({
 })
 
 const styledToPay = css({
-  color: ui.palette.dark
+  color: ui.palette.midGray
 })
 
 const styledPaid = css({

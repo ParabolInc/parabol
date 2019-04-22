@@ -6,9 +6,9 @@ import Row from 'universal/components/Row/Row'
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput'
 import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation'
 import formError from 'universal/styles/helpers/formError'
-import ui from 'universal/styles/ui'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
+import {ROW_GUTTER} from 'universal/styles/rows'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -28,7 +28,7 @@ const Error = styled('div')({
 })
 
 const StyledButton = styled(SecondaryButton)({
-  marginLeft: ui.rowGutter,
+  marginLeft: ROW_GUTTER,
   minWidth: '11rem',
   paddingLeft: 0,
   paddingRight: 0

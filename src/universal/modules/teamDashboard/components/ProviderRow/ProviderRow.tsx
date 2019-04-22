@@ -8,6 +8,7 @@ import SecondaryButton from 'universal/components/SecondaryButton'
 import ProviderCard from 'universal/components/ProviderCard'
 import RowActions from 'universal/components/Row/RowActions'
 import RowInfo from 'universal/components/Row/RowInfo'
+import RowInfoHeading from 'universal/components/Row/RowInfoHeading'
 import RowInfoCopy from 'universal/components/Row/RowInfoCopy'
 import withAtmosphere, {
   WithAtmosphereProps
@@ -19,7 +20,6 @@ import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import SlackProviderLogo from 'universal/SlackProviderLogo'
 import GitHubProviderLogo from 'universal/GitHubProviderLogo'
-import ProviderRowName from './ProviderRowName'
 import {GITHUB_NAME, GITHUB_DESC, SLACK_NAME, SLACK_DESC} from 'universal/styles/providers'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ROW_GUTTER} from 'universal/styles/rows'
@@ -75,11 +75,6 @@ export const providerLookup = {
   }
 }
 
-const defaultDetails = {
-  userCount: 0,
-  integrationCount: 0
-}
-
 interface Props extends WithAtmosphereProps, WithMutationProps, RouteComponentProps<{}> {
   comingSoon?: boolean
   name: string
@@ -100,7 +95,7 @@ const ProviderRow = (props: Props) => {
     onError,
     onCompleted
   } = props
-  const {accessToken, userCount, integrationCount} = providerDetails || defaultDetails
+  const {accessToken} = providerDetails || {accessToken: ''}
   const {description, providerName, route} = providerLookup[name]
   const linkStyle = {
     display: 'block',
@@ -124,11 +119,7 @@ const ProviderRow = (props: Props) => {
       </ConditionalLink>
       <RowInfo>
         <ConditionalLink isLink={!comingSoon} to={to} className={css(providerRowContent)}>
-          <ProviderRowName
-            name={providerName}
-            userCount={userCount}
-            integrationCount={integrationCount}
-          />
+          <RowInfoHeading>{providerName}</RowInfoHeading>
           <RowInfoCopy>
             {comingSoon && <b>{'Coming Soon! '}</b>}
             {description}
@@ -157,8 +148,6 @@ export default createFragmentContainer(
   graphql`
     fragment ProviderRow_providerDetails on ProviderRow {
       accessToken
-      integrationCount
-      userCount
     }
   `
 )

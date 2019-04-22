@@ -15,6 +15,7 @@ import useAllIntegrations from 'universal/hooks/useAllIntegrations'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import useFilteredItems from 'universal/hooks/useFilteredItems'
 import {PALETTE} from 'universal/styles/paletteV2'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {TaskServiceEnum} from 'universal/types/graphql'
 import useForm from 'universal/utils/relay/useForm'
 import {MenuMutationProps} from 'universal/utils/relay/withMutationProps'
@@ -30,7 +31,7 @@ interface Props {
 
 const SearchIcon = styled(Icon)({
   color: PALETTE.TEXT.LIGHT,
-  fontSize: 18
+  fontSize: ICON_SIZE.MD18
 })
 
 const NoResults = styled(MenuItemLabel)({

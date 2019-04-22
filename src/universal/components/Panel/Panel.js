@@ -5,22 +5,18 @@ import ui from 'universal/styles/ui'
 import {panelShadow} from 'universal/styles/elevation'
 import appTheme from 'universal/styles/theme/appTheme'
 import Badge from 'universal/components/Badge/Badge'
+import {ROW_GUTTER, ROW_GUTTER_COMPACT} from 'universal/styles/rows'
 
-const bgThemeValues = {
-  light: appTheme.palette.yellow30l,
-  white: ui.palette.white
-}
-
-const PanelRoot = styled('div')(({bgTheme}) => ({
-  backgroundColor: bgTheme ? bgThemeValues[bgTheme] : bgThemeValues.white,
+const PanelRoot = styled('div')({
+  backgroundColor: 'white',
   boxShadow: panelShadow,
-  borderRadius: ui.cardBorderRadius,
+  borderRadius: 4,
   fontSize: appTheme.typography.s3,
   lineHeight: appTheme.typography.s5,
-  margin: `${ui.panelMarginVertical} 0`,
+  margin: '24px 0',
   position: 'relative',
   width: '100%'
-}))
+})
 
 const PanelHeader = styled('div')({
   alignItems: 'center',
@@ -34,19 +30,19 @@ const PanelLabel = styled('div')(({compact}) => ({
   fontWeight: ui.labelHeadingFontWeight,
   letterSpacing: ui.labelHeadingLetterSpacing,
   lineHeight: ui.labelHeadingLineHeight,
-  padding: `.75rem ${compact ? ui.panelCompactGutter : ui.panelGutter}`,
+  padding: `12px ${compact ? ROW_GUTTER_COMPACT : ROW_GUTTER}px`,
   textTransform: 'uppercase'
 }))
 
 const PanelControls = styled('div')(({compact}) => {
-  const padding = compact ? ui.panelCompactGutter : ui.panelGutter
+  const padding = compact ? ROW_GUTTER_COMPACT : ROW_GUTTER
   return {
     display: 'flex',
     flex: 1,
     height: '2.75rem',
     justifyContent: 'flex-end',
     lineHeight: '2.75rem',
-    padding: `0 ${padding}`
+    padding: `0 ${padding}px`
   }
 })
 
@@ -57,10 +53,10 @@ const PanelBody = styled('div')(({hideFirstRowBorder}) => ({
 }))
 
 const Panel = (props) => {
-  const {badgeCount, bgTheme, children, compact, controls, hideFirstRowBorder, label} = props
+  const {badgeCount, children, compact, controls, hideFirstRowBorder, label} = props
 
   return (
-    <PanelRoot bgTheme={bgTheme}>
+    <PanelRoot>
       {label && (
         <PanelHeader>
           <PanelLabel compact={compact}>{label}</PanelLabel>
@@ -82,7 +78,6 @@ const Panel = (props) => {
 
 Panel.propTypes = {
   badgeCount: PropTypes.number,
-  bgTheme: PropTypes.oneOf(['light', 'white']),
   children: PropTypes.any,
   compact: PropTypes.bool,
   controls: PropTypes.any,

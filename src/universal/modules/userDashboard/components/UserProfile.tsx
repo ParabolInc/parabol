@@ -19,6 +19,7 @@ import withAtmosphere, {
 import withForm, {WithFormProps} from 'universal/utils/relay/withForm'
 import Legitity from 'universal/validation/Legitity'
 import {UserProfile_viewer} from '__generated__/UserProfile_viewer.graphql'
+import {ROW_BORDER_COLOR, ROW_GUTTER} from 'universal/styles/rows'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -26,15 +27,15 @@ const SettingsBlock = styled('div')({
 
 const SettingsForm = styled('form')({
   alignItems: 'center',
-  borderTop: `.0625rem solid ${ui.rowBorderColor}`,
+  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
   display: 'flex',
-  padding: ui.panelGutter,
+  padding: ROW_GUTTER,
   width: '100%'
 })
 
 const InfoBlock = styled('div')({
   flex: 1,
-  paddingLeft: ui.panelGutter
+  paddingLeft: ROW_GUTTER
 })
 
 const FieldBlock = styled('div')({

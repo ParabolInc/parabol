@@ -7,7 +7,6 @@ import NotificationRow from 'universal/modules/notifications/components/Notifica
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import appTheme from 'universal/styles/theme/appTheme'
-import ui from 'universal/styles/ui'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
@@ -15,6 +14,7 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import Panel from 'universal/components/Panel/Panel'
 import {PAYMENT_REJECTED} from 'universal/utils/constants'
+import {ROW_GUTTER, ROW_BORDER_COLOR} from 'universal/styles/rows'
 
 const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',
@@ -29,14 +29,14 @@ const NotificationListBlock = styled('div')({
 
 const NotificationsEmptyBlock = styled('div')({
   alignItems: 'center',
-  borderTop: `1px solid ${ui.rowBorderColor}`,
+  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
   color: appTheme.palette.dark,
   display: 'flex',
   fontSize: appTheme.typography.s5,
   height: '4.8125rem',
   justifyContent: 'center',
   lineHeight: '1.5',
-  padding: ui.rowGutter,
+  padding: ROW_GUTTER,
   textAlign: 'center',
   width: '100%'
 })

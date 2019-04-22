@@ -8,7 +8,7 @@ import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 
 const borderRadius = '50%'
-const borderRadiusPanel = ui.panelBorderRadius
+const borderRadiusPanel = 4
 
 const EditableAvatarRoot = styled('div')(({hasPanel, size}) => ({
   backgroundColor: hasPanel && ui.palette.white,

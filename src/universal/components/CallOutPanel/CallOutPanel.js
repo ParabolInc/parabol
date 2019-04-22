@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import withStyles from 'universal/styles/withStyles'
 import {css} from 'aphrodite-local-styles/no-important'
-import ui from 'universal/styles/ui'
+import {ROW_BORDER_COLOR, ROW_GUTTER} from 'universal/styles/rows'
 import Panel from 'universal/components/Panel/Panel'
 import Type from 'universal/components/Type/Type'
 
@@ -36,12 +36,12 @@ CallOutPanel.propTypes = {
 
 const styleThunk = () => ({
   panelBody: {
-    padding: `2rem ${ui.panelGutter}`,
+    padding: `32px ${ROW_GUTTER}px`,
     textAlign: 'center'
   },
 
   panelBodyWithHeader: {
-    borderTop: `1px solid ${ui.rowBorderColor}`
+    borderTop: `1px solid ${ROW_BORDER_COLOR}`
   }
 })
 

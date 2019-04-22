@@ -20,7 +20,6 @@ const Input = styled('input')({
   '&:focus,:active': {
     border: `1px solid rgb(${PALETTE.BORDER.BLUE_RGB})`,
     boxShadow: `0px 0px 1px 1px rgba(${PALETTE.BORDER.BLUE_RGB}, .5)`
-    // ':placeholder': PALETTE.TEXT.MAIN
   }
 })
 
