@@ -10,6 +10,7 @@ import suOrgCount from 'server/graphql/queries/suOrgCount'
 import sendUpcomingInvoiceEmails from 'server/graphql/intranetSchema/mutations/sendUpcomingInvoiceEmails'
 import addNewFeature from 'server/graphql/intranetSchema/mutations/addNewFeature'
 import user from 'server/graphql/intranetSchema/queries/user'
+import flagOverLimit from 'server/graphql/intranetSchema/mutations/flagOverLimit'
 
 const query = new GraphQLObjectType({
   name: 'Query',
@@ -29,6 +30,7 @@ const mutation = new GraphQLObjectType({
     addNewFeature,
     autopauseUsers,
     endOldMeetings,
+    flagOverLimit,
     sendBatchNotificationEmails,
     sendUpcomingInvoiceEmails
   })

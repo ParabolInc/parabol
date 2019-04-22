@@ -243,6 +243,11 @@ export interface IUser {
   organizations: Array<IOrganization>
 
   /**
+   * a string with message stating that the user is over the free tier limit, else null
+   */
+  overLimitCopy: string | null
+
+  /**
    * The integrations that the user would probably like to use
    */
   suggestedIntegrations: ISuggestedIntegrationQueryPayload
