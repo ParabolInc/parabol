@@ -9,7 +9,7 @@ interface Props {
 const Input = styled('input')({
   appearance: 'none',
   background: 'inherit',
-  border: '1px solid gray',
+  border: `1px solid ${PALETTE.BORDER.LIGHT}`,
   borderRadius: 2,
   display: 'block',
   fontSize: 14,
@@ -19,7 +19,7 @@ const Input = styled('input')({
   width: '100%',
   '&:focus,:active': {
     border: `1px solid rgb(${PALETTE.BORDER.BLUE_RGB})`,
-    boxShadow: `0px 0px 1px 1px rgba(${PALETTE.BORDER.BLUE_RGB}, .5)`
+    boxShadow: `0 0 1px 1px rgba(${PALETTE.BORDER.BLUE_RGB}, .5)`
   }
 })
 
