@@ -115,6 +115,7 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
   render () {
     const {error, fields, isPrimary, isSignin, submitting, onChange, existingAccount} = this.props
     const Button = isPrimary ? PrimaryButton : RaisedButton
+    const hasEmail = !!fields.email.value
     return (
       <Form onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
@@ -123,12 +124,17 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
         )}
         <FieldGroup>
           <FieldBlock>
-            <EmailInputField {...fields.email} onChange={onChange} onBlur={this.handleBlur} />
+            <EmailInputField
+              autoFocus={!hasEmail}
+              {...fields.email}
+              onChange={onChange}
+              onBlur={this.handleBlur}
+            />
           </FieldBlock>
           <FieldBlock>
             <PasswordInputField
+              autoFocus={hasEmail}
               {...fields.password}
-              autoFocus
               onChange={onChange}
               onBlur={this.handleBlur}
             />
