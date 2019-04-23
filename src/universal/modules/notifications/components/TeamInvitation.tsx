@@ -5,7 +5,7 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import {RouteComponentProps, withRouter} from 'react-router-dom'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
-import RowCompact from 'universal/components/Row/RowCompact'
+import Row from 'universal/components/Row/Row'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -49,7 +49,7 @@ const TeamInvitation = (props: Props) => {
   }
 
   return (
-    <RowCompact>
+    <Row>
       <IconAvatar icon='group' size='small' />
       <NotificationMessage>
         {'You have been invited by '}
@@ -69,7 +69,7 @@ const TeamInvitation = (props: Props) => {
           {'Accept'}
         </StyledButton>
       </NotificationButton>
-    </RowCompact>
+    </Row>
   )
 }
 

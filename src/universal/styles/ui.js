@@ -480,7 +480,6 @@ const ui = {
   // Menus
   // ---------------------------------------------------------------------------
   menuBackgroundColor: '#fff',
-  menuBorderColor: '#DFDFE5',
   menuBorderRadius: borderRadiusSmall,
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',

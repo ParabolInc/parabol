@@ -12,7 +12,7 @@ import {ASSIGNEE, MENTIONEE} from 'universal/utils/constants'
 import {clearNotificationLabel} from '../helpers/constants'
 import styled, {css} from 'react-emotion'
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
-import RowCompact from 'universal/components/Row/RowCompact'
+import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 import RaisedButton from 'universal/components/RaisedButton'
 import AcknowledgeButton from 'universal/modules/notifications/components/AcknowledgeButton/AcknowledgeButton'
@@ -113,7 +113,7 @@ class TaskInvolves extends Component {
     const {status, tags, assignee} = task
     const action = involvementWord[involvement]
     return (
-      <RowCompact>
+      <Row>
         <IconAvatar
           icon={involvement === MENTIONEE ? 'chat_bubble' : 'assignment_ind'}
           size='small'
@@ -173,7 +173,7 @@ class TaskInvolves extends Component {
             waiting={submitting}
           />
         </div>
-      </RowCompact>
+      </Row>
     )
   }
 }

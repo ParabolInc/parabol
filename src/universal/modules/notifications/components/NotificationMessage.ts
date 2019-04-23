@@ -1,12 +1,13 @@
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {Layout} from 'universal/types/constEnums'
 
 const NotificationMessage = styled('div')({
-  color: ui.colorText,
+  color: PALETTE.TEXT.MAIN,
   flex: 1,
   fontSize: 14,
   lineHeight: '20px',
-  marginLeft: 16 // #gutter
+  marginLeft: Layout.ROW_GUTTER
 })
 
 export default NotificationMessage

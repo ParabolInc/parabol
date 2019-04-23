@@ -6,7 +6,7 @@ import AcknowledgeButton from 'universal/modules/notifications/components/Acknow
 import defaultStyles from 'universal/modules/notifications/helpers/styles'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import {clearNotificationLabel} from '../../helpers/constants'
-import RowCompact from 'universal/components/Row/RowCompact'
+import Row from 'universal/components/Row/Row'
 import IconAvatar from 'universal/components/IconAvatar/IconAvatar'
 
 const TeamArchived = (props) => {
@@ -21,7 +21,7 @@ const TeamArchived = (props) => {
   }
 
   return (
-    <RowCompact>
+    <Row>
       <IconAvatar icon='archive' size='small' />
       <div className={css(defaultStyles.message)}>
         {'The team '}
@@ -33,7 +33,7 @@ const TeamArchived = (props) => {
         onClick={acknowledge}
         waiting={submitting}
       />
-    </RowCompact>
+    </Row>
   )
 }
 
