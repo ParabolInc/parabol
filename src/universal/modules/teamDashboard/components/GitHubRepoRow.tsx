@@ -18,16 +18,16 @@ import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {GitHubRepoRow_repo} from '__generated__/GitHubRepoRow_repo.graphql'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
 
 const StyledButton = styled(FlatButton)({
-  marginLeft: ROW_GUTTER,
+  marginLeft: Layout.ROW_GUTTER,
   minWidth: '7rem'
 })
 
 const AvatarGroup = styled('div')({
   marginLeft: 'auto',
-  paddingLeft: ROW_GUTTER,
+  paddingLeft: Layout.ROW_GUTTER,
   flex: 1,
   display: 'flex',
   justifyContent: 'flex-end'

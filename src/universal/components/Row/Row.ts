@@ -1,12 +1,13 @@
 import styled from 'react-emotion'
-import {ROW_BORDER_COLOR, ROW_GUTTER} from 'universal/styles/rows'
+import {PALETTE} from 'universal/styles/paletteV2'
+import {Layout} from 'universal/types/constEnums'
 
 const Row = styled('div')({
   alignItems: 'center',
-  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
+  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
   display: 'flex',
   justifyContent: 'space-between',
-  padding: ROW_GUTTER,
+  padding: Layout.ROW_GUTTER,
   width: '100%'
 })
 

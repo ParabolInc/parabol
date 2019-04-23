@@ -1,9 +1,30 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import ui from 'universal/styles/ui'
-import RaisedButton from 'universal/components/RaisedButton'
-import CallOutPanel from 'universal/components/CallOutPanel/CallOutPanel'
+import PrimaryButton from 'universal/components/PrimaryButton'
+import Panel from 'universal/components/Panel/Panel'
 import {withRouter} from 'react-router-dom'
+import styled from 'react-emotion'
+
+const Body = styled('div')({
+  padding: '32px',
+  textAlign: 'center'
+})
+
+const Heading = styled('h2')({
+  fontSize: 20,
+  lineHeight: '30px',
+  margin: '0 0 16px'
+})
+
+const Copy = styled('p')({
+  fontSize: 14,
+  lineHeight: '21px',
+  margin: '0 0 24px'
+})
+
+const StyledButton = styled(PrimaryButton)({
+  margin: '0 auto'
+})
 
 const EmptyOrgsCallOut = (props) => {
   const {history} = props
@@ -11,24 +32,21 @@ const EmptyOrgsCallOut = (props) => {
   const gotoNewTeam = () => {
     history.push('/newteam')
   }
-  const button = (
-    <RaisedButton onClick={gotoNewTeam} palette='warm' size={ui.ctaPanelButtonSize}>
-      {'Start a New Organization'}
-    </RaisedButton>
-  )
 
   return (
-    <CallOutPanel
-      control={button}
-      heading={'You aren’t in any organizations!'}
-      panelLabel={'Organizations'}
-    >
-      <span>
-        {'You can create a new organization'}
-        <br />
-        {'and manage your own teams and tasks.'}
-      </span>
-    </CallOutPanel>
+    <Panel>
+      <Body>
+        <Heading>{'You aren’t in any organizations!'}</Heading>
+        <Copy>
+          {'You can create a new organization'}
+          <br />
+          {'and manage your own teams and tasks.'}
+        </Copy>
+        <StyledButton onClick={gotoNewTeam} size='medium'>
+          {'Start a New Organization'}
+        </StyledButton>
+      </Body>
+    </Panel>
   )
 }
 

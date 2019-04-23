@@ -2,17 +2,16 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import styled from 'react-emotion'
 import {panelShadow} from 'universal/styles/elevation'
-import appTheme from 'universal/styles/theme/appTheme'
 import Badge from 'universal/components/Badge/Badge'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
-import {ROW_GUTTER, ROW_GUTTER_COMPACT} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
 
 const PanelRoot = styled('div')({
   backgroundColor: 'white',
   boxShadow: panelShadow,
   borderRadius: 4,
-  fontSize: appTheme.typography.s3,
-  lineHeight: appTheme.typography.s5,
+  fontSize: 14,
+  lineHeight: '20px',
   margin: '24px 0',
   position: 'relative',
   width: '100%'
@@ -24,37 +23,34 @@ const PanelHeader = styled('div')({
   width: '100%'
 })
 
-const PanelLabel = styled(LabelHeading)(({compact}) => ({
-  padding: `12px ${compact ? ROW_GUTTER_COMPACT : ROW_GUTTER}px`,
+const PanelLabel = styled(LabelHeading)({
+  padding: `12px ${Layout.ROW_GUTTER}px`,
   textTransform: 'uppercase'
-}))
+})
 
-const PanelControls = styled('div')(({compact}) => {
-  const padding = compact ? ROW_GUTTER_COMPACT : ROW_GUTTER
-  return {
-    display: 'flex',
-    flex: 1,
-    height: '2.75rem',
-    justifyContent: 'flex-end',
-    lineHeight: '2.75rem',
-    padding: `0 ${padding}px`
-  }
+const PanelControls = styled('div')({
+  display: 'flex',
+  flex: 1,
+  height: 44,
+  justifyContent: 'flex-end',
+  lineHeight: '44px',
+  padding: `0 ${Layout.ROW_GUTTER}px`
 })
 
 const PanelBody = styled('div')(({hideFirstRowBorder}) => ({
   display: 'block',
-  marginTop: hideFirstRowBorder && '-.0625rem',
+  marginTop: hideFirstRowBorder && '-1px',
   width: '100%'
 }))
 
 const Panel = (props) => {
-  const {badgeCount, children, compact, controls, hideFirstRowBorder, label} = props
+  const {badgeCount, children, controls, hideFirstRowBorder, label} = props
 
   return (
     <PanelRoot>
       {label && (
         <PanelHeader>
-          <PanelLabel compact={compact}>{label}</PanelLabel>
+          <PanelLabel>{label}</PanelLabel>
           {badgeCount && <Badge colorPalette='midGray' value={badgeCount} />}
           <PanelControls>{controls}</PanelControls>
         </PanelHeader>
@@ -74,7 +70,6 @@ const Panel = (props) => {
 Panel.propTypes = {
   badgeCount: PropTypes.number,
   children: PropTypes.any,
-  compact: PropTypes.bool,
   controls: PropTypes.any,
   hideFirstRowBorder: PropTypes.bool,
   label: PropTypes.any

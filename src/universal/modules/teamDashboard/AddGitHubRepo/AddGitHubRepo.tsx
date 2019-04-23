@@ -15,7 +15,7 @@ import {GITHUB_ENDPOINT} from 'universal/utils/constants'
 import makeGitHubPostOptions from 'universal/utils/makeGitHubPostOptions'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {AddGitHubRepo_subbedRepos} from '__generated__/AddGitHubRepo_subbedRepos.graphql'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -40,7 +40,7 @@ const Footer = styled('div')({
 })
 
 const StyledButton = styled(SecondaryButton)({
-  marginLeft: ROW_GUTTER,
+  marginLeft: Layout.ROW_GUTTER,
   minWidth: '11rem',
   paddingLeft: 0,
   paddingRight: 0

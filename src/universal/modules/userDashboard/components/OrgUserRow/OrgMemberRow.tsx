@@ -25,7 +25,7 @@ import RowActions from 'universal/components/Row/RowActions'
 import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
 import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
 import LoadableModal from '../../../../components/LoadableModal'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
 
 const originAnchor = {
   vertical: 'top',
@@ -44,12 +44,12 @@ const ActionsBlock = styled('div')({
 })
 
 const MenuToggleBlock = styled('div')({
-  marginLeft: ROW_GUTTER,
+  marginLeft: Layout.ROW_GUTTER,
   width: '2rem'
 })
 
 const ToggleBlock = styled('div')({
-  marginLeft: ROW_GUTTER,
+  marginLeft: Layout.ROW_GUTTER,
   width: '6.25rem'
 })
 

@@ -3,51 +3,51 @@ import {createPaginationContainer, graphql, RelayPaginationProp} from 'react-rel
 import SecondaryButton from 'universal/components/SecondaryButton'
 import Panel from 'universal/components/Panel/Panel'
 import InvoiceRow from 'universal/modules/userDashboard/components/InvoiceRow/InvoiceRow'
-import appTheme from 'universal/styles/theme/appTheme'
 import styled from 'react-emotion'
 import LoadableModal from 'universal/components/LoadableModal'
 import UpdateCreditCardLoadable from 'universal/components/UpdateCreditCardLoadable'
 import Icon from 'universal/components/Icon'
-import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 import {OrgBilling_viewer} from '__generated__/OrgBilling_viewer.graphql'
 import {OrgBilling_organization} from '__generated__/OrgBilling_organization.graphql'
-import {ROW_BORDER_COLOR, ROW_GUTTER} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const panelCell = {
-  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
-  padding: ROW_GUTTER
+  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  padding: Layout.ROW_GUTTER
 }
 
 const CreditCardInfo = styled('div')({
   alignItems: 'center',
-  color: appTheme.palette.dark,
+  color: PALETTE.TEXT.MAIN,
   display: 'flex',
-  fontSize: appTheme.typography.s3,
-  lineHeight: appTheme.typography.s5
+  fontSize: 14,
+  lineHeight: '20px'
 })
 
 const CreditCardIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18,
-  marginRight: '1rem'
+  fontSize: ICON_SIZE.MD18,
+  marginRight: 16
 })
 
 const EnvelopeIcon = styled(Icon)({
-  fontSize: MD_ICONS_SIZE_18,
-  marginLeft: '.24rem'
+  fontSize: ICON_SIZE.MD18,
+  marginLeft: 4
 })
 
 const CreditCardProvider = styled('span')({
   fontWeight: 600,
-  marginRight: '.5rem'
+  marginRight: 8
 })
 
 const CreditCardNumber = styled('span')({
-  marginRight: '2rem'
+  marginRight: 32
 })
 
 const CreditCardExpiresLabel = styled('span')({
   fontWeight: 600,
-  marginRight: '.5rem'
+  marginRight: 8
 })
 
 const InfoAndUpdate = styled('div')({
@@ -58,7 +58,7 @@ const InfoAndUpdate = styled('div')({
 })
 
 const MoreGutter = styled('div')({
-  paddingBottom: ROW_GUTTER
+  paddingBottom: Layout.ROW_GUTTER
 })
 
 const LoadMoreButton = styled(SecondaryButton)({
@@ -72,14 +72,14 @@ const PanelRow = styled('div')({
 
 const Unsubscribe = styled('div')({
   alignItems: 'center',
-  color: appTheme.palette.mid,
+  color: PALETTE.LINK.MAIN,
   display: 'flex',
   justifyContent: 'center',
   '& a': {
     alignItems: 'center',
-    color: appTheme.palette.mid,
+    color: PALETTE.LINK.BLUE,
     display: 'flex',
-    marginLeft: '.5rem',
+    marginLeft: 8,
     '& > u': {
       textDecoration: 'none'
     },

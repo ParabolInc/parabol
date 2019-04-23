@@ -1,8 +1,8 @@
 import styled from 'react-emotion'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
 
 const RowInfo = styled('div')({
-  paddingLeft: ROW_GUTTER
+  paddingLeft: Layout.ROW_GUTTER
 })
 
 export default RowInfo

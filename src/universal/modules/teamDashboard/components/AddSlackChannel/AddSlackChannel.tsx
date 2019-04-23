@@ -8,7 +8,7 @@ import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation
 import formError from 'universal/styles/helpers/formError'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -28,7 +28,7 @@ const Error = styled('div')({
 })
 
 const StyledButton = styled(SecondaryButton)({
-  marginLeft: ROW_GUTTER,
+  marginLeft: Layout.ROW_GUTTER,
   minWidth: '11rem',
   paddingLeft: 0,
   paddingRight: 0
@@ -59,13 +59,15 @@ class AddSlackChannel extends Component {
       selectedChannel: defaultSelectedChannel()
     }
     this.lastUpdated = 0
-    this.fetchOptions(props.accessToken)
+    // TODO: fix TS warning
+    // this.fetchOptions(props.accessToken)
   }
 
   componentWillReceiveProps (nextProps) {
     const {accessToken} = nextProps
     if (!this.props.accessToken !== accessToken) {
-      this.fetchOptions(accessToken)
+      // TODO: fix TS warning
+      // this.fetchOptions(accessToken)
     }
   }
 

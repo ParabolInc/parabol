@@ -1,7 +1,7 @@
 import {SuggestedIntegrationGitHubMenuItem_suggestedIntegration} from '__generated__/SuggestedIntegrationGitHubMenuItem_suggestedIntegration.graphql'
 import React, {forwardRef} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import GitHubSVG18 from 'universal/components/GitHubSVG18'
+import GitHubSVG from 'universal/components/GitHubSVG'
 import MenuItem from 'universal/components/MenuItem'
 import MenuItemComponentAvatar from 'universal/components/MenuItemComponentAvatar'
 import MenuItemLabel from 'universal/components/MenuItemLabel'
@@ -10,6 +10,7 @@ import CreateGitHubIssueMutation from 'universal/mutations/CreateGitHubIssueMuta
 import {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import TypeAheadLabel from './TypeAheadLabel'
 import styled from 'react-emotion'
+import {ICON_SIZE} from 'universal/styles/typographyV2'
 
 interface Props {
   closePortal: () => void
@@ -21,9 +22,11 @@ interface Props {
   query: string
 }
 
-const BlockSVG = styled('div')({
+const MenuItemIcon = styled(MenuItemComponentAvatar)({
   '& svg': {
-    display: 'block'
+    display: 'block',
+    height: ICON_SIZE.MD18,
+    width: ICON_SIZE.MD18
   }
 })
 
@@ -36,11 +39,9 @@ const SuggestedIntegrationGitHubMenuItem = forwardRef((props: Props, ref: any) =
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemComponentAvatar>
-            <BlockSVG>
-              <GitHubSVG18 />
-            </BlockSVG>
-          </MenuItemComponentAvatar>
+          <MenuItemIcon>
+            <GitHubSVG />
+          </MenuItemIcon>
           <TypeAheadLabel query={query} label={nameWithOwner} />
         </MenuItemLabel>
       }

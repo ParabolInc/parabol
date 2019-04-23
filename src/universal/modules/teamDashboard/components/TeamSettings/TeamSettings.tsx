@@ -11,7 +11,8 @@ import ArchiveTeamContainer from 'universal/modules/teamDashboard/containers/Arc
 import ui from 'universal/styles/ui'
 import {PERSONAL, PRO_LABEL} from 'universal/utils/constants'
 import PrimaryButton from 'universal/components/PrimaryButton'
-import {ROW_BORDER_COLOR, ROW_GUTTER} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const TeamSettingsLayout = styled('div')({
   display: 'flex',
@@ -27,8 +28,8 @@ const PanelsLayout = styled('div')({
 })
 
 const PanelRow = styled('div')({
-  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
-  padding: ROW_GUTTER
+  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  padding: Layout.ROW_GUTTER
 })
 
 const StyledRow = styled(Row)({

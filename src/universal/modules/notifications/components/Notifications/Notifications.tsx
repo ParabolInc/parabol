@@ -6,7 +6,6 @@ import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow'
 import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
 import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
-import appTheme from 'universal/styles/theme/appTheme'
 import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
 import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
@@ -14,7 +13,8 @@ import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import Panel from 'universal/components/Panel/Panel'
 import {PAYMENT_REJECTED} from 'universal/utils/constants'
-import {ROW_GUTTER, ROW_BORDER_COLOR} from 'universal/styles/rows'
+import {Layout} from 'universal/types/constEnums'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',
@@ -29,14 +29,14 @@ const NotificationListBlock = styled('div')({
 
 const NotificationsEmptyBlock = styled('div')({
   alignItems: 'center',
-  borderTop: `1px solid ${ROW_BORDER_COLOR}`,
-  color: appTheme.palette.dark,
+  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
+  color: PALETTE.TEXT.MAIN,
   display: 'flex',
-  fontSize: appTheme.typography.s5,
-  height: '4.8125rem',
+  fontSize: 20,
+  height: 77,
   justifyContent: 'center',
   lineHeight: '1.5',
-  padding: ROW_GUTTER,
+  padding: Layout.ROW_GUTTER,
   textAlign: 'center',
   width: '100%'
 })
@@ -67,7 +67,6 @@ const Notifications = (props) => {
       <Helmet title='My Notifications | Parabol' />
       <SettingsWrapper>
         <Panel
-          compact
           label='Notifications'
           controls={!submitting && clearableNotifs.length > 0 && clearAllButton()}
         >

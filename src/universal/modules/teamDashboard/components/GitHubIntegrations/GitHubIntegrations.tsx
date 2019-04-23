@@ -22,8 +22,7 @@ import RemoveProviderMutation from 'universal/mutations/RemoveProviderMutation'
 import {GITHUB} from 'universal/utils/constants'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import {GITHUB_NAME, GITHUB_DESC} from 'universal/styles/providers'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout, Providers} from 'universal/types/constEnums'
 
 const ProviderDetails = styled(Row)({
   border: 0,
@@ -32,7 +31,7 @@ const ProviderDetails = styled(Row)({
 
 const AddGitHubButton = styled(RaisedButton)({
   margin: '0 auto',
-  marginBottom: ROW_GUTTER
+  marginBottom: Layout.ROW_GUTTER
 })
 
 interface Props extends WithAtmosphereProps, WithMutationProps {
@@ -62,8 +61,8 @@ const GitHubIntegrations = (props: Props) => {
         <ProviderDetails>
           <GitHubProviderLogo />
           <RowInfo>
-            <RowInfoHeading>{GITHUB_NAME}</RowInfoHeading>
-            <RowInfoCopy>{GITHUB_DESC}</RowInfoCopy>
+            <RowInfoHeading>{Providers.GITHUB_NAME}</RowInfoHeading>
+            <RowInfoCopy>{Providers.GITHUB_DESC}</RowInfoCopy>
           </RowInfo>
           {accessToken && (
             <RowActions>

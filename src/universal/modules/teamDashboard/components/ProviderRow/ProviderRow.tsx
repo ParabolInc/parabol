@@ -20,9 +20,8 @@ import makeHref from 'universal/utils/makeHref'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import SlackProviderLogo from 'universal/SlackProviderLogo'
 import GitHubProviderLogo from 'universal/GitHubProviderLogo'
-import {GITHUB_NAME, GITHUB_DESC, SLACK_NAME, SLACK_DESC} from 'universal/styles/providers'
+import {Layout, Providers} from 'universal/types/constEnums'
 import {PALETTE} from 'universal/styles/paletteV2'
-import {ROW_GUTTER} from 'universal/styles/rows'
 
 const StyledButton = styled(SecondaryButton)({
   paddingLeft: 0,
@@ -40,7 +39,7 @@ const providerRowContent = {
 
 const ProviderActions = styled(RowActions)({
   marginLeft: 'auto',
-  paddingLeft: ROW_GUTTER,
+  paddingLeft: Layout.ROW_GUTTER,
   maxWidth: '10rem'
 })
 
@@ -54,8 +53,8 @@ export const providerLookup = {
       )}&state=${state}&response_type=code&prompt=consent`
   },
   [GITHUB]: {
-    description: GITHUB_DESC,
-    providerName: GITHUB_NAME,
+    description: Providers.GITHUB_DESC,
+    providerName: Providers.GITHUB_NAME,
     route: 'github',
     makeUri: (state) =>
       `https://github.com/login/oauth/authorize?client_id=${
@@ -63,8 +62,8 @@ export const providerLookup = {
       }&scope=${GITHUB_SCOPE}&state=${state}`
   },
   [SLACK]: {
-    description: SLACK_DESC,
-    providerName: SLACK_NAME,
+    description: Providers.SLACK_DESC,
+    providerName: Providers.SLACK_NAME,
     route: 'slack',
     makeUri: (state) => {
       const redirect = makeHref('/auth/slack')
