@@ -4,7 +4,6 @@ import endMeeting from 'server/graphql/mutations/endMeeting'
 import {requireSU} from 'server/utils/authorization'
 import sendSegmentEvent from 'server/utils/sendSegmentEvent'
 import {OLD_MEETING_AGE} from 'server/utils/serverConstants'
-import endNewMeeting from 'server/graphql/mutations/endNewMeeting'
 
 const endOldMeetings = {
   type: GraphQLInt,
@@ -45,8 +44,8 @@ const endOldMeetings = {
 
     await Promise.all(
       newMeetingMeetingIds.map((meetingId) => {
-        sendSegmentEvent('endOldMeeting', authToken.sub, {meetingId})
-        return endNewMeeting.resolve(undefined, {meetingId}, {authToken, socketId: '', dataLoader})
+        sendSegmentEvent('Longrunning Retro', authToken.sub, {meetingId})
+        // return endNewMeeting.resolve(undefined, {meetingId}, {authToken, socketId: '', dataLoader})
       })
     )
 
