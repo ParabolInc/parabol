@@ -1,16 +1,17 @@
 import {BillingLeaderActionMenu_organization} from '__generated__/BillingLeaderActionMenu_organization.graphql'
 import {BillingLeaderActionMenu_organizationUser} from '__generated__/BillingLeaderActionMenu_organizationUser.graphql'
-import React, {lazy} from 'react'
+import React from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Menu from 'universal/components/Menu'
 import MenuItem from 'universal/components/MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
+import useModal from 'universal/hooks/useModal'
 import SetOrgUserRoleMutation from 'universal/mutations/SetOrgUserRoleMutation'
 import {BILLING_LEADER} from 'universal/utils/constants'
+import lazyPreload from 'universal/utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import LoadableModal from './LoadableModal'
 
 interface Props extends WithMutationProps, WithAtmosphereProps {
   closePortal: () => void
@@ -19,11 +20,11 @@ interface Props extends WithMutationProps, WithAtmosphereProps {
   organization: BillingLeaderActionMenu_organization
 }
 
-const LeaveOrgModal = lazy(() =>
+const LeaveOrgModal = lazyPreload(() =>
   import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
 )
 
-const RemoveFromOrgModal = lazy(() =>
+const RemoveFromOrgModal = lazyPreload(() =>
   import(/* webpackChunkName: 'RemoveFromOrgModal' */ 'universal/modules/userDashboard/components/RemoveFromOrgModal/RemoveFromOrgModal')
 )
 
@@ -52,37 +53,43 @@ const BillingLeaderActionMenu = (props: Props) => {
     SetOrgUserRoleMutation(atmosphere, variables, {}, onError, onCompleted)
   }
 
+  const {originRef: leaveRef, togglePortal: toggleLeave, modalPortal: leaveModal} = useModal()
+  const {originRef: removeRef, togglePortal: toggleRemove, modalPortal: removeModal} = useModal()
   return (
-    <Menu ariaLabel={'Select your action'} closePortal={closePortal}>
-      {isBillingLeader && !isViewerLastBillingLeader && (
-        <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
+    <>
+      <Menu ariaLabel={'Select your action'} closePortal={closePortal}>
+        {isBillingLeader && !isViewerLastBillingLeader && (
+          <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
+        )}
+        {!isBillingLeader && (
+          <MenuItem label='Promote to Billing Leader' onClick={setRole(BILLING_LEADER)} />
+        )}
+        {viewerId === userId && !isViewerLastBillingLeader && (
+          <MenuItem
+            noCloseOnClick
+            label='Leave Organization'
+            ref={leaveRef}
+            onClick={toggleLeave}
+            onMouseEnter={LeaveOrgModal.preload}
+          />
+        )}
+        {viewerId !== userId && (
+          <MenuItem
+            noCloseOnClick
+            label={
+              new Date(newUserUntil) > new Date() ? 'Refund and Remove' : 'Remove from Organization'
+            }
+            ref={removeRef}
+            onClick={toggleRemove}
+            onMouseEnter={RemoveFromOrgModal.preload}
+          />
+        )}
+      </Menu>
+      {leaveModal(<LeaveOrgModal orgId={orgId} />)}
+      {removeModal(
+        <RemoveFromOrgModal orgId={orgId} userId={userId} preferredName={preferredName} />
       )}
-      {!isBillingLeader && (
-        <MenuItem label='Promote to Billing Leader' onClick={setRole(BILLING_LEADER)} />
-      )}
-      {viewerId === userId && !isViewerLastBillingLeader && (
-        <MenuItem label='Leave Organization' />
-        // <LoadableModal
-        //   LoadableComponent={LeaveOrgModal}
-        //   queryVars={{orgId}}
-        //   toggle={}
-        // />
-      )}
-      {viewerId !== userId && (
-        <MenuItem
-          label={
-            new Date(newUserUntil) > new Date() ? 'Refund and Remove' : 'Remove from Organization'
-          }
-        />
-        // <LoadableModal
-        //   LoadableComponent={RemoveFromOrgModal}
-        //   queryVars={{orgId, userId, preferredName}}
-        //   toggle={
-
-        // }
-        // />
-      )}
-    </Menu>
+    </>
   )
 }
 

@@ -20,7 +20,7 @@ const backgroundStyles = {
   },
   [PortalState.Exiting]: {
     opacity: 0,
-    transition: `all 120ms ${DECELERATE}`
+    transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
   },
   [PortalState.Entering]: {
     opacity: 0,

@@ -1,18 +1,18 @@
-import {useMemo} from 'react'
+import {useMemo, useRef} from 'react'
 import getBBox from 'universal/components/RetroReflectPhase/getBBox'
-import useCoords, {MenuPosition} from 'universal/hooks/useCoords'
 import useLoadingDelay from 'universal/hooks/useLoadingDelay'
-import useMenuPortal from 'universal/hooks/useMenuPortal'
+import useModalPortal from 'universal/hooks/useModalPortal'
 import usePortal, {UsePortalOptions} from 'universal/hooks/usePortal'
 
 interface Options extends UsePortalOptions {
+  background?: string
   loadingWidth?: number
 }
 
-const useMenu = (menuPosition: MenuPosition, options: Options = {}) => {
-  const {onOpen, onClose} = options
-  // TODO useCoords should export the actual menuPosition (it changes if there's not enough space to put it where it's preferred)
-  const {targetRef, originRef, coords} = useCoords(menuPosition)
+const useModal = (options: Options = {}) => {
+  const {background, onOpen, onClose} = options
+  const originRef = useRef<HTMLDivElement>(null)
+  const targetRef = useRef<HTMLDivElement>(null)
   const {portal, closePortal, togglePortal, status} = usePortal({onOpen, onClose})
   const loadingWidth = useMemo(() => {
     if (options.loadingWidth) return options.loadingWidth
@@ -20,16 +20,16 @@ const useMenu = (menuPosition: MenuPosition, options: Options = {}) => {
     return Math.max(40, bbox ? bbox.width : 40)
   }, [originRef.current])
   const {loadingDelay, loadingDelayRef} = useLoadingDelay()
-  const menuPortal = useMenuPortal(
+  const modalPortal = useModalPortal(
     portal,
     targetRef,
     loadingWidth,
-    coords,
     status,
-    menuPosition,
-    loadingDelayRef
+    loadingDelayRef,
+    closePortal,
+    background
   )
-  return {togglePortal, originRef, menuPortal, closePortal, loadingDelay, loadingWidth}
+  return {togglePortal, originRef, modalPortal, closePortal, loadingDelay, loadingWidth}
 }
 
-export default useMenu
+export default useModal

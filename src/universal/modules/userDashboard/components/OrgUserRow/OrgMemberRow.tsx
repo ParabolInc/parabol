@@ -1,6 +1,6 @@
 import {OrgMemberRow_organization} from '__generated__/OrgMemberRow_organization.graphql'
 import {OrgMemberRow_organizationUser} from '__generated__/OrgMemberRow_organizationUser.graphql'
-import React, {lazy} from 'react'
+import React from 'react'
 import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import Avatar from 'universal/components/Avatar/Avatar'
@@ -20,13 +20,13 @@ import withAtmosphere, {
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
 import {MenuPosition} from 'universal/hooks/useCoords'
 import useMenu from 'universal/hooks/useMenu'
+import useModal from 'universal/hooks/useModal'
 import InactivateUserMutation from 'universal/mutations/InactivateUserMutation'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import {BILLING_LEADER, PERSONAL} from 'universal/utils/constants'
 import lazyPreload from 'universal/utils/lazyPreload'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
-import LoadableModal from '../../../../components/LoadableModal'
 
 const ActionsBlock = styled('div')({
   alignItems: 'center',
@@ -62,7 +62,7 @@ const MenuButton = (props) => (
   </StyledButton>
 )
 
-const LeaveOrgModal = lazy(() =>
+const LeaveOrgModal = lazyPreload(() =>
   import(/* webpackChunkName: 'LeaveOrgModal' */ 'universal/modules/userDashboard/components/LeaveOrgModal/LeaveOrgModal')
 )
 
@@ -89,6 +89,8 @@ const OrgMemberRow = (props: Props) => {
     isViewerBillingLeader && isBillingLeader && billingLeaderCount === 1
   const {viewerId} = atmosphere
   const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const {togglePortal: toggleLeave, originRef: leaveRef, modalPortal} = useModal()
+
   const toggleHandler = () => {
     if (isPersonalTier) return
     if (!inactive) {
@@ -134,11 +136,16 @@ const OrgMemberRow = (props: Props) => {
       <RowActions>
         <ActionsBlock>
           {!isBillingLeader && viewerId === userId && (
-            <LoadableModal
-              LoadableComponent={LeaveOrgModal}
-              queryVars={{orgId}}
-              toggle={<FlatButton>Leave Organization</FlatButton>}
-            />
+            <>
+              <FlatButton
+                onClick={toggleLeave}
+                onMouseEnter={LeaveOrgModal.preload}
+                innerRef={leaveRef}
+              >
+                Leave Organization
+              </FlatButton>
+              {modalPortal(<LeaveOrgModal orgId={orgId} />)}
+            </>
           )}
           {!isPersonalTier && isViewerBillingLeader && (
             <ToggleBlock>

@@ -22,6 +22,7 @@ export interface MenuItemProps {
 interface Props {
   label: ReactNode
   onClick?: (e: React.MouseEvent) => void
+  onMouseEnter?: (e: React.MouseEvent) => void
   noCloseOnClick?: boolean
 }
 
@@ -55,7 +56,7 @@ const MenuItemStyles = styled('div')(({isActive, idx}: {isActive: boolean; idx: 
 }))
 
 const MenuItem = forwardRef((props: Props, ref: any) => {
-  const {label, noCloseOnClick, onClick} = props
+  const {label, noCloseOnClick, onMouseEnter, onClick} = props
   const itemRef = useRef<HTMLDivElement>()
   // we're doing something a little hacky here, overloading a callback ref with some props so we don't need to pass them explicitly
   const {activate, closePortal, isActive, idx} = ref as MenuItemProps
@@ -87,6 +88,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
       role='menuitem'
       innerRef={itemRef}
       onClick={handleClick}
+      onMouseEnter={onMouseEnter}
       idx={idx}
     >
       {typeof label === 'string' ? <MenuItemLabel>{label}</MenuItemLabel> : label}
