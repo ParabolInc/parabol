@@ -19,6 +19,8 @@ import withAtmosphere, {
 import withForm, {WithFormProps} from 'universal/utils/relay/withForm'
 import Legitity from 'universal/validation/Legitity'
 import {UserProfile_viewer} from '__generated__/UserProfile_viewer.graphql'
+import {Layout} from 'universal/types/constEnums'
+import {PALETTE} from 'universal/styles/paletteV2'
 
 const SettingsBlock = styled('div')({
   width: '100%'
@@ -26,21 +28,21 @@ const SettingsBlock = styled('div')({
 
 const SettingsForm = styled('form')({
   alignItems: 'center',
-  borderTop: `.0625rem solid ${ui.rowBorderColor}`,
+  borderTop: `1px solid ${PALETTE.BORDER.LIGHTER}`,
   display: 'flex',
-  padding: ui.panelGutter,
+  padding: Layout.ROW_GUTTER,
   width: '100%'
 })
 
 const InfoBlock = styled('div')({
   flex: 1,
-  paddingLeft: ui.panelGutter
+  paddingLeft: Layout.ROW_GUTTER
 })
 
 const FieldBlock = styled('div')({
   flex: 1,
   minWidth: 0,
-  paddingRight: '1rem'
+  paddingRight: 16
 })
 
 const ControlBlock = styled('div')({
@@ -52,7 +54,7 @@ const ControlBlock = styled('div')({
 })
 
 const StyledButton = styled(SecondaryButton)({
-  width: '7rem'
+  width: 112
 })
 
 const UserAvatarInput = lazy(() =>

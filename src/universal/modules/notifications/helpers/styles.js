@@ -1,39 +1,40 @@
 import ui from 'universal/styles/ui'
-import appTheme from 'universal/styles/theme/appTheme'
+
+const gutter = 16 // #gutter
 
 export default {
   message: {
     color: ui.colorText,
     flex: 1,
-    fontSize: appTheme.typography.s3,
-    lineHeight: '1.375rem',
-    marginLeft: ui.rowCompactGutter
+    fontSize: 14,
+    lineHeight: '20px',
+    marginLeft: gutter
   },
   messageVar: {
     textDecoration: 'underline'
   },
   messageSub: {
     color: ui.colorText,
-    fontSize: appTheme.typography.s2,
-    marginTop: '.25rem'
+    fontSize: 13,
+    marginTop: 4
   },
   notifLink: {
     cursor: 'pointer',
     ':hover': {
-      color: appTheme.palette.warm
+      color: ui.palette.warm
     }
   },
   button: {
-    marginLeft: ui.rowCompactGutter,
-    minWidth: '5.125rem'
+    marginLeft: gutter,
+    minWidth: 82
   },
   widerButton: {
-    marginLeft: ui.rowCompactGutter,
-    minWidth: '8.25rem'
+    marginLeft: gutter,
+    minWidth: 132
   },
   widestButton: {
-    marginLeft: ui.rowCompactGutter,
-    minWidth: '11rem'
+    marginLeft: gutter,
+    minWidth: 176
   },
   buttonGroup: {
     display: 'flex'
@@ -41,16 +42,16 @@ export default {
   owner: {
     display: 'flex',
     alignItems: 'center',
-    paddingTop: '.5rem'
+    paddingTop: 8
   },
   ownerAvatar: {
     borderRadius: '100%',
     display: 'block',
-    height: '1.5rem',
-    width: '1.5rem'
+    height: 24,
+    width: 24
   },
   ownerName: {
     fontWeight: 600,
-    paddingLeft: '.375rem'
+    paddingLeft: 8
   }
 }

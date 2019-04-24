@@ -4,6 +4,7 @@ import UnderlineInput from './InputField/UnderlineInput'
 import TinyLabel from 'universal/components/TinyLabel'
 
 interface Props {
+  autoFocus?: boolean
   dirty: boolean
   error: string | undefined
   value: string
@@ -17,11 +18,12 @@ const Label = styled(TinyLabel)({
 })
 
 const EmailInputField = (props: Props) => {
-  const {dirty, error, onChange, onBlur, value} = props
+  const {autoFocus, dirty, error, onChange, onBlur, value} = props
   return (
     <React.Fragment>
       <Label>Email</Label>
       <UnderlineInput
+        autoFocus={autoFocus}
         error={dirty ? (error as string) : undefined}
         name='email'
         onBlur={onBlur}

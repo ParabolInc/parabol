@@ -1,5 +1,5 @@
 import getRethink from 'server/database/rethinkDriver'
-import {BILLING_LEADER, PERSONAL, PRO} from 'universal/utils/constants'
+import {BILLING_LEADER, PERSONAL, PRO, ENTERPRISE} from 'universal/utils/constants'
 
 // breaking this out into its own helper so it can be used directly to
 // populate segment traits
@@ -21,10 +21,18 @@ const countTiersForUserId = async (userId) => {
   ).length
   const tierProCount = organizationUsers.filter((organizationUser) => organizationUser.tier === PRO)
     .length
+  const tierEnterpriseCount = organizationUsers.filter(
+    (organizationUser) => organizationUser.tier === ENTERPRISE
+  ).length
   const tierProBillingLeaderCount = organizationUsers.filter(
     (organizationUser) => organizationUser.tier === PRO && organizationUser.role === BILLING_LEADER
   ).length
-  return {tierPersonalCount, tierProCount, tierProBillingLeaderCount}
+  return {
+    tierPersonalCount,
+    tierProCount,
+    tierEnterpriseCount,
+    tierProBillingLeaderCount
+  }
 }
 
 export default countTiersForUserId

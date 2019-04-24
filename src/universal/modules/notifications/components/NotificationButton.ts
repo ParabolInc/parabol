@@ -1,9 +1,9 @@
 import styled from 'react-emotion'
-import ui from 'universal/styles/ui'
+import {Layout} from 'universal/types/constEnums'
 
 const NotificationButton = styled('div')({
-  marginLeft: ui.rowCompactGutter,
-  minWidth: '5.125rem'
+  marginLeft: Layout.ROW_GUTTER,
+  minWidth: 82
 })
 
 export default NotificationButton

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
+import {RouteComponentProps, withRouter} from 'react-router'
 import ErrorAlert from 'universal/components/ErrorAlert/ErrorAlert'
 import PrimaryButton from 'universal/components/PrimaryButton'
 import RaisedButton from 'universal/components/RaisedButton'
@@ -17,7 +18,11 @@ import Legitity from '../validation/Legitity'
 import EmailInputField from './EmailInputField'
 import PasswordInputField from './PasswordInputField'
 
-interface Props extends WithAtmosphereProps, WithMutationProps, WithFormProps {
+interface Props
+  extends WithAtmosphereProps,
+    WithMutationProps,
+    WithFormProps,
+    RouteComponentProps<{}> {
   email: string
   // is the primary login action (not secondary to Google Oauth)
   isPrimary?: boolean
@@ -41,6 +46,13 @@ const Form = styled('form')({
 
 // exporting as a Base is a good indicator that a parent component is using this as a ref
 export class EmailPasswordAuthFormBase extends Component<Props> {
+  componentDidUpdate (prevProps: Props) {
+    const {location, onError} = this.props
+    if (prevProps.location !== location && prevProps.error) {
+      onError()
+    }
+  }
+
   handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     this.props.setDirtyField(e.target.name)
   }
@@ -103,6 +115,7 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
   render () {
     const {error, fields, isPrimary, isSignin, submitting, onChange, existingAccount} = this.props
     const Button = isPrimary ? PrimaryButton : RaisedButton
+    const hasEmail = !!fields.email.value
     return (
       <Form onSubmit={this.onSubmit}>
         {error && <ErrorAlert message={error} />}
@@ -111,12 +124,17 @@ export class EmailPasswordAuthFormBase extends Component<Props> {
         )}
         <FieldGroup>
           <FieldBlock>
-            <EmailInputField {...fields.email} onChange={onChange} onBlur={this.handleBlur} />
+            <EmailInputField
+              autoFocus={!hasEmail}
+              {...fields.email}
+              onChange={onChange}
+              onBlur={this.handleBlur}
+            />
           </FieldBlock>
           <FieldBlock>
             <PasswordInputField
+              autoFocus={hasEmail}
               {...fields.password}
-              autoFocus
               onChange={onChange}
               onBlur={this.handleBlur}
             />
@@ -146,4 +164,4 @@ const form = withForm({
   }
 })
 
-export default withAtmosphere(withMutationProps(form(EmailPasswordAuthFormBase)))
+export default withAtmosphere(withMutationProps(withRouter(form(EmailPasswordAuthFormBase))))

@@ -23,7 +23,7 @@ const PaymentRejected = (props) => {
     history.push(`/me/organizations/${orgId}`)
   }
   return (
-    <Row compact>
+    <Row>
       <IconAvatar icon='credit_card' size='small' />
       <div className={css(defaultStyles.message)}>
         {'Your '}

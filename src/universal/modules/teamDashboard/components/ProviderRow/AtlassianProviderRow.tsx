@@ -21,12 +21,11 @@ import useMenu from 'universal/hooks/useMenu'
 import {DECELERATE} from 'universal/styles/animation'
 import {PALETTE} from 'universal/styles/paletteV2'
 import {ICON_SIZE} from 'universal/styles/typographyV2'
-import {ROW_GUTTER} from 'universal/styles/rows'
+import {Layout, Providers} from 'universal/types/constEnums'
 import {IAuthToken, IntegrationServiceEnum} from 'universal/types/graphql'
 import handleOpenOAuth from 'universal/utils/handleOpenOAuth'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import AtlassianProviderLogo from 'universal/AtlassianProviderLogo'
-import {ATLASSIAN_NAME, ATLASSIAN_DESC} from 'universal/styles/providers'
 
 const StyledButton = styled(FlatButton)({
   borderColor: PALETTE.BORDER.LIGHT,
@@ -40,7 +39,7 @@ const StyledButton = styled(FlatButton)({
 
 const ProviderActions = styled(RowActions)({
   marginLeft: 'auto',
-  paddingLeft: ROW_GUTTER,
+  paddingLeft: Layout.ROW_GUTTER,
   maxWidth: '10rem'
 })
 
@@ -142,8 +141,8 @@ const AtlassianProviderRow = (props: Props) => {
     <ProviderCard>
       <AtlassianProviderLogo />
       <RowInfo>
-        <ProviderName>{ATLASSIAN_NAME}</ProviderName>
-        <RowInfoCopy>{ATLASSIAN_DESC}</RowInfoCopy>
+        <ProviderName>{Providers.ATLASSIAN_NAME}</ProviderName>
+        <RowInfoCopy>{Providers.ATLASSIAN_DESC}</RowInfoCopy>
       </RowInfo>
       {!accessToken && (
         <ProviderActions>

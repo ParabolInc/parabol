@@ -49,7 +49,7 @@ const TeamInvitation = (props: Props) => {
   }
 
   return (
-    <Row compact>
+    <Row>
       <IconAvatar icon='group' size='small' />
       <NotificationMessage>
         {'You have been invited by '}

@@ -10,7 +10,6 @@ const useAtlassianSites = (accessToken?: string) => {
   const [sites, setSites] = useState<AccessibleResource[]>([])
   const [status, setStatus] = useState<null | 'loading' | 'loaded' | 'error'>(null)
   useEffect(() => {
-    console.log('using effect')
     const fetchSites = async () => {
       let res: AtlassianError | AccessibleResource[]
       try {

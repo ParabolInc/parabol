@@ -13,21 +13,21 @@ import JoinIntegrationMutation from 'universal/mutations/JoinIntegrationMutation
 import LeaveIntegrationMutation from 'universal/mutations/LeaveIntegrationMutation'
 import RemoveGitHubRepoMutation from 'universal/mutations/RemoveGitHubRepoMutation'
 import formError from 'universal/styles/helpers/formError'
-import ui from 'universal/styles/ui'
 import fromGlobalId from 'universal/utils/relay/fromGlobalId'
 import toTeamMemberId from 'universal/utils/relay/toTeamMemberId'
 import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 import {GitHubRepoRow_repo} from '__generated__/GitHubRepoRow_repo.graphql'
 import {PALETTE} from 'universal/styles/paletteV2'
+import {Layout} from 'universal/types/constEnums'
 
 const StyledButton = styled(FlatButton)({
-  marginLeft: ui.rowGutter,
+  marginLeft: Layout.ROW_GUTTER,
   minWidth: '7rem'
 })
 
 const AvatarGroup = styled('div')({
   marginLeft: 'auto',
-  paddingLeft: ui.rowGutter,
+  paddingLeft: Layout.ROW_GUTTER,
   flex: 1,
   display: 'flex',
   justifyContent: 'flex-end'

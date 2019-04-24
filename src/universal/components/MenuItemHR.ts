@@ -1,8 +1,9 @@
-import ui from 'universal/styles/ui'
 import styled from 'react-emotion'
+import {PALETTE} from 'universal/styles/paletteV2'
+import ui from 'universal/styles/ui'
 
 const MenuItemHR = styled('hr')({
-  backgroundColor: ui.menuBorderColor,
+  backgroundColor: PALETTE.BORDER.LIGHTER,
   border: 'none',
   height: '.0625rem',
   marginBottom: ui.menuGutterVertical,

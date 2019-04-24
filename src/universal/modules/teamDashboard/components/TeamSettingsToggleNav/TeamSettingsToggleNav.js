@@ -30,7 +30,7 @@ const TeamSettingsToggleNav = (props) => {
   ]
 
   const wrapperStyle = {
-    margin: `${ui.panelMarginVertical} auto 0`,
+    margin: '24px auto 0',
     maxWidth: ui.settingsPanelMaxWidth,
     width: '100%'
   }

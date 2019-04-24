@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import styled from 'react-emotion'
-import {PALETTE} from 'universal/styles/paletteV2'
-import Legitity from '../validation/Legitity'
-import appTheme from 'universal/styles/theme/appTheme'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
+import {PALETTE} from 'universal/styles/paletteV2'
+import appTheme from 'universal/styles/theme/appTheme'
+import Legitity from '../validation/Legitity'
 
 const StaticBlock = styled('div')({
   alignItems: 'center',
@@ -42,6 +42,7 @@ const StyledIcon = styled(Icon)({
 const Input = styled('input')({
   backgroundColor: 'transparent',
   border: 0,
+  color: PALETTE.TEXT.MAIN,
   display: 'block',
   fontSize: 'inherit',
   fontWeight: 'inherit',
@@ -57,6 +58,7 @@ const Form = styled('form')({
 })
 
 interface Props {
+  autoFocus?: boolean
   className?: string
   error: string | undefined
   validate: (value: string) => Legitity
@@ -65,35 +67,49 @@ interface Props {
   initialValue: string
   maxLength: number
   placeholder: string
+  onEditingChange?: (isEditing: boolean) => void
 }
 
 interface State {
+  autoFocus: boolean
   value: string
   isEditing: boolean
 }
 
 class EditableText extends Component<Props, State> {
   state = {
+    autoFocus: false,
     isEditing: false,
     value: this.props.initialValue
   }
 
   inputRef = React.createRef<HTMLInputElement>()
 
-  setEditing = () => {
+  componentDidMount () {
+    if (this.props.autoFocus) {
+      this.setState({autoFocus: true})
+    }
+  }
+
+  setEditing = (isEditing: boolean) => {
+    const {onEditingChange} = this.props
     this.setState({
-      isEditing: true
+      isEditing
+    })
+    onEditingChange && onEditingChange(isEditing)
+    this.setState({
+      autoFocus: false
     })
   }
 
-  onChange = (e) => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {validate} = this.props
-    const {value: nextValue} = e.target
+    const nextValue = e.target.value || ''
     validate(nextValue)
+    // make sure this is always true
+    // repro: remove all text, blur input, focus input (with error present), then type a char
+    this.setEditing(true)
     this.setState({
-      // make sure this is always true
-      // repro: remove all text, blur input, focus input (with error present), then type a char
-      isEditing: true,
       value: nextValue
     })
   }
@@ -108,9 +124,7 @@ class EditableText extends Component<Props, State> {
 
   onSubmit = async (e: React.FocusEvent | React.FormEvent) => {
     e.preventDefault()
-    this.setState({
-      isEditing: false
-    })
+    this.setEditing(false)
     const {handleSubmit, initialValue} = this.props
     const {value} = this.state
 
@@ -125,10 +139,10 @@ class EditableText extends Component<Props, State> {
   }
 
   reset = () => {
+    this.setEditing(false)
     this.setState(
       {
-        value: this.props.initialValue,
-        isEditing: false
+        value: this.props.initialValue
       },
       () => {
         this.props.validate(this.props.initialValue)
@@ -162,7 +176,11 @@ class EditableText extends Component<Props, State> {
     const value = this.state.value || this.props.initialValue
     const showPlaceholder = !value && placeholder
     return (
-      <StaticBlock onClick={this.setEditing}>
+      <StaticBlock
+        tabIndex={0}
+        onFocus={() => this.setEditing(true)}
+        onClick={() => this.setEditing(true)}
+      >
         {showPlaceholder && <Placeholder>{placeholder}</Placeholder>}
         {value && <StaticValue>{value}</StaticValue>}
         {!hideIcon && <StyledIcon>edit</StyledIcon>}
@@ -172,8 +190,8 @@ class EditableText extends Component<Props, State> {
 
   render () {
     const {className, error} = this.props
-    const {isEditing} = this.state
-    const showEditing = error || isEditing
+    const {autoFocus, isEditing} = this.state
+    const showEditing = error || isEditing || autoFocus
     return (
       <div className={className}>{showEditing ? this.renderEditing() : this.renderStatic()}</div>
     )

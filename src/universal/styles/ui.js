@@ -147,9 +147,6 @@ const MODAL_LAYOUT_MAIN_WITH_DASH_ALERT = 'mainHasDashAlert'
 const MODAL_LAYOUT_MAIN_WITH_DASH_ALERTS = 'mainHasDashAlerts'
 const MODAL_LAYOUT_VIEWPORT = 'viewport'
 
-// Panels
-const panelInnerBorderColor = appTheme.palette.mid10l
-
 // Transitions
 // NOTE: increases on a scale of 2x
 const transition = [
@@ -483,7 +480,6 @@ const ui = {
   // Menus
   // ---------------------------------------------------------------------------
   menuBackgroundColor: '#fff',
-  menuBorderColor: appTheme.palette.mid30l,
   menuBorderRadius: borderRadiusSmall,
   menuGutterHorizontal: '1rem',
   menuGutterInner: '.75rem',
@@ -533,14 +529,6 @@ const ui = {
   // ---------------------------------------------------------------------------
   notificationButtonSize: BUTTON_SIZE_SMALL,
 
-  // Panels
-  // ---------------------------------------------------------------------------
-  panelInnerBorderColor,
-  panelBorderRadius: borderRadiusMedium,
-  panelGutter: '1rem',
-  panelCompactGutter: '.75rem',
-  panelMarginVertical: '1.5rem',
-
   // Placeholders
   // ---------------------------------------------------------------------------
   placeholderColor: FIELD_PLACEHOLDER_COLOR,
@@ -552,17 +540,6 @@ const ui = {
   taskColumnPaddingInnerLarge: '.9375rem',
   taskColumnsMaxWidth: '78.25rem',
   taskColumnsMinWidth: '48rem',
-
-  // Rows
-  // ---------------------------------------------------------------------------
-  rowBorderColor: panelInnerBorderColor,
-  rowGutter: '1rem',
-  rowCompactGutter: '.75rem',
-  rowSubheading: {
-    color: COLOR_TEXT_LIGHT,
-    fontSize: appTheme.typography.s2,
-    lineHeight: appTheme.typography.s4
-  },
 
   // Settings
   // ---------------------------------------------------------------------------
