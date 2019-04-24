@@ -20,7 +20,8 @@ export namespace PALETTE {
     LIGHT = '#C1C0CD',
     DARK = '#b6adc7',
     MAIN = '#493272',
-    BLUE_RGB = '50, 154, 229'
+    BLUE = '#329AE5',
+    BLUE_LIGHT = '#99CDF2'
   }
   export const enum TEXT {
     MAIN = '#444258',

@@ -18,8 +18,8 @@ const Input = styled('input')({
   padding: '3px 0 3px 39px',
   width: '100%',
   '&:focus,:active': {
-    border: `1px solid rgb(${PALETTE.BORDER.BLUE_RGB})`,
-    boxShadow: `0 0 1px 1px rgba(${PALETTE.BORDER.BLUE_RGB}, .5)`
+    border: `1px solid ${PALETTE.BORDER.BLUE}`,
+    boxShadow: `0 0 1px 1px ${PALETTE.BORDER.BLUE_LIGHT}`
   }
 })
 
