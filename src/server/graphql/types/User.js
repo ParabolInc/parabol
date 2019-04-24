@@ -375,6 +375,11 @@ const User = new GraphQLObjectType({
         return organizations.filter((organization) => viewerOrgIds.includes(organization.id))
       }
     },
+    overLimitCopy: {
+      description:
+        'a string with message stating that the user is over the free tier limit, else null',
+      type: GraphQLString
+    },
     suggestedIntegrations,
     tasks,
     team: require('../queries/team').default,

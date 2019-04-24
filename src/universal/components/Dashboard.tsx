@@ -6,7 +6,7 @@ import styled from 'react-emotion'
 import {createFragmentContainer, graphql} from 'react-relay'
 import {Route, Switch} from 'react-router'
 import DashSidebar from './Dashboard/DashSidebar'
-import MeetingDashAlert from './MeetingDashAlert'
+import DashAlert from './DashAlert'
 
 const UserDashboard = lazy(() =>
   import(/* webpackChunkName: 'UserDashboard' */ 'universal/modules/userDashboard/components/UserDashboard/UserDashboard')
@@ -39,7 +39,7 @@ const Dashboard = (props: Props) => {
     <DashLayout>
       <DashSidebar viewer={viewer} location={location} />
       <DashPanel>
-        <MeetingDashAlert viewer={viewer} />
+        <DashAlert viewer={viewer} />
         <Switch>
           <Route
             path='/me'
@@ -59,7 +59,7 @@ export default createFragmentContainer(
   dragDropContext(HTML5Backend)(Dashboard),
   graphql`
     fragment Dashboard_viewer on User {
-      ...MeetingDashAlert_viewer
+      ...DashAlert_viewer
       notifications(first: 100) @connection(key: "DashboardWrapper_notifications") {
         edges {
           node {
