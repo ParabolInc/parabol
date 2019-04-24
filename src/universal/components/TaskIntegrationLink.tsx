@@ -24,7 +24,6 @@ interface Props {
 const TaskIntegrationLink = (props: Props) => {
   const {integration} = props
   if (!integration) return null
-  console.log('int', integration)
   const {service} = integration
   if (service === TaskServiceEnum.jira) {
     const {issueKey, projectKey, cloudName} = integration

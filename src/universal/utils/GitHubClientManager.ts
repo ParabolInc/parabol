@@ -91,7 +91,6 @@ class GitHubClientManager {
   }
 
   async createIssue (createIssueInput: ICreateIssueInput) {
-    console.log('quer', createIssue)
     return this.mutate(createIssue, {input: createIssueInput})
   }
 }
