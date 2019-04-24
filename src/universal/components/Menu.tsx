@@ -13,6 +13,7 @@ import styled from 'react-emotion'
 const isMenuItem = (node: any) => node && node.onClick
 
 const MenuStyles = styled('div')({
+  background: '#fff',
   maxHeight: 224,
   maxWidth: 400,
   outline: 0,

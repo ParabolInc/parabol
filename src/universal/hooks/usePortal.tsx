@@ -22,7 +22,6 @@ const usePortal = (options: UsePortalOptions) => {
     if (portalRef.current) {
       document.body.removeChild(portalRef.current)
       portalRef.current = undefined
-      options.onClose && options.onClose()
     }
   }, [])
 
@@ -33,8 +32,13 @@ const usePortal = (options: UsePortalOptions) => {
     document.removeEventListener('keydown', handleKeydown)
     document.removeEventListener('mousedown', handleDocumentClick)
     document.removeEventListener('touchstart', handleDocumentClick)
+    options.onClose && options.onClose()
     if (portalRef.current) {
-      portalRef.current.addEventListener('transitionend', terminatePortal)
+      portalRef.current.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'transform') {
+          terminatePortal()
+        }
+      })
     }
     setStatus(PortalState.Exiting)
   }, [])

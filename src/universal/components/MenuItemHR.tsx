@@ -10,6 +10,7 @@ const StyledHR = styled('hr')(({idx}: {idx: number}) => ({
   height: '.0625rem',
   marginBottom: ui.menuGutterVertical,
   marginTop: ui.menuGutterVertical,
+  opacity: 0,
   padding: 0
 }))
 

@@ -2,8 +2,8 @@ import {BillingLeaderActionMenu_organization} from '__generated__/BillingLeaderA
 import {BillingLeaderActionMenu_organizationUser} from '__generated__/BillingLeaderActionMenu_organizationUser.graphql'
 import React, {lazy} from 'react'
 import {createFragmentContainer, graphql} from 'react-relay'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import Menu from 'universal/components/Menu'
+import MenuItem from 'universal/components/MenuItem'
 import withAtmosphere, {
   WithAtmosphereProps
 } from 'universal/decorators/withAtmosphere/withAtmosphere'
@@ -53,39 +53,36 @@ const BillingLeaderActionMenu = (props: Props) => {
   }
 
   return (
-    <MenuWithShortcuts ariaLabel={'Select your action'} closePortal={closePortal}>
+    <Menu ariaLabel={'Select your action'} closePortal={closePortal}>
       {isBillingLeader && !isViewerLastBillingLeader && (
-        <MenuItemWithShortcuts label='Remove Billing Leader role' onClick={setRole(null)} />
+        <MenuItem label='Remove Billing Leader role' onClick={setRole(null)} />
       )}
       {!isBillingLeader && (
-        <MenuItemWithShortcuts
-          label='Promote to Billing Leader'
-          onClick={setRole(BILLING_LEADER)}
-        />
+        <MenuItem label='Promote to Billing Leader' onClick={setRole(BILLING_LEADER)} />
       )}
       {viewerId === userId && !isViewerLastBillingLeader && (
-        <LoadableModal
-          LoadableComponent={LeaveOrgModal}
-          queryVars={{orgId}}
-          toggle={<MenuItemWithShortcuts label='Leave Organization' />}
-        />
+        <MenuItem label='Leave Organization' />
+        // <LoadableModal
+        //   LoadableComponent={LeaveOrgModal}
+        //   queryVars={{orgId}}
+        //   toggle={}
+        // />
       )}
       {viewerId !== userId && (
-        <LoadableModal
-          LoadableComponent={RemoveFromOrgModal}
-          queryVars={{orgId, userId, preferredName}}
-          toggle={
-            <MenuItemWithShortcuts
-              label={
-                new Date(newUserUntil) > new Date()
-                  ? 'Refund and Remove'
-                  : 'Remove from Organization'
-              }
-            />
+        <MenuItem
+          label={
+            new Date(newUserUntil) > new Date() ? 'Refund and Remove' : 'Remove from Organization'
           }
         />
+        // <LoadableModal
+        //   LoadableComponent={RemoveFromOrgModal}
+        //   queryVars={{orgId, userId, preferredName}}
+        //   toggle={
+
+        // }
+        // />
       )}
-    </MenuWithShortcuts>
+    </Menu>
   )
 }
 

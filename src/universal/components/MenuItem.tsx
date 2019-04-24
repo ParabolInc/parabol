@@ -37,9 +37,8 @@ const fadeUp = keyframes`
 `
 const itemDuration = Duration.MENU_OPEN / 5
 export const menuItemAnimation = (idx) =>
-  `${fadeUp} ${itemDuration}ms ${DECELERATE} ${idx * itemDuration +
-    Duration.MENU_OPEN -
-    itemDuration}ms forwards`
+  `${fadeUp} ${itemDuration}ms ${DECELERATE} ${(idx * itemDuration) / 2 +
+    Duration.MENU_OPEN}ms forwards`
 
 const MenuItemStyles = styled('div')(({isActive, idx}: {isActive: boolean; idx: number}) => ({
   animation: menuItemAnimation(idx),

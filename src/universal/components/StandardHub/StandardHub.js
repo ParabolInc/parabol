@@ -8,22 +8,13 @@ import appTheme from 'universal/styles/theme/appTheme'
 import defaultUserAvatar from 'universal/styles/theme/images/avatar-user.svg'
 import ui from 'universal/styles/ui'
 import styled, {css} from 'react-emotion'
-import LoadableStandardHubUserMenu from 'universal/components/LoadableStandardHubUserMenu'
-import LoadableMenu from 'universal/components/LoadableMenu'
 import textOverflow from 'universal/styles/helpers/textOverflow'
 import Icon from 'universal/components/Icon'
 import {MD_ICONS_SIZE_18} from 'universal/styles/icons'
 import {APP_BAR_HEIGHT} from 'universal/styles/appbars'
-
-const originAnchor = {
-  vertical: 'bottom',
-  horizontal: 'left'
-}
-
-const targetAnchor = {
-  vertical: 'top',
-  horizontal: 'left'
-}
+import useMenu from 'universal/hooks/useMenu'
+import {MenuPosition} from 'universal/hooks/useCoords'
+import lazyPreload from 'universal/utils/lazyPreload'
 
 const StandardHubRoot = styled('div')({
   alignItems: 'center',
@@ -104,6 +95,10 @@ const NotificationIcon = styled(Icon)({
   color: 'white'
 })
 
+const StandardHubUserMenu = lazyPreload(() =>
+  import(/* webpackChunkName: 'StandardHubUserMenu' */ 'universal/components/StandardHubUserMenu')
+)
+
 const StandardHub = (props) => {
   const {viewer} = props
   const notifications = viewer && viewer.notifications && viewer.notifications.edges
@@ -112,7 +107,7 @@ const StandardHub = (props) => {
 
   const navLinkStyles = css(notificationsStyles, notificationsCount > 0 && notificationsWithBadge)
   const userAvatar = picture || defaultUserAvatar
-
+  const {togglePortal, originRef, menuPortal, closePortal} = useMenu(MenuPosition.UPPER_LEFT)
   return (
     <StandardHubRoot>
       <User>
@@ -120,17 +115,12 @@ const StandardHub = (props) => {
         <PreferredName>
           <span>{preferredName}</span>
         </PreferredName>
-        <LoadableMenu
-          LoadableComponent={LoadableStandardHubUserMenu}
-          maxWidth={450}
-          maxHeight={275}
-          originAnchor={originAnchor}
-          queryVars={{
-            viewer
-          }}
-          targetAnchor={targetAnchor}
-          toggle={<MenuToggle />}
+        <MenuToggle
+          onClick={togglePortal}
+          onMouseEnter={StandardHubUserMenu.preload}
+          innerRef={originRef}
         />
+        {menuPortal(<StandardHubUserMenu closePortal={closePortal} viewer={viewer} />)}
       </User>
       <NavLink
         activeClassName={css(notificationsActive)}
