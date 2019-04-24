@@ -31,7 +31,7 @@ export class Prompt {
     this.updatedAt = now
     this.templateId = template.id
     this.question = question
-    this.description = description
+    this.description = description || ''
     this.title = title
   }
 }

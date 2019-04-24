@@ -19,7 +19,7 @@ const auth0Authorize = async (loginHint?: string) => {
       window.__ACTION__.auth0
     }&scope=openid rol tms bet&connection=google-oauth2&redirect_uri=${makeHref(
       '/oauth-redirect'
-    )}&response_type=token&state=${upState}${hint}`
+    )}&response_type=token&state=${upState}&prompt=select_account${hint}`
     const popup = window.open(
       authUrl,
       'OAuth',

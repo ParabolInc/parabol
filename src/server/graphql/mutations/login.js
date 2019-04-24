@@ -78,8 +78,9 @@ const login = {
          * on each login is just fine.
          *
          * See also: https://community.segment.com/t/631m9s/identify-per-signup-or-signin
+         * Note: no longer awaiting the identify call since it's getting pretty expensive
          */
-        await sendSegmentIdentify(user.id)
+        sendSegmentIdentify(user.id).catch()
         return {
           userId: viewerId,
           // create a brand new auth token using the tms in our DB, not auth0s

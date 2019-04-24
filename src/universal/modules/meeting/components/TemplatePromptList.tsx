@@ -18,6 +18,8 @@ interface Props extends WithAtmosphereProps, WithMutationProps {
 
 const PromptList = styled('ul')({
   margin: 0,
+  marginBottom: 16,
+  overflowY: 'auto',
   padding: '0 2rem',
   width: '100%'
 })

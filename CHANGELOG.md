@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## v3.7.2
+
+### Fixed
+* Borked demo from featureFlags
+
 ## v3.7.1
 
 ### Added
