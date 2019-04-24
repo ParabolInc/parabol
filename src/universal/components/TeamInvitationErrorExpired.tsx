@@ -5,10 +5,10 @@ import {PALETTE} from '../styles/paletteV2'
 import LINK = PALETTE.LINK
 import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
-import InvitationDialog from './InvitationDialog'
-import InvitationDialogContent from './InvitationDialogContent'
+import BasicCard from './BasicCard'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 
 interface Props {
   verifiedInvitation: TeamInvitationErrorExpired_verifiedInvitation
@@ -27,10 +27,10 @@ const TeamInvitationErrorExpired = (props: Props) => {
   const {verifiedInvitation} = props
   const {teamName, inviterName, inviterEmail} = verifiedInvitation
   return (
-    <InvitationDialog>
+    <BasicCard>
       <Helmet title={`Token Expired | Team Invitation`} />
-      <InvitationDialogTitle>Invitation Expired</InvitationDialogTitle>
-      <InvitationDialogContent>
+      <DialogTitle>Invitation Expired</DialogTitle>
+      <DialogContent>
         <InvitationDialogCopy>
           The invitation to <TeamName>{teamName}</TeamName> has expired.
         </InvitationDialogCopy>
@@ -41,8 +41,8 @@ const TeamInvitationErrorExpired = (props: Props) => {
           </StyledEmailLink>
         </InvitationDialogCopy>
         <InvitationDialogCopy>to request a new one</InvitationDialogCopy>
-      </InvitationDialogContent>
-    </InvitationDialog>
+      </DialogContent>
+    </BasicCard>
   )
 }
 

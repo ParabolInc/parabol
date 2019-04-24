@@ -20,7 +20,14 @@ class LoadableDropdownMenu extends React.Component {
     const toggle = React.cloneElement(this.props.toggle, {
       ref: this.setToggleRef
     })
-    return <LoadableMenu {...this.props} minWidth={width} maxWidth={width} toggle={toggle} />
+    return (
+      <LoadableMenu
+        {...this.props}
+        minWidth={width}
+        maxWidth={this.props.maxWidth || width}
+        toggle={toggle}
+      />
+    )
   }
 }
 

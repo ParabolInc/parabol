@@ -4,9 +4,9 @@ import TEXT = PALETTE.TEXT
 
 const DialogContent = styled('div')({
   color: TEXT.MAIN,
-  fontSize: '.875rem',
+  fontSize: 14,
   lineHeight: 1.5,
-  padding: '1rem 2rem 2rem'
+  padding: '16px 32px 32px'
 })
 
 export default DialogContent

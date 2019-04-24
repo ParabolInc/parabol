@@ -1,8 +1,9 @@
+import * as Sentry from '@sentry/browser'
 import React, {Component, ErrorInfo, ReactNode} from 'react'
 import ErrorComponent from 'universal/components/ErrorComponent/ErrorComponent'
-import * as Sentry from '@sentry/browser'
 
 interface Props {
+  fallback?: (error: Error) => ReactNode
   children: ReactNode
 }
 
@@ -34,7 +35,8 @@ class ErrorBoundary extends Component<Props, State> {
   render () {
     const {error} = this.state
     if (error) {
-      return <ErrorComponent error={error!} />
+      const {fallback} = this.props
+      return fallback ? fallback(error) : <ErrorComponent error={error} />
     }
     // Normally, just render children
     return this.props.children

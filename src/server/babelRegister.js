@@ -7,12 +7,15 @@ const presetTypescript = require('@babel/preset-typescript').default
 const pluginObjectRestSpread = require('@babel/plugin-proposal-object-rest-spread').default
 const pluginClassProps = require('@babel/plugin-proposal-class-properties').default
 const pluginRelay = require('babel-plugin-relay')
+// used for importing githubQuery .graphql files as strings
+const pluginInlineImport = require('babel-plugin-inline-import').default
 
 // .tsx required for email SSR
-const extensions = ['.js', '.ts', '.tsx']
+const extensions = ['.js', '.ts', '.tsx', '.graphql']
 require('@babel/register')({
   extensions,
   plugins: [
+    pluginInlineImport,
     pluginDynamicImport,
     pluginObjectRestSpread,
     pluginClassProps,

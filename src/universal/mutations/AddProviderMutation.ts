@@ -24,11 +24,16 @@ graphql`
       preferredName
       picture
     }
+    user {
+      ...TaskFooterIntegrateMenuViewerGitHubAuth
+      # after adding, check for new integrations (populates the menu)
+      ...TaskFooterIntegrateMenuViewerSuggestedIntegrations
+    }
   }
 `
 
 const mutation = graphql`
-  mutation AddProviderMutation($code: ID!, $service: IntegrationService!, $teamId: ID!) {
+  mutation AddProviderMutation($code: ID!, $service: IntegrationServiceEnum!, $teamId: ID!) {
     addProvider(code: $code, service: $service, teamId: $teamId) {
       error {
         message

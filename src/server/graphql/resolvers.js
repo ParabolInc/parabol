@@ -76,6 +76,7 @@ export const resolveOrganization = ({orgId, organization}, args, {dataLoader}) =
 
 export const resolveTask = async ({task, taskId}, args, {authToken, dataLoader}) => {
   const taskDoc = taskId ? await dataLoader.get('tasks').load(taskId) : task
+  if (!taskDoc) return null
   const {userId, tags, teamId} = taskDoc
   const isViewer = userId === getUserId(authToken)
   const isViewerOnTeam = authToken.tms.includes(teamId)

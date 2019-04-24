@@ -1,6 +1,6 @@
 exports.up = async (r) => {
   try {
-    await Promise.all([r.tableCreate('AtlassianAuth'), r.tableCreate('AtlassianProject')])
+    await Promise.all([r.tableCreate('AtlassianAuth')])
   } catch (e) {
     /**/
   }
@@ -8,10 +8,7 @@ exports.up = async (r) => {
     await Promise.all([
       r.table('AtlassianAuth').indexCreate('userId'),
       r.table('AtlassianAuth').indexCreate('teamId'),
-      r.table('AtlassianAuth').indexCreate('atlassianUserId'),
-      r.table('AtlassianProject').indexCreate('userIds', {multi: true}),
-      r.table('AtlassianProject').indexCreate('teamId'),
-      r.table('AtlassianProject').indexCreate('projectId')
+      r.table('AtlassianAuth').indexCreate('accountId')
     ])
   } catch (e) {
     /**/
@@ -20,7 +17,7 @@ exports.up = async (r) => {
 
 exports.down = async (r) => {
   try {
-    await Promise.all([r.tableDrop('AtlassianAuth'), r.tableCreate('jiraProject')])
+    await Promise.all([r.tableDrop('AtlassianAuth')])
   } catch (e) {
     /**/
   }

@@ -1,8 +1,8 @@
-import {GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import StandardMutationError from 'server/graphql/types/StandardMutationError'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import AtlassianAuth from './AtlassianAuth'
-import AtlassianProject from './AtlassianProject'
+import User from './User'
 
 const AddAtlassianAuthPayload = new GraphQLObjectType({
   name: 'AddAtlassianAuthPayload',
@@ -22,11 +22,12 @@ const AddAtlassianAuthPayload = new GraphQLObjectType({
         return null
       }
     },
-    atlassianProjects: {
-      type: new GraphQLList(new GraphQLNonNull(AtlassianProject)),
-      description: 'projects that the new auth has joined',
-      resolve: ({atlassianProjectIds}, _args, {dataLoader}) => {
-        return dataLoader.get('atlassianProjects').loadMany(atlassianProjectIds)
+    user: {
+      type: User,
+      description: 'The user with updated atlassianAuth',
+      resolve: (_source, _args, {authToken, dataLoader}) => {
+        const viewerId = getUserId(authToken)
+        return dataLoader.get('users').load(viewerId)
       }
     }
   })

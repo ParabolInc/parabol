@@ -12,7 +12,7 @@ import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
 const slackChannelQuery = graphql`
-  query SlackIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
+  query SlackIntegrationsRootQuery($teamId: ID!, $service: IntegrationServiceEnum!) {
     viewer {
       ...SlackIntegrations_viewer
     }

@@ -50,7 +50,17 @@ export interface IUser {
   /**
    * The userId provided by auth0
    */
-  id: string | null
+  id: string
+
+  /**
+   * All the integrations that the user could possibly use
+   */
+  allAvailableIntegrations: Array<SuggestedIntegration>
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  atlassianAuth: IAtlassianAuth | null
 
   /**
    * Array of identifier + ip pairs
@@ -91,6 +101,11 @@ export interface IUser {
    * Any super power given to the user via a super user
    */
   featureFlags: IUserFeatureFlags
+
+  /**
+   * The auth for the user. access token is null if not viewer. Use isActive to check for presence
+   */
+  githubAuth: IGitHubAuth | null
 
   /**
    * An array of objects with information about the user's identities.
@@ -226,6 +241,11 @@ export interface IUser {
    * Get the list of all organizations a user belongs to
    */
   organizations: Array<IOrganization>
+
+  /**
+   * The integrations that the user would probably like to use
+   */
+  suggestedIntegrations: ISuggestedIntegrationQueryPayload
   tasks: ITaskConnection
 
   /**
@@ -252,6 +272,28 @@ export interface IUser {
    * all the teams the user is a part of that the viewer can see
    */
   tms: Array<string | null> | null
+  userOnTeam: IUser | null
+}
+
+export interface IAllAvailableIntegrationsOnUserArguments {
+  /**
+   * a teamId to use as a filter for the access tokens
+   */
+  teamId: string
+}
+
+export interface IAtlassianAuthOnUserArguments {
+  /**
+   * The teamId for the atlassian auth token
+   */
+  teamId: string
+}
+
+export interface IGithubAuthOnUserArguments {
+  /**
+   * The teamId for the auth object
+   */
+  teamId: string
 }
 
 export interface ITimelineOnUserArguments {
@@ -302,7 +344,7 @@ export interface IIntegrationProviderOnUserArguments {
   /**
    * The name of the service
    */
-  service: IntegrationService
+  service: IntegrationServiceEnum
 }
 
 export interface IInvoicesOnUserArguments {
@@ -384,6 +426,13 @@ export interface IOrganizationUserOnUserArguments {
   orgId: string
 }
 
+export interface ISuggestedIntegrationsOnUserArguments {
+  /**
+   * a teamId to use as a filter to provide more accurate suggestions
+   */
+  teamId: string
+}
+
 export interface ITasksOnUserArguments {
   /**
    * the datetime cursor
@@ -418,6 +467,86 @@ export interface ITeamMemberOnUserArguments {
   teamId: string
 }
 
+export interface IUserOnTeamOnUserArguments {
+  /**
+   * The other user
+   */
+  userId: string
+}
+
+export type SuggestedIntegration = ISuggestedIntegrationGitHub | ISuggestedIntegrationJira
+
+export interface ISuggestedIntegration {
+  __typename: 'SuggestedIntegration'
+  id: string
+  service: TaskServiceEnum
+}
+
+/**
+ * The list of services for task integrations
+ */
+export const enum TaskServiceEnum {
+  github = 'github',
+  jira = 'jira'
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IAtlassianAuth {
+  __typename: 'AtlassianAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if the auth is valid, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null
+
+  /**
+   * *The atlassian account ID
+   */
+  accountId: string
+
+  /**
+   * The atlassian cloud IDs that the user has granted
+   */
+  cloudIds: Array<string>
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * The refresh token to atlassian to receive a new 1-hour accessToken, always null since server secret is required
+   */
+  refreshToken: string | null
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
+}
+
 /**
  * Identifier and IP address blocked
  */
@@ -450,6 +579,53 @@ export interface IUserFeatureFlags {
    * true if jira is allowed
    */
   jira: boolean | null
+}
+
+/**
+ * OAuth token for a team member
+ */
+export interface IGitHubAuth {
+  __typename: 'GitHubAuth'
+
+  /**
+   * shortid
+   */
+  id: string
+
+  /**
+   * true if an access token exists, else false
+   */
+  isActive: boolean
+
+  /**
+   * The access token to atlassian, useful for 1 hour. null if no access token available
+   */
+  accessToken: string | null
+
+  /**
+   * *The GitHub login used for queries
+   */
+  login: string
+
+  /**
+   * The timestamp the provider was created
+   */
+  createdAt: any
+
+  /**
+   * *The team that the token is linked to
+   */
+  teamId: string
+
+  /**
+   * The timestamp the token was updated at
+   */
+  updatedAt: any
+
+  /**
+   * The user that the access token is attached to
+   */
+  userId: string
 }
 
 export interface IAuthIdentityType {
@@ -938,16 +1114,6 @@ export interface ITeam {
    * true if the team has been archived
    */
   isArchived: boolean | null
-
-  /**
-   * The auth for the viewer
-   */
-  atlassianAuth: IAtlassianAuth | null
-
-  /**
-   * A list of projects integrated with the team
-   */
-  atlassianProjects: Array<IAtlassianProject>
 }
 
 export interface IMeetingSettingsOnTeamArguments {
@@ -1596,7 +1762,7 @@ export interface ITask {
   /**
    * The body of the task. If null, it is a new task.
    */
-  content: string | null
+  content: string
 
   /**
    * The timestamp the task was created
@@ -1617,7 +1783,7 @@ export interface ITask {
    * a list of users currently editing the task (fed by a subscription, so queries return null)
    */
   editors: Array<ITaskEditorDetails | null> | null
-  integration: IGitHubTask | null
+  integration: TaskIntegration | null
 
   /**
    * true if this is assigned to a soft team member
@@ -1652,17 +1818,17 @@ export interface ITask {
   /**
    * The id of the team (indexed). Needed for subscribing to archived tasks
    */
-  teamId: string | null
+  teamId: string
 
   /**
    * The team this task belongs to
    */
-  team: ITeam | null
+  team: ITeam
 
   /**
    * The team member (or soft team member) that owns this task
    */
-  assignee: Assignee | null
+  assignee: Assignee
 
   /**
    * The id of the team member (or soft team member) assigned to this task
@@ -1677,7 +1843,7 @@ export interface ITask {
   /**
    * * The userId, index useful for server-side methods getting all tasks under a user
    */
-  userId: string | null
+  userId: string
 }
 
 export interface ITaskEditorDetails {
@@ -1694,30 +1860,12 @@ export interface ITaskEditorDetails {
   preferredName: string
 }
 
-/**
- * The details associated with a task integrated with GitHub
- */
-export interface IGitHubTask {
-  __typename: 'GitHubTask'
-  integrationId: string
-  service: IntegrationService
-  nameWithOwner: string | null
-  issueNumber: number | null
-}
-
-export type TaskIntegration = IGitHubTask
+export type TaskIntegration = ITaskIntegrationGitHub | ITaskIntegrationJira
 
 export interface ITaskIntegration {
   __typename: 'TaskIntegration'
-  service: IntegrationService | null
-}
-
-/**
- * The list of services for integrations
- */
-export const enum IntegrationService {
-  GitHubIntegration = 'GitHubIntegration',
-  SlackIntegration = 'SlackIntegration'
+  id: string
+  service: TaskServiceEnum
 }
 
 /**
@@ -1783,105 +1931,6 @@ export interface ITasksOnSoftTeamMemberArguments {
    */
   after?: any | null
   first?: number | null
-}
-
-/**
- * OAuth token for a team member
- */
-export interface IAtlassianAuth {
-  __typename: 'AtlassianAuth'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * The access token to atlassian, null if no access token available
-   */
-  accessToken: string | null
-
-  /**
-   * *The id for the user used by the provider, eg SlackTeamId, GoogleUserId, githubLogin
-   */
-  atlassianUserId: string
-
-  /**
-   * The atlassian cloud IDs that the user has granted
-   */
-  cloudIds: Array<string>
-
-  /**
-   * The timestamp the provider was created
-   */
-  createdAt: any
-
-  /**
-   * *The team that the token is linked to
-   */
-  teamId: string
-
-  /**
-   * The timestamp the token was updated at
-   */
-  updatedAt: any
-
-  /**
-   * The user that the access token is attached to
-   */
-  userId: string
-}
-
-/**
- * An integration that connects Atlassian projects with parabol
- */
-export interface IAtlassianProject {
-  __typename: 'AtlassianProject'
-
-  /**
-   * shortid
-   */
-  id: string
-
-  /**
-   * *The project ID in atlassian
-   */
-  projectId: string
-
-  /**
-   * The parabol userId of the admin for this repo (usually the creator). This is used as a fallback if the user does not have an atlassian auth
-   */
-  adminUserId: string
-
-  /**
-   * The datetime the integration was created
-   */
-  createdAt: any
-
-  /**
-   * true if active, else false
-   */
-  isActive: boolean | null
-
-  /**
-   * *The team that is linked to this integration
-   */
-  teamId: string
-
-  /**
-   * The users that can CRUD this integration
-   */
-  teamMembers: Array<ITeamMember>
-
-  /**
-   * The datetime the integration was updated
-   */
-  updatedAt: any
-
-  /**
-   * *The userIds connected to the repo so they can CRUD things under their own name
-   */
-  userIds: Array<string | null> | null
 }
 
 /**
@@ -2104,6 +2153,15 @@ export interface IGitHubIntegration {
 }
 
 /**
+ * The list of services for integrations
+ */
+export const enum IntegrationServiceEnum {
+  GitHubIntegration = 'GitHubIntegration',
+  SlackIntegration = 'SlackIntegration',
+  atlassian = 'atlassian'
+}
+
+/**
  * A token for a user to be used on 1 or more teams
  */
 export interface IProvider {
@@ -2142,7 +2200,7 @@ export interface IProvider {
   /**
    * The name of the service
    */
-  service: IntegrationService | null
+  service: IntegrationServiceEnum | null
 
   /**
    * *The team that the token is linked to
@@ -2694,7 +2752,7 @@ export interface IProviderRow {
   /**
    * The name of the service
    */
-  service: IntegrationService | null
+  service: IntegrationServiceEnum | null
   teamId: string | null
 }
 
@@ -2733,6 +2791,38 @@ export interface ISlackIntegration {
    * *The team that cares about these annoucements
    */
   teamId: string
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ISuggestedIntegrationQueryPayload {
+  __typename: 'SuggestedIntegrationQueryPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * true if the items returned are a subset of all the possible integration, else false (all possible integrations)
+   */
+  hasMore: boolean | null
+
+  /**
+   * All the integrations that are likely to be integrated
+   */
+  items: Array<SuggestedIntegration> | null
+}
+
+export interface IStandardMutationError {
+  __typename: 'StandardMutationError'
+
+  /**
+   * The title of the error
+   */
+  title: string | null
+
+  /**
+   * The full error
+   */
+  message: string
 }
 
 export interface IVerifiedInvitationPayload {
@@ -2842,6 +2932,7 @@ export interface IMutation {
    */
   createImposterToken: ICreateImposterTokenPayload | null
   createGitHubIssue: ICreateGitHubIssuePayload | null
+  createJiraIssue: ICreateJiraIssuePayload | null
 
   /**
    * Create a PUT URL on the CDN for an organization’s profile picture
@@ -3012,6 +3103,11 @@ export interface IMutation {
    * Remove an agenda item
    */
   removeAgendaItem: IRemoveAgendaItemPayload | null
+
+  /**
+   * Disconnect a team member from atlassian
+   */
+  removeAtlassianAuth: IRemoveAtlassianAuthPayload
 
   /**
    * Disconnect a team from a Provider token
@@ -3272,7 +3368,7 @@ export interface IAddOrgOnMutationArguments {
 
 export interface IAddProviderOnMutationArguments {
   code: string
-  service: IntegrationService
+  service: IntegrationServiceEnum
   teamId: string
 }
 
@@ -3339,6 +3435,23 @@ export interface ICreateGitHubIssueOnMutationArguments {
    * The owner/repo string
    */
   nameWithOwner: string
+}
+
+export interface ICreateJiraIssueOnMutationArguments {
+  /**
+   * The atlassian cloudId for the site
+   */
+  cloudId: string
+
+  /**
+   * The atlassian key of the project to put the issue in
+   */
+  projectKey: string
+
+  /**
+   * The id of the task to convert to a Jira issue
+   */
+  taskId: string
 }
 
 export interface ICreateOrgPicturePutUrlOnMutationArguments {
@@ -3670,6 +3783,13 @@ export interface IRemoveAgendaItemOnMutationArguments {
    * The agenda item unique id
    */
   agendaItemId: string
+}
+
+export interface IRemoveAtlassianAuthOnMutationArguments {
+  /**
+   * the teamId to disconnect from the token
+   */
+  teamId: string
 }
 
 export interface IRemoveProviderOnMutationArguments {
@@ -4029,20 +4149,6 @@ export interface IAcceptTeamInvitationPayload {
   teamLead: IUser | null
 }
 
-export interface IStandardMutationError {
-  __typename: 'StandardMutationError'
-
-  /**
-   * The title of the error
-   */
-  title: string | null
-
-  /**
-   * The full error
-   */
-  message: string
-}
-
 export interface IAddAtlassianAuthPayload {
   __typename: 'AddAtlassianAuthPayload'
   error: IStandardMutationError | null
@@ -4053,9 +4159,9 @@ export interface IAddAtlassianAuthPayload {
   atlassianAuth: IAtlassianAuth | null
 
   /**
-   * projects that the new auth has joined
+   * The user with updated atlassianAuth
    */
-  atlassianProjects: Array<IAtlassianProject> | null
+  user: IUser | null
 }
 
 export interface ICreateAgendaItemInput {
@@ -4156,6 +4262,11 @@ export interface IAddProviderPayload {
    */
   joinedIntegrationIds: Array<string> | null
   teamMember: ITeamMember | null
+
+  /**
+   * The user with updated githubAuth
+   */
+  user: IUser | null
 }
 
 export interface IAddSlackChannelInput {
@@ -4959,6 +5070,12 @@ export interface ICreateGitHubIssuePayload {
   task: ITask | null
 }
 
+export interface ICreateJiraIssuePayload {
+  __typename: 'CreateJiraIssuePayload'
+  error: IStandardMutationError | null
+  task: ITask | null
+}
+
 export interface ICreatePicturePutUrlPayload {
   __typename: 'CreatePicturePutUrlPayload'
   error: IStandardMutationError | null
@@ -5596,6 +5713,22 @@ export interface IRemoveAgendaItemPayload {
   __typename: 'RemoveAgendaItemPayload'
   error: IStandardMutationError | null
   agendaItem: IAgendaItem | null
+}
+
+export interface IRemoveAtlassianAuthPayload {
+  __typename: 'RemoveAtlassianAuthPayload'
+  error: IStandardMutationError | null
+
+  /**
+   * The ID of the authorization removed
+   */
+  authId: string | null
+  teamId: string | null
+
+  /**
+   * The user with updated atlassianAuth
+   */
+  user: IUser | null
 }
 
 export interface IRemoveProviderPayload {
@@ -6342,12 +6475,12 @@ export interface IIntegrationSubscriptionOnSubscriptionArguments {
 }
 
 export interface IIntegrationJoinedOnSubscriptionArguments {
-  service: IntegrationService
+  service: IntegrationServiceEnum
   teamId: string
 }
 
 export interface IIntegrationLeftOnSubscriptionArguments {
-  service: IntegrationService
+  service: IntegrationServiceEnum
   teamId: string
 }
 
@@ -7303,7 +7436,7 @@ export interface IAuthToken {
   /**
    * teams. a list of teamIds where the user is active
    */
-  tms: Array<string> | null
+  tms: Array<string>
 }
 
 /**
@@ -7311,6 +7444,136 @@ export interface IAuthToken {
  */
 export const enum AuthTokenRole {
   su = 'su'
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ITaskIntegrationGitHub {
+  __typename: 'TaskIntegrationGitHub'
+  id: string
+  service: TaskServiceEnum
+  nameWithOwner: string | null
+  issueNumber: number | null
+}
+
+/**
+ * The details associated with a task integrated with Jira
+ */
+export interface ITaskIntegrationJira {
+  __typename: 'TaskIntegrationJira'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * The project key used by jira as a more human readable proxy for a projectId
+   */
+  projectKey: string
+
+  /**
+   * The name of the project as defined by jira
+   */
+  projectName: string
+
+  /**
+   * The cloud ID that the project lives on
+   */
+  cloudId: string
+
+  /**
+   * The issue key used by jira as a more human readable proxy for the id field
+   */
+  issueKey: string
+
+  /**
+   * The psuedo-domain to use to generate a base url
+   */
+  cloudName: string
+}
+
+/**
+ * The details associated with a task integrated with GitHub
+ */
+export interface ISuggestedIntegrationGitHub {
+  __typename: 'SuggestedIntegrationGitHub'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * The name of the repo. Follows format of OWNER/NAME
+   */
+  nameWithOwner: string
+}
+
+/**
+ * The details associated with a task integrated with Jira
+ */
+export interface ISuggestedIntegrationJira {
+  __typename: 'SuggestedIntegrationJira'
+  id: string
+  service: TaskServiceEnum
+
+  /**
+   * URL to a 24x24 avatar icon
+   */
+  avatar: string
+
+  /**
+   * The project key used by jira as a more human readable proxy for a projectId
+   */
+  projectKey: string
+
+  /**
+   * The name of the project, prefixed with the cloud name if more than 1 cloudId exists
+   */
+  projectName: string
+
+  /**
+   * The cloud ID that the project lives on
+   */
+  cloudId: string
+
+  /**
+   * The full project document fetched from Jira
+   */
+  remoteProject: IJiraRemoteProject
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteProject {
+  __typename: 'JiraRemoteProject'
+  self: string
+  id: string
+  key: string
+  name: string
+  avatarUrls: IJiraRemoteAvatarUrls
+  projectCategory: IJiraRemoteProjectCategory
+  simplified: boolean
+  style: string
+}
+
+/**
+ * A project fetched from Jira in real time
+ */
+export interface IJiraRemoteAvatarUrls {
+  __typename: 'JiraRemoteAvatarUrls'
+  x48: string
+  x24: string
+  x16: string
+  x32: string
+}
+
+/**
+ * A project category fetched from a JiraRemoteProject
+ */
+export interface IJiraRemoteProjectCategory {
+  __typename: 'JiraRemoteProjectCategory'
+  self: string
+  id: string
+  name: string
+  description: string
 }
 
 // tslint:enable

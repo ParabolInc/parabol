@@ -1,5 +1,5 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
-import IntegrationService from 'server/graphql/types/IntegrationService'
+import IntegrationServiceEnum from 'server/graphql/types/IntegrationServiceEnum'
 import addProviderGitHub from 'server/safeMutations/addProviderGitHub'
 import addProviderSlack from 'server/safeMutations/addProviderSlack'
 import {getUserId, isTeamMember} from 'server/utils/authorization'
@@ -15,7 +15,7 @@ export default {
       type: new GraphQLNonNull(GraphQLID)
     },
     service: {
-      type: new GraphQLNonNull(IntegrationService)
+      type: new GraphQLNonNull(IntegrationServiceEnum)
     },
     teamId: {
       type: new GraphQLNonNull(GraphQLID)

@@ -56,7 +56,7 @@ const AuthToken = new GraphQLObjectType({
       description: 'role. Any privileges associated with the account'
     },
     tms: {
-      type: new GraphQLList(new GraphQLNonNull(GraphQLID)),
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))),
       description: 'teams. a list of teamIds where the user is active'
     }
   })

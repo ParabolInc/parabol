@@ -90,6 +90,8 @@ import acceptTeamInvitation from 'server/graphql/mutations/acceptTeamInvitation'
 import dismissSuggestedAction from 'server/graphql/mutations/dismissSuggestedAction'
 import dismissNewFeature from 'server/graphql/mutations/dismissNewFeature'
 import addAtlassianAuth from 'server/graphql/mutations/addAtlassianAuth'
+import removeAtlassianAuth from 'server/graphql/mutations/removeAtlassianAuth'
+import createJiraIssue from 'server/graphql/mutations/createJiraIssue'
 import reflectTemplatePromptUpdateDescription from 'server/graphql/mutations/reflectTemplatePromptUpdateDescription'
 
 export default new GraphQLObjectType({
@@ -111,6 +113,7 @@ export default new GraphQLObjectType({
     connectSocket,
     createImposterToken,
     createGitHubIssue,
+    createJiraIssue,
     createOrgPicturePutUrl,
     createReflection,
     createReflectionGroup,
@@ -145,6 +148,7 @@ export default new GraphQLObjectType({
     promoteToTeamLead,
     reflectTemplatePromptUpdateDescription,
     removeAgendaItem,
+    removeAtlassianAuth,
     removeProvider,
     removeSlackChannel,
     removeGitHubRepo,

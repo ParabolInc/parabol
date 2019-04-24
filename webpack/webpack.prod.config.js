@@ -18,6 +18,7 @@ const pluginClassProps = require('@babel/plugin-proposal-class-properties')
 const pluginRelay = require('babel-plugin-relay')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const pluginInlineImport = require('babel-plugin-inline-import').default
 
 const publicPath = getWebpackPublicPath.default()
 const buildPath = path.join(__dirname, '../build')
@@ -53,6 +54,7 @@ const babelConfig = {
     cacheDirectory: true,
     babelrc: false,
     plugins: [
+      pluginInlineImport,
       pluginObjectRestSpread,
       pluginClassProps,
       pluginDynamicImport,

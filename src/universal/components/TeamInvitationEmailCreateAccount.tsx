@@ -5,17 +5,17 @@ import Helmet from 'react-helmet'
 import {createFragmentContainer, graphql} from 'react-relay'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InvitationDialog from './InvitationDialog'
-import InvitationDialogContent from './InvitationDialogContent'
+import BasicCard from './BasicCard'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 import AuthPrivacyFooter from 'universal/components/AuthPrivacyFooter'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailCreateAccount_verifiedInvitation
 }
 
-const StyledDialog = styled(InvitationDialog)({
+const StyledDialog = styled(BasicCard)({
   maxWidth: 356
 })
 
@@ -32,8 +32,8 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
   return (
     <StyledDialog>
       <Helmet title={`Sign up | Team Invitation`} />
-      <InvitationDialogTitle>Welcome!</InvitationDialogTitle>
-      <InvitationDialogContent>
+      <DialogTitle>Welcome!</DialogTitle>
+      <DialogContent>
         <InvitationDialogCopy>
           Choose a password for immediate access to your team: <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
@@ -41,7 +41,7 @@ const TeamInvitationEmailCreateAccount = (props: Props) => {
           <EmailPasswordAuthForm email={email} isPrimary />
         </InvitationCenteredCopy>
         <AuthPrivacyFooter />
-      </InvitationDialogContent>
+      </DialogContent>
     </StyledDialog>
   )
 }

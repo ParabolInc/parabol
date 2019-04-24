@@ -1,20 +1,20 @@
 import React from 'react'
-import InvitationDialog from './InvitationDialog'
-import InvitationDialogContent from './InvitationDialogContent'
+import BasicCard from './BasicCard'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 import Helmet from 'react-helmet'
 
 const TeamInvitationErrorNotFound = () => {
   return (
-    <InvitationDialog>
+    <BasicCard>
       <Helmet title={`Token not found | Team Invitation`} />
-      <InvitationDialogTitle>Invalid Invitation</InvitationDialogTitle>
-      <InvitationDialogContent>
+      <DialogTitle>Invalid Invitation</DialogTitle>
+      <DialogContent>
         <InvitationDialogCopy>The invitation token is not valid.</InvitationDialogCopy>
         <InvitationDialogCopy>Try copying the link from your email again.</InvitationDialogCopy>
-      </InvitationDialogContent>
-    </InvitationDialog>
+      </DialogContent>
+    </BasicCard>
   )
 }
 

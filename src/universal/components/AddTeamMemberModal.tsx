@@ -10,8 +10,8 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import AddTeamMemberModalBoundary from './AddTeamMemberModalBoundary'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import BasicTextArea from './InputField/BasicTextArea'
-import InvitationDialogContent from './InvitationDialogContent'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogContent from './DialogContent'
+import DialogTitle from './DialogTitle'
 import StyledError from './StyledError'
 import {AddTeamMemberModal_teamMembers} from '__generated__/AddTeamMemberModal_teamMembers.graphql'
 import plural from 'universal/utils/plural'
@@ -35,7 +35,7 @@ const ButtonGroup = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const OffsetTitle = styled(InvitationDialogTitle)({
+const OffsetTitle = styled(DialogTitle)({
   paddingLeft: '1.75rem'
 })
 
@@ -134,7 +134,7 @@ class AddTeamMemberModal extends Component<Props, State> {
     return (
       <AddTeamMemberModalBoundary>
         <OffsetTitle>Invite to Team</OffsetTitle>
-        <InvitationDialogContent>
+        <DialogContent>
           <BasicTextArea
             autoFocus
             name='rawInvitees'
@@ -152,7 +152,7 @@ class AddTeamMemberModal extends Component<Props, State> {
               {title}
             </PrimaryButton>
           </ButtonGroup>
-        </InvitationDialogContent>
+        </DialogContent>
       </AddTeamMemberModalBoundary>
     )
   }

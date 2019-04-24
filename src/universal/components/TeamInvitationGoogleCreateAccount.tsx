@@ -13,10 +13,10 @@ import withMutationProps, {WithMutationProps} from '../utils/relay/withMutationP
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InvitationDialog from './InvitationDialog'
-import InvitationDialogContent from './InvitationDialogContent'
+import BasicCard from './BasicCard'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 import LINK = PALETTE.LINK
 import PlainButton from 'universal/components/PlainButton/PlainButton'
 import HorizontalSeparator from 'universal/components/HorizontalSeparator/HorizontalSeparator'
@@ -33,11 +33,11 @@ interface State {
   isEmailFallback: boolean
 }
 
-const StyledDialog = styled(InvitationDialog)({
+const StyledDialog = styled(BasicCard)({
   maxWidth: 356
 })
 
-const StyledContent = styled(InvitationDialogContent)({
+const StyledContent = styled(DialogContent)({
   paddingLeft: 0,
   paddingRight: 0
 })
@@ -105,7 +105,7 @@ class TeamInvitationGoogleCreateAccount extends Component<Props, State> {
     return (
       <StyledDialog>
         <Helmet title={`Sign up with Google | Team Invitation`} />
-        <InvitationDialogTitle>Welcome!</InvitationDialogTitle>
+        <DialogTitle>Welcome!</DialogTitle>
         <StyledContent>
           <CopyMargins>
             <InvitationDialogCopy>

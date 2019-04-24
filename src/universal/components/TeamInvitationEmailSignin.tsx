@@ -6,16 +6,16 @@ import {createFragmentContainer, graphql} from 'react-relay'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
 import ForgotPasswordOneClick from './ForgotPasswordOneClick'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InvitationDialog from './InvitationDialog'
-import InvitationDialogContent from './InvitationDialogContent'
+import BasicCard from './BasicCard'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 
 interface Props {
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation
 }
 
-const StyledDialog = styled(InvitationDialog)({
+const StyledDialog = styled(BasicCard)({
   maxWidth: 356
 })
 
@@ -33,8 +33,8 @@ const TeamInvitationEmailSignin = (props: Props) => {
   return (
     <StyledDialog>
       <Helmet title={`Sign in | Team Invitation`} />
-      <InvitationDialogTitle>Welcome back, {preferredName}!</InvitationDialogTitle>
-      <InvitationDialogContent>
+      <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
+      <DialogContent>
         <InvitationDialogCopy>
           Enter your password for immediate access to your team: <TeamName>{teamName}</TeamName>
         </InvitationDialogCopy>
@@ -42,7 +42,7 @@ const TeamInvitationEmailSignin = (props: Props) => {
           <EmailPasswordAuthForm email={email} isPrimary isSignin />
           <ForgotPasswordOneClick email={email} />
         </InvitationCenteredCopy>
-      </InvitationDialogContent>
+      </DialogContent>
     </StyledDialog>
   )
 }

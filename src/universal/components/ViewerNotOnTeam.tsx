@@ -8,10 +8,10 @@ import PrimaryButton from 'universal/components/PrimaryButton'
 import AcceptTeamInvitationMutation from 'universal/mutations/AcceptTeamInvitationMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
-import InvitationDialog from './InvitationDialog'
-import InvitationDialogContent from './InvitationDialogContent'
+import BasicCard from './BasicCard'
+import DialogContent from './DialogContent'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import InvitationDialogTitle from './InvitationDialogTitle'
+import DialogTitle from './DialogTitle'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props extends RouteComponentProps<{}> {
@@ -48,10 +48,10 @@ const ViewerNotOnTeam = (props: Props) => {
   }
   return (
     <TeamInvitationWrapper>
-      <InvitationDialog>
+      <BasicCard>
         <Helmet title={`Invitation Required`} />
-        <InvitationDialogTitle>Invitation Required</InvitationDialogTitle>
-        <InvitationDialogContent>
+        <DialogTitle>Invitation Required</DialogTitle>
+        <DialogContent>
           <InvitationDialogCopy>You’re almost on the team!</InvitationDialogCopy>
           <InvitationDialogCopy>Just ask a team member for an invitation.</InvitationDialogCopy>
           <InvitationDialogCopy>This page will redirect automatically.</InvitationDialogCopy>
@@ -61,8 +61,8 @@ const ViewerNotOnTeam = (props: Props) => {
               <Ellipsis />
             </PrimaryButton>
           </InvitationCenteredCopy>
-        </InvitationDialogContent>
-      </InvitationDialog>
+        </DialogContent>
+      </BasicCard>
     </TeamInvitationWrapper>
   )
 }

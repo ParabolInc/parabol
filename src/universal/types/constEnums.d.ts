@@ -9,6 +9,9 @@ export const enum LoaderSize {
   PANEL = 200
 }
 
+export const enum ZIndex {
+  MODAL = 400 /*should be 24, https://github.com/ParabolInc/action/issues/2772 */
+}
 // equal to utils/constants
 export const enum MeetingTypes {
   ACTION = 'action',

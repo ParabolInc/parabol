@@ -8,7 +8,7 @@ import getDisplayName from 'universal/utils/getDisplayName'
  * Chore: refactor all V1 instances to use V2
  */
 
-const getOffset = (orientation, fullWidth) => {
+export const getOffset = (orientation, fullWidth) => {
   if (orientation === 'center') {
     return fullWidth / 2
   } else if (orientation === 'right' || orientation === 'bottom') {

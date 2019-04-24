@@ -2,12 +2,11 @@ import React from 'react'
 import appTheme from 'universal/styles/theme/appTheme'
 import {createFragmentContainer} from 'react-relay'
 import styled from 'react-emotion'
-import {UserDraggingHeader_user as User} from '__generated__/UserDraggingHeader_user.graphql'
 import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
 import Tag from 'universal/components/Tag/Tag'
 
 type Props = {
-  user: User
+  user: any
 }
 
 const Header = styled('div')({

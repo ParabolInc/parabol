@@ -1,3 +1,4 @@
+/* Deprecated. See MenuAvatar */
 import styled from 'react-emotion'
 import ui from 'universal/styles/ui'
 

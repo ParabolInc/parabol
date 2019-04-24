@@ -1,7 +1,8 @@
+/* Deprecating... use GitHubAuth (slackAuth tbd...) */
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLObjectType, GraphQLString} from 'graphql'
 import {connectionDefinitions, globalIdField} from 'graphql-relay'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
-import IntegrationService from 'server/graphql/types/IntegrationService'
+import IntegrationServiceEnum from 'server/graphql/types/IntegrationServiceEnum'
 
 const Provider = new GraphQLObjectType({
   name: 'Provider',
@@ -31,7 +32,7 @@ const Provider = new GraphQLObjectType({
       description: 'The username (or email) attached to the provider'
     },
     service: {
-      type: IntegrationService,
+      type: IntegrationServiceEnum,
       description: 'The name of the service'
     },
     teamId: {

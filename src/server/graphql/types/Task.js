@@ -8,13 +8,13 @@ import {
   GraphQLString
 } from 'graphql'
 import connectionDefinitions from 'server/graphql/connectionDefinitions'
-import GitHubTask from 'server/graphql/types/GitHubTask'
 import GraphQLISO8601Type from 'server/graphql/types/GraphQLISO8601Type'
 import PageInfoDateCursor from 'server/graphql/types/PageInfoDateCursor'
 import TaskEditorDetails from 'server/graphql/types/TaskEditorDetails'
 import TaskStatusEnum from 'server/graphql/types/TaskStatusEnum'
 import Team from 'server/graphql/types/Team'
 import Assignee from 'server/graphql/types/Assignee'
+import TaskIntegration from 'server/graphql/types/TaskIntegration'
 
 const Task = new GraphQLObjectType({
   name: 'Task',
@@ -29,7 +29,7 @@ const Task = new GraphQLObjectType({
       description: 'the agenda item that created this task, if any'
     },
     content: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The body of the task. If null, it is a new task.'
     },
     createdAt: {
@@ -53,8 +53,7 @@ const Task = new GraphQLObjectType({
       }
     },
     integration: {
-      // TODO replace this with TaskIntegration
-      type: GitHubTask
+      type: TaskIntegration
     },
     isSoftTask: {
       type: GraphQLBoolean,
@@ -82,18 +81,18 @@ const Task = new GraphQLObjectType({
       description: 'The tags associated with the task'
     },
     teamId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The id of the team (indexed). Needed for subscribing to archived tasks'
     },
     team: {
-      type: Team,
+      type: new GraphQLNonNull(Team),
       description: 'The team this task belongs to',
       resolve: ({teamId}, args, {dataLoader}) => {
         return dataLoader.get('teams').load(teamId)
       }
     },
     assignee: {
-      type: Assignee,
+      type: new GraphQLNonNull(Assignee),
       description: 'The team member (or soft team member) that owns this task',
       resolve: ({assigneeId, isSoftTask}, args, {dataLoader}) => {
         return isSoftTask
@@ -110,7 +109,7 @@ const Task = new GraphQLObjectType({
       description: 'The timestamp the task was updated'
     },
     userId: {
-      type: GraphQLID,
+      type: new GraphQLNonNull(GraphQLID),
       description:
         '* The userId, index useful for server-side methods getting all tasks under a user'
     }

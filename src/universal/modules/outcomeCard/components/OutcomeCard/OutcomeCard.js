@@ -5,7 +5,7 @@ import TaskEditor from 'universal/components/TaskEditor/TaskEditor'
 import TaskIntegrationLink from 'universal/components/TaskIntegrationLink'
 import TaskWatermark from 'universal/components/TaskWatermark'
 import EditingStatusContainer from 'universal/containers/EditingStatus/EditingStatusContainer'
-import OutcomeCardFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/OutcomeCardFooter'
+import TaskFooter from 'universal/modules/outcomeCard/components/OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from 'universal/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import labels from 'universal/styles/theme/labels'
 import ui from 'universal/styles/ui'
@@ -105,8 +105,8 @@ const OutcomeCard = (props) => {
           teamId={teamId}
           team={team}
         />
-        <TaskIntegrationLink integration={integration || null} />
-        <OutcomeCardFooter
+        <TaskIntegrationLink integration={integration} />
+        <TaskFooter
           area={area}
           cardIsActive={cardIsActive}
           editorState={editorState}
@@ -159,7 +159,7 @@ export default createFragmentContainer(
       # grab userId to ensure sorting on connections works
       userId
       ...EditingStatusContainer_task
-      ...OutcomeCardFooter_task
+      ...TaskFooter_task
     }
   `
 )

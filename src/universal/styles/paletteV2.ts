@@ -32,4 +32,17 @@ export namespace PALETTE {
     BLUE = '#329AE5',
     COLOR_NEUTRAL = '#444258'
   }
+
+  export const enum TASK_STATUS {
+    DONE = '#7C5FB0',
+    STUCK = '#FE7168',
+    FUTURE = '#55C0CF',
+    ACTIVE = '#61BF8B',
+    ARCHIVED = '#A2A1AC',
+    PRIVATE = '#FFCC63'
+  }
+
+  export const enum SERVICES {
+    ATLASSIAN_BLUE = '#0052cc'
+  }
 }

@@ -1,6 +1,8 @@
-import React from 'react'
+import React, {forwardRef, useEffect} from 'react'
 import styled from 'react-emotion'
+import {LoadingDelayRef} from 'universal/hooks/useLoadingDelay'
 import Spinner from 'universal/modules/spinner/components/Spinner/Spinner'
+import {PALETTE} from 'universal/styles/paletteV2'
 import {LoaderSize, Times} from 'universal/types/constEnums'
 import useTimeout from '../../hooks/useTimeout'
 
@@ -21,21 +23,47 @@ const LoadingWrapper = styled('div')(
 )
 
 type Props = {
+  delay?: number
   height?: number | string
   width?: number | string
+  loadingDelayRef?: LoadingDelayRef
+  showAfter?: number
   spinnerSize?: number
 }
 
-const LoadingComponent = (props: Props) => {
-  const {height, width, spinnerSize = LoaderSize.MAIN} = props
-  const minDelay = useTimeout(Times.HUMAN_ADDICTION_THRESH)
+// the ref isn't currenty used, but the Menu component likes to pass along a ref to figure out if the child is an item
+const LoadingComponent = forwardRef((props: Props, ref: any) => {
+  const {
+    delay,
+    height,
+    loadingDelayRef,
+    width,
+    spinnerSize = LoaderSize.MAIN,
+    showAfter = Times.HUMAN_ADDICTION_THRESH
+  } = props
+  const minDelay = useTimeout(showAfter)
   const timedOut = useTimeout(Times.MAX_WAIT_TIME)
-  if (!minDelay) return null
+  useEffect(() => {
+    if (loadingDelayRef) {
+      loadingDelayRef.current.start = Date.now()
+    }
+    return () => {
+      if (loadingDelayRef) {
+        loadingDelayRef.current.stop = Date.now()
+        loadingDelayRef.current.forceUpdate()
+      }
+    }
+  }, [])
+  if (showAfter && !minDelay) return null
   return (
-    <LoadingWrapper height={height} width={width}>
-      <Spinner fillColor={timedOut ? 'warm' : 'cool'} width={spinnerSize} />
+    <LoadingWrapper innerRef={ref} height={height} width={width}>
+      <Spinner
+        delay={delay}
+        fill={timedOut ? PALETTE.ERROR.MAIN : PALETTE.BACKGROUND.TEAL}
+        width={spinnerSize}
+      />
     </LoadingWrapper>
   )
-}
+})
 
 export default LoadingComponent

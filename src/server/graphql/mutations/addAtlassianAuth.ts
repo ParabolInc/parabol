@@ -35,9 +35,15 @@ export default {
 
     const manager = await AtlassianManager.init(code)
     const sites = await manager.getAccessibleResources()
+    if (!Array.isArray(sites)) {
+      return standardError(new Error(sites.message), {userId: viewerId})
+    }
     const cloudIds = sites.map((cloud) => cloud.id)
     const self = await manager.getMyself(cloudIds[0])
-    const {accessToken} = manager
+    if (!('accountId' in self)) {
+      return standardError(new Error(self.message), {userId: viewerId})
+    }
+    const {accessToken, refreshToken} = manager
 
     let atlassianAuthId
     const existingAuth = await r
@@ -46,30 +52,30 @@ export default {
       .filter({teamId})
       .nth(0)
       .default(null)
+    const updateDoc = {
+      isActive: true,
+      accessToken,
+      accountId: self.accountId,
+      cloudIds,
+      refreshToken,
+      teamId,
+      updatedAt: now,
+      userId: viewerId
+    }
     if (existingAuth) {
       atlassianAuthId = existingAuth.id
       await r
         .table('AtlassianAuth')
         .get(existingAuth.id)
-        .update({
-          accessToken,
-          updatedAt: now
-        })
+        .update(updateDoc)
     } else {
       atlassianAuthId = shortid.generate()
       await r.table('AtlassianAuth').insert({
+        ...updateDoc,
         id: atlassianAuthId,
-        accessToken,
-        cloudIds,
-        createdAt: now,
-        updatedAt: now,
-        teamId,
-        userId: viewerId,
-        atlassianUserId: self.accountId
+        createdAt: now
       })
     }
-
-    // TODO auto join existing projects
 
     const data = {atlassianAuthId}
     publish(TEAM, teamId, AddAtlassianAuthPayload, data, subOptions)

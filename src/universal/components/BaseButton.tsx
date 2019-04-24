@@ -60,6 +60,7 @@ export interface BaseButtonProps extends PlainButtonProps {
   elevationResting?: number
   innerRef?: Ref<any>
   onClick?: React.MouseEventHandler
+  onMouseDown?: React.MouseEventHandler
   onMouseEnter?: React.MouseEventHandler
   onMouseLeave?: React.MouseEventHandler
   style?: object
@@ -78,6 +79,8 @@ class BaseButton extends Component<BaseButtonProps, State> {
     if (e.button === 0) {
       this.setState({pressedDown: true})
     }
+    const {onMouseDown} = this.props
+    onMouseDown && onMouseDown(e)
   }
 
   onMouseUp = (e) => {

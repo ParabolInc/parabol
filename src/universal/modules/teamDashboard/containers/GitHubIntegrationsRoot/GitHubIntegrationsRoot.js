@@ -15,7 +15,7 @@ import fromTeamMemberId from 'universal/utils/relay/fromTeamMemberId'
 import IntegrationSubscription from 'universal/subscriptions/IntegrationSubscription'
 
 const githubRepoQuery = graphql`
-  query GitHubIntegrationsRootQuery($teamId: ID!, $service: IntegrationService!) {
+  query GitHubIntegrationsRootQuery($teamId: ID!, $service: IntegrationServiceEnum!) {
     viewer {
       ...GitHubIntegrations_viewer
     }

@@ -1,34 +1,47 @@
-import makeAppLink from './makeAppLink'
-import {ATLASSIAN_SCOPE} from 'universal/utils/constants'
 import fetch from 'node-fetch'
+import AtlassianClientManager from 'universal/utils/AtlassianClientManager'
+import {ATLASSIAN_SCOPE} from 'universal/utils/constants'
+import makeAppLink from './makeAppLink'
 
-interface JiraUser {
-  self: string
-  key: string
-  accountId: string
-  name: string
-  emailAddress: string
-  avatarUrls: {[key: string]: string}
-  displayName: string
-  active: boolean
-  timeZone: string
+interface AuthQueryParams {
+  grant_type: 'authorization_code'
+  code: string
+  redirect_uri: string
 }
 
-interface AccessibleResource {
-  id: string
-  name: string
-  scopes: string[]
-  avatarUrl: string
+interface RefreshQueryParams {
+  grant_type: 'refresh_token'
+  refresh_token: string
 }
 
-class AtlassianManager {
+interface OAuth2Response {
+  access_token: string
+  refresh_token: string
+  error: any
+  scope: string
+}
+
+class AtlassianManager extends AtlassianClientManager {
   static async init (code: string) {
-    const queryParams = {
+    return AtlassianManager.fetchToken({
       grant_type: 'authorization_code',
-      client_id: process.env.ATLASSIAN_CLIENT_ID,
-      client_secret: process.env.ATLASSIAN_CLIENT_SECRET,
       code,
       redirect_uri: makeAppLink('auth/atlassian')
+    })
+  }
+
+  static async refresh (refreshToken: string) {
+    return AtlassianManager.fetchToken({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken
+    })
+  }
+
+  static async fetchToken (partialQueryParams: AuthQueryParams | RefreshQueryParams) {
+    const queryParams = {
+      ...partialQueryParams,
+      client_id: process.env.ATLASSIAN_CLIENT_ID,
+      client_secret: process.env.ATLASSIAN_CLIENT_SECRET
     }
 
     const uri = `https://auth.atlassian.com/oauth/token`
@@ -42,11 +55,11 @@ class AtlassianManager {
       body: JSON.stringify(queryParams)
     })
 
-    const tokenJson = await tokenRes.json()
+    const tokenJson = (await tokenRes.json()) as OAuth2Response
 
-    const {access_token: accessToken, error, scope} = tokenJson
+    const {access_token: accessToken, refresh_token: refreshToken, error, scope} = tokenJson
     if (error) {
-      throw new Error(`GitHub: ${error}`)
+      throw new Error(`Atlassian: ${error}`)
     }
     const providedScope = scope.split(' ')
     const matchingScope =
@@ -54,37 +67,11 @@ class AtlassianManager {
     if (!matchingScope) {
       throw new Error(`bad scope: ${scope}`)
     }
-    return new AtlassianManager(accessToken)
+    return new AtlassianManager(accessToken, refreshToken)
   }
 
-  accessToken: string
-  options: {headers: {Authorization: string; Accept: 'application/json'}}
-
-  constructor (accessToken: string) {
-    this.accessToken = accessToken
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json' as 'application/json'
-    }
-    this.options = {headers}
-  }
-
-  async getAccessibleResources () {
-    const siteRes = await fetch(
-      'https://api.atlassian.com/oauth/token/accessible-resources',
-      this.options
-    )
-    const siteJson = await siteRes.json()
-    return siteJson as AccessibleResource[]
-  }
-
-  async getMyself (cloudId: string) {
-    const selfRes = await fetch(
-      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/myself`,
-      this.options
-    )
-    const selfJson = await selfRes.json()
-    return selfJson as JiraUser
+  constructor (accessToken: string, refreshToken?: string) {
+    super(accessToken, {fetch, refreshToken})
   }
 }
 
