@@ -1,13 +1,13 @@
 import ms from 'ms'
 import getRethink from 'server/database/rethinkDriver'
 import {DataLoaderWorker} from 'server/graphql/graphql'
+import makeSuggestedIntegrationId from 'universal/utils/makeSuggestedIntegrationId'
 
 export interface IntegrationByUserId {
   id: string
   userId: string
   service: 'github' | 'jira'
   nameWithOwner: string | null
-  projectId: string | null
   projectKey: string | null
   projectName: string | null
   avatar: string | null
@@ -43,16 +43,6 @@ export const useOnlyUserIntegrations = (
     : undefined
 }
 
-const makeId = (item) => {
-  const {service} = item
-  switch (service) {
-    case 'github':
-      return item.nameWithOwner
-    case 'jira':
-      return `${item.cloudId}:${item.projectId}`
-  }
-}
-
 export const getTeamIntegrationsByUserId = async (
   teamId: string
 ): Promise<IntegrationByUserId[]> => {
@@ -70,9 +60,6 @@ export const getTeamIntegrationsByUserId = async (
       r.row('integration')('service'),
       r
         .row('integration')('nameWithOwner')
-        .default(null),
-      r
-        .row('integration')('projectId')
         .default(null),
       r
         .row('integration')('projectKey')
@@ -94,16 +81,15 @@ export const getTeamIntegrationsByUserId = async (
       userId: row('group')(0),
       service: row('group')(1),
       nameWithOwner: row('group')(2),
-      projectId: row('group')(3),
-      projectKey: row('group')(4),
-      projectName: row('group')(5),
-      avatar: row('group')(6),
-      cloudId: row('group')(7),
+      projectKey: row('group')(3),
+      projectName: row('group')(4),
+      avatar: row('group')(5),
+      cloudId: row('group')(6),
       lastUsedAt: row('reduction')
     }))
   return res.map((item) => ({
     ...item,
-    id: makeId(item)
+    id: makeSuggestedIntegrationId(item)
   }))
 }
 
