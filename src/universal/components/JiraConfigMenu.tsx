@@ -1,6 +1,6 @@
 import React from 'react'
-import MenuItemWithShortcuts from 'universal/components/MenuItemWithShortcuts'
-import MenuWithShortcuts from 'universal/components/MenuWithShortcuts'
+import MenuItem from 'universal/components/MenuItem'
+import Menu from 'universal/components/Menu'
 import useAtmosphere from 'universal/hooks/useAtmosphere'
 import RemoveAtlassianAuthMutation from 'universal/mutations/RemoveAtlassianAuthMutation'
 import {IntegrationServiceEnum} from 'universal/types/graphql'
@@ -32,10 +32,10 @@ const JiraConfigMenu = (props: Props) => {
     RemoveAtlassianAuthMutation(atmosphere, {teamId}, {onError: noop, onCompleted: noop})
   }
   return (
-    <MenuWithShortcuts ariaLabel={'Configure your Jira integration'} closePortal={closePortal}>
-      <MenuItemWithShortcuts label='Refresh token' onClick={openOAuth} />
-      <MenuItemWithShortcuts label='Remove Atlassian' onClick={removeAtlassian} />
-    </MenuWithShortcuts>
+    <Menu ariaLabel={'Configure your Jira integration'} closePortal={closePortal}>
+      <MenuItem label='Refresh token' onClick={openOAuth} />
+      <MenuItem label='Remove Atlassian' onClick={removeAtlassian} />
+    </Menu>
   )
 }
 
