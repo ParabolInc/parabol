@@ -35,9 +35,11 @@ const SearchIcon = styled(Icon)({
 })
 
 const NoResults = styled(MenuItemLabel)({
-  paddingLeft: 44,
-  fontStyle: 'italic',
-  fontWeight: 600
+  color: PALETTE.TEXT.LIGHT,
+  justifyContent: 'center',
+  paddingLeft: 8,
+  paddingRight: 8,
+  fontStyle: 'italic'
 })
 
 const SearchItem = styled(MenuItemLabel)({
