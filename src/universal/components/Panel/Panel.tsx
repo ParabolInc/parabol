@@ -36,22 +36,20 @@ const PanelControls = styled('div')({
   padding: `0 ${Layout.ROW_GUTTER}px`
 })
 
-const PanelBody = styled('div')(({hideFirstRowBorder}: {hideFirstRowBorder: boolean}) => ({
+const PanelBody = styled('div')({
   display: 'block',
-  marginTop: hideFirstRowBorder ? '-1px' : undefined,
   width: '100%'
-}))
+})
 
 interface Props {
   badgeCount?: number
   children: ReactNode
   controls?: any
-  hideFirstRowBorder?: boolean
   label?: any
 }
 
 const Panel = (props: Props) => {
-  const {badgeCount, children, controls, hideFirstRowBorder, label} = props
+  const {badgeCount, children, controls, label} = props
 
   return (
     <PanelRoot>
@@ -62,14 +60,7 @@ const Panel = (props: Props) => {
           <PanelControls>{controls}</PanelControls>
         </PanelHeader>
       )}
-      {/*
-          NOTE: “hideFirstRowBorder”
-          children may only be a set of rows,
-          and in the absense of a panel header,
-          we may want to avoid fuzzies by hiding
-          the first row’s top border
-      */}
-      <PanelBody hideFirstRowBorder={!!hideFirstRowBorder}>{children}</PanelBody>
+      <PanelBody>{children}</PanelBody>
     </PanelRoot>
   )
 }
