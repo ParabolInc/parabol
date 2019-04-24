@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, {ReactNode} from 'react'
 import styled from 'react-emotion'
-import {panelShadow} from 'universal/styles/elevation'
 import Badge from 'universal/components/Badge/Badge'
 import LabelHeading from 'universal/components/LabelHeading/LabelHeading'
+import {panelShadow} from 'universal/styles/elevation'
 import {Layout} from 'universal/types/constEnums'
 
 const PanelRoot = styled('div')({
@@ -37,13 +36,21 @@ const PanelControls = styled('div')({
   padding: `0 ${Layout.ROW_GUTTER}px`
 })
 
-const PanelBody = styled('div')(({hideFirstRowBorder}) => ({
+const PanelBody = styled('div')(({hideFirstRowBorder}: {hideFirstRowBorder: boolean}) => ({
   display: 'block',
-  marginTop: hideFirstRowBorder && '-1px',
+  marginTop: hideFirstRowBorder ? '-1px' : undefined,
   width: '100%'
 }))
 
-const Panel = (props) => {
+interface Props {
+  badgeCount?: number
+  children: ReactNode
+  controls?: any
+  hideFirstRowBorder?: boolean
+  label?: any
+}
+
+const Panel = (props: Props) => {
   const {badgeCount, children, controls, hideFirstRowBorder, label} = props
 
   return (
@@ -62,17 +69,9 @@ const Panel = (props) => {
           we may want to avoid fuzzies by hiding
           the first row’s top border
       */}
-      <PanelBody hideFirstRowBorder={hideFirstRowBorder}>{children}</PanelBody>
+      <PanelBody hideFirstRowBorder={!!hideFirstRowBorder}>{children}</PanelBody>
     </PanelRoot>
   )
-}
-
-Panel.propTypes = {
-  badgeCount: PropTypes.number,
-  children: PropTypes.any,
-  controls: PropTypes.any,
-  hideFirstRowBorder: PropTypes.bool,
-  label: PropTypes.any
 }
 
 export default Panel

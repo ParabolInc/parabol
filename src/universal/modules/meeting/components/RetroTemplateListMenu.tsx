@@ -55,6 +55,8 @@ class RetroTemplateListMenu extends Component<Props> {
             <MenuItemWithShortcuts key={id} label={name} onClick={this.handleTemplateClick(id)} />
           )
         })}
+        {/*
+        // @ts-ignore*/}
         <MenuItemHR notMenuItem />
         <MenuItemWithShortcuts label='Customize...' onClick={customize} />
       </MenuWithShortcuts>

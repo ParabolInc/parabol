@@ -1,20 +1,20 @@
-import PropTypes from 'prop-types'
 import React from 'react'
-import Atmosphere from 'universal/Atmosphere'
-import Helmet from 'react-helmet'
-import withAtmosphere from 'universal/decorators/withAtmosphere/withAtmosphere'
-import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow'
-import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
-import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
 import styled from 'react-emotion'
-import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
+import Helmet from 'react-helmet'
 import FlatButton from 'universal/components/FlatButton'
 import IconLabel from 'universal/components/IconLabel'
 import Panel from 'universal/components/Panel/Panel'
-import {PAYMENT_REJECTED} from 'universal/utils/constants'
-import {Layout} from 'universal/types/constEnums'
+import SettingsWrapper from 'universal/components/Settings/SettingsWrapper'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
+import NotificationRow from 'universal/modules/notifications/components/NotificationRow/NotificationRow'
+import UserSettingsWrapper from 'universal/modules/userDashboard/components/UserSettingsWrapper/UserSettingsWrapper'
+import ClearNotificationMutation from 'universal/mutations/ClearNotificationMutation'
 import {PALETTE} from 'universal/styles/paletteV2'
+import {Layout} from 'universal/types/constEnums'
+import {PAYMENT_REJECTED} from 'universal/utils/constants'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 const ClearAllButton = styled(FlatButton)({
   alignSelf: 'center',
@@ -45,7 +45,11 @@ const NOTIFICATION_TYPES_REQUIRING_ACTION = new Set([PAYMENT_REJECTED])
 
 const requiresAction = (type): boolean => NOTIFICATION_TYPES_REQUIRING_ACTION.has(type)
 
-const Notifications = (props) => {
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  notifications: any
+}
+
+const Notifications = (props: Props) => {
   const {atmosphere, notifications, submitMutation, onCompleted, onError, submitting} = props
 
   const clearableNotifs = notifications.edges.filter(({node}) => node && !requiresAction(node.type))
@@ -87,15 +91,6 @@ const Notifications = (props) => {
       </SettingsWrapper>
     </UserSettingsWrapper>
   )
-}
-
-Notifications.propTypes = {
-  atmosphere: PropTypes.instanceOf(Atmosphere),
-  notifications: PropTypes.object,
-  onCompleted: PropTypes.func.isRequired,
-  onError: PropTypes.func.isRequired,
-  submitting: PropTypes.bool.isRequired,
-  submitMutation: PropTypes.func.isRequired
 }
 
 export default withAtmosphere(withMutationProps(Notifications))

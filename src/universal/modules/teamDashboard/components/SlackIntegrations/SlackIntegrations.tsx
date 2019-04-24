@@ -100,7 +100,6 @@ const SlackIntegrations = (props: Props) => {
           <Row>
             <AddSlackChannel
               accessToken={accessToken}
-              environment={atmosphere}
               teamMemberId={teamMemberId}
               subbedChannels={slackChannels}
             />

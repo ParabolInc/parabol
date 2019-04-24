@@ -1,14 +1,16 @@
 import ms from 'ms'
-import PropTypes from 'prop-types'
 import React, {Component} from 'react'
-import SecondaryButton from 'universal/components/SecondaryButton'
+import styled from 'react-emotion'
 import Row from 'universal/components/Row/Row'
+import SecondaryButton from 'universal/components/SecondaryButton'
+import withAtmosphere, {
+  WithAtmosphereProps
+} from 'universal/decorators/withAtmosphere/withAtmosphere'
 import ServiceDropdownInput from 'universal/modules/integrations/components/ServiceDropdownInput/ServiceDropdownInput'
 import AddSlackChannelMutation from 'universal/mutations/AddSlackChannelMutation'
 import formError from 'universal/styles/helpers/formError'
-import withMutationProps from 'universal/utils/relay/withMutationProps'
-import styled from 'react-emotion'
 import {Layout} from 'universal/types/constEnums'
+import withMutationProps, {WithMutationProps} from 'universal/utils/relay/withMutationProps'
 
 const StyledRow = styled(Row)({
   alignItems: 'flex-start',
@@ -39,28 +41,27 @@ const defaultSelectedChannel = () => ({
   channelName: 'Select a Slack channel'
 })
 
-class AddSlackChannel extends Component {
-  static propTypes = {
-    accessToken: PropTypes.string,
-    environment: PropTypes.object,
-    teamMemberId: PropTypes.string,
-    setDirty: PropTypes.func.isRequired,
-    error: PropTypes.any,
-    submitting: PropTypes.bool,
-    submitMutation: PropTypes.func.isRequired,
-    onCompleted: PropTypes.func.isRequired,
-    onError: PropTypes.func.isRequired
-  }
+interface Props extends WithAtmosphereProps, WithMutationProps {
+  accessToken: string
+  subbedChannels: ReadonlyArray<any>
+  teamMemberId: string
+}
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      options: [],
-      selectedChannel: defaultSelectedChannel()
-    }
-    this.lastUpdated = 0
-    // TODO: fix TS warning
-    // this.fetchOptions(props.accessToken)
+interface State {
+  isLoaded?: boolean
+  options: any[]
+  selectedChannel: {
+    channelId: any
+    channelName: string
+  }
+}
+
+class AddSlackChannel extends Component<Props, State> {
+  lastUpdated = 0
+
+  state: State = {
+    options: [],
+    selectedChannel: defaultSelectedChannel()
   }
 
   componentWillReceiveProps (nextProps) {
@@ -82,17 +83,17 @@ class AddSlackChannel extends Component {
   }
 
   handleAddChannel = () => {
-    const {environment, teamMemberId, onError, onCompleted} = this.props
+    const {atmosphere, teamMemberId, onError, onCompleted} = this.props
     const {selectedChannel} = this.state
     if (!selectedChannel.channelId) return
-    AddSlackChannelMutation(environment, selectedChannel, teamMemberId, onError, onCompleted)
+    AddSlackChannelMutation(atmosphere, selectedChannel, teamMemberId, onError, onCompleted)
     this.setState({
       selectedChannel: defaultSelectedChannel()
     })
   }
 
   fetchOptions = async (accessToken) => {
-    const now = new Date()
+    const now = Date.now()
     const isStale = now - this.lastUpdated > ms('30s')
     if (accessToken && isStale) {
       this.lastUpdated = now
@@ -132,7 +133,7 @@ class AddSlackChannel extends Component {
             options={options}
             isLoaded={isLoaded}
           />
-          <Error>{error && error.message}</Error>
+          <Error>{error && (error as any).message}</Error>
         </DropdownAndError>
         <StyledButton onClick={this.handleAddChannel}>{'Add Channel'}</StyledButton>
       </StyledRow>
@@ -140,4 +141,4 @@ class AddSlackChannel extends Component {
   }
 }
 
-export default withMutationProps(AddSlackChannel)
+export default withAtmosphere(withMutationProps(AddSlackChannel))
