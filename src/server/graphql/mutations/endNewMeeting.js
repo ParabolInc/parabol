@@ -82,10 +82,20 @@ export default {
     endSlackMeeting(meetingId, teamId, true)
 
     if (currentStage) {
-      sendSegmentEvent('Retro Meeting Completed', presentMemberUserIds, {
+      const {facilitatorUserId} = completedMeeting
+      const nonFacilitators = presentMemberUserIds.filter((userId) => userId !== facilitatorUserId)
+      const traits = {
+        wasFacilitator: false,
+        teamMembersCount: meetingMembers.length,
+        teamMembersPresentCount: presentMembers.length,
         teamId,
         meetingNumber
+      }
+      sendSegmentEvent('Retro Meeting Completed', facilitatorUserId, {
+        ...traits,
+        wasFacilitator: true
       })
+      sendSegmentEvent('Retro Meeting Completed', nonFacilitators, traits)
       sendSegmentIdentify(presentMemberUserIds)
       sendNewMeetingSummary(completedMeeting, dataLoader)
       const events = meetingMembers.map((meetingMember) => ({
